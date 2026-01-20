@@ -3,7 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.Basic
+module
+
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 
 /-! # Tactics that transform types into definitionally equal types
 
@@ -12,6 +15,8 @@ change hypotheses and the goal to things that are definitionally equal.
 
 It then provides a number of tactics that transform local hypotheses and/or the target.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

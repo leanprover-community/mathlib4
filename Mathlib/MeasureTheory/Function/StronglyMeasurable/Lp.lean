@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Finitely strongly measurable functions in `Lp`
@@ -23,6 +25,8 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+public section
 
 
 open MeasureTheory Filter TopologicalSpace Function

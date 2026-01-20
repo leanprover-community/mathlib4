@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Sébastien Gouëzel, Jireh Loreaux
 -/
-import Mathlib.Analysis.MeanInequalities
-import Mathlib.Analysis.Normed.Lp.WithLp
+module
+
+public import Mathlib.Analysis.MeanInequalities
+public import Mathlib.Analysis.Normed.Lp.WithLp
 
 /-!
 # `L^p` distance on products of two metric spaces
@@ -44,6 +46,8 @@ TODO: the results about uniformity and bornology in the `Aux` section should be 
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 
 -/
+
+@[expose] public section
 
 open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
 
@@ -109,6 +113,22 @@ theorem smul_fst : (c • x).fst = c • x.fst :=
 @[simp]
 theorem smul_snd : (c • x).snd = c • x.snd :=
   rfl
+
+variable (p 𝕜 α β)
+
+/-- `WithLp.fst` as a linear map. -/
+@[simps]
+def fstₗ : WithLp p (α × β) →ₗ[𝕜] α where
+  toFun := WithLp.fst
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- `WithLp.snd` as a linear map. -/
+@[simps]
+def sndₗ : WithLp p (α × β) →ₗ[𝕜] β where
+  toFun := WithLp.snd
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 end algebra
 
@@ -429,6 +449,7 @@ private lemma isUniformInducing_ofLp_aux [PseudoEMetricSpace α] [PseudoEMetricS
   (prod_antilipschitzWith_ofLp_aux p α β).isUniformInducing
     (prod_lipschitzWith_ofLp_aux p α β).uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
     𝓤 (WithLp p (α × β)) = 𝓤[UniformSpace.comap ofLp inferInstance] := by
   rw [← (isUniformInducing_ofLp_aux p α β).comap_uniformity]
@@ -437,6 +458,7 @@ private lemma prod_uniformity_aux [PseudoEMetricSpace α] [PseudoEMetricSpace β
 instance instProdBornology (p : ℝ≥0∞) (α β : Type*) [Bornology α] [Bornology β] :
     Bornology (WithLp p (α × β)) := Bornology.induced ofLp
 
+set_option backward.privateInPublic true in
 private lemma prod_cobounded_aux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     @cobounded _ PseudoMetricSpace.toBornology = cobounded (WithLp p (α × β)) :=
   le_antisymm (prod_antilipschitzWith_ofLp_aux p α β).tendsto_cobounded.le_comap
@@ -468,6 +490,14 @@ def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
 
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
+
+@[fun_prop]
+protected lemma continuous_fst : Continuous (@WithLp.fst p α β) :=
+  continuous_fst.comp <| prod_continuous_ofLp ..
+
+@[fun_prop]
+protected lemma continuous_snd : Continuous (@WithLp.snd p α β) :=
+  continuous_snd.comp <| prod_continuous_ofLp ..
 
 variable [T0Space α] [T0Space β]
 
@@ -532,11 +562,25 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
 
+/-- `WithLp.fst` as a continuous linear map. -/
+@[simps! coe apply]
+def fstL : WithLp p (α × β) →L[𝕜] α where
+  __ := fstₗ ..
+  cont := WithLp.continuous_fst ..
+
+/-- `WithLp.snd` as a continuous linear map. -/
+@[simps! coe apply]
+def sndL : WithLp p (α × β) →L[𝕜] β where
+  __ := sndₗ ..
+  cont := WithLp.continuous_snd ..
+
 end ContinuousLinearEquiv
 
 /-! Throughout the rest of the file, we assume `1 ≤ p`. -/
 variable [hp : Fact (1 ≤ p)]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `PseudoEMetricSpace` instance on the product of two pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance instProdPseudoEMetricSpace [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -548,6 +592,8 @@ edistance, and having as uniformity the product uniformity. -/
 instance instProdEMetricSpace [EMetricSpace α] [EMetricSpace β] : EMetricSpace (WithLp p (α × β)) :=
   EMetricSpace.ofT0PseudoEMetricSpace (WithLp p (α × β))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `PseudoMetricSpace` instance on the product of two pseudometric spaces, using the
 `L^p` distance, and having as uniformity the product uniformity. -/
 instance instProdPseudoMetricSpace [PseudoMetricSpace α] [PseudoMetricSpace β] :
@@ -708,7 +754,7 @@ theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
   ext
   simp [prod_norm_eq_add (p.toReal_pos_iff_ne_top.mpr hp)]
 
-theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔  ‖f.snd‖₊ := by
+theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst‖₊ ⊔ ‖f.snd‖₊ := by
   ext
   norm_cast
 
@@ -964,6 +1010,9 @@ of `α × β`. See for instance `TrivSqZeroExt.instL1SeminormedAddCommGroup`.
 
 variable (α β : Type*)
 
+-- This prevents Lean from elaborating terms of `α × β` with an unintended norm.
+attribute [-instance] Prod.toNorm
+
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `a × β` with the
 Lp distance. -/
@@ -996,7 +1045,7 @@ lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [Seminorme
     @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-instance isBoundedSMulSeminormedAddCommGroupToProd
+lemma isBoundedSMulSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
     letI := pseudoMetricSpaceToProd p α β
@@ -1006,23 +1055,23 @@ instance isBoundedSMulSeminormedAddCommGroupToProd
   · simpa [dist_pseudoMetricSpaceToProd] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToProd] using dist_pair_smul x y (toLp p z)
 
-instance normSMulClassSeminormedAddCommGroupToProd
+lemma normSMulClassSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [NormSMulClass R α] [NormSMulClass R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormSMulClass R (α × β) := by
   letI := seminormedAddCommGroupToProd p α β
-  refine ⟨fun x y ↦ ?_⟩
-  rw [norm_smul]
+  exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
-instance normedSpaceSeminormedAddCommGroupToProd
+/-- This definition allows to endow `α × β` with a normed space structure corresponding to
+the Lp norm. It is useful for type synonyms of `α × β`. -/
+abbrev normedSpaceSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
     [NormedSpace R α] [NormedSpace R β] :
     letI := seminormedAddCommGroupToProd p α β
     NormedSpace R (α × β) := by
   letI := seminormedAddCommGroupToProd p α β
-  refine ⟨fun x y ↦ ?_⟩
-  simp [norm_seminormedAddCommGroupToProd, norm_smul]
+  exact ⟨fun x y ↦ norm_smul_le x (toLp p y)⟩
 
 /-- This definition allows to endow `α × β` with the Lp norm with the uniformity and bornology
 being defeq to the product ones. It is useful to endow a type synonym of `α × β` with the
@@ -1040,3 +1089,157 @@ abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] 
 end toProd
 
 end WithLp
+
+variable (γ : Type*) {α' β' : Type*}
+
+section Isometry
+
+variable [hp : Fact (1 ≤ p)] [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
+  [PseudoEMetricSpace α'] [PseudoEMetricSpace β']
+
+variable {α β} in
+/-- The `L^p` product of two isometries is an isometry. -/
+theorem Isometry.withLpProdMap {f : α → α'} (hf : Isometry f) {g : β → β'} (hg : Isometry g) :
+    Isometry (WithLp.map p (Prod.map f g)) := by
+  intro _ _
+  rcases p.trichotomy with rfl | rfl | hp
+  · absurd hp.elim; simp
+  · simp [WithLp.prod_edist_eq_sup, hf.edist_eq, hg.edist_eq]
+  · simp [WithLp.prod_edist_eq_add hp, hf.edist_eq, hg.edist_eq]
+
+namespace IsometryEquiv
+
+variable {α β} in
+/-- The `L^p` product of two isometric equivalences. -/
+@[simps! apply symm_apply]
+def withLpProdCongr (f : α ≃ᵢ α') (g : β ≃ᵢ β') : WithLp p (α × β) ≃ᵢ WithLp p (α' × β') where
+  __ := WithLp.congr p (f.toEquiv.prodCongr g.toEquiv)
+  isometry_toFun := f.isometry.withLpProdMap p g.isometry
+
+/-- Commutativity of the `L^p` product as an isometric equivalence. -/
+def withLpProdComm : WithLp p (α × β) ≃ᵢ WithLp p (β × α) where
+  __ := WithLp.congr p (Equiv.prodComm α β)
+  isometry_toFun _ _ := by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp [WithLp.prod_edist_eq_sup, max_comm]
+    · simp [WithLp.prod_edist_eq_add hp, add_comm]
+
+@[simp]
+theorem withLpProdComm_apply (x : WithLp p (α × β)) :
+    withLpProdComm p α β x = .toLp p (x.snd, x.fst) :=
+  rfl
+
+@[simp]
+theorem withLpProdComm_symm : (withLpProdComm p α β).symm = withLpProdComm p β α :=
+  rfl
+
+/-- Associativity of the `L^p` product as an isometric equivalence. -/
+@[simps apply symm_apply]
+def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ᵢ WithLp p (α × WithLp p (β × γ)) where
+  toFun x := .toLp p (x.fst.fst, .toLp p (x.fst.snd, x.snd))
+  invFun x := .toLp p (.toLp p (x.fst, x.snd.fst), x.snd.snd)
+  isometry_toFun _ _ := by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp [WithLp.prod_edist_eq_sup, max_assoc]
+    · simp [WithLp.prod_edist_eq_add hp, ENNReal.rpow_inv_rpow hp.ne', add_assoc]
+
+/-- Right identity of the `L^p` product as an isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ᵢ α where
+  __ := (WithLp.equiv _ _).trans (Equiv.prodUnique _ _)
+  isometry_toFun x y : edist x.fst y.fst = edist x y := by
+    rcases p.trichotomy with rfl | rfl | hp
+    · absurd hp.elim; simp
+    · simp_rw [WithLp.prod_edist_eq_sup, Unique.eq_default, edist_self, max_zero_right]
+    · simp_rw [WithLp.prod_edist_eq_add hp, Unique.eq_default, edist_self,
+        ENNReal.zero_rpow_of_pos hp, add_zero, one_div, ENNReal.rpow_rpow_inv hp.ne']
+
+theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p α β) = WithLp.fst :=
+  rfl
+
+/-- Left identity of the `L^p` product as an isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ᵢ β :=
+  (withLpProdComm p α β).trans (withLpProdUnique p β α)
+
+theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p α β) = WithLp.snd :=
+  rfl
+
+end IsometryEquiv
+
+end Isometry
+
+section Linear
+
+variable [hp : Fact (1 ≤ p)] [Semiring 𝕜]
+  [SeminormedAddCommGroup α] [Module 𝕜 α]
+  [SeminormedAddCommGroup β] [Module 𝕜 β]
+  [SeminormedAddCommGroup γ] [Module 𝕜 γ]
+  [SeminormedAddCommGroup α'] [Module 𝕜 α']
+  [SeminormedAddCommGroup β'] [Module 𝕜 β']
+
+variable {𝕜 α β} in
+/-- The `L^p` product of two linear isometries. -/
+@[simps! apply]
+def LinearIsometry.withLpProdMap (f : α →ₗᵢ[𝕜] α') (g : β →ₗᵢ[𝕜] β') :
+    WithLp p (α × β) →ₗᵢ[𝕜] WithLp p (α' × β') where
+  __ := (f.toLinearMap.prodMap g.toLinearMap).withLpMap p
+  norm_map' := (f.isometry.withLpProdMap p g.isometry).norm_map_of_map_zero
+    ((f.toLinearMap.prodMap g.toLinearMap).withLpMap p).map_zero
+
+namespace LinearIsometryEquiv
+
+variable {𝕜 α β} in
+/-- The `L^p` product of two linear isometric equivalences. -/
+@[simps! apply symm_apply]
+def withLpProdCongr (f : α ≃ₗᵢ[𝕜] α') (g : β ≃ₗᵢ[𝕜] β') :
+    WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (α' × β') where
+  __ := (f.toLinearEquiv.prodCongr g.toLinearEquiv).withLpCongr p
+  norm_map' := (f.toLinearIsometry.withLpProdMap p g.toLinearIsometry).norm_map
+
+@[deprecated (since := "2025-12-22")] alias _root_.LinearIsometry.withLpProdCongr := withLpProdCongr
+
+/-- Commutativity of the `L^p` product as a linear isometric equivalence. -/
+def withLpProdComm : WithLp p (α × β) ≃ₗᵢ[𝕜] WithLp p (β × α) where
+  __ := (LinearEquiv.prodComm 𝕜 α β).withLpCongr p
+  norm_map' := (IsometryEquiv.withLpProdComm p α β).isometry.norm_map_of_map_zero rfl
+
+@[simp]
+theorem withLpProdComm_apply (x : WithLp p (α × β)) :
+    withLpProdComm p 𝕜 α β x = WithLp.toLp p (x.snd, x.fst) :=
+  rfl
+
+@[simp]
+theorem withLpProdComm_symm : (withLpProdComm p 𝕜 α β).symm = withLpProdComm p 𝕜 β α :=
+  rfl
+
+/-- Associativity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdAssoc : WithLp p (WithLp p (α × β) × γ) ≃ₗᵢ[𝕜] WithLp p (α × WithLp p (β × γ)) where
+  __ := (IsometryEquiv.withLpProdAssoc p α β γ).toEquiv
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  norm_map' := (IsometryEquiv.withLpProdAssoc p α β γ).isometry.norm_map_of_map_zero rfl
+
+/-- Right identity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpProdUnique [Unique β] : WithLp p (α × β) ≃ₗᵢ[𝕜] α where
+  __ := (WithLp.linearEquiv _ _ _).trans LinearEquiv.prodUnique
+  norm_map' := (IsometryEquiv.withLpProdUnique _ _ _).isometry.norm_map_of_map_zero rfl
+
+theorem coe_withLpProdUnique [Unique β] : ⇑(withLpProdUnique p 𝕜 α β) = WithLp.fst :=
+  rfl
+
+/-- Left identity of the `L^p` product as a linear isometric equivalence. -/
+@[simps! apply symm_apply]
+def withLpUniqueProd [Unique α] : WithLp p (α × β) ≃ₗᵢ[𝕜] β :=
+  (withLpProdComm p 𝕜 α β).trans (withLpProdUnique p 𝕜 β α)
+
+theorem coe_withLpUniqueProd [Unique α] : ⇑(withLpUniqueProd p 𝕜 α β) = WithLp.snd :=
+  rfl
+
+end LinearIsometryEquiv
+
+end Linear

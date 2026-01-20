@@ -3,11 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+module
 
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.Order.IntermediateValue
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # Proper spaces
@@ -20,6 +22,8 @@ This file contains some more involved results about `ProperSpace`s.
 * `exists_lt_subset_ball`
 * `Metric.exists_isLocalMin_mem_ball`
 -/
+
+public section
 
 open Set Metric
 
@@ -55,3 +59,23 @@ theorem Metric.exists_isLocalMin_mem_ball [TopologicalSpace β]
   simp_rw [← closedBall_diff_ball] at hf1
   exact (isCompact_closedBall a r).exists_isLocalMin_mem_open ball_subset_closedBall hf hz hf1
     isOpen_ball
+
+@[fun_prop]
+lemma isProperMap_dist (x : α) : IsProperMap (dist x) :=
+  isProperMap_iff_tendsto_cocompact.mpr
+    ⟨by fun_prop, (tendsto_dist_left_cocompact_atTop x).trans atTop_le_cocompact⟩
+
+omit [ProperSpace α] in
+lemma properSpace_iff_isProperMap_dist : ProperSpace α ↔ ∀ x : α, IsProperMap (dist x) := by
+  refine ⟨fun _ ↦ isProperMap_dist, fun H ↦ ⟨fun x r ↦ ?_⟩⟩
+  convert (H x).isCompact_preimage (isCompact_closedBall 0 r)
+  ext
+  simp [dist_comm, Real.dist_eq]
+
+lemma isClosedMap_dist (x : α) : IsClosedMap (dist x) := (isProperMap_dist x).isClosedMap
+
+lemma isProperMap_nndist (x : α) : IsProperMap (nndist x) :=
+  isProperMap_of_comp_of_inj (Z := ℝ) (g := (↑)) (by fun_prop) (by fun_prop)
+    (isProperMap_dist x) NNReal.coe_injective
+
+lemma isClosedMap_nndist (x : α) : IsClosedMap (nndist x) := (isProperMap_nndist _).isClosedMap

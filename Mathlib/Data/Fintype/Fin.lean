@@ -3,8 +3,10 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # The structure of `Fintype (Fin n)`
@@ -12,6 +14,8 @@ import Mathlib.Data.Vector.Basic
 This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
+
+public section
 
 open List (Vector)
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
+module
+
+public import Mathlib.MeasureTheory.Measure.Trim
+public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 /-!
 # Almost everywhere measurable functions
@@ -13,6 +15,8 @@ A function is almost everywhere measurable if it coincides almost everywhere wit
 function. This property, called `AEMeasurable f μ`, is defined in the file `MeasureSpaceDef`.
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
+
+@[expose] public section
 
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
@@ -168,21 +172,26 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
   rw [map_apply_of_aemeasurable hg hs, map_apply₀ hf (hg.nullMeasurable hs),
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem fst {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).1) μ :=
   measurable_fst.comp_aemeasurable hf
 
-@[fun_prop, measurability]
+@[fun_prop]
 protected theorem snd {f : α → β × γ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x).2) μ :=
   measurable_snd.comp_aemeasurable hf
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem prodMk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prodMk hg.measurable_mk,
     hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+theorem _root_.nullMeasurableSet_eq_fun [MeasurableEq β]
+    {f g : α → β} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    NullMeasurableSet { x | f x = g x } μ :=
+  (hf.prodMk hg).nullMeasurableSet_preimage measurableSet_diagonal
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
@@ -266,8 +275,8 @@ theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
 @[simp]
 theorem aemeasurable_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     AEMeasurable f (c • μ) ↔ AEMeasurable f μ :=
-  ⟨fun h => ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
-    ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).2 h.ae_eq_mk⟩⟩
+  ⟨fun h => ⟨h.mk f, h.measurable_mk, (ae_ennreal_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
+    ⟨h.mk f, h.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 h.ae_eq_mk⟩⟩
 
 theorem aemeasurable_of_aemeasurable_trim {α} {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → β} (hf : AEMeasurable f (μ.trim hm)) : AEMeasurable f μ :=
@@ -336,7 +345,7 @@ lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β
     simp [NeZero.ne b]
   · exact (aemeasurable_indicator_iff₀ h).mpr aemeasurable_const
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.indicator (hfm : AEMeasurable f μ) {s} (hs : MeasurableSet s) :
     AEMeasurable (s.indicator f) μ :=
   (aemeasurable_indicator_iff hs).mpr hfm.restrict

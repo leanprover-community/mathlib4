@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Connected.Basic
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Topology.Connected.Basic
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Locally connected topological spaces
@@ -14,6 +16,8 @@ of connected *open* sets. Local connectivity is equivalent to each point having 
 of connected (not necessarily open) sets --- but in a non-trivial way, so we choose this definition
 and prove the equivalence later in `locallyConnectedSpace_iff_connected_basis`.
 -/
+
+@[expose] public section
 
 open Set Topology
 

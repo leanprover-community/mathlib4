@@ -3,10 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Fourier.ZMod
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # L-series of functions on `ZMod N`
@@ -48,12 +49,14 @@ Results for completed L-functions:
   `LFunction_eq_completed_div_gammaFactor_odd`: we have
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ s` for `Φ` even, and
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ (s + 1)` for `Φ` odd. (We formulate it this way
-  around so it is still valid at the poles of the Gamma factor.)
+  so that it is still valid at the poles of the Gamma factor.)
 * `ZMod.differentiableAt_completedLFunction`: `ZMod.completedLFunction Φ` is differentiable at
   `s ∈ ℂ`, unless `s = 1` and `∑ j, Φ j ≠ 0`, or `s = 0` and `Φ 0 ≠ 0`.
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex ZMod Finset Topology Filter Set
 

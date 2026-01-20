@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 
@@ -33,6 +35,8 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -93,10 +97,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
-      · dsimp
-        rw [PushoutCocone.condition_zero, Category.assoc]
-        erw [hh.w]
-        rw [hf.w_assoc]
+      · simp [hh.w, hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
     · rintro i _ (_ | _ | _)
       · dsimp; simp_rw [Functor.map_id]
@@ -248,13 +249,13 @@ instance Type.adhesive : Adhesive (Type u) :=
 
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
     IsRegularMonoCategory C :=
-  ⟨fun f _ => ⟨{
+  ⟨fun f _ => ⟨⟨{
       Z := pushout f f
       left := pushout.inl _ _
       right := pushout.inr _ _
       w := pushout.condition
       isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
-        (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩
+        (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩⟩
 
 -- This then implies that adhesive categories are balanced
 example [Adhesive C] : Balanced C :=

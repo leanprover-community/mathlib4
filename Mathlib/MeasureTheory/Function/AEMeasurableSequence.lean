@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
@@ -19,6 +21,8 @@ and a measurable set `aeSeqSet hf p`, such that
 * `x ∈ aeSeqSet hf p → ∀ i : ι, aeSeq hf hp i x = f i x`
 * `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`
 -/
+
+@[expose] public section
 
 
 open MeasureTheory

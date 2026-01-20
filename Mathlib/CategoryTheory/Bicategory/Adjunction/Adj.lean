@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -26,6 +28,8 @@ both pullback and pushforward functors.
 * https://ncatlab.org/nlab/show/mate
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -112,7 +116,7 @@ instance : Category (a ⟶ b) where
 /-- Constructor for isomorphisms between 1-morphisms in the bicategory `Adj B`. -/
 @[simps]
 def iso₂Mk {α β : a ⟶ b} (el : α.l ≅ β.l) (er : β.r ≅ α.r)
-    (h : conjugateEquiv β.adj α.adj el.hom = er.hom) :
+    (h : conjugateEquiv β.adj α.adj el.hom = er.hom := by cat_disch) :
     α ≅ β where
   hom :=
     { τl := el.hom

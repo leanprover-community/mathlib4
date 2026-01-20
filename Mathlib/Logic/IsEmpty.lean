@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Logic.Relator
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
 
 /-!
 # Types that are empty
@@ -15,6 +17,8 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
+
+@[expose] public section
 
 variable {α β γ : Sort*}
 

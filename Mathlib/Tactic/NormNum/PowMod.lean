@@ -3,7 +3,9 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Tactic.NormNum.Pow
+module
+
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.
@@ -12,7 +14,8 @@ These expressions can often be evaluated efficiently in cases where first evalua
 then reducing mod `m` is not feasible. We provide a function `evalNatPowMod` which is used by the
 `reduce_mod_char` tactic to efficiently evaluate powers in rings with positive characteristic.
 
-The approach taken here is identical to (and copied from) the development in `NormNum/Pow.lean`.
+The approach taken here is identical to (and copied from) the development in
+`Mathlib/Tactic/NormNum/Pow.lean`.
 
 ## TODO
 
@@ -20,6 +23,8 @@ The approach taken here is identical to (and copied from) the development in `No
   of the form `a ^ b % m` using `evalNatPowMod`.
 
 -/
+
+public meta section
 
 assert_not_exists RelIso
 

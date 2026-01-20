@@ -3,8 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+module
+
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.Convex.NNReal
 
 /-!
 # Hölder continuous functions
@@ -32,14 +35,15 @@ Hölder continuity, Lipschitz continuity
 
 -/
 
+@[expose] public section
+
 
 variable {X Y Z : Type*}
 
-open Filter Set
+open Filter Set Metric
+open scoped NNReal ENNReal Topology
 
-open NNReal ENNReal Topology
-
-section Emetric
+section EMetric
 
 variable [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [PseudoEMetricSpace Z]
 
@@ -129,31 +133,111 @@ protected theorem continuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) : Contin
 protected theorem mono (hf : HolderOnWith C r f s) (ht : t ⊆ s) : HolderOnWith C r f t :=
   fun _ hx _ hy => hf.edist_le (ht hx) (ht hy)
 
-theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : EMetric.diam s ≤ d) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
-    hf.edist_le_of_le hx hy <| (EMetric.edist_le_diam_of_mem hx hy).trans hd
+theorem ediam_image_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞} (hd : ediam s ≤ d) :
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+  ediam_image_le_iff.2 fun _ hx _ hy =>
+    hf.edist_le_of_le hx hy <| (edist_le_ediam_of_mem hx hy).trans hd
 
 theorem ediam_image_le (hf : HolderOnWith C r f s) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * ediam s ^ (r : ℝ) :=
   hf.ediam_image_le_of_le le_rfl
 
 theorem ediam_image_le_of_subset (hf : HolderOnWith C r f s) (ht : t ⊆ s) :
-    EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
+    ediam (f '' t) ≤ (C : ℝ≥0∞) * ediam t ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le
 
 theorem ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s) {d : ℝ≥0∞}
-    (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' t) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+    (hd : ediam t ≤ d) : ediam (f '' t) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   (hf.mono ht).ediam_image_le_of_le hd
 
 theorem ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
-    (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
+    (hd : ediam t ≤ d) : ediam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
   hf.ediam_image_le_of_subset_of_le inter_subset_right <|
-    (EMetric.diam_mono inter_subset_left).trans hd
+    (ediam_mono inter_subset_left).trans hd
 
 theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :
-    EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * EMetric.diam t ^ (r : ℝ) :=
+    ediam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * ediam t ^ (r : ℝ) :=
   hf.ediam_image_inter_le_of_le le_rfl
+
+/-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
+`(C₁ ^ t₁ * C₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (ht : t₁ + t₂ = 1) :
+    HolderOnWith (C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) (r * t₁ + s * t₂) f A := by
+  intro x hx y hy
+  calc edist (f x) (f y)
+      = (edist (f x) (f y)) ^ (t₁ : ℝ) * (edist (f x) (f y)) ^ (t₂ : ℝ) := by
+        simp [← ENNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
+    _ ≤ (C₁ * (edist x y) ^ (r : ℝ)) ^ (t₁ : ℝ) * (C₂ * (edist x y) ^ (s : ℝ)) ^ (t₂ : ℝ) := by
+        nth_grw 1 [hf₁ x hx y hy, hf₂ x hx y hy]
+    _ = ↑(C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) * (edist x y) ^ (↑(r * t₁ + s * t₂) : ℝ) := by
+        push_cast
+        simp (discharger := positivity) only [ENNReal.mul_rpow_of_nonneg,
+          ENNReal.rpow_add_of_nonneg, ENNReal.rpow_mul, ENNReal.coe_rpow_of_nonneg]
+        ring
+
+/-- If a function is Hölder over a bounded set, then it is bounded. -/
+lemma holderOnWith_zero_of_bounded {C D : ℝ≥0} {A : Set X}
+    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) :
+    HolderOnWith (C * D ^ (r : ℝ)) 0 f A := by
+  intro x hx y hy
+  simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
+  grw [hf x hx y hy, hA x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
+
+/-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma of_le {C D s : ℝ≥0} {A : Set X}
+    (hA : ∀ x ∈ A, ∀ y ∈ A, edist x y ≤ D) (hf : HolderOnWith C r f A) (hsr : s ≤ r) :
+    HolderOnWith (C * D ^ (r - s : ℝ)) s f A := by
+  obtain rfl | ht := eq_zero_or_pos s
+  · simpa using hf.holderOnWith_zero_of_bounded hA
+  have hr : 0 < r := ht.trans_le hsr
+  rw [← NNReal.coe_le_coe] at hsr
+  rw [← NNReal.coe_pos] at hr
+  set θ₁ : ℝ≥0 := ⟨s/r, by positivity⟩
+  set θ₂ : ℝ≥0 := ⟨1 - s/r, by simpa using div_le_one_of_le₀ hsr (by positivity)⟩
+  have hθ : θ₁ + θ₂ = 1 := by ext; simp [θ₁, θ₂]
+  have hθt : r * θ₁ + 0 * θ₂ = s := by ext; simp [θ₁, mul_div_cancel₀ _ hr.ne']
+  have hθC : C * D ^ (r - s : ℝ) = C ^ (θ₁ : ℝ) * (C * D ^ (r : ℝ)) ^ (θ₂ : ℝ) := by
+    simp (discharger := positivity) only [NNReal.mul_rpow, ← mul_assoc,
+      ← NNReal.rpow_add_of_nonneg, ← NNReal.rpow_mul, ← NNReal.coe_add, hθ, NNReal.coe_one,
+      NNReal.rpow_one]
+    congr
+    simp [mul_sub, θ₂, mul_div_cancel₀ _ hr.ne']
+  rw [hθC, ← hθt]
+  exact hf.interpolate (hf.holderOnWith_zero_of_bounded hA) hθ
+
+lemma mono_const {C₁ C₂ : ℝ≥0} {A : Set X} (hf : HolderOnWith C₁ r f A)
+    (hC : C₁ ≤ C₂) : HolderOnWith C₂ r f A := by
+  intro x hx y hy
+  grw [← hC]
+  exact hf x hx y hy
+
+/-- If a function is `(C, r)`-Hölder and `(C, s)`-Hölder,
+then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate_const {C s t₁ t₂ : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C r f A) (hf₂ : HolderOnWith C s f A) (ht : t₁ + t₂ = 1) :
+    HolderOnWith C (r * t₁ + s * t₂) f A := by
+  convert hf₁.interpolate hf₂ ht
+  simp [← NNReal.rpow_add_of_nonneg, ← NNReal.coe_add, ht]
+
+variable (f) in
+/-- For fixed `f : X → Y`, `A : Set X` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
+`f` is `(C, r)`-Hölder on `A` is convex. -/
+lemma _root_.convex_setOf_holderOnWith (C : ℝ≥0) (A : Set X) :
+    Convex ℝ≥0 {r | HolderOnWith C r f A} := by
+  intro r hr s hs _ _ _ _ ht
+  rw [smul_eq_mul, smul_eq_mul, ← mul_comm r, ← mul_comm s]
+  exact hr.interpolate_const hs ht
+
+lemma of_le_of_le {C₁ C₂ s t : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (hrt : r ≤ t)
+    (hts : t ≤ s) : HolderOnWith (max C₁ C₂) t f A := by
+  replace hf₁ := hf₁.mono_const (le_max_left C₁ C₂)
+  replace hf₂ := hf₂.mono_const (le_max_right C₁ C₂)
+  exact convex_setOf_holderOnWith f (max C₁ C₂) A |>.segment_subset hf₁ hf₂
+    (NNReal.Icc_subset_segment ⟨hrt, hts⟩)
 
 end HolderOnWith
 
@@ -191,9 +275,8 @@ protected theorem continuous (hf : HolderWith C r f) (h0 : 0 < r) : Continuous f
   (hf.uniformContinuous h0).continuous
 
 theorem ediam_image_le (hf : HolderWith C r f) (s : Set X) :
-    EMetric.diam (f '' s) ≤ (C : ℝ≥0∞) * EMetric.diam s ^ (r : ℝ) :=
-  EMetric.diam_image_le_iff.2 fun _ hx _ hy =>
-    hf.edist_le_of_le <| EMetric.edist_le_diam_of_mem hx hy
+    ediam (f '' s) ≤ (C : ℝ≥0∞) * ediam s ^ (r : ℝ) :=
+  ediam_image_le_iff.2 fun _ hx _ hy => hf.edist_le_of_le <| edist_le_ediam_of_mem hx hy
 
 lemma const {y : Y} :
     HolderWith C r (Function.const X y) := fun x₁ x₂ => by
@@ -207,9 +290,49 @@ lemma mono {C' : ℝ≥0} (hf : HolderWith C r f) (h : C ≤ C') :
     HolderWith C' r f :=
   fun x₁ x₂ ↦ (hf x₁ x₂).trans (by gcongr)
 
+/-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder, then it is
+`(C₁ ^ t₁ * C₂ ^ t₂, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate {C₁ C₂ s t₁ t₂ : ℝ≥0}
+    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (ht : t₁ + t₂ = 1) :
+    HolderWith (C₁ ^ (t₁ : ℝ) * C₂ ^ (t₂ : ℝ)) (r * t₁ + s * t₂) f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).interpolate (holderOnWith_univ.2 hf₂) ht)
+
+/-- If a function is Hölder over a bounded space, then it is bounded. -/
+lemma holderWith_zero_of_bounded {C D : ℝ≥0}
+    (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) :
+    HolderWith (C * D ^ (r : ℝ)) 0 f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).holderOnWith_zero_of_bounded (fun x _ y _ ↦ h x y))
+
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma of_le {C D s : ℝ≥0} (h : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (hsr : s ≤ r) :
+    HolderWith (C * D ^ (r - s : ℝ)) s f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ h x y) hsr)
+
+/-- If a function is `(C, r)`-Hölder and `(C, s)`-Hölder,
+then it is `(C, r * t₁ + s * t₂)`-Hölder for all `t₁ t₂ : ℝ≥0` such that
+`t₁ + t₂ = 1`. -/
+lemma interpolate_const {C s t₁ t₂ : ℝ≥0}
+    (hf₁ : HolderWith C r f) (hf₂ : HolderWith C s f) (ht : t₁ + t₂ = 1) :
+    HolderWith C (r * t₁ + s * t₂) f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).interpolate_const (holderOnWith_univ.2 hf₂) ht)
+
+variable (f) in
+/-- For fixed `f : X → Y` and `C : ℝ≥0`, the set of all parameters `r : ℝ≥0` such that
+`f` is `(C, r)`-Hölder is convex. -/
+lemma _root_.convex_setOf_holderWith (C : ℝ≥0) :
+    Convex ℝ≥0 {r | HolderWith C r f} := by
+  simp_rw [← holderOnWith_univ]
+  exact convex_setOf_holderOnWith f C _
+
+lemma of_le_of_le {C₁ C₂ s t : ℝ≥0}
+    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ s f) (hrt : r ≤ t)
+    (hts : t ≤ s) : HolderWith (max C₁ C₂) t f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf₁).of_le_of_le (holderOnWith_univ.2 hf₂) hrt hts)
+
 end HolderWith
 
-end Emetric
+end EMetric
 
 section PseudoMetric
 
@@ -285,23 +408,23 @@ namespace HolderWith
 lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
     HolderWith (C + C') r (f + g) := by
   intro x₁ x₂
-  simp only [Pi.add_apply, coe_add]
+  simp only [Pi.add_apply, ENNReal.coe_add]
   grw [edist_add_add_le, hf x₁ x₂, hg x₁ x₂]
   rw [add_mul]
 
 lemma smul {α} [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
   refine edist_smul_le _ _ _ |>.trans ?_
-  rw [coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
+  rw [ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]
   gcongr
   exact hf x₁ x₂
 
 lemma smul_iff {α} [SeminormedRing α] [Module α Y] [NormSMulClass α Y] (a : α)
     (ha : ‖a‖₊ ≠ 0) :
     HolderWith (C * ‖a‖₊) r (a • f) ↔ HolderWith C r f := by
-  simp_rw [HolderWith, coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
+  simp_rw [HolderWith, ENNReal.coe_mul, Pi.smul_apply, edist_smul₀, ENNReal.smul_def, smul_eq_mul,
     mul_comm (C : ℝ≥0∞), mul_assoc,
-    ENNReal.mul_le_mul_left (ENNReal.coe_ne_zero.mpr ha) ENNReal.coe_ne_top, mul_comm]
+    ENNReal.mul_le_mul_iff_right (ENNReal.coe_ne_zero.mpr ha) ENNReal.coe_ne_top, mul_comm]
 
 end HolderWith
 

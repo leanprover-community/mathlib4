@@ -3,9 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Gershgorin's circle theorem
@@ -18,11 +20,13 @@ of matrices and some applications.
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
 
+public section
+
 variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 
 /-- **Gershgorin's circle theorem**: for any eigenvalue `μ` of a square matrix `A`, there exists an
 index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of
-radius the sum of the norms `∑ j ≠ k, ‖A k j‖. -/
+radius the sum of the norms `∑ j ≠ k, ‖A k j‖`. -/
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
     ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j ∈ Finset.univ.erase k, ‖A k j‖) := by
   cases isEmpty_or_nonempty n
@@ -55,7 +59,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
       _ ≤ ∑ j ∈ Finset.univ.erase i, ‖A i j‖ :=
                 (Finset.sum_le_sum fun j _ => mul_le_of_le_one_right (norm_nonneg _) (h_le j))
 
-/-- If `A` is a row strictly dominant diagonal matrix, then it's determinant is nonzero. -/
+/-- If `A` is a row strictly dominant diagonal matrix, then its determinant is nonzero. -/
 theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k, ‖A k j‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   contrapose! h
@@ -65,7 +69,7 @@ theorem det_ne_zero_of_sum_row_lt_diag (h : ∀ k, ∑ j ∈ Finset.univ.erase k
   rw [Module.End.hasEigenvalue_iff, Module.End.eigenspace_zero, ne_comm]
   exact ne_of_lt (LinearMap.bot_lt_ker_of_det_eq_zero (by rwa [LinearMap.det_toLin']))
 
-/-- If `A` is a column strictly dominant diagonal matrix, then it's determinant is nonzero. -/
+/-- If `A` is a column strictly dominant diagonal matrix, then its determinant is nonzero. -/
 theorem det_ne_zero_of_sum_col_lt_diag (h : ∀ k, ∑ i ∈ Finset.univ.erase k, ‖A i k‖ < ‖A k k‖) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]

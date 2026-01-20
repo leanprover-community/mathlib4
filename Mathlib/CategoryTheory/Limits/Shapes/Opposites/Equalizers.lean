@@ -3,9 +3,11 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
 /-!
 # Equalizers and coequalizers in `C` and `Cᵒᵖ`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 We construct equalizers and coequalizers in the opposite categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -316,7 +320,7 @@ def isColimitCoforkPushoutEquivIsColimitForkOpPullback
         (by simp [← op_comp]) (by simp [← op_comp]) (by simp)
   invFun h := Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitUnop f.op f.op
     pushout.condition (by rw [← unop_comp, ← unop_comp, pushout.condition]) rfl h) _
-      (pullbackIsoUnopPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+      (pullbackIsoUnopPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 
@@ -332,7 +336,7 @@ def isColimitCoforkPushoutEquivIsColimitForkUnopPullback
   invFun h :=
     Cofork.isColimitOfIsos _ (Fork.isLimitOfιEquivIsColimitOp f.unop f.unop pushout.condition
       (by rw [← op_comp, ← op_comp, pushout.condition]) rfl h) _
-        (pullbackIsoOpPushout f f).symm ( .refl _) (.refl _) (by simp) (by simp) (by simp)
+        (pullbackIsoOpPushout f f).symm (.refl _) (.refl _) (by simp) (by simp) (by simp)
   left_inv := by cat_disch
   right_inv := by cat_disch
 

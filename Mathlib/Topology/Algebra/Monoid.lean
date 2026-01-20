@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Order.Filter.Pointwise
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -19,6 +21,8 @@ In this file we define mixin classes `ContinuousMul` and `ContinuousAdd`. While 
 applications the underlying type is a monoid (multiplicative or additive), we do not require this in
 the definitions.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -103,6 +107,13 @@ theorem nhds_mul_nhds_one {M} [MulOneClass M] [TopologicalSpace M] [ContinuousMu
     𝓝 a * 𝓝 1 = 𝓝 a :=
   ((le_nhds_mul _ _).trans_eq <| congr_arg _ (mul_one a)).antisymm <|
     le_mul_of_one_le_right' <| pure_le_nhds 1
+
+/-- This lemma exists to ensure that we can still do the simplification `pure_le_nhds_iff`
+after simplifying with `pure_one`. -/
+@[to_additive (attr := simp) /-- This lemma exists to ensure that we can still do the simplification
+`pure_le_nhds_iff` after simplifying with `pure_zero`. -/]
+theorem one_le_nhds_iff [T1Space X] [One X] {b : X} : 1 ≤ 𝓝 b ↔ 1 = b :=
+  pure_le_nhds_iff
 
 section tendsto_nhds
 
@@ -336,7 +347,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [M
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
@@ -741,7 +752,7 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.
 
-Notably, this instances applies when `R = A`, or when `[Algebra R A]` is available. -/
+Notably, this instance applies when `R = A`, or when `[Algebra R A]` is available. -/
 @[to_additive /-- If `R` acts on `A` via `A`, then continuous addition implies
 continuous affine addition by constants. -/]
 instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
@@ -753,11 +764,11 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
 
-Notably, this instances applies when `R = Aᵐᵒᵖ`. -/
+Notably, this instance applies when `R = Aᵐᵒᵖ`. -/
 @[to_additive /-- If the action of `R` on `A` commutes with left-addition, then
 continuous addition implies continuous affine addition by constants.
 
-Notably, this instances applies when `R = Aᵃᵒᵖ`. -/]
+Notably, this instance applies when `R = Aᵃᵒᵖ`. -/]
 instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Monoid A] [SMul R A]
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by

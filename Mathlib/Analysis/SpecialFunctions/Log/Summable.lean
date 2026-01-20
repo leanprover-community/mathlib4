@@ -3,9 +3,10 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -14,6 +15,8 @@ We give conditions under which the logarithms of a summble sequence is summable.
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
+
+public section
 
 variable {ι : Type*}
 

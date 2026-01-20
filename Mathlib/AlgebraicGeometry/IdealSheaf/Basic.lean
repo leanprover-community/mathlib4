@@ -3,8 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.AlgebraicGeometry.Properties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.Tactic.DepRewrite
 
 /-!
 # Ideal sheaves on schemes
@@ -39,6 +42,8 @@ ideal sheaf. This should be refactored as a constructor for ideal sheaves once t
 into mathlib.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory TopologicalSpace
 
@@ -229,6 +234,38 @@ lemma ideal_le_comap_ideal {U V : X.affineOpens} (h : U ≤ V) :
     I.ideal V ≤ (I.ideal U).comap (X.presheaf.map (homOfLE h).op).hom := by
   rw [← Ideal.map_le_iff_le_comap, ← I.map_ideal h]
 
+lemma le_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) ≤ J.ideal (U i)) :
+    I ≤ J := by
+  intro V
+  have : ∀ x : V.1, ∃ (i : ι) (r : Γ(X, V.1)) (rU : Γ(X, U i)),
+      X.basicOpen r = X.basicOpen rU ∧ x.1 ∈ X.basicOpen r := by
+    intro ⟨x, hxV⟩
+    obtain ⟨i, hi⟩ := TopologicalSpace.Opens.mem_iSup.mp (hU.ge (Set.mem_univ x))
+    exact ⟨i, exists_basicOpen_le_affine_inter V.2 (U i).2 _ ⟨hxV, hi⟩⟩
+  choose i r rU e hxr using this
+  have : Ideal.span (Set.range r) = ⊤ := by
+    rw [← V.2.self_le_iSup_basicOpen_iff]
+    exact fun x hxV ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨⟨_, _, rfl⟩, hxr ⟨x, hxV⟩⟩
+  have inst := V.2.isLocalization_basicOpen
+  refine Submodule.le_of_isLocalized_span _ this (fun i ↦ Γ(X, X.basicOpen i.1))
+    (fun i ↦ Algebra.linearMap Γ(X, V.1) Γ(X, X.basicOpen i.1)) ?_
+  rintro ⟨_, j, rfl⟩
+  dsimp
+  simp only [← Submodule.restrictScalars_localized' Γ(X, X.basicOpen (r j)),
+    Ideal.localized'_eq_map, RingHom.algebraMap_toAlgebra]
+  erw [I.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j)),
+    J.map_ideal (U := ⟨_, V.2.basicOpen _⟩) (X.basicOpen_le (r j))]
+  delta algebra_section_section_basicOpen
+  rw! [e]
+  rw [← I.map_ideal (V := (U _)) (X.basicOpen_le _), ← J.map_ideal (V := (U _)) (X.basicOpen_le _)]
+  exact Ideal.map_mono (f := (X.presheaf.map (homOfLE (X.basicOpen_le (rU j))).op).hom) (H (i j))
+
+lemma ext_of_iSup_eq_top {I J : X.IdealSheafData} {ι : Type*}
+    (U : ι → X.affineOpens) (hU : ⨆ i, (U i).1 = ⊤) (H : ∀ i, I.ideal (U i) = J.ideal (U i)) :
+    I = J :=
+  (le_of_iSup_eq_top U hU (by aesop)).antisymm (le_of_iSup_eq_top U hU (by aesop))
+
 end map_ideal
 
 section support
@@ -393,7 +430,7 @@ open _root_.PrimeSpectrum TopologicalSpace
 @[deprecated (since := "2025-08-10")] alias Scheme.zeroLocus_radical :=
   AlgebraicGeometry.Scheme.zeroLocus_radical
 
-/-- The radical of a ideal sheaf. -/
+/-- The radical of an ideal sheaf. -/
 @[simps! ideal]
 def radical (I : IdealSheafData X) : IdealSheafData X :=
   mkOfMemSupportIff
@@ -498,9 +535,6 @@ lemma le_support_iff_le_vanishingIdeal {I : X.IdealSheafData} {Z : Closeds X} :
   rw [coe_support_inter, ← Set.image_subset_image_iff U.2.fromSpec.isOpenEmbedding.injective,
     Set.image_preimage_eq_inter_range, IsAffineOpen.fromSpec_image_zeroLocus,
     IsAffineOpen.range_fromSpec]
-
-@[deprecated (since := "2025-05-16")]
-alias subset_support_iff_le_vanishingIdeal := le_support_iff_le_vanishingIdeal
 
 /-- `support` and `vanishingIdeal` forms a Galois connection.
 This is the global version of `PrimeSpectrum.gc`. -/
@@ -753,7 +787,7 @@ lemma Hom.support_ker (f : X ⟶ Y) [QuasiCompact f] :
     rw [ker_of_isAffine, coe_support_ofIdealTop, Spec_zeroLocus, ← Ideal.coe_comap,
       RingHom.comap_ker, ← PrimeSpectrum.closure_range_comap, ← CommRingCat.hom_comp,
       ← Scheme.ΓSpecIso_inv_naturality]
-    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp, ContinuousMap.coe_comp]
+    simp only [CommRingCat.hom_comp, PrimeSpectrum.comap_comp]
     exact closure_mono (Set.range_comp_subset_range _ (Spec.map φ))
   · rw [(support _).isClosed.closure_subset_iff]
     exact f.range_subset_ker_support

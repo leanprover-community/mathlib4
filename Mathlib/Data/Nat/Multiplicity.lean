@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Choose.Factorization
+module
+
+public import Mathlib.Data.Nat.Choose.Factorization
 
 /-!
 # Natural number multiplicity
@@ -42,6 +44,8 @@ Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multi
 
 Legendre, p-adic
 -/
+
+public section
 
 open Finset
 
@@ -117,7 +121,7 @@ theorem sub_one_mul_multiplicity_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * multiplicity p n ! =
     n - (p.digits n).sum := by
   simp only [multiplicity_eq_of_emultiplicity_eq_some <|
-      emultiplicity_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+      emultiplicity_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range, ←
     sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -129,7 +133,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
     rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
@@ -217,7 +221,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | n + 1, k + 1 => by
     rw [← hp.emultiplicity_mul]
     refine emultiplicity_le_emultiplicity_of_dvd_right ?_
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}

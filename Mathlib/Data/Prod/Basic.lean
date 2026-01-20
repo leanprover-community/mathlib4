@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Iterate
-import Aesop
-import Mathlib.Tactic.Inhabit
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.Inhabit
+public import Batteries.Tactic.Trans
 
 /-!
 # Extra facts about `Prod`
@@ -15,15 +17,19 @@ This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
+@[expose] public section
+
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 namespace Prod
 
-lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by grind
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
@@ -133,22 +139,23 @@ instance Lex.decidable [DecidableEq α]
   fun _ _ ↦ decidable_of_decidable_of_iff lex_def.symm
 
 @[refl]
-theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_left (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.left _ _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl α r] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl r] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_left _ _⟩
 
 @[refl]
-theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [IsRefl β s] : ∀ x, Prod.Lex r s x x
+theorem Lex.refl_right (r : α → α → Prop) (s : β → β → Prop) [Std.Refl s] : ∀ x, Prod.Lex r s x x
   | (_, _) => Lex.right _ (refl _)
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsRefl β s] : IsRefl (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] : Std.Refl (Prod.Lex r s) :=
   ⟨Lex.refl_right _ _⟩
 
-instance isIrrefl [IsIrrefl α r] [IsIrrefl β s] : IsIrrefl (α × β) (Prod.Lex r s) :=
+instance [Std.Irrefl r] [Std.Irrefl s] : Std.Irrefl (Prod.Lex r s) :=
   ⟨by rintro ⟨i, a⟩ (⟨_, _, h⟩ | ⟨_, h⟩) <;> exact irrefl _ h⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[trans]
 theorem Lex.trans {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTrans β s] :
     ∀ {x y z : α × β}, Prod.Lex r s x y → Prod.Lex r s y z → Prod.Lex r s x z
@@ -161,8 +168,8 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsTrans α r] [IsTra
     IsTrans (α × β) (Prod.Lex r s) :=
   ⟨fun _ _ _ ↦ Lex.trans⟩
 
-instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [IsAntisymm β s] :
-    IsAntisymm (α × β) (Prod.Lex r s) :=
+instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] [Std.Antisymm s] :
+    Std.Antisymm (Prod.Lex r s) :=
   ⟨fun x₁ x₂ h₁₂ h₂₁ ↦
     match x₁, x₂, h₁₂, h₂₁ with
     | (a, _), (_, _), .left  _ _ hr₁, .left  _ _ hr₂ => (irrefl a (_root_.trans hr₁ hr₂)).elim
@@ -170,12 +177,12 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
-    IsTotal (α × β) (Prod.Lex r s) :=
-  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+instance total_left {r : α → α → Prop} {s : β → β → Prop} [Std.Total r] :
+    Std.Total (Prod.Lex r s) :=
+  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (Std.Total.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 
-instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
-    IsTotal (α × β) (Prod.Lex r s) :=
+instance total_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [Std.Total s] :
+    Std.Total (Prod.Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)
@@ -190,13 +197,13 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
-instance [IsAsymm α r] [IsAsymm β s] :
-    IsAsymm (α × β) (Prod.Lex r s) where
+instance [Std.Asymm r] [Std.Asymm s] :
+    Std.Asymm (Prod.Lex r s) where
   asymm
-  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
-  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
-  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
-  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => Std.Asymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => Std.Asymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => Std.Asymm.asymm _ _ h₁ h₂
 
 end Prod
 
@@ -299,19 +306,19 @@ open Lean PrettyPrinter Delaborator
 When true, then `Prod.fst x` and `Prod.snd x` pretty print as `x.1` and `x.2`
 rather than as `x.fst` and `x.snd`.
 -/
-register_option pp.numericProj.prod : Bool := {
+meta register_option pp.numericProj.prod : Bool := {
   defValue := true
   descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
 }
 
 /-- Tell whether pretty-printing should use numeric projection notations `.1`
 and `.2` for `Prod.fst` and `Prod.snd`. -/
-def getPPNumericProjProd (o : Options) : Bool :=
+meta def getPPNumericProjProd (o : Options) : Bool :=
   o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
 @[app_delab Prod.fst]
-def delabProdFst : Delab :=
+meta def delabProdFst : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|
@@ -321,7 +328,7 @@ def delabProdFst : Delab :=
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
 @[app_delab Prod.snd]
-def delabProdSnd : Delab :=
+meta def delabProdSnd : Delab :=
   whenPPOption getPPNumericProjProd <|
   whenPPOption getPPFieldNotation <|
   whenNotPPOption getPPExplicit <|

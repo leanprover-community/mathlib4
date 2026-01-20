@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.FractionalIdeal.Operations
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Operations
 
 /-!
 # Inverse operator for fractional ideals
@@ -11,7 +13,7 @@ import Mathlib.RingTheory.FractionalIdeal.Operations
 This file defines the notation `I⁻¹` where `I` is a not necessarily invertible fractional ideal.
 Note that this is somewhat misleading notation in case `I` is not invertible.
 The theorem that all nonzero fractional ideals are invertible in a Dedekind domain can be found in
-`Mathlib/DedekindDomain/Ideal/Basic.lean`.
+`Mathlib/RingTheory/DedekindDomain/Ideal/Basic.lean`.
 
 ## Main definitions
 
@@ -27,6 +29,8 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 
 fractional ideal, invertible ideal
 -/
+
+public section
 
 assert_not_exists IsDedekindDomain
 

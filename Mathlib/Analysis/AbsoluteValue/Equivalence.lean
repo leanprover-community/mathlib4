@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Field.WithAbs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Field.WithAbs
 Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
+
+@[expose] public section
 
 namespace AbsoluteValue
 
@@ -107,7 +111,8 @@ variable [IsStrictOrderedRing S]
 theorem isEquiv_iff_lt_one_iff :
     v.IsEquiv w ↔ ∀ x, v x < 1 ↔ w x < 1 := by
   refine ⟨fun h _ ↦ h.lt_one_iff, fun h x y ↦ ?_⟩
-  rcases eq_or_ne (v x) 0 with (_ | hy₀) <;> simp_all
+  rcases eq_or_ne (v x) 0 with (_ | hy₀)
+  · simp_all
   rw [le_iff_le_iff_lt_iff_lt, ← one_mul (v x), ← mul_inv_lt_iff₀ (by simp_all), ← one_mul (w x),
     ← mul_inv_lt_iff₀ (by simp_all), ← map_inv₀, ← map_mul, ← map_inv₀, ← map_mul]
   exact h _
@@ -159,7 +164,7 @@ open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [OrderTopology S]
-  {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
+  {ι : Type*} [Finite ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
   {a b : R} {i : ι}
 
 /--
@@ -175,6 +180,7 @@ each `v j` for `j ≠ i`.
 private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
+  classical
   let c : ℕ → R := fun n ↦ a ^ n * b
   have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
@@ -184,6 +190,7 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
+  have := Fintype.ofFinite ι
   let r := Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h
   refine ⟨c r, lt_of_lt_of_le (by linarith) (hr₁ r ?_), fun j hj ↦ ?_, by simpa [c, haw]⟩
   · exact Finset.le_sup_dite_pos (p := fun j ↦ j = i) (f := fun _ _ ↦ r₁) (Finset.mem_univ _) rfl
@@ -202,6 +209,7 @@ each `v j` for `j ≠ i`.
 private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : 1 < w a) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
+  classical
   let c : ℕ → R := fun n ↦ 1 / (1 + a⁻¹ ^ n) * b
   have hcᵢ : Tendsto (fun n ↦ v i (c n)) atTop (𝓝 (v i b)) := by
     have : v i a⁻¹ < 1 := map_inv₀ (v i) a ▸ inv_lt_one_of_one_lt₀ ha
@@ -218,6 +226,7 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
   choose rN hrN using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_lt_const hbw hcₙ
+  have := Fintype.ofFinite ι
   let r := max (Finset.univ.sup fun j ↦ if h : j = i then r₁ else rₙ j h) rN
   refine ⟨c r, hr₁ r ?_, fun j hj ↦ ?_, ?_⟩
   · exact le_max_iff.2 <| .inl <|
@@ -235,12 +244,14 @@ absolute values, then for any `i` there is some `a : R` such that `1 < v i a` an
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
-  let P (ι : Type _) [Fintype ι] : Prop := [DecidableEq ι] →
+  classical
+  have := Fintype.ofFinite ι
+  let P (ι : Type _) [Fintype ι] : Prop :=
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
   -- Use strong induction on the index.
-  revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ _ v h hv i ↦ ?_)
-    (fun ι _ _ ih _ v h hv i ↦ ?_) v
+  revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ v h hv i ↦ ?_)
+    (fun ι _ _ ih v h hv i ↦ ?_) v
   · -- If `ι` is trivial this follows immediately from `(v i).IsNontrivial`.
     let ⟨a, ha⟩ := (h i).exists_abv_gt_one
     exact ⟨a, ha, fun j hij ↦ absurd (Subsingleton.elim i j) hij.symm⟩
@@ -298,14 +309,14 @@ theorem IsEquiv.log_div_log_eq_log_div_log (h : v.IsEquiv w)
     {a : F} (ha₀ : a ≠ 0) (ha₁ : v a ≠ 1) {b : F} (hb₀ : b ≠ 0) (hb₁ : v b ≠ 1) :
     (v b).log / (w b).log = (v a).log / (w a).log := by
   by_contra! h_ne
-  wlog ha : 1 < v a generalizing a b
+  wlog! ha : 1 < v a generalizing a b
   · apply this (inv_ne_zero ha₀) (by simpa) hb₀ hb₁ (by simpa)
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le (not_lt.1 ha)⟩
-  wlog hb : 1 < v b generalizing a b
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos ha₀, ha₁.lt_of_le ha⟩
+  wlog! hb : 1 < v b generalizing a b
   · apply this ha₀ ha₁ (inv_ne_zero hb₀) (by simpa) (by simpa) ha
-    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le (not_lt.1 hb)⟩
-  wlog h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
-  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne (not_lt.1 h_lt) h_ne.symm
+    simpa using one_lt_inv_iff₀.2 ⟨v.pos hb₀, hb₁.lt_of_le hb⟩
+  wlog! h_lt : (v b).log / (w b).log < (v a).log / (w a).log generalizing a b
+  · exact this hb₀ hb₁ ha₀ ha₁ h_ne.symm hb ha <| lt_of_le_of_ne h_lt h_ne.symm
   have hwa := h.one_lt_iff.1 ha
   have hwb := h.one_lt_iff.1 hb
   rw [div_lt_div_iff₀ (log_pos hwb) (log_pos hwa), mul_comm (v a).log,
@@ -335,8 +346,10 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
     rcases eq_or_ne (w b) 1 with hb₁ | hb₁; · simp [hb₁, h.eq_one_iff.2 hb₁]
     rw [← h.symm.log_div_log_eq_log_div_log ha₀ ha₁ hb₀ hb₁, div_eq_inv_mul, rpow_mul (v.nonneg _),
       rpow_inv_log (v.pos hb₀) (h.eq_one_iff.not.2 hb₁), exp_one_rpow, exp_log (w.pos hb₀)]
-  · exact ⟨1, zero_lt_one, funext fun x ↦ by rcases eq_or_ne x 0 with rfl | h₀ <;>
-      aesop (add simp [h.isNontrivial_congr])⟩
+  · exact ⟨1, zero_lt_one,
+      funext fun x ↦ by
+        rcases eq_or_ne x 0 with rfl | h₀ <;>
+        aesop (add simp [h.isNontrivial_congr])⟩
 
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by

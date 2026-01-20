@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Full and faithful functors
@@ -26,13 +28,15 @@ equivalence if and only if it is fully faithful and essentially surjective.
 
 -/
 
+@[expose] public section
+
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category E]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type*} [Category* E]
 
 namespace Functor
 
@@ -213,7 +217,20 @@ def isoEquiv {X Y : C} : (X ≅ Y) ≃ (F.obj X ≅ F.obj Y) where
 def comp {G : D ⥤ E} (hG : G.FullyFaithful) : (F ⋙ G).FullyFaithful where
   preimage f := hF.preimage (hG.preimage f)
 
+/-- If `F` is fully faithful and `F ≅ G`, then `G` is fully faithful. -/
+def ofIso {G : C ⥤ D} (e : F ≅ G) : G.FullyFaithful where
+  preimage f := hF.preimage (e.hom.app _ ≫ f ≫ e.inv.app _)
+  map_preimage f := by simp [← NatIso.naturality_1 e]
+
 end
+
+variable (F) in
+lemma nonempty_iff_map_bijective :
+    Nonempty F.FullyFaithful ↔ ∀ (X Y : C), Function.Bijective (F.map : (X ⟶ Y) → _) :=
+  ⟨fun ⟨hF⟩ ↦ hF.map_bijective, fun hF ↦ by
+    have : F.Faithful := ⟨fun h ↦ (hF _ _).injective h⟩
+    have : F.Full := ⟨(hF _ _).surjective⟩
+    exact ⟨.ofFullyFaithful _⟩⟩
 
 /-- If `F ⋙ G` is fully faithful and `G` is faithful, then `F` is fully faithful. -/
 def ofCompFaithful {G : D ⥤ E} [G.Faithful] (hFG : (F ⋙ G).FullyFaithful) :

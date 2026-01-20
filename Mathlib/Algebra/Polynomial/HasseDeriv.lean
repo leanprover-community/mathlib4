@@ -3,12 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Nat.Choose.Vandermonde
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Vandermonde
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Hasse derivative of polynomials
@@ -31,13 +33,15 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
   the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
-in `Data/Polynomial/Taylor.lean`.
+in `Mathlib/Algebra/Polynomial/Taylor.lean`.
 
 ## Reference
 
 https://math.fontein.de/2009/08/12/the-hasse-derivative/
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -53,7 +57,7 @@ variable {R : Type*} [Semiring R] (k : ℕ) (f : R[X])
 /-- The `k`th Hasse derivative of a polynomial `∑ a_i X^i` is `∑ (i.choose k) a_i X^(i-k)`.
 It satisfies `k! * (hasse_deriv k f) = derivative^[k] f`. -/
 def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
-  lsum fun i => monomial (i - k) ∘ₗ DistribMulAction.toLinearMap R R (i.choose k)
+  lsum fun i => monomial (i - k) ∘ₗ DistribSMul.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :
     hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
@@ -135,7 +139,7 @@ theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivativ
   simp only [← mul_assoc]
   norm_cast
   congr 2
-  rw [mul_comm (k+1) _, mul_assoc, mul_assoc]
+  rw [mul_comm (k + 1) _, mul_assoc, mul_assoc]
   congr 1
   have : n + k + 1 = n + (k + 1) := by apply add_assoc
   rw [← choose_symm_of_eq_add this, choose_succ_right_eq, mul_comm]

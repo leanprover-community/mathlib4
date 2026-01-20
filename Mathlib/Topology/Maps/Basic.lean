@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Order
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Topology.Order
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -41,6 +43,8 @@ This file introduces the following properties of a map `f : X → Y` between top
 open map, closed map, embedding, quotient map, identification map
 
 -/
+
+public section
 
 
 open Set Filter Function
@@ -196,7 +200,7 @@ lemma of_leftInverse {f : X → Y} {g : Y → X} (h : LeftInverse f g) (hf : Con
 
 alias _root_.Function.LeftInverse.isEmbedding := of_leftInverse
 
-lemma map_nhds_eq (hf : IsEmbedding f) (x : X) :     (𝓝 x).map f = 𝓝[range f] f x :=
+lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
   hf.1.map_nhds_eq x
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
@@ -253,6 +257,15 @@ protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
   ⟨hgf.1.of_comp,
     le_antisymm (by grw [hgf.eq_coinduced, ← coinduced_compose, hf.coinduced_le]) hg.coinduced_le⟩
+
+theorem of_comp_of_eq_coinduced (hgf : IsQuotientMap (g ∘ f))
+    (hf : ‹TopologicalSpace Y› = ‹TopologicalSpace X›.coinduced f) : IsQuotientMap g :=
+  isQuotientMap_iff.mpr <| .intro hgf.1.of_comp fun s ↦ by
+    conv_rhs => rw [TopologicalSpace.ext_iff.mp hf, isOpen_coinduced]
+    exact (isQuotientMap_iff.mp hgf).2 s
+
+theorem of_comp_isQuotientMap (hf : IsQuotientMap f) (hgf : IsQuotientMap (g ∘ f)) :
+    IsQuotientMap g := of_comp_of_eq_coinduced hgf hf.2
 
 theorem of_inverse {g : Y → X} (hf : Continuous f) (hg : Continuous g) (h : LeftInverse g f) :
     IsQuotientMap g := .of_comp hf hg <| h.comp_eq_id.symm ▸ IsQuotientMap.id
@@ -377,6 +390,11 @@ theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt
 
 end IsOpenMap
 
+/-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed.
+
+One way to understand this result is that `f : X → Y` is open if and only if its fibers vary in a
+**lower hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
+`(f ⁻¹' {y} ∩ U).Nonempty` is open in `Y`. See `isOpenMap_iff_lowerHemicontinuous`. -/
 lemma isOpenMap_iff_kernImage :
     IsOpenMap f ↔ ∀ {u : Set X}, IsClosed u → IsClosed (kernImage f u) := by
   rw [IsOpenMap, compl_surjective.forall]
@@ -390,7 +408,7 @@ theorem isOpenMap_iff_clusterPt_comap :
   refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ ?_⟩
   simp only [isOpenMap_iff_nhds_le, le_map_iff]
   intro x s hs
-  contrapose! hs
+  contrapose hs
   rw [← mem_interior_iff_mem_nhds, mem_interior_iff_not_clusterPt_compl, not_not] at hs ⊢
   exact (h _ _ hs).mono <| by simp [subset_preimage_image]
 
@@ -468,7 +486,7 @@ end IsClosedMap
 
 One way to understand this result is that `f : X → Y` is closed if and only if its fibers vary in an
 **upper hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
-`f ⁻¹' {y} ⊆ U` is open in `Y`. -/
+`f ⁻¹' {y} ⊆ U` is open in `Y`. See `isClosedMap_iff_upperHemicontinuous`. -/
 lemma isClosedMap_iff_kernImage :
     IsClosedMap f ↔ ∀ {u : Set X}, IsOpen u → IsOpen (kernImage f u) := by
   rw [IsClosedMap, compl_surjective.forall]
@@ -558,9 +576,8 @@ theorem IsClosedMap.frequently_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} 
   and then go back to `isClosedMap_iff_comap_nhdsSet_le`.
   Ultimately, this makes no difference.
   -/
-  revert H
-  contrapose
-  simpa only [not_frequently, not_exists, not_and] using hf.eventually_nhds_fiber y₀
+  contrapose! H
+  exact hf.eventually_nhds_fiber y₀ H
 
 theorem IsClosedMap.closure_image_eq_of_continuous
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set X) :
@@ -743,6 +760,13 @@ theorem comp (hg : IsClosedEmbedding g) (hf : IsClosedEmbedding f) :
 lemma of_comp_iff (hg : IsClosedEmbedding g) : IsClosedEmbedding (g ∘ f) ↔ IsClosedEmbedding f := by
   simp_rw [isClosedEmbedding_iff, hg.isEmbedding.of_comp_iff, Set.range_comp,
     ← hg.isClosed_iff_image_isClosed]
+
+protected lemma of_comp (hg : IsEmbedding g) (hgf : IsClosedEmbedding (g ∘ f)) :
+    IsClosedEmbedding f where
+  __ := hg.of_comp_iff.mp hgf.isEmbedding
+  isClosed_range := by
+    convert hg.isClosed_preimage _ hgf.isClosed_range
+    rw [range_comp, hg.injective.preimage_image]
 
 theorem closure_image_eq (hf : IsClosedEmbedding f) (s : Set X) :
     closure (f '' s) = f '' closure s :=

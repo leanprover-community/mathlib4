@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Endofunctors as a monoidal category.
@@ -16,6 +18,8 @@ and show that when `C` itself is monoidal, it embeds via a monoidal functor into
 Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C) = ρ_ (𝟙_ C)`?
 I suspect this is harder than is usually made out.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -117,7 +121,7 @@ instance : (tensoringRight C).Monoidal :=
 end MonoidalCategory
 
 variable {C}
-variable {M : Type*} [Category M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
+variable {M : Type*} [Category* M] [MonoidalCategory M] (F : M ⥤ (C ⥤ C))
 
 @[reassoc (attr := simp)]
 theorem μ_δ_app (i j : M) (X : C) [F.Monoidal] :

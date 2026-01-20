@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Admissible absolute values on polynomials
@@ -19,6 +21,8 @@ use to show the class number of the ring of integers of a function field is fini
 * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -103,7 +107,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
     exact mul_pos (Int.cast_pos.mpr (AbsoluteValue.pos _ hb)) hε
   have one_lt_q : 1 < Fintype.card Fq := Fintype.one_lt_card
   have one_lt_q' : (1 : ℝ) < Fintype.card Fq := by assumption_mod_cast
-  have q_pos : 0 < Fintype.card Fq := by omega
+  have q_pos : 0 < Fintype.card Fq := by lia
   have q_pos' : (0 : ℝ) < Fintype.card Fq := by assumption_mod_cast
   -- If `b` is already small enough, then the remainders are equal and we are done.
   by_cases! le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊

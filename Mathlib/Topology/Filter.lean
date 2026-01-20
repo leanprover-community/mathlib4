@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Topology on the set of filters on a type
@@ -30,6 +32,8 @@ This topology has the following important properties.
 
 filter, topological space
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace

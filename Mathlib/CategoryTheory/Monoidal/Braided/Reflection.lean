@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.Tactic.TFAE
 /-!
 
 # Day's reflection theorem
@@ -26,11 +28,13 @@ apply Day's reflection theorem to prove that `C` is also closed monoidal.
 - The original paper is [day1972] *A reflection theorem for closed categories*, by Day, 1972.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
@@ -204,7 +208,7 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3:)]
+  rw [((isIso_tfae adj).out 0 3 :)]
   intro d d'
   infer_instance
 

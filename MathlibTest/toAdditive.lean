@@ -9,8 +9,8 @@ set_option autoImplicit true
 namespace Test
 
 -- [note] use the below options for diagnostics:
--- set_option trace.to_additive true
--- set_option trace.to_additive_detail true
+-- set_option trace.translate true
+-- set_option trace.translate_detail true
 -- set_option pp.universes true
 -- set_option pp.explicit true
 -- set_option pp.notation false
@@ -21,16 +21,32 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
 class my_has_pow (α : Type u) (β : Type v) where
-  (pow : α → β → α)
+  pow : α → β → α
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
 class my_has_scalar (M : Type u) (α : Type v) where
-  (smul : M → α → α)
+  smul : M → α → α
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
-attribute [to_additive (reorder := 1 2) my_has_scalar] my_has_pow
-attribute [to_additive (reorder := 1 2, 4 5)] my_has_pow.pow
+attribute [to_additive (reorder := α β) my_has_scalar] my_has_pow
+/--
+error: `to_additive` validation failed: expected
+  {α : Type u} → {β : Type v} → [self : my_has_scalar β α] → α → β → α
+but 'Test.my_has_scalar.smul' has type
+  {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
+-/
+#guard_msgs in
+attribute [to_additive existing] my_has_pow.pow
+/--
+error: `to_additive` validation failed: expected
+  {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
+but 'Test.my_has_scalar.smul' has type
+  {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
+-/
+#guard_msgs in
+attribute [to_additive existing (reorder := α β)] my_has_pow.pow
+attribute [to_additive existing (reorder := α β, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
 def foo1 {α : Type u} [my_has_pow α ℕ] (x : α) (n : ℕ) : α := @my_has_pow.pow α ℕ _ x n
@@ -98,16 +114,16 @@ theorem bar11_works : bar11 = foo11 := rfl
 @[to_additive bar12]
 def foo12 (_ : Nat) (_ : Int) : Fin 37 := ⟨2, by decide⟩
 
-@[to_additive (reorder := 1 2, 4 5) bar13]
+@[to_additive (reorder := α β, 4 5) bar13]
 lemma foo13 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : x ^ y = x ^ y := rfl
 
-@[to_additive (reorder := 1 2, 4 5) bar14]
+@[to_additive (reorder := α β, 4 5) bar14]
 def foo14 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : α := (x ^ y) ^ y
 
-@[to_additive (reorder := 1 2, 4 5) bar15]
+@[to_additive (reorder := α β, 4 5) bar15]
 lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := rfl
 
-@[to_additive (reorder := 1 2, 4 5) bar16]
+@[to_additive (reorder := α β, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
 @[to_additive bar17]
@@ -141,14 +157,14 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+run_meta guard <| argInfoAttr.find? (← getEnv) `Test.foo21 matches some ⟨[], 1⟩
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1
   | _ => a
 
-run_cmd liftCoreM <| MetaM.run' <| do
+run_meta do
   -- make `abbrev` definition `reducible` automatically
   guard <| (← getReducibilityStatus `Test.bar22) == .reducible
   -- make `abbrev` definition `inline` automatically
@@ -216,7 +232,7 @@ def mul_foo {α} [Monoid α] (a : α) : ℕ → α
 
 -- cannot apply `@[to_additive]` to `some_def` if `some_def.in_namespace` doesn't have the attribute
 run_cmd liftCoreM <| successIfFail <|
-    transformDecl ToAdditive.data { ref := ← getRef} `Test.some_def `Test.add_some_def
+  transformDeclRec ToAdditive.data (← getRef) `Test.some_def `Test.add_some_def `Test.some_def []
 
 
 attribute [to_additive some_other_name] some_def.in_namespace
@@ -270,6 +286,7 @@ end instances
 lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
   rw [npowRec]
 
+set_option linter.translateRedundant false in
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
 lemma optiontest (x : Option α) : x.elim none some = x := by
@@ -282,6 +299,14 @@ def IsUnit [Mul M] (a : M) : Prop := a ≠ a
 @[to_additive]
 theorem isUnit_iff_exists_inv [Mul M] {a : M} : IsUnit a ↔ ∃ _ : α, a ≠ a :=
   ⟨fun h => absurd rfl h, fun ⟨_, hab⟩ => hab⟩
+
+@[to_additive (dont_translate := R)]
+def mulMatchAux {R A} [Mul A] (_ : R) (_ : A) : Nat := 5
+
+@[to_additive (dont_translate := R)]
+theorem mulMatchThm {R A} (r : R) (a : A) [Mul A] : True := by
+  have ⟨_, _⟩ : mulMatchAux r a = mulMatchAux r a ∧ True := ⟨rfl, trivial⟩
+  exact trivial
 
 /-! Test that `@[to_additive]` correctly translates auxiliary declarations that do not have the
 original declaration name as prefix. -/
@@ -296,17 +321,11 @@ theorem isUnit'_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit' a ↔ ∃ b, b 
   simp [isUnit'_iff_exists_inv, mul_comm]
 
 /-! Test a permutation with a cycle of length > 2. -/
-@[to_additive (reorder := 3 4 5)]
+@[to_additive (reorder := x y z)]
 def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 
 /-! Test a permutation that is too big for the list of arguments. -/
-/--
-error: the permutation
-[[2, 3, 50]]
-provided by the `(reorder := ...)` option is out of bounds, the type
-  {α : Type u_1} → [Add α] → α → α → α → α
-has only 5 arguments
--/
+/-- error: index `51` is out of bounds, there are only `5` arguments -/
 #guard_msgs in
 @[to_additive (reorder := 3 4 51)]
 def reorderMulThree' {α : Type _} [Mul α] (x y z : α) : α := x * y * z
@@ -330,9 +349,14 @@ For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each othe
 @[to_additive (reorder := 04)]
 example : True := trivial
 
-/-- error: invalid position `00`, positions are counted starting from 1. -/
+/-- error: invalid index `00`, arguments are counted starting from 1. -/
 #guard_msgs in
-@[to_additive (reorder := 100 200, 2 00)]
+@[to_additive (reorder := 00 100 200)]
+example : True := trivial
+
+/-- error: invalid argument 'x', it is not an argument of '_example'. -/
+#guard_msgs in
+@[to_additive (reorder := x y z)]
 example : True := trivial
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl
@@ -356,14 +380,14 @@ run_cmd do
   unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
   unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
-@[to_additive, to_additive_dont_translate]
-def MonoidEnd : Type := Unit
+@[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
+def Unit' : Type := Unit
+@[to_additive_do_translate] def Unit'' : Type := Unit
 
-run_cmd do
-  let stx ← `(Semigroup MonoidEnd)
-  liftTermElabM do
-    let e ← Term.elabTerm stx none
-    guard <| shouldTranslate (← getEnv) ToAdditive.data e == some (.inl `Test.MonoidEnd)
+run_meta do
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) == some (.inl `Test.MonoidEnd)
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') == some (.inl `Test.Unit')
+  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') == none
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -396,10 +420,6 @@ run_cmd
   -- `AddCommMonoid` instead of `CommAddMonoid`.
   checkGuessName "comm_mul_CommMul_commMul" "comm_add_AddComm_addComm"
   checkGuessName "mul_comm_MulComm_mulComm" "add_comm_AddComm_addComm"
-  checkGuessName "mul_single_eq_same" "single_eq_same"
-  checkGuessName "mul_support" "support"
-  checkGuessName "mul_tsupport" "tsupport"
-  checkGuessName "mul_indicator" "indicator"
 
   checkGuessName "CommMonoid" "AddCommMonoid"
   checkGuessName "commMonoid" "addCommMonoid"
@@ -539,13 +559,32 @@ fun {α} [Add α] a => Add.add a
 #print myAdd
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+/--
+warning: `to_additive self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_additive` to translate expressions involving `test1`,
+use `to_additive_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
+
+/-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+/--
+warning: `to_additive` did not change the type of theorem `test1'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
+@[simp, to_additive none]
+theorem test1' : 5 = 5 := rfl
 
 /-! Test that we can't write `to_additive self (attr := ..)`. -/
 
 /--
-error: invalid `(attr := ...)` after `self`, as there is only one declaration for the attributes.
+error: invalid `(attr := ...)` after `self` or `none`, as there is no other declaration for the attributes.
 Instead, you can write the attributes in the usual way.
 -/
 #guard_msgs in
@@ -563,6 +602,12 @@ def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 
 /-! Test that additive docstrings work -/
 
+/--
+warning: `to_additive` did not change the type of theorem `mulTrivial`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
@@ -578,6 +623,10 @@ warning: String syntax for `to_additive` docstrings is deprecated: Use docstring
 
 Update deprecated syntax to:
   [apply] /-- (via `str` syntax) I am an additive docstring! -/
+---
+warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
@@ -722,11 +771,11 @@ structure fields/constructors.
 structure SimpleNSMul (β : Type 1) (α : Type) where
   x : Nat
 
-@[to_additive (reorder := 1 2) (relevant_arg := 2)]
+@[to_additive (reorder := α β) (relevant_arg := β)]
 structure SimplePow (α : Type) (β : Type 1) where
   x : Nat
 
-@[to_additive (reorder := 1 2) (attr := simps)]
+@[to_additive (reorder := α β) (attr := simps)]
 def simplePowZero (α β) : SimplePow α β where
   x := 0
 
@@ -749,7 +798,7 @@ lemma simplePowZero_x'' {β} : (simplePowZero Nat β).x = 0 := by
 structure AddMonoidAlgebra' (k G : Type) where
   x : G → k
 
-@[to_additive (relevant_arg := 2)]
+@[to_additive (relevant_arg := G)]
 structure MonoidAlgebra' (k G : Type) where
   x : G → k
 
@@ -776,3 +825,30 @@ in the application
 @[to_additive]
 instance : Mul (MonoidAlgebra' Nat G) where
   mul | ⟨a⟩, ⟨b⟩ => ⟨fun i => a i * b 1⟩
+
+-- Proofs in types aren't abstracted:
+@[to_additive]
+def abstractMul : Function.const _ True (id Nat.zero_lt_one) := trivial
+
+set_option pp.proofs true in
+/-- info: abstractMul : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractMul
+set_option pp.proofs true in
+/-- info: abstractAdd : Function.const (0 < 1) True (id Nat.zero_lt_one) -/
+#guard_msgs in
+#check abstractAdd
+
+-- We give a warning if an existing translation is overwritten:
+/--
+warning: `abstractMul` was already translated to `abstractAdd` instead of `someOtherTranslation`.
+Unless the original translation was wrong, please remove this `to_additive` attribute.
+
+Note: This linter can be disabled with `set_option linter.translateOverwrite false`
+-/
+#guard_msgs in
+attribute [to_additive someOtherTranslation] abstractMul
+
+-- Test that we don't blindly translate the prefix of a name.
+def Mul.test : Nat := 5
+@[to_additive] def Mul.test' := Mul.test

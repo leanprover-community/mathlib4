@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-import Mathlib.Topology.Algebra.Valued.LocallyCompact
-import Mathlib.Topology.Algebra.Valued.ValuativeRel
+module
+
+public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Valued.LocallyCompact
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 
@@ -16,6 +18,8 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 -/
+
+@[expose] public section
 
 /--
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
@@ -71,7 +75,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
       ∃ r', r' ≠ 0 ∧ valuation K r' < 1 ∧ { x | valuation K x ≤ valuation K r' } ⊆ s := by
     obtain ⟨r, hr, hrs⟩ := (IsValuativeTopology.hasBasis_nhds_zero' K).mem_iff.mp hs
     obtain ⟨r', hr', hr⟩ := Valuation.IsNontrivial.exists_lt_one (v := valuation K)
-    simp only [ne_eq, map_eq_zero] at hr'
+    simp only [ne_eq] at hr'
     obtain hr1 | hr1 := lt_or_ge r 1
     · obtain ⟨r, rfl⟩ := ValuativeRel.valuation_surjective r
       simp only [ne_eq, map_eq_zero] at hr

@@ -3,10 +3,11 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.Perfection
+public import Mathlib.NumberTheory.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.Perfection
 
 /-!
 # Untilt Function
@@ -32,7 +33,9 @@ is not the untilt *functor*.
 Perfectoid, Tilting equivalence, Untilt
 -/
 
-open Perfection Ideal
+@[expose] public section
+
+open Ideal
 
 noncomputable section
 
@@ -49,7 +52,7 @@ def untiltAux (x : PreTilt O p) (n : ℕ) : O :=
   match n with
   | 0 => 1
   | n + 1 =>
-  (Quotient.out (coeff (ModP O p) _ n x)) ^ (p ^ n)
+  (Quotient.out (coeff n x)) ^ (p ^ n)
 
 lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n) :
     (p : O) ^ m ∣ x.untiltAux m - x.untiltAux n := by
@@ -64,9 +67,9 @@ lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n
     rw [← mem_span_singleton, ← Ideal.Quotient.eq]
     simp only [Ideal.Quotient.mk_out, map_pow, Nat.sub_add_cancel h]
     calc
-      _ = (coeff (ModP O p) p (n' - (n' - m))) x := by simp [Nat.sub_sub_self h]
-      _ = (coeff (ModP O p) p n') (((frobenius (Ring.Perfection (ModP O p) p) p))^[n' - m] x) :=
-        (coeff_iterate_frobenius' x n' (n' - m) (Nat.sub_le n' m)).symm
+      _ = coeff (n' - (n' - m)) x := by simp [Nat.sub_sub_self h]
+      _ = coeff n' ((frobenius _ p)^[n' - m] x) :=
+        (coeff_iterate_frobenius' x (Nat.sub_le n' m)).symm
       _ = _ := by simp [iterate_frobenius]
 
 lemma pow_dvd_one_untiltAux_sub_one (m : ℕ) :
@@ -151,9 +154,9 @@ with the untilt function equals taking the zeroth component of the perfection.
 -/
 @[simp]
 theorem mk_untilt_eq_coeff_zero (x : PreTilt O p) :
-    Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff (ModP O p) p 0 x := by
+    Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff 0 x := by
   simp only [untilt]
-  rw [← Ideal.Quotient.mk_out ((coeff (ModP O p) p 0) x), Ideal.Quotient.eq, ← SModEq.sub_mem]
+  rw [← Ideal.Quotient.mk_out (coeff 0 x), Ideal.Quotient.eq, ← SModEq.sub_mem]
   simpa [untiltAux] using (x.untiltAux_smodEq_untiltFun 1).symm
 
 /--
@@ -163,12 +166,12 @@ A variation of `PreTilt.mk_untilt_eq_coeff_zero`.
 -/
 @[simp]
 theorem mk_comp_untilt_eq_coeff_zero :
-    Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff (ModP O p) p 0 :=
+    Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff 0 :=
   funext mk_untilt_eq_coeff_zero
 
 @[simp]
 theorem untilt_iterate_frobeniusEquiv_symm_pow (x : PreTilt O p) (n : ℕ) :
-    untilt (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
+    untilt (((frobeniusEquiv (PreTilt O p) p).symm^[n]) x) ^ p ^ n = x.untilt := by
   simp only [← map_pow]
   congr
   simp

@@ -3,9 +3,11 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Seminorms and norms on rings
@@ -28,8 +30,8 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
-absolute values.
+The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
+absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.
 
 ## References
 
@@ -38,6 +40,8 @@ absolute values.
 ## Tags
 ring_seminorm, ring_norm
 -/
+
+@[expose] public section
 
 
 open NNReal
@@ -172,9 +176,7 @@ theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminorm
   | 1, _ => by simp only [pow_one, le_refl]
   | n + 2, _ => by
     simp only [pow_succ _ (n + 1)]
-    exact
-      le_trans (map_mul_le_mul f _ a)
-        (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+    grw [map_mul_le_mul, map_pow_le_pow _ _ n.succ_ne_zero]
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ 1`, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
 theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
@@ -201,18 +203,15 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
   have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
     intro m
     rw [← mul_one_div (s (ψ m) : ℝ), rpow_mul (apply_nonneg p x), rpow_natCast]
-    exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
-      (one_div_nonneg.mpr (cast_nonneg _))
+    grw [map_pow_le_pow' hp x]
   apply isBoundedUnder_of
-  by_cases! hfx : p x ≤ 1
-  · use 1, fun m => le_trans (h_le m)
-      (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
-  · use p x
-    intro m
-    apply le_trans (h_le m)
-    conv_rhs => rw [← rpow_one (p x)]
-    exact rpow_le_rpow_of_exponent_le hfx.le
-      (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
+  cases le_or_gt (p x) 1 with
+  | inl hfx =>
+    use 1, fun m ↦ le_trans (h_le m) (rpow_le_one (by positivity) hfx (by positivity))
+  | inr hfx =>
+    use p x
+    refine fun m ↦ le_trans (h_le m) <| rpow_le_self_of_one_le hfx.le ?_
+    exact div_le_one_of_le₀ (mod_cast hs_le _) (cast_nonneg _)
 
 end RingSeminorm
 
@@ -421,6 +420,7 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 
 open Int
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/
 def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm R where
   toFun     := norm
@@ -429,6 +429,7 @@ def SeminormedRing.toRingSeminorm (R : Type*) [SeminormedRing R] : RingSeminorm 
   mul_le'   := norm_mul_le
   neg'      := norm_neg
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedRing`, as a `RingNorm`. -/
 @[simps]
 def NormedRing.toRingNorm (R : Type*) [NormedRing R] : RingNorm R where
@@ -444,6 +445,7 @@ theorem NormedRing.toRingNorm_apply (R : Type*) [NormedRing R] (x : R) :
     (NormedRing.toRingNorm R) x = ‖x‖ :=
   rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedField`, as a `MulRingNorm`. -/
 def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   toFun     := norm
@@ -454,6 +456,7 @@ def NormedField.toMulRingNorm (R : Type*) [NormedField R] : MulRingNorm R where
   neg'      := norm_neg
   eq_zero_of_map_eq_zero' x hx := by rw [← norm_eq_zero]; exact hx
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The norm on a `NormedField`, as an `AbsoluteValue`. -/
 def NormedField.toAbsoluteValue (R : Type*) [NormedField R] : AbsoluteValue R ℝ where
   toFun     := norm

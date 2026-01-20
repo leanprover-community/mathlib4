@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Iterate
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Instances.Rat
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Iterate
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # A collection of specific limit computations
@@ -19,6 +21,8 @@ This file, by design, is independent of `NormedSpace` in the import hierarchy.  
 important specific limit computations in metric spaces, in ordered rings/fields, and in specific
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis NormedSpace
 
@@ -445,7 +449,7 @@ decaying terms.
 -/
 
 
-section EdistLeGeometric
+section EDistLeGeometric
 
 variable [PseudoEMetricSpace α] (r C : ℝ≥0∞) (hr : r < 1) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C * r ^ n)
@@ -456,8 +460,7 @@ then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine cauchySeq_of_edist_le_of_tsum_ne_top _ hu ?_
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
-  have := (tsub_pos_iff_lt.2 hr).ne'
-  finiteness
+  finiteness [(tsub_pos_iff_lt.2 hr).ne']
 
 include hu in
 /-- If `edist (f n) (f (n+1))` is bounded by `C * r^n`, then the distance from
@@ -474,9 +477,9 @@ theorem edist_le_of_edist_le_geometric_of_tendsto₀ {a : α} (ha : Tendsto f at
     edist (f 0) a ≤ C / (1 - r) := by
   simpa only [_root_.pow_zero, mul_one] using edist_le_of_edist_le_geometric_of_tendsto r C hu ha 0
 
-end EdistLeGeometric
+end EDistLeGeometric
 
-section EdistLeGeometricTwo
+section EDistLeGeometricTwo
 
 variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → α}
   (hu : ∀ n, edist (f n) (f (n + 1)) ≤ C / 2 ^ n) {a : α} (ha : Tendsto f atTop (𝓝 a))
@@ -504,7 +507,7 @@ theorem edist_le_of_edist_le_geometric_two_of_tendsto₀ : edist (f 0) a ≤ 2 *
   simpa only [_root_.pow_zero, div_eq_mul_inv, inv_one, mul_one] using
     edist_le_of_edist_le_geometric_two_of_tendsto C hu ha 0
 
-end EdistLeGeometricTwo
+end EDistLeGeometricTwo
 
 section LeGeometric
 
@@ -692,7 +695,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       · positivity
       · refine (div_le_one <| mod_cast hn).mpr ?_
         norm_cast
-        cutsat)
+        lia)
 
 /-!
 ### Ceil and floor

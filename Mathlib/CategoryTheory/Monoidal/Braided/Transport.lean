@@ -3,13 +3,17 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 
 # Transport a symmetric monoidal structure along an equivalence of categories
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -66,7 +70,7 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, assoc,
         Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
-    simp? [-Adjunction.rightAdjointLaxMonoidal_μ]  at this says
+    simp? [-Adjunction.rightAdjointLaxMonoidal_μ] at this says
       simp only [Functor.comp_obj, Functor.CoreMonoidal.toMonoidal_toLaxMonoidal,
         Equivalence.symm_inverse, Equivalence.symm_functor,
         Functor.CoreMonoidal.toMonoidal_toOplaxMonoidal, comp_μ, Functor.comp_map,

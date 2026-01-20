@@ -3,13 +3,15 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.LinearRecurrence
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.Tactic.NormNum.NatFib
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.LinearRecurrence
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Int.Fib.Basic
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.NatFib
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # The golden ratio and its conjugate
@@ -21,6 +23,8 @@ Along with various computational facts about them, we prove their
 irrationality, and we link them to the Fibonacci sequence by proving
 Binet's formula.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -245,7 +249,16 @@ theorem coe_fib_eq' :
 theorem coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
   rw [← funext_iff, Real.coe_fib_eq']
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents -/
+/-- **Binet's formula** for integer values. -/
+theorem coe_intFib_eq (n : ℤ) : (Int.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
+  obtain ⟨n, (rfl | rfl)⟩ := n.eq_nat_or_neg
+  · exact coe_fib_eq n
+  · simp only [Int.fib_neg, Int.even_coe_nat, Int.fib_natCast, Int.cast_ite, Int.cast_neg,
+      Int.cast_natCast, zpow_neg, zpow_natCast, ← inv_pow, inv_goldenRatio, inv_goldenConj,
+      ← neg_one_mul ψ, ← neg_one_mul φ, mul_pow, neg_one_pow_eq_ite]
+    grind [coe_fib_eq]
+
+/-- Relationship between the Fibonacci Sequence, the golden ratio, and its conjugate's exponents. -/
 theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
@@ -256,7 +269,12 @@ theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.
 @[deprecated (since := "2025-08-23")]
 alias _root_.fib_golden_conj_exp := fib_succ_sub_goldenRatio_mul_fib
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
+/-- Relationship between the Fibonacci Sequence, the conjugate of the golden ratio,
+and its exponents. -/
+lemma goldenConj_mul_fib_succ_add_fib (n : ℕ) : ψ * Nat.fib (n + 1) + Nat.fib n = ψ ^ (n + 1) := by
+  grind [fib_succ_sub_goldenRatio_mul_fib]
+
+/-- Relationship between the Fibonacci Sequence, the golden ratio, and its exponents. -/
 lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
   | zero => simp
@@ -270,5 +288,10 @@ lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fi
 
 @[deprecated (since := "2025-08-23")]
 alias _root_.fib_golden_exp' := goldenRatio_mul_fib_succ_add_fib
+
+/-- Relationship between the Fibonacci Sequence, exponents of the golden ratio,
+and its conjugate. -/
+theorem fib_succ_sub_goldenConj_mul_fib (n : ℕ) : Nat.fib (n + 1) - ψ * Nat.fib n = φ ^ n := by
+  grind [goldenRatio_mul_fib_succ_add_fib]
 
 end Real

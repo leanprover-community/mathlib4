@@ -3,13 +3,15 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Spectrum mapping theorem
 
-This file develops proves the spectral mapping theorem for polynomials over algebraically closed
+This file develops and proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
 spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
@@ -32,6 +34,8 @@ eigenvalue.
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
+
+public section
 
 namespace spectrum
 
@@ -94,7 +98,7 @@ theorem map_polynomial_aeval_of_degree_pos [IsAlgClosed 𝕜] (a : A) (p : 𝕜[
   -- handle the easy direction via `spectrum.subset_polynomial_aeval`
   refine Set.eq_of_subset_of_subset (fun k hk => ?_) (subset_polynomial_aeval a p)
   -- write `C k - p` product of linear factors and a constant; show `C k - p ≠ 0`.
-  have hprod := eq_prod_roots_of_splits_id (IsAlgClosed.splits (C k - p))
+  have hprod := (IsAlgClosed.splits (C k - p)).eq_prod_roots
   have h_ne : C k - p ≠ 0 := ne_zero_of_degree_gt <| by
     rwa [degree_sub_eq_right_of_degree_lt (lt_of_le_of_lt degree_C_le hdeg)]
   have lead_ne := leadingCoeff_ne_zero.mpr h_ne
@@ -147,7 +151,7 @@ theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontriv
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
   have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
-  rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
+  rw [(IsAlgClosed.splits p).eq_prod_roots_of_monic h_mon] at nu
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩
 

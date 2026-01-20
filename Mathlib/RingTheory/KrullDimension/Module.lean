@@ -3,18 +3,22 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-import Mathlib.RingTheory.Spectrum.Prime.Module
+module
+
+public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+public import Mathlib.RingTheory.Spectrum.Prime.Module
 
 /-!
 
 # Krull Dimension of Module
 
-In this file we define `Module.supportDim R M` for a `R`-module `M` as
+In this file we define `Module.supportDim R M` for an `R`-module `M` as
 the krull dimension of its support. It is equal to the krull dimension of `R / Ann M` when
 `M` is finitely generated.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 

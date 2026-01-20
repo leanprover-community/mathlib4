@@ -4,11 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
 Jireh Loreaux
 -/
-import Lean.Elab.Tactic.Location
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
+module
+
+public meta import Lean.Elab.Tactic.Location
+public import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Util.AtLocation
 
 /-!
 # The `push`, `push_neg` and `pull` tactics
@@ -18,6 +21,8 @@ as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Push
 
@@ -55,25 +60,32 @@ theorem not_and_eq : (¬ (p ∧ q)) = (p → ¬ q) := propext not_and
 theorem not_and_or_eq : (¬ (p ∧ q)) = (¬ p ∨ ¬ q) := propext not_and_or
 theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 
-/-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
+/-- Set `distrib` to true in `push_neg` and related tactics. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
-    group := ""
-    descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
+    descr := "Set `distrib` to true in `push_neg` and related tactics." }
 
 open Lean Meta Elab.Tactic Parser.Tactic
+
+/-- The configuration options for the `push` tactic. -/
+structure Config where
+  /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`. -/
+  distrib : Bool := false
+
+/-- Function elaborating `Push.Config`. -/
+declare_config_elab elabPushConfig Config
 
 /--
 `pushNegBuiltin` is a simproc for pushing `¬` in a way that can't be done
 using the `@[push]` attribute.
-- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the option `push_neg.use_distrib`.
+- `¬ (p ∧ q)` turns into `p → ¬ q` or `¬ p ∨ ¬ q`, depending on the `distrib` configuration.
 - `¬ ∀ a, p` turns into `∃ a, ¬ p`, where the binder name `a` is preserved.
 -/
-private def pushNegBuiltin : Simp.Simproc := fun e => do
+private def pushNegBuiltin (cfg : Config) : Simp.Simproc := fun e => do
   let e := (← instantiateMVars e).cleanupAnnotations
   match e with
   | .app (.app (.const ``And _) p) q =>
-    if ← getBoolOption `push_neg.use_distrib then
+    if cfg.distrib then
       return mkSimpStep (mkOr (mkNot p) (mkNot q)) (mkApp2 (.const ``not_and_or_eq []) p q)
     else
       return mkSimpStep (.forallE `_ p (mkNot q) .default) (mkApp2 (.const ``not_and_eq []) p q)
@@ -93,7 +105,7 @@ def pushSimpConfig : Simp.Config where
   proj := false
 
 /-- Try to rewrite using a `push` lemma. -/
-def pushStep (head : Head) : Simp.Simproc := fun e => do
+def pushStep (head : Head) (cfg : Config) : Simp.Simproc := fun e => do
   let e_whnf ← whnf e
   let some e_head := Head.ofExpr? e_whnf | return Simp.Step.continue
   unless e_head == head do
@@ -104,18 +116,19 @@ def pushStep (head : Head) : Simp.Simproc := fun e => do
     -- after rewriting `¬ ¬ ¬ p` into `¬ p`, we may want to rewrite `¬ p` again.
     return Simp.Step.visit r
   if let some e := e_whnf.not? then
-    pushNegBuiltin e
+    pushNegBuiltin cfg e
   else
     return Simp.Step.continue
 
 /-- Common entry point to the implementation of `push`. -/
-def pushCore (head : Head) (tgt : Expr) (disch? : Option Simp.Discharge) : MetaM Simp.Result := do
+def pushCore (head : Head) (cfg : Config) (disch? : Option Simp.Discharge) (tgt : Expr) :
+    MetaM Simp.Result := do
   let ctx : Simp.Context ← Simp.mkContext pushSimpConfig
       (simpTheorems := #[])
       (congrTheorems := ← getSimpCongrTheorems)
   let methods := match disch? with
-    | none => { pre := pushStep head }
-    | some disch => { pre := pushStep head, discharge? := disch, wellBehavedDischarge := false }
+    | none => { pre := pushStep head cfg }
+    | some disch => { pre := pushStep head cfg, discharge? := disch, wellBehavedDischarge := false }
   (·.1) <$> Simp.main tgt ctx (methods := methods)
 
 /-- Try to rewrite using a `pull` lemma. -/
@@ -195,65 +208,81 @@ end ElabHead
 def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
   (·.2) <$> tacticToDischarge stx.raw[3]
 
+/-- Run the `push` tactic. -/
+def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
+    (failIfUnchanged : Bool := true) : TacticM Unit := do
+  let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
+  transformAtLocation (pushCore head cfg disch? ·) "push" loc failIfUnchanged
+
 /--
-`push` pushes the given constant away from the head of the expression. For example
-- `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
-- `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
-- `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
-  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
-
-In addition to constants, `push` can be used to push `fun` and `∀` binders:
-- `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
-- `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
-
-The `push` tactic can be extended using the `@[push]` attribute.
+`push c` rewrites the goal by pushing the constant `c` deeper into an expression.
+For instance, `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
+More precisely, the `push` tactic repeatedly rewrites an expression by applying lemmas
+of the form `c ... = ... (c ...)` (where `c` can appear 0 or more times on the right hand side).
+To extend the `push` tactic, you can tag a lemma of this form with the `@[push]` attribute.
 
 To instead move a constant closer to the head of the expression, use the `pull` tactic.
 
-To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
+`push` works as both a tactic and a conv tactic.
+
+* `push _ ~ _` pushes the (binary) operator `~`, `push ~ _` pushes the (unary) operator `~`.
+* `push c at l1 l2 ...` rewrites at the given locations.
+* `push c at *` rewrites at all hypotheses and the goal.
+* `push (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
+
+Examples:
+* `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
+* `push (disch := positivity) Real.log` rewrites `log (a * b ^ 2)` into `log a + 2 * log b`.
+* `push ¬ _` is the same as `push_neg` or `push Not`, and it rewrites
+  `¬ ∀ ε > 0, ∃ δ > 0, δ < ε` into `∃ ε > 0, ∀ δ > 0, ε ≤ δ`.
+* `push fun _ ↦ _` rewrites `fun x => f x ^ 2 + 5` into `f ^ 2 + 5`
+* `push ∀ _, _` rewrites `∀ a, p a ∧ q a` into `(∀ a, p a) ∧ (∀ a, q a)`.
 -/
-elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
-    tactic => do
+elab (name := pushStx) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term)
+    loc:(location)? : tactic => do
   let disch? ← disch?.mapM elabDischarger
-  let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
+  push (← elabPushConfig cfg) disch? (← elabHead head) loc
 
 /--
-Push negations into the conclusion or a hypothesis.
-For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg at h` into
-`h : ∃ x, ∀ y, y < x`. Binder names are preserved.
+`push_neg` rewrites the goal by pushing negations deeper into an expression.
+For instance, the goal `¬ ∀ x, ∃ y, x ≤ y` will be transformed by `push_neg` into
+`∃ x, ∀ y, y < x`. Binder names are preserved (contrary to what would happen with `simp`
+using the relevant lemmas). `push_neg` works as both a tactic and a conv tactic.
 
 `push_neg` is a special case of the more general `push` tactic, namely `push Not`.
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
-built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
-transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
-`set_option push_neg.use_distrib true`.
+built in for `push Not`.
 
 Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
 that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
 
-Another example: given a hypothesis
+* `push_neg at l1 l2 ...` rewrites at the given locations.
+* `push_neg at *` rewrites at each hypothesis and the goal.
+* `push_neg +distrib` rewrites `¬ (p ∧ q)` into `¬ p ∨ ¬ q` (by default, the tactic rewrites it
+  into `p → ¬ q` instead).
+
+Example:
+
 ```lean
-h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε
+example (h : ¬ ∀ ε > 0, ∃ δ > 0, ∀ x, |x - x₀| ≤ δ → |f x - y₀| ≤ ε) :
+    ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀| := by
+  push_neg at h
+  -- Now we have the hypothesis `h : ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|`
+  exact h
 ```
-writing `push_neg at h` will turn `h` into
-```lean
-h : ∃ ε > 0, ∀ δ > 0, ∃ x, |x - x₀| ≤ δ ∧ ε < |f x - y₀|
-```
-Note that binder names are preserved by this tactic, contrary to what would happen with `simp`
-using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
-at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
-using say `push_neg at h h' ⊢`, as usual.
 -/
-macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
+elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  push (← elabPushConfig cfg) none (.const ``Not) loc
 
 /--
-`pull` is the inverse tactic to `push`.
-It pulls the given constant towards the head of the expression. For example
-- `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
-- `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
-- `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.
+`pull c` rewrites the goal by pulling the constant `c` closer to the head of the expression.
+For instance, `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
+More precisely, the `pull` tactic repeatedly rewrites an expression by applying lemmas
+of the form `... (c ...) = c ...` (where `c` can appear 1 or more times on the left hand side).
+`pull` is the inverse tactic to `push`. To extend the `pull` tactic, you can tag a lemma
+with the `@[push]` attribute. `pull` works as both a tactic and a conv tactic.
 
 A lemma is considered a `pull` lemma if its reverse direction is a `push` lemma
 that actually moves the given constant away from the head. For example
@@ -263,6 +292,16 @@ that actually moves the given constant away from the head. For example
   `pull` lemmas for `fun`, because every `push fun _ ↦ _` lemma is also considered a `pull` lemma.
 
 TODO: define a `@[pull]` attribute for tagging `pull` lemmas that are not `push` lemmas.
+
+* `pull _ ~ _` pulls the operator or relation `~`.
+* `pull c at l1 l2 ...` rewrites at the given locations.
+* `pull c at *` rewrites at all hypotheses and the goal.
+* `pull (disch := tac) c` uses the tactic `tac` to discharge any hypotheses for `@[push]` lemmas.
+
+Examples:
+* `pull _ ∈ _` rewrites `x ∈ y ∨ ¬ x ∈ z` into `x ∈ y ∪ zᶜ`.
+* `pull (disch := positivity) Real.log` rewrites `log a + 2 * log b` into `log (a * b ^ 2)`.
+* `pull fun _ ↦ _` rewrites `f ^ 2 + 5` into `fun x => f x ^ 2 + 5` where `f` is a function.
 -/
 elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
     tactic => do
@@ -272,38 +311,45 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
-simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
+simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda {}
 
 /-- A simproc variant of `pull fun _ ↦ _`, to be used as `simp [pullFun]`. -/
 simproc_decl _root_.pullFun (_) := pullStep .lambda
 
 section Conv
 
-@[inherit_doc push]
-elab "push" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
+@[inherit_doc pushStx]
+elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv =>
+  withMainContext do
+  let cfg ← elabPushConfig cfg
+  let cfg := { distrib := cfg.distrib || (← getBoolOption `push_neg.use_distrib) }
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
-  Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
+  -- TODO: this doesn't throw an error when it does nothing.
+  -- Note that conv-mode `simp` has the same problem.
+  Conv.applySimpResult (← pushCore head cfg disch? (← instantiateMVars (← Conv.getLhs)))
 
 @[inherit_doc push_neg]
-macro "push_neg" : conv => `(conv| push Not)
+macro "push_neg" cfg:optConfig : conv => `(conv| push $cfg Not)
 
 /--
-The syntax is `#push head e`, where `head` is a constant and `e` is an expression,
-which will print the `push head` form of `e`.
+`#push head e`, where `head` is a constant and `e` is an expression,
+prints the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk push $head:ident => $e)
+macro (name := pushCommand) tk:"#push" cfg:optConfig disch?:(discharger)? ppSpace head:term " => "
+    e:term : command =>
+  `(command| #conv%$tk push $cfg $[$disch?:discharger]? $head:term => $e)
 
 /--
-The syntax is `#push_neg e`, where `e` is an expression,
-which will print the `push_neg` form of `e`.
+`#push_neg e`, where `e` is an expression,
+prints the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
+macro (name := pushNegCommand) tk:"#push_neg" cfg:optConfig ppSpace e:term : command =>
+ `(command| #push%$tk $cfg Not => $e)
 
 @[inherit_doc pull]
 elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
@@ -317,8 +363,9 @@ which will print the `pull head` form of `e`.
 
 `#pull` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pullCommand) tk:"#pull " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk pull $head:ident => $e)
+macro (name := pullCommand) tk:"#pull" disch?:(discharger)? ppSpace head:term " => " e:term :
+    command =>
+  `(command| #conv%$tk pull $[$disch?:discharger]? $head:term => $e)
 
 end Conv
 

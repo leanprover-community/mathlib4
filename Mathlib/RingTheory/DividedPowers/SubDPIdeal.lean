@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.RingTheory.DividedPowers.DPMorphism
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.DividedPowers.DPMorphism
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # Sub-divided power-ideals
 
@@ -69,6 +70,8 @@ lattice.
 * [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
 
+@[expose] public section
+
 open Subtype
 
 namespace DividedPowers
@@ -92,6 +95,7 @@ theorem self : IsSubDPIdeal hI I where
   isSubideal := le_rfl
   dpow_mem _ hn _ ha := hI.dpow_mem hn ha
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The divided power structure on a sub-dp-ideal. -/
 def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)] :
     DividedPowers J where
@@ -164,7 +168,7 @@ theorem span_isSubDPIdeal_iff {S : Set A} (hS : S ⊆ I) :
         · exact hm0 ▸ mul_mem_left (span S) _ (hy _ hm)
         · exact mul_mem_right _ (span S) (hx _ hm0)
     | smul a x hxI hx =>
-        rw [Algebra.id.smul_eq_mul, hI.dpow_mul (hSI hxI)]
+        rw [smul_eq_mul, hI.dpow_mul (hSI hxI)]
         exact mul_mem_left (span S) (a ^ m) (hx m hm)
 
 theorem isSubDPIdeal_sup {J K : Ideal A} (hJ : IsSubDPIdeal hI J) (hK : IsSubDPIdeal hI K) :
@@ -243,6 +247,7 @@ theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 @[simp]
 theorem memCarrier {s : SubDPIdeal hI} {x : A} : x ∈ s.carrier ↔ x ∈ s := Iff.rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
   isSubideal := J.isSubideal
   dpow_mem   := J.dpow_mem
@@ -258,7 +263,7 @@ def prod (J : Ideal A) : SubDPIdeal hI where
   dpow_mem m hm x hx := by
     induction hx using Submodule.smul_induction_on' generalizing m with
     | smul a ha b hb =>
-      rw [Algebra.id.smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
+      rw [smul_eq_mul, smul_eq_mul, mul_comm a b, hI.dpow_mul ha, mul_comm]
       exact Submodule.mul_mem_mul (J.pow_mem_of_mem hb m (zero_lt_iff.mpr hm))
         (hI.dpow_mem hm ha)
     | add x hx y hy hx' hy' =>
@@ -480,7 +485,7 @@ def dpEqualizer : Ideal A where
     · rw [hn, hI.dpow_zero (zero_mem I), hI'.dpow_zero (zero_mem I)]
     · rw [hI.dpow_eval_zero hn, hI'.dpow_eval_zero hn]
   smul_mem' a x hx := by
-    rw [Algebra.id.smul_eq_mul]
+    rw [smul_eq_mul]
     exact ⟨I.mul_mem_left a hx.1, (fun n ↦ by rw [hI.dpow_mul hx.1, hI'.dpow_mul hx.1, hx.2])⟩
 
 theorem mem_dpEqualizer_iff {x : A} :
@@ -508,6 +513,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   rintro b ⟨a, ha, rfl⟩
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
 a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
 def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
@@ -628,10 +634,13 @@ variable {J : Ideal A} (hIJ : IsSubDPIdeal hI (J ⊓ I))
 noncomputable def dpow (J : Ideal A) : ℕ → A ⧸ J → A ⧸ J :=
   DividedPowers.Quotient.OfSurjective.dpow hI (Ideal.Quotient.mk J)
 
+set_option backward.privateInPublic true in
 private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
     IsSubDPIdeal hI (RingHom.ker (Ideal.Quotient.mk J) ⊓ I) := by
   simpa [Ideal.mk_ker] using hIJ
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
  `I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=

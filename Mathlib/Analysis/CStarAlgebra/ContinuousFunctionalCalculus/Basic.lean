@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
 
@@ -48,6 +50,8 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
@@ -176,7 +180,7 @@ lemma inr_comp_cfcₙHom_eq_cfcₙAux {A : Type*} [NonUnitalCStarAlgebra A] (a :
   · change Continuous (fun f ↦ (cfcₙHom ha f : A⁺¹)); fun_prop
   · exact isClosedEmbedding_cfcₙAux @(h) a ha |>.continuous
   · trans (a : A⁺¹)
-    · congrm(inr $(cfcₙHom_id ha))
+    · congrm (inr $(cfcₙHom_id ha))
     · exact cfcₙAux_id @(h) a ha |>.symm
 
 end Normal
@@ -223,7 +227,6 @@ lemma SpectrumRestricts.eq_zero_of_neg {a : A} (ha : IsSelfAdjoint a)
     (ha₁ : SpectrumRestricts a ContinuousMap.realToNNReal)
     (ha₂ : SpectrumRestricts (-a) ContinuousMap.realToNNReal) :
     a = 0 := by
-  nontriviality A
   rw [SpectrumRestricts.nnreal_iff] at ha₁ ha₂
   apply CFC.eq_zero_of_spectrum_subset_zero (R := ℝ) a
   rw [Set.subset_singleton_iff]
@@ -238,7 +241,7 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
   nontriviality A
   intro x hx
   by_cases hr' : r = 0
-  · simp [hr'] at hx ⊢
+  · simp only [hr', zero_smul, spectrum.zero_eq, Set.mem_singleton_iff] at hx ⊢
     exact hx.symm.le
   · lift r to ℝˣ using IsUnit.mk0 r hr'
     rw [← Units.smul_def, spectrum.unit_smul_eq_smul, Set.mem_smul_set_iff_inv_smul_mem] at hx
@@ -254,7 +257,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have ha : IsSelfAdjoint a := by simp [a_def]
   -- the key element to consider is `c := b * a⁻`, which satisfies `- (star c * c) = a⁻ ^ 3`.
   set c := b * a⁻
-  have h_eq_negPart_a : - (star c * c) = a⁻ ^ 3 := calc
+  have h_eq_negPart_a : -(star c * c) = a⁻ ^ 3 := calc
     -(star c * c) = - a⁻ * a * a⁻ := by
       simp only [star_mul, c, mul_assoc, ← mul_assoc (star b), ← a_def, CFC.negPart_def,
         neg_mul, IsSelfAdjoint.cfcₙ (f := (·⁻)).star_eq]
@@ -263,7 +266,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     _ = a⁻ ^ 3 := by simp [mul_sub, pow_succ]
   -- the spectrum of `- (star c * c) = a⁻ ^ 3` is nonnegative, since the function on the right
   -- is nonnegative on the spectrum of `a`.
-  have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
+  have h_c_spec₀ : SpectrumRestricts (-(star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_negPart_a, CFC.negPart_def]
     rw [cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow (ha := ha) .., cfc_map_spectrum (ha := ha) ..]
     rintro - ⟨x, -, rfl⟩
@@ -375,7 +378,6 @@ lemma CStarAlgebra.spectralOrderedRing : @StarOrderedRing A _ (CStarAlgebra.spec
           exact spectrum_star_mul_self_nonneg
         | zero =>
           rw [quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, SpectrumRestricts.nnreal_iff]
-          nontriviality A
           simp
         | add x y _ _ hx hy =>
           simp +singlePass only [← Unitization.isSelfAdjoint_inr (R := ℂ),

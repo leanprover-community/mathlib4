@@ -3,8 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Stability under retracts
@@ -13,6 +15,8 @@ Given `P : MorphismProperty C`, we introduce a typeclass `P.IsStableUnderRetract
 is the property that `P` is stable under retracts.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -31,6 +35,11 @@ class IsStableUnderRetracts (P : MorphismProperty C) : Prop where
 lemma of_retract {P : MorphismProperty C} [P.IsStableUnderRetracts]
     {X Y Z W : C} {f : X ⟶ Y} {g : Z ⟶ W} (h : RetractArrow f g) (hg : P g) : P f :=
   IsStableUnderRetracts.of_retract h hg
+
+instance {D : Type*} [Category* D] (F : C ⥤ D) (P : MorphismProperty D)
+    [P.IsStableUnderRetracts] :
+    (P.inverseImage F).IsStableUnderRetracts where
+  of_retract h₁ h₂ := of_retract (P := P) (h₁.map F) h₂
 
 instance IsStableUnderRetracts.monomorphisms : (monomorphisms C).IsStableUnderRetracts where
   of_retract {_ _ _ _ f g} h (hg : Mono g) := ⟨fun α β w ↦ by

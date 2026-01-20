@@ -3,24 +3,28 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Cast.Prod
-import Mathlib.Data.ULift
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Algebra.Ring.GrindInstances
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Cast.Prod
+public import Mathlib.Data.ULift
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Characteristic of semirings
 
 This file collects some fundamental results on the characteristic of rings that don't need the extra
-imports of `CharP/Lemmas.lean`.
+imports of `Mathlib/Algebra/CharP/Lemmas.lean`.
 
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset TwoSidedIdeal
 

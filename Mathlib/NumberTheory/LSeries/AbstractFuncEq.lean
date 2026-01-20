@@ -3,14 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
-zeta and L functions.
+zeta and L-functions.
 
 ### FE-pairs
 
@@ -56,8 +57,10 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 -/
 
+@[expose] public section
 
-/- TODO : Consider extending the results to allow functional equations of the form
+
+/- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
@@ -108,6 +111,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
@@ -297,6 +301,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     simp_rw [rpow_neg hx.le]
     match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where

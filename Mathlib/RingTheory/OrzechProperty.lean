@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 
@@ -25,7 +27,7 @@ It's proved in the above papers that
 
 - a left-Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
   which in particular includes the division ring case
-  (see `Mathlib/RingTheory/Noetherian.lean`);
+  (see `Mathlib/RingTheory/Noetherian/Orzech.lean`);
 - a commutative ring satisfies the `OrzechProperty`
   (see `Mathlib/RingTheory/FiniteType.lean`).
 
@@ -41,6 +43,8 @@ It's proved in the above papers that
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -61,6 +65,12 @@ class OrzechProperty : Prop where
     [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
 namespace OrzechProperty
+
+instance [Finite R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' {M} _ _ _ {N} _f hf :=
+    have : Finite M := Module.finite_of_finite R
+    have ⟨_g, hg⟩ := N.subtype_injective.hasLeftInverse
+    .of_comp (hg.surjective.comp hf).bijective_of_finite.1
 
 variable {R}
 

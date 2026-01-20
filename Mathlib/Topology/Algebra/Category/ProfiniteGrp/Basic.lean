@@ -3,11 +3,13 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Nailin Guan, Yuyang Zhao
 -/
-import Mathlib.Algebra.Category.Grp.FiniteGrp
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.Separation.Connected
+module
+
+public import Mathlib.Algebra.Category.Grp.FiniteGrp
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.Separation.Connected
 /-!
 
 # Category of Profinite Groups
@@ -27,6 +29,8 @@ disconnected.
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -100,12 +104,16 @@ structure ProfiniteGrp.Hom (A B : ProfiniteGrp.{u}) where
   /-- The underlying `ContinuousMonoidHom`. -/
   hom' : A →ₜ* B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ProfiniteGrp.Hom A B
   id A := ⟨ContinuousMonoidHom.id A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory ProfiniteGrp (fun X Y => X →ₜ* Y) where
   hom f := f.hom'
@@ -205,7 +213,7 @@ abbrev ofProfinite (G : Profinite) [Group G] [IsTopologicalGroup G] :
 profinite additive group. -/]
 def pi {α : Type u} (β : α → ProfiniteGrp) : ProfiniteGrp :=
   let pitype := Profinite.pi fun (a : α) => (β a).toProfinite
-  letI (a : α): Group (β a).toProfinite := (β a).group
+  letI (a : α) : Group (β a).toProfinite := (β a).group
   letI : Group pitype := Pi.group
   letI : IsTopologicalGroup pitype := Pi.topologicalGroup
   ofProfinite pitype
@@ -219,11 +227,13 @@ def ofFiniteGrp (G : FiniteGrp) : ProfiniteGrp :=
   letI : IsTopologicalGroup G := {}
   of G
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : HasForget₂ FiniteGrp ProfiniteGrp where
   forget₂ :=
   { obj := ofFiniteGrp
-    map := fun f => ⟨f.hom, by continuity⟩ }
+    map f := ⟨f.hom.hom, by continuity⟩ }
 
 @[to_additive]
 instance : HasForget₂ ProfiniteGrp GrpCat where
@@ -277,7 +287,7 @@ instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
 end ProfiniteGrp
 
 /-!
-# Limits in the category of profinite groups
+### Limits in the category of profinite groups
 
 In this section, we construct limits in the category of profinite groups.
 
@@ -310,6 +320,8 @@ instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 @[to_additive /-- The explicit limit cone in `ProfiniteAddGrp`. -/]
 abbrev limitCone : Limits.Cone F where
@@ -332,7 +344,7 @@ abbrev limitCone : Limits.Cone F where
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := ofHom
     { ((Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).lift
-        ((forget₂ ProfiniteGrp Profinite).mapCone cone)).hom with
+        ((forget₂ ProfiniteGrp Profinite).mapCone cone)).hom.hom with
       map_one' := Subtype.ext (funext fun j ↦ map_one (cone.π.app j).hom)
       -- TODO: investigate whether it's possible to set up `ext` lemmas for the `TopCat`-related
       -- categories so that `by ext j; exact map_one (cone.π.app j)` works here, similarly below.

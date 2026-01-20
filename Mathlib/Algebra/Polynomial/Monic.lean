@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Theory of monic polynomials
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Regular.SMul
 We give several tools for proving that polynomials are monic, e.g.
 `Monic.mul`, `Monic.map`, `Monic.pow`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -221,6 +225,52 @@ theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associate
   obtain ⟨u, rfl⟩ := hpq
   rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
 
+section MonicDegreeEq
+
+variable [Semiring S]
+
+variable (R n) in
+/--
+The type of monic polynomials of degree `n`.
+
+The implementation is slightly different because it is useful to still contain `X ^ n` when
+`R` is trivial. See `MonicDegreeEq.mk` for the usual constructor.
+-/
+abbrev MonicDegreeEq : Type _ := { p : R[X] // p.coeff n = 1 ∧ ∀ i > n, p.coeff i = 0 }
+
+@[simp]
+lemma MonicDegreeEq.natDegree [Nontrivial R] (p : MonicDegreeEq R n) :
+    p.1.natDegree = n :=
+  natDegree_eq_of_le_of_coeff_ne_zero (natDegree_le_iff_coeff_eq_zero.mpr p.2.2) (by simp [p.2.1])
+
+@[simp]
+lemma MonicDegreeEq.degree [Nontrivial R] (p : MonicDegreeEq R n) :
+    p.1.degree = n :=
+  degree_eq_of_le_of_coeff_ne_zero (degree_le_of_natDegree_le p.natDegree.le) (by simp [p.2.1])
+
+lemma MonicDegreeEq.monic (p : MonicDegreeEq R n) :
+    p.1.Monic := by
+  nontriviality R
+  rw [Monic, leadingCoeff, p.natDegree, p.2.1]
+
+lemma MonicDegreeEq.coeff_of_ge (p : MonicDegreeEq R n) (i : ℕ) (hi : n ≤ i) :
+    p.1.coeff i = if i = n then 1 else 0 := by
+  split_ifs <;> simp_all [p.2.1, p.2.2 _ (hi.lt_of_ne (.symm _))]
+
+/-- The constructor for `MonicDegreeEq` given a monic polynomial of degree `n`. -/
+@[simps]
+def MonicDegreeEq.mk (p : R[X]) (hp : p.Monic) (hp' : p.natDegree = n) :
+    MonicDegreeEq R n :=
+  ⟨p, by rw [← hp', ← leadingCoeff, hp], fun i hi ↦ coeff_eq_zero_of_natDegree_lt (hp'.trans_lt hi)⟩
+
+/-- The image of a monic polynomial of degree `n` under a ring homomorphism. -/
+@[simps] noncomputable
+def MonicDegreeEq.map (p : MonicDegreeEq R n) (f : R →+* S) :
+    MonicDegreeEq S n :=
+  ⟨p.1.map f, by simp +contextual [coeff_map, p.2]⟩
+
+end MonicDegreeEq
+
 end Semiring
 
 section CommSemiring
@@ -346,7 +396,7 @@ variable [Semiring R]
 theorem Monic.natDegree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) (f : R →+* S) :
     (P.map f).natDegree = P.natDegree := by
   refine le_antisymm natDegree_map_le (le_natDegree_of_ne_zero ?_)
-  rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
+  rw [coeff_map, Monic.coeff_natDegree hmo, map_one]
   exact one_ne_zero
 
 @[simp]

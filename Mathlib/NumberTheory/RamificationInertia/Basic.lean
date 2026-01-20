@@ -3,10 +3,13 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Finiteness.Quotient
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.Algebra.GroupWithZero.Torsion
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -39,6 +42,8 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
+
+@[expose] public section
 
 
 namespace Ideal
@@ -110,6 +115,10 @@ theorem ramificationIdx_bot : ramificationIdx f ⊥ P = 0 :=
 theorem ramificationIdx_of_not_le (h : ¬map f p ≤ P) : ramificationIdx f p P = 0 :=
   ramificationIdx_spec (by simp) (by simpa using h)
 
+theorem ramificationIdx_bot' (hp : p ≠ ⊥) (hf : Function.Injective f) :
+    ramificationIdx f p ⊥ = 0 :=
+  ramificationIdx_of_not_le <| le_bot_iff.not.mpr <| (map_eq_bot_iff_of_injective hf).not.mpr hp
+
 theorem ramificationIdx_ne_zero {e : ℕ} (he : e ≠ 0) (hle : map f p ≤ P ^ e)
     (hnle : ¬map f p ≤ P ^ (e + 1)) : ramificationIdx f p P ≠ 0 := by
   rwa [ramificationIdx_spec hle hnle]
@@ -159,13 +168,13 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
   constructor
   · intro he
     have : 1 ≤ Nat.find H := Nat.find_spec H 1 (by simpa)
-    have := Nat.find_min H (m := 1) (by omega)
+    have := Nat.find_min H (m := 1) (by lia)
     push_neg at this
     obtain ⟨k, hk, h1k⟩ := this
-    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
+    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
-    omega
+    lia
 
 open IsLocalRing in
 /-- The converse is true when `S` is a Dedekind domain.
@@ -185,6 +194,15 @@ lemma ramificationIdx_eq_one_of_map_localization
   rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_eq_bot_iff_of_injective] at this
   · exact hp this
   · exact IsLocalization.injective _ hp'
+
+theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
+    ramificationIdx f p (map f p) = 1 := by
+  refine ramificationIdx_spec (by simp) fun h ↦ ?_
+  have : map f p ^ 1 = (map f p) ^ 2 := by
+    rw [pow_one]
+    exact le_antisymm h <| pow_le_self two_ne_zero
+  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
+  simp_all
 
 namespace IsDedekindDomain
 
@@ -229,7 +247,7 @@ theorem ramificationIdx_ne_zero (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (le : m
     exists_mem_normalizedFactors_of_dvd hp0 hPirr (Ideal.dvd_iff_le.mpr le)
   rwa [Multiset.count_ne_zero, associated_iff_eq.mp P'_eq]
 
-theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [NoZeroSMulDivisors R S]
+theorem ramificationIdx_ne_zero_of_liesOver [Algebra R S] [IsDomain R] [IsTorsionFree R S]
     (P : Ideal S) [hP : P.IsPrime] {p : Ideal R} (hp : p ≠ ⊥) [hPp : P.LiesOver p] :
     ramificationIdx (algebraMap R S) p P ≠ 0 :=
   IsDedekindDomain.ramificationIdx_ne_zero (map_ne_bot_of_ne_bot hp) hP <|
@@ -290,7 +308,7 @@ theorem inertiaDeg_algebraMap [P.LiesOver p] [p.IsMaximal] :
   rw [inertiaDeg, dif_pos (over_def P p).symm]
 
 theorem inertiaDeg_pos [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : 0 < inertiaDeg p P :=
-  haveI : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
+  have : Nontrivial (S ⧸ P) := Quotient.nontrivial_of_liesOver_of_isPrime P p
   finrank_pos.trans_eq (inertiaDeg_algebraMap p P).symm
 
 theorem inertiaDeg_ne_zero [p.IsMaximal] [Module.Finite R S] [P.LiesOver p] : inertiaDeg p P ≠ 0 :=
@@ -316,7 +334,7 @@ theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
     [hP : P.LiesOver (⊥ : Ideal R)] :
     (⊥ : Ideal R).inertiaDeg P = finrank R S := by
   rw [inertiaDeg, dif_pos (over_def P (⊥ : Ideal R)).symm]
-  replace hP : P = ⊥ := eq_bot_of_liesOver_bot _ P (h := hP)
+  replace hP : P = ⊥ := eq_bot_of_liesOver_bot R P
   rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
     ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
   rfl
@@ -326,19 +344,22 @@ end DecEq
 
 section absNorm
 
+lemma absNorm_eq_pow_inertiaDeg_of_liesOver {S : Type*} [CommRing S] [IsDedekindDomain S]
+    [Module.Free ℤ S] [IsDedekindDomain R] [Module.Free ℤ R] [Algebra S R] [Module.Finite S R]
+    (P : Ideal R) (p : Ideal S) [P.LiesOver p] (hp : p.IsPrime) (hp_ne_bot : p ≠ ⊥) :
+    absNorm P = absNorm p ^ (p.inertiaDeg P) := by
+  have : p.IsMaximal := hp.isMaximal hp_ne_bot
+  let _ : Field (S ⧸ p) := Quotient.field p
+  simpa [absNorm_apply, Submodule.cardQuot_apply] using Module.natCard_eq_pow_finrank (K := S ⧸ p)
+
 /-- The absolute norm of an ideal `P` above a rational prime `p` is
 `|p| ^ ((span {p}).inertiaDeg P)`.
 See `absNorm_eq_pow_inertiaDeg'` for a version with `p` of type `ℕ`. -/
 lemma absNorm_eq_pow_inertiaDeg [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℤ}
     (P : Ideal R) [P.LiesOver (span {p})] (hp : Prime p) :
     absNorm P = p.natAbs ^ ((span {p}).inertiaDeg P) := by
-  have : (span {p}).IsMaximal :=
-    (isPrime_of_prime (prime_span_singleton_iff.mpr hp)).isMaximal (by simp [hp.ne_zero])
-  have h : Module.Finite (ℤ ⧸ span {p}) (R ⧸ P) := module_finite_of_liesOver P (span {p})
-  let _ : Field (ℤ ⧸ span {p}) := Quotient.field (span {p})
-  rw [inertiaDeg_algebraMap, absNorm_apply, Submodule.cardQuot_apply,
-    Module.natCard_eq_pow_finrank (K := ℤ ⧸ span {p})]
-  simp [Nat.card_congr (Int.quotientSpanEquivZMod p).toEquiv]
+  simpa using absNorm_eq_pow_inertiaDeg_of_liesOver P (span {p})
+    (by rwa [span_singleton_prime hp.ne_zero]) (by simpa using hp.ne_zero)
 
 /-- The absolute norm of an ideal `P` above a rational (positive) prime `p` is
 `p ^ ((span {p}).inertiaDeg P)`.
@@ -346,7 +367,7 @@ See `absNorm_eq_pow_inertiaDeg` for a version with `p` of type `ℤ`. -/
 lemma absNorm_eq_pow_inertiaDeg' [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R] {p : ℕ}
     (P : Ideal R) [P.LiesOver (span {(p : ℤ)})] (hp : p.Prime) :
     absNorm P = p ^ ((span {(p : ℤ)}).inertiaDeg P) :=
-  absNorm_eq_pow_inertiaDeg P ( Nat.prime_iff_prime_int.mp hp)
+  absNorm_eq_pow_inertiaDeg P (Nat.prime_iff_prime_int.mp hp)
 
 end absNorm
 section FinrankQuotientMap
@@ -377,7 +398,7 @@ More precisely, we avoid quotients in this statement and instead require that `b
 -/
 theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [Module.Finite R S]
     [Algebra R L] [IsScalarTower R S L] [IsScalarTower R K L] [Algebra.IsAlgebraic R S]
-    [NoZeroSMulDivisors R K] (hp : p ≠ ⊤) (b : Set S)
+    [IsTorsionFree R K] (hp : p ≠ ⊤) (b : Set S)
     (hb' : Submodule.span R b ⊔ (p.map (algebraMap R S)).restrictScalars R = ⊤) :
     Submodule.span K (algebraMap S L '' b) = ⊤ := by
   have hRL : Function.Injective (algebraMap R L) := by
@@ -443,7 +464,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   · rw [eq_comm, Submodule.restrictScalars_eq_top_iff, Ideal.span_singleton_eq_top]
     refine IsUnit.mk0 _ ((map_ne_zero_iff (algebraMap R L) hRL).mpr ?_)
     refine ne_zero_of_map (f := Ideal.Quotient.mk p) ?_
-    haveI := Ideal.Quotient.nontrivial hp
+    have := Ideal.Quotient.nontrivial_iff.mpr hp
     calc
       Ideal.Quotient.mk p A.det = Matrix.det ((Ideal.Quotient.mk p).mapMatrix A) := by
         rw [RingHom.map_det]
@@ -455,10 +476,9 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
     · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
       rw [map_sub, RingHom.mapMatrix_apply, map_one]
-      rfl
+      simp
     · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)
-      rw [Ideal.Quotient.eq_zero_iff_mem.mpr (hA'p i j), zero_sub]
-      rfl
+      rw [Ideal.Quotient.eq_zero_iff_mem.mpr (hA'p i j), zero_sub, Matrix.neg_apply]
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
   · intro x hx
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
@@ -501,10 +521,10 @@ theorem FinrankQuotientMap.linearIndependent_of_nontrivial [IsDedekindDomain R]
     rw [map_sum, ← smul_zero a, ← eq, Finset.smul_sum]
     refine Finset.sum_congr rfl ?_
     intro i hi
-    rw [LinearMap.map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
+    rw [map_smul, ← IsScalarTower.algebraMap_smul K, hg' i hi, ← smul_assoc,
       smul_eq_mul, Function.comp_apply]
   simp only [IsScalarTower.algebraMap_smul, ← map_smul, ← map_sum,
-    (f.map_eq_zero_iff hf).mp eq, LinearMap.map_zero, (· ∘ ·)]
+    (f.map_eq_zero_iff hf).mp eq, map_zero, (· ∘ ·)]
 
 variable (L)
 
@@ -637,8 +657,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
   map_add' := by
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
-      quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
-    exact congr_arg Submodule.Quotient.mk rfl
+      quotientToQuotientRangePowQuotSuccAux_mk, mul_add, map_add, map_mul, AddMemClass.mk_add_mk]
   map_smul' := by
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
@@ -772,7 +791,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   letI : Algebra (R ⧸ p) (S ⧸ P) := Quotient.algebraQuotientOfRamificationIdxNeZero p P
   have hdim := rank_prime_pow_ramificationIdx _ _ hP0 he
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
-  · haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
+  · have := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
     apply @Nat.cast_injective Cardinal
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
@@ -930,7 +949,7 @@ theorem ramificationIdx_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsM
   have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩
   rw [← sum_ramification_inertia S K L hp0, ← Finset.add_sum_erase _ _ hP]
   refine le_trans (Nat.le_mul_of_pos_right _ ?_) (Nat.le_add_right _ _)
-  exact Nat.pos_iff_ne_zero.mpr <|  inertiaDeg_ne_zero p P
+  exact Nat.pos_iff_ne_zero.mpr <| inertiaDeg_ne_zero p P
 
 theorem card_primesOverFinset_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
     (hp0 : p ≠ ⊥) : Finset.card (primesOverFinset p S) ≤ Module.finrank K L := by

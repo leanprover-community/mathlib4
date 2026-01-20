@@ -3,22 +3,32 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Hom
-import Mathlib.CategoryTheory.Products.Basic
-import Mathlib.Data.ULift
-import Mathlib.Logic.Function.ULift
+module
+
+public import Mathlib.CategoryTheory.Functor.Hom
+public import Mathlib.CategoryTheory.Products.Basic
+public import Mathlib.Data.ULift
+public import Mathlib.Logic.Function.ULift
 
 /-!
 # The Yoneda embedding
 
-The Yoneda embedding as a functor `yoneda : C ⥤ (Cᵒᵖ ⥤ Type v₁)`,
-along with an instance that it is `FullyFaithful`.
+Let `C : Type u₁` be a category (with `Category.{v₁} C`). We define
+the Yoneda embedding as a fully faithful functor `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`,
+In addition to `yoneda`, we also define `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁)`
+with the additional universe parameter `w`. When `C` is locally `w`-small,
+one may also use `shrinkYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type w` from the file
+`Mathlib/CategoryTheory/ShrinkYoneda.lean`.
 
-Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation C)`.
+The naturality of the bijection `yonedaEquiv` involved in the
+Yoneda lemma is also expressed as a natural isomorphism
+`yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C`.
 
 ## References
 * [Stacks: Opposite Categories and the Yoneda Lemma](https://stacks.math.columbia.edu/tag/001L)
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -123,7 +133,7 @@ namespace ULiftYoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -176,8 +186,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
@@ -204,7 +213,7 @@ namespace ULiftCoyoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftCoyoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftCoyoneda.{w} (C := C)).FullyFaithful :=
   Coyoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -226,7 +235,7 @@ structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj (op X)`. -/
   homEquiv {X : C} : (X ⟶ Y) ≃ F.obj (op X)
   homEquiv_comp {X X' : C} (f : X ⟶ X') (g : X' ⟶ Y) :
-    homEquiv (f ≫ g) = F.map f.op (homEquiv g)
+    homEquiv (f ≫ g) = F.map f.op (homEquiv g) := by cat_disch
 
 lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
     (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
@@ -247,7 +256,7 @@ structure CorepresentableBy (F : C ⥤ Type v) (X : C) where
   /-- the natural bijection `(X ⟶ Y) ≃ F.obj Y`. -/
   homEquiv {Y : C} : (X ⟶ Y) ≃ F.obj Y
   homEquiv_comp {Y Y' : C} (g : Y ⟶ Y') (f : X ⟶ Y) :
-    homEquiv (f ≫ g) = F.map g (homEquiv f)
+    homEquiv (f ≫ g) = F.map g (homEquiv f) := by cat_disch
 
 lemma CorepresentableBy.homEquiv_symm_comp {F : C ⥤ Type v} {X : C}
     (e : F.CorepresentableBy X) {Y Y' : C} (y : F.obj Y) (g : Y ⟶ Y') :
@@ -341,6 +350,88 @@ def corepresentableByEquiv {F : C ⥤ Type v₁} {X : C} :
 def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.CorepresentableBy X) :
     coyoneda.obj (op X) ≅ F :=
   corepresentableByEquiv e
+
+/-- Transport `RepresentableBy` along an isomorphism of the object. -/
+@[simps]
+def RepresentableBy.ofIsoObj {F : Cᵒᵖ ⥤ Type w} {X Y : C} (R : F.RepresentableBy X)
+    (e : Y ≅ X) :
+    F.RepresentableBy Y where
+  homEquiv {Z} := e.homToEquiv.trans R.homEquiv
+  homEquiv_comp := by simp [R.homEquiv_comp]
+
+/-- Transport `RepresentableBy` along an isomorphism of the object. -/
+@[simps]
+def CorepresentableBy.ofIsoObj {F : C ⥤ Type w} {X Y : C} (R : F.CorepresentableBy X)
+    (e : Y ≅ X) :
+    F.CorepresentableBy Y where
+  homEquiv {Z} := e.homFromEquiv.trans R.homEquiv
+  homEquiv_comp := by simp [R.homEquiv_comp]
+
+/-- If `Y` is isomorphic to `X`, representations of `F` by `X` are equivalent
+to representations of `F` by `Y`. -/
+@[simps]
+def RepresentableBy.equivOfIsoObj {F : Cᵒᵖ ⥤ Type w} {X Y : C} (e : Y ≅ X) :
+    F.RepresentableBy X ≃ F.RepresentableBy Y where
+  toFun R := R.ofIsoObj e
+  invFun R := R.ofIsoObj e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- If `Y` is isomorphic to `X`, corepresentations of `F` by `X` are equivalent
+to corepresentations of `F` by `Y`. -/
+@[simps]
+def CorepresentableBy.equivOfIsoObj {F : C ⥤ Type w} {X Y : C} (e : Y ≅ X) :
+    F.CorepresentableBy X ≃ F.CorepresentableBy Y where
+  toFun R := R.ofIsoObj e
+  invFun R := R.ofIsoObj e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- Representing `F` composed with universe lifting is the same as representing `F`. -/
+@[simps]
+def representableByUliftFunctorEquiv {F : Cᵒᵖ ⥤ Type v} {X : C} :
+    (F ⋙ uliftFunctor.{w}).RepresentableBy X ≃ F.RepresentableBy X where
+  toFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
+      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+  invFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
+      homEquiv_comp f g := by simp [R.homEquiv_comp] }
+
+/-- Corepresenting `F` composed with universe lifting is the same as corepresenting `F`. -/
+@[simps]
+def corepresentableByUliftFunctorEquiv {F : C ⥤ Type v} {X : C} :
+    (F ⋙ uliftFunctor.{w}).CorepresentableBy X ≃ F.CorepresentableBy X where
+  toFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift
+      homEquiv_comp f g := congr($(R.homEquiv_comp _ _).down) }
+  invFun R :=
+    { homEquiv {Y} := R.homEquiv.trans Equiv.ulift.symm
+      homEquiv_comp f g := by simp [R.homEquiv_comp] }
+
+/-- Version of `representableByEquiv` with more general universe assumptions. -/
+@[simps]
+def RepresentableBy.equivUliftYonedaIso (F : Cᵒᵖ ⥤ Type (max w v₁)) (X : C) :
+    F.RepresentableBy X ≃ (uliftYoneda.obj X ≅ F) where
+  toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
+    intro X Y f
+    ext x
+    exact R.homEquiv_comp f.unop _
+  invFun e :=
+    { homEquiv {X} := Equiv.ulift.symm.trans (equivEquivIso.symm (e.app _))
+      homEquiv_comp {X Y} f g := congr($(e.hom.naturality f.op) ⟨g⟩) }
+
+/-- Version of `corepresentableByEquiv` with more general universe assumptions. -/
+@[simps]
+def CorepresentableBy.equivUliftCoyonedaIso (F : C ⥤ Type (max w v₁)) (X : C) :
+    F.CorepresentableBy X ≃ (uliftCoyoneda.obj (op X) ≅ F) where
+  toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
+    intro X Y f
+    ext x
+    exact R.homEquiv_comp f _
+  invFun e :=
+    { homEquiv {X} := Equiv.ulift.symm.trans (equivEquivIso.symm (e.app _))
+      homEquiv_comp {X Y} f g := congr($(e.hom.naturality f) ⟨g⟩) }
 
 /-- A functor `F : Cᵒᵖ ⥤ Type v` is representable if there is an object `Y` with a structure
 `F.RepresentableBy Y`, i.e. there is a natural bijection `(X ⟶ Y) ≃ F.obj (op X)`,
@@ -457,6 +548,16 @@ theorem coreprW_hom_app (F : C ⥤ Type v₁) [F.IsCorepresentable] (X : C) (f :
   apply CorepresentableBy.homEquiv_eq
 
 end Corepresentable
+
+lemma isRepresentable_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type v} :
+    (F ⋙ uliftFunctor.{w}).IsRepresentable ↔ F.IsRepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv.symm R⟩⟩
+
+lemma isCorepresentable_comp_uliftFunctor_iff {F : C ⥤ Type v} :
+    (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
 
 end Functor
 

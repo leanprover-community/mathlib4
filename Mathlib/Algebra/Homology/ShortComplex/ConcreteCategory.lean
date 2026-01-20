@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 # Exactness of short complexes in concrete abelian categories
@@ -16,6 +18,8 @@ which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -169,7 +173,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   apply (mono_iff_injective (e.hom.app _)).1 inferInstance
   refine (congr_hom (e.hom.naturality D.δ) x₃).trans
-    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans
+    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_).trans
     (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
   · refine ((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
       (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃)

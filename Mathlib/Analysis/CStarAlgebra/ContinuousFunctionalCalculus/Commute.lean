@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
 /-! # Commuting with applications of the continuous functional calculus
 
@@ -25,6 +27,8 @@ can talk about topological star algebras. Instead, we avoid this to minimize the
 to call these lemmas, and give a straightforward proof by induction.
 
 -/
+
+public section
 
 variable {𝕜 A : Type*}
 

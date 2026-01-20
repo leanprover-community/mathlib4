@@ -3,12 +3,14 @@ Copyright (c) 2022 Jiale Miao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiale Miao, Utensil Song, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.GroupTheory.GroupAction.ConjAct
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
-import Mathlib.LinearAlgebra.CliffordAlgebra.Even
-import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Even
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Inversion
 
 /-!
 # The Pin group and the Spin group
@@ -42,6 +44,8 @@ https://mathoverflow.net/q/427881/172242 and https://mathoverflow.net/q/251288/1
 
 Try to show the reverse statement is true in finite dimensions.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -78,8 +82,6 @@ theorem conjAct_smul_ι_mem_range_ι {x : (CliffordAlgebra Q)ˣ} (hx : x ∈ lip
     letI := x.invertible
     letI : Invertible (ι Q a) := by rwa [ha]
     letI : Invertible (Q a) := invertibleOfInvertibleι Q a
-    letI := invertibleNeg (ι Q a)
-    letI := Invertible.map involute (ι Q a)
     simp_rw [← invOf_units x, inv_inv, ← ha, invOf_ι_mul_ι_mul_ι, LinearMap.mem_range_self]
   | one => simp_rw [inv_one, Units.val_one, one_mul, mul_one, LinearMap.mem_range_self]
   | mul y z _ _ hy hz =>

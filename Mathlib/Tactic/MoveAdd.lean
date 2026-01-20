@@ -3,9 +3,14 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public meta import Mathlib.Lean.Meta
+public meta import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
@@ -99,6 +104,8 @@ Once that is done, it tries to replace the initial goal with the permuted one by
 Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruction of the goal.
 This will be the content of a later PR.
 -/
+
+public meta section
 
 open Lean Expr
 
@@ -448,12 +455,12 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))

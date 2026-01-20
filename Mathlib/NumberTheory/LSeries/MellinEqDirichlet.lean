@@ -3,14 +3,17 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 /-!
 # Dirichlet series as Mellin transforms
 
 Here we prove general results of the form "the Mellin transform of a power series in exp (-t) is
 a Dirichlet series".
 -/
+
+public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex

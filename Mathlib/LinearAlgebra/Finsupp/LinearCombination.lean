@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Data.Finsupp.Option
-import Mathlib.LinearAlgebra.Finsupp.Supported
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Data.Finsupp.Option
+public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 # `Finsupp.linearCombination`
@@ -28,6 +30,8 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -132,6 +136,11 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     use single i 1
     simp [hi]
 
+theorem _root_.span_range_eq_top_iff_surjective_finsuppLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Finsupp.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, range_linearCombination]
+
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
     (linearCombination R v').comp (lmapDomain R R f) = g.comp (linearCombination R v) := by
   ext l
@@ -211,10 +220,9 @@ theorem linearCombination_linearCombination {α β : Type*} (A : α → M) (B : 
   | add f₁ f₂ h₁ h₂ => simp [sum_add_index, h₁, h₂, add_smul]
   | single => simp [sum_single_index, sum_smul_index, smul_sum, mul_smul]
 
-theorem linearCombination_smul [DecidableEq α] [Module R S] [Module S M] [IsScalarTower R S M]
-    {w : α' → S} :
+theorem linearCombination_smul [Module R S] [Module S M] [IsScalarTower R S M] {w : α' → S} :
     linearCombination R (fun i : α × α' ↦ w i.2 • v i.1) = (linearCombination S v).restrictScalars R
-      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (finsuppProdLEquiv R).toLinearMap := by
+      ∘ₗ mapRange.linearMap (linearCombination R w) ∘ₗ (curryLinearEquiv R).toLinearMap := by
   ext; simp
 
 @[simp]
@@ -335,6 +343,11 @@ theorem Fintype.range_linearCombination :
     LinearMap.range (Fintype.linearCombination R v) = Submodule.span R (Set.range v) := by
   rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
       LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
+
+theorem span_range_eq_top_iff_surjective_fintypeLinearCombination :
+    Submodule.span R (Set.range v) = ⊤ ↔
+      Function.Surjective (Fintype.linearCombination R v) := by
+  rw [← LinearMap.range_eq_top, Fintype.range_linearCombination]
 
 /-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.

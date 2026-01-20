@@ -3,15 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Resolution
-import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.GuitartExact.Opposite
+module
+
+public import Mathlib.CategoryTheory.Localization.Resolution
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Derivability structures
 
 Let `Φ : LocalizerMorphism W₁ W₂` be a localizer morphism, i.e. `W₁ : MorphismProperty C₁`,
-`W₂ : MorphismProperty C₂`, and `Φ.functor : C₁ ⥤ C₂` is a functors which maps `W₁` to `W₂`.
+`W₂ : MorphismProperty C₂`, and `Φ.functor : C₁ ⥤ C₂` is a functor which maps `W₁` to `W₂`.
 Following the definition introduced by Bruno Kahn and Georges Maltsiniotis in
 [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008],
 we say that `Φ` is a right derivability structure if `Φ` has right resolutions and
@@ -34,8 +36,8 @@ L₁|         | L₂
 In the field `guitartExact'` of the structure `LocalizerMorphism.IsRightDerivabilityStructure`,
 The condition that the square is Guitart exact is stated for the localization functors
 of the constructed categories (`W₁.Q` and `W₂.Q`).
-The lemma `LocalizerMorphism.isRightDerivabilityStructure_iff` show that it does
-not depend of the choice of the localization functors.
+The lemma `LocalizerMorphism.isRightDerivabilityStructure_iff` shows that it does
+not depend on the choice of the localization functors.
 
 ## TODO
 
@@ -52,6 +54,8 @@ not depend of the choice of the localization functors.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -67,7 +71,7 @@ variable (Φ : LocalizerMorphism W₁ W₂)
 
 /-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a right derivability
 structure if it has right resolutions and the 2-square where the left and right functors
-are localizations functors for `W₁` and `W₂` are Guitart exact. -/
+are localization functors for `W₁` and `W₂` are Guitart exact. -/
 class IsRightDerivabilityStructure : Prop where
   hasRightResolutions : Φ.HasRightResolutions := by infer_instance
   /-- Do not use this field directly: use the more general
@@ -78,7 +82,7 @@ class IsRightDerivabilityStructure : Prop where
 attribute [instance] IsRightDerivabilityStructure.hasRightResolutions
   IsRightDerivabilityStructure.guitartExact'
 
-variable {D₁ D₂ : Type*} [Category D₁] [Category D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
+variable {D₁ D₂ : Type*} [Category* D₁] [Category* D₂] (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] (F : D₁ ⥤ D₂)
 
 lemma isRightDerivabilityStructure_iff [Φ.HasRightResolutions] (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F) :
@@ -129,7 +133,7 @@ instance [W₁.ContainsIdentities] : (LocalizerMorphism.id W₁).IsRightDerivabi
 
 /-- A localizer morphism `Φ : LocalizerMorphism W₁ W₂` is a left derivability
 structure if it has left resolutions and the 2-square where the top and bottom functors
-are localizations functors for `W₁` and `W₂` is Guitart exact. -/
+are localization functors for `W₁` and `W₂` is Guitart exact. -/
 class IsLeftDerivabilityStructure : Prop where
   hasLeftResolutions : Φ.HasLeftResolutions := by infer_instance
   /-- Do not use this field directly: use the more general

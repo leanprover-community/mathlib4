@@ -3,11 +3,14 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Lean.Util.Heartbeats
-import Lean.Server.InfoUtils
-import Mathlib.Lean.ContextInfo
-import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Compiler.IR.CompilerM
+public import Lean.Elab.Command
+public import Mathlib.Lean.ContextInfo
 
 /-! # Tactic analysis framework
 
@@ -32,6 +35,8 @@ make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` 
 The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and should be changed
 in the future. Please do not rely on this interface being stable.
 -/
+
+public meta section
 
 open Lean Elab Term Command Linter
 
@@ -174,6 +179,15 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
       let childTactics := relevantChildren.filterMap Prod.fst
       let childSequences := (relevantChildren.map Prod.snd).flatten
       let stx := i.stx
+      -- Tactic sequencing operators: collect all the child tactics into a new sequence.
+      -- This must happen regardless of source info, as `have h := by ...` creates tacticSeq
+      -- nodes with synthetic source info.
+      if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
+          ``Lean.Parser.Term.byTactic] then
+        return (none, if childTactics.isEmpty then
+            childSequences
+          else
+            childSequences.push childTactics)
       if let some (.original _ _ _ _) := stx.getHeadInfo? then
         -- Punctuation: skip this.
         if stx.getKind ∈ [`«;», `Lean.cdotTk, `«]», nullKind, `«by»] then
@@ -181,13 +195,6 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
         -- Tactic modifiers: return the children unmodified.
         if stx.getKind ∈ [``Lean.Parser.Tactic.withAnnotateState] then
           return (childTactics[0]?, childSequences)
-        -- Tactic sequencing operators: collect all the child tactics into a new sequence.
-        if stx.getKind ∈ [``Lean.Parser.Tactic.tacticSeq, ``Lean.Parser.Tactic.tacticSeq1Indented,
-            ``Lean.Parser.Term.byTactic] then
-          return (none, if childTactics.isEmpty then
-              childSequences
-            else
-              childSequences.push childTactics)
 
         -- Remaining options: plain pieces of syntax.
         -- We discard `childTactics` here, because those are either already picked up by a
@@ -196,7 +203,7 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
           let childSequences :=
             -- This tactic accepts the failure of its children.
             if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
-              childSequences.map (· |>.map fun i => { i with mayFail := true })
+              childSequences.map (·.map fun i => { i with mayFail := true })
             else
               childSequences
           return (some ⟨ctx, i, false⟩, childSequences)

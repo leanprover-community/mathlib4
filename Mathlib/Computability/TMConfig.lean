@@ -3,9 +3,10 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.PostTuringMachine
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.PostTuringMachine
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -21,6 +22,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
   `List ℕ →. List ℕ`.
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -258,6 +261,8 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
         simp [Vector.mOfFn, hg₁, map_bind, hl]
         rfl⟩
 
+-- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
+set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with

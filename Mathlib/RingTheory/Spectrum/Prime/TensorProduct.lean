@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.SurjectiveOnStalks
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.SurjectiveOnStalks
 
 /-!
 
@@ -12,10 +14,12 @@ import Mathlib.RingTheory.SurjectiveOnStalks
 
 ## Main result
 - `PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks`:
-  If `R →+* T` is surjective on stalks (see Mathlib/RingTheory/SurjectiveOnStalks.lean),
+  If `R →+* T` is surjective on stalks (see `Mathlib/RingTheory/SurjectiveOnStalks.lean`),
   then `Spec(S ⊗[R] T) → Spec S × Spec T` is a topological embedding
   (where `Spec S × Spec T` is the Cartesian product with the product topology).
 -/
+
+@[expose] public section
 
 variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable [CommRing T] [Algebra R T]
@@ -30,7 +34,7 @@ def PrimeSpectrum.tensorProductTo (x : PrimeSpectrum (S ⊗[R] T)) :
 
 @[fun_prop]
 lemma PrimeSpectrum.continuous_tensorProductTo : Continuous (tensorProductTo R S T) :=
-  (comap _).2.prodMk (comap _).2
+  (continuous_comap _).prodMk (continuous_comap _)
 
 variable (hRT : (algebraMap R T).SurjectiveOnStalks)
 include hRT

@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
-import Mathlib.Analysis.Convex.Slope
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Convexity of functions and derivatives
@@ -18,6 +20,8 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 * `ConvexOn.monotoneOn_deriv`: if a function is convex and differentiable, then its derivative is
   monotone.
 -/
+
+public section
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 open scoped Topology NNReal

@@ -3,7 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Combination
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
 
 /-!
 # Centroid of a Finite Set of Points in Affine Space
@@ -20,6 +22,8 @@ ring.
   `centroidWeights`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Affine.Simplex
 
@@ -204,6 +208,15 @@ theorem centroid_eq_of_inj_on_of_image_eq {p : ι → P}
     s.centroid k p = s₂.centroid k p₂ := by
   classical rw [s.centroid_eq_centroid_image_of_inj_on k hi rfl,
       s₂.centroid_eq_centroid_image_of_inj_on k hi₂ he]
+
+/-- The centroid commutes with translation by a constant point.
+Subtracting a fixed point `p₀` from the centroid is the same as taking the centroid of
+the family translated by `-ᵥ p₀` -/
+theorem centroid_vsub_const [CharZero k] {p : ι → P} {p₀ : P} (hs : s.Nonempty) :
+    Finset.centroid k s p -ᵥ p₀ = Finset.centroid k s (fun i => p i -ᵥ p₀) := by
+  have h := s.sum_centroidWeights_eq_one_of_nonempty k hs
+  simp only [centroid_def]
+  grind [sum_smul_vsub_const_eq_affineCombination_vsub, affineCombination_eq_linear_combination]
 
 end Finset
 

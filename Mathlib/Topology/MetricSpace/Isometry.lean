@@ -3,10 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -18,6 +20,8 @@ and prove their basic properties. We also introduce isometric bijections.
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -148,10 +152,10 @@ theorem preimage_emetric_ball (h : Isometry f) (x : α) (r : ℝ≥0∞) :
   simp [h.edist_eq]
 
 /-- Isometries preserve the diameter in pseudoemetric spaces. -/
-theorem ediam_image (hf : Isometry f) (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
-  eq_of_forall_ge_iff fun d => by simp only [EMetric.diam_le_iff, forall_mem_image, hf.edist_eq]
+theorem ediam_image (hf : Isometry f) (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
+  eq_of_forall_ge_iff fun d => by simp only [Metric.ediam_le_iff, forall_mem_image, hf.edist_eq]
 
-theorem ediam_range (hf : Isometry f) : EMetric.diam (range f) = EMetric.diam (univ : Set α) := by
+theorem ediam_range (hf : Isometry f) : Metric.ediam (range f) = Metric.ediam (univ : Set α) := by
   rw [← image_univ]
   exact hf.ediam_image univ
 
@@ -253,11 +257,11 @@ theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
 
-/-- An embedding from a topological space to a metric space is an isometry with respect to the
-induced metric space structure on the source space. -/
-theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
-    (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
-  let _ := h.comapMetricSpace f
+/-- An embedding from a topological space to a pseudometric space is an isometry with respect to the
+induced pseudometric space structure on the source space. -/
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [PseudoMetricSpace β]
+    {f : α → β} (h : IsEmbedding f) : (letI := h.comapPseudoMetricSpace; Isometry f) :=
+  let _ := h.comapPseudoMetricSpace
   Isometry.of_dist_eq fun _ _ => rfl
 
 theorem PseudoEMetricSpace.isometry_induced (f : α → β) [m : PseudoEMetricSpace β] :
@@ -300,10 +304,10 @@ protected theorem lipschitz : LipschitzWith 1 f :=
 protected theorem antilipschitz : AntilipschitzWith 1 f :=
   (IsometryClass.isometry f).antilipschitz
 
-theorem ediam_image (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
+theorem ediam_image (s : Set α) : Metric.ediam (f '' s) = Metric.ediam s :=
   (IsometryClass.isometry f).ediam_image s
 
-theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set α) :=
+theorem ediam_range : Metric.ediam (range f) = Metric.ediam (univ : Set α) :=
   (IsometryClass.isometry f).ediam_range
 
 instance toContinuousMapClass : ContinuousMapClass F α β where
@@ -400,7 +404,7 @@ protected theorem continuous (h : α ≃ᵢ β) : Continuous h :=
   h.isometry.continuous
 
 @[simp]
-theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : EMetric.diam (h '' s) = EMetric.diam s :=
+theorem ediam_image (h : α ≃ᵢ β) (s : Set α) : Metric.ediam (h '' s) = Metric.ediam s :=
   h.isometry.ediam_image s
 
 @[ext]
@@ -446,6 +450,9 @@ def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
 initialize_simps_projections IsometryEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
+theorem coe_symm_toEquiv (h : α ≃ᵢ β) : ⇑h.toEquiv.symm = h.symm := rfl
+
+@[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl
 
 theorem symm_bijective : Bijective (IsometryEquiv.symm : (α ≃ᵢ β) → β ≃ᵢ α) :=
@@ -482,11 +489,11 @@ theorem symm_trans_apply (h₁ : α ≃ᵢ β) (h₂ : β ≃ᵢ γ) (x : γ) :
     (h₁.trans h₂).symm x = h₁.symm (h₂.symm x) :=
   rfl
 
-theorem ediam_univ (h : α ≃ᵢ β) : EMetric.diam (univ : Set α) = EMetric.diam (univ : Set β) := by
+theorem ediam_univ (h : α ≃ᵢ β) : Metric.ediam (univ : Set α) = Metric.ediam (univ : Set β) := by
   rw [← h.range_eq_univ, h.isometry.ediam_range]
 
 @[simp]
-theorem ediam_preimage (h : α ≃ᵢ β) (s : Set β) : EMetric.diam (h ⁻¹' s) = EMetric.diam s := by
+theorem ediam_preimage (h : α ≃ᵢ β) (s : Set β) : Metric.ediam (h ⁻¹' s) = Metric.ediam s := by
   rw [← image_symm, ediam_image]
 
 @[simp]

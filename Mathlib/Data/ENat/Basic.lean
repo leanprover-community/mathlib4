@@ -3,14 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.ENat.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -33,6 +35,8 @@ of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for ad
 for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
 similarly for multiplication.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -282,15 +286,26 @@ lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
 
+theorem add_le_add_iff_left {m n k : ENat} (h : k ≠ ⊤) :
+    k + n ≤ k + m ↔ n ≤ m :=
+  WithTop.add_le_add_iff_left h
+
+theorem add_le_add_iff_right {m n k : ENat} (h : k ≠ ⊤) :
+    n + k ≤ m + k ↔ n ≤ m :=
+  WithTop.add_le_add_iff_right h
+
+theorem lt_add_one_iff' {m n : ENat} (hm : m ≠ ⊤) :
+    m < n + 1 ↔ m ≤ n := by
+  rw [← add_one_le_iff hm, add_le_add_iff_right one_ne_top]
+
 theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
   lt_add_one_iff (coe_ne_top n)
 
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-@[simp]
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
-  cases n <;> simp
+@[deprecated not_lt_zero (since := "2025-12-03")]
+protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
@@ -557,14 +572,19 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         | top =>
           have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
           simp [mul_top hx, WithTop.mul_top this]
-        | coe y => simp [← Nat.cast_mul, - coe_mul] }
+        | coe y => simp [← Nat.cast_mul, -coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }
+
+@[simp]
+lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
+    (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
+  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 

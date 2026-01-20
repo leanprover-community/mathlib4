@@ -3,14 +3,16 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.HeineCantor
-import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.HeineCantor
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Tactic.Abel
 
 /-!
 # Uniform structure on topological groups
@@ -23,6 +25,8 @@ import Mathlib.Tactic.Abel
   of first countable topological groups by normal subgroups are themselves complete. In particular,
   the quotient of a Banach space by a subspace is complete.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -73,6 +77,30 @@ lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
 end IsUniformGroup
 
 end Cauchy
+
+namespace IsRightUniformGroup
+
+variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
+
+/-- A locally compact right-uniform group is complete. -/
+@[to_additive
+/-- A locally compact right-uniform additive group is complete. -/]
+theorem completeSpace_of_weaklyLocallyCompactSpace
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
+  complete {f} hf := by
+    open scoped RightActions in
+    have : f.NeBot := hf.1
+    obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
+    obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, y / x ∈ K := by
+      rw [cauchy_iff_le, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap] at hf
+      exact hf.eventually_mem K_mem |>.curry.exists
+    simp_rw [div_eq_mul_inv, ← op_smul_eq_mul, MulOpposite.op_inv,
+      ← mem_smul_set_iff_inv_smul_mem] at hx
+    have Kx_complete : IsComplete (K <• x) := K_compact.smul _ |>.isComplete
+    obtain ⟨l, -, hl⟩ := Kx_complete f hf (by simpa using hx)
+    exact ⟨l, hl⟩
+
+end IsRightUniformGroup
 
 namespace Subgroup
 
@@ -185,8 +213,9 @@ variable {G}
 @[to_additive]
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
+  have hd : IsDiscrete (H : Set G) := isDiscrete_iff_discreteTopology.mpr ‹_›
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+    nhds_inter_eq_singleton_of_mem_discrete hd H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -197,16 +226,17 @@ instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTop
   exact (eq_of_div_eq_one this).symm
 
 @[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
-    Tendsto ((↑) : H → G) cofinite (cocompact _) :=
-  IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G)
+    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
+ haveI : DiscreteTopology H := isDiscrete_iff_discreteTopology.mp hH
+ IsClosed.tendsto_coe_cofinite_of_isDiscrete isClosed_of_discrete hH
 
 @[to_additive]
 lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
-    (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
+    (hf : Function.Injective f) (hf' : IsDiscrete (f.range : Set G)) :
     Tendsto f cofinite (cocompact _) := by
   replace hf : Function.Injective f.rangeRestrict := by simpa
-  exact f.range.tendsto_coe_cofinite_of_discrete.comp hf.tendsto_cofinite
+  exact (f.range.tendsto_coe_cofinite_of_discrete hf').comp hf.tendsto_cofinite
 
 end IsTopologicalGroup
 

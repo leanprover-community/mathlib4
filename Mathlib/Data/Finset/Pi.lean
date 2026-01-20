@@ -3,10 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Multiset.Pi
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Multiset.Pi
+public import Mathlib.Logic.Function.DependsOn
 
 /-!
 # The Cartesian product of finsets
@@ -15,6 +17,8 @@ import Mathlib.Logic.Function.DependsOn
 
 * `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -50,7 +54,7 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
   Multiset.mem_pi _ _ _
@@ -96,7 +100,7 @@ alias ⟨_, pi_nonempty_of_forall_nonempty⟩ := pi_nonempty
 
 @[simp]
 lemma pi_eq_empty : s.pi t = ∅ ↔ ∃ a ∈ s, t a = ∅ := by
-  simp [← not_nonempty_iff_eq_empty]
+  contrapose!; exact pi_nonempty
 
 @[simp]
 theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, Finset (β a)} {a : α}
@@ -118,14 +122,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
 
 theorem pi_singletons {β : Type*} (s : Finset α) (f : α → β) :
-    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by
-  rw [eq_singleton_iff_unique_mem]
-  constructor
-  · simp
-  intro a ha
-  ext i hi
-  rw [mem_pi] at ha
-  simpa using ha i hi
+    (s.pi fun a => ({f a} : Finset β)) = {fun a _ => f a} := by grind
 
 theorem pi_const_singleton {β : Type*} (s : Finset α) (i : β) :
     (s.pi fun _ => ({i} : Finset β)) = {fun _ _ => i} :=
@@ -189,15 +186,17 @@ theorem restrict₂_comp_restrict₂ (hst : s ⊆ t) (htu : t ⊆ u) :
 lemma dependsOn_restrict (s : Finset ι) : DependsOn (s.restrict (π := π)) s :=
   (s : Set ι).dependsOn_restrict
 
-lemma restrict_preimage [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
+lemma restrict_preimage_univ [DecidablePred (· ∈ s)] (t : (i : s) → Set (π i)) :
     s.restrict ⁻¹' (Set.univ.pi t) =
       Set.pi s (fun i ↦ if h : i ∈ s then t ⟨i, h⟩ else Set.univ) := by
-  ext x
-  simp only [Set.mem_preimage, Set.mem_pi, Set.mem_univ, restrict, forall_const, Subtype.forall,
-    mem_coe]
-  refine ⟨fun h i hi ↦ by simpa [hi] using h i hi, fun h i hi ↦ ?_⟩
-  convert h i hi
-  rw [dif_pos hi]
+  ext
+  simp_all
+
+lemma restrict_preimage [DecidableEq ι] {I : Set ι}
+    [DecidablePred (· ∈ I)] (s : Finset I) (u : (i : I) → Set (π i)) :
+    I.restrict ⁻¹' Set.pi s u =
+      Set.pi (s.image Subtype.val) (fun i ↦ if h : i ∈ I then u ⟨i, h⟩ else .univ) := by
+  grind
 
 lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : s) → Set (π i)) :
     (restrict₂ hst) ⁻¹' (Set.univ.pi u) =

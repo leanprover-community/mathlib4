@@ -3,7 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.ModEq
+module
+
+public import Mathlib.Data.Nat.ModEq
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 
@@ -19,15 +22,42 @@ modeq, congruence, mod, MOD, modulo, integers
 
 -/
 
+@[expose] public section
 
-namespace Int
 
 /-- `a ≡ b [ZMOD n]` when `a % n = b % n`. -/
-def ModEq (n a b : ℤ) :=
+def Int.ModEq (n a b : ℤ) :=
   a % n = b % n
 
 @[inherit_doc]
-notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
+notation:50 a " ≡ " b " [ZMOD " n "]" => Int.ModEq n a b
+
+namespace AddCommGroup
+
+@[simp]
+theorem modEq_iff_intModEq {a b z : ℤ} : a ≡ b [PMOD z] ↔ a ≡ b [ZMOD z] := by
+  rw [modEq_comm]
+  simp [modEq_iff_zsmul', dvd_iff_exists_eq_mul_left, Int.ModEq,
+    Int.emod_eq_emod_iff_emod_sub_eq_zero, ← Int.dvd_iff_emod_eq_zero]
+
+@[deprecated (since := "2026-01-13")]
+alias modEq_iff_int_modEq := modEq_iff_intModEq
+
+variable {G : Type*} [AddCommGroupWithOne G] [CharZero G]
+
+@[simp, norm_cast]
+theorem intCast_modEq_intCast {a b z : ℤ} : a ≡ b [PMOD (z : G)] ↔ a ≡ b [PMOD z] :=
+  map_modEq_iff (Int.castAddHom G) Int.cast_injective
+
+@[simp, norm_cast]
+lemma intCast_modEq_intCast' {a b : ℤ} {n : ℕ} : a ≡ b [PMOD (n : G)] ↔ a ≡ b [PMOD (n : ℤ)] := by
+  simpa using intCast_modEq_intCast (G := G) (z := n)
+
+alias ⟨ModEq.of_intCast, ModEq.intCast⟩ := intCast_modEq_intCast
+
+end AddCommGroup
+
+namespace Int
 
 variable {m n a b c d : ℤ}
 
@@ -42,7 +72,7 @@ protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
 protected theorem rfl : a ≡ a [ZMOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -90,7 +120,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
-  simp only [modEq_iff_dvd, (by cutsat : -b - -a = -(b - a)), Int.dvd_neg]
+  simp only [modEq_iff_dvd, (by lia : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -112,7 +142,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; cutsat
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; lia
 
 protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -122,7 +152,7 @@ protected theorem add_right (c : ℤ) (h : a ≡ b [ZMOD n]) : a + c ≡ b + c [
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by cutsat
+  have : d - c = b + d - (a + c) - (b - a) := by lia
   modEq_iff_dvd.2 <| by
     rw [this]
     exact Int.dvd_sub h₂.dvd h₁.dvd
@@ -164,7 +194,7 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction m with
-  | zero => rfl
+  | zero => simp
   | succ d hd => rw [pow_succ, pow_succ]; exact hd.mul h
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by

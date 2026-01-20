@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Integral and algebraic elements of a fraction field
@@ -21,6 +23,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
@@ -51,13 +55,10 @@ theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff 
   simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
-@[deprecated (since := "2025-05-23")]
-alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
-
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [coeffIntegerNormalization, dif_neg h]
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
@@ -81,7 +82,7 @@ theorem integerNormalization_spec (p : S[X]) :
       Classical.choose_spec
         (Classical.choose_spec (exist_integer_multiples_of_finset M (p.support.image p.coeff))
           (p.coeff i) (Finset.mem_image.mpr ⟨i, hi, rfl⟩))
-  · rw [RingHom.map_zero, notMem_support_iff.mp hi, smul_zero]
+  · rw [map_zero, notMem_support_iff.mp hi, smul_zero]
 
 theorem integerNormalization_map_to_map (p : S[X]) :
     ∃ b : M, (integerNormalization M p).map (algebraMap R S) = (b : R) • p :=
@@ -182,7 +183,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommS
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)
   · refine eval₂_mul_eq_zero_of_left _ _ _ ?_
     rw [eval₂_map, IsLocalization.map_comp, ← hom_eval₂ _ f (algebraMap S Sₘ) x]
-    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (RingHom.map_zero _)
+    exact _root_.trans (congr_arg (algebraMap S Sₘ) hf) (map_zero _)
 
 /-- Given a particular witness to an element being algebraic over an algebra `R → S`,
 We can localize to a submonoid containing the leading coefficient to make it integral.
@@ -211,8 +212,7 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
   refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
-    rw [RingHom.map_mul, RingHom.map_one, localizationAlgebraMap_def, IsLocalization.map_eq]
-      at hv'
+    rw [map_mul, map_one, localizationAlgebraMap_def, IsLocalization.map_eq] at hv'
     exact hv.2 ▸ hv'
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
@@ -270,6 +270,72 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
     exact one_mem _
   · rwa [Polynomial.monic_scaleRoots_iff]
 
+/-- If `t` is `R`-integral in `S[M⁻¹]` where `M` is a submonoid of `R`,
+then `m • t` is integral in `S` for some `m ∈ M`. -/
+lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
+    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    [Algebra R Sₘ] [IsScalarTower R S Sₘ] (M : Submonoid R)
+    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ] {x : S}
+    (hx : IsIntegral R (algebraMap S Sₘ x)) : ∃ m ∈ M, IsIntegral R (m • x) := by
+  obtain ⟨p, hpm, hp⟩ := hx
+  simp only [IsScalarTower.algebraMap_eq R S Sₘ, ← hom_eval₂,
+    IsLocalization.map_eq_zero_iff (Algebra.algebraMapSubmonoid S M), Algebra.algebraMapSubmonoid,
+    Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and] at hp
+  obtain ⟨m, hm, e⟩ := hp
+  exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
+    RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
+
+/-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
+lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
+    (t s : S) (hst : s * t = 1) (ht : IsIntegral (Algebra.adjoin R {s}) t) :
+    IsIntegral R t := by
+  nontriviality S
+  let φ := aeval (R := R) s
+  obtain ⟨q, hqm, hqt⟩ : φ.IsIntegralElem t := by
+    obtain ⟨p, hpm, hpt⟩ := ht
+    have : p.map (algebraMap _ S) ∈ lifts φ.toRingHom := (lifts_iff_coeff_lifts _).mpr
+      (by simp [← AlgHom.mem_range, φ, ← Algebra.adjoin_singleton_eq_range_aeval])
+    obtain ⟨q, hqp, hqd, hqm⟩ := lifts_and_degree_eq_and_monic this (hpm.map _)
+    exact ⟨q, hqm, by rw [← eval_map, hqp, eval_map, hpt]⟩
+  let N := q.support.sup (q.coeff · |>.natDegree)
+  have hN (i : _) : (q.coeff i).natDegree ≤ N := by
+    by_cases hi : i ∈ q.support
+    · exact Finset.le_sup (f := (q.coeff · |>.natDegree)) hi
+    · simp_all
+  let q' := q.sum fun i r ↦ X ^ i * r.reflect N
+  have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
+    letI : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
+    rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
+    simp [mul_comm, this, aeval_def]
+  refine ⟨q', ?_, ?_⟩
+  · refine monic_of_natDegree_le_of_coeff_eq_one (q.natDegree + N) ?_ ?_
+    · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
+      grw [natDegree_mul_le, natDegree_pow_le, natDegree_X_le, natDegree_reflect_le]
+      simp [max_eq_left (hN _), le_natDegree_of_mem_supp _ hi]
+    · simp only [sum, finset_sum_coeff, coeff_X_pow_mul', coeff_reflect, q']
+      rw [Finset.sum_eq_single q.natDegree]
+      · simp [hqm.leadingCoeff]
+      · intro i hi₁ hi₂
+        have : N + i < q.natDegree + N :=
+          add_comm N i ▸ add_lt_add_left ((le_natDegree_of_mem_supp _ hi₁).lt_of_ne hi₂) _
+        simpa [(le_natDegree_of_mem_supp _ hi₁).trans, revAt, this.not_ge] using
+          coeff_eq_zero_of_natDegree_lt (by grind)
+      · simp +contextual
+  · trans t ^ N * q.sum (t ^ · * φ.toRingHom ·)
+    · simp [φ, q', Polynomial.sum, ← aeval_def, this, mul_left_comm _ (t ^ N), ← Finset.mul_sum]
+    · simp_rw [mul_comm (t ^ _), ← eval₂_eq_sum, hqt, zero_mul]
+
+/-- If `t` is integral in `S[1/t]`, then it is integral in `S`. -/
+lemma IsLocalization.Away.isIntegral_of_isIntegral_map
+    {R S Sₘ : Type*} [CommRing R] [CommRing S] [CommRing Sₘ] [Algebra R S] [Algebra S Sₘ]
+    [Algebra R Sₘ] [IsScalarTower R S Sₘ] (x : S) [IsLocalization.Away x Sₘ]
+    (hx : IsIntegral R (algebraMap S Sₘ x)) : IsIntegral R x := by
+  obtain ⟨p, hpm, hp⟩ := hx
+  simp only [IsScalarTower.algebraMap_eq R S Sₘ, IsLocalization.map_eq_zero_iff (.powers x),
+    Subtype.exists, Submonoid.mem_powers_iff, ← hom_eval₂, exists_prop, exists_exists_eq_and] at hp
+  obtain ⟨n, hn⟩ := hp
+  exact ⟨X ^ n * p, (monic_X_pow n).mul hpm, by simpa⟩
+
 end IsIntegral
 
 variable {A K : Type*} [CommRing A]
@@ -295,7 +361,7 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
     surj := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
-        hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
+        hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩
     exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 
@@ -336,13 +402,66 @@ theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra A L] [Algebra K
 
 end integralClosure
 
+section
+
+variable {Rf Sf : Type*} [CommRing Rf] [CommRing Sf] [Algebra R Rf] [Algebra S Sf]
+    [Algebra Rf Sf] [Algebra R Sf] [IsScalarTower R S Sf] [IsScalarTower R Rf Sf]
+
+/-- Taking integral closure commutes with localizations. -/
+-- We take in an arbitrary `Algebra (integralClosure R S) (integralClosure Rf Sf)` instance
+-- so that it applies more easily.
+protected lemma IsLocalization.integralClosure
+    (M : Submonoid R) [IsLocalization M Rf] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sf]
+    [Algebra (integralClosure R S) (integralClosure Rf Sf)]
+    [IsScalarTower (integralClosure R S) (integralClosure Rf Sf) Sf]
+    [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
+    IsLocalization (Algebra.algebraMapSubmonoid (integralClosure R S) M)
+      (integralClosure Rf Sf) := by
+  refine ⟨⟨?_, ?_, ?_⟩⟩
+  · rintro ⟨_, f, hf, rfl⟩
+    convert (IsLocalization.map_units (S := Rf) ⟨f, hf⟩).map (algebraMap Rf (integralClosure Rf Sf))
+    simp [← IsScalarTower.algebraMap_apply]
+  · rintro ⟨s, hs⟩
+    obtain ⟨⟨x, _, m₁, hm₁, rfl⟩, e⟩ := IsLocalization.surj (Algebra.algebraMapSubmonoid S M) s
+    simp only [← IsScalarTower.algebraMap_apply] at e
+    obtain ⟨⟨m₂, hm₂⟩, hm₂s⟩ := IsIntegral.exists_multiple_integral_of_isLocalization M _ hs
+    simp only [Submonoid.smul_def, Algebra.smul_def] at hm₂s
+    obtain ⟨m₃, hm₃, hm₃s⟩ := IsLocalization.exists_isIntegral_smul_of_isIntegral_map (Sₘ := Sf)
+      M (x := m₂ • x) <| by
+        simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, ← e, ← mul_assoc]
+        exact hm₂s.mul (.algebraMap (Algebra.IsIntegral.isIntegral _))
+    refine ⟨⟨⟨_, hm₃s⟩, _, _, mul_mem hm₁ (mul_mem hm₂ hm₃), rfl⟩, ?_⟩
+    · apply (FaithfulSMul.algebraMap_injective (integralClosure Rf Sf) Sf)
+      simp [← IsScalarTower.algebraMap_apply, e, ← mul_assoc, Algebra.smul_def]
+      ring
+  · rintro ⟨a, ha⟩ ⟨b, hb⟩ e
+    have := congr(algebraMap _ Sf $e)
+    have : algebraMap S Sf a = algebraMap S Sf b := by
+      simpa only [← IsScalarTower.algebraMap_apply] using this
+    obtain ⟨⟨_, m, hm, rfl⟩, h⟩ :=
+      (IsLocalization.eq_iff_exists (Algebra.algebraMapSubmonoid S M) _).mp this
+    refine ⟨⟨_, m, hm, rfl⟩, FaithfulSMul.algebraMap_injective (integralClosure R S) S ?_⟩
+    simpa only [← IsScalarTower.algebraMap_apply]
+
+-- We take in an arbitrary `Algebra (integralClosure R S) (integralClosure Rf Sf)` instance
+-- so that it applies more easily.
+protected lemma IsLocalization.Away.integralClosure
+    (f : R) [IsLocalization.Away f Rf] [IsLocalization.Away (algebraMap R S f) Sf]
+    [Algebra (integralClosure R S) (integralClosure Rf Sf)]
+    [IsScalarTower (integralClosure R S) (integralClosure Rf Sf) Sf]
+    [IsScalarTower R (integralClosure R S) (integralClosure Rf Sf)] :
+    IsLocalization.Away (algebraMap R (integralClosure R S) f) (integralClosure Rf Sf) := by
+  convert IsLocalization.integralClosure (S := S) (Rf := Rf) (Sf := Sf) (.powers f)
+  simp
+
+end
 namespace IsFractionRing
 
 variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
 theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
-    [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
+    [Module.IsTorsionFree R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor

@@ -3,17 +3,21 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime.Pow
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Nat
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers
 
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
+
+@[expose] public section
 assert_not_exists Nat.divisors
 
 variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
@@ -75,7 +79,7 @@ theorem isPrimePow_nat_iff_bounded (n : ℕ) :
   refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
   refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt).le, hp, hk, rfl⟩
-  conv => { lhs; rw [← (pow_one p)] }
+  conv => {lhs; rw [← (pow_one p)]}
   exact Nat.pow_le_pow_right hp.one_lt.le hk
 
 theorem isPrimePow_nat_iff_bounded_log (n : ℕ) :

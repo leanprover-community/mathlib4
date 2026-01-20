@@ -3,9 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Topology
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Topology
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Integral over an interval
@@ -44,6 +47,8 @@ three possible intervals with the same endpoints for two reasons:
 
 integral
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -287,6 +292,13 @@ omit [PseudoMetrizableSpace ε] in
 protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
+
+omit [PseudoMetrizableSpace ε] in
+protected theorem aestronglyMeasurable_restrict_uIoc (h : IntervalIntegrable f μ a b) :
+    AEStronglyMeasurable f (μ.restrict (uIoc a b)) := by
+  by_cases hab : a ≤ b
+  · rw [uIoc_of_le hab]; exact h.aestronglyMeasurable
+  · rw [uIoc_of_ge (by linarith)]; exact h.aestronglyMeasurable'
 
 end
 

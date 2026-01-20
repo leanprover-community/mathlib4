@@ -3,10 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -30,15 +32,15 @@ We prove some basic facts about the category `Type`:
   (the corresponding fact about monads is in `Mathlib/CategoryTheory/Monad/Types.lean`).
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [category theory universes].
 universe v v' w u u'
 
-/- The `@[to_additive]` attribute is just a hint that expressions involving this instance can
-  still be additivized. -/
-@[to_additive self]
+@[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
   id _ := id

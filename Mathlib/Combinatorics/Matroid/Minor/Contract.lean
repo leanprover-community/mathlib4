@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Delete
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Delete
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # Matroid Contraction
@@ -23,7 +25,7 @@ While this is perhaps less intuitive, we use this very concise expression as the
 and prove with the lemma `Matroid.IsBasis.contract_indep_iff` that this is equivalent to
 the more verbose definition above.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.contract M C`, written `M ／ C`, is the matroid on ground set `M.E \ C` in which a set
   `I ⊆ M.E \ C` is independent if and only if `I ∪ J` is independent in `M`,
@@ -34,11 +36,13 @@ the more verbose definition above.
   sets of `M ／ C` are exactly the `J ⊆ M.E \ C` for which `I ∪ J` is independent in `M`.
 * `Matroid.contract_delete_comm` : `M ／ C ＼ D = M ＼ D ／ C` for disjoint `C` and `D`.
 
-# Naming conventions
+## Naming conventions
 
 Mirroring the convention for deletion, we use the abbreviation `contractElem` in lemma names
 to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 

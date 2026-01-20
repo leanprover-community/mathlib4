@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Weiser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Ring.Subring.Pointwise
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Ring.Subring.Pointwise
 
 /-!
 # Pointwise actions on subalgebras.
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Ring.Subring.Pointwise
 If `R'` acts on an `R`-algebra `A` (so that `R'` and `R` actions commute)
 then we get an `R'` action on the collection of `R`-subalgebras.
 -/
+
+@[expose] public section
 
 
 namespace Subalgebra
@@ -21,10 +25,10 @@ section Pointwise
 variable {R : Type*} {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 theorem mul_toSubmodule_le (S T : Subalgebra R A) :
-    (Subalgebra.toSubmodule S)* (Subalgebra.toSubmodule T) ≤ Subalgebra.toSubmodule (S ⊔ T) := by
+    Subalgebra.toSubmodule S * Subalgebra.toSubmodule T ≤ Subalgebra.toSubmodule (S ⊔ T) := by
   rw [Submodule.mul_le]
   intro y hy z hz
-  change y * z ∈ S ⊔ T
+  simp only [mem_toSubmodule]
   exact mul_mem (Algebra.mem_sup_left hy) (Algebra.mem_sup_right hz)
 
 /-- As submodules, subalgebras are idempotent. -/

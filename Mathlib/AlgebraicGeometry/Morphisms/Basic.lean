@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Local
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
@@ -95,6 +96,8 @@ The properties `IsZariskiLocalAtTarget` and `IsZariskiLocalAtSource` are defined
 for the respective local property of morphism properties defined generally for categories equipped
 with a `Precoverage`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -191,6 +194,19 @@ lemma of_forall_source_exists_preimage
     exact ⟨x, h₁ x⟩
   · intro x
     exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
+
+lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
+    P (coprod.map f g) := by
+  refine IsZariskiLocalAtTarget.of_openCover (coprodOpenCover.{_, 0} _ _) ?_
+  rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
+    convert hf
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
+    convert hg
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
 
@@ -513,7 +529,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h

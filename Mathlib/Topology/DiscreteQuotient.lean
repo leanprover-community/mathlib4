@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 
@@ -60,6 +62,8 @@ The two main results proved in this file are:
 The constructions in this file will be used to show that any profinite space is a limit
 of finite discrete spaces.
 -/
+
+@[expose] public section
 
 
 open Set Function TopologicalSpace Topology
@@ -367,7 +371,7 @@ lemma comp_finsetClopens [CompactSpace X] :
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext
     simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
-  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
+  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj, Quotient.eq]⟩
 
 /-- `finsetClopens X` is injective. -/
 theorem finsetClopens_inj [CompactSpace X] :
@@ -387,8 +391,6 @@ TODO: show that this is precisely those finsets of clopens which form a partitio
 -/
 noncomputable
 def equivFinsetClopens [CompactSpace X] := Equiv.ofInjective _ (finsetClopens_inj X)
-
-variable {X}
 
 end DiscreteQuotient
 

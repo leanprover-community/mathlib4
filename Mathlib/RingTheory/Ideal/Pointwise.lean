@@ -3,8 +3,10 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.End
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
 
@@ -19,6 +21,8 @@ This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Po
 Where possible, try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 open Set
@@ -94,13 +98,10 @@ theorem pointwise_smul_toAddSubmonoid (a : M) (S : Ideal R)
 
 @[simp]
 theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R]
-    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r)  :
+    (a : M) (S : Ideal R) (ha : Function.Surjective fun r : R => a • r) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup := by
   ext
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
-
-@[deprecated (since := "2025-07-08")]
-alias pointwise_smul_toAddSubGroup := pointwise_smul_toAddSubgroup
 
 end Monoid
 

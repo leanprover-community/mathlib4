@@ -3,47 +3,43 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.Embedding
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Data.Fin.Tuple.Embedding
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.Embedding
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Data.Fin.Tuple.Embedding
 
 /-! # The SubMulAction of the stabilizer of a point on the complement of that point
 
 When a group `G` acts on a type `α`, the stabilizer of a point `a : α`
 acts naturally on the complement of that point.
 
-Such actions (as the similar one for the fixator of a set acting on the complement
-of that set, defined in `Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup`)
+Such actions
+(as the similar one, `SubMulAction.ofFixingSubgroup`,
+for the fixing subgroup of a set acting on the complement of that set)
 are useful to study the multiple transitivity of the group `G`,
 since `n`-transitivity of `G` on `α` is equivalent to `n - 1`-transitivity
-of `stabilizer G a` on the complement of `a`.
+of `MulAction.stabilizer G a` on the complement of `a`.
 
-We define equivariant maps that relate various of these sub_mul_actions
+We define equivariant maps that relate various of these `SubMulAction`s
 and permit to manipulate them in a relatively smooth way.
 
 * `SubMulAction.ofStabilizer a` : the action of `stabilizer G a` on `{a}ᶜ`
 
-* `SubMulAction.Enat_card_ofStabilizer_eq_add_one`, `SubMulAction.nat_card_ofStabilizer_eq`
+* `SubMulAction.ENat_card_ofStabilizer_add_one_eq` and `SubMulAction.nat_card_ofStabilizer_eq`
   compute the cardinality of the `carrier` of that action.
 
 Consider `a b : α` and `g : G` such that `hg : g • b = a`.
 
-* `SubMulAction.conjMap hg` is the equivariant map
+* `SubMulAction.ofStabilizer.conjMap hg` is the equivariant map
   from `SubMulAction.ofStabilizer G a` to `SubMulAction.ofStabilizer G b`.
-* `SubMulAction.ofStabilizer.isPretransitive_iff_conj hg` shows
-  that this actions are equivalently pretransitive or
-* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff_conj hg` shows
-  that this actions are equivalently `n`-pretransitive for all `n : ℕ`.
-* `SubMulAction.ofStabilizer.append` : given `x : Fin n ↪ ofStabilizer G a`,
+* `SubMulAction.ofStabilizer.snoc` : given `x : Fin n ↪ ofStabilizer G a`,
   append `a` to obtain `y : Fin n.succ ↪ α`
-* `SubMulAction.ofStabilizer.isMultiplyPretransitive_iff` : is the action of `G` on `α`
-  is pretransitive, then it is `n.succ` pretransitive if and only if
-  the action of `stabilizer G a` on `ofStabilizer G a` is `n`-pretransitive.
-
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -91,19 +87,16 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
   congr
   simp
 
-@[deprecated (since := "2025-07-15")]
-alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
-
 @[to_additive]
 lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
-  dsimp only [Nat.card]
-  rw [← Cardinal.mk_sum_compl {a},
-    Cardinal.toNat_add Cardinal.mk_lt_aleph0 Cardinal.mk_lt_aleph0]
-  simp only [Cardinal.mk_fintype, Fintype.card_unique, Nat.cast_one, map_one, add_comm]
-  congr
+  classical
+  let := Fintype.ofFinite α
+  rw [Nat.subtype_card {a}ᶜ, ← Finset.card_singleton a, Finset.card_compl_add_card,
+    Nat.card_eq_fintype_card]
+  simp [mem_ofStabilizer_iff]
 
-@[deprecated  (since := "2025-10-03")]
+@[deprecated (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
 
 @[to_additive]
@@ -196,7 +189,7 @@ theorem ofStabilizer.conjMap_bijective : Function.Bijective (conjMap hg) := by
 def ofStabilizer.snoc {n : ℕ} (x : Fin n ↪ ofStabilizer G a) :
     Fin n.succ ↪ α :=
   Fin.Embedding.snoc (x.trans (subtype _)) (a := a) (by
-    simp [Set.mem_range, trans_apply, not_exists]
+    simp only [Set.mem_range, trans_apply, Function.Embedding.subtype_apply, not_exists]
     exact fun i ↦ (x i).prop)
 
 @[to_additive]
@@ -224,7 +217,7 @@ lemma exists_smul_of_last_eq [IsPretransitive G α] {n : ℕ} (a : α) (x : Fin 
   ext i
   rcases Fin.eq_castSucc_or_eq_last i with ⟨i, rfl⟩ | ⟨rfl⟩
   · simpa [ofStabilizer.snoc] using
-      Subtype.eq_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
+      Subtype.ext_iff.mp <| Function.Embedding.codRestrict_apply _ _ H i
   · simpa only [smul_apply, ofStabilizer.snoc, Fin.Embedding.snoc_last]
 
 end SubMulAction
@@ -255,7 +248,7 @@ instance (s : Set α) : MulAction (stabilizer G s) s where
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, OneMemClass.coe_one, one_smul]
   mul_smul g k x := by
     simp only [← Subtype.coe_inj, SMul.smul_stabilizer_def, Subgroup.coe_mul,
-      MulAction.mul_smul]
+      SemigroupAction.mul_smul]
 
 theorem stabilizer_empty_eq_top :
     stabilizer G (∅ : Set α) = ⊤ := by

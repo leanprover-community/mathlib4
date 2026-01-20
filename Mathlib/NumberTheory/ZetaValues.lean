@@ -3,11 +3,14 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.BernoulliPolynomials
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.NumberTheory.BernoulliPolynomials
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Critical values of the Riemann zeta function
@@ -26,6 +29,8 @@ zeta functions, in terms of Bernoulli polynomials.
   an explicit multiple of `Bₖ(x)`, for any `x ∈ [0, 1]` and `k ≥ 3` odd.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped Nat Real Interval
@@ -43,6 +48,22 @@ section BernoulliFunProps
 def bernoulliFun (k : ℕ) (x : ℝ) : ℝ :=
   (Polynomial.map (algebraMap ℚ ℝ) (Polynomial.bernoulli k)).eval x
 
+section Evaluation
+
+@[simp]
+theorem bernoulliFun_zero (x : ℝ) : bernoulliFun 0 x = 1 := by
+  simp only [bernoulliFun, Polynomial.bernoulli_zero, Polynomial.map_one, Polynomial.eval_one]
+
+@[simp]
+theorem bernoulliFun_one (x : ℝ) : bernoulliFun 1 x = x - 1 / 2 := by
+  simp [bernoulliFun, Polynomial.bernoulli_def, Finset.sum_range_succ]
+  ring
+
+@[simp]
+theorem bernoulliFun_two (x : ℝ) : bernoulliFun 2 x = x ^ 2 - x + 6⁻¹ := by
+  simp [bernoulliFun, Polynomial.bernoulli_def, Finset.sum_range_succ]
+  ring
+
 theorem bernoulliFun_eval_zero (k : ℕ) : bernoulliFun k 0 = bernoulli k := by
   rw [bernoulliFun, Polynomial.eval_zero_map, Polynomial.bernoulli_eval_zero, eq_ratCast]
 
@@ -58,25 +79,134 @@ theorem bernoulliFun_eval_one (k : ℕ) : bernoulliFun k 1 = bernoulliFun k 0 + 
     push_cast; ring
   · rw [bernoulli_eq_bernoulli'_of_ne_one h, add_zero, eq_ratCast]
 
+end Evaluation
+
+section Calculus
+
 theorem hasDerivAt_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (bernoulliFun k) (k * bernoulliFun (k - 1) x) x := by
   convert ((Polynomial.bernoulli k).map <| algebraMap ℚ ℝ).hasDerivAt x using 1
   simp only [bernoulliFun, Polynomial.derivative_map, Polynomial.derivative_bernoulli k,
     Polynomial.map_mul, Polynomial.map_natCast, Polynomial.eval_mul, Polynomial.eval_natCast]
 
+variable (k : ℕ)
+
+theorem contDiff_bernoulliFun : ContDiff ℝ ⊤ (bernoulliFun k) := by
+  simp +unfoldPartialApp [bernoulliFun, Polynomial.eval_map_algebraMap, Polynomial.contDiff_aeval]
+
+@[continuity, fun_prop]
+theorem continuous_bernoulliFun : Continuous (bernoulliFun k) := Polynomial.continuous_aeval _
+
+theorem intervalIntegrable_bernoulliFun (a b : ℝ) :
+    IntervalIntegrable (bernoulliFun k) volume a b :=
+  (continuous_bernoulliFun k).intervalIntegrable a b
+
+@[simp]
+theorem deriv_bernoulliFun :
+    deriv (bernoulliFun k) = fun x ↦ k * bernoulliFun (k - 1) x := by
+  ext x
+  exact (hasDerivAt_bernoulliFun _ _).deriv
+
 theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   simp [Nat.cast_add_one_ne_zero k]
 
-theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :
+theorem integral_bernoulliFun : ∫ x : ℝ in 0..1, bernoulliFun k x = if k = 0 then 1 else 0 := by
+  simp +contextual [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
+      (intervalIntegrable_bernoulliFun k _ _), bernoulliFun_eval_one, ← sub_div, ite_div]
+
+variable {k} in
+theorem integral_bernoulliFun_eq_zero (hk : k ≠ 0) :
     ∫ x : ℝ in 0..1, bernoulliFun k x = 0 := by
-  rw [integral_eq_sub_of_hasDerivAt (fun x _ => antideriv_bernoulliFun k x)
-      ((Polynomial.continuous _).intervalIntegrable _ _)]
-  rw [bernoulliFun_eval_one]
-  split_ifs with h
-  · exfalso; exact hk (Nat.succ_inj.mp h)
-  · simp
+  rw [integral_bernoulliFun, if_neg hk]
+
+/-- Fundamental theorem of calculus to express a Bernoulli polynomial via the previous one -/
+theorem bernoulliFun_eq_integral (k : ℕ) (x y : ℝ) :
+    bernoulliFun (k + 1) y =
+      bernoulliFun (k + 1) x + ∫ t in x..y, (k + 1 : ℕ) * bernoulliFun k t := by
+  rw [intervalIntegral.integral_eq_sub_of_hasDerivAt, add_sub_cancel]
+  · exact fun y _ ↦ hasDerivAt_bernoulliFun _ y
+  · exact Continuous.intervalIntegrable (by fun_prop) _ _
+
+end Calculus
+
+/-- Reflection principle: `B_s(1 - x) = (-1)^s B_s(x)` -/
+theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
+    bernoulliFun k (1 - x) = (-1) ^ k * bernoulliFun k x := by
+  simpa [bernoulliFun, Polynomial.aeval_comp]
+    using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
+
+/-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
+theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
+    bernoulliFun k (m * x) =
+      m ^ k / m * ∑ i ∈ Finset.range m, bernoulliFun k (x + i / m) := by
+  have m0' : (m : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr m0
+  let f (k x) := bernoulliFun k (m * x) -
+    m ^ k / m * ∑ i ∈ Finset.range m, bernoulliFun k (x + i / ↑m)
+  suffices h : ∀ x, f k x = 0 by
+    rw [← sub_eq_zero]
+    exact h x
+  induction k with
+  | zero =>
+    intro x
+    simp only [f, bernoulliFun_zero, pow_zero, one_div, Finset.sum_const, Finset.card_range,
+      nsmul_eq_mul, mul_one, sub_eq_zero]
+    rw [inv_mul_cancel₀ (Nat.cast_ne_zero.mpr m0)]
+  | succ k h =>
+    have d (x) : HasDerivAt (f (k + 1)) (m * (k + 1) * f k x) x := by
+      simp only [f, mul_sub, Finset.mul_sum, pow_succ, mul_div_cancel_right₀ _ m0',
+        ← mul_assoc, mul_comm _ (_ / _), div_mul_cancel₀ _ m0']
+      apply HasDerivAt.sub
+      · rw [mul_assoc, mul_comm (m : ℝ) _, ← Nat.cast_add_one]
+        exact (hasDerivAt_bernoulliFun _ _).comp _ (hasDerivAt_const_mul ..)
+      · refine HasDerivAt.fun_sum fun i _ ↦ ?_
+        simp only [mul_assoc, ← Nat.cast_add_one]
+        apply HasDerivAt.const_mul
+        rw [← mul_one (_ * _)]
+        exact (hasDerivAt_bernoulliFun _ _).comp _ ((hasDerivAt_id' _).add_const _)
+    simp only [h, mul_zero] at d
+    have fc (x) : f (k + 1) x = f (k + 1) 0 :=
+      is_const_of_deriv_eq_zero (fun _ ↦ (d _).differentiableAt) (fun _ ↦ (d _).deriv) x 0
+    generalize f (k + 1) 0 = c at fc
+    have i : ∫ x in (0 : ℝ)..m⁻¹, f (k + 1) x = 0 := by
+      simp only [f]
+      rw [intervalIntegral.integral_sub, intervalIntegral.integral_comp_mul_left _ m0', mul_zero,
+        mul_inv_cancel₀ m0', integral_bernoulliFun_eq_zero (by lia), smul_zero, sub_eq_zero,
+        intervalIntegral.integral_const_mul, eq_comm (a := 0), mul_eq_zero]
+      · right
+        rw [intervalIntegral.integral_finset_sum]
+        · simp only [intervalIntegral.integral_comp_add_right, zero_add, ← one_div, ← add_div,
+            add_comm (1 : ℝ), ← Nat.cast_add_one]
+          rw [intervalIntegral.sum_integral_adjacent_intervals]
+          · simp [div_self m0', integral_bernoulliFun_eq_zero]
+          · intros; exact Continuous.intervalIntegrable (by fun_prop) _ _
+        · intros; exact Continuous.intervalIntegrable (by fun_prop) _ _
+      · exact Continuous.intervalIntegrable (by fun_prop) _ _
+      · exact Continuous.intervalIntegrable (by fun_prop) _ _
+    simp only [fc, intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_eq_zero, inv_eq_zero,
+      Nat.cast_eq_zero, m0, false_or] at i
+    simpa only [i] using fc
+
+/-!
+### Values at 1/2
+-/
+
+theorem bernoulliFun_eval_half_eq_zero (k : ℕ) : bernoulliFun (2 * k + 1) 2⁻¹ = 0 := by
+  have h := bernoulliFun_eval_one_sub (k := 2 * k + 1) (x := 2⁻¹)
+  simp only [pow_succ, even_two, Even.mul_right, Even.neg_pow, one_pow, mul_neg, mul_one, neg_mul,
+    one_mul, ← one_div, (sub_eq_of_eq_add (add_halves (1 : ℝ)).symm)] at h
+  linarith
+
+theorem bernoulliFun_eval_half (k : ℕ) : bernoulliFun k 2⁻¹ = (2 / 2 ^ k - 1) * bernoulli k := by
+  by_cases k1 : k = 1
+  · simp [k1]
+  · have m := bernoulliFun_mul k two_ne_zero 2⁻¹
+    simp_rw [Nat.cast_ofNat, mul_inv_cancel₀ (two_ne_zero' ℝ), Finset.sum_range_succ,
+      Finset.sum_range_zero, Nat.cast_zero, Nat.cast_one, ← one_div, add_halves,
+      bernoulliFun_eval_one, if_neg k1, bernoulliFun_eval_zero, zero_div, add_zero, zero_add] at m
+    rw [← inv_mul_eq_iff_eq_mul₀ (by positivity), ← sub_eq_iff_eq_add, ← sub_one_mul, inv_div] at m
+    rw [m, one_div]
 
 end BernoulliFunProps
 
@@ -126,11 +256,9 @@ theorem bernoulliFourierCoeff_eq {k : ℕ} (hk : k ≠ 0) (n : ℤ) :
     simp only [Nat.cast_one, tsub_self, neg_mul, one_mul, if_true,
       Nat.factorial_one, pow_one]
     rw [bernoulli_zero_fourier_coeff hn, sub_zero, mul_one, div_neg, neg_div]
-  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, Nat.add_sub_cancel k 1]
-    split_ifs with h
-    · exfalso; exact (ne_of_gt (Nat.lt_succ_iff.mpr hk)) h
-    · rw [h'k, Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
-      ring
+  · rw [bernoulliFourierCoeff_recurrence (k + 1) hn, if_neg (by grind), Nat.add_sub_cancel k 1, h'k,
+      Nat.factorial_succ, zero_sub, Nat.cast_mul, pow_add]
+    ring
 
 end BernoulliFourierCoeffs
 
@@ -183,13 +311,13 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
     · exact this hx
     · convert this (left_mem_Ico.mpr zero_lt_one) using 1
       · rw [AddCircle.coe_period, QuotientAddGroup.mk_zero]
-      · rw [bernoulliFun_endpoints_eq_of_ne_one (by cutsat : k ≠ 1)]
+      · rw [bernoulliFun_endpoints_eq_of_ne_one (by lia : k ≠ 1)]
   intro y hy
   let B : C(𝕌, ℂ) :=
     ContinuousMap.mk ((↑) ∘ periodizedBernoulli k)
-      (continuous_ofReal.comp (periodizedBernoulli.continuous (by cutsat)))
+      (continuous_ofReal.comp (periodizedBernoulli.continuous (by lia)))
   have step1 : ∀ n : ℤ, fourierCoeff B n = -k ! / (2 * π * I * n) ^ k := by
-    rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by cutsat : k ≠ 0)
+    rw [ContinuousMap.coe_mk]; exact fourierCoeff_bernoulli_eq (by lia : k ≠ 0)
   have step2 :=
     has_pointwise_sum_fourier_series_of_summable
       ((summable_bernoulli_fourier hk).congr fun n => (step1 n).symm) y
@@ -232,7 +360,7 @@ theorem hasSum_one_div_nat_pow_mul_cos {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
     HasSum (fun n : ℕ => 1 / (n : ℂ) ^ (2 * k) * (fourier n (x : 𝕌) + fourier (-n) (x : 𝕌)))
       ((-1 : ℂ) ^ (k + 1) * (2 * (π : ℂ)) ^ (2 * k) / (2 * k)! * bernoulliFun (2 * k) x) := by
     convert
-      hasSum_one_div_nat_pow_mul_fourier (by cutsat : 2 ≤ 2 * k)
+      hasSum_one_div_nat_pow_mul_fourier (by lia : 2 ≤ 2 * k)
         hx using 3
     · rw [pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul]
     · rw [pow_add, pow_one]
@@ -270,7 +398,7 @@ theorem hasSum_one_div_nat_pow_mul_sin {k : ℕ} (hk : k ≠ 0) {x : ℝ} (hx : 
         bernoulliFun (2 * k + 1) x) := by
     convert
       hasSum_one_div_nat_pow_mul_fourier
-        (by cutsat : 2 ≤ 2 * k + 1) hx using 1
+        (by lia : 2 ≤ 2 * k + 1) hx using 1
     · ext1 n
       rw [pow_add (-1 : ℂ), pow_mul (-1 : ℂ), neg_one_sq, one_pow, one_mul, pow_one, ←
         neg_eq_neg_one_mul, ← sub_eq_add_neg]
@@ -317,7 +445,7 @@ theorem hasSum_zeta_nat {k : ℕ} (hk : k ≠ 0) :
       · skip
       · rw [← pow_one (2 : ℝ)]
     rw [← pow_add, Nat.sub_add_cancel]
-    omega
+    lia
   rw [this, mul_pow]
   ring
 
@@ -335,16 +463,6 @@ theorem hasSum_zeta_four : HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 4) (π
   rw [bernoulli_eq_bernoulli'_of_ne_one, bernoulli'_four]
   · simp [Nat.factorial]; ring
   · decide
-
-theorem Polynomial.bernoulli_three_eval_one_quarter :
-    (Polynomial.bernoulli 3).eval (1 / 4) = 3 / 64 := by
-  simp_rw [Polynomial.bernoulli, Finset.sum_range_succ, Polynomial.eval_add,
-    Polynomial.eval_monomial]
-  rw [Finset.sum_range_zero, Polynomial.eval_zero, zero_add, bernoulli_one]
-  rw [bernoulli_eq_bernoulli'_of_ne_one zero_ne_one, bernoulli'_zero,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 2 ≠ 1), bernoulli'_two,
-    bernoulli_eq_bernoulli'_of_ne_one (by decide : 3 ≠ 1), bernoulli'_three]
-  norm_num
 
 /-- Explicit formula for `L(χ, 3)`, where `χ` is the unique nontrivial Dirichlet character modulo 4.
 -/

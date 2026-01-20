@@ -3,8 +3,10 @@ Copyright (c) 2020 James Arthur. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Arthur, Chris Hughes, Shing Tak Lam
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Inverse of the sinh function
@@ -35,6 +37,7 @@ inverse, arsinh.
 arsinh, arcsinh, argsinh, asinh, sinh injective, sinh bijective, sinh surjective
 -/
 
+@[expose] public section
 
 noncomputable section
 
@@ -46,7 +49,7 @@ namespace Real
 
 variable {x y : ℝ}
 
-/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + sqrt(1 + x^2))`. -/
+/-- `arsinh` is defined using a logarithm, `arsinh x = log (x + √(1 + x^2))`. -/
 @[pp_nodot]
 def arsinh (x : ℝ) :=
   log (x + √(1 + x ^ 2))
@@ -75,6 +78,10 @@ theorem sinh_arsinh (x : ℝ) : sinh (arsinh x) = x := by
 @[simp]
 theorem cosh_arsinh (x : ℝ) : cosh (arsinh x) = √(1 + x ^ 2) := by
   rw [← sqrt_sq (cosh_pos _).le, cosh_sq', sinh_arsinh]
+
+@[simp]
+theorem tanh_arsinh (x : ℝ) : tanh (arsinh x) = x / √(1 + x ^ 2) := by
+  rw [tanh_eq_sinh_div_cosh, sinh_arsinh, cosh_arsinh]
 
 /-- `sinh` is surjective, `∀ b, ∃ a, sinh a = b`. In this case, we use `a = arsinh b`. -/
 theorem sinh_surjective : Surjective sinh :=
@@ -165,12 +172,29 @@ theorem differentiable_arsinh : Differentiable ℝ arsinh := fun x =>
   (hasDerivAt_arsinh x).differentiableAt
 
 @[fun_prop]
-theorem contDiff_arsinh {n : ℕ∞} : ContDiff ℝ n arsinh :=
+theorem contDiff_arsinh {n : WithTop ℕ∞} : ContDiff ℝ n arsinh :=
   sinhHomeomorph.contDiff_symm_deriv (fun x => (cosh_pos x).ne') hasDerivAt_sinh contDiff_sinh
 
 @[continuity]
 theorem continuous_arsinh : Continuous arsinh :=
   sinhHomeomorph.symm.continuous
+
+/-- The function `Real.arsinh` is real analytic. -/
+@[fun_prop]
+lemma analyticAt_arsinh : AnalyticAt ℝ arsinh x :=
+  contDiff_arsinh.contDiffAt.analyticAt
+
+/-- The function `Real.arsinh` is real analytic. -/
+lemma analyticWithinAt_arsinh {s : Set ℝ} : AnalyticWithinAt ℝ arsinh s x :=
+  contDiff_arsinh.contDiffWithinAt.analyticWithinAt
+
+/-- The function `Real.arsinh` is real analytic. -/
+theorem analyticOnNhd_arsinh {s : Set ℝ} : AnalyticOnNhd ℝ arsinh s :=
+  fun _ _ ↦ analyticAt_arsinh
+
+/-- The function `Real.arsinh` is real analytic. -/
+lemma analyticOn_arsinh {s : Set ℝ} : AnalyticOn ℝ arsinh s :=
+  contDiff_arsinh.contDiffOn.analyticOn
 
 end Real
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactification.OnePoint.Basic
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Compactification.OnePoint.Basic
+public import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 
 # The light profinite set classifying convergent sequences
@@ -12,6 +14,8 @@ import Mathlib.Topology.Category.LightProfinite.Basic
 This file defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of
 `ℕ`.
 -/
+
+@[expose] public section
 
 open CategoryTheory OnePoint TopologicalSpace Topology
 

@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.IndepAxioms
+module
+
+public import Mathlib.Combinatorics.Matroid.IndepAxioms
 
 /-!
 # Matroid Duality
@@ -27,6 +29,8 @@ This is an abbreviation for `M✶.Indep X`, but has its own name for the sake of
 * `M.Coindep X` means `M✶.Indep X`, or equivalently that `X` is contained in `M.E \ B` for some
   base `B` of `M`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -86,7 +90,7 @@ section dual
         inter_union_distrib_left, hdj.symm.inter_eq, empty_union, diff_eq, ← inter_assoc,
         ← diff_eq, diff_subset_comm, diff_eq, inter_assoc, ← diff_eq, inter_comm]
       exact subset_trans (inter_subset_inter_right _ hB''.subset_ground) hXJ
-    obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
+    obtain ⟨B₁, hB₁, hI'B₁, hB₁I⟩ := (hB'.indep.subset hI').exists_isBase_subset_union_isBase hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right inter_subset_left] at hB₁I
     obtain rfl : B₁ = B' := by
       refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
@@ -96,7 +100,7 @@ section dual
       exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
     by_contra hdj'
     obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
-    obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
+    obtain (heB'' | ⟨-, heX⟩) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
   subset_ground := by tauto

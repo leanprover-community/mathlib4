@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
-import Mathlib.CategoryTheory.Localization.SmallShiftedHom
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
+public import Mathlib.CategoryTheory.Localization.SmallShiftedHom
 
 /-!
 # Ext groups in abelian categories
@@ -35,6 +37,8 @@ Then, for `C := Sheaf X.etale AddCommGrpCat.{u}`, we will have
 sheaves over `X` shall be in `Type u`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -75,11 +79,11 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
       rw [← cancel_mono ((Q.commShiftIso b).inv.app _),
         ← cancel_epi ((Q.commShiftIso a).hom.app _)]
       have : (((CochainComplex.singleFunctor C 0).obj X)⟦a⟧).IsStrictlyLE (-a) :=
-        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by cutsat)
+        CochainComplex.isStrictlyLE_shift _ 0 _ _ (by lia)
       have : (((CochainComplex.singleFunctor C 0).obj Y)⟦b⟧).IsStrictlyGE (-b) :=
-        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by cutsat)
+        CochainComplex.isStrictlyGE_shift _ 0 _ _ (by lia)
       apply (subsingleton_hom_of_isStrictlyLE_of_isStrictlyGE _ _ (-a) (-b) (by
-        cutsat)).elim
+        lia)).elim
 
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
@@ -89,13 +93,28 @@ lemma HasExt.standard : HasExt.{max u v} C := by
   letI := HasDerivedCategory.standard
   exact hasExt_of_hasDerivedCategory _
 
+instance [HasExt.{w} C] (X Y : C) (a b : ℤ) [HasDerivedCategory.{w'} C] :
+    Small.{w} ((singleFunctor C a).obj X ⟶ (singleFunctor C b).obj Y) := by
+  have (a b : ℤ) :
+      Small.{w} (((singleFunctor C 0).obj X)⟦a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦b⟧) :=
+    (hasSmallLocalizedShiftedHom_iff.{w}
+      (W := (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))) (M := ℤ)
+      (X := (CochainComplex.singleFunctor C 0).obj X)
+      (Y := (CochainComplex.singleFunctor C 0).obj Y) Q).1 inferInstance a b
+  exact small_of_injective
+    (β := ((singleFunctor C 0).obj X)⟦-a⟧ ⟶ ((singleFunctor C 0).obj Y)⟦-b⟧)
+    (f := fun φ ↦
+      ((singleFunctors C).shiftIso (-a) a 0 (by simp)).hom.app X ≫ φ ≫
+        ((singleFunctors C).shiftIso (-b) b 0 (by simp)).inv.app Y)
+    (fun φ₁ φ₂ h ↦ by simpa using h)
+
 variable {C}
 
 variable [HasExt.{w} C]
 
 namespace Abelian
 
-/-- A Ext-group in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
+/-- An Ext-group in an abelian category `C`, defined as a `Type w` when `[HasExt.{w} C]`. -/
 def Ext (X Y : C) (n : ℕ) : Type w :=
   SmallShiftedHom.{w} (HomologicalComplex.quasiIso C (ComplexShape.up ℤ))
     ((CochainComplex.singleFunctor C 0).obj X)
@@ -108,13 +127,13 @@ variable {X Y Z T : C}
 /-- The composition of `Ext`. -/
 noncomputable def comp {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
     Ext X Z c :=
-  SmallShiftedHom.comp α β (by cutsat)
+  SmallShiftedHom.comp α β (by lia)
 
 lemma comp_assoc {a₁ a₂ a₃ a₁₂ a₂₃ a : ℕ} (α : Ext X Y a₁) (β : Ext Y Z a₂) (γ : Ext Z T a₃)
     (h₁₂ : a₁ + a₂ = a₁₂) (h₂₃ : a₂ + a₃ = a₂₃) (h : a₁ + a₂ + a₃ = a) :
-    (α.comp β h₁₂).comp γ (show a₁₂ + a₃ = a by cutsat) =
-      α.comp (β.comp γ h₂₃) (by cutsat) :=
-  SmallShiftedHom.comp_assoc _ _ _ _ _ _ (by cutsat)
+    (α.comp β h₁₂).comp γ (show a₁₂ + a₃ = a by lia) =
+      α.comp (β.comp γ h₂₃) (by lia) :=
+  SmallShiftedHom.comp_assoc _ _ _ _ _ _ (by lia)
 
 @[simp]
 lemma comp_assoc_of_second_deg_zero
@@ -122,7 +141,7 @@ lemma comp_assoc_of_second_deg_zero
     (h₁₃ : a₁ + a₃ = a₁₃) :
     (α.comp β (add_zero _)).comp γ h₁₃ = α.comp (β.comp γ (zero_add _)) h₁₃ := by
   apply comp_assoc
-  cutsat
+  lia
 
 @[simp]
 lemma comp_assoc_of_third_deg_zero
@@ -130,7 +149,7 @@ lemma comp_assoc_of_third_deg_zero
     (h₁₂ : a₁ + a₂ = a₁₂) :
     (α.comp β h₁₂).comp γ (add_zero _) = α.comp (β.comp γ (add_zero _)) h₁₂ := by
   apply comp_assoc
-  cutsat
+  lia
 
 section
 
@@ -150,7 +169,7 @@ noncomputable abbrev hom {a : ℕ} (α : Ext X Y a) :
 
 @[simp]
 lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + b = c) :
-    (α.comp β h).hom = α.hom.comp β.hom (by cutsat) := by
+    (α.comp β h).hom = α.hom.comp β.hom (by lia) := by
   apply SmallShiftedHom.equiv_comp
 
 @[ext]
@@ -178,7 +197,7 @@ lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T
     (mk₀ f).comp ((mk₀ g).comp α (zero_add n)) (zero_add n) =
       (mk₀ (f ≫ g)).comp α (zero_add n) := by
   rw [← mk₀_comp_mk₀, comp_assoc]
-  cutsat
+  lia
 
 
 variable (X Y) in
@@ -304,6 +323,11 @@ lemma mk₀_addEquiv₀_apply (f : Ext X Y 0) :
     mk₀ (addEquiv₀ f) = f :=
   addEquiv₀.left_inv f
 
+@[simp]
+lemma mk₀_eq_zero_iff {M N : C} (f : M ⟶ N) :
+    Ext.mk₀ f = 0 ↔ f = 0 :=
+  Ext.addEquiv₀.symm.map_eq_zero_iff (x := f)
+
 section
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
@@ -397,7 +421,7 @@ noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} wher
     rw [← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
-    omega
+    lia
 
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`
 to `Ext X Y n`. -/
@@ -412,7 +436,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} whe
         dsimp
         symm
         apply Ext.comp_assoc
-        all_goals omega }
+        all_goals lia }
   map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     simp

@@ -3,12 +3,15 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Util.WhatsNew
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Init
 
 /-!
 # `ToExpr` instances for Mathlib
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean
@@ -23,9 +26,12 @@ instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
   toTypeExpr := mkConst ``PUnit [toLevel.{u+1}]
 
 deriving instance ToExpr for String.Pos.Raw
-deriving instance ToExpr for Substring
+deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
+
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
 
 open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.

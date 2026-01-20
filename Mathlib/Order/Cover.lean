@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Interval.Set.WithBotTop
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # The covering relation
@@ -22,6 +24,8 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⋖ b` means that `b` covers `a`.
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
+
+@[expose] public section
 
 
 open Set OrderDual
@@ -75,7 +79,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
   simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
-instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
+instance WCovBy.stdRefl : @Std.Refl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
 
 theorem WCovBy.Ioo_eq (h : a ⩿ b) : Ioo a b = ∅ :=
@@ -180,6 +184,7 @@ section LT
 
 variable [LT α] {a b : α}
 
+@[to_dual self]
 theorem CovBy.lt (h : a ⋖ b) : a < b :=
   h.1
 
@@ -192,6 +197,7 @@ alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 alias LT.lt.exists_lt_lt := exists_lt_lt_of_not_covBy
 
 /-- In a dense order, nothing covers anything. -/
+@[to_dual self]
 theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
   let ⟨_, hc⟩ := exists_between h.1
   h.2 hc.1 hc.2
@@ -200,16 +206,18 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[simp]
+@[to_dual self, simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
-@[simp]
+@[to_dual self, simp]
 theorem ofDual_covBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⋖ ofDual b ↔ b ⋖ a :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
 
+@[to_dual self]
 alias ⟨_, CovBy.toDual⟩ := toDual_covBy_toDual_iff
 
+@[to_dual self]
 alias ⟨_, CovBy.ofDual⟩ := ofDual_covBy_ofDual_iff
 
 end LT
@@ -273,7 +281,7 @@ instance : IsNonstrictStrictOrder α (· ⩿ ·) (· ⋖ ·) :=
   ⟨fun _ _ =>
     covBy_iff_wcovBy_and_not_le.trans <| and_congr_right fun h => h.wcovBy_iff_le.not.symm⟩
 
-instance CovBy.isIrrefl : IsIrrefl α (· ⋖ ·) :=
+instance CovBy.irrefl : @Std.Irrefl α (· ⋖ ·) :=
   ⟨fun _ ha => ha.ne rfl⟩
 
 theorem CovBy.Ioo_eq (h : a ⋖ b) : Ioo a b = ∅ :=

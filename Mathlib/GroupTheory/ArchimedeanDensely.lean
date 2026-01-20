@@ -3,13 +3,15 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
-import Mathlib.Data.Int.Interval
-import Mathlib.GroupTheory.Archimedean
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Order.Interval.Finset.DenselyOrdered
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered
@@ -21,6 +23,8 @@ integers, or they are densely ordered.
 They are placed here in a separate file (rather than incorporated as a continuation of
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
+
+@[expose] public section
 
 open Set
 open scoped WithZero
@@ -96,6 +100,7 @@ instance : Unique (ℤ ≃+o ℤᵒᵈ) where
         simp
       simp [H, ← ofDual_lt_ofDual] at h1
 
+set_option backward.proofsInPublic true in
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
 is isomorphic (and order-isomorphic) to the closure of an element in the other group. -/
@@ -124,10 +129,10 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     have ypos : 1 < y' := by
       simp [hy', eq_comm, ← hxy, hx]
     have hxc : closure {x} = closure {x'} := by
-      rcases max_cases x x⁻¹ with H|H <;>
+      rcases max_cases x x⁻¹ with H | H <;>
       simp [hx', H.left]
     have hyc : closure {y} = closure {y'} := by
-      rcases max_cases y y⁻¹ with H|H <;>
+      rcases max_cases y y⁻¹ with H | H <;>
       simp [hy', H.left]
     refine ⟨⟨⟨
       fun a ↦ ⟨y' ^ ((mem_closure_singleton).mp
@@ -177,7 +182,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
       rw [← zpow_right_inj this.right, zpow_mul', hm, zpow_one]
     rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at key
     rw [eq_comm]
-    rcases key with ⟨rfl, rfl⟩|⟨rfl, rfl⟩ <;>
+    rcases key with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ <;>
     simp [this.right.le, this.right, mabs]
   · wlog ha : 1 ≤ a generalizing a
     · convert @this (a⁻¹) ?_ (by simpa using le_of_not_ge ha) using 4
@@ -264,14 +269,14 @@ lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
     [AddCommGroup G] [LinearOrder G] [IsOrderedAddMonoid G] [Archimedean G] :
     Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
   suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
-    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
+    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩ | h
     · simpa [this h] using ⟨h⟩
     · simp only [h, not_true_eq_false, iff_false, not_nonempty_iff]
       exact ⟨fun H ↦ (this H) h⟩
   intro e H
   rw [denselyOrdered_iff_of_orderIsoClass e] at H
   obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
-  cutsat
+  lia
 
 /-- Any non-trivial linearly ordered archimedean additive group is either cyclic, or densely
 ordered, exclusively. -/
@@ -362,11 +367,10 @@ lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
       rw [LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered]
       intro hd
       obtain ⟨y, hy⟩ := exists_ne (0 : G)
-      wlog hy' : 0 < y generalizing y
+      wlog! hy' : 0 < y generalizing y
       · refine this (-y) ?_ ?_
         · simp [hy]
-        · simp only [not_lt] at hy'
-          simp [lt_of_le_of_ne hy' hy]
+        · simp [lt_of_le_of_ne hy' hy]
       obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩
       obtain ⟨w, hw, hw'⟩ := exists_between hz'
       exact hz'' ⟨w, hw.le⟩ hw hw'

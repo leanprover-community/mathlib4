@@ -3,10 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Algebra.GroupWithZero.Nat
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # ℕ and ℤ are normalized GCD monoids.
@@ -22,6 +24,8 @@ import Mathlib.Algebra.GroupWithZero.Nat
 ## Tags
 natural numbers, integers, normalization monoid, gcd monoid, greatest common divisor
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -84,7 +88,7 @@ theorem nonneg_of_normalize_eq_self {z : ℤ} (hz : normalize z = z) : 0 ≤ z :
   by_cases! h : 0 ≤ z
   · exact h
   · rw [normalize_of_nonpos h.le] at hz
-    cutsat
+    lia
 
 theorem nonneg_iff_normalize_eq_self (z : ℤ) : normalize z = z ↔ 0 ≤ z :=
   ⟨nonneg_of_normalize_eq_self, normalize_of_nonneg⟩

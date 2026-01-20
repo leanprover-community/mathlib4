@@ -3,7 +3,9 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
 
 /-!
 # Models of elliptic curves with prescribed j-invariant
@@ -31,6 +33,8 @@ It is a modification of [silverman2009], Chapter III, Proposition 1.4 (c).
 
 elliptic curve, weierstrass equation, j invariant
 -/
+
+@[expose] public section
 
 namespace WeierstrassCurve
 

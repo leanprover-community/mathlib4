@@ -3,15 +3,17 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Analysis.InnerProductSpace.l2Space
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Analysis.InnerProductSpace.l2Space
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 /-!
 
@@ -58,6 +60,8 @@ For continuous maps `f : AddCircle T → ℂ`, the theorem
 coefficients of `f` is summable, then the Fourier series `∑ (i : ℤ), fourierCoeff f i * fourier i`
 converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -165,7 +169,8 @@ theorem fourier_neg' {n : ℤ} {x : AddCircle T} : @toCircle T (-(n • x)) = co
   rw [← neg_smul, ← fourier_apply]; exact fourier_neg
 
 -- simp normal form is `fourier_add'`
-theorem fourier_add {m n : ℤ} {x : AddCircle T} : fourier (m+n) x = fourier m x * fourier n x := by
+theorem fourier_add {m n : ℤ} {x : AddCircle T} :
+    fourier (m + n) x = fourier m x * fourier n x := by
   simp_rw [fourier_apply, add_zsmul, toCircle_add, Circle.coe_mul]
 
 @[simp]
@@ -270,7 +275,7 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   split_ifs with h
   · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measureReal_univ_eq_one, Complex.real_smul,
+    rw [this, integral_const, probReal_univ, Complex.real_smul,
       Complex.ofReal_one, mul_one]
   have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)

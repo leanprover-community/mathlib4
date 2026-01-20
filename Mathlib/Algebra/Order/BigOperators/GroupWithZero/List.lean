@@ -3,8 +3,10 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-!
 # Big operators on a list in ordered groups with zeros
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 This file contains the results concerning the interaction of list big operators with ordered
 groups with zeros.
 -/
+
+public section
 
 namespace List
 variable {R : Type*} [CommMonoidWithZero R] [PartialOrder R] [ZeroLEOneClass R] [PosMulMono R]

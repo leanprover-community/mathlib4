@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Part
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Part
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Natural numbers with infinity
@@ -52,6 +54,8 @@ If `ENat` does not serve your purposes, please raise this on the community Zulip
 
 PartENat, ℕ∞
 -/
+
+@[expose] public section
 
 
 open Part hiding some
@@ -220,7 +224,6 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 
 instance partialOrder : PartialOrder PartENat where
-  le := (· ≤ ·)
   le_refl _ := ⟨id, fun _ => le_rfl⟩
   le_trans := fun _ _ _ ⟨hxy₁, hxy₂⟩ ⟨hyz₁, hyz₂⟩ =>
     ⟨hxy₁ ∘ hyz₁, fun _ => le_trans (hxy₂ _) (hyz₂ _)⟩
@@ -238,7 +241,7 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cutsat
+      lia
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
       obtain ⟨hx', h⟩ := h
@@ -246,11 +249,11 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_ge (h _) (H _)⟩
 
-noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat :=
-  { add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
-      PartENat.casesOn c (by simp [top_add]) fun c =>
-        ⟨fun h => And.intro (dom_natCast _) (h₁ h.2), fun h => by
-          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩ }
+noncomputable instance isOrderedAddMonoid : IsOrderedAddMonoid PartENat where
+  add_le_add_left := fun a b ⟨h₁, h₂⟩ c =>
+      PartENat.casesOn c (by simp [add_top]) fun c =>
+        ⟨fun h => And.intro (h₁ h.1) (dom_natCast _), fun h => by
+          simpa only [coe_add_get] using add_le_add_left (h₂ _) c⟩
 
 instance semilatticeSup : SemilatticeSup PartENat :=
   { PartENat.partialOrder with
@@ -261,11 +264,9 @@ instance semilatticeSup : SemilatticeSup PartENat :=
       ⟨fun hz => ⟨hx₁ hz, hy₁ hz⟩, fun _ => sup_le (hx₂ _) (hy₂ _)⟩ }
 
 instance orderBot : OrderBot PartENat where
-  bot := ⊥
   bot_le _ := ⟨fun _ => trivial, fun _ => Nat.zero_le _⟩
 
 instance orderTop : OrderTop PartENat where
-  top := ⊤
   le_top _ := ⟨fun h => False.elim h, fun hy => False.elim hy⟩
 
 instance : ZeroLEOneClass PartENat where
@@ -387,7 +388,7 @@ instance isTotal : IsTotal PartENat (· ≤ ·) where
 
 noncomputable instance linearOrder : LinearOrder PartENat :=
   { PartENat.partialOrder with
-    le_total := IsTotal.total
+    le_total := isTotal.total
     toDecidableLE := Classical.decRel _
     max := (· ⊔ ·)
     max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }
@@ -432,7 +433,7 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
     exact_mod_cast natCast_lt_top _
   intro h
   norm_cast at h
-  exact_mod_cast add_lt_add_right h _
+  exact mod_cast add_lt_add_left h _
 
 protected theorem add_lt_add_iff_right {x y z : PartENat} (hz : z ≠ ⊤) : x + z < y + z ↔ x < y :=
   ⟨lt_of_add_lt_add_right, fun h => PartENat.add_lt_add_right h hz⟩
@@ -744,9 +745,11 @@ theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=
 
 end Find
 
-noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat :=
-  { PartENat.linearOrder, PartENat.isOrderedAddMonoid, PartENat.orderTop with
-    top_add' := top_add }
+noncomputable instance : LinearOrderedAddCommMonoidWithTop PartENat where
+  top_add' := top_add
+  isAddLeftRegular_of_ne_top a ha b c hbc := by
+    contrapose! hbc
+    simpa only [ne_iff_lt_or_gt, PartENat.add_lt_add_iff_left ha] using hbc.lt_or_gt
 
 noncomputable instance : CompleteLinearOrder PartENat :=
   { lattice, withTopOrderIso.symm.toGaloisInsertion.liftCompleteLattice,

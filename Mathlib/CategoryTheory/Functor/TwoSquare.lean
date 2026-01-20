@@ -3,9 +3,11 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # 2-squares of functors
@@ -29,6 +31,8 @@ law of those two operations.
 Generalize all of this to double categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 

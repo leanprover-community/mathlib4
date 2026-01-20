@@ -1,32 +1,6 @@
-/-
-Copyright (c) 2019 mathlib community. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Wojciech Nawrocki
--/
-import Batteries.Data.RBMap.Basic
-import Mathlib.Data.Tree.Basic
+module
 
-/-!
-# Binary tree and RBMaps
+public import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Linter.DeprecatedModule
 
-In this file we define `Tree.ofRBNode`.
-This definition was moved from the main file to avoid a dependency on `RBMap`.
-
-## TODO
-
-Implement a `Traversable` instance for `Tree`.
-
-## References
-
-<https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
--/
-
-namespace Tree
-
-universe u
-
-variable {α : Type u}
-
-open Batteries (RBNode)
-
-end Tree
+deprecated_module (since := "2026-01-16")

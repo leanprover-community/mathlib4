@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
 /-!
 # Oriented angles and orthogonal projection.
@@ -12,6 +14,8 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 This file proves lemmas relating to oriented angles involving orthogonal projections.
 
 -/
+
+public section
 
 
 namespace EuclideanGeometry

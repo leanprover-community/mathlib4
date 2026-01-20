@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups
@@ -13,6 +15,8 @@ import Mathlib.Algebra.BigOperators.Group.List.Basic
 This file contains the results concerning the interaction of list big operators with ordered
 groups/monoids.
 -/
+
+public section
 
 variable {ι α M N : Type*}
 
@@ -261,7 +265,7 @@ theorem apply_prod_le_sum_map (h_one : f 1 ≤ 0) (h_mul : ∀ (a b : α), f (a 
     f l.prod ≤ (l.map f).sum := by
   induction l with
   | nil => simp [h_one]
-  | cons hd tl IH => simpa using (h_mul _ _).trans (add_le_add_left IH _)
+  | cons hd tl IH => grw [prod_cons, h_mul, IH]; simp
 
 theorem sum_map_le_apply_prod (h_one : 0 ≤ f 1) (h_mul : ∀ (a b : α), f a + f b ≤ f (a * b)) :
     (l.map f).sum ≤ f l.prod :=

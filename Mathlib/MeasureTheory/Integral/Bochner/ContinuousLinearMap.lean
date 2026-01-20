@@ -3,9 +3,11 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.CompleteCodomain
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+module
+
+public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Continuous linear maps composed with integration
@@ -16,6 +18,8 @@ operations on the space `L¹`. Note that composition by a continuous linear map 
 the composition, as we are dealing with classes of functions, but it has already been defined
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
+
+public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
@@ -49,7 +53,7 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
   apply φ_int.induction (P := fun φ => ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ))
   · intro e s s_meas _
     rw [integral_indicator_const e s_meas, ← @smul_one_smul E ℝ 𝕜 _ _ _ _ _ (μ.real s) e,
-      ContinuousLinearMap.map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
+      map_smulₛₗ, hσ, map_one, smul_assoc, one_smul,
       ← integral_indicator_const (L e) s_meas]
     congr 1 with a
     rw [← Function.comp_def L, Set.indicator_comp_of_zero L.map_zero, Function.comp_apply]
@@ -69,7 +73,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
-  · rcases subsingleton_or_nontrivial H with hH|hH
+  · rcases subsingleton_or_nontrivial H with hH | hH
     · simp [Subsingleton.eq_zero v]
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
@@ -121,7 +125,7 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace ℝ E]
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
-  obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
+  obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
   · simp [integral, *]
 

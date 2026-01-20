@@ -3,12 +3,14 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Ring.Subring.Pointwise
-import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationRing
+public import Mathlib.RingTheory.Localization.AsSubring
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Ring.Subring.Pointwise
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 The order structure on `ValuationSubring K`.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -85,13 +89,15 @@ instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
+@[simp]
+theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
+
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
 instance : OrderTop (ValuationSubring K) where
-  top := ⊤
   le_top := le_top
 
 instance : Inhabited (ValuationSubring K) :=
@@ -119,7 +125,7 @@ instance : ValuationRing A where
       ext
       simp [field]
 
-instance : Algebra A K := inferInstanceAs <| Algebra A.toSubring K
+instance : Algebra A K := inferInstance
 
 instance isLocalRing : IsLocalRing A := inferInstance
 
@@ -349,10 +355,10 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
-  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
+  exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
@@ -409,6 +415,9 @@ variable (A : ValuationSubring K)
 @[simp]
 theorem valuationSubring_valuation : A.valuation.valuationSubring = A := by
   ext; rw [← A.valuation_le_one_iff]; rfl
+
+theorem integer_valuation : A.valuation.integer = A.toSubring :=
+  congr(($A.valuationSubring_valuation).toSubring)
 
 section UnitGroup
 
@@ -474,14 +483,26 @@ end UnitGroup
 
 section nonunits
 
-/-- The nonunits of a valuation subring of `K`, as a subsemigroup of `K` -/
-def nonunits : Subsemigroup K where
+/-- The nonunits of a valuation subring of `K`, as a nonunital subring of `K` -/
+def nonunits : NonUnitalSubring K where
   carrier := {x | A.valuation x < 1}
   mul_mem' ha hb := (mul_lt_mul'' (Set.mem_setOf.mp ha) (Set.mem_setOf.mp hb)
     zero_le' zero_le').trans_eq <| mul_one _
+  add_mem' ha hb := (A.valuation.map_add ..).trans_lt (max_lt ha hb)
+  zero_mem' := by simp
+  neg_mem' h := (A.valuation.map_neg _).trans_lt h
 
 theorem mem_nonunits_iff {x : K} : x ∈ A.nonunits ↔ A.valuation x < 1 :=
   Iff.rfl
+
+theorem mem_nonunits_iff_or {x : K} : x ∈ A.nonunits ↔ x = 0 ∨ x⁻¹ ∉ A := by
+  rw [← valuation_le_one_iff, ← or_congr_right' fun h ↦ (A.valuation.one_le_val_iff h).not,
+    ← lt_iff_not_ge, ← mem_nonunits_iff, or_iff_right_of_imp]
+  rintro rfl
+  exact A.nonunits.zero_mem
+
+theorem inv_mem_nonunits_iff {x : K} : x⁻¹ ∈ A.nonunits ↔ x = 0 ∨ x ∉ A := by
+  rw [mem_nonunits_iff_or, inv_inv, inv_eq_zero]
 
 theorem nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonunits ↔ A ≤ B := by
   constructor
@@ -492,14 +513,15 @@ theorem nonunits_le_nonunits {A B : ValuationSubring K} : B.nonunits ≤ A.nonun
   · intro h x hx
     by_contra h_1; exact not_lt.2 (monotone_mapOfLE _ _ h (not_lt.1 h_1)) hx
 
-theorem nonunits_injective : Function.Injective (nonunits : ValuationSubring K → Subsemigroup _) :=
+theorem nonunits_injective :
+    Function.Injective (nonunits : ValuationSubring K → NonUnitalSubring _) :=
   fun A B h => by simpa only [le_antisymm_iff, nonunits_le_nonunits] using h.symm
 
 theorem nonunits_inj {A B : ValuationSubring K} : A.nonunits = B.nonunits ↔ A = B :=
   nonunits_injective.eq_iff
 
 /-- The map on valuation subrings to their nonunits is a dual order embedding. -/
-def nonunitsOrderEmbedding : ValuationSubring K ↪o (Subsemigroup K)ᵒᵈ where
+def nonunitsOrderEmbedding : ValuationSubring K ↪o (NonUnitalSubring K)ᵒᵈ where
   toFun A := A.nonunits
   inj' := nonunits_injective
   map_rel_iff' {_A _B} := nonunits_le_nonunits
@@ -514,7 +536,7 @@ at the expense of a more complicated right-hand side.
 theorem coe_mem_nonunits_iff {a : A} : (a : K) ∈ A.nonunits ↔ a ∈ IsLocalRing.maximalIdeal A :=
   (valuation_lt_one_iff _ _).symm
 
-theorem nonunits_le : A.nonunits ≤ A.toSubring.toSubmonoid.toSubsemigroup := fun _a ha =>
+theorem nonunits_le : A.nonunits ≤ A.toNonUnitalSubring := fun _a ha =>
   (A.valuation_le_one_iff _).mp (A.mem_nonunits_iff.mp ha).le
 
 theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
@@ -690,7 +712,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G K]
 
 This is available as an instance in the `Pointwise` locale. -/
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
-  smul g S :=-- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
+  smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
       mem_or_inv_mem' := fun x =>
         (mem_or_inv_mem S (g⁻¹ • x)).imp Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr fun h =>

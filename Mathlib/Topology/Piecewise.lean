@@ -3,11 +3,15 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Continuity of piecewise defined functions
 -/
+
+public section
 
 open Set Filter Function Topology Filter
 
@@ -87,6 +91,8 @@ theorem ContinuousOn.piecewise [∀ a, Decidable (a ∈ t)]
     (hg : ContinuousOn g <| s ∩ closure tᶜ) : ContinuousOn (piecewise t f g) s :=
   hf.if ht hg
 
+-- `simp` runs on two goals, but only uses `assumption` on one of them
+set_option linter.flexible false in
 theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
     (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
     (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))

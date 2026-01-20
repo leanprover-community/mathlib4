@@ -3,8 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.CompletionName
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Lean.Meta.CompletionName
 
 /-!
 # Constructing a RefinedDiscrTree
@@ -22,6 +24,9 @@ There is also `createModuleDiscrTree` which does the same but with the constants
 from the current file.
 
 -/
+
+public section
+
 namespace Lean.Meta.RefinedDiscrTree
 
 variable {α : Type}
@@ -161,12 +166,12 @@ private structure InitResults (α : Type) where
 namespace InitResults
 
 /-- Combine two initial results. -/
-protected def append (x y : InitResults α) : InitResults α :=
+private protected def append (x y : InitResults α) : InitResults α :=
   let { tree := xv, errors := xe } := x
   let { tree := yv, errors := ye } := y
   { tree := xv ++ yv, errors := xe ++ ye }
 
-instance : Append (InitResults α) where
+private instance : Append (InitResults α) where
   append := InitResults.append
 
 end InitResults

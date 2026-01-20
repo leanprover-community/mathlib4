@@ -3,9 +3,11 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Distributive.Monoidal
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Distributive.Monoidal
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 
@@ -40,6 +42,8 @@ monoidal distributive.
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/
 
+@[expose] public section
+
 universe v v₂ u u₂
 
 noncomputable section
@@ -50,7 +54,7 @@ open Category Limits MonoidalCategory Distributive CartesianMonoidalCategory
 
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C] [HasBinaryCoproducts C]
 
-/-- A category `C` with finite products is Cartesian distributive if is monoidal distributive
+/-- A category `C` with finite products is Cartesian distributive if it is monoidal distributive
 with respect to the Cartesian monoidal structure. -/
 abbrev IsCartesianDistributive :=
   IsMonoidalDistrib C
