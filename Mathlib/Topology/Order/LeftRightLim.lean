@@ -96,6 +96,20 @@ theorem ContinuousWithinAt.rightLim_eq [TopologicalSpace α] [OrderTopology α] 
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Ici a) a) : rightLim f a = f a :=
   ContinuousWithinAt.leftLim_eq (α := αᵒᵈ) hf
 
+theorem tendsto_leftLim_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology α]
+    {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)) :
+    Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a)) := by
+  rcases eq_or_neBot (𝓝[<] a) with h' | h'
+  · simp [h']
+  rw [h'α.topology_eq_generate_intervals] at h h' ⊢
+  simp only [leftLim, neBot_iff.1 h', h, not_true_eq_false, or_self, ↓reduceIte]
+  exact tendsto_nhds_limUnder h
+
+theorem tendsto_rightLim_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology α]
+    {f : α → β} {a : α} (h : ∃ y, Tendsto f (𝓝[>] a) (𝓝 y)) :
+    Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a)) :=
+  tendsto_leftLim_of_tendsto (α := αᵒᵈ) h
+
 end
 
 open Function
@@ -172,11 +186,8 @@ theorem rightLim_le_leftLim (h : x < y) : rightLim f x ≤ leftLim f y := by
 
 variable [TopologicalSpace α] [OrderTopology α]
 
-theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) := by
-  rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
-  · simp [h']
-  rw [leftLim_eq_sSup hf h']
-  exact hf.tendsto_nhdsLT x
+theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
+  tendsto_leftLim_of_tendsto ⟨_, hf.tendsto_nhdsLT x⟩
 
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)
