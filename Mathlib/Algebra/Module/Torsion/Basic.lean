@@ -63,7 +63,7 @@ public import Mathlib.RingTheory.SimpleModule.Basic
 ## TODO
 
 * Move the advanced material to a new file `RingTheory.Torsion`.
-* Replace `NoZeroSMulDivisors` with `Module.IsTorsionFree`
+* Replace `Module.IsTorsionFree` with `Module.IsTorsionFree`
 
 ## Tags
 
@@ -763,26 +763,6 @@ theorem coe_torsion_eq_annihilator_ne_bot :
       ⟨a, fun _ ⟨b, hb⟩ => by rw [← hb, smul_comm, ← Submonoid.smul_def, hax, smul_zero],
         nonZeroDivisors.coe_ne_zero _⟩,
       fun ⟨a, hax, ha⟩ => ⟨⟨_, mem_nonZeroDivisors_of_ne_zero ha⟩, hax x ⟨1, one_smul _ _⟩⟩⟩
-
-/-- A module over a domain has `NoZeroSMulDivisors` iff its torsion submodule is trivial. -/
-theorem noZeroSMulDivisors_iff_torsion_eq_bot : NoZeroSMulDivisors R M ↔ torsion R M = ⊥ := by
-  constructor <;> intro h
-  · haveI : NoZeroSMulDivisors R M := h
-    rw [eq_bot_iff]
-    rintro x ⟨a, hax⟩
-    change (a : R) • x = 0 at hax
-    rcases eq_zero_or_eq_zero_of_smul_eq_zero hax with h0 | h0
-    · exfalso
-      exact nonZeroDivisors.coe_ne_zero a h0
-    · exact h0
-  · exact
-      { eq_zero_or_eq_zero_of_smul_eq_zero := fun {a} {x} hax => by
-          by_cases ha : a = 0
-          · left
-            exact ha
-          · right
-            rw [← mem_bot R, ← h]
-            exact ⟨⟨a, mem_nonZeroDivisors_of_ne_zero ha⟩, hax⟩ }
 
 lemma torsion_int {G} [AddCommGroup G] :
     (torsion ℤ G).toAddSubgroup = AddCommGroup.torsion G := by

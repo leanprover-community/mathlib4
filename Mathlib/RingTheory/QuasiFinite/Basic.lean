@@ -41,8 +41,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 open TensorProduct
 
 -- for performance reasons
-attribute [-instance] NoZeroSMulDivisors.instFaithfulSMulOfNontrivial
-  Module.Free.instFaithfulSMulOfNontrivial Algebra.IsIntegral.isLocalHom
+attribute [-instance] Module.Free.instFaithfulSMulOfNontrivial Algebra.IsIntegral.isLocalHom
 
 namespace Algebra
 

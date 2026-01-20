@@ -225,12 +225,6 @@ end CommSemiring
 
 @[deprecated "The assumptions `NoZeroSMulDivisors R M` and `Nontrivial M` imply `NoZeroDivisors R`,
 and TC inference already knows that this implies `IsReduced R`." (since := "2025-10-20")]
-lemma NoZeroSMulDivisors.isReduced (R M : Type*)
-    [MonoidWithZero R] [Zero M] [MulActionWithZero R M] [Nontrivial M] [NoZeroSMulDivisors R M] :
+lemma NoZeroSMulDivisors.isReduced (R : Type*) [MonoidWithZero R] [NoZeroDivisors R] :
     IsReduced R := by
-  have : NoZeroDivisors R := by
-    obtain ⟨m, hm⟩ := exists_ne (0 : M)
-    constructor
-    rintro x y hxy
-    simpa [mul_smul, hm] using congr($hxy • m)
   infer_instance

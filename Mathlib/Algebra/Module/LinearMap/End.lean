@@ -8,7 +8,7 @@ module
 
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Module.Equiv.Opposite
-public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Endomorphisms of a module
@@ -331,15 +331,8 @@ lemma smulRight_zero (f : M₁ →ₗ[R] S) : f.smulRight (0 : M) = 0 := by ext;
 lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext; simp
 
 @[simp]
-lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
-    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
-  ext v
-  replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
-  rw [smul_eq_zero] at h
-  tauto
+lemma smulRight_apply_eq_zero_iff [IsDomain S] {f : M₁ →ₗ[R] S} {x : M} [Module.IsTorsionFree S M] :
+    f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by simp [DFunLike.ext_iff, forall_or_right]
 
 end SMulRight
 

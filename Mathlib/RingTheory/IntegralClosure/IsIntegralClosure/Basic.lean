@@ -363,13 +363,6 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
       fun _ _ => ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
-theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
-    NoZeroSMulDivisors R A := by
-  refine
-    Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => ?_
-  simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
-
 variable {R} (A) {B}
 
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/

@@ -287,10 +287,8 @@ instance instSMulCommClass' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTow
 instance instSMulCommClass [SMulCommClass R A A] : SMulCommClass R S S where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : A) (y : A)
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
-  ⟨fun {c x} h =>
-    have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg ((↑) : S → A) h)
-    this.imp_right Subtype.ext⟩
+instance instIsTorsionFree [Module.IsTorsionFree R A] : Module.IsTorsionFree R S :=
+  S.toSubmodule.instIsTorsionFree
 
 end
 

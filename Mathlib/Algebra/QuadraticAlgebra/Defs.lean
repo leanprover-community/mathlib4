@@ -483,10 +483,6 @@ instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
     Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
   (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
 
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
-
 @[simp]
 theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=
   (algebraMap R (QuadraticAlgebra R a b)).map_pow r n
