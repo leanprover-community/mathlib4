@@ -6,7 +6,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
 /-!
-# A theorem by Smith (following T. Beke)
+# Lemma 1.8 (T. Beke)
 
 -/
 

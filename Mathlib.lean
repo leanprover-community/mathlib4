@@ -1457,6 +1457,8 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Opposite
 public import Mathlib.AlgebraicTopology.ModelCategory.Over
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma18
+public import Mathlib.AlgebraicTopology.ModelCategory.Smith.SolutionSetCondition
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -3228,7 +3230,6 @@ public import Mathlib.CategoryTheory.Sites.Types
 public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Skeletal
 public import Mathlib.CategoryTheory.SmallObject.Basic
-public import Mathlib.CategoryTheory.SmallObject.Beke
 public import Mathlib.CategoryTheory.SmallObject.Construction
 public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
