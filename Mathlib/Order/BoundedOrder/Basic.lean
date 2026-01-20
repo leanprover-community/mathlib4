@@ -76,7 +76,7 @@ end LE
 /-- A top element can be replaced with `⊤`.
 
 Prefer `IsTop.eq_top` if `α` already has a top element. -/
-@[to_dual (attr := elab_as_elim)/-- A bottom element can be replaced with `⊥`.
+@[to_dual (attr := elab_as_elim) /-- A bottom element can be replaced with `⊥`.
 
 Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/]
 protected def IsTop.rec [LE α] {P : (x : α) → IsTop x → Sort*}
@@ -245,6 +245,7 @@ end OrderBot
   denoted `⊤` and `⊥` respectively. -/
 class BoundedOrder (α : Type u) [LE α] extends OrderTop α, OrderBot α
 
+attribute [to_dual self (reorder := 3 4)] BoundedOrder.mk
 attribute [to_dual existing] BoundedOrder.toOrderTop
 
 instance OrderDual.instBoundedOrder (α : Type u) [LE α] [BoundedOrder α] : BoundedOrder αᵒᵈ where

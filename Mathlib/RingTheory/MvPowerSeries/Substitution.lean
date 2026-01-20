@@ -150,6 +150,10 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
     HasSubst a :=
   hasSubst_of_constantCoeff_nilpotent (fun s ↦ by simp only [ha s, IsNilpotent.zero])
 
+protected theorem HasSubst.X_pow [Finite σ] {n : ℕ} (hn : n ≠ 0) :
+    HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S) ^ n) :=
+  hasSubst_of_constantCoeff_zero (by simp [hn])
+
 /-- Substitution of power series into a power series
 
 It coincides with evaluation when `f` is a polynomial, or under `HasSubst a`.
@@ -279,6 +283,21 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
+    {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
+    MvPowerSeries.constantCoeff (subst a f) = 0 := by
+  rw [constantCoeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro d
+  by_cases hd : d = 0
+  · simp [hd, hf]
+  · have : constantCoeff (d.prod fun s e ↦ a s ^ e) = 0 := by
+      obtain ⟨i, hi⟩ : ∃ i : σ, d i ≠ 0 := by
+        by_contra! hc
+        exact hd <| Finsupp.ext hc
+      simpa [map_finsuppProd, ha'] using
+        Finset.prod_eq_zero (i := i) (by simp [hi]) (by simp [zero_pow hi])
+    rw [this, smul_zero]
+
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
     map (algebraMap R S) f = subst X f := by
   ext e
@@ -287,6 +306,19 @@ theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
       algebra_compatible_smul S, smul_eq_mul, mul_one]
   · intro d hd
     rw [← MvPowerSeries.monomial_one_eq, coeff_monomial_ne hd.symm, smul_zero]
+
+omit [Algebra R S] in
+theorem map_subst [Finite σ] {a : σ → MvPowerSeries τ R} (ha : HasSubst a) {h : R →+* S}
+    (f : MvPowerSeries σ R) :
+    (f.subst a).map h = (f.map h).subst (fun i => (a i).map h) := by
+  ext n
+  have {r : R} : h r = h.toAddMonoidHom r := rfl
+  rw [coeff_subst <| hasSubst_of_constantCoeff_nilpotent fun s => (ha.const_coeff s).map h,
+    coeff_map, coeff_subst ha, this, AddMonoidHom.map_finsum _ (coeff_subst_finite ha _ _),
+      finsum_congr]
+  intro d
+  simp [smul_eq_mul, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe, map_mul,
+    ← coeff_map, Finsupp.prod]
 
 variable
     {T : Type*} [CommRing T]

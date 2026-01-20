@@ -53,7 +53,7 @@ abbrev ObjAsType : Type :=
 instance : Countable (ObjAsType α) := Countable.of_equiv α (equivShrink.{0} α)
 
 instance {i j : ObjAsType α} : Countable (i ⟶ j) :=
-  CountableCategory.countableHom ((equivShrink.{0} α).symm i) _
+  Countable.of_equiv _ InducedCategory.homEquiv.symm
 
 instance : CountableCategory (ObjAsType α) where
 

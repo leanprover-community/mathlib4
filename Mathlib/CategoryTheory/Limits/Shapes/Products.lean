@@ -29,7 +29,7 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
 
@@ -874,7 +874,7 @@ instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
 instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
   left_cancellation _ _ h := by
     refine colimit.hom_ext fun j => ?_
-    simpa using  Sigma.ι _ j ≫= h
+    simpa using Sigma.ι _ j ≫= h
 
 end
 

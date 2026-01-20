@@ -19,7 +19,7 @@ of `WithTop.some`.
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

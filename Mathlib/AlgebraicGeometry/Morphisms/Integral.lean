@@ -98,6 +98,13 @@ lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
 
 instance : IsMultiplicative @IsIntegralHom where
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
+    IsIntegralHom (Limits.coprod.desc f g) := by
+  refine hasAffineProperty.coprodDesc_affineAnd RingHom.isIntegral_respectsIso ?_ _ _ ‹_› ‹_›
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g]
+  refine algebraMap_isIntegral_iff.mpr inferInstance
+
 instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
     UniversallyClosed f := by
   revert X Y f ‹IsIntegralHom f›

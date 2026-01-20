@@ -22,18 +22,23 @@ section Finset
 
 variable [Encodable α]
 
+set_option backward.privateInPublic true in
 private def enle : α → α → Prop :=
   encode ⁻¹'o (· ≤ ·)
 
+set_option backward.privateInPublic true in
 private theorem enle.isLinearOrder : IsLinearOrder α enle :=
   (RelEmbedding.preimage ⟨encode, encode_injective⟩ (· ≤ ·)).isLinearOrder
 
+set_option backward.privateInPublic true in
 private def decidable_enle (a b : α) : Decidable (enle a b) := by
   unfold enle Order.Preimage
   infer_instance
 
 attribute [local instance] enle.isLinearOrder decidable_enle
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Explicit encoding function for `Multiset α` -/
 def encodeMultiset (s : Multiset α) : ℕ :=
   encode (s.sort enle)
@@ -42,6 +47,8 @@ def encodeMultiset (s : Multiset α) : ℕ :=
 def decodeMultiset (n : ℕ) : Option (Multiset α) :=
   ((↑) : List α → Multiset α) <$> decode (α := List α) n
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `α` is encodable, then so is `Multiset α`. -/
 instance _root_.Multiset.encodable : Encodable (Multiset α) :=
   ⟨encodeMultiset, decodeMultiset, fun s => by simp [encodeMultiset, decodeMultiset, encodek]⟩

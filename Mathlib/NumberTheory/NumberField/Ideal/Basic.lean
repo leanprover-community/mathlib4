@@ -29,11 +29,11 @@ We study results about integral ideals of a number field `K`.
 
 @[expose] public section
 
-section torsionMapQuot
-
 open Ideal NumberField Units
 
 variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
+
+section torsionMapQuot
 
 theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
     {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
@@ -109,3 +109,6 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   rwa [Nat.card_eq_fintype_card, Nat.card_units] at h
 
 end torsionMapQuot
+
+instance [NumberField K] [I.IsMaximal] : Finite (𝓞 K ⧸ I) :=
+  I.finiteQuotientOfFreeOfNeBot (I.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'

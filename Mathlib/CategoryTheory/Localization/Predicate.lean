@@ -179,12 +179,12 @@ order to deduce properties of `L` from properties of `W.Q`. -/
 def equivalenceFromModel : W.Localization ≌ D :=
   (Localization.Construction.lift L (inverts L W)).asEquivalence
 
-/-- Via the equivalence of categories `equivalence_from_model L W : W.localization ≌ D`,
+/-- Via the equivalence of categories `equivalenceFromModel L W : W.Localization ≌ D`,
 one may identify the functors `W.Q` and `L`. -/
 def qCompEquivalenceFromModelFunctorIso : W.Q ⋙ (equivalenceFromModel L W).functor ≅ L :=
   eqToIso (Construction.fac _ _)
 
-/-- Via the equivalence of categories `equivalence_from_model L W : W.localization ≌ D`,
+/-- Via the equivalence of categories `equivalenceFromModel L W : W.Localization ≌ D`,
 one may identify the functors `L` and `W.Q`. -/
 def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).inverse ≅ W.Q :=
   calc
@@ -218,12 +218,11 @@ instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
       rw [Construction.fac])) (fun τ => by
         ext
         dsimp [Construction.whiskeringLeftEquivalence, equivalenceFromModel, whiskerLeft]
-        erw [NatTrans.comp_app, NatTrans.comp_app, eqToHom_app, eqToHom_app, eqToHom_refl,
-          eqToHom_refl, comp_id, id_comp]
-        · rfl
-        all_goals
-          change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ _ = L ⋙ _
-          rw [Construction.fac])
+        rw [ObjectProperty.eqToHom_hom, ObjectProperty.eqToHom_hom, eqToHom_app, eqToHom_app,
+          eqToHom_refl, eqToHom_refl]
+        dsimp
+        rw [comp_id, id_comp]
+        rfl)
   exact Functor.isEquivalence_of_iso iso
 
 /-- The equivalence of categories `(D ⥤ E) ≌ (W.FunctorsInverting E)` induced by

@@ -28,7 +28,7 @@ reflexive.
 * `IsReflexivePair` is the predicate that f and g have a common section.
 * `WalkingReflexivePair` is the diagram indexing pairs with a common section.
 * A `reflexiveCofork` is a cocone on a diagram indexed by `WalkingReflexivePair`.
-* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclustion functor from
+* `WalkingReflexivePair.inclusionWalkingReflexivePair` is the inclusion functor from
   `WalkingParallelPair` to `WalkingReflexivePair`. It acts on reflexive pairs as forgetting
   the common section.
 * `HasReflexiveCoequalizers` is the predicate that a category has all colimits of reflexive pairs.
@@ -39,7 +39,7 @@ reflexive.
 
 * `IsKernelPair.isReflexivePair`: A kernel pair is a reflexive pair
 * `WalkingParallelPair.inclusionWalkingReflexivePair_final`: The inclusion functor is final.
-* `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
+* `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only if it
   has all colimits of shape `WalkingReflexivePair`.
 
 ## TODO
@@ -408,6 +408,7 @@ variable {F G : WalkingReflexivePair ⥤ C}
   (h₂ : F.map right ≫ e₀ = e₁ ≫ G.map right := by cat_disch)
   (h₃ : F.map reflexion ≫ e₁ = e₀ ≫ G.map reflexion := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
   app := fun x ↦ match x with
@@ -420,9 +421,11 @@ def mkNatTrans : F ⟶ G where
       simp only [Functor.map_id, Category.id_comp, Category.comp_id, Functor.map_comp, h₁, h₂, h₃,
         reassoc_of% h₁, reassoc_of% h₂, Category.assoc]
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_zero : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app zero = e₀ := rfl
 
+set_option backward.privateInPublic true in
 @[simp]
 lemma mkNatTrans_app_one : (mkNatTrans e₀ e₁ h₁ h₂ h₃).app one = e₁ := rfl
 

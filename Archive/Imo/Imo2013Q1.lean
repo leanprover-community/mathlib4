@@ -59,7 +59,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
     have hmpk : (m pk : ℚ) = 2 * t + 2 ^ pk.succ := by
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
     calc
-      ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
+      ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
         rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
         simp [field, -mul_eq_mul_right_iff]

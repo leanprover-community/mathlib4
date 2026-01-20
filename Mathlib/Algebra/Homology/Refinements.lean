@@ -18,7 +18,7 @@ in the file `Mathlib/CategoryTheory/Abelian/Refinements.lean`.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory
 

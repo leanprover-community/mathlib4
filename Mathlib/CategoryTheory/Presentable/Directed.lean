@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
@@ -15,11 +16,11 @@ public import Mathlib.CategoryTheory.Products.Unitor
 /-!
 # `κ`-filtered categories and `κ`-directed poset
 
-In this file, we shall formalize the proof by Deligne (SGA 4 I 8.1.6) that for
+In this file, we formalize the proof by Deligne (SGA 4 I 8.1.6) that for
 any (small) filtered category `J`, there exists a final functor `F : α ⥤ J`
-where `α` is a directed partially ordered set (TODO).
+where `α` is a directed partially ordered set (`IsFiltered.exists_directed`).
 The construction applies more generally to `κ`-filtered categories and
-`κ`-directed posets (TODO).
+`κ`-directed posets (`IsCardinalFiltered.exists_cardinal_directed`).
 
 Note: the argument by Deligne is reproduced (without reference) in the book
 by Adámek and Rosický (theorem 1.5), but with a mistake:
@@ -50,7 +51,7 @@ namespace exists_cardinal_directed
 variable (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
 
 /-!
-Let `J` is a `κ`-filtered category. In order to construct a cofinal functor `α ⥤ J`
+Let `J` be a `κ`-filtered category. In order to construct a cofinal functor `α ⥤ J`
 with a `κ`-directed poset `α`, we first consider the case where there is no
 object `m : J` such that for any object `j : J`, there exists a map `j ⟶ m`.
 Under this assumption (`hJ`), the partially ordered type `DiagramWithUniqueTerminal J κ`
@@ -62,7 +63,7 @@ choice for `α`.
 in a category `J`. -/
 @[ext]
 structure Diagram where
-  /-- the morphisms which belongs to the diagram -/
+  /-- the morphisms which belong to the diagram -/
   W : MorphismProperty J
   /-- the objects in the diagram -/
   P : ObjectProperty J
@@ -216,7 +217,7 @@ noncomputable def DiagramWithUniqueTerminal.single (j : J) :
   toDiagram := .single j
   top := j
   isTerminal := by
-    refine .ofExistsUnique ⟨⟨⟩⟩ (fun _ h ↦ ?_) (fun _ h₁ _ _ h₂ h₃ ↦ ? _) (fun _ _ _ h ↦ ?_)
+    refine .ofExistsUnique ⟨⟨⟩⟩ (fun _ h ↦ ?_) (fun _ h₁ _ _ h₂ h₃ ↦ ?_) (fun _ _ _ h ↦ ?_)
     · simp only [Diagram.single_P, ObjectProperty.singleton_iff] at h
       subst h
       exact ⟨𝟙 _, ⟨⟨⟩⟩⟩
@@ -265,8 +266,289 @@ def Diagram.sup (D₁ D₂ : Diagram J κ) :
   hW := .sup D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
   hP := .sup D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
 
+variable [IsCardinalFiltered J κ]
+  (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
+
+include hJ in
+lemma isCardinalFiltered_aux
+    {ι : Type w} (D : ι → DiagramWithUniqueTerminal J κ) (hι : HasCardinalLT ι κ) :
+    ∃ (m : J) (u : ∀ i, (D i).top ⟶ m), (∀ (i : ι), IsEmpty (m ⟶ (D i).top)) ∧
+      ∀ (i₁ i₂ : ι) (j : J) (hj₁ : (D i₁).P j) (hj₂ : (D i₂).P j),
+        (D i₁).isTerminal.lift hj₁ ≫ u i₁ = (D i₂).isTerminal.lift hj₂ ≫ u i₂ := by
+  choose m₀ t₀ hm₀ using fun i ↦ hJ (D i).top
+  let m₁ := IsCardinalFiltered.max m₀ hι
+  let t₁ (i : ι) : m₀ i ⟶ m₁ := IsCardinalFiltered.toMax m₀ hι i
+  let u (i : ι) : (D i).top ⟶ m₁ := t₀ i ≫ t₁ i
+  let S := { x : ι × ι × J // (D x.1).P x.2.2 ∧ (D x.2.1).P x.2.2 }
+  let shape : MultispanShape.{w, w} :=
+    { L := { x : ι × ι × J // (D x.1).P x.2.2 ∧ (D x.2.1).P x.2.2 }
+      R := PUnit
+      fst _ := ⟨⟩
+      snd _ := ⟨⟩ }
+  let index : MultispanIndex shape J :=
+    { left x := x.1.2.2
+      right _ := m₁
+      fst x := (D x.1.1).isTerminal.lift x.2.1 ≫ u x.1.1
+      snd x := (D x.1.2.1).isTerminal.lift x.2.2 ≫ u x.1.2.1 }
+  have hκ : Cardinal.aleph0 ≤ κ := Cardinal.IsRegular.aleph0_le Fact.out
+  have hL : HasCardinalLT shape.L κ := by
+    have : HasCardinalLT (ι × (Σ (i : ι), Subtype (D i).P)) κ :=
+      hasCardinalLT_prod hκ hι (hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP))
+    refine this.of_injective (fun ⟨⟨i₁, i₂, j⟩, h₁, h₂⟩ ↦ ⟨i₁, i₂, ⟨j, h₂⟩⟩) ?_
+    rintro ⟨⟨i₁, i₂, j⟩, _, _⟩ ⟨⟨i₁', i₂', j'⟩, _, _⟩ h
+    rw [Prod.ext_iff, Sigma.ext_iff] at h
+    dsimp at h
+    obtain rfl : i₁ = i₁' := h.1
+    obtain rfl : i₂ = i₂' := h.2.1
+    obtain rfl : j = j' := by simpa using h
+    rfl
+  have hR : HasCardinalLT shape.R κ := hasCardinalLT_of_finite _ _ hκ
+  have hshape : HasCardinalLT (Arrow (WalkingMultispan shape)) κ := by
+    rw [hasCardinalLT_iff_of_equiv (WalkingMultispan.arrowEquiv shape),
+      hasCardinalLT_sum_iff _ _ _ hκ, hasCardinalLT_sum_iff _ _ _ hκ,
+      hasCardinalLT_iff_of_equiv (WalkingMultispan.equiv shape),
+      hasCardinalLT_sum_iff _ _ _ hκ]
+    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩ <;> assumption
+  let c : Multicofork _ := IsCardinalFiltered.cocone index.multispan hshape
+  exact ⟨c.pt, fun i ↦ u i ≫ c.π ⟨⟩,
+    fun i ↦ ⟨fun hi ↦ (hm₀ i).false (t₁ i ≫ c.π ⟨⟩ ≫ hi)⟩,
+    fun i₁ i₂ j h₁ h₂ ↦ by simpa [index, shape] using c.condition ⟨⟨i₁, i₂, j⟩, h₁, h₂⟩⟩
+
+section
+
+variable {J κ} {ι : Type w} (D : ι → DiagramWithUniqueTerminal J κ) (hι : HasCardinalLT ι κ)
+  {m : J} (u : (i : ι) → (D i).top ⟶ m)
+
+variable (m) in
+/-- Auxiliary definition for `isCardinalFiltered`. -/
+@[simps!]
+def D₁ : Diagram J κ :=
+  (Diagram.iSup (fun i ↦ (D i).toDiagram) hι).sup (.single m)
+
+/-- Auxiliary definition for `isCardinalFiltered`. -/
+@[simps!]
+def D₂ : Diagram J κ where
+  W := (D₁ D hι m).W ⊔ MorphismProperty.ofHoms
+    fun (x : (Σ (i : ι), (Subtype (D i).P))) ↦ (D x.1).isTerminal.lift x.2.2 ≫ u x.1
+  P := (D₁ D hι m).P
+  src := by
+    simp only [D₁_W, D₁_P]
+    rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
+    · simp only [MorphismProperty.iSup_iff] at hf
+      obtain ⟨i, hf⟩ := hf
+      exact Or.inl ⟨i, (D i).src hf⟩
+    · exact Or.inr rfl
+    · exact Or.inl ⟨i, hj⟩
+  tgt := by
+    simp only [D₁_W, D₁_P]
+    rintro _ _ _ ((hf | ⟨⟨⟩⟩) | ⟨i, j, hj⟩)
+    · simp only [MorphismProperty.iSup_iff] at hf
+      obtain ⟨i, hf⟩ := hf
+      exact Or.inl ⟨i, (D i).tgt hf⟩
+    · exact Or.inr rfl
+    · exact Or.inr rfl
+  hW := .sup (D₁ _ _ _).hW (MorphismProperty.hasCardinalLT_ofHoms _
+    ((hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))) (Cardinal.IsRegular.aleph0_le Fact.out)
+  hP := (D₁ _ _ _).hP
+
+omit [IsCardinalFiltered J κ] in
+lemma eq_id_of_D₂_W (hD : ∀ {i : ι}, ¬ (D i).P m) {f : m ⟶ m} (hf : (D₂ D hι u).W f) :
+    f = 𝟙 _ := by
+  simp only [D₂_W] at hf
+  obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
+  · simp only [MorphismProperty.iSup_iff] at hf
+    obtain ⟨i, hi⟩ := hf
+    exact (hD ((D i).src hi)).elim
+  · rfl
+  · rw [MorphismProperty.ofHoms_iff] at hf
+    obtain ⟨⟨i, j, hj⟩, hi⟩ := hf
+    obtain rfl : m = j := congr_arg Arrow.leftFunc.obj hi
+    exact (hD hj).elim
+
+end
+
+include hJ
+
+lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) κ :=
+  isCardinalFiltered_preorder _ _ (fun ι D hι ↦ by
+    rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
+    obtain ⟨m, u, hm₀, hm⟩ := isCardinalFiltered_aux J κ hJ D hι
+    let φ (x : (Σ (i : ι), (Subtype (D i).P))) : x.2.1 ⟶ m :=
+      (D x.1).isTerminal.lift x.2.2 ≫ u x.1
+    have hD {i : ι} : ¬ (D i).P m := fun hi ↦ (hm₀ i).false ((D i).isTerminal.lift hi)
+    let he : (D₂ D hι u).IsTerminal m := by
+      have H {i : ι} {j : J} (hj : (D i).P j) {f : j ⟶ m} (hf : (D₂ D hι u).W f) :
+          f = φ ⟨i, ⟨_, hj⟩⟩ := by
+        simp only [D₂_W] at hf
+        obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨i', j, hj'⟩⟩) := hf
+        · simp only [MorphismProperty.iSup_iff] at hf
+          obtain ⟨i, hf⟩ := hf
+          exact (hD ((D i).tgt hf)).elim
+        · exact (hD hj).elim
+        · apply hm
+      refine .ofExistsUnique ?_ ?_ ?_ ?_
+      · exact Or.inl (Or.inr ⟨⟨⟩⟩)
+      · simp only [D₂_P, D₂_W]
+        rintro j (⟨i, hi⟩ | rfl)
+        · exact ⟨φ ⟨i, _, hi⟩, Or.inr (.mk _)⟩
+        · exact ⟨𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩)⟩
+      · intro j hj l₁ l₂ hl₁ hl₂
+        simp only [D₂_P] at hj
+        obtain (⟨i, hj⟩ | rfl) := hj
+        · obtain rfl := H hj hl₁
+          obtain rfl := H hj hl₂
+          rfl
+        · rw [eq_id_of_D₂_W D hι u hD hl₁, eq_id_of_D₂_W D hι u hD hl₂]
+      · rintro j k f ((hf | ⟨⟨⟩⟩) | ⟨⟨i, j, hj⟩⟩)
+        · simp only [Diagram.iSup_W, MorphismProperty.iSup_iff] at hf
+          obtain ⟨i, hf⟩ := hf
+          exact ⟨φ ⟨i, j, (D i).src hf⟩, φ ⟨i, k, (D i).tgt hf⟩, Or.inr ⟨_⟩, Or.inr ⟨_⟩,
+            by simp [φ, (D i).isTerminal.comm_assoc _ hf]⟩
+        · exact ⟨𝟙 _, 𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩), Or.inl (Or.inr ⟨⟨⟩⟩), by simp⟩
+        · refine ⟨φ ⟨i, j, hj⟩, 𝟙 _, Or.inr ⟨_⟩, Or.inl (Or.inr ⟨⟨⟩⟩), by simp [φ]⟩
+    let D₂' : DiagramWithUniqueTerminal J κ :=
+      { toDiagram := D₂ D hι u
+        top := _
+        isTerminal := he
+        uniq_terminal j hj := by
+          have := hj.prop
+          simp only [D₂_P] at this
+          obtain (⟨i, hi⟩ | rfl) := this
+          · exfalso
+            exact (hm₀ i).false (hj.lift (by simp) ≫ (D i).isTerminal.lift hi)
+          · rfl }
+    refine ⟨D₂', fun i ↦ ⟨?_, ?_⟩⟩
+    · exact le_trans (le_trans (le_trans (by rfl) (le_iSup _ i)) le_sup_left) le_sup_left
+    · exact le_trans (le_trans (by rfl) (le_iSup _ i)) le_sup_left)
+
+section
+
+variable {κ J} (D : DiagramWithUniqueTerminal J κ) {m₁ : J}
+  (φ : (∀ (x : Subtype D.P), x.val ⟶ m₁))
+
+variable (m₁) in
+/-- Auxiliary definition for `final_functor`. -/
+@[simps!]
+def D₃ : Diagram J κ :=
+  D.toDiagram.sup (.single m₁)
+
+/-- Auxiliary definition for `final_functor`. -/
+@[simps!]
+def D₄ : Diagram J κ where
+  W := (D₃ D m₁).W ⊔ .ofHoms φ
+  P := (D₃ D m₁).P
+  src := by
+    rintro i j f (hf | ⟨⟨j, hj⟩⟩)
+    · exact (D₃ D m₁).src hf
+    · exact Or.inl hj
+  tgt := by
+    rintro i j f (hf | ⟨⟨j, hj⟩⟩)
+    · exact (D₃ D m₁).tgt hf
+    · exact Or.inr ⟨⟨⟩⟩
+  hW := .sup (D₃ D m₁).hW (MorphismProperty.hasCardinalLT_ofHoms _ D.hP)
+    (Cardinal.IsRegular.aleph0_le Fact.out)
+  hP := (D₃ D m₁).hP
+
+end
+
+lemma final_functor : (functor J κ).Final := by
+  have := isCardinalFiltered J κ hJ
+  have := isFiltered_of_isCardinalFiltered J κ
+  have := isFiltered_of_isCardinalFiltered (DiagramWithUniqueTerminal J κ) κ
+  rw [Functor.final_iff_of_isFiltered]
+  refine ⟨fun j ↦ ⟨.single j, ⟨𝟙 _⟩⟩, fun {j D} (f₁ f₂ : j ⟶ D.top) ↦ ?_⟩
+  obtain ⟨m₀, t, hm₀⟩ := hJ D.top
+  obtain ⟨m₁, u, hu⟩ : ∃ (m₁ : J) (u : m₀ ⟶ m₁), f₁ ≫ t ≫ u = f₂ ≫ t ≫ u :=
+    ⟨_, IsFiltered.coeqHom (f₁ ≫ t) (f₂ ≫ t),
+      by simpa using IsFiltered.coeq_condition (f₁ ≫ t) (f₂ ≫ t)⟩
+  have h₁ : ¬ (D.P m₁) := fun h₁ ↦ hm₀.false (u ≫ D.isTerminal.lift h₁)
+  let φ (x : Subtype D.P) : x.1 ⟶ m₁ := D.isTerminal.lift x.2 ≫ t ≫ u
+  have h₂ {j : J} (hj : D.P j) {f : j ⟶ m₁} (hf : (D₄ D φ).W f) :
+      f = φ ⟨_, hj⟩ := by
+    obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨⟩⟩) := hf
+    · exact (h₁ (D.tgt hf)).elim
+    · exact (h₁ hj).elim
+    · rfl
+  have h₃ {f : m₁ ⟶ m₁} (hf : (D₄ D φ).W f) : f = 𝟙 _ := by
+    obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
+    · exact (h₁ (D.src hf)).elim
+    · rfl
+    · rw [MorphismProperty.ofHoms_iff] at hf
+      obtain ⟨⟨j, hj⟩, hf⟩ := hf
+      obtain rfl : m₁ = j := congr_arg Arrow.leftFunc.obj hf
+      exact (h₁ hj).elim
+  let hm₁ : (D₄ D φ).IsTerminal m₁ :=
+    .ofExistsUnique (Or.inl (Or.inr ⟨⟨⟩⟩)) (by
+        rintro j (hj | ⟨⟨⟨⟩⟩⟩)
+        · exact ⟨φ ⟨_, hj⟩, Or.inr ⟨_⟩⟩
+        · exact ⟨𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩)⟩) (by
+        rintro j (hj | ⟨⟨⟨⟩⟩⟩) l₁ l₂ hl₁ hl₂
+        · obtain rfl := h₂ hj hl₁
+          obtain rfl := h₂ hj hl₂
+          rfl
+        · rw [h₃ hl₁, h₃ hl₂]) (by
+      rintro j k f ((hf | ⟨⟨⟩⟩) | ⟨⟨j, hj⟩⟩)
+      · exact ⟨φ ⟨_, D.src hf⟩, φ ⟨_, D.tgt hf⟩,
+          Or.inr ⟨_⟩, Or.inr ⟨_⟩, D.isTerminal.comm_assoc _ hf _⟩
+      · exact ⟨𝟙 _, 𝟙 _, Or.inl (Or.inr ⟨⟨⟩⟩), Or.inl (Or.inr ⟨⟨⟩⟩), by simp⟩
+      · exact ⟨φ ⟨_, hj⟩, 𝟙 _, Or.inr ⟨_⟩, Or.inl (Or.inr ⟨⟨⟩⟩), by simp⟩)
+  have lift_eq (j : J) (hj : D.P j) : hm₁.lift (Or.inl hj) = φ ⟨_, hj⟩ :=
+    hm₁.uniq _ (Or.inr ⟨_⟩)
+  let D₄' : DiagramWithUniqueTerminal J κ :=
+    { toDiagram := D₄ D φ
+      top := m₁
+      isTerminal := hm₁
+      uniq_terminal j hj := by
+        obtain (hj' | ⟨⟨⟩⟩) := hj.prop
+        · exact hm₀.elim (u ≫ hj.lift (Or.inr ⟨⟨⟩⟩) ≫ D.isTerminal.lift hj')
+        · rfl }
+  exact ⟨D₄', homOfLE ⟨le_sup_left.trans le_sup_left, le_sup_left⟩,
+    by simpa [functorMap, D₄', lift_eq _ D.isTerminal.prop, φ]⟩
+
+lemma aux :
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
+      (F : α ⥤ J), F.Final :=
+  ⟨DiagramWithUniqueTerminal J κ, _, isCardinalFiltered J κ hJ,
+    functor J κ, final_functor J κ hJ⟩
+
 end exists_cardinal_directed
 
+/-!
+The previous lemma `IsCardinalFiltered.exists_cardinal_directed.aux`
+is the particular case of the main lemma
+`IsCardinalFiltered.exists_cardinal_directed` below in the particular
+case the `κ`-filtered category `J` has no object `m : J` such that for any
+object `j : J`, there exists a map `j ⟶ m`.
+
+The general case is obtained by applying the previous result to
+the cartesian product `J × κ.ord.toType`.
+-/
+
+@[stacks 0032]
+lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w})
+    [Fact κ.IsRegular] [IsCardinalFiltered J κ] :
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsCardinalFiltered α κ)
+      (F : α ⥤ J), F.Final := by
+  have := isFiltered_of_isCardinalFiltered κ.ord.ToType κ
+  obtain ⟨α, _, _, F, _⟩ :=
+    exists_cardinal_directed.aux (J × κ.ord.ToType) κ (fun ⟨j, x⟩ ↦
+      ⟨⟨j, Order.succ x⟩, (𝟙 _, homOfLE (Order.le_succ x)), ⟨fun ⟨_, f⟩ ↦ by
+        have : NoMaxOrder κ.ord.ToType :=
+          Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+        exact not_isMax _ (Order.max_of_succ_le (leOfHom f))⟩⟩)
+  exact ⟨_, _, inferInstance, F ⋙ Prod.fst _ _, inferInstance⟩
+
 end IsCardinalFiltered
+
+attribute [local instance] Cardinal.fact_isRegular_aleph0 in
+@[stacks 0032]
+lemma IsFiltered.exists_directed
+    (J : Type w) [SmallCategory J] [IsFiltered J] :
+    ∃ (α : Type w) (_ : PartialOrder α) (_ : IsDirected α (· ≤ ·)) (_ : Nonempty α)
+      (F : α ⥤ J), F.Final := by
+  have := (isCardinalFiltered_aleph0_iff.{w} J).2 inferInstance
+  obtain ⟨α, _, _, F, _⟩ := IsCardinalFiltered.exists_cardinal_directed J .aleph0
+  have : IsFiltered α := by rwa [← isCardinalFiltered_aleph0_iff.{w}]
+  exact ⟨α, _, IsFiltered.isDirectedOrder _, nonempty, F, inferInstance⟩
 
 end CategoryTheory
