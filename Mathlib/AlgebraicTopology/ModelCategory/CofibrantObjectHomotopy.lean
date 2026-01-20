@@ -46,6 +46,10 @@ instance : HomRel.IsStableUnderPostcomp (homRel C) where
 instance : HomRel.IsStableUnderPrecomp (homRel C) where
   comp_left _ _ _ h := h.precomp _
 
+lemma homRel_equivalence_of_isFibrant_tgt {X Y : CofibrantObject C} [IsFibrant Y.obj] :
+    Equivalence (homRel C (X := X) (Y := Y) · ·) :=
+  ((RightHomotopyRel.equivalence _ _).comap (fun (f : X ⟶ Y) ↦ f.hom))
+
 variable (C) in
 /-- The homotopy category of cofibrant objects. -/
 abbrev HoCat := Quotient (CofibrantObject.homRel C)
@@ -68,15 +72,7 @@ lemma toHoCat_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.obj] (f g : X �
     toHoCat.map f = toHoCat.map g ↔ homRel C f g := by
   dsimp [toHoCat]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    HomRel.compClosure_eq_self]
-  refine ⟨?_, .rel _ _⟩
-  rw [homRel_iff_rightHomotopyRel]
-  intro h
-  induction h with
-  | rel _ _ h => exact h
-  | refl => exact .refl _
-  | symm _ _ _ h => exact .symm h
-  | trans _ _ _ _ _ h h' => exact .trans h h'
+    HomRel.compClosure_eq_self, homRel_equivalence_of_isFibrant_tgt.eqvGen_eq]
 
 instance : (weakEquivalences (CofibrantObject C)).HasQuotient (homRel C) where
   iff X Y f g h := by
