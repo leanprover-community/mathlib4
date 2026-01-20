@@ -1105,7 +1105,7 @@ theorem affineIndependent_of_sbtw_affineIndependent_inv {a b c d : P}
 
 /-- Affine independence of `a`, `b`, `c` is equivalent to affine independence of `a`, `d`, `c`
    when `d` is strictly between `a` and `b`. -/
-theorem affineIndependent_iff_affineIndependent_of_sbtw {a b c d : P} {hd : Sbtw R a d b} :
+theorem affineIndependent_iff_affineIndependent_of_sbtw {a b c d : P} (hd : Sbtw R a d b) :
     AffineIndependent R ![a, b, c] ↔ AffineIndependent R ![a, d, c] :=
   ⟨affineIndependent_of_sbtw_affineIndependent hd,
   affineIndependent_of_sbtw_affineIndependent_inv hd⟩
