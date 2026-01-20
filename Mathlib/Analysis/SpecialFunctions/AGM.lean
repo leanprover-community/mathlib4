@@ -178,6 +178,7 @@ lemma min_le_agm : min x y ≤ agm x y := by
     nth_rw 1 [← mul_self_sqrt y]
     gcongr
 
+@[simp]
 lemma agm_self : agm x x = x := by
   apply le_antisymm
   · nth_rw 3 [← max_self x]
@@ -185,6 +186,7 @@ lemma agm_self : agm x x = x := by
   · nth_rw 1 [← min_self x]
     exact min_le_agm
 
+@[simp]
 lemma agm_zero_left : agm 0 x = 0 := by
   suffices ∀ n, (agmSequences 0 x).1 n = 0 by
     simp [agm_eq_ciSup, this]
@@ -195,6 +197,7 @@ lemma agm_zero_left : agm 0 x = 0 := by
     simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply] at ih ⊢
     rw [iterate_succ', comp_apply, ih, zero_mul, sqrt_zero]
 
+@[simp]
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
 
