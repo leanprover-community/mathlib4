@@ -185,6 +185,12 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
   simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_sSup]
     using NoetherianSpace.exists_finite_set_closeds_irreducible s
 
+theorem NoetherianSpace.exists_finset_isClosed_irreducible [NoetherianSpace α]
+    {s : Set α} (hs : IsClosed s) : ∃ S : Finset (Set α),
+      (∀ c ∈ S, IsClosed c) ∧ (∀ c ∈ S, IsIrreducible c) ∧ s = S.sup id := by
+  obtain ⟨S, hS, _⟩ := NoetherianSpace.exists_finite_set_isClosed_irreducible hs
+  exact ⟨hS.toFinset, by simpa [← Set.sUnion_eq_biUnion]⟩
+
 @[stacks 0052 "(2)"]
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
