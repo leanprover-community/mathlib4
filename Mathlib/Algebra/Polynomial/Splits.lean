@@ -369,7 +369,7 @@ theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   simpa [hf.natDegree_eq_card_roots] using hf0
 
-theorem Splits.roots_map {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
+theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
     {f : R[X]} (hf : Splits f) {φ : R →+* S} (hφ : f.map φ ≠ 0) :
     (f.map φ).roots = f.roots.map φ := by
   induction hf using Submonoid.closure_induction with
@@ -377,14 +377,17 @@ theorem Splits.roots_map {R S : Type*} [CommRing R] [CommRing S] [IsDomain R] [I
   | one => simp
   | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
 
-theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
+theorem Splits.roots_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+
+@[deprecated (since := "2025-11-27")]
+alias Splits.map_roots := Splits.roots_map
 
 theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
     x ∈ i.range := by
-  rw [← mem_roots (map_ne_zero hf0), hf.map_roots, Multiset.mem_map] at hx
+  rw [← mem_roots (map_ne_zero hf0), hf.roots_map, Multiset.mem_map] at hx
   obtain ⟨x, -, hx⟩ := hx
   exact ⟨x, hx⟩
 
@@ -393,7 +396,7 @@ theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Spl
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.map_roots, map_map, g.comp_algebraMap, ← rootSet]
+    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
 
 omit [IsDomain R] in
 theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
@@ -408,7 +411,7 @@ theorem Splits.image_rootSet_of_map_ne_zero (hf : (f.map (algebraMap R A)).Split
   classical
   replace hφ : (f.map (algebraMap R A)).map (φ : A →+* B) ≠ 0 := by
     rwa [map_map, φ.comp_algebraMap]
-  replace hf := hf.roots_map hφ
+  replace hf := hf.roots_map_of_ne_zero hφ
   rw [map_map, φ.comp_algebraMap] at hf
   simp [rootSet, aroots, hf, Multiset.toFinset_map]
 
