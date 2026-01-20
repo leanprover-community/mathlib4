@@ -48,6 +48,13 @@ theorem exists_ne_map_eq_of_card_lt (f : α → β) (h : Fintype.card β < Finty
   let ⟨x, _, y, _, h⟩ := Finset.exists_ne_map_eq_of_card_lt_of_maps_to h fun x _ => mem_univ (f x)
   ⟨x, y, h⟩
 
+/-- If `card β < card α`, then `f : α → β` is not injective.
+This is a formulation of the pigeonhole principle. -/
+theorem not_injective_of_card_lt (f : α → β) (h : Fintype.card β < Fintype.card α) :
+    ¬Function.Injective f := fun hinj =>
+  let ⟨_x, _y, ne, feq⟩ := exists_ne_map_eq_of_card_lt f h
+  ne (hinj feq)
+
 end Fintype
 
 namespace Function.Embedding
