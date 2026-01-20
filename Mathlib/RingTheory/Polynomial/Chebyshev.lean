@@ -996,8 +996,7 @@ theorem iterate_derivative_U_field_eval_one {𝔽} [Field 𝔽] [CharZero 𝔽] 
     mul_comm, iterate_derivative_U_eval_one]
 
 theorem iterate_derivative_T_field_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
-    ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣
-    (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
+    ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣ (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
   dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
 
 theorem iterate_derivative_U_field_eval_one_dvd {𝔽} [Field 𝔽] (n : ℤ) (k : ℕ) :
