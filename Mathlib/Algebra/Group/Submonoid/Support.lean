@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Group.Subgroup.Lattice
-public import Mathlib.Tactic.ApplyFun
+
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Supports of submonoids
