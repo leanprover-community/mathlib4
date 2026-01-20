@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Patrick Massot
 -/
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+module
 
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
@@ -35,6 +36,8 @@ proves Noether's first and second isomorphism theorems.
 
 isomorphism theorems, quotient groups
 -/
+
+@[expose] public section
 
 open Function
 open scoped Pointwise
@@ -267,10 +270,8 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
   letI := Subgroup.normal_subgroupOf_of_le_normalizer hLE
   letI := Subgroup.normal_subgroupOf_sup_of_le_normalizer hLE
-  let
-    φ :-- φ is the natural homomorphism H →* (HN)/N.
-      H →*
-      _ ⧸ N.subgroupOf (H ⊔ N) :=
+  -- φ is the natural homomorphism H →* (HN)/N.
+  let φ : H →* _ ⧸ N.subgroupOf (H ⊔ N) :=
     (mk' <| N.subgroupOf (H ⊔ N)).comp (inclusion le_sup_left)
   have φ_surjective : Surjective φ := fun x =>
     x.inductionOn' <| by
@@ -278,12 +279,10 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
       rw [← SetLike.mem_coe] at hy
       rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
+      simp only [SetLike.mem_coe] at hn
       use ⟨h, hh⟩
       refine Quotient.eq.mpr ?_
-      change leftRel _ _ _
-      rw [leftRel_apply]
-      change h⁻¹ * (h * n) ∈ N
-      rwa [← mul_assoc, inv_mul_cancel, one_mul]
+      simp [leftRel_apply, inclusion, mem_subgroupOf, hn]
   (quotientMulEquivOfEq (by simp [φ, ← comap_ker])).trans
     (quotientKerEquivOfSurjective φ φ_surjective)
 
@@ -371,9 +370,7 @@ section trivial
 
 @[to_additive]
 theorem subsingleton_quotient_top : Subsingleton (G ⧸ (⊤ : Subgroup G)) := by
-  dsimp [HasQuotient.Quotient, QuotientGroup.instHasQuotientSubgroup, Quotient]
-  rw [leftRel_eq]
-  exact Trunc.instSubsingletonTrunc
+  simp
 
 /-- If the quotient by a subgroup gives a singleton then the subgroup is the whole group. -/
 @[to_additive /-- If the quotient by an additive subgroup gives a singleton then the additive

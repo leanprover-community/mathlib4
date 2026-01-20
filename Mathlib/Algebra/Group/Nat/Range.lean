@@ -3,13 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Finset.Image
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Finset.Image
 
 /-!
 # `Finset.range` and addition of natural numbers
 -/
+
+public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {α β γ : Type*}
@@ -20,7 +24,7 @@ theorem disjoint_range_addLeftEmbedding (a : ℕ) (s : Finset ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) s) := by
   simp_rw [disjoint_left, mem_map, mem_range, addLeftEmbedding_apply]
   rintro _ h ⟨l, -, rfl⟩
-  cutsat
+  lia
 
 theorem disjoint_range_addRightEmbedding (a : ℕ) (s : Finset ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) s) := by

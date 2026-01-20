@@ -3,10 +3,12 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Data.Int.NatPrime
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Data.Int.NatPrime
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Field
 
 /-!
 # Pythagorean Triples
@@ -21,6 +23,8 @@ that these are coprime. This is easy except for the prime 2. In order to deal wi
 analyze the parity of `x`, `y`, `m` and `n` and eliminate all the impossible cases. This takes up
 the bulk of the proof below.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -184,7 +188,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
 theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h.IsClassified := by
   obtain ⟨m, n, H⟩ := hp
   use 1, m, n
-  cutsat
+  lia
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
@@ -243,6 +247,8 @@ For the classification of Pythagorean triples, we will use a parametrization of 
 
 variable {K : Type*} [Field K]
 
+-- Non-terminal simp, used to be field_simp
+set_option linter.flexible false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- A parameterization of the unit circle that is useful for classifying Pythagorean triples.
@@ -477,7 +483,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exfalso
     have h1 : 2 ∣ (Int.gcd n m : ℤ) :=
       Int.dvd_coe_gcd (Int.dvd_of_emod_eq_zero hn2) (Int.dvd_of_emod_eq_zero hm2)
-    cutsat
+    lia
   · -- m even, n odd
     apply h.isPrimitiveClassified_aux hc hzpos hm2n2 hv2 hw2 _ hmncp
     · apply Or.intro_left
@@ -501,7 +507,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
         rw [← Rat.divInt_eq_div, ← Rat.divInt_mul_right (by simp : (2 : ℤ) ≠ 0)]
         rw [Int.ediv_mul_cancel h1.1, Int.ediv_mul_cancel h1.2.1, hw2, Rat.divInt_eq_div]
         norm_cast
-      · cutsat
+      · lia
     norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
@@ -603,7 +609,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          cutsat
+          lia
       · exfalso
         revert h_pos
         rw [h_neg]

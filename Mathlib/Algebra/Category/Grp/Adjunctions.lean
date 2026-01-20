@@ -3,9 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.GroupTheory.FreeAbelianGroup
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -30,6 +33,8 @@ category of abelian groups.
 * `abelianizeAdj`: proves that `GrpCat.abelianize` is left adjoint to the forgetful functor from
   abelian groups to groups.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -121,7 +126,7 @@ def adj : free ⊣ forget GrpCat.{u} :=
         intros
         rfl }
 
-instance : (forget GrpCat.{u}).IsRightAdjoint  :=
+instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 section Abelianization

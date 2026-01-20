@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Circumcenter and circumradius
@@ -28,6 +30,8 @@ the circumcenter.
 * https://en.wikipedia.org/wiki/Circumscribed_circle
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -80,7 +84,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
       · rw [hp₁, hpo,
           dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc _ _
             (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-          ← dist_eq_norm_vsub V p, dist_comm _ cc]
+          Real.norm_eq_abs, abs_mul_abs_self, ← dist_eq_norm_vsub V p, dist_comm _ cc]
         simp only [ycc₂]
         field
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
@@ -118,20 +122,9 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     rw [hpo, hcc₃'', hcr₃val, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
       dist_sq_smul_orthogonal_vadd_smul_orthogonal_vadd (orthogonalProjection_mem p) hcc₃' _ _
         (vsub_orthogonalProjection_mem_direction_orthogonal s p),
-      dist_comm, ← dist_eq_norm_vsub V p,
+      Real.norm_eq_abs, abs_mul_abs_self, dist_comm, ← dist_eq_norm_vsub V p,
       Real.mul_self_sqrt (add_nonneg (mul_self_nonneg _) (mul_self_nonneg _))] at hcr₃
-    change x * x + _ * (y * y) = _ at hcr₃
-    rw [show
-        x * x + (1 - t₃) * (1 - t₃) * (y * y) = x * x + y * y - 2 * y * (t₃ * y) + t₃ * y * (t₃ * y)
-        by ring,
-      add_left_inj] at hcr₃
-    have ht₃ : t₃ = ycc₂ / y := by simp [ycc₂, ← hcr₃, hy0]
-    subst ht₃
-    change cc₃ = cc₂ at hcc₃''
-    congr
-    rw [hcr₃val]
-    congr 2
-    field
+    grind
 
 /-- Given a finite nonempty affinely independent family of points,
 there is a unique (circumcenter, circumradius) pair for those points
@@ -144,7 +137,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
   | zero =>
     exfalso
     have h := Fintype.card_pos_iff.2 hne
-    cutsat
+    lia
   | succ m hm =>
     rcases m with - | m
     · rw [Fintype.card_eq_one_iff] at hn
@@ -295,6 +288,11 @@ theorem circumcenter_eq_point (s : Simplex ℝ P 0) (i : Fin 1) : s.circumcenter
   congr
   simp only [eq_iff_true_of_subsingleton]
 
+lemma circumcenter_ne_point {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
+    s.circumcenter ≠ s.points i := by
+  rw [← dist_ne_zero, dist_circumcenter_eq_circumradius']
+  exact s.circumradius_pos.ne'
+
 /-- The circumcenter of a 1-simplex equals its centroid. -/
 theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
     s.circumcenter = Finset.univ.centroid ℝ s.points := by
@@ -331,6 +329,40 @@ theorem circumcenter_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) 
 @[simp]
 theorem circumradius_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumradius = s.circumradius := by simp_rw [circumradius, circumsphere_reindex]
+
+@[simp] lemma circumcenter_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumcenter = f s.circumcenter := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumcenter_of_dist_eq (r := s.circumradius) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumradius_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
+    [MetricSpace P₂] [NormedAddTorsor V₂ P₂] {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) :
+    (s.map f.toAffineMap f.injective).circumradius = s.circumradius := by
+  rw [eq_comm]
+  refine (s.map f.toAffineMap f.injective).eq_circumradius_of_dist_eq (p := f s.circumcenter) ?_
+    fun i ↦ by simp
+  rw [map_points, Set.range_comp, ← AffineSubspace.map_span]
+  exact AffineSubspace.mem_map_of_mem _ s.circumcenter_mem_affineSpan
+
+@[simp] lemma circumcenter_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumcenter = s.circumcenter := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumcenter_map S.subtypeₐᵢ
+
+@[simp] lemma circumradius_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
+    (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).circumradius = s.circumradius := by
+  rw [eq_comm]
+  have : Nonempty S := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (s.restrict S hS).circumradius_map S.subtypeₐᵢ
 
 theorem dist_circumcenter_sq_eq_sq_sub_circumradius {n : ℕ} {r : ℝ} (s : Simplex ℝ P n) {p₁ : P}
     (h₁ : ∀ i : Fin (n + 1), dist (s.points i) p₁ = r)
@@ -450,7 +482,7 @@ def pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) : PointsWithCircumc
   | pointIndex j => if j = i then 1 else 0
   | circumcenterIndex => 0
 
-/-- `point_weights_with_circumcenter` sums to 1. -/
+/-- `pointWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_pointWeightsWithCircumcenter {n : ℕ} (i : Fin (n + 1)) :
     ∑ j, pointWeightsWithCircumcenter i j = 1 := by
@@ -562,7 +594,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
     simp [W]
-  rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
+  rw [reflection_apply', h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,
     circumcenter_eq_affineCombination_of_pointsWithCircumcenter, ← @vsub_eq_zero_iff_eq V,
@@ -641,7 +673,6 @@ circumradius. -/
 theorem exists_circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumradius_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -689,7 +720,6 @@ circumcenter. -/
 theorem exists_circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumcenter_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
@@ -727,7 +757,6 @@ circumsphere. -/
 theorem exists_circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDimensional ℝ V]
     (hd : finrank ℝ V = n) (hc : Cospherical ps) :
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
-  haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
   refine exists_circumsphere_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _

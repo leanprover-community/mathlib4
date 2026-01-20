@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Smooth.Basic
-import Mathlib.RingTheory.Unramified.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -24,6 +26,8 @@ We show that étale is stable under algebra isomorphisms, composition and
 localization at an element.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -108,13 +112,34 @@ end OfEquiv
 
 section Comp
 
+variable [Algebra A B] [IsScalarTower R A B]
+
 variable (R A B) in
-theorem comp [Algebra A B] [IsScalarTower R A B] [FormallyEtale R A] [FormallyEtale A B] :
+theorem comp [FormallyEtale R A] [FormallyEtale A B] :
     FormallyEtale R B :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.comp R A B, FormallySmooth.comp R A B⟩
 
+lemma of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
+    FormallyEtale A B :=
+  have := FormallyUnramified.of_restrictScalars R A B
+  have := FormallySmooth.of_restrictScalars R A B
+  .of_formallyUnramified_and_formallySmooth
+
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.of_restrictScalars := of_restrictScalars
+
 end Comp
+
+lemma iff_of_surjective
+    {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] (h : Function.Surjective (algebraMap R S)) :
+    Algebra.FormallyEtale R S ↔ IsIdempotentElem (RingHom.ker (algebraMap R S)) := by
+  rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
+    and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
+
+@[deprecated (since := "2025-12-09")]
+alias Algebra.FormallyEtale.iff_of_surjective := iff_of_surjective
 
 section BaseChange
 
@@ -157,6 +182,9 @@ include M
 theorem of_isLocalization : FormallyEtale R Rₘ :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.of_isLocalization M, FormallySmooth.of_isLocalization M⟩
+
+instance [FormallyEtale R S] (M : Submonoid S) : FormallyEtale R (Localization M) :=
+  .of_formallyUnramified_and_formallySmooth
 
 theorem localization_base [FormallyEtale R Sₘ] : FormallyEtale Rₘ Sₘ :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr

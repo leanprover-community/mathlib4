@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Defs
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # Compact separated uniform spaces
@@ -24,6 +26,8 @@ loop.
 
 uniform space, uniform continuity, compact space
 -/
+
+@[expose] public section
 
 open Topology Filter UniformSpace Set
 open scoped SetRel

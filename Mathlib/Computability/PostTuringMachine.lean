@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Turing machines
@@ -57,6 +60,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -1078,8 +1083,8 @@ theorem tr_respects :
       refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
-        trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
-      apply IH
+        trTape'_move_left enc0]
+      simpa using IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
       apply IH

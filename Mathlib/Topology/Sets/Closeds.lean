@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.Clopen
+module
+
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -17,6 +19,8 @@ For a topological space `α`,
 * `TopologicalSpace.Closeds α`: The type of closed sets.
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
+
+@[expose] public section
 
 
 open Order OrderDual Set Topology
@@ -183,12 +187,27 @@ def coframeMinimalAxioms : Coframe.MinimalAxioms (Closeds α) where
 
 instance instCoframe : Coframe (Closeds α) := .ofMinimalAxioms coframeMinimalAxioms
 
-/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
 @[simps]
-def singleton [T1Space α] (x : α) : Closeds α :=
-  ⟨{x}, isClosed_singleton⟩
+instance [T1Space α] : Singleton α (Closeds α) where
+  singleton x := ⟨{x}, isClosed_singleton⟩
 
-@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+/-- The term of `TopologicalSpace.Closeds α` corresponding to a singleton. -/
+@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
+abbrev singleton [T1Space α] (x : α) : Closeds α := {x}
+
+@[simp]
+theorem mk_singleton [T1Space α] {x : α} :
+    (⟨{x}, isClosed_singleton⟩ : Closeds α) = {x} :=
+  rfl
+
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ ({b} : Closeds α) ↔ a = b := Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective ({·} : α → Closeds α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : ({x} : Closeds α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
 
 /-- The preimage of a closed set under a continuous map. -/
 @[simps]
@@ -254,16 +273,15 @@ lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsA
   Closeds.gi.isAtom_iff' rfl
     (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
 
-/-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the
-`TopologicalSpace.Closeds.singleton`s. -/
+/-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the singletons. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
-    IsAtom s ↔ ∃ x, s = Closeds.singleton x := by
+    IsAtom s ↔ ∃ x, s = {x} := by
   simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
-`(TopologicalSpace.Closeds.singleton x).compl`. -/
+`({x} : Closeds α).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
-    IsCoatom s ↔ ∃ x, s = (Closeds.singleton x).compl := by
+    IsCoatom s ↔ ∃ x, s = ({x} : Closeds α).compl := by
   rw [← s.compl_compl, ← isAtom_dual_iff_isCoatom]
   change IsAtom (Closeds.complOrderIso α s.compl) ↔ _
   simp only [(Closeds.complOrderIso α).isAtom_iff, Closeds.isAtom_iff,
@@ -318,7 +336,7 @@ instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
 instance : HImp (Clopens α) where himp s t := ⟨s ⇨ t, s.isClopen.himp t.isClopen⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 @[simp, norm_cast] lemma coe_sup (s t : Clopens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_inf (s t : Clopens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
@@ -394,28 +412,46 @@ protected theorem ext {s t : IrreducibleCloseds α} (h : (s : Set α) = t) : s =
 theorem coe_mk (s : Set α) (h : IsIrreducible s) (h' : IsClosed s) : (mk s h h' : Set α) = s :=
   rfl
 
-/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
 @[simps]
-def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
-  ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
+instance [T1Space α] : Singleton α (IrreducibleCloseds α) where
+  singleton x := ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
 
-@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+/-- The term of `TopologicalSpace.IrreducibleCloseds α` corresponding to a singleton. -/
+@[deprecated "Use `{x}` instead" (since := "2025-11-23")]
+abbrev singleton [T1Space α] (x : α) : IrreducibleCloseds α := {x}
 
+@[simp]
+theorem mk_singleton [T1Space α] {x : α} :
+    (⟨{x}, isIrreducible_singleton, isClosed_singleton⟩ : IrreducibleCloseds α) = {x} :=
+  rfl
+
+@[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ ({b} : IrreducibleCloseds α) ↔ a = b :=
+  Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective ({·} : α → IrreducibleCloseds α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : ({x} : IrreducibleCloseds α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
+
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
 -/
 @[simps apply symm_apply]
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
-  toFun a   := ⟨a.1, a.2, a.3⟩
-  invFun a  := ⟨a.1, a.2.1, a.2.2⟩
+  toFun a  := ⟨a.1, a.2, a.3⟩
+  invFun a := ⟨a.1, a.2.1, a.2.2⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
 -/
 @[simps apply symm_apply]
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
-  toFun a   := ⟨a.1, a.3, a.2⟩
-  invFun a  := ⟨a.1, a.2.2, a.2.1⟩
+  toFun a  := ⟨a.1, a.3, a.2⟩
+  invFun a := ⟨a.1, a.2.2, a.2.1⟩
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an

@@ -3,9 +3,11 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Tactic.DepRewrite
+module
+
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.Tactic.DepRewrite
 
 /-!
 # A functor from a small category to a filtered category factors through a small filtered category
@@ -15,6 +17,8 @@ A consequence of this is that if `C` is filtered and finally small, then `C` is 
 This is occasionally useful, for example in the proof of the recognition theorem for ind-objects
 (Proposition 6.1.5 in [Kashiwara2006]).
 -/
+
+@[expose] public section
 
 universe w v v₁ u u₁
 
@@ -39,9 +43,12 @@ inductive filteredClosure : ObjectProperty C
 /-- The full subcategory induced by the filtered closure of a family of objects is filtered. -/
 instance : IsFilteredOrEmpty (filteredClosure f).FullSubcategory where
   cocone_objs j j' :=
-    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, leftToMax _ _, rightToMax _ _, trivial⟩
+    ⟨⟨max j.1 j'.1, filteredClosure.max j.2 j'.2⟩, ObjectProperty.homMk (leftToMax _ _),
+      ObjectProperty.homMk (rightToMax _ _), trivial⟩
   cocone_maps {j j'} f f' :=
-    ⟨⟨coeq f f', filteredClosure.coeq j.2 j'.2 f f'⟩, coeqHom (C := C) f f', coeq_condition _ _⟩
+    ⟨⟨coeq f.hom f'.hom, filteredClosure.coeq j.2 j'.2 f.hom f'.hom⟩,
+      ObjectProperty.homMk (coeqHom f.hom f'.hom),
+      ObjectProperty.hom_ext _ (coeq_condition _ _)⟩
 
 namespace FilteredClosureSmall
 /-! Our goal for this section is to show that the size of the filtered closure of an `α`-indexed
@@ -94,14 +101,16 @@ private noncomputable def abstractFilteredClosureRealization : AbstractFilteredC
 end FilteredClosureSmall
 
 theorem small_fullSubcategory_filteredClosure :
-    Small.{max v w} (filteredClosure f).FullSubcategory  := by
+    Small.{max v w} (filteredClosure f).FullSubcategory := by
   refine small_of_injective_of_exists (FilteredClosureSmall.abstractFilteredClosureRealization f)
     (fun _ _ => ObjectProperty.FullSubcategory.ext) ?_
   rintro ⟨j, h⟩
   induction h with
   | base x =>
       refine ⟨⟨0, ?_⟩, ?_⟩
-      · simp only [FilteredClosureSmall.bundledAbstractFilteredClosure]
+      · #adaptation_note
+        /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
+        simp -implicitDefEqProofs only [FilteredClosureSmall.bundledAbstractFilteredClosure]
         exact ULift.up x
       · simp only [FilteredClosureSmall.abstractFilteredClosureRealization]
         rw! [FilteredClosureSmall.bundledAbstractFilteredClosure]
@@ -201,9 +210,11 @@ inductive cofilteredClosure : ObjectProperty C
 /-- The full subcategory induced by the cofiltered closure of a family is cofiltered. -/
 instance : IsCofilteredOrEmpty (cofilteredClosure f).FullSubcategory where
   cone_objs j j' :=
-    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩, minToLeft _ _, minToRight _ _, trivial⟩
+    ⟨⟨min j.1 j'.1, cofilteredClosure.min j.2 j'.2⟩,
+    ObjectProperty.homMk (minToLeft _ _), ObjectProperty.homMk (minToRight _ _), trivial⟩
   cone_maps {j j'} f f' :=
-    ⟨⟨eq f f', cofilteredClosure.eq j.2 j'.2 f f'⟩, eqHom (C := C) f f', eq_condition _ _⟩
+    ⟨⟨eq f.hom f'.hom, cofilteredClosure.eq j.2 j'.2 f.hom f'.hom⟩,
+    ObjectProperty.homMk (eqHom f.hom f'.hom), ObjectProperty.hom_ext _ (eq_condition _ _)⟩
 
 namespace CofilteredClosureSmall
 
@@ -250,7 +261,9 @@ theorem small_fullSubcategory_cofilteredClosure :
   induction h with
   | base x =>
     refine ⟨⟨0, ?_⟩,?_⟩
-    · simp only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
+    · #adaptation_note
+      /-- On nightly-2025-11-04 we need to add `-implicitDefEqProofs` here. -/
+      simp -implicitDefEqProofs only [CofilteredClosureSmall.bundledAbstractCofilteredClosure]
       exact ULift.up x
     · simp only [CofilteredClosureSmall.abstractCofilteredClosureRealization]
       rw! [CofilteredClosureSmall.bundledAbstractCofilteredClosure]

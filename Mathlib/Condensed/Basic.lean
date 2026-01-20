@@ -3,9 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 
@@ -29,6 +30,8 @@ as we do not impose cardinality bounds, and manage universes carefully instead.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits
 
 open CategoryTheory
@@ -46,10 +49,10 @@ instance {C : Type w} [Category.{v} C] : Category (Condensed.{u} C) :=
   show Category (Sheaf _ _) from inferInstance
 
 /--
-Condensed sets (types) with the appropriate universe levels, i.e. `Type (u+1)`-valued
+Condensed sets (types) with the appropriate universe levels, i.e. `Type (u + 1)`-valued
 sheaves on `CompHaus.{u}`.
 -/
-abbrev CondensedSet := Condensed.{u} (Type (u+1))
+abbrev CondensedSet := Condensed.{u} (Type (u + 1))
 
 namespace Condensed
 

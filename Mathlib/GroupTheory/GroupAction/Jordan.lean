@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
 
 /-! # Theorems of Jordan
 
@@ -43,6 +44,8 @@ This mostly follows the book [Wielandt, *Finite permutation groups*][Wielandt-19
 
 -/
 
+public section
+
 open MulAction SubMulAction Subgroup
 
 open scoped Pointwise
@@ -61,7 +64,7 @@ theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
   have : Nontrivial α := by
     rw [← ENat.one_lt_card_iff_nontrivial]
     exact lt_trans (by norm_num) hsn'
-  have hGa : IsCoatom (stabilizer G a) :=  by
+  have hGa : IsCoatom (stabilizer G a) := by
     rw [isCoatom_stabilizer_iff_preprimitive]
     exact isPreprimitive_of_is_two_pretransitive hG'
   apply hGa.right
@@ -249,24 +252,8 @@ theorem MulAction.IsPreprimitive.isMultiplyPreprimitive
   have hα : Finite α := Or.resolve_right (finite_or_infinite α) (fun _ ↦ by
     simp [Nat.card_eq_zero_of_infinite] at hsn')
   induction n generalizing α hα G with
-  | zero => -- case n = 0
-    have : IsPretransitive G α := hG.toIsPretransitive
-    simp only [zero_add, Set.ncard_eq_one] at hsn
-    obtain ⟨a, rfl⟩ := hsn
-    constructor
-    · rw [ofStabilizer.isMultiplyPretransitive (a := a), is_one_pretransitive_iff]
-      apply IsPretransitive.of_surjective_map
-        ofFixingSubgroup_of_singleton_bijective.surjective hprim.toIsPretransitive
-    · intro t h
-      rw [zero_add, Nat.cast_ofNat, ← one_add_one_eq_two,
-        (ENat.add_left_injective_of_ne_top ENat.one_ne_top).eq_iff] at h
-      obtain ⟨b, htb⟩ := Set.encard_eq_one.mp h
-      obtain ⟨g, hg⟩ := exists_smul_eq G a b
-      have hst : g • ({a} : Set α) = ({b} : Set α) := by
-        rw [Set.smul_set_singleton, hg]
-      rw [htb]
-      refine IsPreprimitive.of_surjective
-        (conjMap_ofFixingSubgroup_bijective (hst := hst)).surjective
+  -- case n = 0
+  | zero => simpa using is_two_preprimitive hG hsn hsn' hprim
   -- Induction step
   | succ n hrec =>
     suffices ∃ (a : α) (t : Set (SubMulAction.ofStabilizer G a)),
@@ -322,7 +309,7 @@ theorem subgroup_eq_top_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG 
   apply Subgroup.eq_top_of_le_card
   rw [Nat.card_perm]
   apply (Nat.factorial_le hα).trans
-  rwa [Nat.factorial_two, Nat.succ_le, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
+  rwa [Nat.factorial_two, Nat.succ_le_iff, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
 
 theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K α]
     (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) (n : ℕ) :
@@ -351,7 +338,7 @@ theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K
   apply le_antisymm (card_le_card_group φ.range)
   simp only [Nat.card_perm, hα, Nat.factorial_two]
   by_contra H
-  simp only [not_le, Nat.lt_succ, Finite.card_le_one_iff_subsingleton] at H
+  simp only [not_le, Nat.lt_succ_iff, Finite.card_le_one_iff_subsingleton] at H
   apply hK
   apply Set.eq_univ_of_univ_subset
   intro a _ g
@@ -391,12 +378,14 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/
 theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
     (hG : IsPreprimitive G α) (g : Perm α) (h2g : IsSwap g) (hg : g ∈ G) :
     G = ⊤ := by
   classical
+  have := Fintype.ofFinite α
   rcases Nat.lt_or_ge (Nat.card α) 3 with hα3 | hα3
   · -- trivial case : Nat.card α ≤ 2
     rw [Nat.lt_succ_iff] at hα3
@@ -441,7 +430,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · -- trivial case : Fintype.card α ≤ 3
     rw [Nat.lt_succ_iff] at hα4
     apply alternatingGroup_le_of_index_le_two
-    rw [← Nat.mul_le_mul_right_iff (k:= Nat.card G) (Nat.card_pos),
+    rw [← Nat.mul_le_mul_right_iff (k := Nat.card G) (Nat.card_pos),
       Subgroup.index_mul_card, Nat.card_perm]
     apply le_trans (Nat.factorial_le hα4)
     rw [show Nat.factorial 3 = 2 * 3 by simp [Nat.factorial]]

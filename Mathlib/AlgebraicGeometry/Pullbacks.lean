@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.AlgebraicGeometry.Gluing
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
 /-!
 # Fibred products of schemes
@@ -24,12 +26,14 @@ constructed via tensor products.
 
 -/
 
+@[expose] public section
+
 
 universe u v w
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits AlgebraicGeometry
+open CategoryTheory Functor CartesianMonoidalCategory Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
 
@@ -560,6 +564,29 @@ def openCoverOfBase (𝒰 : OpenCover.{v} Z) (f : X ⟶ Z) (g : Y ⟶ Z) :
       PullbackCone.π_app_right, IsPullback.cone_snd, pullbackSymmetry_hom_comp_fst_assoc]
     rfl
 
+-- TODO: generalize to covers in subcanonical topologies
+open pullback in
+attribute [local simp] condition condition_assoc in
+lemma _root_.AlgebraicGeometry.Scheme.isPullback_of_openCover
+    {W : Scheme.{u}} (fWX : W ⟶ X) (fWY : W ⟶ Y) (fXZ : X ⟶ Z) (fYZ : Y ⟶ Z) (𝒰 : X.OpenCover)
+    (H : ∀ i, IsPullback (𝒰.pullbackHom fWX i) ((𝒰.pullback₁ fWX).f i ≫ fWY) (𝒰.f i ≫ fXZ) fYZ) :
+    IsPullback fWX fWY fXZ fYZ := by
+  have h : fWX ≫ fXZ = fWY ≫ fYZ :=
+    Scheme.Cover.hom_ext (𝒰.pullback₁ fWX) _ _ fun i ↦ by simpa using (H i).w
+  suffices IsIso (lift fWX fWY h) from .of_iso_pullback ⟨h⟩ (asIso (lift _ _ h)) (by simp) (by simp)
+  have H₁ (i : _) : IsIso ((openCoverOfLeft 𝒰 fXZ fYZ).pullbackHom (lift fWX fWY h) i) := by
+    let f := map (𝒰.f i ≫ fXZ) fYZ fXZ fYZ (𝒰.f i) (𝟙 Y) (𝟙 Z) (by simp) (by simp)
+    have : IsPullback (fst (𝒰.f i ≫ fXZ) fYZ) f (𝒰.f i) (fst _ _) := by
+      simpa [← IsPullback.paste_vert_iff (.of_hasPullback _ _), f] using .of_hasPullback _ _
+    have H' : IsPullback (fst fWX (𝒰.f i)) (lift (snd _ _) (fst _ _ ≫ fWY) (by simp [← h]))
+        (lift fWX fWY h) f := by
+      rw [← IsPullback.paste_vert_iff this.flip (by ext <;> simp [f])]
+      simpa using .of_hasPullback _ _
+    convert inferInstanceAs (IsIso (H'.isoPullback.inv ≫ (H i).isoPullback.hom))
+    aesop (add simp [Iso.eq_inv_comp, Scheme.Cover.pullbackHom])
+  exact MorphismProperty.of_zeroHypercover_target (P := .isomorphisms Scheme)
+    (Scheme.Pullback.openCoverOfLeft 𝒰 fXZ fYZ) H₁
+
 variable (f : X ⟶ Y) (𝒰 : OpenCover.{u} Y) (𝒱 : ∀ i, OpenCover.{w} ((𝒰.pullback₁ f).X i))
 
 /--
@@ -631,6 +658,14 @@ instance Scheme.pullback_map_isOpenImmersion {X Y S X' Y' S' : Scheme}
   rw [pullback_map_eq_pullbackFstFstIso_inv]
   infer_instance
 
+section CartesianMonoidalCategory
+variable {S : Scheme}
+
+instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
+instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+
+end CartesianMonoidalCategory
+
 section Spec
 
 variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
@@ -658,6 +693,11 @@ lemma pullbackSpecIso_inv_fst :
     (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom includeLeftRingHom) :=
   limit.isoLimitCone_inv_π _ _
 
+@[reassoc]
+lemma pullbackSpecIso_inv_fst' :
+    (pullbackSpecIso R S T).inv ≫ pullback.fst _ _ = Spec.map (ofHom (algebraMap S _)) :=
+  pullbackSpecIso_inv_fst ..
+
 /--
 The composition of the inverse of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the second projection is
@@ -681,6 +721,11 @@ lemma pullbackSpecIso_hom_fst :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom includeLeftRingHom) = pullback.fst _ _ := by
   rw [← pullbackSpecIso_inv_fst, Iso.hom_inv_id_assoc]
 
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_fst' :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap S _)) = pullback.fst _ _ :=
+  pullbackSpecIso_hom_fst ..
+
 /--
 The composition of the isomorphism `pullbackSpecIso R S T` (from the pullback of
 `Spec S ⟶ Spec R` and `Spec T ⟶ Spec R` to `Spec (S ⊗[R] T)`) with the morphism
@@ -691,6 +736,12 @@ is the second projection.
 lemma pullbackSpecIso_hom_snd :
     (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (toRingHom includeRight)) = pullback.snd _ _ := by
   rw [← pullbackSpecIso_inv_snd, Iso.hom_inv_id_assoc]
+
+@[reassoc (attr := simp)]
+lemma pullbackSpecIso_hom_base :
+    (pullbackSpecIso R S T).hom ≫ Spec.map (ofHom (algebraMap R _)) =
+      pullback.fst _ _ ≫ Spec.map (ofHom (algebraMap _ _)) := by
+  simp [Algebra.TensorProduct.algebraMap_def]
 
 lemma isPullback_SpecMap_of_isPushout {A B C P : CommRingCat} (f : A ⟶ B) (g : A ⟶ C)
     (inl : B ⟶ P) (inr : C ⟶ P) (h : IsPushout f g inl inr) :
@@ -722,12 +773,28 @@ lemma diagonal_SpecMap :
 
 end Spec
 
-section CartesianMonoidalCategory
-variable {S : Scheme}
+namespace Scheme
+variable {M S T : Scheme.{u}} [M.Over S] {f : T ⟶ S}
 
-instance : CartesianMonoidalCategory (Over S) := Over.cartesianMonoidalCategory _
-instance : BraidedCategory (Over S) := .ofCartesianMonoidalCategory
+@[simps]
+instance canonicallyOverPullback : (pullback (M ↘ S) f).CanonicallyOver T where
+  hom := pullback.snd (M ↘ S) f
 
-end CartesianMonoidalCategory
+@[simps! -isSimp mul one]
+instance monObjAsOverPullback [MonObj (asOver M S)] : MonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.monObjMkPullbackSnd
 
-end AlgebraicGeometry
+instance isCommMonObj_asOver_pullback [MonObj (asOver M S)] [IsCommMonObj (asOver M S)] :
+    IsCommMonObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.isCommMonObj_mk_pullbackSnd
+
+instance GrpObjAsOverPullback [GrpObj (asOver M S)] : GrpObj (asOver (pullback (M ↘ S) f) T) := by
+  unfold asOver OverClass.asOver at *; exact Over.grpObjMkPullbackSnd
+
+instance : (pullback.fst (M ↘ S) (𝟙 S)).IsOver S := ⟨pullback.condition.trans (by simp)⟩
+
+instance isMonHom_fst_id_right [MonObj (asOver M S)] :
+    IsMonHom ((pullback.fst (M ↘ S) (𝟙 S)).asOver S) := by
+  unfold asOver OverClass.asOver at *; exact Over.isMonHom_pullbackFst_id_right
+
+end AlgebraicGeometry.Scheme

@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Constructions.Cylinders
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Projective measure families and projective limits
@@ -28,6 +30,8 @@ the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`.
   is unique.
 
 -/
+
+@[expose] public section
 
 open Set
 

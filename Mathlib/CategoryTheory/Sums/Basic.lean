@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # Binary disjoint unions of categories
@@ -23,7 +25,7 @@ The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B �
 This construction should be preferred when defining functors out of a sum.
 
 We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
-`inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
+`inrCompSum' : inr_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
 constructs a natural isomorphism of functors out of a sum out of natural isomorphism with
@@ -32,6 +34,8 @@ to construct isomorphisms between functors out of a sum.
 
 We further define sums of functors and natural transformations, written `F.sum G` and `α.sum β`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -60,7 +64,7 @@ instance sum : Category.{max v₁ v₂} (C ⊕ D) where
     | inr X => ULift.up (𝟙 X)
   comp {X Y Z} f g :=
     match X, Y, Z, f, g with
-    | inl _, inl _, inl _, f, g => ULift.up <|f.down ≫ g.down
+    | inl _, inl _, inl _, f, g => ULift.up <| f.down ≫ g.down
     | inr _, inr _, inr _, f, g => ULift.up <| f.down ≫ g.down
 
 @[aesop norm -10 destruct (rule_sets := [CategoryTheory])]
@@ -92,8 +96,8 @@ def inr_ : D ⥤ C ⊕ D where
 
 variable {C D}
 
-/-- An induction principle for morphisms in a sum of category: a morphism is either of the form
-`(inl_ _ _).map _` or of the form `(inr_ _ _).map _)`. -/
+/-- An induction principle for morphisms in a sum of categories: a morphism is either of the form
+`(inl_ _ _).map _` or of the form `(inr_ _ _).map _`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))

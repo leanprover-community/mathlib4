@@ -3,15 +3,17 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.Real.Cardinality
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.DiffContOnCl
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Complex.ReImTopology
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -88,7 +90,7 @@ differentiability at all but countably many points of the set mentioned below.
 ## Implementation details
 
 The proof of the Cauchy integral formula in this file is based on a very general version of the
-divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable`
+divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`
 (a version for functions defined on `Fin (n + 1) → ℝ`),
 `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le`, and
 `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` (versions for
@@ -155,6 +157,8 @@ function is analytic on the open ball.
 
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
+
+public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 
@@ -448,6 +452,15 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
         ((continuousOn_id.sub continuousOn_const).smul hc) fun z hz =>
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = 0 := by rw [sub_self, zero_smul, smul_zero]
+
+omit [CompleteSpace E] in
+/-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
+`{z | ‖z - c‖ ≤ R}` and is complex differentiable on the open disk,
+then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
+theorem _root_.DiffContOnCl.circleIntegral_eq_zero {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
+    {c : ℂ} (hc : DiffContOnCl ℂ f (ball c R)) : ∮ z in C(c, R), f z = 0 :=
+  circleIntegral_eq_zero_of_differentiable_on_off_countable h0 countable_empty
+    hc.continuousOn_ball fun _z hz ↦ hc.differentiableAt isOpen_ball hz.1
 
 /-- An auxiliary lemma for
 `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`. This lemma assumes

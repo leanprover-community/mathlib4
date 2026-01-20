@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Short complexes
@@ -16,11 +18,13 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 variable (C) in

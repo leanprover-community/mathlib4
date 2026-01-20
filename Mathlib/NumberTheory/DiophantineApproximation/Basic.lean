@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation
@@ -47,7 +49,7 @@ Both statements are combined to give an equivalence,
 There are two versions of Legendre's Theorem. One, `Real.exists_rat_eq_convergent`, uses
 `Real.convergent`, a simple recursive definition of the convergents that is also defined
 in this file, whereas the other, `Real.exists_convs_eq_rat` defined in the file
-`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFraction.lean`, uses
+`Mathlib/NumberTheory/DiophantineApproximation/ContinuedFractions.lean`, uses
 `GenContFract.convs` of `GenContFract.of ξ`.
 
 ## Implementation notes
@@ -67,6 +69,8 @@ fractions is much more extensive than the English one.)
 
 Diophantine approximation, Dirichlet's approximation theorem, continued fraction
 -/
+
+@[expose] public section
 
 
 namespace Real
@@ -273,10 +277,11 @@ end Rat
 theorem Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational (ξ : ℝ) :
     {q : ℚ | |ξ - q| < 1 / (q.den : ℝ) ^ 2}.Infinite ↔ Irrational ξ := by
   refine
-    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ H => Set.not_infinite.mpr ?_ h,
+    ⟨fun h => (irrational_iff_ne_rational ξ).mpr fun a b _ => ?_,
       Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational⟩
+  contrapose! h
   convert Rat.finite_rat_abs_sub_lt_one_div_den_sq ((a : ℚ) / b) with q
-  rw [H, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
+  rw [h, (by (push_cast; rfl) : (1 : ℝ) / (q.den : ℝ) ^ 2 = (1 / (q.den : ℚ) ^ 2 : ℚ))]
   norm_cast
 
 /-!
@@ -368,7 +373,7 @@ def ContfracLegendre.Ass (ξ : ℝ) (u v : ℤ) : Prop :=
 -- ### Auxiliary lemmas
 -- This saves a few lines below, as it is frequently needed.
 private theorem aux₀ {v : ℤ} (hv : 0 < v) : (0 : ℝ) < v ∧ (0 : ℝ) < 2 * v - 1 :=
-  ⟨cast_pos.mpr hv, by norm_cast; cutsat⟩
+  ⟨cast_pos.mpr hv, by norm_cast; lia⟩
 
 -- In the following, we assume that `ass ξ u v` holds and `v ≥ 2`.
 variable {ξ : ℝ} {u v : ℤ}
@@ -391,7 +396,7 @@ private theorem aux₁ : 0 < fract ξ := by
     norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
     rintro rfl
-    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> omega
+    cases isUnit_iff.mp (isCoprime_self.mp (IsCoprime.mul_left_iff.mp hcop).2) <;> lia
   norm_cast at H
   linarith only [hv, H]
 

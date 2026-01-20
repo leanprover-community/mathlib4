@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lattice
-import Batteries.Data.List.Pairwise
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lattice
+public import Batteries.Data.List.Pairwise
 
 /-!
 # Erasure of duplicates in a list
@@ -18,6 +20,8 @@ occurrence of each.
 
 duplicate, multiplicity, nodup, `nub`
 -/
+
+public section
 
 
 universe u
@@ -41,8 +45,6 @@ theorem dedup_cons' (a : α) (l : List α) :
     dedup (a :: l) = if a ∈ dedup l then dedup l else a :: dedup l := by
   split <;> simp [dedup_cons_of_mem', dedup_cons_of_notMem', *]
 
-@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem' := dedup_cons_of_notMem'
-
 @[simp]
 theorem mem_dedup {a : α} {l : List α} : a ∈ dedup l ↔ a ∈ l := by
   have := not_congr (@forall_mem_pwFilter α (· ≠ ·) _ ?_ a l)
@@ -57,8 +59,6 @@ theorem dedup_cons_of_mem {a : α} {l : List α} (h : a ∈ l) : dedup (a :: l) 
 @[simp]
 theorem dedup_cons_of_notMem {a : α} {l : List α} (h : a ∉ l) : dedup (a :: l) = a :: dedup l :=
   dedup_cons_of_notMem' <| mt mem_dedup.1 h
-
-@[deprecated (since := "2025-05-23")] alias dedup_cons_of_not_mem := dedup_cons_of_notMem
 
 theorem dedup_cons (a : α) (l : List α) :
     dedup (a :: l) = if a ∈ l then dedup l else a :: dedup l := by
@@ -97,7 +97,7 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
-    cutsat
+    lia
   · have := @List.cons_head!_tail α ⟨a⟩ _ (ne_nil_of_mem (mem_dedup.2 h.1))
     have hal : a ∈ l.dedup := mem_dedup.2 h.1
     rw [← this, mem_cons, or_iff_not_imp_right] at hal

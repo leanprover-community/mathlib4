@@ -3,12 +3,16 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Absolute value in `ZMod n`
 -/
+
+@[expose] public section
 
 namespace ZMod
 variable {n : ℕ} {a b : ZMod n}
@@ -69,8 +73,7 @@ lemma valMinAbs_mem_Ioc [NeZero n] (x : ZMod n) : x.valMinAbs * 2 ∈ Set.Ioc (-
     exacts [Nat.cast_nonneg _, zero_le_two]
   · refine ⟨?_, le_trans (mul_nonpos_of_nonpos_of_nonneg ?_ zero_le_two) <| Nat.cast_nonneg _⟩
     · linarith only [h]
-    · rw [sub_nonpos, Int.ofNat_le]
-      exact x.val_lt.le
+    · grind
 
 lemma valMinAbs_spec [NeZero n] (x : ZMod n) (y : ℤ) :
     x.valMinAbs = y ↔ x = y ∧ y * 2 ∈ Set.Ioc (-n : ℤ) n where

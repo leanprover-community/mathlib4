@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Monotone.Monovary
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Order.Monotone.Monovary
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Interpreting monovarying functions as monotone functions
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Order
 This file proves that monovarying functions to linear orders can be made simultaneously monotone by
 setting the correct order on their shared indexing type.
 -/
+
+@[expose] public section
 
 open Function Set
 

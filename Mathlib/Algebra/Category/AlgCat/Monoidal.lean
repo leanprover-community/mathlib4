@@ -3,14 +3,18 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # The monoidal category structure on R-algebras
 -/
+
+@[expose] public section
 
 open CategoryTheory
 open scoped MonoidalCategory
@@ -38,8 +42,6 @@ noncomputable abbrev tensorObj (X Y : AlgCat.{u} R) : AlgCat.{u} R :=
 noncomputable abbrev tensorHom {W X Y Z : AlgCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
   ofHom <| Algebra.TensorProduct.map f.hom g.hom
-
-open MonoidalCategory
 
 end instMonoidalCategory
 

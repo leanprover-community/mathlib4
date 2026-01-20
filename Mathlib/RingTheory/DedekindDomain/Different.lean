@@ -3,10 +3,12 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.RamificationInertia.Unramified
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.FractionalIdeal.Extended
-import Mathlib.RingTheory.Trace.Quotient
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Unramified
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.FractionalIdeal.Extended
+public import Mathlib.RingTheory.Trace.Quotient
 
 /-!
 # The different ideal
@@ -30,6 +32,8 @@ import Mathlib.RingTheory.Trace.Quotient
 ## TODO
 - Show properties of the different ideal
 -/
+
+@[expose] public section
 
 open Module
 
@@ -140,8 +144,8 @@ variable [IsFractionRing A K]
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
     [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
-    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
-      traceDual A K (I.map (FractionRing.algEquiv B L)) := by
+    (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L).toLinearMap =
+      traceDual A K (I.map (FractionRing.algEquiv B L).toLinearMap) := by
   change Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
     traceDual A K (I.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap)
   rw [Submodule.map_equiv_eq_comap_symm, Submodule.map_equiv_eq_comap_symm]
@@ -233,12 +237,12 @@ def dual (I : FractionalIdeal B⁰ L) :
     have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp
       (IsIntegral.algebraMap (B := L) (discr_isIntegral K hb))
     refine ⟨y * x, mem_nonZeroDivisors_iff_ne_zero.mpr (mul_ne_zero ?_ hx), fun z hz ↦ ?_⟩
-    · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
+    · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, map_zero,
         ← (algebraMap K L).map_zero, (algebraMap K L).injective.ne_iff]
       exact discr_not_zero_of_basis K b
     · convert isIntegral_discr_mul_of_mem_traceDual I hb hx' hz using 1
       · ext w; exact (IsIntegralClosure.isIntegral_iff (A := B)).symm
-      · rw [Algebra.smul_def, RingHom.map_mul, hy, ← Algebra.smul_def]⟩
+      · rw [Algebra.smul_def, map_mul, hy, ← Algebra.smul_def]⟩
 
 end FractionalIdeal
 
@@ -342,18 +346,14 @@ lemma inv_le_dual :
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by
   by_cases hI : I = 0; · simp [hI]
-  convert mul_right_mono ((dual A K I)⁻¹)
-    (mul_left_mono I (inv_le_dual A K I)) using 1
-  · simp only [mul_inv_cancel₀ hI, one_mul]
-  · simp only [mul_inv_cancel₀ (dual_ne_zero A K (hI := hI)), mul_assoc, mul_one]
+  rw [inv_le_comm₀ (by simpa [pos_iff_ne_zero]) (by simpa [pos_iff_ne_zero])]
+  exact inv_le_dual ..
 
 lemma dual_eq_mul_inv :
     dual A K I = dual A K 1 * I⁻¹ := by
   by_cases hI : I = 0; · simp [hI]
   apply le_antisymm
-  · suffices dual A K I * I ≤ dual A K 1 by
-      convert mul_right_mono I⁻¹ this using 1; simp only [mul_inv_cancel₀ hI, mul_one, mul_assoc]
-    rw [← le_dual_iff A K hI]
+  · rw [le_mul_inv_iff₀ (pos_iff_ne_zero.2 hI), ← le_dual_iff A K hI]
   rw [le_dual_iff A K hI, mul_assoc, inv_mul_cancel₀ hI, mul_one]
 
 variable {I}
@@ -433,9 +433,9 @@ theorem smul_mem_dual_one {x : L} (hx : x ∈ dual A K (1 : FractionalIdeal B⁰
   obtain ⟨a, ha⟩ := hx b
   use a
   simpa [Algebra.smul_def b, hb, mul_comm _ x, ← smul_eq_mul, ← (Algebra.trace L M).map_smul,
-    Algebra.trace_trace, -id.smul_eq_mul, smul_comm x c y] using ha
+    Algebra.trace_trace, smul_comm x c y] using ha
 
-variable [NoZeroSMulDivisors B C]
+variable [IsTorsionFree B C]
 
 theorem dual_eq_dual_mul_dual :
     dual A K (1 : FractionalIdeal C⁰ M) = dual B L (1 : FractionalIdeal C⁰ M) *
@@ -470,7 +470,7 @@ end FractionalIdeal
 section IsIntegrallyClosed
 
 variable (B)
-variable [IsIntegrallyClosed A] [IsDedekindDomain B] [NoZeroSMulDivisors A B]
+variable [IsIntegrallyClosed A] [IsDedekindDomain B] [IsTorsionFree A B]
 
 /-- The different ideal of an extension of integral domains `B/A` is the inverse of the dual of `A`
 as an ideal of `B`. See `coeIdeal_differentIdeal` and `coeSubmodule_differentIdeal`. -/
@@ -483,8 +483,6 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
     [FiniteDimensional (FractionRing A) (FractionRing B)] :
     coeSubmodule (FractionRing B) (differentIdeal A B) =
       1 / Submodule.traceDual A (FractionRing A) 1 := by
-  have : IsIntegralClosure B A (FractionRing B) :=
-    IsIntegralClosure.of_isIntegrallyClosed _ _ _
   rw [coeSubmodule, differentIdeal, Submodule.map_comap_eq, inf_eq_right]
   have := FractionalIdeal.dual_inv_le (A := A) (K := FractionRing A)
     (1 : FractionalIdeal B⁰ (FractionRing B))
@@ -544,9 +542,6 @@ theorem differentIdeal_ne_bot [Module.Finite A B]
     differentIdeal A B ≠ ⊥ := by
   let K := FractionRing A
   let L := FractionRing B
-  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [ne_eq, ← FractionalIdeal.coeIdeal_inj (K := L), coeIdeal_differentIdeal (K := K)]
   simp
 
@@ -572,13 +567,16 @@ open FractionalIdeal in
 theorem differentIdeal_eq_differentIdeal_mul_differentIdeal (C : Type*) [IsDomain B] [CommRing C]
     [Algebra B C] [Algebra A C] [IsDedekindDomain C]
     [Module.Finite A B] [Module.Finite A C] [Module.Finite B C]
-    [NoZeroSMulDivisors A C] [NoZeroSMulDivisors B C] [IsScalarTower A B C]
+    [IsTorsionFree A C] [IsTorsionFree B C] [IsScalarTower A B C]
     [Algebra.IsSeparable (FractionRing A) (FractionRing C)] :
     differentIdeal A C = differentIdeal B C * (differentIdeal A B).map (algebraMap B C) := by
   have : Algebra.IsSeparable (FractionRing B) (FractionRing C) :=
     isSeparable_tower_top_of_isSeparable (FractionRing A) _ _
   have : Algebra.IsSeparable (FractionRing A) (FractionRing B) :=
     isSeparable_tower_bot_of_isSeparable _ _ (FractionRing C)
+  haveI : FiniteDimensional (FractionRing A) (FractionRing B) := .of_isLocalization A B A⁰
+  haveI : FiniteDimensional (FractionRing A) (FractionRing C) := .of_isLocalization A C A⁰
+  haveI : FiniteDimensional (FractionRing B) (FractionRing C) := .of_isLocalization B C B⁰
   rw [← coeIdeal_inj (K := FractionRing C), coeIdeal_mul, coeIdeal_differentIdeal A
     (FractionRing A), coeIdeal_differentIdeal B (FractionRing B)]
   rw [← extendedHomₐ_coeIdeal_eq_map (K := FractionRing B), coeIdeal_differentIdeal A
@@ -686,7 +684,7 @@ section
 
 variable (L)
 variable [IsFractionRing B L] [IsDedekindDomain A] [IsDedekindDomain B]
-  [NoZeroSMulDivisors A B] [Module.Finite A B]
+  [IsTorsionFree A B] [Module.Finite A B]
 
 include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux
@@ -717,10 +715,10 @@ lemma pow_sub_one_dvd_differentIdeal_aux
       Submodule.map_le_iff_le_comap]
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
-      FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
+      FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
     rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
-      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
+      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hx
     intro y hy'
@@ -729,7 +727,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
     have : trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
       rw [← algebraMap_intTrace (A := A)]
       exact ⟨intTrace A B z, this z hz, rfl⟩
-    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
+    rwa [mul_comm, ← smul_eq_mul, ← map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← trace_quotient_eq_of_isDedekindDomain,
@@ -771,10 +769,10 @@ theorem not_dvd_differentIdeal_of_intTrace_not_mem
   have : FiniteDimensional K L := .of_isLocalization A B A⁰
   rw [Ideal.dvd_iff_le]
   intro H
-  replace H := (mul_le_mul_right' H Q).trans_eq hP
+  replace H := (mul_le_mul_left H Q).trans_eq hP
   replace H := (FractionalIdeal.coeIdeal_le_coeIdeal' _ (P := L) le_rfl).mpr H
   rw [FractionalIdeal.coeIdeal_mul, coeIdeal_differentIdeal A K] at H
-  replace H := mul_le_mul_left' H (FractionalIdeal.dual A K 1)
+  replace H := mul_le_mul_right H (FractionalIdeal.dual A K 1)
   simp only [ne_eq, FractionalIdeal.dual_eq_zero_iff, one_ne_zero, not_false_eq_true,
     mul_inv_cancel_left₀] at H
   apply hx
@@ -857,9 +855,6 @@ lemma dvd_differentIdeal_of_not_isSeparable
       (by rw [pow_two, ha]; exact mul_dvd_mul_left _ hPa)
   let K := FractionRing A
   let L := FractionRing B
-  have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
-    IsIntegralClosure.isLocalization _ K _ _
-  have : FiniteDimensional K L := .of_isLocalization A B A⁰
   have hp' := (Ideal.map_eq_bot_iff_of_injective
     (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
@@ -875,10 +870,10 @@ lemma dvd_differentIdeal_of_not_isSeparable
       Submodule.map_le_iff_le_comap]
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
-      FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp')] at hx
+      FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
     rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
-      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_nonzero (by simpa using hp)]
+      FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂] at hx
     intro y hy'
@@ -887,7 +882,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
     have : Algebra.trace K L (algebraMap B L z) ∈ (p : FractionalIdeal A⁰ K) := by
       rw [← Algebra.algebraMap_intTrace (A := A)]
       exact ⟨Algebra.intTrace A B z, this z hz, rfl⟩
-    rwa [mul_comm, ← smul_eq_mul, ← LinearMap.map_smul, Algebra.smul_def, mul_comm,
+    rwa [mul_comm, ← smul_eq_mul, ← map_smul, Algebra.smul_def, mul_comm,
       ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L, ← hz']
   intro x hx
   rw [← Ideal.Quotient.eq_zero_iff_mem, ← Algebra.trace_quotient_eq_of_isDedekindDomain]
@@ -918,7 +913,6 @@ theorem not_dvd_differentIdeal_iff
     simp only [Submodule.zero_eq_bot, differentIdeal_ne_bot, not_false_eq_true, true_iff]
     let K := FractionRing A
     let L := FractionRing B
-    have : FiniteDimensional K L := .of_isLocalization A B A⁰
     have : IsLocalization B⁰ (Localization.AtPrime (⊥ : Ideal B)) := by
       convert (inferInstanceAs
         (IsLocalization (⊥ : Ideal B).primeCompl (Localization.AtPrime (⊥ : Ideal B))))

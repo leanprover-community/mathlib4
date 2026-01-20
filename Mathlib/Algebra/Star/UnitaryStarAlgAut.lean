@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Star.Unitary
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Algebra.Star.Unitary
 
 /-!
 # The ⋆-algebra automorphism given by a unitary element
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Star.Unitary
 This file defines the ⋆-algebra automorphism on `R` given by a unitary `u`,
 which is `Unitary.conjStarAlgAut S R u`, defined to be `x ↦ u * x * star u`.
 -/
+
+@[expose] public section
 
 namespace Unitary
 variable {S R : Type*} [Semiring R] [StarMul R]
@@ -40,6 +44,9 @@ def conjStarAlgAut : unitary R →* (R ≃⋆ₐ[S] R) where
 theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
     (conjStarAlgAut S R u).symm x = (star u : R) * x * u := rfl
 
+theorem conjStarAlgAut_star_apply (u : unitary R) (x : R) :
+    conjStarAlgAut S R (star u) x = (star u : R) * x * u := by simp
+
 @[simp] theorem conjStarAlgAut_symm (u : unitary R) :
     (conjStarAlgAut S R u).symm = conjStarAlgAut S R (star u) := by
   ext; simp [conjStarAlgAut_symm_apply]
@@ -47,6 +54,9 @@ theorem conjStarAlgAut_symm_apply (u : unitary R) (x : R) :
 theorem conjStarAlgAut_trans_conjStarAlgAut (u₁ u₂ : unitary R) :
     (conjStarAlgAut S R u₁).trans (conjStarAlgAut S R u₂) = conjStarAlgAut S R (u₂ * u₁) :=
   map_mul _ _ _ |>.symm
+
+theorem conjStarAlgAut_mul_apply (u₁ u₂ : unitary R) (x : R) :
+    conjStarAlgAut S R (u₁ * u₂) x = conjStarAlgAut S R u₁ (conjStarAlgAut S R u₂ x) := by simp
 
 theorem toRingEquiv_conjStarAlgAut (u : unitary R) :
     (conjStarAlgAut S R u).toRingEquiv =

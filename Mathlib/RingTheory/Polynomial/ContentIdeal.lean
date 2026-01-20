@@ -3,10 +3,11 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # The content ideal of a polynomial
@@ -39,6 +40,8 @@ Let `p : R[X]`.
 
 -/
 
+@[expose] public section
+
 namespace Polynomial
 
 open Ideal
@@ -53,9 +56,6 @@ theorem contentIdeal_def : p.contentIdeal = span (p.coeffs : Set R) := rfl
 @[simp]
 theorem contentIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
-
-@[deprecated (since := "2025-07-01")]
-alias contenIdeal_zero := contentIdeal_zero
 
 @[simp]
 theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by

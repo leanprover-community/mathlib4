@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -18,13 +20,15 @@ We show that
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
-  there are also spelling with trivial kernel and full range
+  there are also spellings with trivial kernel and full range
 
 In particular, (extended) charts have bijective differential.
 
 ## Tags
 charts, differentiable, bijective
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -100,7 +104,7 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
     ContDiffOn 𝕜 1 (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
       (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I ((chartAt H x : M → H) x)) mem
+  have B := A.differentiableOn one_ne_zero (I ((chartAt H x : M → H) x)) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -121,7 +125,7 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
     ContDiffOn 𝕜 1 (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
       (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_rfl (I x) mem
+  have B := A.differentiableOn one_ne_zero (I x) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -199,10 +203,10 @@ theorem mfderiv_injective {x : M} (hx : x ∈ e.source) : Function.Injective (mf
 theorem mfderiv_surjective {x : M} (hx : x ∈ e.source) : Function.Surjective (mfderiv I I' e x) :=
   (he.mfderiv hx).surjective
 
-theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : LinearMap.ker (mfderiv I I' e x) = ⊥ :=
+theorem ker_mfderiv_eq_bot {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).ker = ⊥ :=
   (he.mfderiv hx).toLinearEquiv.ker
 
-theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : LinearMap.range (mfderiv I I' e x) = ⊤ :=
+theorem range_mfderiv_eq_top {x : M} (hx : x ∈ e.source) : (mfderiv I I' e x).range = ⊤ :=
   (he.mfderiv hx).toLinearEquiv.range
 
 theorem range_mfderiv_eq_univ {x : M} (hx : x ∈ e.source) : range (mfderiv I I' e x) = univ :=

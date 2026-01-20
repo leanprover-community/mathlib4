@@ -3,11 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.Matrix.RowCol
-import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Fin
+public meta import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Matrix and vector notation
@@ -37,6 +40,8 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
+@[expose] public section
+
 namespace Matrix
 
 universe u uₘ uₙ uₒ
@@ -51,14 +56,14 @@ open Lean Qq
 
 open Qq in
 /-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
-def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
+meta def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
     Q(Matrix (Fin $m) (Fin $n) $α) :=
   let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
   q(Matrix.of $elems)
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
-protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
+protected meta instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
     [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
     Lean.ToExpr (Matrix m' n' α) :=
   have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
@@ -119,7 +124,8 @@ macro_rules
 
 /-- Delaborator for the `!![]` notation. -/
 @[app_delab DFunLike.coe]
-def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
+meta def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
       (← getExpr).appFn!.appArg! | failure
@@ -455,7 +461,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
-set_option linter.style.commandStart false in -- Preserve the formatting of the matrices.
+set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
     !![a₁₁, a₁₂, a₁₃;

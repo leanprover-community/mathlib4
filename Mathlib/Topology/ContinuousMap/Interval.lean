@@ -3,14 +3,18 @@ Copyright (c) 2024 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Continuous bundled maps on intervals
 
 In this file we prove a few results about `ContinuousMap` when the domain is an interval.
 -/
+
+@[expose] public section
 
 open Set ContinuousMap Filter Topology
 

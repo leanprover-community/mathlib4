@@ -3,11 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 /-!
 # Monad combinators, as in Haskell's Control.Monad.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -21,7 +24,3 @@ respectively. -/
 def condM {m : Type → Type} [Monad m] {α : Type} (mbool : m Bool) (tm fm : m α) : m α := do
   let b ← mbool
   cond b tm fm
-
-namespace Monad
-
-end Monad

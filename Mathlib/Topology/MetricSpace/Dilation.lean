@@ -3,10 +3,12 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Data.FunLike.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Dilations
@@ -48,9 +50,11 @@ needed.
 - [Marcel Berger, *Geometry*][berger1987]
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Bornology Function Set Topology
+open Bornology Function Set Topology Metric
 open scoped ENNReal NNReal
 
 section Defs
@@ -378,21 +382,20 @@ theorem toContinuous : Continuous (f : α → β) :=
   (lipschitz f).continuous
 
 /-- Dilations scale the diameter by `ratio f` in pseudoemetric spaces. -/
-theorem ediam_image (s : Set α) : EMetric.diam ((f : α → β) '' s) = ratio f * EMetric.diam s := by
+theorem ediam_image (s : Set α) : ediam ((f : α → β) '' s) = ratio f * ediam s := by
   refine ((lipschitz f).ediam_image_le s).antisymm ?_
   apply ENNReal.mul_le_of_le_div'
   rw [div_eq_mul_inv, mul_comm, ← ENNReal.coe_inv]
   exacts [(antilipschitz f).le_mul_ediam_image s, ratio_ne_zero f]
 
 /-- A dilation scales the diameter of the range by `ratio f`. -/
-theorem ediam_range : EMetric.diam (range (f : α → β)) = ratio f * EMetric.diam (univ : Set α) := by
+theorem ediam_range : ediam (range (f : α → β)) = ratio f * ediam (univ : Set α) := by
   rw [← image_univ]; exact ediam_image f univ
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.ball x r) (EMetric.ball (f x) (ratio f * r)) :=
-  fun y hy => (edist_eq f y x).trans_lt <|
-    (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 <| ratio_ne_zero f) ENNReal.coe_ne_top).2 hy
+  fun y (hy : _ < r) ↦ by rw [EMetric.mem_ball, edist_eq f y x]; gcongr <;> simp [ratio_ne_zero, *]
 
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
@@ -447,10 +450,10 @@ section PseudoMetricDilation
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [DilationClass F α β] (f : F)
 
 /-- A dilation scales the diameter by `ratio f` in pseudometric spaces. -/
-theorem diam_image (s : Set α) : Metric.diam ((f : α → β) '' s) = ratio f * Metric.diam s := by
-  simp [Metric.diam, ediam_image, ENNReal.toReal_mul]
+theorem diam_image (s : Set α) : diam ((f : α → β) '' s) = ratio f * diam s := by
+  simp [diam, ediam_image, ENNReal.toReal_mul]
 
-theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam (univ : Set α) := by
+theorem diam_range : diam (range (f : α → β)) = ratio f * diam (univ : Set α) := by
   rw [← image_univ, diam_image]
 
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/

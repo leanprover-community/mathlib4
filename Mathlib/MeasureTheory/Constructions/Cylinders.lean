@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Topology.Constructions
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -40,6 +42,8 @@ a product set.
 
 -/
 
+@[expose] public section
+
 open Function Set
 
 namespace MeasureTheory
@@ -51,7 +55,7 @@ section squareCylinders
 /-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
 `∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
-`squareCylinders` is the set of all such squareCylinders. -/
+`squareCylinders` is the set of all such square cylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
@@ -436,7 +440,7 @@ lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
 /-- The function `update f a : X a → Π a, X a` is always measurable.
 This doesn't require `f` to be measurable.
 This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[fun_prop]
 lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
   measurable_update_cylinderEvents'.comp measurable_prodMk_left

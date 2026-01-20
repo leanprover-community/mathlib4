@@ -3,12 +3,13 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -35,6 +36,8 @@ the spectral order.
 
 continuous functional calculus, normal, selfadjoint
 -/
+
+@[expose] public section
 
 open scoped NNReal CStarAlgebra
 
@@ -158,7 +161,7 @@ lemma IsSelfAdjoint.le_algebraMap_norm_self {a : A} (ha : IsSelfAdjoint a := by 
   · simp
 
 lemma IsSelfAdjoint.neg_algebraMap_norm_le_self {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
-    - (algebraMap ℝ A ‖a‖) ≤ a := by
+    -(algebraMap ℝ A ‖a‖) ≤ a := by
   rw [neg_le, ← norm_neg]
   exact ha.neg.le_algebraMap_norm_self
 
@@ -488,7 +491,7 @@ lemma inr_mem_Icc_iff_nnnorm_le {x : A} :
 lemma preimage_inr_Icc_zero_one :
     ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
   ext
-  simp [- mem_Icc, inr_mem_Icc_iff_norm_le]
+  simp [-mem_Icc, inr_mem_Icc_iff_norm_le]
 
 end Icc
 

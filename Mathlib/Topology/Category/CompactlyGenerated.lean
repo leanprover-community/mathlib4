@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
-import Mathlib.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
+public import Mathlib.CategoryTheory.Elementwise
 /-!
 
 # Compactly generated topological spaces
@@ -19,6 +21,8 @@ compact Hausdorff spaces `S` mapping continuously to `X`.
 * `CompactlyGenerated` is Cartesian closed.
 * Every first-countable space is `u`-compactly generated for every universe `u`.
 -/
+
+@[expose] public section
 
 universe u w
 
@@ -42,8 +46,8 @@ instance : CoeSort CompactlyGenerated Type* :=
 
 attribute [instance] is_compactly_generated
 
-instance : Category.{w, w+1} CompactlyGenerated.{u, w} :=
-  InducedCategory.category toTop
+instance : Category.{w, w + 1} CompactlyGenerated.{u, w} :=
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{w} CompactlyGenerated.{u, w} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -96,8 +100,8 @@ def homeoOfIso {X Y : CompactlyGenerated.{u, w}} (f : X ≅ Y) : X ≃ₜ Y wher
   invFun := f.inv
   left_inv := f.hom_inv_id_apply
   right_inv := f.inv_hom_id_apply
-  continuous_toFun := f.hom.hom.continuous
-  continuous_invFun := f.inv.hom.continuous
+  continuous_toFun := f.hom.hom.hom.continuous
+  continuous_invFun := f.inv.hom.hom.continuous
 
 /-- The equivalence between isomorphisms in `CompactlyGenerated` and homeomorphisms
 of topological spaces. -/

@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Bases in a vector space
@@ -27,6 +29,8 @@ import cycle.
 basis, bases
 
 -/
+
+@[expose] public section
 
 open Function Module Set Submodule
 
@@ -252,9 +256,28 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
+open scoped Classical in
+/-- The left inverse of `f : E →ₗ[𝕜] F`.
+
+If `f` is not injective, then we use the junk value `0`. -/
+noncomputable
+def LinearMap.leftInverse (f : V →ₗ[K] V') : V' →ₗ[K] V :=
+  if h_inj : LinearMap.ker f = ⊥ then
+  (f.exists_leftInverse_of_injective h_inj).choose
+  else 0
+
+theorem LinearMap.leftInverse_comp_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) :
+    f.leftInverse ∘ₗ f = LinearMap.id := by
+  simpa [leftInverse, h_inj] using (f.exists_leftInverse_of_injective h_inj).choose_spec
+
+/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
+theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) (x : V) :
+    f.leftInverse (f x) = x :=
+  LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
+
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
-  let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
-  ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
+  ⟨LinearMap.ker p.subtype.leftInverse,
+    LinearMap.isCompl_of_proj <| LinearMap.leftInverse_apply_of_inj p.ker_subtype⟩
 
 instance Submodule.complementedLattice : ComplementedLattice (Submodule K V) :=
   ⟨Submodule.exists_isCompl⟩
@@ -276,9 +299,6 @@ theorem LinearMap.exists_extend_of_notMem {p : Submodule K V} {v : V} (f : p →
   · have := LinearPMap.supSpanSingleton_apply_self ⟨p, f⟩ y hv
     simpa using congr($hg _).trans this
 
-@[deprecated (since := "2025-05-23")]
-alias LinearMap.exists_extend_of_not_mem := LinearMap.exists_extend_of_notMem
-
 open Submodule LinearMap
 
 theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v ∉ p) :
@@ -295,9 +315,6 @@ instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
   have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
   obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
   exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
-
-@[deprecated (since := "2025-05-23")]
-alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem
 
 /-- If `p < ⊤` is a subspace of a vector space `V`, then there exists a nonzero linear map
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/

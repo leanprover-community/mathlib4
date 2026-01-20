@@ -3,18 +3,23 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.OfFn
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Data.Vector.Defs
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.SuccPred
 
 /-!
 # Additional theorems and definitions about the `Vector` type
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -37,7 +42,7 @@ theorem toList_injective : Function.Injective (@toList α n) :=
 @[ext]
 theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vector.get w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
-    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
+    Subtype.ext (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 
 /-- The empty `Vector` is a `Subsingleton`. -/
 instance zero_subsingleton : Subsingleton (Vector α 0) :=
@@ -160,16 +165,14 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
-  rcases v with ⟨l, rfl⟩
-  apply toList_injective
-  dsimp
-  simpa only [toList_ofFn] using List.ofFn_get _
+  ext
+  apply List.Vector.get_ofFn
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by cutsat⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -201,6 +204,10 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
     funext i
     rw [get_tail, get_ofFn]
     rfl
+
+theorem toList_tail : ∀ (v : Vector α n), v.tail.toList = v.toList.tail
+  | ⟨[], _⟩     => by rfl
+  | ⟨_ :: _, _⟩ => by rfl
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
@@ -310,7 +317,8 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
+  apply Vector.eq; simp [scanl]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -367,7 +375,7 @@ theorem scanl_get (i : Fin n) :
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
 end Scan
 
@@ -524,7 +532,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    split <;> omega⟩
+    split <;> lia⟩
 
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
     (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
@@ -536,10 +544,7 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
 
 theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx_self ..)
-
-@[deprecated (since := "2025-06-17")]
-alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
+  Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -548,7 +553,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertIdx, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
-    simp only [Fin.lt_iff_val_lt_val]
+    simp only [Fin.lt_def]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
@@ -566,8 +571,8 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
-    refine Subtype.eq ?_
-    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    refine Subtype.ext ?_
+    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.val_castAdd]
     apply List.insertIdx_comm
     · assumption
     · rw [hl]
@@ -637,7 +642,7 @@ private def traverseAux {α β : Type u} (f : α → F β) : ∀ x : List α, F 
   | x :: xs => Vector.cons <$> f x <*> traverseAux f xs
 
 /-- Apply an applicative function to each component of a vector. -/
-protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
+@[no_expose] protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
   | ⟨v, Hv⟩ => cast (by rw [Hv]) <| traverseAux f v
 
 section

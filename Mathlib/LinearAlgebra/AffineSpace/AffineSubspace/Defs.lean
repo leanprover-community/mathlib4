@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.Atoms
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 
 /-!
 # Affine spaces
@@ -43,6 +45,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 noncomputable section
 
 open Affine
@@ -85,6 +89,18 @@ theorem vsub_set_subset_vectorSpan (s : Set P) : s -ᵥ s ⊆ ↑(vectorSpan k s
 theorem vsub_mem_vectorSpan {s : Set P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) :
     p₁ -ᵥ p₂ ∈ vectorSpan k s :=
   vsub_set_subset_vectorSpan k s (vsub_mem_vsub hp₁ hp₂)
+
+lemma vectorSpan_of_subsingleton {s : Set P} (h : s.Subsingleton) : vectorSpan k s = ⊥ := by
+  rcases h.eq_empty_or_singleton with rfl | ⟨p, rfl⟩ <;> simp
+
+@[simp]
+lemma vectorSpan_eq_bot_iff_subsingleton {s : Set P} : vectorSpan k s = ⊥ ↔ s.Subsingleton := by
+  refine ⟨fun h ↦ ?_, vectorSpan_of_subsingleton _⟩
+  by_contra hns
+  rw [Set.not_subsingleton_iff] at hns
+  obtain ⟨p, hp, q, hq, hpq⟩ := hns
+  have hpq' := vsub_mem_vectorSpan k hp hq
+  simp_all
 
 /-- The points in the affine span of a (possibly empty) set of points. Use `affineSpan` instead to
 get an `AffineSubspace k P`. -/
@@ -345,6 +361,9 @@ theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ dir
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
   ⟨p, self_mem_mk' p direction⟩
 
+instance (p : P) (direction : Submodule k V) : Nonempty (mk' p direction) :=
+  ⟨⟨p, self_mem_mk' p direction⟩⟩
+
 /-- The direction of an affine subspace constructed from a point and a direction. -/
 @[simp]
 theorem direction_mk' (p : P) (direction : Submodule k V) :
@@ -440,7 +459,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
   simp [mem_add, spanPoints]
-  aesop
+  grind
 
 variable {k}
 
@@ -677,8 +696,6 @@ variable {P}
 /-- No points are in `⊥`. -/
 theorem notMem_bot (p : P) : p ∉ (⊥ : AffineSubspace k P) :=
   Set.notMem_empty p
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 instance isEmpty_bot : IsEmpty (⊥ : AffineSubspace k P) :=
   Subtype.isEmpty_of_false fun _ ↦ notMem_bot _ _ _
@@ -1052,7 +1069,7 @@ lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     exact Submodule.smul_mem _ _ (Submodule.sub_mem _ hu hv)
 
 lemma affineSpan_subset_span {s : Set V} :
-    (affineSpan k s : Set V) ⊆  Submodule.span k s :=
+    (affineSpan k s : Set V) ⊆ Submodule.span k s :=
   affineSpan_le_toAffineSubspace_span
 
 -- TODO: We want this to be simp, but `affineSpan` gets simp-ed away to `spanPoints`!

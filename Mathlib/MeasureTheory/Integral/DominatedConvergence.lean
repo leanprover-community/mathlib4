@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.IndicatorFunction
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # The dominated convergence theorem
@@ -28,6 +30,8 @@ for the Bochner integral.
   measurable functions are continuous
 
 -/
+
+public section
 
 open MeasureTheory Metric
 
@@ -193,7 +197,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
     refine fun n => Eventually.of_forall fun x => ?_
-    exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
+    grw [(h_anti (zero_le n)).subset]
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 
 end TendstoMono

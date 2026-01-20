@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Pi
-import Mathlib.RingTheory.Unramified.Field
+module
+
+public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Unramified.Field
 
 /-!
 # Étale algebras over fields
@@ -28,6 +30,8 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+public section
 
 
 universe u
@@ -115,7 +119,6 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
     rw [← hg₂ _ ((g _).comp (IntermediateField.inclusion e))]
     · rfl
     apply AlgHom.ext
-    intro ⟨a, _⟩
     rw [← AlgHom.comp_assoc, hg₁, AlgHom.comp_assoc]
     simp
   have H : ∀ x y : L, ∃ α : L, x ∈ K⟮α⟯ ∧ y ∈ K⟮α⟯ := by

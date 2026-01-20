@@ -3,12 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Calculus.LagrangeMultipliers
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Algebra.EuclideanDomain.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # The Rayleigh quotient
@@ -35,6 +37,8 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 
 -/
 
+public section
+
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -59,12 +63,16 @@ theorem rayleigh_smul (x : E) {c : 𝕜} (hc : c ≠ 0) :
   · simp [hx]
   simp [field, norm_smul, T.reApplyInnerSelf_smul]
 
+theorem rayleighQuotient_add (S : E →L[𝕜] E) {x : E} :
+    (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply, inner_add_left, add_div]
+
 theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     rayleighQuotient T '' {0}ᶜ = rayleighQuotient T '' sphere 0 r := by
   ext a
   constructor
   · rintro ⟨x, hx : x ≠ 0, hxT⟩
-    let c : 𝕜 := ↑‖x‖⁻¹ * r
+    let c : 𝕜 := ‖x‖⁻¹ * r
     have : c ≠ 0 := by simp [c, hx, hr.ne']
     refine ⟨c • x, ?_, ?_⟩
     · simp [field, c, norm_smul, abs_of_pos hr]
@@ -101,7 +109,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
   rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
-    ContinuousLinearMap.prod_apply, innerSL_apply, id, ContinuousLinearMap.id_apply,
+    ContinuousLinearMap.prod_apply, innerSL_apply_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
@@ -143,9 +151,7 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
   set c : ℝ := -b⁻¹ * a
   convert hc
-  have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
-  simp [field, inner_smul_left, real_inner_self_eq_norm_mul_norm, mul_comm a] at this ⊢
-  exact this
+  simpa [field, inner_smul_left, mul_comm a] using congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
 
 end Real
 
@@ -155,7 +161,7 @@ variable [CompleteSpace E] {T : E →L[𝕜] E}
 
 theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
-    T x₀ = (↑(T.rayleighQuotient x₀) : 𝕜) • x₀ := by
+    T x₀ = (T.rayleighQuotient x₀ : 𝕜) • x₀ := by
   letI := InnerProductSpace.rclikeToReal 𝕜 E
   let hSA := hT.isSymmetric.restrictScalars.toSelfAdjoint.prop
   exact hSA.eq_smul_self_of_isLocalExtrOn_real hextr
@@ -164,7 +170,7 @@ theorem eq_smul_self_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E}
 centred at the origin is an eigenvector of `T`. -/
 theorem hasEigenvector_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
-    HasEigenvector (T : E →ₗ[𝕜] E) (↑(T.rayleighQuotient x₀)) x₀ := by
+    HasEigenvector (T : E →ₗ[𝕜] E) (T.rayleighQuotient x₀) x₀ := by
   refine ⟨?_, hx₀⟩
   rw [Module.End.mem_eigenspace_iff]
   exact hT.eq_smul_self_of_isLocalExtrOn hextr
@@ -174,7 +180,7 @@ at the origin is an eigenvector of `T`, with eigenvalue the global supremum of t
 quotient. -/
 theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMaxOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
-    HasEigenvector (T : E →ₗ[𝕜] E) (↑(⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x)) x₀ := by
+    HasEigenvector (T : E →ₗ[𝕜] E) (⨆ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
   convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inr hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
@@ -193,7 +199,7 @@ at the origin is an eigenvector of `T`, with eigenvalue the global infimum of th
 quotient. -/
 theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x₀ ≠ 0)
     (hextr : IsMinOn T.reApplyInnerSelf (sphere (0 : E) ‖x₀‖) x₀) :
-    HasEigenvector (T : E →ₗ[𝕜] E) (↑(⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x)) x₀ := by
+    HasEigenvector (T : E →ₗ[𝕜] E) (⨅ x : { x : E // x ≠ 0 }, T.rayleighQuotient x : ℝ) x₀ := by
   convert hT.hasEigenvector_of_isLocalExtrOn hx₀ (Or.inl hextr.localize)
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
@@ -222,7 +228,7 @@ namespace IsSymmetric
 /-- The supremum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨆ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
+    HasEigenvalue T (⨆ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0
@@ -241,7 +247,7 @@ theorem hasEigenvalue_iSup_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetr
 /-- The infimum of the Rayleigh quotient of a symmetric operator `T` on a nontrivial
 finite-dimensional vector space is an eigenvalue for that operator. -/
 theorem hasEigenvalue_iInf_of_finiteDimensional [Nontrivial E] (hT : T.IsSymmetric) :
-    HasEigenvalue T ↑(⨅ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
+    HasEigenvalue T (⨅ x : { x : E // x ≠ 0 }, RCLike.re ⟪T x, x⟫ / ‖(x : E)‖ ^ 2 : ℝ) := by
   haveI := FiniteDimensional.proper_rclike 𝕜 E
   let T' := hT.toSelfAdjoint
   obtain ⟨x, hx⟩ : ∃ x : E, x ≠ 0 := exists_ne 0

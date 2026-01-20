@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.ENNReal.Action
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
+module
+
+public import Mathlib.Data.ENNReal.Action
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.MeasureTheory.OuterMeasure.Caratheodory
 
 /-!
 # Induced Outer Measure
@@ -14,7 +16,7 @@ We can extend a function defined on a subset of `Set α` to an outer measure.
 The underlying function is called `extend`, and the measure it induces is called
 `inducedOuterMeasure`.
 
-Some lemmas below are proven twice, once in the general case, and one where the function `m`
+Some lemmas below are proven twice, once in the general case, and once where the function `m`
 is only defined on measurable sets (i.e. when `P = MeasurableSet`). In the latter cases, we can
 remove some hypotheses in the statement. The general version has the same name, but with a prime
 at the end.
@@ -24,6 +26,8 @@ at the end.
 outer measure
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid
@@ -26,7 +28,9 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 -/
 
-open Polynomial Set Function minpoly
+@[expose] public section
+
+open Polynomial Set Function minpoly Module
 
 namespace minpoly
 
@@ -59,8 +63,7 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 
 end
 
-variable [IsDomain S] [NoZeroSMulDivisors R S]
-variable [IsIntegrallyClosed R]
+variable [IsIntegrallyClosed R] [IsDomain S] [IsTorsionFree R S]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
   integral element as root. See also `minpoly.dvd` which relaxes the assumptions on `S`
@@ -87,7 +90,7 @@ theorem isIntegrallyClosed_dvd_iff {s : S} (hs : IsIntegral R s) (p : R[X]) :
     Polynomial.aeval s p = 0 ↔ minpoly R s ∣ p :=
   ⟨fun hp => isIntegrallyClosed_dvd hs hp, fun hp => by
     simpa only [RingHom.mem_ker, RingHom.coe_comp, coe_evalRingHom, coe_mapRingHom,
-      Function.comp_apply, eval_map, ← aeval_def] using
+      Function.comp_apply, eval_map_algebraMap] using
       aeval_eq_zero_of_dvd_aeval_eq_zero hp (minpoly.aeval R s)⟩
 
 theorem ker_eval {s : S} (hs : IsIntegral R s) :
@@ -107,6 +110,18 @@ theorem IsIntegrallyClosed.degree_le_of_ne_zero {s : S} {p : R[X]}
   rw [degree_eq_natDegree (minpoly.ne_zero hs), degree_eq_natDegree hp0]
   norm_cast
   exact natDegree_le_of_dvd ((isIntegrallyClosed_dvd_iff hs _).mp hp) hp0
+
+/-- If `x` is a root of an irreducible polynomial `p`, then `x` is integral
+iff the leading coefficient of `p` is a unit. -/
+theorem IsIntegrallyClosed.isIntegral_iff_isUnit_leadingCoeff {x : S} {p : R[X]}
+    (hirr : Irreducible p) (hp : p.aeval x = 0) :
+    IsIntegral R x ↔ IsUnit p.leadingCoeff where
+  mp int_x := by
+    obtain ⟨p, rfl⟩ := isIntegrallyClosed_dvd int_x hp
+    rw [leadingCoeff_mul, monic int_x, one_mul]
+    exact ((of_irreducible_mul hirr).resolve_left (not_isUnit R x)).map leadingCoeffHom
+  mpr isUnit := by
+    simpa [smul_smul] using (isIntegral_leadingCoeff_smul _ _ hp).smul ((isUnit.unit⁻¹ : Rˣ) : R)
 
 /-- The minimal polynomial of an element `x` is uniquely characterized by its defining property:
 if there is another monic polynomial of minimal degree that has `x` as a root, then this polynomial
@@ -159,6 +174,30 @@ theorem prime_of_isIntegrallyClosed {x : S} (hx : IsIntegral R x) : Prime (minpo
   rw [← minpoly.isIntegrallyClosed_dvd_iff hx] at h' h ⊢
   rw [aeval_mul] at h
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero h' h
+
+lemma _root_.IsIntegrallyClosed.minpoly_smul {r : R} (hr : r ≠ 0) {s : S} (hs : IsIntegral R s) :
+    minpoly R (r • s) = (minpoly R s).scaleRoots r := by
+  let K := FractionRing R
+  let L := FractionRing S
+  let : Algebra K L := FractionRing.liftAlgebra _ _
+  apply map_injective _ (FaithfulSMul.algebraMap_injective R K)
+  rw [← minpoly.isIntegrallyClosed_eq_field_fractions K L (hs.smul r),
+    map_scaleRoots _ _ _ (by simpa [minpoly.ne_zero_iff]),
+    ← minpoly.isIntegrallyClosed_eq_field_fractions K L hs]
+  simp_rw [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply,
+    IsScalarTower.algebraMap_apply R K L]
+  refine eq_of_monic_of_associated (minpoly.monic ?_) ?_
+    (associated_of_dvd_dvd (minpoly.dvd _ _ ?_) ?_)
+  · refine isIntegral_algebraMap.mul (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · simpa [monic_scaleRoots_iff] using minpoly.monic
+      (hs.map (IsScalarTower.toAlgHom R S L)).tower_top
+  · exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
+  · rw [← Polynomial.scaleRoots_dvd_iff _ _ (r := (algebraMap R K r)⁻¹) (IsUnit.mk0 _ (by simpa)),
+      ← scaleRoots_mul, mul_inv_cancel₀ (by simpa), scaleRoots_one]
+    refine minpoly.dvd _ _ ?_
+    nth_rw 1 [← inv_mul_cancel_left₀ (b := algebraMap S L s)
+      (a := algebraMap K L (algebraMap R K r)) (by simpa), ← map_inv₀]
+    exact scaleRoots_aeval_eq_zero (minpoly.aeval _ _)
 
 noncomputable section AdjoinRoot
 

@@ -3,11 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Right-exactness properties of tensor product
 
@@ -83,6 +84,8 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -254,6 +257,7 @@ lemma lTensor.inverse_comp_lTensor :
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_lTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
   (computably, given a right inverse) -/
@@ -261,8 +265,8 @@ noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
   toLinearMap := lTensor.toFun Q hfg
-  invFun    := lTensor.inverse_of_rightInverse Q hfg hgh
-  left_inv  := fun y ↦ by
+  invFun   := lTensor.inverse_of_rightInverse Q hfg hgh
+  left_inv := fun y ↦ by
     simp only [lTensor.toFun, AddHom.toFun_eq_coe, coe_toAddHom]
     obtain ⟨y, rfl⟩ := Submodule.mkQ_surjective _ y
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
@@ -305,7 +309,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
-  TensorProduct.lift  {
+  TensorProduct.lift {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ TensorProduct.mk R _ _ (h p)
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change h (p + p') ⊗ₜ[R] q - (h p ⊗ₜ[R] q + h p' ⊗ₜ[R] q) ∈ range (rTensor Q f)
@@ -359,6 +363,7 @@ lemma rTensor.inverse_comp_rTensor :
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [rTensor.inverse, rTensor.inverse_of_rightInverse_comp_rTensor]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- For a surjective `f : N →ₗ[R] P`,
   the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
   (computably, given a right inverse) -/
@@ -399,11 +404,10 @@ open Submodule LinearEquiv in
 lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
-  rw [← comap_coe_toLinearMap, ← ker_comp]
+  rw [← ker_comp]
   convert rTensor_mkQ Q I
   · ext; simp
-  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
-    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
+  rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
@@ -534,7 +538,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           use 0
           simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
-          use (a * x) ⊗ₜ[R] (b •y)
+          use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
           rfl
         | add x y hx hy =>

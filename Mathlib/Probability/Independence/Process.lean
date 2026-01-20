@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Constructions.Cylinders
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Independence of stochastic processes
@@ -21,6 +23,8 @@ We prove an analogous condition for a family of stochastic processes.
 
 independence, stochastic processes
 -/
+
+public section
 
 open MeasureTheory MeasurableSpace
 

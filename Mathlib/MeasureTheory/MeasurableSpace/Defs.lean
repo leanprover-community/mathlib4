@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Countable
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.Measurability
+module
+
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Measurable spaces and measurable functions
@@ -34,6 +36,8 @@ contains all of them.
 
 measurable space, σ-algebra, measurable function
 -/
+
+@[expose] public section
 
 assert_not_exists Covariant MonoidWithZero
 
@@ -205,6 +209,20 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
+protected lemma MeasurableSet.imp {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x → q x} := by
+  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by grind
+  rw [h_eq]
+  exact hs.compl.union ht
+
+protected lemma MeasurableSet.iff {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x ↔ q x} := by
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  rw [h_eq]
+  exact (hs.imp ht).inter (ht.imp hs)
+
 /-- Every set has a measurable superset. Declare this as local instance as needed. -/
 theorem nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=
   ⟨⟨univ, subset_univ s, MeasurableSet.univ⟩⟩
@@ -235,7 +253,6 @@ section MeasurableSingletonClass
 
 variable [MeasurableSpace α] [MeasurableSingletonClass α]
 
-@[measurability]
 theorem measurableSet_eq {a : α} : MeasurableSet { x | x = a } := .singleton a
 
 @[measurability]
@@ -489,10 +506,9 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[measurability]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
@@ -505,7 +521,7 @@ protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf
 
-@[simp, fun_prop, measurability]
+@[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
@@ -533,7 +549,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[measurability] lemma MeasurableSet.of_discrete : MeasurableSet s :=
   DiscreteMeasurableSpace.forall_measurableSet _
 
-@[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
+@[fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

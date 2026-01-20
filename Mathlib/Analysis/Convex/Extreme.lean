@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Extreme sets
@@ -38,8 +40,10 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
 
+@[expose] public section
 
-open Function Set Affine
+
+open Function Module Set Affine
 
 variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
@@ -240,7 +244,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A : Set E} {x : E}
+variable [DenselyOrdered 𝕜] [IsTorsionFree 𝕜 E] {A : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments
 that contain it are those with `x` as one of their endpoints. -/

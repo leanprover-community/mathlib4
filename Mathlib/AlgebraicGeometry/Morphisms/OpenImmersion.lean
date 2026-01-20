@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 
@@ -16,6 +18,8 @@ Most of the theories are developed in `AlgebraicGeometry/OpenImmersion`, and we 
 remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,7 +47,7 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
         IsLocalization.away_of_isIdempotentElem he.one_sub (by simp) Ideal.Quotient.mk_surjective
       IsOpenImmersion.of_isLocalization (1 - e)
     have H : Set.range (Spec.map φ) = Set.range (Spec.map f) :=
-      ((PrimeSpectrum.range_comap_of_surjective _ _
+      ((range_comap_of_surjective _ _
         Ideal.Quotient.mk_surjective).trans (by simp)).trans he'.symm
     let i : S ≅ .of _ := (Scheme.Spec.preimageIso
       (IsOpenImmersion.isoOfRangeEq (Spec.map φ) (Spec.map f) H)).unop
@@ -103,5 +107,10 @@ instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) :
 
 instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
+
+instance {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') [IsOpenImmersion f] [IsOpenImmersion g] :
+    IsOpenImmersion (coprod.map f g) :=
+  IsZariskiLocalAtTarget.coprodMap f g ‹_› ‹_›
 
 end AlgebraicGeometry

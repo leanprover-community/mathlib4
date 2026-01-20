@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.Filter
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Erasing an element from a finite set
@@ -18,6 +20,8 @@ import Mathlib.Data.Multiset.Filter
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -56,8 +60,6 @@ theorem mem_erase {a b : α} {s : Finset α} : a ∈ erase s b ↔ a ≠ b ∧ a
 theorem notMem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
   s.2.notMem_erase
 
-@[deprecated (since := "2025-05-23")] alias not_mem_erase := notMem_erase
-
 theorem ne_of_mem_erase : b ∈ erase s a → b ≠ a := fun h => (mem_erase.1 h).1
 
 theorem mem_of_mem_erase : b ∈ erase s a → b ∈ s :=
@@ -66,16 +68,12 @@ theorem mem_of_mem_erase : b ∈ erase s a → b ∈ s :=
 theorem mem_erase_of_ne_of_mem : a ≠ b → a ∈ s → a ∈ erase s b := by
   simp only [mem_erase]; exact And.intro
 
-/-- An element of `s` that is not an element of `erase s a` must be`a`. -/
+/-- An element of `s` that is not an element of `erase s a` must be `a`. -/
 theorem eq_of_mem_of_notMem_erase (hs : b ∈ s) (hsa : b ∉ s.erase a) : b = a := by grind
-
-@[deprecated (since := "2025-05-23")] alias eq_of_mem_of_not_mem_erase := eq_of_mem_of_notMem_erase
 
 @[simp]
 theorem erase_eq_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : erase s a = s :=
   eq_of_veq <| erase_of_notMem h
-
-@[deprecated (since := "2025-05-23")] alias erase_eq_of_not_mem := erase_eq_of_notMem
 
 @[simp]
 theorem erase_eq_self : s.erase a = s ↔ a ∉ s :=

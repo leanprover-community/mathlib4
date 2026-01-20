@@ -3,7 +3,9 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+module
+
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 /-!
 # Functoriality of group homology
@@ -32,6 +34,8 @@ We also provide extra API for these maps in degrees 0, 1, 2.
   `A`, defined using the corestriction and coinflation map in degree 1.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -521,8 +525,8 @@ theorem comap_coinvariantsKer_pOpcycles_range_subtype_pOpcycles_eq_top :
   apply (moduleCat_pOpcycles_eq_iff _ _ _).2 ⟨Z, ?_⟩
   change d₂₁ A Z = mapRange id rfl (lmapDomain _ k Subtype.val Y) -
     mapRange.linearMap (Submodule.subtype _) (mapDomain id x)
-  simpa [map_finsuppSum, mapDomain, map_sub, ← hX, sum_single_index, finsuppProdLEquiv,
-    finsuppProdEquiv, Finsupp.uncurry, d₂₁, Y, Z, sum_mapRange_index,
+  simpa [map_finsuppSum, mapDomain, map_sub, ← hX, sum_single_index, curryLinearEquiv,
+    curryEquiv, Finsupp.uncurry, d₂₁, Y, Z, sum_mapRange_index,
     chains₁ToCoinvariantsKer, d₁₀, single_sum, mul_assoc, sub_add_eq_add_sub,
     sum_sum_index, add_smul, sub_sub_sub_eq, lsingle, singleAddHom] using add_comm _ _
 

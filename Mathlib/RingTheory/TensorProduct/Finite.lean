@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Bilinear
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Bilinear
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Finiteness of the tensor product of (sub)modules
@@ -16,6 +18,8 @@ In this file we show that the supremum of two subalgebras that are finitely gene
 is again finitely generated.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -129,8 +133,7 @@ lemma Module.exists_surjective_quotient_of_finite :
     (by rw [← LinearMap.range_eq_top, ← LinearMap.span_singleton_eq_range, hx])
   refine ⟨_, f.symm.toLinearMap.comp N.mkQ, fun e ↦ ?_, f.symm.surjective.comp N.mkQ_surjective⟩
   obtain rfl : x = 0 := by simpa using LinearMap.congr_fun (LinearMap.ker_eq_top.mp e) 1
-  rw [ne_eq, ← Submodule.subsingleton_quotient_iff_eq_top, ← not_nontrivial_iff_subsingleton,
-    not_not] at hN
+  have : Nontrivial (M ⧸ N) := by rwa [Submodule.Quotient.nontrivial_iff]
   simp at hx
 
 open TensorProduct
@@ -138,8 +141,7 @@ instance : Nontrivial (M ⊗[R] M) := by
   obtain ⟨I, ϕ, hI, hϕ⟩ := Module.exists_surjective_quotient_of_finite R M
   let ψ : M ⊗[R] M →ₗ[R] R ⧸ I :=
     (LinearMap.mul' R (R ⧸ I)).comp (TensorProduct.map ϕ ϕ)
-  have : Nontrivial (R ⧸ I) := by
-    rwa [← not_subsingleton_iff_nontrivial, Submodule.subsingleton_quotient_iff_eq_top]
+  have : Nontrivial (R ⧸ I) := by rwa [Submodule.Quotient.nontrivial_iff]
   have : Function.Surjective ψ := by
     intro x; obtain ⟨x, rfl⟩ := hϕ x; obtain ⟨y, hy⟩ := hϕ 1; exact ⟨x ⊗ₜ y, by simp [ψ, hy]⟩
   exact this.nontrivial
@@ -152,26 +154,32 @@ theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [A
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
   exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
 
-open TensorProduct in
-lemma RingHom.surjective_of_tmul_eq_tmul_of_finite {R S}
-    [CommRing R] [Ring S] [Algebra R S] [Module.Finite R S]
-    (h₁ : ∀ s : S, s ⊗ₜ[R] 1 = 1 ⊗ₜ s) : Function.Surjective (algebraMap R S) := by
-  let R' := LinearMap.range (Algebra.ofId R S).toLinearMap
-  rcases subsingleton_or_nontrivial (S ⧸ R') with h | _
-  · rwa [Submodule.subsingleton_quotient_iff_eq_top, LinearMap.range_eq_top] at h
-  have : Subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R')) := by
-    refine subsingleton_of_forall_eq 0 fun y ↦ ?_
-    induction y with
-    | zero => rfl
-    | add a b e₁ e₂ => rwa [e₁, zero_add]
-    | tmul x y =>
-      obtain ⟨x, rfl⟩ := R'.mkQ_surjective x
-      obtain ⟨y, rfl⟩ := R'.mkQ_surjective y
-      obtain ⟨s, hs⟩ : ∃ s, 1 ⊗ₜ[R] s = x ⊗ₜ[R] y := by
-        use x * y
-        trans x ⊗ₜ 1 * 1 ⊗ₜ y
-        · simp [h₁]
-        · simp
-      have : R'.mkQ 1 = 0 := (Submodule.Quotient.mk_eq_zero R').mpr ⟨1, map_one (algebraMap R S)⟩
-      rw [← map_tmul R'.mkQ R'.mkQ, ← hs, map_tmul, this, zero_tmul]
-  cases false_of_nontrivial_of_subsingleton ((S ⧸ R') ⊗[R] (S ⧸ R'))
+-- Subsumed by `RingHom.Finite.tensorProductMap`.
+private lemma RingHom.Finite.tensorProductMap_id
+    {R S S' T : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S']
+    [Algebra R S] [Algebra R T] [Algebra R S']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) :
+    (Algebra.TensorProduct.map f (AlgHom.id R T)).toRingHom.Finite := by
+  letI := f.toRingHom.toAlgebra
+  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
+  have : Module.Finite S S' := finite_algebraMap.mp Hf
+  change (Algebra.TensorProduct.map (Algebra.ofId S S') (AlgHom.id R T)).Finite
+  convert_to (((Algebra.TensorProduct.comm _ _ _).trans
+      (Algebra.TensorProduct.cancelBaseChange R S S S' T)).toAlgHom.comp
+    Algebra.TensorProduct.includeLeft).Finite
+  · ext; simp
+  exact (RingEquiv.finite _).comp (finite_algebraMap.mpr inferInstance)
+
+lemma RingHom.Finite.tensorProductMap
+    {R S S' T T' : Type*} [CommRing R] [CommRing S] [CommRing T] [CommRing S'] [CommRing T']
+    [Algebra R S] [Algebra R T] [Algebra R S'] [Algebra R T']
+    {f : S →ₐ[R] S'} (Hf : f.Finite) {g : T →ₐ[R] T'} (Hg : g.Finite) :
+    (Algebra.TensorProduct.map f g).toRingHom.Finite := by
+  convert RingHom.Finite.tensorProductMap_id (T := T') Hf |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite |>.comp <|
+    RingHom.Finite.tensorProductMap_id (T := S) Hg |>.comp <|
+    (Algebra.TensorProduct.comm _ _ _).toRingEquiv.finite
+  simp only [AlgHom.toRingHom_eq_coe, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AlgEquiv.toRingEquiv_toRingHom, ← AlgEquiv.toAlgHom_toRingHom, ← AlgHom.comp_toRingHom]
+  congr
+  ext <;> simp

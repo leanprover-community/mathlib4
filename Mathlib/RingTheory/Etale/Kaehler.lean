@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Etale.Basic
-import Mathlib.RingTheory.Kaehler.JacobiZariski
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Flat.Localization
+module
+
+public import Mathlib.RingTheory.Etale.Basic
+public import Mathlib.RingTheory.Kaehler.JacobiZariski
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # The differential module and étale algebras
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.Flat.Localization
 - `Algebra.tensorH1CotangentOfIsLocalization`:
   The canonical isomorphism `T ⊗[S] H¹(L_{S⁄R}) ≃ₗ[T] H¹(L_{T⁄R})` for `T` a localization of `S`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -60,6 +64,13 @@ instance KaehlerDifferential.isLocalizedModule_map (M : Submonoid S) [IsLocaliza
     IsLocalizedModule M (map R R S T) :=
   have := Algebra.FormallyEtale.of_isLocalization (Rₘ := T) M
   (isLocalizedModule_iff_isBaseChange M T _).mpr (isBaseChange_of_formallyEtale R S T)
+
+lemma KaehlerDifferential.span_range_map_derivation_of_isLocalization
+    (M : Submonoid S) [IsLocalization M T] :
+    Submodule.span T (Set.range <| map R R S T ∘ D R S) = ⊤ := by
+  convert span_eq_top_of_isLocalizedModule T M (map R R S T) (v := Set.range <| D R S)
+    (span_range_derivation R S)
+  rw [← Set.range_comp, Function.comp_def]
 
 namespace Algebra.Extension
 
@@ -154,12 +165,12 @@ def tensorCotangentInvFun
       LinearEquiv.symm_apply_apply, f']
     clear hx ha
     induction x with
-    | zero => simp only [LinearEquiv.map_zero, ZeroMemClass.coe_zero, zero_smul]
+    | zero => simp only [map_zero, ZeroMemClass.coe_zero, zero_smul]
     | add x y _ _ =>
-      simp only [LinearEquiv.map_add, Submodule.coe_add, add_smul, zero_add, *]
+      simp only [map_add, Submodule.coe_add, add_smul, zero_add, *]
     | tmul a b =>
       induction y with
-      | zero => simp only [LinearMap.map_zero, smul_zero]
+      | zero => simp only [map_zero, smul_zero]
       | add x y hx hy => simp only [LinearMap.map_add, smul_add, hx, hy, zero_add]
       | tmul c d =>
         simp only [LinearMap.liftBaseChange_tmul, LinearMap.coe_comp, SetLike.val_smul,

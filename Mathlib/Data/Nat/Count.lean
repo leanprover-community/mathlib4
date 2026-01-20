@@ -3,8 +3,10 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Nat.Range
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Range
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Counting on ℕ
@@ -15,6 +17,8 @@ We then prove several expected lemmas about `count`, relating it to the cardinal
 objects, and helping to evaluate it for specific `k`.
 
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
 assert_not_exists Ring

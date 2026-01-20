@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RingHom.FinitePresentation
-import Mathlib.RingTheory.Smooth.Locus
+module
+
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Smooth.Locus
 
 /-!
 # Smooth ring homomorphisms
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Smooth.Locus
 In this file we define smooth ring homomorphisms and show their meta properties.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -35,6 +39,11 @@ lemma FormallySmooth.toAlgebra {f : R →+* S} (hf : FormallySmooth f) :
 lemma formallySmooth_algebraMap [Algebra R S] :
     (algebraMap R S).FormallySmooth ↔ Algebra.FormallySmooth R S := by
   rw [FormallySmooth, toAlgebra_algebraMap]
+
+lemma FormallySmooth.of_bijective {f : R →+* S} (hf : Function.Bijective f) :
+    f.FormallySmooth := by
+  algebraize [f]
+  exact Algebra.FormallySmooth.of_equiv (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
 
 lemma FormallySmooth.holdsForLocalizationAway : HoldsForLocalizationAway @FormallySmooth :=
   fun _ _ _ _ _ r _ ↦ formallySmooth_algebraMap.mpr <| .of_isLocalization (.powers r)
@@ -96,6 +105,10 @@ lemma holdsForLocalizationAway : HoldsForLocalizationAway Smooth := by
   rw [smooth_algebraMap]
   exact ⟨Algebra.FormallySmooth.of_isLocalization (.powers r),
     IsLocalization.Away.finitePresentation r⟩
+
+lemma of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Smooth := by
+  rw [RingHom.smooth_def]
+  exact ⟨.of_bijective hf, .of_bijective hf⟩
 
 variable (R) in
 /-- The identity of a ring is smooth. -/

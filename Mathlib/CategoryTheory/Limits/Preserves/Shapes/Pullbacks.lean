@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
-import Mathlib.CategoryTheory.Limits.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preserving pullbacks
@@ -24,6 +26,8 @@ The dual is also given.
 * Generalise to wide pullbacks
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -77,7 +81,7 @@ def isLimitMapConePullbackConeEquiv :
 /-- The property of preserving pullbacks expressed in terms of binary fans. -/
 def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
-    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp,comm]
+    have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
   (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
 
@@ -149,7 +153,7 @@ theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
-/-- A pullback cone in `C` is limit iff if it is so after the application
+/-- A pullback cone in `C` is a limit iff it is so after the application
 of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
 def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
     IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=
@@ -205,7 +209,7 @@ def isColimitMapCoconePushoutCoconeEquiv :
 def isColimitPushoutCoconeMapOfIsColimit [PreservesColimit (span f g) G]
     (l : IsColimit (PushoutCocone.mk h k comm)) :
     IsColimit (PushoutCocone.mk (G.map h) (G.map k) (show G.map f ≫ G.map h = G.map g ≫ G.map k
-      from by simp only [← G.map_comp,comm] )) :=
+      by simp only [← G.map_comp, comm])) :=
   isColimitMapCoconePushoutCoconeEquiv G comm (isColimitOfPreserves G l)
 
 /-- The property of reflecting pushouts expressed in terms of binary cofans. -/

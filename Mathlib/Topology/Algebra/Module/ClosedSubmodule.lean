@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Closed submodules of a topological module
@@ -18,6 +20,8 @@ block by doing `lift s to ClosedSubmodule R E using hs`.
 
 Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 -/
+
+@[expose] public section
 
 open Function Order TopologicalSpace
 
@@ -70,6 +74,10 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
 
 @[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+  rfl
+
+@[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
 
 lemma isClosed (s : ClosedSubmodule R M) : IsClosed (s : Set M) := s.isClosed'
@@ -85,14 +93,14 @@ instance : CanLift (Submodule R M) (ClosedSubmodule R M) toSubmodule (IsClosed (
 /-- The preimage of a closed submodule under a continuous linear map as a closed submodule. -/
 @[simps!]
 def comap (f : M →L[R] N) (s : ClosedSubmodule R N) : ClosedSubmodule R M where
-  toSubmodule := .comap f s
+  toSubmodule := .comap (f : M →ₗ[R] N) s
   isClosed' := by simpa using s.isClosed.preimage f.continuous
 
 @[simp]
 lemma mem_comap {f : M →L[R] N} {s : ClosedSubmodule R N} {x : M} : x ∈ s.comap f ↔ f x ∈ s := .rfl
 
 @[simp] lemma toSubmodule_comap (f : M →L[R] N) (s : ClosedSubmodule R N) :
-    (s.comap f).toSubmodule = s.toSubmodule.comap f := rfl
+    (s.comap f).toSubmodule = s.toSubmodule.comap (f : M →ₗ[R] N) := rfl
 
 @[simp] lemma comap_id (s : ClosedSubmodule R M) : s.comap (.id _ _) = s := rfl
 
@@ -188,16 +196,25 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
+@[simp]
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
+
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
+
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-@[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  ext x; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -205,11 +222,11 @@ submodule.
 `ClosedSubmodule.map f` is left-adjoint to `ClosedSubmodule.comap f`.
 See `ClosedSubmodule.gc_map_comap`. -/
 def map (f : M →L[R] N) (s : ClosedSubmodule R M) : ClosedSubmodule R N :=
-  (s.toSubmodule.map f).closure
+  (s.toSubmodule.map (f : M →ₗ[R] N)).closure
 
 @[simp]
 lemma map_id [ContinuousAdd M] [ContinuousConstSMul R M] (s : ClosedSubmodule R M) :
-    s.map (.id _ _) = s := SetLike.coe_injective <| by simpa [map] using s.isClosed.closure_eq
+    s.map (.id _ _) = s := SetLike.coe_injective <| by simp [map]
 
 lemma map_le_iff_le_comap {s : ClosedSubmodule R M} {t : ClosedSubmodule R N} :
     map f s ≤ t ↔ s ≤ comap f t := by
@@ -288,3 +305,13 @@ instance : Lattice (ClosedSubmodule R N) where
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
 
 end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace

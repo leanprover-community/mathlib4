@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 /-!
 # Uniform time lemma for the global existence of integral curves
@@ -22,6 +24,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 integral curve, vector field, global existence
 -/
+
+public section
 
 open scoped Topology
 

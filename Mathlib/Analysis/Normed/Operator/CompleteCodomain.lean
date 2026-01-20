@@ -3,10 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-! # Completeness of spaces of linear and multilinear maps
 
@@ -16,6 +18,8 @@ linear maps from `E` to `F` is equivalent to the completeness of `F`.
 
 A similar statement holds for spaces of continuous multilinear maps
 -/
+
+public section
 
 open Filter
 open scoped Topology

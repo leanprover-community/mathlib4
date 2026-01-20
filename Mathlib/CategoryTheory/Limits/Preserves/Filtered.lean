@@ -3,15 +3,24 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
-(although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
+(although not general colimits). See e.g. `Mathlib/Algebra/Category/MonCat/FilteredColimits.lean`.
+
+Note also that using the results in the file `Mathlib/CategoryTheory/Presentable/Directed.lean`,
+in order to show that a functor preserves filtered colimits, it would be
+sufficient to check that it preserves colimits indexed by nonempty directed
+types.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

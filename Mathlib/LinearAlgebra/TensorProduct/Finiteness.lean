@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 
@@ -35,6 +37,8 @@ This file contains some finiteness results of tensor product.
 tensor product, finitely generated
 
 -/
+
+public section
 
 open scoped TensorProduct
 

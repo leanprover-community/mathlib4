@@ -3,11 +3,13 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Quotient
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Quotient
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
@@ -16,11 +18,13 @@ This file develops the basic theory of left and right cosets.
 
 When `G` is a group and `a : G`, `s : Set G`, with  `open scoped Pointwise` we can write:
 * the left coset of `s` by `a` as `a • s`
-* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`)
+* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`,
+  or `s <• a` with `open scoped Pointwise RightActions`)
 
 If instead `G` is an additive group, we can write (with  `open scoped Pointwise` still)
 * the left coset of `s` by `a` as `a +ᵥ s`
-* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a • s` with `open AddOpposite`)
+* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a +ᵥ s` with `open AddOpposite`,
+  or `s <+ᵥ a` with `open scoped Pointwise RightActions`)
 
 ## Main definitions
 
@@ -38,6 +42,8 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
+@[expose] public section
+
 assert_not_exists Cardinal
 
 open Function Set
@@ -46,7 +52,7 @@ open scoped Pointwise
 variable {α : Type*}
 
 /- Ensure that `@[to_additive]` uses the right namespace. -/
-run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+insert_to_additive_translation QuotientGroup QuotientAddGroup
 
 namespace QuotientGroup
 

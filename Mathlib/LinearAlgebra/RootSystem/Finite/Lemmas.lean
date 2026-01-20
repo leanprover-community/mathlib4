@@ -3,10 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.Reduced
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.Algebra.Ring.Torsion
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
+public import Mathlib.LinearAlgebra.RootSystem.Irreducible
+public import Mathlib.Algebra.Ring.Torsion
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
@@ -26,6 +28,8 @@ root pairings.
   a root.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -87,7 +91,7 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   have : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
   simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
   norm_cast at this ⊢
-  cutsat
+  lia
 
 variable [IsDomain R]
 -- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
@@ -133,7 +137,7 @@ lemma RootPositiveForm.rootLength_le_of_pairingIn_eq (B : P.RootPositiveForm ℤ
   have h' := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases h with hij' | hij' | hij' | hij' | hij' | hij' | hij' | hij' <;>
-  rw [hij'.1, hij'.2] at h' <;> omega
+  rw [hij'.1, hij'.2] at h' <;> lia
 
 variable {P} in
 lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
@@ -152,11 +156,7 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
   have aux₂ := B.pairingIn_mul_eq_pairingIn_mul_swap i j
   have hi := B.rootLength_pos i
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
-  rw [hji, hij'] at aux₂ <;> omega
-
-@[deprecated (since := "2025-05-23")]
-alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
-  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
+  rw [hji, hij'] at aux₂ <;> lia
 
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
@@ -193,7 +193,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by
@@ -211,7 +211,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
       simp_all
     simp_rw [coxeterWeightIn, Int.mul_mem_one_two_three_iff, mem_insert_iff, mem_singleton_iff,
       Prod.mk.injEq] at this
-    cutsat
+    lia
   · -- The case where the two roots are linearly dependent
     have : (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(1, 4), (2, 2), (4, 1)} : Set _) := by
       have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
@@ -318,8 +318,7 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
   · refine ⟨i, i, fun j ↦ by simp [h j]⟩
   · obtain ⟨j, hji_ne⟩ := h
     refine ⟨i, j, fun k ↦ ?_⟩
-    by_contra! hk
-    obtain ⟨hki_ne, hkj_ne⟩ := hk
+    by_contra! ⟨hki_ne, hkj_ne⟩
     have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
     have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
     have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm

@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings made from bilinear forms
@@ -20,6 +22,8 @@ integral lattice with an arbitrary reflexive module equipped with a bilinear for
 ## TODO
 * properties
 -/
+
+@[expose] public section
 
 open Set Function Module
 
@@ -78,7 +82,7 @@ lemma coroot_apply_self : coroot B hx x = 2 :=
 lemma isOrthogonal_reflection (hSB : LinearMap.IsSymm B) :
     B.IsOrthogonal (Module.reflection (coroot_apply_self B hx)) := by
   intro y z
-  simp only [reflection_apply, LinearMap.map_sub, map_smul, sub_apply,
+  simp only [reflection_apply, map_sub, map_smul, sub_apply,
     smul_apply, smul_eq_mul]
   refine hx.1.1 ?_
   simp only [mul_sub, ← mul_assoc, apply_self_mul_coroot_apply]

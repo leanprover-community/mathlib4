@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Order.Sublattice
 
 /-!
 # Boolean subalgebras
 
 This file defines Boolean subalgebras.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -87,7 +91,7 @@ instance instSupCoe : Max L where max a b := ⟨a ⊔ b, L.supClosed a.2 b.2⟩
 instance instInfCoe : Min L where min a b := ⟨a ⊓ b, L.infClosed a.2 b.2⟩
 
 /-- A Boolean subalgebra of a lattice inherits a complement. -/
-instance instHasComplCoe : HasCompl L where compl a := ⟨aᶜ, compl_mem a.2⟩
+instance instComplCoe : Compl L where compl a := ⟨aᶜ, compl_mem a.2⟩
 
 /-- A Boolean subalgebra of a lattice inherits a difference. -/
 instance instSDiffCoe : SDiff L where sdiff a b := ⟨a \ b, sdiff_mem a.2 b.2⟩
@@ -167,11 +171,11 @@ instance instBot : Bot (BooleanSubalgebra α) where
 
 /-- The inf of two Boolean subalgebras is their intersection. -/
 instance instInf : Min (BooleanSubalgebra α) where
-  min L M :=  { carrier := L ∩ M
-                bot_mem' := ⟨bot_mem, bot_mem⟩
-                compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
-                supClosed' := L.supClosed.inter M.supClosed
-                infClosed' := L.infClosed.inter M.infClosed }
+  min L M := { carrier := L ∩ M
+               bot_mem' := ⟨bot_mem, bot_mem⟩
+               compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
+               supClosed' := L.supClosed.inter M.supClosed
+               infClosed' := L.infClosed.inter M.infClosed }
 
 /-- The inf of Boolean subalgebras is their intersection. -/
 instance instInfSet : InfSet (BooleanSubalgebra α) where

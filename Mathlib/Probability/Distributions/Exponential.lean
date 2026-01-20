@@ -3,9 +3,10 @@ Copyright (c) 2023 Claus Clausen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Probability.Distributions.Gamma
+module
+
+public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
@@ -13,7 +14,7 @@ Define the Exponential measure over the reals.
 
 ## Main definitions
 * `exponentialPDFReal`: the function `r x ↦ r * exp (-(r * x)` for `0 ≤ x`
-  or `0` else, which is the probability density function of a exponential distribution with
+  or `0` else, which is the probability density function of an exponential distribution with
   rate `r` (when `hr : 0 < r`).
 * `exponentialPDF`: `ℝ≥0∞`-valued pdf,
   `exponentialPDF r = ENNReal.ofReal (exponentialPDFReal r)`.
@@ -23,6 +24,8 @@ Define the Exponential measure over the reals.
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -58,12 +61,12 @@ lemma lintegral_exponentialPDF_of_nonpos {x r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, exponentialPDF r y = 0 := lintegral_gammaPDF_of_nonpos hx
 
 /-- The exponential pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_exponentialPDFReal (r : ℝ) : Measurable (exponentialPDFReal r) :=
   measurable_gammaPDFReal 1 r
 
 -- The exponential pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_exponentialPDFReal (r : ℝ) :
     StronglyMeasurable (exponentialPDFReal r) := stronglyMeasurable_gammaPDFReal 1 r
 
@@ -101,7 +104,7 @@ section ExponentialCDF
 /-- CDF of the exponential distribution -/
 @[deprecated "Use `cdf (expMeasure r)` instead." (since := "2025-08-28")]
 noncomputable
-def exponentialCDFReal (r : ℝ) : StieltjesFunction :=
+def exponentialCDFReal (r : ℝ) : StieltjesFunction ℝ :=
   cdf (expMeasure r)
 
 lemma cdf_expMeasure_eq_integral {r : ℝ} (hr : 0 < r) (x : ℝ) :
@@ -132,6 +135,8 @@ lemma exp_neg_integrableOn_Ioc {b x : ℝ} (hb : 0 < b) :
   simp only [neg_mul_eq_neg_mul]
   exact (exp_neg_integrableOn_Ioi _ hb).mono_set Ioc_subset_Ioi_self
 
+-- TODO: non-terminal simp followed by positivity
+set_option linter.flexible false in
 lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     ∫⁻ y in Iic x, exponentialPDF r y
     = ENNReal.ofReal (if 0 ≤ x then 1 - exp (-(r * x)) else 0) := by

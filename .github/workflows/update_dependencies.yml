@@ -13,7 +13,7 @@ jobs:
       BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
@@ -29,13 +29,13 @@ jobs:
         id: get-branch-sha
         run: |
           # Check if the branch exists remotely
-          if git fetch origin "$BRANCH_NAME"; then
-            SHA=$(git rev-parse "origin/$BRANCH_NAME")
+          SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
+          if [ -n "$SHA" ]; then
             echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
             echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
           else
             echo "Branch '$BRANCH_NAME' does not exist"
-            echo "sha=" >>" ${GITHUB_OUTPUT}"
+            echo "sha=" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Get PR and labels
@@ -114,7 +114,7 @@ jobs:
 
       - name: Create Pull Request
         if: ${{ steps.pr-title.outcome == 'success' }}
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        uses: peter-evans/create-pull-request@98357b18bf14b5342f975ff684046ec3b2a07725 # v8.0.0
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
           author: "leanprover-community-mathlib4-bot <leanprover-community-mathlib4-bot@users.noreply.github.com>"
@@ -130,3 +130,16 @@ jobs:
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
+
+      - name: Send Zulip message (failure)
+        if: ${{ failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ["Update dependencies" workflow run failed!](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

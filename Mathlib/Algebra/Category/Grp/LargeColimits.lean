@@ -3,9 +3,11 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.Algebra.Group.Equiv.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.Colimits
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
 # Existence of "big" colimits in the category of additive commutative groups
@@ -15,6 +17,8 @@ if `Colimits.Quot F` (the quotient of the direct sum of the commutative groups `
 by the relations given by the morphisms in the diagram) is `w`-small.
 
 -/
+
+public section
 
 universe w u v
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Data.List.Chain
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
@@ -18,6 +20,8 @@ The main results are the following:
 - `List.isChain_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
   related to the first element of the next list.
 -/
+
+public section
 
 namespace List
 
@@ -62,15 +66,11 @@ private theorem nil_notMem_splitByLoop {r : α → α → Bool} {l : List α} {a
     · rw [splitByLoop_eq_append, mem_append]
       simpa using IH
 
-@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitByLoop := nil_notMem_splitByLoop
-
 @[simp]
 theorem nil_notMem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
   | nil => not_mem_nil
   | cons _ _ => nil_notMem_splitByLoop
-
-@[deprecated (since := "2025-05-23")] alias nil_not_mem_splitBy := nil_notMem_splitBy
 
 theorem ne_nil_of_mem_splitBy {r : α → α → Bool} {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] :=
   fun _ ↦ by simp_all

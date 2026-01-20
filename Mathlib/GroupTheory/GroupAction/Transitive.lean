@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-! # Complements to pretransitive actions
 
@@ -27,6 +29,8 @@ Given `MulAction G X` where `G` is a group,
   iff `MulAction.orbit G a` is full.
 
 -/
+
+public section
 
 variable {G X : Type*} [Group G] [MulAction G X]
 

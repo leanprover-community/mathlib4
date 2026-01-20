@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # The preordered type of simplices of a simplicial set
@@ -24,6 +26,8 @@ simplices of a simplicial set `X`, and also the type of nondegenerate
 simplices of a simplicial set `X` which do not belong to a given subcomplex.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -111,7 +115,7 @@ lemma le_def {s t : X.S} : s ≤ t ↔ s.subcomplex ≤ t.subcomplex :=
 
 lemma le_iff {s t : X.S} :
     s ≤ t ↔ ∃ (f : ⦋s.dim⦌ ⟶ ⦋t.dim⦌), X.map f.op t.simplex = s.simplex := by
-  rw [le_def, Subcomplex.ofSimplex_le_iff, Subpresheaf.ofSection_obj, Set.mem_setOf_eq]
+  rw [le_def, Subcomplex.ofSimplex_le_iff, Subfunctor.ofSection_obj, Set.mem_setOf_eq]
   tauto
 
 lemma mk_map_le {n m : ℕ} (x : X _⦋n⦌) (f : ⦋m⦌ ⟶ ⦋n⦌) :

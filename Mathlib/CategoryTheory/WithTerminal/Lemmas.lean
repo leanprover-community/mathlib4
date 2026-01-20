@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
 /-!
 # Further lemmas on `WithTerminal`
@@ -12,9 +14,11 @@ import Mathlib.CategoryTheory.WithTerminal.Basic
 These lemmas and instances need more imports.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace WithTerminal
 

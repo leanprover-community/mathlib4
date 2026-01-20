@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Piecewise
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Piecewise
 
 /-!
 # Interaction of big operators with piecewise functions
 
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
+
+public section
 
 variable {ι κ M β γ : Type*} {s : Finset ι}
 
@@ -75,7 +79,7 @@ lemma prod_ite_of_false {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, ¬
 lemma prod_dite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ i ∈ s, p i) (f : ∀ i, p i → M)
     (g : ∀ i, ¬ p i → M) :
     ∏ i ∈ s, (if hi : p i then f i hi else g i hi) = ∏ i : s, f i.1 (h _ i.2) := by
-  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> aesop
+  refine prod_bij' (fun x hx => ⟨x, hx⟩) (fun x _ ↦ x) ?_ ?_ ?_ ?_ ?_ <;> grind
 
 @[to_additive]
 lemma prod_ite_of_true {p : ι → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x) (f g : ι → M) :
@@ -219,11 +223,6 @@ theorem prod_update_of_notMem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i �
     exact h hj
   simp [this]
 
-@[deprecated (since := "2025-05-23")] alias sum_update_of_not_mem := sum_update_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_update_of_not_mem := prod_update_of_notMem
-
 @[to_additive]
 theorem prod_update_of_mem [DecidableEq ι] {s : Finset ι} {i : ι} (h : i ∈ s) (f : ι → M) (b : M) :
     ∏ x ∈ s, Function.update f i b x = b * ∏ x ∈ s \ singleton i, f x := by
@@ -246,6 +245,13 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
 @[to_additive sum_boole_nsmul]
 theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :
     (∏ x ∈ s, f x ^ ite (a = x) 1 0) = ite (a ∈ s) (f a) 1 := by simp
+
+@[to_additive]
+lemma prod_eq_prod_iff_single [IsRightCancelMul M] {f g : ι → M} {i : ι} (hi : i ∈ s)
+    (hfg : ∀ j ∈ s, j ≠ i → f j = g j) : ∏ j ∈ s, f j = ∏ j ∈ s, g j ↔ f i = g i := by
+  classical
+  rw [prod_eq_mul_prod_diff_singleton hi, prod_eq_mul_prod_diff_singleton hi,
+    prod_congr rfl (by simpa), mul_left_inj]
 
 end CommMonoid
 

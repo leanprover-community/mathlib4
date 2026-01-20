@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
-import Mathlib.Order.BooleanAlgebra.Defs
+module
+
+public import Mathlib.Order.BooleanAlgebra.Defs
+public import Mathlib.Tactic.GRewrite
 
 /-!
 # Basic properties of Boolean algebras
@@ -22,6 +25,8 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -82,6 +87,7 @@ private theorem sdiff_le' : x \ y ≤ x :=
     x \ y ≤ x ⊓ y ⊔ x \ y := le_sup_right
     _ = x := sup_inf_sdiff x y
 
+set_option backward.privateInPublic true in
 -- Use `sdiff_sup_self`
 private theorem sdiff_sup_self' : y \ x ⊔ x = y ⊔ x :=
   calc
@@ -113,6 +119,8 @@ theorem inf_sdiff_self_right : x ⊓ y \ x = ⊥ :=
 @[simp]
 theorem inf_sdiff_self_left : y \ x ⊓ x = ⊥ := by rw [inf_comm, inf_sdiff_self_right]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 -- see Note [lower instance priority]
 instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgebra :
     GeneralizedCoheytingAlgebra α where
@@ -127,7 +135,7 @@ instance (priority := 100) GeneralizedBooleanAlgebra.toGeneralizedCoheytingAlgeb
             inf_sup_right]))
         (calc
           y ⊔ y \ x ≤ y \ x ⊔ x ⊔ z := by
-            grind [sup_of_le_left, sdiff_le', le_sup_left, sup_assoc, sdiff_sup_self']
+            grind [sup_of_le_left, sdiff_le', le_sup_left, sdiff_sup_self']
           _ = x ⊔ z ⊔ y \ x := by ac_rfl),
       fun h => le_of_inf_le_sup_le (inf_sdiff_self_left.trans_le bot_le) (calc
         y \ x ⊔ x = y ⊔ x := sdiff_sup_self'
@@ -623,16 +631,13 @@ protected abbrev Function.Injective.generalizedBooleanAlgebra [Max α] [Min α] 
 
 -- See note [reducible non-instances]
 /-- Pullback a `BooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [HasCompl α]
+protected abbrev Function.Injective.booleanAlgebra [Max α] [Min α] [Top α] [Bot α] [Compl α]
     [SDiff α] [HImp α] [BooleanAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_sdiff : ∀ a b, f (a \ b) = f a \ f b) (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) :
     BooleanAlgebra α where
   __ := hf.generalizedBooleanAlgebra f map_sup map_inf map_bot map_sdiff
-  compl := compl
-  himp := himp
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
   bot_le _ := map_bot.le.trans bot_le
   inf_compl_le_bot a := ((map_inf _ _).trans <| by rw [map_compl, inf_compl_eq_bot, map_bot]).le
