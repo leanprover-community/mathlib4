@@ -34,7 +34,7 @@ variable (𝕜 X)
 def SchauderBasis (e : ℕ → X) : Prop :=
   ∃ f : ℕ → StrongDual 𝕜 X,
     (∀ i j, f i (e j) = if i = j then 1 else 0) ∧
-    ∀ x : X, Summable (fun n ↦ f n x • e n) ∧ (∑' n, f n x • e n = x)
+    ∀ x : X, HasSum (fun n ↦ f n x • e n) x
 
 
 variable {𝕜 X}
@@ -48,7 +48,7 @@ def coord (n : ℕ) : StrongDual 𝕜 X := (Classical.choose h) n
 
 theorem coord_spec :
     (∀ i j, h.coord i (e j) = if i = j then 1 else 0) ∧
-    ∀ x : X, Summable (fun n ↦ h.coord n x • e n) ∧ (∑' n, h.coord n x • e n = x) :=
+    ∀ x : X, HasSum (fun n ↦ h.coord n x • e n) x :=
   Classical.choose_spec h
 
 @[simp]
@@ -81,10 +81,8 @@ theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 
 /-- The expansion of x in the basis. -/
 @[simp]
 theorem expansion (x : X) : ∑' n, h.coord n x • e n = x :=
-  (h.coord_spec.2 x).2
+  (h.coord_spec.2 x).tsum_eq
 
-theorem summable (x : X) : Summable (fun n ↦ h.coord n x • e n) :=
-  (h.coord_spec.2 x).1
 
 /-- A canonical projection P_n associated to a Schauder basis given by coordinate functionals f_i:
     P_n x = ∑_{i < n} f_i(x) e_i -/
@@ -185,10 +183,8 @@ theorem composition_eq_min (h : SchauderBasis 𝕜 X e) (m n : ℕ) :
 /-- The canonical projections converge pointwise to the identity map. -/
 theorem id_eq_limit (x : X) :
     Tendsto (fun n => h.canonicalProjection n x) atTop (𝓝 x) := by
-  convert HasSum.tendsto_sum_nat (h.summable x).hasSum
-  · rw [canonicalProjection_apply]
-  simp only [expansion h x]
-
+  simp only [canonicalProjection_apply]
+  exact (h.coord_spec.2 x).tendsto_sum_nat
 
 
 /-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
@@ -211,6 +207,7 @@ def basis_constant {e : ℕ → X} (h : SchauderBasis 𝕜 X e) : ℝ :=
 def coordinateProjection (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X :=
  if n = 0 then P 0 else P n - P (n - 1)
 
+@[simp]
 lemma idem_rank_one_projections_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hcomp : ∀ n m : ℕ, ∀ x : X, P n (P m x) = P (min n m) x) :
     (∀ i j, ∀ x : X, (coordinateProjection P i) ( (coordinateProjection P j) x)
@@ -257,7 +254,6 @@ lemma rank_one_projections_of_canonical_projections
       · rw [if_pos h0]
         exact hdim 0
       rw [if_neg h0]
-
       have h_le : LinearMap.range (P (n - 1)) ≤ LinearMap.range (P n) := by
           rintro x ⟨y, rfl⟩
           use P (n - 1) y
@@ -266,7 +262,11 @@ lemma rank_one_projections_of_canonical_projections
       have hdisjoint : LinearMap.range (Q n) ⊓ LinearMap.range (P (n - 1)) = ⊥ := by
           rw [Submodule.eq_bot_iff]
           intro x ⟨⟨xp, hxP⟩, ⟨xq, hxQ⟩⟩
-          rw [← hxP, ← idem_rank_one_projections_of_canonical_projections hdim hcomp, hxP]
+          rw [← hxP]
+          have : Q n (Q n xp) = if n = n then Q n xp else 0 := by
+            exact idem_rank_one_projections_of_canonical_projections hcomp n n xp
+          rw [if_pos rfl] at this
+          rw [← this, hxP]
           have : (Q n) ((P (n - 1)) xq) = 0 := by
             simp only [Q, coordinateProjection, if_neg h0,
               ContinuousLinearMap.sub_apply, hcomp, tsub_le_iff_right, le_add_iff_nonneg_right,
