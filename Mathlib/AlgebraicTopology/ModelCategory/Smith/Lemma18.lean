@@ -278,11 +278,11 @@ variable
   [HasColimitsOfSize.{w, w} C]
   [MorphismProperty.IsSmall.{w} I]
   [LocallySmall.{w} C]
-  (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
+  (κ : Cardinal.{w}) [Fact κ.IsRegular]
   (hκ : ∀ {A B : C} (i : A ⟶ B), I i → IsCardinalPresentable A κ)
 
 include hJ₁ hJ₂ hκ in
-lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
+lemma lemma_1_8 [OrderBot κ.ord.ToType] {X Y : C} (f : X ⟶ Y) (hf : W f) :
     ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
       (_ : RelativeCellComplex.{w} (basicCell := fun (_ : κ.ord.ToType) ↦ J.homFamily) a)
       (_ : I.rlp b), a ≫ b = f := by
@@ -333,6 +333,18 @@ lemma lemma_1_8 {X Y : C} (f : X ⟶ Y) (hf : W f) :
       simpa [reassoc_of% fac₁] using this
     fac_right := by cat_disch
   }⟩⟩
+
+include hJ₁ hJ₂ hκ in
+lemma lemma_1_8' {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    ∃ (Z : C) (a : X ⟶ Z) (b : Z ⟶ Y)
+      (_ : J.rlp.llp a) (_ : I.rlp b), a ≫ b = f := by
+  letI : OrderBot κ.ord.ToType :=
+    Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  obtain ⟨Z, a, b, ha, hb, fac⟩ := lemma_1_8 hJ₁ hJ₂ κ hκ f hf
+  refine ⟨Z, a, b, ?_, hb, fac⟩
+  apply MorphismProperty.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp
+    J κ.ord.ToType
+  simpa using ha.transfiniteCompositionOfShape.mem
 
 end
 

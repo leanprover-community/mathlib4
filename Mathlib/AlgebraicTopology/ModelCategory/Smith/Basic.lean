@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma19
+public import Mathlib.CategoryTheory.Presentable.SmallObject
 
 /-!
 # Smith's theorem
@@ -18,7 +19,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma19
 
 universe w v u
 
-open CategoryTheory Limits MorphismProperty
+open CategoryTheory Limits MorphismProperty SmallObject
 
 namespace HomotopicalAlgebra
 
@@ -30,6 +31,7 @@ def CategoryWithSmithStructure
     [MorphismProperty.IsSmall.{w} I]
     [W.HasTwoOutOfThreeProperty] [W.IsStableUnderRetracts]
     [IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
+    [IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
     [IsStableUnderCobaseChange (I.rlp.llp ⊓ W)]
     (_ : I.rlp ≤ W) (_ : I ≤ solutionSetCondition.{w} W) := C
 
@@ -38,6 +40,7 @@ variable [IsLocallyPresentable.{w} C]
   [MorphismProperty.IsSmall.{w} I]
   [W.HasTwoOutOfThreeProperty] [W.IsStableUnderRetracts]
   [IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
+  [IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
   [IsStableUnderCobaseChange (I.rlp.llp ⊓ W)]
   (hIW₁ : I.rlp ≤ W) (hIW₃ : I ≤ solutionSetCondition.{w} W)
 
@@ -45,6 +48,9 @@ namespace CategoryWithSmithStructure
 
 instance : Category (CategoryWithSmithStructure hIW₁ hIW₃) :=
   inferInstanceAs (Category C)
+
+instance : IsLocallyPresentable.{w} (CategoryWithSmithStructure hIW₁ hIW₃) :=
+  inferInstanceAs (IsLocallyPresentable.{w} C)
 
 instance : CategoryWithCofibrations (CategoryWithSmithStructure hIW₁ hIW₃) where
   cofibrations := I.rlp.llp
@@ -110,20 +116,24 @@ instance {A B X Y : CategoryWithSmithStructure hIW₁ hIW₃}
   rw [fibration_iff, fibrations_eq] at hp
   exact hp _ ⟨hi₁, hi₂⟩
 
-/-instance : HasFiniteLimits (CategoryWithSmithStructure hIW₁ hIW₃) := by
-  sorry
-
 instance : (cofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFunctorialFactorization
     (trivialFibrations (CategoryWithSmithStructure hIW₁ hIW₃)) := by
-  have : HasFunctorialFactorization I.rlp.llp I.rlp := by
-    sorry
   have le : I.rlp ≤ (I.rlp.llp ⊓ W).rlp ⊓ W := by
     simp only [le_inf_iff]
     exact ⟨by simp [← le_llp_iff_le_rlp], hIW₁⟩
   simpa [trivialFibrations] using HasFunctorialFactorization.of_le le_rfl le
 
+/-open lemma_1_9 in
 instance : (trivialCofibrations (CategoryWithSmithStructure hIW₁ hIW₃)).HasFactorization
-    (fibrations (CategoryWithSmithStructure hIW₁ hIW₃)) :=
+    (fibrations (CategoryWithSmithStructure hIW₁ hIW₃)) := by
+  obtain ⟨κ, _, hκ⟩ : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+    ∀ {A B : C} (i : A ⟶ B) (hi : I i), IsCardinalPresentable A κ := sorry
+  have : OrderBot κ.ord.ToType := Cardinal.toTypeOrderBot (Cardinal.IsRegular.ne_zero Fact.out)
+  simp only [trivialCofibrations, cofibrations_eq, weakEquivalences_eq, fibrations_eq,
+    ← llp_rlp_J hIW₁ hIW₃ κ hκ, rlp_llp_rlp]
+  infer_instance
+
+instance : HasFiniteLimits (CategoryWithSmithStructure hIW₁ hIW₃) := by
   sorry
 
 instance : ModelCategory (CategoryWithSmithStructure hIW₁ hIW₃) where

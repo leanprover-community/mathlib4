@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma18
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.SolutionSetCondition
+public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.SmallObject.Basic
 
@@ -27,15 +28,13 @@ namespace CategoryTheory
 
 namespace SmallObject
 
-section
+namespace lemma_1_9
 
 variable [HasPushouts C]
   {I W : MorphismProperty C}
   [HasFactorization I.rlp.llp I.rlp]
   (hIW₁ : I.rlp ≤ W)
   (hIW₃ : I ≤ solutionSetCondition.{w} W)
-
-namespace lemma_1_9
 
 def Index : Type _ :=
   Σ (f : I.toSet) (w : (hIW₃ _ f.2).morphismProperty.toSet), f.1 ⟶ w.1
@@ -100,9 +99,27 @@ lemma condition {i w : Arrow C} (sq : i ⟶ w) (hi : I i.hom) (hw : W w.hom) :
     · simp
     · simp [u, Index.c]
 
-end lemma_1_9
+include hIW₁ in
+lemma llp_rlp_J [W.HasTwoOutOfThreeProperty] [W.IsStableUnderRetracts]
+    [(I.rlp.llp ⊓ W).IsStableUnderCobaseChange]
+    [HasColimitsOfSize.{w, w} C] [MorphismProperty.IsSmall.{w} I] [LocallySmall.{w} C]
+    [IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
+    [IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
+    [HasSmallObjectArgument.{w} (J hIW₃)]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hκ : ∀ {A B : C} (i : A ⟶ B), I i → IsCardinalPresentable A κ) :
+    (J hIW₃).rlp.llp = I.rlp.llp ⊓ W := by
+  refine le_antisymm ?_ ?_
+  · rw [(J hIW₃).llp_rlp_of_hasSmallObjectArgument, retracts_le_iff,
+      transfiniteCompositions_le_iff, pushouts_le_iff, coproducts_le_iff]
+    exact J_le_inter hIW₁ hIW₃
+  · intro X Y f hf
+    obtain ⟨Z, a, b, ha, hb, fac⟩ :=
+      lemma_1_8'.{w} (condition hIW₃) (J_le_inter hIW₁ hIW₃) κ hκ f hf.2
+    have := hf.1 _ hb
+    exact MorphismProperty.of_retract (.ofLeftLiftingProperty fac) ha
 
-end
+end lemma_1_9
 
 end SmallObject
 
