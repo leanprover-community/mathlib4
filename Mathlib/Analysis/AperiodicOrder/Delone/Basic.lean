@@ -86,6 +86,31 @@ instance : Membership X (DeloneSet X) where
 lemma nonempty [Nonempty X] (D : DeloneSet X) : D.carrier.Nonempty :=
   D.isCover_coveringRadius.nonempty Set.univ_nonempty
 
+/-- Copy of a Delone set with new fields equal to the old ones.
+Useful to fix definitional equalities. -/
+protected def copy (D : DeloneSet X) (carrier : Set X) (packingRadius : ℝ≥0) (coveringRadius : ℝ≥0)
+    (h_carrier : carrier = D.carrier) (h_packing : packingRadius = D.packingRadius)
+    (h_covering : coveringRadius = D.coveringRadius) :
+    DeloneSet X where
+  carrier := carrier
+  packingRadius := packingRadius
+  packingRadius_pos := by simpa [h_packing] using D.packingRadius_pos
+  isSeparated_packingRadius := by
+    simpa [h_carrier, h_packing] using D.isSeparated_packingRadius
+  coveringRadius := coveringRadius
+  coveringRadius_pos := by simpa [h_covering] using D.coveringRadius_pos
+  isCover_coveringRadius := by
+    simpa [h_carrier, h_covering] using D.isCover_coveringRadius
+
+@[simp] theorem copy_eq (D : DeloneSet X)
+    (h_carrier : D.carrier = D.carrier := rfl)
+    (h_packing : D.packingRadius = D.packingRadius := rfl)
+    (h_covering : D.coveringRadius = D.coveringRadius := rfl) :
+    D.copy D.carrier D.packingRadius D.coveringRadius
+      h_carrier h_packing h_covering = D := by
+  cases D
+  rfl
+
 lemma packingRadius_lt_dist_of_mem_ne (D : DeloneSet X) {x y : X}
     (hx : x ∈ D) (hy : y ∈ D) (hne : x ≠ y) :
     D.packingRadius < dist x y := by
@@ -126,19 +151,18 @@ noncomputable def mapBilipschitz (f : X ≃ Y) (K₁ K₂ : ℝ≥0) (hK₁ : 0 
   isCover_coveringRadius := D.isCover_coveringRadius.image_lipschitz_of_surjective hf₂ f.surjective
 
 /-- The image of a Delone set under an isometry. This is a specialization of
-`DeloneSet.mapBiLipschitz` where the packing and covering radii are preserved because the
+`DeloneSet.mapBilipschitz` where the packing and covering radii are preserved because the
 Lipschitz constants are both 1. -/
-noncomputable abbrev mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
-  D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
-    f.isometry.antilipschitz f.isometry.lipschitz
+noncomputable def mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) : DeloneSet Y :=
+  (D.mapBilipschitz f.toEquiv 1 1 zero_lt_one zero_lt_one
+    f.isometry.antilipschitz f.isometry.lipschitz).copy (f '' D.carrier)
+    D.packingRadius D.coveringRadius rfl (by simp [mapBilipschitz]) (by simp [mapBilipschitz])
 
 lemma packingRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
-    (D.mapIsometry f).packingRadius = D.packingRadius := by
-  simp only [mapBilipschitz, div_one]
+    (D.mapIsometry f).packingRadius = D.packingRadius := rfl
 
 lemma coveringRadius_mapIsometry (D : DeloneSet X) (f : X ≃ᵢ Y) :
-    (D.mapIsometry f).coveringRadius = D.coveringRadius := by
-  simp only [mapBilipschitz, IsometryEquiv.coe_toEquiv, div_one, one_mul]
+    (D.mapIsometry f).coveringRadius = D.coveringRadius := rfl
 
 /-- Extensionality for Delone sets. -/
 @[ext] lemma ext {D E : DeloneSet X}
@@ -169,14 +193,14 @@ lemma mapBilipschitz_trans {Z : Type*} [MetricSpace Z] (D : DeloneSet X)
   · simp only [mapBilipschitz_packingRadius, NNReal.coe_div, div_div]
   · simp only [mapBilipschitz_coveringRadius, NNReal.coe_mul, mul_assoc]
 
-@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D :=
-  mapBilipschitz_refl D ..
+@[simp] lemma mapIsometry_refl (D : DeloneSet X) : D.mapIsometry (.refl X) = D := by
+  ext <;> simp only [mapIsometry, DeloneSet.copy]
+  exact exists_eq_right
 
 lemma mapIsometry_trans {Z : Type*} [MetricSpace Z]
     (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
     D.mapIsometry (f.trans g) = (D.mapIsometry f).mapIsometry g := by
-  simp only [mapBilipschitz_trans, mul_one]
-  rfl
+  ext <;> simp [mapIsometry, DeloneSet.copy]
 
 end DeloneSet
 
