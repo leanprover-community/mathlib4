@@ -361,3 +361,16 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
     exact hI.1
   obtain ⟨a, ha⟩ := associatedPrimes.nonempty R (R ⧸ I)
   exact ha.eq_radical hI ▸ ha
+
+namespace Submodule
+
+variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+  (N : Submodule R M)
+
+/-- The associated primes of `R ⧸ N` (but phrased without the quotient to allow semirings). -/
+def associatedPrimes : Set (Ideal R) :=
+  {p | p.IsPrime ∧ ∃ x : M, p = (N.colon {x}).radical}
+
+instance (p : N.associatedPrimes) : p.1.IsPrime := p.2.1
+
+end Submodule
