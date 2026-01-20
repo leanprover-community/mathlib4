@@ -8,7 +8,9 @@ module
 public import Mathlib.FieldTheory.Finiteness
 public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -111,6 +113,13 @@ instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
   rcases eq_bot_or_nonempty s₂ with rfl | ⟨p₂, hp₂⟩
   · rwa [sup_bot_eq]
   rw [AffineSubspace.direction_sup hp₁ hp₂]
+  infer_instance
+
+/-- The image of a finite-dimensional affine subspace under an affine map is finite-dimensional. -/
+instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
+    [AffineSpace V₂ P₂] (s : AffineSubspace k P) [FiniteDimensional k s.direction]
+    (f : P →ᵃ[k] P₂) : FiniteDimensional k (s.map f).direction := by
+  rw [map_direction]
   infer_instance
 
 /-- The `vectorSpan` of a finite subset of an affinely independent
@@ -639,7 +648,7 @@ theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : 
     AffineIndependent k ![p₁, p₂, p] := by
   rw [affineIndependent_iff_not_collinear_set]
   by_contra h
-  have h1: Collinear k {p₁, p₃, p₂, p} := by
+  have h1 : Collinear k {p₁, p₃, p₂, p} := by
     apply collinear_insert_insert_of_mem_affineSpan_pair
     · apply Collinear.mem_affineSpan_of_mem_of_ne h (by simp) (by simp) (by simp) hne
     · apply Collinear.mem_affineSpan_of_mem_of_ne hcol (by simp) (by simp) (by simp) hne
@@ -775,6 +784,17 @@ variable (k)
 /-- Three points are coplanar. -/
 theorem coplanar_triple (p₁ p₂ p₃ : P) : Coplanar k ({p₁, p₂, p₃} : Set P) :=
   (collinear_pair k p₂ p₃).coplanar_insert p₁
+
+/-- For a simplex, the centroid, a vertex, and the corresponding `faceOppositeCentroid` are
+collinear. -/
+theorem Affine.Simplex.collinear_point_centroid_faceOppositeCentroid [CharZero k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
+    Collinear k {s.points i, s.centroid, s.faceOppositeCentroid i} := by
+  apply collinear_insert_of_mem_affineSpan_pair
+  have h : s.points i = (-n : k) • (s.faceOppositeCentroid i -ᵥ s.centroid) +ᵥ s.centroid := by
+    rw [← neg_vsub_eq_vsub_rev, neg_smul_neg, ← point_vsub_centroid_eq_smul_vsub, vsub_vadd]
+  rw [h]
+  exact smul_vsub_vadd_mem_affineSpan_pair _ _ _
 
 end DivisionRing
 

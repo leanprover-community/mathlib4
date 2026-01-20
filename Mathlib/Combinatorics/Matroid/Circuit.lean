@@ -233,9 +233,6 @@ lemma fundCircuit_eq_of_notMem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e
   simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
   exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
 
-@[deprecated (since := "2025-05-23")]
-alias fundCircuit_eq_of_not_mem_ground := fundCircuit_eq_of_notMem_ground
-
 lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.IsCircuit (M.fundCircuit e I) := by
   have aux : ⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J} ⊆ I := sInter_subset_of_mem (by simpa)
@@ -417,7 +414,7 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of circuits.
 
-It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
+It states that, given a circuit `C₀`, an arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
 the union of `C₀` and the `C i` contains a circuit containing `z` but none of the `x i`.
 
@@ -687,18 +684,12 @@ lemma fundCocircuit_eq_of_notMem_ground (X : Set α) (he : e ∉ M.E) :
     M.fundCocircuit e X = {e} := by
   rwa [fundCocircuit, fundCircuit_eq_of_notMem_ground]
 
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem_ground := fundCocircuit_eq_of_notMem_ground
-
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ X` -/
 lemma fundCocircuit_eq_of_notMem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
   by_cases he : e ∈ M.E
   · rw [fundCocircuit, fundCircuit_eq_of_mem]
     exact ⟨he, heX⟩
   rw [fundCocircuit_eq_of_notMem_ground _ he]
-
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem := fundCocircuit_eq_of_notMem
 
 /-- For every element `e` of an independent set `I`,
 there is a cocircuit whose intersection with `I` is `{e}`. -/

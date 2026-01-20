@@ -43,6 +43,7 @@ instance : CoeSort Preord (Type u) :=
 
 attribute [coe] Preord.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
 structure Hom (X Y : Preord.{u}) where
@@ -50,11 +51,15 @@ structure Hom (X Y : Preord.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Preord.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Preord (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -168,10 +173,11 @@ end Preord
 @[simps]
 def preordToCat : Preord.{u} ⥤ Cat where
   obj X := .of X.1
-  map f := f.hom.monotone.functor
+  map f := f.hom.monotone.functor.toCatHom
 
 instance : preordToCat.{u}.Faithful where
-  map_injective h := by ext x; exact Functor.congr_obj h x
+  map_injective h := by ext x; exact Functor.congr_obj congr(($h).toFunctor) x
 
 instance : preordToCat.{u}.Full where
-  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩
+  map_surjective {X Y} f := ⟨⟨f.toFunctor.obj,
+    @CategoryTheory.Functor.monotone X Y _ _ f.toFunctor⟩, rfl⟩

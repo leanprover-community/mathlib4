@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
 public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.Condensed.Light.Basic
@@ -28,4 +28,4 @@ variable {C : Type u} [SmallCategory C]
 instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
   inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
 
-instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))
+instance : MonoidalClosed (LightCondSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))

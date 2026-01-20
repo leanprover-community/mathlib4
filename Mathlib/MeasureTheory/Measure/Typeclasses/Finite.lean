@@ -68,6 +68,12 @@ theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht
   ⟨fun h => compl_compl s ▸ compl_compl t ▸ measure_compl_le_add_of_le_add hs.compl ht.compl h,
     measure_compl_le_add_of_le_add ht hs⟩
 
+theorem cofinite_eq_bot_iff : μ.cofinite = ⊥ ↔ IsFiniteMeasure μ := by
+  simp [← empty_mem_iff_bot, μ.mem_cofinite, isFiniteMeasure_iff]
+
+@[nontriviality, simp]
+theorem cofinite_eq_bot [IsFiniteMeasure μ] : μ.cofinite = ⊥ := cofinite_eq_bot_iff.2 ‹_›
+
 /-- The measure of the whole space with respect to a finite measure, considered as `ℝ≥0`. -/
 def measureUnivNNReal (μ : Measure α) : ℝ≥0 :=
   (μ univ).toNNReal
@@ -130,12 +136,8 @@ theorem Measure.isFiniteMeasure_map_iff {μ : Measure α} {f : α → β}
   ⟨fun _ ↦ isFiniteMeasure_of_map hf, fun _ ↦ isFiniteMeasure_map μ f⟩
 
 instance IsFiniteMeasure_comap (f : β → α) [IsFiniteMeasure μ] : IsFiniteMeasure (μ.comap f) where
-  measure_univ_lt_top := by
-    by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ
-    · rw [Measure.comap_apply₀ _ _ hf.1 hf.2 MeasurableSet.univ.nullMeasurableSet]
-      exact measure_lt_top μ _
-    · rw [Measure.comap, dif_neg hf]
-      exact zero_lt_top
+  measure_univ_lt_top :=
+    (Measure.comap_apply_le _ _ nullMeasurableSet_univ).trans_lt (measure_lt_top _ _)
 
 @[simp]
 theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 0 ↔ μ = 0 := by
@@ -190,7 +192,7 @@ lemma tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
     intro x hx
     simp only [mem_iInter, mem_iUnion, exists_prop] at hx
     obtain ⟨j, _, x_in_Es_j⟩ := hx 0
-    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j+1)
+    obtain ⟨k, k_gt_j, x_in_Es_k⟩ := hx (j + 1)
     have oops := (Es_disj (Nat.ne_of_lt k_gt_j)).ne_of_mem x_in_Es_j x_in_Es_k
     contradiction
   have key := tendsto_measure_iInter_atTop (μ := μ) (fun n ↦ by measurability)

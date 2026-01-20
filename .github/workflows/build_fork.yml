@@ -92,7 +92,7 @@ jobs:
 
       # Checkout the master branch into a subdirectory
       - name: Checkout master branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
@@ -102,7 +102,7 @@ jobs:
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.event.pull_request.head.sha }}"
           path: pr-branch
@@ -237,7 +237,7 @@ jobs:
 
           # Extract all inputRevs from the manifest
           invalid_revs=$(jq -r '.packages[].inputRev // empty' lake-manifest.json | \
-            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?)$' || true)
+            grep -v -E '^(main|master|v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?)$' || true)
 
           if [ -n "$invalid_revs" ]; then
             echo "❌ Error: Found invalid inputRevs in lake-manifest.json:"
@@ -246,7 +246,7 @@ jobs:
             echo "All inputRevs must be one of:"
             echo "  - 'main'"
             echo "  - 'master'"
-            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3 or v1.2.3-pre)"
+            echo "  - 'vX.Y.Z' (semantic version, e.g., v1.2.3, v1.2.3-pre, or v1.2.3+build)"
             exit 1
           else
             echo "✅ All inputRevs in lake-manifest.json are valid"
@@ -379,7 +379,7 @@ jobs:
 
       - name: upload artifact containing contents of pr-branch
         # temporary measure for debugging no-build failures
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: mathlib4_artifact
           include-hidden-files: true
@@ -409,7 +409,7 @@ jobs:
           # do not try to upload files just downloaded
 
           echo "Uploading cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -465,8 +465,8 @@ jobs:
           export MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
 
           echo "Uploading Archive and Counterexamples cache to Azure..."
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
-          USE_FRO_CACHE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Archive.lean
+          MATHLIB_CACHE_USE_CLOUDFLARE=0 ../master-branch/.lake/build/bin/cache --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }} put-unpacked Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
@@ -510,12 +510,64 @@ jobs:
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
+      - name: kill stray runLinter processes
+        if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Checking for runLinter processes..."
+          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "Killing runLinter processes..."
+            pkill -f runLinter || true
+          else
+            echo "No stray runLinter processes found."
+          fi
+
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
+        timeout-minutes: 40
         run: |
           cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 ../master-branch/scripts/lake-build-wrapper.py .lake/build_summary_lint.json lake exe runLinter Mathlib
+          set -o pipefail
+          # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
+          # We use .lake/ for the output file because landrun restricts /tmp access
+          for attempt in 1 2; do
+            if timeout 15m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+              break
+            fi
+            status=${PIPESTATUS[0]}
+            if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
+              echo ""
+              echo "=============================================================================="
+              echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
+              echo "the --trace flag. Please merge 'master' into your PR branch to get the"
+              echo "updated linter, then push again."
+              echo ""
+              echo "You can do this with:"
+              echo "  git fetch upstream"
+              echo "  git merge upstream/master"
+              echo "  git push"
+              echo "=============================================================================="
+              echo ""
+              exit 1
+            fi
+            if [ "$status" -eq 124 ]; then
+              echo "runLinter timed out (attempt $attempt)."
+              if [ "$attempt" -lt 2 ]; then
+                echo "Checking for runLinter processes..."
+                if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+                  echo "Killing runLinter processes..."
+                  pkill -f runLinter || true
+                else
+                  echo "No stray runLinter processes found."
+                fi
+                echo "Retrying runLinter after timeout..."
+                continue
+              fi
+            fi
+            exit $status
+          done
 
       - name: end gh-problem-match-wrap for shake and lint steps
         uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23
@@ -539,6 +591,15 @@ jobs:
           then
             printf $'%s\n' "${buildMsgs}"
             exit 1
+          fi
+
+      - name: list stray runLinter processes
+        shell: bash
+        if: always()
+        run: |
+          echo "Checking for runLinter processes..."
+          if ! ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+            echo "No stray runLinter processes found."
           fi
 
       - name: Post comments for lean-pr-testing-NNNN and batteries-pr-testing-NNNN branches
@@ -566,7 +627,7 @@ jobs:
     runs-on: ubuntu-latest # Note these steps run on disposable GitHub runners, so no landrun sandboxing is needed.
     steps:
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: "${{ github.event.pull_request.head.sha }}"
 
@@ -614,7 +675,7 @@ jobs:
           lake exe graph
 
       - name: upload the import graph
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: import-graph
           path: import_graph.dot
@@ -638,34 +699,7 @@ jobs:
           lake build AesopTest
 
       # We no longer run `lean4checker` in regular CI, as it is quite expensive for little benefit.
-      # Instead we run it in a cron job on master: see `lean4checker.yml`.
-      # Output is posted to the zulip topic
-      # https://leanprover.zulipchat.com/#narrow/stream/345428-mathlib-reviewers/topic/lean4checker
-
-      - name: checkout lean4checker
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        shell: bash
-        run: |
-          git clone https://github.com/leanprover/lean4checker
-          cd lean4checker
-          # Read lean-toolchain file and checkout appropriate branch
-          TOOLCHAIN=$(cat ../lean-toolchain)
-          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
-            VERSION=${TOOLCHAIN#leanprover/lean4:}
-            git checkout "$VERSION"
-          else
-            git checkout master
-          fi
-
-      - name: run leanchecker on itself
-        if: ${{ (always() && needs.build.outputs.build-outcome == 'success' || needs.build.outputs.build-outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
-        run: |
-          cd lean4checker
-          # Build lean4checker using the same toolchain
-          cp ../lean-toolchain .
-          lake build
-          lake -q exe lean4checker Lean4Checker
-
+      # Instead we run it in a cron job on master: see `daily.yml`.
   style_lint:
     name: Lint style (fork)
     if: github.event.pull_request.head.repo.fork && github.repository != 'leanprover-community/mathlib4-nightly-testing'
@@ -702,15 +736,6 @@ jobs:
           echo "number=${{ steps.PR_from_push.outputs.number || github.event.pull_request.number }}" | tee -a "$GITHUB_OUTPUT"
           echo "pr_labels=${{ steps.PR_from_push.outputs.pr_labels || join(github.event.pull_request.labels.*.name, ',') }}" | tee -a "$GITHUB_OUTPUT"
 
-      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
-        name: If `bench-after-CI` is present, add a `!bench` comment.
-        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
-        with:
-          token: ${{ secrets.AUTO_MERGE_TOKEN }}
-          issue-number: ${{ steps.PR.outputs.number }}
-          body: |
-            !bench
-
       - id: remove_labels
         name: Remove "awaiting-CI"
         # we use curl rather than octokit/request-action so that the job won't fail
@@ -727,7 +752,7 @@ jobs:
         # unfortunately we cannot query only for 'auto-merge-after-CI' events
         # so we have to process this with jq in the next step
         id: get-timeline
-        uses: octokit/graphql-action@8ad880e4d437783ea2ab17010324de1075228110 # v2.3.2
+        uses: octokit/graphql-action@ddde8ebb2493e79f390e6449c725c21663a67505 # v3.0.2
         with:
           query: |
             query($owner: String!, $name: String!, $number: Int!) {

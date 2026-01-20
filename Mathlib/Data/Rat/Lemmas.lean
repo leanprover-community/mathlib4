@@ -56,19 +56,13 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
     rw [qdf]
     exact Rat.num_ne_zero.2 ((divInt_ne_zero hd).mpr hn)
 
-theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
-  have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
-  rcases d with ((_ | _) | _) <;>
-  simp [divInt, mkRat, Rat.normalize_eq, Int.sign, Int.gcd,
-    Int.zero_ediv, this]
+@[deprecated Rat.num_divInt (since := "2025-12-27")]
+theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d :=
+  Int.gcd_comm .. ▸ Rat.num_divInt ..
 
-theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
-  have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
-  rcases d with ((_ | _) | _) <;>
-    simp [divInt, mkRat, Rat.normalize_eq, Int.gcd,
-      if_neg (Nat.cast_add_one_ne_zero _), this]
+@[deprecated Rat.den_divInt (since := "2025-12-27")]
+theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d :=
+  Int.gcd_comm .. ▸ Rat.den_divInt ..
 
 theorem add_den_dvd_lcm (q₁ q₂ : ℚ) : (q₁ + q₂).den ∣ q₁.den.lcm q₂.den := by
   rw [add_def, normalize_eq, Nat.div_dvd_iff_dvd_mul (Nat.gcd_dvd_right _ _)
@@ -300,10 +294,8 @@ theorem inv_natCast_num_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.num = 1 
   inv_intCast_num_of_pos (mod_cast ha0 : 0 < (a : ℤ))
 
 theorem inv_intCast_den_of_pos {a : ℤ} (ha0 : 0 < a) : ((a : ℚ)⁻¹.den : ℤ) = a := by
-  rw [← ofInt_eq_cast, ofInt, mk_eq_divInt, Rat.inv_divInt, divInt_eq_div, Nat.cast_one]
-  apply den_div_eq_of_coprime ha0
-  rw [Int.natAbs_one]
-  exact Nat.coprime_one_left _
+  simp only [den_inv, num_intCast]
+  grind
 
 theorem inv_natCast_den_of_pos {a : ℕ} (ha0 : 0 < a) : (a : ℚ)⁻¹.den = a := by
   rw [← Int.ofNat_inj, ← Int.cast_natCast a, inv_intCast_den_of_pos]
@@ -319,7 +311,7 @@ theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℚ)⁻¹.num = 1 :
   simp only [num_inv, num_ofNat, den_ofNat, Nat.cast_one, mul_one, Int.sign_eq_one_iff_pos,
     gt_iff_lt]
   change 0 < (a : ℤ)
-  cutsat
+  lia
 
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by simp
 

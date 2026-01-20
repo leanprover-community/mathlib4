@@ -19,7 +19,7 @@ We also prove a lemma about parity of `Fin.succAbove i j + Fin.predAbove j i`
 which can be used to prove `d ∘ d = 0` for de Rham cohomologies.
 -/
 
-@[expose] public section
+public section
 
 open Fin
 

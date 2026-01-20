@@ -14,7 +14,7 @@ public import Mathlib.Data.Finset.Density
 # Theorems about the density of pointwise operations on finsets.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

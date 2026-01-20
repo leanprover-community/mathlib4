@@ -117,7 +117,7 @@ theorem projectiveSeminorm_tprod_le (m : Π i, E i) :
   rw [projectiveSeminorm_apply]
   convert ciInf_le (bddBelow_projectiveSemiNormAux _) ⟨FreeAddMonoid.of ((1 : 𝕜), m), ?_⟩
   · simp [projectiveSeminormAux]
-  · rw [mem_lifts_iff, FreeAddMonoid.toList_of,List.map_singleton, List.sum_singleton, one_smul]
+  · rw [mem_lifts_iff, FreeAddMonoid.toList_of, List.map_singleton, List.sum_singleton, one_smul]
 
 theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [SeminormedAddCommGroup G]
     [NormedSpace 𝕜 G] (f : ContinuousMultilinearMap 𝕜 E G) :

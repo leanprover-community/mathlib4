@@ -170,7 +170,7 @@ theorem IsAlgClosed.algebraicClosure_eq_bot_iff [IsAlgClosed E] :
     ne_zero_of_dvd_ne_zero hmon.ne_zero (minpoly.dvd _ x hx))
   exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
 
-/-- `F(S) / F` is a algebraic extension if and only if all elements of `S` are
+/-- `F(S) / F` is an algebraic extension if and only if all elements of `S` are
 algebraic elements. -/
 theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
     Algebra.IsAlgebraic F (adjoin F S) ↔ ∀ x ∈ S, IsAlgebraic F x :=

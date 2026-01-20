@@ -35,7 +35,7 @@ Hermann Minkowski.
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
 
-@[expose] public section
+public section
 
 
 namespace MeasureTheory
@@ -95,11 +95,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s) (h_cpt : IsCompact s)
     (h : μ F * 2 ^ finrank ℝ E ≤ μ s) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
-  have h_mes : μ s ≠ 0 := by
-    intro hμ
-    suffices μ F = 0 from fund.measure_ne_zero (NeZero.ne μ) this
-    rw [hμ, le_zero_iff, mul_eq_zero] at h
-    exact h.resolve_right <| pow_ne_zero _ two_ne_zero
+  have h_mes : μ s ≠ 0 := fun hμ ↦ fund.measure_ne_zero (NeZero.ne μ) <| by simpa [hμ] using h
   have h_nemp : s.Nonempty := nonempty_of_measure_ne_zero h_mes
   let u : ℕ → ℝ≥0 := (exists_seq_strictAnti_tendsto 0).choose
   let K : ConvexBody E := ⟨s, h_conv, h_cpt, h_nemp⟩
@@ -119,7 +115,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
-    exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
+    exact isOpen_inter_eq_singleton_of_mem_discrete ⟨inferInstance⟩ (zero_mem L)
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
