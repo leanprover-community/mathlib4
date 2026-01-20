@@ -112,6 +112,13 @@ lemma ι_flip : sq.flip.ι = sq.ι := by
   · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
   · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
 
+@[simp]
+lemma ofHasPushout_ι [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
+    (ofHasPushout F f₁ f₂).ι =
+      pushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp) := by
+  apply (ofHasPushout F f₁ f₂).isPushout.hom_ext
+  all_goals simp [PushoutObjObj.ι]
+
 noncomputable section Arrow
 
 variable {f₁ f₁' : Arrow C₁} {f₂ : Arrow C₂}
@@ -283,8 +290,9 @@ lemma π_snd : sq.π ≫ sq.snd = (G.obj (op Y₁)).map f₃ := by simp [π]
 lemma ofHasPullback_π
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     (ofHasPullback G f₁ f₃).π =
-    (IsPullback.of_hasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)).lift
-      ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) ((G.map f₁.op).naturality f₃).symm := rfl
+      pullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp) := by
+  apply (ofHasPullback G f₁ f₃).isPullback.hom_ext
+  all_goals simp [PullbackObjObj.π]
 
 noncomputable section Arrow
 
