@@ -198,33 +198,29 @@ variable (𝔽) [Field 𝔽] [CharZero 𝔽]
 
 theorem iterate_derivative_T_real_eval_one (n : ℤ) (k : ℕ) :
     (derivative^[k] (T 𝔽 n)).eval 1 =
-      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
-  have h := iterate_derivative_T_eval_one (R := 𝔽) n k
-  push_cast at h ⊢
-  refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
-  norm_cast
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) :=
+  eq_div_of_mul_eq (Nat.cast_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr (fun l hl => by norm_cast))
+    ((mul_comm ..).trans (iterate_derivative_T_eval_one n k))
 
 theorem iterate_derivative_U_real_eval_one (n : ℤ) (k : ℕ) :
     (derivative^[k] (U 𝔽 n)).eval 1 =
       ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
-      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
-  have h := iterate_derivative_U_eval_one (R := 𝔽) n k
-  push_cast at h ⊢
-  refine eq_div_of_mul_eq (Finset.prod_ne_zero_iff.mpr (fun l hl => ?_)) ((mul_comm ..).trans h)
-  norm_cast
+      (∏ l ∈ Finset.range k, (2 * l + 3)) :=
+  eq_div_of_mul_eq (Nat.cast_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr (fun l hl => by norm_cast))
+    ((mul_comm ..).trans (iterate_derivative_U_eval_one n k))
 
 theorem iterate_derivative_T_real_eval_one_dvd (n : ℤ) (k : ℕ) :
     ∏ l ∈ Finset.range k, (2 * l + 1 : ℤ) ∣ ∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) := by
-  have h := iterate_derivative_T_eval_one (R := ℤ) n k
-  push_cast at h
-  apply dvd_of_mul_right_eq _ h
+  apply dvd_of_mul_right_eq
+  convert iterate_derivative_T_eval_one n k
+  simp
 
 theorem iterate_derivative_U_real_eval_one_dvd (n : ℤ) (k : ℕ) :
     ∏ l ∈ Finset.range k, (2 * l + 3 : ℤ) ∣
       (∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2)) * (n + 1) := by
-  have h := iterate_derivative_U_eval_one (R := ℤ) n k
-  push_cast at h
-  apply dvd_of_mul_right_eq _ h
+  apply dvd_of_mul_right_eq
+  convert iterate_derivative_U_eval_one n k
+  simp
 
 theorem derivative_U_real_eval_one (n : ℤ) :
     (derivative (U ℝ n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
