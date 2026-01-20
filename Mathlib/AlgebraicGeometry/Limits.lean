@@ -578,8 +578,7 @@ private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
     (fun i j e ↦ by convert hU' e using 0; simp [← Opens.coe_disjoint])
   convert isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
   · ext
-    simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply]
-    simp [Subtype.exists, Scheme.Opens.toScheme_carrier]
+    simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply, Scheme.Opens.exists_toScheme]
   · have (i : _) : IsAffine _ := hU i
     infer_instance
 
