@@ -34,7 +34,7 @@ variable (α β : Type*)
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] [Preorder β]
 
 /-- The Hasse diagram of an order as a simple graph. The graph of the covering relation. -/
 def hasse : SimpleGraph α where
@@ -59,6 +59,13 @@ theorem hasseDualIso_apply (a : αᵒᵈ) : hasseDualIso a = ofDual a :=
 @[simp]
 theorem hasseDualIso_symm_apply (a : α) : hasseDualIso.symm a = toDual a :=
   rfl
+
+/-- Lift an order embedding with an `OrdConnected` range to a graph embedding
+between Hasse diagrams -/
+def Embedding.hasse (f : α ↪o β) (h : (Set.range f).OrdConnected) : hasse α ↪g hasse β where
+  toFun := f
+  inj' := f.inj'
+  map_rel_iff' := by simp [h.apply_covBy_apply_iff]
 
 end Preorder
 
@@ -112,5 +119,30 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+
+namespace Walk
+
+variable {V : Type*} {G : SimpleGraph V} (n : ℕ)
+
+/-- The walk in a path graph going through all vertices in order -/
+def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
+  match n with
+  | .zero => .nil
+  | .succ n =>
+    .cons (by simp [pathGraph_adj, Embedding.hasse]) <| ofPathGraph n |>.map <| Embedding.toHom <|
+      .hasse (Fin.succOrderEmb _) <| by simp [← Set.Iio_union_Ioi, Set.Iio, Set.ordConnected_Ioi]
+
+@[simp]
+theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) := by
+  induction n with
+  | zero => rfl
+  | succ n ih =>
+    rw [ofPathGraph, support_cons, support_map, ih]
+    exact List.finRange_succ.symm
+
+theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
+  .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
+
+end Walk
 
 end SimpleGraph
