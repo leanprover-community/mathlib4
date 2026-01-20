@@ -54,6 +54,10 @@ def J : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (i : Index hIW) ↦
     pushout.inl _ _ ≫ (MorphismProperty.factorizationData I.rlp.llp I.rlp i.c).i)
 
+instance : MorphismProperty.IsSmall.{w} (J hIW) := by
+  dsimp [J]
+  infer_instance
+
 end lemma_1_9
 
 end
