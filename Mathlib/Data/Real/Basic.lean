@@ -481,7 +481,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
+instance leTotal_R : @Std.Total ℝ (· ≤ ·) :=
   ⟨by
     intro a b
     induction a using Real.ind_mk
