@@ -386,8 +386,6 @@ theorem tmul_eq_smul_one_tmul {S : Type*} [Semiring S] [Module R S] [SMulCommCla
     (s : S) (m : M) : s ⊗ₜ[R] m = s • (1 ⊗ₜ[R] m) := by
   nth_rw 1 [← mul_one s, ← smul_eq_mul, smul_tmul']
 
-@[deprecated (since := "2025-07-08")] alias tsmul_eq_smul_one_tuml := tmul_eq_smul_one_tmul
-
 instance leftModule : Module R'' (M ⊗[R] N) :=
   { add_smul := TensorProduct.add_smul
     zero_smul := TensorProduct.zero_smul }
@@ -1201,14 +1199,14 @@ theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTens
 
 @[simp]
 theorem lTensor_smul_action (r : R) :
-    (DistribMulAction.toLinearMap R N r).lTensor M =
-      DistribMulAction.toLinearMap R (M ⊗[R] N) r :=
+    (DistribSMul.toLinearMap R N r).lTensor M =
+      DistribSMul.toLinearMap R (M ⊗[R] N) r :=
   (lTensor_smul M r LinearMap.id).trans (congrArg _ (lTensor_id M N))
 
 @[simp]
 theorem rTensor_smul_action (r : R) :
-    (DistribMulAction.toLinearMap R N r).rTensor M =
-      DistribMulAction.toLinearMap R (N ⊗[R] M) r :=
+    (DistribSMul.toLinearMap R N r).rTensor M =
+      DistribSMul.toLinearMap R (N ⊗[R] M) r :=
   (rTensor_smul M r LinearMap.id).trans (congrArg _ (rTensor_id M N))
 
 variable {N}

@@ -420,7 +420,7 @@ open scoped Vector3
 
 theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Vector3 ℕ n → ℕ}
     (df : DiophFn f) : Dioph {v : Vector3 ℕ n | (f v::v) ∈ S} :=
-  Dioph.ext (diophFn_comp1 (reindex_dioph _ (none::some) d) df) (fun v => by
+  Dioph.ext (diophFn_comp1 (reindex_dioph _ (none :: some) d) df) (fun v => by
     dsimp
     -- TODO: `apply iff_of_eq` is required here, even though `congr!` works on iff below.
     apply iff_of_eq
@@ -430,10 +430,10 @@ theorem diophFn_vec_comp1 {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) {f : Ve
 /-- Deleting the first component preserves the Diophantine property. -/
 theorem vec_ex1_dioph (n) {S : Set (Vector3 ℕ (succ n))} (d : Dioph S) :
     Dioph {v : Fin2 n → ℕ | ∃ x, (x::v) ∈ S} :=
-  ext (ex1_dioph <| reindex_dioph _ (none::some) d) fun v =>
+  ext (ex1_dioph <| reindex_dioph _ (none :: some) d) fun v =>
     exists_congr fun x => by
       dsimp
-      rw [show Option.elim' x v ∘ cons none some = x::v from
+      rw [show Option.elim' x v ∘ cons none some = x :: v from
           funext fun s => by rcases s with a | b <;> rfl]
 
 theorem diophFn_vec (f : Vector3 ℕ n → ℕ) : DiophFn f ↔ Dioph {v | f (v ∘ fs) = v fz} :=
@@ -456,7 +456,7 @@ theorem diophFn_compn :
         simp only [vectorAllP_cons, and_imp]
         exact fun df dfl =>
           have : Dioph {v | (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr) ∈ S} :=
-            ext (diophFn_comp1 (reindex_dioph _ (some ∘ inl ⊗ none::some ∘ inr) d) <|
+            ext (diophFn_comp1 (reindex_dioph _ (some ∘ inl ⊗ none :: some ∘ inr) d) <|
                 reindex_diophFn inl df)
               fun v => by
                 dsimp
@@ -465,7 +465,7 @@ theorem diophFn_compn :
                 congr! 1
                 ext x; obtain _ | _ | _ := x <;> rfl
           have : Dioph {v | (v ⊗ f v::fun i : Fin2 n => fl i v) ∈ S} :=
-            @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl)::v ∘ inr)) this _ dfl
+            @diophFn_compn n (fun v => S (v ∘ inl ⊗ f (v ∘ inl) :: v ∘ inr)) this _ dfl
           ext this fun v => by
             dsimp
             congr! 3 with x
@@ -477,7 +477,7 @@ theorem dioph_comp {S : Set (Vector3 ℕ n)} (d : Dioph S) (f : Vector3 ((α →
 
 theorem diophFn_comp {f : Vector3 ℕ n → ℕ} (df : DiophFn f) (g : Vector3 ((α → ℕ) → ℕ) n)
     (dg : VectorAllP DiophFn g) : DiophFn fun v => f fun i => g i v :=
-  dioph_comp ((diophFn_vec _).1 df) ((fun v => v none)::fun i v => g i (v ∘ some)) <| by
+  dioph_comp ((diophFn_vec _).1 df) ((fun v ↦ v none) :: fun i v ↦ g i (v ∘ some)) <| by
     simp only [vectorAllP_cons]
     exact ⟨proj_dioph none, (vectorAllP_iff_forall _ _).2 fun i =>
           reindex_diophFn _ <| (vectorAllP_iff_forall _ _).1 dg _⟩
