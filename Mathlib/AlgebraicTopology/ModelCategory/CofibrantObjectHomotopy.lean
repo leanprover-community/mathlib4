@@ -64,7 +64,7 @@ lemma toHoCat_map_eq {X Y : CofibrantObject C} {f g : X ⟶ Y}
     toHoCat.map f = toHoCat.map g :=
   CategoryTheory.Quotient.sound _ h
 
-lemma toHoCat_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.1] (f g : X ⟶ Y) :
+lemma toHoCat_map_eq_iff {X Y : CofibrantObject C} [IsFibrant Y.obj] (f g : X ⟶ Y) :
     toHoCat.map f = toHoCat.map g ↔ homRel C f g := by
   dsimp [toHoCat]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
