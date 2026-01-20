@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 open TensorProduct
 
 /--
-The M-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the canonical
+The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the canonical
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
 noncomputable def LinearEquiv.chooseBasis_piScalarRight (R : Type*) (M : Type*) (V : Type*)
