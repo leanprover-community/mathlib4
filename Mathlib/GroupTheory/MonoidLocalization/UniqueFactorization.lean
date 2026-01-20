@@ -17,7 +17,6 @@ variable {M N : Type*}
 
 namespace Submonoid.LocalizationMap
 
-section CommMonoidWithZero
 variable [CommMonoidWithZero M] [CommMonoidWithZero N] {S : Submonoid M}
 
 theorem map_prime (f : S.LocalizationMap N) {m : M} (prime : Prime m)
@@ -47,12 +46,10 @@ theorem irreducible_of_map_wfDvdMonoid [WfDvdMonoid M] (f : S.LocalizationMap N)
     · obtain ⟨u, m', hu, hm', rfl⟩ := ha hai.1
       exact ⟨u * i, m', by simpa using hu.mul hai.2, hm', by ac_rfl⟩
 
-end CommMonoidWithZero
-
 open UniqueFactorizationMonoid in
-theorem uniquFactorizationMonoid [CancelCommMonoidWithZero M] [CancelCommMonoidWithZero N]
-    {S : Submonoid M} (f : S.LocalizationMap N)
+theorem uniquFactorizationMonoid (f : S.LocalizationMap N)
     [UniqueFactorizationMonoid M] : UniqueFactorizationMonoid N :=
+  have := f.isCancelMulZero
   .of_exists_prime_factors fun n hn ↦ by
     classical
     have ⟨⟨m, s⟩, eq⟩ := f.surj n
