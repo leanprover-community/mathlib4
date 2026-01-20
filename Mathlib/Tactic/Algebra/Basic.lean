@@ -3,55 +3,55 @@ Copyright (c) 2025 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
--- module
+module
 
--- public import Mathlib.Algebra.Algebra.Basic
--- public import Mathlib.Algebra.Algebra.Defs
--- public import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Tactic.Ring.RingNF
 
--- import Mathlib.Tactic.Algebra.Lemmas
+import Mathlib.Tactic.Algebra.Lemmas
 
--- /-!
--- # The `algebra` tactic
--- A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
--- where the exponents can also contain variables.
+/-!
+# The `algebra` tactic
+A suite of three tactics for solving equations in commutative algebras over commutative (semi)rings,
+where the exponents can also contain variables.
 
--- Based largely on the implementation of `ring`. The `algebra` normal form mirrors that of `ring`
--- except that the constants are expressions in the base ring that are kept in ring normal form.
+Based largely on the implementation of `ring`. The `algebra` normal form mirrors that of `ring`
+except that the constants are expressions in the base ring that are kept in ring normal form.
 
--- ## Organization
--- The structure of this file closely matches that of `Ring.Basic`.
+## Organization
+The structure of this file closely matches that of `Ring.Basic`.
 
--- * Normalized expressions are stored as an `ExSum`, a type which is part of the inductive family of
--- types `ExSum`, `ExProd` and `ExBase`.
--- * We implement evaluation functions (`evalAdd`, `evalMul`, etc.) for all of the operations we
--- support, which take normalized expressions and return a new normalized expression together with
--- a proof that the new expression equals the operation applied to the input expressions.
--- * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
--- coefficients as experssions in the base ring `R`, normalized by `ring`.
+* Normalized expressions are stored as an `ExSum`, a type which is part of the inductive family of
+types `ExSum`, `ExProd` and `ExBase`.
+* We implement evaluation functions (`evalAdd`, `evalMul`, etc.) for all of the operations we
+support, which take normalized expressions and return a new normalized expression together with
+a proof that the new expression equals the operation applied to the input expressions.
+* While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
+coefficients as experssions in the base ring `R`, normalized by `ring`.
 
--- This tactic is used internally to implement the `polynomial` tactic.
+This tactic is used internally to implement the `polynomial` tactic.
 
--- ## Limitations
--- The main limitation of the current implementation is that it does not handle rational constants
--- when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
--- with polynomials, but would be an issue when working with a number field over its ring of integers.
+## Limitations
+The main limitation of the current implementation is that it does not handle rational constants
+when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
+with polynomials, but would be an issue when working with a number field over its ring of integers.
 
--- -/
+-/
 
--- open Lean hiding Module
--- open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
+open Lean hiding Module
+open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
 
--- public meta section
+public meta section
 
--- namespace Mathlib.Tactic.Algebra
+namespace Mathlib.Tactic.Algebra
 
 
--- attribute [local instance] monadLiftOptionMetaM
+attribute [local instance] monadLiftOptionMetaM
 
 -- section ExSum
 
--- open NormNum
+open NormNum hiding Result
 
 -- open Ring in
 -- mutual
@@ -257,18 +257,19 @@ Authors: Arend Mellendijk
 
 -- end ExSum
 
--- /-- This cache contains typeclasses required during `algebra`'s execution. These assumptions
---   are stronger than `ring` because `algebra` occasionally requires commutativity to move between
---   the base ring and the algebra. -/
--- structure Cache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) extends Ring.Cache sA where
---   /-- A Field instance on `A`, if available. -/
---   field : Option Q(Field $A)
+/-- This cache contains typeclasses required during `algebra`'s execution. These assumptions
+  are stronger than `ring` because `algebra` occasionally requires commutativity to move between
+  the base ring and the algebra. -/
+structure Cache {u : Level} {A : Q(Type u)}
+    (sA : Q(CommSemiring $A)) extends Ring.Common.Cache sA where
+  /-- A Field instance on `A`, if available. -/
+  field : Option Q(Field $A)
 
--- /-- Create a new cache for `A` by doing the necessary instance searches. -/
--- def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
---   field := (← trySynthInstanceQ q(Field $A)).toOption
---   toCache := ← Ring.mkCache sA
--- }
+/-- Create a new cache for `A` by doing the necessary instance searches. -/
+def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache sA) := do return {
+  field := (← trySynthInstanceQ q(Field $A)).toOption
+  toCache := ← Ring.Common.mkCache sA
+}
 
 -- open Mathlib.Tactic.Ring (Result)
 -- open NormNum hiding Result
@@ -793,195 +794,386 @@ Authors: Arend Mellendijk
 --   | _, _, _ =>
 --     els
 
--- open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
+open Ring
 
--- theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
---     Nat.cast n = algebraMap ℕ A n := rfl
+section BaseType
 
--- theorem Nat.algebraMap_eq_cast (A : Type*) [CommSemiring A] (n : ℕ) :
---     algebraMap ℕ A n = Nat.cast n := rfl
+variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+  {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
--- theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
---     Int.cast n = algebraMap ℤ A n := rfl
+-- structure BaseType (a : Q($A)) where
+--   r : Q($R)
+--   vr : Ring.ExSum q($sR) q($r)
+--   pr : Q($a = algebraMap $R $A $r)
 
--- theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
---     algebraMap ℤ A n = Int.cast n := rfl
+inductive BaseType : (a : Q($A)) → Type
+  | mk (r : Q($R)) (_ : Ring.ExSum q($sR) r) : BaseType q(algebraMap $R $A $r)
 
--- /-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
--- def preprocess (mvarId : MVarId) : MetaM MVarId := do
---   -- collect the available `push_cast` lemmas
---   let thms : SimpTheorems := {}
---   let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap].foldlM (·.addConst ·) thms
---   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
---   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
---     throwError "internal error in polynomial tactic: preprocessing should not close goals"
---   return r
+def Algebra.ExBase := Common.ExBase (BaseType sAlg) sA
+def Algebra.ExProd := Common.ExProd (BaseType sAlg) sA
+def Algebra.ExSum := Common.ExSum (BaseType sAlg) sA
 
--- /-- Clean up the normal form into a more human-friendly format. This does everything
---   `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
---   the start. i.e. x * y * (r • 1) → r • (x * y)
---   Used by `cleanup`. -/
--- def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
---   let thms : SimpTheorems := {}
---   let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
---     ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
---     ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
---   let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
---       ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
---   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
---     (simpTheorems := #[thms])
---     (congrTheorems := ← getSimpCongrTheorems)
---   pure <| ←
---     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+/-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
+into casts. -/
+def pushCast (e : Expr) : MetaM Simp.Result := do
+  -- collect the available `push_cast` lemmas
+  let mut thms : SimpTheorems := ← NormCast.pushCastExt.getTheorems
+  let simps : Array Name := #[``eq_natCast, ``eq_intCast, ``eq_ratCast]
+  for thm in simps do
+    let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
+    thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
+  -- now run `simp` with these lemmas, and (importantly) *no* simprocs
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+  let (r, _) ← simp e ctx (simprocs := #[])
+  return r
 
--- /-- Turn scalar multiplication by an explicit constant in `R` into multiplication in `A`.
 
--- e.g. `(4 : ℚ) • x` becomes `4 * x` but `↑n • x` stays `↑n • x`.
+/-- Handle scalar multiplication when the scalar ring `R'` doesn't match the base ring `R`.
+Assumes `R` is an `R'`-algebra (i.e., `R'` is smaller), and casts the scalar using `algebraMap`. -/
+def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(Type v)}
+    {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
+    (smul : Q(HSMul $R' $A $A)) (r' : Q($R')) :
+    MetaM <| Σ r : Q($R), Q(∀ a : $A, $r • a = $r' • a) := do
+  if (← isDefEq R R') then
+    have : u =QL u' := ⟨⟩
+    have : $R =Q $R' := ⟨⟩
+    assumeInstancesCommute
+    return ⟨q($r'), q(fun _ => rfl)⟩
+  let _sR' ← synthInstanceQ q(CommSemiring $R')
+  -- Synthesize the algebra instance showing R is an R'-algebra
+  let _algR'R ← synthInstanceQ q(Algebra $R' $R)
+  -- TODO: Determine if I should be synthing this instance.
+  let _mod ← synthInstanceQ q(Module $R' $A)
+  let _ist ← synthInstanceQ q(IsScalarTower $R' $R $A)
+  assumeInstancesCommute
+  let r_cast : Q($R) := q(algebraMap $R' $R $r')
+  let res ← pushCast r_cast
+  have r₀ : Q($R) := res.expr
+  let pf : Q($r₀ = $r_cast) ← res.getProof
+  return ⟨r₀, q(fun a ↦ $pf ▸ algebraMap_smul $R $r' a)⟩
+
+
+
+-- variable {R : Type*} [CommSemiring R] {n : ℕ} {a₁ a₂ a₃ : ℕ} {b₁ b₂ b₃ : R}
+
+-- /-! ### Scalar multiplication by `ℕ` -/
+
+-- theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
+
+-- theorem natCast_mul {a₁ a₃ : ℕ} (a₂) (_ : ((a₁ : ℕ) : R) = b₁)
+--     (_ : ((a₃ : ℕ) : R) = b₃) : ((a₁ ^ a₂ * a₃ : ℕ) : R) = b₁ ^ a₂ * b₃ := by
+--   subst_vars; simp
+
+-- theorem natCast_zero : ((0 : ℕ) : R) = 0 := Nat.cast_zero
+
+-- theorem natCast_add {a₁ a₂ : ℕ}
+--     (_ : ((a₁ : ℕ) : R) = b₁) (_ : ((a₂ : ℕ) : R) = b₂) : ((a₁ + a₂ : ℕ) : R) = b₁ + b₂ := by
+--   subst_vars; simp
+
+-- mutual -- partial only to speed up compilation
+
+-- open Common
+
+
+-- /-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
+
+-- * An atom `e` causes `↑e` to be allocated as a new atom.
+-- * A sum delegates to `ExSum.evalNatCast`.
 -- -/
--- def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
---   let thms : SimpTheorems := {}
---   let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
---     ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
---   let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
---     ``nnRat_ofNat_smul_2, ``rat_ofNat_smul_1, ``rat_ofNat_smul_2
---     ].foldlM (·.addConst · (post := false)) thms
---   let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
---     (simpTheorems := #[thms])
---     (congrTheorems := ← getSimpCongrTheorems)
---   pure <| ←
---     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+-- partial def ExBase.evalNatCast {a : Q($S)} (va : Ring.ExBase sS a) :
+--     AtomM (Result (Ring.ExBase sR) q(algebraMap $S $R $a)) :=
+--   match va with
+--   | .atom _ => do
+--     let (i, ⟨b', _⟩) ← addAtomQ q(algebraMap $S $R $a)
+--     pure ⟨b', .atom i, q(sorry)⟩
+--   | .sum va => do
+--     let ⟨_, vc, p⟩ ← ExSum.evalNatCast va
+--     pure ⟨_, .sum vc, p⟩
 
--- /-- Collect all scalar rings from scalar multiplications using a state monad for performance. -/
--- partial def collectScalarRingsAux (e : Expr) : StateT (List Expr) MetaM Unit  := do
---   match_expr e with
---   | SMul.smul R _ _ _ a =>
---     modify fun l ↦ R :: l
---     collectScalarRingsAux a
---   | DFunLike.coe _ _R _A _inst φ _ =>
---       match_expr φ with
---       | algebraMap R _ _ _ _ =>
---         modify fun l ↦ R :: l
---       | _ => return
---   | HSMul.hSMul R _ _ _ _ a =>
---     modify fun l ↦ R :: l
---     collectScalarRingsAux a
---   | Eq _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | HAdd.hAdd _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | Add.add _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | HMul.hMul _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | Mul.mul _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | HSub.hSub _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | Sub.sub _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
---   | HPow.hPow _ _ _ _ a _ => collectScalarRingsAux a
---   | Neg.neg _ _ a => collectScalarRingsAux a
---   | _ => return
+-- /-- Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
 
--- /-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
--- expression. -/
--- partial def collectScalarRings (e : Expr) : MetaM (List Expr) := do
---   let ⟨_, l⟩ ← (collectScalarRingsAux e).run []
---   return l
+-- * `↑c = c` if `c` is a numeric literal
+-- * `↑(a ^ n * b) = ↑a ^ n * ↑b`
+-- -/
+-- partial def ExProd.evalNatCast {a : Q($S)} (va : Ring.ExProd sS a) :
+--     AtomM (Result (Ring.ExProd sR) q(algebraMap $S $R $a)) :=
+--   match va with
+--   | .const ⟨c, hc⟩ => sorry -- cast constants
+--     -- have n : Q(ℕ) := a.appArg!
+--     -- have : $a =Q Nat.rawCast $n := ⟨⟩
+--     -- -- WARNING: I don't think the hc here is correct.
+--     -- pure ⟨q(Nat.rawCast $n), .const ⟨c, hc⟩, q(natCast_nat (R := $R) $n)⟩
+--   | .mul (e := a₂) va₁ va₂ va₃ => do
+--     let ⟨_, vb₁, pb₁⟩ ← ExBase.evalNatCast va₁
+--     let ⟨_, vb₃, pb₃⟩ ← ExProd.evalNatCast va₃
+--     assumeInstancesCommute
+--     pure ⟨_, .mul vb₁ va₂ vb₃, q(sorry)⟩
 
--- /-- Given two rings, determine which is 'larger' in the sense that the larger is an algebra
--- over the smaller. Returns the first ring if they're the same or incompatible. -/
--- def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
---     MetaM (Σ u : Lean.Level, Q(Type u)) := do
---   let ⟨u1, R1⟩ := r1
---   let ⟨u2, R2⟩ := r2
---   -- If they're definitionally equal, return the first one
---   if ← withReducible <| isDefEq R1 R2 then
---     return r1
---   -- Try to show R2 is an R1-algebra (meaning R1 is smaller, so return R2)
---   try
---     let _i1 ← synthInstanceQ q(CommSemiring $R1)
---     let _i2 ← synthInstanceQ q(Semiring $R2)
---     let _i3 ← synthInstanceQ q(Algebra $R1 $R2)
---     return r2
---   catch _ => try
---     -- Try to show R1 is an R2-algebra (meaning R2 is smaller, so return R1)
---     let _i1 ← synthInstanceQ q(CommSemiring $R2)
---     let _i2 ← synthInstanceQ q(Semiring $R1)
---     let _i3 ← synthInstanceQ q(Algebra $R2 $R1)
---     return r1
---   catch _ =>
---     -- If neither works, return the first ring
---     return r1
+-- /-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
 
--- /-- Infer from the expression what base ring the normalization should use.
---  Finds all scalar rings in the expression and picks the 'larger' one in the sense that
---  it is an algebra over the smaller rings. -/
--- def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
---   let rings ← (← collectScalarRings e).mapM getLevelQ'
---   let res ← match rings with
---   | [] =>
---     match ca.field, ca.czα, ca.rα with
---     | some _, some _, _ =>
---       -- A is a Field
---       return ⟨0, q(ℚ)⟩
---     | _, _, some _ =>
---       -- A is a CommRing
---       return ⟨0, q(ℤ)⟩
---     | _, _, _ =>
---       return ⟨0, q(ℕ)⟩
---   | r :: rs => rs.foldlM pickLargerRing r
---   return res
+-- * `↑0 = 0`
+-- * `↑(a + b) = ↑a + ↑b`
+-- -/
+-- partial def ExSum.evalNatCast {a : Q($S)} (va : ExSum sS a) :
+--     AtomM (Result (Ring.ExSum sR) q(algebraMap $S $R $a)) := do
+--   assumeInstancesCommute
+--   match va with
+--   | .zero => pure ⟨_, .zero, q(sorry)⟩
+--   | .add va₁ va₂ => do
+--     let ⟨_, vb₁, pb₁⟩ ← ExProd.evalNatCast va₁
+--     let ⟨_, vb₂, pb₂⟩ ← ExSum.evalNatCast va₂
+--     pure ⟨_, .add vb₁ vb₂, q(sorry)⟩
 
--- /-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
--- def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
---   let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
---     | throwError "algebra failed: not an equality"
---   let .sort u ← whnf (← inferType α) | unreachable!
---   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
---   have A : Q(Type v) := α
---   let sA ← synthInstanceQ q(CommSemiring $A)
---   let cA ← Algebra.mkCache sA
---   let ⟨u, R⟩ ←
---     match base with
---       | .some p => do pure p
---       | none => do
---         pure (← inferBase cA (← g.getType))
---   let sR ← synthInstanceQ q(CommSemiring $R)
---   let sAlg ← synthInstanceQ q(Algebra $R $A)
---   let cR ← Algebra.mkCache sR
---   have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
---   let eq ← algCore q($sAlg) cR cA e₁ e₂
---   g.assign eq
--- where
---   /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
---   and returns a proof that they are equal (or fails). -/
---   algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
---       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
---       (cR : Cache q($sR)) (cA : Cache q($sA)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
---     profileitM Exception "algebra" (← getOptions) do
---       let ⟨a, va, pa⟩ ← eval sAlg cR cA e₁
---       let ⟨b, vb, pb⟩ ← eval sAlg cR cA e₂
---       unless va.eq vb do
---         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
---         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
---       let pb : Q($e₂ = $a) := pb
---       return q(by simp_all)
+-- end
 
--- /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
--- goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
--- expressions are the same. The R-coefficients are put into ring normal form.
 
--- The scalar ring R is inferred automatically by looking for scalar multiplications and algebraMaps
--- present in the expressions.
---  -/
--- elab (name := algebra) "algebra":tactic =>
---   withMainContext do
---     liftMetaTactic' preprocess
---     let g ← getMainGoal
---     AtomM.run .default (proveEq none g)
 
--- /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
--- goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
--- expressions are the same. The R-coefficients are put into ring normal form. -/
--- elab (name := algebraWith) "algebra" " with " R:term : tactic =>
---   withMainContext do
---     liftMetaTactic' preprocess
---     let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
---     let g ← getMainGoal
---     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
--- end Mathlib.Tactic.Algebra
+#check Mathlib.Tactic.Ring.ringCompute
+
+
+
+
+instance : Common.RingCompute (baseType q($sR)) sR := ringCompute sR
+
+instance : Common.RingCompute (BaseType sAlg) sA where
+  evalAdd a b za zb := do
+    let ⟨r, vr⟩ := za
+    let ⟨s, vs⟩ := zb
+    let ⟨t, vt, pt⟩ ← Common.evalAdd sR vr vs
+    match vt with
+    | .zero =>
+      -- TODO: Why doesn't the match substitute t?
+      have : $t =Q 0 := ⟨⟩
+      return  ⟨⟨_, .mk _ vt, q(sorry)⟩, some q(sorry)⟩
+    | vt =>
+      return ⟨⟨_, .mk _ vt, q(sorry)⟩, none⟩
+  evalMul a b za zb := do
+    let ⟨r, vr⟩ := za
+    let ⟨s, vs⟩ := zb
+    let ⟨t, vt, pt⟩ ← Common.evalMul sR vr vs
+    return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
+  evalCast v R' sR' _ r' _ := do
+    let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
+    -- TODO: use existing cache here.
+    let cR ← mkCache sR
+    let ⟨_r'', vr, pr⟩ ← Common.eval (bt := Ring.baseType q($sR)) q($sR) cR.toCache q($r)
+    return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
+  evalNeg a rR za := do
+    let ⟨r, vr⟩ := za
+    let ⟨t, vt, pt⟩ ← Common.evalNeg sR rR vr
+    return ⟨_, .mk _ vt, q(sorry)⟩
+  -- TODO: Regression? we can only handle literal exponents in the coefficient ring.
+  evalPow a za lit := do
+    let ⟨r, vr⟩ := za
+    let ⟨s, vs, ps⟩ ← Common.evalPowNat sR vr lit
+    return ⟨_, ⟨_, vs⟩, q(sorry)⟩
+  evalInv czR fR za := do
+    let ⟨r, vr⟩ := za
+    let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR fR czR vr
+    return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
+  derive := sorry
+  eq := sorry
+  compare := sorry
+  isOne := sorry
+  one := sorry
+
+
+end BaseType
+
+
+open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
+
+theorem Nat.cast_eq_algebraMap (A : Type*) [CommSemiring A] (n : ℕ) :
+    Nat.cast n = algebraMap ℕ A n := rfl
+
+theorem Nat.algebraMap_eq_cast (A : Type*) [CommSemiring A] (n : ℕ) :
+    algebraMap ℕ A n = Nat.cast n := rfl
+
+theorem Int.cast_eq_algebraMap (A : Type*) [CommRing A] (n : ℤ) :
+    Int.cast n = algebraMap ℤ A n := rfl
+
+theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
+    algebraMap ℤ A n = Int.cast n := rfl
+
+/-- Remove some nonstandard spellings of `algebraMap` such as `Nat.cast` -/
+def preprocess (mvarId : MVarId) : MetaM MVarId := do
+  -- collect the available `push_cast` lemmas
+  let thms : SimpTheorems := {}
+  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap].foldlM (·.addConst ·) thms
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
+  let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
+    throwError "internal error in polynomial tactic: preprocessing should not close goals"
+  return r
+
+/-- Clean up the normal form into a more human-friendly format. This does everything
+  `RingNF.cleanup` does and also pulls the scalar multiplication from the end of of each term to
+  the start. i.e. x * y * (r • 1) → r • (x * y)
+  Used by `cleanup`. -/
+def cleanupSMul (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  let thms : SimpTheorems := {}
+  let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev, ``_root_.pow_one,
+    ``mul_neg, ``add_neg, ``one_smul, ``mul_smul_comm, ``Nat.algebraMap_eq_cast,
+    ``Int.algebraMap_eq_cast].foldlM (·.addConst ·) thms
+  let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+      ``nnrat_rawCast, ``rat_rawCast_neg].foldlM (·.addConst · (post := false)) thms
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
+    (simpTheorems := #[thms])
+    (congrTheorems := ← getSimpCongrTheorems)
+  pure <| ←
+    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+
+/-- Turn scalar multiplication by an explicit constant in `R` into multiplication in `A`.
+
+e.g. `(4 : ℚ) • x` becomes `4 * x` but `↑n • x` stays `↑n • x`.
+-/
+def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result := do
+  let thms : SimpTheorems := {}
+  let thms ← [``add_zero, ``_root_.one_mul, ``_root_.mul_one,
+    ``neg_mul, ``add_neg].foldlM (·.addConst ·) thms
+  let thms ← [``ofNat_smul, ``neg_ofNat_smul, ``neg_1_smul, ``nnRat_ofNat_smul_1,
+    ``nnRat_ofNat_smul_2, ``rat_ofNat_smul_1, ``rat_ofNat_smul_2
+    ].foldlM (·.addConst · (post := false)) thms
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta }
+    (simpTheorems := #[thms])
+    (congrTheorems := ← getSimpCongrTheorems)
+  pure <| ←
+    r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
+
+/-- Collect all scalar rings from scalar multiplications using a state monad for performance. -/
+partial def collectScalarRingsAux (e : Expr) : StateT (List Expr) MetaM Unit  := do
+  match_expr e with
+  | SMul.smul R _ _ _ a =>
+    modify fun l ↦ R :: l
+    collectScalarRingsAux a
+  | DFunLike.coe _ _R _A _inst φ _ =>
+      match_expr φ with
+      | algebraMap R _ _ _ _ =>
+        modify fun l ↦ R :: l
+      | _ => return
+  | HSMul.hSMul R _ _ _ _ a =>
+    modify fun l ↦ R :: l
+    collectScalarRingsAux a
+  | Eq _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HAdd.hAdd _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Add.add _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HMul.hMul _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Mul.mul _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HSub.hSub _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Sub.sub _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HPow.hPow _ _ _ _ a _ => collectScalarRingsAux a
+  | Neg.neg _ _ a => collectScalarRingsAux a
+  | _ => return
+
+/-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
+expression. -/
+partial def collectScalarRings (e : Expr) : MetaM (List Expr) := do
+  let ⟨_, l⟩ ← (collectScalarRingsAux e).run []
+  return l
+
+/-- Given two rings, determine which is 'larger' in the sense that the larger is an algebra
+over the smaller. Returns the first ring if they're the same or incompatible. -/
+def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
+    MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let ⟨u1, R1⟩ := r1
+  let ⟨u2, R2⟩ := r2
+  -- If they're definitionally equal, return the first one
+  if ← withReducible <| isDefEq R1 R2 then
+    return r1
+  -- Try to show R2 is an R1-algebra (meaning R1 is smaller, so return R2)
+  try
+    let _i1 ← synthInstanceQ q(CommSemiring $R1)
+    let _i2 ← synthInstanceQ q(Semiring $R2)
+    let _i3 ← synthInstanceQ q(Algebra $R1 $R2)
+    return r2
+  catch _ => try
+    -- Try to show R1 is an R2-algebra (meaning R2 is smaller, so return R1)
+    let _i1 ← synthInstanceQ q(CommSemiring $R2)
+    let _i2 ← synthInstanceQ q(Semiring $R1)
+    let _i3 ← synthInstanceQ q(Algebra $R2 $R1)
+    return r1
+  catch _ =>
+    -- If neither works, return the first ring
+    return r1
+
+variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+  {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
+
+/-- Infer from the expression what base ring the normalization should use.
+ Finds all scalar rings in the expression and picks the 'larger' one in the sense that
+ it is an algebra over the smaller rings. -/
+def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
+  let rings ← (← collectScalarRings e).mapM getLevelQ'
+  let res ← match rings with
+  | [] =>
+    match ca.field, ca.czα, ca.rα with
+    | some _, some _, _ =>
+      -- A is a Field
+      return ⟨0, q(ℚ)⟩
+    | _, _, some _ =>
+      -- A is a CommRing
+      return ⟨0, q(ℤ)⟩
+    | _, _, _ =>
+      return ⟨0, q(ℕ)⟩
+  | r :: rs => rs.foldlM pickLargerRing r
+  return res
+
+/-- Frontend of `algebra`: attempt to close a goal `g`, assuming it is an equation of semirings. -/
+def proveEq (base : Option (Σ u : Lean.Level, Q(Type u))) (g : MVarId) : AtomM Unit := do
+  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
+    | throwError "algebra failed: not an equality"
+  let .sort u ← whnf (← inferType α) | unreachable!
+  let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
+  have A : Q(Type v) := α
+  let sA ← synthInstanceQ q(CommSemiring $A)
+  let cA ← Algebra.mkCache sA
+  let ⟨u, R⟩ ←
+    match base with
+      | .some p => do pure p
+      | none => do
+        pure (← inferBase cA (← g.getType))
+  let sR ← synthInstanceQ q(CommSemiring $R)
+  let sAlg ← synthInstanceQ q(Algebra $R $A)
+  let cR ← Algebra.mkCache sR
+  have e₁ : Q($A) := e₁; have e₂ : Q($A) := e₂
+  let eq ← algCore q($sAlg) cR cA e₁ e₂
+  g.assign eq
+where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
+  algCore {u v : Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
+      {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
+      (cR : Cache q($sR)) (cA : Cache q($sA)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
+    profileitM Exception "algebra" (← getOptions) do
+      let ⟨a, va, pa⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₁
+      let ⟨b, vb, pb⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₂
+      unless va.eq vb do
+        let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
+        throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
+      let pb : Q($e₂ = $a) := pb
+      return q(by simp_all)
+
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
+expressions are the same. The R-coefficients are put into ring normal form.
+
+The scalar ring R is inferred automatically by looking for scalar multiplications and algebraMaps
+present in the expressions.
+ -/
+elab (name := algebra) "algebra":tactic =>
+  withMainContext do
+    liftMetaTactic' preprocess
+    let g ← getMainGoal
+    AtomM.run .default (proveEq none g)
+
+/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
+goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
+expressions are the same. The R-coefficients are put into ring normal form. -/
+elab (name := algebraWith) "algebra" " with " R:term : tactic =>
+  withMainContext do
+    liftMetaTactic' preprocess
+    let ⟨u, R⟩ ← getLevelQ' (← elabTerm R none)
+    let g ← getMainGoal
+    AtomM.run .default (proveEq (some ⟨u, R⟩) g)
+
+end Mathlib.Tactic.Algebra

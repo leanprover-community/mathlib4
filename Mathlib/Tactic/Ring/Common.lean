@@ -82,7 +82,7 @@ ring, semiring, exponent, power
 assert_not_exists IsOrderedMonoid
 
 namespace Mathlib.Tactic
-namespace Algebra
+namespace Ring.Common
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 
@@ -108,7 +108,7 @@ ring subexpressions of type `ℤ`.
 -/
 def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
-structure Ring.baseType {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+structure _root_.Mathlib.Tactic.Ring.baseType {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (e : Q($α)) where
   value : ℚ
   hyp : Option Expr
@@ -244,8 +244,9 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   evalNeg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → baseType x → MetaM (Result baseType q(-$x))
   evalPow (sα) : ∀ x : Q($α), baseType x → (lit : Q(ℕ)) →
     OptionT MetaM (Result baseType q($x ^ $lit))
+  -- TODO: Do we want this to run in AtomM or in MetaM & handle atoms on failure?
   evalInv : ∀ {x : Q($α)}, (czα : Option Q(CharZero $α)) → (fα : Q(Semifield $α)) → baseType x →
-    MetaM (Option <| Result baseType q($x⁻¹))
+    AtomM (Option <| Result baseType q($x⁻¹))
   derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum baseType sα) q($x))
   eq (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
   compare (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
@@ -1272,6 +1273,5 @@ partial def eval [∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiri
 -- TODO: Find the start of this section.
 end
 
-end Algebra
-
+end Ring.Common
 end Mathlib.Tactic

@@ -82,10 +82,12 @@ ring, semiring, exponent, power
 assert_not_exists IsOrderedMonoid
 
 namespace Mathlib.Tactic
-open Algebra
+
 namespace Ring
 
-open Mathlib.Meta Qq NormNum Lean.Meta AtomM
+open Mathlib.Meta Qq Lean.Meta AtomM
+open NormNum hiding Result
+open Common (Result)
 
 attribute [local instance] monadLiftOptionMetaM
 
@@ -112,9 +114,9 @@ def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
-def ExBase := Algebra.ExBase (Algebra.Ring.baseType sα) sα
-def ExProd := Algebra.ExProd (Algebra.Ring.baseType sα) sα
-def ExSum := Algebra.ExSum (Algebra.Ring.baseType sα) sα
+def ExBase := Common.ExBase (Ring.baseType sα) sα
+def ExProd := Common.ExProd (Ring.baseType sα) sα
+def ExSum := Common.ExSum (Ring.baseType sα) sα
 
 
 
@@ -231,7 +233,7 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sβ a) : AtomM (Result 
   match va with
   | .atom _ => do
     let (i, ⟨b', _⟩) ← addAtomQ q($a)
-    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
+    pure ⟨b', .atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← ExSum.evalNatCast va
     pure ⟨_, .sum vc, p⟩
@@ -305,7 +307,7 @@ def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sβ a) 
   | .atom _ => do
     assumeInstancesCommute
     let (i, ⟨b', _⟩) ← addAtomQ q($a)
-    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
+    pure ⟨b', .atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← ExSum.evalIntCast rα va
     pure ⟨_, .sum vc, p⟩
@@ -388,8 +390,8 @@ theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} : n 
   subst_vars
   simp only [zsmul_eq_mul]
 
-instance Ring.ringCompute :
-    RingCompute (Ring.baseType sα) sα where
+def ringCompute :
+    Common.RingCompute (Ring.baseType sα) sα where
   evalAdd a b za zb := do
     let ⟨qa, ha⟩ := za
     let ⟨qb, hb⟩ := zb
@@ -473,10 +475,8 @@ instance Ring.ringCompute :
     ⟨1, none⟩
 
 
-
-instance : RingCompute (u := 0) btℕ Algebra.sℕ := Ring.ringCompute Algebra.sℕ
-
--- local instance : Algebra.RingCompute (Algebra.Ring.baseType sα) sα := Algebra.Ring.ringCompute sα
+instance : Common.RingCompute (baseType sα) sα := ringCompute sα
+instance : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute Common.sℕ
 
 universe u
 
@@ -545,10 +545,10 @@ where
   and returns a proof that they are equal (or fails). -/
   ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
-    let c ← Algebra.mkCache sα
+    let c ← Common.mkCache sα
     profileitM Exception "ring" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Algebra.eval (bt := Algebra.Ring.baseType sα) sα c e₁
-      let ⟨b, vb, pb⟩ ← Algebra.eval (bt := Algebra.Ring.baseType sα) sα c e₂
+      let ⟨a, va, pa⟩ ← Common.eval (bt := Ring.baseType sα) sα c e₁
+      let ⟨b, vb, pb⟩ ← Common.eval (bt := Ring.baseType sα) sα c e₂
       unless va.eq vb do
         let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
         throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
