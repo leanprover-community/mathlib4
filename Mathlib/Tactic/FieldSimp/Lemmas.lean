@@ -151,13 +151,13 @@ theorem eq_mul_of_eq_eq_eq_mul {M : Type*} [Mul M] {a b c D e f : M}
     a = D * f := by
   rw [h₁, h₂, h₃, h₄]
 
-theorem eq_eq_cancel_eq {M : Type*} [CancelMonoidWithZero M] {e₁ e₂ f₁ f₂ L : M}
+theorem eq_eq_cancel_eq {M : Type*} [MonoidWithZero M] [IsLeftCancelMulZero M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : L ≠ 0) :
     (e₁ = e₂) = (f₁ = f₂) := by
   subst H₁ H₂
   rw [mul_right_inj' HL]
 
-theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulMono M]
+theorem le_eq_cancel_le {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulMono M]
     [PosMulReflectLE M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ ≤ e₂) = (f₁ ≤ f₂) := by
@@ -165,7 +165,7 @@ theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [P
   apply Iff.eq
   exact mul_le_mul_iff_right₀ HL
 
-theorem lt_eq_cancel_lt {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+theorem lt_eq_cancel_lt {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
     [PosMulReflectLT M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ < e₂) = (f₁ < f₂) := by

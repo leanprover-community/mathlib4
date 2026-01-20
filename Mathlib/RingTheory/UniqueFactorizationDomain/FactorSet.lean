@@ -30,7 +30,7 @@ namespace Associates
 
 open UniqueFactorizationMonoid Associated Multiset
 
-variable [CancelCommMonoidWithZero α]
+variable [CommMonoidWithZero α]
 
 /-- `FactorSet α` representation elements of unique factorization domain as multisets.
 `Multiset α` produced by `normalizedFactors` are only unique up to associated elements, while the
@@ -39,7 +39,7 @@ gives us a representation of each element as a unique multisets (or the added �
 complete lattice structure. Infimum is the greatest common divisor and supremum is the least common
 multiple.
 -/
-abbrev FactorSet.{u} (α : Type u) [CancelCommMonoidWithZero α] : Type u :=
+abbrev FactorSet.{u} (α : Type u) [CommMonoidWithZero α] : Type u :=
   WithTop (Multiset { a : Associates α // Irreducible a })
 
 attribute [local instance] Associated.setoid
@@ -88,7 +88,8 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
   | WithTop.some _, WithTop.some _, h =>
     prod_le_prod <| Multiset.map_le_map <| WithTop.coe_le_coe.1 <| h
 
-theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
+theorem FactorSet.prod_eq_zero_iff [IsCancelMulZero α] [Nontrivial α] (p : FactorSet α) :
+    p.prod = 0 ↔ p = ⊤ := by
   unfold FactorSet at p
   induction p  -- TODO: `induction_eliminator` doesn't work with `abbrev`
   · simp only [Associates.prod_top]

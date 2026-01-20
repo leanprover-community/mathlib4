@@ -70,7 +70,8 @@ theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squa
   · apply isUnit_of_mul_isUnit_left hu
 
 @[simp]
-theorem Prime.squarefree [CancelCommMonoidWithZero R] {x : R} (h : Prime x) : Squarefree x :=
+theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :
+    Squarefree x :=
   h.irreducible.squarefree
 
 theorem Squarefree.of_mul_left [Monoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
@@ -98,7 +99,7 @@ theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
 
 section SquarefreeGcdOfSquarefree
 
-variable {α : Type*} [CancelCommMonoidWithZero α] [GCDMonoid α]
+variable {α : Type*} [CommMonoidWithZero α] [GCDMonoid α]
 
 theorem Squarefree.gcd_right (a : α) {b : α} (hb : Squarefree b) : Squarefree (gcd a b) :=
   hb.squarefree_of_dvd (gcd_dvd_right _ _)
@@ -164,7 +165,7 @@ theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 
 
 end
 
-variable [CancelCommMonoidWithZero R] {x y p d : R}
+variable [CommMonoidWithZero R] [IsCancelMulZero R] {x y p d : R}
 
 theorem IsRadical.squarefree (h0 : x ≠ 0) (h : IsRadical x) : Squarefree x := by
   rintro z ⟨w, rfl⟩
@@ -242,7 +243,7 @@ end IsRadical
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by

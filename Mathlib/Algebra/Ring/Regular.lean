@@ -45,34 +45,13 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
     rintro rfl
     exact not_not.mpr h.left not_isLeftRegular_zero, isRegular_of_ne_zero'⟩
 
-/-- A ring with no zero divisors is a `CancelMonoidWithZero`.
+/-- A ring with no zero divisors is a cancellative `MonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-abbrev NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] :
-    CancelMonoidWithZero α where
+lemma NoZeroDivisors.toIsCancelMulZero [NonUnitalNonAssocRing α] [NoZeroDivisors α] :
+    IsCancelMulZero α where
   mul_left_cancel_of_ne_zero ha := (isRegular_of_ne_zero' ha).1
   mul_right_cancel_of_ne_zero hb := (isRegular_of_ne_zero' hb).2
-
-/-- A commutative ring with no zero divisors is a `CancelCommMonoidWithZero`.
-
-Note this is not an instance as it forms a typeclass loop. -/
-abbrev NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
-    CancelCommMonoidWithZero α :=
-  { NoZeroDivisors.toCancelMonoidWithZero, ‹CommRing α› with }
-
-section IsDomain
-
--- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelMonoidWithZero [Semiring α] [IsDomain α] :
-    CancelMonoidWithZero α where
-
-variable [CommSemiring α] [IsDomain α]
-
--- see Note [lower instance priority]
-instance (priority := 100) IsDomain.toCancelCommMonoidWithZero : CancelCommMonoidWithZero α :=
-  { mul_left_cancel_of_ne_zero := IsLeftCancelMulZero.mul_left_cancel_of_ne_zero }
-
-end IsDomain
 
 namespace IsDedekindFiniteMonoid
 

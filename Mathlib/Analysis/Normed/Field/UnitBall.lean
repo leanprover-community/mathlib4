@@ -163,9 +163,9 @@ protected theorem Metric.unitClosedBall.coe_pow [SeminormedRing 𝕜] [NormOneCl
 instance Metric.unitClosedBall.instMonoidWithZero [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     MonoidWithZero (closedBall (0 : 𝕜) 1) where
 
-instance Metric.unitClosedBall.instCancelMonoidWithZero [SeminormedRing 𝕜] [IsCancelMulZero 𝕜]
-    [NormOneClass 𝕜] : CancelMonoidWithZero (closedBall (0 : 𝕜) 1) where
-  toIsCancelMulZero := Subtype.val_injective.isCancelMulZero _ rfl fun _ _ ↦ rfl
+instance Metric.unitClosedBall.instIsCancelMulZero [SeminormedRing 𝕜] [IsCancelMulZero 𝕜]
+    [NormOneClass 𝕜] : IsCancelMulZero (closedBall (0 : 𝕜) 1) :=
+  Subtype.val_injective.isCancelMulZero _ rfl fun _ _ ↦ rfl
 
 /-!
 ### Algebraic instances on the unit sphere
