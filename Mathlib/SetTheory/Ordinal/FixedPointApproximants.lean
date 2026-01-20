@@ -65,16 +65,16 @@ namespace OrdinalApprox
 
 universe u
 variable {α : Type u}
-variable [CompletePartialOrder α] (f : α →o α) (x : α)
+variable [CompletePartialOrder α] {f : α →o α} (x : α)
 
 set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the least fixed point greater than
 an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
 `lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
 def lfpApprox (a : Ordinal.{u}) : α :=
-  sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
+  sSup ({ f (lfpApprox b) | (b : Ordinal) (_ : b < a) } ∪ {x})
 termination_by a
-decreasing_by exact h
+decreasing_by assumption
 
 variable {β : Type u}
 variable [CompleteLattice β] (g : β →o β) (y : β)
@@ -84,16 +84,14 @@ set_option linter.unusedVariables false in
 an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
 `gfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
 def gfpApprox (a : Ordinal.{u}) : β :=
-  sInf ({ g (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {y})
+  sInf ({ g (gfpApprox b) | (b : Ordinal) (_ : b < a) } ∪ {y})
 termination_by a
-decreasing_by exact h
+decreasing_by assumption
 
 open Function fixedPoints Cardinal Order OrderHom
 
-
-
 theorem directedOn_lfpApprox (a : Ordinal.{u}) (h : x ≤ f x) :
-    DirectedOn (· ≤ ·) ({ f (lfpApprox f x b) | (b : Ordinal) (h : b < a) } ∪ {x}) := by
+    DirectedOn (· ≤ ·) ({ f (lfpApprox f x b) | (b : Ordinal) (_ : b < a) } ∪ {x}) := by
   induction a using Ordinal.induction with
   | h i ih =>
     rintro z (⟨b, h_b, h_z⟩ | h_z) y (⟨c, h_c, h_y⟩ | h_y)
