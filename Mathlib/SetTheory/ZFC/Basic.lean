@@ -398,21 +398,34 @@ theorem mem_omega : x ∈ omega ↔ ∃ (n : ℕ), x = n := by
   simp [omega, PSet.mem_omega, Nat.cast, NatCast.natCast, eq]
 
 @[simp]
-theorem omega_zero : ∅ ∈ omega :=
-  ⟨⟨0⟩, Equiv.rfl⟩
+theorem natCast_mem_omega (n : ℕ) : ↑n ∈ omega := by
+  simp [mem_omega]
 
 @[simp]
-theorem omega_succ {x} : x ∈ omega.{u} → insert x x ∈ omega.{u} := by
+theorem omega_zero : ∅ ∈ omega := by
+  simp [← natCast_zero]
+
+@[simp]
+theorem omega_succ : x ∈ omega → insert x x ∈ omega := by
   simp only [mem_omega, forall_exists_index]
   rintro n rfl
   exact ⟨n + 1, by simp⟩
 
-/-- `omega` is the smallest inductive set. -/
-theorem omega_subset {x} : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
-  intro _ _ _ h
-  rw [mem_omega] at h
-  rcases h with ⟨n, rfl⟩
+@[elab_as_elim]
+theorem omega_induction_on {motive : ∀ x ∈ omega, Prop} (hx : x ∈ omega)
+    (omega_zero : motive ∅ omega_zero)
+    (omega_succ : ∀ {x} (hx : x ∈ omega), motive x hx → motive (insert x x) (omega_succ hx)) :
+    motive x hx := by
+  rcases mem_omega.1 hx with ⟨n, rfl⟩
   induction n with simp [*]
+
+theorem omega_subset : ∅ ∈ x → (∀ y ∈ x, insert y y ∈ x) → omega ⊆ x := by
+  intro _ _ _ h
+  induction h using omega_induction_on with simp [*]
+
+/-- `omega` is the smallest inductive set. -/
+theorem isLeast_inductive_omega : IsLeast {x | ∅ ∈ x ∧ ∀ y ∈ x, insert y y ∈ x} omega := by
+  simp +contextual [IsLeast, mem_lowerBounds, omega_subset]
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=
