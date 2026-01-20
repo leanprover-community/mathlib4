@@ -212,22 +212,27 @@ def coordinateProjection (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X
  if n = 0 then P 0 else P n - P (n - 1)
 
 lemma idem_rank_one_projections_of_canonical_projections {P : ℕ → X →L[𝕜] X}
-    (hdim : ∀ n : ℕ, Module.finrank 𝕜 (LinearMap.range (P n)) = n + 1)
     (hcomp : ∀ n m : ℕ, ∀ x : X, P n (P m x) = P (min n m) x) :
-    (∀ n, ∀ x : X, (coordinateProjection P n) ( (coordinateProjection P n) x)
-    = (coordinateProjection P n) x) := by
-
-      intro n x
-        -- simp only [Q, coordinateProjection, if_neg h0, ContinuousLinearMap.sub_apply,
-        --   ContinuousLinearMap.map_sub, hcomp, min_self, tsub_le_iff_right,
-        --   le_add_iff_nonneg_right, zero_le, inf_of_le_left, inf_of_le_right, sub_self, sub_zero]
-        sorry
+    (∀ i j, ∀ x : X, (coordinateProjection P i) ( (coordinateProjection P j) x)
+    = if i = j then (coordinateProjection P j) x else 0) := by
+      intro i j x
+      let Q := coordinateProjection P
+      simp only [coordinateProjection]
+      by_cases hij : i = j
+      · rw [if_pos hij, ← hij]
+        by_cases h0 : i = 0
+        · rw [if_pos h0]
+          exact hcomp 0 0 x
+        rw [if_neg h0]
+        simp only [ContinuousLinearMap.sub_apply,
+          ContinuousLinearMap.map_sub, hcomp, min_self, tsub_le_iff_right,
+          le_add_iff_nonneg_right, zero_le, inf_of_le_left, inf_of_le_right, sub_self, sub_zero]
+      sorry
 
 lemma canonical_projections_decomposition_rank_one_projections_of_canonical_projections
     {P : ℕ → X →L[𝕜] X} :
     (∀ n, ∑ i ∈ Finset.range (n + 1), coordinateProjection P i = P n) := by
       let Q := coordinateProjection P
-
       -- Sum of Q i from i=0 to n equals P n
       intro n
       dsimp only [Q, coordinateProjection]
@@ -317,8 +322,8 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     ∃ e : ℕ → X, SchauderBasis 𝕜 X e := by
   let Q := coordinateProjection P
   -- 1. Obtain rank 1 property for Q
-  obtain ⟨h_sum_Q, h_rank_Q⟩ := rank_one_projections_of_canonical_projections hdim hcomp
-
+  obtain h_rank_Q := rank_one_projections_of_canonical_projections hdim hcomp
+  have h_compq := idem_rank_one_projections_of_canonical_projections hcomp
   -- 2. Construct basis vectors e_n
   -- Since rank(Q n) = 1, the range is not {0}, so there exists a non-zero vector.
   have h_exists_e : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
@@ -388,65 +393,22 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
   constructor
   -- 4. Biorthogonality: f i (e j) = δ_ij
   · intro i j
-    -- We know Q i (e j) = f i (e j) • e i.
-    -- Also e j ∈ Range(Q j), so e j = Q j y.
-    -- Thus Q i (e j) = Q i (Q j y).
-    -- Using the projection property, Q i Q j = δ_ij Q i.
-    -- simp only [LinearMap.mkContinuous_apply, IsLinearMap.mk'_apply]
-    -- apply smul_right_injective _ (he_ne_zero i)
-    -- rw [← h_f_apply]
-    -- Calculate Q i (e j)
     obtain ⟨y, hy⟩ := (LinearMap.mem_range).mp (he_in_range j)
-    -- rw [← hy]
+    have h_from_f : Q i (e j) = f i (e j) • e i := h_f_apply i (e j)
+    have h_qapply : Q i (e j) = if i = j then e j else 0 := by rw [← hy]; exact h_compq i j y
     by_cases hij : i = j
     · rw [hij, if_pos rfl]
-      -- Q j (Q j y) = Q j y = e j.
-      -- Need Q j (Q j y) = Q j y.
-      simp [Q, coordinateProjection] at hy ⊢
-      -- Proving Q n ∘ Q n = Q n
-      have h_idem : Q j (Q j y) = Q j y := by
-
-      rw [h_idem, hy, one_smul]
+      rw [hij, if_pos rfl] at h_qapply
+      rw [hij, h_qapply] at h_from_f
+      apply smul_left_injective 𝕜 (he_ne_zero j)
+      simp only [one_smul]
+      exact h_from_f.symm
     · rw [if_neg hij]
-      -- Q i (Q j y) = 0
-      rw [← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def]
-      suffices Q i * Q j = 0 by rw [this, ContinuousLinearMap.zero_apply, zero_smul]
-      dsimp [Q, coordinateProjection]
-      -- Similar algebra using hcomp shows Q i * Q j = 0 for i ≠ j
-      by_cases h0i : i = 0;
-      · subst h0i;
-        have : j ≠ 0 := Ne.symm hij
-        rw [if_pos rfl, if_neg this]
-        rw [mul_sub]; simp [hcomp];
-        have : 0 < j := Nat.pos_of_ne_zero this
-        rw [min_eq_left (Nat.zero_le _), min_eq_left (Nat.zero_le _)]; simp
-      by_cases h0j : j = 0
-      · subst h0j; rw [if_neg h0i, if_pos rfl]; rw [sub_mul]; simp [hcomp]
-        have : 0 < i := Nat.pos_of_ne_zero h0i
-        rw [min_eq_right (Nat.zero_le _), min_eq_right (Nat.zero_le _)]; simp
-      rw [if_neg h0i, if_neg h0j]
-      rw [sub_mul, mul_sub, mul_sub]
-      simp only [hcomp]
-      -- Analyze min terms. WLOG i < j.
-      -- If i < j, then i ≤ j-1.
-      -- min i j = i, min (i-1) j = i-1.
-      -- min i (j-1) = i, min (i-1) (j-1) = i-1.
-      -- Result: P i - P i - P(i-1) + P(i-1) = 0.
-      -- Symmetrical for j < i.
-      have h_cases : i < j ∨ j < i := Nat.lt_or_gt.mp hij
-      rcases h_cases with h_lt | h_lt
-      · have h1 : i ≤ j - 1 := Nat.le_sub_one_of_lt h_lt
-        have h2 : i - 1 ≤ j - 1 := Nat.le_trans (Nat.pred_le i) h1
-        have h3 : i ≤ j := Nat.le_of_lt h_lt
-        have h4 : i - 1 ≤ j := Nat.le_trans (Nat.pred_le i) h3
-        rw [min_eq_left h3, min_eq_left h1, min_eq_left h4, min_eq_left h2]
-        simp
-      · have h1 : j ≤ i - 1 := Nat.le_sub_one_of_lt h_lt
-        have h2 : j - 1 ≤ i - 1 := Nat.le_trans (Nat.pred_le j) h1
-        have h3 : j ≤ i := Nat.le_of_lt h_lt
-        have h4 : j - 1 ≤ i := Nat.le_trans (Nat.pred_le j) h3
-        rw [min_eq_right h3, min_eq_right h1, min_eq_right h4, min_eq_right h2]
-        simp
+      rw [if_neg hij] at h_qapply
+      rw [h_qapply] at h_from_f
+      apply smul_left_injective 𝕜 (he_ne_zero i)
+      simp only [zero_smul]
+      exact h_from_f.symm
 
   -- 5. Convergence: P n x → x
   · intro x
