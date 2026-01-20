@@ -151,7 +151,15 @@ lemma bddAbove_range_agmSequences_fst :
 
 /-- The AGM is also the supremum of the geometric means. -/
 lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y).1 (n + 1) := by
-  sorry
+  refine tendsto_nhds_unique ?_ <|
+    tendsto_atTop_ciSup agmSequences_fst_monotone bddAbove_range_agmSequences_fst
+  apply (tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)).congr_dist
+  have key := @tendsto_dist_agmSequences_atTop_zero x y
+  conv at key =>
+    rw [← tendsto_add_atTop_iff_nat 1]
+    enter [1, n]
+    rw [dist_comm]
+  exact key
 
 lemma agmSequences_fst_le_agm : (agmSequences x y).1 (n + 1) ≤ agm x y := by
   rw [agm_eq_ciSup]
@@ -177,8 +185,15 @@ lemma agm_self : agm x x = x := by
   · nth_rw 1 [← min_self x]
     exact min_le_agm
 
-lemma agm_zero_left : agm 0 x = 0 :=
-  sorry
+lemma agm_zero_left : agm 0 x = 0 := by
+  suffices ∀ n, (agmSequences 0 x).1 n = 0 by
+    simp [agm_eq_ciSup, this]
+  intro n
+  induction n with
+  | zero => simp [agmSequences]
+  | succ n ih =>
+    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply] at ih ⊢
+    rw [iterate_succ', comp_apply, ih, zero_mul, sqrt_zero]
 
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
