@@ -228,6 +228,19 @@ def annulusIcc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X => edist y x) �
 def annulusIoi (x : X) (r : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ioi r
 def annulusIci (x : X) (r : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ici r
 
+@[simp] lemma annulusIoo_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    annulusIoo x r R = (fun y : X => edist y x) ⁻¹' Ioo r R := rfl
+@[simp] lemma annulusIoc_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    annulusIoc x r R = (fun y : X => edist y x) ⁻¹' Ioc r R := rfl
+@[simp] lemma annulusIco_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    annulusIco x r R = (fun y : X => edist y x) ⁻¹' Ico r R := rfl
+@[simp] lemma annulusIcc_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    annulusIcc x r R = (fun y : X => edist y x) ⁻¹' Icc r R := rfl
+@[simp] lemma annulusIoi_eq_preimage (x : X) (r : ℝ≥0∞) :
+    annulusIoi x r = (fun y : X => edist y x) ⁻¹' Ioi r := rfl
+@[simp] lemma annulusIci_eq_preimage (x : X) (r : ℝ≥0∞) :
+    annulusIci x r = (fun y : X => edist y x) ⁻¹' Ici r := rfl
+
 @[simp] lemma annulusIoo_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoo x r R = ∅ := by
   simp [annulusIoo, Ioo_eq_empty_of_le h]
 
