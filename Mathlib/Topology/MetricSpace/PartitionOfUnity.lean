@@ -128,7 +128,7 @@ theorem exists_continuous_nnreal_forall_closedBall_subset (hK : ∀ i, IsClosed 
     ∃ δ : C(X, ℝ≥0), (∀ x, 0 < δ x) ∧ ∀ (i), ∀ x ∈ K i, closedBall x (δ x) ⊆ U i := by
   rcases EMetric.exists_continuous_nnreal_forall_closedBall_subset hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine ⟨δ, hδ0, fun i x hx => ?_⟩
-  rw [← emetric_closedBall_nnreal]
+  rw [← Metric.closedEBall_coe]
   exact hδ i x hx
 
 /-- Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets, let

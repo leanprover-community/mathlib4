@@ -49,7 +49,7 @@ lemma hasSum_taylorSeries_on_ball :
     exact ⟨r', h₂, Metric.pos_of_mem_ball h₁, Metric.mem_ball'.mpr h₁⟩
   lift r' to NNReal using hr'₀.le
   have hz' : z - c ∈ Metric.eball 0 r' := by
-    rw [Metric.emetric_ball_nnreal]
+    rw [Metric.eball_coe]
     exact mem_ball_zero_iff.mpr hzr'
   have H := (hf.mono <| Metric.closedBall_subset_ball hr').hasFPowerSeriesOnBall hr'₀
       |>.hasSum_iteratedFDeriv hz'
@@ -88,9 +88,9 @@ lemma hasSum_taylorSeries_on_emetric_ball :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
   obtain ⟨r', hzr', hr'⟩ := exists_between (Metric.mem_eball'.mp hz)
   lift r' to NNReal using ne_top_of_lt hr'
-  rw [← Metric.mem_eball', Metric.emetric_ball_nnreal] at hzr'
+  rw [← Metric.mem_eball', Metric.eball_coe] at hzr'
   refine hasSum_taylorSeries_on_ball ?_ hzr'
-  rw [← Metric.emetric_ball_nnreal]
+  rw [← Metric.eball_coe]
   exact hf.mono <| Metric.eball_subset_eball hr'.le
 
 include hf hz in

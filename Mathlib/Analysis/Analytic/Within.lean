@@ -58,7 +58,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
         · exact st (x + y) (rt (by simpa using yr)) ys
       simp only [this]
       apply (hasFPowerSeriesOnBall_const (e := 0)).hasSum
-      simp only [Metric.emetric_ball_top, mem_univ] }⟩
+      simp only [Metric.eball_top, mem_univ] }⟩
 
 /-- If `f` is `AnalyticOn` near each point in a set, it is `AnalyticOn` the set -/
 lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}

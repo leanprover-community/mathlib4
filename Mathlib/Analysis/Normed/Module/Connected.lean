@@ -146,7 +146,7 @@ theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
     rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
     exact RealTopologicalVectorSpace.contractibleSpace
   | coe r =>
-    rw [emetric_ball_nnreal]
+    rw [Metric.eball_coe]
     apply ball_contractible
     simpa using hr
 

@@ -487,7 +487,7 @@ lemma setOf_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set M} 
     _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
-    rw [← Metric.emetric_ball_nnreal, Metric.mem_eball, edist_eq_enorm_sub]
+    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this

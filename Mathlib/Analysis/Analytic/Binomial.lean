@@ -108,7 +108,7 @@ theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
       apply AnalyticOn.cpow (analyticOn_const.add analyticOn_id) analyticOn_const
       intro z hz
       apply Complex.mem_slitPlane_of_norm_lt_one
-      rw [← ENNReal.ofReal_one, Metric.emetric_ball] at hz
+      rw [← ENNReal.ofReal_one, Metric.eball_ofReal] at hz
       simpa using hz
     · rw [← this]
       exact binomialSeries_radius_ge_one

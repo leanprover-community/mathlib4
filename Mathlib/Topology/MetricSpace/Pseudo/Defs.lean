@@ -944,30 +944,30 @@ theorem Metric.eball_top_eq_univ (x : α) : Metric.eball x ∞ = Set.univ :=
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball {x : α} {ε : ℝ} : Metric.eball x (ENNReal.ofReal ε) = ball x ε := by
+theorem Metric.eball_ofReal {x : α} {ε : ℝ} : Metric.eball x (ENNReal.ofReal ε) = ball x ε := by
   ext y
   simp only [Metric.mem_eball, mem_ball, edist_dist]
   exact ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg
 
 /-- Balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_ball_nnreal {x : α} {ε : ℝ≥0} : Metric.eball x ε = ball x ε := by
-  rw [← Metric.emetric_ball]
+theorem Metric.eball_coe {x : α} {ε : ℝ≥0} : Metric.eball x ε = ball x ε := by
+  rw [← Metric.eball_ofReal]
   simp
 
 /-- Closed balls defined using the distance or the edistance coincide -/
-theorem Metric.emetric_closedBall {x : α} {ε : ℝ} (h : 0 ≤ ε) :
+theorem Metric.closedEBall_ofReal {x : α} {ε : ℝ} (h : 0 ≤ ε) :
     Metric.closedEBall x (ENNReal.ofReal ε) = closedBall x ε := by
   ext y; simp [edist_le_ofReal h]
 
 /-- Closed balls defined using the distance or the edistance coincide -/
 @[simp]
-theorem Metric.emetric_closedBall_nnreal {x : α} {ε : ℝ≥0} :
+theorem Metric.closedEBall_coe {x : α} {ε : ℝ≥0} :
     Metric.closedEBall x ε = closedBall x ε := by
-  rw [← Metric.emetric_closedBall ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
+  rw [← Metric.closedEBall_ofReal ε.coe_nonneg, ENNReal.ofReal_coe_nnreal]
 
 @[simp]
-theorem Metric.emetric_ball_top (x : α) : Metric.eball x ⊤ = univ :=
+theorem Metric.eball_top (x : α) : Metric.eball x ⊤ = univ :=
   eq_univ_of_forall fun _ => edist_lt_top _ _
 
 /-- Build a new pseudometric space from an old one where the bundled uniform structure is provably

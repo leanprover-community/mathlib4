@@ -920,7 +920,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn
     · exact inter_mem_nhdsWithin _ this
     · apply mem_nhdsWithin_of_mem_nhds
       apply Filter.mem_of_superset this (Metric.eball_subset_eball hr'.le)
-  · simpa [Metric.emetric_ball_nnreal] using hf.tendstoUniformlyOn hr' u hu
+  · simpa [Metric.eball_coe] using hf.tendstoUniformlyOn hr' u hu
 
 /-- If a function admits a power series expansion at `x`, then it is the locally uniform limit of
 the partial sums of this power series on the disk of convergence, i.e., `f (x + y)`

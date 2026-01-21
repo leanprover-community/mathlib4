@@ -720,7 +720,7 @@ theorem Metric.exists_contMDiffMap_forall_closedBall_subset
       (∀ x, 0 < δ x) ∧ ∀ i, ∀ x ∈ K i, Metric.closedBall x (δ x) ⊆ U i := by
   rcases Emetric.exists_contMDiffMap_forall_closedBall_subset I hK hU hKU hfin with ⟨δ, hδ0, hδ⟩
   refine ⟨δ, hδ0, fun i x hx => ?_⟩
-  rw [← Metric.emetric_closedBall (hδ0 _).le]
+  rw [← Metric.closedEBall_ofReal (hδ0 _).le]
   exact hδ i x hx
 
 @[deprecated (since := "2025-12-17")]

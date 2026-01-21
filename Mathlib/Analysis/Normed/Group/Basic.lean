@@ -940,7 +940,7 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
   rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
 
 @[to_additive]
-theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ Metric.eball 1 r ↔ ‖a‖ₑ < r := by
+theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ Metric.eball 1 r ↔ ‖a‖ₑ < r := by
   rw [Metric.mem_eball, edist_one_eq_enorm]
 
 end ENorm

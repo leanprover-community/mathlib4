@@ -323,7 +323,7 @@ theorem HasFiniteFPowerSeriesOnBall.sum (h : HasFiniteFPowerSeriesOnBall f p x n
 protected theorem FormalMultilinearSeries.continuousOn_of_finite
     (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : ∀ m, n ≤ m → p m = 0) :
     Continuous p.sum := by
-  rw [← continuousOn_univ, ← Metric.emetric_ball_top]
+  rw [← continuousOn_univ, ← Metric.eball_top]
   exact (p.hasFiniteFPowerSeriesOnBall_of_finite hn).continuousOn
 
 end FiniteFPowerSeries

@@ -198,7 +198,7 @@ namespace Metric
 @[to_additive (attr := simp)]
 theorem smul_eball (c : G) (x : X) (r : ℝ≥0∞) :
     c • eball x r = eball (c • x) r :=
-  (IsometryEquiv.constSMul c).image_emetric_ball _ _
+  (IsometryEquiv.constSMul c).image_eball _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_eball (c : G) (x : X) (r : ℝ≥0∞) :
@@ -208,7 +208,7 @@ theorem preimage_smul_eball (c : G) (x : X) (r : ℝ≥0∞) :
 @[to_additive (attr := simp)]
 theorem smul_closedEBall (c : G) (x : X) (r : ℝ≥0∞) :
     c • closedEBall x r = closedEBall (c • x) r :=
-  (IsometryEquiv.constSMul c).image_emetric_closedBall _ _
+  (IsometryEquiv.constSMul c).image_closedEBall _ _
 
 @[to_additive (attr := simp)]
 theorem preimage_smul_closedEBall (c : G) (x : X) (r : ℝ≥0∞) :

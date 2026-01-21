@@ -68,7 +68,7 @@ lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
   fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
 
-lemma isCover_iff_subset_iUnion_emetricClosedBall :
+lemma isCover_iff_subset_iUnion_closedEBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
 
@@ -84,7 +84,7 @@ lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBoun
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
   rw [Metric.totallyBounded_iff_eball'] at hs
   obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
-  simp only [isCover_iff_subset_iUnion_emetricClosedBall]
+  simp only [isCover_iff_subset_iUnion_closedEBall]
   refine ⟨N, by simpa, by simpa, ?_⟩
   · refine hN.trans fun x hx ↦ ?_
     simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
@@ -135,7 +135,7 @@ section EMetricSpace
 variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
-  simp [isCover_iff_subset_iUnion_emetricClosedBall]
+  simp [isCover_iff_subset_iUnion_closedEBall]
 
 end EMetricSpace
 
