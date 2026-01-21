@@ -311,13 +311,7 @@ theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
   (biUnion_associatedPrimes_eq_zero_divisors R R).trans <| by
     ext; simp [← nonZeroDivisorsLeft_eq_nonZeroDivisors, and_comm]
 
-end Semiring
-
-variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
-
-open LinearMap Submodule
-
-variable {I J M}
+variable {R M}
 
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
     (⊤ : Submodule R M).annihilator ≤ I := by
@@ -327,6 +321,21 @@ theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
   simp only [mem_annihilator, mem_top, forall_const] at hy
   specialize hy x
   simpa
+
+end Semiring
+
+variable {R : Type*} [CommRing R] (I J : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
+
+theorem isAssociatedPrime_iff_exists_injective_linearMap [IsNoetherianRing R] :
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ (f : R ⧸ I →ₗ[R] M), Function.Injective f := by
+  rw [isAssociatedPrime_iff', and_congr_right_iff]
+  refine fun _ ↦ ⟨fun ⟨x, h⟩ ↦ ?_, fun ⟨f, h⟩ ↦ ⟨(f ∘ₗ mkQ I) 1, ?_⟩⟩
+  · replace h : I = ker (toSpanSingleton R M x) := by simp [h, SetLike.ext_iff]
+    exact ⟨liftQ _ _ h.le, ker_eq_bot.mp (ker_liftQ_eq_bot' _ _ h)⟩
+  · conv_lhs => rw [← I.ker_mkQ, ← ker_comp_of_ker_eq_bot (mkQ I) (ker_eq_bot_of_injective h)]
+    simp [SetLike.ext_iff, ← Ideal.Quotient.algebraMap_eq, Algebra.algebraMap_eq_smul_one]
+
+variable {I J M}
 
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
