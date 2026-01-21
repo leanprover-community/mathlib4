@@ -61,7 +61,7 @@ theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b els
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
-theorem indicator_singleton (a : α) (f : α → M) :
+theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
   classical
   ext x
@@ -69,7 +69,7 @@ theorem indicator_singleton (a : α) (f : α → M) :
   split_ifs with h <;> simp [h]
 
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b :=
-  (indicator_singleton a (fun _ => b)).symm
+  (set_indicator_singleton a (fun _ => b)).symm
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
