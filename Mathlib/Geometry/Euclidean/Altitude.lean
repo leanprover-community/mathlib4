@@ -85,38 +85,15 @@ theorem vectorSpan_isOrtho_altitude_direction {n : ℕ} (s : Simplex ℝ P n) (i
 
 lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (i : Fin (n + 1)) :
     (s.map f.toAffineMap f.injective).altitude i = (s.altitude i).map f.toAffineMap := by
-  rw [eq_iff_direction_eq_of_mem ((s.map f.toAffineMap f.injective).mem_altitude i)
-    (mem_map_of_mem f.toAffineMap (s.mem_altitude i)), map_direction, direction_altitude,
-    direction_altitude, Submodule.map_inf f.linear f.linearIsometry.injective,
-    AffineMap.vectorSpan_image_eq_submodule_map]
-  ext v
-  simp only [map_points, AffineIsometry.coe_toAffineMap, Function.comp_apply, Set.range_comp,
-    Submodule.mem_inf, Submodule.mem_orthogonal, AffineIsometry.linear_eq_linearIsometry,
-    Submodule.mem_map, LinearIsometry.coe_toLinearMap, and_congr_left_iff]
-  have h : (fun a ↦ f (s.points a)) = f ∘ s.points := rfl
-  rw [h, Set.image_comp]
-  intro hv
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map,
-      Submodule.mem_map] at hv
-    rcases hv with ⟨v, hv, rfl⟩
-    refine ⟨v, ?_⟩
-    simp only [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap, and_true]
-    intro u hu
-    rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map] at h
-    replace h := h (f.linear u)
-    rw [Submodule.mem_map] at h
-    replace h := h ⟨u, hu, rfl⟩
-    rwa [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap,
-      LinearIsometry.inner_map_map] at h
-  · rcases h with ⟨v, h, rfl⟩
-    rw [← AffineIsometry.coe_toAffineMap, ← AffineMap.vectorSpan_image_eq_submodule_map]
-    intro u hu
-    rw [Submodule.mem_map] at hu
-    rcases hu with ⟨u, hu, rfl⟩
-    rw [AffineIsometry.linear_eq_linearIsometry, LinearIsometry.coe_toLinearMap,
-      LinearIsometry.inner_map_map]
-    exact h u hu
+  refine (eq_iff_direction_eq_of_mem (p := f (s.points i)) ?_ ?_).mpr ?_
+  · exact (s.map f.toAffineMap f.injective).mem_altitude i
+  · exact mem_map_of_mem f.toAffineMap (s.mem_altitude i)
+  have hf : Function.Injective f.linear := f.linearIsometry.injective
+  rw [map_direction, direction_altitude, direction_altitude, Submodule.map_inf _ hf,
+    AffineIsometry.linear_eq_linearIsometry, Submodule.map_orthogonal,
+    ← AffineIsometry.linear_eq_linearIsometry, map_points, Set.range_comp,
+    Set.image_comp, ← AffineMap.map_vectorSpan, inf_assoc, ← Submodule.map_top,
+    ← Submodule.map_inf _ hf, top_inf_eq, ← AffineMap.map_vectorSpan]
 
 @[simp] lemma map_altitude_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
@@ -128,7 +105,7 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
 lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-    ((s.restrict S hS).altitude i) = (s.altitude i).comap S.subtype := by
+    (s.restrict S hS).altitude i = (s.altitude i).comap S.subtype := by
   haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← s.map_altitude_restrict S hS, comap_map_eq_of_injective S.subtype_injective]
 
