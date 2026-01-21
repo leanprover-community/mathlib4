@@ -50,25 +50,10 @@ lemma _root_.TopologicalSpace.NoetherianSpace.exists_finset_isClosed_irreducible
   exact ⟨hS.toFinset, by simpa [← Set.sUnion_eq_biUnion]⟩
 
 lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
-    I.minimalPrimes.Finite := by
-  classical
-  obtain ⟨t, ht, ht', hs⟩ :=
-    NoetherianSpace.exists_finset_isClosed_irreducible (isClosed_zeroLocus (I : Set R))
-  suffices ∀ p ∈ I.minimalPrimes, p ∈ t.image vanishingIdeal from
-    (t.image vanishingIdeal).finite_toSet.subset this
-  rintro p ⟨⟨hp, hIp⟩, h⟩
-  have key := isIrreducible_iff_sUnion_isClosed.mp
-    ((isIrreducible_zeroLocus_iff_of_radical p hp.isRadical).mpr hp) t ht
-  rw [← Finset.sup_id_set_eq_sUnion, ← hs] at key
-  obtain ⟨c, hct, hpc⟩ := key (zeroLocus_anti_mono hIp)
-  suffices vanishingIdeal c ≤ p by
-    refine Finset.mem_image.mpr ⟨c, hct, le_antisymm this
-      (h ⟨isIrreducible_iff_vanishingIdeal_isPrime.mp (ht' c hct), ?_⟩ this)⟩
-    rw [← subset_zeroLocus_iff_le_vanishingIdeal, hs]
-    exact Finset.le_sup_of_le hct le_rfl
-  rw [← hp.radical, ← vanishingIdeal_zeroLocus_eq_radical]
-  exact vanishingIdeal_anti_mono hpc
-
+    I.minimalPrimes.Finite :=
+  Ideal.minimalPrimes.equivIrreducibleComponents I
+    |>.set_finite_iff
+    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end IsNoetherianRing
 

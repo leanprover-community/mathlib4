@@ -443,7 +443,7 @@ theorem arccos_nhdsLE (h : Tendsto f l (𝓝[≤] x)) : Tendsto (arccos <| f ·)
 theorem arccos_nhdsGE (h : Tendsto f l (𝓝[≥] x)) :
     Tendsto (arccos <| f ·) l (𝓝[≤] (arccos x)) := by
   refine ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
-  simp only [mem_Ici, mem_Iic] at hy ⊢
+  push _ ∈ _ at hy ⊢
   exact antitone_arccos hy
 
 end Filter.Tendsto

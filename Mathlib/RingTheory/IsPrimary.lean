@@ -52,22 +52,24 @@ protected def IsPrimary (S : Submodule R M) : Prop :=
 
 variable {S T : Submodule R M}
 
-protected def IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
+lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
+
+lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
+    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+  h.right hrm
+
+protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
     (h : (S.colon Set.univ).radical = (T.colon Set.univ).radical) :
     (S ⊓ T).IsPrimary := by
-  simp only [Submodule.IsPrimary, ← lt_top_iff_ne_top] at hS hT ⊢
-  obtain ⟨hS₀, hS⟩ := hS
-  obtain ⟨hT₀, hT⟩ := hT
-  refine ⟨inf_le_left.trans_lt hS₀, ?_⟩
-  intro r x hrx
-  specialize hS hrx.1
-  specialize hT hrx.2
-  simp only [← mem_colon_iff_le, top_coe, ← Ideal.mem_radical_iff, h, inf_colon,
-    Ideal.radical_inf, inf_idem] at hS hT ⊢
-  exact and_or_right.mpr ⟨hS, hT⟩
+  obtain ⟨_, hS⟩ := hS
+  obtain ⟨_, hT⟩ := hT
+  refine ⟨by grind, fun ⟨hS', hT'⟩ ↦ ?_⟩
+  simp_rw [← mem_colon_iff_le, ← Ideal.mem_radical_iff, inf_colon, Ideal.radical_inf,
+    top_coe, h, inf_idem, mem_inf, and_or_right] at hS hT ⊢
+  exact ⟨hS hS', hT hT'⟩
 
 open Finset in
-lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
+lemma isPrimary_finsetInf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon Set.univ).radical = ((f i).colon Set.univ).radical) :
     (s.inf f).IsPrimary := by
@@ -79,20 +81,11 @@ lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Submodule R M} {i : �
     · simp only [insert_empty_eq, mem_singleton] at hi
       simpa [hi] using hs
     simp only [inf_insert]
-    have H : ∀ ⦃x⦄, x ∈ s → ((f x).colon Set.univ).radical = ((f y).colon Set.univ).radical := by
-      intro x hx
+    have H ⦃x⦄ (hx : x ∈ s) : ((f x).colon Set.univ).radical = ((f y).colon Set.univ).radical := by
       rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
-    refine IsPrimary.inf (hs (by simp)) (IH hy ?_ H) ?_
-    · intro x hx
-      exact hs (by simp [hx])
-    · rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
-        hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
-
-lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
-
-lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
-    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
-  h.2 hrm
+    refine IsPrimary.inf (hs (by simp)) (IH hy (fun x hx ↦ hs (by simp [hx])) H) ?_
+    rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
+      hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 end CommSemiring
 
