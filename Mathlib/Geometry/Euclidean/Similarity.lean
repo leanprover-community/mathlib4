@@ -41,11 +41,7 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
     by_contra! hq
     have := angle_lt_pi_div_two_of_angle_eq_pi_div_two hq.1 (ne₂₃_of_not_collinear h_not_col).symm
     grind
-  have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by
-    by_contra! hq
-    rw [hq.1] at h₁
-    rw [hq.2.1] at h₂
-    grind [angle_self_left]
+  have not_all_eq : a' ≠ b' ∨ b' ≠ c' ∨ a' ≠ c' := by grind [angle_self_left]
   have h_not_col' : ¬ Collinear ℝ {a', b', c'} := by
     grind only [collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi, angle_self_right,
       angle_self_left, Set.insert_comm, Set.pair_comm]
@@ -56,8 +52,7 @@ theorem similar_of_angle_angle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : 
   have h₃ : ∠ c a b = ∠ c' a' b' := by
     have hsum := angle_add_angle_add_angle_eq_pi c (ne₁₂_of_not_collinear h_not_col)
     have hsum' := angle_add_angle_add_angle_eq_pi c' (ne₁₂_of_not_collinear h_not_col')
-    rw [← hsum'] at hsum
-    grind [add_left_inj, angle_comm]
+    grind [angle_comm]
   have h_sin_ne1 : Real.sin (∠ b c a) ≠ 0 := by
     grind only [sin_ne_zero_of_not_collinear, Set.pair_comm, Set.insert_comm]
   have h_sin_ne2 : Real.sin (∠ c a b) ≠ 0 := by
