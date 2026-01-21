@@ -43,8 +43,17 @@ public theorem eigenvalues_adjoint_comp_self_nonneg
 /--
 7.64(b) in [axler2024].
 -/
-lemma ker_adjoint_comp_self_eq_ker_self : ker (adjoint T ∘ₗ T) = ker T := by
-  sorry
+lemma ker_adjoint_comp_self : ker (adjoint T ∘ₗ T) = ker T := by
+  apply le_antisymm
+  · intro v hv
+    have := calc
+      ‖T v‖ ^ 2 = ⟪T v, T v⟫_𝕜 := (inner_self_eq_norm_sq_to_K (T v)).symm
+      _ = ⟪(adjoint T ∘ₗ T) v, v⟫_𝕜 := (adjoint_inner_left T v (T v)).symm
+      _ = ⟪0, v⟫_𝕜 := by rw [hv]
+      _ = 0 := inner_zero_left v
+    simp_all
+  · intro v hv
+    simp_all
 
 -- TODO: Prove using ContinuousLinearMap.orthogonal_range
 lemma orthogonal_ker : (ker T)ᗮ = range (adjoint T) := by
@@ -57,12 +66,18 @@ lemma IsSymmetric.orthogonal_ker {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) : (
 /--
 7.64(c) in [axler2024].
 -/
-lemma range_adjoint_comp_self_eq_range_adjoint : range (adjoint T ∘ₗ T) = range (adjoint T) :=
+lemma range_adjoint_comp_self : range (adjoint T ∘ₗ T) = range (adjoint T) :=
   calc
     range (adjoint T ∘ₗ T) = (ker (adjoint T ∘ₗ T))ᗮ :=
       T.isSymmetric_adjoint_comp_self.orthogonal_ker.symm
-    _ = (ker T)ᗮ := by rw [ker_adjoint_comp_self_eq_ker_self]
+    _ = (ker T)ᗮ := by rw [ker_adjoint_comp_self]
     _ = range (adjoint T) := T.orthogonal_ker
+
+/--
+Part of 7.64(d) from [axler2024]. See also `Module.finrank_range_adjoint_comp_self`.
+-/
+theorem _root_.Module.finrank_range_adjoint
+  : Module.finrank 𝕜 (range (adjoint T)) = Module.finrank 𝕜 (range T) := sorry
 
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
