@@ -54,7 +54,7 @@ noncomputable instance {V} [Quiver V] : Inhabited (WideSubquiver V) :=
 -- TODO Unify with `CategoryTheory.Arrow`? (The fields have been named to match.)
 /-- `Total V` is the type of _all_ arrows of `V`. -/
 @[ext]
-structure Total (V : Type u) [Quiver.{v} V] : Type (max u v) where
+structure Total (V : Type u) [Quiver.{v} V] : Type max u v where
   /-- the source vertex of an arrow -/
   left : V
   /-- the target vertex of an arrow -/
