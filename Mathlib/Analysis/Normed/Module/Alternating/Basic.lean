@@ -470,6 +470,20 @@ lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[
     compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
   rfl
 
+theorem continuous_compContinuousLinearMapCLM :
+    Continuous
+      (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) := by
+  refine UniformConvergenceCLM.isUniformInducing_postcomp (.id 𝕜)
+    (toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] G) →L[𝕜] _)
+    isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing _ |>.isInducing
+    |>.continuous_iff |>.mpr ?_
+  change Continuous <|
+    (toContinuousMultilinearMapCLM 𝕜 : (F [⋀^ι]→L[𝕜] G) →L[𝕜] _).precomp _ ∘
+      ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear 𝕜
+        (fun _ : ι ↦ E) (fun _ ↦ F) G ∘
+      (fun f _ ↦ f)
+  fun_prop
+
 variable [DecidableEq ι]
 
 /-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
@@ -580,6 +594,12 @@ generate a continuous linear equivalence between the spaces of continuous altern
 def ContinuousLinearEquiv.continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E' [⋀^ι]→L[𝕜] F') :=
   e.continuousAlternatingMapCongrLeft.trans <| e'.continuousAlternatingMapCongrRight
+
+lemma ContinuousLinearEquiv.coe_continuousAlternatingMapCongr (e : E ≃L[𝕜] E') (e' : F ≃L[𝕜] F') :
+    (e.continuousAlternatingMapCongr e' (ι := ι) : (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E' [⋀^ι]→L[𝕜] F')) =
+      ContinuousLinearMap.compContinuousAlternatingMapCLM 𝕜 E' F F' (e' : F →L[𝕜] F') ∘L
+        compContinuousLinearMapCLM e.symm :=
+  rfl
 
 end
 
