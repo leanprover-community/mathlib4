@@ -305,7 +305,7 @@ section Countable
 
 variable [Countable α] [Countable L.Symbols]
 
-instance : Countable ((constantsOn α).Symbols) := by
+instance : Countable (constantsOn α).Symbols := by
   refine mk_le_aleph0_iff.mp ?_
   change (constantsOn α).card ≤ ℵ₀
   simpa only [card_constantsOn, mk_le_aleph0_iff]
