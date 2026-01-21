@@ -138,7 +138,6 @@ theorem toContinuousLinearEquiv_toContinuousLinearMap_eq (e : A ≃A[R] B) :
     e.toContinuousLinearEquiv.toContinuousLinearMap
     = e.toContinuousAlgHom.toContinuousLinearMap := rfl
 
-@[simp]
 theorem toContinuousLinearEquiv_toLinearEquiv_eq (e : A ≃A[R] B) :
     e.toContinuousLinearEquiv.toLinearEquiv
     = e.toAlgEquiv.toLinearEquiv := rfl
@@ -203,6 +202,10 @@ theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
+
+@[simp]
+theorem refl_toContinuousLinearEquiv :
+    (refl R A).toContinuousLinearEquiv = .refl R A := rfl
 
 variable {R A}
 
