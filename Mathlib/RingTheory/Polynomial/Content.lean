@@ -507,6 +507,7 @@ noncomputable instance (priority := 100) [StrongNormalizedGCDMonoid R] :
 
 -- We do not add a `GCDMonoid R[X]` instance because of diamonds
 instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] := by
+  have := IsGCDMonoid.isCancelMulZero R
   classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
 
 end Polynomial

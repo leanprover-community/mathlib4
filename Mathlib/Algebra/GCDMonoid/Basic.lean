@@ -383,6 +383,7 @@ instance [h : IsStrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizationMon
 instance [h : Nonempty (StrongNormalizationMonoid α)] : Nonempty (NormalizationMonoid α) :=
   h.elim fun _ ↦ inferInstance
 
+variable (α) in
 -- This is not an instance due to performance reasons.
 theorem IsGCDMonoid.isCancelMulZero [h : IsGCDMonoid α] : IsCancelMulZero α :=
   h.rec fun _ ↦ inferInstance
