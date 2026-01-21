@@ -103,7 +103,7 @@ def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
 
 /-- Intersecting the left ideal with `K` does not change `IsTorsionQuot` on the right. -/
 lemma isTorsionQuot_inter_left_iff {F : IdealFilter A} {L K : Ideal A} :
-    IsTorsionQuot F L K ↔ IsTorsionQuot F (L ⊓ K) K := by
+    IsTorsionQuot F (L ⊓ K) K ↔ IsTorsionQuot F L K := by
   constructor <;>
   · intro h k hk
     rcases h k hk with ⟨I, hI, hI_le⟩
