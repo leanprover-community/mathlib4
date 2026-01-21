@@ -116,13 +116,16 @@ lemma tsum_logDeriv_eta_q (z : ℂ) : ∑' n, logDeriv (fun x ↦ 1 - eta_q n x)
   rw [tsum_congr (one_sub_eta_logDeriv_eq z), ← tsum_mul_left]
   grind
 
-theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
-    DifferentiableAt ℂ eta z := by
-  apply DifferentiableAt.mul (by fun_prop)
-  refine (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
+lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
+    DifferentiableAt ℂ (fun x ↦ ∏' n, (1 - eta_q n x)) z := by
+  apply (multipliableLocallyUniformlyOn_eta.hasProdLocallyUniformlyOn.differentiableOn ?_
     isOpen_upperHalfPlaneSet z hz).differentiableAt (isOpen_upperHalfPlaneSet.mem_nhds hz)
   filter_upwards with b
   simpa [Finset.prod_fn] using DifferentiableOn.finset_prod (by fun_prop)
+
+theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
+    DifferentiableAt ℂ eta z := by
+  apply DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
 
 lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
   have : (𝕢 24) = (fun z ↦ cexp (z)) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
