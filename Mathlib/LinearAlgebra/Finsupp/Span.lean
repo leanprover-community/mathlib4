@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.Span.Basic
 function with finite support, module, linear algebra
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

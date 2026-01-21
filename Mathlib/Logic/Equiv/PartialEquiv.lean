@@ -677,7 +677,7 @@ def EqOnSource (e e' : PartialEquiv α β) : Prop :=
 `PartialEquiv`s. -/
 instance eqOnSourceSetoid : Setoid (PartialEquiv α β) where
   r := EqOnSource
-  iseqv := by constructor <;> simp only [EqOnSource, EqOn] <;> aesop
+  iseqv := by constructor <;> grind [EqOnSource, EqOn]
 
 theorem eqOnSource_refl : e ≈ e :=
   Setoid.refl _

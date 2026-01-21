@@ -158,7 +158,7 @@ function is analytic on the open ball.
 Cauchy-Goursat theorem, Cauchy integral formula
 -/
 
-@[expose] public section
+public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral Metric Filter Function
 

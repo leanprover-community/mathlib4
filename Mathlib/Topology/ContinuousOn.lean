@@ -22,7 +22,7 @@ equipped with the subspace topology.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
@@ -488,7 +488,7 @@ theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t
     (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
   subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs
 
-theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
+@[fun_prop] theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
     (hg : ContinuousAt g (f x)) (hf : ContinuousWithinAt f s x) : ContinuousWithinAt (g ∘ f) s x :=
   hg.continuousWithinAt.comp hf (mapsTo_univ _ _)
 
@@ -729,6 +729,7 @@ theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSp
 theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
   continuous_const.continuousOn
 
+@[fun_prop]
 theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
     ContinuousWithinAt (fun _ : α => b) s x :=
   continuous_const.continuousWithinAt

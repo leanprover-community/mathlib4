@@ -20,7 +20,6 @@ we provide an API in order to construct elements in `Ext X Y n` in terms
 of the complex `R.cocomplex` and to make computations in the `Ext`-group.
 
 ## TODO
-* Functoriality in `X` for a given injective resolution `R`
 * Functoriality in `Y`: this would involve a morphism `Y ⟶ Y'`, injective
 resolutions `R` and `R'` of `Y` and `Y'`, a lift of `Y ⟶ Y'` as a morphism
 of cochain complexes `R.cocomplex ⟶ R'.cocomplex`; in this context,
@@ -54,10 +53,17 @@ noncomputable def extEquivCohomologyClass :
 lemma extEquivCohomologyClass_symm_mk_hom [HasDerivedCategory C]
     (x : Cocycle ((singleFunctor C 0).obj X) R.cochainComplex n) :
     (R.extEquivCohomologyClass.symm (.mk x)).hom =
-      (ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q).comp
-        (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι'))) (zero_add _) := by
+      (ShiftedHom.mk₀ _ rfl ((DerivedCategory.singleFunctorIsoCompQ C 0).hom.app X)).comp
+        ((ShiftedHom.map (Cocycle.equivHomShift.symm x) DerivedCategory.Q).comp
+        (.mk₀ _ rfl (inv (DerivedCategory.Q.map R.ι') ≫
+          (DerivedCategory.singleFunctorIsoCompQ C 0).inv.app Y)) (zero_add _)) (add_zero _) := by
   change SmallShiftedHom.equiv _ _ ((CohomologyClass.mk x).toSmallShiftedHom.comp _ _) = _
-  simp [SmallShiftedHom.equiv_comp, isoOfHom]
+  simp only [SmallShiftedHom.equiv_comp, CohomologyClass.equiv_toSmallShiftedHom_mk,
+    SmallShiftedHom.equiv_mk₀Inv, isoOfHom, asIso_inv, Functor.comp_obj,
+    DerivedCategory.singleFunctorIsoCompQ, Iso.refl_hom, NatTrans.id_app, Iso.refl_inv,
+    ShiftedHom.mk₀_id_comp]
+  congr
+  cat_disch
 
 @[simp]
 lemma extEquivCohomologyClass_symm_add
@@ -199,5 +205,21 @@ lemma extMk_surjective (α : Ext X Y n) (m : ℕ) (hm : n + 1 = m) :
   exact ⟨f ≫ (R.cochainComplexXIso n n rfl).hom,
     by simpa [R.cochainComplex_d _ _ _ _ rfl rfl,
       ← cancel_mono (R.cochainComplexXIso m m rfl).inv] using hf, by simp [extMk]⟩
+
+lemma mk₀_comp_extMk {n : ℕ} (f : X ⟶ R.cocomplex.X n) (m : ℕ) (hm : n + 1 = m)
+    (hf : f ≫ R.cocomplex.d n m = 0) {X' : C} (g : X' ⟶ X) :
+    (Ext.mk₀ g).comp (R.extMk f m hm hf) (zero_add _) =
+      R.extMk (g ≫ f) m hm (by simp [hf]) := by
+  have := HasDerivedCategory.standard C
+  ext
+  simp only [extMk, Ext.comp_hom, Int.cast_ofNat_Int, Ext.mk₀_hom,
+    extEquivCohomologyClass_symm_mk_hom, Category.assoc]
+  rw [Cocycle.fromSingleMk_precomp g _ (zero_add _) _ (by lia) (by
+      simp [cochainComplex_d _ _ _ n m rfl rfl, reassoc_of% hf]),
+    Cocycle.equivHomShift_symm_precomp, ← ShiftedHom.mk₀_comp 0 rfl,
+    ShiftedHom.map_comp,
+    ShiftedHom.comp_assoc _ _ _ (add_zero _) (zero_add _) (by simp),
+    ← ShiftedHom.comp_assoc _ _ _ (add_zero _) (add_zero (n : ℤ)) (by simp)]
+  simp
 
 end CategoryTheory.InjectiveResolution

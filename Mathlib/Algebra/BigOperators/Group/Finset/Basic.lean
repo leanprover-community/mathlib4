@@ -15,7 +15,7 @@ public import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
@@ -275,9 +275,9 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → M) :
 end bij
 
 @[to_additive (attr := simp)]
-lemma prod_diag [DecidableEq ι] (s : Finset ι) (f : ι × ι → M) :
+lemma prod_diag (s : Finset ι) (f : ι × ι → M) :
     ∏ i ∈ s.diag, f i = ∏ i ∈ s, f (i, i) := by
-  apply prod_nbij' Prod.fst (fun i ↦ (i, i)) <;> simp
+  simp [diag]
 
 @[to_additive]
 theorem prod_image' [DecidableEq ι] {s : Finset κ} {g : κ → ι} (h : κ → M)

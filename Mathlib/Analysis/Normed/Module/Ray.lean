@@ -17,7 +17,7 @@ this case, for two vectors `x y` in the same ray, the norm of their sum is equal
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/
 
-@[expose] public section
+public section
 
 
 open Real

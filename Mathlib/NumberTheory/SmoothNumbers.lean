@@ -506,9 +506,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
-  have H₁ : m ≠ 0 → p ∣ m → m < N + 1 → p < N + 1 :=
-    fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
-  have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
+  have H : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
   grind
 

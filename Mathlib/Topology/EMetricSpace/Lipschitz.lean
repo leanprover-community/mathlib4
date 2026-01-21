@@ -170,10 +170,10 @@ protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') 
   fun x y => le_trans (hf x y) <| mul_left_mono (ENNReal.coe_le_coe.2 h)
 
 theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
-    EMetric.diam (f '' s) ≤ K * EMetric.diam s := by
-  apply EMetric.diam_le
+    Metric.ediam (f '' s) ≤ K * Metric.ediam s := by
+  apply Metric.ediam_le
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-  exact hf.edist_le_mul_of_le (EMetric.edist_le_diam_of_mem hx hy)
+  exact hf.edist_le_mul_of_le (Metric.edist_le_ediam_of_mem hx hy)
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
     (h : edist x y < d / K) : edist (f x) (f y) < d :=
@@ -331,14 +331,14 @@ protected theorem prodMk {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith
 
 theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α) (t : Set β)
     (hf₁ : ∀ b ∈ t, LipschitzOnWith K₁ (f · b) s) (hf₂ : ∀ a ∈ s, LipschitzOnWith K₂ (f a) t) :
-    EMetric.diam (Set.image2 f s t) ≤ ↑K₁ * EMetric.diam s + ↑K₂ * EMetric.diam t := by
-  simp only [EMetric.diam_le_iff, forall_mem_image2]
+    Metric.ediam (Set.image2 f s t) ≤ ↑K₁ * Metric.ediam s + ↑K₂ * Metric.ediam t := by
+  simp only [Metric.ediam_le_iff, forall_mem_image2]
   intro a₁ ha₁ b₁ hb₁ a₂ ha₂ b₂ hb₂
   refine (edist_triangle _ (f a₂ b₁) _).trans ?_
   exact
     add_le_add
-      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_right_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
-      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_right_mono <| EMetric.edist_le_diam_of_mem hb₁ hb₂)
+      ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| mul_right_mono <| Metric.edist_le_ediam_of_mem ha₁ ha₂)
+      ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| mul_right_mono <| Metric.edist_le_ediam_of_mem hb₁ hb₂)
 
 end LipschitzOnWith
 

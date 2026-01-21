@@ -14,7 +14,7 @@ Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar resul
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

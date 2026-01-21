@@ -29,7 +29,7 @@ linear form `g` of norm `1` with `g x = ‖x‖` (where the norm has to be inter
 of `𝕜`).
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

@@ -33,7 +33,7 @@ The proof and motivation are described in the paper
 p-adic, p adic, padic, p-adic integer
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

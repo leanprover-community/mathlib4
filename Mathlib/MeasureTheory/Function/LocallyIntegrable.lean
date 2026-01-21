@@ -482,19 +482,26 @@ theorem ContinuousOn.locallyIntegrableOn [IsLocallyFiniteMeasure μ]
     (hK : MeasurableSet K) : LocallyIntegrableOn f K μ := fun _x hx =>
   hf.integrableAt_nhdsWithin hK hx
 
+/-- If `f` is continuous on a compact set `K`, then it is integrable on any measurable subset
+`s ⊆ K` of finite measure. -/
+theorem ContinuousOn.integrableOn_of_subset_isCompact (hf : ContinuousOn f K)
+    (hK : IsCompact K) (hs : MeasurableSet s) (h's : s ⊆ K) (mus : μ s ≠ ∞) :
+    IntegrableOn f s μ := by
+  refine ⟨hf.aestronglyMeasurable_of_subset_isCompact hK hs h's, ?_⟩
+  have : Fact (μ s < ∞) := ⟨mus.lt_top⟩
+  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
+    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
+  apply HasFiniteIntegral.of_bounded (C := C)
+  filter_upwards [ae_restrict_mem hs] with a ha using hC _ (mem_image_of_mem f (h's ha))
+
 variable [IsFiniteMeasureOnCompacts μ]
 
 /-- A function `f` continuous on a compact set `K` is integrable on this set with respect to any
 locally finite measure. -/
 theorem ContinuousOn.integrableOn_compact'
     (hK : IsCompact K) (h'K : MeasurableSet K) (hf : ContinuousOn f K) :
-    IntegrableOn f K μ := by
-  refine ⟨ContinuousOn.aestronglyMeasurable_of_isCompact hf hK h'K, ?_⟩
-  have : Fact (μ K < ∞) := ⟨hK.measure_lt_top⟩
-  obtain ⟨C, hC⟩ : ∃ C, ∀ x ∈ f '' K, ‖x‖ ≤ C :=
-    IsBounded.exists_norm_le (hK.image_of_continuousOn hf).isBounded
-  apply HasFiniteIntegral.of_bounded (C := C)
-  filter_upwards [ae_restrict_mem h'K] with x hx using hC _ (mem_image_of_mem f hx)
+    IntegrableOn f K μ :=
+  hf.integrableOn_of_subset_isCompact hK h'K Subset.rfl hK.measure_ne_top
 
 theorem ContinuousOn.integrableOn_compact [T2Space X]
     (hK : IsCompact K) (hf : ContinuousOn f K) : IntegrableOn f K μ :=

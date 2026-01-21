@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
@@ -590,7 +591,7 @@ def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
       rw [hx, hy]
   right_inv n := by
     rw [map_zsmul, lift_apply_of]
-    exact zsmul_int_one n
+    exact zsmul_one n
   map_add' := map_add _
 
 /-- Isomorphic types have isomorphic free abelian groups. -/

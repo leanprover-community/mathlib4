@@ -16,7 +16,7 @@ public import Mathlib.Data.Set.BooleanAlgebra
 - The complete lattice structure on sieves is given, as well as the Galois insertion
   given by downward-closing.
 - A `Sieve X` (functorially) induces a presheaf on `C` together with a monomorphism to
-  the yoneda embedding of `X`.
+  the Yoneda embedding of `X`.
 
 ## Tags
 
@@ -522,7 +522,7 @@ instance : CompleteLattice (Sieve X) where
   le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
   le_sup_left _ _ _ _ := Or.inl
   le_sup_right _ _ _ _ := Or.inr
-  sup_le _ _ _ h₁ h₂ _ f := by--ℰ S hS Y f := by
+  sup_le _ _ _ h₁ h₂ _ f := by
     rintro (hf | hf)
     · exact h₁ _ hf
     · exact h₂ _ hf

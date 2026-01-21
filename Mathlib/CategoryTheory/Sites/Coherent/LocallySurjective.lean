@@ -29,7 +29,7 @@ and extensive topologies.
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
-@[expose] public section
+public section
 
 universe w
 

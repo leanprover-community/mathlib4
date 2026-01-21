@@ -158,7 +158,7 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
 def of [Frame α] : MinimalAxioms α where
-  __ :=  ‹Frame α›
+  __ := ‹Frame α›
   inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
 
 end MinimalAxioms
@@ -223,8 +223,8 @@ variable (minAx : MinimalAxioms α)
 -/
 def of [CompleteDistribLattice α] : MinimalAxioms α where
   __ := ‹CompleteDistribLattice α›
-  inf_sSup_le_iSup_inf a s:= inf_sSup_eq.le
-  iInf_sup_le_sup_sInf a s:= sup_sInf_eq.ge
+  inf_sSup_le_iSup_inf a s := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf a s := sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
 abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms

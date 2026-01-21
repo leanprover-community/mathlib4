@@ -21,7 +21,7 @@ by an `R`-linear endomorphism, which require the concept of finite-dimensionalit
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

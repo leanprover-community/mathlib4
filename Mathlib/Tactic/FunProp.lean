@@ -5,15 +5,21 @@ Authors: Tomas Skrivan
 -/
 module
 
-public meta import Mathlib.Tactic.FunProp.Attr
-public meta import Mathlib.Tactic.FunProp.Core
 public meta import Mathlib.Tactic.FunProp.Decl
-public meta import Mathlib.Tactic.FunProp.Elab
 public meta import Mathlib.Tactic.FunProp.FunctionData
 public meta import Mathlib.Tactic.FunProp.Mor
 public meta import Mathlib.Tactic.FunProp.Theorems
 public meta import Mathlib.Tactic.FunProp.ToBatteries
 public meta import Mathlib.Tactic.FunProp.Types
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.FunProp.Core
+public import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Elab
+public import Mathlib.Tactic.FunProp.FunctionData
+public import Mathlib.Tactic.FunProp.Mor
+public import Mathlib.Tactic.FunProp.Theorems
+public import Mathlib.Tactic.FunProp.ToBatteries
+public import Mathlib.Tactic.FunProp.Types
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

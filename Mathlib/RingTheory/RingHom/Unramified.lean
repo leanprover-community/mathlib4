@@ -72,7 +72,6 @@ lemma ofLocalizationPrime :
   intro x
   let Rₓ := Localization.AtPrime (x.asIdeal.comap f)
   let Sₓ := Localization.AtPrime x.asIdeal
-  have := Algebra.FormallyUnramified.of_isLocalization (Rₘ := Rₓ) (x.asIdeal.comap f).primeCompl
   letI : Algebra Rₓ Sₓ := (Localization.localRingHom _ _ _ rfl).toAlgebra
   have : IsScalarTower R Rₓ Sₓ := .of_algebraMap_eq
     fun x ↦ (Localization.localRingHom_to_map _ _ _ rfl x).symm

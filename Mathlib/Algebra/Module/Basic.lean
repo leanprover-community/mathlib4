@@ -18,7 +18,7 @@ public import Mathlib.Algebra.Ring.Invertible
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Nonneg.inv Multiset
 

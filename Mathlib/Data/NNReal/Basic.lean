@@ -24,7 +24,7 @@ As a consequence, it is a bit of a random collection of results, and is a good t
 This file uses `ℝ≥0` as a localized notation for `NNReal`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists TrivialStar
 

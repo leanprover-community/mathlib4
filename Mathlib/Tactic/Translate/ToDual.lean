@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -172,8 +172,8 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("cospan", ["Span"]),
   ("kernel", ["Cokernel"]),
   ("cokernel", ["Kernel"]),
-  ("kernels", ["Cokernel"]),
-  ("cokernels", ["Kernel"]),
+  ("kernels", ["Cokernels"]),
+  ("cokernels", ["Kernels"]),
   ("unit", ["Counit"]),
   ("counit", ["Unit"]),
   ("monad", ["Comonad"]),

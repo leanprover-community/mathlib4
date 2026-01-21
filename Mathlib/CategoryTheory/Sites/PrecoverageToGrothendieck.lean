@@ -6,7 +6,7 @@ Authors: Adam Topaz, Benoît Guillemet
 module
 
 public import Mathlib.CategoryTheory.Sites.Precoverage
-public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
 

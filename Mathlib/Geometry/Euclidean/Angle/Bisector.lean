@@ -15,7 +15,7 @@ This file proves lemmas relating to bisecting angles.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace EuclideanGeometry

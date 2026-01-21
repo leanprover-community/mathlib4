@@ -21,7 +21,7 @@ i.e. `Hom_R(S, -)` preserves filtered colimits.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Limits
 

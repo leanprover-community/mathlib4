@@ -684,7 +684,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
   carrier := { x : R⟦Γ⟧ˣ | 0 < (x.val - 1).orderTop}
   mul_mem' := by
     intro x y hx hy
-    obtain (_|_) := subsingleton_or_nontrivial R
+    obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
     · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
       have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
@@ -694,7 +694,7 @@ def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCance
   one_mem' := by simp
   inv_mem' {y} h := by
     suffices 0 < (y.inv - 1).orderTop by exact this
-    obtain (_|_) := subsingleton_or_nontrivial R
+    obtain (_ | _) := subsingleton_or_nontrivial R
     · simp
     · have : 0 < (y.val - 1).orderTop := h
       rw [orderTop_self_sub_one_pos_iff] at this
@@ -758,6 +758,14 @@ instance SMulCommClass [CommSemiring R] [Module R V] :
   smul_comm r x y := by
     rw [← single_zero_smul_eq_smul Γ, ← mul_smul', mul_comm, mul_smul', single_zero_smul_eq_smul Γ]
 
+instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V] [AddCommMonoid Γ]
+    [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Module R V] [Module.IsTorsionFree R V] :
+    Module.IsTorsionFree R⟦Γ⟧ (HahnModule Γ R V) :=
+  .of_smul_eq_zero fun x y hxy ↦ by
+    contrapose! hxy
+    rw [ne_eq, HahnModule.ext_iff, funext_iff, not_forall]
+    exact ⟨x.order + ((of R).symm y).order, by simpa [coeff_smul_order_add_order]⟩
+
 instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :
     NoZeroSMulDivisors R⟦Γ⟧ (HahnModule Γ R V) where
@@ -775,6 +783,13 @@ end HahnModule
 
 namespace HahnSeries
 
+instance {Γ : Type*} [Ring R] [IsDomain R] [AddCommMonoid Γ] [LinearOrder Γ]
+    [IsOrderedCancelAddMonoid Γ] : NoZeroDivisors R⟦Γ⟧ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} hxy := by
+    contrapose! hxy
+    rw [ne_eq, HahnSeries.ext_iff, funext_iff, not_forall]
+    exact ⟨x.order + y.order, by simpa [coeff_mul_order_add_order]⟩
+
 instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
     NoZeroDivisors R⟦Γ⟧ where
@@ -782,6 +797,9 @@ instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
     haveI : NoZeroSMulDivisors R⟦Γ⟧ R⟦Γ⟧ :=
       HahnModule.instNoZeroSMulDivisors
     exact eq_zero_or_eq_zero_of_smul_eq_zero xy
+
+instance {Γ : Type*} [Ring R] [IsDomain R] [AddCommMonoid Γ] [LinearOrder Γ]
+    [IsOrderedCancelAddMonoid Γ] : IsDomain R⟦Γ⟧ := NoZeroDivisors.to_isDomain _
 
 instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R] :
     IsDomain R⟦Γ⟧ :=

@@ -27,7 +27,7 @@ is a pullback square.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
