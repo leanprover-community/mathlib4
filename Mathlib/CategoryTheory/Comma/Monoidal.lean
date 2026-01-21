@@ -392,7 +392,7 @@ lemma PushoutProduct.pentagon
       · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
         all_goals simp [associator_naturality_left_assoc]
   · exact MonoidalCategory.pentagon W.right X.right Y.right Z.right
-/--/
+
 @[simps!]
 noncomputable
 def PushoutProduct.braiding_left_iso [BraidedCategory C] :
