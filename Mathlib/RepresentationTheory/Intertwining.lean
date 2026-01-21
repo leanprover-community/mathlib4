@@ -33,7 +33,7 @@ variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMon
   toLinearMap : V →ₗ[A] W
   isIntertwining (g : G) (v : V) : toLinearMap (ρ g v) = σ g (toLinearMap v)
 
-lemma to_linear_map_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap :=
+lemma toLinearMap_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap :=
     by
   intro f g h
   ext x
