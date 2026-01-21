@@ -80,7 +80,7 @@ theorem isTopologicalAddGroup :
     IsTopologicalAddGroup A :=
   F.addGroupFilterBasis.isTopologicalAddGroup
 
-/-- In `F.addGroupTopology`, a set is a neighbourhood of `a` iff it contains a
+/-- In `F.addGroupTopology`, `s` is a neighbourhood of `a` iff it contains a
 left-additive coset of some ideal `I ∈ F`. -/
 lemma addGroupTopology_mem_nhds_iff (a : A) (s : Set A) :
     letI : TopologicalSpace A := F.addGroupTopology
@@ -99,7 +99,7 @@ belonging to `F`. -/
 lemma addGroupTopology_mem_nhds_zero_iff (s : Set A) :
     letI : TopologicalSpace A := F.addGroupTopology
     s ∈ 𝓝 0 ↔ ∃ I ∈ F, (I : Set A) ⊆ s := by
-  simpa [zero_vadd] using F.addGroupTopology_mem_nhds_iff (a := (0 : A)) (s := s)
+  simpa [zero_vadd] using F.addGroupTopology_mem_nhds_iff 0 s
 end AddGroup
 
 section Ring
@@ -152,7 +152,7 @@ to `F`. -/
 lemma ringTopology_mem_nhds_zero_iff (s : Set A) :
     letI : TopologicalSpace A := ringTopology hUniform
     s ∈ 𝓝 0 ↔ ∃ I ∈ F, (I : Set A) ⊆ s := by
-  simpa [zero_vadd] using ringTopology_mem_nhds_iff (hUniform := hUniform) (a := (0 : A)) (s := s)
+  simpa [zero_vadd] using ringTopology_mem_nhds_iff (hUniform := hUniform) 0 s
 
 /-- Under `F.IsUniform`, the topology `ringTopology` is linear in the sense that `𝓝 0` has a
 basis of ideals. -/
@@ -170,7 +170,7 @@ end Ring
 /-- An `IdealFilter` on a ring `A` is uniform if and only if its ideals form a `RingFilterBasis`
 for `A`. -/
 theorem isUniform_iff_exists_ringFilterBasis {F : IdealFilter A} :
-    F.IsUniform ↔ ∃ B : RingFilterBasis A, B.sets = {s : Set A | ∃ I ∈ F, s = (I : Set A)} := by
+    F.IsUniform ↔ ∃ B : RingFilterBasis A, B.sets = {s : Set A | ∃ I ∈ F, s = I} := by
   constructor
   · intro hF
     refine ⟨ringFilterBasis hF, ?_⟩
