@@ -220,65 +220,26 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
   rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
-    have vs : ∀ i, v i ∈ s := fun i ↦ by
-      simp only [v]
-      split_ifs
-      · exact us i
-      · exact hx
-    have hv : Monotone v := by
-      refine monotone_nat_of_le_succ fun i => ?_
-      simp only [v]
-      rcases lt_trichotomy i n with (hi | rfl | hi)
-      · have : i + 1 ≤ n := Nat.succ_le_of_lt hi
-        simp only [hi.le, this, if_true]
-        exact hu (Nat.le_succ i)
-      · simp only [le_refl, if_true, add_le_iff_nonpos_right, Nat.le_zero, Nat.one_ne_zero,
-          if_false, h]
-      · have A : ¬i ≤ n := hi.not_ge
-        have B : ¬i + 1 ≤ n := fun h => A (i.le_succ.trans h)
-        simp only [A, B, if_false, le_rfl]
-    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
-    · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
-    · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
-      simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]
-    · calc
-        (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-            ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
-          apply Finset.sum_congr rfl fun i hi => ?_
-          simp only [Finset.mem_range] at hi
-          have : i + 1 ≤ n := Nat.succ_le_of_lt hi
-          simp only [v, hi.le, this, if_true]
-        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
-          gcongr
-          apply Nat.le_add_right
+    refine ⟨v, n + 2, by grind [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, by grind⟩, ?_⟩
+    calc
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+          ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
+      _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
+        gcongr
+        apply Nat.le_add_right
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)
-  have ws : ∀ i, w i ∈ s := by grind
   have hw : Monotone w := by
     apply monotone_nat_of_le_succ fun i => ?_
-    dsimp only [w]
     rcases lt_trichotomy (i + 1) N with (hi | hi | hi)
-    · have : i < N := Nat.lt_of_le_of_lt (Nat.le_succ i) hi
-      simp only [hi, this, if_true]
-      exact hu (Nat.le_succ _)
+    · grind [Monotone]
     · have A : i < N := hi ▸ i.lt_succ_self
-      have B : ¬i + 1 < N := by rw [← hi]; exact fun h => h.ne rfl
-      rw [if_pos A, if_neg B, if_pos hi]
-      have T := Nat.find_min exists_N A
-      push_neg at T
-      exact T (A.le.trans hN.1)
-    · have A : ¬i < N := (Nat.lt_succ_iff.mp hi).not_gt
-      have B : ¬i + 1 < N := hi.not_gt
-      have C : ¬i + 1 = N := hi.ne.symm
-      have D : i + 1 - 1 = i := Nat.pred_succ i
-      rw [if_neg A, if_neg B, if_neg C, D]
-      split_ifs
-      · exact hN.2.le.trans (hu (le_of_not_gt A))
-      · exact hu (Nat.pred_le _)
-  refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
-  · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
+      have := Nat.find_min exists_N A
+      grind
+    · grind [Monotone]
+  refine ⟨w, n + 1, hw, by grind, (mem_image _ _ _).2 ⟨N, by grind⟩, ?_⟩
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
@@ -295,11 +256,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           ((∑ i ∈ Finset.Ico 0 (N - 1), edist (f (u (i + 1))) (f (u i))) +
               ∑ i ∈ Finset.Ico (N - 1) N, edist (f (u (i + 1))) (f (u i))) +
             ∑ i ∈ Finset.Ico N n, edist (f (u (i + 1))) (f (u i)) := by
-        rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico]
-        · exact zero_le _
-        · exact hN.1
-        · exact zero_le _
-        · exact Nat.pred_le _
+        rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico] <;> grind
       _ = (∑ i ∈ Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               edist (f (u N)) (f (u (N - 1))) +
             ∑ i ∈ Finset.Ico N n, edist (f (w (1 + i + 1))) (f (w (1 + i))) := by
@@ -327,11 +284,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
           Finset.sum_empty, add_zero, add_comm (edist _ _)]
         exact edist_triangle _ _ _
       _ = ∑ j ∈ Finset.range (n + 1), edist (f (w (j + 1))) (f (w j)) := by
-        rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico]
-        · exact zero_le _
-        · exact Nat.succ_le_succ hN.left
-        · exact zero_le _
-        · exact N.pred_le.trans N.le_succ
+        rw [Finset.sum_Ico_consecutive, Finset.sum_Ico_consecutive, Finset.range_eq_Ico] <;> grind
 
 /-- The variation of a function on the union of two sets `s` and `t`, with `s` to the left of `t`,
 bounds the sum of the variations along `s` and `t`. -/
@@ -351,19 +304,6 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
     variations. -/
   rintro ⟨n, ⟨u, hu, us⟩⟩ ⟨m, ⟨v, hv, vt⟩⟩
   let w i := if i ≤ n then u i else v (i - (n + 1))
-  have wst : ∀ i, w i ∈ s ∪ t := by
-    intro i
-    by_cases hi : i ≤ n
-    · simp [w, hi, us]
-    · simp [w, hi, vt]
-  have hw : Monotone w := by
-    intro i j hij
-    dsimp only [w]
-    split_ifs with h_1 h_2 h_2
-    · exact hu hij
-    · apply h _ (us _) _ (vt _)
-    · exfalso; exact h_1 (hij.trans h_2)
-    · apply hv (tsub_le_tsub hij le_rfl)
   calc
     ((∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) +
           ∑ i ∈ Finset.range m, edist (f (v (i + 1))) (f (v i))) =
@@ -381,14 +321,9 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
         using 3 <;> abel
     _ ≤ ∑ i ∈ Finset.range (n + 1 + m), edist (f (w (i + 1))) (f (w i)) := by
       rw [← Finset.sum_union]
-      · gcongr
-        rintro i hi
-        simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        lia
-      · refine Finset.disjoint_left.2 fun i hi h'i => ?_
-        simp only [Finset.mem_Ico, Finset.mem_range] at hi h'i
-        exact hi.not_gt (Nat.lt_of_succ_le h'i.left)
-    _ ≤ eVariationOn f (s ∪ t) := sum_le f _ hw wst
+      · gcongr; grind
+      · exact Finset.disjoint_left.2 (by grind)
+    _ ≤ eVariationOn f (s ∪ t) := sum_le f _ (by grind [Monotone]) (by grind)
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
