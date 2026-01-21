@@ -25,6 +25,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
   {F : Type*} [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [FiniteDimensional 𝕜 F]
   (T : E →ₗ[𝕜] F)
 
+-- TODO: I might have a more elementary proof somewhere of this
 public theorem isSymmetric_self_comp_adjoint :
     (T ∘ₗ adjoint T).IsSymmetric := T.isPositive_self_comp_adjoint.isSymmetric
 
@@ -32,11 +33,36 @@ public theorem isSymmetric_self_comp_adjoint :
 public theorem isSymmetric_adjoint_comp_self
   : (adjoint T ∘ₗ T).IsSymmetric := T.isPositive_adjoint_comp_self.isSymmetric
 
+-- TODO: Rewrite statement using one of the above
 public theorem eigenvalues_adjoint_comp_self_nonneg
   {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i : Fin n)
   : 0 ≤ (LinearMap.isPositive_adjoint_comp_self T).isSymmetric.eigenvalues hn i := by
   apply LinearMap.IsPositive.nonneg_eigenvalues
   exact T.isPositive_adjoint_comp_self
+
+/--
+7.64(b) in [axler2024].
+-/
+lemma ker_adjoint_comp_self_eq_ker_self : ker (adjoint T ∘ₗ T) = ker T := by
+  sorry
+
+-- TODO: Prove using ContinuousLinearMap.orthogonal_range
+lemma orthogonal_ker : (ker T)ᗮ = range (adjoint T) := by
+  sorry
+
+-- TODO: Place after LinearMap.IsSymmetric.orthogonal_ker
+lemma IsSymmetric.orthogonal_ker {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) : (ker T)ᗮ = range T := by
+  simp [←hT.orthogonal_range]
+
+/--
+7.64(c) in [axler2024].
+-/
+lemma range_adjoint_comp_self_eq_range_adjoint : range (adjoint T ∘ₗ T) = range (adjoint T) :=
+  calc
+    range (adjoint T ∘ₗ T) = (ker (adjoint T ∘ₗ T))ᗮ :=
+      T.isSymmetric_adjoint_comp_self.orthogonal_ker.symm
+    _ = (ker T)ᗮ := by rw [ker_adjoint_comp_self_eq_ker_self]
+    _ = range (adjoint T) := T.orthogonal_ker
 
 /--
 The singular values of a finite dimensional linear map, ordered in descending order.
@@ -111,8 +137,6 @@ public theorem singularValues_antitone : Antitone T.singularValues := by
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
-  -- I think this is one of the hard ones. Might want to hold off on it until the theory of left
-  -- and right singular vectors has been developed.
   sorry
 
 -- It's unclear what the right way to state "The rank of T, as a natural number" is,
