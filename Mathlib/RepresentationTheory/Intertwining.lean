@@ -61,18 +61,7 @@ instance : Add (IntertwiningMap ρ σ) :=
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
 
 instance : SMul A (IntertwiningMap ρ σ) :=
-  ⟨fun a f =>
-    { toLinearMap := a • f.toLinearMap
-      isIntertwining := by
-        intro g v
-        calc
-          (a • f.toLinearMap) (ρ g v) = a • f.toLinearMap (ρ g v) := by
-            simp [LinearMap.smul_apply]
-          _ = a • σ g (f.toLinearMap v) := by
-            simp [f.isIntertwining]
-          _ = σ g (a • f.toLinearMap v) := by
-            symm
-            simp}⟩
+  ⟨fun a f ↦ ⟨a • f.toLinearMap, by simp [f.isIntertwining]⟩⟩
 
 @[simp] lemma coe_smul (a : A) (f : IntertwiningMap ρ σ) :
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
