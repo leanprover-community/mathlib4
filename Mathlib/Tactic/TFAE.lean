@@ -94,7 +94,7 @@ destructuring, and goal creation.
 
 * `tfae_have i ← j := t` adds a hypothesis in the reverse direction, of type `Pⱼ → Pᵢ`.
 * `tfae_have i ↔ j := t` adds a hypothesis in the both directions, of type `Pᵢ ↔ Pⱼ`.
-* `tfae_have hij : i → j := t` names the introduced hypothesis `hij`.
+* `tfae_have hij : i → j := t` names the introduced hypothesis `hij` instead of `tfae_i_to_j`.
 * `tfae_have i j | p₁ => t₁ | ...` matches on the assumption `p : Pᵢ`.
 * `tfae_have ⟨hij, hji⟩ : i ↔ j := t` destructures the bi-implication into `hij : Pᵢ → Pⱼ`
   and `hji : Pⱼ → Pⱼ`.
