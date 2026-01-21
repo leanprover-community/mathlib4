@@ -302,12 +302,6 @@ def mulRight (r : Rˣ) : R ≃ₜ+ R where
   continuous_toFun := continuous_mul_right _
   continuous_invFun := continuous_mul_right _
 
-open Pointwise in
-@[simp]
-lemma preimage_mulLeft_smul (r : Rˣ) (s : Set R) :
-    ContinuousAddEquiv.mulLeft r ⁻¹' (r • s) = s := by
-  ext; simp [Set.mem_smul_set, Units.smul_def]
-
 end ContinuousAddEquiv
 
 namespace NonUnitalSubring
