@@ -53,7 +53,7 @@ theorem Submodule.coe_eq_univ {R M : Type*}
 theorem Submodule.IsPrimary.isPrime_radical_colon {R M : Type*}
     [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} (hI : I.IsPrimary) :
     (I.colon Set.univ).radical.IsPrime := by
-  refine isPrime_iff.mpr <| hI.imp (by simp [radical_eq_top]) fun h x y ⟨n, hn⟩ ↦ ?_
+  refine isPrime_iff.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
   simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
   refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
   simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢

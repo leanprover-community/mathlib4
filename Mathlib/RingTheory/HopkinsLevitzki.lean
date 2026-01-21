@@ -188,4 +188,4 @@ lemma isArtinianRing_iff_isNilpotent_maximalIdeal (R : Type*) [CommRing R] [IsNo
     ← and_iff_left (a := Ring.KrullDimLE 0 R) ‹IsLocalRing R›,
     (Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 3 rfl rfl,
     IsLocalRing.isMaximal_iff, le_antisymm_iff, and_iff_right]
-  exact IsLocalRing.le_maximalIdeal (by simp [nilradical, Ideal.radical_eq_top])
+  exact IsLocalRing.le_maximalIdeal (by simp [nilradical])

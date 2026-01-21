@@ -207,9 +207,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     obtain ⟨n, hc⟩ := hc
     use n
     rw [smul_comm, hc, smul_zero]
-  have H₂ : ((⊥ : Submodule R M).colon {a ^ k • y}).radical ≠ ⊤ := by
-    simpa [Ideal.radical_eq_top]
-  rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩)]
+  rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩)]
   use k
   simpa [smul_smul, ← mul_pow, mul_comm]
 
@@ -294,16 +292,12 @@ theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
   simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff]
   refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
   · rintro _ ⟨h, x, ⟨⟩⟩ r h'
-    refine ⟨x, ?_, by simpa using h'⟩
-    rintro rfl
-    rw [colon_singleton_zero] at h
-    exact h.1 rfl
+    exact ⟨x, by simpa using h.ne_top, by simpa using h'⟩
   · intro r ⟨x, h, h'⟩
     obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
-    rw [Ideal.IsPrime.radical_le_iff hP.1] at hx
     rw [isAssociatedPrime_iff] at hP
-    refine Set.mem_biUnion hP (hx ?_)
-    rwa [mem_colon_singleton]
+    rw [hP.1.radical_le_iff] at hx
+    exact Set.mem_biUnion hP (hx (by rwa [mem_colon_singleton]))
 
 theorem biUnion_associatedPrimes_eq_compl_nonZeroDivisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R R, p = (nonZeroDivisors R : Set R)ᶜ :=
@@ -315,11 +309,8 @@ variable {R M}
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
     (⊤ : Submodule R M).annihilator ≤ I := by
   obtain ⟨hI, x, rfl⟩ := h
-  intro y hy
-  refine Ideal.le_radical ?_
-  simp only [mem_annihilator, mem_top, forall_const] at hy
-  specialize hy x
-  simpa
+  rw [bot_colon']
+  exact (annihilator_mono le_top).trans Ideal.le_radical
 
 end Semiring
 
