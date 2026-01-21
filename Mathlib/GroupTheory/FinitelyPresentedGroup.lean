@@ -67,13 +67,61 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         simp [FreeGroup.freeGroupUnitEquivInt] }
 
 -- TODO do this.
-  lemma FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
-    Function.Surjective (FreeGroup.map f) := by
-    sorry
-
-
+theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
+  Function.Surjective (FreeGroup.map f) := by
+    intro x
+    induction' x using FreeGroup.induction_on with x ih;
+    · exact ⟨ 1, by simp +decide ⟩;
+    · exact Exists.elim ( hf x ) fun a ha => ⟨ FreeGroup.of a, by simp +decide [ ha ] ⟩;
+    · -- By the induction hypothesis, there exists an element a in the free group on α such that FreeGroup.map f a = FreeGroup.of ih.
+      obtain ⟨a, ha⟩ : ∃ a : FreeGroup α, FreeGroup.map f a = FreeGroup.of ih := by
+        assumption;
+      exact ⟨ a⁻¹, by simp +decide [ ha ] ⟩;
+    · case _ hx hy => obtain ⟨ x, rfl ⟩ := hx; obtain ⟨ y, rfl ⟩ := hy; exact ⟨ x * y, by simp +decide ⟩ ;
 -- end of addition to #FreeGroup
 
+-- Start of suggested additions to #Group.FG
+
+theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
+    Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
+    constructor
+    · rw [Group.fg_iff_exists_freeGroup_hom_surjective]
+      intro ⟨S, hS, φ⟩
+      let n := hS.toFinset.card
+      let α := Fin n
+      use α, inferInstance
+      haveI := hS.fintype
+      have hn : Fintype.card S = n := by
+        simp [n]
+      let e : S ≃ α := Fintype.equivFinOfCardEq hn
+      rcases φ with ⟨φ, hφ⟩
+      refine ⟨φ.comp (FreeGroup.map e.symm), ?_⟩
+      exact hφ.comp (FreeGroup.map_surjective _ e.symm.surjective)
+    · intro ⟨α, _, φ, hφ⟩
+      haveI := Fintype.ofFinite α
+      let S : Set G := Set.image (fun a : α ↦ φ (FreeGroup.of a)) (Set.univ : Set α)
+      have hS : S.Finite := by
+        simpa [S] using (Set.Finite.image (s := (Set.univ : Set α))
+          (f := fun a : α => φ (FreeGroup.of a)) (Set.finite_univ))
+      -- This is copied from Group.FG.
+      have hS' : S = φ '' Set.range (FreeGroup.of : α → FreeGroup α) := by
+        ext g; constructor
+        · rintro ⟨a, -, rfl⟩
+          exact ⟨FreeGroup.of a, ⟨a, rfl⟩, rfl⟩
+        · rintro ⟨x, ⟨a, rfl⟩, rfl⟩
+          exact ⟨a, by simp, rfl⟩
+      have hSgen : Subgroup.closure S = ⊤ := by
+        simpa [hS'] using
+          (by
+            simp [← MonoidHom.map_closure, hφ, FreeGroup.closure_range_of,
+              ← MonoidHom.range_eq_map] :
+            Subgroup.closure (φ '' Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤)
+      -- end of copy.
+      refine (Group.fg_iff).2 ?_
+      use S
+
+
+-- end of suggested additions to #Group.FG
 
 -- Start of suggestion additions to #PresentedGroup
 

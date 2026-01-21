@@ -3,21 +3,18 @@ This file was edited by Aristotle.
 
 Lean version: leanprover/lean4:v4.24.0
 Mathlib version: f897ebcf72cd16f89ab4577d0c826cd14afaafc7
-This project request had uuid: 2fdb090b-eb6f-4e94-9421-167c409eca0e
+This project request had uuid: ca9e7207-4c3a-46c4-afc9-fec2ff48f6d4
 
 To cite Aristotle, tag @Aristotle-Harmonic on GitHub PRs/issues, and add as co-author to commits:
 Co-authored-by: Aristotle (Harmonic) <aristotle-harmonic@harmonic.fun>
 
 The following was proved by Aristotle:
 
+- lemma FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
+    Function.Surjective (FreeGroup.map f)
+
 - theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
     Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ
-
-- theorem iff_hom_surj_set_G {G : Type*} [Group G] :
-  IsFinitelyPresented G ↔
-    ∃ (S : Set G) (hS : S.Finite),
-      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker
 
 At Harmonic, we use a modified version of the `generalize_proofs` tactic.
 For compatibility, we include this tactic at the start of the file.
@@ -299,6 +296,19 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         ext
         simp [FreeGroup.freeGroupUnitEquivInt] }
 
+-- TODO do this.
+  lemma FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
+    Function.Surjective (FreeGroup.map f) := by
+    intro x
+    induction' x using FreeGroup.induction_on with x ih;
+    · exact ⟨ 1, by simp +decide ⟩;
+    · exact Exists.elim ( hf x ) fun a ha => ⟨ FreeGroup.of a, by simp +decide [ ha ] ⟩;
+    · -- By the induction hypothesis, there exists an element a in the free group on α such that FreeGroup.map f a = FreeGroup.of ih.
+      obtain ⟨a, ha⟩ : ∃ a : FreeGroup α, FreeGroup.map f a = FreeGroup.of ih := by
+        assumption;
+      exact ⟨ a⁻¹, by simp +decide [ ha ] ⟩;
+    · case _ hx hy => obtain ⟨ x, rfl ⟩ := hx; obtain ⟨ y, rfl ⟩ := hy; exact ⟨ x * y, by simp +decide ⟩ ;
+
 -- end of addition to #FreeGroup
 
 -- Start of suggested additions to #Group.FG
@@ -377,31 +387,34 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G
       constructor
       · rw [Group.fg_iff_exists_freeGroup_hom_surjective]
         intro ⟨S, hS, φ⟩
-        -- Since S is finite, we can convert it to a finite type.
-        obtain ⟨α, hα⟩ : ∃ α : Type, Nonempty (α ≃ S) ∧ Finite α := by
-          -- Since S is finite, we can convert it to a finite type using `Finset.exists_equiv_fin`.
-          obtain ⟨n, hn⟩ : ∃ n : ℕ, Nonempty (S ≃ Fin n) := by
-            exact?;
-          exact ⟨ Fin n, ⟨ hn.some.symm ⟩, inferInstance ⟩;
-        -- Since S is finite, we can convert it to a finite type α and construct an isomorphism between FreeGroup α and FreeGroup S.
-        obtain ⟨α, hα⟩ : ∃ α : Type, Nonempty (α ≃ S) ∧ Finite α := by
-          -- Since α is finite and there's an equivalence between α and S, we can use α as the finite type.
-          use α
-        obtain ⟨e⟩ : Nonempty (α ≃ S) := hα.left
-        have h_iso : FreeGroup α ≃* FreeGroup S := by
-          exact?
-        generalize_proofs at *; (
-        exact ⟨ α, hα.2, φ.choose.comp h_iso.toMonoidHom, φ.choose_spec.comp h_iso.surjective ⟩)
+        obtain ⟨ φ, hφ ⟩ := φ;
+        -- Since the free group on S is isomorphic to the free group on a finite type, we can use this isomorphism to construct the required homomorphism.
+        obtain ⟨α, hα, e⟩ : ∃ (α : Type) (hα : Fintype α), Nonempty (S ≃ α) := by
+          -- Since S is finite, we can use the fact that any finite set is equivalent to a finite type.
+          obtain ⟨α, hα⟩ : ∃ α : Type, Nonempty (S ≃ α) ∧ Finite α := by
+            -- Since S is finite, we can use the fact that any finite set is equivalent to a finite type. Specifically, we can take α to be Fin (Nat.card S).
+            use Fin (Nat.card S);
+            exact ⟨ by have := hS.fintype; exact ⟨ Fintype.equivOfCardEq <| by simp +decide [ Nat.card_eq_fintype_card ] ⟩, by infer_instance ⟩;
+          cases' hα with hα₁ hα₂;
+          exact ⟨ α, Fintype.ofFinite α, hα₁ ⟩;
+        refine' ⟨ α, _, _, _ ⟩;
+        -- Since α is finite, we can use the fact that it has a Fintype instance.
+        apply Finite.of_fintype α;
+        exact φ.comp ( FreeGroup.map e.some.symm );
+        exact hφ.comp ( FreeGroup.map_surjective _ e.some.symm.surjective )
       ·
-        rintro ⟨ α, hα, φ, hφ ⟩;
-        -- Since α is finite, the image of a surjective homomorphism from a finitely generated group is also finitely generated.
-        have h_surj_fg : Group.FG (FreeGroup α) := by
-          -- Since α is finite, we can take the set of generators to be the elements of α themselves.
-          have h_generators : ∃ (S : Set (FreeGroup α)), S.Finite ∧ Subgroup.closure S = ⊤ := by
-            refine' ⟨ Set.range ( FreeGroup.of : α → FreeGroup α ), Set.toFinite _, _ ⟩;
-            simp +decide [ Subgroup.eq_top_iff' ];
-          choose S hS using h_generators;
-          exact ⟨ hS.1.toFinset, by simpa [ Subgroup.closure ] using hS.2 ⟩;
+        -- If there exists a finite type α and a surjective homomorphism from the free group on α to G, then G is generated by the image of α under the homomorphism.
+        intro h
+        obtain ⟨α, hα, φ, hφ⟩ := h
+        have h_gen : ∃ S : Finset G, Subgroup.closure (S : Set G) = ⊤ := by
+          -- Since φ is surjective, the image of α under φ generates G.
+          have h_image_gen : Subgroup.closure (Set.image (fun a => φ (FreeGroup.of a)) (Set.univ : Set α)) = ⊤ := by
+            simp +decide [ Subgroup.eq_top_iff', hφ ];
+            intro x; obtain ⟨ y, rfl ⟩ := hφ x; induction y using FreeGroup.induction_on <;> aesop;
+          -- Since α is finite, the image of α under φ is also finite. We can collect these elements into a finite set S.
+          obtain ⟨S, hS⟩ : ∃ S : Finset G, (Set.image (fun a => φ (FreeGroup.of a)) (Set.univ : Set α)) = S := by
+            exact ⟨ Set.Finite.toFinset ( Set.toFinite ( Set.image ( fun a => φ ( FreeGroup.of a ) ) Set.univ ) ), by simp +decide ⟩;
+          exact ⟨ S, hS ▸ h_image_gen ⟩;
         exact?
 
 -- End of suggested additions to #Group.FG
@@ -590,149 +603,58 @@ theorem if_hom_surj_finite {G : Type*} [Group G] :
     IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
   exact ⟨n, f', hf'surj, hf'ker⟩
 
-noncomputable section AristotleLemmas
-
-lemma IsFinitelyPresented.backward {G : Type*} [Group G] :
-    (∃ (S : Set G) (hS : S.Finite),
-      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker) → IsFinitelyPresented G := by
-        rintro ⟨ S, hS, hS', hS'' ⟩;
-        apply if_hom_surj_finite;
-        exact ⟨ S, hS.to_subtype, _, hS', hS'' ⟩
-
-lemma FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
-  Function.Surjective (FreeGroup.map f) := by
-    intro g;
-    induction g using Quot.inductionOn;
-    induction' ‹_› with b l ih;
-    · exact ⟨ 1, rfl ⟩;
-    · cases' hf b.1 with a ha;
-      cases' ih with x hx;
-      exact ⟨ if b.2 then FreeGroup.of a * x else ( FreeGroup.of a ) ⁻¹ * x, by aesop ⟩
-
-end AristotleLemmas
-
 theorem iff_hom_surj_set_G {G : Type*} [Group G] :
   IsFinitelyPresented G ↔
-    ∃ (S : Set G) (hS : S.Finite),
+    ∃ (S : Set G) (_ : S.Finite),
       Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
       IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
-  -- · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
-  --   simp [FinitelyPresentedGroup, PresentedGroup] at iso
-  --   let _ : Fintype α := Fintype.ofFinite α
-
-  --   let h : FreeGroup α →* G :=
-  --     iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
-  --   have hgsurj : Function.Surjective h := by
-  --     simpa [h] using
-  --     (Function.Surjective.comp iso.symm.surjective
-  --     (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
-
-  --   let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-
-  --   have hS : S.Finite := by
-  --     simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
-  --   use S, hS
-  --   set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-  --   let g : α → S := fun a ↦ Subtype.mk (h (FreeGroup.of a)) (by exact ⟨a, rfl⟩)
-
-  --   have hfgh : f.comp (FreeGroup.map g) = h := by
-  --     ext a
-  --     simp [f, h, g]
-
-  --   have hfsurj : Function.Surjective f := by
-  --     intro y
-  --     obtain ⟨x, rfl⟩ := hgsurj y
-  --     refine ⟨FreeGroup.map g x, ?_⟩
-  --     simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfgh
-
-  --   use hfsurj
-
-  --   let rels' : Set (FreeGroup S) := FreeGroup.map g '' rels
-  --   have hrels' : rels'.Finite := by
-  --     simpa [rels'] using hrels.image (FreeGroup.map g)
-
-  --   have hhker : h.ker = Subgroup.normalClosure rels := by
-  --     ext x
-  --     simp [h]
-
-  --   have hfgx (x : FreeGroup α) : f (FreeGroup.map g x) = h x := by
-  --     simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfgh
-
-  --   have hmap_surj : Function.Surjective (FreeGroup.map g) := by
-  --     intro x
-  --     induction x using FreeGroup.induction_on with
-  --     | of s =>
-  --         rcases s with ⟨y, ⟨a, rfl⟩⟩
-  --         refine ⟨FreeGroup.of a, by simp [g]⟩
-  --     | one =>
-  --         exact ⟨1, by simp⟩
-  --     | mul x y hx hy =>
-  --         rcases hx with ⟨x', rfl⟩
-  --         rcases hy with ⟨y', rfl⟩
-  --         refine ⟨x' * y', by simp⟩
-  --     | inv x hx =>
-  --         rcases hx with ⟨x', rfl⟩
-  --         refine ⟨x'⁻¹, by simp⟩
-
-
-  --   have hker_eq : f.ker = (h.ker).map (FreeGroup.map g) := by
-  --     ext x
-  --     constructor
-  --     · intro hx
-  --       rcases hmap_surj x with ⟨y, rfl⟩
-  --       have : h y = 1 := by
-  --         simpa [MonoidHom.comp_apply] using (congrArg (fun m => m y) hfgh) ▸ hx
-  --       exact ⟨y, this, rfl⟩
-  --     · rintro ⟨y, hy, rfl⟩
-  --       simpa [MonoidHom.comp_apply] using (congrArg (fun m => m y) hfgh) ▸ hy
-
-  --   have hfker : f.ker = Subgroup.normalClosure rels' := by
-  --     ext x
-  --     simp only [MonoidHom.mem_ker]
-  --     simp [rels', g, f]
-  --     sorry
-
-  --   unfold IsNormalClosureFG
-  --   exact ⟨rels', hrels', hfker.symm⟩
-  ·
-    intro h;
-    have := IsFinitelyPresented.iff_hom_surj_fintype.mp h;
-    obtain ⟨α, hα, f, hf⟩ := this;
-    refine' ⟨ Set.range ( fun a : α => f ( FreeGroup.of a ) ), _, _, _ ⟩;
-    · exact Set.toFinite _;
-    · intro g
-      obtain ⟨x, hx⟩ := hf.left g
-      generalize_proofs at *;
-      refine' ⟨ FreeGroup.map ( fun a => ⟨ f ( FreeGroup.of a ), Set.mem_range_self a ⟩ ) x, _ ⟩;
-      convert hx using 1;
-      refine' FreeGroup.induction_on x _ _ _ _ <;> aesop;
-    · -- Let $g : α → Set.range (fun a : α => f (FreeGroup.of a))$ be the map sending each generator to its image in $S$.
-      set g : α → Set.range (fun a : α => f (FreeGroup.of a)) := fun a => ⟨f (FreeGroup.of a), by
-        exact Set.mem_range_self a⟩
-      generalize_proofs at *;
-      -- Since $g$ is surjective, $FreeGroup.map g$ is surjective.
-      have h_map_g_surjective : Function.Surjective (FreeGroup.map g) := by
-        apply FreeGroup.map_surjective;
-        intro x; aesop;
-      -- Since $FreeGroup.map g$ is surjective, the kernel of $FreeGroup.lift (fun s : Set.range (fun a : α => f (FreeGroup.of a)) => s.val)$ is the image of the kernel of $f$ under $FreeGroup.map g$.
-      have h_kernel_image : (FreeGroup.lift (fun s : Set.range (fun a : α => f (FreeGroup.of a)) => s.val)).ker = (f.ker).map (FreeGroup.map g) := by
-        refine' le_antisymm _ _;
-        · intro x hx;
-          obtain ⟨ y, rfl ⟩ := h_map_g_surjective x;
-          simp_all +decide [ MonoidHom.mem_ker ];
-          refine' ⟨ y, _, rfl ⟩;
-          convert hx using 1;
-          refine' FreeGroup.induction_on y _ _ _ _ <;> simp +decide [ * ];
-          · exact?;
-          · aesop;
-        · intro x hx;
-          obtain ⟨ y, hy, rfl ⟩ := hx;
-          simp_all +decide [ MonoidHom.mem_ker ];
-          convert hy using 1;
-          refine' FreeGroup.induction_on y _ _ _ _ <;> aesop;
-      aesop
+  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
+    simp [FinitelyPresentedGroup, PresentedGroup] at iso
+    let _ : Fintype α := Fintype.ofFinite α
+    let h : FreeGroup α →* G :=
+      iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
+    have hhsurj : Function.Surjective h := by
+      simpa [h] using
+      (Function.Surjective.comp iso.symm.surjective
+      (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
+    let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+    have hS : S.Finite := by
+      simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
+    use S, hS
+    set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+    let g : α → S := fun a => ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
+    have hgsurj : Function.Surjective g := by
+      intro s
+      rcases s with ⟨y, ⟨a, rfl⟩⟩
+      exact ⟨a, rfl⟩
+    have hh_fcompg : f.comp (FreeGroup.map g) = h := by
+      ext a
+      simp [f, h, g]
+    have hfsurj : Function.Surjective f := by
+      intro y
+      obtain ⟨x, rfl⟩ := hhsurj y
+      refine ⟨FreeGroup.map g x, ?_⟩
+      simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hh_fcompg
+    use hfsurj
+    let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
+    have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective g hgsurj
+    have hhker : h.ker = Subgroup.normalClosure rels := by
+      ext x
+      simp [h]
+    have hhker' : IsNormalClosureFG h.ker := by
+      rw [hhker]
+      use rels
+    have hfker : f.ker = Subgroup.map g' (Subgroup.normalClosure rels) := by
+      have hhker'' : h.ker = (f.ker).comap g' := by
+        simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
+      have hmap : Subgroup.map g' (h.ker) = f.ker := by
+        simpa [hhker''] using
+          (Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj)
+      simpa [hhker] using hmap.symm
+    convert IsNormalClosureFG.invariant_surj_hom g' hg'_surj h.ker hhker'
+    rw [hhker]
+    exact hfker
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
     let α := S
