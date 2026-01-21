@@ -37,11 +37,12 @@ Takes an expression representing a list of elements of type `α` and outputs the
 vector `Fin n → α`.
 -/
 partial def vecOfListQ {u : Level} {α : Q(Type u)}
-    (n : Q(ℕ)) (vec : Q(List $α)) : MetaM Q(Fin $n → $α) := do
+    (n : ℕ) (vec : List Q($α)) : MetaM Q(Fin $n → $α) := do
   match n, vec with
-  | ~q(Nat.succ $prev), ~q($head :: $rest) =>
-    return q(Matrix.vecCons $head $(← vecOfListQ prev rest))
-  | ~q(0), ~q([]) => return q(Matrix.vecEmpty)
+  | n + 1, head :: rest =>
+    return q(Matrix.vecCons $head $(← vecOfListQ n rest))
+  | 0, [] => return q(Matrix.vecEmpty)
+  | _, _ => throwError "error message here"
 
 /--
 Given a list `l` of elements of type `α` and a list `perm` of indices (as natural numbers), outputs
@@ -61,15 +62,15 @@ list of term of type `Fin n`. This is meant to be used when `perm corresponds to
 of `Fin n`, e.g. `perm = Equiv.swap 0 1`, etc. -/
 def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     MetaM (Option <| List Nat) :=
-  withConfig (fun cfg ↦ { cfg with transparency := .default }) do
+  withDefault do
     try
       let mut out : List Nat := []
       let _ ← synthInstanceQ q(NeZero $n)
-      for idx in List.range vn do
+      for idx in *...vn do
         let idxQ := mkNatLitQ idx
         let idxQ : Q(Fin $n) := q(Fin.ofNat $n $idxQ)
         let outIdxQ : Q(Nat) := q(($perm $idxQ : Nat))
-        -- TODO: try to evaluate using the compiler?
+        -- TODO(Paul-Lez): try to evaluate using the compiler? (probably better for performance)
         let outIdxExpr : Q(Nat) ← whnf outIdxQ
         let some outIdx ← Lean.Meta.getNatValue? outIdxExpr | return none
         out := out ++ [outIdx]
@@ -86,15 +87,14 @@ example {a b c : Nat} : ![a, b, c] ∘ Equiv.swap 0 1 = ![b, a, c] := by
   simp only [vecPerm]
 ```
 -/
-simproc_decl vecPerm (_ ∘ _) := fun e ↦ do
+simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let ⟨_, ~q(Fin $n → $α), ~q($v ∘ $p)⟩ ← inferTypeQ' e | return .continue
   let ⟨_, ~q(Fin $n → $α), ~q($v)⟩ ← inferTypeQ' v | return .continue
   let some qp ← Qq.checkTypeQ p q(Fin $n → Fin $n) | return .continue
   let some unpermList ← listOfVecQ (α := α) (n := n) v | return .continue
   let some permAsList ← listOfVecFinQ n unpermList.length qp | return .continue
   let outAsList := permList unpermList permAsList
-  let outAsListQ := outAsList.foldr (fun head list  ↦ q($head :: $list)) q(([] : List $α))
-  let out ← vecOfListQ n outAsListQ
+  let out ← vecOfListQ unpermList.length outAsList
   let pf ← mkAppM ``FinVec.etaExpand_eq #[e]
   let pf ← mkAppM ``Eq.symm #[pf]
   let result : Result := {expr := out, proof? := some pf}
