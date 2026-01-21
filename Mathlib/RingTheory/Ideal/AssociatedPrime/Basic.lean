@@ -44,7 +44,7 @@ theorem minimalPrimes.eq_of_le {R : Type*} [CommSemiring R] {I J : Ideal R}
     (hJ : J ∈ I.minimalPrimes) (K : Ideal R) (hK : K ∈ I.minimalPrimes) (hJK : J ≤ K) : J = K :=
   le_antisymm hJK (hK.2 hJ.1 hJK)
 
-open Ideal LinearMap Submodule
+open LinearMap Submodule
 
 namespace Submodule
 
@@ -65,19 +65,19 @@ variable {N I}
 theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     (hI : I ∈ (N.colon {x}).minimalPrimes) : ∃ x' : M, I = N.colon {x'} := by
   by_cases hx : x ∈ N
-  · simp [show (N.colon {x}) = ⊤ by simpa, minimalPrimes_top] at hI
+  · simp [show (N.colon {x}) = ⊤ by simpa, Ideal.minimalPrimes_top] at hI
   classical
   set ann := N.colon {x}
   -- there exists an integer `n ≠ 0` and an ideal `J` satisfying `I ^ n * J ≤ ann` and `¬ J ≠ I`
   have key : ∃ n ≠ 0, ∃ J : Ideal R, I ^ n * J ≤ ann ∧ ¬ J ≤ I := by
     -- let `n` be large enough so that `ann.radical ^ n ≤ ann` (uses Noetherian)
-    obtain ⟨n, hn⟩ := exists_radical_pow_le_of_fg ann ann.radical.fg_of_isNoetherianRing
+    obtain ⟨n, hn⟩ := ann.exists_radical_pow_le_of_fg ann.radical.fg_of_isNoetherianRing
     have hn0 : n ≠ 0 := by contrapose! hn; simpa [hn, ann]
     -- then take `J` to be the product of the other minimal primes raised to the `n`th power
-    have h := finite_minimalPrimes_of_isNoetherianRing R ann
-    rw [← sInf_minimalPrimes, ← h.coe_toFinset, ← h.toFinset.inf_id_eq_sInf,
+    have h := ann.finite_minimalPrimes_of_isNoetherianRing R
+    rw [← ann.sInf_minimalPrimes, ← h.coe_toFinset, ← h.toFinset.inf_id_eq_sInf,
       ← Finset.insert_erase (h.mem_toFinset.mpr hI), Finset.inf_insert, id_eq] at hn
-    grw [← mul_le_inf, mul_pow] at hn
+    grw [← Ideal.mul_le_inf, mul_pow] at hn
     refine ⟨n, hn0, ((h.toFinset.erase I).inf id) ^ n, hn, ?_⟩
     have (K : Ideal R) (hKI : K ≤ I) (hK : K ∈ ann.minimalPrimes) : K = I :=
       le_antisymm hKI (hI.2 hK.1 hKI)
@@ -105,7 +105,7 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   -- let `s` be a finite generating set for `K`
   obtain ⟨s, hs⟩ : (⊤ : Submodule R K).FG := Module.Finite.fg_top
   rw [← (map_injective_of_injective K.subtype_injective).eq_iff,
-    map_span, map_subtype_top, ← Finset.coe_image, submodule_span_eq] at hs
+    map_span, map_subtype_top, ← Finset.coe_image, Ideal.submodule_span_eq] at hs
   -- let `z` be the product of these finitely many `f y`'s
   let z := ∏ y ∈ s, f y
   -- then `z ∉ I`
@@ -118,10 +118,10 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     intro i hi
     obtain ⟨y, hy : z = f i * y⟩ := Finset.dvd_prod_of_mem f hi
     rw [Set.mem_preimage, SetLike.mem_coe, mem_colon_singleton, smul_comm, ← mem_colon_singleton]
-    exact hy ▸ mul_mem_right y _ (g i)
+    exact hy ▸ Ideal.mul_mem_right y _ (g i)
   -- or equivalently `K * Ideal.span {z} ≤ ann`
   replace hz' : K * Ideal.span {z} ≤ ann := by
-    rw [mul_comm, span_singleton_mul_le_iff]
+    rw [mul_comm, Ideal.span_singleton_mul_le_iff]
     intro i hi
     simpa only [ann, mem_colon_singleton, mul_comm, mul_smul] using hz' hi
   -- but now `K = I ^ (n - 1) * J` contradicts the minimality of `n`
