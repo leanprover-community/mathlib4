@@ -741,10 +741,11 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
 instance total_le [LE α] [IsTotalLE α] : IsTotalLE (WithBot α) where
-  total x y := by cases x <;> cases y <;> simp; simpa using total_le ..
+  total x y := by cases x <;> cases y <;> simp [le_total]
 
+@[to_dual existing]
 instance _root_.WithTop.total_le [LE α] [IsTotalLE α] : IsTotalLE (WithTop α) where
-  total x y := by cases x <;> cases y <;> simp; simpa using total_le ..
+  total x y := by cases x <;> cases y <;> simp [le_total]
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
 
