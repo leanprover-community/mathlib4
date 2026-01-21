@@ -850,6 +850,9 @@ section OrderTop
 theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
   isMax_top.Ici_eq
 
+theorem Iio_top [PartialOrder α] [OrderTop α] : Iio (⊤ : α) = {⊤}ᶜ :=
+  ext fun _ ↦ lt_top_iff_ne_top
+
 variable [Preorder α] [OrderTop α] {a : α}
 
 theorem Ioi_top : Ioi (⊤ : α) = ∅ :=
@@ -872,6 +875,9 @@ section OrderBot
 @[simp]
 theorem Iic_bot [PartialOrder α] [OrderBot α] : Iic (⊥ : α) = {⊥} :=
   isMin_bot.Iic_eq
+
+theorem Ioi_bot [PartialOrder α] [OrderBot α] : Ioi (⊥ : α) = {⊥}ᶜ :=
+  ext fun _ ↦ bot_lt_iff_ne_bot
 
 variable [Preorder α] [OrderBot α] {a : α}
 
