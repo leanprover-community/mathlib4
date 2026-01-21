@@ -286,7 +286,7 @@ variable [Ring R] [IsTopologicalRing R]
 
 /-- The additive homeomorphism from a topological ring to itself,
 induced by left multiplication by a unit. -/
-@[simps apply]
+@[simps! apply]
 def mulLeft (r : Rˣ) : R ≃ₜ+ R where
   __ := r.mulLeft
   map_add' x₁ x₂ := left_distrib ↑r x₁ x₂
@@ -295,12 +295,9 @@ def mulLeft (r : Rˣ) : R ≃ₜ+ R where
 
 /-- The additive homeomorphism from a topological ring to itself,
 induced by right multiplication by a unit. -/
-@[simps apply]
+@[simps! apply]
 def mulRight (r : Rˣ) : R ≃ₜ+ R where
-  toFun x := x * r
-  invFun y := y * r⁻¹
-  left_inv x := by simp [mul_assoc]
-  right_inv y := by simp [mul_assoc]
+  __ := r.mulRight
   map_add' x₁ x₂ := right_distrib x₁ x₂ r
   continuous_toFun := continuous_mul_right _
   continuous_invFun := continuous_mul_right _
