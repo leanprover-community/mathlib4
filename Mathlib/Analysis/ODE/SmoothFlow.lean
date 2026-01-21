@@ -17,6 +17,14 @@ public import Mathlib.Analysis.Calculus.ImplicitContDiff
 open Function intervalIntegral MeasureTheory Metric Set ContinuousMultilinearMap
 open scoped Nat NNReal Topology
 
+/-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
+`dist x y`. -/
+-- TODO: this is the "left" version. make a "right" version too
+lemma segment_subset_closedBall {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+    (x y : E) : segment ℝ x y ⊆ Metric.closedBall x (dist x y) :=
+  (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
+    (Metric.mem_closedBall.mpr (dist_comm y x ▸ le_refl _))
+
 namespace SmoothFlow
 
 noncomputable section
@@ -480,24 +488,14 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
         · intro z hz
           apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
           apply (h x (mem_range_self _) z _).1
-          -- missing lemma
-          have hseg : segment ℝ x y ⊆ closedBall x (dist y x) :=
-            (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
-              (Metric.mem_closedBall.mpr le_rfl)
-          apply (mem_closedBall'.mp (hseg hz)).trans_lt
+          apply (mem_closedBall'.mp (dist_comm x y ▸ segment_subset_closedBall x y hz)).trans_lt
           rw [dist_eq_norm]
-          -- repeated
           simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
           exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
         · intro z hz
           rw [← dist_eq_norm, dist_comm]
           apply (h x (mem_range_self _) z _).2.le
-          -- missing lemma, repeated
-          have hseg : segment ℝ x y ⊆ closedBall x (dist y x) :=
-            (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
-              (Metric.mem_closedBall.mpr le_rfl)
-          -- repeated
-          apply (mem_closedBall'.mp (hseg hz)).trans_lt
+          apply (mem_closedBall'.mp (dist_comm x y ▸ segment_subset_closedBall x y hz)).trans_lt
           rw [dist_eq_norm]
           simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
           exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
