@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.IsPrimary
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
@@ -22,8 +20,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 We provide the definition and related lemmas about associated primes of modules.
 
 ## Main definition
-- `IsAssociatedPrime`: `I` is an associated prime of `M` if `I` is prime and is the radical of the
-annihilator of some `x : M`.
+- `IsAssociatedPrime`: `IsAssociatedPrime I M` if the prime ideal `I` is the
+  radical of the annihilator of some `x : M`.
 - `associatedPrimes`: The set of associated primes of a module.
 
 ## Main results
@@ -32,17 +30,23 @@ annihilator of some `x : M`.
 - `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
+## Implementation details
+
+The presence of the radical in the definition of `IsAssociatedPrime` is slightly nonstandard but
+gives the correct characterization of the prime ideals of any minimal primary decomposition in the
+non-Noetherian setting (see Theorem 4.5 in Atiyah-Macdonald). If the ring `R` is assumed to be
+Noetherian, then the radical can be dropped from the definition (see `isAssociatedPrime_iff`).
+
 ## TODO
 
 Generalize this to a non-commutative setting once there are annihilator for non-commutative rings.
 
+## References
+
+* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
 -/
 
 @[expose] public section
-
-theorem minimalPrimes.eq_of_le {R : Type*} [CommSemiring R] {I J : Ideal R}
-    (hJ : J ∈ I.minimalPrimes) (K : Ideal R) (hK : K ∈ I.minimalPrimes) (hJK : J ≤ K) : J = K :=
-  le_antisymm hJK (hK.2 hJ.1 hJK)
 
 open LinearMap Submodule
 
@@ -160,8 +164,8 @@ section Semiring
 
 variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid M] [Module R M]
 
-/-- `I` is an associated prime of `M` if `I` is prime and is the radical of the
-annihilator of some `x : M`. -/
+/-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
+of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
   I.IsPrime ∧ ∃ x : M, I = ((⊥ : Submodule R M).colon {x}).radical
 
@@ -176,7 +180,7 @@ theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPri
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
-theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
+theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x, I = (⊥ : Submodule R M).colon {x} :=
   (⊥ : Submodule R M).isAssociatedPrime_iff
 
@@ -199,18 +203,16 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
 
 variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
-    (hx : x ≠ 0) :
-    ∃ P : Ideal R, IsAssociatedPrime P M ∧ ((⊥ : Submodule R M).colon {x}).radical ≤ P := by
+    (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ (colon ⊥ {x}).radical ≤ P := by
   obtain ⟨P, ⟨l, h₁, y, rfl⟩, h₃⟩ :=
     set_has_maximal_iff_noetherian.mpr H
       { P | (colon ⊥ {x}).radical ≤ P ∧ P ≠ ⊤ ∧ ∃ y : M, P = (colon ⊥ {y}).radical }
       ⟨_, rfl.le, by simpa, x, rfl⟩
   refine ⟨_, ⟨⟨h₁, ?_⟩, y, rfl⟩, l⟩
-  intro a b hab
+  rintro a b ⟨k, hk⟩
   rw [or_iff_not_imp_left]
   intro ha
-  simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hab
-  obtain ⟨k, hk⟩ := hab
+  simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hk
   replace ha := forall_not_of_not_exists ha k
   have H₁ : (colon ⊥ {y} : Ideal R).radical ≤ (colon ⊥ {a ^ k • y}).radical := by
     intro c hc
