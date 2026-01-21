@@ -42,7 +42,7 @@ noncomputable def measureT : Measure ℝ :=
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
 theorem integral_chebMeasT (f : ℝ → ℝ) :
-    ∫ x, f x ∂chebMeasT = ∫ x in -1..1, (f x) * √(1 - x ^ 2)⁻¹ := by
+    ∫ x, f x ∂chebMeasT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
   rw [integral_of_le (by norm_num), chebMeasT,
     restrict_withDensity (by measurability),
     integral_withDensity_eq_integral_smul (by measurability)]
