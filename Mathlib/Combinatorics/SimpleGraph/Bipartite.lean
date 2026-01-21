@@ -322,6 +322,7 @@ theorem even_length_iff_congr {α} {G : SimpleGraph α}
       rw [← not_iff, ← Bool.eq_iff_iff]
       exact c.valid h
     tauto
+
 lemma even_length_iff_same_color
     {c : G.Coloring (Fin 2)}
     {u v : V} (p : G.Walk u v) :
