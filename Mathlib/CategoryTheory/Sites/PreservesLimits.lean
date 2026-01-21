@@ -63,10 +63,6 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesLimit F.op X
       (isoWhiskerRight (J.uliftYonedaOpCompCoyoneda) ((evaluation _ _ ).obj X)).symm this
     exact isLimitOfPreserves _ hc.op⟩
 
-instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val] :
-    PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
-  preservesColimit := inferInstance
-
 instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesColimit F.op X.val] :
     PreservesLimit F (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
   preserves {c} hc := ⟨by
@@ -77,6 +73,10 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesColimit F.op
     suffices IsColimit ((X.val ⋙ uliftFunctor).mapCocone c.op) from IsColimit.mapCoconeEquiv
       (isoWhiskerRight (J.uliftYonedaOpCompCoyoneda) ((evaluation _ _ ).obj X)).symm this
     exact isColimitOfPreserves _ hc.op⟩
+
+instance [∀ X : Sheaf J (Type (max v v')), PreservesLimitsOfShape Kᵒᵖ X.val] :
+    PreservesColimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
+  preservesColimit := inferInstance
 
 instance [∀ X : Sheaf J (Type (max v v')), PreservesColimitsOfShape Kᵒᵖ X.val] :
     PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
