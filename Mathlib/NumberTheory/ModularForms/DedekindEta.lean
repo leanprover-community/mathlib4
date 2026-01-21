@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.LogDerivUniformlyOn
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Summable
+public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+
 
 /-!
 # Dedekind eta function
@@ -29,7 +32,7 @@ differentiable on the upper half-plane.
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
 
-open UpperHalfPlane hiding I
+open _root_.UpperHalfPlane hiding I
 
 open scoped Interval Real NNReal ENNReal Topology BigOperators Nat
 
@@ -144,10 +147,9 @@ lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
   apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
     (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨z, hz⟩)).mul_left
     (-2 * π * I))).congr
-  intro b
-  field_simp [one_sub_eta_q_ne_zero b hz]
-  ring
+  grind [one_sub_eta_q_ne_zero _ hz]
 
+open EisensteinSeries in
 lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z := by
   unfold ModularForm.eta
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
@@ -159,16 +161,13 @@ lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z
   rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
   simp only [logDeriv_q_term z, HG, tsum_logDeriv_eta_q z, E2, one_div,
     mul_inv_rev, Pi.smul_apply, smul_eq_mul]
-  rw [G2_q_exp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
+  rw [G2_eq_tsum_cexp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
     (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
   congr 1
   · field_simp
     ring
-  · field_simp [tsum_pnat_eq_tsum_succ (f := fun n ↦ n * cexp (2 * π * I * z) ^ n
-      / (1 - cexp (2 * π * I * z) ^ n )), eta_q_eq_pow]
-    simp_rw [← tsum_mul_left, ← tsum_mul_right, ← tsum_neg]
-    congr
-    ext n
-    ring_nf
+  · simp [eta_q_eq_pow,  ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
+        n * cexp (2 * π * I * z) ^ n / (1 - cexp (2 * π * I * z) ^ n)), ← tsum_neg]
+    grind
 
 end ModularForm
