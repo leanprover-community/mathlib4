@@ -66,17 +66,17 @@ The field is named `smooth_smul` following Mathlib conventions, even though it a
   fiber bundle structure
 -/
 public class SmoothLeftGAction
-{𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
-{E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
-{E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
-{H_G : Type*} [TopologicalSpace H_G] (I_G : ModelWithCorners 𝕜 E_G H_G)
-{H_M : Type*} [TopologicalSpace H_M] (I_M : ModelWithCorners 𝕜 E_M H_M)
-(G : Type*) [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
-(M : Type*) [TopologicalSpace M] [ChartedSpace H_M M]
-[MulAction G M]
-[IsManifold I_G n G]
-[IsManifold I_M n M] : Prop where
- (smooth_smul : ContMDiff (I_G.prod I_M) I_M n (fun p : G × M => p.1 •> p.2))
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
+    {E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
+    {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
+    {H_G : Type*} [TopologicalSpace H_G] (I_G : ModelWithCorners 𝕜 E_G H_G)
+    {H_M : Type*} [TopologicalSpace H_M] (I_M : ModelWithCorners 𝕜 E_M H_M)
+    (G : Type*) [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H_M M]
+    [MulAction G M]
+    [IsManifold I_G n G]
+    [IsManifold I_M n M] : Prop where
+    (smooth_smul : ContMDiff (I_G.prod I_M) I_M n (fun p : G × M => p.1 •> p.2))
 
 /-- An `n`-times continuously differentiable right action of a Lie group `G` on a manifold `M`.
 
@@ -113,18 +113,17 @@ The field is named `smooth_smul` following Mathlib conventions, even though it a
 - For principal bundles, right actions are typically required for the structure group
 -/
 public class SmoothRightGAction
- {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
- {E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
- {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
- {H_G : Type*} [TopologicalSpace H_G] (I_G : ModelWithCorners 𝕜 E_G H_G)
- {H_M : Type*} [TopologicalSpace H_M] (I_M : ModelWithCorners 𝕜 E_M H_M)
- (G : Type*) [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
- (M : Type*) [TopologicalSpace M] [ChartedSpace H_M M]
- [MulAction (MulOpposite G) M]
- [IsManifold I_G n G]
- [IsManifold I_M n M]
- : Prop where
- smooth_smul : ContMDiff (I_M.prod I_G) I_M n (fun p : M × G => p.1 <• p.2)
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
+    {E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
+    {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
+    {H_G : Type*} [TopologicalSpace H_G] (I_G : ModelWithCorners 𝕜 E_G H_G)
+    {H_M : Type*} [TopologicalSpace H_M] (I_M : ModelWithCorners 𝕜 E_M H_M)
+    (G : Type*) [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H_M M]
+    [MulAction (MulOpposite G) M]
+    [IsManifold I_G n G]
+    [IsManifold I_M n M] : Prop where
+    smooth_smul : ContMDiff (I_M.prod I_G) I_M n (fun p : M × G => p.1 <• p.2)
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {n : WithTop ℕ∞}
@@ -190,31 +189,31 @@ Together, `is_free` and `is_transitive` mean that each fiber is a principal homo
 space (also called a G-torsor in some contexts) for G.
 -/
 public structure PrincipalBundleCore
-  (ι : Type uP)
-  {𝕜 : Type uK} [NontriviallyNormedField 𝕜]
-  {n : WithTop ℕ∞}
-  {E_B : Type uB} {E_F : Type uF} {E_G : Type uG}
-  [NormedAddCommGroup E_B] [NormedSpace 𝕜 E_B]
-  [NormedAddCommGroup E_F] [NormedSpace 𝕜 E_F]
-  [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
-  {H_B : Type uH} {H_F : Type uI} {H_G : Type uG}
-  [TopologicalSpace H_B] [TopologicalSpace H_F] [TopologicalSpace H_G]
-  {I_B : ModelWithCorners 𝕜 E_B H_B}
-  {I_F : ModelWithCorners 𝕜 E_F H_F}
-  {I_G : ModelWithCorners 𝕜 E_G H_G}
-  (B : Type uB) [TopologicalSpace B] [ChartedSpace H_B B] [IsManifold I_B n B]
-  (F : Type uF) [TopologicalSpace F]
-  [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
-  (core : FiberBundleCore ι B F)
-  [MulAction (MulOpposite G) (TotalSpace F (core.Fiber))]
-  [ChartedSpace (ModelProd H_B H_F) (TotalSpace F core.Fiber)]
-  [IsManifold (ModelWithCorners.prod I_B I_F) n (TotalSpace F core.Fiber)]
-  [SmoothRightGAction n I_G (ModelWithCorners.prod I_B I_F) G (TotalSpace F core.Fiber)]
-  where
-  (respects_fibres : ∀ (p : TotalSpace F (core.Fiber)) (g : G), core.proj (p <• g) = core.proj p)
-  (is_free : ∀ (g : G), stabilizer G g = ⊥)
-  (is_transitive : ∀ (b : B) (p q : TotalSpace F (core.Fiber)),
-    core.proj p = b → core.proj q = b → q ∈ orbit (MulOpposite G) p)
+    (ι : Type uP)
+    {𝕜 : Type uK} [NontriviallyNormedField 𝕜]
+    {n : WithTop ℕ∞}
+    {E_B : Type uB} {E_F : Type uF} {E_G : Type uG}
+    [NormedAddCommGroup E_B] [NormedSpace 𝕜 E_B]
+    [NormedAddCommGroup E_F] [NormedSpace 𝕜 E_F]
+    [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
+    {H_B : Type uH} {H_F : Type uI} {H_G : Type uG}
+    [TopologicalSpace H_B] [TopologicalSpace H_F] [TopologicalSpace H_G]
+    {I_B : ModelWithCorners 𝕜 E_B H_B}
+    {I_F : ModelWithCorners 𝕜 E_F H_F}
+    {I_G : ModelWithCorners 𝕜 E_G H_G}
+    (B : Type uB) [TopologicalSpace B] [ChartedSpace H_B B] [IsManifold I_B n B]
+    (F : Type uF) [TopologicalSpace F]
+    [TopologicalSpace G] [ChartedSpace H_G G] [Group G] [LieGroup I_G n G]
+    (core : FiberBundleCore ι B F)
+    [MulAction (MulOpposite G) (TotalSpace F (core.Fiber))]
+    [ChartedSpace (ModelProd H_B H_F) (TotalSpace F core.Fiber)]
+    [IsManifold (ModelWithCorners.prod I_B I_F) n (TotalSpace F core.Fiber)]
+    [SmoothRightGAction n I_G (ModelWithCorners.prod I_B I_F) G (TotalSpace F core.Fiber)]
+    where
+    (respects_fibres : ∀ (p : TotalSpace F (core.Fiber)) (g : G), core.proj (p <• g) = core.proj p)
+    (is_free : ∀ (g : G), stabilizer G g = ⊥)
+    (is_transitive : ∀ (b : B) (p q : TotalSpace F (core.Fiber)),
+      core.proj p = b → core.proj q = b → q ∈ orbit (MulOpposite G) p)
 
 -- TODO: move to better location
 instance {α : Type*} [DecidableEq α] [Fintype α] : MulAction (orthogonalGroup α ℝ) (α -> ℝ) where
