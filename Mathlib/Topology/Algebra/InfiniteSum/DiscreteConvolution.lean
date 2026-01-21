@@ -197,14 +197,17 @@ variable [Module S E] [Module S E'] [Module S E''] [Module S F'] [Module S G]
 variable [TopologicalSpace G]
 
 /-- Triple convolution exists at `x` when the sum over `tripleFiber x` is summable. -/
-@[to_additive (dont_translate := S) TripleAddConvolutionExistsAt]
+@[to_additive (dont_translate := S) TripleAddConvolutionExistsAt
+  /-- Triple additive convolution exists at `x` when the sum over
+  `tripleAddFiber x` is summable. -/]
 def TripleConvolutionExistsAt
     (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
     (f : M → E) (g : M → E') (h : M → E'') (x : M) : Prop :=
   Summable fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))
 
 /-- Triple convolution exists when it exists at every point. -/
-@[to_additive (dont_translate := S) TripleAddConvolutionExists]
+@[to_additive (dont_translate := S) TripleAddConvolutionExists
+  /-- Triple additive convolution exists when it exists at every point. -/]
 def TripleConvolutionExists
     (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
     (f : M → E) (g : M → E') (h : M → E'') : Prop :=
@@ -227,7 +230,12 @@ variable [TopologicalSpace F]
 def convolution (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : M → F :=
   fun x => ∑' ab : mulFiber x, L (f ab.1.1) (g ab.1.2)
 
+/-- Notation for discrete convolution with explicit bilinear map:
+`(f ⋆[L] g) x = ∑' ab : mulFiber x, L (f ab.1) (g ab.2)`. -/
 scoped notation:67 f:68 " ⋆[" L "] " g:67 => convolution L f g
+
+/-- Notation for additive convolution with explicit bilinear map:
+`(f ⋆₊[L] g) x = ∑' ab : addFiber x, L (f ab.1) (g ab.2)`. -/
 scoped notation:67 f:68 " ⋆₊[" L "] " g:67 => addConvolution L f g
 
 end Definition
@@ -278,11 +286,16 @@ variable [Monoid M] [CommSemiring S] [AddCommMonoid E] [AddCommMonoid E'] [AddCo
 variable [Module S E] [Module S E'] [Module S F]
 variable [TopologicalSpace F]
 
-@[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt]
+/-- The convolution of `f` and `g` with bilinear map `L` exists at `x` when the sum over
+the fiber is summable. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExistsAt
+  /-- Additive convolution exists at `x` when the fiber sum is summable. -/]
 def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
   Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
 
-@[to_additive (dont_translate := S E E' F) AddConvolutionExists]
+/-- The convolution of `f` and `g` with bilinear map `L` exists when it exists at every point. -/
+@[to_additive (dont_translate := S E E' F) AddConvolutionExists
+  /-- Additive convolution exists when it exists at every point. -/]
 def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
   ∀ x, ConvolutionExistsAt L f g x
 
