@@ -25,6 +25,11 @@ lemma segment_subset_closedBall {E : Type*} [SeminormedAddCommGroup E] [NormedSp
   (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
     (Metric.mem_closedBall.mpr (dist_comm y x ▸ le_refl _))
 
+/-- `f` maps `univ` into `t` if and only if the range of `f` is contained in `t`. -/
+lemma Set.mapsTo_univ_iff_range_subset {α : Type*} {β : Type*} {t : Set β} {f : α → β} :
+    MapsTo f univ t ↔ range f ⊆ t :=
+  mapsTo_univ_iff.trans range_subset_iff.symm
+
 namespace SmoothFlow
 
 noncomputable section
@@ -135,7 +140,6 @@ lemma continuous_integrand_pi₂ {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : S
 
 variable [CompleteSpace E]
 
--- consider new lemma for `MapsTo α univ u ↔ range α ⊆ u`
 lemma continuous_integralFun {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
@@ -432,10 +436,8 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
   intro ε hε
   have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
-  -- missing lemma for `MapsTo` iff `range_subset`
   obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu (range_subset_iff.mpr (mapsTo_univ_iff.mp hα))
-    hpos
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu (mapsTo_univ_iff_range_subset.mp hα) hpos
   rw [Metric.eventually_nhds_iff]
   refine ⟨δ, hδ, fun dα₀ hdα₀ ↦ ?_⟩
   apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
@@ -488,15 +490,15 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
         · intro z hz
           apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
           apply (h x (mem_range_self _) z _).1
-          apply (mem_closedBall'.mp (dist_comm x y ▸ segment_subset_closedBall x y hz)).trans_lt
-          rw [dist_eq_norm]
+          apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+          rw [dist_comm, dist_eq_norm]
           simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
           exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
         · intro z hz
           rw [← dist_eq_norm, dist_comm]
           apply (h x (mem_range_self _) z _).2.le
-          apply (mem_closedBall'.mp (dist_comm x y ▸ segment_subset_closedBall x y hz)).trans_lt
-          rw [dist_eq_norm]
+          apply (mem_closedBall'.mp (segment_subset_closedBall x y hz)).trans_lt
+          rw [dist_comm, dist_eq_norm]
           simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
           exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
       _ ≤ ε / (1 + |tmax - tmin|) * ‖dα₀‖ := by
