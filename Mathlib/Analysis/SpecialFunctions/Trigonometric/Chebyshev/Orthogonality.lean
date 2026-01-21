@@ -118,7 +118,7 @@ theorem integral_chebMeasT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
   simpa using Iff.mp intervalIntegrable_iff' <|
     intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul <| by simpa
 
-theorem integral_T_real_zero :
+theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂chebMeasT = π := by
   rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]; simp
 
