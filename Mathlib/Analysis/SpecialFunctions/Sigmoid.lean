@@ -118,7 +118,7 @@ open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
   · rintro - ⟨x, rfl⟩
-    simp only [mem_Ioo]
+    push _ ∈ _
     bound
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩
