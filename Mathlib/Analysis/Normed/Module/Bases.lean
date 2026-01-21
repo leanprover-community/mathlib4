@@ -91,7 +91,7 @@ theorem range_proj (n : ℕ) :
     use e i
     rw [proj_basis_element , if_pos i.is_lt]
 
-/-- The dimension of the range of the canonical projection P n is n. -/
+/-- The dimension of the range of the canonical projection `P n` is `n`. -/
 theorem dim_range_proj (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (b.proj n)) = n := by
   rw [range_proj, finrank_span_eq_card]
   · exact Fintype.card_fin n
@@ -113,9 +113,9 @@ theorem proj_uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.pr
   use M
 
 /-- The basis constant is the infimum of the bounds on the canonical projections. -/
-def basis_constant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
+def basisConstant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
 
-/-- Q_n = P_{n+1} - P_n. -/
+/-- `Q_n = P_{n+1} - P_n`. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
 /-- The sum of Q i over i < n equals P n. -/
@@ -125,7 +125,7 @@ lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) : ∑ i ∈ Fi
   | zero => simp [h0]
   | succ n ih => rw [Finset.sum_range_succ, ih, Q]; abel
 
-/-- The operators Q i are orthogonal projections. -/
+/-- The operators `Q i` are orthogonal projections. -/
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
   simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
@@ -140,7 +140,7 @@ lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m
         min_eq_right_of_lt (Nat.lt_succ_of_lt h')]
       abel
 
-/-- The rank of Q n is 1. -/
+/-- The rank of `Q n` is `1`. -/
 lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     (h0 : P 0 = 0)
     (hrank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
@@ -154,10 +154,10 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     · rintro x ⟨y, rfl⟩; rw [← sub_add_cancel (P (n + 1) y) (P n y)]
       exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
     · rw [sup_le_iff]
-      have hV: ∀ y : X, P n y ∈ LinearMap.range (P (n + 1)) := by
+      have hV (y : X) :  P n y ∈ LinearMap.range (P (n + 1)) := by
         intro y
         use P n y
-        rw [hcomp (n+1) n y, min_eq_right (Nat.le_succ n)]
+        rw [hcomp (n + 1) n y, min_eq_right (Nat.le_succ n)]
       constructor
       · rintro x ⟨y, rfl⟩
         apply Submodule.sub_mem _ (LinearMap.mem_range_self _ _)
@@ -168,21 +168,20 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   have h_disjoint : U ⊓ V = ⊥ := by
     rw [Submodule.eq_bot_iff]
     rintro x ⟨⟨y, rfl⟩, ⟨z, hz⟩⟩
-    -- have : Q P n (P n z) = 0 := by simp [Q, h_comm, Nat.min_succ_self, min_self]
     have : Q n (P n z) = 0 := by
       simp_rw [Q, SchauderBasis.Q, ContinuousLinearMap.sub_apply, hcomp,
         min_eq_right (Nat.le_succ n), min_self, sub_self]
     rw [← hz, ← this, hz, Q_ortho hcomp, if_pos rfl]
   have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
-      intro n
-      by_cases hn : n = 0
-      · rw [hn]
-        apply FiniteDimensional.of_rank_eq_zero
-        apply Submodule.rank_eq_zero.mpr
-        exact LinearMap.range_eq_bot.mpr (by simp only [h0, ContinuousLinearMap.coe_zero])
-      apply FiniteDimensional.of_finrank_pos
-      rw [hrank n]
-      exact Nat.pos_of_ne_zero hn
+    intro n
+    by_cases hn : n = 0
+    · rw [hn]
+      apply FiniteDimensional.of_rank_eq_zero
+      apply Submodule.rank_eq_zero.mpr
+      exact LinearMap.range_eq_bot.mpr (by simp only [h0, ContinuousLinearMap.coe_zero])
+    apply FiniteDimensional.of_finrank_pos
+    rw [hrank n]
+    exact Nat.pos_of_ne_zero hn
   have : FiniteDimensional 𝕜 U := by
     have : U ≤ LinearMap.range (P (n+1)) := by
       simp only [U, Q, SchauderBasis.Q]
@@ -205,12 +204,12 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 
     ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 X e) := by
   let Q := Q P
   have hrankQ := Q_rank_one h0 hdim hcomp
-  have : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
-      intro n
-      refine exists_mem_ne_zero_of_rank_pos ?_
-      apply Module.lt_rank_of_lt_finrank
-      rw [hrankQ n]
-      exact Nat.zero_lt_one
+  have (n : ℕ) :  ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
+    intro n
+    refine exists_mem_ne_zero_of_rank_pos ?_
+    apply Module.lt_rank_of_lt_finrank
+    rw [hrankQ n]
+    exact Nat.zero_lt_one
   choose e he_in_range he_ne using this
   have h_range_eq_span : ∀ n, LinearMap.range (Q n) = Submodule.span 𝕜 {e n} := by
     intro n
