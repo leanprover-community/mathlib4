@@ -269,9 +269,7 @@ lemma IsTree.isPath_length_eq_dist (hT : G.IsTree) (v w : V) (p : G.Walk v w)
   obtain ⟨q, hq_len⟩ := hT.isConnected.exists_walk_length_eq_dist v w
   have hq_path : q.IsPath := q.isPath_of_length_eq_dist hq_len
   obtain ⟨r, _, hr_unique⟩ := hT.existsUnique_path v w
-  have hp_eq_r : p = r := hr_unique p hp
-  have hq_eq_r : q = r := hr_unique q hq_path
-  rw [hp_eq_r, ← hq_eq_r, hq_len]
+  grind
 
 theorem isTree_iff_uniqueShortest_path :
     G.IsTree ↔ Nonempty V ∧ ∀ v w : V, v ≠ w →
