@@ -226,10 +226,9 @@ theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
     have h_nodup := hg3.nodup_iff_mem_support.mpr ha
     have : ∃ b c, b ∉ g.support ∧ c ∉ g.support ∧ b ≠ c := by
       simp only [← Finset.mem_compl]
-      rw [← Finset.one_lt_card_iff]
-      rw [← Nat.succ_le_iff, Nat.succ_eq_add_one]
-      rw [← Nat.add_le_add_iff_right, Finset.card_compl_add_card]
-      rwa [hg3.card_support, ← Nat.card_eq_fintype_card]
+      rwa [← Finset.one_lt_card_iff, ← Nat.succ_le_iff, Nat.succ_eq_add_one,
+        ← Nat.add_le_add_iff_right, Finset.card_compl_add_card, hg3.card_support,
+        ← Nat.card_eq_fintype_card]
     obtain ⟨b, c, hb, hc, hbc⟩ := this
     let k := swap a (g a) * (swap b c)
     let k' := swap b c * (swap (g a) (g (g a)))

@@ -54,82 +54,23 @@ open MulAction Equiv.Perm Equiv
 
 namespace Equiv.Perm
 
-variable {α : Type*} [DecidableEq α]
+variable {α : Type*} [DecidableEq α] [Finite α]
 
-theorem mem_support_ofSubtype [Fintype α] {p : α → Prop}
-    [DecidablePred p] (x : α) (u : Perm (Subtype p)) :
-    x ∈ (ofSubtype u).support ↔ ∃ (hx : p x), ⟨x, hx⟩ ∈ u.support := by
-  simp [support_ofSubtype]
-
-lemma exists_Perm_smul_ofSubtype_eq_conj
-    {α : Type*} [Finite α] [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
-    (s : Set α) (k : Perm {x // x ∈ s}) (g : Perm α) :
-    ∃ (x : Perm ↥(g • s)), ofSubtype x = g * ofSubtype k * g⁻¹ := by
-  classical
-  have : Fintype α := Fintype.ofFinite α
-  use subtypePerm (g * ofSubtype k * g⁻¹) ?_
-  · apply Equiv.Perm.ofSubtype_subtypePerm
-    intro x hx
-    replace hx : g⁻¹ • x ∈ (ofSubtype k).support := by aesop
-    rw [mem_support_ofSubtype] at hx
-    obtain ⟨hy, hx⟩ := hx
-    rwa [Set.mem_smul_set_iff_inv_smul_mem]
-  · intro x
-    simp only [Set.mem_smul_set_iff_inv_smul_mem]
-    simpa using ofSubtype_apply_mem_iff_mem k _
-
-theorem Equiv.Perm.support_conj_eq_smul_support
-    {α : Type*} [DecidableEq α] [Fintype α] (g k : Equiv.Perm α) :
-    (g * k * g⁻¹).support = g • k.support := by
-  simp [support_conj, Finset.smul_finset_def, Finset.map_eq_image]
-
-theorem Equiv.Perm.support_conj_eq_smul_support'
-    {α : Type*} [DecidableEq α] [Fintype α] (g k : Equiv.Perm α) :
-    (g⁻¹ * k * g).support = g⁻¹ • k.support := by
-  nth_rewrite 2 [← inv_inv g]
-  exact support_conj_eq_smul_support g⁻¹ k
-
-variable [∀ s : Nat.Combination α 2, DecidablePred fun x ↦ x ∈ s]
-
-theorem mem_rangeOfSubtype_iff
-    {α : Type*} [DecidableEq α] [Fintype α] {p : α → Prop} [DecidablePred p]
-    {g : Perm α} :
-    g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔
-      (g.support : Set α) ⊆ setOf p := by
-  constructor
-  · rintro ⟨k, rfl⟩
-    intro x
-    simp only [Finset.mem_coe, mem_support_ofSubtype, Set.mem_setOf_eq]
-    exact fun ⟨hx, _⟩ ↦ hx
-  · intro hg
-    rw [← Equiv.Perm.ofSubtype_subtypePerm (f := g) (p := p) ?_ ?_]
-    · simp
-    · intro x
-      by_cases hx : x ∈ (g.support : Set α)
-      · simp only [Set.mem_setOf_eq.mp (hg hx), iff_true]
-        apply hg
-        rwa [Finset.mem_coe, Equiv.Perm.apply_mem_support]
-      · suffices g x = x by rw [this]
-        simpa using hx
-    · intro x hx
-      apply hg
-      simpa using hx
-
-theorem conj_smul_rangeOfSubtype {α : Type*} [DecidableEq α] [Finite α] {p : ℕ}
-    (g : Perm α) (s : Nat.Combination α p)
+theorem conj_smul_range_ofSubtype {n : ℕ}
+    (g : Perm α) (s : n.Combination α)
     [DecidablePred fun x ↦ x ∈ g • s] [DecidablePred fun x ↦ x ∈ s] :
     (ofSubtype : Perm { x // x ∈ ↑(g • s) } →*  Perm α).range
       = MulAut.conj g • (ofSubtype : Perm {x // x ∈ s} →* Perm α).range := by
   have : Fintype α := Fintype.ofFinite α
   ext k
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_rangeOfSubtype_iff, SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv]
+  simp only [mem_range_ofSubtype_iff, SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv]
   rw [← Nat.Combination.coe_coe, Nat.Combination.coe_smul,
       Finset.coe_smul_finset, Nat.Combination.coe_coe]
   rw [MulAut.conj_apply, Equiv.Perm.support_conj]
   simp [← Set.image_smul, Perm.smul_def]
 
-variable [Finite α]
+variable [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
 
 /-- The Iwasawa structure of `Perm α` acting on `Nat.Combination α 2`. -/
 @[expose] public def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
@@ -140,7 +81,7 @@ variable [Finite α]
       apply MonoidHom.range_isMulCommutative
     apply isCyclic_of_prime_card (p := 2)
     rw [Nat.card_perm, Nat.card_eq_finsetCard, s.prop, Nat.factorial_two]
-  is_conj g s := conj_smul_rangeOfSubtype g s
+  is_conj g s := conj_smul_range_ofSubtype g s
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     intro g hg
@@ -159,7 +100,7 @@ public theorem alternatingGroup_of_le_of_normal
   rw [← alternatingGroup.commutator_perm_eq hα]
   rw [← Nat.card_eq_fintype_card] at hα
   have : IsPreprimitive (Perm α) (Nat.Combination α 2) := by
-    apply Nat.Combination.isPreprimitive_Perm α (by norm_num)
+    apply Nat.Combination.isPreprimitive_perm α (by norm_num)
       (lt_of_lt_of_le (by norm_num) hα)
     intro h
     rw [h] at hα
@@ -233,7 +174,7 @@ lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingG
   simp only [MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def]
-  rw [← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_rangeOfSubtype]
+  rw [← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_range_ofSubtype]
   apply and_congr
   · convert Iff.rfl
   · simp only [mem_alternatingGroup, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply]
@@ -258,7 +199,7 @@ theorem mem_range_ofSubtype {p : ℕ} (s : Nat.Combination α p) (k : alternatin
       rw [mem_alternatingGroup, sign_ofSubtype] at hk'
       refine ⟨k, ?_, rfl⟩
       convert hk'
-    rw [mem_rangeOfSubtype_iff]
+    rw [mem_range_ofSubtype_iff]
     simpa using hk
 
 theorem range_ofSubtype_conj {p : ℕ} (s : Nat.Combination α p) (g : alternatingGroup α) :
@@ -497,3 +438,56 @@ public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_6 hα hα' hH
 
 end alternatingGroup
+
+
+/-
+variable {α : Type*}
+    (s : Set α) (g : Perm α)
+    [DecidablePred fun x ↦ x ∈ s]
+    [DecidablePred fun x ↦ x ∈ (g • s)]
+
+/-- By conjugation, a permutation `g` induces a `MulEquiv`
+from `Equiv.Perm s` to `Equiv.Perm (g • s)`, for any `s : Set α`. -/
+def subtypePerm_conjEquiv :
+    Perm {x // x ∈ s} ≃* Perm {x // x ∈ g • s} where
+  toFun k := (g * ofSubtype k * g⁻¹).subtypePerm (fun x ↦ by
+    simp [Set.mem_smul_set_iff_inv_smul_mem, ofSubtype_apply_mem_iff_mem])
+  invFun k := (g⁻¹ * ofSubtype k * g).subtypePerm (fun x ↦ by
+    simp only [coe_mul, Function.comp_apply]
+    rw [← Equiv.Perm.smul_def, ← Set.mem_smul_set_iff_inv_smul_mem,
+      ofSubtype_apply_mem_iff_mem k, ← Equiv.Perm.smul_def, Set.smul_mem_smul_set_iff])
+  map_mul' := by simp
+  left_inv k := by
+    ext ⟨x, hx⟩
+    dsimp only [subtypePerm_apply, coe_mul, coe_inv, Function.comp_apply]
+    rw [ofSubtype_apply_of_mem _ (by rwa [← Equiv.Perm.smul_def, Set.smul_mem_smul_set_iff])]
+    simp only [subtypePerm_apply, coe_mul, coe_inv, Function.comp_apply,
+      symm_apply_apply, ofSubtype_apply_of_mem _ hx]
+  right_inv k := by
+    ext ⟨x, hx⟩
+    dsimp only [subtypePerm_apply, coe_mul, coe_inv, Function.comp_apply]
+    rw [ofSubtype_apply_of_mem _ (by simpa [Set.mem_smul_set_iff_inv_smul_mem] using hx)]
+    simp only [subtypePerm_apply, coe_mul, coe_inv, Function.comp_apply,
+      apply_symm_apply, ofSubtype_apply_of_mem _ hx]
+
+theorem subtypePerm_conjEquiv_apply (k : Perm {x // x ∈ s}) (x : ↑(g • s)) :
+    subtypePerm_conjEquiv s g k x = g • (ofSubtype k) (g⁻¹ • x) := by
+  rfl
+
+theorem ofSubtype_subtypePerm_conjEquiv (k : Perm s) :
+    ofSubtype (subtypePerm_conjEquiv s g k) = g * ofSubtype k * g⁻¹ := by
+  ext x
+  by_cases hx : x ∈ g • s
+  · simp [ofSubtype_apply_of_mem _ hx, subtypePerm_conjEquiv_apply]
+  · rw [ofSubtype_apply_of_not_mem _ hx]
+    simp only [coe_mul, Function.comp_apply]
+    rw [ofSubtype_apply_of_not_mem, coe_inv, apply_symm_apply]
+    rwa [Set.mem_smul_set_iff_inv_smul_mem] at hx
+
+lemma exists_perm_smul_ofSubtype_eq_conj (k : Perm {x // x ∈ s}) :
+    ∃ (x : Perm ↥(g • s)), ofSubtype x = g * ofSubtype k * g⁻¹ :=
+  ⟨subtypePerm_conjEquiv _ _ k, ofSubtype_subtypePerm_conjEquiv ..⟩
+
+#find_home! exists_perm_smul_ofSubtype_eq_conj
+-/
+
