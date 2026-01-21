@@ -644,16 +644,43 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ioc_zero [TopologicalSpac
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Ico_zero (toDual x)
 
-/-- If a function has bounded variation, then the variation on small closed-open
-intervals to the left of any point tends to `0`. -/
+/-- If a function has bounded variation and is left-continuous at a point, then the variation on
+small closed intervals to the left of this point tends to `0`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_left
     [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α}
-    (hf : BoundedVariationOn f s) (x : α) (h : ContinuousWithinAt f (s ∩ Iic x) x) :
+    (hf : BoundedVariationOn f s) {x : α} (h : ContinuousWithinAt f (s ∩ Iic x) x) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Icc y x)) (𝓝[s] x) (𝓝 0) := by
-  have W := hf.tendsto
+  rcases eq_or_neBot (𝓝[s ∩ Iio x] x) with h' | h'
+  · apply tendsto_const_nhds.congr'
+    have : s = (s ∩ Iio x) ∪ (s ∩ Ici x) := by grind
+    nth_rewrite 1 [this]
+    simp only [nhdsWithin_union, h', bot_le, sup_of_le_right]
+    filter_upwards [self_mem_nhdsWithin] with y hy
+    apply (eVariationOn.subsingleton _ (by grind [Set.Subsingleton])).symm
+  apply (hf.tendsto_eVariationOn_Ico_zero x).congr (fun y ↦ ?_)
+  rcases le_or_gt x y with hy | hy
+  · rw [eVariationOn.subsingleton, eVariationOn.subsingleton] <;>
+      grind [Set.Subsingleton]
+  have W := eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt (f := f)
+    (s := s ∩ Icc y x) (a := x) ?_ ?_
+  · convert W using 2 <;> grind
+  · rwa [show s ∩ Icc y x ∩ Iio x = (s ∩ Iio x) ∩ Ici y by grind, nhdsWithin_inter_of_mem']
+    apply mem_nhdsWithin_of_mem_nhds
+    exact Ici_mem_nhds hy
+  · apply h.mono (by grind)
 
-
-#exit
+/-- If a function has bounded variation and is right-continuous at a point, then the variation on
+small closed intervals to the right of this point tends to `0`. -/
+theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
+    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α}
+    (hf : BoundedVariationOn f s) (x : α) (h : ContinuousWithinAt f (s ∩ Ici x) x) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Icc x y)) (𝓝[s] x) (𝓝 0) := by
+  have : (fun y ↦ eVariationOn f (s ∩ Icc x y)) =
+      (fun y ↦ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s ∩ Icc (toDual y) (toDual x))) := by
+    ext y
+    rw [Icc_toDual, ← preimage_inter, eVariationOn_ofDual]
+  rw [this]
+  exact hf.ofDual.tendsto_eVariationOn_Icc_zero_left h
 
 /-- A bounded variation function has a limit on its right within a set. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace E] [TopologicalSpace α]
