@@ -285,53 +285,45 @@ end MonoidWithZero
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
+variable {a b c : M₀}
+variable [MulZeroOneClass M₀]
 
--- see Note [lower instance priority]
-instance (priority := 10) CancelMonoidWithZero.to_noZeroDivisors : NoZeroDivisors M₀ :=
-  ⟨fun ab0 => or_iff_not_imp_left.mpr fun ha => mul_left_cancel₀ ha <|
-    ab0.trans (mul_zero _).symm⟩
-
-@[simp]
-theorem mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
-  by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
-
-@[simp]
-theorem mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
-  by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
-
-theorem mul_right_eq_self₀ : a * b = a ↔ b = 1 ∨ a = 0 :=
+theorem mul_right_eq_self₀ [IsLeftCancelMulZero M₀] : a * b = a ↔ b = 1 ∨ a = 0 :=
   calc
     a * b = a ↔ a * b = a * 1 := by rw [mul_one]
     _ ↔ b = 1 ∨ a = 0 := mul_eq_mul_left_iff
 
-theorem mul_left_eq_self₀ : a * b = b ↔ a = 1 ∨ b = 0 :=
+theorem mul_left_eq_self₀ [IsRightCancelMulZero M₀] : a * b = b ↔ a = 1 ∨ b = 0 :=
   calc
     a * b = b ↔ a * b = 1 * b := by rw [one_mul]
     _ ↔ a = 1 ∨ b = 0 := mul_eq_mul_right_iff
 
 @[simp]
-theorem mul_eq_left₀ (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
+theorem mul_eq_left₀ [IsLeftCancelMulZero M₀] (ha : a ≠ 0) : a * b = a ↔ b = 1 := by
   rw [Iff.comm, ← mul_right_inj' ha, mul_one]
 
 @[simp]
-theorem mul_eq_right₀ (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
+theorem mul_eq_right₀ [IsRightCancelMulZero M₀] (hb : b ≠ 0) : a * b = b ↔ a = 1 := by
   rw [Iff.comm, ← mul_left_inj' hb, one_mul]
 
 @[simp]
-theorem left_eq_mul₀ (ha : a ≠ 0) : a = a * b ↔ b = 1 := by rw [eq_comm, mul_eq_left₀ ha]
+theorem left_eq_mul₀ [IsLeftCancelMulZero M₀] (ha : a ≠ 0) : a = a * b ↔ b = 1 := by
+  rw [eq_comm, mul_eq_left₀ ha]
 
 @[simp]
-theorem right_eq_mul₀ (hb : b ≠ 0) : b = a * b ↔ a = 1 := by rw [eq_comm, mul_eq_right₀ hb]
+theorem right_eq_mul₀ [IsRightCancelMulZero M₀] (hb : b ≠ 0) : b = a * b ↔ a = 1 := by
+  rw [eq_comm, mul_eq_right₀ hb]
 
-/-- An element of a `CancelMonoidWithZero` fixed by right multiplication by an element other
-than one must be zero. -/
-theorem eq_zero_of_mul_eq_self_right (h₁ : b ≠ 1) (h₂ : a * b = a) : a = 0 :=
+/-- An element of a left-cancellative `MulZeroOneClass` fixed by right multiplication by
+an element other than one must be zero. -/
+theorem eq_zero_of_mul_eq_self_right [IsLeftCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : a * b = a) :
+    a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_left_cancel₀ ha <| h₂.symm ▸ (mul_one a).symm
 
-/-- An element of a `CancelMonoidWithZero` fixed by left multiplication by an element other
-than one must be zero. -/
-theorem eq_zero_of_mul_eq_self_left (h₁ : b ≠ 1) (h₂ : b * a = a) : a = 0 :=
+/-- An element of a right-cancellative `MulZeroOneClass` fixed by left multiplication by
+an element other than one must be zero. -/
+theorem eq_zero_of_mul_eq_self_left [IsRightCancelMulZero M₀] (h₁ : b ≠ 1) (h₂ : b * a = a) :
+    a = 0 :=
   Classical.byContradiction fun ha => h₁ <| mul_right_cancel₀ ha <| h₂.symm ▸ (one_mul a).symm
 
 end CancelMonoidWithZero
@@ -386,12 +378,11 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 
 -- see Note [lower instance priority]
-instance (priority := 10) GroupWithZero.toCancelMonoidWithZero : CancelMonoidWithZero G₀ :=
-  { (‹_› : GroupWithZero G₀) with
-    mul_left_cancel_of_ne_zero {x} hx y z h := by
-      dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z],
-    mul_right_cancel_of_ne_zero {x} hx y z h := by
-      dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z] }
+instance (priority := 10) : IsCancelMulZero G₀ where
+  mul_left_cancel_of_ne_zero {x} hx y z h := by
+    dsimp only at h; rw [← inv_mul_cancel_left₀ hx y, h, inv_mul_cancel_left₀ hx z]
+  mul_right_cancel_of_ne_zero {x} hx y z h := by
+    dsimp only at h; rw [← mul_inv_cancel_right₀ hx y, h, mul_inv_cancel_right₀ hx z]
 
 end GroupWithZero
 
