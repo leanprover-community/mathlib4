@@ -288,10 +288,7 @@ variable [Ring R] [IsTopologicalRing R]
 induced by left multiplication by a unit. -/
 @[simps apply]
 def mulLeft (r : Rˣ) : R ≃ₜ+ R where
-  toFun x := r * x
-  invFun y := r⁻¹ * y
-  left_inv x := by simp
-  right_inv y := by simp
+  __ := r.mulLeft
   map_add' x₁ x₂ := left_distrib ↑r x₁ x₂
   continuous_toFun := continuous_mul_left _
   continuous_invFun := continuous_mul_left _
