@@ -774,11 +774,11 @@ theorem mk_compl_eq_mk_compl_infinite {α : Type*} [Infinite α] {s t : Set α} 
   rw [mk_compl_of_infinite s hs, mk_compl_of_infinite t ht]
 
 theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α] {s : Set α}
-    {t : Set β} (h1 : (lift.{max v w, u} #α) = (lift.{max u w, v} #β))
-    (h2 : lift.{max v w, u} #s = lift.{max u w, v} #t) :
-    lift.{max v w} #(sᶜ : Set α) = lift.{max u w} #(tᶜ : Set β) := by
+    {t : Set β} (h1 : (lift.{v, u} #α) = (lift.{u, v} #β))
+    (h2 : lift.{v, u} #s = lift.{u, v} #t) :
+    lift.{v} #(sᶜ : Set α) = lift.{u} #(tᶜ : Set β) := by
   cases nonempty_fintype α
-  rcases lift_mk_eq.{u, v, w}.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
+  rcases lift_mk_eq'.1 h1 with ⟨e⟩; letI : Fintype β := Fintype.ofEquiv α e
   replace h1 : Fintype.card α = Fintype.card β := (Fintype.ofEquiv_card _).symm
   classical
     lift s to Finset α using s.toFinite
@@ -790,7 +790,7 @@ theorem mk_compl_eq_mk_compl_finite_lift {α : Type u} {β : Type v} [Finite α]
 theorem mk_compl_eq_mk_compl_finite {α β : Type u} [Finite α] {s : Set α} {t : Set β}
     (h1 : #α = #β) (h : #s = #t) : #(sᶜ : Set α) = #(tᶜ : Set β) := by
   rw [← lift_inj.{u, u}]
-  apply mk_compl_eq_mk_compl_finite_lift.{u, u, u}
+  apply mk_compl_eq_mk_compl_finite_lift.{u, u}
   <;> rwa [lift_inj]
 
 theorem mk_compl_eq_mk_compl_finite_same {α : Type u} [Finite α] {s t : Set α} (h : #s = #t) :
@@ -814,10 +814,9 @@ theorem extend_function {α β : Type*} {s : Set α} (f : s ↪ β)
 theorem extend_function_finite {α : Type u} {β : Type v} [Finite α] {s : Set α} (f : s ↪ β)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by
   apply extend_function.{u, v} f
-  obtain ⟨g⟩ := id h
-  rw [← lift_mk_eq.{u, v, max u v}] at h
-  rw [← lift_mk_eq.{u, v, max u v}, mk_compl_eq_mk_compl_finite_lift.{u, v, max u v} h]
-  rw [mk_range_eq_lift.{u, v, max u v}]; exact f.2
+  rw [← lift_mk_eq'] at h
+  rw [← lift_mk_eq', mk_compl_eq_mk_compl_finite_lift h]
+  rw [mk_range_eq_of_injective]; exact f.2
 
 theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : #s < #α)
     (h : Nonempty (α ≃ β)) : ∃ g : α ≃ β, ∀ x : s, g x = f x := by

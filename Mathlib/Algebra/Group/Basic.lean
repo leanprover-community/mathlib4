@@ -993,10 +993,10 @@ end CommGroup
 
 section multiplicative
 
-variable [Monoid β] (p r : α → α → Prop) [IsTotal α r] (f : α → α → β)
+variable [Monoid β] (p r : α → α → Prop) [Std.Total r] (f : α → α → β)
 
-@[to_additive additive_of_symmetric_of_isTotal]
-lemma multiplicative_of_symmetric_of_isTotal
+@[to_additive additive_of_symmetric_of_total]
+lemma multiplicative_of_symmetric_of_total
     (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
@@ -1012,21 +1012,31 @@ lemma multiplicative_of_symmetric_of_isTotal
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
 
+@[deprecated (since := "2026-01-09")]
+alias additive_of_symmetric_of_isTotal := additive_of_symmetric_of_total
+@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
+alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_total
+
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
   We allow restricting to a subset specified by a predicate `p`. -/
-@[to_additive additive_of_isTotal /-- If a binary function from a type equipped with a total
+@[to_additive additive_of_total /-- If a binary function from a type equipped with a total
   relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
   order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
   `r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
-theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
+theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  apply multiplicative_of_symmetric_of_total (fun a b => p a ∧ p b) r f fun _ _ => And.symm
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
+
+@[deprecated (since := "2026-01-09")]
+alias additive_of_isTotal := additive_of_total
+@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
+alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
 
