@@ -385,8 +385,8 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).excenter signs = s.excenter signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  rw [eq_comm]
-  convert h.excenter_map S.subtypeₐᵢ
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (h.excenter_map S.subtypeₐᵢ).symm
 
 /-- The incenter of a simplex. -/
 def incenter : P :=
@@ -1079,8 +1079,8 @@ variable {s} in
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.restrict S hS).touchpointWeights signs = s.touchpointWeights signs := by
   rw [← s.excenterExists_restrict S hS] at h
-  rw [eq_comm]
-  convert h.touchpointWeights_map S.subtypeₐᵢ
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  exact (h.touchpointWeights_map S.subtypeₐᵢ).symm
 
 variable {s} in
 lemma ExcenterExists.sign_touchpointWeights {signs : Finset (Fin (n + 1))}
