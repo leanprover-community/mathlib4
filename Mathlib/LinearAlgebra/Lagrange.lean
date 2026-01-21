@@ -485,7 +485,7 @@ theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} 
     (derivative^[k] P).eval x =
       k.factorial * ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, (v i - v j)) *
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
-  rw (occs := [1]) [eq_interpolate hvs hP]
+  nth_rewrite 1 [eq_interpolate hvs hP]
   rw [iterate_derivative_interpolate _ hvs hk, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul,
     eval_finset_sum]
   congr! 2 with i hi
