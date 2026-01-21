@@ -77,16 +77,12 @@ This lets us recover multiplicities from `MeromorphicOn.divisor`, and is a prere
 
 lemma divisor_univ_eq_analyticOrderNatAt_int {f : ℂ → ℂ} (hf : Differentiable ℂ f) (z : ℂ) :
     MeromorphicOn.divisor f (Set.univ : Set ℂ) z = (analyticOrderNatAt f z : ℤ) := by
-  -- `f` is meromorphic on `univ`
   have hmero : MeromorphicOn f (Set.univ : Set ℂ) := by
     intro w hw
     exact (Differentiable.analyticAt (f := f) hf w).meromorphicAt
-  -- unfold divisor via `meromorphicOrderAt`
   simp only
     [MeromorphicOn.divisor_apply hmero (by simp : z ∈ (Set.univ : Set ℂ)), analyticOrderNatAt]
-  -- relate `meromorphicOrderAt` to `analyticOrderAt` for analytic functions
   have han : AnalyticAt ℂ f z := Differentiable.analyticAt (f := f) hf z
-  -- case-split on `analyticOrderAt`
   cases h : analyticOrderAt f z with
   | top =>
       simp [han.meromorphicOrderAt_eq, h]
@@ -96,11 +92,9 @@ lemma divisor_univ_eq_analyticOrderNatAt_int {f : ℂ → ℂ} (hf : Differentia
 lemma divisor_support_countable {f : ℂ → ℂ} {U : Set ℂ} :
     (MeromorphicOn.divisor f U).support.Countable := by
   classical
-  -- `support` is discrete within `U` (hence discrete as a subset of `ℂ`)
   have hdisc : IsDiscrete (MeromorphicOn.divisor f U).support := by
     simpa [MeromorphicOn.divisor] using
       (Function.locallyFinsuppWithin.discreteSupport (D := MeromorphicOn.divisor f U))
-  -- In `ℂ` (second countable), every set is Lindelöf; discrete + Lindelöf ⇒ countable.
   have hlin : IsLindelof (MeromorphicOn.divisor f U).support :=
     HereditarilyLindelof_LindelofSets _
   exact hlin.countable_of_isDiscrete hdisc
@@ -721,11 +715,8 @@ to reason about the infinite divisor-indexed product.
 theorem analyticOrderAt_finset_prod_weierstrassFactor_divisorZeroIndex₀
     (m : ℕ) (f : ℂ → ℂ)
     (s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ))) (z₀ : ℂ) :
-    analyticOrderAt
-        (fun z : ℂ => ∏ p ∈ s, weierstrassFactor m (z / divisorZeroIndex₀_val p))
-        z₀
-      =
-      ((s.filter (fun p => divisorZeroIndex₀_val p = z₀)).card : ℕ∞) := by
+    analyticOrderAt (fun z : ℂ => ∏ p ∈ s, weierstrassFactor m (z / divisorZeroIndex₀_val p))
+        z₀ = ((s.filter (fun p => divisorZeroIndex₀_val p = z₀)).card : ℕ∞) := by
   classical
   refine Finset.induction_on s ?base ?step
   · simp [analyticOrderAt_eq_zero]
@@ -1532,7 +1523,6 @@ theorem eventually_exists_analyticAt_eq_pow_smul_divisorComplementPartialProduct
               (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card •
                 (divisorComplementPartialProduct m f z₀ s z * u z) := by
   classical
-  -- choose the fixed fiber-only quotient `u`
   let fiber : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) :=
     divisorZeroIndex₀_fiberFinset (f := f) z₀
   have hfib : ∃ u : ℂ → ℂ, AnalyticAt ℂ u z₀ ∧ u z₀ ≠ 0 ∧ (fun z : ℂ =>
@@ -1636,7 +1626,6 @@ theorem TendstoUniformlyOn.mul_left_bounded
       calc
         ‖h z * f z - h z * F n z‖ = ‖h z * (f z - F n z)‖ := by simp [mul_sub]
         _ = ‖h z‖ * ‖f z - F n z‖ := by simp
-    simp [dist_eq_norm]
     calc
       ‖h z * f z - h z * F n z‖
           = ‖h z‖ * ‖f z - F n z‖ := this
@@ -1647,9 +1636,9 @@ theorem TendstoUniformlyOn.mul_left_bounded
 /-!
 ## Quotient convergence on compacts avoiding `z₀`
 
-If `K` is compact and avoids `z₀`, then multiplying by `((z - z₀)^k)⁻¹` preserves uniform convergence
-on `K`. This is the key tool for the eventual removable-singularity argument for multiplicities.
--/
+If `K` is compact and avoids `z₀`, then multiplying by `((z - z₀)^k)⁻¹` preserves uniform
+convergence on `K`. This is the key tool for the eventual removable-singularity argument for
+multiplicities. -/
 
 theorem tendstoUniformlyOn_divisorPartialProduct_div_pow_sub
     (m : ℕ) (f : ℂ → ℂ)
@@ -1692,7 +1681,8 @@ theorem tendstoUniformlyOn_divisorPartialProduct_div_pow_sub
     intro z hz
     exact hC (h z) ⟨z, hz, rfl⟩
   have hunif' :=
-    (TendstoUniformlyOn.mul_left_bounded (p := (Filter.atTop : Filter (Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)))))
+    (TendstoUniformlyOn.mul_left_bounded (p := (Filter.atTop : Filter (Finset (divisorZeroIndex₀ f
+    (Set.univ : Set ℂ)))))
         (K := K)
         (F := fun s z => divisorPartialProduct m f s z)
         (f := fun z => divisorCanonicalProduct m f (Set.univ : Set ℂ) z)
@@ -1751,11 +1741,8 @@ theorem exists_ball_eq_divisorCanonicalProduct_div_pow_eq
   classical
   let fiber : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) :=
     divisorZeroIndex₀_fiberFinset (f := f) z₀
-  have hfib :
-      ∃ u : ℂ → ℂ,
-        AnalyticAt ℂ u z₀ ∧ u z₀ ≠ 0 ∧
-          (fun z : ℂ => divisorPartialProduct m f fiber z)
-            =ᶠ[𝓝 z₀]
+  have hfib : ∃ u : ℂ → ℂ, AnalyticAt ℂ u z₀ ∧ u z₀ ≠ 0 ∧
+          (fun z : ℂ => divisorPartialProduct m f fiber z) =ᶠ[𝓝 z₀]
             fun z : ℂ => (z - z₀) ^ fiber.card • u z := by
     simpa [fiber, divisorPartialProduct] using
       (exists_analyticAt_eq_pow_smul_of_partialProduct_contains_fiber (m := m) (f := f) (z₀ := z₀)
@@ -1766,13 +1753,8 @@ theorem exists_ball_eq_divisorCanonicalProduct_div_pow_eq
   rcases Metric.mem_nhds_iff.1 hmem with ⟨ε, hε, hball⟩
   refine ⟨ε, hε, u, huA, hu0, ?_⟩
   have hq :
-      TendstoLocallyUniformlyOn
-        (fun s z =>
-          (divisorPartialProduct m f s z) /
-            (z - z₀) ^ fiber.card)
-        (fun z =>
-          (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
-            (z - z₀) ^ fiber.card)
+      TendstoLocallyUniformlyOn (fun s z => (divisorPartialProduct m f s z) / (z - z₀) ^ fiber.card)
+        (fun z => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) / (z - z₀) ^ fiber.card)
         (Filter.atTop : Filter (Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ))))
         ((Set.univ : Set ℂ) \ {z₀}) :=
     tendstoLocallyUniformlyOn_divisorPartialProduct_div_pow_sub
@@ -1784,30 +1766,22 @@ theorem exists_ball_eq_divisorCanonicalProduct_div_pow_eq
         (divisorComplementCanonicalProduct m f z₀)
         Filter.atTop
         (Set.univ : Set ℂ) :=
-    tendstoLocallyUniformlyOn_divisorComplementPartialProduct_univ (m := m) (f := f) (z₀ := z₀) h_sum
+    tendstoLocallyUniformlyOn_divisorComplementPartialProduct_univ (m := m) (f := f)
+    (z₀ := z₀) h_sum
   intro z hz hzne
   have hz' : z ∈ ((Set.univ : Set ℂ) \ {z₀}) := by
     refine ⟨by simp, ?_⟩
     simpa [Set.mem_singleton_iff] using hzne
-  have hF :
-      Tendsto
-        (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
-          (divisorPartialProduct m f s z) / (z - z₀) ^ fiber.card)
-        (Filter.atTop : Filter _)
+  have hF : Tendsto (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
+          (divisorPartialProduct m f s z) / (z - z₀) ^ fiber.card) (Filter.atTop : Filter _)
         (𝓝 ((divisorCanonicalProduct m f (Set.univ : Set ℂ) z) / (z - z₀) ^ fiber.card)) :=
     hq.tendsto_at hz'
-  have hG0 :
-      Tendsto
-        (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
-          divisorComplementPartialProduct m f z₀ s z)
-        (Filter.atTop : Filter _)
+  have hG0 : Tendsto  (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
+          divisorComplementPartialProduct m f z₀ s z) (Filter.atTop : Filter _)
         (𝓝 (divisorComplementCanonicalProduct m f z₀ z)) :=
     hcomp.tendsto_at (by simp : z ∈ (Set.univ : Set ℂ))
-  have hG :
-      Tendsto
-        (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
-          (divisorComplementPartialProduct m f z₀ s z) * u z)
-        (Filter.atTop : Filter _)
+  have hG : Tendsto (fun s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) =>
+          (divisorComplementPartialProduct m f z₀ s z) * u z) (Filter.atTop : Filter _)
         (𝓝 ((divisorComplementCanonicalProduct m f z₀ z) * u z)) :=
     (hG0.mul tendsto_const_nhds)
   have hsub : ∀ᶠ s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) in (Filter.atTop : Filter _),
@@ -1874,8 +1848,8 @@ theorem bddAbove_norm_divisorCanonicalProduct_div_pow_puncturedBall
               (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card) ''
             ((Metric.ball z₀ r) \ {z₀})) := by
   classical
-  rcases exists_ball_eq_divisorCanonicalProduct_div_pow_eq (m := m) (f := f) (h_sum := h_sum) (z₀ := z₀) with
-    ⟨ε, hε, u, huA, hu0, hEq⟩
+  rcases exists_ball_eq_divisorCanonicalProduct_div_pow_eq (m := m) (f := f) (h_sum := h_sum)
+    (z₀ := z₀) with ⟨ε, hε, u, huA, hu0, hEq⟩
   have huC : ContinuousAt u z₀ := huA.continuousAt
   have hpre : {z : ℂ | ‖u z - u z₀‖ < 1} ∈ 𝓝 z₀ := by
     have : u ⁻¹' Metric.ball (u z₀) (1 : ℝ) ∈ 𝓝 z₀ :=
@@ -1972,8 +1946,8 @@ theorem divisorComplementCanonicalProduct_ne_zero_at
   have h_big :
       ∀ᶠ p : divisorZeroIndex₀ f (Set.univ : Set ℂ) in Filter.cofinite,
         (2 * R : ℝ) < ‖divisorZeroIndex₀_val p‖ := by
-    have hfin :
-        ({p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤ 2 * R} : Set _).Finite := by
+    have hfin : ({p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤
+        2 * R} : Set _).Finite := by
       have : Metric.closedBall (0 : ℂ) (2 * R) ⊆ (Set.univ : Set ℂ) := by simp
       exact divisorZeroIndex₀_norm_le_finite (f := f) (U := (Set.univ : Set ℂ)) (B := 2 * R) this
     have := hfin.eventually_cofinite_notMem
@@ -2109,34 +2083,33 @@ theorem eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct
 /-!
 ## On `𝓝[≠] z₀`, large partial product quotients agree with an analytic function
 
-This is the punctured-neighborhood version of `eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct`,
+This is the punctured-neighborhood version of
+`eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct`,
 obtained by dividing the factorization by `(z - z₀)^k` away from `z₀`.
 -/
 
 theorem eventually_eq_punctured_quotient_of_factorization
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) :
     ∀ᶠ s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) in (Filter.atTop : Filter _),
-      ∃ g : ℂ → ℂ,
-        AnalyticAt ℂ g z₀ ∧
-          (fun z : ℂ => (divisorPartialProduct m f s z) /
+      ∃ g : ℂ → ℂ, AnalyticAt ℂ g z₀ ∧ (fun z : ℂ => (divisorPartialProduct m f s z) /
             (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)
             =ᶠ[𝓝[≠] z₀] g := by
   classical
-  refine (eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct (m := m) (f := f) z₀).mono ?_
+  refine (eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct (m := m)
+    (f := f) z₀).mono ?_
   intro s hs
   rcases hs with ⟨g, hg, hg0, hEq⟩
   refine ⟨g, hg, ?_⟩
-  have hEq' :
-      (fun z : ℂ => divisorPartialProduct m f s z) =ᶠ[𝓝[≠] z₀]
-        fun z : ℂ =>
-          (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card • g z :=
+  have hEq' : (fun z : ℂ => divisorPartialProduct m f s z) =ᶠ[𝓝[≠] z₀]
+        fun z : ℂ => (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card • g z :=
     hEq.filter_mono nhdsWithin_le_nhds
   have hne : ∀ᶠ z : ℂ in 𝓝[≠] z₀, z ≠ z₀ := by
     simpa [Filter.Eventually] using (self_mem_nhdsWithin : {z : ℂ | z ≠ z₀} ∈ 𝓝[≠] z₀)
   filter_upwards [hEq', hne] with z hz hzne
   have hz0 : (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card ≠ 0 :=
     pow_ne_zero _ (sub_ne_zero.mpr hzne)
-  have : (divisorPartialProduct m f s z) / (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card = g z := by
+  have : (divisorPartialProduct m f s z) / (z - z₀) ^ (divisorZeroIndex₀_fiberFinset
+      (f := f) z₀).card = g z := by
     rw [hz]
     simpa [smul_eq_mul] using (mul_div_cancel_left₀ (g z) hz0)
   simpa [divisorPartialProduct] using this
@@ -2145,8 +2118,7 @@ theorem eventually_exists_ball_eq_punctured_quotient_of_factorization
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) :
     ∀ᶠ s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) in (Filter.atTop : Filter _),
       ∃ ε > 0, ∃ g : ℂ → ℂ, AnalyticAt ℂ g z₀ ∧
-        ∀ z : ℂ, z ∈ Metric.ball z₀ ε → z ≠ z₀ →
-          (divisorPartialProduct m f s z) /
+        ∀ z : ℂ, z ∈ Metric.ball z₀ ε → z ≠ z₀ → (divisorPartialProduct m f s z) /
               (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card
             = g z := by
   classical
@@ -2170,8 +2142,7 @@ by `(z - z₀)^k` is holomorphic on the punctured plane.
 theorem differentiableOn_divisorPartialProduct_div_pow_sub
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) (k : ℕ)
     (s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ))) :
-    DifferentiableOn ℂ
-      (fun z : ℂ => (divisorPartialProduct m f s z) / (z - z₀) ^ k)
+    DifferentiableOn ℂ (fun z : ℂ => (divisorPartialProduct m f s z) / (z - z₀) ^ k)
       ((Set.univ : Set ℂ) \ {z₀}) := by
   classical
   have hdiff_prod : DifferentiableOn ℂ (divisorPartialProduct m f s) (Set.univ : Set ℂ) := by
@@ -2204,11 +2175,9 @@ theorem differentiableOn_divisorPartialProduct_div_pow_sub
     simpa [div_eq_mul_inv] using (hdiff_prod.mono (by intro z hz; exact hz.1)).mul hdiff_inv
 
 theorem differentiableOn_divisorCanonicalProduct_div_pow_sub
-    (m : ℕ) (f : ℂ → ℂ)
-    (h_sum : Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+    (m : ℕ) (f : ℂ → ℂ) (h_sum : Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
       ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1)))
-    (z₀ : ℂ) (k : ℕ) :
-    DifferentiableOn ℂ
+    (z₀ : ℂ) (k : ℕ) : DifferentiableOn ℂ
       (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) / (z - z₀) ^ k)
       ((Set.univ : Set ℂ) \ {z₀}) := by
   classical
@@ -2235,27 +2204,18 @@ theorem differentiableOn_update_limUnder_divisorCanonicalProduct_div_pow
     (m : ℕ) (f : ℂ → ℂ)
     (h_sum : Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
       ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1)))
-    (z₀ : ℂ) :
-    ∃ r > 0,
-      DifferentiableOn ℂ
-        (Function.update
-          (fun z : ℂ =>
-            (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
-              (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)
-          z₀
-          (limUnder (𝓝[≠] z₀)
-            (fun z : ℂ =>
-              (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
-                (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)))
+    (z₀ : ℂ) : ∃ r > 0, DifferentiableOn ℂ (Function.update
+          (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
+            (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card) z₀
+          (limUnder (𝓝[≠] z₀) (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
+            (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)))
         (Metric.ball z₀ r) := by
   classical
   rcases bddAbove_norm_divisorCanonicalProduct_div_pow_puncturedBall (m := m) (f := f)
       (h_sum := h_sum) (z₀ := z₀) with ⟨r, hrpos, hbdd⟩
   refine ⟨r, hrpos, ?_⟩
   have hnhds : Metric.ball z₀ r ∈ 𝓝 z₀ := Metric.ball_mem_nhds z₀ hrpos
-  have hdiff :
-      DifferentiableOn ℂ
-        (fun z : ℂ =>
+  have hdiff : DifferentiableOn ℂ (fun z : ℂ =>
           (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
             (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)
         ((Metric.ball z₀ r) \ {z₀}) := by
@@ -2266,11 +2226,7 @@ theorem differentiableOn_update_limUnder_divisorCanonicalProduct_div_pow
     refine hglob.mono ?_
     intro z hz
     exact ⟨by simp, hz.2⟩
-  have hb :
-      BddAbove
-        (norm ∘
-          (fun z : ℂ =>
-            (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
+  have hb : BddAbove (norm ∘ (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
               (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card) ''
             ((Metric.ball z₀ r) \ {z₀})) := hbdd
   simpa using
@@ -2283,17 +2239,11 @@ theorem analyticAt_update_limUnder_divisorCanonicalProduct_div_pow
     (m : ℕ) (f : ℂ → ℂ)
     (h_sum : Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
       ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1)))
-    (z₀ : ℂ) :
-    AnalyticAt ℂ
-      (Function.update
-        (fun z : ℂ =>
-          (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
-            (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)
-        z₀
-        (limUnder (𝓝[≠] z₀)
-          (fun z : ℂ =>
-            (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
-              (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)))
+    (z₀ : ℂ) : AnalyticAt ℂ (Function.update (fun z : ℂ =>
+      (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
+        (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card) z₀
+        (limUnder (𝓝[≠] z₀) (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
+        (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)))
       z₀ := by
   classical
   rcases
@@ -2349,9 +2299,11 @@ theorem analyticOrderNatAt_divisorCanonicalProduct_eq_fiber_card
     exact this.differentiableAt (by simp)
   have hqA : AnalyticAt ℂ q z₀ := by
     simpa [q, q0, F, k] using
-      (analyticAt_update_limUnder_divisorCanonicalProduct_div_pow (m := m) (f := f) (h_sum := h_sum) (z₀ := z₀))
+      (analyticAt_update_limUnder_divisorCanonicalProduct_div_pow (m := m) (f := f)
+      (h_sum := h_sum) (z₀ := z₀))
   rcases
-      exists_ball_eq_divisorCanonicalProduct_div_pow_eq (m := m) (f := f) (h_sum := h_sum) (z₀ := z₀)
+      exists_ball_eq_divisorCanonicalProduct_div_pow_eq (m := m) (f := f) (h_sum := h_sum)
+      (z₀ := z₀)
     with ⟨ε, hε, u, huA, hu0, hEq⟩
   let g : ℂ → ℂ := fun z => (divisorComplementCanonicalProduct m f z₀ z) * u z
   have hcompDiff : DifferentiableOn ℂ (divisorComplementCanonicalProduct m f z₀) (Set.univ : Set ℂ) :=
