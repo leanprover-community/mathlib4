@@ -67,12 +67,6 @@ lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M -
   suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
   nlinarith
 
-/-- The Schwarz transform `z ↦ z / (2M - z)` maps values with `z.re < M` into the unit disk. -/
-lemma norm_div_two_mul_sub_lt_one (hM : 0 < M) (hz : z.re < M) : ‖z / (2 * M - z)‖ < 1 := by
-  by_cases h : 0 < ‖z‖
-  · rw [norm_div, div_lt_one (h.trans (norm_lt_norm_two_mul_sub hM hz))]
-    exact norm_lt_norm_two_mul_sub hM hz
-  · simp [norm_le_zero_iff.mp (not_lt.mp h)]
 
 /-- Application of the Schwarz lemma to the transformed function. If `f` is differentiable on
 the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz transform
