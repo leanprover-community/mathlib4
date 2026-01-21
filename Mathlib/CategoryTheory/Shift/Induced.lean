@@ -100,7 +100,7 @@ noncomputable def induced : HasShift D A :=
       add := Induced.add F s i
       zero_add_hom_app := fun n => by
         suffices (Induced.add F s i 0 n).hom =
-          eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i ).inv (s n) by
+          eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i).inv (s n) by
           intro X
           simpa using NatTrans.congr_app this X
         apply ((whiskeringLeft C D D).obj F).map_injective
@@ -138,7 +138,7 @@ noncomputable def induced : HasShift D A :=
         ext X
         dsimp
         have eq := F.congr_map (shiftFunctorAdd'_assoc_hom_app
-          m₁ m₂ m₃ _ _ (m₁+m₂+m₃) rfl rfl rfl X)
+          m₁ m₂ m₃ _ _ (m₁ + m₂ + m₃) rfl rfl rfl X)
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd] at eq
         simp only [Functor.comp_obj, Functor.map_comp, shiftFunctorAdd',
           Iso.trans_hom, eqToIso.hom, NatTrans.comp_app, eqToHom_app,

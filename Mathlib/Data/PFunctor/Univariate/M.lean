@@ -546,7 +546,7 @@ theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
     apply bisim.tail h₀
   | cons i ps ps_ih => ?_
   obtain ⟨a', i⟩ := i
-  obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
+  obtain rfl : a = a' := by rcases hh with hh | hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction h : f i using PFunctor.M.casesOn' with | _ a₀ f₀

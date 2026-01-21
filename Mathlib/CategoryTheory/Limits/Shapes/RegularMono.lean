@@ -6,8 +6,8 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -17,7 +17,7 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 
 In this file, we give the following definitions.
 * `RegularMono f`, which is a structure carrying the data that exhibits `f` as a regular
-  monomorphism. That is, it carries a fork and data specifying `f` a the equalizer of that fork.
+  monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
 * `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
 and constructions
@@ -430,6 +430,10 @@ def coequalizerRegular (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
       apply coequalizer.hom_ext
       simp [← w]
 
+instance (g h : X ⟶ Y) [HasColimit (parallelPair g h)] :
+    IsRegularEpi (coequalizer.π g h) :=
+  ⟨⟨coequalizerRegular g h⟩⟩
+
 /-- A morphism which is a coequalizer for its kernel pair is a regular epi. -/
 def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
     (hc : IsColimit (Cofork.ofπ f pullback.condition)) : RegularEpi f where
@@ -493,6 +497,23 @@ def regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
 instance isRegularEpi_of_EffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : IsRegularEpi f :=
   isRegularEpi_of_regularEpi <| regularEpiOfEffectiveEpi f
+
+lemma isRegularEpi_iff_effectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f] :
+    IsRegularEpi f ↔ EffectiveEpi f :=
+  ⟨fun ⟨_⟩ ↦ inferInstance, fun _ ↦ inferInstance⟩
+
+/-- Let `p : Y ⟶ X` be an effective epimorphism, `p₁ : Z ⟶ Y` and `p₂ : Z ⟶ Y` two
+morphisms which make `Z` the pullback of two copies of `Y` over `X`.
+Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
+noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
+    {X Y Z : C} {p : Y ⟶ X} (hp : EffectiveEpiStruct p) {p₁ p₂ : Z ⟶ Y}
+    (sq : IsPullback p₁ p₂ p p) :
+    IsColimit (Cofork.ofπ p sq.w) :=
+  Cofork.IsColimit.mk _ (fun s ↦ hp.desc s.π (fun {T} g₁ g₂ h ↦ by
+      obtain ⟨l, rfl, rfl⟩ := sq.exists_lift g₁ g₂ h
+      simp [s.condition]))
+    (fun s ↦ hp.fac _ _)
+    (fun s m hm ↦ hp.uniq _ _ _ hm)
 
 /-- Every split epimorphism is a regular epimorphism. -/
 def RegularEpi.ofSplitEpi (f : X ⟶ Y) [IsSplitEpi f] : RegularEpi f where

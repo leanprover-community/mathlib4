@@ -30,7 +30,7 @@ For instances relating, e.g., `ContinuousMul` to `MeasurableMul` see file
 ## Implementation notes
 
 For the heuristics of `@[to_additive]` it is important that the type with a multiplication
-(or another multiplicative operations) is the first (implicit) argument of all declarations.
+(or another multiplicative operation) is the first (implicit) argument of all declarations.
 
 ## Tags
 
@@ -57,7 +57,7 @@ variable {α : Type*}
 -/
 
 
-/-- We say that a type has `MeasurableAdd` if `(· + c)` and `(· + c)` are measurable functions.
+/-- We say that a type has `MeasurableAdd` if `(c + ·)` and `(· + c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· + ·)` see `MeasurableAdd₂`. -/
 class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_const_add : ∀ c : M, Measurable (c + ·)
@@ -65,7 +65,7 @@ class MeasurableAdd (M : Type*) [MeasurableSpace M] [Add M] : Prop where
 
 export MeasurableAdd (measurable_const_add measurable_add_const)
 
-/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable functions.
+/-- We say that a type has `MeasurableAdd₂` if `uncurry (· + ·)` is a measurable function.
 For a typeclass assuming measurability of `(c + ·)` and `(· + c)` see `MeasurableAdd`. -/
 class MeasurableAdd₂ (M : Type*) [MeasurableSpace M] [Add M] : Prop where
   measurable_add : Measurable fun p : M × M => p.1 + p.2
@@ -81,7 +81,7 @@ class MeasurableMul (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
 
 export MeasurableMul (measurable_const_mul measurable_mul_const)
 
-/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable functions.
+/-- We say that a type has `MeasurableMul₂` if `uncurry (· * ·)` is a measurable function.
 For a typeclass assuming measurability of `(c * ·)` and `(· * c)` see `MeasurableMul`. -/
 @[to_additive MeasurableAdd₂]
 class MeasurableMul₂ (M : Type*) [MeasurableSpace M] [Mul M] : Prop where
@@ -219,7 +219,7 @@ class MeasurableSub (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
 
 export MeasurableSub (measurable_const_sub measurable_sub_const)
 
-/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable functions.
+/-- We say that a type has `MeasurableSub₂` if `uncurry (· - ·)` is a measurable function.
 For a typeclass assuming measurability of `(c - ·)` and `(· - c)` see `MeasurableSub`. -/
 class MeasurableSub₂ (G : Type*) [MeasurableSpace G] [Sub G] : Prop where
   measurable_sub : Measurable fun p : G × G => p.1 - p.2
@@ -235,7 +235,7 @@ class MeasurableDiv (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop wher
 
 export MeasurableDiv (measurable_const_div measurable_div_const)
 
-/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable functions.
+/-- We say that a type has `MeasurableDiv₂` if `uncurry (· / ·)` is a measurable function.
 For a typeclass assuming measurability of `(c / ·)` and `(· / c)` see `MeasurableDiv`. -/
 @[to_additive MeasurableSub₂]
 class MeasurableDiv₂ (G₀ : Type*) [MeasurableSpace G₀] [Div G₀] : Prop where
@@ -520,6 +520,7 @@ variable {M X α β : Type*} [MeasurableSpace X] [SMul M X]
 section MeasurableConstSMul
 variable [MeasurableConstSMul M X]
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := fun_prop)]
 lemma Measurable.const_smul (hg : Measurable g) (c : M) : Measurable (c • g) :=
   (measurable_const_smul c).comp hg
@@ -535,6 +536,7 @@ lemma Measurable.fun_const_smul {g : α → β → X} {h : α → β} (hg : Meas
 lemma AEMeasurable.fun_const_smul (hg : AEMeasurable g μ) (c : M) : AEMeasurable (c • g ·) μ :=
   (measurable_const_smul c).comp_aemeasurable hg
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := fun_prop)]
 lemma AEMeasurable.const_smul (hf : AEMeasurable g μ) (c : M) : AEMeasurable (c • g) μ :=
   hf.fun_const_smul c
@@ -702,7 +704,7 @@ end MeasurableSMul
 end Monoid
 
 section GroupWithZero
-variable [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β] [MeasurableSMul G₀ β]
+variable [GroupWithZero G₀] [MulAction G₀ β] [MeasurableConstSMul G₀ β]
 
 theorem measurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     (Measurable fun x => c • f x) ↔ Measurable f :=
@@ -797,11 +799,6 @@ theorem List.measurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
 
-@[deprecated (since := "2025-05-30")]
-alias List.measurable_sum' := List.measurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias List.measurable_prod' := List.measurable_prod
-
 @[to_additive (attr := measurability, fun_prop)]
 theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
@@ -811,11 +808,6 @@ theorem List.aemeasurable_prod (l : List (α → M)) (hl : ∀ f ∈ l, AEMeasur
     rw [List.forall_mem_cons] at hl
     rw [List.prod_cons]
     exact hl.1.mul (ihl hl.2)
-
-@[deprecated (since := "2025-05-30")]
-alias List.aemeasurable_sum' := List.aemeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias List.aemeasurable_prod' := List.aemeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem List.measurable_fun_prod (l : List (α → M)) (hl : ∀ f ∈ l, Measurable f) :
@@ -840,21 +832,11 @@ theorem Multiset.measurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, Me
   rcases l with ⟨l⟩
   simpa using l.measurable_prod (by simpa using hl)
 
-@[deprecated (since := "2025-05-30")]
-alias Multiset.measurable_sum' := Multiset.measurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias Multiset.measurable_prod' := Multiset.measurable_prod
-
 @[to_additive (attr := measurability, fun_prop)]
 theorem Multiset.aemeasurable_prod (l : Multiset (α → M)) (hl : ∀ f ∈ l, AEMeasurable f μ) :
     AEMeasurable l.prod μ := by
   rcases l with ⟨l⟩
   simpa using l.aemeasurable_prod (by simpa using hl)
-
-@[deprecated (since := "2025-05-30")]
-alias Multiset.aemeasurable_sum' := Multiset.aemeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias Multiset.aemeasurable_prod' := Multiset.aemeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem Multiset.measurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈ s, Measurable f) :
@@ -886,22 +868,12 @@ lemma Finset.measurable_prod_apply {f : ι → α → β → M} {g : α → β} 
     Measurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
   simp only [prod_apply]; fun_prop (discharger := assumption)
 
-@[deprecated (since := "2025-05-30")]
-alias Finset.measurable_sum' := Finset.measurable_sum_apply
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias Finset.measurable_prod' := Finset.measurable_prod_apply
-
 @[to_additive (attr := measurability, fun_prop)]
 theorem Finset.aemeasurable_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :
     AEMeasurable (∏ i ∈ s, f i) μ :=
   Multiset.aemeasurable_prod _ fun _g hg =>
     let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
     hg ▸ hf _ hi
-
-@[deprecated (since := "2025-05-30")]
-alias Finset.aemeasurable_sum' := Finset.aemeasurable_sum
-@[to_additive existing, deprecated (since := "2025-05-30")]
-alias Finset.aemeasurable_prod' := Finset.aemeasurable_prod
 
 @[to_additive (attr := measurability, fun_prop)]
 theorem Finset.aemeasurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, AEMeasurable (f i) μ) :

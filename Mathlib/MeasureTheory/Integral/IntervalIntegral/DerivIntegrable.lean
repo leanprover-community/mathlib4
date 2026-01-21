@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.BoundedVariation
 public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -26,7 +27,7 @@ then `f'` is interval integrable on `a..b`.
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set Filter
 
@@ -118,7 +119,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
   rw [← uIcc_of_le hab] at hGf hG hG'
   have : f a ≤ f b := hf (by simp [hab]) (by simp [hab]) hab
   rw [uIcc_of_le (by linarith), mem_Icc]
-  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b): 0 ≤ deriv f x := by
+  have f_deriv_nonneg {x : ℝ} (hx : x ∈ Ioo a b) : 0 ≤ deriv f x := by
     rw [← derivWithin_of_mem_nhds (Icc_mem_nhds (a := a) (b := b) (by grind) (by grind))]
     exact hf.derivWithin_nonneg
   constructor

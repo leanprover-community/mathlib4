@@ -388,12 +388,10 @@ theorem factorsThrough_toFunLifted_π :
   have uFG : Subalgebra.FG (R := R) (φ R s).range := by
     rw [← Algebra.map_top]
     exact Subalgebra.FG.map _ Algebra.FiniteType.out
-    -- (Algebra.FiniteType.mvPolynomial R (Fin s.card)).out
   set u' := rTensor M (φ R s').rangeRestrict.toLinearMap p' with hu'
   have u'FG : Subalgebra.FG (R := R) (φ R s').range := by
     rw [← Algebra.map_top]
     exact Subalgebra.FG.map _ Algebra.FiniteType.out
-    -- (Algebra.FiniteType.mvPolynomial R (Fin s'.card)).out
   have huu' : rTensor M (Subalgebra.val _).toLinearMap u =
     rTensor M (Subalgebra.val _).toLinearMap u' := by
     simp only [π] at h
@@ -433,7 +431,7 @@ theorem exists_lift_of_mem_range_rTensor
     use p
     rw [← hu, ← Subalgebra.val_comp_inclusion hφ, comp_toLinearMap, rTensor_comp,
       LinearMap.comp_apply, ← hp, ← LinearMap.comp_apply, ← rTensor_comp, ← comp_toLinearMap]
-    rfl
+    simp
   exact rTensor_surjective M (rangeRestrict_surjective φ)
 
 /-- Tensor products in `S ⊗[R] M` can be lifted to some

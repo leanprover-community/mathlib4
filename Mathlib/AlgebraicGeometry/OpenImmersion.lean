@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Geometry.RingedSpace.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Scheme
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
@@ -369,7 +369,7 @@ def Scheme.ofRestrict : X.restrict h ⟶ X :=
 
 @[simp]
 lemma Scheme.ofRestrict_app (V) :
-    (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op  :=
+    (X.ofRestrict h).app V = X.presheaf.map (h.isOpenMap.adjunction.counit.app V).op :=
   rfl
 
 instance IsOpenImmersion.ofRestrict : IsOpenImmersion (X.ofRestrict h) :=
@@ -436,7 +436,7 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
 instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmersion where
   of_postcomp f g _ _ := .of_comp f g
 
-theorem iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
+theorem iff_isIso_stalkMap {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
     fun ⟨h, _⟩ ↦ .of_isIso_stalkMap f h⟩
@@ -713,12 +713,12 @@ are naturally isomorphic to the sections of `Y` over the image of `f`. -/
 noncomputable
 def ΓIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
     Γ(X, f ⁻¹ᵁ U) ≅ Γ(Y, f.opensRange ⊓ U) :=
-  (f.appIso (f⁻¹ᵁ U)).symm ≪≫
+  (f.appIso (f ⁻¹ᵁ U)).symm ≪≫
     Y.presheaf.mapIso (eqToIso <| (f.image_preimage_eq_opensRange_inf U).symm).op
 
 @[simp]
 lemma ΓIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (U : Y.Opens) :
-    (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f⁻¹ᵁ U)
+    (ΓIso f U).inv = f.appLE (f.opensRange ⊓ U) (f ⁻¹ᵁ U)
       (by rw [← f.image_preimage_eq_opensRange_inf, f.preimage_image_eq]) := by
   simp only [ΓIso, Iso.trans_inv, Functor.mapIso_inv, Iso.op_inv, eqToIso.inv, eqToHom_op,
     Iso.symm_inv, Scheme.Hom.appIso_hom', Scheme.Hom.map_appLE]

@@ -35,7 +35,7 @@ namespace Ring
 noncomputable section NormalClosure
 
 variable (R S : Type*) [CommRing R] [CommRing S] [IsDomain R] [IsDomain S]
-  [Algebra R S] [NoZeroSMulDivisors R S]
+  [Algebra R S] [Module.IsTorsionFree R S]
 
 /--
 We register this specific instance as a local instance rather than making
@@ -95,7 +95,7 @@ local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
-instance : NoZeroSMulDivisors S T := Subalgebra.noZeroSMulDivisors_bot (integralClosure S E)
+instance : Module.IsTorsionFree S T := Subalgebra.instIsTorsionFree (integralClosure S E)
 
 instance : FaithfulSMul R T :=
   (faithfulSMul_iff_algebraMap_injective R T).mpr <|
@@ -117,8 +117,9 @@ local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
 
 instance : IsGalois K (FractionRing T) := by
-  refine IsGalois.of_equiv_equiv (F := K) («E» := E) (f := (FractionRing.algEquiv R K).symm)
-      (g := (FractionRing.algEquiv T E).symm) ?_
+  refine IsGalois.of_equiv_equiv (F := K) («E» := E)
+    (f := (FractionRing.algEquiv R K).symm.toRingEquiv)
+    (g := (FractionRing.algEquiv T E).symm.toRingEquiv) ?_
   ext
   simpa using IsFractionRing.algEquiv_commutes (FractionRing.algEquiv R K).symm
     (FractionRing.algEquiv T E).symm _

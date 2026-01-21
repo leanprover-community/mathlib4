@@ -459,10 +459,10 @@ Return tuples of the form ("module name", "path to .lean file").
 
 The input string `arg` takes one of the following forms:
 
-1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
-2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
-3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
-4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
+1. `Mathlib.Algebra.Field.Basic`: there exists such a Lean file
+2. `Mathlib.Algebra.Field`: no Lean file exists but a folder (TODO)
+3. `Mathlib/Algebra/Field/Basic.lean`: the file exists (note potentially `\` on Windows)
+4. `Mathlib/Algebra/Field/`: the folder exists (TODO)
 
 Not supported yet:
 
@@ -472,6 +472,9 @@ Note: An argument like `Archive` is treated as module, not a path.
 -/
 def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     IO <| Except String <| Array (Name × FilePath) := do
+  if argₛ.startsWith "-" then
+    -- provided option after command
+    return .error s!"Invalid argument: option must come before command {argₛ}"
   -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
@@ -491,6 +494,9 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   else
     -- provided a module
     let mod := argₛ.toName
+    if mod.isAnonymous then
+      -- provided a module name which is not a valid Lean identifier
+      return .error s!"Invalid argument: expected path or module name, not {argₛ}"
     let sourceFile ← Lean.findLean sp mod
     if ← sourceFile.pathExists then
       -- (1.) provided valid module

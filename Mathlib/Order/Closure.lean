@@ -281,6 +281,7 @@ end CompleteLattice
 
 end ClosureOperator
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
 `e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
 @[simps apply symm_apply]
@@ -457,8 +458,6 @@ theorem subset_closure (s : Set β) : s ⊆ l s :=
 
 theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
   hP (subset_closure _ s h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
   l.gc s S
