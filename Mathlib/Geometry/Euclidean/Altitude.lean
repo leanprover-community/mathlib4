@@ -105,7 +105,7 @@ lemma altitude_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (
 lemma altitude_restrict_eq_comap_subtype {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) (i : Fin (n + 1)) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
-    ((s.restrict S hS).altitude i) = (s.altitude i).comap S.subtype := by
+    (s.restrict S hS).altitude i = (s.altitude i).comap S.subtype := by
   haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
   rw [← s.map_altitude_restrict S hS, comap_map_eq_of_injective S.subtype_injective]
 
