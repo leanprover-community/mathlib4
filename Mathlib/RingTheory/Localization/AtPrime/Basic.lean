@@ -117,7 +117,7 @@ theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZ
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
-  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+  exact fun ⟨_, h⟩ ↦ .of_ne_zero <| by aesop
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
