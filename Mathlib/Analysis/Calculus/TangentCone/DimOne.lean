@@ -27,7 +27,7 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
   apply eq_univ_iff_forall.2 (fun y ↦ ?_)
   -- first deal with the case of `0`, which has to be handled separately.
   rcases eq_or_ne y 0 with rfl | hy
-  · exact zero_mem_tangentCone (mem_closure_iff_clusterPt.mpr hx.clusterPt)
+  · exact zero_mem_tangentConeAt (mem_closure_iff_clusterPt.mpr hx.clusterPt)
   /- Assume now `y` is a fixed nonzero scalar. Take a sequence `d n` tending to `0` such
   that `x + d n ∈ s`. Let `c n = y / d n`. Then `‖c n‖` tends to infinity, and `c n • d n`
   converges to `y` (as it is equal to `y`). By definition, this shows that `y` belongs to the
