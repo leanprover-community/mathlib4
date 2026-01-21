@@ -68,7 +68,7 @@ namespace CompleteType
 
 attribute [coe] CompleteType.toTheory
 
-instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
+instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
   ⟨fun p => p.toTheory, fun p q h => by
     cases p
     cases q
@@ -116,7 +116,7 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   refine
     ⟨fun h =>
       ⟨⟨L[[α]].completeTheory h.some, (subset_union_left (t := S)).trans completeTheory.subset,
-          completeTheory.isMaximal (L[[α]]) h.some⟩,
+          completeTheory.isMaximal L[[α]] h.some⟩,
         (((L.lhomWithConstants α).onTheory T).subset_union_right).trans completeTheory.subset⟩,
       ?_⟩
   rintro ⟨p, hp⟩
@@ -153,7 +153,7 @@ theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 
-theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset (L[[α]]).Sentence} :
+theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentence} :
     t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
   simp_rw [subset_def, ← SetLike.mem_coe, p.isMaximal.mem_iff_models, models_sentence_iff,
     Sentence.Realize, Formula.Realize, BoundedFormula.realize_foldr_inf, Finset.mem_toList]
