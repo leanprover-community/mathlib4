@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
@@ -17,7 +16,7 @@ This file contains some lemmas about sums and products over integer intervals `I
 
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
@@ -27,7 +26,7 @@ lemma prod_Icc_of_even_eq_range {α : Type*} [CommGroup α] {f : ℤ → α} (hf
   induction N with
   | zero => simp [sq]
   | succ N ih =>
-    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by omega), ih,
+    rw [Nat.cast_add, Nat.cast_one, Icc_succ_succ, prod_union (by simp), prod_pair (by lia), ih,
       prod_range_succ _ (N + 1), hf, ← pow_two, div_mul_eq_mul_div, ← mul_pow, Nat.cast_succ]
 
 @[to_additive]

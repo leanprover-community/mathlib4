@@ -14,8 +14,9 @@ public import Mathlib.Algebra.Regular.Defs
 # Regular elements
 
 By definition, a regular element in a commutative ring is a non-zero divisor.
-Lemma `isRegular_of_ne_zero` implies that every non-zero element of an integral domain is regular.
-Since it assumes that the ring is a `CancelMonoidWithZero` it applies also, for instance, to `ℕ`.
+Lemma `IsRegular.of_ne_zero` implies that every non-zero element of an integral domain is regular.
+Since it assumes that the ring is a cancellative `MonoidWithZero` it applies also,
+for instance, to `ℕ`.
 
 The lemmas in Section `MulZeroClass` show that the `0` element is (left/right-)regular if and
 only if the `MulZeroClass` is trivial.  This is useful when figuring out stopping conditions for
@@ -25,7 +26,7 @@ by adding one further `0`.
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
@@ -220,5 +221,19 @@ lemma IsRightRegular.pow_iff (n0 : 0 < n) : IsRightRegular (a ^ n) ↔ IsRightRe
 @[to_additive (attr := simp)] lemma IsRightRegular.mul_right_eq_self_iff (ha : IsRightRegular a) :
     b * a = a ↔ b = 1 :=
   ⟨fun h ↦ by rwa [← ha.eq_iff, one_mul], fun h ↦ by rw [h, one_mul]⟩
+
+namespace IsDedekindFiniteMonoid
+
+@[to_additive] lemma iff_isLeftRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsLeftRegular x where
+  mp _ x y eq := isLeftRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [← mul_assoc, eq]⟩
+
+@[to_additive] lemma iff_isRightRegular_of_mul_eq_one :
+    IsDedekindFiniteMonoid R ↔ ∀ x y : R, x * y = 1 → IsRightRegular y where
+  mp _ x y eq := isRightRegular_of_mul_eq_one (mul_eq_one_symm eq)
+  mpr h := ⟨fun eq ↦ h _ _ eq <| by simp [mul_assoc, eq]⟩
+
+end IsDedekindFiniteMonoid
 
 end Monoid

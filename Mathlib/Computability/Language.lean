@@ -9,7 +9,8 @@ public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Data.Set.Lattice
 public import Mathlib.Tactic.DeriveFintype
-import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages
@@ -126,8 +127,6 @@ theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l
 @[simp]
 theorem notMem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_zero := notMem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
@@ -302,7 +301,7 @@ instance : KleeneAlgebra (Language α) where
     refine iSup_le fun n ↦ ?_
     induction n with
     | zero => simp
-    | succ n ih => grw [pow_succ, ← mul_assoc m (l^n) l, ih, h]
+    | succ n ih => grw [pow_succ, ← mul_assoc m (l ^ n) l, ih, h]
 
 @[deprecated add_le_add (since := "2025-10-26")]
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=

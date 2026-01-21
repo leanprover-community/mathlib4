@@ -118,7 +118,7 @@ theorem corners_theorem_nat (hε : 0 < ε) (hn : cornersTheoremBound (ε / 9) �
     rintro a b hab
     have := hAn hab
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| by
@@ -177,7 +177,7 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
     rintro a ha
     have := hAn ha
     simp at this
-    omega
+    lia
   rw [this] at hA
   have := Fin.isAddFreimanIso_Iio two_ne_zero (le_refl (2 * n))
   have := hA.of_image this.isAddFreimanHom Fin.val_injective.injOn <| Set.image_subset_iff.2 <|

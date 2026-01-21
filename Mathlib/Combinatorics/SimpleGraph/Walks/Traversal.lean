@@ -104,9 +104,6 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
     some (p.getVert n) = p.support[n]? := by
   rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
 
-@[deprecated (since := "2025-06-10")]
-alias getVert_eq_support_get? := getVert_eq_support_getElem?
-
 lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
     p.getVert n = p.support.getD n v := by
   by_cases h : n ≤ p.length
@@ -180,7 +177,7 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj p.penultimate w := by
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
-  convert adj_getVert_succ _ _ <;> omega
+  convert adj_getVert_succ _ _ <;> lia
 
 lemma penultimate_mem_dropLast_support {p : G.Walk u v} (h : ¬p.Nil) :
     p.penultimate ∈ p.support.dropLast := by

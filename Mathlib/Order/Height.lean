@@ -43,7 +43,7 @@ variable {α β : Type*} (s : Set α) (r : α → α → Prop)
 noncomputable def chainHeight : ℕ∞ := ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard
 
 theorem chainHeight_eq_iSup :
-  s.chainHeight r = ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard := rfl
+    s.chainHeight r = ⨆ t : {t : Set α // t ⊆ s ∧ IsChain r t}, t.val.encard := rfl
 
 theorem chainHeight_le_encard : s.chainHeight r ≤ s.encard := by
   simp_all [chainHeight, encard_le_encard]

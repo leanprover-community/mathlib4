@@ -56,9 +56,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
-  /-- For every arity, a `Type*` of functions of that arity -/
+  /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
-  /-- For every arity, a `Type*` of relations of that arity -/
+  /-- For every arity, a `Type v` of relations of that arity -/
   Relations : ℕ → Type v
 
 namespace Language
@@ -477,7 +477,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 
 theorem comp_injective (h : N ↪[L] P) :
-    Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+    Function.Injective (h.comp : (M ↪[L] N) → (M ↪[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
@@ -486,7 +486,7 @@ theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f
   ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
 
 theorem toHom_comp_injective (h : N ↪[L] P) :
-    Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
+    Function.Injective (h.toHom.comp : (M →[L] N) → (M →[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
@@ -667,7 +667,7 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
   rfl
 
 theorem injective_comp (h : N ≃[L] P) :
-    Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
+    Function.Injective (h.comp : (M ≃[L] N) → (M ≃[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
 

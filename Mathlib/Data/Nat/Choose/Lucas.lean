@@ -23,7 +23,7 @@ respectively.
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
 
-@[expose] public section
+public section
 
 open Finset hiding choose
 

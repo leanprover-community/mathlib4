@@ -181,10 +181,12 @@ private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv A (E × 
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (E × F)) 1 <| by
     simpa using norm_equiv_le_norm_prod
 
+set_option backward.privateInPublic true in
 private lemma uniformity_prod_eq_aux :
     𝓤[(inferInstance : UniformSpace (E × F)).comap <| equiv _ _] = 𝓤 C⋆ᵐᵒᵈ(A, E × F) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_two_equiv_prod_aux lipschitzWith_one_equiv_prod_aux
 
+set_option backward.privateInPublic true in
 private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
     @IsBounded _ (induced <| equiv A (E × F)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_two_equiv_prod_aux
@@ -192,6 +194,8 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 
 end Aux
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
 
@@ -306,16 +310,20 @@ private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv A (Π i, E
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
     simpa using norm_equiv_le_norm_pi
 
+set_option backward.privateInPublic true in
 private lemma uniformity_pi_eq_aux :
     𝓤[(inferInstance : UniformSpace (Π i, E i)).comap <| equiv A _] = 𝓤 C⋆ᵐᵒᵈ(A, Π i, E i) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux
 
+set_option backward.privateInPublic true in
 private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
     @IsBounded _ (induced <| equiv A (Π i, E i)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux s
 
 end Aux
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
 

@@ -27,7 +27,7 @@ We gather results relating cyclotomic polynomials and `expand`.
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial

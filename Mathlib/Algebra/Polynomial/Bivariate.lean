@@ -230,8 +230,6 @@ theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
 
--- TODO: fix non-terminal simp
-set_option linter.flexible false in
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
   simp [← C_mul_X_pow_eq_monomial]; ac_rfl
@@ -249,7 +247,7 @@ attribute [local instance] Polynomial.algebra in
 theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
-  | add =>  aesop
+  | add => aesop
   | monomial n a =>
       simp
       induction a using Polynomial.induction_on'

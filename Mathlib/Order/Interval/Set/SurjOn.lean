@@ -16,7 +16,7 @@ endpoints in the range.  This is expressed in this file using `Set.surjOn`, and 
 permutations of interval endpoints.
 -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*} {β : Type*} [LinearOrder α] [PartialOrder β] {f : α → β}

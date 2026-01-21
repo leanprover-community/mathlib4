@@ -55,7 +55,7 @@ algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
+instance instCompl : Compl (Booleanisation α) where
   compl
     | lift a => comp a
     | comp a => lift a
