@@ -215,10 +215,9 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
   simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at ha hk
   replace ha := forall_not_of_not_exists ha k
   have H₁ : (colon ⊥ {y} : Ideal R).radical ≤ (colon ⊥ {a ^ k • y}).radical := by
+    apply Ideal.radical_mono
     intro c hc
-    simp only [Ideal.mem_radical_iff, mem_colon_singleton, mem_bot] at hc ⊢
-    obtain ⟨n, hc⟩ := hc
-    use n
+    rw [mem_colon_singleton, mem_bot] at hc ⊢
     rw [smul_comm, hc, smul_zero]
   rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩)]
   use k
