@@ -68,7 +68,7 @@ namespace CompleteType
 
 attribute [coe] CompleteType.toTheory
 
-instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
+instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
   ⟨fun p => p.toTheory, fun p q h => by
     cases p
     cases q
