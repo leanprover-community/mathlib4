@@ -221,7 +221,7 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     rw [smul_comm, hc, smul_zero]
   rw [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, by simpa, _, rfl⟩)]
   use k
-  simpa [smul_smul, ← mul_pow, mul_comm]
+  rwa [mem_colon_singleton, smul_smul, ← mul_pow, mul_comm]
 
 namespace associatedPrimes
 
@@ -239,9 +239,8 @@ contained in the union of those of `M` and `M''`. -/
 theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact f g) :
     associatedPrimes R M' ⊆ associatedPrimes R M ∪ associatedPrimes R M'' := by
   rintro p ⟨_, x, hx⟩
-  simp only [Set.mem_union, AssociatePrimes.mem_iff, IsAssociatedPrime]
   by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, ∃ k, f y = a ^ k • x
-  · obtain ⟨a, ha, y, k, hk⟩ := h
+  · obtain ⟨a, ha, y, k, h⟩ := h
     left
     refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
@@ -249,25 +248,23 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
       use n
       rw [mem_colon_singleton, mem_bot] at hb ⊢
       apply_fun _ using hf
-      rw [map_smul, hk, smul_comm, hb, smul_zero, map_zero]
+      rw [map_smul, h, smul_comm, hb, smul_zero, map_zero]
     · obtain ⟨n, hb⟩ := hb
       rw [mem_colon_singleton, mem_bot] at hb
       apply_fun f at hb
-      rw [map_smul, map_zero, hk, ← mul_smul] at hb
+      rw [map_smul, map_zero, h, ← mul_smul, ← mem_bot R, ← mem_colon_singleton] at hb
+      replace hb := hx.ge (Ideal.le_radical hb)
       contrapose hb
-      have key := p.primeCompl.mul_mem (p.primeCompl.pow_mem hb n) (p.primeCompl.pow_mem ha k)
-      contrapose! key
-      simp only [hx, Ideal.mem_primeCompl_iff, not_not]
-      use 1
-      simpa
+      exact p.primeCompl.mul_mem (p.primeCompl.pow_mem hb n) (p.primeCompl.pow_mem ha k)
   · right
     refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
     · rw [hx] at hb
-      refine Ideal.radical_mono (fun y hy ↦ ?_) hb
-      rw [mem_colon_singleton, mem_bot] at hy ⊢
-      rw [← map_smul, hy, map_zero]
+      refine Ideal.radical_mono (fun b hb ↦ ?_) hb
+      rw [mem_colon_singleton, mem_bot] at hb ⊢
+      rw [← map_smul, hb, map_zero]
     · obtain ⟨n, hb⟩ := hb
-      rw [mem_colon_singleton, mem_bot, ← map_smul, ← mem_ker, hfg.linearMap_ker_eq] at hb
+      rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
+        hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
       by_contra H
       exact h b H y n hy
