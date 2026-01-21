@@ -112,6 +112,10 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
 instance [Group G] (H : Subgroup G) [IsCyclic H] : IsMulCommutative H :=
   ⟨IsCyclic.commutative⟩
 
+@[to_additive]
+instance [hg : Group α] [IsCyclic α] (N : Subgroup α) : N.Normal :=
+    @N.normal_of_comm _ IsCyclic.commGroup
+
 variable [Group α] [Group G] [Group G']
 
 /-- A non-cyclic multiplicative group is non-trivial. -/
@@ -211,6 +215,10 @@ theorem isCyclic_of_surjective {F : Type*} [hH : IsCyclic G']
   obtain ⟨a, rfl⟩ := hf a
   obtain ⟨n, rfl⟩ := hx a
   exact ⟨n, (map_zpow _ _ _).symm⟩
+
+@[to_additive]
+theorem isCyclic_quotient [IsCyclic G] (N : Subgroup G) : IsCyclic (G ⧸ N) :=
+    isCyclic_of_surjective _ <| QuotientGroup.mk'_surjective _
 
 @[to_additive]
 theorem MulEquiv.isCyclic (e : G ≃* G') :
