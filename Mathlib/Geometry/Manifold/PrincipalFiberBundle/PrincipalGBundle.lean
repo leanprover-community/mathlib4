@@ -3,10 +3,11 @@ Copyright (c) 2025 Dominic Steinitz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dominic Steinitz
 -/
+module
 
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Topology.FiberBundle.Basic
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Principal G-Bundles
@@ -64,7 +65,7 @@ The field is named `smooth_smul` following Mathlib conventions, even though it a
 - For actions on principal bundles, the differentiability is typically automatic from the
   fiber bundle structure
 -/
-class SmoothLeftGAction
+public class SmoothLeftGAction
 {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
 {E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
 {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
@@ -111,7 +112,7 @@ The field is named `smooth_smul` following Mathlib conventions, even though it a
 - For left actions, see `SmoothLeftGAction`
 - For principal bundles, right actions are typically required for the structure group
 -/
-class SmoothRightGAction
+public class SmoothRightGAction
  {𝕜 : Type*} [NontriviallyNormedField 𝕜] (n : WithTop ℕ∞)
  {E_G : Type*} [NormedAddCommGroup E_G] [NormedSpace 𝕜 E_G]
  {E_M : Type*} [NormedAddCommGroup E_M] [NormedSpace 𝕜 E_M]
@@ -188,7 +189,7 @@ bundles in differential geometry.
 Together, `is_free` and `is_transitive` mean that each fiber is a principal homogeneous
 space (also called a G-torsor in some contexts) for G.
 -/
-structure PrincipalBundleCore
+public structure PrincipalBundleCore
   (ι : Type uP)
   {𝕜 : Type uK} [NontriviallyNormedField 𝕜]
   {n : WithTop ℕ∞}
