@@ -783,7 +783,7 @@ instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
   abv_add' := norm_add_le
   abv_mul' := norm_mul
 
-instance (priority := 100) NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
+instance NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
     simpa only [← norm_eq_zero (E := α), norm_mul, mul_eq_zero] using h
 
