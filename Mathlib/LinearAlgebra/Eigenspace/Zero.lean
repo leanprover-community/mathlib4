@@ -32,7 +32,7 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 
 -/
 
-@[expose] public section
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]

@@ -157,6 +157,10 @@ Additional diagnostic information may be available using the `set_option trace.o
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
+-- check that order treats defeq types the same
+example (a : Fin 3) (b : Fin (2 + 1)) (h : a ≤ b) : LE.le (α := Fin (2 + 1)) a b := by
+  order
+
 -- Contrived example for universes not of the form `Sort (u + 1)`.
 example {α : Sort (max (v + 1) (u + 1))} [LinearOrder α] {a b c : α} (hab : a < b)
     (habc : min a b ≤ c) (hcba : min c b ≤ a) : a = c := by

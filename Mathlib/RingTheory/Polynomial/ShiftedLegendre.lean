@@ -85,7 +85,7 @@ theorem coeff_shiftedLegendre (n k : ℕ) :
     (shiftedLegendre n).coeff k = (-1) ^ k * n.choose k * (n + k).choose n := by
   rw [shiftedLegendre, finset_sum_coeff]
   simp_rw [coeff_C_mul_X_pow]
-  simp +contextual [choose_eq_zero_of_lt, add_one_le_iff]
+  simp +contextual [choose_eq_zero_of_lt]
 
 /-- The degree of `shiftedLegendre n` is `n`. -/
 @[simp] theorem degree_shiftedLegendre (n : ℕ) : (shiftedLegendre n).degree = n := by

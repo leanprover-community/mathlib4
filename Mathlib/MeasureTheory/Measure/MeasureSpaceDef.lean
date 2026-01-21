@@ -37,7 +37,7 @@ This conveniently allows us to apply the measure to sets without proving that th
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
 See the documentation of `MeasureTheory.MeasureSpace` for ways to construct measures and proving
-that two measure are equal.
+that two measures are equal.
 
 A `MeasureSpace` is a class that is a measurable space with a canonical measure.
 The measure is denoted `volume`.
@@ -401,7 +401,10 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ ν : Measure α}
 
 /-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
-function. -/
+function.
+
+A similar notion is `MeasureTheory.NullMeasurable`. That notion is equivalent to `AEMeasurable` if
+the σ-algebra on the codomain is countably generated, but weaker in general. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g

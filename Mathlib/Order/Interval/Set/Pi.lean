@@ -19,7 +19,7 @@ In this we prove various simple lemmas about intervals in `Π i, α i`. Closed i
 usually include the corresponding products as proper subsets.
 -/
 
-@[expose] public section
+public section
 
 -- Porting note: Added, since dot notation no longer works on `Function.update`
 open Function

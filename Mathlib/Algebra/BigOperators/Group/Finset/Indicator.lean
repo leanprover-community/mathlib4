@@ -13,7 +13,7 @@ public import Mathlib.Order.CompleteLattice.Finset
 # Interaction of big operators with indicator functions
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 
