@@ -480,13 +480,11 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
           rw [eq_comm]
           exact prod_image <| by grind [hvs'.mono]
 
-theorem eval_iterate_derivative_eq_sum
-    (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s)
+theorem eval_iterate_derivative_eq_sum (hvs : Set.InjOn v s) {P : Polynomial F} (hP : P.degree < #s)
     {k : ℕ} (hk : k < #s) (x : F) :
-    (derivative^[k] P).eval x = k.factorial *
-      ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, (v i - v j)) *
-      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
-      ∏ a ∈ t, (x - v a) := by
+    (derivative^[k] P).eval x =
+      k.factorial * ∑ i ∈ s, (P.eval (v i) / ∏ j ∈ s.erase i, (v i - v j)) *
+        ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (x - v a) := by
   rw (occs := [1]) [eq_interpolate hvs hP]
   rw [iterate_derivative_interpolate _ hvs hk, ← nsmul_eq_mul, eval_smul, nsmul_eq_mul,
     eval_finset_sum]
