@@ -221,23 +221,17 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
   rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
-    have vs : ∀ i, v i ∈ s := by grind
-    have hv : Monotone v := by grind [Monotone]
-    refine ⟨v, n + 2, hv, vs, (mem_image _ _ _).2 ⟨n + 1, ?_, ?_⟩, ?_⟩
-    · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
-    · have : ¬n + 1 ≤ n := Nat.not_succ_le_self n
-      simp only [v, this, ite_eq_right_iff, IsEmpty.forall_iff]
-    · calc
-        (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-            ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := Finset.sum_congr rfl (by grind)
-        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
-          gcongr
-          apply Nat.le_add_right
+    refine ⟨v, n + 2, by grind [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, by grind⟩, ?_⟩
+    calc
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+          ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
+      _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
+        gcongr
+        apply Nat.le_add_right
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)
-  have ws : ∀ i, w i ∈ s := by grind
   have hw : Monotone w := by
     apply monotone_nat_of_le_succ fun i => ?_
     rcases lt_trichotomy (i + 1) N with (hi | hi | hi)
@@ -246,8 +240,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have := Nat.find_min exists_N A
       grind
     · grind [Monotone]
-  refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
-  · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
+  refine ⟨w, n + 1, hw, by grind, (mem_image _ _ _).2 ⟨N, by grind⟩, ?_⟩
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
@@ -312,8 +305,6 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
     variations. -/
   rintro ⟨n, ⟨u, hu, us⟩⟩ ⟨m, ⟨v, hv, vt⟩⟩
   let w i := if i ≤ n then u i else v (i - (n + 1))
-  have wst : ∀ i, w i ∈ s ∪ t := by grind
-  have hw : Monotone w := by grind [Monotone]
   calc
     ((∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) +
           ∑ i ∈ Finset.range m, edist (f (v (i + 1))) (f (v i))) =
@@ -333,7 +324,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       rw [← Finset.sum_union]
       · gcongr; grind
       · exact Finset.disjoint_left.2 (by grind)
-    _ ≤ eVariationOn f (s ∪ t) := sum_le f _ hw wst
+    _ ≤ eVariationOn f (s ∪ t) := sum_le f _ (by grind [Monotone]) (by grind)
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
@@ -921,7 +912,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b + variationOnFromTo f s b c = variationOnFromTo f s a c := by
   symm
-  refine additive_of_isTotal (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
+  refine additive_of_total (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
     simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs

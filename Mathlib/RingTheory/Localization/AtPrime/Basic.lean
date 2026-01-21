@@ -117,7 +117,7 @@ theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZ
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
-  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+  exact fun ⟨_, h⟩ ↦ .of_ne_zero <| by aesop
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
@@ -361,7 +361,7 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
     (disj : Disjoint (T : Set S) (P : Set S)) :
     (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
   suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
-      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+      Ideal.map (algebraMap R R') p from ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
   rw [under_under, ← under_under (B := S), under_def, under_def,
     IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]
