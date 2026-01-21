@@ -559,24 +559,76 @@ def isColimitCocone [SuccOrder J] [NoMaxOrder J] :
         dsimp
         grind [objι] })
 
-variable [HasCoproductsOfShape J C]
-  [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
+variable [HasCoproductsOfShape J C] [SuccOrder J] [NoMaxOrder J]
 
-instance : (diagramFunctor f).IsWellOrderContinuous where
+instance [OrderBot J] : (diagramFunctor f).IsWellOrderContinuous where
   nonempty_isColimit m hm :=
     ⟨evaluationJointlyReflectsColimits _
       (fun ⟨j⟩ ↦ (columnFunctor f j).isColimitOfIsWellOrderContinuous m hm)⟩
 
-instance : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
+instance [OrderBot J] : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
   nonempty_isColimit m hm :=
     ⟨isColimitOfPreserves colim
       ((diagramFunctor f).isColimitOfIsWellOrderContinuous m hm)⟩
+
+open Classical in
+lemma isPushout (i : J) :
+    IsPushout ((objIso₁ f i i le_rfl).inv ≫ Sigma.ι _ i) (f i)
+      (colimMap ((diagramFunctor f).map (homOfLE (Order.le_succ i))))
+      ((objIso₂ f (Order.succ i) i (Order.lt_succ i)).inv ≫ Sigma.ι _ i) where
+  w := by simp [map]
+  isColimit' := ⟨by
+    let φ (s : PushoutCocone ((objIso₁ f i i le_rfl).inv ≫ Sigma.ι (obj f i) i) (f i))
+        (j : J) :
+        obj f (Order.succ i) j ⟶ s.pt :=
+      if hij : i < j then
+          (objIso₁ f (Order.succ i) j (Order.succ_le_of_lt hij)).hom ≫
+            (objIso₁ f i j hij.le).inv ≫ Sigma.ι _ j ≫ s.inl
+      else
+        if hij : j < i then
+          (objIso₂ f (Order.succ i) j (Order.lt_succ_of_le hij.le)).hom ≫
+            (objIso₂ f i j hij).inv ≫ Sigma.ι _ j ≫ s.inl
+        else
+          haveI hij : i = j := by lia
+          (objIso₂ f (Order.succ i) j (by simp [hij])).hom ≫
+            eqToHom (by rw [hij]) ≫ s.inr
+    have hφ₁ (s) :
+        (objIso₂ f _ _ (Order.lt_succ i)).inv ≫ φ s i = s.inr := by simp [φ]
+    have hφ₂ (s) (j : J) :
+        map f _ _ (Order.le_succ i) j ≫ φ s j = Sigma.ι (obj f i) j ≫ s.inl := by
+      dsimp [φ]
+      split_ifs with h₁ h₂
+      · simp [map, dif_pos h₁]
+      · simp [map, dif_neg h₁, dif_neg (show ¬ i ≤ j by lia)]
+      · obtain rfl : i = j := by lia
+        have := s.condition
+        rw [Category.assoc] at this
+        simp [← cancel_epi (objIso₁ f i i le_rfl).inv, this, map]
+    refine PushoutCocone.IsColimit.mk _ (fun s ↦ Sigma.desc (φ s))
+      (fun s ↦ by ext; simp [hφ₂]) (fun s ↦ by simp [hφ₁])
+      (fun s l hl₁ hl₂ ↦ Sigma.hom_ext _ _ (fun j ↦ ?_))
+    dsimp
+    rw [Sigma.ι_desc]
+    by_cases hij : i = j
+    · subst hij
+      rw [Category.assoc] at hl₂
+      rw [← cancel_epi ((objIso₂ f (Order.succ i) i (Order.lt_succ i)).inv), hl₂, hφ₁]
+    · replace hl₁ := Sigma.ι _ j ≫= hl₁
+      dsimp at hl₁
+      rw [Sigma.ι_map_assoc, ← hφ₂] at hl₁
+      have : IsIso (map f _ _ (Order.le_succ i) j) := by
+        dsimp [map]
+        split_ifs
+        · infer_instance
+        · lia
+        · infer_instance
+      rwa [← cancel_epi (map f _ _ (Order.le_succ i) j)]⟩
 
 end transfiniteCompositionOfShapeSigmaMap
 
 variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
 
-/-open transfiniteCompositionOfShapeSigmaMap in
+open transfiniteCompositionOfShapeSigmaMap in
 noncomputable def transfiniteCompositionOfShapeSigmaMap :
     TransfiniteCompositionOfShape (MorphismProperty.ofHoms f).pushouts J
       (Limits.Sigma.map f) where
@@ -584,7 +636,7 @@ noncomputable def transfiniteCompositionOfShapeSigmaMap :
   isoBot := isoBot f
   incl := { app i := colim.map ((cocone f).ι.app i) }
   isColimit := isColimitOfPreserves colim (isColimitCocone f)
-  map_mem i hi := by sorry
+  map_mem i hi := MorphismProperty.pushouts_mk _ (isPushout f i) ⟨i⟩
   fac := by dsimp [isoBot]; cat_disch
 
 variable (hf : ∀ (j : J), W (f j))
@@ -592,12 +644,11 @@ variable (hf : ∀ (j : J), W (f j))
 variable [W.IsStableUnderTransfiniteCompositionOfShape J]
 variable [W.IsStableUnderCobaseChange]
 
-instance : W.IsStableUnderCoproductsOfShape J :=
+/-instance : W.IsStableUnderCoproductsOfShape J :=
   IsStableUnderCoproductsOfShape.mk _ _ (fun X Y _ _ f hf ↦ by
     sorry)-/
 
 end
-
 
 end MorphismProperty
 
