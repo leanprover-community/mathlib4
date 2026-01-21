@@ -71,5 +71,3 @@ lemma _root_.IsArtinianRing.exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsP
 end IsArtinianRing
 
 end PrimeSpectrum
-
-#min_imports

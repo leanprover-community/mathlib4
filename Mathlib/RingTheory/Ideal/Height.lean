@@ -477,5 +477,3 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
   exact h P
 
 end isLocalization
-
-#min_imports
