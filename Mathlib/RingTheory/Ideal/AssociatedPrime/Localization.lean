@@ -133,7 +133,8 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
       simp only [pow_one,
         IsLocalizedModule.mk'_eq_zero, map_smul]
       rw [← f.map_smul, hk, map_zero]
-    have h1 := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
+    have h1 := Set.disjoint_left.mp
+      ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
     have h2 := (Ideal.IsPrime.under R p).mul_mem_iff_mem_or_mem.mp mem
     refine hp.mem_of_pow_mem k ?_
     have key := h2.resolve_right h1
