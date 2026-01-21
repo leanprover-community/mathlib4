@@ -19,7 +19,7 @@ For a point `x` and radii `r R`, the set `Metric.annulusIoo x r R` consists of a
 `dist y x ∈ Set.Ioo r R`. We provide analogous definitions for `Ioc`, `Ico`, `Icc`, and also for the
 half-infinite intervals `Ioi`, `Ici` (these are complements of `closedBall`/`ball`).
 
-We also define `EMetric.annulusIxx` using `edist` (hence radii in `ℝ≥0∞`), and relate these to
+We also define `Metric.eannulusIxx` using `edist` (hence radii in `ℝ≥0∞`), and relate these to
 `Metric.annulusIxx` via `ENNReal.ofReal` when `edist = ENNReal.ofReal ∘ dist`.
 
 ## Tags
@@ -221,79 +221,79 @@ theorem iUnion_annulusIoc_eq_annulusIoi {x : X} {f : ℕ → ℝ} (hf : ∀ n, f
 
 end Metric
 
-namespace EMetric
+namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X]
 
 /-! ### Annulus defined using `edist` -/
 
 /-- The annulus `{y | edist y x ∈ Set.Ioo r R}` in a pseudo emetric space. -/
-def annulusIoo (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioo r R
+def eannulusIoo (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioo r R
 
 /-- The annulus `{y | edist y x ∈ Set.Ioc r R}` in a pseudo emetric space. -/
-def annulusIoc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioc r R
+def eannulusIoc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioc r R
 
 /-- The annulus `{y | edist y x ∈ Set.Ico r R}` in a pseudo emetric space. -/
-def annulusIco (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ico r R
+def eannulusIco (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ico r R
 
 /-- The annulus `{y | edist y x ∈ Set.Icc r R}` in a pseudo emetric space. -/
-def annulusIcc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Icc r R
+def eannulusIcc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Icc r R
 
 /-- The exterior `{y | edist y x ∈ Set.Ioi r}`. -/
-def annulusIoi (x : X) (r : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioi r
+def eannulusIoi (x : X) (r : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ioi r
 
 /-- The exterior `{y | edist y x ∈ Set.Ici r}`. -/
-def annulusIci (x : X) (r : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ici r
+def eannulusIci (x : X) (r : ℝ≥0∞) : Set X := (fun y : X ↦ edist y x) ⁻¹' Ici r
 
-@[simp] lemma annulusIoo_eq_preimage (x : X) (r R : ℝ≥0∞) :
-    annulusIoo x r R = (fun y : X ↦ edist y x) ⁻¹' Ioo r R := rfl
+@[simp] lemma eannulusIoo_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    eannulusIoo x r R = (fun y : X ↦ edist y x) ⁻¹' Ioo r R := rfl
 
-@[simp] lemma annulusIoc_eq_preimage (x : X) (r R : ℝ≥0∞) :
-    annulusIoc x r R = (fun y : X ↦ edist y x) ⁻¹' Ioc r R := rfl
+@[simp] lemma eannulusIoc_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    eannulusIoc x r R = (fun y : X ↦ edist y x) ⁻¹' Ioc r R := rfl
 
-@[simp] lemma annulusIco_eq_preimage (x : X) (r R : ℝ≥0∞) :
-    annulusIco x r R = (fun y : X ↦ edist y x) ⁻¹' Ico r R := rfl
+@[simp] lemma eannulusIco_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    eannulusIco x r R = (fun y : X ↦ edist y x) ⁻¹' Ico r R := rfl
 
-@[simp] lemma annulusIcc_eq_preimage (x : X) (r R : ℝ≥0∞) :
-    annulusIcc x r R = (fun y : X ↦ edist y x) ⁻¹' Icc r R := rfl
+@[simp] lemma eannulusIcc_eq_preimage (x : X) (r R : ℝ≥0∞) :
+    eannulusIcc x r R = (fun y : X ↦ edist y x) ⁻¹' Icc r R := rfl
 
-@[simp] lemma annulusIoi_eq_preimage (x : X) (r : ℝ≥0∞) :
-    annulusIoi x r = (fun y : X ↦ edist y x) ⁻¹' Ioi r := rfl
+@[simp] lemma eannulusIoi_eq_preimage (x : X) (r : ℝ≥0∞) :
+    eannulusIoi x r = (fun y : X ↦ edist y x) ⁻¹' Ioi r := rfl
 
-@[simp] lemma annulusIci_eq_preimage (x : X) (r : ℝ≥0∞) :
-    annulusIci x r = (fun y : X ↦ edist y x) ⁻¹' Ici r := rfl
+@[simp] lemma eannulusIci_eq_preimage (x : X) (r : ℝ≥0∞) :
+    eannulusIci x r = (fun y : X ↦ edist y x) ⁻¹' Ici r := rfl
 
-lemma annulusIoo_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoo x r R = ∅ := by
-  simp [annulusIoo, Ioo_eq_empty_of_le h]
+lemma eannulusIoo_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : eannulusIoo x r R = ∅ := by
+  simp [eannulusIoo, Ioo_eq_empty_of_le h]
 
-lemma annulusIoc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoc x r R = ∅ := by
-  simp [annulusIoc, Ioc_eq_empty_of_le h]
+lemma eannulusIoc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : eannulusIoc x r R = ∅ := by
+  simp [eannulusIoc, Ioc_eq_empty_of_le h]
 
-lemma annulusIco_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIco x r R = ∅ := by
-  simp [annulusIco, Ico_eq_empty_of_le h]
+lemma eannulusIco_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : eannulusIco x r R = ∅ := by
+  simp [eannulusIco, Ico_eq_empty_of_le h]
 
-lemma annulusIcc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R < r) : annulusIcc x r R = ∅ := by
-  simp [annulusIcc, Icc_eq_empty_of_lt h]
+lemma eannulusIcc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R < r) : eannulusIcc x r R = ∅ := by
+  simp [eannulusIcc, Icc_eq_empty_of_lt h]
 
 @[gcongr]
-lemma annulusIoo_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
-    annulusIoo x r₁ R₁ ⊆ annulusIoo x r₂ R₂ := by
+lemma eannulusIoo_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
+    eannulusIoo x r₁ R₁ ⊆ eannulusIoo x r₂ R₂ := by
   intro y hy
   exact ⟨lt_of_le_of_lt hr hy.1, lt_of_lt_of_le hy.2 hR⟩
 
 @[gcongr]
-lemma annulusIoc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
-    annulusIoc x r₁ R₁ ⊆ annulusIoc x r₂ R₂ := by
+lemma eannulusIoc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
+    eannulusIoc x r₁ R₁ ⊆ eannulusIoc x r₂ R₂ := by
   intro y hy; exact ⟨lt_of_le_of_lt hr hy.1, hy.2.trans hR⟩
 
 @[gcongr]
-lemma annulusIco_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
-    annulusIco x r₁ R₁ ⊆ annulusIco x r₂ R₂ := by
+lemma eannulusIco_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
+    eannulusIco x r₁ R₁ ⊆ eannulusIco x r₂ R₂ := by
   intro y hy; exact ⟨hr.trans hy.1, lt_of_lt_of_le hy.2 hR⟩
 
 @[gcongr]
-lemma annulusIcc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
-    annulusIcc x r₁ R₁ ⊆ annulusIcc x r₂ R₂ := by
+lemma eannulusIcc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
+    eannulusIcc x r₁ R₁ ⊆ eannulusIcc x r₂ R₂ := by
   intro y hy; exact ⟨hr.trans hy.1, hy.2.trans hR⟩
 
-end EMetric
+end Metric
