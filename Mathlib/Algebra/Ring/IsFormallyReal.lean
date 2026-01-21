@@ -66,6 +66,7 @@ theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s
 alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
 
 namespace AddSubsemigroup
+
 variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
 
 variable (T) in
