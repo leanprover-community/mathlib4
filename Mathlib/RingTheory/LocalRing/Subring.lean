@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.LocalRing.Defs
 We prove basic properties of subrings of local rings.
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 

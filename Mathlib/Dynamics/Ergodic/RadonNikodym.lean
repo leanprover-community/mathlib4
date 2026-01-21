@@ -25,7 +25,7 @@ It isn't clear if the finiteness assumptions are optimal in this file.
 We should either weaken them, or describe an example showing that it's impossible.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 

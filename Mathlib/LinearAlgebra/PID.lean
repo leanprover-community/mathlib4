@@ -23,7 +23,7 @@ algebra import hierarchy have to depend on the theory of PIDs.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LinearMap
 

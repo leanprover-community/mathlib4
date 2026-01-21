@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 /-!
 # The pullback of a shift by a monoid morphism
 
-Given a shift by a monoid `B` on a category `C` and a monoid morphism  `φ : A →+ B`,
+Given a shift by a monoid `B` on a category `C` and a monoid morphism `φ : A →+ B`,
 we define a shift by `A` on a category `PullbackShift C φ` which is a type synonym for `C`.
 
 If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, we define
@@ -27,8 +27,8 @@ on `F` and `G`), we define a pulled back `CommShift` structure by `A` on
 
 Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
 `PullbackShift.adjunction adj φ : PullbackShift.functor F φ ⊣ PullbackShift.functor G φ`
-and we show that, if `adj` compatible with `CommShift` structures
-on `F` and `G`, then `PullbackShift.adjunction adj φ` iis also compatible with the pulled back
+and we show that, if `adj` is compatible with `CommShift` structures
+on `F` and `G`, then `PullbackShift.adjunction adj φ` is also compatible with the pulled back
 `CommShift` structures.
 -/
 
@@ -38,7 +38,7 @@ namespace CategoryTheory
 
 open Limits Category
 
-variable (C : Type*) [Category C] {A B : Type*} [AddMonoid A] [AddMonoid B]
+variable (C : Type*) [Category* C] {A B : Type*} [AddMonoid A] [AddMonoid B]
   (φ : A →+ B) [HasShift C B]
 
 /-- The category `PullbackShift C φ` is equipped with a shift such that for all `a`,
@@ -54,7 +54,7 @@ attribute [local instance] endofunctorMonoidalCategory
 
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
-noncomputable instance : HasShift (PullbackShift C φ) A where
+instance : HasShift (PullbackShift C φ) A where
   shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
 instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
@@ -72,7 +72,7 @@ instance [Preadditive C] (a : A) [(shiftFunctor C (φ a)).Additive] :
 
 /-- When `b = φ a`, this is the canonical
 isomorphism `shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b`. -/
-noncomputable def pullbackShiftIso (a : A) (b : B) (h : b = φ a) :
+def pullbackShiftIso (a : A) (b : B) (h : b = φ a) :
     shiftFunctor (PullbackShift C φ) a ≅ shiftFunctor C b := eqToIso (by subst h; rfl)
 
 variable {C}
@@ -139,7 +139,7 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
-variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+variable {D : Type*} [Category* D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
 /--
 The functor `F`, seen as a functor from `PullbackShift C φ` to `PullbackShift D φ`.
@@ -164,9 +164,9 @@ namespace Functor
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then `PullbackShift.functor F φ`
 commutes with their pullbacks by an additive map `φ`.
 -/
-noncomputable instance commShiftPullback : (PullbackShift.functor φ F).CommShift A where
+instance commShiftPullback : (PullbackShift.functor φ F).CommShift A where
   commShiftIso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
-    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
+    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _ (pullbackShiftIso D φ a (φ a) rfl).symm
   commShiftIso_zero := by
     ext
     dsimp
@@ -218,7 +218,7 @@ instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
       isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
       assoc]
     rw [← τ.naturality_assoc]
-    simp  [← NatTrans.shift_app_comm_assoc]
+    simp [← NatTrans.shift_app_comm_assoc]
 
 variable (C) in
 /-- The natural isomorphism between the identity of `PullbackShift C φ` and the
@@ -237,7 +237,7 @@ instance : NatTrans.CommShift (PullbackShift.natIsoId C φ).hom A where
     ext
     simp [PullbackShift.natIsoId, Functor.commShiftPullback_iso_eq]
 
-variable (F) {E : Type*} [Category E] [HasShift E B] (G : D ⥤ E) [G.CommShift B]
+variable (F) {E : Type*} [Category* E] [HasShift E B] (G : D ⥤ E) [G.CommShift B]
 
 /-- The natural isomorphism between the pullback of `F ⋙ G` and the
 composition of the pullbacks of `F` and `G`.

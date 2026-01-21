@@ -117,7 +117,6 @@ lemma natDegree_polynomial [Nontrivial R] : W.polynomial.natDegree = 2 := by
   exact Cubic.natDegree_of_b_ne_zero' one_ne_zero
 
 lemma monic_polynomial : W.polynomial.Monic := by
-  nontriviality R
   simpa only [polynomial_eq] using Cubic.monic_of_b_eq_one'
 
 lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by

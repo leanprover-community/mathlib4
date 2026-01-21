@@ -70,7 +70,7 @@ theorem toSkeleton_tensorObj (X Y : C) : toSkeleton (X ⊗ Y) = toSkeleton X * t
 the equivalence. -/
 noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
   (BraidedCategory.ofFullyFaithful
-    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse:)
+    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse :)
 
 /--
 The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the
@@ -90,7 +90,7 @@ noncomputable instance : (skeletonEquivalence C).functor.Monoidal :=
 noncomputable instance : (skeletonEquivalence C).inverse.Monoidal :=
   inferInstanceAs (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).functor.Monoidal
 
-variable {D : Type*} [Category D] [MonoidalCategory D] (F : C ⥤ D) (e : C ≌ D)
+variable {D : Type*} [Category* D] [MonoidalCategory D] (F : C ⥤ D) (e : C ≌ D)
 
 noncomputable instance [F.LaxMonoidal] : F.mapSkeleton.LaxMonoidal := .comp ..
 noncomputable instance [F.OplaxMonoidal] : F.mapSkeleton.OplaxMonoidal := .comp ..

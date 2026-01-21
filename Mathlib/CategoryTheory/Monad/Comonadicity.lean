@@ -168,7 +168,7 @@ theorem comparisonAdjunction_counit_f
 variable (adj)
 
 /-- The fork which describes the unit of the adjunction: the morphism from this fork to the
-the equalizer of this pair is the unit.
+equalizer of this pair is the unit.
 -/
 @[simps!]
 def unitFork (B : C) :
@@ -224,7 +224,7 @@ Beck's comonadicity theorem, the converse is given in `comonadicOfCreatesFSplitE
 -/
 def createsFSplitEqualizersOfComonadic [ComonadicLeftAdjoint F] ⦃A B⦄ (f g : A ⟶ B)
     [F.IsCosplitPair f g] : CreatesLimit (parallelPair f g) F := by
-  apply (config := {allowSynthFailures := true}) comonadicCreatesLimitOfPreservesLimit
+  apply (config := { allowSynthFailures := true }) comonadicCreatesLimitOfPreservesLimit
   all_goals
     apply @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
