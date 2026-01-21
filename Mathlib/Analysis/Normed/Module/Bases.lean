@@ -138,15 +138,15 @@ def basis_constant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
 /-- Q_n = P_{n+1} - P_n. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
+@[simp]
 lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
     ∑ i ∈ Finset.range n, Q P i = P n := by
   induction n with
   | zero => simp [h0]
   | succ n ih => rw [Finset.sum_range_succ, ih, Q]; abel
 
-lemma Q_ortho {P : ℕ → X →L[𝕜] X} (i j : ℕ) (x : X)
-  (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x) :
-    (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
+lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
+  (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
   -- simp only [Q, ContinuousLinearMap.sub_apply, ContinuousLinearMap.map_sub, hcomp]
   -- split_ifs with hij
   -- · subst hij; simp [min_self, Nat.min_succ_self, Nat.succ_min_self]
@@ -156,9 +156,10 @@ lemma Q_ortho {P : ℕ → X →L[𝕜] X} (i j : ℕ) (x : X)
 
 lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     (h_rank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
-    (hcomp : ∀ n m, ∀ x: X, P n (P m x) = P (min n m) x)  (n : ℕ) :
+    (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)  (n : ℕ) :
     Module.finrank 𝕜 (LinearMap.range (Q P n)) = 1 := by
-  let U := LinearMap.range (Q P n)
+  let Q := Q P
+  let U := LinearMap.range (Q n)
   let V := LinearMap.range (P n)
   have h_range_Pn_succ : LinearMap.range (P (n + 1)) = U ⊔ V := by
     apply le_antisymm
@@ -173,7 +174,7 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   have h_disjoint : U ⊓ V = ⊥ := by
     rw [Submodule.eq_bot_iff]; rintro x ⟨⟨y, rfl⟩, ⟨z, hz⟩⟩
     -- have : Q P n (P n z) = 0 := by simp [Q, h_comm, Nat.min_succ_self, min_self]
-    have : Q P n (P n z) = 0 := by sorry
+    have : Q n (P n z) = 0 := by sorry
     rw [← hz, ← this, hz, Q_ortho n n y hcomp, if_pos rfl]
 
   -- have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
@@ -193,64 +194,70 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (h0 : P 0 = 0)
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
-    (hcomp : ∀ n m, ∀ x: X, P n (P m x) = P (min n m) x)
+    (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x)) :
     ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 X e) := by
-  let Qn := Q P
-  have h_rank := Q_rank_one hdim hcomp
-  -- have : ∀ n, ∃ v, v ∈ LinearMap.range (Qn n) ∧ v ≠ 0 :=
-  --   fun n ↦ exists_mem_ne_zero_of_rank_pos (by rw [h_rank]; exact Nat.one_pos)
-  have : ∀ n, ∃ v, v ∈ LinearMap.range (Qn n) ∧ v ≠ 0 := by
+  let Q := Q P
+  have hrankQ := Q_rank_one hdim hcomp
+  have Qortho := Q_ortho hcomp
+  have : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
       intro n
       refine exists_mem_ne_zero_of_rank_pos ?_
       apply Module.lt_rank_of_lt_finrank
-      rw [h_rank n]
+      rw [hrankQ n]
       exact Nat.zero_lt_one
   choose e he_in_range he_ne using this
-  -- let f_fun (n : ℕ) (x : X) : 𝕜 := Classical.choose (Submodule.mem_span_singleton.mp (by
-  --   rw [Submodule.span_singleton_eq_range_of_mem_of_finrank_one (he_mem n) (h_rank n)]
-  --   exact LinearMap.mem_range_self (Qn n) x))
-  have h_range_eq_span : ∀ n, LinearMap.range (Qn n) = Submodule.span 𝕜 {e n} := by
+  have h_range_eq_span : ∀ n, LinearMap.range (Q n) = Submodule.span 𝕜 {e n} := by
     intro n
+    symm
+    have : FiniteDimensional 𝕜 ↥(LinearMap.range (Q n)) := by
+      apply FiniteDimensional.of_finrank_pos
+      rw [hrankQ n]
+      exact Nat.succ_pos 0
     apply Submodule.eq_of_le_of_finrank_eq
-    · sorry
-    · rw [h_rank n, finrank_span_singleton (he_ne n)]
-
+    · rw [Submodule.span_le, Set.singleton_subset_iff]
+      exact he_in_range n
+    · rw [hrankQ n, finrank_span_singleton (he_ne n)]
   let f_fun : ℕ → X → 𝕜 := fun n x =>
     Classical.choose (Submodule.mem_span_singleton.mp (by
       rw [← h_range_eq_span]
-      exact LinearMap.mem_range_self (Qn n) x))
-
-  have hQf : ∀ n x, Qn n x = f_fun n x • e n := fun n x =>
-  -- have h_f_apply : ∀ n x, Q n x = f_fun n x • e n := fun n x =>
+      exact LinearMap.mem_range_self (Q n) x))
+  have hQf : ∀ n x, Q n x = f_fun n x • e n := fun n x =>
     (Classical.choose_spec (Submodule.mem_span_singleton.mp (by
       rw [← h_range_eq_span]
-      exact LinearMap.mem_range_self (Qn n) x))).symm
+      exact LinearMap.mem_range_self (Q n) x))).symm
   let f (n : ℕ) : StrongDual 𝕜 X := LinearMap.mkContinuous (IsLinearMap.mk' (f_fun n) (by
     constructor
-    · intro x y; apply smul_left_injective 𝕜 (he_ne n);dsimp only [smul_eq_mul]; rw [← hQf, map_add, add_smul, hQf, hQf]
-    · intro c x; apply smul_left_injective 𝕜 (he_ne n);dsimp  only [smul_eq_mul]; rw [← hQf, map_smul, mul_smul, hQf]
-    )) (‖Qn n‖ / ‖e n‖) (by
+    · intro x y; apply smul_left_injective 𝕜 (he_ne n); dsimp only [smul_eq_mul];
+      rw [← hQf, map_add, add_smul, hQf, hQf]
+    · intro c x; apply smul_left_injective 𝕜 (he_ne n);dsimp  only [smul_eq_mul];
+      rw [← hQf, map_smul, mul_smul, hQf]
+    )) (‖Q n‖ / ‖e n‖) (by
       intro x; rw [div_mul_eq_mul_div, le_div_iff₀ (norm_pos_iff.mpr (he_ne n))]
       calc ‖f_fun n x‖ * ‖e n‖ = ‖f_fun n x • e n‖ := (norm_smul _ _).symm
-        _ = ‖Qn n x‖ := by rw [hQf]
-        _ ≤ ‖Qn n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _)
-
-
-
-  have  ortho : ∀ i j, f i (e j) = if i = j then 1 else 0 := by
+        _ = ‖Q n x‖ := by rw [hQf]
+        _ ≤ ‖Q n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _)
+  have ortho : ∀ i j, f i (e j) = if i = j then 1 else 0 := by
     intro i j
     apply smul_left_injective 𝕜 (he_ne i)
     dsimp only [smul_eq_mul]
-    -- rw [← hQf, ContinuousLinearMap.sub_apply, Q_ortho hcomp]
-    have : Qn i (e j) = if i = j then e j else 0 := by
-      sorry
-    sorry
+    simp only [mkContinuous_apply, IsLinearMap.mk'_apply, ite_smul, one_smul, zero_smul, f]
+    have : Q i (e j) = if i = j then e j else 0 := by
+      obtain ⟨x, hx⟩ := he_in_range j
+      rw [← hx, Q_ortho hcomp i j x]
+    rw [← hQf, this]
+    split_ifs with hij
+    · subst hij; simp
+    · simp
   have lim : ∀ x, Tendsto (fun n ↦ ∑ i ∈ Finset.range n, f i x • e i) atTop (𝓝 x) := by
     intro x
-    sorry
-    -- apply tendsto_congr (fun n ↦ (Q_sum P h0 n).symm ▸ ContinuousLinearMap.sum_apply _ _ _)
-    -- simp_rw [hQf]; exact hlim x
+    apply Tendsto.congr _ (hlim x)
+    intro n
+    simp_rw [f]
+    dsimp only [mkContinuous_apply, IsLinearMap.mk'_apply]
+    simp_rw [← hQf, Q]
+    simp only [← Q_sum P h0 n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
+
   use e
   exact ⟨SchauderBasis.mk f ortho lim⟩
 
