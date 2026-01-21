@@ -42,7 +42,7 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-@[expose] public section
+public section
 
 open Function
 

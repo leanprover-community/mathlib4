@@ -26,7 +26,7 @@ Please keep in sync with:
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Function Order OrderDual
 
@@ -100,7 +100,7 @@ lemma Icc_add_one_left_eq_Ioc (a b : α) : Icc (a + 1) b = Ioc a b := by
   simpa [succ_eq_add_one] using Icc_succ_left_eq_Ioc a b
 
 lemma Ico_add_one_right_eq_Icc (a b : α) : Ico a (b + 1) = Icc a b := by
-  simpa [succ_eq_add_one] using  Ico_succ_right_eq_Icc a b
+  simpa [succ_eq_add_one] using Ico_succ_right_eq_Icc a b
 
 lemma Ioo_add_one_right_eq_Ioc (a b : α) : Ioo a (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ioo_succ_right_eq_Ioc a b

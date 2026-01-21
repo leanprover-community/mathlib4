@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Behaviour of the total complex with respect to shifts
@@ -353,7 +354,7 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
       (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
   ext n n₁ n₂ h
   dsimp at h ⊢
-  rw [Linear.comp_units_smul,ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
+  rw [Linear.comp_units_smul, ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
     ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
     Linear.units_smul_comp, Linear.comp_units_smul]
   dsimp [shiftFunctor₁₂CommIso]

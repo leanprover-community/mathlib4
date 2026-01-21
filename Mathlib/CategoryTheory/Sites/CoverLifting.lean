@@ -96,7 +96,7 @@ to sheaves when `G : C ⥤ D` is a cocontinuous functor.
 
 We do not follow the proofs in SGA 4 III 2.2 or <https://stacks.math.columbia.edu/tag/00XK>.
 Instead, we verify as directly as possible that if `F : Cᵒᵖ ⥤ A` is a sheaf,
-then `G.op.ran.obj F` is a sheaf. in order to do this, we use the "multifork"
+then `G.op.ran.obj F` is a sheaf. In order to do this, we use the "multifork"
 characterization of sheaves which involves limits in the category `A`.
 As `G.op.ran.obj F` is the chosen right Kan extension of `F` along `G.op : Cᵒᵖ ⥤ Dᵒᵖ`,
 we actually verify that any pointwise right Kan extension of `F` along `G.op` is a sheaf.
@@ -149,7 +149,7 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
             r.g₂ := h
             r.w := by simpa using w.symm
             .. }
-        simpa [r] using s.condition r )
+        simpa [r] using s.condition r)
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :

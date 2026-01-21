@@ -32,7 +32,6 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 
 @[expose] public section
 
-
 namespace Function
 
 /-!

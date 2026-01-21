@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Basic
 # Theorems about the `Disjoint` relation on `Set`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists HeytingAlgebra RelIso
 
@@ -43,15 +43,9 @@ theorem disjoint_left : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ s → a ∉ t :=
 
 alias ⟨_root_.Disjoint.notMem_of_mem_left, _⟩ := disjoint_left
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_left := Disjoint.notMem_of_mem_left
-
 theorem disjoint_right : Disjoint s t ↔ ∀ ⦃a⦄, a ∈ t → a ∉ s := by rw [disjoint_comm, disjoint_left]
 
 alias ⟨_root_.Disjoint.notMem_of_mem_right, _⟩ := disjoint_right
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.not_mem_of_mem_right := Disjoint.notMem_of_mem_right
 
 lemma not_disjoint_iff : ¬Disjoint s t ↔ ∃ x, x ∈ s ∧ x ∈ t := by grind
 

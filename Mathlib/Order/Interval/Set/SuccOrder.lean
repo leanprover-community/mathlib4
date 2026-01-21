@@ -17,7 +17,7 @@ which is not the maximum, we have `↑(Order.succ i) = Order.succ ↑i`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Set
 

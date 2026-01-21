@@ -43,18 +43,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`experimental.module, true⟩,
-    -- Enforcing the module system's restrictions on using private declarations in public contexts
-    -- will require further API changes specific to the respective usage, so we disable these checks
-    -- for now until they can be addressed one by one.
-    ⟨`backward.privateInPublic, true⟩,
-    -- We disable the many warnings for now; this can be switched locally to work on the offenders.
-    ⟨`backward.privateInPublic.warn, false⟩,
-    -- Similarly, enforcing that tactic blocks embedded in terms are elaborated in the private scope
-    -- can affect type inference, which breaks in multiple places and should be fixed separately.
-    -- Note that this should be fixed first such that access to private declarations in such proofs
-    -- is allowed even when disabling `backward.privateInPublic`.
-    ⟨`backward.proofsInPublic, true⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
@@ -83,7 +71,6 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
-  leanOptions := #[⟨`experimental.module, true⟩]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
