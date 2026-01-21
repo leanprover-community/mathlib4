@@ -5,7 +5,7 @@ Authors: Artie Khovanov
 -/
 module
 
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 
 import Mathlib.Tactic.ApplyFun
@@ -58,29 +58,32 @@ end AddSubmonoid
 
 namespace Submonoid
 
+open scoped Pointwise
+
 variable {G : Type*} [Group G] (M : Submonoid G)
 
 /--
 The support of a submonoid `M` of a group `G` is `M ∩ M⁻¹`,
 the largest subgroup of `G` contained in `M`.
 -/
-@[to_additive
+@[to_additive (attr := simps!)
 /-- The support of a submonoid `M` of a group `G` is `M ∩ -M`,
 the largest subgroup of `G` contained in `M`. -/]
 def mulSupport : Subgroup G where
-  carrier := M ∩ M⁻¹
-  one_mem' := by aesop
-  mul_mem' := by aesop
+  toSubmonoid := M ⊓ M⁻¹
   inv_mem' := by aesop
 
 variable {M} in
-@[to_additive (attr := aesop simp)]
+@[to_additive (attr := simp)]
 theorem mem_mulSupport {x} : x ∈ M.mulSupport ↔ x ∈ M ∧ x⁻¹ ∈ M := .rfl
 
-@[to_additive]
-theorem coe_mulSupport : M.mulSupport = (M ∩ M⁻¹ : Set G) := rfl
+@[to_additive (attr := simp)]
+theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 
-variable {G : Type*} [Group G] (M : Submonoid G)
+@[to_additive]
+theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
+    GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
+  fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
 
 /-- Typeclass for submonoids of a group with zero support. -/
 @[to_additive]
@@ -95,13 +98,19 @@ attribute [aesop 50% apply, aesop safe forward (immediate := [hx₁])] eq_one_of
 alias eq_one_of_mem_of_inv_mem₂ := eq_one_of_mem_of_inv_mem -- for Aesop
 
 @[to_additive (attr := simp)]
-theorem mulSupport_eq_bot [M.IsMulPointed] : M.mulSupport = ⊥ := by ext; aesop
+theorem mulSupport_eq_bot [M.IsMulPointed] : M.mulSupport = ⊥ := by aesop
 
+variable {M} in
 @[to_additive]
 theorem IsMulPointed.of_mulSupport_eq_bot (h : M.mulSupport = ⊥) : M.IsMulPointed where
   eq_one_of_mem_of_inv_mem {x} := by
     apply_fun (x ∈ ·) at h
     aesop
+
+@[to_additive]
+theorem isMulPointed_iff : M.IsMulPointed ↔ M.mulSupport = ⊥ where
+  mp := by aesop
+  mpr := IsMulPointed.of_mulSupport_eq_bot
 
 /-- Typeclass for submonoids `M` of a group `G` such that `M` generates `G` as a subgroup. -/
 @[to_additive]
@@ -112,14 +121,17 @@ export IsMulSpanning (mem_or_inv_mem)
 
 attribute [aesop safe forward, aesop safe apply] mem_or_inv_mem
 
+variable {M} in
 @[to_additive (attr := aesop 80%)]
 theorem inv_mem_of_notMem [M.IsMulSpanning] (x : G) (h : x ∉ M) : x⁻¹ ∈ M := by aesop
 
+variable {M} in
 @[to_additive (attr := aesop 50%)]
 theorem mem_of_inv_notMem [M.IsMulSpanning] (x : G) (h : x⁻¹ ∉ M) : x ∈ M := by aesop
 
+variable {M} in
 @[to_additive]
-theorem IsMulSpanning.of_le {M N : Submonoid G} [M.IsMulSpanning] (h : M ≤ N) :
+theorem IsMulSpanning.of_le {N : Submonoid G} [M.IsMulSpanning] (h : M ≤ N) :
     N.IsMulSpanning where
 
 @[to_additive]
