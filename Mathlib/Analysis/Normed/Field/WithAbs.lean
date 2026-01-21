@@ -117,7 +117,8 @@ abbrev Completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
-/-- This is a `CoeTail` so that `Coe (WithAbs v) v.Completion` is prioritised. -/
+/-- This is a `CoeTail` so that it does not apply to the defeq `(WithAbs v`) and replace the
+already existing `Coe (WithAbs v) v.Completion` from `UniformSpace.Completion.instCoe`. -/
 instance : CoeTail K v.Completion where
   coe k : v.Completion := ↑((WithAbs.equiv v).symm k)
 

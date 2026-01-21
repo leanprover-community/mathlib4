@@ -102,11 +102,17 @@ variable {R' : Type*} [Semiring R]
 
 instance instModule_left [AddCommGroup R'] [Module R R'] (v : AbsoluteValue R S) :
     Module (WithAbs v) R' :=
-  inferInstanceAs <| Module R R'
+  Module.compHom R' (equiv v).toRingHom
 
 instance instModule_right [Semiring R'] [Module R R'] (v : AbsoluteValue R' S) :
-    Module R (WithAbs v) :=
-  inferInstanceAs <| Module R R'
+    Module R (WithAbs v) where
+  smul r x := r • equiv v x
+  one_smul _ := by simp
+  smul_zero _ := by simp
+  smul_add _ _ _ := by simp
+  add_smul r₁ r₂ x := add_smul r₁ r₂ (equiv v x)
+  mul_smul r₁ r₂ x := mul_smul r₁ r₂ (equiv v x)
+  zero_smul x := zero_smul _ (equiv v x)
 
 end module
 
@@ -115,13 +121,17 @@ section algebra
 variable {R' : Type*} [CommSemiring R] [Semiring R'] [Algebra R R']
 
 instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) R' :=
-  inferInstanceAs <| Algebra R R'
+  Algebra.compHom R' (equiv v).toRingHom
 
 theorem algebraMap_left_apply (v : AbsoluteValue R S) (x : WithAbs v) :
     algebraMap (WithAbs v) R' x = algebraMap R R' (WithAbs.equiv v x) := rfl
 
-instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) :=
-  inferInstanceAs <| Algebra R R'
+instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) where
+  algebraMap := (equiv v).toRingHom.comp (algebraMap R R')
+  commutes' _ x := by
+    apply_fun (equiv v)
+    exact Algebra.commutes _ _
+  smul_def' _ _ := by simp only [Algebra.smul_def, RingEquiv.toRingHom_eq_coe]; rfl
 
 theorem algebraMap_right_apply (v : AbsoluteValue R' S) (x : R) :
     algebraMap R (WithAbs v) x = WithAbs.equiv v (algebraMap R R' x) := rfl
