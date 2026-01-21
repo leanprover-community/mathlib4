@@ -10,6 +10,8 @@ public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.SuccPred.IntervalSucc
 
+@[expose] public section
+
 /-!
 # Annulus
 
