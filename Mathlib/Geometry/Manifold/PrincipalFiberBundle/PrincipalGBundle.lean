@@ -155,7 +155,7 @@ instance mulAction_op_of_left [Group G] [MulAction G M] : MulAction (Gᵐᵒᵖ)
       (unop (g₁ * g₂))⁻¹ •> m
         = (unop g₂ * unop g₁)⁻¹ •> m       := by rw [unop_mul]
       _ = ((unop g₁)⁻¹ * (unop g₂)⁻¹) •> m := by rw [_root_.mul_inv_rev]
-      _ = (unop g₁)⁻¹ • ((unop g₂)⁻¹ • m)  := by rw [MulAction.mul_smul]
+      _ = (unop g₁)⁻¹ • ((unop g₂)⁻¹ • m)  := by rw [SemigroupAction.mul_smul];
     exact h1
 
 instance SmoothRightGAction_of_Left
