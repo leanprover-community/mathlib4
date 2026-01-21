@@ -124,10 +124,8 @@ theorem coe_toAlgEquiv (e : A ≃A[R] B) : ⇑e.toAlgEquiv = e := rfl
 /-- The natural coercion from a continuous algebra isomorphism
 to a continuous linear isomorphism. -/
 @[coe]
-def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B where
-  __ := e.toLinearEquiv
-  continuous_toFun := e.continuous_toFun
-  continuous_invFun := e.continuous_invFun
+def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
+  { e with __ := e.toLinearEquiv }
 
 instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 
