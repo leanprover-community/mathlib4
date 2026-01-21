@@ -65,6 +65,13 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         intro x y
         ext
         simp [FreeGroup.freeGroupUnitEquivInt] }
+
+-- TODO do this.
+  lemma FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
+    Function.Surjective (FreeGroup.map f) := by
+    sorry
+
+
 -- end of addition to #FreeGroup
 
 -- Start of suggested additions to #Group.FG
@@ -161,14 +168,14 @@ On the other hand, when we write IsFinitelyPresented as `∃ α: Type` and a sur
 `f: FreeGroup α →* G` such that `f.ker = normalClosure rels,`
 since `MonoidHom` allows `FreeGroup α` and `G` to be different types,
 we have to specify that `α` and `G` live in the same type universe to get the same result. -/
-lemma iff_hom_surj {G : Type*} [Group G] : IsPresented G ↔
-  ∃ (α : Type*) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
-  Function.Surjective f ∧ f.ker = Subgroup.normalClosure rels := by
-    constructor
-    · intro ⟨α, rels, ⟨iso⟩⟩
-      -- TODO `use α` returns a type mismatch.
-      sorry
-    · sorry
+-- lemma iff_hom_surj {G : Type*} [Group G] : IsPresented G ↔
+--   ∃ (α : Type*) (rels : Set (FreeGroup α)) (f : FreeGroup α →* G),
+--   Function.Surjective f ∧ f.ker = Subgroup.normalClosure rels := by
+--     constructor
+--     · intro ⟨α, rels, ⟨iso⟩⟩
+--       -- TODO `use α` returns a type mismatch.
+--       sorry
+--     · sorry
 
 end IsPresented
 -- End of suggested additions to #PresentedGroup
@@ -333,53 +340,62 @@ theorem if_hom_surj_finite {G : Type*} [Group G] :
 
 theorem iff_hom_surj_set_G {G : Type*} [Group G] :
   IsFinitelyPresented G ↔
-    ∃ (S : Set G) (hS : S.Finite),
+    ∃ (S : Set G) (_ : S.Finite),
       Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
       IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
   · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
     simp [FinitelyPresentedGroup, PresentedGroup] at iso
     let _ : Fintype α := Fintype.ofFinite α
-
     let h : FreeGroup α →* G :=
       iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
-    have hgsurj : Function.Surjective h := by
+    have hhsurj : Function.Surjective h := by
       simpa [h] using
       (Function.Surjective.comp iso.symm.surjective
       (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
-
     let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-
     have hS : S.Finite := by
       simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
     use S, hS
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-    let g : α → S := fun a ↦ Subtype.mk (h (FreeGroup.of a)) (by exact ⟨a, rfl⟩)
-
+    let g : α → S := fun a => ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
+    have hgsurj : Function.Surjective g := by
+      intro s
+      rcases s with ⟨y, ⟨a, rfl⟩⟩
+      exact ⟨a, rfl⟩
     have hfgh : f.comp (FreeGroup.map g) = h := by
       ext a
       simp [f, h, g]
     have hfsurj : Function.Surjective f := by
       intro y
-      obtain ⟨x, rfl⟩ := hgsurj y
+      obtain ⟨x, rfl⟩ := hhsurj y
       refine ⟨FreeGroup.map g x, ?_⟩
       simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hfgh
     use hfsurj
-
-    let rels' : Set (FreeGroup S) := FreeGroup.map g '' rels
-    have hrels' : rels'.Finite := by
-      simpa [rels'] using hrels.image (FreeGroup.map g)
-
+    let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
+    have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective g hgsurj
     have hhker : h.ker = Subgroup.normalClosure rels := by
       ext x
       simp [h]
-
-    have hfker : f.ker = Subgroup.normalClosure rels' := by
-      simp [rels']
-      sorry
-
-    unfold IsNormalClosureFG
-    exact ⟨rels', hrels', hfker.symm⟩
+    have hhker' : IsNormalClosureFG h.ker := by
+      rw [hhker]
+      use rels
+    have hker : h.ker = (f.ker).comap g' := by
+      have : h.ker = (f.comp g').ker := by
+        simpa [g'] using congrArg MonoidHom.ker hfgh.symm
+      simpa [MonoidHom.comap_ker] using this
+    have hker' : h.ker = (f.ker).comap g' := by
+      have : h.ker = (f.comp g').ker := by
+        simpa [g'] using congrArg MonoidHom.ker hfgh.symm
+      simpa [MonoidHom.comap_ker] using this
+    have hmap : Subgroup.map g' (h.ker) = f.ker := by
+      simpa [hker'] using
+        (Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj)
+    have hker : f.ker = Subgroup.map g' (Subgroup.normalClosure rels) := by
+      simpa [hhker] using hmap.symm
+    convert IsNormalClosureFG.invariant_surj_hom g' hg'_surj h.ker hhker'
+    rw [hhker]
+    exact hker
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
     let α := S
@@ -414,7 +430,8 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
         simp_all only [MonoidHom.ker_comp_mulEquiv, FreeGroup.freeGroupCongr_symm, Equiv.symm_symm,
           MulEquiv.toMonoidHom_eq_coe, f, S', f', iso, e]
         ext a : 1
-        simp_all only [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, FreeGroup.freeGroupCongr_apply,
+        simp_all only
+        [MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, FreeGroup.freeGroupCongr_apply,
           FreeGroup.map.of, FreeGroup.lift_apply_of, Set.Finite.subtypeEquivToFinset_symm_apply_coe]
       rw [← hf'canon]
       use hf'surj
@@ -480,55 +497,55 @@ lemma of_mulEquiv {G H : Type*} [Group G] [Group H]
 
 -- TODO: it makes more sense to write this for PresentedGroup first and then unfold.
 /- Direct products of finitely presented groups are finitely presented -/
-instance instProd [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
-  IsFinitelyPresented (G × H) := by
-  obtain ⟨α, hα, Grels, hGrels, ⟨Giso⟩⟩ := hG
-  obtain ⟨β, hβ, Hrels, hHrels, ⟨Hiso⟩⟩ := hH
-  simp only [FinitelyPresentedGroup] at Giso Hiso
-  use α ⊕ β, inferInstance
-  let Grels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inl '' Grels
-  let Hrels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inr '' Hrels
-  have hGrels_prod : Grels_prod.Finite := by
-    simpa [Grels_prod] using hGrels.image (FreeGroup.map Sum.inl)
-  have hHrels_prod : Hrels_prod.Finite := by
-    simpa [Hrels_prod] using hHrels.image (FreeGroup.map Sum.inr)
-  -- TODO this should be refactored.
-  let comms : Set (FreeGroup (α ⊕ β)) :=
-  (fun p => ⁅p.1, p.2⁆) '' (Grels_prod ×ˢ Hrels_prod)
-  have hcomm : comms.Finite := by
-  -- comms = image of commutator on Grels_prod ×ˢ Hrels_prod
-    simpa [comms] using (Set.Finite.image (fun p => ⁅p.1, p.2⁆) (hGrels_prod.prod hHrels_prod))
-  let rels_prod : Set (FreeGroup (α ⊕ β)) :=
-  Grels_prod ∪ Hrels_prod ∪ comms
-  have hrels_prod : rels_prod.Finite := by
-  -- assuming hGrels_prod : Grels_prod.Finite, hHrels_prod : Hrels_prod.Finite
-    simpa [rels_prod] using (hGrels_prod.union hHrels_prod).union hcomm
-  refine ⟨rels_prod, hrels_prod, ?_⟩
-  refine ⟨?_iso⟩
-  have e₁ : G × H ≃* PresentedGroup Grels × PresentedGroup Hrels :=
-    MulEquiv.prodCongr Giso Hiso
-  sorry
+-- instance instProd [hG : IsFinitelyPresented G] [hH : IsFinitelyPresented H] :
+--   IsFinitelyPresented (G × H) := by
+--   obtain ⟨α, hα, Grels, hGrels, ⟨Giso⟩⟩ := hG
+--   obtain ⟨β, hβ, Hrels, hHrels, ⟨Hiso⟩⟩ := hH
+--   simp only [FinitelyPresentedGroup] at Giso Hiso
+--   use α ⊕ β, inferInstance
+--   let Grels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inl '' Grels
+--   let Hrels_prod : Set (FreeGroup (α ⊕ β)) := FreeGroup.map Sum.inr '' Hrels
+--   have hGrels_prod : Grels_prod.Finite := by
+--     simpa [Grels_prod] using hGrels.image (FreeGroup.map Sum.inl)
+--   have hHrels_prod : Hrels_prod.Finite := by
+--     simpa [Hrels_prod] using hHrels.image (FreeGroup.map Sum.inr)
+--   -- TODO this should be refactored.
+--   let comms : Set (FreeGroup (α ⊕ β)) :=
+--   (fun p => ⁅p.1, p.2⁆) '' (Grels_prod ×ˢ Hrels_prod)
+--   have hcomm : comms.Finite := by
+--   -- comms = image of commutator on Grels_prod ×ˢ Hrels_prod
+--     simpa [comms] using (Set.Finite.image (fun p => ⁅p.1, p.2⁆) (hGrels_prod.prod hHrels_prod))
+--   let rels_prod : Set (FreeGroup (α ⊕ β)) :=
+--   Grels_prod ∪ Hrels_prod ∪ comms
+--   have hrels_prod : rels_prod.Finite := by
+--   -- assuming hGrels_prod : Grels_prod.Finite, hHrels_prod : Hrels_prod.Finite
+--     simpa [rels_prod] using (hGrels_prod.union hHrels_prod).union hcomm
+--   refine ⟨rels_prod, hrels_prod, ?_⟩
+--   refine ⟨?_iso⟩
+--   have e₁ : G × H ≃* PresentedGroup Grels × PresentedGroup Hrels :=
+--     MulEquiv.prodCongr Giso Hiso
+--   sorry
 
-lemma quotient_of_normalClosureFG (N : Subgroup G) [N.Normal]
-    [hG : IsFinitelyPresented G] (hN : IsNormalClosureFG N) :
-    IsFinitelyPresented (G ⧸ N) := by
-    obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := hG
-    unfold FinitelyPresentedGroup at iso
-    unfold PresentedGroup at iso
-    let N' := N.map iso.toMonoidHom
-    have hN'normal : N'.Normal :=
-     Subgroup.Normal.map (H := N) (h := inferInstance) (f := iso.toMonoidHom) iso.surjective
-    have hN'closureFG : IsNormalClosureFG N' := by
-      simpa [N'] using
-    (IsNormalClosureFG.invariant_surj_hom (f := iso.toMonoidHom)
-      (hf := iso.surjective) (K := N) hN)
-    have he : Subgroup.map (↑iso) N = N' := by
-      rfl
-    have qiso : G ⧸ N ≃* (FreeGroup α ⧸ Subgroup.normalClosure rels) ⧸ N' :=
-      QuotientGroup.congr N N' iso he
-    obtain ⟨S, hS, hSClosure⟩ := hN'closureFG
-    -- TODO show isomorphism (FreeGroup α ⧸ normalClosure rels) ⧸ N' with (FreeGroup α ⧸ normalClosure (rels ∪ S))
-    sorry
+-- lemma quotient_of_normalClosureFG (N : Subgroup G) [N.Normal]
+--     [hG : IsFinitelyPresented G] (hN : IsNormalClosureFG N) :
+--     IsFinitelyPresented (G ⧸ N) := by
+--     obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := hG
+--     unfold FinitelyPresentedGroup at iso
+--     unfold PresentedGroup at iso
+--     let N' := N.map iso.toMonoidHom
+--     have hN'normal : N'.Normal :=
+--      Subgroup.Normal.map (H := N) (h := inferInstance) (f := iso.toMonoidHom) iso.surjective
+--     have hN'closureFG : IsNormalClosureFG N' := by
+--       simpa [N'] using
+--     (IsNormalClosureFG.invariant_surj_hom (f := iso.toMonoidHom)
+--       (hf := iso.surjective) (K := N) hN)
+--     have he : Subgroup.map (↑iso) N = N' := by
+--       rfl
+--     have qiso : G ⧸ N ≃* (FreeGroup α ⧸ Subgroup.normalClosure rels) ⧸ N' :=
+--       QuotientGroup.congr N N' iso he
+--     obtain ⟨S, hS, hSClosure⟩ := hN'closureFG
+--     -- TODO show isomorphism (FreeGroup α ⧸ normalClosure rels) ⧸ N' with (FreeGroup α ⧸ normalClosure (rels ∪ S))
+--     sorry
 
 end IsFinitelyPresented
 
