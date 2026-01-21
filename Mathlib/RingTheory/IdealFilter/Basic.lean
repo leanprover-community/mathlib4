@@ -129,14 +129,20 @@ lemma isTorsionQuot_self (F : IdealFilter A) (I : Ideal A) :
   obtain ⟨J, hJ⟩ := F.nonempty
   exact ⟨J, hJ, le_of_le_of_eq le_top (by simpa [eq_comm])⟩
 
-/-- Monotonicity in the left ideal for `IsTorsionQuot`. -/
-lemma isTorsionQuot.mono_left {F : IdealFilter A}
-    {I J K : Ideal A} (hIJ : I ≤ J) (I_tors : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
-  fun _ h ↦ (I_tors _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono hIJ .rfl))
+/-- `IsTorsionQuot` is monotone in the left ideal. -/
+lemma IsTorsionQuot.mono_left {F : IdealFilter A}
+    {I J K : Ideal A} (hIJ : I ≤ J) (hIK : IsTorsionQuot F I K) : IsTorsionQuot F J K :=
+  fun _ h ↦ (hIK _ h).imp fun _ ↦ And.imp_right (le_trans · (Submodule.colon_mono hIJ .rfl))
 
-lemma IsTorsionQuot.mono_right {F : IdealFilter A}
-    {I J K : Ideal A} (hJK : J ≤ K) (hI : IsTorsionQuot F I K) : IsTorsionQuot F I J :=
-  fun x hx ↦ hI x (hJK hx)
+/-- `IsTorsionQuot` is antitone in the right ideal. -/
+lemma IsTorsionQuot.anti_right {F : IdealFilter A}
+    {I J K : Ideal A} (hJK : J ≤ K) (hIK : IsTorsionQuot F I K) : IsTorsionQuot F I J :=
+  fun x hx ↦ hIK x (hJK hx)
+
+/-- Combined monotonicity for `IsTorsionQuot`. -/
+lemma IsTorsionQuot.mono {F : IdealFilter A} {I J K L : Ideal A} (hIK : IsTorsionQuot F I K)
+    (hIJ : I ≤ J) (hLK : L ≤ K) : IsTorsionQuot F J L :=
+  (hIK.mono_left hIJ).anti_right hLK
 
 lemma IsTorsionQuot.inf {F : IdealFilter A}
     {I J K : Ideal A} (hI : IsTorsionQuot F I K) (hJ : IsTorsionQuot F J K) :
@@ -156,9 +162,9 @@ lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
   · rintro I ⟨K, hK, hIK⟩ J ⟨L, hL, hJL⟩
     refine ⟨I ⊓ J, ?_, inf_le_left, inf_le_right⟩
     exact ⟨K ⊓ L, G.inf_mem hK hL,
-      (hIK.mono_right inf_le_left).inf (hJL.mono_right inf_le_right)⟩
+      (hIK.anti_right inf_le_left).inf (hJL.anti_right inf_le_right)⟩
   · intro I J hIJ ⟨K, hK, hIK⟩
-    exact ⟨K, hK, isTorsionQuot.mono_left hIJ hIK⟩
+    exact ⟨K, hK, hIK.mono_left hIJ⟩
 
 /-- `gabrielComposition F G` is the Gabriel composition of ideal filters `F` and `G`. -/
 def gabrielComposition (F G : IdealFilter A) : IdealFilter A :=
