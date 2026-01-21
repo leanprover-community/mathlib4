@@ -1129,7 +1129,7 @@ variable {s} in
 @[simp] lemma ExcenterExists.touchpointWeights_map {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (f : P →ᵃⁱ[ℝ] P₂) :
     (s.map f.toAffineMap f.injective).touchpointWeights signs = s.touchpointWeights signs := by
-  ext1 i
+  ext i : 1
   rw [← affineCombination_eq_touchpoint_iff
     ((s.map f.toAffineMap f.injective).sum_touchpointWeights _ _)]
   have hc := (s.map f.toAffineMap f.injective).affineCombination_touchpointWeights signs i
