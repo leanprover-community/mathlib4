@@ -59,8 +59,4 @@ def units_map (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
 theorem units_map_apply (f : M ≃ₜ* N) (x : Mˣ) :
     f.units_map x = Units.mapEquiv f x := rfl
 
-@[simp]
-theorem units_map_toMulEquiv (f : M ≃ₜ* N) :
-    f.units_map.toMulEquiv = Units.mapEquiv f := rfl
-
 end ContinuousMulEquiv
