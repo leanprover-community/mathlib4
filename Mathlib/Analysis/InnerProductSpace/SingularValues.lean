@@ -55,6 +55,11 @@ lemma ker_adjoint_comp_self : ker (adjoint T ∘ₗ T) = ker T := by
   · intro v hv
     simp_all
 
+lemma injective_adjoint_comp_self_iff
+  : Function.Injective (adjoint T ∘ₗ T) ↔ Function.Injective T := by
+  repeat rw [←LinearMap.ker_eq_bot]
+  rw [ker_adjoint_comp_self]
+
 -- TODO: Prove using ContinuousLinearMap.orthogonal_range
 lemma orthogonal_ker : (ker T)ᗮ = range (adjoint T) := by
   sorry
@@ -149,6 +154,21 @@ public theorem singularValues_antitone : Antitone T.singularValues := by
     rw [T.sq_singularValues_fin rfl ⟨j, hj⟩, T.sq_singularValues_fin rfl ⟨i, hi⟩]
     exact T.isSymmetric_adjoint_comp_self.eigenvalues_antitone rfl hij
   simpa using Real.sqrt_le_sqrt this
+
+/--
+7.68(a) from [axler2024]. Note that we have countably infinitely many singular values whereas there
+are only dim(domain(T)) singular values in [axler2024], so we modify the statement to account for
+this.
+-/
+public theorem injective_theorem
+  : Function.Injective T
+    ↔ 0 ∉ Finset.image T.singularValues (Finset.range (Module.finrank 𝕜 (range T))) := by
+  rw [←injective_adjoint_comp_self_iff]
+  rw [←ker_eq_bot]
+  have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
+  rw [←this]
+  rw [not_iff_not]
+  sorry
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
