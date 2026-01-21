@@ -13,6 +13,7 @@ public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
@@ -695,15 +696,19 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 section Unbounded
 
+/-!
+## Integrals over unbounded rectangular contours
+-/
+
 open Set Real Complex intervalIntegral Metric Filter MeasureTheory
 
 open scoped Interval Topology
 
 section aux
 
--- Why isn't `exact?` giving me these? Are these not in mathlib?! Suggestions welcome...
-private theorem re_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).re = x := by simp
-private theorem im_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).im = y := by simp
+-- Helper lemmas that make it easier to work with `x + y * I` where `x y : ℝ`.
+private lemma re_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).re = x := by simp
+private lemma im_of_real_add_real_mul_I (x y : ℝ) : (x + y * I).im = y := by simp
 
 end aux
 
@@ -892,6 +897,7 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
 end Contour_Deformation_of_Integrable_along_BOTH
 
 end Unbounded
+
 end analyticity
 
 section derivatives
