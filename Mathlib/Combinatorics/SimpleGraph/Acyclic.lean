@@ -9,16 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-<<<<<<< HEAD
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Int.Star
-
-=======
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Data.Int.Star
->>>>>>> fbf087a1fe (Let G be a tree of order n ≥ 2. Then G has at least two pendent vertices.)
 /-!
 
 # Acyclic graphs and trees
