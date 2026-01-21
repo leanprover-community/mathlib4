@@ -103,7 +103,7 @@ theorem ScottContinuousOn.comp
   rw [Set.image_comp]
   refine hg hd₁' hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
 
-theorem ScottContinuousOn.comp_image
+theorem ScottContinuousOn.image_comp
     {g : β → γ}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
@@ -122,13 +122,13 @@ theorem ScottContinuousOn.comp'
   ScottContinuousOn.comp hD hD' hg hf
 
 @[fun_prop]
-theorem ScottContinuousOn.comp_image'
+theorem ScottContinuousOn.image_comp'
     {g : β → γ}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
     (hf : ScottContinuousOn D f)
     : ScottContinuousOn D (fun x ↦ g (f x)) :=
-  ScottContinuousOn.comp_image hD hg hf
+  ScottContinuousOn.image_comp hD hg hf
 
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
