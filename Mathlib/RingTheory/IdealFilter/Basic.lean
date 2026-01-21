@@ -86,8 +86,7 @@ def IsTorsionElem (F : IdealFilter A)
     {M : Type*} [AddCommMonoid M] [Module A M] (m : M) : Prop :=
   ∃ L ∈ F, ∀ a ∈ L, a • m = 0
 
-/-- We say that an `A`-module `M` is `F`-torsion if every element of `M` is `F`-torsion in the
-sense of `IsTorsionElem`. -/
+/-- Module-level `F`-torsion: every element is `F`-torsion. -/
 def IsTorsion (F : IdealFilter A)
     (M : Type*) [AddCommMonoid M] [Module A M] : Prop :=
   ∀ m : M, IsTorsionElem F m
