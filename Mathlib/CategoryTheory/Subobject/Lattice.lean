@@ -356,7 +356,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
-theorem inf_isPullback (f g : Subobject A) :
+theorem inf_isPullback {A : C} (f g : Subobject A) :
   IsPullback
     (Subobject.ofLE _ _ (Subobject.inf_le_left f g))
     (Subobject.ofLE _ _ (Subobject.inf_le_right f g))
