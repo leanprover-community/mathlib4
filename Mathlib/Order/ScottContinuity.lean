@@ -247,6 +247,7 @@ lemma ScottContinuous.sup₂ :
   · rw [sup_le_iff]
     exact e1 _ _ fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
+@[fun_prop]
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
   ScottContinuous.sup₂.scottContinuousOn
