@@ -246,7 +246,7 @@ lemma getD_comp_some (d : α) : (fun x ↦ x.getD d) ∘ some = id := by
   simp only [Function.comp_apply, getD_some, id_eq]
 
 @[simp]
-theorem none_eq_map_iff {x : Option α} {f : α → β}  : none = x.map f ↔ x = none := by
+theorem none_eq_map_iff {x : Option α} {f : α → β} : none = x.map f ↔ x = none := by
   rw [eq_comm, map_eq_none_iff]
 
 @[simp]
