@@ -80,7 +80,8 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         ext
         simp [FreeGroup.freeGroupUnitEquivInt] }
 
-/- If `α` and `β` are finite  -/
+/- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
+FreeGroup.map is also surjective.  -/
 theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
   Function.Surjective (FreeGroup.map f) := by
   intro x
