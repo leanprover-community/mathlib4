@@ -50,9 +50,7 @@ instance : FunLike (IntertwiningMap ρ σ) V W where
 
 theorem intertwiningMap_toLinearMap (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
 
-instance : Zero (IntertwiningMap ρ σ) :=
-  ⟨{ toLinearMap := 0
-     isIntertwining := by intro g v; simp }⟩
+instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
 @[simp] lemma coe_zero : ((0 : IntertwiningMap ρ σ) : V → W) = 0 := rfl
 
