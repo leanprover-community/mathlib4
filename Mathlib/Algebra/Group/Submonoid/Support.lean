@@ -81,6 +81,7 @@ theorem mem_mulSupport {x} : x ∈ M.mulSupport ↔ x ∈ M ∧ x⁻¹ ∈ M := 
 theorem mulSupport_toSubmonoid : M.mulSupport.toSubmonoid = M ⊓ M⁻¹ := rfl
 
 @[to_additive]
+/- The support of a submonoid is the largest subgroup it contains. -/
 theorem _root_.Subgroup.gc_toSubmonoid_mulSupport :
     GaloisConnection (α := Subgroup G) Subgroup.toSubmonoid mulSupport :=
   fun _ _ ↦ ⟨fun _ _ ↦ by aesop, fun h _ hx ↦ (h hx).1⟩
@@ -109,7 +110,7 @@ theorem IsMulPointed.of_mulSupport_eq_bot (h : M.mulSupport = ⊥) : M.IsMulPoin
 
 @[to_additive]
 theorem isMulPointed_iff : M.IsMulPointed ↔ M.mulSupport = ⊥ where
-  mp := by aesop
+  mp _ := mulSupport_eq_bot _
   mpr := IsMulPointed.of_mulSupport_eq_bot
 
 /-- Typeclass for submonoids `M` of a group `G` such that `M` generates `G` as a subgroup. -/
