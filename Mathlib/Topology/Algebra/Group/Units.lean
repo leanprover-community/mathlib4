@@ -45,9 +45,22 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
     ⟨continuous_pi fun _ ↦ Units.continuous_val.comp <| continuous_apply _,
       continuous_pi fun _ ↦ Units.continuous_coe_inv.comp <| continuous_apply _⟩
 
+namespace ContinuousMulEquiv
+
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
+
 /-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
-def ContinuousMulEquiv.units_map {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
-    [Monoid M] [Monoid N] (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
+def units_map (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
   { __ := Units.mapEquiv f
     continuous_toFun := f.continuous.units_map _
     continuous_invFun := f.symm.continuous.units_map _ }
+
+@[simp]
+theorem units_map_apply (f : M ≃ₜ* N) (x : Mˣ) :
+    f.units_map x = Units.mapEquiv f x := rfl
+
+@[simp]
+theorem units_map_toMulEquiv (f : M ≃ₜ* N) :
+    f.units_map.toMulEquiv = Units.mapEquiv f := rfl
+
+end ContinuousMulEquiv
