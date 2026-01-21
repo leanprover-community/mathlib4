@@ -124,4 +124,20 @@ lemma mulEquivHaarChar_trans {φ ψ : G ≃ₜ* G} :
   rw [MeasureTheory.Measure.haarScalarFactor_eq_mul haar (haar.map ψ),
     ← mulEquivHaarChar_eq (haar.map ψ)]
 
+open TopologicalSpace Set in
+@[to_additive addEquivAddHaarChar_eq_one_of_compactSpace]
+lemma mulEquivHaarChar_eq_one_of_compactSpace [CompactSpace G] (φ : G ≃ₜ* G) :
+    mulEquivHaarChar φ = 1 := by
+  set μ := haarMeasure (⟨⟨univ, isCompact_univ⟩, by simp⟩ : PositiveCompacts G)
+  have hμ : μ univ = 1 := haarMeasure_self
+  rw [mulEquivHaarChar_eq μ]
+  suffices (μ.haarScalarFactor (map φ μ) : ℝ≥0∞) = 1 by exact_mod_cast this
+  calc
+    _ = μ.haarScalarFactor (map φ μ) • (1 : ℝ≥0∞) := by rw [ENNReal.smul_def, smul_eq_mul, mul_one]
+    _ = μ.haarScalarFactor (map φ μ) • (map φ μ univ) := by
+          rw [map_apply (map_continuous φ).measurable .univ, Set.preimage_univ, hμ]
+    _ = μ univ := by
+          conv_rhs => rw [isMulInvariant_eq_smul_of_compactSpace μ (map φ μ), Measure.smul_apply]
+    _ = 1 := hμ
+
 end MeasureTheory
