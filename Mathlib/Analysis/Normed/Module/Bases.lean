@@ -50,8 +50,8 @@ theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 
   simp_rw [ContinuousLinearMap.map_smul] at happ
   rw [Finset.sum_eq_single i, h.ortho i i] at happ
   · simpa using happ
-  · intro j _ hji; rw [h.ortho i j, if_neg hji.symm]; simp
-  · intro hi; simp [Finsupp.notMem_support_iff.mp hi]
+  · intro j _ hji; rw [h.ortho i j, if_neg hji.symm]; simp only [smul_eq_mul, mul_zero]
+  · intro hi; simp only [Finsupp.notMem_support_iff.mp hi, smul_eq_mul, zero_mul]
 
 /-- A canonical projection P_n associated to a Schauder basis given by coordinate functionals f_i:
     P_n x = ∑_{i < n} f_i(x) e_i -/
@@ -63,18 +63,17 @@ theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.
 
 /-- The action of the canonical projection on a basis element e i. -/
 @[simp]
-theorem proj_basis_element (n i : ℕ) :
-  b.proj n (e i) = if i < n then e i else 0 := by
-    rw [proj_apply]
-    by_cases hin : i < n
-    · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
-      · simp only [b.ortho, ↓reduceIte, one_smul, if_pos hin]
-      · intro j _ hji; rw [b.ortho j i, if_neg hji, zero_smul]
-    rw [if_neg hin, Finset.sum_eq_zero]
-    intro j hj
-    push_neg at hin
-    rw [b.ortho j i, if_neg, zero_smul]
-    exact (Finset.mem_range.mp hj).trans_le hin |>.ne
+theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else 0 := by
+  rw [proj_apply]
+  by_cases hin : i < n
+  · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
+    · simp only [b.ortho, ↓reduceIte, one_smul, if_pos hin]
+    · intro j _ hji; rw [b.ortho j i, if_neg hji, zero_smul]
+  rw [if_neg hin, Finset.sum_eq_zero]
+  intro j hj
+  push_neg at hin
+  rw [b.ortho j i, if_neg, zero_smul]
+  exact (Finset.mem_range.mp hj).trans_le hin |>.ne
 
 /-- The range of the canonical projection is the span of the first n basis elements. -/
 theorem range_canonicalProjection (n : ℕ) :
@@ -121,15 +120,14 @@ def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
 /-- The sum of Q i over i < n equals P n. -/
 @[simp]
-lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
-    ∑ i ∈ Finset.range n, Q P i = P n := by
+lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) : ∑ i ∈ Finset.range n, Q P i = P n := by
   induction n with
   | zero => simp [h0]
   | succ n ih => rw [Finset.sum_range_succ, ih, Q]; abel
 
 /-- The operators Q i are orthogonal projectionsP. -/
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
-  (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
+    (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
   simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
   split_ifs with h
   · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
@@ -142,12 +140,11 @@ lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m
         min_eq_right_of_lt (Nat.lt_succ_of_lt h')]
       abel
 
--- TODO refactor the proof below to avoid sorrys and clean the next one
-
 /-- The rank of Q n is 1. -/
 lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
-    (h_rank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
-    (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)  (n : ℕ) :
+    (h0 : P 0 = 0)
+    (hrank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
+    (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x) (n : ℕ) :
     Module.finrank 𝕜 (LinearMap.range (Q P n)) = 1 := by
   let Q := Q P
   let U := LinearMap.range (Q n)
@@ -156,30 +153,51 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     apply le_antisymm
     · rintro x ⟨y, rfl⟩; rw [← sub_add_cancel (P (n + 1) y) (P n y)]
       exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
-    · rw [sup_le_iff]; constructor
-      · rintro x ⟨y, rfl⟩; exact Submodule.sub_mem _ (LinearMap.mem_range_self _ _)
-          -- (by rw [h_comp]; use y; simp)
-          sorry
-      -- · rintro x ⟨y, rfl⟩; rw [← h_comp n (n+1)]; exact LinearMap.mem_range_self _ _
-      · sorry
+    · rw [sup_le_iff]
+      have hV: ∀ y : X, P n y ∈ LinearMap.range (P (n + 1)) := by
+        intro y
+        use P n y
+        rw [hcomp (n+1) n y, min_eq_right (Nat.le_succ n)]
+      constructor
+      · rintro x ⟨y, rfl⟩
+        apply Submodule.sub_mem _ (LinearMap.mem_range_self _ _)
+        dsimp only [ContinuousLinearMap.coe_coe]
+        exact hV y
+      · rintro x ⟨y, rfl⟩
+        exact hV y
   have h_disjoint : U ⊓ V = ⊥ := by
-    rw [Submodule.eq_bot_iff]; rintro x ⟨⟨y, rfl⟩, ⟨z, hz⟩⟩
+    rw [Submodule.eq_bot_iff]
+    rintro x ⟨⟨y, rfl⟩, ⟨z, hz⟩⟩
     -- have : Q P n (P n z) = 0 := by simp [Q, h_comm, Nat.min_succ_self, min_self]
-    have : Q n (P n z) = 0 := by sorry
+    have : Q n (P n z) = 0 := by
+      simp_rw [Q, SchauderBasis.Q, ContinuousLinearMap.sub_apply, hcomp,
+        min_eq_right (Nat.le_succ n), min_self, sub_self]
     rw [← hz, ← this, hz, Q_ortho hcomp, if_pos rfl]
-
-  -- have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
-  --     intro n
-  --     apply FiniteDimensional.of_finrank_pos
-  --     rw [hdim n]
-  --     exact Nat.succ_pos n
-  -- have : FiniteDimensional 𝕜 V := by simp only [V]; exact h_fin_Pn (n-1)
-  have : FiniteDimensional 𝕜 U := by sorry
-  have : FiniteDimensional 𝕜 V := by sorry
+  have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
+      intro n
+      by_cases hn : n = 0
+      · rw [hn]
+        apply FiniteDimensional.of_rank_eq_zero
+        apply Submodule.rank_eq_zero.mpr
+        exact LinearMap.range_eq_bot.mpr (by simp only [h0, ContinuousLinearMap.coe_zero])
+      apply FiniteDimensional.of_finrank_pos
+      rw [hrank n]
+      exact Nat.pos_of_ne_zero hn
+  have : FiniteDimensional 𝕜 U := by
+    have : U ≤ LinearMap.range (P (n+1)) := by
+      simp only [U, Q, SchauderBasis.Q]
+      intro x ⟨y, hy⟩
+      rw [← hy, ContinuousLinearMap.sub_apply]
+      apply Submodule.sub_mem _ (LinearMap.mem_range_self _ _)
+      use P n y
+      rw [hcomp (n+1) n y, min_eq_right (Nat.le_succ n)]
+    exact Submodule.finiteDimensional_of_le this
+  have : FiniteDimensional 𝕜 V := by simp only [V]; exact h_fin_Pn n
   have := Submodule.finrank_sup_add_finrank_inf_eq U V
-  rw [h_disjoint, finrank_bot, add_zero, ← h_range_Pn_succ, h_rank, h_rank] at this
-  rw [Nat.add_comm] at this
+  rw [h_disjoint, finrank_bot, add_zero, ← h_range_Pn_succ, hrank, hrank, Nat.add_comm] at this
   exact Nat.add_right_cancel this.symm
+
+-- TODO clean up the proof below
 
 /-- Constructs a Schauder basis from a sequence of canonical projections. -/
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
@@ -189,7 +207,7 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x)) :
     ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 X e) := by
   let Q := Q P
-  have hrankQ := Q_rank_one hdim hcomp
+  have hrankQ := Q_rank_one h0 hdim hcomp
   have : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
       intro n
       refine exists_mem_ne_zero_of_rank_pos ?_
