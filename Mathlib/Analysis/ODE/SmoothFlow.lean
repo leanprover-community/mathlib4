@@ -65,9 +65,9 @@ lemma continuous_compProj₂ {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
 
 lemma _root_.ContinuousOn.continuous_comp_compProj {F : Type*} [TopologicalSpace F] {g : E → F}
     {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+    {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
     Continuous (fun τ ↦ g (compProj t₀ α τ)) :=
-  hg.comp_continuous (continuous_compProj t₀ α) (fun _ ↦ hα trivial)
+  hg.comp_continuous (continuous_compProj t₀ α) (fun _ ↦ hα (mem_range_self _))
 
 lemma compProj_update {n : ℕ} {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x : C(Icc tmin tmax, E)) (τ : ℝ) :
@@ -87,9 +87,9 @@ lemma _root_.Continuous.continuous_compProj_pi₂ {X : Type*} [TopologicalSpace 
 lemma _root_.ContinuousOn.continuous_comp_compProj_pi₂ {X F : Type*} [TopologicalSpace X]
     [TopologicalSpace F] {g : E → F} {u : Set E} (hg : ContinuousOn g u) {tmin tmax : ℝ}
     (t₀ : Icc tmin tmax) {f : X → C(Icc tmin tmax, E)} (hf : Continuous f)
-    (hf_mem : ∀ x, MapsTo (f x) univ u) :
+    (hf_mem : ∀ x, range (f x) ⊆ u) :
     Continuous (fun p : X × ℝ ↦ g (compProj t₀ (f p.1) p.2)) :=
-  hg.comp_continuous (hf.continuous_compProj_pi₂ t₀) fun p ↦ hf_mem p.1 trivial
+  hg.comp_continuous (hf.continuous_compProj_pi₂ t₀) fun p ↦ hf_mem p.1 (mem_range_self _)
 
 /-- Joint continuity of evaluating a family of curves via `compProj`. -/
 lemma _root_.Continuous.continuous_compProj_pi_apply₂ {X : Type*} [TopologicalSpace X]
@@ -116,7 +116,7 @@ The integrand is continuous in the integration variable.
 -/
 lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
+    (hα : range α ⊆ u) (dα : Fin n → C(Icc tmin tmax, E)) :
     Continuous (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) :=
   continuous_eval.comp ((hg.continuous_comp_compProj t₀ hα).prodMk
     (continuous_pi fun j ↦ continuous_compProj t₀ (dα j)))
@@ -124,7 +124,7 @@ lemma continuous_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
 /-- The integrand is interval integrable. -/
 lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hg : ContinuousOn g u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
-    {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E))
+    {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (dα : Fin n → C(Icc tmin tmax, E))
     (a b : Icc tmin tmax) :
     IntervalIntegrable (fun τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) volume a b :=
   (continuous_integrand hg t₀ hα dα).intervalIntegrable a b
@@ -132,7 +132,7 @@ lemma intervalIntegrable_integrand {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u :
 /-- Parametric version of `continuous_integrand`: the integrand is jointly continuous
 in `dα` and the integration variable. -/
 lemma continuous_integrand_pi₂ {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
     Continuous (fun p : (Fin n → C(Icc tmin tmax, E)) × ℝ ↦
       g (compProj t₀ α p.2) (fun i ↦ compProj t₀ (p.1 i) p.2)) :=
   continuous_eval.comp (((hg.continuous_comp_compProj t₀ hα).comp continuous_snd).prodMk
@@ -142,7 +142,7 @@ variable [CompleteSpace E]
 
 lemma continuous_integralFun {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) :
+    (hα : range α ⊆ u) (dα : Fin n → C(Icc tmin tmax, E)) :
     Continuous (integralFun g t₀ α dα) := by
   apply Continuous.comp
     (g := fun t ↦ ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) _
@@ -156,7 +156,7 @@ derivatives with respect to the curve
 -/
 def integralCMAux {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) (dα : Fin n → C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) where
+    (hα : range α ⊆ u) (dα : Fin n → C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) where
   toFun := integralFun g t₀ α dα
   continuous_toFun := continuous_integralFun hg t₀ hα dα
 
@@ -168,33 +168,33 @@ pattern, which will allow us to take its iterated derivative with respect to the
 def integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) : C(Icc tmin tmax, E) :=
-  if hα : MapsTo α univ u then integralCMAux hg t₀ hα dα else 0
+  if hα : range α ⊆ u then integralCMAux hg t₀ hα dα else 0
 
 open Classical in
 lemma integralCM_def {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α =
-      fun dα ↦ if hα : MapsTo α univ u then integralCMAux hg t₀ hα dα else 0 := rfl
+      fun dα ↦ if hα : range α ⊆ u then integralCMAux hg t₀ hα dα else 0 := rfl
 
 lemma integralCM_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u) :
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
     integralCM hg t₀ α = integralCMAux hg t₀ hα := by
   simp [integralCM_def, dif_pos hα]
 
 lemma integralCM_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
     {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)}
-    (hα : ¬MapsTo α univ u) :
+    (hα : ¬ range α ⊆ u) :
     integralCM hg t₀ α = fun _ ↦ 0 := by
   simp [integralCM_def, dif_neg hα]
 
 lemma integralCM_apply_if_pos {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : MapsTo α univ u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u)
     {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
     integralCM hg t₀ α dα t = integralFun g t₀ α dα t := by
   simp [integralCM_def, dif_pos hα, integralCMAux]
 
 lemma integralCM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {hg : ContinuousOn g u}
-    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : ¬ MapsTo α univ u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {α : C(Icc tmin tmax, E)} (hα : ¬ range α ⊆ u)
     {dα : Fin n → C(Icc tmin tmax, E)} {t : Icc tmin tmax} :
     integralCM hg t₀ α dα t = 0 := by
   simp [integralCM_def, dif_neg hα]
@@ -205,7 +205,7 @@ lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x y : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (x + y)) =
       integralCM hg t₀ α (update dα i x) + integralCM hg t₀ α (update dα i y) := by
-  by_cases hα : MapsTo α univ u
+  by_cases hα : range α ⊆ u
   · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.add_apply]
     intro t
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
@@ -219,7 +219,7 @@ lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (c : ℝ) (x : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (c • x)) = c • integralCM hg t₀ α (update dα i x) := by
-  by_cases hα : MapsTo α univ u
+  by_cases hα : range α ⊆ u
   · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.smul_apply]
     intro t
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
@@ -230,7 +230,7 @@ lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E
 lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     Continuous (integralCM hg t₀ α) := by
-  by_cases hα : MapsTo α univ u
+  by_cases hα : range α ⊆ u
   · rw [integralCM_if_pos hα]
     let X := Fin n → C(Icc tmin tmax, E)
     let fparam : (X × Icc tmin tmax) → ℝ → E :=
@@ -287,13 +287,13 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
   rw [integralCMLM, dif_neg hg, zero_apply]
 
 def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g : E → F} {u : Set E}
-    (hg : ContinuousOn g u) (α : {α : C(I, E) | MapsTo α univ u}) : C(I, F) :=
-  ⟨g ∘ α, hg.comp_continuous α.1.continuous_toFun (fun _ ↦ α.2 trivial)⟩
+    (hg : ContinuousOn g u) (α : {α : C(I, E) | range α ⊆ u}) : C(I, F) :=
+  ⟨g ∘ α, hg.comp_continuous α.1.continuous_toFun (fun _ ↦ α.2 (mem_range_self _))⟩
 
 omit [NormedSpace ℝ E] [CompleteSpace E] in
 lemma gComp_apply_projIcc {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E}
     (hg : ContinuousOn g u) {tmin tmax : ℝ} {t₀ : Icc tmin tmax}
-    {α : {α : C(Icc tmin tmax, E) | MapsTo α univ u}} (t : ℝ) :
+    {α : {α : C(Icc tmin tmax, E) | range α ⊆ u}} (t : ℝ) :
     gComp (Icc tmin tmax) hg α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) =
       g (compProj t₀ α t) := rfl
 
@@ -302,12 +302,12 @@ lemma continuous_gComp {F : Type*} [TopologicalSpace F] {g : E → F} {u : Set E
     (hg : ContinuousOn g u) (tmin tmax : ℝ) :
     Continuous (gComp (Icc tmin tmax) hg) := by
   apply ContinuousMap.continuous_of_continuous_uncurry
-  refine hg.comp_continuous ?_ fun ⟨α, _⟩ ↦ α.2 trivial
+  refine hg.comp_continuous ?_ fun ⟨α, _⟩ ↦ α.2 (mem_range_self _)
   exact continuous_eval.comp (continuous_subtype_val.prodMap continuous_id)
 
 lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) :
-    ContinuousOn (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | MapsTo α univ u} := by
+    ContinuousOn (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
   -- embed `ContinuousMultilinearMap` into `UniformOnFun` and use notion of continuity there
   rw [continuousOn_iff_continuous_restrict, isEmbedding_toUniformOnFun.continuous_iff,
     UniformOnFun.continuous_rng_iff]
@@ -424,7 +424,7 @@ where `g'` is the derivative of `g` in `E`.
 -/
 lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) :
+    (hα : range α ⊆ u) :
     (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
         (fderiv ℝ (integralCMLM g u t₀) α) =
       integralCMLM
@@ -437,7 +437,7 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
   intro ε hε
   have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
   obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu (mapsTo_univ_iff_range_subset.mp hα) hpos
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα hpos
   rw [Metric.eventually_nhds_iff]
   refine ⟨δ, hδ, fun dα₀ hdα₀ ↦ ?_⟩
   apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
@@ -445,11 +445,12 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
   have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
-  have hα_add : MapsTo (α + dα₀) univ u := by
-    intro x _
-    refine (h (α x) (mem_range_self x) _ ?_).1
+  have hα_add : range (α + dα₀) ⊆ u := by
+    intro x hx
+    obtain ⟨t, rfl⟩ := hx
+    refine (h (α t) (mem_range_self t) _ ?_).1
     rw [dist_eq_norm, ContinuousMap.add_apply, sub_add_cancel_left, norm_neg]
-    apply (ContinuousMap.norm_coe_le_norm dα₀ x).trans_lt
+    apply (ContinuousMap.norm_coe_le_norm dα₀ t).trans_lt
     rwa [← dist_zero_right]
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα_add dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
