@@ -39,8 +39,7 @@ lemma to_linear_map_injective : Function.Injective fun f : IntertwiningMap ρ σ
   ext x
   exact congrFun (congrArg DFunLike.coe h) x
 
-lemma to_fun_injective : Function.Injective fun f :
-    IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
+lemma to_fun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.toLinearMap.toFun := by
   intro f g h
   ext x
   exact congrFun h x
