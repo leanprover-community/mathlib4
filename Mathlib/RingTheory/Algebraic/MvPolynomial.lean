@@ -16,7 +16,7 @@ This file lists some results on some elements in `MvPolynomial σ R` being trans
 over the base ring `R` and subrings `MvPolynomial.supported` of `MvPolynomial σ R`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 

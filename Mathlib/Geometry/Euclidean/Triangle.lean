@@ -37,7 +37,7 @@ unnecessarily.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -177,7 +177,7 @@ theorem angle_eq_angle_add_add_angle_add (x : V) {y : V} (hy : y ≠ 0) :
     obtain ⟨-, r₂, r₂_pos, hr₂⟩ := h
     have : (r₁ + r₂ - 1) • (x + y) = 0 := by
       rw [sub_smul, add_smul, one_smul, ← hr₁, ← hr₂, sub_eq_zero]
-    cases eq_zero_or_eq_zero_of_smul_eq_zero this
+    cases smul_eq_zero.1 this
     · linarith
     · contradiction
   obtain rfl : n = 0 := by lia
@@ -328,7 +328,7 @@ measures of the remote interior angles. -/
 theorem exterior_angle_eq_angle_add_angle {p₁ p₂ p₃ : P} (p : P) (h : Sbtw ℝ p p₁ p₂) :
     ∠ p₃ p₁ p = ∠ p₁ p₃ p₂ + ∠ p₃ p₂ p₁ := by
   linarith [angle_add_angle_eq_pi_of_angle_eq_pi p₃ h.angle₁₂₃_eq_pi,
-  angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
+    angle_add_angle_add_angle_eq_pi p₃ h.right_ne.symm, angle_comm p₃ p₁ p₂]
 
 /-- The **sum of the angles of a triangle** (possibly degenerate, where the triangle is a line),
 oriented angles at point. -/

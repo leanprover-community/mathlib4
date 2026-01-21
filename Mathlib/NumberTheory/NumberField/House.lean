@@ -58,11 +58,10 @@ lemma house_prod_le (s : Finset K) : house (∏ x ∈ s, x) ≤ ∏ x ∈ s, hou
 theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
   simp only [house, map_add]; apply norm_add_le
 
-theorem house_pow_le (α : K) (i : ℕ) : house (α^i) ≤ house α ^ i := by
+theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
   simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
 
-theorem house_nat_mul (α : K) (c : ℕ) :
-    house (c * α) = c * house α := by
+theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
   norm_cast
   simp [NNReal.mul_finset_sup]

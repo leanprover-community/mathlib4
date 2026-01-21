@@ -6,7 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
@@ -41,7 +41,7 @@ class GrpObj (X : C) extends MonObj X where
 namespace MonObj
 
 @[inherit_doc] scoped notation "ι" => GrpObj.inv
-@[inherit_doc] scoped notation "ι["G"]" => GrpObj.inv (X := G)
+@[inherit_doc] scoped notation "ι[" G "]" => GrpObj.inv (X := G)
 
 end MonObj
 
@@ -82,8 +82,6 @@ def trivial : Grp C :=
 
 instance : Inhabited (Grp C) where
   default := trivial C
-
-@[deprecated (since := "2025-06-15")] alias mk' := mk
 
 instance : Category (Grp C) :=
   inferInstanceAs (Category (InducedCategory _ Grp.toMon))

@@ -29,7 +29,7 @@ Namely, we prove the following facts.
 polynomial, Rolle's Theorem, root
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

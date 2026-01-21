@@ -9,7 +9,7 @@ variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
   [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
   {F : C ⥤ D} {G : D ⥤ E}
 
-@[reassoc]
+@[to_dual (attr := reassoc) bar]
 lemma foo {x y z : C} (f : x ⟶ y) (g : y ⟶ z) (h : x ⟶ z) (w : f ≫ g = h) :
     f ≫ g = h := w
 
@@ -23,6 +23,20 @@ info: Tests.Reassoc.foo_assoc.{v₁, u₁} {C : Type u₁} [Category.{v₁, u₁
 -/
 #guard_msgs in
 #check foo_assoc
+
+/--
+info: Tests.Reassoc.foo_assoc._to_dual_1.{v₁, u₁} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : y ⟶ x) (g : z ⟶ y)
+  (h : z ⟶ x) (w : g ≫ f = h) {Z : C} (h✝ : Z ⟶ z) : (h✝ ≫ g) ≫ f = h✝ ≫ h
+-/
+#guard_msgs in
+#check foo_assoc._to_dual_1
+
+/--
+info: Tests.Reassoc.bar_assoc._to_dual_1.{v₁, u₁} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ⟶ y) (g : y ⟶ z)
+  (h : x ⟶ z) (w : f ≫ g = h) {Z : C} (h✝ : Z ⟶ x) : (h✝ ≫ f) ≫ g = h✝ ≫ h
+-/
+#guard_msgs in
+#check bar_assoc._to_dual_1
 
 /--
 info: Tests.Reassoc.foo_iso_assoc.{v₁, u₁} {C : Type u₁} [Category.{v₁, u₁} C] {x y z : C} (f : x ≅ y) (g : y ≅ z) (h : x ≅ z)

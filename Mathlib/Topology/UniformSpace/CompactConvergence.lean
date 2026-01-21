@@ -429,9 +429,6 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
   exact (UniformOnFun.isClosed_setOf_continuous
     CompactlyCoherentSpace.isCoherentWith).completeSpace_coe
 
-@[deprecated (since := "2025-06-03")]
-alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
-
 end CompleteSpace
 
 /-- If `C(α, β)` is a complete space, then for any (possibly, discontinuous) function `f`

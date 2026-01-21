@@ -97,7 +97,7 @@ instance [Algebra R S] (p : PrimeSpectrum S) :
   over := rfl
 
 /-- `RingHom.comap` of an isomorphism of rings as an equivalence of their prime spectra. -/
-@[simps apply symm_apply]
+@[simps apply]
 def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
   toFun := comap e.symm.toRingHom
   invFun := comap e.toRingHom
@@ -110,6 +110,8 @@ def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃o PrimeSpectrum S where
       RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
     rfl
   map_rel_iff' {I J} := Ideal.comap_le_comap_iff_of_surjective _ e.symm.surjective ..
+
+@[simp] lemma comapEquiv_symm (e : R ≃+* S) : (comapEquiv e).symm = comapEquiv e.symm := rfl
 
 section Pi
 
@@ -159,10 +161,6 @@ theorem exists_maximal_notMem_range_sigmaToPi_of_infinite :
     simpa using p.1.ne_top_iff_one.mp p.2.ne_top
   rw [eq] at this
   exact this (le ⟨.single i 1, rfl⟩)
-
-@[deprecated (since := "2025-05-24")]
-alias exists_maximal_nmem_range_sigmaToPi_of_infinite :=
-  exists_maximal_notMem_range_sigmaToPi_of_infinite
 
 theorem sigmaToPi_not_surjective_of_infinite : ¬ (sigmaToPi R).Surjective := fun surj ↦
   have ⟨_, _, notMem⟩ := exists_maximal_notMem_range_sigmaToPi_of_infinite R

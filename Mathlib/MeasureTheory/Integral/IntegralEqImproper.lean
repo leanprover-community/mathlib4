@@ -335,7 +335,7 @@ variable {α ι : Type*} [Countable ι] [MeasurableSpace α] {μ : Measure α}
 
 theorem AECover.biUnion_Iic_aecover [Preorder ι] {φ : ι → Set α} (hφ : AECover μ atTop φ) :
     AECover μ atTop fun n : ι => ⋃ (k) (_h : k ∈ Iic n), φ k :=
-  hφ.superset (fun _ ↦ subset_biUnion_of_mem right_mem_Iic) fun _ ↦ .biUnion (to_countable _)
+  hφ.superset (fun _ ↦ subset_biUnion_of_mem self_mem_Iic) fun _ ↦ .biUnion (to_countable _)
     fun _ _ ↦ (hφ.2 _)
 
 theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
@@ -368,8 +368,8 @@ theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ
   have lim₂ := lintegral_tendsto_of_monotone_of_nat hφ.biUnion_Iic_aecover
     (fun i j hij => biUnion_subset_biUnion_left (Iic_subset_Iic.mpr hij)) hfm
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le lim₁ lim₂ (fun n ↦ ?_) fun n ↦ ?_
-  exacts [lintegral_mono_set (biInter_subset_of_mem left_mem_Ici),
-    lintegral_mono_set (subset_biUnion_of_mem right_mem_Iic)]
+  exacts [lintegral_mono_set (biInter_subset_of_mem self_mem_Ici),
+    lintegral_mono_set (subset_biUnion_of_mem self_mem_Iic)]
 
 theorem AECover.lintegral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
     (hφ : AECover μ l φ) {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) :
@@ -741,7 +741,7 @@ theorem integral_Ioi_of_hasDerivAt_of_tendsto' (hderiv : ∀ x ∈ Ici a, HasDer
     ∫ x in Ioi a, f' x = m - f a := by
   refine integral_Ioi_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Ioi_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
@@ -791,7 +791,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonneg' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'pos : ∀ x ∈ Ioi a, 0 ≤ g' x) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonneg ?_ (fun x hx => hderiv x hx.out.le) g'pos hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonnegative, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -827,7 +827,7 @@ on `[a, +∞)`. -/
 theorem integrableOn_Ioi_deriv_of_nonpos' (hderiv : ∀ x ∈ Ici a, HasDerivAt g (g' x) x)
     (g'neg : ∀ x ∈ Ioi a, g' x ≤ 0) (hg : Tendsto g atTop (𝓝 l)) : IntegrableOn g' (Ioi a) := by
   refine integrableOn_Ioi_deriv_of_nonpos ?_ (fun x hx ↦ hderiv x hx.out.le) g'neg hg
-  exact (hderiv a left_mem_Ici).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Ici).continuousAt.continuousWithinAt
 
 /-- When a function has a limit at infinity `l`, and its derivative is nonpositive, then the
 integral of the derivative on `(a, +∞)` is `l - g a` (and the derivative is integrable, see
@@ -936,7 +936,7 @@ theorem integral_Iic_of_hasDerivAt_of_tendsto'
     (hf : Tendsto f atBot (𝓝 m)) : ∫ x in Iic a, f' x = f a - m := by
   refine integral_Iic_of_hasDerivAt_of_tendsto ?_ (fun x hx => hderiv x hx.out.le)
     f'int hf
-  exact (hderiv a right_mem_Iic).continuousAt.continuousWithinAt
+  exact (hderiv a self_mem_Iic).continuousAt.continuousWithinAt
 
 /-- A special case of `integral_Iic_of_hasDerivAt_of_tendsto` where we assume that `f` is C^1 with
 compact support. -/
@@ -1035,7 +1035,7 @@ theorem integral_comp_smul_deriv_Ioi {f f' : ℝ → ℝ} {g : ℝ → E} {a : �
   have t2 := intervalIntegral_tendsto_integral_Ioi _ hg2 tendsto_id
   have : Ioi (f a) ⊆ f '' Ici a :=
     Ioi_subset_Ici_self.trans <|
-      IsPreconnected.intermediate_value_Ici isPreconnected_Ici left_mem_Ici
+      IsPreconnected.intermediate_value_Ici isPreconnected_Ici self_mem_Ici
         (le_principal_iff.mpr <| Ici_mem_atTop _) hf hft
   have t1 := (intervalIntegral_tendsto_integral_Ioi _ (hg1.mono_set this) tendsto_id).comp hft
   exact tendsto_nhds_unique (Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop a) eq) t2) t1

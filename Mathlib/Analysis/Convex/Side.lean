@@ -149,12 +149,8 @@ theorem SSameSide.wSameSide {s : AffineSubspace R P} {x y : P} (h : s.SSameSide 
 theorem SSameSide.left_notMem {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) : x ∉ s :=
   h.2.1
 
-@[deprecated (since := "2025-05-23")] alias SSameSide.left_not_mem := SSameSide.left_notMem
-
 theorem SSameSide.right_notMem {s : AffineSubspace R P} {x y : P} (h : s.SSameSide x y) : y ∉ s :=
   h.2.2
-
-@[deprecated (since := "2025-05-23")] alias SSameSide.right_not_mem := SSameSide.right_notMem
 
 theorem SOppSide.wOppSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     s.WOppSide x y :=
@@ -163,12 +159,8 @@ theorem SOppSide.wOppSide {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y
 theorem SOppSide.left_notMem {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) : x ∉ s :=
   h.2.1
 
-@[deprecated (since := "2025-05-23")] alias SOppSide.left_not_mem := SOppSide.left_notMem
-
 theorem SOppSide.right_notMem {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) : y ∉ s :=
   h.2.2
-
-@[deprecated (since := "2025-05-23")] alias SOppSide.right_not_mem := SOppSide.right_notMem
 
 theorem wSameSide_comm {s : AffineSubspace R P} {x y : P} : s.WSameSide x y ↔ s.WSameSide y x :=
   ⟨fun ⟨p₁, hp₁, p₂, hp₂, h⟩ => ⟨p₂, hp₂, p₁, hp₁, h.symm⟩,
@@ -623,9 +615,6 @@ theorem _root_.Sbtw.sOppSide_of_notMem_of_mem {s : AffineSubspace R P} {x y z : 
     ← sub_eq_add_neg, s.direction.smul_mem_iff (sub_ne_zero_of_ne ht)] at hy'
   rwa [vadd_mem_iff_mem_of_mem_direction (Submodule.smul_mem _ _ hy')] at hy
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.Sbtw.sOppSide_of_not_mem_of_mem := _root_.Sbtw.sOppSide_of_notMem_of_mem
-
 theorem sSameSide_smul_vsub_vadd_left {s : AffineSubspace R P} {x p₁ p₂ : P} (hx : x ∉ s)
     (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s) {t : R} (ht : 0 < t) : s.SSameSide (t • (x -ᵥ p₁) +ᵥ p₂) x := by
   refine ⟨wSameSide_smul_vsub_vadd_left x hp₁ hp₂ ht.le, fun h => hx ?_, hx⟩
@@ -989,5 +978,67 @@ lemma wOppSide_affineSpan_faceOpposite_iff {w₁ w₂ : Fin (n + 1) → R} (hw�
         exact (s.sOppSide_affineSpan_faceOpposite_of_pos_of_neg hw₂ hw₁ h h').symm.wOppSide
       · rw [sign_pos h', eq_comm, neg_eq_iff_eq_neg, sign_eq_neg_one_iff] at h
         exact (s.sOppSide_affineSpan_faceOpposite_of_pos_of_neg hw₁ hw₂ h' h).wOppSide
+
+lemma sSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide (s.points i)
+      (Finset.univ.affineCombination R s.points w) ↔ 0 < w i := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
+    s.sSameSide_affineSpan_faceOpposite_iff
+      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm]
+  simp [sign_eq_one_iff]
+
+lemma sSameSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).SSameSide
+      (Finset.univ.affineCombination R s.points w) (s.points i) ↔ 0 < w i := by
+  rw [sSameSide_comm, s.sSameSide_affineSpan_faceOpposite_point_left_iff hw]
+
+lemma sOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).SOppSide (s.points i)
+      (Finset.univ.affineCombination R s.points w) ↔ w i < 0 := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
+    s.sOppSide_affineSpan_faceOpposite_iff
+      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm,
+    neg_eq_iff_eq_neg]
+  simp [sign_eq_neg_one_iff]
+
+lemma sOppSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).SOppSide
+      (Finset.univ.affineCombination R s.points w) (s.points i) ↔ w i < 0 := by
+  rw [sOppSide_comm, s.sOppSide_affineSpan_faceOpposite_point_left_iff hw]
+
+lemma wSameSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).WSameSide (s.points i)
+      (Finset.univ.affineCombination R s.points w) ↔ 0 ≤ w i := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
+    s.wSameSide_affineSpan_faceOpposite_iff
+      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm]
+  simp [sign_eq_one_iff, le_iff_eq_or_lt', or_comm]
+
+lemma wSameSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).WSameSide
+      (Finset.univ.affineCombination R s.points w) (s.points i) ↔ 0 ≤ w i := by
+  rw [wSameSide_comm, s.wSameSide_affineSpan_faceOpposite_point_left_iff hw]
+
+lemma wOppSide_affineSpan_faceOpposite_point_left_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).WOppSide (s.points i)
+      (Finset.univ.affineCombination R s.points w) ↔ w i ≤ 0 := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights R s.points (Finset.mem_univ i),
+    s.wOppSide_affineSpan_faceOpposite_iff
+      (Finset.univ.sum_affineCombinationSingleWeights _ (Finset.mem_univ _)) hw, eq_comm,
+    neg_eq_iff_eq_neg]
+  simp [sign_eq_neg_one_iff, le_iff_eq_or_lt, or_comm]
+
+lemma wOppSide_affineSpan_faceOpposite_point_right_iff {w : Fin (n + 1) → R}
+    (hw : ∑ j, w j = 1) {i : Fin (n + 1)} :
+    (affineSpan R (Set.range (s.faceOpposite i).points)).WOppSide
+      (Finset.univ.affineCombination R s.points w) (s.points i) ↔ w i ≤ 0 := by
+  rw [wOppSide_comm, s.wOppSide_affineSpan_faceOpposite_point_left_iff hw]
 
 end Affine.Simplex
