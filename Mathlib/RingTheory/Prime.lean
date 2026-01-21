@@ -16,7 +16,7 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 This file contains lemmas about prime elements of commutative rings.
 -/
 
-@[expose] public section
+public section
 
 
 section CancelCommMonoidWithZero

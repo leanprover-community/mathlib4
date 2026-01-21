@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Fin.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cartan matrices
@@ -242,6 +243,62 @@ theorem G₂_off_diag_nonpos (i j : Fin 2) (h : i ≠ j) : G₂ i j ≤ 0 := by
 @[simp] theorem E₇_transpose : E₇.transpose = E₇ := by decide
 
 @[simp] theorem E₈_transpose : E₈.transpose = E₈ := by decide
+
+/-! ### Exceptional matrix determinants -/
+
+theorem G₂_det : G₂.det = 1 := by decide
+
+theorem F₄_det : F₄.det = 1 := by decide
+
+/-! The determinants of E₆, E₇, E₈ are 3, 2, 1 respectively.
+`decide` fails for these larger matrices without increasing the max recursion depth.
+We could write manual proofs (e.g., expanding via `det_succ_column_zero`),
+but prefer to wait for a more principled determinant tactic. -/
+
+proof_wanted E₆_det : E₆.det = 3
+
+proof_wanted E₇_det : E₇.det = 2
+
+proof_wanted E₈_det : E₈.det = 1
+
+/-- A Cartan matrix is simply laced if its off-diagonal entries are all `0` or `-1`. -/
+def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
+  Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
+
+instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
+  inferInstanceAs <|
+    DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
+
+@[simp] theorem _root_.Matrix.isSimplyLaced_transpose {ι : Type*} (A : Matrix ι ι ℤ) :
+    A.transpose.IsSimplyLaced ↔ A.IsSimplyLaced := by
+  rw [IsSimplyLaced, IsSimplyLaced, Pairwise, Pairwise, forall_comm]
+  aesop
+
+theorem isSimplyLaced_A (n : ℕ) : IsSimplyLaced (A n) := by
+  intro i j h
+  simp only [A, of_apply]
+  grind
+
+theorem isSimplyLaced_D (n : ℕ) : IsSimplyLaced (D n) := by
+  intro i j h
+  simp only [D, of_apply]
+  grind
+
+theorem isSimplyLaced_E₆ : IsSimplyLaced E₆ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₆] at h ⊢
+
+theorem isSimplyLaced_E₇ : IsSimplyLaced E₇ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₇] at h ⊢
+
+theorem isSimplyLaced_E₈ : IsSimplyLaced E₈ :=
+  fun i j h ↦ by fin_cases i <;> fin_cases j <;> simp [E₈] at h ⊢
+
+/-! The Cartan matrices F₄ and G₂ are not simply laced because they contain
+off-diagonal entries that are neither 0 nor -1. -/
+
+theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
+
+theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
 
 end Properties
 

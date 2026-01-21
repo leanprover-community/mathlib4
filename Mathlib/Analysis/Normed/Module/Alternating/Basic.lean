@@ -600,7 +600,7 @@ which is a linear map from `E [⋀^ι]→L[𝕜] F` to `E' [⋀^ι]→ₗ[𝕜] 
 def mkContinuousLinear (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G) (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : F →L[𝕜] E [⋀^ι]→L[𝕜] G :=
   LinearMap.mkContinuous
-    { toFun x :=  (f x).mkContinuous (C * ‖x‖) <| H x
+    { toFun x := (f x).mkContinuous (C * ‖x‖) <| H x
       map_add' x y := by ext1; simp
       map_smul' c x := by ext1; simp }
     (max C 0) fun x ↦ by

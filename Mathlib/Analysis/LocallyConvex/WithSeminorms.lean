@@ -22,6 +22,13 @@ public import Mathlib.Topology.Algebra.Module.LocallyConvex
 * `SeminormFamily.moduleFilterBasis`: A module filter basis formed by the open balls.
 * `Seminorm.IsBounded`: A linear map `f : E →ₗ[𝕜] F` is bounded iff every seminorm in `F` can be
   bounded by a finite number of seminorms in `E`.
+* `WithSeminorms p`, when `p` is a family of seminorms on `E`, is a proposition expressing that the
+  (existing) topology on `E` is induced by the seminorms `p`.
+* `PolynormableSpace 𝕜 E` is a class asserting that the (existing) topology on `E` is induced
+  by *some* family of `𝕜`-seminorms. If `𝕜` is `RCLike`, this is equivalent to
+  `LocallyConvexSpace 𝕜 E`.
+  The terminology is inspired by N. Bourbaki, *Variétés différentielles et analytiques*. However,
+  unlike Bourbaki, we do not ask seminorms to be ultrametric when `𝕜` is ultrametric.
 
 ## Main statements
 
@@ -268,12 +275,26 @@ variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 structure WithSeminorms (p : SeminormFamily 𝕜 E ι) [topology : TopologicalSpace E] : Prop where
   topology_eq_withSeminorms : topology = p.moduleFilterBasis.topology
 
+variable (𝕜 E) in
+/-- A topological vector space `E` is **polynormable** over `𝕜` if its topology is induced by
+*some* family of `𝕜`-seminorms. Equivalently, its topology is induced by *all* its continuous
+seminorm.
+
+If `𝕜` is `RCLike`, this is equivalent to `LocallyConvexSpace 𝕜 E`. -/
+class PolynormableSpace [topology : TopologicalSpace E] where
+  withSeminorms' : WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.1)
+
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) : t = p.moduleFilterBasis.topology :=
   hp.1
 
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
+
+variable (𝕜 E) in
+theorem PolynormableSpace.withSeminorms [PolynormableSpace 𝕜 E] :
+    WithSeminorms (fun p : {p : Seminorm 𝕜 E // Continuous p} ↦ p.1) :=
+  PolynormableSpace.withSeminorms'
 
 theorem WithSeminorms.topologicalAddGroup (hp : WithSeminorms p) : IsTopologicalAddGroup E := by
   rw [hp.withSeminorms_eq]
@@ -430,6 +451,20 @@ theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : W
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
   exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
 
+theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
+    PolynormableSpace 𝕜 E where
+  withSeminorms' := by
+    have := hp.topologicalAddGroup
+    have hp' (i : ι) : Continuous (p i) := hp.continuous_seminorm i
+    rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf] at ⊢ hp
+    refine le_antisymm ?_ ?_
+    · simp_rw [le_iInf_iff, ← tendsto_iff_comap]
+      intro ⟨p, hp⟩
+      exact hp.tendsto' 0 0 (map_zero _)
+    · simp_rw [hp, le_iInf_iff]
+      intro i
+      exact iInf_le (ι := {p : Seminorm 𝕜 E // Continuous p}) _ ⟨p i, hp' i⟩
+
 end TopologicalSpace
 
 /-- The uniform structure induced by a family of seminorms is exactly the infimum of the ones
@@ -453,6 +488,11 @@ theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
+
+/-- A (semi-)normed space is polynormable. -/
+instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+    PolynormableSpace 𝕜 E :=
+  norm_withSeminorms 𝕜 E |>.toPolynormableSpace
 
 end NormedSpace
 
@@ -851,6 +891,12 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     simp_rw [Set.mem_iUnion, Set.mem_singleton_iff] at hs
     rcases hs with ⟨I, r, _, rfl⟩
     exact convex_ball _ _ _
+
+/-- A `PolynormableSpace` over `ℝ` is locally convex.
+
+TODO: generalize to `RCLike`. -/
+instance (priority := low) [PolynormableSpace ℝ E] : LocallyConvexSpace ℝ E :=
+  PolynormableSpace.withSeminorms ℝ E |>.toLocallyConvexSpace
 
 end LocallyConvexSpace
 

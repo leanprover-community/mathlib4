@@ -22,7 +22,7 @@ This file contains basic results on the natural-valued floor and ceiling functio
 rounding, floor, ceil
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 

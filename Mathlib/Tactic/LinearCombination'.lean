@@ -5,7 +5,7 @@ Authors: Abby J. Goldberg, Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Ring
 
 /-!
 # linear_combination' Tactic

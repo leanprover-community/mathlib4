@@ -30,8 +30,8 @@ For a ring `R`:
 
 ## Notes
 
-The corresponding hom classes are defined in `Mathlib/Analysis/Order/Hom/Basic.lean` to be used by
-absolute values.
+The corresponding hom classes are defined in `Mathlib/Algebra/Order/Hom/Basic.lean` to be used by
+absolute values; see `Mathlib/Algebra/Order/AbsoluteValue/Basic.lean` for the bundled version.
 
 ## References
 

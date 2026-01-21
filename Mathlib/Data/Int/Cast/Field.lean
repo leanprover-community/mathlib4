@@ -18,7 +18,7 @@ This file concerns the canonical homomorphism `ℤ → F`, where `F` is a field.
 * `Int.cast_div`: if `n` divides `m`, then `↑(m / n) = ↑m / ↑n`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Int

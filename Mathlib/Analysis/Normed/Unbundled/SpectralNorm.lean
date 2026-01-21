@@ -496,10 +496,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
-      convert le_ciSup (Finite.bddAbove_range _) σ
-      · rfl
-      · exact instNonemptyOfInhabited
-      · exact SemilatticeSup.to_isDirected_le
+      apply le_ciSup (Finite.bddAbove_range _) σ
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist
@@ -732,7 +729,7 @@ theorem spectralNorm_unique [CompleteSpace K] {f : AlgebraNorm K L} (hf_pm : IsP
   letI N1 : NormedSpace K E :=
     { one_smul e := by simp [one_smul]
       mul_smul k1 k2 e := by simp [mul_smul]
-      smul_zero e  := by simp
+      smul_zero e := by simp
       smul_add k e_1 e_ := by simp [smul_add]
       add_smul k1 k2 e := by simp [add_smul]
       zero_smul e := by simp [zero_smul]

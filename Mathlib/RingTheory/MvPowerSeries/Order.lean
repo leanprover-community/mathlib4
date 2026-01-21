@@ -359,16 +359,15 @@ section Order
 
 variable {f g : MvPowerSeries σ R}
 
-theorem eq_zero_iff_forall_coeff_eq_zero_and :
-    f = 0 ↔ (∀ d : σ →₀ ℕ, coeff d f = 0) :=
-  MvPowerSeries.ext_iff
+@[deprecated (since := "2026-01-06")]
+alias eq_zero_iff_forall_coeff_eq_zero_and := eq_zero_iff_forall_coeff_zero
 
 theorem ne_zero_iff_exists_coeff_ne_zero_and_degree :
     f ≠ 0 ↔ (∃ n : ℕ, ∃ d : σ →₀ ℕ, coeff d f ≠ 0 ∧ degree d = n) := by
   simp_rw [degree_eq_weight_one]
   exact ne_zero_iff_exists_coeff_ne_zero_and_weight (fun _ => 1)
 
-/-- The order of a mv_power_series -/
+/-- The order of an `MvPowerSeries`. -/
 def order (f : MvPowerSeries σ R) : ℕ∞ := weightedOrder (fun _ => 1) f
 
 @[simp]

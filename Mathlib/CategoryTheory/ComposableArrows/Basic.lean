@@ -16,7 +16,7 @@ public import Mathlib.Tactic.SuppressCompilation
 # Composable arrows
 
 If `C` is a category, the type of `n`-simplices in the nerve of `C` identifies
-to the type of functors `Fin (n + 1) ⥤ C`, which can be thought as families of `n` composable
+to the type of functors `Fin (n + 1) ⥤ C`, which can be thought of as families of `n` composable
 arrows in `C`. In this file, we introduce and study this category `ComposableArrows C n`
 of `n` composable arrows in `C`.
 

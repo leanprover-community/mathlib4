@@ -63,19 +63,19 @@ theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ C
   or_comm
 
 @[simp, refl]
-theorem CompRel.refl (r : α → α → Prop) [IsRefl α r] (a : α) : CompRel r a a :=
+theorem CompRel.refl (r : α → α → Prop) [Std.Refl r] (a : α) : CompRel r a a :=
   .of_rel (_root_.refl _)
 
-theorem CompRel.rfl [IsRefl α r] : CompRel r a a := .refl ..
+theorem CompRel.rfl [Std.Refl r] : CompRel r a a := .refl ..
 
-instance [IsRefl α r] : IsRefl α (CompRel r) where
+instance [Std.Refl r] : Std.Refl (CompRel r) where
   refl := .refl r
 
 @[symm]
 theorem CompRel.symm : CompRel r a b → CompRel r b a :=
   Or.symm
 
-instance : IsSymm α (CompRel r) where
+instance : Std.Symm (CompRel r) where
   symm _ _ := CompRel.symm
 
 theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
@@ -193,13 +193,13 @@ theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
   antisymmRel_swap_apply rᶜ
 
 @[simp, refl]
-theorem IncompRel.refl [IsIrrefl α r] (a : α) : IncompRel r a a :=
+theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=
   AntisymmRel.refl rᶜ a
 
 variable {r} in
-theorem IncompRel.rfl [IsIrrefl α r] {a : α} : IncompRel r a a := .refl ..
+theorem IncompRel.rfl [Std.Irrefl r] {a : α} : IncompRel r a a := .refl ..
 
-instance [IsIrrefl α r] : IsRefl α (IncompRel r) where
+instance [Std.Irrefl r] : Std.Refl (IncompRel r) where
   refl := .refl r
 
 variable {r}
@@ -208,7 +208,7 @@ variable {r}
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
   And.symm
 
-instance : IsSymm α (IncompRel r) where
+instance : Std.Symm (IncompRel r) where
   symm _ _ := IncompRel.symm
 
 theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=

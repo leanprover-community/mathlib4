@@ -41,9 +41,6 @@ instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
 
 end IsSepClosed
 
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosed.hasEnoughRootsOfUnity := IsSepClosed.hasEnoughRootsOfUnity
-
 namespace AlgebraicClosure
 
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (AlgebraicClosure F) n :=

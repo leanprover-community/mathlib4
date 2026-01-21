@@ -6,9 +6,9 @@ Authors: Gabriel Ebner, Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Const
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Analysis.Calculus.TangentCone.DimOne
 public import Mathlib.Analysis.Calculus.TangentCone.Real
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 
@@ -245,9 +245,6 @@ theorem derivWithin_zero_of_not_uniqueDiffWithinAt (h : ¬UniqueDiffWithinAt �
 
 theorem derivWithin_zero_of_notMem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_notMem_closure h, ContinuousLinearMap.zero_apply]
-
-@[deprecated (since := "2025-05-24")]
-alias derivWithin_zero_of_nmem_closure := derivWithin_zero_of_notMem_closure
 
 theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
   unfold deriv
@@ -517,7 +514,7 @@ theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi
     have B := (differentiableWithinAt_Ioi_iff_Ici.1 H).hasDerivWithinAt
-    simpa using (uniqueDiffOn_Ici x).eq left_mem_Ici A B
+    simpa using (uniqueDiffOn_Ici x).eq self_mem_Ici A B
   · rw [derivWithin_zero_of_not_differentiableWithinAt H,
       derivWithin_zero_of_not_differentiableWithinAt]
     rwa [differentiableWithinAt_Ioi_iff_Ici] at H

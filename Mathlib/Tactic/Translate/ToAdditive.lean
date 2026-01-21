@@ -6,7 +6,7 @@ Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_additive]` attribute.
@@ -153,7 +153,7 @@ mismatch error.
   Solutions:
   * First figure out what the fixed type is in the first argument of the declaration that didn't
     get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
-    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
+    it is hard, you can run `set_option trace.translate_detail true` and search the output for the
     fragment "contains the fixed type" to find what the fixed type is.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
@@ -371,7 +371,8 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
   ("modularCharacter", "AddModularCharacter"),
-  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap")]
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
+  ("addExact", "exact")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where

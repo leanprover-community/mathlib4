@@ -151,10 +151,6 @@ instance : Bot (ConvexCone R M) :=
 
 @[simp] lemma notMem_bot : x ∉ (⊥ : ConvexCone R M) := id
 
-@[deprecated notMem_bot (since := "2025-06-11")]
-theorem mem_bot (x : M) : (x ∈ (⊥ : ConvexCone R M)) = False :=
-  rfl
-
 @[simp, norm_cast] lemma coe_bot : ↑(⊥ : ConvexCone R M) = (∅ : Set M) := rfl
 
 @[simp, norm_cast]
@@ -342,8 +338,6 @@ lemma to_isOrderedAddMonoid (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Sa
   __ := toPartialOrder C h₁ h₂
   add_le_add_left a b hab c := show b + c - (a + c) ∈ C by rwa [add_sub_add_right_eq_sub]
 
-@[deprecated (since := "2025-06-11")] alias toIsOrderedAddMonoid := to_isOrderedAddMonoid
-
 end AddCommGroup
 
 section Module
@@ -433,11 +427,11 @@ See also (`IsGenerating`). -/
 def IsReproducing [AddCommGroup M] (C : ConvexCone R M) : Prop :=
   (C : Set M) - (C : Set M) = Set.univ
 
-/-- A sufficient criteria for a convex cone `C` to be reproducing is that `Set.univ` is a subset
+/-- A sufficient criterion for a convex cone `C` to be reproducing is that `Set.univ` is a subset
 of `C - C`. -/
 theorem IsReproducing.of_univ_subset [AddCommGroup M] {C : ConvexCone R M}
     (h : Set.univ ⊆ (C : Set M) - (C : Set M)) : C.IsReproducing :=
-  Set.eq_univ_iff_forall.mpr fun _ ↦ h trivial
+  Set.eq_univ_iff_forall.mpr fun _ ↦ h (Set.mem_univ _)
 
 /-- The set difference of a reproducing cone with itself equals `Set.univ`. -/
 lemma IsReproducing.sub_eq_univ [AddCommGroup M] {C : ConvexCone R M} (hC : C.IsReproducing) :
@@ -567,8 +561,6 @@ def toConvexCone (C : Submodule R M) : ConvexCone R M where
 @[simp]
 lemma toConvexCone_le_toConvexCone : C₁.toConvexCone ≤ C₂.toConvexCone ↔ C₁ ≤ C₂ := .rfl
 
-@[deprecated (since := "2025-06-11")] alias toConvexCone_le_iff := toConvexCone_le_toConvexCone
-
 @[simp] lemma toConvexCone_bot : (⊥ : Submodule R M).toConvexCone = 0 := rfl
 @[simp] lemma toConvexCone_top : (⊤ : Submodule R M).toConvexCone = ⊤ := rfl
 
@@ -578,8 +570,6 @@ lemma toConvexCone_inf (C₁ C₂ : Submodule R M) :
 
 @[simp]
 lemma pointed_toConvexCone (C : Submodule R M) : C.toConvexCone.Pointed := C.zero_mem
-
-@[deprecated (since := "2025-06-11")] alias toConvexCone_pointed := pointed_toConvexCone
 
 end AddCommMonoid
 
@@ -645,9 +635,6 @@ theorem coe_strictlyPositive : ↑(strictlyPositive R M) = Set.Ioi (0 : M) :=
   rfl
 
 lemma strictlyPositive_le_positive : strictlyPositive R M ≤ positive R M := fun _ => le_of_lt
-
-@[deprecated (since := "2025-05-29")]
-alias positive_le_strictlyPositive := strictlyPositive_le_positive
 
 /-- The strictly positive cone of an ordered module is always salient. -/
 theorem salient_strictlyPositive : Salient (strictlyPositive R M) :=

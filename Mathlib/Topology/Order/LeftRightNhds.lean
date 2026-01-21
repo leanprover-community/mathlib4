@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pointwise.Set
 public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic
@@ -17,7 +16,7 @@ We've seen some properties of left and right neighborhood of a point in an `Orde
 In an `OrderTopology`, such neighborhoods can be characterized as the sets containing suitable
 intervals to the right or to the left of `a`. We give now these characterizations. -/
 
-@[expose] public section
+public section
 
 open Set Filter TopologicalSpace Topology Function
 

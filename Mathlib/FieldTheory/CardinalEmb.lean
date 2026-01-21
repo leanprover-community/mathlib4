@@ -87,7 +87,7 @@ local notation "ι" => (Module.rank F E).ord.ToType
 
 set_option backward.privateInPublic true in
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
-local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
+local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
 def wellOrderedBasis : Basis ι F E :=
@@ -142,7 +142,7 @@ def leastExt : ι → ι :=
 local notation "φ" => leastExt F E
 
 section
-local notation "E⟮<"i"⟯" => adjoin F (b ∘ φ '' Iio i)
+local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
@@ -229,7 +229,7 @@ theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
 
 end
 
-local notation "E⟮<"i"⟯" => filtration i
+local notation "E⟮<" i "⟯" => filtration i
 
 variable (F E) in
 /-- The functor on `WithTop ι` given by embeddings of `E⟮<i⟯` into `Ē` -/

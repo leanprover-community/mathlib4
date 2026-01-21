@@ -11,7 +11,6 @@ public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.RealVectorSpace
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -610,8 +609,6 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 
 @[simp]
 lemma zero_notMem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
-
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_slitPlane := zero_notMem_slitPlane
 
 @[simp]
 lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by

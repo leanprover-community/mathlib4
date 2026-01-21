@@ -42,14 +42,14 @@ protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
-instance [Monoid M] : IsRefl M Associated :=
+instance [Monoid M] : @Std.Refl M Associated :=
   ⟨Associated.refl⟩
 
 @[symm]
 protected theorem symm [Monoid M] : ∀ {x y : M}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
 
-instance [Monoid M] : IsSymm M Associated :=
+instance [Monoid M] : Std.Symm (α := M) Associated :=
   ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=

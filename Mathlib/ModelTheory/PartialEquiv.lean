@@ -146,10 +146,8 @@ theorem le_trans (f g h : M ≃ₚ[L] N) : f ≤ g → g ≤ h → f ≤ h := by
   ext
   simp
 
-set_option backward.privateInPublic true in
 private theorem le_refl (f : M ≃ₚ[L] N) : f ≤ f := ⟨le_rfl, rfl⟩
 
-set_option backward.privateInPublic true in
 private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g ≤ f) : f = g := by
   let ⟨dom_f, cod_f, equiv_f⟩ := f
   cases _root_.le_antisymm (dom_le_dom le_fg) (dom_le_dom le_gf)
@@ -157,12 +155,10 @@ private theorem le_antisymm (f g : M ≃ₚ[L] N) (le_fg : f ≤ g) (le_gf : g �
   convert rfl
   exact Equiv.injective_toEmbedding ((subtype _).comp_injective (subtype_toEquiv_inclusion le_fg))
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 instance : PartialOrder (M ≃ₚ[L] N) where
-  le_refl := le_refl
+  le_refl := private le_refl
   le_trans := le_trans
-  le_antisymm := le_antisymm
+  le_antisymm := private le_antisymm
 
 @[gcongr] lemma symm_le_symm {f g : M ≃ₚ[L] N} (hfg : f ≤ g) : f.symm ≤ g.symm := by
   rw [le_iff]
@@ -331,15 +327,13 @@ noncomputable def partialEquivLimit : M ≃ₚ[L] N where
   toEquiv :=
     (Equiv_iSup {
       toFun := (fun i ↦ (S i).cod)
-      monotone' := monotone_cod.comp S.monotone}
-    ).comp
+      monotone' := monotone_cod.comp S.monotone}).comp
       ((DirectLimit.equiv_lift L ι (fun i ↦ (S i).dom)
         (fun _ _ hij ↦ Substructure.inclusion (dom_le_dom (S.monotone hij)))
         (fun i ↦ (S i).cod)
         (fun _ _ hij ↦ Substructure.inclusion (cod_le_cod (S.monotone hij)))
         (fun i ↦ (S i).toEquiv)
-        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)
-      ).comp
+        (fun _ _ hij _ ↦ toEquiv_inclusion_apply (S.monotone hij) _)).comp
         (Equiv_iSup {
           toFun := (fun i ↦ (S i).dom)
           monotone' := monotone_dom.comp S.monotone}).symm)

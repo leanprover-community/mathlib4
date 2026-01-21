@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 /-!
 # Kan extensions
 
-The basic definitions for Kan extensions of functors is introduced in this file. Part of API
+The basic definitions for Kan extensions of functors are introduced in this file. Part of API
 is parallel to the definitions for bicategories (see `CategoryTheory.Bicategory.Kan.IsKan`).
 (The bicategory API cannot be used directly here because it would not allow the universe
 polymorphism which is necessary for some applications.)
@@ -415,7 +415,7 @@ def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F �
   CostructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    ({app _ := associator _ _ _|>.inv}) (𝟙 _)
+    ({app _ := associator _ _ _ |>.inv}) (𝟙 _)
 
 variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form

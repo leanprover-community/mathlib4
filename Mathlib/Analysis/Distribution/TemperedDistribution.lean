@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.FourierSchwartz
-public import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 public import Mathlib.MeasureTheory.Function.Holder
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 
 /-!
 # TemperedDistribution
@@ -24,6 +24,9 @@ tempered distribution.
 * `SchwartzMap.toTemperedDistributionCLM`: The canonical map from `𝓢` to `𝓢'` as a continuous linear
 map.
 * `MeasureTheory.Lp.toTemperedDistribution`: Every `Lp` function is a tempered distribution.
+* `TemperedDistribution.mulLeftCLM`: Multiplication with temperate growth function as a continuous
+linear map.
+* `TemperedDistribution.instLineDeriv`: The directional derivative on tempered distributions.
 * `TemperedDistribution.fourierTransformCLM`: The Fourier transform on tempered distributions.
 
 ## Notation
@@ -33,13 +36,11 @@ map.
 
 @[expose] public noncomputable section
 
-noncomputable section
-
 open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {E F : Type*}
+variable {𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
@@ -93,7 +94,7 @@ set_option backward.privateInPublic true in
 /-- A function of temperate growth `f` defines a tempered distribution via integration, namely
 `g ↦ ∫ (x : E), g x • f x ∂μ`. -/
 def toTemperedDistribution {f : E → F} (hf : f.HasTemperateGrowth) : 𝓢'(E, F) :=
-    toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
+  toPointwiseConvergenceCLM _ _ _ _ ((integralCLM ℂ μ) ∘L (bilinLeftCLM (lsmul ℂ ℂ) hf))
 
 set_option backward.privateInPublic true in
 @[simp]
@@ -205,8 +206,8 @@ theorem toTemperedDistributionCLM_apply {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] (
 variable [FiniteDimensional ℝ E] [IsLocallyFiniteMeasure μ]
 
 theorem ker_toTemperedDistributionCLM_eq_bot {p : ℝ≥0∞} [hp : Fact (1 ≤ p)] :
-    LinearMap.ker (MeasureTheory.Lp.toTemperedDistributionCLM F μ p) = ⊥ := by
-  rw [LinearMap.ker_eq_bot']
+    (MeasureTheory.Lp.toTemperedDistributionCLM F μ p).ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot', ContinuousLinearMap.coe_coe]
   intro f hf
   rw [eq_zero_iff_ae_eq_zero]
   apply ae_eq_zero_of_integral_contDiff_smul_eq_zero
@@ -224,6 +225,121 @@ end Embeddings
 
 namespace TemperedDistribution
 
+/-! ### Scalar multiplication with temperate growth functions -/
+
+section Multiplication
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℂ F]
+
+variable (F) in
+/-- Multiplication with a temperate growth function as a continuous linear map on `𝓢'(E, F)`. -/
+def smulLeftCLM (g : E → ℂ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
+  PointwiseConvergenceCLM.precomp _ (SchwartzMap.smulLeftCLM ℂ g)
+
+@[simp]
+theorem smulLeftCLM_apply_apply (g : E → ℂ) (f : 𝓢'(E, F)) (f' : 𝓢(E, ℂ)) :
+    smulLeftCLM F g f f' = f (SchwartzMap.smulLeftCLM ℂ g f') := by
+  rfl
+
+@[simp]
+theorem smulLeftCLM_const (c : ℂ) (f : 𝓢'(E, F)) : smulLeftCLM F (fun _ : E ↦ c) f = c • f := by
+  ext1; simp
+
+@[simp]
+theorem smulLeftCLM_smulLeftCLM_apply {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) (f : 𝓢'(E, F)) :
+    smulLeftCLM F g₂ (smulLeftCLM F g₁ f) = smulLeftCLM F (g₁ * g₂) f := by
+  ext; simp [hg₁, hg₂]
+
+theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F g₂ ∘L smulLeftCLM F g₁ = smulLeftCLM F (g₁ * g₂) := by
+  ext1 f
+  simp [hg₁, hg₂]
+
+open ENNReal MeasureTheory
+
+variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
+  [CompleteSpace F]
+
+/-- Coercion of the product of two `Lp` functions to a tempered distribution is equal to the left
+multiplication if the left factor is a function of temperate growth. -/
+theorem _root_.MeasureTheory.Lp.toTemperedDistribution_smul_eq {p q r : ℝ≥0∞} [p.HolderTriple q r]
+    [Fact (1 ≤ q)] [Fact (1 ≤ r)] {g : E → ℂ} (hg₁ : g.HasTemperateGrowth) (hg₂ : MemLp g p μ)
+    (f : Lp F q μ) :
+    ((hg₂.toLp _) • f : Lp F r μ) = smulLeftCLM F g f := by
+  ext u
+  simp only [Lp.toTemperedDistribution_apply, smulLeftCLM_apply_apply]
+  apply integral_congr_ae
+  filter_upwards [Lp.coeFn_lpSMul (r := r) (hg₂.toLp _) f, hg₂.coeFn_toLp] with x hg hg'
+  simp [hg, hg', hg₁, smul_smul, mul_comm]
+
+end Multiplication
+
+/-! ### Derivatives -/
+
+section deriv
+
+variable [NormedAddCommGroup F] [NormedSpace ℂ F]
+
+variable (F) in
+/-- The 1-dimensional derivative on tempered distribution as a continuous `ℂ`-linear map. -/
+def derivCLM : 𝓢'(ℝ, F) →L[ℂ] 𝓢'(ℝ, F) :=
+  PointwiseConvergenceCLM.precomp F (-SchwartzMap.derivCLM ℂ ℂ)
+
+@[simp]
+theorem derivCLM_apply_apply (f : 𝓢'(ℝ, F)) (g : 𝓢(ℝ, ℂ)) :
+    derivCLM F f g = f (-SchwartzMap.derivCLM ℂ ℂ g) := rfl
+
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+variable (𝕜) in
+theorem derivCLM_toTemperedDistributionCLM_eq (f : 𝓢(ℝ, F)) :
+    derivCLM F (f : 𝓢'(ℝ, F)) = SchwartzMap.derivCLM 𝕜 F f := by
+  ext1 g
+  simp [integral_smul_deriv_right_eq_neg_left, integral_neg]
+
+end deriv
+
+section lineDeriv
+
+open LineDeriv
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+
+/-- The partial derivative (or directional derivative) in the direction `m : E` as a
+continuous linear map on tempered distributions. -/
+instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
+
+instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+
+instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
+
+instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_lineDerivOp m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
+
+theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
+  PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
+
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := rfl
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
+  {μ : Measure E} [μ.IsAddHaarMeasure]
+
+theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
+    ∂_{m} (toTemperedDistributionCLM E F μ f) = toTemperedDistributionCLM E F μ (∂_{m} f) := by
+  ext1 g
+  simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
+
+end lineDeriv
+
 /-! ### Fourier transform -/
 
 section Fourier
@@ -234,35 +350,53 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [NormedSpace ℂ F]
   [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
 
-variable (E F) in
-/-- The Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLM ℂ)
-
 instance instFourierTransform : FourierTransform 𝓢'(E, F) 𝓢'(E, F) where
-  fourier := fourierTransformCLM E F
+  fourier := PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))
+
+instance instFourierAdd : FourierAdd 𝓢'(E, F) 𝓢'(E, F) where
+  fourier_add := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).map_add
+
+instance instFourierSMul : FourierSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourier_smul := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).map_smul
+
+instance instContinuousFourier : ContinuousFourier 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_fourier := (PointwiseConvergenceCLM.precomp F (fourierCLM ℂ 𝓢(E, ℂ))).cont
 
 @[simp]
-theorem fourierTransformCLM_apply (f : 𝓢'(E, F)) :
-  fourierTransformCLM E F f = 𝓕 f := rfl
+theorem fourier_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
 
-@[simp]
-theorem fourierTransform_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕 f g = f (𝓕 g) := rfl
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLM := FourierTransform.fourierCLM
 
-variable (E F) in
-/-- The inverse Fourier transform on tempered distributions as a continuous linear map. -/
-def fourierTransformInvCLM : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
-  PointwiseConvergenceCLM.precomp F (SchwartzMap.fourierTransformCLE ℂ).symm.toContinuousLinearMap
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformCLM_apply := FourierTransform.fourierCLM_apply
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransform_apply := fourier_apply
 
 instance instFourierTransformInv : FourierTransformInv 𝓢'(E, F) 𝓢'(E, F) where
-  fourierInv := fourierTransformInvCLM E F
+  fourierInv := PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))
+
+instance instFourierInvAdd : FourierInvAdd 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv_add := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).map_add
+
+instance instFourierInvSMul : FourierInvSMul ℂ 𝓢'(E, F) 𝓢'(E, F) where
+  fourierInv_smul := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).map_smul
+
+instance instContinuousFourierInv : ContinuousFourierInv 𝓢'(E, F) 𝓢'(E, F) where
+  continuous_fourierInv := (PointwiseConvergenceCLM.precomp F (fourierInvCLM ℂ 𝓢(E, ℂ))).cont
 
 @[simp]
-theorem fourierTransformInvCLM_apply (f : 𝓢'(E, F)) :
-    fourierTransformInvCLM E F f = 𝓕⁻ f := rfl
+theorem fourierInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
 
-@[simp]
-theorem fourierTransformInv_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) : 𝓕⁻ f g = f (𝓕⁻ g) := rfl
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInvCLM := FourierTransform.fourierInvCLM
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInvCLM_apply := FourierTransform.fourierInvCLM_apply
+
+@[deprecated (since := "2026-01-06")]
+alias fourierTransformInv_apply := fourierInv_apply
 
 instance instFourierPair : FourierPair 𝓢'(E, F) 𝓢'(E, F) where
   fourierInv_fourier_eq f := by ext; simp
@@ -274,21 +408,71 @@ variable [CompleteSpace F]
 
 /-- The distributional Fourier transform and the classical Fourier transform coincide on
 `𝓢(E, F)`. -/
-theorem fourierTransform_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+theorem fourier_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     𝓕 (f : 𝓢'(E, F)) = 𝓕 f := by
   ext g
   simpa using integral_fourier_smul_eq g f
 
 /-- The distributional inverse Fourier transform and the classical inverse Fourier transform
 coincide on `𝓢(E, F)`. -/
-theorem fourierTransformInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
     𝓕⁻ (f : 𝓢'(E, F)) = 𝓕⁻ f := calc
   _ = 𝓕⁻ (toTemperedDistributionCLM E F volume (𝓕 (𝓕⁻ f))) := by
     congr; exact (fourier_fourierInv_eq f).symm
   _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
-    rw [fourierTransform_toTemperedDistributionCLM_eq]
+    rw [fourier_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
 
 end Fourier
+
+section DiracDelta
+
+variable [NormedAddCommGroup E]
+
+section definition
+
+variable [NormedSpace ℝ E]
+
+/-- The Dirac delta distribution -/
+def delta (x : E) : 𝓢'(E, ℂ) :=
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    (BoundedContinuousFunction.evalCLM ℂ x).comp (toBoundedContinuousFunctionCLM ℂ E ℂ)
+
+@[deprecated (since := "2025-12-23")]
+noncomputable alias _root_.SchwartzMap.delta := delta
+
+@[simp]
+theorem delta_apply (x : E) (f : 𝓢(E, ℂ)) : delta x f = f x :=
+  rfl
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.delta_apply := delta_apply
+
+open MeasureTheory MeasureTheory.Measure
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+
+/-- Dirac measure considered as a tempered distribution is the delta distribution. -/
+@[simp]
+theorem toTemperedDistribution_dirac_eq_delta (x : E) :
+  (dirac x).toTemperedDistribution = delta x := by aesop
+
+@[deprecated (since := "2025-12-23")]
+alias _root_.SchwartzMap.integralCLM_dirac_eq_delta := toTemperedDistribution_dirac_eq_delta
+
+end definition
+
+variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+
+open FourierTransform
+
+/-- The Fourier transform of the delta distribution is equal to the volume.
+
+Informally, this is usually represented as `𝓕 δ = 1`. -/
+theorem fourier_delta_zero : 𝓕 (delta (0 : E)) = volume.toTemperedDistribution := by
+  ext f
+  simp [SchwartzMap.fourier_coe, Real.fourier_eq]
+
+end DiracDelta
 
 end TemperedDistribution

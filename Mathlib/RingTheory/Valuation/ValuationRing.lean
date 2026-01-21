@@ -183,14 +183,19 @@ instance commGroupWithZero :
       rfl }
 
 noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .., commGroupWithZero .. with
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    bot := 0
-    bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
+    LinearOrderedCommGroupWithZero (ValueGroup A K) where
+  bot := 0
+  bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  zero_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  mul_lt_mul_of_pos_left := by
+    simp_rw [← not_le]
+    rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
+    contrapose! hbc
+    obtain ⟨d, hd⟩ := hbc
+    simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
+    obtain rfl | rfl := hd
+    · exact ⟨d, by simp [Algebra.smul_def]⟩
+    · cases ha le_rfl
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 noncomputable def valuation : Valuation K (ValueGroup A K) where

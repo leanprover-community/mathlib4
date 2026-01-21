@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
@@ -16,12 +16,15 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
 
 ## Main definitions
 
-* `Lp.fourierTransformₗᵢ`: The Fourier transform on $L^2$ as a linear isometry equivalence.
+* `MeasureTheory.Lp.fourierTransformₗᵢ`: The Fourier transform on $L^2$ as a linear isometry
+  equivalence.
 
 ## Main statements
 
-* `SchwartzMap.toLp_fourierTransform_eq`: The Fourier transform on `𝓢(E, F)` agrees with the Fourier
+* `SchwartzMap.toLp_fourier_eq`: The Fourier transform on `𝓢(E, F)` agrees with the Fourier
   transform on $L^2$.
+* `MeasureTheory.Lp.fourier_toTemperedDistribution_eq`: The Fourier transform on $L^2$ agrees with
+  the Fourier transform on `𝓢'(E, F)`.
 
 -/
 
@@ -44,7 +47,7 @@ namespace MeasureTheory.Lp
 variable (E F) in
 /-- The Fourier transform on `L2` as a linear isometry equivalence. -/
 def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2) :=
-  (fourierTransformCLE ℂ (V := E) (E := F)).toLinearEquiv.extendOfIsometry
+  (fourierEquiv ℂ 𝓢(E, F)).extendOfIsometry
     (toLpCLM ℂ (E := E) F 2 volume) (toLpCLM ℂ (E := E) F 2 volume)
     -- Not explicitly stating the measure as being the volume causes time-outs in the proofs below
     (denseRange_toLpCLM ENNReal.ofNat_ne_top) (denseRange_toLpCLM ENNReal.ofNat_ne_top)
@@ -53,8 +56,26 @@ def fourierTransformₗᵢ : (Lp (α := E) F 2) ≃ₗᵢ[ℂ] (Lp (α := E) F 2
 instance instFourierTransform : FourierTransform (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourier := fourierTransformₗᵢ E F
 
+instance instFourierAdd : FourierAdd (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourier_add := (fourierTransformₗᵢ E F).map_add
+
+instance instFourierSMul : FourierSMul ℂ (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourier_smul := (fourierTransformₗᵢ E F).map_smul
+
+instance instContinuousFourier : ContinuousFourier (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  continuous_fourier := (fourierTransformₗᵢ E F).continuous
+
 instance instFourierTransformInv : FourierTransformInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourierInv := (fourierTransformₗᵢ E F).symm
+
+instance instFourierInvAdd : FourierInvAdd (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourierInv_add := (fourierTransformₗᵢ E F).symm.map_add
+
+instance instFourierInvSMul : FourierInvSMul ℂ (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  fourierInv_smul := (fourierTransformₗᵢ E F).symm.map_smul
+
+instance instContinuousFourierInv : ContinuousFourierInv (Lp (α := E) F 2) (Lp (α := E) F 2) where
+  continuous_fourierInv := (fourierTransformₗᵢ E F).symm.continuous
 
 instance instFourierPair : FourierPair (Lp (α := E) F 2) (Lp (α := E) F 2) where
   fourierInv_fourier_eq := (Lp.fourierTransformₗᵢ E F).symm_apply_apply
@@ -74,7 +95,7 @@ theorem inner_fourier_eq (f g : Lp (α := E) F 2) : ⟪𝓕 f, 𝓕 g⟫ = ⟪f,
 end MeasureTheory.Lp
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
+theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -83,7 +104,7 @@ theorem SchwartzMap.toLp_fourierTransform_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) 
   exact (norm_fourier_toL2_eq f).le
 
 @[simp]
-theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
+theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq
   · exact SchwartzMap.denseRange_toLpCLM ENNReal.ofNat_ne_top
   use 1
@@ -91,5 +112,30 @@ theorem SchwartzMap.toLp_fourierTransformInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.to
   rw [one_mul]
   convert (norm_fourier_toL2_eq (𝓕⁻ f)).symm.le
   simp
+
+namespace MeasureTheory.Lp
+
+/-- The `𝓢'`-Fourier transform and the `L2`-Fourier transform coincide on `L2`. -/
+theorem fourier_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
+    𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2) := by
+  set p := fun f : Lp (α := E) F 2 ↦ 𝓕 (f : 𝓢'(E, F)) = (𝓕 f : Lp (α := E) F 2)
+  apply DenseRange.induction_on (p := p)
+    (SchwartzMap.denseRange_toLpCLM (p := 2) ENNReal.ofNat_ne_top) f
+  · apply isClosed_eq
+    · exact (fourierCLM ℂ 𝓢'(E, F) ∘L toTemperedDistributionCLM F volume 2).continuous
+    · exact (toTemperedDistributionCLM F volume 2 ∘L fourierCLM ℂ (Lp (α := E) F 2)).continuous
+  intro f
+  simp [p, TemperedDistribution.fourier_toTemperedDistributionCLM_eq]
+
+/-- The `𝓢'`-inverse Fourier transform and the `L2`-inverse Fourier transform coincide on `L2`. -/
+theorem fourierInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
+    𝓕⁻ (f : 𝓢'(E, F)) = (𝓕⁻ f : Lp (α := E) F 2) := calc
+  _ = 𝓕⁻ (Lp.toTemperedDistribution (𝓕 (𝓕⁻ f))) := by
+    congr; exact (fourier_fourierInv_eq f).symm
+  _ = 𝓕⁻ (𝓕 (Lp.toTemperedDistribution (𝓕⁻ f))) := by
+    rw [fourier_toTemperedDistribution_eq]
+  _ = _ := fourierInv_fourier_eq _
+
+end MeasureTheory.Lp
 
 end FourierTransform

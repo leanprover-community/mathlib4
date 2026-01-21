@@ -77,7 +77,7 @@ theorem ModEq.trans : a ≡ b [PMOD p] → b ≡ c [PMOD p] → a ≡ c [PMOD p]
 instance : IsTrans α (ModEq p) where
   trans _ _ _ := ModEq.trans
 
-instance : IsRefl _ (ModEq p) :=
+instance : Std.Refl (ModEq p) :=
   ⟨modEq_refl⟩
 
 @[simp]

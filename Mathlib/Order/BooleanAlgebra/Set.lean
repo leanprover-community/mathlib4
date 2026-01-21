@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Insert
 public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Boolean algebra of sets
@@ -78,12 +79,8 @@ theorem compl_setOf {α} (p : α → Prop) : { a | p a }ᶜ = { a | ¬p a } :=
 theorem notMem_of_mem_compl {s : Set α} {x : α} (h : x ∈ sᶜ) : x ∉ s :=
   h
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_compl := notMem_of_mem_compl
-
 theorem notMem_compl_iff {x : α} : x ∉ sᶜ ↔ x ∈ s :=
   not_not
-
-@[deprecated (since := "2025-05-23")] alias not_mem_compl_iff := notMem_compl_iff
 
 @[simp]
 theorem inter_compl_self (s : Set α) : s ∩ sᶜ = ∅ :=
@@ -190,15 +187,11 @@ lemma subset_compl_singleton_iff : s ⊆ {a}ᶜ ↔ a ∉ s := subset_compl_comm
 
 theorem notMem_diff_of_mem {s t : Set α} {x : α} (hx : x ∈ t) : x ∉ s \ t := fun h => h.2 hx
 
-@[deprecated (since := "2025-05-23")] alias not_mem_diff_of_mem := notMem_diff_of_mem
-
 theorem mem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∈ s :=
   h.left
 
 theorem notMem_of_mem_diff {s t : Set α} {x : α} (h : x ∈ s \ t) : x ∉ t :=
   h.right
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem_diff := notMem_of_mem_diff
 
 theorem diff_eq_compl_inter {s t : Set α} : s \ t = tᶜ ∩ s := by rw [diff_eq, inter_comm]
 
@@ -407,8 +400,6 @@ lemma subset_insert_diff_singleton (x : α) (s : Set α) : s ⊆ insert x (s \ {
 lemma diff_insert_of_notMem (h : a ∉ s) : s \ insert a t = s \ t := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias diff_insert_of_not_mem := diff_insert_of_notMem
-
 @[simp]
 lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   grind
@@ -416,13 +407,8 @@ lemma insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
 lemma insert_diff_of_notMem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias insert_diff_of_not_mem := insert_diff_of_notMem
-
 lemma insert_diff_self_of_notMem (h : a ∉ s) : insert a s \ {a} = s := by
   ext x; simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
-
-@[deprecated (since := "2025-05-23")]
-alias insert_diff_self_of_not_mem := insert_diff_self_of_notMem
 
 @[simp] lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
   ext; simp +contextual [or_and_left, em, ha]
