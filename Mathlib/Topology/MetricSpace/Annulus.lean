@@ -54,8 +54,7 @@ def annulusIci (x : X) (r : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ici r
 
 variable {x : X} {r R : ℝ}
 
-lemma annulusIoo_eq :
-    annulusIoo x r R = ball x R ∩ (closedBall x r)ᶜ := by
+lemma annulusIoo_eq : annulusIoo x r R = ball x R ∩ (closedBall x r)ᶜ := by
   ext; simp [annulusIoo, ball, closedBall, and_comm]
 
 lemma annulusIoc_eq {x : X} {r R : ℝ} :
