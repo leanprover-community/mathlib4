@@ -5,17 +5,11 @@ Authors: Michał Świętek
 -/
 module
 
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Analysis.Normed.Module.WeakDual
-import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Tactic
+public import Mathlib.Analysis.Normed.Module.WeakDual
+public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+public import Mathlib.Tactic
+
+@[expose] public section
 
 noncomputable section
 
@@ -133,8 +127,6 @@ theorem uniform_bound [CompleteSpace X] :  ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n
 /-- The basis constant is the infimum of the bounds on the canonical projections. -/
 def basis_constant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
 
-
-
 /-- Q_n = P_{n+1} - P_n. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
@@ -147,13 +139,19 @@ lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
 
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
   (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
-  -- simp only [Q, ContinuousLinearMap.sub_apply, ContinuousLinearMap.map_sub, hcomp]
-  -- split_ifs with hij
-  -- · subst hij; simp [min_self, Nat.min_succ_self, Nat.succ_min_self]
-  -- · simp only [min_def]
-  --   split_ifs <;> simp
-  sorry
+  simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
+  split_ifs with h
+  · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
+    abel
+  · rcases Nat.lt_or_gt_of_ne h with h' | h'
+    · rw [min_eq_left_of_lt h', min_eq_left (Nat.succ_le_of_lt h'),
+        min_eq_left_of_lt (Nat.lt_succ_of_lt h')]
+      abel
+    · rw [min_eq_right_of_lt h', min_eq_right (Nat.succ_le_of_lt h'),
+        min_eq_right_of_lt (Nat.lt_succ_of_lt h')]
+      abel
 
+/-- The rank of Q n is 1, given appropriate properties of P. -/
 lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     (h_rank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)  (n : ℕ) :
@@ -175,7 +173,7 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     rw [Submodule.eq_bot_iff]; rintro x ⟨⟨y, rfl⟩, ⟨z, hz⟩⟩
     -- have : Q P n (P n z) = 0 := by simp [Q, h_comm, Nat.min_succ_self, min_self]
     have : Q n (P n z) = 0 := by sorry
-    rw [← hz, ← this, hz, Q_ortho n n y hcomp, if_pos rfl]
+    rw [← hz, ← this, hz, Q_ortho hcomp, if_pos rfl]
 
   -- have h_fin_Pn : ∀ n, FiniteDimensional 𝕜 (LinearMap.range (P n)) := by
   --     intro n
@@ -190,7 +188,8 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   rw [Nat.add_comm] at this
   exact Nat.add_right_cancel this.symm
 
-/-- Main existence theorem from projections. -/
+/-- Constructs a Schauder basis from a sequence of canonical projections
+    satisfying appropriate properties. -/
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (h0 : P 0 = 0)
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
@@ -199,7 +198,6 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 X e) := by
   let Q := Q P
   have hrankQ := Q_rank_one hdim hcomp
-  have Qortho := Q_ortho hcomp
   have : ∀ n, ∃ v, v ∈ LinearMap.range (Q n) ∧ v ≠ 0 := by
       intro n
       refine exists_mem_ne_zero_of_rank_pos ?_
@@ -257,7 +255,6 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     dsimp only [mkContinuous_apply, IsLinearMap.mk'_apply]
     simp_rw [← hQf, Q]
     simp only [← Q_sum P h0 n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
-
   use e
   exact ⟨SchauderBasis.mk f ortho lim⟩
 
