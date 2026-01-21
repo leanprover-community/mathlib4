@@ -55,9 +55,7 @@ instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 @[simp] lemma coe_zero : ((0 : IntertwiningMap ρ σ) : V → W) = 0 := rfl
 
 instance : Add (IntertwiningMap ρ σ) :=
-  ⟨fun f g =>
-    { toLinearMap := f.toLinearMap + g.toLinearMap
-      isIntertwining := by intro γ v; simp [f.isIntertwining, g.isIntertwining] }⟩
+  ⟨fun f g ↦ ⟨f.toLinearMap + g.toLinearMap, by simp [f.isIntertwining, g.isIntertwining]⟩⟩
 
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
