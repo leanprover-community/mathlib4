@@ -451,10 +451,8 @@ theorem interpolate_eq_add_interpolate_erase (hvs : Set.InjOn v s) (hi : i ∈ s
 
 theorem interpolate_eq_sum : interpolate s v r =
     ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, ((v i) - (v j))) * (∏ j ∈ s.erase i, (X - C (v j))) := by
-  simp_rw [interpolate_apply]
-  unfold Lagrange.basis basisDivisor
-  congr! 1 with i hi
-  rw [division_def, C_mul, prod_mul_distrib, mul_assoc, ← prod_inv_distrib, map_prod]
+  simp [Lagrange.basis, basisDivisor, div_eq_mul_inv, prod_mul_distrib, ← map_prod,
+    ← prod_inv_distrib, mul_assoc]
 
 theorem iterate_derivative_interpolate
     (hvs : Set.InjOn v s) {k : ℕ} (hk : k < #s) :
