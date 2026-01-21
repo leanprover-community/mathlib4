@@ -97,8 +97,7 @@ theorem boundaryParam_continuousOn_piece (k : Fin n) :
   let lo : ℝ := k.val / n
   let hi : ℝ := (k.val + 1) / n
   have onPiece : ∀ x ∈ Icc lo hi, (⌊x * n⌋.toNat % n = ↑k ∨ x = hi) := by
-    intro x
-    intro xin
+    intro x xin
     have hn : (0 : ℝ) < n := Nat.cast_pos.mpr (NeZero.pos n)
     by_cases h : x = hi
     right
@@ -122,7 +121,95 @@ theorem boundaryParam_continuousOn_piece (k : Fin n) :
       exact_mod_cast this
     simp [floorEq, Int.toNat_natCast, Nat.mod_eq_of_lt k.isLt]
   by_cases last : (k.val + 1 : ℝ) / n = 1
-  sorry
+  intro x hx
+  have hk_eq : k.val + 1 = n := by
+    have hn : (n : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne n)
+    have h := div_eq_one_iff_eq hn |>.mp last
+    exact_mod_cast h
+  by_cases hx1 : x = 1
+  subst hx1
+  refine ContinuousWithinAt.congr_of_eventuallyEq
+    (f := fun t => poly.toPolygon.edgePath k (t * ↑n - ↑↑k)) ?_ ?_ ?_
+  · apply Continuous.continuousWithinAt
+    unfold Polygon.edgePath
+    continuity
+  · apply eventually_nhdsWithin_of_forall
+    intro t ht
+    by_cases ht1 : t = 1
+    · subst ht1
+      simp only [↓reduceIte, one_mul, Polygon.edgePath]
+      have hparam : (↑n : ℝ) - ↑↑k = 1 := by
+        have hkval : k.val = n - 1 := by omega
+        have hn_pos : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
+        have : (n : ℝ) - (n - 1 : ℕ) = 1 := by
+          rw [Nat.cast_sub hn_pos]
+          ring
+        rw [hkval]
+        exact this
+      rw [hparam, AffineMap.lineMap_apply_one]
+      congr 1
+      apply Fin.ext
+      simp only [Fin.val_add, Fin.val_zero]
+      have h1 : (1 : Fin n).val = 1 % n := rfl
+      simp only [h1, Nat.add_mod_mod, hk_eq, Nat.mod_self]
+    · simp only [ht1, ↓reduceIte]
+      have ht' := onPiece t ht
+      rcases ht' with hfloor | heq
+      · simp only [hfloor]
+      · simp only [hi] at heq
+        rw [last] at heq
+        exact absurd heq ht1
+  · -- eq_at: show they agree at t = 1
+    simp only [↓reduceIte, one_mul, Polygon.edgePath]
+    have hparam : (↑n : ℝ) - ↑↑k = 1 := by
+      have hkval : k.val = n - 1 := by omega
+      have hn_pos : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
+      have : (n : ℝ) - (n - 1 : ℕ) = 1 := by
+        rw [Nat.cast_sub hn_pos]
+        ring
+      rw [hkval]
+      exact this
+    rw [hparam, AffineMap.lineMap_apply_one]
+    congr 1
+    apply Fin.ext
+    simp only [Fin.val_add, Fin.val_zero]
+    have h1 : (1 : Fin n).val = 1 % n := rfl
+    simp only [h1, Nat.add_mod_mod, hk_eq, Nat.mod_self]
+  simp only [lo,hi] at onPiece
+  have hx' := onPiece x hx
+  rcases hx' with onSegment | atEnd
+  apply ContinuousWithinAt.congr_of_eventuallyEq _ (eventually_nhdsWithin_of_forall (fun t ht => ?_))
+  simp only [hx1]
+  simp
+  simp only [onSegment]
+  simp only [Fin.eta]
+  rfl
+  apply Continuous.continuousWithinAt
+  unfold Polygon.edgePath
+  apply Continuous.comp
+  exact AffineMap.lineMap_continuous
+  continuity
+  by_cases ht1 : t = 1
+  simp only [ht1, if_true]
+  have hparam : (1 : ℝ) * ↑n - ↑↑k = 1 := by
+    have h := div_eq_one_iff_eq (Nat.cast_ne_zero.mpr (NeZero.ne n)) |>.mp last
+    field_simp
+    linarith
+  rw [hparam]
+  simp only [Polygon.edgePath]
+  simp
+  congr 1
+  have : (k + 1 : Fin n).val = 0 := by
+    simp [Fin.val_add]
+    simp [hk_eq]
+  exact Fin.ext this.symm
+  simp only [ht1, ite_false]
+  congr 1
+  ext
+  exact (onPiece t ht).resolve_right (fun h => ht1 (last ▸ h))
+  congr 1
+  exact_mod_cast (onPiece t ht).resolve_right (fun h => ht1 (last ▸ h))
+  exact absurd (atEnd.trans last) hx1
   intro x hx
   simp only [lo,hi] at onPiece
   have hx' := onPiece x hx
@@ -216,13 +303,19 @@ theorem boundaryParam_continuousOn_piece (k : Fin n) :
   have hx1 : x ≠ 1 := by
     have hk_le : k.val + 1 ≤ n := by omega
     have hk_lt : k.val + 1 < n := by
-      exact Nat.lt_of_le_of_ne hk_le (by omega : k.val + 1 ≠ n)
+      refine Nat.lt_of_le_of_ne hk_le ?_
+      intro heq
+      apply last
+      have h : (↑↑k + 1 : ℝ) = ↑n := by
+        exact_mod_cast heq
+      rw [h, div_self (Nat.cast_ne_zero.mpr (NeZero.ne n))]
     have hx_le : x ≤ (↑↑k + 1)/↑n := by
       exact (Set.mem_Icc.mp hx').right
     have h : (↑↑k + 1)/↑n < 1 := by
       have h1 : (↑↑k + 1 : ℝ) < (n : ℝ) := by
         norm_cast
       have hn_pos : (0 : ℝ) < n := Nat.cast_pos.mpr (NeZero.pos n)
+      exact Nat.div_lt_one_iff (NeZero.pos n) |>.mpr hk_lt
     have xle1 : x < 1 := by
       have h' : (↑↑k + 1 : ℝ) / ↑n < 1 := by
         have hk_lt : k.val + 1 < n := by omega
@@ -292,15 +385,9 @@ theorem boundaryParam_continuousOn_piece (k : Fin n) :
   exact mod_eq.symm
 
 
-
-
-
-
 theorem boundaryParam_continuousOn : ContinuousOn poly.boundaryParam (Icc 0 1) := by
-  unfold boundaryParam
-
   sorry
-
+  
 noncomputable def circleMap : AddCircle (1 : ℝ) → EuclideanSpace ℝ (Fin 2) :=
   AddCircle.liftIco 1 0 poly.boundaryParam
 
