@@ -307,6 +307,8 @@ theorem roots_eq_of_degree_eq_card {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : S.card = p.degree) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (by lia) (by contrapose! hcard; simp [hcard])
 
+@[deprecated (since := "2025-12-16")] alias roots_eq_of_degree_le_card := roots_eq_of_degree_eq_card
+
 theorem roots_eq_of_natDegree_le_card_of_ne_zero {S : Finset R}
     (hS : ∀ x ∈ S, p.eval x = 0) (hcard : p.natDegree ≤ S.card) (hp : p ≠ 0) : p.roots = S.val :=
   roots_eq_of_degree_le_card_of_ne_zero hS (degree_le_of_natDegree_le hcard) hp
@@ -598,6 +600,9 @@ theorem mem_rootSet {p : T[X]} {S : Type*} [IsDomain T] [CommRing S] [IsDomain S
 lemma mem_rootSet_of_ne {p : T[X]} {S : Type*} [IsDomain T] [CommRing S] [IsDomain S] [Algebra T S]
     [Module.IsTorsionFree T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
   mem_rootSet.trans <| and_iff_right hp
+
+theorem preimage_eval_singleton (hp : p ≠ C a) : p.eval ⁻¹' {a} = (p - C a).rootSet R := by
+  ext; simp [mem_rootSet_of_ne (sub_ne_zero.mpr hp), sub_eq_zero]
 
 theorem Monic.mem_rootSet {p : T[X]} (hp : Monic p) {S : Type*} [CommRing S] [IsDomain S]
     [Algebra T S] {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 := by
