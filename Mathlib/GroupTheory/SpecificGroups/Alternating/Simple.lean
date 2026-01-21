@@ -91,7 +91,7 @@ variable [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
     exact ⟨swap ⟨a, by aesop⟩ ⟨b, by aesop⟩, Equiv.Perm.ofSubtype_swap_eq _ _⟩
 
 /-- If `α` has at least 5 elements, then the only nontrivial
-normal sugroup of `Equiv.Perm α` is `alternatingGroup α`. -/
+normal subgroup of `Equiv.Perm α` is `alternatingGroup α`. -/
 public theorem alternatingGroup_of_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
     {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
@@ -131,8 +131,6 @@ end Equiv.Perm
 
 namespace alternatingGroup
 
--- open MulAction Equiv.Perm Equiv Finset Subgroup
-
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
 -- The `convert` is bizarre
@@ -145,7 +143,7 @@ def ofSubtype {p : ℕ} (s : Nat.Combination α p) :
   map_mul' := by simp
   map_one' := by simp
 
-theorem mapOfSubtype {p : ℕ} (s : Nat.Combination α p) :
+theorem map_ofSubtype {p : ℕ} (s : Nat.Combination α p) :
     (alternatingGroup ↥(s : Finset α)).map (Perm.ofSubtype : Perm (s : Finset α) →* Perm α) =
       (Perm.ofSubtype : Perm (s : Finset α) →* Perm α).range ⊓ (alternatingGroup α) := by
   ext k
@@ -168,18 +166,12 @@ lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingG
   classical
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
-  simp only [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mapOfSubtype, Subgroup.mem_inf]
-  simp only [Subgroup.mk_smul]
-  simp only [MulAut.smul_def, MulAut.inv_apply,
-    MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def]
-  rw [← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_range_ofSubtype]
-  apply and_congr
-  · convert Iff.rfl
-  · simp only [mem_alternatingGroup, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply]
-    simp only [sign_mul, sign_inv, mul_right_comm]
-    simp
+  simp only [Subgroup.mem_subgroupOf, Subgroup.mem_pointwise_smul_iff_inv_smul_mem,
+    map_ofSubtype, Subgroup.mem_inf, Subgroup.mk_smul, MulAut.smul_def,
+    MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
+  rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def,
+    ← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_range_ofSubtype]
+  exact and_congr (by convert Iff.rfl) (by simp [mul_right_comm])
 
 theorem mem_range_ofSubtype {p : ℕ} (s : Nat.Combination α p) (k : alternatingGroup α) :
     k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
@@ -222,9 +214,7 @@ theorem closure_isThreeCycles_eq_top :
       { g : Perm α | IsThreeCycle g} by
     aesop
   ext g
-  constructor
-  · rintro ⟨k, hk, rfl⟩; exact hk
-  · exact fun hg ↦ ⟨⟨g, hg.mem_alternatingGroup⟩, by simpa⟩
+  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, hg.mem_alternatingGroup⟩, by simpa⟩⟩
 
 theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure
@@ -237,12 +227,9 @@ theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
     rw [this, Perm.closure_cycleType_eq_2_2_eq_alternatingGroup h5]
     aesop
   ext g
-  constructor
-  · rintro ⟨k, hk, rfl⟩; exact hk
-  · intro hg
-    refine ⟨⟨g, ?_⟩, by simpa⟩
-    simp only [Set.mem_setOf_eq] at hg
-    simp [sign_of_cycleType, hg, ← Units.val_inj]
+  refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, ?_⟩, by simpa⟩⟩
+  simp only [Set.mem_setOf_eq] at hg
+  simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 3`. -/
 @[expose] public
@@ -266,9 +253,9 @@ def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combina
     rw [mem_range_ofSubtype]
 
 /-- If `α` has at least 5 elements, but not 6,
-then the only nontrivial normal sugroup of `alternatingGroup α`
+then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
-theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_6
+theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 6)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
@@ -279,31 +266,27 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_6
     refine Nat.Combination.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
     · apply lt_of_lt_of_le (by norm_num) hα
     · simpa using hα'
-  rw [eq_top_iff]
-  rw [← commutator_alternatingGroup_eq_top hα]
+  rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   apply iwasawaStructure_three.commutator_le
   intro h
+  simp_rw [Set.eq_univ_iff_forall, mem_fixedPoints] at h
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
   obtain ⟨g, hgN, hg_ne⟩ := hN
   suffices ∃ s : Nat.Combination α 3, g • s ≠ s by
     obtain ⟨s, hs⟩ := this
-    have := Set.mem_univ s
-    rw [← h, mem_fixedPoints] at this
     apply hs
-    rw [← Subgroup.mk_smul g hgN, this]
+    rw [← Subgroup.mk_smul g hgN, h]
   contrapose! hg_ne
   replace hg_ne : (toPerm g : Perm (Nat.Combination α 3)) = 1 := by
     ext1 s
     exact hg_ne s
-  rw [Nat.Combination.mulAction_faithful (n := 3)
+  rw [← Subtype.coe_inj]
+  rwa [Nat.Combination.mulAction_faithful (n := 3)
     (G := alternatingGroup α) (α := α) (g := g)
     (by norm_num)
     (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast]
         apply le_trans (by norm_num) hα)] at hg_ne
-  ext x
-  simp only [Perm.ext_iff, toPerm_apply, Subgroup.mk_smul g.val g.prop, Perm.smul_def] at hg_ne
-  simp [hg_ne]
 
 theorem mem_map_kleinFour_ofSubtype (s : Nat.Combination α 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -321,15 +304,13 @@ theorem mem_map_kleinFour_ofSubtype (s : Nat.Combination α 4) (k : alternatingG
     rw [mem_support_ofSubtype]
     exact Exists.choose
   · rintro ⟨hk, hk'⟩
-    rw [Subgroup.mem_map]
     rw [← mem_range_ofSubtype] at hk
     obtain ⟨k, rfl⟩ := hk
-    simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk, cycleType_ofSubtype] at hk'
-    use k
-    refine ⟨?_, rfl⟩
+    apply Subgroup.mem_map_of_mem
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hs,
       Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq]
-    simp only [map_eq_one_iff _ ofSubtype_injective, OneMemClass.coe_eq_one] at hk'
+    simp only [ofSubtype, MonoidHom.coe_mk, OneHom.coe_mk, cycleType_ofSubtype,
+      map_eq_one_iff _ ofSubtype_injective, OneMemClass.coe_eq_one] at hk'
     convert hk'
 
 theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) :
@@ -338,12 +319,11 @@ theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) 
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_map_kleinFour_ofSubtype]
-  simp only [Subgroup.mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
+  simp only [mem_map_kleinFour_ofSubtype, Subgroup.mk_smul,
+    Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
-  apply and_congr Iff.rfl
-  apply or_congr
+  refine and_congr Iff.rfl (or_congr ?_ ?_)
   · simp [mul_eq_one_iff_inv_eq']
   · nth_rewrite 2 [← inv_inv g]
     rw [cycleType_conj]
@@ -369,9 +349,9 @@ provided `α` has at least 5 elements. -/
     simp [hg]
 
 /-- If `α` has at least 5 elements, but not 8,
-then the only nontrivial normal sugroup of `alternatingGroup α`
+then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
-theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_8
+theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 8)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
@@ -382,59 +362,54 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_8
     refine Nat.Combination.isPreprimitive_alternatingGroup (by norm_num) ?_ ?_
     · apply lt_of_lt_of_le (by norm_num) hα
     · simpa using hα'
-  rw [eq_top_iff]
-  rw [← commutator_alternatingGroup_eq_top hα]
+  rw [eq_top_iff, ← commutator_alternatingGroup_eq_top hα]
   rw [← Nat.card_eq_fintype_card] at hα
   apply (iwasawaStructure_four hα).commutator_le
   intro h
+  simp_rw [Set.eq_univ_iff_forall, mem_fixedPoints] at h
   rw [← ne_eq, ← Subgroup.nontrivial_iff_ne_bot, Subgroup.nontrivial_iff_exists_ne_one] at hN
   obtain ⟨g, hgN, hg_ne⟩ := hN
   suffices ∃ s : Nat.Combination α 4, g • s ≠ s by
     obtain ⟨s, hs⟩ := this
-    have := Set.mem_univ s
-    rw [← h, mem_fixedPoints] at this
     apply hs
-    rw [← Subgroup.mk_smul g hgN, this]
+    rw [← Subgroup.mk_smul g hgN, h]
   contrapose! hg_ne
   replace hg_ne : (toPerm g : Perm (Nat.Combination α 4)) = 1 := by
     ext1 s
     exact hg_ne s
-  rw [Nat.Combination.mulAction_faithful (n := 4)
+  rw [← Subtype.coe_inj]
+  rwa [Nat.Combination.mulAction_faithful (n := 4)
     (G := alternatingGroup α) (α := α) (g := g)
     (by norm_num)
     (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast]
         simpa using hα)] at hg_ne
-  ext x
-  simp only [Perm.ext_iff, toPerm_apply, Subgroup.mk_smul g.val g.prop, Perm.smul_def] at hg_ne
-  simp [hg_ne]
 
 /-- If `α` has at least 5 elements,
-then the only nontrivial normal sugroup of `alternatingGroup α`
+then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
 public theorem normal_subgroup_eq_bot_or_eq_top
     (hα : 5 ≤ Nat.card α)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
   by_cases hα' : Nat.card α = 6
-  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_8 hα _ hnN
+  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα _ hnN
     rw [hα']
     simp
-  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_6 hα hα' hnN
+  · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα' hnN
 
 /-- When `α` has at least 5 elements, then `alternatingGroup α` is a simple group. -/
 public theorem isSimpleGroup (hα : 5 ≤ Nat.card α) :
     IsSimpleGroup (alternatingGroup α) where
   exists_pair_ne := by
-    suffices Nontrivial (alternatingGroup α) by
-      apply Nontrivial.exists_pair_ne
+    rw [← nontrivial_iff]
     refine nontrivial_of_three_le_card ?_
     simpa using le_trans (by norm_num) hα
   eq_bot_or_eq_top_of_normal H hH := by
     by_cases hα' : Nat.card α = 6
-    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_8 hα _ hH
+    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight hα _ hH
       rw [hα']
       simp
-    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_6 hα hα' hH
+    · apply normal_subgroup_eq_bot_or_eq_top_of_card_ne_six hα hα' hH
 
 end alternatingGroup
