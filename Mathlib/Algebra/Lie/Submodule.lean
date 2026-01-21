@@ -185,8 +185,8 @@ instance [IsNoetherian R M] (N : LieSubmodule R L M) : IsNoetherian R N :=
 instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
   inferInstanceAs <| IsArtinian R N.toSubmodule
 
-instance [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R N :=
-  inferInstanceAs <| NoZeroSMulDivisors R N.toSubmodule
+instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
+  inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
 
 variable [LieAlgebra R L] [LieModule R L M]
 
@@ -670,7 +670,7 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
   exact lieSpan_le (N := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
-    CompleteLattice.IsCompactElement (lieSpan R L {m}) := by
+    IsCompactElement (lieSpan R L {m}) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
   replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
