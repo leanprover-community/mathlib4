@@ -5,9 +5,11 @@ Authors: Thomas Browning, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 
@@ -557,6 +559,63 @@ instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
 end unique
 
 end ContinuousMulEquiv
+
+section Actions
+
+variable {G M : Type*}
+
+/--
+Each element of the scalars defines a continuous additive monoid homomorphism.
+
+This is a continuous version of `DistribSMul.toAddMonoidHom`. -/
+@[simps! toFun toAddMonoidHom]
+def DistribSMul.toContinuousAddMonoidHom
+    [AddMonoid M] [DistribSMul G M] [TopologicalSpace M] [ContinuousConstSMul G M] (g : G) :
+    M →ₜ+ M where
+  __ := DistribSMul.toAddMonoidHom M g
+  continuous_toFun := continuous_const_smul _
+
+/--
+Each element of the scalars defines a continuous monoid homomorphism.
+
+This is a continuous version of `MulDistribMulAction.toMonoidHom`. -/
+@[simps! toFun toMonoidHom]
+def MulDistribMulAction.toContinuousMonoidHom
+    [Monoid G] [Monoid M] [MulDistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
+    (g : G) : M →ₜ* M where
+  __ := MulDistribMulAction.toMonoidHom M g
+  continuous_toFun := continuous_const_smul _
+
+/--
+Each element of the group defines a continuous additive monoid isomorphism.
+
+This is a continuous version of `DistribMulAction.toAddEquiv`. -/
+@[simps! apply symm_apply toAddEquiv]
+def DistribMulAction.toContinuousAddEquiv
+    [Group G] [AddMonoid M] [DistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
+    (g : G) : M ≃ₜ+ M where
+  __ := DistribMulAction.toAddEquiv M g
+  continuous_toFun := continuous_const_smul _
+  continuous_invFun := continuous_const_smul _
+
+/--
+Each element of the group defines a continuous monoid isomorphism.
+
+This is a continuous version of `MulDistribMulAction.toMulEquiv`. -/
+@[simps! apply symm_apply toMulEquiv]
+def MulDistribMulAction.toContinuousMulEquiv
+    [Group G] [Monoid M] [MulDistribMulAction G M] [TopologicalSpace M] [ContinuousConstSMul G M]
+    (g : G) : M ≃ₜ* M where
+  __ := MulDistribMulAction.toMulEquiv M g
+  continuous_toFun := continuous_const_smul _
+  continuous_invFun := continuous_const_smul _
+
+/-!
+For now we do not have `→*` versions of the above to match `DistribMulAction.toAddAut`, as first
+we need the monoid of endomorphisms and group of automorphisms.
+-/
+
+end Actions
 
 namespace MulEquiv
 
