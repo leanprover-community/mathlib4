@@ -12,9 +12,9 @@ public import Mathlib.RingTheory.Localization.FractionRing
 /-!
 # The field of rational functions
 
-Files in this folder define the field `RatFunc K` of rational functions over a field `K`, show it
-is the field of fractions of `K[X]` and provide the main results concerning it. This file contains
-the basic definition.
+Files in this folder define the field `RatFunc K` of rational functions over a field `K`, defined
+to be the field of fractions of `K[X]`, and provide the main results concerning it. This file
+contains the basic definition.
 
 For connections with Laurent Series, see `Mathlib/RingTheory/LaurentSeries.lean`.
 
@@ -28,12 +28,6 @@ We provide a set of recursion and induction principles:
   rational functions
 
 ## Implementation notes
-
-We need a couple of maps to set up the `Field` and `IsFractionRing` structure,
-namely `RatFunc.ofFractionRing`, `RatFunc.toFractionRing`, `RatFunc.mk` and
-`RatFunc.toFractionRingRingEquiv`.
-All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] (RatFunc K)`
-and `IsLocalization.algEquiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
 the codomain is not a field or even an integral domain.

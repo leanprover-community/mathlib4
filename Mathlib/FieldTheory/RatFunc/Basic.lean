@@ -247,13 +247,6 @@ theorem liftRingHom_apply_mk (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap �
     (d : R[X]⁰) : liftRingHom φ hφ (Localization.mk n d) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_mk _ hφ _ _
 
-@[simp]
-lemma liftRingHom_ofFractionRing_algebraMap
-    (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
-    RatFunc.liftRingHom φ hφ (ofFractionRing <| algebraMap R[X] _ x) = φ x := by
-  rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
-  simp
-
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftRingHom φ hφ') :=
@@ -346,6 +339,9 @@ theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : 
 lemma liftRingHom_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (x : K[X]) : liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
   simpa using liftRingHom_apply_div' φ hφ x 1
+
+@[deprecated (since := "2026-01-21")]
+alias liftRingHom_ofFractionRing_algebraMap := liftRingHom_algebraMap
 
 @[simp]
 lemma liftRingHom_comp_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
