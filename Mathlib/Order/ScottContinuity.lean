@@ -87,12 +87,12 @@ lemma ScottContinuousOn.const' (x : β) : ScottContinuousOn D (fun _ : α ↦ x)
 theorem ScottContinuousOn.comp
     {g : β → γ} {D'}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (hD' : ∀ d ∈ D, f '' d ∈ D')
+    (hD' : Set.MapsTo (f '' ·) D D')
     (hg : ScottContinuousOn D' g)
     (hf : ScottContinuousOn D f)
     : ScottContinuousOn D (g ∘ f) := by
   intro d hd₁ hd₂ hd₃ a ha
-  have hd₁' : f '' d ∈ D' := by grind
+  have hd₁' : f '' d ∈ D' := hD' hd₁
   have hd₂' : (f '' d).Nonempty := ⟨f hd₂.choose, by grind⟩
   have hd₃' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
     have := hf.monotone
@@ -101,7 +101,7 @@ theorem ScottContinuousOn.comp
       forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at ⊢ this hd₃
     grind
   rw [Set.image_comp]
-  refine hg hd₁' ⟨f hd₂.choose, by grind⟩ hd₃' (hf hd₁ hd₂ hd₃ ha)
+  refine hg hd₁' hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
 
 theorem ScottContinuousOn.comp_image
     {g : β → γ}
@@ -109,7 +109,7 @@ theorem ScottContinuousOn.comp_image
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
     (hf : ScottContinuousOn D f)
     : ScottContinuousOn D (g ∘ f) :=
-  ScottContinuousOn.comp hD (by grind) hg hf
+  ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
 
 @[fun_prop]
 theorem ScottContinuousOn.comp'
