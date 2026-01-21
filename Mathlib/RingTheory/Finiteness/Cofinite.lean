@@ -105,7 +105,7 @@ protected theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.Co
     exact hs.1.inf (hs' hs.2)
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-protected theorem CoFG.sInf_of_finite {s : Set (Submodule R M)} (hs : s.Finite)
+theorem CoFG.sInf_of_finite {s : Set (Submodule R M)} (hs : s.Finite)
     (hcofg : ∀ S ∈ s, S.CoFG) : (sInf s).CoFG := by
   rw [← hs.coe_toFinset] at hcofg ⊢; exact CoFG.sInf hcofg
 
