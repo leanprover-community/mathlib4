@@ -205,34 +205,36 @@ lemma integralCM_update_add {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (x y : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (x + y)) =
       integralCM hg t₀ α (update dα i x) + integralCM hg t₀ α (update dα i y) := by
-  by_cases hα : range α ⊆ u
-  · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.add_apply]
+  rw [integralCM_def]
+  split_ifs with hα
+  · simp only [ContinuousMap.ext_iff, ContinuousMap.add_apply]
     intro t
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
     rw [← integral_add (intervalIntegrable_integrand hg t₀ hα _ t₀ t)
         (intervalIntegrable_integrand hg t₀ hα _ t₀ t),
       integral_congr fun τ _ ↦ ?_]
     simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_add ..
-  · simp [integralCM_if_neg hα]
+  · simp
 
 lemma integralCM_update_smul {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E))
     (dα : Fin n → C(Icc tmin tmax, E)) (i : Fin n) (c : ℝ) (x : C(Icc tmin tmax, E)) :
     integralCM hg t₀ α (update dα i (c • x)) = c • integralCM hg t₀ α (update dα i x) := by
-  by_cases hα : range α ⊆ u
-  · simp only [integralCM_if_pos hα, ContinuousMap.ext_iff, ContinuousMap.smul_apply]
+  rw [integralCM_def]
+  split_ifs with hα
+  · simp only [ContinuousMap.ext_iff, ContinuousMap.smul_apply]
     intro t
     simp only [integralCMAux, ContinuousMap.coe_mk, integralFun]
     rw [← intervalIntegral.integral_smul, integral_congr fun τ _ ↦ ?_]
     simpa only [compProj_update] using (g (compProj t₀ α τ)).toMultilinearMap.map_update_smul ..
-  · simp [integralCM_if_neg hα]
+  · simp
 
 lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContinuousOn g u)
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)) :
     Continuous (integralCM hg t₀ α) := by
-  by_cases hα : range α ⊆ u
-  · rw [integralCM_if_pos hα]
-    let X := Fin n → C(Icc tmin tmax, E)
+  rw [integralCM_def]
+  split_ifs with hα
+  · let X := Fin n → C(Icc tmin tmax, E)
     let fparam : (X × Icc tmin tmax) → ℝ → E :=
       fun p τ ↦ g (compProj t₀ α τ) (fun i ↦ compProj t₀ (p.1 i) τ)
     apply ContinuousMap.continuous_of_continuous_uncurry
@@ -240,8 +242,7 @@ lemma continuous_integralCM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
       (continuous_induced_dom.comp continuous_snd)
     exact (continuous_integrand_pi₂ hg t₀ hα).comp
       ((continuous_fst.comp continuous_fst).prodMk continuous_snd)
-  · rw [integralCM_if_neg hα]
-    exact continuous_const
+  · exact continuous_const
 
 /--
 The integral as a continuous multilinear map on the space of continuous curves, which will allow us
