@@ -7,6 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs

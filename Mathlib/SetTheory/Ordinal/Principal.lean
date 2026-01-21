@@ -157,9 +157,6 @@ theorem isSuccLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o
   rw [isSuccLimit_iff, isSuccPrelimit_iff_succ_lt]
   exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
-@[deprecated (since := "2025-07-08")]
-alias isLimit_of_principal_add := isSuccLimit_of_principal_add
-
 theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o, a + o = o := by
   refine ⟨fun ho a hao => ?_, fun h a b hao hbo => ?_⟩
   · rcases lt_or_ge 1 o with ho₁ | ho₁
@@ -303,9 +300,6 @@ theorem principal_add_of_principal_mul (ho : Principal (· * ·) o) (ho₂ : o �
 theorem isSuccLimit_of_principal_mul (ho₂ : 2 < o) (ho : Principal (· * ·) o) : IsSuccLimit o :=
   isSuccLimit_of_principal_add ((lt_succ 1).trans (succ_one ▸ ho₂))
     (principal_add_of_principal_mul ho (ne_of_gt ho₂))
-
-@[deprecated (since := "2025-07-08")]
-alias isLimit_of_principal_mul := isSuccLimit_of_principal_mul
 
 theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a → a < o → a * o = o := by
   refine ⟨fun h a ha₀ hao => ?_, fun h a b hao hbo => ?_⟩

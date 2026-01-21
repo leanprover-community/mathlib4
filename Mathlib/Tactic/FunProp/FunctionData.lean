@@ -14,7 +14,7 @@ public meta import Std.Do
 /-!
 ## `funProp` data structure holding information about a function
 
-`FunctionData` holds data about function in the form `fun x => f x₁ ... xₙ`.
+`FunctionData` holds data about function in the form `fun x ↦ f x₁ ... xₙ`.
 -/
 
 public meta section
@@ -106,7 +106,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
       }
 
 /-- Result of `getFunctionData?`. It returns function data if the function is in the form
-`fun x => f y₁ ... yₙ`. Two other cases are `fun x => let y := ...` or `fun x y => ...` -/
+`fun x ↦ f y₁ ... yₙ`. Two other cases are `fun x ↦ let y := ...` or `fun x y ↦ ...` -/
 inductive MaybeFunctionData where
   /-- Can't generate function data as function body has let binder. -/
   | letE (f : Expr)
@@ -186,12 +186,12 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
       return .none
 
 
-/-- Decomposes `fun x => f y₁ ... yₙ` into `(fun g => g yₙ) ∘ (fun x y => f y₁ ... yₙ₋₁ y)`
+/-- Decomposes `fun x ↦ f y₁ ... yₙ` into `(fun g ↦ g yₙ) ∘ (fun x y ↦ f y₁ ... yₙ₋₁ y)`
 
 Returns none if:
   - `n=0`
   - `yₙ` contains `x`
-  - `n=1` and `(fun x y => f y)` is identity function i.e. `x=f` -/
+  - `n=1` and `(fun x y ↦ f y)` is identity function i.e. `x=f` -/
 def FunctionData.peeloffArgDecomposition (fData : FunctionData) : MetaM (Option (Expr × Expr)) := do
   unless fData.args.size > 0 do return none
   withLCtx fData.lctx fData.insts do
@@ -263,11 +263,11 @@ def FunctionData.nontrivialDecomposition (fData : FunctionData) : MetaM (Option 
     return (f, g)
 
 
-/-- Decompose function `fun x => f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
+/-- Decompose function `fun x ↦ f y₁ ... yₙ` over specified argument indices `#[i, j, ...]`.
 
 The result is:
 ```
-(fun (yᵢ',yⱼ',...) => f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x => (yᵢ, yⱼ, ...))
+(fun (yᵢ',yⱼ',...) ↦ f y₁ .. yᵢ' .. yⱼ' .. yₙ) ∘ (fun x ↦ (yᵢ, yⱼ, ...))
 ```
 
 This is not possible if `yₗ` for `l ∉ #[i,j,...]` still contains `x`.

@@ -776,7 +776,7 @@ noncomputable def tensorSubmoduleAlgebraEquiv : A ⊗[R] submoduleAlgebra e ≃�
   .ofBijective (.mul'' R A ∘ₗ AlgebraTensorModule.lTensor A A (Submodule.subtype _)) <| by
     convert (AlgebraTensorModule.congr (.refl ..) (submoduleAlgebraEquiv e) ≪≫ₗ e).bijective
     ext x
-    refine x.induction_on (by simp) ?_ (by simp+contextual)
+    refine x.induction_on (by simp) ?_ (by simp +contextual)
     intro a x
     obtain ⟨m, rfl⟩ := (submoduleAlgebraEquiv e).symm.surjective x
     suffices a * toAlgebra e m = e (a ⊗ₜ[R] m) by simpa using this

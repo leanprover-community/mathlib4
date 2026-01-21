@@ -74,6 +74,25 @@ lemma exists_lift_trans_eq {i j : 𝒰.I₀} (x : (pullback (𝒰.f i) (𝒰.f j
       pullback.lift (𝒰.trans hki) (𝒰.trans hkj) (by simp) y = x :=
   LocallyDirected.directed x
 
+lemma exists_of_f_eq_f {i j : 𝒰.I₀} (xi : 𝒰.X i) (xj : 𝒰.X j) (h : 𝒰.f i xi = 𝒰.f j xj) :
+    ∃ (k : 𝒰.I₀) (fi : k ⟶ i) (fj : k ⟶ j) (xk : 𝒰.X k),
+      𝒰.trans fi xk = xi ∧ 𝒰.trans fj xk = xj := by
+  obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj h
+  obtain ⟨k, fi, fj, xk, rfl⟩ := 𝒰.exists_lift_trans_eq z
+  use k, fi, fj, xk
+  simp [← Scheme.Hom.comp_apply]
+
+lemma exists_of_trans_eq_trans {i j k : 𝒰.I₀} (fi : i ⟶ k) (fj : j ⟶ k) (xi : 𝒰.X i)
+    (xj : 𝒰.X j) (h : 𝒰.trans fi xi = 𝒰.trans fj xj) :
+    ∃ (l : 𝒰.I₀) (fli : l ⟶ i) (flj : l ⟶ j) (x : 𝒰.X l),
+      𝒰.trans fli x = xi ∧ 𝒰.trans flj x = xj := by
+  have : 𝒰.f i xi = 𝒰.f j xj := by
+    rw [← 𝒰.trans_map fi, ← 𝒰.trans_map fj, Hom.comp_base, Hom.comp_base,
+      ConcreteCategory.comp_apply, h, ConcreteCategory.comp_apply]
+  obtain ⟨z, rfl, rfl⟩ := Scheme.Pullback.exists_preimage_pullback xi xj this
+  obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
+  refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
+
 lemma property_trans {i j : 𝒰.I₀} (hij : i ⟶ j) : P (𝒰.trans hij) :=
   LocallyDirected.property_trans hij
 
@@ -112,6 +131,12 @@ instance : (𝒰.functorOfLocallyDirected ⋙ Scheme.forget).IsLocallyDirected w
     obtain ⟨l, gi, gj, y, rfl⟩ := 𝒰.exists_lift_trans_eq z
     refine ⟨l, gi, gj, y, ?_, ?_⟩ <;> simp [← Scheme.Hom.comp_apply]
 
+/-- The structure maps to `S` as a natural transformation. -/
+@[simps]
+def functorOfLocallyDirectedHomBase :
+    𝒰.functorOfLocallyDirected ⟶ (Functor.const _).obj X where
+  app i := 𝒰.f i
+
 /--
 The canonical cocone with point `X` on the functor induced by the locally directed cover `𝒰`.
 If `𝒰` is an open cover, this is colimiting (see `OpenCover.isColimitCoconeOfLocallyDirected`).
@@ -119,7 +144,7 @@ If `𝒰` is an open cover, this is colimiting (see `OpenCover.isColimitCoconeOf
 @[simps]
 def coconeOfLocallyDirected : Cocone 𝒰.functorOfLocallyDirected where
   pt := X
-  ι.app := 𝒰.f
+  ι := 𝒰.functorOfLocallyDirectedHomBase
 
 section BaseChange
 
