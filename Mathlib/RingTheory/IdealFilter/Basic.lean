@@ -144,7 +144,6 @@ lemma IsTorsionQuot.inf {F : IdealFilter A}
   obtain ⟨J', hJ'F, hJ'x⟩ := hJ x hx
   exact ⟨_, F.inf_mem hI'F hJ'F, (inf_le_inf hI'x hJ'x).trans Submodule.inf_colon.ge⟩
 
-/-- The set defining `gabrielComposition` forms a `PFilter`. -/
 lemma isPFilter_gabrielComposition (F G : IdealFilter A) :
     Order.IsPFilter {L : Ideal A | ∃ K ∈ G, F.IsTorsionQuot L K} := by
   refine Order.IsPFilter.of_def ?nonempty ?directed ?mem_of_le
