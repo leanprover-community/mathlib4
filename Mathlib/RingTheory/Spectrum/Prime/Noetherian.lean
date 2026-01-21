@@ -5,10 +5,9 @@ Authors: Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Artinian.Module
-public import Mathlib.Topology.NoetherianSpace
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 This file proves additional properties of the prime spectrum a ring is Noetherian.
@@ -30,23 +29,12 @@ variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
 
-lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
-  minimalPrimes.equivIrreducibleComponents R
-    |>.set_finite_iff
-    |>.mpr NoetherianSpace.finite_irreducibleComponents
-
 lemma finite_setOf_isMin :
     {x : PrimeSpectrum R | IsMin x}.Finite := by
   have : Function.Injective (asIdeal (R := R)) := @PrimeSpectrum.ext _ _
   refine Set.Finite.of_finite_image (f := asIdeal) ?_ this.injOn
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
-
-lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
-    I.minimalPrimes.Finite :=
-  Ideal.minimalPrimes.equivIrreducibleComponents I
-    |>.set_finite_iff
-    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end IsNoetherianRing
 
@@ -83,3 +71,5 @@ lemma _root_.IsArtinianRing.exists_not_mem_forall_mem_of_ne (p : Ideal R) [p.IsP
 end IsArtinianRing
 
 end PrimeSpectrum
+
+#min_imports

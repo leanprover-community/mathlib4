@@ -6,8 +6,8 @@ Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 module
 
 public import Mathlib.Algebra.Module.SpanRank
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # The Height of an Ideal
@@ -477,3 +477,5 @@ lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
   exact h P
 
 end isLocalization
+
+#min_imports
