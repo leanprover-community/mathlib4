@@ -10,7 +10,7 @@ public import Mathlib.RepresentationTheory.Basic
 /-!
 # Intertwining maps
 
-This file gives defines intertwining maps of representations.
+This file gives defines intertwining maps of representations (aka equivariant linear maps).
 
 -/
 
