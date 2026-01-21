@@ -76,7 +76,7 @@ theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else
   exact (Finset.mem_range.mp hj).trans_le hin |>.ne
 
 /-- The range of the canonical projection is the span of the first n basis elements. -/
-theorem range_canonicalProjection (n : ℕ) :
+theorem range_proj (n : ℕ) :
     LinearMap.range (b.proj n) = Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
@@ -92,8 +92,8 @@ theorem range_canonicalProjection (n : ℕ) :
     rw [proj_basis_element , if_pos i.is_lt]
 
 /-- The dimension of the range of the canonical projection P n is n. -/
-theorem dim_of_range (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (b.proj n)) = n := by
-  rw [range_canonicalProjection, finrank_span_eq_card]
+theorem dim_range_proj (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (b.proj n)) = n := by
+  rw [range_proj, finrank_span_eq_card]
   · exact Fintype.card_fin n
   · exact b.linearIndependent.comp (fun (i : Fin n) => (i : ℕ)) Fin.val_injective
 
@@ -102,7 +102,7 @@ theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) 
   simp_rw [proj_apply, b.basis_expansion x]
 
 /-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
-theorem uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
+theorem proj_uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
   apply banach_steinhaus
   intro x
   let f: ℕ → X := fun n => b.proj n x
@@ -125,7 +125,7 @@ lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) : ∑ i ∈ Fi
   | zero => simp [h0]
   | succ n ih => rw [Finset.sum_range_succ, ih, Q]; abel
 
-/-- The operators Q i are orthogonal projectionsP. -/
+/-- The operators Q i are orthogonal projections. -/
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
   simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
@@ -197,11 +197,8 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   rw [h_disjoint, finrank_bot, add_zero, ← h_range_Pn_succ, hrank, hrank, Nat.add_comm] at this
   exact Nat.add_right_cancel this.symm
 
--- TODO clean up the proof below
-
-/-- Constructs a Schauder basis from a sequence of canonical projections. -/
-theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
-    (h0 : P 0 = 0)
+/-- Constructs a Schauder basis from a sequence of projections. -/
+theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 0)
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x)) :
@@ -255,8 +252,8 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
       rw [← hx, Q_ortho hcomp i j x]
     rw [← hQf, this]
     split_ifs with hij
-    · subst hij; simp
-    · simp
+    · subst hij; simp only
+    · simp only
   have lim : ∀ x, Tendsto (fun n ↦ ∑ i ∈ Finset.range n, f i x • e i) atTop (𝓝 x) := by
     intro x
     apply Tendsto.congr _ (hlim x)
