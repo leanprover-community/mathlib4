@@ -422,6 +422,164 @@ end isomorphisms
 
 end TransfiniteCompositionOfShape
 
+section
+
+variable {J : Type w} [LinearOrder J]
+
+variable {X Y : J → C} (f : ∀ j, X j ⟶ Y j)
+
+namespace transfiniteCompositionOfShapeSigmaMap
+
+open Classical in
+def obj (_ : ∀ j, X j ⟶ Y j) (i j : J) : C :=
+  if i ≤ j then X j else Y j
+
+def objIso₁ (i j : J) (hij : i ≤ j) : obj f i j ≅ X j :=
+  eqToIso (dif_pos hij)
+
+def objIso₂ (i j : J) (hij : j < i) : obj f i j ≅ Y j :=
+  eqToIso (dif_neg (by simpa using hij))
+
+def map (i₁ i₂ : J) (h : i₁ ≤ i₂) (j : J) :
+    obj f i₁ j ⟶ obj f i₂ j :=
+  if hi₂ : i₂ ≤ j then
+    (objIso₁ f i₁ j (by lia)).hom ≫ (objIso₁ f i₂ j hi₂).inv
+  else
+    if hi₁ : i₁ ≤ j then
+      (objIso₁ f i₁ j hi₁).hom ≫ f j ≫ (objIso₂ f i₂ j (by lia)).inv
+    else
+      (objIso₂ f i₁ j (by lia)).hom ≫ (objIso₂ f i₂ j (by lia)).inv
+
+lemma map_eq_of_le₂ (i₁ i₂ : J) (h : i₁ ≤ i₂) (j : J) (hi₂ : i₂ ≤ j) :
+    map f i₁ i₂ h j = (objIso₁ f i₁ j (by lia)).hom ≫ (objIso₁ f i₂ j hi₂).inv := by
+  grind [map]
+
+@[simp]
+lemma map_refl (i j : J) :
+    map f i i (by rfl) j = 𝟙 _ := by
+  grind [map]
+
+@[reassoc (attr := simp)]
+lemma map_trans (i₁ i₂ i₃ : J) (hi₁₂ : i₁ ≤ i₂) (hi₂₃ : i₂ ≤ i₃) (j : J) :
+    map f i₁ i₂ hi₁₂ j ≫ map f i₂ i₃ hi₂₃ j = map f i₁ i₃ (hi₁₂.trans hi₂₃) j := by
+  grind [map]
+
+open Classical in
+def objι (i j : J) :
+    obj f i j ⟶ Y j :=
+  if hi : i ≤ j then
+    (objIso₁ f i j hi).hom ≫ f j
+  else
+    (objIso₂ f i j (by lia)).hom
+
+@[reassoc (attr := simp)]
+lemma objIso₁_inv_objι (i j : J) (hi : i ≤ j) :
+    (objIso₁ f i j hi).inv ≫ objι f i j = f j:= by
+  grind [objι]
+
+@[reassoc (attr := simp)]
+lemma map_objι (i₁ i₂ : J) (hi : i₁ ≤ i₂) (j : J) :
+    map f i₁ i₂ hi j ≫ objι f i₂ j = objι f i₁ j := by
+  grind [map, objι]
+
+@[reassoc (attr := simp)]
+lemma objIso₂_inv_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (j : J) (hi₁ : j < i₁) :
+    (objIso₂ f i₁ j hi₁).inv ≫ map f i₁ i₂ hi j = (objIso₂ f i₂ j (by lia)).inv := by
+  grind [map]
+
+@[simps]
+def columnFunctor (j : J) : J ⥤ C where
+  obj i := obj f i j
+  map {i₁ i₂} g := map f i₁ i₂ (leOfHom g) j
+
+instance (j : J) [OrderBot J] [SuccOrder J] :
+    (columnFunctor f j).IsWellOrderContinuous where
+  nonempty_isColimit m hm := by
+    by_cases h : m ≤ j
+    · exact ⟨{
+        desc s := (objIso₁ f m j h).hom ≫ (objIso₁ f ⊥ j bot_le).inv ≫
+          s.ι.app ⟨⊥, Order.IsSuccLimit.bot_lt hm⟩
+        fac s k := by
+          rw [← s.w (show ⟨⊥, Order.IsSuccLimit.bot_lt hm⟩ ⟶ k from homOfLE bot_le)]
+          dsimp
+          grind [map]
+        uniq s l hl := by
+          simp [← hl ⟨⊥, Order.IsSuccLimit.bot_lt hm⟩, map_eq_of_le₂ f _ _ bot_le j h]
+      }⟩
+    · simp only [not_le] at h
+      exact ⟨{
+        desc s := (objIso₂ f m j h).hom ≫
+            (objIso₂ f _ _ (Order.lt_succ_of_not_isMax (not_isMax_iff.2 ⟨_, h⟩))).inv ≫
+            s.ι.app ⟨Order.succ j, hm.succ_lt_iff.2 h⟩
+        fac s k := by
+          dsimp
+          by_cases hk : Order.succ j ≤ k
+          · rw [← s.w (show ⟨Order.succ j, hm.succ_lt_iff.2 h⟩ ⟶ k from homOfLE hk)]
+            dsimp
+            grind [map]
+          · simp only [not_le] at hk
+            rw [← s.w (show k ⟶ ⟨Order.succ j, hm.succ_lt_iff.2 h⟩ from homOfLE hk.le)]
+            dsimp
+            grind [map]
+        uniq s l hl := by simp [← hl ⟨Order.succ j, hm.succ_lt_iff.2 h⟩]
+      }⟩
+
+variable [HasCoproductsOfShape J C]
+
+@[simps]
+noncomputable def functor : J ⥤ C where
+  obj i := ∐ (obj f i)
+  map {i₁ i₂} g := Limits.Sigma.map (map f i₁ i₂ (leOfHom g))
+
+noncomputable abbrev ι (i : J) : ∐ (obj f i) ⟶ ∐ Y :=
+  Limits.Sigma.map (objι f i)
+
+@[reassoc (attr := simp)]
+lemma map_ι (i₁ i₂ : J) (hi : i₁ ≤ i₂) :
+    Limits.Sigma.map (map f i₁ i₂ hi) ≫ ι f i₂ = ι f i₁ := by
+  simp [Limits.Sigma.map_comp_map]
+
+variable [OrderBot J]
+
+noncomputable def isoBot : ∐ (obj f ⊥) ≅ ∐ X :=
+  Sigma.mapIso (fun j ↦ objIso₁ f ⊥ j bot_le)
+
+@[reassoc (attr := simp)]
+lemma isoBot_inv_ι :
+    (isoBot f).inv ≫ ι f ⊥ = Limits.Sigma.map f := by
+  dsimp [isoBot, ι]
+  cat_disch
+
+variable [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
+
+/-instance : (functor f).IsWellOrderContinuous := sorry -/
+
+end transfiniteCompositionOfShapeSigmaMap
+
+variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
+
+/-open transfiniteCompositionOfShapeSigmaMap in
+noncomputable def transfiniteCompositionOfShapeSigmaMap :
+    TransfiniteCompositionOfShape (MorphismProperty.ofHoms f).pushouts J
+      (Limits.Sigma.map f) where
+  F := functor f
+  isoBot := isoBot f
+  incl := { app i := ι f i }
+  isColimit := sorry
+  map_mem := sorry
+
+variable (hf : ∀ (j : J), W (f j))
+
+variable [W.IsStableUnderTransfiniteCompositionOfShape J]
+variable [W.IsStableUnderCobaseChange]
+
+instance : W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderCoproductsOfShape.mk _ _ (fun X Y _ _ f hf ↦ by
+    sorry)-/
+
+end
+
+
 end MorphismProperty
 
 end CategoryTheory
