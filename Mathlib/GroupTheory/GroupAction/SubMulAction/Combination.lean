@@ -84,9 +84,9 @@ theorem coe_nonempty_iff {s : Nat.Combination α n} :
   rw [← Nat.Combination.coe_coe, Finset.coe_nonempty, ← one_le_card, s.prop]
 
 theorem coe_nontrivial_iff {s : Nat.Combination α n} :
-    (s : Set α).Nontrivial ↔ 2 ≤ n := by
+    (s : Set α).Nontrivial ↔ 1 < n := by
   rw [← coe_coe, Finset.nontrivial_coe, ← one_lt_card_iff_nontrivial,
-    card_eq, add_one_le_iff]
+    card_eq]
 
 theorem eq_iff_subset : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
@@ -120,6 +120,17 @@ variable {G}
 theorem coe_smul [DecidableEq α] {n : ℕ} {g : G} {s : n.Combination α} :
     ((g • s : n.Combination α) : Finset α) = g • s :=
   SubMulAction.val_smul (p := subMulAction G α n) g s
+
+theorem stabilizer_coe [DecidableEq α] {n : ℕ} (s : n.Combination α) :
+    stabilizer G s = stabilizer G (s : Set α) := by
+  ext g
+  simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
+
+theorem addAction_stabilizer_coe [DecidableEq α] {G : Type*} [AddGroup G] [AddAction G α]
+    {n : ℕ} (s : n.Combination α) :
+    AddAction.stabilizer G s = AddAction.stabilizer G (s : Set α) := by
+  ext g
+  simp [AddAction.mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
 
 theorem addAction_faithful {G : Type*} [AddGroup G] {α : Type*} [AddAction G α] {n : ℕ}
     [DecidableEq α] (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
@@ -334,54 +345,51 @@ theorem isPretransitive : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
     (Equiv.Perm.isMultiplyPretransitive α n)
 
 /-- The action of `Equiv.Perm α` on `n.Combination α` is preprimitive
-provided 1 ≤ n < #α and #α ≠ 2*n -/
+provided `1 ≤ n < #α` and `#α ≠ 2 * n`.
+
+This is a consequence that the stabilizer of such a combination
+is a maximal subgroup. -/
 theorem isPreprimitive_perm
     {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (Perm α) (n.Combination α) := by
+  -- The finiteness of `α` follows from the assumptions of the theorem.
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ by
     simp [h] at hn)
   have : Fintype α := Fintype.ofFinite α
-  rcases Nat.eq_or_lt_of_le h_one_le with h_one | h_one_lt
-  · -- n = 1 :
-    rw [← h_one]
-    have : IsPreprimitive (Perm α) α := inferInstance
-    apply IsPreprimitive.of_surjective
-      (Nat.Combination.mulActionHom_singleton_bijective (Perm α) α).surjective
-  -- 1 < n
-  have : Nontrivial α := by
-    rw [← Finite.one_lt_card_iff_nontrivial]
-    exact lt_trans h_one_lt hn
+  -- The action is pretransitive.
   have : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
     Combination.isPretransitive α
+  -- The type on which the group acts is nontrivial.
   have : Nontrivial (n.Combination α) := by
     apply Combination.nontrivial' h_one_le
     simpa using hn
   obtain ⟨s⟩ := this.to_nonempty
+  -- It remains to prove that stabilizer of some point is maximal.
   rw [← isCoatom_stabilizer_iff_preprimitive _ s]
-  suffices stabilizer (Perm α) s = stabilizer (Perm α) (s : Set α) by
-    rw [this]
-    apply isCoatom_stabilizer
-    · rwa [Combination.coe_nonempty_iff]
-    · simpa [← Nat.Combination.coe_coe, ← Finset.coe_compl, Finset.coe_nonempty,
-        ← Finset.card_compl_lt_iff_nonempty, Combination.card_eq,
-        ← Nat.card_eq_fintype_card]
-    · contrapose hα
-      rw [hα, Nat.mul_left_cancel_iff (by norm_num),
-        ← Nat.Combination.coe_coe, Set.ncard_coe_finset, Combination.card_eq]
-  ext g
-  simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← Finset.coe_inj]
+  -- The stabilizer of a combination is the stabilizer of the underlying set.
+  rw [stabilizer_coe]
+  -- We conclude by `Equiv.Perm.isCoatom_stabilizer`
+  apply isCoatom_stabilizer
+  -- `s` is nonempty because `n ≠ 0`.
+  · rwa [Combination.coe_nonempty_iff]
+  -- `sᶜ` is nonempty because `n < Nat.card α`.
+  · simpa [← Nat.Combination.coe_coe, ← Finset.coe_compl, Finset.coe_nonempty,
+      ← Finset.card_compl_lt_iff_nonempty, Combination.card_eq,
+      ← Nat.card_eq_fintype_card]
+  -- `Nat.card α ≠ 2 * s.ncard` because `Nat.card α ≠ 2 * s`.
+  · rwa [← Nat.Combination.coe_coe, Set.ncard_coe_finset, Combination.card_eq]
 
-/-- If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `n.Combination α`. -/
-/- If `Nat.card α ≤ 2`, then `alternatinGroup α` is trivial, and
+/-- If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `n.Combination α`.
+
+If `Nat.card α ≤ 2`, then `alternatinGroup α` is trivial, and
 the result only holds in the trivial case where `n.Combination α` is a subsingleton,
 that is, when `n = 0` or `Nat.card α ≤ n`. -/
 theorem isPretransitive_alternatingGroup
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) (n.Combination α) := by
-  wlog hn : 2 * n ≤ Nat.card α
+  wlog! hn : 2 * n ≤ Nat.card α
   · have : IsPretransitive (alternatingGroup α) (Combination α (Nat.card α - n)) := by
-      rw [not_le] at hn
       apply this hα
       rw [Nat.mul_sub, Nat.sub_le_iff_le_add, two_mul]
       simp only [add_le_add_iff_left]
