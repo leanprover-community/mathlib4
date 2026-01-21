@@ -134,6 +134,15 @@ theorem natDegree_denom_le_natDegree_minpoly_X (hf : ¬∃ c, f = C c) :
 
 theorem natDegree_num_le_natDegree_minpoly_X (hf : ¬∃ c, f = C c) :
     f.num.natDegree ≤ f.minpoly_X.natDegree := by
+  have f_ne_zero : f ≠ 0 := by
+    intro H
+    apply hf
+    rw [H]
+    use 0
+    exact Eq.symm (RingHom.map_zero C)
+  #check is_constant_of_minpoly_X_coeff_eq_zero f⁻¹
+  apply Polynomial.le_natDegree_of_ne_zero
+  intro H
   sorry
 
 theorem natDegree_minpoly_X : f.minpoly_X.natDegree = max f.num.natDegree f.denom.natDegree := by
@@ -150,6 +159,7 @@ theorem natDegree_minpoly_X : f.minpoly_X.natDegree = max f.num.natDegree f.deno
     · exact natDegree_num_le_natDegree_minpoly_X f hf
     · exact Polynomial.le_natDegree_of_ne_zero
         (fun H ↦ hf (f.is_constant_of_minpoly_X_coeff_eq_zero (congr_arg Subtype.val H)))
+
 
 theorem transcendental_of_not_constant (hf : ¬∃ c, f = C c) : Transcendental K f := by
   intro H
@@ -209,22 +219,21 @@ noncomputable abbrev minpoly_X' : K[f][X] := f.num.map (algebraMap K K[f]) -
 open IntermediateField.algebraAdjoinAdjoin
 
 theorem map_minpoly_X' : f.minpoly_X'.map (algebraMap ..) = f.minpoly_X := by
-  simp only [minpoly_X', Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_C]
+  simp only [Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_C]
   congr 1
   · rw [Polynomial.map_map, ←IsScalarTower.algebraMap_eq]
   · rw [Polynomial.map_map, ←IsScalarTower.algebraMap_eq]
     simp only [mul_eq_mul_right_iff, Polynomial.C_inj]
     exact .inl rfl
 
-noncomputable def minpoly_X'' : K[X][X] := f.num.map (algebraMap K K[X]) -
+noncomputable abbrev minpoly_X'' : K[X][X] := f.num.map (algebraMap K K[X]) -
   Polynomial.C Polynomial.X * f.denom.map (algebraMap K K[X])
 
 theorem algEquivOfTranscendental_minpoly_X'' (hf : ¬∃ c, f = C c) :
     f.minpoly_X''.mapEquiv (f.adjoinSimpleEquiv hf).toRingEquiv = f.minpoly_X' := by
-  simp only [AlgEquiv.toRingEquiv_eq_coe, minpoly_X'', Polynomial.algebraMap_eq,
-    Polynomial.mapEquiv_apply, AlgEquiv.toRingEquiv_toRingHom, adjoinSimpleEquiv_coe,
-    Polynomial.map_sub, Polynomial.map_map, Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe,
-    Polynomial.aeval_X]
+  simp only [AlgEquiv.toRingEquiv_eq_coe, Polynomial.algebraMap_eq, Polynomial.mapEquiv_apply,
+    AlgEquiv.toRingEquiv_toRingHom, adjoinSimpleEquiv_coe, Polynomial.map_sub, Polynomial.map_map,
+    Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe, Polynomial.aeval_X]
   congr 2 <;> ext <;> simp
 
 theorem irreducible_minpoly_X'' : Irreducible f.minpoly_X'' := by
@@ -241,9 +250,12 @@ theorem irreducible_minpoly_X (hf : ¬∃ c, f = C c) : Irreducible f.minpoly_X 
   · exact f.irreducible_minpoly_X' hf
   apply (f.irreducible_minpoly_X' hf).isPrimitive
   intro H
-  sorry --easy?
+  have := Polynomial.natDegree_map_le (f := algebraMap K[f] K⟮f⟯) (p := f.minpoly_X')
+  rw [map_minpoly_X', H, nonpos_iff_eq_zero, f.natDegree_minpoly_X, Nat.max_eq_zero_iff,
+    ←f.eq_C_iff] at this
+  exact hf this
 
-theorem finrank_eq_max_natDegree (hf : ¬∃ c, f = C c) :
+theorem finrank_eq_max_natDegree :
     Module.finrank K⟮f⟯ (RatFunc K) = max f.num.natDegree f.denom.natDegree := by
   by_cases hf : ∃ c, f = C c
   · obtain ⟨c, rfl⟩ := hf
@@ -263,13 +275,12 @@ Let `E` be an intermediate field between `K` and `K(X)`,
 we must show that `E = K⟮f⟯` for some `f : K(X)` transcendental over `K`.
 -/
 
-end
+end RatFunc
 
-end Polynomial
 
 section
 
-variable (K L : Type*) [Field K] [Field L] [Algebra K L]
+variable (K L M : Type) [Field K] [Field L] [Field M] [Algebra K L] [Algebra K M]
 theorem IntermediateField.adjoin_inv {x : L} :
     adjoin K {x⁻¹} = adjoin K {x} :=
   le_antisymm (adjoin_le_iff.mpr <| by simpa using mem_adjoin_simple_self K x)
@@ -278,101 +289,3 @@ theorem IntermediateField.adjoin_inv {x : L} :
 end
 
 open Polynomial
-
-/- First it is easy to show that `K(X)` does not contain any algebraic element over `K` other than
-elements of `K`. Proof: use (a generalized version of) `transcendental_div`.
-Potentially useful: `Localization.rec` and `FractionRing.mk_eq_div`. -/
-instance : IsIntegrallyClosedIn K K(X) := by
-  sorry
-
-variable (E : IntermediateField K K(X)) (hE : E ≠ ⊥)
-include hE
-
-instance : Algebra.IsAlgebraic E K(X) := by
-  have h₁ : ∃ p q : K[X], IsCoprime p q ∧ ¬ (p.natDegree = 0 ∧ q.natDegree = 0) ∧ p.toRatFunc / q.toRatFunc ∈ E := by
-    have h₂ : ∃ f ∈ E, K⟮f⟯ ≠ ⊥ := by
-      have g₁ : ¬ (E ≤ ⊥) := by
-          rwa [le_bot_iff]
-      rw [SetLike.not_le_iff_exists] at g₁
-      rcases g₁ with ⟨x, xin, xnotin⟩
-      use x
-      constructor
-      · exact xin
-      · contrapose xnotin
-        push_neg
-        rw [← IntermediateField.adjoin_simple_eq_bot_iff]
-        push_neg at xnotin
-        exact xnotin
-    rcases h₂ with ⟨f, finE, fnotinK⟩
-    have h₃ : ∃ p q : K[X], IsCoprime p q ∧ f = p.toRatFunc / q.toRatFunc := by
-      exact FractionRing.exists_isCoprime_eq_div f
-    rcases h₃ with ⟨p, q, coprimepq, feqpdivq⟩
-    use p
-    use q
-    constructor
-    · exact coprimepq
-    · constructor
-      · intro h
-        rw [← adjoin_p_dvd_q_eq_bot_iff p q coprimepq] at h
-        rw [← feqpdivq] at h
-        contradiction
-      · rw [← feqpdivq]
-        exact finE
-  rcases h₁ with ⟨p, q, rest⟩
-  have h₄ : Algebra.IsAlgebraic K⟮p.toRatFunc / q.toRatFunc⟯ K(X) := by
-    by_cases hq : 0 < q.natDegree
-    · exact isAlgebraic_adjoin_div p q rest.1 hq
-    · have h₅ : q.natDegree = 0 := by
-        exact Nat.eq_zero_of_not_pos hq
-      have h₆ : 0 < p.natDegree := by
-        rcases rest with ⟨coprime, degree, quotient⟩
-        push_neg at degree
-        contrapose degree
-        push_neg
-        constructor
-        · exact Nat.eq_zero_of_not_pos degree
-        · exact h₅
-      have h₇ : K⟮toRatFunc p / toRatFunc q⟯ = K⟮toRatFunc q / toRatFunc p⟯ := by
-        have h₈ : toRatFunc p / toRatFunc q = (toRatFunc q / toRatFunc p)⁻¹ := by
-          exact Eq.symm (inv_div (toRatFunc q) (toRatFunc p))
-        rw [h₈]
-        exact IntermediateField.adjoin_inv K K(X)
-      rw [h₇]
-      have h₉ : IsCoprime q p := by
-        have g₂ : IsCoprime p q := by
-          exact rest.1
-        exact id (IsCoprime.symm g₂)
-      exact isAlgebraic_adjoin_div q p h₉ h₆
-  have h₅ : K⟮p.toRatFunc / q.toRatFunc⟯ ≤ E := by
-    rw [IntermediateField.adjoin_simple_le_iff]
-    exact rest.2.2
-  let : Algebra K⟮p.toRatFunc / q.toRatFunc⟯ E := (IntermediateField.inclusion h₅).toAlgebra
-  have : IsScalarTower K⟮p.toRatFunc / q.toRatFunc⟯ E K(X) := .of_algebraMap_eq fun _ _ _ => rfl
-  apply Algebra.IsAlgebraic.tower_top (K := K⟮p.toRatFunc / q.toRatFunc⟯)
-
-/-- The minimal polynomial of `X : K(X)` over an intermediate field `E`. -/
-noncomputable def IntermediateField.minpolyX : E[X] :=
-  minpoly E (X : K[X]).toRatFunc
-
-/- Write each coefficient as a rational function such that the numerator and denominator
-  are coprime. Then multiply the minimal polynomial with the least common multiple of
-  the denominators. The resulting polynomial over `K(X)` is primitive. -/
-
-/- Since `X` is not algebraic over K, the minimal polynomial of `X` over `E`
-  must have a coefficient not contained in `K`. -/
-lemma minpolyX_existence_coeff_transcendent : ∃ j : ℕ, IntermediateField.minpolyX.coeff j ∉ K := by
-  sorry
-
-/- Choose such a coefficient and call this `uj`, write `uj` as a fraction of coprime polynomials
-  `p` and `q` over `K[X]`. The field `K(uj)` is a subfield of `E` of degree
-  `max p.natDegree q.natDegree` by above.
-  The goal is to show that these two fields are equal. This implies luroth.
-  For this it suffices to show that `max p.natDegree q.natDegree` is smaller or equal than
-  the degree of `IntermediateField.minpolyX`. -/
-
-
--- TODO: fill in more details here from [Cohn] and [Jacobson]
-
-theorem luroth : ∃ f : K(X), Transcendental K f ∧ E = K⟮f⟯ := by
-  sorry
-
