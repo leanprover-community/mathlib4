@@ -520,7 +520,7 @@ theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
 
 theorem support_swap_mul_swap'
     {x y z t : α} (h : [x, y, z, t].Nodup) :
-    ((swap x y) * (swap z t)).support = {x, y, z, t} := by
+    (swap x y * swap z t).support = {x, y, z, t} := by
   apply le_antisymm
   · apply le_trans (Perm.support_mul_le _ _)
     apply _root_.sup_le
