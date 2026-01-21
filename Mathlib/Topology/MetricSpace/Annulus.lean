@@ -40,7 +40,7 @@ variable {X : Type*} [PseudoMetricSpace X]
 /-! ### Annulus defined using `dist` -/
 
 /-- The annulus `{y | dist y x ∈ Set.Ioo r R}` in a pseudo metric space. -/
-def annulusIoo (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioo r R
+def annulusIoo (x : X) (r R : ℝ) : Set X := (fun y : X ↦ dist y x) ⁻¹' Ioo r R
 /-- The annulus `{y | dist y x ∈ Set.Ioc r R}` in a pseudo metric space. -/
 def annulusIoc (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioc r R
 /-- The annulus `{y | dist y x ∈ Set.Ico r R}` in a pseudo metric space. -/
