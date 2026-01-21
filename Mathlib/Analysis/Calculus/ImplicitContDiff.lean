@@ -5,7 +5,7 @@ Authors: Winston Yin
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Implicit
+public import Mathlib.Analysis.Calculus.ImplicitFunction.OfProdDomain
 public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
 
 /-!
@@ -31,10 +31,10 @@ implicit function, inverse function
 
 @[expose] public section
 
-variable {𝕜 E₁ E₂ F : Type*} [RCLike 𝕜]
-  [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
-  [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+variable {𝕜 : Type*} [RCLike 𝕜]
+  {E₁ : Type*} [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁] [CompleteSpace E₁]
+  {E₂ : Type*} [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂] [CompleteSpace E₂]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
 
 namespace ImplicitFunctionData
 
