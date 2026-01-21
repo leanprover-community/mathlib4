@@ -488,9 +488,12 @@ lemma objIso₂_inv_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (j : J) (hi₁ : j 
   grind [map]
 
 @[simps]
-def columnFunctor (j : J) : J ⥤ C where
-  obj i := obj f i j
-  map {i₁ i₂} g := map f i₁ i₂ (leOfHom g) j
+def diagramFunctor :
+    J ⥤ Discrete J ⥤ C where
+  obj i := Discrete.functor (obj f i)
+  map {i₁ i₂} g := Discrete.natTrans (fun ⟨j⟩ ↦ map f i₁ i₂ (leOfHom g) j)
+
+abbrev columnFunctor (j : J) : J ⥤ C := (diagramFunctor f).flip.obj (.mk j)
 
 instance (j : J) [OrderBot J] [SuccOrder J] :
     (columnFunctor f j).IsWellOrderContinuous where
@@ -526,11 +529,6 @@ instance (j : J) [OrderBot J] [SuccOrder J] :
 
 variable [HasCoproductsOfShape J C]
 
-@[simps]
-noncomputable def functor : J ⥤ C where
-  obj i := ∐ (obj f i)
-  map {i₁ i₂} g := Limits.Sigma.map (map f i₁ i₂ (leOfHom g))
-
 noncomputable abbrev ι (i : J) : ∐ (obj f i) ⟶ ∐ Y :=
   Limits.Sigma.map (objι f i)
 
@@ -552,7 +550,9 @@ lemma isoBot_inv_ι :
 
 variable [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
 
-/-instance : (functor f).IsWellOrderContinuous := sorry -/
+/-instance : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    sorry⟩-/
 
 end transfiniteCompositionOfShapeSigmaMap
 
@@ -562,7 +562,7 @@ variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
 noncomputable def transfiniteCompositionOfShapeSigmaMap :
     TransfiniteCompositionOfShape (MorphismProperty.ofHoms f).pushouts J
       (Limits.Sigma.map f) where
-  F := functor f
+  F := diagramFunctor f ⋙ colim
   isoBot := isoBot f
   incl := { app i := ι f i }
   isColimit := sorry
