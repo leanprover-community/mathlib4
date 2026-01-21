@@ -152,6 +152,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Descent
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
@@ -500,6 +501,7 @@ public import Mathlib.Algebra.GroupWithZero.Hom
 public import Mathlib.Algebra.GroupWithZero.Idempotent
 public import Mathlib.Algebra.GroupWithZero.Indicator
 public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Int
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.GroupWithZero.Nat
 public import Mathlib.Algebra.GroupWithZero.NeZero
@@ -657,6 +659,7 @@ public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.CartanExists
+public import Mathlib.Algebra.Lie.CartanMatrix
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Character
 public import Mathlib.Algebra.Lie.Classical
@@ -1257,6 +1260,7 @@ public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.Cover.Over
+public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
@@ -1311,6 +1315,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
@@ -1569,6 +1574,7 @@ public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
 public import Mathlib.Analysis.Calculus.ContDiff.WithLp
+public import Mathlib.Analysis.Calculus.ContDiffHolder.Pointwise
 public import Mathlib.Analysis.Calculus.DSlope
 public import Mathlib.Analysis.Calculus.Darboux
 public import Mathlib.Analysis.Calculus.Deriv.Abs
@@ -1789,6 +1795,9 @@ public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.FourierSchwartz
 public import Mathlib.Analysis.Distribution.SchwartzSpace
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.Distribution.TestFunction
@@ -1813,6 +1822,7 @@ public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
+public import Mathlib.Analysis.InnerProductSpace.Coalgebra
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Continuous
@@ -2184,6 +2194,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Extremal
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
@@ -2338,6 +2349,7 @@ public import Mathlib.CategoryTheory.Category.Cat.Op
 public import Mathlib.CategoryTheory.Category.Cat.Terminal
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.Category.Grpd
 public import Mathlib.CategoryTheory.Category.Init
 public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Category.Pairwise
@@ -3062,6 +3074,7 @@ public import Mathlib.CategoryTheory.Sites.Grothendieck
 public import Mathlib.CategoryTheory.Sites.Hypercover.Homotopy
 public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
+public import Mathlib.CategoryTheory.Sites.Hypercover.Subcanonical
 public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
@@ -4080,6 +4093,7 @@ public import Mathlib.Deprecated.Aliases
 public import Mathlib.Deprecated.Estimator
 public import Mathlib.Deprecated.MLList.BestFirst
 public import Mathlib.Deprecated.Order
+public import Mathlib.Deprecated.RingHom
 public import Mathlib.Deprecated.Sort
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Basic
@@ -5190,6 +5204,7 @@ public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Skolem
 public import Mathlib.ModelTheory.Substructures
 public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Topology.Types
 public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
@@ -6309,6 +6324,7 @@ public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.RingHom.Integral
 public import Mathlib.RingTheory.RingHom.Locally
+public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 public import Mathlib.RingTheory.RingHom.Smooth
@@ -6339,6 +6355,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.IntegralClosure
 public import Mathlib.RingTheory.Smooth.Kaehler
@@ -6672,6 +6689,7 @@ public import Mathlib.Tactic.LinearCombination'
 public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Linter
 public import Mathlib.Tactic.Linter.CommandRanges
+public import Mathlib.Tactic.Linter.CommandStart
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
@@ -7082,6 +7100,7 @@ public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
 public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 public import Mathlib.Topology.Compactness.Exterior
+public import Mathlib.Topology.Compactness.HilbertCubeEmbedding
 public import Mathlib.Topology.Compactness.Lindelof
 public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Compactness.LocallyFinite
@@ -7356,6 +7375,7 @@ public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
 public import Mathlib.Topology.Separation.Basic

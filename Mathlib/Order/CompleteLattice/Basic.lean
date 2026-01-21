@@ -989,6 +989,22 @@ theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
   @iSup_extend_bot αᵒᵈ _ _ _ _ he _
 
+theorem Set.BijOn.iSup_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨆ x ∈ s, g (f x) = ⨆ y ∈ t, g y := by
+  rw [← hf.image_eq, iSup_image]
+
+theorem Set.BijOn.iInf_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → α)
+    (hf : Set.BijOn f s t) : ⨅ x ∈ s, g (f x) = ⨅ y ∈ t, g y := by
+  rw [← hf.image_eq, iInf_image]
+
+theorem Set.BijOn.iSup_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨆ x ∈ s, f x = ⨆ y ∈ t, g y := by
+  simpa only [h2] using h1.iSup_comp g
+
+theorem Set.BijOn.iInf_congr {s : Set β} {t : Set γ} (f : β → α) (g : γ → α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⨅ x ∈ s, f x = ⨅ y ∈ t, g y := by
+  simpa only [h2] using h1.iInf_comp g
+
 section le
 
 variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
