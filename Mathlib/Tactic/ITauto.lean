@@ -700,8 +700,9 @@ def itautoCore (g : MVarId)
 open Elab Tactic
 
 /-- `itauto` solves the main goal when it is a tautology of intuitionistic propositional logic.
-Unlike `finish` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
-option), and the proof search is tailored for this use case.
+Unlike `grind` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
+option), and the proof search is tailored for this use case. `itauto` is complete for intuitionistic
+propositional logic: it will solve any goal that is provable in this logic.
 
 * `itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
   `Decidable a` and `Decidable b`.
