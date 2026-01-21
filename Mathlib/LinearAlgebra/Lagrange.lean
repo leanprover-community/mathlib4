@@ -465,8 +465,7 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
   have hvs' := hvs.mono (coe_subset.mpr (erase_subset i s))
   calc
     derivative^[k] (∏ j ∈ s.erase i, (X - C (v j))) =
-    derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by
-      rw [Finset.prod_image hvs']
+    derivative^[k] (∏ vj ∈ (s.erase i).image v, (X - C vj)) := by rw [Finset.prod_image hvs']
     _ = k.factorial * ∑ t ∈ ((s.erase i).image v).powersetCard (#s - (k + 1)),
       ∏ va ∈ t, (X - C va) := by
       have hcard : #((s.erase i).image v) = #s - 1 := by
