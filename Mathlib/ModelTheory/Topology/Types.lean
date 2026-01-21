@@ -44,13 +44,13 @@ public lemma isTopologicalBasis_range_typesWith :
     exact Set.subset_sUnion_of_mem ⟨_, typesWith_top⟩
   eq_generateFrom := rfl
 
-public lemma isOpen_typesWith (φ : (L[[α]]).Sentence) : IsOpen (typesWith (T := T) φ) :=
+public lemma isOpen_typesWith (φ : L[[α]].Sentence) : IsOpen (typesWith (T := T) φ) :=
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
-public lemma isClosed_typesWith (φ : (L[[α]]).Sentence) : IsClosed (typesWith (T := T) φ) where
+public lemma isClosed_typesWith (φ : L[[α]].Sentence) : IsClosed (typesWith (T := T) φ) where
   isOpen_compl := by rw [←typesWith_not]; exact isOpen_typesWith _
 
-public lemma isClopen_typesWith (φ : (L[[α]]).Sentence) : IsClopen (typesWith (T := T) φ) where
+public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (typesWith (T := T) φ) where
   left := isClosed_typesWith _
   right := isOpen_typesWith _
 
