@@ -740,12 +740,11 @@ instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
 
-instance total_le [LE α] [@Std.Total α (· ≤ ·)] : @Std.Total (WithBot α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
+instance total_le [LE α] [IsTotalLE α] : IsTotalLE (WithBot α) where
+  total x y := by cases x <;> cases y <;> simp; simpa using total_le ..
 
-instance _root_.WithTop.total_le [LE α] [@Std.Total α (· ≤ ·)] :
-    @Std.Total (WithTop α) (· ≤ ·) where
-  total x y := by cases x <;> cases y <;> simp; simpa using Std.Total.total ..
+instance _root_.WithTop.total_le [LE α] [IsTotalLE α] : IsTotalLE (WithTop α) where
+  total x y := by cases x <;> cases y <;> simp; simpa using total_le ..
 
 instance linearOrder [LinearOrder α] : LinearOrder (WithBot α) := Lattice.toLinearOrder _
 

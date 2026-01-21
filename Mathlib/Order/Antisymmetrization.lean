@@ -303,7 +303,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [IsTotalLE α] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),

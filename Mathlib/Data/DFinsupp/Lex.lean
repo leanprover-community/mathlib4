@@ -145,10 +145,10 @@ private def lt_trichotomy_rec {P : Lex (Π₀ i, α i) → Lex (Π₀ i, α i) �
     · exact h_gt ⟨wit, fun j hj ↦
         notMem_neLocus.mp (Finset.notMem_of_lt_min hj <| by rwa [neLocus_comm]), hwit⟩
 
-instance Lex.total_le : @Std.Total (Lex (Π₀ i, α i)) (· ≤ ·) where
+instance Lex.total_le : IsTotalLE (Lex (Π₀ i, α i)) where
   total := lt_trichotomy_rec (fun h ↦ Or.inl h.le) (fun h ↦ Or.inl h.le) fun h ↦ Or.inr h.le
 
-instance Colex.total_le : @Std.Total (Colex (Π₀ i, α i)) (· ≤ ·) :=
+instance Colex.total_le : IsTotalLE (Colex (Π₀ i, α i)) :=
   Lex.total_le (ι := ιᵒᵈ)
 
 set_option backward.privateInPublic true in
