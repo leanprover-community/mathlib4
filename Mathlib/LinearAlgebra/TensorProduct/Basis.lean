@@ -86,7 +86,7 @@ If `{𝒞ᵢ}` is a basis for the module `N`, then every elements of `x ∈ M �
 as `∑ᵢ mᵢ ⊗ 𝒞ᵢ` for some `mᵢ ∈ M`.
 -/
 def TensorProduct.equivFinsuppOfBasisRight : M ⊗[R] N ≃ₗ[R] κ →₀ M :=
-  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R M κ
+  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R R M κ
 
 @[simp]
 lemma TensorProduct.equivFinsuppOfBasisRight_apply_tmul (m : M) (n : N) :
