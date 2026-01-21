@@ -606,33 +606,28 @@ and `f₂ : E₂ →L[𝕜] F`, the latter invertible, we prove that the kernels
 `ImplicitFunctionData` thereby permitting use of the general machinery provided above. -/
 def implicitFunctionDataOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
     {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ :=
-  let f₁ := f' ∘L .inl 𝕜 E₁ E₂
-  let f₂ := f' ∘L .inr 𝕜 E₁ E₂
-  { leftFun := f
-    rightFun := Prod.fst
-    pt := u
-    leftDeriv := f₁.coprod f₂
-    hasStrictFDerivAt_leftFun := by
-      simp [f₁, f₂, ← ContinuousLinearMap.comp_coprod, dfu]
-    rightDeriv := .fst 𝕜 E₁ E₂
-    hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
-    range_leftDeriv := by
-      rw [ContinuousLinearMap.range_coprod]
-      convert sup_top_eq _
-      exact f₂.range_eq_top.2 if₂.surjective
-    range_rightDeriv := Submodule.range_fst
-    isCompl_ker := by
-      change f₂.IsInvertible at if₂
-      constructor
-      · rw [LinearMap.disjoint_ker]
-        intro (_, y) h rfl
-        suffices y ∈ (⊥ : Submodule 𝕜 E₂) by simpa using this
-        simpa [← f₂.ker_eq_bot.2 if₂.injective] using h
-      · rw [Submodule.codisjoint_iff_exists_add_eq]
-        intro (v₁, v₂)
-        use (v₁, -f₂.inverse (f₁ v₁)), (0, v₂ + f₂.inverse (f₁ v₁))
-        simp [if₂] }
+    ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
+  leftFun := f
+  rightFun := Prod.fst
+  pt := u
+  leftDeriv := f'
+  hasStrictFDerivAt_leftFun := dfu
+  rightDeriv := .fst 𝕜 E₁ E₂
+  hasStrictFDerivAt_rightFun := hasStrictFDerivAt_fst
+  range_leftDeriv := by
+    have : (f' ∘L .inr _ _ _).range ≤ f'.range := LinearMap.range_comp_le_range _ _
+    rwa [LinearMap.range_eq_top.mpr if₂.surjective, top_le_iff] at this
+  range_rightDeriv := Submodule.range_fst
+  isCompl_ker := by
+    constructor
+    · rw [LinearMap.disjoint_ker]
+      intro (_, y) h rfl
+      simpa using (injective_iff_map_eq_zero _).mp if₂.injective y h
+    · rw [Submodule.codisjoint_iff_exists_add_eq]
+      intro v
+      obtain ⟨y, hy⟩ := if₂.surjective (f' v)
+      use v - (0, y), (0, y)
+      aesop
 
 /-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
 `f : E₁ × E₂ → F` at `u`. -/
@@ -645,13 +640,12 @@ theorem hasStrictFDerivAt_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} 
     {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     HasStrictFDerivAt (dfu.implicitFunctionOfProdDomain if₂)
       (-(f' ∘L .inr 𝕜 E₁ E₂).inverse ∘L (f' ∘L .inl 𝕜 E₁ E₂)) u.1 := by
-  set f₁ := f' ∘L .inl 𝕜 E₁ E₂
-  set f₂ := f' ∘L .inr 𝕜 E₁ E₂
-  apply HasStrictFDerivAt.snd (f₂' := (ContinuousLinearMap.id 𝕜 E₁).prod (-f₂.inverse ∘L f₁))
-  apply (dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction
-  · apply ContinuousLinearMap.fst_comp_prod
-  · change f₁ + f₂ ∘L (-f₂.inverse ∘L f₁) = 0
-    simp [← ContinuousLinearMap.comp_assoc, if₂]
+  have : f' ∘L (.prod (.id _ _) (-(f' ∘L .inr _ _ _).inverse ∘L (f' ∘L .inl _ _ _))) = 0 := by
+    ext x
+    rw [f'.comp_apply, ← f'.comp_inl_add_comp_inr]
+    simp [map_neg, if₂]
+  exact ((dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction _
+    (ContinuousLinearMap.fst_comp_prod _ _) this).snd
 
 theorem image_eq_iff_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
     {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
