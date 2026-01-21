@@ -66,22 +66,28 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         ext
         simp [FreeGroup.freeGroupUnitEquivInt] }
 
--- TODO do this.
 theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
   Function.Surjective (FreeGroup.map f) := by
-    intro x
-    induction' x using FreeGroup.induction_on with x ih;
-    · exact ⟨ 1, by simp +decide ⟩;
-    · exact Exists.elim ( hf x ) fun a ha => ⟨ FreeGroup.of a, by simp +decide [ ha ] ⟩;
-    · -- By the induction hypothesis, there exists an element a in the free group on α such that FreeGroup.map f a = FreeGroup.of ih.
-      obtain ⟨a, ha⟩ : ∃ a : FreeGroup α, FreeGroup.map f a = FreeGroup.of ih := by
-        assumption;
-      exact ⟨ a⁻¹, by simp +decide [ ha ] ⟩;
-    · case _ hx hy => obtain ⟨ x, rfl ⟩ := hx; obtain ⟨ y, rfl ⟩ := hy; exact ⟨ x * y, by simp +decide ⟩ ;
+  intro x
+  induction x using FreeGroup.induction_on
+  · use 1
+    rfl
+  · rename_i b
+    rcases hf b with ⟨a, ha⟩
+    refine ⟨FreeGroup.of a, ?_⟩
+    simp [ha]
+  · rename_i b hb
+    rcases hb with ⟨a, ha⟩
+    refine ⟨a⁻¹, ?_⟩
+    simp [ha]
+  · rename_i b c hb hc
+    rcases hb with ⟨a, ha⟩
+    rcases hc with ⟨d, hd⟩
+    refine ⟨a * d, ?_⟩
+    simp [ha, hd]
 -- end of addition to #FreeGroup
 
 -- Start of suggested additions to #Group.FG
-
 theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G] :
     Group.FG G ↔ ∃ (α : Type) (_ : Finite α) (φ : FreeGroup α →* G), Function.Surjective φ := by
     constructor
@@ -119,8 +125,6 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G
       -- end of copy.
       refine (Group.fg_iff).2 ?_
       use S
-
-
 -- end of suggested additions to #Group.FG
 
 -- Start of suggestion additions to #PresentedGroup
