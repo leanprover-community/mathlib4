@@ -70,28 +70,30 @@ def equiv : WithVal v ≃+* R := RingEquiv.refl _
 section AlgebraInstances
 
 variable {R Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-variable [CommRing R] (v : Valuation R Γ₀)
 variable {P S : Type*}
 
 instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) where
   smul s x := s • WithVal.equiv v x
 
-instance [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) : Algebra S (WithVal v) where
+instance [Ring R] [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) :
+    Algebra S (WithVal v) where
   algebraMap := (WithVal.equiv v).symm.toRingHom.comp (algebraMap S R)
-  commutes' _ _ := mul_comm ..
+  commutes' _ _ := by
+    apply_fun (equiv v)
+    exact Algebra.commutes _ _
   smul_def' _ _ := by simp only [Algebra.smul_def, RingEquiv.toRingHom_eq_coe, RingHom.coe_comp,
     RingHom.coe_coe, Function.comp_apply]; rfl
 
-theorem algebraMap_apply [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) (s : S) :
+theorem algebraMap_apply [CommRing R] [CommSemiring S] [Algebra S R] (v : Valuation R Γ₀) (s : S) :
     algebraMap S (WithVal v) s = (WithVal.equiv v).symm (algebraMap S R s) := rfl
 
 instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
     IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
 
-instance [Ring S] [Algebra R S] :
+instance [CommRing R] [Ring S] [Algebra R S] (v : Valuation R Γ₀) :
     Algebra (WithVal v) S := Algebra.compHom S (WithVal.equiv v).toRingHom
 
-theorem algebraMap_apply' [Ring S] [Algebra R S] (x : WithVal v) :
+theorem algebraMap_apply' [CommRing R] [Ring S] [Algebra R S] (v : Valuation R Γ₀) (x : WithVal v) :
     algebraMap (WithVal v) S x = algebraMap R S (WithVal.equiv v x) := rfl
 
 instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
@@ -101,8 +103,8 @@ instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Va
     IsScalarTower P S (WithVal v) :=
   inferInstanceAs (IsScalarTower P S R)
 
-instance [Ring S] [Semiring P] [Module P R] [Module P S]
-    [Algebra R S] [IsScalarTower P R S] :
+instance [CommRing R] [Ring S] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] (v : Valuation R Γ₀) :
     IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
 
 instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
