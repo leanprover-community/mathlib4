@@ -130,7 +130,7 @@ end projectiveSeminorm_tprod
 
 /-
 Here, we restate the definition of `injectiveSeminorm` found so far in Mathlib and prove that it
-is extensinally equal to `projectiveSeminorm`.
+is extensionally equal to `projectiveSeminorm`.
 -/
 section dualCharacterization
 
