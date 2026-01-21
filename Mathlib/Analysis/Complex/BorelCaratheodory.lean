@@ -63,13 +63,9 @@ lemma norm_two_mul_div_one_add_le (hM : 0 < M) (hw : ‖w‖ < 1) :
 /-- If `z.re < M`, then `‖z‖ < ‖2M - z‖`. This shows that the Schwarz transform
 `z ↦ z / (2M - z)` has numerator smaller than denominator when the real part is bounded by M -/
 lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M - z‖ := by
-  apply (sq_lt_sq₀ (norm_nonneg z) (norm_nonneg (2 * M - z))).mp
-  rw [Complex.sq_norm, Complex.sq_norm]
-  simp only [normSq_apply, sub_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im,
-    mul_zero, sub_zero, sub_im, mul_im, zero_mul, add_zero, zero_sub, mul_neg, neg_mul,
-    neg_neg, add_lt_add_iff_right]
-  ring_nf
-  nlinarith [sq_nonneg (z.re - M)]
+  rw [← sq_lt_sq₀ (by positivity) (by positivity)]
+  suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
+  nlinarith
 
 /-- The Schwarz transform `z ↦ z / (2M - z)` maps values with `z.re < M` into the unit disk. -/
 lemma norm_div_two_mul_sub_lt_one (hM : 0 < M) (hz : z.re < M) : ‖z / (2 * M - z)‖ < 1 := by
