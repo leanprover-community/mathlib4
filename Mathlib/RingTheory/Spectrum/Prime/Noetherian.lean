@@ -25,7 +25,7 @@ open TopologicalSpace
 
 section IsNoetherianRing
 
-variable (R : Type u) [CommRing R] [IsNoetherianRing R]
+variable (R : Type u) [CommSemiring R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) :=
   ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr (closedsEmbedding R).dual.wellFoundedLT
@@ -43,10 +43,10 @@ lemma finite_setOf_isMin :
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
 
 lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
-    I.minimalPrimes.Finite := by
-  rw [I.minimalPrimes_eq_comap]
-  apply Set.Finite.image
-  apply minimalPrimes.finite_of_isNoetherianRing
+    I.minimalPrimes.Finite :=
+  Ideal.minimalPrimes.equivIrreducibleComponents I
+    |>.set_finite_iff
+    |>.mpr NoetherianSpace.finite_irreducibleComponents
 
 end IsNoetherianRing
 
