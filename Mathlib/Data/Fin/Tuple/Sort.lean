@@ -203,19 +203,13 @@ theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j �
 @[simp]
 theorem sort_perm (σ : Equiv.Perm (Fin n)) :
     sort σ = σ⁻¹ := by
-  apply Eq.symm (eq_sort_iff.2 ⟨?_, ?_⟩)
-  · intro _ _ _
-    simpa only [Equiv.Perm.coe_inv, Function.comp_apply, Equiv.apply_symm_apply]
-  · intros
-    simp_all [(Equiv.bijective σ⁻¹).1 ((Equiv.bijective σ).1 _)]
+  apply (eq_sort_iff.2 ⟨?_ , ?_⟩).symm
+  · simpa using monotone_id
+  · intro _ _ hij h
+    exact (hij.ne (by simpa using h)).elim
 
 end Tuple
 
 theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
     Monotone σ ↔ σ = 1 := by
-  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm]
-  constructor <;> intro h
-  · apply inv_eq_one.mp
-    rw [h]
-    rfl
-  · exact inv_eq_one.mp h
+  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]
