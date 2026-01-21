@@ -34,9 +34,9 @@ its ideals form a `RingFilterBasis` for `A`.
 
 ## References
 
-* [nLab: Uniform filter](https://ncatlab.org/nlab/show/uniform+filter)
-* [nLab: Gabriel filter](https://ncatlab.org/nlab/show/Gabriel+filter)
-* [nLab: Gabriel composition](https://ncatlab.org/nlab/show/Gabriel+composition+of+filters)
+* [nLab: Uniform filter](<https://ncatlab.org/nlab/show/uniform+filter>)
+* [nLab: Gabriel filter](<https://ncatlab.org/nlab/show/Gabriel+filter>)
+* [nLab: Gabriel composition](<https://ncatlab.org/nlab/show/Gabriel+composition+of+filters>)
 
 ## Tags
 
@@ -75,8 +75,7 @@ def addGroupFilterBasis : AddGroupFilterBasis A where
     rintro x₀ s ⟨I, hI, rfl⟩
     exact ⟨I, ⟨I, hI, rfl⟩, by simp⟩
 
-/-- Under `F.IsUniform`, the ring filter basis obtained from `addGroupFilterBasis`.
-The right-multiplication axiom uses the comap-closure from uniformity. -/
+/-- Under `F.IsUniform`, the ring filter basis obtained from `addGroupFilterBasis`. -/
 def ringFilterBasis (hUniform : F.IsUniform) : RingFilterBasis A where
   sets := F.addGroupFilterBasis.sets
   nonempty := F.addGroupFilterBasis.nonempty
@@ -121,7 +120,8 @@ theorem isUniform_iff_exists_ringFilterBasis :
 /-- The topology on `A` induced by `addGroupFilterBasis`. -/
 def addGroupTopology : TopologicalSpace A := (addGroupFilterBasis F).topology
 
-/-- The topology `addGroupTopology` makes `A` a topological additive group. -/
+/-- The topology `F.addGroupTopology` endows `A` with the structure of a topological additive
+group. -/
 theorem isTopologicalAddGroup :
     letI : TopologicalSpace A := F.addGroupTopology
     IsTopologicalAddGroup A :=
@@ -131,14 +131,15 @@ theorem isTopologicalAddGroup :
 def ringTopology (hUniform : F.IsUniform) : TopologicalSpace A :=
   (ringFilterBasis F hUniform).topology
 
-/-- Under `F.IsUniform`, the topology `ringTopology` makes `A` a topological ring. -/
+/-- Under `F.IsUniform`, the topology `F.ringTopology` endows `A` with the structure of a
+topological ring. -/
 theorem isTopologicalRing (hUniform : F.IsUniform) :
     letI : TopologicalSpace A := F.ringTopology hUniform
     IsTopologicalRing A :=
   (F.ringFilterBasis hUniform).isTopologicalRing
 
-/-- Neighbourhoods in `addGroupTopology`: a set is a neighbourhood of `a` iff it contains a
-left-additive coset `a +ᵥ I` for some ideal `I ∈ F`. -/
+/-- In `F.addGroupTopology`, a set is a neighbourhood of `a` iff it contains a
+left-additive coset of some ideal `I ∈ F`. -/
 lemma addGroupTopology_mem_nhds_iff (a : A) (s : Set A) :
     letI : TopologicalSpace A := F.addGroupTopology
     s ∈ 𝓝 a ↔ ∃ I ∈ F, a +ᵥ (I : Set A) ⊆ s := by
@@ -151,15 +152,15 @@ lemma addGroupTopology_mem_nhds_iff (a : A) (s : Set A) :
     refine ((F.addGroupFilterBasis).nhds_hasBasis a).mem_iff.2 ?_
     exact ⟨I, ⟨I, hI, rfl⟩, hIs⟩
 
-/-- In `F.addGroupTopology`, `s : Set A` is a neighbourhood of `0` iff it contains an ideal
+/-- In `F.addGroupTopology`, `s` is a neighbourhood of `0` iff it contains an ideal
 belonging to `F`. -/
 lemma addGroupTopology_mem_nhds_zero_iff (s : Set A) :
     letI : TopologicalSpace A := F.addGroupTopology
     s ∈ 𝓝 0 ↔ ∃ I ∈ F, (I : Set A) ⊆ s := by
   simpa [zero_vadd] using F.addGroupTopology_mem_nhds_iff (a := (0 : A)) (s := s)
 
-/-- Neighbourhoods in `ringTopology`: a set is a neighbourhood of `a` iff it contains a
-left-additive coset `a +ᵥ I` for some ideal `I ∈ F`. -/
+/-- In `F.ringTopology`, `s` is a neighbourhood of `a` iff it contains a
+left-additive coset of some ideal `I ∈ F`. -/
 lemma ringTopology_mem_nhds_iff (hUniform : F.IsUniform) (a : A) (s : Set A) :
     letI : TopologicalSpace A := F.ringTopology hUniform
     s ∈ 𝓝 a ↔ ∃ I ∈ F, a +ᵥ (I : Set A) ⊆ s := by
@@ -171,7 +172,7 @@ lemma ringTopology_mem_nhds_iff (hUniform : F.IsUniform) (a : A) (s : Set A) :
   · rintro ⟨I, hI, hIs⟩
     exact ((F.ringFilterBasis hUniform).nhds_hasBasis a).mem_iff.mpr ⟨I, ⟨I, hI, rfl⟩, hIs⟩
 
-/-- In `F.ringTopology`, `s : Set A` is a neighbourhood of `0` iff it contains an ideal belonging
+/-- In `F.ringTopology`, `s` is a neighbourhood of `0` iff it contains an ideal belonging
 to `F`. -/
 lemma ringTopology_mem_nhds_zero_iff (hUniform : F.IsUniform) (s : Set A) :
     letI : TopologicalSpace A := F.ringTopology hUniform
