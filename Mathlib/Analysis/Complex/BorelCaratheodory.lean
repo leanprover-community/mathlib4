@@ -125,7 +125,8 @@ public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by
   have hfz : ‖f z - f 0‖ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) := by
     apply borelCaratheodory_zero (by positivity) (by fun_prop) ?_ hR hz (by simp)
-    intro x hx; simp only [Set.mem_setOf_eq, sub_re]
+    intro x hx
+    simp only [Set.mem_setOf_eq, sub_re]
     calc (f x).re - (f 0).re < M - (f 0).re := by gcongr; exact hf₁ hx
          _ ≤ M + ‖f 0‖ := by linarith [neg_le_abs (f 0).re, abs_re_le_norm (f 0)]
   have h_denom_ne : R - ‖z‖ ≠ 0 := by linarith [mem_ball_zero_iff.mp hz]
