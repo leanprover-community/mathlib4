@@ -39,12 +39,6 @@ variable {f : ℂ → ℂ} {s : Set ℂ} {M R : ℝ} {z w : ℂ}
 
 section SchwarzTransform
 
-/-- If a differentiable function avoids a value `M`, then it remains differentiable
-when divided by `M - f z`. -/
-private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
-    DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
-  hf.div (hf.const_sub M) (by grind [Set.MapsTo])
-
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
 Schwarz transform used in the proof of the Borel-Carathéodory theorem. -/
 lemma eq_mul_div_one_add_of_eq_div_sub (_ : M ≠ 0) (_ : 2 * M - z ≠ 0)
@@ -66,13 +60,13 @@ lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M -
   suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
   nlinarith
 
-
 /-- Application of the Schwarz lemma to the transformed function. If `f` is differentiable on
 the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz transform
 satisfies the bound from the Schwarz lemma. -/
 private lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hz : z ∈ ball 0 R) (hf₂ : f 0 = 0) :
-    dist (f z / (2 * M - f z)) 0 ≤ 1 / R * dist z 0 := by
+    ‖f z / (2 * M - f z)‖ ≤ (1 / R) * ‖z‖ := by  
+  rw [← dist_zero_right, ← dist_zero_right]
   nth_rw 1 [← zero_div (2 * M - f 0), ← hf₂]
   apply dist_le_div_mul_dist_of_mapsTo_ball (R₂ := 1) ?_ (fun x hx ↦ ?_) hz
   · apply hf.div (hf.const_sub _) fun x hx h ↦ ?_
