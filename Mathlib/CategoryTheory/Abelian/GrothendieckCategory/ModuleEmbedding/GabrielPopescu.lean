@@ -26,7 +26,7 @@ We closely follow the elementary proof given by Barry Mitchell.
 The left adjoint `tensorObj G` actually exists as soon as `C` is cocomplete and additive, so the
 construction could be generalized.
 
-The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End R)ᵐᵒᵖ`.
+The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (End G)ᵐᵒᵖ`.
 
 ## References
 
@@ -137,7 +137,8 @@ theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     · rw [ModuleCat.mono_iff_injective]
       cat_disch
 
-/-- Right exactness follows because `tensorObj G` is a left adjoint. -/
+/-- `tensorObj G` is left exact: it is additive and preserves monomorphisms and cokernels,
+so it preserves homology and therefore finite limits. -/
 theorem GabrielPopescu.preservesFiniteLimits (G : C) (hG : IsSeparator G) :
     PreservesFiniteLimits (tensorObj G) := by
   have := preservesInjectiveObjects G hG
