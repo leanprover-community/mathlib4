@@ -73,14 +73,13 @@ satisfies the bound from the Schwarz lemma. -/
 private lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hz : z ∈ ball 0 R) (hf₂ : f 0 = 0) :
     dist (f z / (2 * M - f z)) 0 ≤ 1 / R * dist z 0 := by
-  have h0 : 0 = f 0 / (2 * M - f 0) := by simp [hf₂]
-  conv_lhs => rw [h0]
-  apply dist_le_div_mul_dist_of_mapsTo_ball (R₂ := 1) ?_ ?_ hz
-  · norm_cast
-    exact Complex.div_const_sub hf
-      (hf₁.mono_right fun a ha h => by simp [h] at ha; linarith [ha, hM])
-  · rw [← h0]; intro x hx; rw [mem_closedBall, dist_zero_right]
-    exact le_of_lt (norm_div_two_mul_sub_lt_one hM (hf₁ hx))
+  nth_rw 1 [← zero_div (2 * M - f 0), ← hf₂]
+  apply dist_le_div_mul_dist_of_mapsTo_ball (R₂ := 1) ?_ (fun x hx ↦ ?_) hz
+  · apply hf.div (hf.const_sub _) fun x hx h ↦ ?_
+    have := sub_eq_zero.mp h ▸ hf₁ hx
+    aesop
+  · simpa [hf₂] using
+      div_le_one_of_le₀ (norm_lt_norm_two_mul_sub hM (hf₁ hx)).le (by positivity)
 
 end SchwarzTransform
 
