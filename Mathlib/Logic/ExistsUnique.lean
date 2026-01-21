@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 module
 
 public import Mathlib.Tactic.TypeStar
-public import Batteries.Tactic.Alias
 
 /-!
 # `ExistsUnique`
@@ -92,6 +91,10 @@ theorem ExistsUnique.exists {p : α → Prop} : (∃! x, p x) → ∃ x, p x | �
 theorem ExistsUnique.unique {p : α → Prop}
     (h : ∃! x, p x) {y₁ y₂ : α} (py₁ : p y₁) (py₂ : p y₂) : y₁ = y₂ :=
   let ⟨_, _, hy⟩ := h; (hy _ py₁).trans (hy _ py₂).symm
+
+theorem ExistsUnique.choose_eq_iff {p : α → Prop} {a : α} (h : ∃! x, p x) :
+    h.choose = a ↔ p a :=
+  ⟨fun ha ↦ ha ▸ h.choose_spec.left, h.unique h.choose_spec.left⟩
 
 -- TODO
 -- attribute [congr] forall_congr'

@@ -12,7 +12,7 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 # Bounds on specific values of the exponential
 -/
 
-@[expose] public section
+public section
 
 
 namespace Real

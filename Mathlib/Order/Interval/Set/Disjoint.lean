@@ -19,7 +19,7 @@ in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 We consider various intersections and unions of half infinite intervals.
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

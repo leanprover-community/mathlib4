@@ -668,7 +668,7 @@ def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B]
     (f : F) : A ≃⋆ₐ[R] B :=
   { (f : A ≃+* B) with
     map_star' := map_star f
-    map_smul' := map_smul f}
+    map_smul' := map_smul f }
 
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/

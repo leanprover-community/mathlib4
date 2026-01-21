@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -63,12 +61,11 @@ lemma oreEqv_eq_r : (OreLocalization.oreEqv S M).r = r S M := by
   · rintro ⟨u, v, h₁, h₂⟩
     use u
     simp only [Submonoid.smul_def, smul_smul, h₂]
-    rw [mul_comm, mul_smul, ← h₁, mul_comm, mul_smul]
-    rfl
+    rw [mul_comm, mul_smul, ← h₁, mul_comm, mul_smul, Submonoid.smul_def]
   · rintro ⟨u, hu⟩
     use u * a.2, u * b.2
     rw [mul_smul, ← hu, mul_smul, Submonoid.coe_mul, mul_assoc, mul_assoc, mul_comm (a.2 : R)]
-    exact ⟨rfl, rfl⟩
+    simp [Submonoid.smul_def]
 
 theorem r.isEquiv : IsEquiv _ (r S M) :=
   { refl := fun ⟨m, s⟩ => ⟨1, by rw [one_smul]⟩
@@ -274,7 +271,7 @@ noncomputable abbrev smulOfIsLocalization : SMul T (LocalizedModule S M) where
             simp_rw [Submonoid.smul_def, Submonoid.coe_mul, ← mul_smul]; ring_nf
           _ = a.2 • a.1 • s • p.2 • p'.1 := by rw [h]
           _ = s • (a.2 * p.2) • a.1 • p'.1 := by
-            simp_rw [Submonoid.smul_def, ← mul_smul, Submonoid.coe_mul]; ring_nf )
+            simp_rw [Submonoid.smul_def, ← mul_smul, Submonoid.coe_mul]; ring_nf)
 
 attribute [local instance] smulOfIsLocalization
 
@@ -371,8 +368,7 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   refine (OreLocalization.smul_oreDiv _ _ _).trans ?_
-  change (r • 1 : R) • m /ₒ s = _
-  rw [smul_assoc, one_smul]
+  simp
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
@@ -448,11 +444,13 @@ noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Alge
   algebraMap := numeratorRingHom.comp (algebraMap R A)
   commutes' r x := by
     induction x using induction_on with | _ a s => _
-    change mk _ _ * mk _ _ = mk _ _ * mk _ _
+    simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply]
     rw [mk_mul_mk, mk_mul_mk, mul_comm, Algebra.commutes]
   smul_def' r x := by
     induction x using induction_on with | _ a s => _
-    change _ • mk _ _ = mk _ _ * mk _ _
+    simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply]
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
 private lemma example_oreLocalizationInstAlgebra_eq_localizedModuleAlgebra' :
@@ -1310,6 +1308,13 @@ lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
   simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, SetLike.le_def,
     mem_ker_iff S, Submodule.mem_top, true_implies]
 
+lemma subsingleton_of_subsingleton (S : Submonoid R) (g : M →ₗ[R] M') [IsLocalizedModule S g]
+    [Subsingleton M] : Subsingleton M' := by
+  rw [subsingleton_iff S g]
+  intro m
+  use 1
+  simp [one_mem, Subsingleton.elim m 0]
+
 end Subsingleton
 
 end IsLocalizedModule
@@ -1369,24 +1374,5 @@ lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
 instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
     IsTorsionFree (Localization S) (LocalizedModule S M) :=
   isTorsionFree (LocalizedModule.mkLinearMap S M) S
-
-theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
-    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
-  rw [noZeroSMulDivisors_iff]
-  intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
-  obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
-  rw [Function.uncurry_apply_pair] at hcx ⊢
-  rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
-  obtain ⟨u, hl⟩ := hcx
-  rw [← smul_assoc] at hl
-  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
-  · rw [IsLocalization.mk'_eq_zero_iff]
-    exact Or.inl ⟨u, hua⟩
-  · simp
-
-instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors (Localization S) (LocalizedModule S M) :=
-  noZeroSMulDivisors (LocalizedModule.mkLinearMap S M) S
 
 end IsLocalizedModule

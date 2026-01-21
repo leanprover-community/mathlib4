@@ -530,7 +530,6 @@ theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
     (@DFinsupp.equivFunOnFintype ι β _ _).symm (Pi.single i m) = DFinsupp.single i m := by
-  ext i'
   simp only [← single_eq_pi_single, equivFunOnFintype_symm_coe]
 
 section SingleAndZipWith
@@ -577,14 +576,11 @@ theorem erase_zero (i : ι) : erase i (0 : Π₀ i, β i) = 0 :=
 
 @[simp]
 theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = f.erase i := by
-  ext
-  grind
+  ext; grind
 
 @[simp]
 theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
-  rw [← filter_ne_eq_erase f i]
-  congr with j
-  exact ne_comm
+  ext; grind
 
 theorem erase_single (j : ι) (i : ι) (x : β i) :
     (single i x).erase j = if i = j then 0 else single i x := by
@@ -880,7 +876,6 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
-  ext
   grind
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=

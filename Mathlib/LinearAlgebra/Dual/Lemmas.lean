@@ -680,7 +680,6 @@ open LinearMap in
 theorem quotDualCoannihilatorToDual_nondegenerate (W : Submodule R (Dual R M)) :
     W.quotDualCoannihilatorToDual.Nondegenerate := by
   rw [Nondegenerate, separatingLeft_iff_ker_eq_bot, separatingRight_iff_flip_ker_eq_bot]
-  letI : AddCommGroup W := inferInstance
   simp_rw [ker_eq_bot]
   exact ⟨W.quotDualCoannihilatorToDual_injective, W.flip_quotDualCoannihilatorToDual_injective⟩
 
@@ -1029,6 +1028,19 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
   ext
   simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
+
+lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+    {s : Set ι} {v : ι → V} (hli : LinearIndepOn K v s) :
+    ∃ f : Dual K V, ∀ i ∈ s, f (v i) = 1 := by
+  replace hli : LinearIndepOn K id (v '' s) := LinearIndepOn.id_image hli
+  let b : Basis _ K V := .mk (hli.linearIndepOn_extend (Set.subset_univ _)) <| by
+    simpa using hli.span_extend_eq_span <| Set.subset_univ _
+  refine ⟨b.constr K 1, fun i hi ↦ ?_⟩
+  replace hi : v i ∈ hli.extend (Set.subset_univ _) :=
+    hli.subset_extend _ <| Set.mem_image_of_mem v hi
+  let ri : hli.extend (Set.subset_univ _) := ⟨v i, hi⟩
+  have : b ri = v i := by simp [b, ri]
+  simp [← this]
 
 namespace TensorProduct
 
