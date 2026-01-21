@@ -306,26 +306,20 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
 theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
     Irrational x := by
   contrapose! hnz
-  rw [Irrational, Set.mem_range, not_not] at hnz
-  obtain ⟨q, hq⟩ := hnz
-  replace hroot : x ∈ (T ℝ n).roots := (mem_roots_iff_aeval_eq_zero (T_ne_zero ℝ n)).mpr hroot
-  rw [roots_T_real] at hroot
+  obtain ⟨q, hq⟩ := exists_rational_of_not_irrational hnz
+  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real] at hroot
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
   have hn : n ≠ 0 := by grind
-  suffices (2 * k + 1 : ℚ) / (2 * n) = 1 / 2 by
-    have : (2 * k + 1) * π / (2 * n) = π / 2 := calc
-      (2 * k + 1) * π / (2 * n) = (2 * k + 1 : ℝ) / (2 * n) * π := by ring
-      _ = π / 2 := by rify at this; rw [this]; ring
-    rw [←hk₂, this, cos_pi_div_two]
   set r := (2 * k + 1 : ℚ) / (2 * n) with rdef
-  have hcos : cos (r * π) = q := by rw [hq, ← hk₂, rdef]; congr 1; push_cast; ring
-  have h_bnd : r ∈ Set.Icc 0 1 := by
-    refine Set.mem_Icc.mpr ⟨by positivity, by rw [rdef]; field_simp; norm_cast; grind⟩
+  have hcos : cos (r * π) = q := by rw [← hq, ← hk₂, rdef]; congr 1; push_cast; ring
+  have h_bnd : r ∈ Set.Icc 0 1 :=
+    Set.mem_Icc.mpr ⟨by positivity, by rw [rdef]; field_simp; norm_cast; grind⟩
   rcases niven_angle_div_pi_eq ⟨q, hcos⟩ h_bnd with (hr | hr | hr | hr | hr)
-  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr
-  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr; grind
-  · exact hr
-  · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr; grind
-  · exfalso; rw [Set.mem_singleton_iff, rdef] at hr; field_simp at hr; norm_cast at hr; grind
+  all_goals simp only [Set.mem_singleton_iff, rdef] at hr; field_simp at hr; norm_cast at hr
+  all_goals try lia
+  rw [hq, ← hcos, rdef, ← cos_pi_div_two]
+  rw_mod_cast [hr]
+  push_cast
+  field_simp
 
 end Polynomial.Chebyshev
