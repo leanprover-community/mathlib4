@@ -21,7 +21,8 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 * We define the Dedekind eta function as the infinite product
 `η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
 The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-differentiable on the upper half-plane.
+differentiable on the upper half-plane. Laslty, we compute its logarithmic derivative and show that
+it is a multiple of the Eisenstein series `E2`.
 
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
@@ -131,15 +132,13 @@ lemma differentiableAt_eta_tprod {z : ℂ} (hz : z ∈ ℍₒ) :
 
 theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍₒ) :
     DifferentiableAt ℂ eta z := by
-  apply DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
+  exact DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
 
 lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
   have : (𝕢 24) = (fun z ↦ cexp (z)) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
-    ext y
-    simp only [Periodic.qParam, ofReal_ofNat, comp_apply]
-    ring_nf
+    grind [Periodic.qParam, ofReal_ofNat]
   rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
-  simp only [LogDeriv_exp, Pi.one_apply, deriv_id'', mul_one, one_mul]
+  simp [LogDeriv_exp]
 
 lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
     Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
@@ -150,8 +149,8 @@ lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
   grind [one_sub_eta_q_ne_zero _ hz]
 
 open EisensteinSeries in
-lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z := by
-  unfold ModularForm.eta
+lemma eta_logDeriv (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
+  unfold eta
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
     Periodic.qParam]) (eta_tprod_ne_zero z.2) (by fun_prop) (differentiableAt_eta_tprod z.2)]
   have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := z)
@@ -163,11 +162,8 @@ lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z
     mul_inv_rev, Pi.smul_apply, smul_eq_mul]
   rw [G2_eq_tsum_cexp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
     (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
-  congr 1
-  · field_simp
-    ring
-  · simp [eta_q_eq_pow,  ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
+  simp [eta_q_eq_pow,  ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
         n * cexp (2 * π * I * z) ^ n / (1 - cexp (2 * π * I * z) ^ n)), ← tsum_neg]
-    grind
+  grind
 
 end ModularForm
