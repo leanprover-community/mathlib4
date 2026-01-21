@@ -42,7 +42,7 @@ variable (R : Type u) {E : Type v}
 
 section TangentConeAt
 
-variable [AddCommMonoid E] [SMul R E] [TopologicalSpace E] {s : Set E} {x y : E}
+variable [AddCommGroup E] [SMul R E] [TopologicalSpace E] {s : Set E} {x y : E}
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
 def tangentConeAt (s : Set E) (x : E) : Set E :=
@@ -88,7 +88,7 @@ abbrev posTangentConeAt [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] (s 
     Set E :=
   tangentConeAt NNReal s x
 
-variable [Semiring R] [AddCommMonoid E] [Module R E] [TopologicalSpace E]
+variable [Semiring R] [AddCommGroup E] [Module R E] [TopologicalSpace E]
 
 /-- A property ensuring that the tangent cone to `s` at `x` spans a dense subset of the whole space.
 The main role of this property is to ensure that the differential within `s` at `x` is unique,

@@ -22,9 +22,9 @@ open scoped Topology Pointwise
 
 variable {𝕜 E : Type*}
 
-section SMulMonoid
+section SMul
 
-variable [AddCommMonoid E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
+variable [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
 
 @[gcongr]
 theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := fun y hy ↦
@@ -73,13 +73,7 @@ theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
 
-end SMulMonoid
-
-section SMulGroup
-
-variable [AddCommGroup E] [SMul 𝕜 E]
-  [TopologicalSpace E] [ContinuousAdd E] [ContinuousConstSMul 𝕜 E]
-  {s t : Set E} {x : E}
+variable [ContinuousConstSMul 𝕜 E]
 
 @[simp]
 theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt 𝕜 s x := by
@@ -89,7 +83,7 @@ theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt
   grw [(isOpenMap_add_left x).preimage_closure_subset_closure_preimage, hU.2.inter_closure,
     set_smul_closure_subset]
 
-end SMulGroup
+end SMul
 
 section Module
 
@@ -177,21 +171,21 @@ theorem UniqueDiffWithinAt.accPt [T2Space E] [Nontrivial E] (h : UniqueDiffWithi
 
 end Module
 
-theorem mem_tangentConeAt_of_add_smul_mem {α : Type*}
-    [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [TopologicalSpace 𝕜] [TopologicalSpace E] [ContinuousSMul 𝕜 E]
-    {l : Filter α} [l.NeBot] {c : α → 𝕜} {s : Set E} {x y : E} (hc₀ : Tendsto c l (𝓝[≠] 0))
-    (hmem : ∀ᶠ n in l, x + c n • y ∈ s) : y ∈ tangentConeAt 𝕜 s x := by
+section TVS
+
+variable [DivisionSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace 𝕜]
+  [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x y : E}
+
+theorem mem_tangentConeAt_of_add_smul_mem {α : Type*} {l : Filter α} [l.NeBot] {c : α → 𝕜}
+    (hc₀ : Tendsto c l (𝓝[≠] 0)) (hmem : ∀ᶠ n in l, x + c n • y ∈ s) :
+    y ∈ tangentConeAt 𝕜 s x := by
   rw [tendsto_nhdsWithin_iff] at hc₀
   refine mem_tangentConeAt_of_seq l c⁻¹ (c · • y) ?_ hmem ?_
   · simpa using hc₀.1.smul (tendsto_const_nhds (x := y))
   · refine tendsto_nhds_of_eventually_eq <| hc₀.2.mono fun n hn ↦ ?_
     simp_all
 
-section TVSMonoid
-
-variable [DivisionSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace 𝕜]
-  [(𝓝[≠] (0 : 𝕜)).NeBot] [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x : E}
+variable [(𝓝[≠] (0 : 𝕜)).NeBot]
 
 @[simp]
 theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ := by
@@ -200,7 +194,7 @@ theorem tangentConeAt_univ : tangentConeAt 𝕜 univ x = univ := by
 theorem tangentConeAt_of_mem_nhds [ContinuousAdd E] (h : s ∈ 𝓝 x) : tangentConeAt 𝕜 s x = univ := by
   rw [← s.univ_inter, tangentConeAt_inter_nhds h, tangentConeAt_univ]
 
-end TVSMonoid
+end TVS
 
 section UniqueDiff
 
