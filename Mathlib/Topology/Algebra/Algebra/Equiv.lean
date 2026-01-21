@@ -133,7 +133,6 @@ instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
     e.toContinuousLinearEquiv a = e a := rfl
 
-@[simp]
 theorem toContinuousLinearEquiv_toContinuousLinearMap_eq (e : A ≃A[R] B) :
     e.toContinuousLinearEquiv.toContinuousLinearMap
     = e.toContinuousAlgHom.toContinuousLinearMap := rfl
