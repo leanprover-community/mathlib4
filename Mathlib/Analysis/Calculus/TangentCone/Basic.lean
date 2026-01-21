@@ -141,7 +141,7 @@ theorem zero_mem_tangentConeAt (hx : x ∈ closure s) :
   · simp only [Pi.one_apply, one_smul]
     exact Continuous.tendsto' (by fun_prop) _ _ (by simp)
 
-@[deprecated (since := "2026-01-19")]
+@[deprecated (since := "2026-01-21")]
 alias zero_mem_tangentCone := zero_mem_tangentConeAt
 
 /-- If `x` is not an accumulation point of `s, then the tangent cone of `s` at `x`
