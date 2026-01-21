@@ -176,7 +176,7 @@ def associatedPrimes : Set (Ideal R) :=
 
 variable {I J M} {M' : Type*} [AddCommMonoid M'] [Module R M'] (f : M →ₗ[R] M')
 
-theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
+theorem AssociatedPrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPrime I M := Iff.rfl
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
@@ -296,7 +296,7 @@ theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
 
 theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
     ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
-  simp only [AssociatePrimes.mem_iff, isAssociatedPrime_iff]
+  simp only [AssociatedPrimes.mem_iff, isAssociatedPrime_iff]
   refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
   · rintro _ ⟨h, x, ⟨⟩⟩ r h'
     exact ⟨x, by simpa using h.ne_top, by simpa using h'⟩

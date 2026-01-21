@@ -49,27 +49,39 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
   · use f x
     ext t
     rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
-    rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_colon_singleton, mem_bot,
-      IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
-    refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
-    · use 1
-      simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx, Ideal.mem_comap]
-      have : (algebraMap R R') r =
+    simp only [← hrs, Ideal.mem_radical_iff, mem_colon_singleton, ← IsLocalizedModule.mk'_one S f,
+      ← IsLocalization.mk'_pow, IsLocalizedModule.mk'_smul_mk', mul_one, mem_bot,
+      IsLocalizedModule.mk'_eq_zero']
+    refine ⟨fun h ↦ ?_, fun ⟨n, t, ht⟩ ↦ ?_⟩
+    · have : (algebraMap R R') r =
         IsLocalization.mk' R' r s * IsLocalization.mk' R' s.1 (1 : S) := by
         rw [← IsLocalization.mk'_one (M := S) R', ← sub_eq_zero, ← IsLocalization.mk'_mul,
           ← IsLocalization.mk'_sub]
         simp
-      rw [this]
-      exact Ideal.IsTwoSided.mul_mem_of_left _ h
-    · have : t • r • x = (t.1 * r) • x := smul_smul t.1 r x
-      rw [this, ← mem_bot R, ← mem_colon_singleton, ← hx, Ideal.mem_comap,
-        ← IsLocalization.mk'_one (M := S) R'] at ht
+      have key := this ▸ Ideal.IsTwoSided.mul_mem_of_left _ h
+      rw [← Ideal.mem_comap, hx] at key
+      obtain ⟨n, hn⟩ := key
+      use n
+      rw [mem_colon_singleton, mem_bot] at hn
+      use 1
+      rw [hn, one_smul]
+    · have h1 : t • r ^ n • x = t.1 • r ^ n • x := rfl
       have : IsLocalization.mk' R' r s =
         IsLocalization.mk' (M := S) R' (t.1 * r) 1 * IsLocalization.mk' R' 1 (t * s) := by
         rw [← IsLocalization.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← IsLocalization.mk'_sub,
           Submonoid.coe_mul]
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
-      simpa [this] using Ideal.IsTwoSided.mul_mem_of_left _ ht
+      rw [this]
+      refine Ideal.IsTwoSided.mul_mem_of_left _ ?_
+      rw [IsLocalization.mk'_one, ← Ideal.mem_comap, hx]
+      by_cases hn : n = 0
+      · refine Ideal.IsTwoSided.mul_mem_of_left _ ?_
+        use 1
+        simpa [hn] using ht
+      · use n
+        rw [mem_colon_singleton, mem_bot]
+        rw [mul_pow, mul_smul]
+        rw [← pow_sub_one_mul hn, mul_smul, ← h1, ht, smul_zero]
 
 @[deprecated (since := "2025-08-15")]
 alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
@@ -98,24 +110,35 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
   simp only [Function.uncurry_apply_pair] at hx
   have mem (a : T) : algebraMap R R' a ∈ p := by
     simpa [← Ideal.mem_comap, ← hT] using Ideal.subset_span a.2
-  simp only [hx, mem_bot, mem_colon_singleton, algebraMap_smul,
+  simp only [hx, Ideal.mem_radical_iff, mem_bot, mem_colon_singleton, ← map_pow, algebraMap_smul,
     ← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero' f] at mem
-  choose g hg using mem
+  choose e g hg using mem
   refine ⟨.under R p, (∏ a, g a).1 • m, le_antisymm ?_ fun r hr ↦ ?_⟩
   · rw [← hT, Ideal.span_le]
     intro a ha
-    simp only [SetLike.mem_coe, mem_bot, mem_colon_singleton]
+    simp only [SetLike.mem_coe, Ideal.mem_radical_iff, mem_bot, mem_colon_singleton]
     obtain ⟨u, hu⟩ : g ⟨a, ha⟩ ∣ (∏ a, g a) := by
       apply Finset.dvd_prod_of_mem g (Finset.mem_univ ⟨a, ha⟩)
+    use e ⟨a, ha⟩
     rw [hu, Submonoid.coe_mul, smul_smul, ← mul_assoc, mul_comm, ← smul_smul, mul_comm, ← smul_smul]
     exact smul_eq_zero_of_right u.1 (hg ⟨a, ha⟩)
-  · simp only [mem_bot, mem_colon_singleton, smul_smul] at hr
-    have mem : r * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
-      simpa only [hx, Ideal.mem_comap, mem_bot, mem_colon_singleton, algebraMap_smul,
-        ← IsLocalizedModule.mk'_smul, hr] using IsLocalizedModule.mk'_zero f s
-    have := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
-    have := (Ideal.IsPrime.under R p).mul_mem_iff_mem_or_mem.mp mem
-    tauto
+  · simp only [Ideal.mem_radical_iff, mem_bot, mem_colon_singleton, smul_smul] at hr
+    obtain ⟨k, hk⟩ := hr
+    have mem : r ^ k * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
+      have := IsLocalizedModule.mk'_zero f s
+      simp only [hx, Ideal.mem_comap, Ideal.mem_radical_iff,
+        mem_bot, mem_colon_singleton, ← map_pow, algebraMap_smul,
+        ← IsLocalizedModule.mk'_smul] at this ⊢
+      use 1
+      simp only [pow_one,
+        IsLocalizedModule.mk'_eq_zero, map_smul]
+      rw [← f.map_smul, hk, map_zero]
+    have h1 := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
+    have h2 := (Ideal.IsPrime.under R p).mul_mem_iff_mem_or_mem.mp mem
+    refine hp.mem_of_pow_mem k ?_
+    have key := h2.resolve_right h1
+    rw [Ideal.under, Ideal.mem_comap, map_pow] at key
+    exact key
 
 variable (R')
 
