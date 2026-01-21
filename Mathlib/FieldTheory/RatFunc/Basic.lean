@@ -63,6 +63,19 @@ section Field
 
 variable [CommRing K]
 
+instance : Zero (RatFunc K) := inferInstance
+instance : Add (RatFunc K) := inferInstance
+instance : Sub (RatFunc K) := inferInstance
+instance : Neg (RatFunc K) := inferInstance
+instance : One (RatFunc K) := inferInstance
+instance : Mul (RatFunc K) := inferInstance
+
+section IsDomain
+variable [IsDomain K]
+instance : Div (RatFunc K) := inferInstance
+instance : Inv (RatFunc K) := inferInstance
+end IsDomain
+
 section SMul
 
 variable {R : Type*}
@@ -82,9 +95,17 @@ theorem mk_smul (c : R) (p q : K[X]) : RatFunc.mk (c • p) q = c • RatFunc.mk
   · rw [hq, mk_zero, mk_zero, smul_zero]
   · rw [mk_eq_localization_mk _ hq, mk_eq_localization_mk _ hq, ← Localization.smul_mk]
 
+instance : IsScalarTower R K[X] (RatFunc K) := inferInstance
+
 end IsDomain
 
 end SMul
+
+variable (K)
+
+instance [Subsingleton K] : Subsingleton (RatFunc K) := inferInstance
+instance : Inhabited (RatFunc K) := inferInstance
+instance instNontrivial [Nontrivial K] : Nontrivial (RatFunc K) := inferInstance
 
 end Field
 
@@ -114,6 +135,8 @@ end TacticInterlude
 section CommRing
 
 variable [CommRing K]
+
+instance instCommRing : CommRing (RatFunc K) := inferInstance
 
 section LiftHom
 
@@ -255,6 +278,11 @@ theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function
 end LiftHom
 
 variable (K)
+
+@[stacks 09FK]
+instance instField [IsDomain K] : Field (RatFunc K) := inferInstance
+
+instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) := inferInstance
 
 section IsFractionRing
 
@@ -403,6 +431,9 @@ theorem liftAlgHom_apply_div (p q : K[X]) :
 
 end LiftAlgHom
 
+variable (K) in
+instance : IsFractionRing K[X] (RatFunc K) := inferInstance
+
 theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 := by
   simpa
 
@@ -448,7 +479,12 @@ variable (R L : Type*) [CommRing R] [Field L] [IsDomain R] [Algebra R[X] L] [Fai
 This is a scoped instance because it creates a diamond when `L = RatFunc R`. -/
 scoped instance liftAlgebra : Algebra (RatFunc R) L := FractionRing.liftAlgebra ..
 
+instance isScalarTower_liftAlgebra : IsScalarTower R[X] (RatFunc R) L := inferInstance
+
 attribute [local instance] Polynomial.algebra
+
+instance faithfulSMul (K E : Type*) [Field K] [Field E] [Algebra K E]
+    [FaithfulSMul K E] : FaithfulSMul K[X] (RatFunc E) := inferInstance
 
 section rank
 
@@ -473,6 +509,19 @@ end rank
 end lift
 
 section IsScalarTower
+
+/-- Let `RatFunc A / A[X] / R / R₀` be a tower. If `A[X] / R / R₀` is a scalar tower
+then so is `RatFunc A / R / R₀`. -/
+instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A]
+    [Algebra R₀ A[X]] [SMul R₀ R] [Algebra R A[X]] [IsScalarTower R₀ R A[X]] :
+    IsScalarTower R₀ R (RatFunc A) := inferInstance
+
+/-- Let `K / RatFunc A / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
+then so is `K / RatFunc A / R`. -/
+instance (R A K : Type*) [CommRing A] [Field K] [Algebra A[X] K]
+    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
+    IsScalarTower R (RatFunc A) K :=
+  inferInstance
 
 /-- Let `K / k / RatFunc A / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
 then so is `K / k / RatFunc A`. -/
