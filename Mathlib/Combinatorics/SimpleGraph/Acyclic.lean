@@ -515,8 +515,10 @@ section
 
 open Finset
 variable {V : Type*} [Fintype V]
+/-- A pendent vertex (or leaf) is a vertex with degree 1. -/
 def IsPendentVertex (G : SimpleGraph V) [DecidableRel G.Adj] (v : V) : Prop :=
   G.degree v = 1
+/-- The set of all pendent vertices in a graph. -/
 def pendentVertices (G : SimpleGraph V) [DecidableRel G.Adj] : Finset V :=
   univ.filter (fun v => G.degree v = 1)
 lemma Connected.one_le_degree (G : SimpleGraph V) [DecidableRel G.Adj]
