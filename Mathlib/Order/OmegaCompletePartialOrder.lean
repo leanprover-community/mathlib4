@@ -306,8 +306,8 @@ lemma ωScottContinuous.comp' (hg : ωScottContinuous g) (hf : ωScottContinuous
   comp hg hf
 
 @[fun_prop]
-lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) := by
-  simp [ωScottContinuous, ScottContinuousOn, Set.range_nonempty]
+lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
+  ScottContinuousOn.const x
 
 @[fun_prop]
 lemma ωScottContinuous.const' {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
@@ -460,14 +460,12 @@ lemma ωScottContinuous.prodMk
   ) hf hg
 
 @[fun_prop]
-lemma ωScottContinuous_fst : ωScottContinuous (Prod.fst : α × β → α) := by
-  rw [ωScottContinuous_iff_monotone_map_ωSup]
-  exact ⟨monotone_fst, fun _ ↦ rfl⟩
+lemma ωScottContinuous_fst : ωScottContinuous (Prod.fst : α × β → α) :=
+  ScottContinuousOn.fst
 
 @[fun_prop]
-lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) := by
-  rw [ωScottContinuous_iff_monotone_map_ωSup]
-  exact ⟨monotone_snd, fun _ ↦ rfl⟩
+lemma ωScottContinuous_snd : ωScottContinuous (Prod.snd : α × β → β) :=
+  ScottContinuousOn.snd
 
 end Prod
 
