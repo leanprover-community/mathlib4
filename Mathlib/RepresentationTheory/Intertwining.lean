@@ -78,11 +78,7 @@ instance : SMul A (IntertwiningMap ρ σ) :=
     ((a • f : IntertwiningMap ρ σ) : V → W) = a • f := rfl
 
 instance : SMul ℕ (IntertwiningMap ρ σ) :=
-  ⟨fun n f =>
-    { toLinearMap := n • f.toLinearMap
-      isIntertwining := by
-        intro g v
-        simp [LinearMap.smul_apply, f.isIntertwining]}⟩
+  ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [f.isIntertwining]⟩⟩
 
 @[simp] lemma coe_nsmul (n : ℕ) (f : IntertwiningMap ρ σ) :
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
