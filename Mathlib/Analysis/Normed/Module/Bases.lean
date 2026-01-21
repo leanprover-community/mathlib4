@@ -20,7 +20,7 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
 /-- A Schauder basis is a sequence (e n) of vectors in X such that there exists a sequence of
     continuous linear functionals (f n) (the coordinate functionals) satisfying:
-    1) f i (e j) = δ_{ij} (the Kronecker delta)
+    1) f i (e j) = δ_{ij}
     2) for every x : X, the series ∑_{n=0}^∞ f n (x) e n converges to x.
 
     In other words, every vector in X can be uniquely represented as a convergent series of basis
@@ -30,7 +30,7 @@ structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜
   coord : ℕ → StrongDual 𝕜 X
   -- Biorthogonality
   ortho : ∀ i j, coord i (e j) = if i = j then 1 else 0
-  -- Convergence of partial sums (Standard Schauder Basis definition)
+  -- Convergence of partial sums
   basis_expansion : ∀ x : X, Tendsto (fun n ↦ ∑ i ∈ Finset.range n, coord i x • e i)
     atTop (𝓝 x)
 
@@ -45,24 +45,21 @@ theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 
   ext i
   have hsum : ∑ i ∈ l.support, l i • e i = 0 := hl
   -- Apply the i-th coordinate functional to the linear combination
-  have h_app : h.coord i (∑ j ∈ l.support, l j • e j) = 0 := by rw [hsum, map_zero]
-  rw [map_sum] at h_app
-  -- The sum collapses to just the i-th term
-  simp_rw [ContinuousLinearMap.map_smul] at h_app
-  rw [Finset.sum_eq_single i, h.ortho i i] at h_app
-  · simpa using h_app
+  have happ : h.coord i (∑ j ∈ l.support, l j • e j) = 0 := by rw [hsum, map_zero]
+  rw [map_sum] at happ
+  simp_rw [ContinuousLinearMap.map_smul] at happ
+  rw [Finset.sum_eq_single i, h.ortho i i] at happ
+  · simpa using happ
   · intro j _ hji; rw [h.ortho i j, if_neg hji.symm]; simp
   · intro hi; simp [Finsupp.notMem_support_iff.mp hi]
 
 /-- A canonical projection P_n associated to a Schauder basis given by coordinate functionals f_i:
     P_n x = ∑_{i < n} f_i(x) e_i -/
-def proj (n : ℕ) : X →L[𝕜] X :=
-  ∑ i ∈ Finset.range n, (b.coord i).smulRight (e i)
+def proj (n : ℕ) : X →L[𝕜] X := ∑ i ∈ Finset.range n, (b.coord i).smulRight (e i)
 
 /-- The action of the canonical projection on a vector x. -/
-theorem proj_apply (n : ℕ) (x : X) :
-    b.proj n x = ∑ i ∈ Finset.range n, b.coord i x • e i := by
-  simp [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
+theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.coord i x • e i := by
+  simp only [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
 
 /-- The action of the canonical projection on a basis element e i. -/
 @[simp]
@@ -71,7 +68,7 @@ theorem proj_basis_element (n i : ℕ) :
     rw [proj_apply]
     by_cases hin : i < n
     · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
-      · simp [b.ortho, if_pos hin]
+      · simp only [b.ortho, ↓reduceIte, one_smul, if_pos hin]
       · intro j _ hji; rw [b.ortho j i, if_neg hji, zero_smul]
     rw [if_neg hin, Finset.sum_eq_zero]
     intro j hj
@@ -81,8 +78,7 @@ theorem proj_basis_element (n i : ℕ) :
 
 /-- The range of the canonical projection is the span of the first n basis elements. -/
 theorem range_canonicalProjection (n : ℕ) :
-    LinearMap.range (b.proj n) =
-        Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
+    LinearMap.range (b.proj n) = Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
     rw [proj_apply b]
@@ -94,32 +90,25 @@ theorem range_canonicalProjection (n : ℕ) :
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     use e i
-    rw [proj_basis_element b]
-    rw [if_pos i.is_lt]
+    rw [proj_basis_element , if_pos i.is_lt]
 
 /-- The dimension of the range of the canonical projection P n is n. -/
-theorem dim_of_range (n : ℕ) :
-    Module.finrank 𝕜 (LinearMap.range (b.proj n)) = n := by
-  rw [range_canonicalProjection]
-  -- The dimension of the span of linearly independent vectors is the cardinality of the set
-  rw [finrank_span_eq_card]
+theorem dim_of_range (n : ℕ) : Module.finrank 𝕜 (LinearMap.range (b.proj n)) = n := by
+  rw [range_canonicalProjection, finrank_span_eq_card]
   · exact Fintype.card_fin n
-  · -- The subfamily is linearly independent because the whole family is
-    exact b.linearIndependent.comp (fun (i : Fin n) => (i : ℕ)) Fin.val_injective
-
+  · exact b.linearIndependent.comp (fun (i : Fin n) => (i : ℕ)) Fin.val_injective
 
 /-- The canonical projections converge pointwise to the identity map. -/
 theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) := by
-  simp_rw [proj_apply]
-  exact b.basis_expansion x
+  simp_rw [proj_apply, b.basis_expansion x]
 
 /-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
-theorem uniform_bound [CompleteSpace X] :  ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
+theorem uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
   apply banach_steinhaus
   intro x
   let f: ℕ → X := fun n => b.proj n x
   have : ∃ M : ℝ, ∀ x ∈ Set.range f, ‖x‖ ≤ M :=
-      isBounded_iff_forall_norm_le.mp (Metric.isBounded_range_of_tendsto _ (proj_tendsto_id b x ))
+      isBounded_iff_forall_norm_le.mp (Metric.isBounded_range_of_tendsto f (proj_tendsto_id b x ))
   rcases this with ⟨M, hM⟩
   rw [Set.forall_mem_range] at hM
   use M
@@ -130,6 +119,7 @@ def basis_constant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
 /-- Q_n = P_{n+1} - P_n. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
 
+/-- The sum of Q i over i < n equals P n. -/
 @[simp]
 lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
     ∑ i ∈ Finset.range n, Q P i = P n := by
@@ -137,6 +127,7 @@ lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) :
   | zero => simp [h0]
   | succ n ih => rw [Finset.sum_range_succ, ih, Q]; abel
 
+/-- The operators Q i are orthogonal projectionsP. -/
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
   (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
   simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
@@ -151,7 +142,9 @@ lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m
         min_eq_right_of_lt (Nat.lt_succ_of_lt h')]
       abel
 
-/-- The rank of Q n is 1, given appropriate properties of P. -/
+-- TODO refactor the proof below to avoid sorrys and clean the next one
+
+/-- The rank of Q n is 1. -/
 lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     (h_rank : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)  (n : ℕ) :
@@ -188,8 +181,7 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   rw [Nat.add_comm] at this
   exact Nat.add_right_cancel this.symm
 
-/-- Constructs a Schauder basis from a sequence of canonical projections
-    satisfying appropriate properties. -/
+/-- Constructs a Schauder basis from a sequence of canonical projections. -/
 theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X}
     (h0 : P 0 = 0)
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n)) = n)
