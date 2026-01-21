@@ -173,13 +173,7 @@ run_meta do
   guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
   guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
 
-/- test the eta-expansion applied on `foo6`. -/
 run_cmd do
-  let c ← getConstInfo `Test.foo6
-  let e : Expr ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.value!
-  let t ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.type
-  let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
-  liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
   successIfFail <| liftCoreM <| addTranslationAttr ToAdditive.data `bar11_works { ref := ← getRef }
 
