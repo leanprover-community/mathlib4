@@ -6898,6 +6898,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.InfiniteSum.DiscreteConvolution
 public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Topology.Algebra.InfiniteSum.Field
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
@@ -6911,6 +6912,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+public import Mathlib.Topology.Algebra.InfiniteSum.test.TerminationDemo
 public import Mathlib.Topology.Algebra.IntermediateField
 public import Mathlib.Topology.Algebra.IsOpenUnits
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
