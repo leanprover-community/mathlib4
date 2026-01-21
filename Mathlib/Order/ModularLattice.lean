@@ -432,12 +432,7 @@ instance complementedLattice_Ici : ComplementedLattice (Set.Ici a) where
 theorem Disjoint.exists_isCompl {a b : α} (hab : Disjoint a b) :
     ∃ a' : α, a ≤ a' ∧ IsCompl a' b := by
   obtain ⟨u, hu⟩ := ComplementedLattice.exists_isCompl (a ⊔ b)
-  rw [sup_comm] at hu
-  refine ⟨a ⊔ u, le_sup_left, ?_, ?_⟩
-  · rw [disjoint_comm] at *
-    exact hab.disjoint_sup_right_of_disjoint_sup_left hu.disjoint
-  · rw [codisjoint_comm, ← codisjoint_assoc]
-    exact hu.codisjoint
+  exact ⟨u ⊔ a, le_sup_right, hab.isCompl_sup_left_of_isCompl_sup_right hu.symm⟩
 
 /-- A codisjoint element can be shrunk to a complementary element. -/
 theorem Codisjoint.exists_isCompl {a b : α} (hab : Codisjoint a b) :
