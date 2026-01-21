@@ -242,18 +242,14 @@ theorem _root_.DenseRange.topologicalClosure_map_submodule [RingHomSurjective σ
   simp only [Submodule.topologicalClosure_coe, Submodule.top_coe, ← dense_iff_closure_eq] at hs ⊢
   exact hf'.dense_image f.continuous hs
 
-section SMulMonoid
+section SMul
 
-variable {S₂ T₂ : Type*} [Monoid S₂] [Monoid T₂]
-variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
-variable [DistribMulAction T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
+variable {S₂ T₂ : Type*}
+variable [DistribSMul S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
+variable [DistribSMul T₂ M₂] [SMulCommClass R₂ T₂ M₂] [ContinuousConstSMul T₂ M₂]
 
 instance instSMul : SMul S₂ (M₁ →SL[σ₁₂] M₂) where
   smul c f := ⟨c • (f : M₁ →ₛₗ[σ₁₂] M₂), (f.2.const_smul _ : Continuous fun x => c • f x)⟩
-
-instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
-  one_smul _f := ext fun _x => one_smul _ _
-  mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
 
 theorem smul_apply (c : S₂) (f : M₁ →SL[σ₁₂] M₂) (x : M₁) : (c • f) x = c • f x :=
   rfl
@@ -274,6 +270,17 @@ instance isScalarTower [SMul S₂ T₂] [IsScalarTower S₂ T₂ M₂] :
 
 instance smulCommClass [SMulCommClass S₂ T₂ M₂] : SMulCommClass S₂ T₂ (M₁ →SL[σ₁₂] M₂) :=
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
+
+end SMul
+
+section SMulMonoid
+
+variable {S₂ : Type*} [Monoid S₂]
+variable [DistribMulAction S₂ M₂] [SMulCommClass R₂ S₂ M₂] [ContinuousConstSMul S₂ M₂]
+
+instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) where
+  one_smul _f := ext fun _x => one_smul _ _
+  mul_smul _a _b _f := ext fun _x => mul_smul _ _ _
 
 end SMulMonoid
 
