@@ -15,7 +15,7 @@ This file contains lemmas that state the existence of random variables with give
 and a given dependency structure (currently only mutual independence is considered).
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure
 

@@ -706,7 +706,7 @@ However, since `Category.assoc` is a `@[simp]` lemma, often expressions are
 right associated, and it's hard to apply these lemmas about `colimit.ι`.
 
 We thus use `reassoc` to define additional `@[simp]` lemmas, with an arbitrary extra morphism.
-(see `Tactic/reassoc_axiom.lean`)
+(see `Mathlib/Tactic/CategoryTheory/Reassoc.lean`)
 -/
 @[reassoc (attr := simp)]
 theorem colimit.ι_desc {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) :

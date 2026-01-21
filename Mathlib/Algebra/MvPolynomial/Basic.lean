@@ -554,8 +554,6 @@ theorem mem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∈ p.su
 theorem notMem_support_iff {p : MvPolynomial σ R} {m : σ →₀ ℕ} : m ∉ p.support ↔ p.coeff m = 0 :=
   by simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
-
 theorem sum_def {A} [AddCommMonoid A] {p : MvPolynomial σ R} {b : (σ →₀ ℕ) → R → A} :
     p.sum b = ∑ m ∈ p.support, b m (p.coeff m) := by simp [support, Finsupp.sum, coeff]
 
@@ -709,8 +707,9 @@ theorem support_X_mul (s : σ) (p : MvPolynomial σ R) :
   AddMonoidAlgebra.support_single_mul p _ (by simp) _
 
 @[simp]
-theorem support_smul_eq {S₁ : Type*} [Semiring S₁] [Module S₁ R] [NoZeroSMulDivisors S₁ R] {a : S₁}
-    (h : a ≠ 0) (p : MvPolynomial σ R) : (a • p).support = p.support :=
+theorem support_smul_eq {S : Type*} [Semiring S] [IsDomain S] [Module S R]
+    [Module.IsTorsionFree S R] {a : S} (h : a ≠ 0) (p : MvPolynomial σ R) :
+    (a • p).support = p.support :=
   Finsupp.support_smul_eq h
 
 theorem support_sdiff_support_subset_support_add [DecidableEq σ] (p q : MvPolynomial σ R) :
@@ -886,8 +885,6 @@ lemma zero_notMem_coeffs (p : MvPolynomial σ R) : 0 ∉ p.coeffs := by
   obtain ⟨n, hnsupp, hn⟩ := mem_coeffs_iff.mp hz
   exact (mem_support_iff.mp hnsupp) hn.symm
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_coeffs := zero_notMem_coeffs
-
 lemma coeffs_C [DecidableEq R] (r : R) : (C (σ := σ) r).coeffs = if r = 0 then ∅ else {r} := by
   classical
   aesop (add simp mem_coeffs_iff)
@@ -998,9 +995,9 @@ variable (σ M) in
 @[simps]
 def coeffsIn : Submodule R (MvPolynomial σ S) where
   carrier := {p | ∀ i, p.coeff i ∈ M}
-  add_mem' := by simp+contextual [add_mem]
+  add_mem' := by simp +contextual [add_mem]
   zero_mem' := by simp
-  smul_mem' := by simp+contextual [Submodule.smul_mem]
+  smul_mem' := by simp +contextual [Submodule.smul_mem]
 
 lemma mem_coeffsIn : p ∈ coeffsIn σ M ↔ ∀ i, p.coeff i ∈ M := .rfl
 

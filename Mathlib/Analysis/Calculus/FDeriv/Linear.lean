@@ -18,7 +18,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 bounded linear maps.
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics

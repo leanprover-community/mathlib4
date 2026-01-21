@@ -132,7 +132,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     · simp_all [U']
     obtain ⟨j, hj, hj'⟩ := key i hi
     obtain ⟨k, hk⟩ := ih j hj (hj' <| Submodule.mem_map_of_mem hx)
-    use k+1
+    use k + 1
     rw [pow_succ, Module.End.mul_apply, hk]
   have trace_za : (toEnd R A _ ⁅z, a⁆).trace R U = χ ⁅z, a⁆ • (finrank R U) := by
     simpa [T, sub_eq_zero] using trace_T_U_zero ⁅z, a⁆
@@ -164,6 +164,7 @@ variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModul
 
 variable [CharZero k] [Module.Finite k V]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open Submodule in
 theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable k L V]
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
@@ -211,7 +212,7 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
     (L : Type*) [LieRing L] [LieAlgebra k L] [LieRingModule L V] [LieModule k L V]
     [IsSolvable L] [LieModule.IsTriangularizable k L V] [Module.Finite k L] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
-  obtain H|⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
+  obtain H | ⟨A, hA, hAL⟩ := eq_top_or_exists_le_coatom (derivedSeries k L 1).toSubmodule
   · obtain _ | _ := subsingleton_or_nontrivial L
     · use 0
       simpa [mem_weightSpace, nontrivial_iff] using exists_pair_ne V

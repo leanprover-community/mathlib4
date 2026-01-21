@@ -39,7 +39,7 @@ universe v u
 variable (n : Type v) (S : Scheme.{max u v})
 
 local notation3 "ℤ[" n "]" => CommRingCat.of (MvPolynomial n (ULift ℤ))
-local notation3 "ℤ[" n "].{" u "," v "}" => CommRingCat.of (MvPolynomial n (ULift.{max u v} ℤ))
+local notation3 "ℤ[" n "].{" u ", " v "}" => CommRingCat.of (MvPolynomial n (ULift.{max u v} ℤ))
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`.
 Note that `n` is an arbitrary index type (e.g. `Fin m`). -/
@@ -49,7 +49,7 @@ def AffineSpace (n : Type v) (S : Scheme.{max u v}) : Scheme.{max u v} :=
 namespace AffineSpace
 
 /-- `𝔸(n; S)` is the affine `n`-space over `S`. -/
-scoped[AlgebraicGeometry] notation "𝔸("n"; "S")" => AffineSpace n S
+scoped[AlgebraicGeometry] notation "𝔸(" n "; " S ")" => AffineSpace n S
 
 variable {n} in
 lemma of_mvPolynomial_int_ext {R} {f g : ℤ[n] ⟶ R} (h : ∀ i, f (.X i) = g (.X i)) : f = g := by
@@ -367,8 +367,8 @@ lemma map_reindex {n₁ n₂ : Type v} (i : n₁ → n₂) {S T : Scheme.{max u 
 def functor : (Type v)ᵒᵖ ⥤ Scheme.{max u v} ⥤ Scheme.{max u v} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
   map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
-  map_id n := by ext: 2; exact reindex_id _
-  map_comp f g := by ext: 2; dsimp; exact reindex_comp _ _ _
+  map_id n := by ext : 2; exact reindex_id _
+  map_comp f g := by ext : 2; dsimp; exact reindex_comp _ _ _
 
 end functorial
 section instances

@@ -331,9 +331,10 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
 
 /-- There exists a trail of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Fintype G.edgeSet] :
+    [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsTrail),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsTrail), p'.length ≤ p.length := by
+  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
   have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
     fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_card_edgeFinset
@@ -345,9 +346,10 @@ lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [N : No
 
 /-- There exists a path of maximal length in a non-empty graph on finite edges. -/
 lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : Nonempty V]
-    [Fintype G.edgeSet] :
+    [Finite G.edgeSet] :
     ∃ (u v : V) (p : G.Walk u v) (_ : p.IsPath),
       ∀ (u' v' : V) (p' : G.Walk u' v') (_ : p'.IsPath), p'.length ≤ p.length := by
+  have := Fintype.ofFinite G.edgeSet
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
   have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeFinset.card)
     fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_card_edgeFinset
@@ -571,9 +573,6 @@ lemma endpoint_notMem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w
     (hn.symm ▸ p.getVert_length.symm)
   lia
 
-@[deprecated (since := "2025-05-23")]
-alias endpoint_not_mem_support_takeUntil := endpoint_notMem_support_takeUntil
-
 end WalkDecomp
 
 end Walk
@@ -631,8 +630,6 @@ theorem loop_eq {v : V} (p : G.Path v v) : p = Path.nil := by
 
 theorem notMem_edges_of_loop {v : V} {e : Sym2 V} {p : G.Path v v} :
     e ∉ (p : G.Walk v v).edges := by simp [p.loop_eq]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_edges_of_loop := notMem_edges_of_loop
 
 theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
     (he : s(u, v) ∉ (p : G.Walk v u).edges) : (Walk.cons h ↑p).IsCycle := by

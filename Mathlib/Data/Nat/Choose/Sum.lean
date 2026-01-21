@@ -20,7 +20,7 @@ coefficients. Theorems whose proofs depend on such sums may also go in this file
 reasons.
 -/
 
-@[expose] public section
+public section
 
 open Nat Finset
 
@@ -149,6 +149,12 @@ lemma sum_range_add_choose (n k : ℕ) :
   rw [← sum_Icc_choose, range_eq_Ico]
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
   rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
+
+lemma sum_range_multichoose (n k : ℕ) :
+    ∑ i ∈ Finset.range (n + 1), k.multichoose i = (n + k).choose k := by
+  cases k with
+  | zero => simp [Finset.sum_range_succ']
+  | succ k => grind [multichoose_eq, choose_symm_of_eq_add, sum_range_add_choose]
 
 end Nat
 

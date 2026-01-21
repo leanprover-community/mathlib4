@@ -196,7 +196,7 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
   haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
     ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
-  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+  apply (TensorProduct.directSumLeft R R M N).toEquiv.nontrivial
 
 /-- Free `R`-modules over discrete types are flat. -/
 instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
@@ -394,6 +394,11 @@ lemma lTensor_surjective_iff_surjective [Module.FaithfullyFlat R M] :
   conv_rhs => rw [← lTensor_exact_iff_exact R M]
   simp
 
+@[simp]
+lemma lTensor_bijective_iff_bijective [Module.FaithfullyFlat R M] :
+    Function.Bijective (f.lTensor M) ↔ Function.Bijective f := by
+  simp [Function.Bijective]
+
 end
 
 end arbitrary_universe
@@ -473,7 +478,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
 @[simp]
 theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
-    (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
+    (1 : A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
   constructor; swap
   · rintro rfl; rw [tmul_zero]
   intro h

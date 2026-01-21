@@ -104,7 +104,7 @@ lemma connected_sup {H K : G.Subgraph}
   rw [Subgraph.connected_iff', connected_iff_exists_forall_reachable]
   obtain ⟨u, hu, hu'⟩ := hn
   exists ⟨u, Or.inl hu⟩
-  rintro ⟨v, (hv|hv)⟩
+  rintro ⟨v, (hv | hv)⟩
   · exact Reachable.map (Subgraph.inclusion (le_sup_left : H ≤ H ⊔ K)) (hH ⟨u, hu⟩ ⟨v, hv⟩)
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
@@ -403,7 +403,7 @@ lemma snd_of_toSubgraph_adj {u v v'} {p : G.Walk u v} (hp : p.IsPath)
     (hadj : p.toSubgraph.Adj u v') : p.snd = v' := by
   have ⟨i, hi⟩ := p.toSubgraph_adj_iff.mp hadj
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at hi
-  rcases hi.1 with ⟨hl1, rfl⟩|⟨hr1, hr2⟩
+  rcases hi.1 with ⟨hl1, rfl⟩ | ⟨hr1, hr2⟩
   · have : i = 0 := by
       apply hp.getVert_injOn (by rw [Set.mem_setOf]; lia) (by rw [Set.mem_setOf]; lia)
       rw [p.getVert_zero, hl1]
@@ -466,7 +466,7 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by
   have : w ∈ p.toSubgraph.neighborSet v := hadj
   rw [h.neighborSet_toSubgraph_endpoint] at this
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+  push _ ∈ _ at this
   obtain hl | hr := this
   · exact ⟨p, ⟨h, hl.symm, rfl⟩⟩
   · use p.reverse

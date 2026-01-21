@@ -210,8 +210,6 @@ noncomputable def diagonalSuccIsoTensorDiagonal [Monoid G] (n : ℕ) :
     diagonal G (n + 1) ≅ leftRegular G ⊗ diagonal G n :=
   mkIso (Fin.consEquiv _).symm.toIso fun _ => rfl
 
-@[deprecated (since := "2025-06-02")] alias diagonalSucc := diagonalSuccIsoTensorDiagonal
-
 variable [Group G]
 
 /-- Given `X : Action (Type u) G` for `G` a group, then `G × X` (with `G` acting as left

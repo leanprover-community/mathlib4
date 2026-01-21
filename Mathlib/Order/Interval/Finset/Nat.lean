@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Embedding
-public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -74,6 +73,10 @@ theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
 
 theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
   rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
+
+theorem range_succ_eq_Iic (n : ℕ) : range (n + 1) = Iic n := by
+  rw [range_succ_eq_Icc_zero]
+  rfl
 
 @[simp] lemma card_Icc : #(Icc a b) = b + 1 - a := List.length_range' ..
 @[simp] lemma card_Ico : #(Ico a b) = b - a := List.length_range' ..

@@ -5,9 +5,9 @@ Authors: Emily Riehl
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
 /-!
 # Cartesian closed structure on `Cat`
@@ -75,7 +75,7 @@ instance closed : Closed (Cat.of C) where
       homEquiv_naturality_left_symm _ _ := rfl
       homEquiv_naturality_right _ _ := rfl }
 
-instance cartesianClosed : CartesianClosed Cat.{u, u} where
+instance cartesianClosed : MonoidalClosed Cat.{u, u} where
   closed C := closed C
 
 @[simp]
