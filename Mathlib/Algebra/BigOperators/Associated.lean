@@ -89,7 +89,7 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
   induction m using Multiset.induction generalizing x y with
   | empty =>
     apply subset_closure
-    simp only [Set.mem_setOf]
+    push _ ∈ _
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>

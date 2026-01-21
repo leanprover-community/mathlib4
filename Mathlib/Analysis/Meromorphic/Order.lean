@@ -595,7 +595,7 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
-        simp only [mem_compl_iff, mem_setOf_eq]
+        push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
         · rw [meromorphicOrderAt_eq_top_iff, not_eventually]
