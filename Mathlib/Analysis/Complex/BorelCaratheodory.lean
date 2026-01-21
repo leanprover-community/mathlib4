@@ -22,7 +22,7 @@ open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 
 ## Implementation Notes
 
-The proof applies the Schwarz lemma to the transformed function `w(z) = f(z) / (2M - f(z))`,
+The proof applies the Schwarz lemma to the transformed function `fun z ↦ f z / (2 * M - f z)`,
 which maps the ball `|z| < R` into the unit disk provided that `(f z).re < M` for all `|z| < R`.
 After obtaining bounds on `w`, we invert the transformation to recover bounds on `f`.
 
