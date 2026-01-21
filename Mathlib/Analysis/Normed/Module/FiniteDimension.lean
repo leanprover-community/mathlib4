@@ -152,7 +152,7 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
 theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
     ∃ K : ℝ≥0, LipschitzWith K f := by
   let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
-  refine ⟨⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
+  refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
   rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
   exact fL.le_opNorm _
 
