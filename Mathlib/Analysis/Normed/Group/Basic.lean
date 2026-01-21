@@ -41,6 +41,8 @@ to for performance concerns.
 normed group
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 
@@ -920,7 +922,7 @@ theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ �
   nontrivialTopology_iff_exists_nnnorm_ne_zero'.1 ‹_›
 
 @[to_additive (attr := nontriviality) nnnorm_eq_zero]
-theorem nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
+theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
   indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
 
 alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
@@ -952,8 +954,8 @@ variable (E) in
 theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
   nontrivialTopology_iff_exists_norm_ne_zero'.1 ‹_›
 
-@[to_additive (attr := nontriviality) norm_eq_zero]
-theorem norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
+@[to_additive (attr := nontriviality) IndiscreteTopology.norm_eq_zero]
+theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
   indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
 
 alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
