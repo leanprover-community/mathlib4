@@ -35,148 +35,149 @@ lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
 
 open Function Filter Topology
 
-/-- `agmSequences x y` returns the pair of sequences converging to the arithmetic-geometric mean
-starting from `x` and `y`, with the sequence of geometric means first. -/
-noncomputable def agmSequences (x y : ℝ≥0) : (ℕ → ℝ≥0) × (ℕ → ℝ≥0) :=
-  Equiv.arrowProdEquivProdArrow _ _ _ ((fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[·] (x, y))
+/-- `agmSequences x y` is the sequence of (geometric, arithmetic) means
+converging to the arithmetic-geometric mean starting from `x` and `y`. -/
+noncomputable def agmSequences (x y : ℝ≥0) : ℕ → ℝ≥0 × ℝ≥0 :=
+  fun n ↦ (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (x, y)
 
-variable {x y : ℝ≥0} {m n : ℕ}
+variable {x y : ℝ≥0} {n : ℕ}
 
-lemma agmSequences_fst_comm : (agmSequences x y).1 (n + 1) = (agmSequences y x).1 (n + 1) := by
-  simp [agmSequences, mul_comm, add_comm]
+@[simp]
+lemma agmSequences_zero : agmSequences x y 0 = (sqrt (x * y), (x + y) / 2) := rfl
 
-lemma agmSequences_snd_comm : (agmSequences x y).2 (n + 1) = (agmSequences y x).2 (n + 1) := by
-  simp [agmSequences, mul_comm, add_comm]
+lemma agmSequences_succ : agmSequences x y (n + 1) = agmSequences (sqrt (x * y)) ((x + y) / 2) n :=
+  rfl
 
-lemma agmSequences_fst_le_snd : (agmSequences x y).1 (n + 1) ≤ (agmSequences x y).2 (n + 1) := by
-  simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
-  exact sqrt_mul_le_half_add ..
+lemma agmSequences_comm : agmSequences x y = agmSequences y x := by
+  funext n
+  cases n with
+  | zero => simp [mul_comm, add_comm]
+  | succ n => simp [agmSequences_succ, mul_comm, add_comm]
 
-lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y).1 (n + 1) := by
-  refine monotone_nat_of_le_succ fun n ↦ ?_
-  nth_rw 2 [agmSequences]
-  simp_rw [Equiv.arrowProdEquivProdArrow_apply]
-  rw [iterate_succ', comp_apply]
-  change _ ≤ sqrt ((agmSequences x y).1 (n + 1) * (agmSequences x y).2 (n + 1))
-  nth_rw 1 [sqrt_mul, ← mul_self_sqrt ((agmSequences x y).1 (n + 1))]
-  exact mul_le_mul_right (sqrt_le_sqrt.mpr agmSequences_fst_le_snd) _
+lemma le_gm_and_am_le (h : x ≤ y) : x ≤ sqrt (x * y) ∧ (x + y) / 2 ≤ y := by
+  constructor
+  · rw [le_sqrt_iff_sq_le, sq]
+    gcongr
+  · apply div_le_of_le_mul'
+    rw [two_mul]
+    gcongr
 
-lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences x y).2 (n + 1) := by
-  refine antitone_nat_of_succ_le fun n ↦ ?_
-  nth_rw 1 [agmSequences]
-  simp_rw [Equiv.arrowProdEquivProdArrow_apply]
-  rw [iterate_succ', comp_apply]
-  change ((agmSequences x y).1 (n + 1) + (agmSequences x y).2 (n + 1)) / 2 ≤ _
-  rw [add_div]
-  nth_rw 2 [← add_halves ((agmSequences x y).2 (n + 1))]
-  exact add_le_add_left (div_le_div_of_nonneg_right agmSequences_fst_le_snd zero_le_two) _
+lemma dist_gm_am_le : dist (sqrt (x * y)) ((x + y) / 2) ≤ dist x y / 2 := by
+  wlog h : x ≤ y generalizing x y
+  · simpa [add_comm, mul_comm, dist_comm] using this (not_le.mp h).le
+  rw [dist_comm, dist_eq, ← NNReal.coe_sub (sqrt_mul_le_half_add ..), abs_eq]
+  calc
+    _ ≤ ((x + y) / 2 - x).toReal := by
+      gcongr
+      rw [le_sqrt_iff_sq_le, sq]
+      gcongr
+    _ = _ := by
+      nth_rw 2 [← add_halves x]
+      rw [add_div, add_tsub_add_eq_tsub_left, ← tsub_div, NNReal.coe_div, NNReal.coe_two, dist_comm,
+        dist_eq, ← NNReal.coe_sub h, abs_eq]
 
-/-- All geometric means are upper-bounded by all arithmetic means. -/
-lemma agmSequences_fst_le_agmSequences_snd :
-    (agmSequences x y).1 (m + 1) ≤ (agmSequences x y).2 (n + 1) := by
-  rcases le_or_gt m n with h | h
-  · exact (agmSequences_fst_monotone h).trans agmSequences_fst_le_snd
-  · exact agmSequences_fst_le_snd.trans (agmSequences_snd_antitone h.le)
+lemma agmSequences_monotone_and_antitone :
+    (Monotone fun n ↦ (agmSequences x y n).1) ∧ Antitone fun n ↦ (agmSequences x y n).2 := by
+  suffices ∀ n, (agmSequences x y n).1 ≤ (agmSequences x y (n + 1)).1 ∧
+      (agmSequences x y (n + 1)).2 ≤ (agmSequences x y n).2 from
+    ⟨monotone_nat_of_le_succ (this · |>.1), antitone_nat_of_succ_le (this · |>.2)⟩
+  intro n
+  induction n generalizing x y with
+  | zero => exact le_gm_and_am_le (sqrt_mul_le_half_add ..)
+  | succ n ih => exact Prod.mk_le_mk.mp ih
 
-lemma dist_agmSequences_le_two_inv_pow_mul :
-    dist ((agmSequences x y).1 n) ((agmSequences x y).2 n) ≤ 2⁻¹ ^ n * dist x y := by
+lemma agmSequences_fst_monotone : Monotone fun n ↦ (agmSequences x y n).1 :=
+  agmSequences_monotone_and_antitone.1
+
+lemma agmSequences_snd_antitone : Antitone fun n ↦ (agmSequences x y n).2 :=
+  agmSequences_monotone_and_antitone.2
+
+lemma agmSequences_fst_le_snd (n m : ℕ) : (agmSequences x y n).1 ≤ (agmSequences x y m).2 := by
+  suffices ∀ {k}, (agmSequences x y k).1 ≤ (agmSequences x y k).2 by
+    obtain h | h := le_total n m
+    · exact (agmSequences_fst_monotone h).trans this
+    · exact this.trans (agmSequences_snd_antitone h)
+  intro k
+  induction k generalizing x y with
+  | zero => exact sqrt_mul_le_half_add ..
+  | succ n ih => exact ih ..
+
+lemma agmSequences_min_max : agmSequences (min x y) (max x y) = agmSequences x y := by
+  obtain h | h := le_total x y
+  · rw [min_eq_left h, max_eq_right h]
+  · rw [min_eq_right h, max_eq_left h, agmSequences_comm]
+
+lemma dist_agmSequences_fst_snd (n : ℕ) :
+    dist (agmSequences x y n).1 (agmSequences x y n).2 ≤ dist x y / 2 ^ (n + 1) := by
   induction n with
-  | zero => simp [agmSequences]
+  | zero => simp [dist_gm_am_le]
   | succ n ih =>
-    set p := (agmSequences x y).1 n
-    set q := (agmSequences x y).2 n
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, iterate_succ', comp_apply]
+    set p := (agmSequences x y n).1
+    set q := (agmSequences x y n).2
+    rw [agmSequences, iterate_succ']
     change dist (sqrt (p * q)) ((p + q) / 2) ≤ _
-    rw [dist_comm, dist_eq, ← NNReal.coe_sub (sqrt_mul_le_half_add ..), abs_eq]
-    calc
-      _ ≤ ((p + q) / 2 - min p q).toReal := by
-        gcongr
-        rw [← mul_self_sqrt (min p q), sqrt_mul]
-        gcongr
-        · exact min_le_left ..
-        · exact min_le_right ..
-      _ = 2⁻¹ * dist p q := by
-        rw [← add_halves (min p q), ← add_div, ← tsub_div, NNReal.coe_div, NNReal.coe_two,
-          div_eq_inv_mul]
-        congr
-        rcases le_or_gt p q with h | h
-        · rw [min_eq_left h, add_tsub_add_eq_tsub_left, dist_comm, dist_eq,
-            abs_of_nonneg (by simpa), NNReal.coe_sub h]
-        · rw [min_eq_right h.le, add_tsub_add_eq_tsub_right, dist_eq,
-            abs_of_nonneg (by simpa using h.le), NNReal.coe_sub h.le]
-      _ ≤ _ := by
-        rw [pow_succ', mul_assoc]
-        gcongr
+    apply dist_gm_am_le.trans
+    rw [pow_succ, ← div_div]
+    gcongr
 
-/-- The arithmetic and geometric means tend to each other. -/
 lemma tendsto_dist_agmSequences_atTop_zero :
-    Tendsto (fun n ↦ dist ((agmSequences x y).1 n) ((agmSequences x y).2 n)) atTop (𝓝 0) := by
-  refine squeeze_zero (fun _ ↦ dist_nonneg) (fun _ ↦ dist_agmSequences_le_two_inv_pow_mul) ?_
-  rw [← zero_mul (dist x y)]
+    Tendsto (fun n ↦ dist (agmSequences x y n).1 (agmSequences x y n).2) atTop (𝓝 0) := by
+  apply squeeze_zero (fun _ ↦ dist_nonneg) dist_agmSequences_fst_snd
+  conv =>
+    rw [← zero_mul (dist x y / 2)]
+    enter [1, n]
+    rw [pow_succ', ← div_div, div_eq_inv_mul, ← inv_pow]
   exact (_root_.tendsto_pow_atTop_nhds_zero_of_lt_one (by norm_num) (by norm_num)).mul_const _
 
 /-- The arithmetic-geometric mean of two `NNReal`s, defined as the infimum of arithmetic means. -/
 noncomputable def agm (x y : ℝ≥0) : ℝ≥0 :=
-  ⨅ n, (agmSequences x y).2 (n + 1)
+  ⨅ n, (agmSequences x y n).2
 
 lemma agm_comm : agm x y = agm y x := by
   unfold agm
   conv_rhs =>
     enter [1, n]
-    rw [agmSequences_snd_comm]
+    rw [agmSequences_comm]
 
-lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y).2 (n + 1) := rfl
+lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y n).2 := rfl
 
-lemma agm_le_agmSequences_snd : agm x y ≤ (agmSequences x y).2 (n + 1) := ciInf_le' _ n
+lemma agm_le_agmSequences_snd (n : ℕ) : agm x y ≤ (agmSequences x y n).2 := ciInf_le' _ n
 
 lemma agm_le_max : agm x y ≤ max x y := by
-  rcases le_or_gt x y with h | h
-  · rw [max_eq_right h]
-    apply (agm_le_agmSequences_snd (n := 0)).trans
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, add_div]
-    nth_rw 2 [← add_halves y]
-    gcongr
-  · rw [max_eq_left h.le]
-    apply (agm_le_agmSequences_snd (n := 0)).trans
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, add_div]
-    nth_rw 2 [← add_halves x]
-    gcongr
+  wlog h : x ≤ y generalizing x y
+  · simpa [agm_comm, max_comm] using this (not_le.mp h).le
+  rw [max_eq_right h]
+  apply (agm_le_agmSequences_snd 0).trans
+  rw [agmSequences_zero]
+  exact (le_gm_and_am_le h).2
 
-lemma bddAbove_range_agmSequences_fst :
-    BddAbove (Set.range fun n ↦ (agmSequences x y).1 (n + 1)) := by
+lemma bddAbove_range_agmSequences_fst : BddAbove (Set.range fun n ↦ (agmSequences x y n).1) := by
   rw [bddAbove_def]
-  use (x.agmSequences y).2 (0 + 1)
+  use (agmSequences x y 0).2
   simp_rw [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-  exact fun _ ↦ agmSequences_fst_le_agmSequences_snd
+  exact fun _ ↦ agmSequences_fst_le_snd ..
 
 /-- The AGM is also the supremum of the geometric means. -/
-lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y).1 (n + 1) := by
+lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
   refine tendsto_nhds_unique ?_ <|
     tendsto_atTop_ciSup agmSequences_fst_monotone bddAbove_range_agmSequences_fst
   apply (tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)).congr_dist
-  have key := @tendsto_dist_agmSequences_atTop_zero x y
-  conv at key =>
-    rw [← tendsto_add_atTop_iff_nat 1]
+  conv =>
     enter [1, n]
     rw [dist_comm]
-  exact key
+  exact tendsto_dist_agmSequences_atTop_zero
 
-lemma agmSequences_fst_le_agm : (agmSequences x y).1 (n + 1) ≤ agm x y := by
+lemma agmSequences_fst_le_agm (n : ℕ) : (agmSequences x y n).1 ≤ agm x y := by
   rw [agm_eq_ciSup]
   exact le_ciSup bddAbove_range_agmSequences_fst _
 
 lemma min_le_agm : min x y ≤ agm x y := by
-  rcases le_or_gt x y with h | h
-  · rw [min_eq_left h]
-    refine le_trans ?_ (agmSequences_fst_le_agm (n := 0))
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, sqrt_mul]
-    nth_rw 1 [← mul_self_sqrt x]
-    gcongr
-  · rw [min_eq_right h.le]
-    refine le_trans ?_ (agmSequences_fst_le_agm (n := 0))
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, zero_add, iterate_one, sqrt_mul]
-    nth_rw 1 [← mul_self_sqrt y]
-    gcongr
+  wlog h : x ≤ y generalizing x y
+  · simpa [agm_comm, min_comm] using this (not_le.mp h).le
+  rw [min_eq_left h]
+  refine le_trans ?_ (agmSequences_fst_le_agm 0)
+  rw [agmSequences_zero]
+  exact (le_gm_and_am_le h).1
 
 @[simp]
 lemma agm_self : agm x x = x := by
@@ -187,33 +188,31 @@ lemma agm_self : agm x x = x := by
     exact min_le_agm
 
 @[simp]
-lemma agm_zero_left : agm 0 x = 0 := by
-  suffices ∀ n, (agmSequences 0 x).1 n = 0 by
-    simp [agm_eq_ciSup, this]
+lemma agm_zero_left : agm 0 y = 0 := by
+  suffices ∀ n, (agmSequences 0 y n).1 = 0 by simp [agm_eq_ciSup, this]
   intro n
   induction n with
   | zero => simp [agmSequences]
   | succ n ih =>
-    simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply] at ih ⊢
+    simp_rw [agmSequences] at ih ⊢
     rw [iterate_succ', comp_apply, ih, zero_mul, sqrt_zero]
 
 @[simp]
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
 
-lemma agm_eq_agm_agmSequences_fst_agmSequences_snd :
-    agm x y = agm ((agmSequences x y).1 n) ((agmSequences x y).2 n) := by
+lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
+    agm x y = agm (agmSequences x y n).1 (agmSequences x y n).2 := by
   refine tendsto_nhds_unique ?_ <|
     tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
-  have key : Tendsto (fun n ↦ (agmSequences x y).2 (n + 1)) atTop (𝓝 (agm x y)) :=
+  have key : Tendsto (fun n ↦ (agmSequences x y n).2) atTop (𝓝 (agm x y)) :=
     tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
-  rw [← tendsto_add_atTop_iff_nat n] at key
+  rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
   convert key using 2 with m
-  simp_rw [agmSequences, Equiv.arrowProdEquivProdArrow_apply, Prod.mk.eta, ← iterate_add_apply,
-    add_right_comm]
+  simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
 
-lemma agm_eq_agm_means : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
-  simpa using @agm_eq_agm_agmSequences_fst_agmSequences_snd x y 1
+lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
+  simpa using agm_eq_agm_agmSequences_fst_agmSequences_snd 0
 
 lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y < agm x y := by
   wlog hl : x < y generalizing x y
@@ -221,7 +220,7 @@ lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y
     specialize this hy hx hn.symm hl
     rwa [agm_comm, min_comm]
   rw [min_eq_left hl.le]
-  refine (?_ : x < sqrt (x * y)).trans_le (@agmSequences_fst_le_agm x y 0)
+  refine (?_ : x < sqrt (x * y)).trans_le (agmSequences_fst_le_agm 0)
   nth_rw 1 [← mul_self_sqrt x, sqrt_mul]
   gcongr
 
@@ -231,15 +230,14 @@ lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
     specialize this hn.symm hl
     rwa [agm_comm, max_comm]
   rw [max_eq_right hl.le]
-  refine (@agm_le_agmSequences_snd x y 0).trans_lt (?_ : (x + y) / 2 < y)
+  refine (agm_le_agmSequences_snd 0).trans_lt (?_ : (x + y) / 2 < y)
   nth_rw 2 [← add_halves y]
   rw [add_div]
   gcongr
 
 /-- The AGM distributes over multiplication. -/
 lemma agm_mul_distrib {k : ℝ≥0} : agm (k * x) (k * y) = k * agm x y := by
-  unfold agm agmSequences
-  simp_rw [mul_iInf, Equiv.arrowProdEquivProdArrow_apply]
+  simp_rw [agm, agmSequences, mul_iInf]
   congr! with n
   suffices (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (k * x, k * y) =
       k • (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (x, y) by
