@@ -186,6 +186,32 @@ private def assocEquiv (x : M) :
 
 end TripleFiber
 
+/-! ### Triple Convolution Existence -/
+
+section TripleConvolutionExistence
+
+variable [Monoid M] [CommSemiring S]
+variable [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid E'']
+variable [AddCommMonoid F'] [AddCommMonoid G]
+variable [Module S E] [Module S E'] [Module S E''] [Module S F'] [Module S G]
+variable [TopologicalSpace G]
+
+/-- Triple convolution exists at `x` when the sum over `tripleFiber x` is summable. -/
+@[to_additive (dont_translate := S) TripleAddConvolutionExistsAt]
+def TripleConvolutionExistsAt
+    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
+    (f : M → E) (g : M → E') (h : M → E'') (x : M) : Prop :=
+  Summable fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))
+
+/-- Triple convolution exists when it exists at every point. -/
+@[to_additive (dont_translate := S) TripleAddConvolutionExists]
+def TripleConvolutionExists
+    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
+    (f : M → E) (g : M → E') (h : M → E'') : Prop :=
+  ∀ x, TripleConvolutionExistsAt L₃ L₄ f g h x
+
+end TripleConvolutionExistence
+
 /-! ### Convolution Definition and Existence -/
 
 section Definition
@@ -306,32 +332,6 @@ lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} 
   exact Summable.tsum_const_smul (L := .unconditional _) c hfg
 
 end ExistenceProperties
-
-/-! ### Triple Convolution Existence -/
-
-section TripleConvolutionExistence
-
-variable [Monoid M] [CommSemiring S]
-variable [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid E'']
-variable [AddCommMonoid F'] [AddCommMonoid G]
-variable [Module S E] [Module S E'] [Module S E''] [Module S F'] [Module S G]
-variable [TopologicalSpace G]
-
-/-- Triple convolution exists at `x` when the sum over `tripleFiber x` is summable. -/
-@[to_additive (dont_translate := S) TripleAddConvolutionExistsAt]
-def TripleConvolutionExistsAt
-    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
-    (f : M → E) (g : M → E') (h : M → E'') (x : M) : Prop :=
-  Summable fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))
-
-/-- Triple convolution exists when it exists at every point. -/
-@[to_additive (dont_translate := S) TripleAddConvolutionExists]
-def TripleConvolutionExists
-    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
-    (f : M → E) (g : M → E') (h : M → E'') : Prop :=
-  ∀ x, TripleConvolutionExistsAt L₃ L₄ f g h x
-
-end TripleConvolutionExistence
 
 /-! ### Commutativity -/
 
