@@ -473,7 +473,7 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
         rw [powersetCard_eq_filter, powerset_image, eq_comm]
         congrm k.factorial * ?_
         refine sum_nbij (·.image v) (fun a ha ↦ ?hi) ?i_inj (fun t ht ↦ ?i_surj) fun a ha ↦ ?h
-        case hi => grind [card_image_of_injOn, hvs'.mono]  
+        case hi => grind [card_image_of_injOn, hvs'.mono]
         case i_inj => exact (image_injOn_powerset_of_injOn hvs').mono (by grind)
         case i_surj => grind [card_image_of_injOn, hvs'.mono]
         case h =>
