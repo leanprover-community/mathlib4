@@ -374,7 +374,6 @@ variable [CommMonoidWithZero α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
 instance (priority := 100) [GCDMonoid α] : IsGCDMonoid α := ⟨‹_›⟩
-instance (priority := 100) [h : IsGCDMonoid α] : IsCancelMulZero α := h.rec fun _ ↦ inferInstance
 instance [StrongNormalizationMonoid α] : Nonempty (StrongNormalizationMonoid α) := ⟨‹_›⟩
 instance (priority := 100) [StrongNormalizedGCDMonoid α] : IsStrongNormalizedGCDMonoid α := ⟨‹_›⟩
 instance (priority := 100) [h : IsStrongNormalizedGCDMonoid α] : IsGCDMonoid α :=
@@ -383,6 +382,10 @@ instance [h : IsStrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizationMon
   h.rec fun _ ↦ inferInstance
 instance [h : Nonempty (StrongNormalizationMonoid α)] : Nonempty (NormalizationMonoid α) :=
   h.elim fun _ ↦ inferInstance
+
+-- This is not an instance due to performance reasons.
+theorem IsGCDMonoid.isCancelMulZero [h : IsGCDMonoid α] : IsCancelMulZero α :=
+  h.rec fun _ ↦ inferInstance
 
 theorem gcd_isUnit_iff_isRelPrime [GCDMonoid α] {a b : α} :
     IsUnit (gcd a b) ↔ IsRelPrime a b :=
