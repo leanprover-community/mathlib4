@@ -401,4 +401,12 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 
+theorem ediv_modEq_inj (n a b : ℤ) : a = b ↔ a / n = b / n ∧ a ≡ b [ZMOD n] := ediv_emod_inj _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℤ} (h : a / n = b / n) : a ≡ b [ZMOD n] ↔ a = b := by
+  grind [ediv_modEq_inj]
+
+theorem eq_of_ediv_eq_of_modEq {n a b : ℤ} (H0 : a / n = b / n) (H1 : a ≡ b [ZMOD n]) :
+    a = b := eq_of_ediv_eq_of_emod_eq H0 H1
+
 end Int
