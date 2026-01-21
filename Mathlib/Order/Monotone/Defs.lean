@@ -60,37 +60,37 @@ section MonotoneDef
 variable [Preorder α] [Preorder β]
 
 /-- A function `f` is monotone if `a ≤ b` implies `f a ≤ f b`. -/
-@[grind =] def Monotone (f : α → β) : Prop :=
+def Monotone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f a ≤ f b
 
 /-- A function `f` is antitone if `a ≤ b` implies `f b ≤ f a`. -/
-@[grind =] def Antitone (f : α → β) : Prop :=
+def Antitone (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a ≤ b → f b ≤ f a
 
 /-- A function `f` is monotone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f a ≤ f b`. -/
-@[grind =] def MonotoneOn (f : α → β) (s : Set α) : Prop :=
+def MonotoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f a ≤ f b
 
 /-- A function `f` is antitone on `s` if, for all `a, b ∈ s`, `a ≤ b` implies `f b ≤ f a`. -/
-@[grind =] def AntitoneOn (f : α → β) (s : Set α) : Prop :=
+def AntitoneOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a ≤ b → f b ≤ f a
 
 /-- A function `f` is strictly monotone if `a < b` implies `f a < f b`. -/
-@[grind =] def StrictMono (f : α → β) : Prop :=
+def StrictMono (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f a < f b
 
 /-- A function `f` is strictly antitone if `a < b` implies `f b < f a`. -/
-@[grind =] def StrictAnti (f : α → β) : Prop :=
+def StrictAnti (f : α → β) : Prop :=
   ∀ ⦃a b⦄, a < b → f b < f a
 
 /-- A function `f` is strictly monotone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f a < f b`. -/
-@[grind =] def StrictMonoOn (f : α → β) (s : Set α) : Prop :=
+def StrictMonoOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f a < f b
 
 /-- A function `f` is strictly antitone on `s` if, for all `a, b ∈ s`, `a < b` implies
 `f b < f a`. -/
-@[grind =] def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
+def StrictAntiOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃a⦄ (_ : a ∈ s) ⦃b⦄ (_ : b ∈ s), a < b → f b < f a
 
 end MonotoneDef

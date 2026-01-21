@@ -210,6 +210,7 @@ theorem _root_.BoundedVariationOn.sub_le {f : α → ℝ} {s : Set α} (h : Boun
   rw [← Real.dist_eq]
   exact h.dist_le hx hy
 
+set_option maxHeartbeats 0 in
 /-- Consider a monotone function `u` parameterizing some points of a set `s`. Given `x ∈ s`, then
 one can find another monotone function `v` parameterizing the same points as `u`, with `x` added.
 In particular, the variation of a function along `u` is bounded by its variation along `v`. -/
