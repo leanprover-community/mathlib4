@@ -22,7 +22,7 @@ open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 
 ## Implementation Notes
 
-The proof applies the Schwarz lemma to the transformed function `w(z) = f(z) / (2 * M - f(z))`,
+The proof applies the Schwarz lemma to the transformed function `fun z ↦ f z / (2 * M - f z)`,
 which maps the ball `|z| < R` into the unit disk provided that `(f z).re < M` for all `|z| < R`.
 After obtaining bounds on `w`, we invert the transformation to recover bounds on `f`.
 
@@ -42,7 +42,7 @@ section SchwarzTransform
 /-- If a differentiable function avoids a value `M`, then it remains differentiable
 when divided by `M - f z`. -/
 private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
-    DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s := 
+    DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
   hf.div (hf.const_sub M) (by grind [Set.MapsTo])
 
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
@@ -62,16 +62,10 @@ lemma norm_two_mul_div_one_add_le (hM : 0 < M) (hw : ‖w‖ < 1) :
 /-- If `z.re < M`, then `‖z‖ < ‖2M - z‖`. This shows that the Schwarz transform
 `z ↦ z / (2M - z)` has numerator smaller than denominator when the real part is bounded by M -/
 lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M - z‖ := by
-   rw [← sq_lt_sq₀ (by positivity) (by positivity)]
-   suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
-   nlinarith
+  rw [← sq_lt_sq₀ (by positivity) (by positivity)]
+  suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
+  nlinarith
 
-/-- The Schwarz transform `z ↦ z / (2M - z)` maps values with `z.re < M` into the unit disk. -/
-lemma norm_div_two_mul_sub_lt_one (hM : 0 < M) (hz : z.re < M) : ‖z / (2 * M - z)‖ < 1 := by
-  by_cases h : 0 < ‖z‖
-  · rw [norm_div, div_lt_one (h.trans (norm_lt_norm_two_mul_sub hM hz))]
-    exact norm_lt_norm_two_mul_sub hM hz
-  · simp [norm_le_zero_iff.mp (not_lt.mp h)]
 
 /-- Application of the Schwarz lemma to the transformed function. If `f` is differentiable on
 the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz transform
@@ -102,7 +96,7 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
   set w := f z / (2 * M - f z)
   have hzR : ‖z‖ < R := mem_ball_zero_iff.mp hz
   have hwR := by simpa only [dist_zero_right, div_one, mul_comm (1 / R), mul_one_div]
-                   using schwarz_applied hM hf hf₁ hz hf₂
+    using schwarz_applied hM hf hf₁ hz hf₂
   have h_denom : 2 * M - f z ≠ 0 := sub_ne_zero_of_ne (fun h => by simpa [← h, hM] using hf₁ hz)
   calc ‖f z‖
     _ = ‖2 * M * w / (1 + w)‖ := by rw [eq_mul_div_one_add_of_eq_div_sub hM.ne' h_denom rfl]
@@ -124,13 +118,14 @@ public theorem borelCaratheodory (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball
     ‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by
   have hfz : ‖f z - f 0‖ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) := by
     apply borelCaratheodory_zero (by positivity) (by fun_prop) ?_ hR hz (by simp)
-    intro x hx; simp only [Set.mem_setOf_eq, sub_re]
+    intro x hx
+    simp only [Set.mem_setOf_eq, sub_re]
     calc (f x).re - (f 0).re < M - (f 0).re := by gcongr; exact hf₁ hx
-         _ ≤ M + ‖f 0‖ := by linarith [neg_le_abs (f 0).re, abs_re_le_norm (f 0)]
+      _ ≤ M + ‖f 0‖ := by linarith [neg_le_abs (f 0).re, abs_re_le_norm (f 0)]
   have h_denom_ne : R - ‖z‖ ≠ 0 := by linarith [mem_ball_zero_iff.mp hz]
   calc ‖f z‖ ≤ ‖f z - f 0‖ + ‖f 0‖ := norm_le_norm_sub_add _ _
-       _ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) + ‖f 0‖ := by gcongr
-       _ = 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by field_simp; ring
+    _ ≤ 2 * (M + ‖f 0‖) * ‖z‖ / (R - ‖z‖) + ‖f 0‖ := by gcongr
+    _ = 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖) := by field_simp; ring
 
 end BorelCaratheodory
 
