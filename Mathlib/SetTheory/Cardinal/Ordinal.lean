@@ -113,7 +113,7 @@ theorem card_opow_le (a b : Ordinal) : (a ^ b).card ≤ max ℵ₀ (max a.card b
   obtain ⟨n, rfl⟩ | ha := eq_nat_or_omega0_le a
   · obtain ⟨m, rfl⟩ | hb := eq_nat_or_omega0_le b
     · rw [← natCast_opow, card_nat]
-      exact le_max_of_le_left (nat_lt_aleph0 _).le
+      exact le_max_of_le_left natCast_le_aleph0
     · exact (card_opow_le_of_omega0_le_right _ hb).trans (le_max_right _ _)
   · exact (card_opow_le_of_omega0_le_left ha _).trans (le_max_right _ _)
 

@@ -556,7 +556,7 @@ lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
 
 lemma exists_isNilRegular [Infinite R] : ∃ x : L, IsNilRegular φ x := by
   apply exists_isNilRegular_of_finrank_le_card
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
 
