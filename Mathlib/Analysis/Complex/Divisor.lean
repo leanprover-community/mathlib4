@@ -26,17 +26,29 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Annulus
 import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 
 /-!
-# Hadamard factorization
+# Hadamard factorization (preliminaries)
 
-This file is the start of the  refactor along the below guidelines:
+This file develops preliminary lemmas towards Hadamard factorization for entire functions on `ℂ`.
+The main idea is to index zeros (with multiplicity) using the intrinsic divisor
+`MeromorphicOn.divisor`, and to form the corresponding canonical product.
 
-- The final theorem should take intrinsic hypotheses on an entire function `f`, e.g.
-  `EntireOfFiniteOrder ρ f`, and should **not** require a user-supplied `ZeroData`.
-- The proof should internally obtain an enumeration of zeros (or an appropriate divisor) and
-  then apply canonical product machinery.
+## Main definitions
+
+- `Complex.Hadamard.divisorZeroIndex`, `Complex.Hadamard.divisorZeroIndex₀`: index types enumerating
+  zeros with multiplicity.
+- `Complex.Hadamard.divisorCanonicalProduct`: the canonical product indexed by `divisorZeroIndex₀`.
+- `Complex.Hadamard.divisorComplementCanonicalProduct`: the canonical product with the fiber over a
+  fixed point `z₀` removed.
+
+## Main results
+
+- The support of the divisor is discrete and countable, and meets compact sets in finitely many
+  points.
+- Under the standard summability hypothesis, the canonical product converges uniformly on compact
+  sets, and its analytic order agrees with the expected multiplicity away from `0`.
 -/
 
-set_option linter.style.longFile 2900
+set_option linter.style.longFile 2600
 
 noncomputable section
 
@@ -57,9 +69,8 @@ lemma weierstrassFactor_ne_zero_of_ne_one (m : ℕ) {z : ℂ} (hz : z ≠ 1) :
 /-!
 ## Intrinsic divisor support: discreteness and countability
 
-This is the first step needed to remove any external "zero enumeration" input:
-for a meromorphic function, its divisor is a `Function.locallyFinsuppWithin`, hence has
-discrete support; in a second-countable space (like `ℂ`), discrete sets are countable.
+For a meromorphic function, `MeromorphicOn.divisor` is a `Function.locallyFinsuppWithin`, hence its
+support is discrete. In `ℂ` (a second-countable space), discrete sets are countable.
 -/
 
 open scoped Topology
@@ -70,9 +81,6 @@ open Set
 
 For a holomorphic function, the intrinsic divisor multiplicity at `z`
 agrees with `analyticOrderNatAt`.
-
-This lets us recover multiplicities from `MeromorphicOn.divisor`, and is a prerequisite for removing
-`ZeroData` from the API.
 -/
 
 lemma divisor_univ_eq_analyticOrderNatAt_int {f : ℂ → ℂ} (hf : Differentiable ℂ f) (z : ℂ) :
@@ -113,13 +121,12 @@ lemma exists_ball_inter_divisor_support_eq_singleton {f : ℂ → ℂ} (z₀ : �
       (hs := divisor_support_discrete (f := f) (U := (Set.univ : Set ℂ))) hz₀
 
 /-!
-## Local finiteness on compacts (the cofinite-tail lemma)
+## Local finiteness on compact sets
 
 For `D : Function.locallyFinsuppWithin U ℤ`, the support is *locally finite within `U`*.
 Hence any compact `K ⊆ U` meets `D.support` only finitely often.
 
-This is the main hypothesis we need later to obtain “eventually in `cofinite`” bounds for
-divisor-indexed products.
+This yields “eventually in `cofinite`” bounds for divisor-indexed products.
 -/
 
 lemma divisor_support_inter_compact_finite {f : ℂ → ℂ} {U K : Set ℂ}
@@ -191,10 +198,9 @@ lemma exists_nonzero_seq_divisor_support_diff_zero {f : ℂ → ℂ} {U : Set �
       simp [this]
 
 /-!
-## Canonical product indexed by the divisor (no external enumeration)
+## Canonical product indexed by the divisor
 
-To reflect **multiplicities** without introducing a bespoke `ZeroData` structure, we use a
-sigma-type index:
+To reflect multiplicities, we use a sigma-type index:
 
 `Σ z : ℂ, Fin (Int.toNat ((divisor f U) z))`
 
@@ -348,11 +354,11 @@ lemma weierstrassFactor_div_ne_zero_on_ball_punctured
 On a punctured ball around `z₀` whose intersection with the divisor support is `{z₀}`, every
 Weierstrass factor `weierstrassFactor m (z / a)` is nonzero, hence can be viewed as a unit.
 
-This is the entry-point for applying `tprod` splitting lemmas that require a **group** target.
+This packaging is convenient for using infinite-product lemmas stated for groups (e.g. `Units ℂ`).
 -/
 
 /-- View the Weierstrass factors `weierstrassFactor m (z / a)` as units on a punctured isolating
-ball around `z₀` (where none of the factors vanishes). -/
+ball around `z₀`. -/
 noncomputable def weierstrassFactorUnits
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) (ε : ℝ)
     (hball :
@@ -439,10 +445,10 @@ lemma divisorZeroIndex₀_norm_le_finite {f : ℂ → ℂ} {U : Set ℂ} (B : �
   exact Set.toFinite s
 
 /-!
-## Uniform convergence on compacts (Filters-first)
+## Uniform convergence on compact sets
 
-This is the “next PR step”: show uniform convergence of the divisor-indexed canonical product on
-compacts under the standard summability hypothesis.
+Uniform convergence on compact sets of the divisor-indexed canonical product, assuming the
+standard summability hypothesis.
 
 We state it for `U = univ` (the entire-function case), so no domain side-conditions are needed.
 -/
@@ -553,7 +559,7 @@ theorem hasProdUniformlyOn_divisorCanonicalProduct_univ
 /-!
 ## Entire-ness (holomorphy) of the divisor-indexed canonical product
 
-We now upgrade the uniform-on-compacts convergence to **locally uniform on `univ`** and apply the
+We now upgrade the uniform-on-compacts convergence to locally uniform on `univ` and apply the
 standard theorem that a locally uniform limit of holomorphic functions is holomorphic.
 -/
 
@@ -617,8 +623,7 @@ theorem differentiableOn_divisorCanonicalProduct_univ
 /-!
 ## Basic correctness: the divisor canonical product vanishes at indexed zeros
 
-This is an important sanity check for the intrinsic construction: if one of the factors is `0` at
-`z`, then the whole infinite product is `0`.
+If one of the factors is `0` at `z`, then the infinite product is `0`.
 -/
 
 theorem divisorCanonicalProduct_eq_zero_of_exists
@@ -667,8 +672,7 @@ theorem divisorCanonicalProduct_eq_zero_at_index
 /-!
 ## Atomic order lemma: a single factor has a simple zero at its prescribed point
 
-This is a key input for the eventual multiplicity statement for the full canonical product:
-the factor indexed by a nonzero `a` has analytic order exactly `1` at `z = a`.
+The factor indexed by a nonzero `a` has analytic order `1` at `z = a`.
 -/
 
 theorem analyticOrderAt_weierstrassFactor_div_self (m : ℕ) {a : ℂ} (ha : a ≠ 0) :
@@ -714,9 +718,6 @@ theorem analyticOrderNatAt_weierstrassFactor_div_self (m : ℕ) {a : ℂ} (ha : 
 
 For a finite product of elementary factors indexed by divisor-indices, the analytic order at `z₀`
 equals the number of indices whose value is exactly `z₀`.
-
-This is the finite (combinatorial) core that we will later combine with locally-uniform convergence
-to reason about the infinite divisor-indexed product.
 -/
 
 theorem analyticOrderAt_finset_prod_weierstrassFactor_divisorZeroIndex₀
@@ -873,9 +874,7 @@ theorem analyticOrderNatAt_finset_prod_weierstrassFactor_divisorZeroIndex₀
 /-!
 ## The multiplicity fiber `{p | divisorZeroIndex₀_val p = z₀}` is finite
 
-This is the intrinsic replacement for “multiplicity is finite”: it is literally a subtype of
-`Fin (Int.toNat (divisor f z₀))`, hence finite, but we can also obtain it as a subset of a
-norm-bounded set (and we already proved norm-bounded sets are finite).
+The fiber can be bounded by a norm condition, hence is finite.
 -/
 
 theorem divisorZeroIndex₀_fiber_finite (f : ℂ → ℂ) (z₀ : ℂ) :
@@ -896,8 +895,7 @@ theorem divisorZeroIndex₀_fiber_finite (f : ℂ → ℂ) (z₀ : ℂ) :
       (B := ‖z₀‖) this)
   exact hfin.subset hsub
 
-/-- The finite fiber over `z₀` in the divisor-index type `divisorZeroIndex₀` (points counted with
-multiplicity). -/
+/-- The finite fiber over `z₀` in the divisor-index type `divisorZeroIndex₀`. -/
 noncomputable def divisorZeroIndex₀_fiberFinset (f : ℂ → ℂ) (z₀ : ℂ) :
     Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) :=
   (divisorZeroIndex₀_fiber_finite (f := f) z₀).toFinset
@@ -914,7 +912,8 @@ noncomputable def divisorZeroIndex₀_fiberFinset (f : ℂ → ℂ) (z₀ : ℂ)
 The type `divisorZeroIndex₀ f U` is `Σ z, Fin (Int.toNat (divisor z))` with `z ≠ 0`.
 Hence the fiber over a nonzero `z₀` has exactly `Int.toNat (divisor z₀)` elements.
 
-This is the intrinsic replacement for any “multiplicity counting” done via `ZeroData`.
+This provides an intrinsic way to count zeros with multiplicity, phrased in terms of
+`MeromorphicOn.divisor`.
 -/
 
 lemma divisorZeroIndex₀_fiberFinset_card_eq_toNat_divisor (f : ℂ → ℂ) {z₀ : ℂ} (hz₀ : z₀ ≠ 0) :
@@ -1053,8 +1052,8 @@ theorem analyticOrderNatAt_prod_fiberFinset
 /-!
 ## Partial products eventually contain the full fiber (and thus have the right order)
 
-This is the first “finite → infinite” bridge: along the `atTop` filter on `Finset`, any fixed finite
-subset is eventually contained in the running finset.
+Along the `atTop` filter on `Finset`, any fixed finite subset is eventually contained in the
+running finset.
 -/
 
 theorem analyticOrderAt_partialProduct_eq_fiberCard_of_subset
@@ -1099,8 +1098,7 @@ If a partial product finset `s` contains the full fiber over `z₀`, then the pa
 analytic order exactly `k = (fiberFinset.card)` at `z₀`, hence it factors locally as
 `(z - z₀)^k • g z` with `g z₀ ≠ 0`.
 
-This is the right interface for feeding into a future “infinite product has at least this order”
-argument via locally uniform convergence and removable singularity.
+This is the interface used later with locally uniform convergence and removable singularity.
 -/
 
 theorem exists_analyticAt_eq_pow_smul_of_partialProduct_contains_fiber
@@ -1155,8 +1153,7 @@ noncomputable def divisorPartialProduct (m : ℕ) (f : ℂ → ℂ)
 /-!
 ## Splitting finite partial products into fiber vs complement
 
-This is the finitary version of the “fiber × complement” split that will later be passed to the
-limit in the infinite product.
+This is the finitary “fiber × complement” split.
 -/
 
 /-- The partial product over indices *not* in the fiber over `z₀` (implemented via an `if`). -/
@@ -1652,8 +1649,7 @@ theorem TendstoUniformlyOn.mul_left_bounded
 ## Quotient convergence on compacts avoiding `z₀`
 
 If `K` is compact and avoids `z₀`, then multiplying by `((z - z₀)^k)⁻¹` preserves uniform
-convergence on `K`. This is the key tool for the eventual removable-singularity argument for
-multiplicities. -/
+convergence on `K`. -/
 
 theorem tendstoUniformlyOn_divisorPartialProduct_div_pow_sub
     (m : ℕ) (f : ℂ → ℂ)
@@ -2071,9 +2067,8 @@ theorem exists_ball_divisorComplementCanonicalProduct_ne_zero
 /-!
 ## Eventually: partial products factor at `z₀` with the fiber multiplicity
 
-This is the key “asymptotic divisibility” statement: along `atTop`, all sufficiently large partial
-products contain the fiber, hence each such partial product is locally divisible by `(z - z₀)^k`
-where `k` is the intrinsic multiplicity fiber cardinality.
+Along `atTop`, sufficiently large partial products contain the fiber, hence each such partial
+product is locally divisible by `(z - z₀)^k`, where `k` is the fiber cardinality.
 -/
 
 theorem eventually_exists_analyticAt_eq_pow_smul_divisorPartialProduct
@@ -2150,8 +2145,7 @@ theorem eventually_exists_ball_eq_punctured_quotient_of_factorization
 /-!
 ## Differentiability of the quotient on `ℂ \ {z₀}`
 
-This is the “analytic part” of the removable-singularity setup: the quotient of the infinite product
-by `(z - z₀)^k` is holomorphic on the punctured plane.
+The quotient of the infinite product by `(z - z₀)^k` is holomorphic on the punctured plane.
 -/
 
 theorem differentiableOn_divisorPartialProduct_div_pow_sub
@@ -2413,10 +2407,8 @@ theorem analyticOrderNatAt_divisorCanonicalProduct_eq_fiber_card
 /-!
 ## Canonical product has the same analytic order as `f` away from the origin
 
-Once the divisor-indexed canonical product is known to converge (the summability hypothesis),
-we already proved that its analytic order at `z₀` is the fiber cardinality. The fiber cardinality
-itself equals `analyticOrderNatAt f z₀` for holomorphic `f`. Hence the canonical product matches
-`f`'s zero multiplicities at every `z₀ ≠ 0`.
+Away from `0`, the analytic order of the divisor-indexed canonical product agrees with that of `f`
+(for differentiable `f`), assuming the standard summability hypothesis.
 -/
 
 theorem analyticOrderNatAt_divisorCanonicalProduct_eq_analyticOrderNatAt
