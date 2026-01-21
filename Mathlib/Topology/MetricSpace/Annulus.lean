@@ -207,7 +207,6 @@ lemma annulusIco_union_annulusIci {x : X} {r R : ℝ} (h : r ≤ R) :
 theorem iUnion_annulusIco_eq_annulusIci {x : X} {f : ℕ → ℝ} (hf : ∀ n, f 0 ≤ f n)
     (h2f : ¬BddAbove (range f)) :
     (⋃ n : ℕ, annulusIco x (f n) (f (Nat.succ n))) = annulusIci x (f 0) := by
-  -- `dist · x` pulls back the interval statement.
   simpa [annulusIco, annulusIci] using
     congrArg (fun s : Set ℝ => (fun y : X => dist y x) ⁻¹' s)
       (_root_.iUnion_Ico_map_succ_eq_Ici (β := ℝ) hf h2f)
