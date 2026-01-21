@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
@@ -278,6 +279,42 @@ theorem mulRight_continuous (x : R) : Continuous (AddMonoidHom.mulRight x) :=
   continuous_id.mul continuous_const
 
 end
+
+namespace ContinuousAddEquiv
+
+variable [Ring R] [IsTopologicalRing R]
+
+/-- The additive homeomorphism from a topological ring to itself,
+induced by left multiplication by a unit. -/
+@[simps apply]
+def mulLeft (r : Rˣ) : R ≃ₜ+ R where
+  toFun x := r * x
+  invFun y := r⁻¹ * y
+  left_inv x := by simp
+  right_inv y := by simp
+  map_add' x₁ x₂ := left_distrib ↑r x₁ x₂
+  continuous_toFun := continuous_mul_left _
+  continuous_invFun := continuous_mul_left _
+
+/-- The additive homeomorphism from a topological ring to itself,
+induced by right multiplication by a unit. -/
+@[simps apply]
+def mulRight (r : Rˣ) : R ≃ₜ+ R where
+  toFun x := x * r
+  invFun y := y * r⁻¹
+  left_inv x := by simp [mul_assoc]
+  right_inv y := by simp [mul_assoc]
+  map_add' x₁ x₂ := right_distrib x₁ x₂ r
+  continuous_toFun := continuous_mul_right _
+  continuous_invFun := continuous_mul_right _
+
+open Pointwise in
+@[simp]
+lemma preimage_mulLeft_smul (r : Rˣ) (s : Set R) :
+    ContinuousAddEquiv.mulLeft r ⁻¹' (r • s) = s := by
+  ext; simp [Set.mem_smul_set, Units.smul_def]
+
+end ContinuousAddEquiv
 
 namespace NonUnitalSubring
 
