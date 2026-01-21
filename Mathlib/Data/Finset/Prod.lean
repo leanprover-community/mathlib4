@@ -157,7 +157,6 @@ theorem filter_product_card (s : Finset α) (t : Finset β) (p : α → Prop) (q
   classical
   rw [← card_product, ← card_product, ← filter_product, ← filter_product, ← card_union_of_disjoint]
   · apply congr_arg
-    ext
     grind
   · apply Finset.disjoint_filter_filter'
     exact (disjoint_compl_right.inf_left _).inf_right _
@@ -270,6 +269,10 @@ theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
 @[simp, grind =]
 theorem diag_eq_empty : s.diag = ∅ ↔ s = ∅ := by
   simp [diag]
+
+theorem diag_eq_filter [DecidableEq α] :
+    s.diag = (s ×ˢ s).filter fun a : α × α => a.fst = a.snd := by
+  ext; simp +contextual
 
 variable (s)
 
