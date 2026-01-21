@@ -122,7 +122,7 @@ theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
 
 namespace Walk
 
-variable {V : Type*} {G : SimpleGraph V} (n : ℕ)
+variable (n : ℕ)
 
 /-- The walk in a path graph going through all vertices in order -/
 def ofPathGraph (n : ℕ) : (pathGraph (n + 1)).Walk 0 (Fin.last n) :=
