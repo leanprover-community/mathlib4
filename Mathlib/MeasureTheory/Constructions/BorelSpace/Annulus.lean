@@ -2,7 +2,6 @@
 Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom
-
 -/
 module
 
@@ -20,7 +19,6 @@ assuming `OpensMeasurableSpace` on the ambient (pseudo)(e)metric space.
 @[expose] public section
 
 open Set Metric
-
 open scoped NNReal ENNReal
 
 namespace Metric
@@ -60,40 +58,39 @@ lemma measurableSet_annulusIci : MeasurableSet (Metric.annulusIci x r) := by
 
 end Metric
 
-namespace EMetric
+namespace Metric
 
 variable {X : Type*} [PseudoEMetricSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
 variable {x : X} {r R : ℝ≥0∞}
 
 @[measurability]
-lemma measurableSet_annulusIoo : MeasurableSet (EMetric.annulusIoo x r R) := by
-  -- use the `preimage` form and measurability of `edist · x`
-  simpa [EMetric.annulusIoo_eq_preimage] using
+lemma measurableSet_eannulusIoo : MeasurableSet (Metric.eannulusIoo x r R) := by
+  simpa [Metric.eannulusIoo_eq_preimage] using
     (measurableSet_Ioo : MeasurableSet (Set.Ioo r R)).preimage (measurable_edist_left (x := x))
 
 @[measurability]
-lemma measurableSet_annulusIoc : MeasurableSet (EMetric.annulusIoc x r R) := by
-  simpa [EMetric.annulusIoc_eq_preimage] using
+lemma measurableSet_eannulusIoc : MeasurableSet (Metric.eannulusIoc x r R) := by
+  simpa [Metric.eannulusIoc_eq_preimage] using
     (measurableSet_Ioc : MeasurableSet (Set.Ioc r R)).preimage (measurable_edist_left (x := x))
 
 @[measurability]
-lemma measurableSet_annulusIco : MeasurableSet (EMetric.annulusIco x r R) := by
-  simpa [EMetric.annulusIco_eq_preimage] using
+lemma measurableSet_eannulusIco : MeasurableSet (Metric.eannulusIco x r R) := by
+  simpa [Metric.eannulusIco_eq_preimage] using
     (measurableSet_Ico : MeasurableSet (Set.Ico r R)).preimage (measurable_edist_left (x := x))
 
 @[measurability]
-lemma measurableSet_annulusIcc : MeasurableSet (EMetric.annulusIcc x r R) := by
-  simpa [EMetric.annulusIcc_eq_preimage] using
+lemma measurableSet_eannulusIcc : MeasurableSet (Metric.eannulusIcc x r R) := by
+  simpa [Metric.eannulusIcc_eq_preimage] using
     (measurableSet_Icc : MeasurableSet (Set.Icc r R)).preimage (measurable_edist_left (x := x))
 
 @[measurability]
-lemma measurableSet_annulusIoi : MeasurableSet (EMetric.annulusIoi x r) := by
-  simpa [EMetric.annulusIoi_eq_preimage] using
+lemma measurableSet_eannulusIoi : MeasurableSet (Metric.eannulusIoi x r) := by
+  simpa [Metric.eannulusIoi_eq_preimage] using
     (measurableSet_Ioi : MeasurableSet (Set.Ioi r)).preimage (measurable_edist_left (x := x))
 
 @[measurability]
-lemma measurableSet_annulusIci : MeasurableSet (EMetric.annulusIci x r) := by
-  simpa [EMetric.annulusIci_eq_preimage] using
+lemma measurableSet_eannulusIci : MeasurableSet (Metric.eannulusIci x r) := by
+  simpa [Metric.eannulusIci_eq_preimage] using
     (measurableSet_Ici : MeasurableSet (Set.Ici r)).preimage (measurable_edist_left (x := x))
 
-end EMetric
+end Metric
