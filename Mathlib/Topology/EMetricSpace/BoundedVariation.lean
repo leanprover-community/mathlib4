@@ -220,19 +220,17 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
         ∑ j ∈ Finset.range m, edist (f (v (j + 1))) (f (v j)) := by
   rcases le_or_gt (u n) x with (h | h)
   · let v i := if i ≤ n then u i else x
-    refine ⟨v, n + 2, by grind [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, ?_, by grind⟩, ?_⟩
-    · rw [mem_Iio]; exact Nat.lt_succ_self (n + 1)
-    · calc
-        (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
-            ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
-        _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
-          gcongr
-          apply Nat.le_add_right
+    refine ⟨v, n + 2, by grind [Monotone], by grind, (mem_image _ _ _).2 ⟨n + 1, by grind⟩, ?_⟩
+    calc
+      (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
+          ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
+      _ ≤ ∑ j ∈ Finset.range (n + 2), edist (f (v (j + 1))) (f (v j)) := by
+        gcongr
+        apply Nat.le_add_right
   have exists_N : ∃ N, N ≤ n ∧ x < u N := ⟨n, le_rfl, h⟩
   let N := Nat.find exists_N
   have hN : N ≤ n ∧ x < u N := Nat.find_spec exists_N
   let w : ℕ → α := fun i => if i < N then u i else if i = N then x else u (i - 1)
-  have ws : ∀ i, w i ∈ s := by grind
   have hw : Monotone w := by
     apply monotone_nat_of_le_succ fun i => ?_
     rcases lt_trichotomy (i + 1) N with (hi | hi | hi)
@@ -241,8 +239,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       have := Nat.find_min exists_N A
       grind
     · grind [Monotone]
-  refine ⟨w, n + 1, hw, ws, (mem_image _ _ _).2 ⟨N, hN.1.trans_lt (Nat.lt_succ_self n), ?_⟩, ?_⟩
-  · dsimp only [w]; rw [if_neg (lt_irrefl N), if_pos rfl]
+  refine ⟨w, n + 1, hw, by grind, (mem_image _ _ _).2 ⟨N, by grind⟩, ?_⟩
   rcases eq_or_lt_of_le (zero_le N) with (Npos | Npos)
   · calc
       (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) =
