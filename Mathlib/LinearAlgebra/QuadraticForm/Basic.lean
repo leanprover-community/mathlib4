@@ -248,6 +248,13 @@ theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTow
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← map_mul, algebraMap_smul]
 
+/-- Restrict the domain of a quadratic map -/
+@[simps] def restrict (Q : QuadraticMap R M N) (V : Submodule R M) : QuadraticMap R V N where
+  toFun v := Q v
+  toFun_smul a v := Q.toFun_smul a v.val
+  exists_companion' := match Q.exists_companion with
+    | ⟨b, hb⟩ => ⟨b.domRestrict₁₂ V V, fun x y ↦ hb x.val y.val⟩
+
 end CommSemiring
 
 section CommRing
