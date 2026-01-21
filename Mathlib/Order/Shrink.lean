@@ -22,10 +22,8 @@ universe u v
 
 variable (α : Type v) [Small.{u} α]
 
-instance [Preorder α] : Preorder (Shrink.{u} α) where
-  le a b := (equivShrink α).symm a ≤ (equivShrink _).symm b
-  le_refl a := le_refl _
-  le_trans _ _ _ h₁ h₂ := h₁.trans h₂
+instance [Preorder α] : Preorder (Shrink.{u} α) :=
+  Preorder.lift (equivShrink α).symm
 
 /-- The order isomorphism `α ≃o Shrink.{u} α`. -/
 noncomputable def orderIsoShrink [Preorder α] : α ≃o Shrink.{u} α where
