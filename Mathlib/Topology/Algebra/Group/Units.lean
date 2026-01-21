@@ -48,8 +48,6 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
 /-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
 def ContinuousMulEquiv.units_map {M N : Type*} [TopologicalSpace M] [TopologicalSpace N]
     [Monoid M] [Monoid N] (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
-  {
-  __ := Units.mapEquiv f
-  continuous_toFun := by apply Continuous.units_map _ f.continuous_toFun
-  continuous_invFun := by apply Continuous.units_map _ f.continuous_invFun
-      }
+  { __ := Units.mapEquiv f
+    continuous_toFun := f.continuous.units_map _
+    continuous_invFun := f.symm.continuous.units_map _ }
