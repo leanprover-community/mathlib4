@@ -80,4 +80,6 @@ lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
 
 @[simp] lemma isCover_id : IsCover .id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
 
+@[deprecated (since := "2025-12-19")] alias isCover_relId := isCover_id
+
 end SetRel
