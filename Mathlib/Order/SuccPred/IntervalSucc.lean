@@ -57,13 +57,13 @@ theorem iUnion_Ico_map_succ_eq_Ici [OrderBot α] [SuccOrder α] [IsSuccArchimede
     {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
     (⋃ a : α, Ico (f a) (f (succ a))) = Ici (f ⊥) := by
   have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
-  simpa [Set.Ici_bot] using (biUnion_Ici_Ico_map_succ (a := (⊥ : α)) (fun i _ ↦ hf i) h2f')
+  simpa [Set.Ici_bot] using (biUnion_Ici_Ico_map_succ (fun i _ ↦ hf i) h2f')
 
 theorem iUnion_Ioc_map_succ_eq_Ioi [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
     {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
     (⋃ a : α, Ioc (f a) (f (succ a))) = Ioi (f ⊥) := by
   have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
-  simpa [Set.Ici_bot] using (biUnion_Ici_Ioc_map_succ (a := (⊥ : α)) (fun i _ ↦ hf i) h2f')
+  simpa [Set.Ici_bot] using (biUnion_Ici_Ioc_map_succ (fun i _ ↦ hf i) h2f')
 
 namespace Monotone
 
