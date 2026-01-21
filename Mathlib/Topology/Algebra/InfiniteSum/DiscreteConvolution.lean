@@ -126,6 +126,66 @@ lemma mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by
 
 end Fiber
 
+/-! ### Triple Antidiagonal and Fiber -/
+
+section TripleFiber
+
+variable [Monoid M] [Mul S]
+
+set_option backward.privateInPublic true in
+@[to_additive]
+private def mulTripleAntidiagonal (s t u : Set S) (a : S) : Set (S × S × S) :=
+  {x | x.1 ∈ s ∧ x.2.1 ∈ t ∧ x.2.2 ∈ u ∧ x.1 * x.2.1 * x.2.2 = a}
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
+/-- The fiber of triple multiplication at `x`: all triples `(a, b, c)` with `a * b * c = x`. -/
+@[to_additive (attr := irreducible) tripleAddFiber
+  /-- The fiber of triple addition at `x`: all triples `(a, b, c)` with `a + b + c = x`. -/]
+def tripleFiber (x : M) : Set (M × M × M) :=
+  mulTripleAntidiagonal Set.univ Set.univ Set.univ x
+
+@[to_additive mem_tripleAddFiber]
+lemma mem_tripleFiber {x : M} {abc : M × M × M} :
+    abc ∈ tripleFiber x ↔ abc.1 * abc.2.1 * abc.2.2 = x := by
+  simp only [tripleFiber, mulTripleAntidiagonal, Set.mem_setOf_eq, Set.mem_univ, true_and]
+
+@[to_additive leftAddAssocEquiv]
+private def leftAssocEquiv (x : M) : (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ tripleFiber x where
+  toFun := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ =>
+    ⟨⟨a, b, d⟩, by
+      simp only [mem_tripleFiber, mem_mulFiber] at hcd hab ⊢
+      rw [← hcd, ← hab, mul_assoc]⟩
+  invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
+    ⟨⟨⟨a * b, d⟩, by
+      simp only [mem_mulFiber, mem_tripleFiber] at habd ⊢; exact habd⟩,
+     ⟨⟨a, b⟩, by simp only [mem_mulFiber]⟩⟩
+  left_inv := fun ⟨⟨⟨c, d⟩, hcd⟩, ⟨⟨a, b⟩, hab⟩⟩ => by
+    simp only [mem_mulFiber] at hab; subst hab; rfl
+  right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
+
+@[to_additive rightAddAssocEquiv]
+private def rightAssocEquiv (x : M) : (Σ ae : mulFiber x, mulFiber ae.1.2) ≃ tripleFiber x where
+  toFun := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ =>
+    ⟨⟨a, b, d⟩, by
+      simp only [mem_tripleFiber, mem_mulFiber] at hae hbd ⊢
+      rw [← hae, ← hbd, mul_assoc]⟩
+  invFun := fun ⟨⟨a, b, d⟩, habd⟩ =>
+    ⟨⟨⟨a, b * d⟩, by
+      simp only [mem_mulFiber, mem_tripleFiber] at habd ⊢
+      rw [← mul_assoc]; exact habd⟩,
+     ⟨⟨b, d⟩, by simp only [mem_mulFiber]⟩⟩
+  left_inv := fun ⟨⟨⟨a, e⟩, hae⟩, ⟨⟨b, d⟩, hbd⟩⟩ => by
+    simp only [mem_mulFiber] at hbd; subst hbd; rfl
+  right_inv := fun ⟨⟨a, b, d⟩, habd⟩ => rfl
+
+@[to_additive addAssocEquiv]
+private def assocEquiv (x : M) :
+    (Σ cd : mulFiber x, mulFiber cd.1.1) ≃ (Σ ae : mulFiber x, mulFiber ae.1.2) :=
+  (leftAssocEquiv x).trans (rightAssocEquiv x).symm
+
+end TripleFiber
+
 /-! ### Convolution Definition and Existence -/
 
 section Definition
@@ -246,6 +306,32 @@ lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} 
   exact Summable.tsum_const_smul (L := .unconditional _) c hfg
 
 end ExistenceProperties
+
+/-! ### Triple Convolution Existence -/
+
+section TripleConvolutionExistence
+
+variable [Monoid M] [CommSemiring S]
+variable [AddCommMonoid E] [AddCommMonoid E'] [AddCommMonoid E'']
+variable [AddCommMonoid F'] [AddCommMonoid G]
+variable [Module S E] [Module S E'] [Module S E''] [Module S F'] [Module S G]
+variable [TopologicalSpace G]
+
+/-- Triple convolution exists at `x` when the sum over `tripleFiber x` is summable. -/
+@[to_additive (dont_translate := S) TripleAddConvolutionExistsAt]
+def TripleConvolutionExistsAt
+    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
+    (f : M → E) (g : M → E') (h : M → E'') (x : M) : Prop :=
+  Summable fun p : tripleFiber x => L₃ (f p.1.1) (L₄ (g p.1.2.1) (h p.1.2.2))
+
+/-- Triple convolution exists when it exists at every point. -/
+@[to_additive (dont_translate := S) TripleAddConvolutionExists]
+def TripleConvolutionExists
+    (L₃ : E →ₗ[S] F' →ₗ[S] G) (L₄ : E' →ₗ[S] E'' →ₗ[S] F')
+    (f : M → E) (g : M → E') (h : M → E'') : Prop :=
+  ∀ x, TripleConvolutionExistsAt L₃ L₄ f g h x
+
+end TripleConvolutionExistence
 
 /-! ### Commutativity -/
 
