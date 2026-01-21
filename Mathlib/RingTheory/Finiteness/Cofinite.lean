@@ -37,45 +37,40 @@ abbrev CoFG (S : Submodule R M) : Prop := Module.Finite R (M ⧸ S)
 @[simp] theorem CoFG.of_isNoetherian [IsNoetherian R M] {S : Submodule R M} : S.CoFG :=
   Module.Finite.quotient R S
 
-/-- A submodule of a finitely generated module is CoFG. -/
-alias CoFG.of_finite := CoFG.of_isNoetherian
+/-- A submodule of a finite module is CoFG. -/
+@[simp] theorem CoFG.of_finite [Module.Finite R M] {S : Submodule R M} : S.CoFG :=
+  Module.Finite.quotient R S
 
 /-- The top submodule is CoFG. -/
 @[simp] theorem CoFG.top : (⊤ : Submodule R M).CoFG := inferInstance
 
-/-- If the bottom submodule is CoFG, then the module is finite. -/
-theorem _root_.Module.Finite.of_cofg_bot (h : (⊥ : Submodule R M).CoFG) : Module.Finite R M
-    := Module.Finite.equiv (quotEquivOfEqBot ⊥ rfl)
+/-- A module is finite if and only if the bottom submodule is CoFG. -/
+theorem _root_.Module.Finite.iff_cofg_bot : (⊥ : Submodule R M).CoFG ↔ Module.Finite R M :=
+  ⟨fun _ => Module.Finite.equiv (quotEquivOfEqBot ⊥ rfl), fun _ => CoFG.of_finite⟩
 
 /-- A complement of a CoFG submodule is FG. -/
-theorem CoFG.isCompl_fg {S T : Submodule R M} (hST : IsCompl S T) (hS : S.CoFG) : T.FG
+theorem CoFG.fg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.CoFG) : T.FG
   := Module.Finite.iff_fg.mp <| Module.Finite.equiv <| quotientEquivOfIsCompl S T hST
 
 /-- A complement of an FG submodule is CoFG. -/
-theorem FG.isCompl_cofg {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG) : T.CoFG := by
+theorem FG.cofg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG) : T.CoFG := by
   haveI := Module.Finite.iff_fg.mpr hS
   exact Module.Finite.equiv (quotientEquivOfIsCompl T S hST.symm).symm
-
-/-- The sup of a CoFG submodule with another submodule is CoFG. -/
-theorem CoFG.sup_left {S : Submodule R M} (hS : S.CoFG) (T : Submodule R M) : (S ⊔ T).CoFG
-  := Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
-
-alias CoFG.sup := CoFG.sup_left
-
-/-- The sup of a CoFG submodule with another submodule is CoFG. -/
-theorem CoFG.sup_right (S : Submodule R M) {T : Submodule R M} (hT : S.CoFG) : (S ⊔ T).CoFG
-  := Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
 
 /-- A submodule that contains a CoFG submodule is CoFG. -/
 theorem CoFG.of_cofg_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.CoFG := by
   rw [← sup_eq_right.mpr hT]
-  exact hS.sup T
+  exact Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
 
-/-- If a family of submodules contains a CoFG submodule then the supremum of the family is CoFG. -/
-protected theorem CoFG.sSup {s : Set (Submodule R M)} (hs : ∃ S ∈ s, S.CoFG) : (sSup s).CoFG := by
-  obtain ⟨S, hS, hcofg⟩ := hs
-  rw [right_eq_sup.mpr <| le_sSup hS]
-  exact hcofg.sup _
+/-- The sup of a CoFG submodule with another submodule is CoFG. -/
+theorem CoFG.sup_left {S : Submodule R M} (hS : S.CoFG) (T : Submodule R M) : (S ⊔ T).CoFG
+  := of_cofg_le le_sup_left hS
+
+alias CoFG.sup := CoFG.sup_left
+
+/-- The sup of a CoFG submodule with another submodule is CoFG. -/
+theorem CoFG.sup_right (S : Submodule R M) {T : Submodule R M} (hT : T.CoFG) : (S ⊔ T).CoFG
+  := of_cofg_le le_sup_right hT
 
 section LinearMap
 
@@ -114,8 +109,8 @@ protected theorem CoFG.sInf {s : Finset (Submodule R M)} (hs : ∀ S ∈ s, S.Co
     exact hs.1.inf (hs' hs.2)
 
 /-- Over a noetherian ring the infimum of a finite family of CoFG submodules is CoFG. -/
-protected theorem CoFG.sInf' {s : Set (Submodule R M)} (hs : s.Finite) (hcofg : ∀ S ∈ s, S.CoFG) :
-    (sInf s).CoFG := by
+protected theorem CoFG.sInf_of_finite {s : Set (Submodule R M)} (hs : s.Finite)
+    (hcofg : ∀ S ∈ s, S.CoFG) : (sInf s).CoFG := by
   rw [← hs.coe_toFinset] at hcofg ⊢; exact CoFG.sInf hcofg
 
 end IsNoetherianRing
