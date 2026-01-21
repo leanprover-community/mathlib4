@@ -16,7 +16,7 @@ where the bounding value of the real or imaginary part is given by an `EReal` `x
 So this includes the full plane and the empty set for `x = ⊤`/`x = ⊥`.
 -/
 
-@[expose] public section
+public section
 
 namespace Complex
 

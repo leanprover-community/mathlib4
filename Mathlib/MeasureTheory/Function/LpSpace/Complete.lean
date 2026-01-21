@@ -20,7 +20,7 @@ in `MeasureTheory.Lp.instCompleteSpace`.
 open MeasureTheory Filter
 open scoped ENNReal Topology
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [SeminormedAddGroup E]
 
 namespace MeasureTheory.Lp
 
@@ -83,8 +83,29 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_top
   exact eLpNorm'_lim_le_liminf_eLpNorm' hp_pos hf h_lim
 
+/-- If the `eLpNorm` of a collection of `AEStronglyMeasurable` functions that converges almost
+everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
+`C`. -/
+theorem eLpNorm_le_of_ae_tendsto {ι : Type*} {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+    {f : ι → α → E} {g : α → E} {C : ℝ≥0∞} (bound : ∀ᶠ n in u, eLpNorm (f n) p μ ≤ C)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (f · x) u (𝓝 (g x))) :
+    eLpNorm g p μ ≤ C := by
+  obtain ⟨v, hv⟩ := exists_seq_tendsto u
+  have : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f (v n) x) atTop (𝓝 (g x)) := by
+    filter_upwards [h_tendsto] with x hx
+    exact hx.comp hv
+  calc
+  _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f (v n)) p μ) :=
+    Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf (v n)) g this
+  _ ≤ C := by
+    refine liminf_le_of_le (by isBoundedDefault) (fun b hb => ?_)
+    obtain ⟨n, hn⟩ := (hb.and (hv.eventually bound)).exists
+    exact hn.1.trans hn.2
+
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
     (f_lim : Lp E p μ) :
@@ -117,7 +138,6 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] 
     Lp.coeFn_sub ((f_ℒp n).toLp (f n)) (f_lim_ℒp.toLp f_lim)] with _ hx₁ hx₂
   rw [← hx₂]
   exact hx₁
-
 
 theorem tendsto_Lp_of_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] {f : ι → Lp E p μ}
     (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ)

@@ -28,7 +28,7 @@ more painful with reals than nonnegative extended reals. They should probably be
 run.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff
@@ -54,9 +54,7 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[simp] theorem measureReal_univ_eq_one [IsProbabilityMeasure μ] :
-    μ.real Set.univ = 1 := by
-  simp [Measure.real]
+@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
@@ -435,6 +433,14 @@ theorem nonempty_inter_of_measureReal_lt_add'
   rw [add_comm] at h
   rw [inter_comm]
   exact nonempty_inter_of_measureReal_lt_add hs h't h's h hu
+
+variable [IsProbabilityMeasure μ]
+
+lemma probReal_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ.real sᶜ = 1 - μ.real s := by
+  rw [measureReal_compl₀ h, probReal_univ]
+
+lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.real s :=
+  probReal_compl_eq_one_sub₀ hs.nullMeasurableSet
 
 end MeasureTheory
 

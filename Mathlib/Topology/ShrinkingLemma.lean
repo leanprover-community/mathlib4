@@ -224,7 +224,7 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
   rcases zorn_le_nonempty this with ⟨v, hv⟩
   suffices ∀ i, i ∈ v.carrier from
     ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
-  refine fun i ↦ by_contra fun hi ↦ ?_
+  intro i; by_contra hi
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
   exact hv.not_lt hlt
 

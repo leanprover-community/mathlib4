@@ -17,7 +17,7 @@ convex set in `E`. Then the frontier of `s` has measure zero (see `Convex.addHaa
 `s` is a `NullMeasurableSet` (see `Convex.nullMeasurableSet`).
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory MeasureTheory.Measure Set Metric Filter Bornology

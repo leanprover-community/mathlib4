@@ -127,7 +127,7 @@ theorem mk_eq_div' (p q : K[X]) :
     RatFunc.mk p q = algebraMap _ _ p / algebraMap _ _ q := by rw [RatFunc.mk]
 
 theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = 0 := by
-  rw [mk_eq_div', RingHom.map_zero, div_zero]
+  rw [mk_eq_div', map_zero, div_zero]
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) : RatFunc.mk p q = IsLocalization.mk' _ p q := by
   simp only [mk_eq_div', ← Localization.mk_eq_mk', FractionRing.mk_eq_div]

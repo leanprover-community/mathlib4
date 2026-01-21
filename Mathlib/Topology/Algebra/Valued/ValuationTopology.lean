@@ -266,9 +266,6 @@ theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
   isOpen_closedBall _ one_ne_zero
 
-@[deprecated (since := "2025-04-25")]
-alias integer_isOpen := isOpen_integer
-
 /-- The closed unit ball of a valued ring is closed. -/
 theorem isClosed_integer : IsClosed (_i.v.integer : Set R) :=
   isClosed_closedBall _ _
@@ -281,9 +278,6 @@ theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
 theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsOpen (hv.v.valuationSubring : Set K) :=
   isOpen_integer K
-
-@[deprecated (since := "2025-04-25")]
-alias valuationSubring_isOpen := isOpen_valuationSubring
 
 /-- The valuation subring of a valued field is closed. -/
 theorem isClosed_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :

@@ -27,7 +27,7 @@ However many of the results here really belong in `Algebra.BigOperators.Group.Fi
 and should be moved at some point.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MulAction
 

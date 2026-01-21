@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Data.Vector.Defs
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.SuccPred
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -164,16 +165,14 @@ theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
 
 @[simp]
 theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
-  rcases v with ⟨l, rfl⟩
-  apply toList_injective
-  dsimp
-  simpa only [toList_ofFn] using List.ofFn_get _
+  ext
+  apply List.Vector.get_ofFn
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
 def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 
-theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by cutsat⟩ := by
+theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by lia⟩ := by
   obtain ⟨i, ih⟩ := i; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
@@ -205,6 +204,10 @@ theorem tail_ofFn {n : ℕ} (f : Fin n.succ → α) : tail (ofFn f) = ofFn fun i
     funext i
     rw [get_tail, get_ofFn]
     rfl
+
+theorem toList_tail : ∀ (v : Vector α n), v.tail.toList = v.toList.tail
+  | ⟨[], _⟩     => by rfl
+  | ⟨_ :: _, _⟩ => by rfl
 
 @[simp]
 theorem toList_empty (v : Vector α 0) : v.toList = [] :=
@@ -314,7 +317,8 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
+  apply Vector.eq; simp [scanl]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -528,7 +532,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    split <;> omega⟩
+    split <;> lia⟩
 
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
     (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
@@ -541,9 +545,6 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
 theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
-
-@[deprecated (since := "2025-06-17")]
-alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -571,7 +572,7 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
       (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine Subtype.ext ?_
-    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.val_castAdd]
     apply List.insertIdx_comm
     · assumption
     · rw [hl]

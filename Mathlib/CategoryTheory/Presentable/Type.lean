@@ -78,7 +78,7 @@ lemma isFiltered_of_aleph0_le (hκ : Cardinal.aleph0 ≤ κ) :
     IsFiltered (HasCardinalLT.Set X κ) where
   nonempty := ⟨⟨∅, hasCardinalLT_of_finite _ _ hκ⟩⟩
   toIsFilteredOrEmpty := by
-    have : IsDirected (HasCardinalLT.Set X κ) (· ≤ ·) :=
+    have : IsDirectedOrder (HasCardinalLT.Set X κ) :=
       ⟨fun A B ↦ ⟨⟨A.val ∪ B.val, hasCardinalLT_union hκ A.prop B.prop⟩,
         Set.subset_union_left, Set.subset_union_right⟩⟩
     exact isFilteredOrEmpty_of_directed_le _

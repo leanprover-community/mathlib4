@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Ring.Real
 # Topological properties of ℝ
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists UniformOnFun
 

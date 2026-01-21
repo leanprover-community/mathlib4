@@ -33,7 +33,7 @@ In a complete (semi)normed group,
 infinite series, absolute convergence, normed group
 -/
 
-@[expose] public section
+public section
 
 open Topology ENNReal NNReal
 

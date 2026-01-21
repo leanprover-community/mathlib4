@@ -99,17 +99,17 @@ def conesEquivSieveCompatibleFamily :
       { x : FamilyOfElements (P ⋙ coyoneda.obj E) (S : Presieve X) // x.SieveCompatible } where
   toFun π :=
     ⟨fun _ f h => π.app (op ⟨Over.mk f, h⟩), fun X Y f g hf => by
-      apply (id_comp _).symm.trans
-      dsimp
-      exact π.naturality (Quiver.Hom.op (Over.homMk _ (by rfl)))⟩
+      let φ : S.arrows.categoryMk (g ≫ f) (S.downward_closed hf g) ⟶
+        S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ (by rfl))
+      simpa using π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
       naturality := fun f f' g => by
-        refine Eq.trans ?_ (x.2 f.unop.1.hom g.unop.left f.unop.2)
-        dsimp
-        rw [id_comp]
+        have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
+        dsimp at this ⊢
+        rw [id_comp, ← this]
         convert rfl
-        rw [Over.w] }
+        simp only [Over.w] }
 
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
@@ -355,10 +355,44 @@ def sheafSectionsNatIsoEvaluation {X : C} :
 def fullyFaithfulSheafToPresheaf : (sheafToPresheaf J A).FullyFaithful where
   preimage f := ⟨f⟩
 
-variable {J A} in
+section
+
+variable {J A}
+
 /-- The bijection `(X ⟶ Y) ≃ (X.val ⟶ Y.val)` when `X` and `Y` are sheaves. -/
 abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
+
+/-- `Sheaf.homEquiv` as a natural isomorphism. -/
+@[simps!]
+def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
+    sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
+      yoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.symm.{max u₁ v₂} _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compUliftYonedaCompWhiskeringLeft ≪≫
+    uliftYonedaIsoYoneda
+
+lemma sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf.app X).app (op Y) =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
+
+/-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
+@[simps!]
+def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
+    (sheafToPresheaf J A).op ⋙ coyoneda ⋙
+      (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A) ≅
+      coyoneda :=
+  Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.symm.{max u₁ v₂} _) ≪≫
+    (fullyFaithfulSheafToPresheaf J A).compUliftCoyonedaCompWhiskeringLeft ≪≫
+    uliftCoyonedaIsoCoyoneda
+
+lemma sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.app (op X)).app Y =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
+
+end
 
 instance : (sheafToPresheaf J A).Full :=
   (fullyFaithfulSheafToPresheaf J A).full

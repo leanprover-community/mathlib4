@@ -20,7 +20,7 @@ This file states some results about evaluating cyclotomic polynomials in various
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial
@@ -117,7 +117,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
       and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
-  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by cutsat)
+  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by lia)
 
 /-- Cyclotomic polynomials are always positive on inputs larger than one.
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the
@@ -167,6 +167,8 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
 
+-- Fix the non-terminal simp!
+set_option linter.flexible false in
 theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ n) (hq' : 1 < q) :
     (q - 1) ^ totient n < (cyclotomic n ℝ).eval q := by
   have hn : 0 < n := pos_of_gt hn'
@@ -220,6 +222,8 @@ theorem sub_one_pow_totient_le_cyclotomic_eval {q : ℝ} (hq' : 1 < q) :
   | 1 => by simp only [totient_one, pow_one, cyclotomic_one, eval_sub, eval_X, eval_one, le_refl]
   | _ + 2 => (sub_one_pow_totient_lt_cyclotomic_eval le_add_self hq').le
 
+-- TODO: non-terminal simps followed by positivity
+set_option linter.flexible false in
 theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ n) (hq' : 1 < q) :
     (cyclotomic n ℝ).eval q < (q + 1) ^ totient n := by
   have hn : 0 < n := pos_of_gt hn'
@@ -270,7 +274,7 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
-  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith only [hq'])
+  swap; · exact fun _ => Units.mk0 (Real.toNNReal (q + 1)) (by simp; positivity)
   · simp [Complex.card_primitiveRoots]
   · simp only [Finset.mem_attach, forall_true_left, Subtype.forall, ←
       Units.val_le_val, ← NNReal.coe_le_coe, Units.val_mk0,

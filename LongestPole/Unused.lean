@@ -27,8 +27,8 @@ commands that can show the dependency structure from the unused import up to the
 "unnecessarily" transitively imports it.
 
 `scripts/unused_in_pole.sh module` (or no argument for all of Mathlib), will calculate the current
-longest pole in Mathlib (note for this you need to be on a commit on which the speed center has
-run), and then feed that list of modules into `lake exe unused`.
+longest pole in Mathlib (note for this you need to be on a commit on which radar has run), and then
+feed that list of modules into `lake exe unused`.
 
 Demo video at https://youtu.be/PVj_FHGwhUI
 -/

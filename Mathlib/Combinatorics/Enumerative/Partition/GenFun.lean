@@ -22,12 +22,16 @@ We give the definition `Nat.Partition.genFun` using the first equation, and prov
 equation in `Nat.Partition.hasProd_genFun` (with shifted indices).
 
 This generating function can be specialized to
-* When $f(i, c) = 1$, this is the generating function for partition function $p(n)$.
+* When $f(i, c) = 1$, this is the generating function for partition function $p(n)$
+  (TODO: prove this).
 * When $f(i, 1) = 1$ and $f(i, c) = 0$ for $c > 1$, this is the generating function for
-    `#(Nat.Partition.distincts n)`.
+  `#(Nat.Partition.distincts n)`. More generally, setting $f(i, c) = 1$ only for $c < m$ gives
+  the generating function for `#(Nat.Partition.countRestricted n m)`.
+  (See `Nat.Partition.hasProd_powerSeriesMk_card_countRestricted`).
 * When $f(i, c) = 1$ for odd $i$ and $f(i, c) = 0$ for even $i$, this is the generating function for
-    `#(Nat.Partition.odds n)`.
-(TODO: prove these)
+  `#(Nat.Partition.odds n)`. More generally, setting $f(i, c) = 1$ only for $i$ satisfying certain
+  `p : Prop` gives the generating function for `#(Nat.Partition.restricted n p)`.
+  (See `Nat.Partition.hasProd_powerSeriesMk_card_restricted`)
 
 The definition of `Nat.Partition.genFun` ignores the value of $f(0, c)$ and $f(i, 0)$. The formula
 can be interpreted as assuming $f(i, 0) = 1$ and $f(0, c) = 0$ for $c \ne 0$. In theory we could
@@ -57,20 +61,26 @@ lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
     (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
   PowerSeries.coeff_mk _ _
 
+/-- The summands in the formula `Nat.Partition.hasProd_genFun` tends to infinity in their order. -/
+theorem tendsto_order_genFun_term_atTop_nhds_top (f : ℕ → ℕ → R) (i : ℕ) :
+    Filter.Tendsto (fun j ↦ (f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1))).order)
+    Filter.atTop (nhds ⊤) := by
+  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
+  intro m hm
+  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
+  refine lt_add_of_nonneg_of_lt (by simp) ?_
+  nontriviality R using Subsingleton.eq_zero
+  rw [order_X_pow]
+  norm_cast
+  grind
+
 variable [TopologicalSpace R]
 
 /-- The infinite sum in the formula `Nat.Partition.hasProd_genFun` always converges. -/
 theorem summable_genFun_term (f : ℕ → ℕ → R) (i : ℕ) :
     Summable fun j ↦ f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1)) := by
-  nontriviality R
   apply WithPiTopology.summable_of_tendsto_order_atTop_nhds_top
-  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
-  intro m hm
-  grw [PowerSeries.smul_eq_C_mul, ← le_order_mul]
-  refine lt_add_of_nonneg_of_lt (by simp) ?_
-  rw [order_X_pow]
-  norm_cast
-  grind
+  apply tendsto_order_genFun_term_atTop_nhds_top
 
 /-- Alternative form of `summable_genFun_term` that unshifts the first index. -/
 theorem summable_genFun_term' (f : ℕ → ℕ → R) {i : ℕ} (hi : i ≠ 0) :
@@ -135,7 +145,7 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
     ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
   simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
   apply prod_subset_one_on_sdiff
-  · grind [Multiset.mem_toFinset, mem_Icc]
+  · grind
   · intro x hx
     rw [mem_sdiff, Multiset.mem_toFinset] at hx
     have hx0 : x ≠ 0 := fun h ↦ hs0 (h ▸ hx.1)
