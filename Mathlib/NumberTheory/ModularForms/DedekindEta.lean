@@ -21,7 +21,7 @@ public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
 * We define the Dedekind eta function as the infinite product
 `η(z) = q ^ 1/24 * ∏' (1 - q ^ (n + 1))` where `q = e ^ (2πiz)` and `z` is in the upper half-plane.
 The product is taken over all non-negative integers `n`. We then show it is non-vanishing and
-differentiable on the upper half-plane. Laslty, we compute its logarithmic derivative and show that
+differentiable on the upper half-plane. Lastly, we compute its logarithmic derivative and show that
 it is a multiple of the Eisenstein series `E2`.
 
 ## References
@@ -134,11 +134,13 @@ theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍ�
     DifferentiableAt ℂ eta z := by
   exact DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
 
-private lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
-  have : (𝕢 24) = (fun z ↦ cexp z) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
-    grind [Periodic.qParam, ofReal_ofNat]
+lemma logDeriv_qParam (h : ℝ) (z : ℂ) : logDeriv (𝕢 h) z = 2 * π * I / h := by
+  have : (𝕢 h) = cexp ∘ (fun z => (2 * π * I / h) * z) := by
+    ext z
+    simp [Periodic.qParam]
+    ring_nf
   rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
-  simp [LogDeriv_exp]
+  simp [logDeriv_exp]
 
 lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
     Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
@@ -158,11 +160,11 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
     (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_logDeriv_one_sub_eta_q z.2)
     (multipliableLocallyUniformlyOn_eta ) (eta_tprod_ne_zero z.2)
   rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
-  simp only [logDeriv_q_term z, HG, tsum_logDeriv_eta_q z, E2, one_div,
+  simp only [logDeriv_qParam 24 z, HG, tsum_logDeriv_eta_q z, E2, one_div,
     mul_inv_rev, Pi.smul_apply, smul_eq_mul]
   rw [G2_eq_tsum_cexp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma
     (by apply UpperHalfPlane.norm_exp_two_pi_I_lt_one z), mul_sub, sub_eq_add_neg, mul_add]
-  simp [eta_q_eq_pow,  ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
+  simp [eta_q_eq_pow, ← tsum_mul_left, tsum_pnat_eq_tsum_succ (f := fun n ↦
         n * cexp (2 * π * I * z) ^ n / (1 - cexp (2 * π * I * z) ^ n)), ← tsum_neg]
   grind
 
