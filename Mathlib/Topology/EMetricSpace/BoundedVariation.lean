@@ -7,8 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Set.ProjIcc
 public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Semicontinuity.Defs
 
 /-!
 # Functions of bounded variation
@@ -612,7 +613,7 @@ protected theorem add {f : α → E} {s : Set α} (hf : LocallyBoundedVariationO
     (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b + variationOnFromTo f s b c = variationOnFromTo f s a c := by
   symm
-  refine additive_of_isTotal (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
+  refine additive_of_total (· ≤ · : α → α → Prop) (variationOnFromTo f s) (· ∈ s) ?_ ?_ ha hb hc
   · rintro x y _xs _ys
     simp only [variationOnFromTo.eq_neg_swap f s y x, add_neg_cancel]
   · rintro x y z xy yz xs ys zs
