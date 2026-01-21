@@ -437,7 +437,7 @@ theorem Disjoint.exists_isCompl {a b : α} (hab : Disjoint a b) :
 /-- A codisjoint element can be shrunk to a complementary element. -/
 theorem Codisjoint.exists_isCompl {a b : α} (hab : Codisjoint a b) :
     ∃ a' : α, a' ≤ a ∧ IsCompl a' b := by
-  rw [← disjoint_toDual_iff] at *
+  rw [← disjoint_toDual_iff] at hab
   simpa using Disjoint.exists_isCompl hab
 
 end ComplementedLattice
