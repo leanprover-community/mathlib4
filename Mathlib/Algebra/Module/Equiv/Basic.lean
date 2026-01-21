@@ -683,9 +683,9 @@ theorem conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁'
     e.conj f = ((↑e : M₁' →ₛₗ[σ₁'₂'] M₂').comp f).comp (e.symm : M₂' →ₛₗ[σ₂'₁'] M₁') :=
   rfl
 
--- Should rewrite after unapplied `conj` lemmas for performance reason
--- (e.g. `e.conj LinearMap.id x => LinearMap.id x` => `x` rather than
---       `e.conj LinearMap.id x => e (LinearMap.id (e.symm x)) => e (e.symm x) => x`)
+-- Note this has lower `simp` priority for performance reasons, so that we rewrite as
+-- `e.conj LinearMap.id x => LinearMap.id x` => `x` rather than
+-- `e.conj LinearMap.id x => e (LinearMap.id (e.symm x)) => e (e.symm x) => x`.
 @[simp 900]
 theorem conj_apply_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') (x : M₂') :
     e.conj f x = e (f (e.symm x)) :=
