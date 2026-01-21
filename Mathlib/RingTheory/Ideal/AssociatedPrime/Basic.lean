@@ -6,12 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Exact
-public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.IsPrimary
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 
