@@ -22,7 +22,8 @@ namespace Mathlib.Tactic.LibrarySearch
 
 open Lean Meta Elab Tactic Meta.Tactic.TryThis LibrarySearch
 
-/-- `observe hp : p` asserts the proposition `p`, and tries to prove it using `exact?`.
+/-- `observe hp : p` asserts the proposition `p` as a hypothesis named `hp`, and tries to prove it
+using `exact?`.
 If no proof is found, the tactic fails.
 In other words, this tactic is equivalent to `have hp : p := by exact?`.
 
