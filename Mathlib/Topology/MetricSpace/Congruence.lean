@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Congruences
@@ -95,6 +96,17 @@ lemma index_map (h : v₁ ≅ v₂) (f : ι' → ι) : (v₁ ∘ f) ≅ (v₂ �
   refine ⟨fun h i₁ i₂ ↦ ?_, fun h ↦ index_map h f⟩
   simpa [(EquivLike.toEquiv f).right_inv i₁, (EquivLike.toEquiv f).right_inv i₂]
     using edist_eq h ((EquivLike.toEquiv f).symm i₁) ((EquivLike.toEquiv f).symm i₂)
+
+lemma comp_isometry {f : P₁ → P₂} (hf : Isometry f) : f ∘ v₁ ≅ v₁ :=
+  fun _ _ ↦ hf _ _
+
+@[simp]
+lemma comp_left_isometry_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ≅ v₂ ↔ v₁ ≅ v₂ :=
+  ⟨(comp_isometry hf).symm.trans, (comp_isometry hf).trans⟩
+
+@[simp]
+lemma comp_right_isometry_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ≅ f ∘ v₂ ↔ v₁ ≅ v₂ := by
+  rw [congruent_comm, comp_left_isometry_iff hf, congruent_comm]
 
 end Congruent
 

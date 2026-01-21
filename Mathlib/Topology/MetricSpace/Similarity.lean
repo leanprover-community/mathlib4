@@ -113,6 +113,14 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
+@[simp]
+lemma comp_left_isometry_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  ⟨(Congruent.comp_isometry hf).symm.similar.trans, (Congruent.comp_isometry hf).similar.trans⟩
+
+@[simp]
+lemma comp_right_isometry_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ := by
+  rw [similar_comm, comp_left_isometry_iff hf, similar_comm]
+
 section Triangle
 
 variable {a b c : P₁} {a' b' c' : P₂}
