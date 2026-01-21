@@ -64,8 +64,7 @@ is equal to a multiplication on the left by `x * y`.
 @[to_additive (attr := simp) /-- Composing two additions on the left by `y` then `x`
 is equal to an addition on the left by `x + y`. -/]
 theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
-  ext z
-  simp [mul_assoc]
+  grind
 
 /-- Composing two multiplications on the right by `y` and `x`
 is equal to a multiplication on the right by `y * x`.
@@ -73,8 +72,7 @@ is equal to a multiplication on the right by `y * x`.
 @[to_additive (attr := simp) /-- Composing two additions on the right by `y` and `x`
 is equal to an addition on the right by `y + x`. -/]
 theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
-  ext z
-  simp [mul_assoc]
+  grind
 
 end Semigroup
 
@@ -117,15 +115,15 @@ variable [CommSemigroup G]
 
 @[to_additive]
 theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
-  rw [← mul_assoc, mul_comm a, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
-  rw [mul_assoc, mul_comm b, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
-  simp only [mul_left_comm, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
@@ -133,11 +131,11 @@ theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
-  simp only [mul_left_comm, mul_comm]
+  grind
 
 @[to_additive]
 theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
-  simp only [mul_left_comm, mul_comm]
+  grind
 
 end CommSemigroup
 
@@ -178,7 +176,7 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
   | n + 1, h =>
     calc
       a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
-      _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
+      _ = a ^ n * (a * b) * b ^ n := by grind
       _ = 1 := by simp [h, pow_mul_pow_eq_one]
 
 @[to_additive (attr := simp)]
