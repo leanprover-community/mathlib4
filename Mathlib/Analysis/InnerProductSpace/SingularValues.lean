@@ -137,6 +137,10 @@ public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) 
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
   simp [T.singularValues_fin hn, T.eigenvalues_adjoint_comp_self_nonneg hn]
 
+public theorem sq_singularValues_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
+  : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
+  exact T.sq_singularValues_fin hn ⟨i, hi⟩
+
 public theorem hasEigenvalue_adjoint_comp_self_sq_singularValues
   {n : ℕ} (hn : n < Module.finrank 𝕜 E)
   : Module.End.HasEigenvalue (adjoint T ∘ₗ T) ((T.singularValues n).toReal ^ 2) := by
@@ -168,7 +172,10 @@ public theorem injective_theorem
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
   rw [←this]
   rw [not_iff_not]
-  sorry
+  constructor <;> intro h
+  · -- Plan: If 0 is an eigenvalue, then it equals (T*T).eigenvalues i for some i
+    sorry
+  · sorry
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
