@@ -562,7 +562,7 @@ end ContinuousMulEquiv
 
 section Actions
 
-variable {G M : Type*}
+variable {G : Type*} (M : Type*)
 
 /--
 Each element of the scalars defines a continuous additive monoid homomorphism.
