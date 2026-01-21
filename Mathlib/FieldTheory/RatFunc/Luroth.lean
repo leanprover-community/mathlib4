@@ -8,21 +8,15 @@ import Mathlib.FieldTheory.RatFunc.AsPolynomial
 /-!
 # Lüroth's theorem
 
-The goal of this project is to prove Lüroth's theorem, which says that for every field K,
+The goal of this file is to prove Lüroth's theorem, which says that for every field K,
 every intermediate field between K and the rational function field K(X) is either K or
 isomorphic to K(X) as an K-algebra. The proof depends on the following lemma on degrees of
 rational functions:
 
-If `f` is a rational function, i.e. an element in the field `K(X)` (`FractionRing K[X]`)
-for some field `K`, we can write `f = p / q` where `p` and `q` are coprime polynomials in `K[X]`
-with `q` nonzero.
-
-We define the degree of `f` to be the larger of the degrees (`Polynomial.natDegree`)
-of `p` and `q`. It turns out that if `f` is not a constant, its degree is equal to the degree of
-the field extension K(X)/K(f) (`Module.finrank K⟮f⟯ (FractionRing K[X])`).
-
-(In fact, since `finrank` is defined to be 0 when the extension is infinite,
-the equality continue to hold even when `f` is a constant.)
+Let `f` be a rational function, i.e. an element in the field `K(X)` (`RatFunc K`). Let `p` be its
+numerator and `q` its denominator. Then the degree of the field extension `K(X)/K(f)` equals the
+maximum of the degrees of `p` and `q`. Since `finrank` is defined to be zero when the extension
+is infinite, this holds even when `f` is constant.
 
 References:
 
@@ -32,19 +26,19 @@ References:
 
 -/
 
-variable {K : Type*} [Field K]
-
 namespace Polynomial
 
-noncomputable abbrev swap : K[X][X] ≃+* K[X][X] :=
+variable {R : Type*} [CommSemiring R]
+
+noncomputable def swap : R[X][X] ≃+* R[X][X] :=
   .ofRingHom (eval₂RingHom (mapRingHom C) (C X)) (eval₂RingHom (mapRingHom C) (C X))
     (by ext <;> simp) (by ext <;> simp)
 
 @[simp]
-theorem swap_C (f : K[X]) : swap (C f) = f.map (algebraMap K K[X]) := by simp
+theorem swap_coe : swap (R := R) = eval₂RingHom (R := R[X]) (mapRingHom C) (C X) := rfl
 
 @[simp]
-theorem swap_X : swap (X : K[X][X]) = C X := by simp
+theorem swap_apply (f : R[X][X]) : swap f = eval₂RingHom (R := R[X]) (mapRingHom C) (C X) f := rfl
 
 end Polynomial
 
@@ -53,17 +47,17 @@ namespace RatFunc
 open IntermediateField algebraAdjoinAdjoin
 open scoped Polynomial
 
-variable (f : RatFunc K)
+variable {K : Type*} [Field K] (f : RatFunc K)
 
-theorem adjoin_X_eq_top : K⟮(X : RatFunc K)⟯ = ⊤ :=
+theorem adjoin_X : K⟮(X : RatFunc K)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
-theorem adjoin_adjoin_X_eq_top : K⟮f⟯⟮(X : RatFunc K)⟯ = ⊤ := by
+theorem adjoin_adjoin_X : K⟮f⟯⟮(X : RatFunc K)⟯ = ⊤ := by
   rw [←restrictScalars_eq_top_iff (K := K), adjoin_simple_adjoin_simple, eq_top_iff]
-  exact le_trans (le_of_eq adjoin_X_eq_top.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
+  exact le_trans (le_of_eq adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
 noncomputable def adjoinAdjoinXEquiv : K⟮f⟯⟮(X : RatFunc K)⟯ ≃ₐ[K⟮f⟯] RatFunc K :=
-  (IntermediateField.equivOfEq (adjoin_adjoin_X_eq_top f)).trans IntermediateField.topEquiv
+  (IntermediateField.equivOfEq (adjoin_adjoin_X f)).trans IntermediateField.topEquiv
 
 /-- The minimal polynomial of `X` over `K⟮f⟯`. -/
 noncomputable abbrev minpolyX : K⟮f⟯[X] :=
