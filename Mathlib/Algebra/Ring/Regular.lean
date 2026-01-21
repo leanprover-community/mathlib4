@@ -39,6 +39,8 @@ theorem IsRegular.of_ne_zero' [NonUnitalNonAssocRing α] [NoZeroDivisors α] {k 
     isRightRegular_of_non_zero_divisor k fun _ h =>
       (NoZeroDivisors.eq_zero_or_eq_zero_of_mul_eq_zero h).resolve_right hk⟩
 
+@[deprecated (since := "2026-01-21")] alias isRegular_of_ne_zero' := IsRegular.of_ne_zero'
+
 theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZeroDivisors α]
     {k : α} : IsRegular k ↔ k ≠ 0 :=
   ⟨fun h => by
