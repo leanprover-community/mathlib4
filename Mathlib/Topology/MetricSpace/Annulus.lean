@@ -40,7 +40,7 @@ variable {X : Type*} [PseudoMetricSpace X]
 /-! ### Annulus defined using `dist` -/
 
 /-- The annulus `{y | dist y x ∈ Set.Ioo r R}` in a pseudo metric space. -/
-def annulusIoo (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioo r R
+def annulusIoo (x : X) (r R : ℝ) : Set X := (fun y : X ↦ dist y x) ⁻¹' Ioo r R
 /-- The annulus `{y | dist y x ∈ Set.Ioc r R}` in a pseudo metric space. -/
 def annulusIoc (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioc r R
 /-- The annulus `{y | dist y x ∈ Set.Ico r R}` in a pseudo metric space. -/
@@ -52,10 +52,11 @@ def annulusIoi (x : X) (r : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioi r
 /-- The exterior `{y | dist y x ∈ Set.Ici r}` (complement of `ball x r`). -/
 def annulusIci (x : X) (r : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ici r
 
-lemma annulusIoo_eq {x : X} {r R : ℝ} :
+variable {x : X} {r R : ℝ}
+
+lemma annulusIoo_eq :
     annulusIoo x r R = ball x R ∩ (closedBall x r)ᶜ := by
-  ext y
-  simp [annulusIoo, Metric.ball, Metric.closedBall, and_comm]
+  ext; simp [annulusIoo, ball, closedBall, and_comm]
 
 lemma annulusIoc_eq {x : X} {r R : ℝ} :
     annulusIoc x r R = closedBall x R ∩ (closedBall x r)ᶜ := by
