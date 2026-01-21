@@ -23,7 +23,7 @@ variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMon
   (f : V →ₗ[A] W)
 
 /-- An unbundled version of `IntertwiningMap`. -/
-@[mk_iff] structure IsIntertwiningMap where
+@[mk_iff] structure IsIntertwiningMap : Prop where
   isIntertwining (g : G) (v : V) : f (ρ g v) = σ g (f v)
 
 /-- An intertwining map between two representations `ρ` and `σ` of the same monoid `G` is a map
