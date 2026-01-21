@@ -163,15 +163,10 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
 
 theorem niven_rat_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
     (h_bnd : r ∈ Set.Icc 0 1) : r ∈ ({0, 1 / 3, 1 / 2, 2 / 3, 1} : Set ℚ) := by
-  replace h_bnd : (r : ℝ) ∈ Set.Icc 0 1 := Set.mem_Icc.mpr
-    ⟨by norm_cast; grind, by norm_cast; grind⟩
-  replace h_bnd : r * π ∈ Set.Icc 0 π := by
-    obtain ⟨h_lb, h_ub⟩ := Set.mem_Icc.mp h_bnd
-    refine Set.mem_Icc.mpr ⟨by positivity, by grw [h_ub]; simp⟩
-  have hinj : Function.Injective (fun (r : ℚ) => r * π) := smul_left_injective ℚ pi_ne_zero
-  rcases niven_angle_eq ⟨r, rfl⟩ hcos h_bnd with h | h | h | h | h
-  · simp [show r = 0 by apply hinj; dsimp; rw [h]; ring]
-  · simp [show r = 1 / 3 by apply hinj; dsimp; rw [h]; ring]
-  · simp [show r = 1 / 2 by apply hinj; dsimp; rw [h]; ring]
-  · simp [show r = 2 / 3 by apply hinj; dsimp; rw [h]; ring]
-  · simp [show r = 1 by apply hinj; dsimp; rw [h]; ring]
+  apply smul_left_injective ℚ pi_ne_zero |>.mem_set_image.mp
+  replace h_bnd : (r : ℝ) * π ∈ Set.Icc (0 * π) (1 * π) := by
+    obtain ⟨hr, hr'⟩ := h_bnd; constructor <;> gcongr <;> norm_cast
+  generalize h : (r : ℝ) * π = θ at *
+  have := niven_angle_eq ⟨r, h.symm⟩ hcos (by simpa using h_bnd)
+  simp_all [Rat.smul_def]
+  grind
