@@ -270,7 +270,7 @@ lemma schnirelmannDensity_setOf_Odd : schnirelmannDensity (setOf Odd) = 2⁻¹ :
 
 open Pointwise
 
-/-- If two sets `A` and `B` have Schnirelmann densities which sum up to at least 1, then every
+/-- If two sets `A` and `B` have Schnirelmann densities with sum at least 1, then every
   natural number is sum of an element of `{0} ∪ A` and `{0} ∪ B`.
   Note that we cannot omit zeroes from this theorem, as shown by the counterexample `A = B = Odd`.
 -/
