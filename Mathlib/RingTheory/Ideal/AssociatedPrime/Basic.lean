@@ -242,28 +242,26 @@ theorem subset_union_of_exact (hf : Function.Injective f) (hfg : Function.Exact 
   by_cases! h : ∃ a ∈ p.primeCompl, ∃ y : M, ∃ k, f y = a ^ k • x
   · obtain ⟨a, ha, y, k, h⟩ := h
     left
-    refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    refine ⟨‹_›, y, le_antisymm (fun b hb ↦ ?_) (fun b ⟨n, hb⟩ ↦ ?_)⟩
     · rw [hx] at hb
       obtain ⟨n, hb⟩ := hb
       use n
       rw [mem_colon_singleton, mem_bot] at hb ⊢
       apply_fun _ using hf
       rw [map_smul, h, smul_comm, hb, smul_zero, map_zero]
-    · obtain ⟨n, hb⟩ := hb
-      rw [mem_colon_singleton, mem_bot] at hb
+    · rw [mem_colon_singleton, mem_bot] at hb
       apply_fun f at hb
       rw [map_smul, map_zero, h, ← mul_smul, ← mem_bot R, ← mem_colon_singleton] at hb
       replace hb := hx.ge (Ideal.le_radical hb)
       contrapose hb
       exact p.primeCompl.mul_mem (p.primeCompl.pow_mem hb n) (p.primeCompl.pow_mem ha k)
   · right
-    refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b hb ↦ ?_)⟩
+    refine ⟨‹_›, g x, le_antisymm (fun b hb ↦ ?_) (fun b ⟨n, hb⟩ ↦ ?_)⟩
     · rw [hx] at hb
       refine Ideal.radical_mono (fun b hb ↦ ?_) hb
       rw [mem_colon_singleton, mem_bot] at hb ⊢
       rw [← map_smul, hb, map_zero]
-    · obtain ⟨n, hb⟩ := hb
-      rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
+    · rw [mem_colon_singleton, mem_bot, ← map_smul, ← LinearMap.mem_ker,
         hfg.linearMap_ker_eq] at hb
       obtain ⟨y, hy⟩ := hb
       by_contra H
@@ -339,23 +337,18 @@ variable {I J M}
 theorem IsAssociatedPrime.eq_radical (hI : I.IsPrimary) (h : IsAssociatedPrime J (R ⧸ I)) :
     J = I.radical := by
   obtain ⟨hJ, x, e⟩ := h
-  refine le_antisymm ?_ ?_; swap
-  · rw [hJ.radical_le_iff, e]
-    intro x hx
-    use 1
-    simp [Algebra.smul_def, Ideal.Quotient.eq_zero_iff_mem.mpr hx]
-  rw [e, Ideal.radical_le_radical_iff]
+  have : x ≠ 0 := by
+    rintro rfl
+    apply hJ.1
+    rwa [colon_singleton_zero, Ideal.radical_top] at e
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mkₐ_surjective R _ x
-  intro y hy
-  simp only [Ideal.Quotient.mkₐ_eq_mk, mem_colon_singleton, Algebra.smul_def,
-    Ideal.Quotient.algebraMap_eq, ← map_mul, mem_bot, Ideal.Quotient.eq_zero_iff_mem] at hy
-  have := (hI.mem_or_mem hy).resolve_left
-  simp only [Set.top_eq_univ, colon_univ] at this
-  apply this
-  intro hx
-  rw [Ideal.Quotient.mkₐ_eq_mk, Ideal.Quotient.eq_zero_iff_mem.mpr hx,
-    colon_singleton_zero, Ideal.radical_top] at e
-  exact hJ.1 e
+  have h {y} : y ∈ colon ⊥ {(Ideal.Quotient.mk I) x} ↔ Ideal.Quotient.mk I (y * x) = 0 := by
+    rw [mem_colon_singleton, Algebra.smul_def, Ideal.Quotient.algebraMap_eq, ← map_mul, mem_bot]
+  simp only [e, Ideal.Quotient.mkₐ_eq_mk, ne_eq, Ideal.Quotient.eq_zero_iff_mem] at this h ⊢
+  refine le_antisymm (Ideal.radical_le_radical_iff.mpr fun y hy ↦ ?_)
+    (Ideal.radical_mono fun y ↦ h.mpr ∘ I.mul_mem_right x)
+  rw [← I.colon_univ, ← Set.top_eq_univ]
+  exact (hI.mem_or_mem (h.mp hy)).resolve_left this
 
 theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.IsPrimary) :
     associatedPrimes R (R ⧸ I) = {I.radical} := by
