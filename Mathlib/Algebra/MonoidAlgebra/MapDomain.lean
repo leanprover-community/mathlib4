@@ -196,6 +196,11 @@ noncomputable def mapRangeRingHom (f : R →+* S) : R[M] →+* S[M] where
     simp [mul_def]
     simp [MonoidAlgebra, sum_mapRange_index, map_finsuppSum, single_apply, apply_ite]
 
+@[to_additive]
+lemma coe_mapRangeRingHom (f : R →+* S) :
+    ⇑(mapRangeRingHom M f) = mapRange f (map_zero _) := by
+  simp [mapRangeRingHom]
+
 @[to_additive (attr := simp)]
 lemma mapRangeRingHom_apply (f : R →+* S) (x : R[M]) (m : M) :
     mapRangeRingHom M f x m = f (x m) := by simp [mapRangeRingHom]
@@ -275,6 +280,21 @@ lemma symm_mapRangeRingEquiv (e : R ≃+* S) :
 lemma mapRangeRingEquiv_trans (e₁ : R ≃+* S) (e₂ : S ≃+* T) :
     mapRangeRingEquiv M (e₁.trans e₂) =
       (mapRangeRingEquiv M e₁).trans (mapRangeRingEquiv M e₂) := by ext; simp
+
+/-- Nested monoid algebras can be taken in an arbitrary order. -/
+@[to_additive (dont_translate := R)
+/-- Nested additive monoid algebras can be taken in an arbitrary order. -/]
+def commRingEquiv : R[M][N] ≃+* R[N][M] :=
+  curryRingEquiv.symm.trans <| .trans (mapDomainRingEquiv _ <| .prodComm ..) curryRingEquiv
+
+@[to_additive (attr := simp)]
+lemma symm_commRingEquiv : (commRingEquiv : R[M][N] ≃+* R[N][M]).symm = commRingEquiv := rfl
+
+@[to_additive (dont_translate := R) (attr := simp)]
+lemma commRingEquiv_single_single (m : M) (n : N) (r : R) :
+    commRingEquiv (single m <| single n r) = single n (single m r) := by
+  simp [commRingEquiv, MonoidAlgebra, curryRingEquiv, curryAddEquiv, mapDomainRingEquiv,
+    mapDomainRingHom, EquivLike.toEquiv]
 
 end MonoidAlgebra
 

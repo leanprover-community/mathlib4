@@ -363,13 +363,6 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
       fun _ _ => ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
-theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
-    NoZeroSMulDivisors R A := by
-  refine
-    Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => ?_
-  simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
-
 variable {R} (A) {B}
 
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/
@@ -537,8 +530,8 @@ nonrec theorem RingHom.IsIntegral.tower_bot (hg : Function.Injective g)
 variable (T) in
 /-- Let `T / S / R` be a tower of algebras, `T` is non-trivial and is a torsion free `S`-module,
   then if `T` is an integral `R`-algebra, then `S` is an integral `R`-algebra. -/
-theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
-    [NoZeroSMulDivisors S T] [Nontrivial T] [IsScalarTower R S T]
+theorem Algebra.IsIntegral.tower_bot [IsDomain S] [Algebra R S] [Algebra R T] [Algebra S T]
+    [IsTorsionFree S T] [Nontrivial T] [IsScalarTower R S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
