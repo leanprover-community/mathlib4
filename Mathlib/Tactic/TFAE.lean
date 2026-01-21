@@ -81,9 +81,10 @@ end Parser
 open Parser
 
 /--
-`tfae_have i → j := t`, where the goal is `TFAE [P₁, P₂, ...]` introduces a hypothesis of type
-`Pᵢ → Pⱼ` and proof `t` to the local context. Note that `i` and `j` are natural number literals
-(beginning at 1) used as indices to specify the propositions `P₁, P₂, ...` that appear in the goal.
+`tfae_have i → j := t`, where the goal is `TFAE [P₁, P₂, ...]` introduces a hypothesis
+`tfae_i_to_j : Pᵢ → Pⱼ` and proof `t` to the local context. Note that `i` and `j` are
+natural number literals (beginning at 1) used as indices to specify the propositions
+`P₁, P₂, ...` that appear in the goal.
 
 Once sufficient hypotheses have been introduced by `tfae_have`, `tfae_finish` can be used to close
 the goal.
