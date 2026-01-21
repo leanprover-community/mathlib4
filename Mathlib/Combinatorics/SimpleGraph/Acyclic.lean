@@ -279,9 +279,7 @@ theorem isTree_iff_uniqueShortest_path :
   constructor
   · intro hT
     refine ⟨hT.isConnected.nonempty, fun v w _ => ?_⟩
-    constructor
-    · exact hT.existsUnique_path v w
-    · exact fun p hp => IsTree.isPath_length_eq_dist hT v w p hp
+    exact ⟨hT.existsUnique_path v w, hT.isPath_length_eq_dist v w⟩
   · intro ⟨hne, h⟩
     rw [isTree_iff_existsUnique_path]
     refine ⟨hne, fun v w => ?_⟩
