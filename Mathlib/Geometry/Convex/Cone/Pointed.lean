@@ -253,6 +253,7 @@ def lineal (C : PointedCone R E) : Submodule R E where
 lemma coe_lineal (C : PointedCone R E) : C.lineal = C ⊓ -C :=
   rfl
 
+@[simp]
 lemma mem_lineal {C : PointedCone R E} {x : E} : x ∈ C.lineal ↔ x ∈ C ∧ -x ∈ C := by
   rfl
 
