@@ -19,6 +19,9 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
     If `L` is separable over `K`, then `L` is formally étale over `K`.
 - `Algebra.FormallyEtale.iff_isSeparable`:
     If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
+- `Algebra.FormallyEtale.iff_formallyUnramified_of_field`:
+    If `A` is (essentially) of finite type over `K`,
+    then `A/K` is étale iff `A/K` is unramified.
 - `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
     If `A` is (essentially) of finite type over `K`,
     then `A/K` is étale iff `A` is a finite product of separable field extensions.
@@ -155,6 +158,23 @@ lemma of_isSeparable [Algebra.IsSeparable K L] : FormallyEtale K L := by
 theorem iff_isSeparable [EssFiniteType K L] :
     FormallyEtale K L ↔ Algebra.IsSeparable K L :=
   ⟨fun _ ↦ FormallyUnramified.isSeparable K L, fun _ ↦ of_isSeparable K L⟩
+
+attribute [local instance] Ideal.Quotient.field FormallyUnramified.finite_of_free in
+lemma of_formallyUnramified_of_field [EssFiniteType K A] [FormallyUnramified K A] :
+    FormallyEtale K A := by
+  have := FormallyUnramified.isReduced_of_field K A
+  have : IsArtinianRing A := .of_finite K A
+  let e : A ≃ₐ[K] ((I : MaximalSpectrum A) → A ⧸ I.asIdeal) :=
+    { __ := IsArtinianRing.equivPi A, commutes' r := rfl }
+  have (I : MaximalSpectrum A) : FormallyEtale K (A ⧸ I.asIdeal) := by
+    rw [FormallyEtale.iff_isSeparable, ← FormallyUnramified.iff_isSeparable]
+    infer_instance
+  exact .of_equiv e.symm
+
+variable {K A} in
+lemma iff_formallyUnramified_of_field [EssFiniteType K A] :
+    FormallyEtale K A ↔ FormallyUnramified K A :=
+  ⟨fun _ ↦ inferInstance, fun _ ↦ .of_formallyUnramified_of_field K A⟩
 
 attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 /--
