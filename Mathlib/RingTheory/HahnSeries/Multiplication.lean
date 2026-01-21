@@ -767,19 +767,6 @@ instance instIsTorsionFree {Γ V : Type*} [Ring R] [IsDomain R] [AddCommGroup V]
     rw [ne_eq, HahnModule.ext_iff, funext_iff, not_forall]
     exact ⟨x.order + ((of R).symm y).order, by simpa [coeff_smul_order_add_order]⟩
 
-instance instNoZeroSMulDivisors {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [Zero R] [SMulWithZero R V] [NoZeroSMulDivisors R V] :
-    NoZeroSMulDivisors R⟦Γ⟧ (HahnModule Γ R V) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {x y} hxy := by
-    contrapose! hxy
-    simp only [ne_eq]
-    rw [HahnModule.ext_iff, funext_iff, not_forall]
-    refine ⟨x.order + ((of R).symm y).order, ?_⟩
-    rw [coeff_smul_order_add_order x y, of_symm_zero, HahnSeries.coeff_zero, smul_eq_zero, not_or]
-    constructor
-    · exact HahnSeries.leadingCoeff_ne_zero.mpr hxy.1
-    · exact HahnSeries.leadingCoeff_ne_zero.mpr hxy.2
-
 end HahnModule
 
 namespace HahnSeries
@@ -1032,9 +1019,10 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
 variable [NoZeroDivisors R] {x y : R⟦Γ⟧}
 
 instance : NoZeroDivisors R⟦Γ⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero xy :=
-    have : NoZeroSMulDivisors R⟦Γ⟧ R⟦Γ⟧ := HahnModule.instNoZeroSMulDivisors
-    eq_zero_or_eq_zero_of_smul_eq_zero xy
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} hxy := by
+    contrapose! hxy
+    simp only [ne_eq, HahnSeries.ext_iff, funext_iff, not_forall]
+    exact ⟨x.order + y.order, by simpa [coeff_mul_order_add_order]⟩
 
 @[simp]
 lemma order_mul (hx : x ≠ 0) (hy : y ≠ 0) : (x * y).order = x.order + y.order := by
