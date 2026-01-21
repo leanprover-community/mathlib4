@@ -161,7 +161,7 @@ theorem niven_angle_eq (hθ : ∃ r : ℚ, θ = r * π) (hcos : ∃ q : ℚ, cos
     have h₂ := cos_zero] <;>
   simp [injOn_cos h_bnd ⟨by positivity, by linarith [pi_nonneg]⟩ (h₂ ▸ h)]
 
-theorem niven_rat_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
+theorem niven_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
     (h_bnd : r ∈ Set.Icc 0 1) : r ∈ ({0, 1 / 3, 1 / 2, 2 / 3, 1} : Set ℚ) := by
   apply smul_left_injective ℚ pi_ne_zero |>.mem_set_image.mp
   replace h_bnd : (r : ℝ) * π ∈ Set.Icc (0 * π) (1 * π) := by
