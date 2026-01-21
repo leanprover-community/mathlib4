@@ -1724,9 +1724,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
-public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
-public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Basic
@@ -2397,6 +2397,7 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled

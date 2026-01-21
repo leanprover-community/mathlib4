@@ -5,8 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
-public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 
 /-!
 # The Characteristic Function of Value Distribution Theory
