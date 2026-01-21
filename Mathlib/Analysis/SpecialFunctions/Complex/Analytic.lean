@@ -3,16 +3,20 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Various complex special functions are analytic
 
 `log`, and `cpow` are analytic, since they are differentiable.
 -/
+
+public section
 
 open Complex Set
 open scoped Topology

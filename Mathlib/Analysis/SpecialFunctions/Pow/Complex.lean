@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
 /-! # Power function on `ℂ`
 
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
+
+@[expose] public section
 
 open Real Topology Filter ComplexConjugate Finset Set
 

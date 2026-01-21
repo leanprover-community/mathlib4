@@ -3,10 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Bounds.Defs
 
 /-! # Least upper bound and greatest lower bound properties for integers
 
@@ -37,6 +39,8 @@ counterpart of this statement for the least element.
 integer numbers, least element, greatest element
 -/
 
+@[expose] public section
+
 
 namespace Int
 
@@ -49,9 +53,8 @@ def leastOfBdd {P : ℤ → Prop} [DecidablePred P] (b : ℤ) (Hb : ∀ z : ℤ,
     let ⟨elt, Helt⟩ := Hinh
     match elt, le.dest (Hb _ Helt), Helt with
     | _, ⟨n, rfl⟩, Hn => ⟨n, Hn⟩
-  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h =>
-    match z, le.dest (Hb _ h), h with
-    | _, ⟨_, rfl⟩, h => add_le_add_left (Int.ofNat_le.2 <| Nat.find_min' _ h) _⟩
+  ⟨b + (Nat.find EX : ℤ), Nat.find_spec EX, fun z h => by
+    obtain ⟨n, rfl⟩ := le.dest (Hb _ h); grw [Int.ofNat_le.2 <| Nat.find_min' EX h]⟩
 
 /-- `Int.leastOfBdd` is the least integer satisfying a predicate which is false for all `z : ℤ` with
 `z < b` for some fixed `b : ℤ`. -/
@@ -75,7 +78,11 @@ theorem exists_least_of_bdd
 theorem coe_leastOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ} (Hb : ∀ z : ℤ, P z → b ≤ z)
     (Hb' : ∀ z : ℤ, P z → b' ≤ z) (Hinh : ∃ z : ℤ, P z) :
     (leastOfBdd b Hb Hinh : ℤ) = leastOfBdd b' Hb' Hinh := by
-  grind
+  #adaptation_note /-- 2025-09-30 (https://github.com/leanprover/lean4/issues/10622)
+    Used to be `grind` -/
+  rcases leastOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
+  rcases leastOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
+  exact le_antisymm (h2n _ hn') (h2n' _ hn)
 
 /-- A computable version of `exists_greatest_of_bdd`: given a decidable predicate on the
 integers, with an explicit upper bound and a proof that it is somewhere true, return
@@ -112,6 +119,10 @@ theorem exists_greatest_of_bdd
 theorem coe_greatestOfBdd_eq {P : ℤ → Prop} [DecidablePred P] {b b' : ℤ}
     (Hb : ∀ z : ℤ, P z → z ≤ b) (Hb' : ∀ z : ℤ, P z → z ≤ b') (Hinh : ∃ z : ℤ, P z) :
     (greatestOfBdd b Hb Hinh : ℤ) = greatestOfBdd b' Hb' Hinh := by
-  grind
+  #adaptation_note /-- 2025-09-30 (https://github.com/leanprover/lean4/issues/10622)
+    Used to be `grind` -/
+  rcases greatestOfBdd b Hb Hinh with ⟨n, hn, h2n⟩
+  rcases greatestOfBdd b' Hb' Hinh with ⟨n', hn', h2n'⟩
+  exact le_antisymm (h2n' _ hn) (h2n _ hn')
 
 end Int

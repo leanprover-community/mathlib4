@@ -3,13 +3,16 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Algebra.Field.Basic
+module
+
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
+
+public meta section
 
 variable {u : Lean.Level}
 
@@ -148,20 +151,20 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   simp only [Int.negOfNat_eq]
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *
-  use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
+  use this; simp only [Int.ofNat_eq_natCast, Int.cast_neg,
     Int.cast_natCast, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
 open Lean
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- Main part of `evalInv`. -/
-def evalInv.core {u : Level} {α : Q(Type u)} (e a : Q(«$α»)) (ra : Result a)
-    (dsα : Q(DivisionSemiring «$α»)) (i : Option Q(CharZero «$α»)) : MetaM (Result e) := do
-  haveI' : $e =Q $a⁻¹ := ⟨⟩
+/-- The result of inverting a norm_num result. -/
+def Result.inv {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result a)
+    (dsα : Q(DivisionSemiring $α)) (czα? : Option Q(CharZero $α)) :
+    MetaM (Result q($a⁻¹)) := do
   if let .some ⟨qa, na, da, pa⟩ := ra.toNNRat' dsα then
     let qb := qa⁻¹
     if qa > 0 then
-      if let some _i := i then
+      if let some _i := czα? then
         have lit2 : Q(ℕ) := mkRawNatLit (na.natLit! - 1)
         haveI : $na =Q ($lit2).succ := ⟨⟩
         return .isNNRat' dsα qb q($da) q($na) q(isNNRat_inv_pos $pa)
@@ -182,7 +185,7 @@ def evalInv.core {u : Level} {α : Q(Type u)} (e a : Q(«$α»)) (ra : Result a)
     let ⟨qa, na, da, pa⟩ ← ra.toRat' dα
     let qb := qa⁻¹
     guard <| qa < 0
-    if let some _i := i then
+    if let some _i := czα? then
       have lit : Q(ℕ) := na.appArg!
       haveI : $na =Q Int.negOfNat $lit := ⟨⟩
       have lit2 : Q(ℕ) := mkRawNatLit (lit.natLit! - 1)
@@ -201,9 +204,9 @@ such that `norm_num` successfully recognises `a`. -/
   let .app f (a : Q($α)) ← whnfR e | failure
   let ra ← derive a
   let dsα ← inferDivisionSemiring α
-  let i ← inferCharZeroOfDivisionSemiring? dsα
   guard <| ← withNewMCtxDepth <| isDefEq f q(Inv.inv (α := $α))
+  haveI' : $e =Q $a⁻¹ := ⟨⟩
   assumeInstancesCommute
-  evalInv.core e a ra dsα i
+  ra.inv q($dsα) (← inferCharZeroOfDivisionSemiring? dsα)
 
 end Mathlib.Meta.NormNum

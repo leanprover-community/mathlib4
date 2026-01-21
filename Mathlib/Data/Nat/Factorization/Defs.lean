@@ -3,11 +3,13 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Batteries.Data.List.Count
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations
@@ -35,6 +37,8 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
 
 -/
+
+@[expose] public section
 
 open Nat Finset List Finsupp
 
@@ -100,6 +104,10 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
   eq_of_perm_primeFactorsList ha hb
     (by simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h)
 
+theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : a.factorization = b.factorization) : a = b :=
+  eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
+
 
 /-- Every nonzero natural number has a unique prime factorization -/
 theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
@@ -118,15 +126,15 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
   simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
 
 @[simp]
-theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
+theorem factorization_eq_zero_of_not_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
 
--- TODO: Replace
-alias factorization_eq_zero_of_not_prime := factorization_eq_zero_of_non_prime
+@[deprecated (since := "2025-10-24")]
+alias factorization_eq_zero_of_non_prime := factorization_eq_zero_of_not_prime
 
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
-  factorization_eq_zero_of_non_prime _ not_prime_zero
+  factorization_eq_zero_of_not_prime _ not_prime_zero
 
 @[simp]
 theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
@@ -168,7 +176,6 @@ Generalises `factorization_mul`, which is the special case where `#S = 2` and `g
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
-    ext p
     refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
@@ -178,11 +185,13 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by
-  induction' k with k ih; · simp
-  rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
-    add_smul, one_smul, add_comm]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rcases eq_or_ne n 0 with (rfl | hn)
+    · simp
+    rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
+      add_smul, one_smul, add_comm]
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
@@ -208,7 +217,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by omega), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by lia), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 

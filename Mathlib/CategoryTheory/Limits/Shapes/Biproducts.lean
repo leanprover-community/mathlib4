@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Biproducts and binary biproducts
@@ -36,6 +38,8 @@ and occasional cost
 (constructing decidability instances appropriate for constructions involving the indexing type),
 we made everything classical.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -116,7 +120,7 @@ def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
   inv :=
     { hom := φ.inv
       wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
-      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm  }
+      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm }
 
 variable (F) in
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
@@ -348,7 +352,7 @@ class HasBiproductsOfShape : Prop where
 
 attribute [instance 100] HasBiproductsOfShape.has_biproduct
 
-/-- `HasFiniteBiproducts C` represents a choice of biproduct for every family of objects in `C`
+/-- A category `HasFiniteBiproducts` if it has a biproduct for every finite family of objects in `C`
 indexed by a finite type. -/
 class HasFiniteBiproducts : Prop where
   out : ∀ n, HasBiproductsOfShape (Fin n) C
@@ -1036,8 +1040,8 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
   bicone :=
     { pt := f default
-      π := fun j => eqToHom (by congr; rw [← Unique.uniq] )
-      ι := fun j => eqToHom (by congr; rw [← Unique.uniq] ) }
+      π := fun j => eqToHom (by congr; rw [← Unique.uniq])
+      ι := fun j => eqToHom (by congr; rw [← Unique.uniq]) }
   isBilimit :=
     { isLimit := (limitConeOfUnique f).isLimit
       isColimit := (colimitCoconeOfUnique f).isColimit }

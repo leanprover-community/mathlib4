@@ -3,9 +3,11 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.Ring.Ideal
-import Mathlib.RingTheory.Ideal.Nonunits
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.Ring.Ideal
+public import Mathlib.RingTheory.Ideal.Nonunits
 
 /-!
 # The group of units of a complete normed ring
@@ -27,6 +29,8 @@ unit and `0` if not.  The other major results of this file (notably `NormedRing.
 `NormedRing.inverse_add_norm` and `NormedRing.inverse_add_norm_diff_nth_order`) cover the asymptotic
 properties of `Ring.inverse (x + t)` as `t → 0`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

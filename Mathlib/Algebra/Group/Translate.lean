@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Translation operator
@@ -25,6 +27,8 @@ abstracted by `DomAddAct` in such a way that `τ a f = DomAddAct.mk (-a) +ᵥ f`
 negation appearing inside `DomAddAct.mk`. Although mathematically equivalent, the pen and paper
 convention is that translating is an action by subtraction, not by addition.
 -/
+
+@[expose] public section
 
 open Function Set
 open scoped Pointwise

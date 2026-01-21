@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Definition of well-known power series
@@ -23,6 +25,8 @@ In this file we define the following power series:
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
+
+@[expose] public section
 
 
 namespace PowerSeries
@@ -258,11 +262,13 @@ theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 
 
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
-  induction' k with k h
-  · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero,
+  induction k with
+  | zero =>
+    simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero,
       pow_zero (exp A), coe_comp]
-  · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
-    id_apply, rescale_one] using pow_succ (exp A) k
+  | succ k h =>
+    simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
+      id_apply, rescale_one] using pow_succ (exp A) k
 
 /-- Shows that
 $\sum_{k = 0}^{n - 1} (e^{X})^k = \sum_{p = 0}^{\infty} \sum_{k = 0}^{n - 1} \frac{k^p}{p!}X^p$. -/

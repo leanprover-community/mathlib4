@@ -3,10 +3,12 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.Measure.Count
-import Mathlib.Order.Filter.ENNReal
-import Mathlib.Probability.UniformOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.Measure.Count
+public import Mathlib.Order.Filter.ENNReal
+public import Mathlib.Probability.UniformOn
 
 /-!
 # Essential supremum and infimum
@@ -27,6 +29,8 @@ sense). We do not define that quantity here, which is simply the supremum of a m
 * `essSup f μ := (ae μ).limsup f`
 * `essInf f μ := (ae μ).liminf f`
 -/
+
+@[expose] public section
 
 
 open Filter MeasureTheory ProbabilityTheory Set TopologicalSpace
@@ -69,14 +73,19 @@ theorem essInf_const (c : β) (hμ : μ ≠ 0) : essInf (fun _ : α => c) μ = c
   have := NeZero.mk hμ; essInf_const' _
 
 section SMul
-variable {R : Type*} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-  [NoZeroSMulDivisors R ℝ≥0∞] {c : R}
+variable {R : Type*} [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+  [Module.IsTorsionFree R ℝ≥0∞] {c : R}
 
 @[simp]
 lemma essSup_smul_measure (hc : c ≠ 0) (f : α → β) : essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup, Measure.ae_smul_measure_eq hc]
 
 end SMul
+
+@[simp]
+lemma essSup_ennreal_smul_measure {c : ℝ≥0∞} (hc : c ≠ 0) (f : α → β) :
+    essSup f (c • μ) = essSup f μ := by
+  simp_rw [essSup, Measure.ae_ennreal_smul_measure_eq hc]
 
 variable [Nonempty α]
 

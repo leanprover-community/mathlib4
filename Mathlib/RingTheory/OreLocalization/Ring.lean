@@ -3,11 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Module.End
-import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
 
@@ -17,6 +17,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup
 
@@ -30,14 +32,14 @@ variable {R : Type*} [Semiring R] {S : Submonoid R} [OreSet S]
 variable {X : Type*} [AddCommMonoid X] [Module R X]
 
 protected theorem zero_smul (x : X[S⁻¹]) : (0 : R[S⁻¹]) • x = 0 := by
-  induction' x with r s
+  induction x with | _ r s
   rw [OreLocalization.zero_def, oreDiv_smul_char 0 r 1 s 0 1 (by simp)]; simp
 
 protected theorem add_smul (y z : R[S⁻¹]) (x : X[S⁻¹]) :
     (y + z) • x = y • x + z • x := by
-  induction' x with r₁ s₁
-  induction' y with r₂ s₂
-  induction' z with r₃ s₃
+  induction x with | _ r₁ s₁
+  induction y with | _ r₂ s₂
+  induction z with | _ r₃ s₃
   rcases oreDivAddChar' r₂ r₃ s₂ s₃ with ⟨ra, sa, ha, q⟩
   rw [q]
   clear q
@@ -110,7 +112,7 @@ lemma nsmul_eq_nsmul (n : ℕ) (x : X[S⁻¹]) :
 
 /-- The ring homomorphism from `R` to `R[S⁻¹]`, mapping `r : R` to the fraction `r /ₒ 1`. -/
 @[simps!]
-def numeratorRingHom : R →+* R[S⁻¹] where
+abbrev numeratorRingHom : R →+* R[S⁻¹] where
   __ := numeratorHom
   map_zero' := by with_unfolding_all exact OreLocalization.zero_def
   map_add' _ _ := add_oreDiv.symm
@@ -119,7 +121,7 @@ instance {R₀} [CommSemiring R₀] [Algebra R₀ R] : Algebra R₀ R[S⁻¹] wh
   __ := inferInstanceAs (Module R₀ R[S⁻¹])
   algebraMap := numeratorRingHom.comp (algebraMap R₀ R)
   commutes' r x := by
-    induction' x using OreLocalization.ind with r₁ s₁
+    induction x using OreLocalization.ind with | _ r₁ s₁
     dsimp
     rw [mul_div_one, oreDiv_mul_char _ _ _ _ (algebraMap R₀ R r) s₁ (Algebra.commutes _ _).symm,
       Algebra.commutes, mul_one]
@@ -144,14 +146,14 @@ def universalHom : R[S⁻¹] →+* T :=
       simp
     map_add' := fun x y => by
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe]
-      induction' x with r₁ s₁
-      induction' y with r₂ s₂
+      induction x with | _ r₁ s₁
+      induction y with | _ r₂ s₂
       rcases oreDivAddChar' r₁ r₂ s₁ s₂ with ⟨r₃, s₃, h₃, h₃'⟩
       rw [h₃']
       clear h₃'
       simp only [smul_eq_mul, universalMulHom_apply, MonoidHom.coe_coe,
         Submonoid.smul_def]
-      simp only [mul_inv_rev, MonoidHom.map_mul, RingHom.map_add, RingHom.map_mul, Units.val_mul]
+      simp only [mul_inv_rev, map_mul, map_add, map_mul, Units.val_mul]
       rw [mul_add, mul_assoc, ← mul_assoc _ (f s₃), hf, ← Units.val_mul]
       simp only [one_mul, inv_mul_cancel, Units.val_one]
       congr 1

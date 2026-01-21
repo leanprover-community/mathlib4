@@ -3,13 +3,17 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Semiconj.Units
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Lemmas about commuting pairs of elements involving units.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -114,9 +118,6 @@ lemma Units.pow_ofPowEqOne (ha : a ^ n = 1) (hn : n ≠ 0) :
 @[to_additive]
 lemma IsUnit.of_pow_eq_one (ha : a ^ n = 1) (hn : n ≠ 0) : IsUnit a :=
   (Units.ofPowEqOne _ n ha hn).isUnit
-
-@[deprecated (since := "2025-02-03")] alias isUnit_ofPowEqOne := IsUnit.of_pow_eq_one
-@[deprecated (since := "2025-02-03")] alias isAddUnit_ofNSMulEqZero := IsAddUnit.of_nsmul_eq_zero
 
 @[to_additive]
 lemma _root_.Units.commute_iff_inv_mul_cancel {u : Mˣ} {a : M} :

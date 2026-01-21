@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Heyting algebras
@@ -19,10 +21,10 @@ such that `a \ b ≤ c ↔ a ≤ b ⊔ c` and `￢a = ⊤ \ a`.
 
 Bi-Heyting algebras are Heyting algebras that are also co-Heyting algebras.
 
-From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas boolean
+From a logic standpoint, Heyting algebras precisely model intuitionistic logic, whereas Boolean
 algebras model classical logic.
 
-Heyting algebras are the order theoretic equivalent of cartesian-closed categories.
+Heyting algebras are the order-theoretic equivalent of Cartesian closed categories.
 
 ## Main declarations
 
@@ -40,6 +42,8 @@ Heyting algebras are the order theoretic equivalent of cartesian-closed categori
 
 Heyting, Brouwer, algebra, implication, negation, intuitionistic
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -63,7 +67,7 @@ instance Prod.instHNot [HNot α] [HNot β] : HNot (α × β) :=
 instance Prod.instSDiff [SDiff α] [SDiff β] : SDiff (α × β) :=
   ⟨fun a b => (a.1 \ b.1, a.2 \ b.2)⟩
 
-instance Prod.instHasCompl [HasCompl α] [HasCompl β] : HasCompl (α × β) :=
+instance Prod.instCompl [Compl α] [Compl β] : Compl (α × β) :=
   ⟨fun a => (a.1ᶜ, a.2ᶜ)⟩
 
 end
@@ -93,11 +97,11 @@ theorem snd_sdiff [SDiff α] [SDiff β] (a b : α × β) : (a \ b).2 = a.2 \ b.2
   rfl
 
 @[simp]
-theorem fst_compl [HasCompl α] [HasCompl β] (a : α × β) : aᶜ.1 = a.1ᶜ :=
+theorem fst_compl [Compl α] [Compl β] (a : α × β) : aᶜ.1 = a.1ᶜ :=
   rfl
 
 @[simp]
-theorem snd_compl [HasCompl α] [HasCompl β] (a : α × β) : aᶜ.2 = a.2ᶜ :=
+theorem snd_compl [Compl α] [Compl β] (a : α × β) : aᶜ.2 = a.2ᶜ :=
   rfl
 
 namespace Pi
@@ -110,9 +114,11 @@ instance [∀ i, HImp (π i)] : HImp (∀ i, π i) :=
 instance [∀ i, HNot (π i)] : HNot (∀ i, π i) :=
   ⟨fun a i => ￢a i⟩
 
+@[push ←]
 theorem himp_def [∀ i, HImp (π i)] (a b : ∀ i, π i) : a ⇨ b = fun i => a i ⇨ b i :=
   rfl
 
+@[push ←]
 theorem hnot_def [∀ i, HNot (π i)] (a : ∀ i, π i) : ￢a = fun i => ￢a i :=
   rfl
 
@@ -144,7 +150,7 @@ class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, 
 
 /-- A Heyting algebra is a bounded lattice with an additional binary operation `⇨` called Heyting
 implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`. -/
-class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, HasCompl α where
+class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot α, Compl α where
   /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
@@ -1019,13 +1025,13 @@ protected abbrev Function.Injective.generalizedCoheytingAlgebra [Max α] [Min α
 -- See note [reducible non-instances]
 /-- Pullback a `HeytingAlgebra` along an injection. -/
 protected abbrev Function.Injective.heytingAlgebra [Max α] [Min α] [Top α] [Bot α]
-    [HasCompl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
+    [Compl α] [HImp α] [HeytingAlgebra β] (f : α → β) (hf : Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) (map_compl : ∀ a, f aᶜ = (f a)ᶜ)
     (map_himp : ∀ a b, f (a ⇨ b) = f a ⇨ f b) : HeytingAlgebra α :=
   { __ := hf.generalizedHeytingAlgebra f map_sup map_inf map_top map_himp
     __ := ‹Bot α›
-    __ := ‹HasCompl α›
+    __ := ‹Compl α›
     bot_le := fun a => by
       change f _ ≤ _
       rw [map_bot]
@@ -1051,7 +1057,7 @@ protected abbrev Function.Injective.coheytingAlgebra [Max α] [Min α] [Top α] 
 -- See note [reducible non-instances]
 /-- Pullback a `BiheytingAlgebra` along an injection. -/
 protected abbrev Function.Injective.biheytingAlgebra [Max α] [Min α] [Top α] [Bot α]
-    [HasCompl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
+    [Compl α] [HNot α] [HImp α] [SDiff α] [BiheytingAlgebra β] (f : α → β)
     (hf : Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)
     (map_compl : ∀ a, f aᶜ = (f a)ᶜ) (map_hnot : ∀ a, f (￢a) = ￢f a)
@@ -1066,7 +1072,7 @@ namespace PUnit
 
 variable (a b : PUnit.{u + 1})
 
-instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u+1} :=
+instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,

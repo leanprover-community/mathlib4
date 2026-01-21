@@ -3,8 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.SProd
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.SProd
+public import Mathlib.Data.Sum.Basic
 
 /-!
 # Sets in product and pi types
@@ -22,6 +25,8 @@ This file contains basic results on the following notions, which are defined in 
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -131,14 +136,7 @@ theorem prod_inter_prod : s₁ ×ˢ t₁ ∩ s₂ ×ˢ t₂ = (s₁ ∩ s₂) ×
 
 lemma compl_prod_eq_union {α β : Type*} (s : Set α) (t : Set β) :
     (s ×ˢ t)ᶜ = (sᶜ ×ˢ univ) ∪ (univ ×ˢ tᶜ) := by
-  ext p
-  simp only [mem_compl_iff, mem_prod, not_and, mem_union, mem_univ, and_true, true_and]
-  constructor <;> intro h
-  · by_cases fst_in_s : p.fst ∈ s
-    · exact Or.inr (h fst_in_s)
-    · exact Or.inl fst_in_s
-  · intro fst_in_s
-    simpa only [fst_in_s, not_true, false_or] using h
+  grind
 
 @[simp]
 theorem disjoint_prod : Disjoint (s₁ ×ˢ t₁) (s₂ ×ˢ t₂) ↔ Disjoint s₁ s₂ ∨ Disjoint t₁ t₂ := by
@@ -231,8 +229,6 @@ theorem prod_range_range_eq {m₁ : α → γ} {m₂ : β → δ} :
 theorem range_prodMap {m₁ : α → γ} {m₂ : β → δ} : range (Prod.map m₁ m₂) = range m₁ ×ˢ range m₂ :=
   prod_range_range_eq.symm
 
-@[deprecated (since := "2025-04-10")] alias range_prod_map := range_prodMap
-
 theorem prod_range_univ_eq {m₁ : α → γ} :
     range m₁ ×ˢ (univ : Set β) = range fun p : α × β => (m₁ p.1, p.2) :=
   ext <| by simp [range]
@@ -265,18 +261,9 @@ theorem prod_sub_preimage_iff {W : Set γ} {f : α × β → γ} :
 theorem image_prodMk_subset_prod {f : α → β} {g : α → γ} {s : Set α} :
     (fun x => (f x, g x)) '' s ⊆ (f '' s) ×ˢ (g '' s) := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod := image_prodMk_subset_prod
-
 theorem image_prodMk_subset_prod_left (hb : b ∈ t) : (fun a => (a, b)) '' s ⊆ s ×ˢ t := by grind
 
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_left := image_prodMk_subset_prod_left
-
 theorem image_prodMk_subset_prod_right (ha : a ∈ s) : Prod.mk a '' t ⊆ s ×ˢ t := by grind
-
-@[deprecated (since := "2025-02-22")]
-alias image_prod_mk_subset_prod_right := image_prodMk_subset_prod_right
 
 theorem prod_subset_preimage_fst (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.fst ⁻¹' s :=
   inter_subset_left
@@ -389,6 +376,33 @@ theorem _root_.AntitoneOn.set_prod (hf : AntitoneOn f s) (hg : AntitoneOn g s) :
 
 end Mono
 
+lemma eqOn_prod_iff {a b : α → γ × δ} :
+    EqOn a b s ↔ EqOn (Prod.fst ∘ a) (Prod.fst ∘ b) s ∧ EqOn (Prod.snd ∘ a) (Prod.snd ∘ b) s := by
+  grind [EqOn]
+
+lemma EqOn.left_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (ht : t.Nonempty) : EqOn f f' s := by
+  obtain ⟨x, hxt⟩ := ht
+  intro x hxs
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.right_of_eqOn_prodMap {f f' : α → γ} {g g' : β → δ}
+    (h : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t)) (hs : Set.Nonempty s) : EqOn g g' t := by
+  obtain ⟨x, hxs⟩ := hs
+  intro x hxt
+  have h' := h <| mk_mem_prod hxs hxt
+  grind
+
+lemma EqOn.prodMap {f f' : α → γ} {g g' : β → δ}
+    (hf : EqOn f f' s) (hg : EqOn g g' t) : EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) := by
+  grind [EqOn]
+
+lemma eqOn_prodMap_iff {f f' : α → γ} {g g' : β → δ}
+    {s : Set α} {t : Set β} (hs : Set.Nonempty s) (ht : Set.Nonempty t) :
+    EqOn (Prod.map f g) (Prod.map f' g') (s ×ˢ t) ↔ EqOn f f' s ∧ EqOn g g' t :=
+  ⟨fun h ↦ ⟨h.left_of_eqOn_prodMap ht, h.right_of_eqOn_prodMap hs⟩, fun ⟨h, h'⟩ ↦ h.prodMap h'⟩
+
 end Prod
 
 /-! ### Diagonal
@@ -446,7 +460,7 @@ end Diagonal
 theorem range_const_eq_diagonal {α β : Type*} [hβ : Nonempty β] :
     range (const α) = {f : α → β | ∀ x y, f x = f y} := by
   refine (range_eq_iff _ _).mpr ⟨fun _ _ _ ↦ rfl, fun f hf ↦ ?_⟩
-  rcases isEmpty_or_nonempty α with h|⟨⟨a⟩⟩
+  rcases isEmpty_or_nonempty α with h | ⟨⟨a⟩⟩
   · exact hβ.elim fun b ↦ ⟨b, Subsingleton.elim _ _⟩
   · exact ⟨f a, funext fun x ↦ hf _ _⟩
 
@@ -551,7 +565,7 @@ theorem offDiag_eq_empty : s.offDiag = ∅ ↔ s.Subsingleton := by
 
 alias ⟨_, Nontrivial.offDiag_nonempty⟩ := offDiag_nonempty
 
-alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_nonempty
+alias ⟨_, Subsingleton.offDiag_eq_empty⟩ := offDiag_eq_empty
 
 variable (s t)
 
@@ -585,6 +599,8 @@ theorem offDiag_inter : (s ∩ t).offDiag = s.offDiag ∩ t.offDiag :=
 
 variable {s t}
 
+-- TODO: find a good way to fix the linter; simp is called on four goals, with only two remaining
+set_option linter.flexible false in
 theorem offDiag_union (h : Disjoint s t) :
     (s ∪ t).offDiag = s.offDiag ∪ t.offDiag ∪ s ×ˢ t ∪ t ×ˢ s := by
   ext x
@@ -728,8 +744,6 @@ theorem pi_update_of_notMem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a
     rw [update_of_ne]
     exact fun h => hi (h ▸ hj)
 
-@[deprecated (since := "2025-05-23")] alias pi_update_of_not_mem := pi_update_of_notMem
-
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
     (s.pi fun j => t j (update f i a j)) = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) :=
@@ -775,8 +789,6 @@ lemma eval_image_pi_of_notMem [Decidable (s.pi t).Nonempty] (hi : i ∉ s) :
     refine ⟨Function.update x i xᵢ, ?_⟩
     simpa +contextual [(ne_of_mem_of_not_mem · hi)]
 
-@[deprecated (since := "2025-05-23")] alias eval_image_pi_of_not_mem := eval_image_pi_of_notMem
-
 @[simp]
 theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
@@ -809,6 +821,23 @@ theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
 @[simp]
 theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
   simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
+
+theorem subset_pi_iff {s'} : s' ⊆ pi s t ↔ ∀ i ∈ s, s' ⊆ (· i) ⁻¹' t i := by
+  grind
+
+theorem update_mem_pi_iff [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i} :
+    update a i b ∈ pi s t ↔ a ∈ pi (s \ {i}) t ∧ (i ∈ s → b ∈ t i) := by grind
+
+theorem update_mem_pi_iff_of_mem [DecidableEq ι] {a : ∀ i, α i} {i : ι} {b : α i}
+    (ha : a ∈ pi s t) : update a i b ∈ pi s t ↔ i ∈ s → b ∈ t i := by
+  rw [update_mem_pi_iff, and_iff_right]
+  exact fun j hj => ha j hj.1
+
+theorem univ_pi_eq_singleton_iff {a} : pi univ t = {a} ↔ ∀ i, t i = {a i} := by
+  classical
+  simp only [eq_singleton_iff_unique_mem]
+  refine ⟨fun ⟨h₁, h₂⟩ i => ⟨by grind, fun x hx => ?_⟩, by grind⟩
+  rw [← h₂ _ fun j _ => (update_mem_pi_iff_of_mem h₁).mpr (fun _ => hx) j trivial, update_self]
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
@@ -859,6 +888,9 @@ theorem subset_pi_eval_image (s : Set ι) (u : Set (∀ i, α i)) : u ⊆ pi s f
 
 theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α i)) :
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by grind
+
+lemma uncurry_preimage_prod_pi {κ α : Type*} (s : Set ι) (t : Set κ) (u : ι × κ → Set α) :
+    Function.uncurry ⁻¹' (s ×ˢ t).pi u = s.pi (fun i ↦ t.pi fun j ↦ u ⟨i, j⟩) := by grind
 
 end Pi
 

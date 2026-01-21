@@ -3,16 +3,20 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Tactic.NormNum.Eq
+module
+
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Tactic.NormNum.Eq
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Divisible Group and rootable group
 
-In this file, we define a divisible add monoid and a rootable monoid with some basic properties.
+In this file, we define a divisible additive monoid and a rootable monoid with some basic
+properties.
 
 ## Main definition
 
@@ -66,6 +70,8 @@ and their multiplicative counterparts:
 
 TODO: Show that divisibility implies injectivity in the category of `AddCommGroup`.
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -207,7 +213,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     cases n
-    · rw [Int.ofNat_eq_coe, Nat.cast_ne_zero] at hn
+    · rw [Int.ofNat_eq_natCast, Nat.cast_ne_zero] at hn
       simp [RootableBy.root_cancel _ hn]
     · simp [RootableBy.root_cancel _ (Nat.add_one_ne_zero _)]
 
@@ -218,8 +224,9 @@ def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
-    -- Porting note: replaced `norm_num`
-    simpa only [zpow_natCast] using RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    have := RootableBy.root_cancel a (show (n : ℤ) ≠ 0 from mod_cast hn)
+    norm_num at this
+    exact this
 
 end Group
 

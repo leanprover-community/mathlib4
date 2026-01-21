@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Order.Synonym
 
 /-!
 # Comparison
@@ -20,6 +22,8 @@ This file provides basic results about orderings and comparison in linear orders
   elements that are not one strictly less than the other either way are equal.
 -/
 
+@[expose] public section
+
 
 variable {α β : Type*}
 
@@ -28,12 +32,12 @@ three-way comparison result `Ordering`. -/
 def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
   if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
 
-theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x y : α) :
+theorem cmpLE_swap {α} [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_intro xy yx (total_of _ _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
+theorem cmpLE_eq_cmp {α} [Preorder α] [@Std.Total α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
     (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_ge, *, cmp, cmpUsing]
   cases not_or_intro xy yx (total_of _ _ _)
@@ -122,6 +126,8 @@ theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h :
     cmp a b = o :=
   (cmp_compares a b).inj h
 
+-- TODO: is there a nice way to avoid the non-terminal simp?
+set_option linter.flexible false in
 @[simp]
 theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing

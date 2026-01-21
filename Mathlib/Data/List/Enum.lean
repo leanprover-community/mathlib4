@@ -3,19 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Properties of `List.enum`
-
-## Deprecation note
-
-Many lemmas in this file have been replaced by theorems in Lean4,
-in terms of `xs[i]?` and `xs[i]` rather than `get` and `get?`.
-
-The deprecated results here are unused in Mathlib.
-Any downstream users who can not easily adapt may remove the deprecations as needed.
 -/
+
+public section
 
 namespace List
 

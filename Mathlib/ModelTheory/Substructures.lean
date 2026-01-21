@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Closure
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Encoding
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Closure
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Encoding
 
 /-!
 # First-Order Substructures
@@ -38,6 +40,8 @@ substructures appearing in the algebra library.
 
 - `L.Substructure M` forms a `CompleteLattice`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -196,7 +200,7 @@ theorem mem_sInf {S : Set (L.Substructure M)} {x : M} : x ∈ sInf S ↔ ∀ p �
   Set.mem_iInter₂
 
 theorem mem_iInf {ι : Sort*} {S : ι → L.Substructure M} {x : M} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp, norm_cast]
 theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
@@ -238,8 +242,6 @@ theorem subset_closure : s ⊆ closure L s :=
 
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure L s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 @[simp]
 theorem closed (S : L.Substructure M) : (closure L).closed (S : Set M) :=
@@ -641,9 +643,6 @@ theorem subtype_injective (S : L.Substructure M) : Function.Injective (subtype S
 theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-alias coeSubtype := coe_subtype
-
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
   toFun := subtype ⊤
@@ -829,6 +828,9 @@ def eqLocus (f g : M →[L] N) : Substructure L M where
       repeat' rw [Function.comp_apply]
       apply hx
     simp [h]
+
+@[simp]
+theorem mem_eqLocus {f g : M →[L] N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 /-- If two `L.Hom`s are equal on a set, then they are equal on its substructure closure. -/
 theorem eqOn_closure {f g : M →[L] N} {s : Set M} (h : Set.EqOn f g s) :

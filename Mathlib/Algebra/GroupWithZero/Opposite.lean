@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.NeZero
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Opposites of groups with zero
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

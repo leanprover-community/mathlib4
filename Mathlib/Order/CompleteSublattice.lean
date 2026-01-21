@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Set.Functor
-import Mathlib.Order.Sublattice
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Data.Set.Functor
+public import Mathlib.Order.Sublattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Complete Sublattices
@@ -23,6 +25,8 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -143,9 +147,11 @@ sublattice. -/
   supClosed' := L.supClosed.preimage f
   infClosed' := L.infClosed.preimage f
   sSupClosed' s hs := by
-    simpa only [mem_preimage, map_sSup, SetLike.mem_coe] using sSupClosed <| mapsTo'.mp hs
+    simpa only [mem_preimage, map_sSup, SetLike.mem_coe] using sSupClosed
+      <| mapsTo_iff_image_subset.mp hs
   sInfClosed' s hs := by
-    simpa only [mem_preimage, map_sInf, SetLike.mem_coe] using sInfClosed <| mapsTo'.mp hs
+    simpa only [mem_preimage, map_sInf, SetLike.mem_coe] using sInfClosed
+      <| mapsTo_iff_image_subset.mp hs
 
 @[simp] theorem mem_comap {L : CompleteSublattice β} {a : α} : a ∈ L.comap f ↔ f a ∈ L := Iff.rfl
 

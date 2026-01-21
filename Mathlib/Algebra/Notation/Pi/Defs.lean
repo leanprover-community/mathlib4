@@ -3,8 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Util.AssertExists
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Notation for algebraic operators on pi types
@@ -13,6 +16,8 @@ This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, 
 See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
+
+@[expose] public section
 
 assert_not_exists Set.range Monoid Preorder
 
@@ -41,7 +46,7 @@ instance instOne : One (∀ i, M i) where one _ := 1
 @[to_additive (attr := simp high)]
 lemma one_apply (i : ι) : (1 : ∀ i, M i) i = 1 := rfl
 
-@[to_additive]
+@[to_additive (attr := push ← high)]
 lemma one_def : (1 : ∀ i, M i) = fun _ ↦ 1 := rfl
 
 variable {M : Type*} [One M]
@@ -62,7 +67,7 @@ instance instMul : Mul (∀ i, M i) where mul f g i := f i * g i
 @[to_additive (attr := simp)]
 lemma mul_apply (f g : ∀ i, M i) (i : ι) : (f * g) i = f i * g i := rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 lemma mul_def (f g : ∀ i, M i) : f * g = fun i ↦ f i * g i := rfl
 
 variable {M : Type*} [Mul M]
@@ -84,7 +89,7 @@ instance instInv : Inv (∀ i, G i) where inv f i := (f i)⁻¹
 @[to_additive (attr := simp)]
 lemma inv_apply (f : ∀ i, G i) (i : ι) : f⁻¹ i = (f i)⁻¹ := rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 lemma inv_def (f : ∀ i, G i) : f⁻¹ = fun i ↦ (f i)⁻¹ := rfl
 
 variable {G : Type*} [Inv G]
@@ -103,9 +108,9 @@ variable [∀ i, Div (G i)]
 instance instDiv : Div (∀ i, G i) where div f g i := f i / g i
 
 @[to_additive (attr := simp)]
-lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i :=rfl
+lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
 
-@[to_additive]
+@[to_additive (attr := push ←)]
 lemma div_def (f g : ∀ i, G i) : f / g = fun i ↦ f i / g i := rfl
 
 variable {G : Type*} [Div G]
@@ -131,7 +136,7 @@ instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 @[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
 lemma pow_apply (f : ∀ i, M i) (a : α) (i : ι) : (f ^ a) i = f i ^ a := rfl
 
-@[to_additive (attr := to_additive) (reorder := 5 6) smul_def]
+@[to_additive (attr := push ←, to_additive) (reorder := 5 6) smul_def]
 lemma pow_def (f : ∀ i, M i) (a : α) : f ^ a = fun i ↦ f i ^ a := rfl
 
 variable {M : Type*} [Pow M α]
@@ -153,9 +158,9 @@ instance : Star (∀ i, R i) where star x i := star (x i)
 @[simp]
 theorem star_apply (x : ∀ i, R i) (i : ι) : star x i = star (x i) := rfl
 
+@[push ←]
 theorem star_def (x : ∀ i, R i) : star x = fun i => star (x i) := rfl
 
 end Star
-
 
 end Pi

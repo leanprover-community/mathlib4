@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 
 /-!
 # Szemerédi's Regularity Lemma
@@ -61,6 +63,8 @@ We currently only prove the equipartition version of SRL.
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
 
+public section
+
 
 open Finpartition Finset Fintype Function SzemerediRegularity
 
@@ -102,12 +106,11 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       hP₄.resolve_right fun hPenergy => lt_irrefl (1 : ℝ) ?_⟩
     · rw [iterate_succ_apply', stepBound, bound]
       gcongr
-      norm_num
+      simp
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
-        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num
-      _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
-        ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
+        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; simp
+      _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) := by gcongr; exact Nat.lt_floor_add_one _
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
       _ ≤ 1 := mod_cast P.energy_le_one G
   -- Let's do the actual induction.

@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Star
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Star
 
 /-!
 # Star operations on derivatives
@@ -17,6 +19,8 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 `HasDerivAt.conj_conj` and `DifferentiableAt.conj_conj`, showing that `conj ∘ f ∘ conj` is
 differentiable when `f` is (and giving a formula for its derivative).
 -/
+
+public section
 
 universe u v w
 

@@ -1,16 +1,25 @@
 # This file contains basic information about significant downstream repositories.
 # It is used by the `downstream-tags.py` script to check whether a given tag exists on the
 # downstream repositories.
+#
+# Optional fields:
+#   path: subdirectory containing the Lean project (if not at repository root)
+#   zulip-contact: Zulip username of the primary maintainer/contact for this project
 
+- github: https://github.com/leanprover/cslib
+  default_branch: main
+  name: Computer Science Library
 - github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   default_branch: main
   name: Prime Number Theorem and ...
+  zulip-contact: Alex Kontorovich
   workflows:
     build: push.yml
     docs: push.yml
 - github: https://github.com/emilyriehl/infinity-cosmos
   default_branch: main
   name: ∞-Cosmos
+  zulip-contact: Emily Riehl
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
@@ -19,6 +28,7 @@
 - github: https://github.com/fpvandoorn/carleson
   default_branch: master
   name: Carleson operators on doubling metric measure spaces
+  zulip-contact: Floris van Doorn
   workflows:
     build: push.yml
     docs: push.yml
@@ -26,14 +36,24 @@
 - github: https://github.com/ImperialCollegeLondon/FLT
   default_branch: main
   name: Fermat's Last Theorem
+  zulip-contact: Kevin Buzzard
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
     release-tag: create-release.yml
     update: update.yml
+- github: https://github.com/google-deepmind/formal-conjectures
+  default_branch: main
+  name: Formal Conjectures
+  zulip-contact: Eric Wieser
+- github: https://github.com/girving/series
+  default_branch: main
+  name: Power Series Arithmetic
+  zulip-contact: Geoffrey Irving
 - github: https://github.com/james18lpc/GibbsMeasure
   default_branch: main
   name: Gibbs Measures
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
@@ -41,19 +61,33 @@
 - github: https://github.com/kbuzzard/ClassFieldTheory
   default_branch: main
   name: Class Field Theory
+  zulip-contact: Kevin Buzzard
   workflows:
     build: build-project.yml
     docs: blueprint.yml
     release-tag: create-release.yml
+- github: https://github.com/leanprover-community/flt-regular
+  default_branch: master
+  name: Fermat's Last Theorem for regular primes
+  zulip-contact: Riccardo Brasca
+  workflows:
+    build: push.yml
+    docs: push.yml
 - github: https://github.com/leanprover-community/sphere-eversion
   default_branch: master
   name: The sphere eversion project
+  zulip-contact: Patrick Massot
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
+- github: https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean
+  default_branch: main
+  name: Sphere Packing in Dimension 8
+  zulip-contact: Sidharth Hariharan
 - github: https://github.com/Paul-Lez/PersistentDecomp
   default_branch: master
   name: Decomposition of Persistence Modules
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
@@ -61,14 +95,33 @@
 - github: https://github.com/RemyDegenne/brownian-motion
   default_branch: master
   name: Brownian motion project
+  zulip-contact: Rémy Degenne
   workflows:
     build: blueprint.yml
     docs: blueprint.yml
     release-tag: create-release.yml
     update: update.yml
+- github: https://github.com/HEPLean/PhysLean
+  default_branch: master
+  name: PhysLean - Physics Formalization
+  zulip-contact: Joseph Tooby-Smith
+- github: https://github.com/lecopivo/SciLean
+  default_branch: master
+  name: SciLean - Scientific Computing
+  zulip-contact: Tomas Skrivan
+- github: https://github.com/teorth/analysis
+  default_branch: main
+  name: Tao's Analysis I
+  path: analysis
+  zulip-contact: Terence Tao
+- github: https://github.com/teorth/equational_theories
+  default_branch: main
+  name: Equational Theories Project
+  zulip-contact: Terence Tao
 - github: https://github.com/teorth/pfr
   default_branch: master
   name: The Polynomial Freiman-Ruzsa Conjecture
+  zulip-contact: Terence Tao
   workflows:
     build: push.yml
     docs: push.yml
@@ -76,6 +129,7 @@
 - github: https://github.com/YaelDillies/add-combi
   default_branch: master
   name: add-combi
+  zulip-contact: Yaël Dillies
   workflows:
     build: build.yml
     docs: build.yml
@@ -83,6 +137,7 @@
 - github: https://github.com/YaelDillies/ChandraFurstLipton
   default_branch: master
   name: Chandra-Furst-Lipton
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
@@ -90,6 +145,7 @@
 - github: https://github.com/YaelDillies/ForbiddenMatrix
   default_branch: master
   name: Forbidden Matrix Theory
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
@@ -97,6 +153,7 @@
 - github: https://github.com/YaelDillies/LeanAPAP
   default_branch: master
   name: Arithmetic Progressions - Almost Periodicity
+  zulip-contact: Yaël Dillies
   workflows:
     build: push_master.yml
     docs: push_master.yml
@@ -104,6 +161,7 @@
 - github: https://github.com/YaelDillies/LeanCamCombi
   default_branch: master
   name: Cambridge Combinatorics in Lean
+  zulip-contact: Yaël Dillies
   workflows:
     build: push_master.yml
     docs: push_master.yml
@@ -111,6 +169,7 @@
 - github: https://github.com/YaelDillies/MiscYD
   default_branch: master
   name: Miscellaneous results by Yaël Dillies
+  zulip-contact: Yaël Dillies
   workflows:
     build: push_master.yml
     docs: push_master.yml
@@ -118,6 +177,7 @@
 - github: https://github.com/YaelDillies/Toric
   default_branch: master
   name: Toric varieties
+  zulip-contact: Yaël Dillies
   workflows:
     build: push_master.yml
     docs: push_master.yml
@@ -125,12 +185,30 @@
 - github: https://github.com/vihdzp/combinatorial-games
   default_branch: master
   name: Combinatorial Games in Lean
+  zulip-contact: Violeta Hernández
   workflows:
     build: lean_action_ci.yml
 - github: https://github.com/Whysoserioushah/BrauerGroup_new
   default_branch: main
   name: Brauer Group
+  zulip-contact: Edison Xie
   workflows:
     build: push_main.yml
     docs: push_main.yml
     release-tag: lean-release-tag.yml
+- github: https://github.com/ctchou/AutomataTheory
+  default_branch: main
+  name: Automata Theory
+  zulip-contact: Ching-Tsun Chou
+- github: https://github.com/math-xmum/Brouwer
+  default_branch: main
+  name: Brouwer Fixed-Point and Nash Equilibria
+  zulip-contact: Lyu Yuwei
+- github: https://github.com/YijunYuan/HarderNarasimhan
+  default_branch: master
+  name: Harder-Narasimhan Theory
+  zulip-contact: Yijun Yuan
+- github: https://github.com/Ivan-Sergeyev/seymour
+  default_branch: main
+  name: Seymour's Decomposition for Regular Matroids
+  zulip-contact: Martin Dvořák

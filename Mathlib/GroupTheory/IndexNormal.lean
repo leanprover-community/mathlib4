@@ -3,9 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finite.Perm
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.Data.Finite.Perm
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.GroupTheory.Index
 
 /-! # Subgroups of small index are normal
 
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.Index
   (This does not require `G` to be finite.)
 
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -46,12 +50,12 @@ theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
   by_cases hG1 : Nat.card G = 1
   · rw [hG1, minFac_one] at hHp
     exact normal_of_index_eq_one hHp
-  suffices H.normalCore.relindex H = 1 by
+  suffices H.normalCore.relIndex H = 1 by
     convert H.normalCore_normal
-    exact le_antisymm (relindex_eq_one.mp this) (normalCore_le H)
+    exact le_antisymm (relIndex_eq_one.mp this) (normalCore_le H)
   have : Finite G := finite_of_card_ne_zero hG0
   have index_ne_zero : H.index ≠ 0 := index_ne_zero_of_finite
-  rw [← mul_left_inj' index_ne_zero, one_mul, relindex_mul_index H.normalCore_le]
+  rw [← mul_left_inj' index_ne_zero, one_mul, relIndex_mul_index H.normalCore_le]
   have hp : Nat.Prime H.index := hHp ▸ minFac_prime hG1
   have h : H.normalCore.index ∣ H.index ! := by
     rw [normalCore_eq_ker, index_ker, index_eq_card, ← Nat.card_perm]

@@ -3,7 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 
 /-!
 # Induced Topology
@@ -29,13 +31,15 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe v u
 
 open Limits Opposite Presieve CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] (G : C ⥤ D)
 variable {J : GrothendieckTopology C} (K : GrothendieckTopology D)
 variable (A : Type v) [Category.{u} A]
 
@@ -103,11 +107,11 @@ lemma mem_inducedTopology_sieves_iff {X : C} (S : Sieve X) :
     S ∈ (G.inducedTopology K) X ↔ (S.functorPushforward G) ∈ K (G.obj X) :=
   Iff.rfl
 
-/-- `G` is cover-lifting wrt the induced topology. -/
+/-- `G` is cover-lifting w.r.t. the induced topology. -/
 instance inducedTopology_isCocontinuous : G.IsCocontinuous (G.inducedTopology K) K :=
   ⟨@fun _ S hS => LocallyCoverDense.functorPushforward_functorPullback_mem ⟨S, hS⟩⟩
 
-/-- `G` is cover-preserving wrt the induced topology. -/
+/-- `G` is cover-preserving w.r.t. the induced topology. -/
 theorem inducedTopology_coverPreserving : CoverPreserving (G.inducedTopology K) K G :=
   ⟨@fun _ _ hS => hS⟩
 
@@ -131,7 +135,7 @@ instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDen
     · intro hf
       exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
 
-/-- Cover-dense functors induces an equivalence of categories of sheaves.
+/-- Cover-dense functors induce an equivalence of categories of sheaves.
 
 This is known as the comparison lemma. It requires that the sites are small and the value category
 is complete.

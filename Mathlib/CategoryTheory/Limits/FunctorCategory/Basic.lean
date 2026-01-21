@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits in functor categories.
@@ -20,10 +22,12 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 `CategoryTheory.Limits.preservesColimits_of_evaluation`).
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w v₁ v₂ u₁ u₂ v v' u u'
 
 namespace CategoryTheory.Limits
@@ -182,15 +186,13 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
     HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_limits_of_shape := fun _ _ => inferInstance
+  has_limits_of_shape := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_colimits_of_shape := fun _ _ => inferInstance
+  has_colimits_of_shape := inferInstance
 
 instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
     HasLimit (F ⋙ (evaluation _ _).obj k) :=
@@ -198,7 +200,7 @@ instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.ob
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
-    -- Porting note: added a let because X was not inferred
+  -- Porting note: added a let because X was not inferred
   let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
   preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -379,7 +381,7 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isLimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves limits of shape `J` if it does for each `k : K`. -/
-lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
@@ -411,7 +413,7 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isColimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves all colimits of shape `J` if it does for each `k : K`. -/
-lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesColimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesColimitsOfShape J F :=
   ⟨fun {G} => preservesColimit_of_evaluation F G fun _ => PreservesColimitsOfShape.preservesColimit⟩
@@ -437,12 +439,32 @@ the individual limits on objects. -/
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 
+/-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
+@[simps!]
+def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
+    lim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj lim :=
+  (NatIso.ofComponents (limitIsoFlipCompLim · |>.symm) fun {F G} η ↦ by
+    ext k
+    apply limit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]).symm
+
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
   let f := fun k =>
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
+
+/-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
+@[simps!]
+def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
+    flipFunctor K J C ⋙ lim ≅ (whiskeringRight _ _ _).obj lim :=
+  (NatIso.ofComponents (limitFlipIsoCompLim · |>.symm) fun {F G} η ↦ by
+    ext k
+    apply limit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap _)]).symm
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its limit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ lim`.
 Note that this does not require `K` to be small.
@@ -458,12 +480,32 @@ the individual colimits on objects. -/
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 
-/-- A variant of `colimit_iso_flip_comp_colim` where the arguments of `F` are flipped. -/
+/-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
+@[simps!]
+def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
+    colim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj colim :=
+  NatIso.ofComponents colimitIsoFlipCompColim fun {F G} η ↦ by
+    ext k
+    apply colimit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)]
+
+/-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
   let f := fun _ =>
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
+
+/-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
+@[simps!]
+def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
+    flipFunctor K J C ⋙ colim ≅ (whiskeringRight _ _ _).obj colim :=
+  NatIso.ofComponents colimitFlipIsoCompColim fun {F G} η ↦ by
+    ext k
+    apply colimit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap _)]
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its colimit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ colim`.
 Note that this does not require `K` to be small.

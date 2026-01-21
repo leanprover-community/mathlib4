@@ -3,11 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, Andrew Yang
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Data.ENat.Lattice
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+module
+
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.RingTheory.Finiteness.Ideal
 
 /-!
 # Minimum Cardinality of generating set of a submodule
@@ -46,6 +46,8 @@ Note that the corresponding API - `Module.rank` is only defined for a module rat
 submodule, so there is some asymmetry here. Further refactoring might be needed if this difference
 creates a friction later on.
 -/
+
+@[expose] public section
 
 namespace Submodule
 
@@ -113,6 +115,12 @@ lemma spanRank_finite_iff_fg {p : Submodule R M} : p.spanRank < aleph0 ↔ p.FG 
     simpa [← hs] using h
   · rintro ⟨s, hs₁, hs₂⟩
     exact (ciInf_le' _ ⟨s, hs₂⟩).trans_lt (by simpa)
+
+lemma spanFinrank_of_not_fg {p : Submodule R M} (hp : ¬p.FG) : p.spanFinrank = 0 := by
+  refine toNat_eq_zero.2 ?_
+  right
+  by_contra! h
+  exact hp (spanRank_finite_iff_fg.1 h)
 
 /-- A submodule is finitely generated if and only if its `spanRank` is equal to its `spanFinrank`.
 -/
@@ -243,15 +251,58 @@ lemma spanFinrank_singleton {m : M} (hm : m ≠ 0) : (span R {m}).spanFinrank = 
     simp [Submodule.spanFinrank_eq_zero_iff_eq_bot (fg_span_singleton m), hm] at this
 
 end Defs
+
 end Submodule
+
+section map
+
+universe u
+section Submodule
+
+variable {R : Type*} {M N : Type u} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+  [Module R N] (f : M →ₗ[R] N) (p : Submodule R M)
+
+lemma Submodule.spanRank_map_le : (p.map f).spanRank ≤ p.spanRank := by
+  rw [← generators_card p, FG.spanRank_le_iff_exists_span_set_card_le]
+  exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
+    ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
+
+variable {p} in
+lemma Submodule.spanFinrank_map_le_of_fg (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
+  (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
+    (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+
+end Submodule
+
+section Ideal
+
+variable {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (I : Ideal R)
+
+open Submodule in
+lemma Ideal.spanRank_map_le : (I.map f).spanRank ≤ I.spanRank := by
+  rw [← generators_card I, FG.spanRank_le_iff_exists_span_set_card_le]
+  refine ⟨f '' I.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun s ⟨r, hr, hfr⟩ ↦
+    hfr ▸ mem_map_of_mem _ <| span_generators I ▸ subset_span hr)) ?_⟩
+  refine map_le_of_le_comap (fun r hr ↦ ?_)
+  simp only [submodule_span_eq, mem_comap]
+  rw [← map_span, ← submodule_span_eq, span_generators]
+  exact mem_map_of_mem f hr
+
+open Submodule in
+variable {I} in
+lemma Ideal.spanFinrank_map_le_of_fg (hI : I.FG) : (I.map f).spanFinrank ≤ I.spanFinrank :=
+  (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (Ideal.FG.map hI f))
+    ((spanRank_finite_iff_fg.mpr hI))).2 (spanRank_map_le f I)
+
+end Ideal
+
+end map
 
 section rank
 
 open Cardinal Module Submodule
 
-universe u v w
-
-variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma Module.Basis.mk_eq_spanRank [RankCondition R] {ι : Type*} (v : Basis ι R M) :
     #(Set.range v) = (⊤ : Submodule R M).spanRank := by

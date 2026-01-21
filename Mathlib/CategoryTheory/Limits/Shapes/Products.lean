@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -27,9 +29,11 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -93,16 +97,12 @@ abbrev HasCoproduct (f : β → C) :=
 
 lemma hasCoproduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasCoproduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasCoproduct g := by
-  have : HasColimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasColimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasColimit_of_iso α
 
 lemma hasProduct_of_equiv_of_iso (f : α → C) (g : β → C)
     [HasProduct f] (e : β ≃ α) (iso : ∀ j, g j ≅ f (e j)) : HasProduct g := by
-  have : HasLimit ((Discrete.equivalence e).functor ⋙ Discrete.functor f) :=
-    hasLimit_equivalence_comp _
   have α : Discrete.functor g ≅ (Discrete.equivalence e).functor ⋙ Discrete.functor f :=
     Discrete.natIso (fun ⟨j⟩ => iso j)
   exact hasLimit_of_iso α.symm
@@ -207,14 +207,15 @@ abbrev Pi.π (f : β → C) [HasProduct f] (b : β) : ∏ᶜ f ⟶ f b :=
 abbrev Sigma.ι (f : β → C) [HasCoproduct f] (b : β) : f b ⟶ ∐ f :=
   colimit.ι (Discrete.functor f) (Discrete.mk b)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added the next two lemmas to ease automation; without these lemmas,
--- `limit.hom_ext` would be applied, but the goal would involve terms
--- in `Discrete β` rather than `β` itself
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Pi.hom_ext {f : β → C} [HasProduct f] {X : C} (g₁ g₂ : X ⟶ ∏ᶜ f)
     (h : ∀ (b : β), g₁ ≫ Pi.π f b = g₂ ≫ Pi.π f b) : g₁ = g₂ :=
   limit.hom_ext (fun ⟨j⟩ => h j)
 
+/-- Without this lemma, `limit.hom_ext` would be applied, but the goal would involve terms
+in `Discrete β` rather than `β` itself. -/
 @[ext 1050]
 lemma Sigma.hom_ext {f : β → C} [HasCoproduct f] {X : C} (g₁ g₂ : ∐ f ⟶ X)
     (h : ∀ (b : β), Sigma.ι f b ≫ g₁ = Sigma.ι f b ≫ g₂) : g₁ = g₂ :=
@@ -282,6 +283,7 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
   IsColimit.ofIsoColimit (colimit.isColimit (Discrete.functor f))
     (Cofan.ext (@asIso _ _ _ _ _ hc) (fun _ => colimit.ι_desc _ _))
 
+set_option linter.flexible false in -- simp followed by infer_instance
 lemma Cofan.isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     IsIso (Sigma.desc c.inj) ↔ Nonempty (IsColimit c) := by
   refine ⟨fun h ↦ ⟨isColimitOfIsIsoSigmaDesc c⟩, fun ⟨hc⟩ ↦ ?_⟩
@@ -318,6 +320,10 @@ from a family of morphisms between the factors.
 -/
 abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) : ∏ᶜ f ⟶ ∏ᶜ g :=
   limMap (Discrete.natTrans fun X => p X.as)
+
+@[reassoc (attr := simp high)]
+lemma Pi.map_π {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
+    Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp
 
 @[simp]
 lemma Pi.map_id {f : α → C} [HasProduct f] : Pi.map (fun a => 𝟙 (f a)) = 𝟙 (∏ᶜ f) := by
@@ -433,6 +439,10 @@ from a family of morphisms between the factors.
 abbrev Sigma.map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) :
     ∐ f ⟶ ∐ g :=
   colimMap (Discrete.natTrans fun X => p X.as)
+
+@[reassoc (attr := simp high)]
+lemma Sigma.ι_map {f g : β → C} [HasCoproduct f] [HasCoproduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
+    Sigma.ι f b ≫ Sigma.map p = p b ≫ Sigma.ι g b := by simp
 
 @[simp]
 lemma Sigma.map_id {f : α → C} [HasCoproduct f] : Sigma.map (fun a => 𝟙 (f a)) = 𝟙 (∐ f) := by
@@ -752,6 +762,14 @@ instance (priority := 100) hasProduct_unique [Nonempty β] [Subsingleton β] (f 
 def productUniqueIso [Unique β] (f : β → C) : ∏ᶜ f ≅ f default :=
   IsLimit.conePointUniqueUpToIso (limit.isLimit _) (limitConeOfUnique f).isLimit
 
+/-- Any isomorphism is the projection from a single object product. -/
+def Fan.isLimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
+    IsLimit (Fan.mk X fun _ : J ↦ e.hom) := by
+  refine mkFanLimit _ (fun s ↦ s.proj default ≫ e.inv) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  · obtain rfl : j = default := Subsingleton.elim _ _
+    simp
+  · simpa [← cancel_mono e.hom] using hm default
+
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
 def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.functor f) where
@@ -779,6 +797,14 @@ instance (priority := 100) hasCoproduct_unique [Nonempty β] [Subsingleton β] (
 @[simps!]
 def coproductUniqueIso [Unique β] (f : β → C) : ∐ f ≅ f default :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (colimitCoconeOfUnique f).isColimit
+
+/-- Any isomorphism is the projection from a single object product. -/
+def Cofan.isColimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
+    IsColimit (Cofan.mk Y fun _ : J ↦ e.hom) := by
+  refine mkCofanColimit _ (fun s ↦ e.inv ≫ s.inj default) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  · obtain rfl : j = default := Subsingleton.elim _ _
+    simp
+  · simpa [← cancel_epi e.hom] using hm default
 
 end Unique
 
@@ -835,6 +861,22 @@ theorem Sigma.ι_reindex_inv (b : β) :
 end
 
 end Reindex
+
+section
+
+variable {J : Type u₂} [Category.{v₂} J] (F : J ⥤ C)
+
+instance [HasLimit F] [HasProduct F.obj] : Mono (Pi.lift (limit.π F)) where
+  right_cancellation _ _ h := by
+    refine limit.hom_ext fun j => ?_
+    simpa using h =≫ Pi.π _ j
+
+instance [HasColimit F] [HasCoproduct F.obj] : Epi (Sigma.desc (colimit.ι F)) where
+  left_cancellation _ _ h := by
+    refine colimit.hom_ext fun j => ?_
+    simpa using Sigma.ι _ j ≫= h
+
+end
 
 section Fubini
 

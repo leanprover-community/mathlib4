@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Countable.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.List
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Countable.Basic
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.List
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Countable sets
@@ -22,6 +24,8 @@ For a noncomputable conversion to `Encodable s`, use `Set.Countable.nonempty_enc
 
 sets, countable set
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Multiset.sort
 
@@ -267,6 +271,13 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
 /-- The set of finite sets in a countable type is countable. -/
 theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
   simpa using countable_setOf_finite_subset countable_univ
+
+/-- If the codomain of a map is countable and the fibres are countable, the domain
+is countable. -/
+theorem Countable.of_preimage_singleton {f : α → β} [Countable β]
+    (h : ∀ (b : β), (f ⁻¹' {b}).Countable) : Countable α := by
+  simp_rw [← Set.countable_univ_iff, ← Set.preimage_univ (f := f), ← Set.iUnion_of_singleton,
+    Set.preimage_iUnion, Set.countable_iUnion h]
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=

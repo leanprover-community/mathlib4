@@ -3,16 +3,20 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Logarithmic Derivatives
 
-We define the logarithmic derivative of a function f as `deriv f / f`. We then prove some basic
+We define the logarithmic derivative of a function `f` as `deriv f / f`. We then prove some basic
 facts about this, including how it changes under multiplication and composition.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -48,15 +52,12 @@ theorem logDeriv_const (a : 𝕜') : logDeriv (fun _ : 𝕜 ↦ a) = 0 := by
 theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
-  simp only [logDeriv_apply]
-  field_simp [mul_comm]
+  simp [field, logDeriv_apply, *]
 
 theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
     (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
     logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
-  simp only [logDeriv_apply]
-  field_simp [mul_comm]
-  ring
+  simp [field, logDeriv_apply, *]
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0) :
     logDeriv (fun z => f z * a) x = logDeriv f x := by
@@ -86,10 +87,9 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (· ^ n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
-    field_simp [zpow_ne_zero, zpow_sub_one₀ hf]
-    ring
+    simp [field, zpow_sub_one₀ hf]
 
 lemma logDeriv_fun_pow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 𝕜 f x) (n : ℕ) :
     logDeriv (f · ^ n) x = n * logDeriv f x :=
@@ -111,18 +111,15 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
 
-lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
-    [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜] [NormedAlgebra 𝕜 E] [NormedSpace ℝ 𝕜]
-    {f g : 𝕜 → E} {s : Set 𝕜} (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
-    (hs2 : IsOpen s) (hsc : Convex ℝ s) (hgn : ∀ x, x ∈ s → g x ≠ 0) (hfn : ∀ x, x ∈ s → f x ≠ 0) :
-    EqOn (logDeriv f) (logDeriv g) s ↔ ∃ (z : E), z ≠ 0 ∧ s.EqOn f (z • g) := by
-  by_cases hs : s.Nonempty
-  constructor
-  · simp_rw [logDeriv]
-    intro h
-    obtain ⟨t, ht⟩ := hs
-    refine ⟨(f t) * (g t)⁻¹, mul_ne_zero (hfn t ht) (by simpa using (hgn t ht)), fun y hy => ?_⟩
-    · have hderiv : s.EqOn (deriv (f * g⁻¹)) (deriv f * g⁻¹ - f * deriv g / g ^ 2) := by
+lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : Set 𝕜}
+    (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
+    (hs2 : IsOpen s) (hsc : IsPreconnected s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :
+    EqOn (logDeriv f) (logDeriv g) s ↔ ∃ z : 𝕜', z ≠ 0 ∧ EqOn f (z • g) s := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨t, ht⟩
+  · simpa using ⟨1, one_ne_zero⟩
+  · constructor
+    · refine fun h ↦ ⟨f t * (g t)⁻¹, by grind, fun y hy ↦ ?_⟩
+      have hderiv : s.EqOn (deriv (f * g⁻¹)) (deriv f * g⁻¹ - f * deriv g / g ^ 2) := by
         intro z hz
         rw [deriv_mul (hf.differentiableAt (hs2.mem_nhds hz)) ((hg.differentiableAt
           (hs2.mem_nhds hz)).inv (hgn z hz))]
@@ -130,26 +127,13 @@ lemma logDeriv_eqOn_iff {E 𝕜 : Type*} [NontriviallyNormedField E]
           deriv_comp z (differentiableAt_inv (hgn z hz)) (hg.differentiableAt (hs2.mem_nhds hz)),
           mul_neg, Pi.sub_apply, Pi.mul_apply, comp_apply, Pi.div_apply, Pi.pow_apply]
         ring
-      have H3 := Convex.is_const_of_fderivWithin_eq_zero (f := f * g⁻¹) (s := s) hsc
-        (hf.mul (DifferentiableOn.inv hg hgn)) ?_ hy ht
-      · simp only [Pi.mul_apply, Pi.inv_apply] at H3
-        rw [← H3]
-        field_simp [hgn y hy]
-      · have he : s.EqOn (deriv f * g⁻¹ - f * deriv g / g ^ 2) 0 := by
-          intro z hz
-          field_simp [hgn z hz]
-          rw [pow_two, mul_comm, mul_assoc, ← mul_sub, mul_eq_zero]
-          right
-          have H := h hz
-          simp_rw [Pi.div_apply, div_eq_div_iff (hfn z hz) (hgn z hz), mul_comm] at H
-          simp [H]
-        intro v hv
-        have ha := he hv ▸ (hderiv hv)
-        simpa [fderivWithin_of_isOpen hs2 hv] using (ContinuousLinearMap.ext_ring ha)
-  · intro h
-    obtain ⟨z, hz0, hz⟩ := h
-    intro x hx
-    simp [logDeriv_apply, deriv_eqOn_congr hz hs2 hx, hz hx, deriv_const_smul _
-      (hg.differentiableAt (hs2.mem_nhds  hx)), mul_div_mul_left (deriv g x) (g x) hz0]
-  · simp only [not_nonempty_iff_eq_empty.mp hs, eqOn_empty, ne_eq, and_true, true_iff]
-    refine ⟨1, one_ne_zero⟩
+      have hfg : EqOn (deriv (f * g⁻¹)) 0 s := hderiv.trans fun z hz ↦ by
+        simp only [Pi.sub_apply, Pi.mul_apply, Pi.inv_apply, Pi.div_apply, Pi.pow_apply,
+          Pi.zero_apply]
+        grind [logDeriv_apply, Pi.div_apply]
+      letI := IsRCLikeNormedField.rclike 𝕜
+      obtain ⟨a, ha⟩ := hs2.exists_is_const_of_deriv_eq_zero hsc (hf.mul (hg.inv hgn)) hfg
+      grind [Pi.mul_apply, Pi.inv_apply, Pi.smul_apply, smul_eq_mul]
+    · rintro ⟨z, hz0, hz⟩ x hx
+      simp [logDeriv_apply, hz.deriv hs2 hx, hz hx, deriv_const_smul _
+        (hg.differentiableAt (hs2.mem_nhds hx)), mul_div_mul_left (deriv g x) (g x) hz0]

@@ -3,17 +3,19 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
 
-In this file we define `HasContinuousInv₀` to be a mixin typeclass a type with `Inv` and
+In this file we define `ContinuousInv₀` to be a mixin typeclass a type with `Inv` and
 `Zero` (e.g., a `GroupWithZero`) such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
-normed (semi)field has this property. Currently the only example of `HasContinuousInv₀` in
+normed (semi)field has this property. Currently the only example of `ContinuousInv₀` in
 `mathlib` which is not a normed field is the type `NNReal` (a.k.a. `ℝ≥0`) of nonnegative real
 numbers.
 
@@ -23,12 +25,14 @@ and `Continuous`. As a special case, we provide `*.div_const` operations that re
 `DivInvMonoid` and `ContinuousMul` instances.
 
 All lemmas about `(⁻¹)` use `inv₀` in their names because lemmas without `₀` are used for
-`IsTopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
+`IsTopologicalGroup`s. We also use `'` in the typeclass name `ContinuousInv₀` for the sake of
 consistency of notation.
 
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
+
+@[expose] public section
 open Topology Filter Function
 
 /-!
@@ -74,21 +78,23 @@ end DivConst
 
 /-- A type with `0` and `Inv` such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
-class HasContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
+class ContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
   continuousAt_inv₀ : ∀ ⦃x : G₀⦄, x ≠ 0 → ContinuousAt Inv.inv x
 
-export HasContinuousInv₀ (continuousAt_inv₀)
+export ContinuousInv₀ (continuousAt_inv₀)
+
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀ := ContinuousInv₀
 
 section Inv₀
 
-variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] {l : Filter α} {f : α → G₀}
+variable [Zero G₀] [Inv G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {l : Filter α} {f : α → G₀}
   {s : Set α} {a : α}
 
 /-!
 ### Continuity of `fun x ↦ x⁻¹` at a non-zero point
 
-We define `HasContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
+We define `ContinuousInv₀` to be a `GroupWithZero` such that the operation `x ↦ x⁻¹`
 is continuous at all nonzero points. In this section we prove dot-style `*.inv₀` lemmas for
 `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `ContinuousOn`, and `Continuous`.
 -/
@@ -129,7 +135,7 @@ end Inv₀
 
 section GroupWithZero
 
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀]
 
 /-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
@@ -146,7 +152,9 @@ end GroupWithZero
 
 section NhdsInv
 
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] {x : G₀}
+open scoped Pointwise
+
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] {x : G₀}
 
 lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
   refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
@@ -167,7 +175,7 @@ division `(/)` is continuous at any point where the denominator is continuous.
 
 section Div
 
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [ContinuousMul G₀]
   {f g : α → G₀}
 
 theorem Filter.Tendsto.div {l : Filter α} {a b : G₀} (hf : Tendsto f l (𝓝 a))
@@ -306,24 +314,27 @@ theorem nhds_translation_mul_inv₀ (ha : a ≠ 0) : comap (· * a⁻¹) (𝓝 1
 
 /-- If a group with zero has continuous multiplication and `fun x ↦ x⁻¹` is continuous at one,
 then it is continuous at any unit. -/
-theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (𝓝 1)) :
-    HasContinuousInv₀ G₀ where
+theorem ContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (𝓝 1)) :
+    ContinuousInv₀ G₀ where
   continuousAt_inv₀ x hx := by
     have hx' := inv_ne_zero hx
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
     simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
 
+@[deprecated (since := "2025-09-01")] alias HasContinuousInv₀.of_nhds_one :=
+  ContinuousInv₀.of_nhds_one
+
 end map_comap
 
 section ZPow
 
-variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [ContinuousMul G₀]
 
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   rcases m with m | m
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
+  · simpa only [Int.ofNat_eq_natCast, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_ge
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)

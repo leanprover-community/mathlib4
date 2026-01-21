@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+module
+
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Measurability of the integral against a kernel
@@ -18,6 +20,8 @@ The Bochner integral of a strongly measurable function against a kernel is stron
   `f : α → β → E` such that `uncurry f` is measurable.
 
 -/
+
+public section
 
 
 open MeasureTheory ProbabilityTheory Function Set Filter

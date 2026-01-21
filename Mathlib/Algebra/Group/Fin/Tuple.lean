@@ -3,13 +3,17 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.Fin.VecNotation
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Algebraic properties of tuples
 -/
+
+public section
 
 namespace Fin
 variable {n : ℕ} {α : Fin (n + 1) → Type*}

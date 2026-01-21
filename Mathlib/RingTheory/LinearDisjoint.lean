@@ -3,18 +3,20 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
-import Mathlib.Algebra.Algebra.Subalgebra.Rank
-import Mathlib.Algebra.Polynomial.Basis
-import Mathlib.LinearAlgebra.LinearDisjoint
-import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.TensorProduct.Nontrivial
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
+public import Mathlib.Algebra.Algebra.Subalgebra.Rank
+public import Mathlib.Algebra.Polynomial.Basis
+public import Mathlib.LinearAlgebra.LinearDisjoint
+public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
+public import Mathlib.RingTheory.Adjoin.Dimension
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.TensorProduct.Nontrivial
+public import Mathlib.RingTheory.Trace.Defs
 
 /-!
 
@@ -129,6 +131,8 @@ linearly disjoint, linearly independent, tensor product
 
 -/
 
+@[expose] public section
+
 open Module
 open scoped TensorProduct
 
@@ -200,8 +204,8 @@ theorem include_range (A : Type v) [Semiring A] (B : Type w) [Semiring B]
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
   rw [Subalgebra.LinearDisjoint, Submodule.linearDisjoint_iff]
   change Function.Injective <|
-    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft)
-      (LinearMap.range Algebra.TensorProduct.includeRight)
+    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft.toLinearMap)
+      (LinearMap.range Algebra.TensorProduct.includeRight.toLinearMap)
   rw [← Algebra.TensorProduct.linearEquivIncludeRange_symm_toLinearMap]
   exact LinearEquiv.injective _
 
@@ -270,7 +274,7 @@ noncomputable def basisOfBasisRight (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis
 @[simp]
 theorem algebraMap_basisOfBasisRight_apply (H' : A ⊔ B = ⊤) {ι : Type*} (b : Basis ι R B) (i : ι) :
     H.basisOfBasisRight H' b i = algebraMap B S (b i) := by
-  simp [basisOfBasisRight, Subalgebra.algebraMap_def]
+  simp [basisOfBasisRight]
 
 @[simp]
 theorem mulMapLeftOfSupEqTop_symm_apply (H' : A ⊔ B = ⊤) (x : B) :
@@ -287,8 +291,7 @@ theorem leftMulMatrix_basisOfBasisRight_algebraMap (H' : A ⊔ B = ⊤) {ι : Ty
     Algebra.leftMulMatrix (H.basisOfBasisRight H' b) (algebraMap B S x) =
       RingHom.mapMatrix (algebraMap R A) (Algebra.leftMulMatrix b x) := by
   ext
-  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H',
-    Subalgebra.algebraMap_def]
+  simp [Algebra.leftMulMatrix_eq_repr_mul, ← H.algebraMap_basisOfBasisRight_repr_apply H']
 
 /--
 If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
@@ -778,14 +781,14 @@ theorem of_linearDisjoint_finite_left [Algebra.IsIntegral R A]
   rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
-    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
-  obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
+    TensorProduct.exists_finite_submodule_left_of_setFinite' {x, y} (Set.toFinite _)
+  obtain ⟨s, hs⟩ : M'.FG := .of_finite
   have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
   let A' := Algebra.adjoin R (s : Set S)
   have hf' : Submodule.FG (toSubmodule A') := fg_adjoin_of_finite s.finite_toSet fun x hx ↦
     (isIntegral_algHom_iff A.val Subtype.val_injective).2
       (Algebra.IsIntegral.isIntegral (R := R) (A := A) ⟨x, hs' hx⟩)
-  replace hf' : Module.Finite R A' := Module.Finite.iff_fg.2 hf'
+  replace hf' : Module.Finite R A' := .of_fg hf'
   have hA : toSubmodule A' ≤ toSubmodule A := Algebra.adjoin_le_iff.2 hs'
   replace h : {x, y} ⊆ (LinearMap.range (LinearMap.rTensor (toSubmodule B)
       (Submodule.inclusion hA)) : Set _) := fun _ hx ↦ by

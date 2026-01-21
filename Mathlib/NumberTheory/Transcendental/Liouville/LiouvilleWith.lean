@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.NumberTheory.Transcendental.Liouville.Basic
-import Mathlib.Topology.Instances.Irrational
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+public import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Liouville numbers with a given exponent
@@ -32,6 +34,8 @@ predicate.
 
 Liouville number, irrational, irrationality exponent
 -/
+
+@[expose] public section
 
 
 open Filter Metric Real Set
@@ -165,7 +169,7 @@ theorem add_rat (h : LiouvilleWith p x) (r : ℚ) : LiouvilleWith p (x + r) := b
   refine ⟨r.den ^ p * C, (tendsto_id.nsmul_atTop r.pos).frequently (hC.mono ?_)⟩
   rintro n ⟨hn, m, hne, hlt⟩
   have : (↑(r.den * m + r.num * n : ℤ) / ↑(r.den • id n) : ℝ) = m / n + r := by
-    rw [Algebra.id.smul_eq_mul, id]
+    rw [smul_eq_mul, id]
     nth_rewrite 4 [← Rat.num_div_den r]
     push_cast
     rw [add_div, mul_div_mul_left _ _ (by positivity), mul_div_mul_right _ _ (by positivity)]
@@ -294,9 +298,8 @@ variable {x : ℝ}
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
 theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     ∃ᶠ b : ℕ in atTop, ∃ a : ℤ, x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n := by
-  refine Classical.not_not.1 fun H => ?_
-  simp only [not_exists, not_frequently, not_and, not_lt,
-    eventually_atTop] at H
+  by_contra! H
+  simp only [eventually_atTop] at H
   rcases H with ⟨N, hN⟩
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by
     intro b hb

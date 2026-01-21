@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The complex `log` function
 
 Basic properties, relationship with `exp`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -50,6 +54,15 @@ theorem range_exp : Set.range exp = {0}ᶜ :=
 theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp x) = x := by
   rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
+
+theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
+    log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
+  rw [log, norm_exp, Real.log_exp, arg_exp]
+
+theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
+    log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
+  rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
+  simp [mul_assoc]
 
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
@@ -156,11 +169,11 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
     exact Set.subset_union_left
   · rw [← Set.biUnion_preimage_singleton]
     refine hs.biUnion fun z hz => ?_
-    rcases em (∃ w, exp w = z) with (⟨w, rfl⟩ | hne)
-    · simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
+    by_cases! h : ∃ w, exp w = z
+    · rcases h with ⟨w, rfl⟩
+      simp only [Set.preimage, Set.mem_singleton_iff, exp_eq_exp_iff_exists_int, Set.setOf_exists]
       exact Set.countable_iUnion fun m => Set.countable_singleton _
-    · push_neg at hne
-      simp [Set.preimage, hne]
+    · simp [Set.preimage, h]
 
 alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 

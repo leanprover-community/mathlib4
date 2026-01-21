@@ -3,9 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-/-!
+module
 
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.Data.Finite.Sigma
+
+/-!
 # Description of the covering sieves of the extensive topology
 
 This file characterises the covering sieves of the extensive topology.
@@ -17,9 +20,11 @@ This file characterises the covering sieves of the extensive topology.
   exhibiting the target as a coproduct of the sources.
 -/
 
+public section
+
 open CategoryTheory Limits
 
-variable {C : Type*} [Category C] [FinitaryPreExtensive C]
+variable {C : Type*} [Category* C] [FinitaryPreExtensive C]
 
 namespace CategoryTheory
 
