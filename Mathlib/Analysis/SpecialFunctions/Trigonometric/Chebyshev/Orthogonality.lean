@@ -122,7 +122,7 @@ theorem integral_eval_T_real_measureT_zero :
     ∫ x, (T ℝ 0).eval x ∂chebMeasT = π := by
   rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]; simp
 
-theorem integral_T_real_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
+theorem integral_eval_T_real_measureT_eq_zero {n : ℤ} (hn : n ≠ 0) :
     ∫ x, (T ℝ n).eval x ∂chebMeasT = 0 := by
   have hn' : (n : ℝ) ≠ 0 := Int.cast_ne_zero.mpr hn
   suffices ∫ θ in 0..n * π, cos θ = 0 by
