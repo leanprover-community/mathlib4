@@ -65,7 +65,7 @@ the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz 
 satisfies the bound from the Schwarz lemma. -/
 private lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hz : z ∈ ball 0 R) (hf₂ : f 0 = 0) :
-    ‖f z / (2 * M - f z)‖ ≤ (1 / R) * ‖z‖ := by  
+    ‖f z / (2 * M - f z)‖ ≤ (1 / R) * ‖z‖ := by
   rw [← dist_zero_right, ← dist_zero_right]
   nth_rw 1 [← zero_div (2 * M - f 0), ← hf₂]
   apply dist_le_div_mul_dist_of_mapsTo_ball (R₂ := 1) ?_ (fun x hx ↦ ?_) hz
