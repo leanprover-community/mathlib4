@@ -248,7 +248,7 @@ theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
   simp [ENat.card_eq_coe_natCard α, h2]
 
 theorem eq_empty_iff [Finite α] :
-    n.Combination α = ∅ ↔ Nat.card α < n:= by
+    n.Combination α = ∅ ↔ Nat.card α < n := by
   suffices n.Combination α = ∅ ↔ Nat.card (Combination α n) = 0 by
     rw [this, Combination.card, Nat.choose_eq_zero_iff]
   have : Fintype α := Fintype.ofFinite α
@@ -335,7 +335,7 @@ theorem isPretransitive : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
 
 /-- The action of `Equiv.Perm α` on `n.Combination α` is preprimitive
 provided 1 ≤ n < #α and #α ≠ 2*n -/
-theorem isPreprimitive_Perm
+theorem isPreprimitive_perm
     {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (Perm α) (n.Combination α) := by
@@ -354,7 +354,6 @@ theorem isPreprimitive_Perm
     exact lt_trans h_one_lt hn
   have : IsPretransitive (Equiv.Perm α) (n.Combination α) :=
     Combination.isPretransitive α
-    -- n.Combination_isPretransitive α
   have : Nontrivial (n.Combination α) := by
     apply Combination.nontrivial' h_one_le
     simpa using hn
