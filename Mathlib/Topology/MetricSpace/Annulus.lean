@@ -219,6 +219,36 @@ theorem iUnion_annulusIoc_eq_annulusIoi {x : X} {f : ℕ → ℝ} (hf : ∀ n, f
     congrArg (fun s : Set ℝ ↦ (fun y : X ↦ dist y x) ⁻¹' s)
       (_root_.iUnion_Ioc_map_succ_eq_Ioi (β := ℝ) hf h2f)
 
+/-! ### Pairwise disjoint annuli over succ orders -/
+
+open scoped Function -- required for scoped `on` notation
+
+variable {ι : Type*} [LinearOrder ι] [SuccOrder ι]
+
+theorem pairwise_disjoint_on_annulusIco_succ {x : X} {f : ι → ℝ} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => annulusIco x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ico (f i) (f (Order.succ i))) (Ico (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ico_succ) hij
+  simpa [annulusIco] using Disjoint.preimage (fun y : X => dist y x) h'
+
+theorem pairwise_disjoint_on_annulusIoc_succ {x : X} {f : ι → ℝ} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => annulusIoc x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ioc (f i) (f (Order.succ i))) (Ioc (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ioc_succ) hij
+  simpa [annulusIoc] using Disjoint.preimage (fun y : X => dist y x) h'
+
+theorem pairwise_disjoint_on_annulusIoo_succ {x : X} {f : ι → ℝ} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => annulusIoo x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ioo (f i) (f (Order.succ i))) (Ioo (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ioo_succ) hij
+  simpa [annulusIoo] using Disjoint.preimage (fun y : X => dist y x) h'
+
 end Metric
 
 namespace Metric
@@ -295,5 +325,112 @@ lemma eannulusIco_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤
 lemma eannulusIcc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ r₁) (hR : R₁ ≤ R₂) :
     eannulusIcc x r₁ R₁ ⊆ eannulusIcc x r₂ R₂ := by
   intro y hy; exact ⟨hr.trans hy.1, hy.2.trans hR⟩
+
+/-! ### Pairwise disjoint eannuli over succ orders -/
+
+open scoped Function -- required for scoped `on` notation
+
+variable {ι : Type*} [LinearOrder ι] [SuccOrder ι]
+
+theorem pairwise_disjoint_on_eannulusIco_succ {x : X} {f : ι → ℝ≥0∞} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => eannulusIco x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ico (f i) (f (Order.succ i))) (Ico (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ico_succ) hij
+  simpa [eannulusIco] using Disjoint.preimage (fun y : X => edist y x) h'
+
+theorem pairwise_disjoint_on_eannulusIoc_succ {x : X} {f : ι → ℝ≥0∞} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => eannulusIoc x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ioc (f i) (f (Order.succ i))) (Ioc (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ioc_succ) hij
+  simpa [eannulusIoc] using Disjoint.preimage (fun y : X => edist y x) h'
+
+theorem pairwise_disjoint_on_eannulusIoo_succ {x : X} {f : ι → ℝ≥0∞} (hf : Monotone f) :
+    Pairwise (Disjoint on fun i : ι => eannulusIoo x (f i) (f (Order.succ i))) := by
+  intro i j hij
+  have h' :
+      Disjoint (Ioo (f i) (f (Order.succ i))) (Ioo (f j) (f (Order.succ j))) :=
+    (hf.pairwise_disjoint_on_Ioo_succ) hij
+  simpa [eannulusIoo] using Disjoint.preimage (fun y : X => edist y x) h'
+
+end Metric
+
+namespace Metric
+
+/-! ### `ENNReal.ofReal` bridge lemmas in a pseudo metric space -/
+
+variable {X : Type*} [PseudoMetricSpace X]
+variable {x : X} {r R : ℝ}
+
+lemma eannulusIoo_ofReal (hr : 0 ≤ r) :
+    eannulusIoo x (ENNReal.ofReal r) (ENNReal.ofReal R) = annulusIoo x r R := by
+  ext y
+  simp [eannulusIoo, annulusIoo, edist_dist, mem_Ioo,
+    ENNReal.ofReal_lt_ofReal_iff_of_nonneg hr,
+    ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
+
+lemma eannulusIoc_ofReal (hr : 0 ≤ r) :
+    eannulusIoc x (ENNReal.ofReal r) (ENNReal.ofReal R) = annulusIoc x r R := by
+  ext y
+  constructor
+  · intro hy
+    have hy' :
+        ENNReal.ofReal r < ENNReal.ofReal (dist y x) ∧
+          ENNReal.ofReal (dist y x) ≤ ENNReal.ofReal R := by
+      simpa [eannulusIoc, edist_dist, annulusIoc, mem_Ioc] using hy
+    have hrd : r < dist y x :=
+      (ENNReal.ofReal_lt_ofReal_iff_of_nonneg hr).1 hy'.1
+    have hpos : ¬dist y x ≤ 0 := not_le_of_gt (lt_of_le_of_lt hr hrd)
+    have hle : dist y x ≤ R := by
+      have hle' : dist y x ≤ R ∨ dist y x ≤ 0 :=
+        (ENNReal.ofReal_le_ofReal_iff').1 hy'.2
+      exact hle'.resolve_right hpos
+    simp [annulusIoc, mem_Ioc, hrd, hle]
+  · intro hy
+    have hy' : r < dist y x ∧ dist y x ≤ R := by
+      simpa [annulusIoc, mem_Ioc] using hy
+    have : ENNReal.ofReal r < ENNReal.ofReal (dist y x) :=
+      (ENNReal.ofReal_lt_ofReal_iff_of_nonneg hr).2 hy'.1
+    have : (ENNReal.ofReal r < ENNReal.ofReal (dist y x)) ∧
+        (ENNReal.ofReal (dist y x) ≤ ENNReal.ofReal R) :=
+      ⟨this, ENNReal.ofReal_le_ofReal hy'.2⟩
+    simpa [eannulusIoc, edist_dist, annulusIoc, mem_Ioc] using this
+
+lemma eannulusIco_ofReal :
+    eannulusIco x (ENNReal.ofReal r) (ENNReal.ofReal R) = annulusIco x r R := by
+  ext y
+  simp [eannulusIco, annulusIco, edist_dist, mem_Ico,
+    ENNReal.ofReal_le_ofReal_iff dist_nonneg,
+    ENNReal.ofReal_lt_ofReal_iff_of_nonneg dist_nonneg]
+
+lemma eannulusIcc_ofReal (h : 0 < r ∨ 0 ≤ R) :
+    eannulusIcc x (ENNReal.ofReal r) (ENNReal.ofReal R) = annulusIcc x r R := by
+  by_cases hR : 0 ≤ R
+  · ext y
+    simp [eannulusIcc, annulusIcc, edist_dist, mem_Icc,
+      ENNReal.ofReal_le_ofReal_iff dist_nonneg,
+      ENNReal.ofReal_le_ofReal_iff hR]
+  · have hr : 0 < r := h.resolve_right hR
+    have hR' : R < 0 := lt_of_not_ge hR
+    have hRr : R < r := hR'.trans hr
+    have hER : ENNReal.ofReal R < ENNReal.ofReal r :=
+      (ENNReal.ofReal_lt_ofReal_iff').2 ⟨hRr, hr⟩
+    -- both sides are empty, since the corresponding intervals are empty
+    simp [annulusIcc, Icc_eq_empty_of_lt hRr, eannulusIcc, Icc_eq_empty_of_lt hER]
+
+lemma eannulusIoi_ofReal (hr : 0 ≤ r) :
+    eannulusIoi x (ENNReal.ofReal r) = annulusIoi x r := by
+  ext y
+  simp [eannulusIoi, annulusIoi, edist_dist, mem_Ioi,
+    ENNReal.ofReal_lt_ofReal_iff_of_nonneg hr]
+
+lemma eannulusIci_ofReal :
+    eannulusIci x (ENNReal.ofReal r) = annulusIci x r := by
+  ext y
+  simp [eannulusIci, annulusIci, edist_dist, mem_Ici,
+    ENNReal.ofReal_le_ofReal_iff dist_nonneg]
 
 end Metric
