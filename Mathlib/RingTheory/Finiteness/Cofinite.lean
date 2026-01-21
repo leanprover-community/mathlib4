@@ -33,10 +33,6 @@ variable {M : Type*} [AddCommGroup M] [Module R M]
   space `M ⧸ S` is finitely generated. -/
 abbrev CoFG (S : Submodule R M) : Prop := Module.Finite R (M ⧸ S)
 
-/-- A submodule of a noetherian module is CoFG. -/
-@[simp] theorem CoFG.of_isNoetherian [IsNoetherian R M] {S : Submodule R M} : S.CoFG :=
-  Module.Finite.quotient R S
-
 /-- A submodule of a finite module is CoFG. -/
 @[simp] theorem CoFG.of_finite [Module.Finite R M] {S : Submodule R M} : S.CoFG :=
   Module.Finite.quotient R S
