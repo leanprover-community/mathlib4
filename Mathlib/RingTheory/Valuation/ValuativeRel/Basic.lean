@@ -141,10 +141,6 @@ lemma srel_iff {x y : R} : x <ᵥ y ↔ ¬ y ≤ᵥ x := Iff.rfl
 protected alias ⟨_, vle.not_vlt⟩ := not_vlt
 protected alias ⟨_, vlt.not_vle⟩ := not_vle
 
-@[simp, refl]
-lemma vle_refl (x : R) : x ≤ᵥ x := by
-  cases vle_total x x <;> assumption
-
 lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
 protected alias ⟨veq.symm, _⟩ := veq_comm
 
@@ -172,7 +168,7 @@ lemma vle_rfl {x : R} : x ≤ᵥ x := vle_refl x
 protected alias vle.refl := vle_refl
 protected alias vle.rfl := vle_rfl
 
-instance : IsRefl R (· ≤ᵥ ·) where
+instance : @Std.Refl R (· ≤ᵥ ·) where
   refl _ := vle_rfl
 
 @[deprecated (since := "2025-12-20")] protected alias Rel.refl := vle.refl
@@ -184,7 +180,7 @@ lemma veq_rfl {x : R} : x =ᵥ x := veq_refl x
 protected alias veq.refl := veq_refl
 protected alias veq.rfl := veq_rfl
 
-instance : IsRefl R (· =ᵥ ·) where
+instance : @Std.Refl R (· =ᵥ ·) where
   refl _ := veq_rfl
 
 @[simp]
