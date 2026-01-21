@@ -15,6 +15,7 @@ This file gives defines intertwining maps of representations.
 -/
 
 @[expose] public section
+
 open scoped MonoidAlgebra
 
 variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
