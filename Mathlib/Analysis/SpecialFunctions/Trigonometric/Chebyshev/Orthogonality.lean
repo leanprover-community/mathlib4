@@ -23,11 +23,19 @@ Chebyshev T polynomials are orthogonal with respect to `√(1 - x ^ 2)⁻¹`.
 
 ## Main statements
 
-* integrable_chebMeasT: continuous functions are integrable with respect to Lebesgue measure
+* integrable_measureT: continuous functions are integrable with respect to Lebesgue measure
   scaled by `√(1 - x ^ 2)⁻¹` and restricted to `(-1, 1]`.
-* integral_T_real_mul_T_real_of_ne: if `n ≠ m` then the integral of `T_n * T_m` equals `0`.
-* integral_T_real_mul_self_zero: if `n = m = 0` then the integral equals `π`.
-* integral_T_real_mul_self_of_ne_zero: if `n = m ≠ 0` then the integral equals `π / 2`.
+* integral_eval_T_real_mul_evalT_real_measureT_of_ne:
+  if `n ≠ m` then the integral of `T_n * T_m` equals `0`.
+* integral_eval_T_real_mul_self_measureT_zero:
+  if `n = m = 0` then the integral equals `π`.
+* integral_eval_T_real_mul_self_measureT_of_ne_zero:
+  if `n = m ≠ 0` then the integral equals `π / 2`.
+
+## TODO
+
+* Prove that Chebyshev U polynomials are orthogonal with respect to `√(1 - x ^ 2)`
+* Bundle Chebyshev T polynomials into a HilbertBasis for MeasureTheory.Lp ℝ 2 measureT
 
 -/
 public section
@@ -41,9 +49,9 @@ noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
-theorem integral_chebMeasT (f : ℝ → ℝ) :
-    ∫ x, f x ∂chebMeasT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
-  rw [integral_of_le (by norm_num), chebMeasT,
+theorem integral_measureT (f : ℝ → ℝ) :
+    ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := by
+  rw [integral_of_le (by norm_num), measureT,
     restrict_withDensity (by measurability),
     integral_withDensity_eq_integral_smul (by measurability)]
   congr! 2 with x hx
@@ -55,40 +63,23 @@ theorem intervalIntegrable_sqrt_one_sub_sq_inv :
   refine integrableOn_deriv_of_nonneg continuous_arccos.neg.continuousOn (fun x hx ↦ ?_) (by simp)
   simpa using (hasDerivAt_arccos (by aesop) (by aesop)).neg
 
-theorem integrable_chebMeasT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
-    Integrable f chebMeasT := by
+theorem integrable_measureT {f : ℝ → ℝ} (hf : ContinuousOn f (Set.Icc (-1) 1)) :
+    Integrable f measureT := by
   replace hf : ContinuousOn f (Set.uIcc (-1) 1) := by rwa [Set.uIcc_of_lt (by norm_num)]
   have := intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul hf
   rw [intervalIntegrable_iff, Set.uIoc_of_le (by norm_num)] at this
-  rw [chebMeasT, restrict_withDensity (by measurability),
+  rw [measureT, restrict_withDensity (by measurability),
     integrable_withDensity_iff (by measurability) (by simp)]
   unfold IntegrableOn at this
   convert this
 
-/-- `Real.cos` and `Real.arccos` as a (partial) equivalence from `Set.Icc 0 π` to
-`Set.Icc (-1) 1`. -/
-@[simps, expose]
-noncomputable def Real.cosPartialEquiv : PartialEquiv ℝ ℝ where
-  toFun θ := cos θ
-  invFun x := arccos x
-  source := Set.Icc 0 π
-  target := Set.Icc (-1) 1
-  map_source' x hx := by simpa [← abs_le] using abs_cos_le_one x
-  map_target' θ hθ := ⟨Real.arccos_nonneg θ, Real.arccos_le_pi θ⟩
-  left_inv' θ hθ := arccos_cos (by aesop) (by aesop)
-  right_inv' x hx := cos_arccos (by aesop) (by aesop)
-
-@[simp]
-lemma arccos_image_Icc : arccos '' Set.Icc (-1) 1 = Set.Icc 0 π := by
-  simpa using Real.cosPartialEquiv.symm.image_source_eq_target
-
 open Set in
-theorem integral_chebMeasT_eq_integral_cos {f : ℝ → ℝ}
+theorem integral_measureT_eq_integral_cos {f : ℝ → ℝ}
     (hf₁ : ContinuousOn (fun θ ↦ f (cos θ)) (Ioo 0 π))
     (hf₂ : IntegrableOn (fun x ↦ f (cos x)) (Icc 0 π))
     (hf₃ : IntegrableOn (fun x ↦ f x * √(1 - x ^ 2)⁻¹) (Icc (-1) 1)) :
-    ∫ x, f x ∂chebMeasT = ∫ θ in 0..π, f (cos θ) := calc
-  ∫ x, f x ∂chebMeasT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := integral_chebMeasT f
+    ∫ x, f x ∂measureT = ∫ θ in 0..π, f (cos θ) := calc
+  ∫ x, f x ∂measureT = ∫ x in -1..1, f x * √(1 - x ^ 2)⁻¹ := integral_measureT f
   _ = ∫ x in 1..-1, f x * -(√(1 - x ^ 2)⁻¹) := by
     rw [integral_symm, ← intervalIntegral.integral_neg]
     simp
@@ -108,25 +99,25 @@ theorem integral_chebMeasT_eq_integral_cos {f : ℝ → ℝ}
 
 -- we provide this version for convenience.
 open Set in
-theorem integral_chebMeasT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
+theorem integral_measureT_eq_integral_cos_of_continuous {f : ℝ → ℝ}
     (hf : ContinuousOn f (Icc (-1) 1)) :
-    ∫ x, f x ∂chebMeasT = ∫ θ in 0..π, f (cos θ) := by
+    ∫ x, f x ∂measureT = ∫ θ in 0..π, f (cos θ) := by
   have : ContinuousOn (fun θ ↦ f (cos θ)) (Icc 0 π) := by
     refine hf.comp_continuous (by fun_prop) ?_ |>.continuousOn
     simpa [← abs_le] using abs_cos_le_one
-  refine integral_chebMeasT_eq_integral_cos (this.mono Ioo_subset_Icc_self) this.integrableOn_Icc ?_
+  refine integral_measureT_eq_integral_cos (this.mono Ioo_subset_Icc_self) this.integrableOn_Icc ?_
   simpa using Iff.mp intervalIntegrable_iff' <|
     intervalIntegrable_sqrt_one_sub_sq_inv.continuousOn_mul <| by simpa
 
 theorem integral_eval_T_real_measureT_zero :
-    ∫ x, (T ℝ 0).eval x ∂chebMeasT = π := by
-  rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]; simp
+    ∫ x, (T ℝ 0).eval x ∂measureT = π := by
+  rw [integral_measureT_eq_integral_cos_of_continuous (by fun_prop)]; simp
 
-theorem integral_eval_T_real_measureT_eq_zero {n : ℤ} (hn : n ≠ 0) :
-    ∫ x, (T ℝ n).eval x ∂chebMeasT = 0 := by
+theorem integral_eval_T_real_measureT_of_ne_zero {n : ℤ} (hn : n ≠ 0) :
+    ∫ x, (T ℝ n).eval x ∂measureT = 0 := by
   have hn' : (n : ℝ) ≠ 0 := Int.cast_ne_zero.mpr hn
   suffices ∫ θ in 0..n * π, cos θ = 0 by
-    rw [integral_chebMeasT_eq_integral_cos_of_continuous (by fun_prop)]
+    rw [integral_measureT_eq_integral_cos_of_continuous (by fun_prop)]
     simp_rw [T_real_cos]
     rwa [integral_comp_mul_left _ (Int.cast_ne_zero.mpr hn), smul_eq_zero_iff_right (by aesop),
       mul_zero]
@@ -139,34 +130,36 @@ theorem integral_eval_T_real_measureT_eq_zero {n : ℤ} (hn : n ≠ 0) :
     · simp
     exact mul_nonpos_of_nonpos_of_nonneg (Int.cast_nonpos.mpr <| le_of_lt hn) pi_nonneg
 
-theorem integral_T_real_mul_T_real (n m : ℤ) :
-    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂chebMeasT =
-    ((∫ x, (T ℝ (n + m)).eval x ∂chebMeasT) +
-     (∫ x, (T ℝ (n - m)).eval x ∂chebMeasT)) / 2 := by
-  suffices ∫ x, (2 * T ℝ n * T ℝ m).eval x ∂chebMeasT =
-      (∫ x, (T ℝ (n + m)).eval x ∂chebMeasT) +
-      (∫ x, (T ℝ (n - m)).eval x ∂chebMeasT) by
+theorem integral_eval_T_real_mul_eval_T_real_measureT (n m : ℤ) :
+    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂measureT =
+    ((∫ x, (T ℝ (n + m)).eval x ∂measureT) +
+     (∫ x, (T ℝ (n - m)).eval x ∂measureT)) / 2 := by
+  suffices ∫ x, (2 * T ℝ n * T ℝ m).eval x ∂measureT =
+      (∫ x, (T ℝ (n + m)).eval x ∂measureT) +
+      (∫ x, (T ℝ (n - m)).eval x ∂measureT) by
     simp_rw [eval_mul, eval_ofNat, mul_assoc] at this
     rw [MeasureTheory.integral_const_mul] at this
     grind
   simp_rw [T_mul_T, eval_add]
   rw [MeasureTheory.integral_add
-    (integrable_chebMeasT (by fun_prop)) (integrable_chebMeasT (by fun_prop))]
+    (integrable_measureT (by fun_prop)) (integrable_measureT (by fun_prop))]
 
-theorem integral_T_real_mul_T_real_of_ne {n m : ℕ} (h : n ≠ m) :
-    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂chebMeasT = 0 := by
-  rw [integral_T_real_mul_T_real, integral_T_real_of_ne_zero (by grind),
-    integral_T_real_of_ne_zero (by grind)]
+theorem integral_eval_T_real_mul_eval_T_real_measureT_of_ne {n m : ℕ} (h : n ≠ m) :
+    ∫ x, (T ℝ n).eval x * (T ℝ m).eval x ∂measureT = 0 := by
+  rw [integral_eval_T_real_mul_eval_T_real_measureT,
+    integral_eval_T_real_measureT_of_ne_zero (by grind),
+    integral_eval_T_real_measureT_of_ne_zero (by grind)]
   simp
 
-theorem integral_T_real_mul_self_zero :
-    ∫ x, (T ℝ 0).eval x * (T ℝ 0).eval x ∂chebMeasT = π := by
+theorem integral_eval_T_real_mul_self_measureT_zero :
+    ∫ x, (T ℝ 0).eval x * (T ℝ 0).eval x ∂measureT = π := by
   simp_rw [← eval_mul, show (T ℝ 0) * (T ℝ 0) = T ℝ 0 by simp]
-  exact integral_T_real_zero
+  exact integral_eval_T_real_measureT_zero
 
-theorem integral_T_real_mul_self_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
-    ∫ x, (T ℝ n).eval x * (T ℝ n).eval x ∂chebMeasT = π / 2 := by
-  rw [integral_T_real_mul_T_real, integral_T_real_of_ne_zero (by grind), sub_self,
-    integral_T_real_zero, zero_add]
+theorem integral_T_real_mul_self_measureT_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
+    ∫ x, (T ℝ n).eval x * (T ℝ n).eval x ∂measureT = π / 2 := by
+  rw [integral_eval_T_real_mul_eval_T_real_measureT,
+    integral_eval_T_real_measureT_of_ne_zero (by grind), sub_self,
+    integral_eval_T_real_measureT_zero, zero_add]
 
 end Polynomial.Chebyshev
