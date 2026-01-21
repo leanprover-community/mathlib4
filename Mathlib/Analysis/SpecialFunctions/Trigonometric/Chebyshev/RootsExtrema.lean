@@ -321,7 +321,7 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   have hcos : cos (r * π) = q := by rw [hq, ← hk₂, rdef]; congr 1; push_cast; ring
   have h_bnd : r ∈ Set.Icc 0 1 := by
     refine Set.mem_Icc.mpr ⟨by positivity, by rw [rdef]; field_simp; norm_cast; grind⟩
-  rcases niven_rat_eq ⟨q, hcos⟩ h_bnd with (hr | hr | hr | hr | hr)
+  rcases niven_angle_mul_pi_eq ⟨q, hcos⟩ h_bnd with (hr | hr | hr | hr | hr)
   · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr
   · exfalso; rw [rdef] at hr; field_simp at hr; norm_cast at hr; grind
   · exact hr
