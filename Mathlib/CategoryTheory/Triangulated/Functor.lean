@@ -230,13 +230,11 @@ end IsTriangulated
 
 lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
     (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
-  constructor
-  · intro hT
-    obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
-    refine isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso ?_)
-    exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem) (Iso.refl _) (Iso.refl _)
-      (by simp)
-  · exact F.map_distinguished T
+  refine ⟨fun hT ↦ ?_, F.map_distinguished T⟩
+  obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
+  refine isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso ?_)
+  exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem)
+    (Iso.refl _) (Iso.refl _) (by simp)
 
 lemma isTriangulated_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] [F₁.IsTriangulated] : F₂.IsTriangulated where
