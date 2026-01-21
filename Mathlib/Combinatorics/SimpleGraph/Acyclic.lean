@@ -264,7 +264,7 @@ theorem isTree_iff_existsUnique_path :
 lemma IsTree.existsUnique_path (hG : G.IsTree) : ∀ v w, ∃! p : G.Walk v w, p.IsPath :=
   (isTree_iff_existsUnique_path.1 hG).2
 
-lemma IsTree.isPath_length_eq_dist (hT : G.IsTree) (v w : V) (p : G.Walk v w)
+lemma IsAcyclic.isPath_length_eq_dist (hT : G.IsTree) (v w : V) (p : G.Walk v w)
     (hp : p.IsPath) : p.length = G.dist v w := by
   obtain ⟨q, hq_len⟩ := hT.isConnected.exists_walk_length_eq_dist v w
   have hq_path : q.IsPath := q.isPath_of_length_eq_dist hq_len
@@ -277,7 +277,7 @@ theorem isTree_iff_uniqueShortest_path :
   constructor
   · intro hT
     refine ⟨hT.isConnected.nonempty, fun v w _ => ?_⟩
-    exact ⟨hT.existsUnique_path v w, hT.isPath_length_eq_dist v w⟩
+    exact ⟨hT.existsUnique_path v w, IsAcyclic.isPath_length_eq_dist hT v w⟩
   · intro ⟨hne, h⟩
     rw [isTree_iff_existsUnique_path]
     refine ⟨hne, fun v w => ?_⟩
