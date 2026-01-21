@@ -527,32 +527,50 @@ instance (j : J) [OrderBot J] [SuccOrder J] :
         uniq s l hl := by simp [← hl ⟨Order.succ j, hm.succ_lt_iff.2 h⟩]
       }⟩
 
-variable [HasCoproductsOfShape J C]
-
-noncomputable abbrev ι (i : J) : ∐ (obj f i) ⟶ ∐ Y :=
-  Limits.Sigma.map (objι f i)
-
-@[reassoc (attr := simp)]
-lemma map_ι (i₁ i₂ : J) (hi : i₁ ≤ i₂) :
-    Limits.Sigma.map (map f i₁ i₂ hi) ≫ ι f i₂ = ι f i₁ := by
-  simp [Limits.Sigma.map_comp_map]
-
-variable [OrderBot J]
-
-noncomputable def isoBot : ∐ (obj f ⊥) ≅ ∐ X :=
+variable [HasCoproductsOfShape J C] in
+noncomputable def isoBot [OrderBot J] : ∐ (obj f ⊥) ≅ ∐ X :=
   Sigma.mapIso (fun j ↦ objIso₁ f ⊥ j bot_le)
 
-@[reassoc (attr := simp)]
-lemma isoBot_inv_ι :
-    (isoBot f).inv ≫ ι f ⊥ = Limits.Sigma.map f := by
-  dsimp [isoBot, ι]
-  cat_disch
+@[simps]
+def cocone : Cocone (diagramFunctor f) where
+  pt := Discrete.functor Y
+  ι.app i := Discrete.natTrans (fun ⟨j⟩ ↦ objι f i j)
 
-variable [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
+def isColimitCocone [SuccOrder J] [NoMaxOrder J] :
+    IsColimit (cocone f) :=
+  evaluationJointlyReflectsColimits _ (fun ⟨j⟩ ↦
+    { desc s := (objIso₂ f (Order.succ j) j (Order.lt_succ j)).inv ≫
+        s.ι.app (Order.succ j)
+      fac s i := by
+        dsimp
+        by_cases hij : i ≤ Order.succ j
+        · rw [← s.w (homOfLE hij)]
+          dsimp
+          grind [map, objι]
+        · simp only [not_le] at hij
+          have : ¬ i ≤ j := by
+            simp only [not_le]
+            exact lt_of_le_of_lt (Order.le_succ j) hij
+          rw [← s.w (homOfLE hij.le)]
+          simp [objι, map, dif_neg this]
+      uniq s l hl := by
+        dsimp
+        rw [← hl]
+        dsimp
+        grind [objι] })
 
-/-instance : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
-  nonempty_isColimit m hm := ⟨by
-    sorry⟩-/
+variable [HasCoproductsOfShape J C]
+  [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
+
+instance : (diagramFunctor f).IsWellOrderContinuous where
+  nonempty_isColimit m hm :=
+    ⟨evaluationJointlyReflectsColimits _
+      (fun ⟨j⟩ ↦ (columnFunctor f j).isColimitOfIsWellOrderContinuous m hm)⟩
+
+instance : (diagramFunctor f ⋙ colim).IsWellOrderContinuous where
+  nonempty_isColimit m hm :=
+    ⟨isColimitOfPreserves colim
+      ((diagramFunctor f).isColimitOfIsWellOrderContinuous m hm)⟩
 
 end transfiniteCompositionOfShapeSigmaMap
 
@@ -564,9 +582,10 @@ noncomputable def transfiniteCompositionOfShapeSigmaMap :
       (Limits.Sigma.map f) where
   F := diagramFunctor f ⋙ colim
   isoBot := isoBot f
-  incl := { app i := ι f i }
-  isColimit := sorry
-  map_mem := sorry
+  incl := { app i := colim.map ((cocone f).ι.app i) }
+  isColimit := isColimitOfPreserves colim (isColimitCocone f)
+  map_mem i hi := by sorry
+  fac := by dsimp [isoBot]; cat_disch
 
 variable (hf : ∀ (j : J), W (f j))
 
