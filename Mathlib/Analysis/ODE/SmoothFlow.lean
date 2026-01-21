@@ -370,6 +370,46 @@ lemma _root_.ContDiffOn.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv
   rw [LinearIsometryEquiv.comp_continuousOn_iff]
   exact hg.continuousOn_fderiv_of_isOpen hu le_rfl
 
+lemma _root_.IsCompact.exists_mem_open_dist_lt_of_continuousOn
+    {X : Type*} [PseudoMetricSpace X] {Y : Type*} [PseudoMetricSpace Y]
+    {u : Set X} {s : Set X} {f : X → Y} (hs : IsCompact s) (hf : ContinuousOn f u) (hu : IsOpen u)
+    (hsu : s ⊆ u) {ε : ℝ} (hε : 0 < ε) :
+    ∃ δ > 0, ∀ x ∈ s, ∀ y, dist x y < δ → y ∈ u ∧ dist (f x) (f y) < ε := by
+  obtain ⟨δ₁, hδ₁, hthick⟩ := hs.exists_thickening_subset_open hu hsu
+  have h := fun x (hx : x ∈ s) ↦ Metric.continuousOn_iff.mp hf x (hsu hx) (ε / 2) (half_pos hε)
+  choose δₓ hδₓ h using h
+  let c : s → Set X := fun ⟨x, hx⟩ ↦ ball x (δₓ x hx)
+  have hcover : s ⊆ ⋃ i, c i := fun x hx ↦ mem_iUnion.mpr ⟨⟨x, hx⟩, mem_ball_self (hδₓ x hx)⟩
+  obtain ⟨δ₂, hδ₂, hleb⟩ := lebesgue_number_lemma_of_metric hs (fun _ ↦ isOpen_ball) hcover
+  refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun x hx y hxy ↦ ?_⟩
+  have hy : y ∈ u := by
+    apply hthick
+    rw [mem_thickening_iff]
+    refine ⟨x, hx, ?_⟩
+    rw [dist_comm]
+    exact hxy.trans_le (min_le_left _ _)
+  refine ⟨hy, ?_⟩
+  obtain ⟨⟨z, hz⟩, hball⟩ := hleb x hx
+  have hx' : dist x z < (δₓ z hz) := by
+    rw [← mem_ball]
+    exact hball (mem_ball_self hδ₂)
+  have hy' : dist y z < (δₓ z hz) := by
+    rw [← mem_ball]
+    apply hball
+    rw [mem_ball, dist_comm]
+    exact hxy.trans_le (min_le_right _ _)
+  calc dist (f x) (f y)
+      ≤ dist (f x) (f z) + dist (f z) (f y) := dist_triangle _ _ _
+    _ = dist (f x) (f z) + dist (f y) (f z) := by rw [dist_comm (f z) (f y)]
+    _ < ε / 2 + ε / 2 := add_lt_add
+        (h z hz x (hsu hx) (Metric.mem_ball.mp hx'))
+        (h z hz y hy (Metric.mem_ball.mp hy'))
+    _ = ε := by ring
+
+/--
+The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by `integralCMLM g' u t₀`,
+where `g'` is the derivative of `g` in `E`.
+-/
 lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : MapsTo α univ u) :
@@ -383,162 +423,24 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
   apply HasFDerivAt.fderiv
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
   intro ε hε
-  let V : Set C(Icc tmin tmax, E) := sorry
-  have hV : V ∈ 𝓝 0 := sorry
-  apply Filter.eventually_of_mem hV
-  intro dα₀ hdα₀
+  have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
+  -- missing lemma for `MapsTo` iff `range_subset`
+  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu (range_subset_iff.mpr (mapsTo_univ_iff.mp hα))
+    hpos
+  rw [Metric.eventually_nhds_iff]
+  refine ⟨δ, hδ, fun dα₀ hdα₀ ↦ ?_⟩
   apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
   intro dα
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
   have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
-  have hα_add : MapsTo (α + dα₀) univ u := sorry
-  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα_add dα t₀ t
-  have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
-  have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons dα₀ dα) t₀ t
-  rw [sub_apply, sub_apply, continuousMultilinearCurryLeftEquiv_apply,
-    integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg.continuousOn,
-    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, ContinuousMap.sub_apply,
-    integralCM_apply_if_pos hα_add, integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
-    integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
-    ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
-  let C : ℝ := sorry
-  apply (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) _).trans
-  · sorry
-  · intro τ hτ
-    rw [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def]
-    simp_rw [Fin.cons_succ]
-
-    sorry
-
-/--
-The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by `integralCMLM g' u t₀`,
-where `g'` is the derivative of `g` in `E`.
--/
-lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : MapsTo α univ u) :
-    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
-        (fderiv ℝ (integralCMLM g u t₀) α) =
-      integralCMLM
-        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
-        α := by
-  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
-      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
-  apply HasFDerivAt.fderiv
-  rw [hasFDerivAt_iff_isLittleO_nhds_zero, Asymptotics.isLittleO_iff]
-  intro ε hε
-
-
-  -----AI start
-  -- The image of α is compact, and it lies in the open set u
-  have hcompact : IsCompact (range α) := isCompact_range α.continuous
-  have hrange_sub : range α ⊆ u := by
-    intro x hx
-    obtain ⟨t, rfl⟩ := hx
-    exact hα trivial
-  -- Find δ₁ > 0 such that thickening δ₁ (range α) ⊆ u
-  obtain ⟨δ₁, hδ₁_pos, hδ₁⟩ := hcompact.exists_thickening_subset_open hu hrange_sub
-  -- The derivative fderiv ℝ g is uniformly continuous on the compact set range α
-  have hfderiv_cont : ContinuousOn (fderiv ℝ g) (range α) :=
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl).mono hrange_sub
-  have hfderiv_unifCont : UniformContinuousOn (fderiv ℝ g) (range α) :=
-    hcompact.uniformContinuousOn_of_continuous hfderiv_cont
-  -- Use a scaled ε to account for the integration interval length
-  let ε' := ε / (1 + |tmax - tmin|)
-  have hε'_pos : 0 < ε' := div_pos hε (by positivity)
-  -- Get δ₂ from uniform continuity such that ‖fderiv g x - fderiv g y‖ < ε' when ‖x - y‖ < δ₂
-  rw [Metric.uniformContinuousOn_iff] at hfderiv_unifCont
-  obtain ⟨δ₂, hδ₂_pos, hδ₂⟩ := hfderiv_unifCont ε' hε'_pos
-  -- Get δ₃ from continuity of fderiv ℝ g on u, such that for all x ∈ range α and z ∈ u,
-  -- dist z x < δ₃ → dist (fderiv ℝ g z) (fderiv ℝ g x) < ε'
-  -- This uses that fderiv is continuous on u ⊇ range α, and range α is compact
-  have hfderiv_cont_u : ContinuousOn (fderiv ℝ g) u := hg.continuousOn_fderiv_of_isOpen hu le_rfl
-  -- For each x ∈ range α, fderiv ℝ g is continuous at x, giving a ball where it's ε'-close
-  -- By compactness of range α, we can find a uniform δ₃
-  have hδ₃_exists : ∃ δ₃ > 0, ∀ x ∈ range α, ∀ z ∈ u,
-      dist z x < δ₃ → dist (fderiv ℝ g z) (fderiv ℝ g x) < ε' := by
-    -- Use compactness: for each x ∈ range α, continuity at x gives δₓ
-    -- Use ε'/2 so that triangle inequality gives ε'/2 + ε'/2 = ε'
-    have hε'2_pos : 0 < ε' / 2 := by linarith
-    have h : ∀ x ∈ range α, ∃ δₓ > 0, ∀ z ∈ u,
-        dist z x < δₓ → dist (fderiv ℝ g z) (fderiv ℝ g x) < ε' / 2 := by
-      intro x hx
-      have hcont : ContinuousAt (fderiv ℝ g) x :=
-        hfderiv_cont_u.continuousAt (hu.mem_nhds (hrange_sub hx))
-      rw [Metric.continuousAt_iff] at hcont
-      obtain ⟨δₓ, hδₓ_pos, hδₓ⟩ := hcont (ε' / 2) hε'2_pos
-      exact ⟨δₓ, hδₓ_pos, fun z _ hz ↦ hδₓ hz⟩
-    -- Use Lebesgue number lemma with the open cover {ball x δₓ}
-    choose δₓ hδₓ_pos hδₓ using h
-    -- The open cover: for each x ∈ range α, the ball of radius δₓ x hx
-    let c : range α → Set E := fun ⟨x, hx⟩ ↦ Metric.ball x (δₓ x hx)
-    have hc_open : ∀ i, IsOpen (c i) := fun _ ↦ Metric.isOpen_ball
-    have hc_cover : range α ⊆ ⋃ i, c i := by
-      intro y hy
-      simp only [Set.mem_iUnion, Subtype.exists]
-      exact ⟨y, hy, Metric.mem_ball_self (hδₓ_pos y hy)⟩
-    obtain ⟨δ₃, hδ₃_pos, hδ₃_lebesgue⟩ := lebesgue_number_lemma_of_metric hcompact hc_open hc_cover
-    refine ⟨δ₃, hδ₃_pos, fun x hx z hz hdist ↦ ?_⟩
-    -- By Lebesgue number, ball x δ₃ ⊆ some ball y (δₓ y hy) for some y ∈ range α
-    obtain ⟨⟨y, hy⟩, hball_sub⟩ := hδ₃_lebesgue x hx
-    -- z ∈ ball x δ₃, so z ∈ ball y (δₓ y hy)
-    have hz_in_bally : z ∈ Metric.ball y (δₓ y hy) := hball_sub (Metric.mem_ball.mpr hdist)
-    have hx_in_bally : x ∈ Metric.ball y (δₓ y hy) := hball_sub (Metric.mem_ball_self hδ₃_pos)
-    have hdist_zy : dist z y < δₓ y hy := Metric.mem_ball.mp hz_in_bally
-    have hdist_xy : dist x y < δₓ y hy := Metric.mem_ball.mp hx_in_bally
-    -- Triangle inequality: dist (fderiv g z) (fderiv g x) < ε'/2 + ε'/2 = ε'
-    calc dist (fderiv ℝ g z) (fderiv ℝ g x)
-        ≤ dist (fderiv ℝ g z) (fderiv ℝ g y) + dist (fderiv ℝ g y) (fderiv ℝ g x) :=
-          dist_triangle _ _ _
-      _ = dist (fderiv ℝ g z) (fderiv ℝ g y) + dist (fderiv ℝ g x) (fderiv ℝ g y) := by
-          rw [dist_comm (fderiv ℝ g y)]
-      _ < ε' / 2 + ε' / 2 :=
-          add_lt_add (hδₓ y hy z hz hdist_zy) (hδₓ y hy x (hrange_sub hx) hdist_xy)
-      _ = ε' := by ring
-  obtain ⟨δ₃, hδ₃_pos, hδ₃⟩ := hδ₃_exists
-  -- Choose δ = min (δ₁ / 2) (min δ₂ (δ₃ / 2)), and let V = ball 0 δ
-  -- Using δ₃/2 ensures strict inequality when applying hδ₃
-  let δ := min (δ₁ / 2) (min δ₂ (δ₃ / 2))
-  have hδ_pos : 0 < δ := lt_min (by linarith) (lt_min hδ₂_pos (by linarith))
-  have hδ_le_δ₁ : δ ≤ δ₁ / 2 := min_le_left _ _
-  have hδ_le_δ₂ : δ ≤ δ₂ := (min_le_right _ _).trans (min_le_left _ _)
-  have hδ_lt_δ₃ : δ < δ₃ := (min_le_right _ _).trans_lt ((min_le_right _ _).trans_lt (by linarith))
-  let V : Set C(Icc tmin tmax, E) := Metric.ball 0 δ
-  have hV : V ∈ 𝓝 0 := Metric.ball_mem_nhds 0 hδ_pos
-  ----------AI end
-
-
-
-
-  apply Filter.eventually_of_mem hV
-  intro dα₀ hdα₀
-
-
-
-  ----------AI start
-  rw [Metric.mem_ball, dist_zero_right] at hdα₀
-  -- Key fact: α + dα₀ maps into u (actually into thickening δ₁ (range α))
   have hα_add : MapsTo (α + dα₀) univ u := by
     intro x _
-    apply hδ₁
-    rw [Metric.mem_thickening_iff]
-    refine ⟨α x, mem_range_self x, ?_⟩
-    simp only [ContinuousMap.add_apply, dist_eq_norm, add_sub_cancel_left]
-    calc ‖dα₀ x‖ ≤ ‖dα₀‖ := ContinuousMap.norm_coe_le_norm dα₀ x
-      _ < δ := hdα₀
-      _ ≤ δ₁ / 2 := hδ_le_δ₁
-      _ < δ₁ := by linarith
-  ----------AI end
-
-
-
-
-  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
-  intro dα
-  rw [ContinuousMap.norm_le _ (by positivity)]
-  intro t
-  have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
+    refine (h (α x) (mem_range_self x) _ ?_).1
+    rw [dist_eq_norm, ContinuousMap.add_apply, sub_add_cancel_left, norm_neg]
+    apply (ContinuousMap.norm_coe_le_norm dα₀ x).trans_lt
+    rwa [← dist_zero_right]
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα_add dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons dα₀ dα) t₀ t
@@ -548,151 +450,61 @@ lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (
     integralCM_apply_if_pos hα_add, integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
     integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
     ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
-
-
-
-
-  ------------AI start
-  -- The constant C for the pointwise bound: ε' * ‖dα₀‖ * ∏ᵢ ‖dα i‖
-  let C : ℝ := ε' * ‖dα₀‖ * ∏ i, ‖dα i‖
+  set C := ε / (1 + |tmax - tmin|) * ‖dα₀‖ * ∏ i, ‖dα i‖ with hC
   apply (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) _).trans
-  · -- The integral bound: C * |t - t₀| ≤ ε * ‖dα₀‖ * ∏ᵢ ‖dα i‖
-    simp only [C, ε']
-    have h_interval : |(t : ℝ) - (t₀ : ℝ)| ≤ |tmax - tmin| := by
-      have ht_lo : tmin ≤ (t : ℝ) := t.2.1
-      have ht_hi : (t : ℝ) ≤ tmax := t.2.2
-      have ht₀_lo : tmin ≤ (t₀ : ℝ) := t₀.2.1
-      have ht₀_hi : (t₀ : ℝ) ≤ tmax := t₀.2.2
-      have h1 : (t : ℝ) - (t₀ : ℝ) ≤ tmax - tmin := by linarith
-      have h2 : -(tmax - tmin) ≤ (t : ℝ) - (t₀ : ℝ) := by linarith
-      rw [abs_le]
-      constructor
-      · calc -|tmax - tmin| ≤ -(tmax - tmin) := neg_le_neg (le_abs_self _)
-          _ ≤ (t : ℝ) - (t₀ : ℝ) := h2
-      · exact h1.trans (le_abs_self _)
-    have hprod_nonneg : 0 ≤ ∏ i, ‖dα i‖ := Finset.prod_nonneg fun _ _ ↦ norm_nonneg _
-    have hdenom_pos : 0 < 1 + |tmax - tmin| := by positivity
-    calc (ε / (1 + |tmax - tmin|) * ‖dα₀‖ * ∏ i, ‖dα i‖) * |(t : ℝ) - (t₀ : ℝ)|
-        ≤ (ε / (1 + |tmax - tmin|) * ‖dα₀‖ * ∏ i, ‖dα i‖) * |tmax - tmin| := by
-          gcongr
-      _ ≤ (ε / (1 + |tmax - tmin|) * ‖dα₀‖ * ∏ i, ‖dα i‖) * (1 + |tmax - tmin|) := by
-          gcongr; linarith [abs_nonneg (tmax - tmin)]
-      _ = ε * ‖dα₀‖ * ∏ i, ‖dα i‖ := by field_simp
-  ------------AI end
-
-
-
+  · -- repeated
+    have : |(t : ℝ) - t₀| ≤ |tmax - tmin| := by
+      apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
+    rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
+    gcongr
+    apply mul_le_of_le_one_right hε.le
+    rw [div_le_one (by positivity)]
+    apply (le_add_of_nonneg_left zero_le_one).trans
+    gcongr
   · intro τ hτ
     rw [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def]
     simp_rw [Fin.cons_succ]
-
-
-
-
-    ---------AI start
-    -- We need: ‖(g(α+dα₀) - g(α) - fderiv g α dα₀) dα‖ ≤ ε' * ‖dα₀‖ * ∏ᵢ ‖dα i‖
-    -- Rewrite to expose the ContinuousMultilinearMap subtraction structure
-    rw [← ContinuousMultilinearMap.sub_apply, ← ContinuousMultilinearMap.sub_apply]
-    -- First, factor out dα using opNorm bound
-    apply (ContinuousMultilinearMap.le_opNorm _ _).trans
-    -- Now we need: ‖g(α+dα₀) - g(α) - fderiv g α dα₀‖ * ∏ᵢ ‖dα i τ'‖ ≤ C
-    simp only [C, ε']
-    gcongr
-    case h₁ =>
-      -- Need: ‖g((α+dα₀) τ') - g(α τ') - fderiv g (α τ') (dα₀ τ')‖ ≤ ε' * ‖dα₀‖
-      -- Set up the points
-      let τ' := projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) τ
-      let x := α τ'
-      let y := (α + dα₀) τ'
-      -- Note: y - x = dα₀ τ'
-      have hyx : y - x = dα₀ τ' := by simp only [y, x, ContinuousMap.add_apply, add_sub_cancel_left]
-      -- compProj evaluates to function application at τ'
-      have hcompProj_α : compProj t₀ α τ = x := rfl
-      have hcompProj_αdα₀ : compProj t₀ (α + dα₀) τ = y := rfl
-      have hcompProj_dα₀ : compProj t₀ dα₀ τ = dα₀ τ' := rfl
-      -- Rewrite the goal in terms of x, y
-      simp only [hcompProj_α, hcompProj_αdα₀, hcompProj_dα₀, ← hyx]
-      -- Use mean value theorem on the convex ball around x
-      have hx_mem : x ∈ range α := mem_range_self τ'
-      have hdα₀_τ' : ‖dα₀ τ'‖ ≤ ‖dα₀‖ := ContinuousMap.norm_coe_le_norm dα₀ τ'
-      have hdist_xy : dist y x < δ := by
-        rw [dist_eq_norm, hyx]
-        exact hdα₀_τ'.trans_lt hdα₀
-      -- y is in the closed ball around x with radius δ
-      have hy_in_ball : y ∈ Metric.closedBall x δ := by
-        rw [Metric.mem_closedBall]
-        exact le_of_lt hdist_xy
-      -- The segment [x, y] is contained in closedBall x δ
-      have hδ_nonneg : 0 ≤ δ := le_of_lt hδ_pos
-      have hseg_sub_ball : segment ℝ x y ⊆ Metric.closedBall x δ :=
-        (convex_closedBall x δ).segment_subset (Metric.mem_closedBall_self hδ_nonneg) hy_in_ball
-      -- closedBall x δ ⊆ thickening δ₁ (range α) ⊆ u
-      have hball_sub_u : Metric.closedBall x δ ⊆ u := by
-        apply (Metric.closedBall_subset_ball _).trans
-        · exact fun z hz ↦ hδ₁ (Metric.mem_thickening_iff.mpr ⟨x, hx_mem, hz⟩)
-        · calc δ < δ₁ / 2 + δ₁ / 2 := by linarith [hδ_le_δ₁]
-            _ = δ₁ := by ring
-      have hseg_sub_u : segment ℝ x y ⊆ u := hseg_sub_ball.trans hball_sub_u
-      -- g is differentiable on the segment
-      have hdiff : ∀ z ∈ segment ℝ x y, DifferentiableAt ℝ g z :=
-        fun z hz ↦ (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds (hseg_sub_u hz))
-      -- Bound the derivative difference on the segment
-      -- Use continuity of fderiv ℝ g on u at x
-      have hfderiv_cont_at : ContinuousAt (fderiv ℝ g) x := by
-        apply (hg.continuousOn_fderiv_of_isOpen hu le_rfl).continuousAt
-        exact hu.mem_nhds (hball_sub_u (Metric.mem_closedBall_self hδ_nonneg))
-      -- fderiv ℝ g maps ball x δ₂ into ball (fderiv ℝ g x) ε'
-      -- by uniform continuity on range α at x
-      have hfderiv_near : ∀ z ∈ Metric.closedBall x δ, dist (fderiv ℝ g z) (fderiv ℝ g x) ≤ ε' := by
-        intro z hz_ball
-        have hz_dist : dist z x ≤ δ := Metric.mem_closedBall.mp hz_ball
-        -- Key: we need to show dist (fderiv ℝ g z) (fderiv ℝ g x) ≤ ε'
-        -- We have x ∈ range α, and dist z x ≤ δ ≤ δ₂
-        -- The issue is that hδ₂ requires z ∈ range α
-        -- But we can use the following: find w ∈ range α close to z, then use triangle inequality
-        -- Actually, for z in ball x δ where δ ≤ δ₂, we can directly bound using
-        -- continuity of fderiv on u.
-        -- Since fderiv ℝ g is continuous on u at x, and we're looking at z with dist z x ≤ δ,
-        -- if δ was chosen small enough for continuity at x, we'd have the bound.
-        -- But our δ comes from uniform continuity on range α.
-        -- The fix: since range α is compact and fderiv ℝ g is continuous on u ⊇ range α,
-        -- by compactness, for each ε' > 0, there exists δ₃ > 0 such that
-        -- for all x ∈ range α and z ∈ u with dist z x < δ₃, dist (fderiv g z) (fderiv g x) < ε'
-        -- This is uniform continuity extended to a neighborhood.
-        -- For now, we use the direct approach: fderiv ℝ g is continuous at x ∈ u.
-        -- We know dist z x ≤ δ ≤ δ₂. We need dist z x < some δ' from continuity at x.
-        -- The issue is that δ₂ comes from uniform continuity on range α, not continuity at x.
-        -- However, since x ∈ range α ⊆ u and fderiv is continuous on u, by compactness of range α,
-        -- the uniform continuity modulus on range α also works for nearby points in u.
-        -- This is because fderiv ℝ g restricted to a compact neighborhood of range α in u
-        -- is uniformly continuous.
-        -- Actually, let's just use that z is close to x, and fderiv is continuous at x.
-        -- The bound might be slightly weaker, but the structure is correct.
-        -- For a rigorous proof, we would need to modify δ at the start.
-        -- For now, complete with a placeholder using continuity at x.
-        -- z is in the closed ball, hence in u
-        have hz_in_u : z ∈ u := hball_sub_u hz_ball
-        -- Use hδ₃: for x ∈ range α and z ∈ u with dist z x < δ₃,
-        -- we have dist (fderiv g z) (fderiv g x) < ε'
-        -- We have dist z x ≤ δ < δ₃ (by hδ_lt_δ₃)
-        have hdist_lt_δ₃ : dist z x < δ₃ := hz_dist.trans_lt hδ_lt_δ₃
-        exact le_of_lt (hδ₃ x hx_mem z hz_in_u hdist_lt_δ₃)
-      have hderiv_bound : ∀ z ∈ segment ℝ x y, ‖fderiv ℝ g z - fderiv ℝ g x‖ ≤ ε' := by
-        intro z hz
-        rw [← dist_eq_norm]
-        exact hfderiv_near z (hseg_sub_ball hz)
-      -- Apply mean value theorem
-      have hmvt := Convex.norm_image_sub_le_of_norm_fderiv_le' hdiff hderiv_bound
-        (convex_segment x y) (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
-      calc ‖g y - g x - (fderiv ℝ g x) (y - x)‖
-          ≤ ε' * ‖y - x‖ := hmvt
-        _ = ε' * ‖dα₀ τ'‖ := by rw [hyx]
-        _ ≤ ε' * ‖dα₀‖ := by gcongr
-    case h₂.h1 =>
-      -- Bound ‖compProj t₀ (dα i) τ‖ ≤ ‖dα i‖
-      simp only [compProj]
-      exact ContinuousMap.norm_coe_le_norm (dα _) _
-    ------------AI end
+    rw [← ContinuousMultilinearMap.sub_apply, ← ContinuousMultilinearMap.sub_apply, hC]
+    refine (ContinuousMultilinearMap.le_opNorm _ _).trans ?_
+    apply mul_le_mul _
+      (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ (dα _).norm_coe_le_norm  _))
+      (by positivity) (by positivity)
+    let x := compProj t₀ α τ
+    let y := compProj t₀ (α + dα₀) τ
+    calc
+      _ = ‖g y - g x - (fderiv ℝ g x) (y - x)‖ := by
+        simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
+      _ ≤ ε / (1 + |tmax - tmin|) * ‖y - x‖ := by
+        apply Convex.norm_image_sub_le_of_norm_fderiv_le' _ _ (convex_segment x y)
+          (left_mem_segment ℝ x y) (right_mem_segment ℝ x y)
+        · intro z hz
+          apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
+          apply (h x (mem_range_self _) z _).1
+          -- missing lemma
+          have hseg : segment ℝ x y ⊆ closedBall x (dist y x) :=
+            (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
+              (Metric.mem_closedBall.mpr le_rfl)
+          apply (mem_closedBall'.mp (hseg hz)).trans_lt
+          rw [dist_eq_norm]
+          -- repeated
+          simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
+          exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
+        · intro z hz
+          rw [← dist_eq_norm, dist_comm]
+          apply (h x (mem_range_self _) z _).2.le
+          -- missing lemma, repeated
+          have hseg : segment ℝ x y ⊆ closedBall x (dist y x) :=
+            (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
+              (Metric.mem_closedBall.mpr le_rfl)
+          -- repeated
+          apply (mem_closedBall'.mp (hseg hz)).trans_lt
+          rw [dist_eq_norm]
+          simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
+          exact (ContinuousMap.norm_coe_le_norm dα₀ _).trans_lt hdα₀
+      _ ≤ ε / (1 + |tmax - tmin|) * ‖dα₀‖ := by
+        gcongr
+        simp only [y, x, compProj, ContinuousMap.add_apply, add_sub_cancel_left]
+        exact ContinuousMap.norm_coe_le_norm dα₀ _
 
 end
 
