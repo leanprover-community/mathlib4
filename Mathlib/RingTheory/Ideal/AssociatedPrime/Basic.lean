@@ -56,9 +56,9 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Subm
   (I : Ideal R) (x : M)
 
 /-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
-and `I = (N.colon {x}).radical` for some `x : M`. -/
+and `I = (colon N {x}).radical` for some `x : M`. -/
 protected def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x, I = (N.colon {x}).radical
+  I.IsPrime ∧ ∃ x, I = (colon N {x}).radical
 
 /-- The set of associated primes of a submodule. -/
 protected def associatedPrimes : Set (Ideal R) :=
@@ -67,11 +67,11 @@ protected def associatedPrimes : Set (Ideal R) :=
 variable {N I}
 
 theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
-    (hI : I ∈ (N.colon {x}).minimalPrimes) : ∃ x' : M, I = N.colon {x'} := by
+    (hI : I ∈ (colon N {x}).minimalPrimes) : ∃ x' : M, I = colon N {x'} := by
   by_cases hx : x ∈ N
-  · simp [show (N.colon {x}) = ⊤ by simpa, Ideal.minimalPrimes_top] at hI
+  · simp [show (colon N {x}) = ⊤ by simpa, Ideal.minimalPrimes_top] at hI
   classical
-  set ann := N.colon {x}
+  set ann := colon N {x}
   -- there exists an integer `n ≠ 0` and an ideal `J` satisfying `I ^ n * J ≤ ann` and `¬ J ≠ I`
   have key : ∃ n ≠ 0, ∃ J : Ideal R, I ^ n * J ≤ ann ∧ ¬ J ≤ I := by
     -- let `n` be large enough so that `ann.radical ^ n ≤ ann` (uses Noetherian)
@@ -91,19 +91,19 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   set n := Nat.find key
   -- let `K = I ^ (n - 1) * J`
   let K := I ^ (n - 1) * J
-  -- we want `I = N.colon {x'}`, and we have `I ≤ N.colon {y • x}` for every `y ∈ K` (uses `n ≠ 0`)
-  have step1 : ∀ y ∈ K, I ≤ N.colon {y • x} := by
+  -- we want `I = colon N {x'}`, and we have `I ≤ colon N {y • x}` for every `y ∈ K` (uses `n ≠ 0`)
+  have step1 : ∀ y ∈ K, I ≤ colon N {y • x} := by
     intro y hy p hp
     rw [mem_colon_singleton, smul_smul, ← mem_colon_singleton]
     apply hJ
     simpa [K, ← mul_assoc, mul_pow_sub_one hn0] using mul_mem_mul hp hy
   clear hn0
-  -- so it suffices to find a single `y ∈ K` with `N.colon {y • x} ≤ I`
-  suffices step2 : ∃ y : K, N.colon {y • x} ≤ I by
+  -- so it suffices to find a single `y ∈ K` with `colon N {y • x} ≤ I`
+  suffices step2 : ∃ y : K, colon N {y • x} ≤ I by
     obtain ⟨y, hyI⟩ := step2
     exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
   by_contra! h'
-  -- if not, then for every `y ∈ K`, there exists an `f y ∈ N.colon {y • x}` with `f y ∉ I`
+  -- if not, then for every `y ∈ K`, there exists an `f y ∈ colon N {y • x}` with `f y ∉ I`
   simp only [SetLike.not_le_iff_exists] at h'
   choose f g h using h'
   -- let `s` be a finite generating set for `K`
@@ -116,8 +116,8 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
   have hz : z ∉ I := by
     simp only [z, hI.1.1.prod_mem_iff, not_exists, not_and_or]
     exact fun i ↦ Or.inr (h i)
-  -- and `K ≤ N.colon {z • x}`
-  have hz' : K ≤ N.colon {z • x} := by
+  -- and `K ≤ colon N {z • x}`
+  have hz' : K ≤ colon N {z • x} := by
     rw [← hs, Ideal.span_le, Finset.coe_image, Set.image_subset_iff]
     intro i hi
     obtain ⟨y, hy : z = f i * y⟩ := Finset.dvd_prod_of_mem f hi
@@ -142,11 +142,11 @@ theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
     simp [h'] at hn'
 
 protected theorem isAssociatedPrime_def :
-    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (N.colon {x}).radical :=
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
   .rfl
 
 protected theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
-    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = N.colon {x} := by
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
   constructor
   · rintro ⟨hx, x, rfl⟩
     refine ⟨hx, exists_eq_colon_of_mem_minimalPrimes x ?_⟩
@@ -167,7 +167,7 @@ variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x : M, I = ((⊥ : Submodule R M).colon {x}).radical
+  I.IsPrime ∧ ∃ x : M, I = (colon ⊥ {x}).radical
 
 variable (R) in
 /-- The set of associated primes of a module. -/
@@ -181,7 +181,7 @@ theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPri
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
 theorem isAssociatedPrime_iff [IsNoetherianRing R] :
-    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x, I = (⊥ : Submodule R M).colon {x} :=
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x : M, I = colon ⊥ {x} :=
   (⊥ : Submodule R M).isAssociatedPrime_iff
 
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
