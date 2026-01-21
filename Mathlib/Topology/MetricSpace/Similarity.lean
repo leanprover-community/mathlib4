@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid, Newell Jensen
 module
 
 public import Mathlib.Topology.MetricSpace.Congruence
+public import Mathlib.Topology.MetricSpace.Dilation
 public import Mathlib.Tactic.FinCases
 
 /-!
@@ -113,19 +114,36 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
-lemma comp_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : f ∘ v₁ ∼ v₂ :=
-  ((Congruent.refl _).comp_left hf).similar.trans h
+variable {F}
 
-lemma comp_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
-  h.trans ((Congruent.refl _).comp_right hf).similar
+lemma comp_left [FunLike F P₁ P₃] [DilationClass F P₁ P₃] (f : F) (h : v₁ ∼ v₂) :
+    f ∘ v₁ ∼ v₂ :=
+  .trans ⟨Dilation.ratio f, Dilation.ratio_ne_zero f, fun _ _ => Dilation.edist_eq f _ _⟩ h
+
+lemma comp_right (f : P₂ →ᵈ P₃) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  .symm (h.symm.comp_left f)
 
 @[simp]
-lemma comp_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
-  ⟨.trans <| .comp_right hf (.refl _), .comp_left hf⟩
+lemma comp_left_iff (f : P₁ →ᵈ P₃) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  ⟨.trans <| .comp_right f (.refl _), .comp_left f⟩
 
 @[simp]
-lemma comp_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ := by
-  rw [similar_comm, comp_left_iff hf, similar_comm]
+lemma comp_right_iff (f : P₂ →ᵈ P₃) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ := by
+  rw [similar_comm, comp_left_iff, similar_comm]
+
+lemma comp_isometry_left {f : P₁ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : f ∘ v₁ ∼ v₂ :=
+  comp_left hf.toDilation h
+
+lemma comp_isometry_right {f : P₂ → P₃} (hf : Isometry f) (h : v₁ ∼ v₂) : v₁ ∼ f ∘ v₂ :=
+  comp_right hf.toDilation h
+
+@[simp]
+lemma comp_isometry_left_iff {f : P₁ → P₃} (hf : Isometry f) : f ∘ v₁ ∼ v₂ ↔ v₁ ∼ v₂ :=
+  comp_left_iff hf.toDilation
+
+@[simp]
+lemma comp_isometry_right_iff {f : P₂ → P₃} (hf : Isometry f) : v₁ ∼ f ∘ v₂ ↔ v₁ ∼ v₂ :=
+  comp_right_iff hf.toDilation
 
 section Triangle
 
