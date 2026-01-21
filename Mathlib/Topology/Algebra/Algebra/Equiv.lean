@@ -204,10 +204,6 @@ theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
-@[simp]
-theorem refl_toContinuousLinearEquiv :
-    (refl R A).toContinuousLinearEquiv = refl R A := rfl
-
 variable {R A}
 
 /-- The inverse of a continuous algebra equivalence. -/
