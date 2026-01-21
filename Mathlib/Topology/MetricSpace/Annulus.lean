@@ -292,5 +292,3 @@ lemma annulusIcc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ 
   exact ⟨hr.trans hy.1, hy.2.trans hR⟩
 
 end EMetric
-
-#lint
