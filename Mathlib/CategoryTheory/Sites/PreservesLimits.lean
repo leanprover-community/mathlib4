@@ -81,3 +81,11 @@ instance {F : K ⥤ C} [∀ X : Sheaf J (Type (max v v')), PreservesColimit F.op
 instance [∀ X : Sheaf J (Type (max v v')), PreservesColimitsOfShape Kᵒᵖ X.val] :
     PreservesLimitsOfShape K (GrothendieckTopology.uliftYoneda.{v', v, u} J) where
   preservesLimit := inferInstance
+
+instance Subcanonical.preservesFiniteCoproductsYoneda
+    [∀ X : Sheaf J (Type v), PreservesFiniteProducts X.val] :
+    PreservesFiniteCoproducts J.yoneda where
+  preserves n  :=
+    have : ∀ (X : Sheaf J (Type v)), PreservesLimitsOfShape (Discrete (Fin n))ᵒᵖ X.val :=
+      fun X ↦ preservesLimitsOfShape_of_equiv (Discrete.opposite (Fin n)).symm X.val
+    inferInstance
