@@ -45,7 +45,7 @@ identifying the topology with its filter of ideals.
 
 In this development we work systematically with **left ideals**. Accordingly, Stenström’s
 right-ideal construction `(L : a) = {x ∈ A | a * x ∈ L}` is replaced by the left ideal
-`L.colon {a} = {a | x * a ∈ L}`, implemented using preimages under right multiplication.
+`L.colon {a} = {a | x * a ∈ L}`.
 
 With this convention, uniform filters correspond to linear (additive) topologies, while the
 additional Gabriel condition (axiom T4) imposes an algebraic saturation property that does not
