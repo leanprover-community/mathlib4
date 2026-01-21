@@ -104,7 +104,6 @@ theorem posTangentConeAt_univ : posTangentConeAt univ a = univ := tangentConeAt_
 theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos (h : IsLocalMaxOn f s a)
     (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
   rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hd, hcd⟩
-  -- have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
   suffices ∀ᶠ n in l, c n • (f (a + d n) - f a) ≤ 0 from
     le_of_tendsto (hf.lim hd₀ hd hcd) this
   replace hd : Tendsto (fun n => a + d n) l (𝓝[s] (a + 0)) :=

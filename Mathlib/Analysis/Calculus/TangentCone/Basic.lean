@@ -144,7 +144,7 @@ theorem zero_mem_tangentConeAt (hx : x ∈ closure s) :
 @[deprecated (since := "2026-01-21")]
 alias zero_mem_tangentCone := zero_mem_tangentConeAt
 
-/-- If `x` is not an accumulation point of `s, then the tangent cone of `s` at `x`
+/-- If `x` is not an accumulation point of `s`, then the tangent cone of `s` at `x`
 is a subset of `{0}`. -/
 theorem tangentConeAt_subset_zero [T2Space E] (hx : ¬AccPt x (𝓟 s)) : tangentConeAt 𝕜 s x ⊆ 0 := by
   intro y hy

@@ -124,11 +124,15 @@ variable {f' f₁' : E →L[𝕜] F}
 variable {x : E}
 variable {s : Set E}
 
-/- In this section, we discuss the uniqueness of the derivative.
+/-!
+### Uniqueness of the derivative
+
+In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
 uniqueness of the derivative. -/
+
 /-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
-i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
+i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `d n` tends to zero
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
 tangent cone related discussions. -/
