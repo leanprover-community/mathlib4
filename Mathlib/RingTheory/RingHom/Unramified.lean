@@ -96,14 +96,7 @@ lemma ofLocalizationSpanTarget :
 lemma propertyIsLocal :
     PropertyIsLocal FormallyUnramified := by
   constructor
-  · intro R S _ _ f r R' S' _ _ _ _ _ _ H
-    algebraize [f, (algebraMap S S').comp f, IsLocalization.Away.map R' S' f r]
-    have := Algebra.FormallyUnramified.of_isLocalization (Rₘ := S') (.powers (f r))
-    have := Algebra.FormallyUnramified.comp R S S'
-    have H : Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f := by
-      rintro x ⟨n, rfl⟩; exact ⟨n, by simp⟩
-    have : IsScalarTower R R' S' := .of_algebraMap_eq' (IsLocalization.map_comp H).symm
-    exact Algebra.FormallyUnramified.of_restrictScalars R R' S'
+  · exact isStableUnderBaseChange.localizationPreserves.away
   · exact ofLocalizationSpanTarget
   · exact ofLocalizationSpanTarget.ofLocalizationSpan
       (stableUnderComposition.stableUnderCompositionWithLocalizationAway
