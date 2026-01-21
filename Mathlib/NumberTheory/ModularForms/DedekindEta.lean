@@ -138,6 +138,16 @@ lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24
   rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
   simp only [LogDeriv_exp, Pi.one_apply, deriv_id'', mul_one, one_mul]
 
+lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
+    Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
+  simp only [one_sub_eta_logDeriv_eq]
+  apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
+    (by simpa [Periodic.qParam] using UpperHalfPlane.norm_exp_two_pi_I_lt_one ⟨z, hz⟩)).mul_left
+    (-2 * π * I))).congr
+  intro b
+  field_simp [one_sub_eta_q_ne_zero b hz]
+  ring
+
 lemma eta_logDeriv (z : ℍ) : logDeriv ModularForm.eta z = (π * I / 12) * E2 z := by
   unfold ModularForm.eta
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
