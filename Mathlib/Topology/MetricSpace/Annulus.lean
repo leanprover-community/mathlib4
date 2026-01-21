@@ -10,8 +10,6 @@ public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.SuccPred.IntervalSucc
 
-@[expose] public section
-
 /-!
 # Annulus
 
@@ -29,7 +27,7 @@ We also define `EMetric.annulusIxx` using `edist` (hence radii in `ℝ≥0∞`),
 annulus
 -/
 
-public section
+@[expose] public section
 
 open Set
 
