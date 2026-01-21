@@ -48,7 +48,7 @@ instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toLinearMap
   coe_injective' := to_fun_injective ρ σ
 
-theorem intertwiningMap_toLinearMap (f : IntertwiningMap ρ σ) (v : V) : f v = f.toLinearMap v := rfl
+@[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v  = f v := rfl
 
 instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
