@@ -66,7 +66,7 @@ theorem cot_add_tan {z : ℂ} (hz : ¬∃ (n : ℤ), n * π / 2 = z) : cot z + t
 
 theorem cot_sub_cot {z : ℂ} (hz : ¬∃ (n : ℤ), n * π / 2 = z) :
     cot z - cot (z + π / 2) = 2 / sin (2 * z) := by
-  simp [sub_eq_neg_add, ← tan_eq_neg_cot_add_pi_div_two, ← cot_add_tan hz, add_comm]
+  simp [sub_eq_neg_add, ← cot_add_pi_div_two_eq_neg_tan, ← cot_add_tan hz, add_comm]
 
 /-- The tangent of a complex number is equal to zero
 iff this number is equal to `k * π / 2` for an integer `k`.
