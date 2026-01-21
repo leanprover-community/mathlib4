@@ -22,18 +22,6 @@ open Opposite Limits MonoidalCategory Functor PushoutObjObj
 
 variable {C : Type u} [Category.{v} C]
 
-@[reassoc (attr := simp)]
-lemma Limits.colimit.whiskerLeft_ι_desc {J : Type u₁} [Category.{v₁, u₁} J] [MonoidalCategory C]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
-    Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-lemma Limits.colimit.ι_desc_whiskerRight {J : Type u₁} [Category.{v₁, u₁} J] [MonoidalCategory C]
-    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
-    colimit.ι F j ▷ Q ≫ colimit.desc F c ▷ Q = c.ι.app j  ▷ Q := by
-  simp [← comp_whiskerRight]
-
 section IsPushout
 
 namespace IsPushout
@@ -72,46 +60,6 @@ lemma w_whiskerRight (hP : IsPushout f g inl inr) {Q : C} :
     f ▷ Q ≫ inl ▷ Q = g ▷ Q ≫ inr ▷ Q := by
   simp [← MonoidalCategory.comp_whiskerRight, hP.w]
 
-@[reassoc (attr := simp)]
-theorem whiskerLeft_inl_isoPushout_inv [HasPushout f g] {Q : C} :
-    Q ◁ pushout.inl _ _ ≫ Q ◁ hP.isoPushout.inv = Q ◁ inl := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_inr_isoPushout_inv [HasPushout f g] {Q : C} :
-    Q ◁ pushout.inr _ _ ≫ Q ◁ hP.isoPushout.inv = Q ◁ inr := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_inl_isoPushout_hom [HasPushout f g] {Q : C} :
-    Q ◁ inl ≫ Q ◁ hP.isoPushout.hom = Q ◁ pushout.inl _ _ := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-theorem whiskerLeft_inr_isoPushout_hom [HasPushout f g] {Q : C} :
-    Q ◁ inr ≫ Q ◁ hP.isoPushout.hom = Q ◁ pushout.inr _ _ := by
-  simp [← MonoidalCategory.whiskerLeft_comp]
-
-@[reassoc (attr := simp)]
-theorem inl_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
-    pushout.inl _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inl ▷ Q := by
-  simp [← comp_whiskerRight]
-
-@[reassoc (attr := simp)]
-theorem inr_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
-    pushout.inr _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inr ▷ Q := by
-  simp [← comp_whiskerRight]
-
-@[reassoc (attr := simp)]
-theorem inl_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
-    inl ▷ Q ≫ hP.isoPushout.hom ▷ Q = pushout.inl _ _ ▷ Q := by
-  simp [← comp_whiskerRight]
-
-@[reassoc (attr := simp)]
-theorem inr_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
-    inr ▷ Q ≫ hP.isoPushout.hom ▷ Q = pushout.inr _ _ ▷ Q := by
-  simp [← comp_whiskerRight]
-
 end IsPushout
 
 end IsPushout
@@ -119,31 +67,30 @@ end IsPushout
 section Pushout
 
 variable [HasPushouts C] [MonoidalCategory C]
-  {A B X Y Z W : C} (f : A ⟶ B) (g : X ⟶ Y) (h : Z ⟶ W)
+  {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
+  (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
 
 @[reassoc (attr := simp)]
-lemma Limits.pushout.whiskerLeft_inl_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C} :
+lemma Limits.pushout.whiskerLeft_inl_desc :
     Q ◁ inl f g ≫ Q ◁ pushout.desc h k w = Q ◁ h := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-lemma Limits.pushout.whiskerLeft_inr_desc {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C} :
+lemma Limits.pushout.whiskerLeft_inr_desc :
     Q ◁ inr f g ≫ Q ◁ pushout.desc h k w = Q ◁ k := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
-lemma Limits.pushout.inl_desc_whiskerRight {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C} :
+lemma Limits.pushout.inl_desc_whiskerRight :
     inl f g ▷ Q ≫ pushout.desc h k w ▷ Q = h ▷ Q := by
   simp [← comp_whiskerRight]
 
 @[reassoc (attr := simp)]
-lemma Limits.pushout.inr_desc_whiskerRight {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
-    (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C} :
+lemma Limits.pushout.inr_desc_whiskerRight :
     inr f g ▷ Q ≫ pushout.desc h k w ▷ Q = k ▷ Q := by
   simp [← comp_whiskerRight]
+
+variable {A B X Y Z W : C} (f : A ⟶ B) (g : X ⟶ Y) (h : Z ⟶ W)
 
 ---change
 @[reassoc]
@@ -155,10 +102,8 @@ lemma pushout_temp₁ {P : C} {h₁ : Y ⊗ Z ⟶ P} {h₂ : A ⊗ P ⟶ A ⊗ Y
 ---change
 @[reassoc]
 lemma pushout_temp₂ {P : C} {h₁ : P ⟶ B ⊗ Y} {h₂ : A ⊗ Y ⟶ P} :
-    A ◁ Y ◁ h ≫ (α_ A Y W).inv ≫
-      h₂ ▷ W ≫ pushout.inr (h₁ ▷ Z) (P ◁ h) =
-    (α_ A Y Z).inv ≫
-      (h₂ ≫ h₁) ▷ Z ≫ pushout.inl (h₁ ▷ Z) (P ◁ h) := by
+    A ◁ Y ◁ h ≫ (α_ A Y W).inv ≫ h₂ ▷ W ≫ pushout.inr (h₁ ▷ Z) (P ◁ h) =
+      (α_ A Y Z).inv ≫ (h₂ ≫ h₁) ▷ Z ≫ pushout.inl (h₁ ▷ Z) (P ◁ h) := by
   rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ← pushout.condition,
     ← comp_whiskerRight_assoc]
 
@@ -363,6 +308,73 @@ lemma PushoutProduct.associator_naturality
       · simp [← whisker_exchange_assoc, temp₁_assoc]
   · simp
 
+omit [HasPushouts C] in
+@[reassoc (attr := simp)]
+lemma Limits.colimit.whiskerLeft_ι_desc {J : Type u₁} [Category.{v₁, u₁} J]
+    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
+    Q ◁ colimit.ι F j ≫ Q ◁ colimit.desc F c = Q ◁ c.ι.app j := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+omit [HasPushouts C] in
+@[reassoc (attr := simp)]
+lemma Limits.colimit.ι_desc_whiskerRight {J : Type u₁} [Category.{v₁, u₁} J]
+    {F : J ⥤ C} [HasColimit F] (c : Cocone F) (j : J) {Q : C} :
+    colimit.ι F j ▷ Q ≫ colimit.desc F c ▷ Q = c.ι.app j ▷ Q := by
+  simp [← comp_whiskerRight]
+
+section Pentagon
+
+omit [HasPushouts C]
+
+variable {Z X Y P W : C} {f : Z ⟶ X} {g : Z ⟶ Y}
+    {inl : X ⟶ P} {inr : Y ⟶ P} (hP : IsPushout f g inl inr)
+    {W : C} (h : X ⟶ W) (k : Y ⟶ W) (w : f ≫ h = g ≫ k)
+
+--not needed
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.whiskerLeft_inl_isoPushout_inv [HasPushout f g] {Q : C} :
+    Q ◁ pushout.inl _ _ ≫ Q ◁ hP.isoPushout.inv = Q ◁ inl := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.whiskerLeft_inr_isoPushout_inv [HasPushout f g] {Q : C} :
+    Q ◁ pushout.inr _ _ ≫ Q ◁ hP.isoPushout.inv = Q ◁ inr := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.whiskerLeft_inl_isoPushout_hom [HasPushout f g] {Q : C} :
+    Q ◁ inl ≫ Q ◁ hP.isoPushout.hom = Q ◁ pushout.inl _ _ := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.whiskerLeft_inr_isoPushout_hom [HasPushout f g] {Q : C} :
+    Q ◁ inr ≫ Q ◁ hP.isoPushout.hom = Q ◁ pushout.inr _ _ := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+--not needed
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.inl_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
+    pushout.inl _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inl ▷ Q := by
+  simp [← comp_whiskerRight]
+
+--not needed
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.inr_isoPushout_inv_whiskerRight [HasPushout f g] {Q : C} :
+    pushout.inr _ _ ▷ Q ≫ hP.isoPushout.inv ▷ Q = inr ▷ Q := by
+  simp [← comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.inl_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
+    inl ▷ Q ≫ hP.isoPushout.hom ▷ Q = pushout.inl _ _ ▷ Q := by
+  simp [← comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+theorem _root_.CategoryTheory.IsPushout.inr_isoPushout_hom_whiskerRight [HasPushout f g] {Q : C} :
+    inr ▷ Q ≫ hP.isoPushout.hom ▷ Q = pushout.inr _ _ ▷ Q := by
+  simp [← comp_whiskerRight]
+
+end Pentagon
+
 lemma PushoutProduct.pentagon
     [∀ S : C, PreservesColimitsOfSize (tensorLeft S)]
     [∀ S : C, PreservesColimitsOfSize (tensorRight S)]
@@ -380,7 +392,7 @@ lemma PushoutProduct.pentagon
       · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
         all_goals simp [associator_naturality_left_assoc]
   · exact MonoidalCategory.pentagon W.right X.right Y.right Z.right
-
+/--/
 @[simps!]
 noncomputable
 def PushoutProduct.braiding_left_iso [BraidedCategory C] :
@@ -411,15 +423,15 @@ def PushoutProduct.leftUnitor [BraidedCategory C]
   refine Arrow.isoMk ?_ (λ_ X.right) ?_
   · refine Iso.mk ?_ ((λ_ X.left).inv ≫ pushout.inl _ _) ?_ ?_
     · refine pushout.desc (λ_ X.left).hom ?_ ?_
-      · exact IsInitial.to (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm) _
-      · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+      · exact (initialIsInitial.ofIso (mulZero initialIsInitial).symm).to _
+      · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
     · apply pushout.hom_ext
       · simp
-      · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+      · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
     · simp
   · apply pushout.hom_ext
     · simp
-    · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+    · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
 
 @[simps!]
 noncomputable
@@ -428,14 +440,14 @@ def PushoutProduct.rightUnitor (X : Arrow C) :
   refine Arrow.isoMk ?_ (ρ_ X.right) ?_
   · refine Iso.mk ?_ ((ρ_ X.left).inv ≫ pushout.inr _ _) ?_ ?_
     · refine pushout.desc ?_ (ρ_ X.left).hom ?_
-      · exact IsInitial.to (IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm) _
-      · apply (IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm).hom_ext
+      · exact (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).to _
+      · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
     · apply pushout.hom_ext
-      · apply (IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm).hom_ext
+      · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
       · simp
     · simp
   · apply pushout.hom_ext
-    · apply (IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm).hom_ext
+    · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
     · simp
 
 end CartesianMonoidal
@@ -550,13 +562,13 @@ instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalC
     apply Arrow.hom_ext
     · apply pushout.hom_ext
       · simp
-      · apply (IsInitial.ofIso initialIsInitial (mulZero initialIsInitial).symm).hom_ext
+      · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
     · exact leftUnitor_naturality f.right
   rightUnitor := PushoutProduct.rightUnitor
   rightUnitor_naturality f := by
     apply Arrow.hom_ext
     · apply pushout.hom_ext
-      · apply (IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm).hom_ext
+      · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
       · simp
     · exact rightUnitor_naturality f.right
   triangle X Y := by
@@ -564,9 +576,9 @@ instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalC
     · apply pushout.hom_ext
       · simp [← MonoidalCategory.whiskerLeft_comp_assoc]
       · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        · apply (IsInitial.ofIso initialIsInitial ((initialIsoIsInitial ?_) ≪≫
+        · apply (initialIsInitial.ofIso ((initialIsoIsInitial ?_) ≪≫
             (mulZero ?_).symm)).hom_ext
-          all_goals exact IsInitial.ofIso initialIsInitial (zeroMul initialIsInitial).symm
+          all_goals exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
         · simp [← comp_whiskerRight_assoc]
     · exact MonoidalCategory.triangle X.right Y.right
 
@@ -579,6 +591,51 @@ instance [HasInitial C] [HasPushouts C] [HasPullbacks C]
     rightAdj := MonoidalClosed.internalHom.leibnizPullback.obj (op X)
     adj := LeibnizAdjunction.adj X }
 
+section Hexagon
+
+variable [HasPushouts C] [MonoidalCategory C] {W X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z}
+  (h : Y ⟶ W) (k : Z ⟶ W) (w : f ≫ h = g ≫ k) {Q : C}
+
+@[reassoc (attr := simp)]
+lemma Limits.whiskerLeft_inl_comp_pushoutSymmetry_hom (f : X ⟶ Y) (g : X ⟶ Z) :
+    Q ◁ pushout.inl f g ≫ Q ◁ (pushoutSymmetry f g).hom = Q ◁ pushout.inr g f := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+lemma Limits.whiskerLeft_inr_comp_pushoutSymmetry_hom (f : X ⟶ Y) (g : X ⟶ Z) :
+    Q ◁ pushout.inr f g ≫ Q ◁ (pushoutSymmetry f g).hom = Q ◁ pushout.inl g f := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+lemma Limits.inl_comp_pushoutSymmetry_hom_whiskerRight (f : X ⟶ Y) (g : X ⟶ Z) :
+    pushout.inl f g ▷ Q ≫ (pushoutSymmetry f g).hom ▷ Q = pushout.inr g f ▷ Q := by
+  simp [← comp_whiskerRight]
+
+@[reassoc (attr := simp)]
+lemma Limits.inr_comp_pushoutSymmetry_hom_whiskerRight (f : X ⟶ Y) (g : X ⟶ Z) :
+    pushout.inr f g ▷ Q ≫ (pushoutSymmetry f g).hom ▷ Q = pushout.inl g f ▷ Q := by
+  simp [← comp_whiskerRight]
+
+omit [HasPushouts C]
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Limits.HasColimit.whiskerLeft_isoOfNatIso_ι_hom
+    {J : Type u₁} [Category.{v₁, u₁} J]
+    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
+    Q ◁ colimit.ι F j ≫ Q ◁ (HasColimit.isoOfNatIso w).hom =
+      Q ◁ w.hom.app j ≫ Q ◁ colimit.ι G j := by
+  simp [← MonoidalCategory.whiskerLeft_comp]
+
+@[reassoc (attr := simp)]
+lemma _root_.CategoryTheory.Limits.HasColimit.isoOfNatIso_ι_hom_whiskerRight
+    {J : Type u₁} [Category.{v₁, u₁} J]
+    {F G : J ⥤ C} [HasColimit F] [HasColimit G] (w : F ≅ G) (j : J) {Q : C} :
+    colimit.ι F j ▷ Q ≫ (HasColimit.isoOfNatIso w).hom ▷ Q =
+      w.hom.app j ▷ Q ≫ colimit.ι G j ▷ Q := by
+  simp [← MonoidalCategory.comp_whiskerRight]
+
+end Hexagon
+
 lemma PushoutProduct.hexagon_forward [HasInitial C] [HasPushouts C]
     [CartesianMonoidalCategory C] [MonoidalClosed C]
     [BraidedCategory C]
@@ -589,57 +646,8 @@ lemma PushoutProduct.hexagon_forward [HasInitial C] [HasPushouts C]
       Y ◁ (braiding X Z).hom := by
   apply Arrow.hom_ext
   · apply pushout.hom_ext
-    · simp only [tensorObj_def, pushoutProduct, leibnizPushout_obj_obj, id_obj, ofHasPushout_pt,
-        curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map, mk_right, mk_left,
-        mk_hom, associator_def, comp_left, associator_hom_left, braiding_hom_left,
-        Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc, span_left,
-        PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, inl_comp_pushoutSymmetry_hom_assoc,
-        colimit.ι_desc, Cocones.precompose_obj_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
-        span_right, const_obj_obj, spanExt_hom_app_right,
-        BraidedCategory.braiding_naturality_right_assoc,
-        BraidedCategory.braiding_tensor_right_hom, IsPushout.inl_isoPushout_hom_assoc,
-        spanExt_hom_app_left, Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, whiskerRight_def,
-        leibnizPushout_map_app, whiskerLeft_def, leibnizPushout_obj_map, mapArrowLeft_left,
-        ofHasPushout_ι, ofHasPushout_inl, ofHasPushout_inr, braiding_hom_right, map_comp,
-        mapArrowRight_left, MonoidalCategory.whiskerLeft_comp, IsPushout.inl_desc_assoc,
-        IsPushout.inl_desc]
-      rw [← MonoidalCategory.whiskerLeft_comp_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
-        ← MonoidalCategory.whiskerLeft_comp_assoc]
-      simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc, inl_comp_pushoutSymmetry_hom,
-        HasColimit.isoOfNatIso_ι_hom, span_right, spanExt_hom_app_right]
-    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-      · simp only [id_obj, curriedTensor_obj_obj, flip_obj_obj, tensorObj_def, pushoutProduct,
-        leibnizPushout_obj_obj, ofHasPushout_pt, curriedTensor_map_app, curriedTensor_obj_map,
-        mk_left, mk_right, mk_hom, flip_obj_map, associator_def, comp_left, associator_hom_left,
-        braiding_hom_left, Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc,
-        span_right, PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, IsPushout.inl_isoPushout_hom_assoc,
-        span_left, Cocones.precompose_obj_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
-        const_obj_obj, spanExt_hom_app_left, inl_comp_pushoutSymmetry_hom_assoc, colimit.ι_desc,
-        spanExt_hom_app_right, BraidedCategory.braiding_naturality_right_assoc,
-        BraidedCategory.braiding_tensor_right_hom, IsPushout.inr_isoPushout_hom_assoc,
-        Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, whiskerRight_def, leibnizPushout_map_app,
-        whiskerLeft_def, leibnizPushout_obj_map, mapArrowLeft_left, ofHasPushout_ι,
-        ofHasPushout_inl, ofHasPushout_inr, braiding_hom_right, map_comp, mapArrowRight_left,
-        MonoidalCategory.whiskerLeft_comp, IsPushout.inr_desc_assoc, ← comp_whiskerRight_assoc]
-        cat_disch
-      · simp only [id_obj, curriedTensor_obj_obj, flip_obj_obj, tensorObj_def, pushoutProduct,
-        leibnizPushout_obj_obj, ofHasPushout_pt, curriedTensor_map_app, curriedTensor_obj_map,
-        mk_left, mk_right, mk_hom, flip_obj_map, associator_def, comp_left, associator_hom_left,
-        braiding_hom_left, Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc,
-        span_right, PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, IsPushout.inr_isoPushout_hom_assoc,
-        Cocones.precompose_obj_pt, Cocones.precompose_obj_ι, NatTrans.comp_app, const_obj_obj,
-        spanExt_hom_app_right, inr_comp_pushoutSymmetry_hom_assoc, colimit.ι_desc, span_left,
-        spanExt_hom_app_left, BraidedCategory.braiding_tensor_right_hom, Iso.inv_hom_id_assoc,
-        Iso.hom_inv_id_assoc, whiskerRight_def, leibnizPushout_map_app, whiskerLeft_def,
-        leibnizPushout_obj_map, mapArrowLeft_left, ofHasPushout_ι, ofHasPushout_inl,
-        ofHasPushout_inr, braiding_hom_right, map_comp, mapArrowRight_left,
-        MonoidalCategory.whiskerLeft_comp, IsPushout.inr_desc_assoc, ← comp_whiskerRight_assoc]
-        simp only [HasColimit.isoOfNatIso_ι_hom, span_left, spanExt_hom_app_left, comp_whiskerRight,
-          Category.assoc, IsPushout.inl_isoPushout_hom_assoc, colimit.ι_desc_assoc,
-          Cocones.precompose_obj_pt, PushoutCocone.mk_pt, Cocones.precompose_obj_ι,
-          NatTrans.comp_app, const_obj_obj, PushoutCocone.mk_ι_app, IsPushout.inl_desc,
-          ← MonoidalCategory.whiskerLeft_comp_assoc]
-        cat_disch
+    · simp
+    · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
   · exact BraidedCategory.hexagon_forward X.right Y.right Z.right
 
 lemma PushoutProduct.hexagon_reverse [HasInitial C] [HasPushouts C]
@@ -651,56 +659,8 @@ lemma PushoutProduct.hexagon_reverse [HasInitial C] [HasPushouts C]
       X ◁ (braiding Y Z).hom ≫ (α_ X Z Y).inv ≫ (braiding X Z).hom ▷ Y := by
   apply Arrow.hom_ext
   · apply pushout.hom_ext
-    · apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-      · simp only [id_obj, curriedTensor_obj_obj, tensorObj_def, pushoutProduct,
-          leibnizPushout_obj_obj, ofHasPushout_pt, curriedTensor_map_app, curriedTensor_obj_map,
-          mk_left, mk_right, mk_hom, associator_def, comp_left, associator_inv_left,
-          braiding_hom_left, Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc,
-          span_left, PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, NatTrans.comp_app, const_obj_obj,
-          IsPushout.inl_isoPushout_hom_assoc, Cocones.precompose_obj_pt, Cocones.precompose_obj_ι,
-          spanExt_hom_app_left, Iso.symm_hom, inl_comp_pushoutSymmetry_hom_assoc, colimit.ι_desc,
-          span_right, spanExt_hom_app_right, BraidedCategory.braiding_tensor_left_hom,
-          Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, whiskerLeft_def, leibnizPushout_obj_map,
-          whiskerRight_def, leibnizPushout_map_app, mapArrowRight_left, ofHasPushout_ι,
-          ofHasPushout_inl, ofHasPushout_inr, MonoidalCategory.whiskerLeft_comp, braiding_hom_right,
-          mapArrowLeft_left, map_comp, IsPushout.inl_desc_assoc]
-        rw [← MonoidalCategory.whiskerLeft_comp_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc]
-        simp only [inl_comp_pushoutSymmetry_hom, HasColimit.isoOfNatIso_ι_hom, span_right,
-          spanExt_hom_app_right, MonoidalCategory.whiskerLeft_comp, Category.assoc,
-          IsPushout.inr_isoPushout_hom_assoc, colimit.ι_desc_assoc, Cocones.precompose_obj_pt,
-          PushoutCocone.mk_pt, Cocones.precompose_obj_ι, NatTrans.comp_app, const_obj_obj,
-          Iso.symm_hom, PushoutCocone.mk_ι_app, IsPushout.inr_desc, ← comp_whiskerRight_assoc]
-        cat_disch
-      · simp only [id_obj, curriedTensor_obj_obj, tensorObj_def, pushoutProduct,
-          leibnizPushout_obj_obj, ofHasPushout_pt, curriedTensor_map_app, curriedTensor_obj_map,
-          mk_left, mk_right, mk_hom, associator_def, comp_left, associator_inv_left,
-          braiding_hom_left, Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc,
-          span_left, PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, IsPushout.inl_desc_assoc,
-          IsPushout.inr_isoPushout_hom_assoc, span_right, Cocones.precompose_obj_pt,
-          Cocones.precompose_obj_ι, NatTrans.comp_app, const_obj_obj, spanExt_hom_app_right,
-          Iso.symm_hom, inr_comp_pushoutSymmetry_hom_assoc, colimit.ι_desc, spanExt_hom_app_left,
-          BraidedCategory.braiding_naturality_left_assoc, BraidedCategory.braiding_tensor_left_hom,
-          IsPushout.inl_isoPushout_hom_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc,
-          whiskerLeft_def, leibnizPushout_obj_map, whiskerRight_def, leibnizPushout_map_app,
-          mapArrowRight_left, ofHasPushout_ι, ofHasPushout_inl, ofHasPushout_inr,
-          MonoidalCategory.whiskerLeft_comp, braiding_hom_right, mapArrowLeft_left, map_comp]
-        rw [← MonoidalCategory.whiskerLeft_comp_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc]
-        cat_disch
-    · simp only [id_obj, tensorObj_def, pushoutProduct, leibnizPushout_obj_obj, ofHasPushout_pt,
-        curriedTensor_obj_obj, curriedTensor_map_app, curriedTensor_obj_map, mk_right, mk_left,
-        mk_hom, associator_def, comp_left, associator_inv_left, braiding_hom_left,
-        Category.assoc, HasColimit.isoOfNatIso_hom_desc, colimit.ι_desc_assoc, span_right,
-        PushoutCocone.mk_pt, PushoutCocone.mk_ι_app, inr_comp_pushoutSymmetry_hom_assoc,
-        colimit.ι_desc, Cocones.precompose_obj_pt, Cocones.precompose_obj_ι, NatTrans.comp_app,
-        span_left, const_obj_obj, spanExt_hom_app_left,
-        BraidedCategory.braiding_naturality_left_assoc, BraidedCategory.braiding_tensor_left_hom,
-        IsPushout.inr_isoPushout_hom_assoc, spanExt_hom_app_right, Iso.symm_hom,
-        Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc, whiskerLeft_def, leibnizPushout_obj_map,
-        whiskerRight_def, leibnizPushout_map_app, mapArrowRight_left, ofHasPushout_ι,
-        ofHasPushout_inl, ofHasPushout_inr, MonoidalCategory.whiskerLeft_comp, braiding_hom_right,
-        mapArrowLeft_left, map_comp, IsPushout.inr_desc_assoc, IsPushout.inr_desc,
-        ← comp_whiskerRight_assoc]
-      cat_disch
+    · apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
+    · simp
   · exact BraidedCategory.hexagon_reverse X.right Y.right Z.right
 
 @[simps]
