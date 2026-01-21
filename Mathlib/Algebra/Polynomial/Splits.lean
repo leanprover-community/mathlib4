@@ -383,7 +383,7 @@ theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
   | one => simp
   | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
 
-theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
+theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
   (roots_map_of_injective_of_card_eq_natDegree hi hf.natDegree_eq_card_roots.symm).symm
 
