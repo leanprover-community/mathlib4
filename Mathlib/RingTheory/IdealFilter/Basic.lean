@@ -182,7 +182,6 @@ theorem isGabriel_iff (F : IdealFilter A) : F.IsGabriel ↔ F.IsUniform ∧ F �
     ext I
     constructor <;> intro hI
     · rcases hI with ⟨J, hJ, htors⟩
-      unfold IsTorsionQuot at htors
       refine h₂ I ⟨J, hJ, fun x hx ↦ ?_⟩
       rcases htors x hx with ⟨K, hK, hincl⟩
       exact Order.PFilter.mem_of_le hincl hK
