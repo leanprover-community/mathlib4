@@ -247,20 +247,6 @@ lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} 
 
 end ExistenceProperties
 
-/-! ### Ring Multiplication Specialization -/
-
-section RingMul
-
-variable [Monoid M] [Semiring R] [TopologicalSpace R]
-
-@[to_additive (dont_translate := R) addRingConvolution]
-def ringConvolution (f g : M → R) : M → R := convolution (LinearMap.mul ℕ R) f g
-
-scoped notation:67 f:68 " ⋆ᵣ " g:67 => ringConvolution f g
-scoped notation:67 f:68 " ⋆ᵣ₊ " g:67 => addRingConvolution f g
-
-end RingMul
-
 /-! ### Commutativity -/
 
 section CommMonoid
@@ -282,16 +268,6 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
   congr 1; funext ⟨⟨a, b⟩, _⟩; exact hL (f b) (g a)
 
 end CommMonoid
-
-section RingConvolutionComm
-
-variable [CommMonoid M] [CommSemiring R] [TopologicalSpace R]
-
-@[to_additive (dont_translate := R) addRingConvolution_comm]
-theorem ringConvolution_comm (f g : M → R) : f ⋆ᵣ g = g ⋆ᵣ f :=
-  convolution_comm (LinearMap.mul ℕ R) f g (fun x y => mul_comm x y)
-
-end RingConvolutionComm
 
 end DiscreteConvolution
 
