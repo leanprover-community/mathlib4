@@ -16,8 +16,8 @@ see `Complex.hasSum_taylorSeries_on_ball` and `Complex.taylorSeries_eq_on_ball` 
 (in terms of `HasSum` and `tsum`, respectively) for functions to a complete normed
 space over `ℂ`, and `Complex.taylorSeries_eq_on_ball'` for a variant when `f : ℂ → ℂ`.
 
-There are corresponding statements for `EMEtric.ball`s; see
-`Complex.hasSum_taylorSeries_on_emetric_ball`, `Complex.taylorSeries_eq_on_emetric_ball`
+There are corresponding statements for `Metric.eball`s; see
+`Complex.hasSum_taylorSeries_on_eball`, `Complex.taylorSeries_eq_on_eball`
 and `Complex.taylorSeries_eq_on_ball'`.
 
 We also show that the Taylor series around some point `c : ℂ` of a function `f` that is complex
@@ -84,7 +84,7 @@ variable ⦃z : ℂ⦄ (hz : z ∈ Metric.eball c r)
 include hf hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
-lemma hasSum_taylorSeries_on_emetric_ball :
+lemma hasSum_taylorSeries_on_eball :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) := by
   obtain ⟨r', hzr', hr'⟩ := exists_between (Metric.mem_eball'.mp hz)
   lift r' to NNReal using ne_top_of_lt hr'
@@ -96,16 +96,16 @@ lemma hasSum_taylorSeries_on_emetric_ball :
 include hf hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
-lemma taylorSeries_eq_on_emetric_ball :
+lemma taylorSeries_eq_on_eball :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c = f z :=
-  (hasSum_taylorSeries_on_emetric_ball hf hz).tsum_eq
+  (hasSum_taylorSeries_on_eball hf hz).tsum_eq
 
 include hz in
 /-- A function that is complex differentiable on the open ball of radius `r ≤ ∞` around `c`
 is given by evaluating its Taylor series at `c` on this open ball. -/
-lemma taylorSeries_eq_on_emetric_ball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (Metric.eball c r)) :
+lemma taylorSeries_eq_on_eball' {f : ℂ → ℂ} (hf : DifferentiableOn ℂ f (Metric.eball c r)) :
     ∑' n : ℕ, (n ! : ℂ)⁻¹ * iteratedDeriv n f c * (z - c) ^ n = f z := by
-  convert taylorSeries_eq_on_emetric_ball hf hz using 3 with n
+  convert taylorSeries_eq_on_eball hf hz using 3 with n
   rw [mul_right_comm, smul_eq_mul, smul_eq_mul, mul_assoc]
 
 end emetric
@@ -119,7 +119,7 @@ include hf in
 its Taylor series at any point `c`. -/
 lemma hasSum_taylorSeries_of_entire :
     HasSum (fun n : ℕ ↦ (n ! : ℂ)⁻¹ • (z - c) ^ n • iteratedDeriv n f c) (f z) :=
-  hasSum_taylorSeries_on_emetric_ball hf.differentiableOn <| Metric.mem_eball.mpr <|
+  hasSum_taylorSeries_on_eball hf.differentiableOn <| Metric.mem_eball.mpr <|
     edist_lt_top ..
 
 include hf in

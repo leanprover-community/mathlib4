@@ -65,7 +65,7 @@ alias ⟨_, Isometry.of_nndist_eq⟩ := isometry_iff_nndist_eq
 
 namespace Isometry
 
-section PseudoEmetricIsometry
+section PseudoEMetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {f : α → β} {x : α}
@@ -178,10 +178,10 @@ theorem comp_continuous_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ
     Continuous (f ∘ g) ↔ Continuous g :=
   hf.isUniformInducing.isInducing.continuous_iff.symm
 
-end PseudoEmetricIsometry
+end PseudoEMetricIsometry
 
 --section
-section EmetricIsometry
+section EMetricIsometry
 
 variable [EMetricSpace α] [PseudoEMetricSpace β] {f : α → β}
 
@@ -201,7 +201,7 @@ theorem isClosedEmbedding [CompleteSpace α] [EMetricSpace γ] {f : α → γ} (
     IsClosedEmbedding f :=
   hf.antilipschitz.isClosedEmbedding hf.lipschitz.uniformContinuous
 
-end EmetricIsometry
+end EMetricIsometry
 
 --section
 section PseudoMetricIsometry

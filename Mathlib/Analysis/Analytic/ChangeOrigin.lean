@@ -257,12 +257,12 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
     (p.changeOrigin x).sum y = p.sum (x + y) := by
   have radius_pos : 0 < p.radius := lt_of_le_of_lt (zero_le _) h
   have x_mem_ball : x ∈ Metric.eball (0 : E) p.radius :=
-    mem_emetric_ball_zero_iff.2 ((le_add_right le_rfl).trans_lt h)
+    mem_eball_zero_iff.2 ((le_add_right le_rfl).trans_lt h)
   have y_mem_ball : y ∈ Metric.eball (0 : E) (p.changeOrigin x).radius := by
-    refine mem_emetric_ball_zero_iff.2 (lt_of_lt_of_le ?_ p.changeOrigin_radius)
+    refine mem_eball_zero_iff.2 (lt_of_lt_of_le ?_ p.changeOrigin_radius)
     rwa [lt_tsub_iff_right, add_comm]
   have x_add_y_mem_ball : x + y ∈ Metric.eball (0 : E) p.radius := by
-    refine mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt ?_ h)
+    refine mem_eball_zero_iff.2 (lt_of_le_of_lt ?_ h)
     exact mod_cast nnnorm_add_le x y
   set f : (Σ k l : ℕ, { s : Finset (Fin (k + l)) // s.card = l }) → F := fun s =>
     p.changeOriginSeriesTerm s.1 s.2.1 s.2.2 s.2.2.2 (fun _ => x) fun _ => y
@@ -281,7 +281,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
       · simp only [changeOriginSeries, ContinuousMultilinearMap.sum_apply]
         apply hasSum_fintype
       · refine .of_nnnorm_bounded
-          (p.changeOriginSeries_summable_aux₂ (mem_emetric_ball_zero_iff.1 x_mem_ball) k)
+          (p.changeOriginSeries_summable_aux₂ (mem_eball_zero_iff.1 x_mem_ball) k)
             fun s => ?_
         refine (ContinuousMultilinearMap.le_opNNNorm _ _).trans_eq ?_
         simp
@@ -318,14 +318,14 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
   hasSum {z} h'z hz := by
     have : f (x + y + z) =
         FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
-      rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
+      rw [mem_eball_zero_iff, lt_tsub_iff_right, add_comm] at hz
       rw [p.changeOrigin_eval (hz.trans_le hf.r_le), add_assoc, hf.sum]
       · have : insert (x + y) s ⊆ insert (x + y) (insert x s) := by
           apply insert_subset_insert (subset_insert _ _)
         rw [insert_eq_of_mem hy] at this
         apply this
         simpa [add_assoc] using h'z
-      exact mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt (enorm_add_le _ _) hz)
+      exact mem_eball_zero_iff.2 (lt_of_le_of_lt (enorm_add_le _ _) hz)
     rw [this]
     apply (p.changeOrigin y).hasSum
     refine Metric.eball_subset_eball (le_trans ?_ p.changeOrigin_radius) hz

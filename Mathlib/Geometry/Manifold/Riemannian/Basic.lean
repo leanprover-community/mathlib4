@@ -25,7 +25,7 @@ satisfies the predicate `IsRiemannianManifold 𝓘(ℝ, E) E`.
 
 In a general manifold with a Riemannian metric, we define the associated extended distance in the
 manifold, and show that it defines the same topology as the pre-existing one. Therefore, one
-may endow the manifold with an emetric space structure, see `EmetricSpace.ofRiemannianMetric`.
+may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiemannianMetric`.
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".

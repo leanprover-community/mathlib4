@@ -319,7 +319,7 @@ distance, with a topology defeq to the initial one. -/
   uniformity_edist := rfl
 
 @[deprecated (since := "2026-01-08")]
-alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
+alias PseudoEMetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
 
 namespace MulOpposite
 

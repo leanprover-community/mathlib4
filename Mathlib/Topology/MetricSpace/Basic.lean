@@ -203,7 +203,7 @@ variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd
 
 /-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
 non-definitionally) equal to some given edistance. We also provide convenience versions for
-PseudoMetric, Emetric and Metric spaces. -/
+PseudoMetric, EMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceEDist : PseudoEMetricSpace X where
@@ -227,7 +227,7 @@ variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = d
 
 /-- Build new pseudometric space from an old one where the distance is provably (but typically
 non-definitionally) equal to some given distance. We also provide convenience versions for
-PseudoEMetric, Emetric and Metric spaces. -/
+PseudoEMetric, EMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceDist : PseudoMetricSpace X where
