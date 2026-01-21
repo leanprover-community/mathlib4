@@ -134,13 +134,13 @@ theorem differentiableAt_eta_of_mem_upperHalfPlaneSet {z : ℂ} (hz : z ∈ ℍ�
     DifferentiableAt ℂ eta z := by
   exact DifferentiableAt.mul (by fun_prop) (differentiableAt_eta_tprod hz)
 
-lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
-  have : (𝕢 24) = (fun z ↦ cexp (z)) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
+private lemma logDeriv_q_term (z : ℍ) : logDeriv (𝕢 24) ↑z  =  2 * ↑π * I / 24 := by
+  have : (𝕢 24) = (fun z ↦ cexp z) ∘ (fun z => (2 * ↑π * I / 24) * z)  := by
     grind [Periodic.qParam, ofReal_ofNat]
   rw [this, logDeriv_comp (by fun_prop) (by fun_prop), deriv_const_mul _ (by fun_prop)]
   simp [LogDeriv_exp]
 
-lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
+lemma summable_logDeriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
     Summable fun i ↦ logDeriv (fun x ↦ 1 - eta_q i x) z := by
   simp only [one_sub_eta_logDeriv_eq]
   apply ((summable_nat_add_iff 1).mpr ((summable_norm_pow_mul_geometric_div_one_sub (r := 𝕢 1 z) 1
@@ -149,13 +149,13 @@ lemma summable_log_deriv_one_sub_eta_q {z : ℂ} (hz : z ∈ ℍₒ) :
   grind [one_sub_eta_q_ne_zero _ hz]
 
 open EisensteinSeries in
-lemma eta_logDeriv (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
+lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
   unfold eta
   rw [logDeriv_mul (UpperHalfPlane.coe z) (by simp [ne_eq, exp_ne_zero, not_false_eq_true,
     Periodic.qParam]) (eta_tprod_ne_zero z.2) (by fun_prop) (differentiableAt_eta_tprod z.2)]
   have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet (x := z)
     (f := fun n x => 1 - eta_q n x) (fun i ↦ one_sub_eta_q_ne_zero i z.2)
-    (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_log_deriv_one_sub_eta_q z.2)
+    (by simp_rw [eta_q_eq_pow]; fun_prop) (summable_logDeriv_one_sub_eta_q z.2)
     (multipliableLocallyUniformlyOn_eta ) (eta_tprod_ne_zero z.2)
   rw [show z.1 = UpperHalfPlane.coe z by rfl] at HG
   simp only [logDeriv_q_term z, HG, tsum_logDeriv_eta_q z, E2, one_div,
