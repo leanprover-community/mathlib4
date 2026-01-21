@@ -42,13 +42,6 @@ lemma finite_setOf_isMin :
   simp_rw [isMin_iff]
   exact (minimalPrimes.finite_of_isNoetherianRing R).subset (Set.image_preimage_subset _ _)
 
-lemma _root_.TopologicalSpace.NoetherianSpace.exists_finset_isClosed_irreducible {α : Type*}
-    [TopologicalSpace α] [NoetherianSpace α]
-    {s : Set α} (hs : IsClosed s) : ∃ S : Finset (Set α),
-    (∀ c ∈ S, IsClosed c) ∧ (∀ c ∈ S, IsIrreducible c) ∧ s = S.sup id := by
-  obtain ⟨S, hS, _⟩ := NoetherianSpace.exists_finite_set_isClosed_irreducible hs
-  exact ⟨hS.toFinset, by simpa [← Set.sUnion_eq_biUnion]⟩
-
 lemma _root_.Ideal.finite_minimalPrimes_of_isNoetherianRing (I : Ideal R) :
     I.minimalPrimes.Finite :=
   Ideal.minimalPrimes.equivIrreducibleComponents I
