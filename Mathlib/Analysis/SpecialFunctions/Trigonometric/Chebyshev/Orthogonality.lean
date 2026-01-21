@@ -37,7 +37,7 @@ namespace Polynomial.Chebyshev
 open Real intervalIntegral MeasureTheory
 
 /-- Lebesgue measure scaled by √(1 - x ^ 2)⁻¹. -/
-noncomputable def chebMeasT : Measure ℝ :=
+noncomputable def measureT : Measure ℝ :=
   (volume.withDensity
     fun x ↦ ENNReal.ofNNReal ⟨√(1 - x ^ 2)⁻¹, by positivity⟩).restrict (Set.Ioc (-1) 1)
 
