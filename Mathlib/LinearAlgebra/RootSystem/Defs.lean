@@ -379,7 +379,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
 lemma toPerfPair_conj_reflection :
     P.toPerfPair.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
   ext f n
-  simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
+  simp [reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
