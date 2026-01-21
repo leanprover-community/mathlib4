@@ -30,15 +30,18 @@ variable {R : Type*}
 section IsSumNonzeroSq
 
 /--
-The property of being a sum of positive squares is defined inductively by:
-`a * a : R` is a sum of nonzero squares for all nonzero `a`, and
-if `s : R` is a sum of positive squares, and `a ≠ 0`, then `a * a + s` is a sum of positive squares.
+The property of being a sum of squares of nonzero elements (S) is defined inductively by:
+`a * a : R` is (S) for all nonzero `a`, and
+if `s : R` is (S), and `a ≠ 0`, then `a * a + s` is (S).
 -/
 @[mk_iff]
 inductive IsSumNonzeroSq [Mul R] [Add R] [Zero R] : R → Prop
   | sq {a : R} (ha : a ≠ 0) : IsSumNonzeroSq (a * a)
   | sq_add {a s : R} (ha : a ≠ 0) (hs : IsSumNonzeroSq s) : IsSumNonzeroSq (a * a + s)
 
+attribute [aesop 90%] IsSumNonzeroSq.sq
+
+@[aesop 90%]
 theorem IsSumNonzeroSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumNonzeroSq s₁) (h₂ : IsSumNonzeroSq s₂) : IsSumNonzeroSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [sq_add, add_assoc]
@@ -61,6 +64,30 @@ theorem isSumNonzeroSq_iff_isSumSq [NonUnitalNonAssocSemiring R] {s : R} (hs : s
       · exact IsSumNonzeroSq.sq_add ne_a (ih ne_s)
 
 alias ⟨_, IsSumSq.isSumNonzeroSq_of_ne_zero⟩ := isSumNonzeroSq_iff_isSumSq
+
+namespace AddSubsemigroup
+variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
+
+variable (T) in
+/-- The subsemigroup of sums of squares of nonzero elements. -/
+@[simps]
+def sumNonzeroSq : AddSubsemigroup T where
+  carrier := {s : T | IsSumNonzeroSq s}
+  add_mem' := .add
+
+attribute [norm_cast] coe_sumNonzeroSq
+
+@[simp] theorem mem_sumNonzeroSq : s ∈ sumNonzeroSq T ↔ IsSumNonzeroSq s := .rfl
+
+end AddSubsemigroup
+
+@[simp]
+theorem AddSubsemigroup.closure_mul_self [AddMonoid R] [Mul R] :
+    closure {x * x | x ≠ (0 : R)} = sumNonzeroSq R := by
+  refine closure_eq_of_le (fun x hx ↦ by aesop) (fun x hx ↦ ?_)
+  induction hx with
+  | sq ha => aesop
+  | sq_add ha hs ih => aesop
 
 end IsSumNonzeroSq
 
