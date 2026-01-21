@@ -67,39 +67,21 @@ theorem isPrimary_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)
       rw [add_le_iff, span_singleton_le_iff_mem, ← hm.isPrime.radical_le_iff] at hy
       exact Or.inr (hi.eq_of_le hm.ne_top hy.1 ▸ hy.2)
 
-theorem isPrimary_inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
+theorem IsPrimary.inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     (hij : radical I = radical J) : (I ⊓ J).IsPrimary :=
-  isPrimary_iff.mpr
-  ⟨ne_of_lt <| lt_of_le_of_lt inf_le_left (lt_top_iff_ne_top.2 hi.1),
-   fun {x y} ⟨hxyi, hxyj⟩ => by
-    rw [radical_inf, hij, inf_idem]
-    rcases (isPrimary_iff.mp hi).2 hxyi with hxi | hyi
-    · rcases (isPrimary_iff.mp hj).2 hxyj with hxj | hyj
-      · exact Or.inl ⟨hxi, hxj⟩
-      · exact Or.inr hyj
-    · rw [hij] at hyi
-      exact Or.inr hyi⟩
+  Submodule.IsPrimary.inf hi hj (by simpa)
 
-open Finset in
-lemma isPrimary_finset_inf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
+@[deprecated (since := "2025-01-19")]
+alias isPrimary_inf := IsPrimary.inf
+
+lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :
-    IsPrimary (s.inf f) := by
-  classical
-  induction s using Finset.induction_on generalizing i with
-  | empty => simp at hi
-  | insert a s ha IH =>
-    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
-    · simp only [insert_empty_eq, mem_singleton] at hi
-      simpa [hi] using hs
-    simp only [inf_insert]
-    have H : ∀ ⦃x : ι⦄, x ∈ s → (f x).radical = (f y).radical := by
-      intro x hx
-      rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
-    refine isPrimary_inf (hs (by simp)) (IH hy ?_ H) ?_
-    · intro x hx
-      exact hs (by simp [hx])
-    · rw [radical_finset_inf hy H, hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
+    IsPrimary (s.inf f) :=
+  Submodule.isPrimary_finsetInf hi hs (by simpa)
+
+@[deprecated (since := "2026-01-19")]
+alias isPrimary_finset_inf := isPrimary_finsetInf
 
 lemma IsPrimary.comap {I : Ideal S} (hI : I.IsPrimary) (φ : R →+* S) : (I.comap φ).IsPrimary := by
   rw [isPrimary_iff] at hI ⊢
