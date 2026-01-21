@@ -22,7 +22,7 @@ open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 
 ## Implementation Notes
 
-The proof applies the Schwarz lemma to the transformed function `w(z) = f(z) / (2M - f(z))`,
+The proof applies the Schwarz lemma to the transformed function `w(z) = f(z) / (2 * M - f(z))`,
 which maps the ball `|z| < R` into the unit disk provided that `(f z).re < M` for all `|z| < R`.
 After obtaining bounds on `w`, we invert the transformation to recover bounds on `f`.
 
@@ -42,9 +42,8 @@ section SchwarzTransform
 /-- If a differentiable function avoids a value `M`, then it remains differentiable
 when divided by `M - f z`. -/
 private lemma div_const_sub (hf : DifferentiableOn ℂ f s) (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
-    DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
-  DifferentiableOn.div hf (DifferentiableOn.const_sub hf M)
-    fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
+    DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s := 
+  hf.div (hf.const_sub M) (by grind [Set.MapsTo])
 
 /-- If `w = z / (2M - z)`, then `z = 2M * w / (1 + w)`. This is the inverse of the
 Schwarz transform used in the proof of the Borel-Carathéodory theorem. -/
@@ -63,13 +62,9 @@ lemma norm_two_mul_div_one_add_le (hM : 0 < M) (hw : ‖w‖ < 1) :
 /-- If `z.re < M`, then `‖z‖ < ‖2M - z‖`. This shows that the Schwarz transform
 `z ↦ z / (2M - z)` has numerator smaller than denominator when the real part is bounded by M -/
 lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M - z‖ := by
-  apply (sq_lt_sq₀ (norm_nonneg z) (norm_nonneg (2 * M - z))).mp
-  rw [Complex.sq_norm, Complex.sq_norm]
-  simp only [normSq_apply, sub_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im,
-    mul_zero, sub_zero, sub_im, mul_im, zero_mul, add_zero, zero_sub, mul_neg, neg_mul,
-    neg_neg, add_lt_add_iff_right]
-  ring_nf
-  nlinarith [sq_nonneg (z.re - M)]
+   rw [← sq_lt_sq₀ (by positivity) (by positivity)]
+   suffices z.re * z.re < (2 * M - z.re) * (2 * M - z.re) by simpa [Complex.sq_norm, normSq_apply]
+   nlinarith
 
 /-- The Schwarz transform `z ↦ z / (2M - z)` maps values with `z.re < M` into the unit disk. -/
 lemma norm_div_two_mul_sub_lt_one (hM : 0 < M) (hz : z.re < M) : ‖z / (2 * M - z)‖ < 1 := by
@@ -111,8 +106,11 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
   have h_denom : 2 * M - f z ≠ 0 := sub_ne_zero_of_ne (fun h => by simpa [← h, hM] using hf₁ hz)
   calc ‖f z‖
     _ = ‖2 * M * w / (1 + w)‖ := by rw [eq_mul_div_one_add_of_eq_div_sub hM.ne' h_denom rfl]
-    _ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := norm_two_mul_div_one_add_le hM
-        (hwR.trans_lt ((div_lt_one₀ hR).mpr hzR))
+    _ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := by
+      simp only [norm_div, norm_mul, norm_ofNat, norm_real, Real.norm_eq_abs, abs_of_pos hM]
+      gcongr
+      · linarith [hwR.trans_lt ((div_lt_one₀ hR).mpr hzR)]
+      · simpa using norm_sub_le_norm_add 1 w
     _ = 2 * M * (‖w‖ / (1 - ‖w‖)) := by ring
     _ ≤ 2 * M * (‖z‖ / R / (1 - ‖z‖ / R)) := by gcongr; simpa [div_lt_one hR]
     _ = 2 * M * ‖z‖ / (R - ‖z‖) := by field_simp
