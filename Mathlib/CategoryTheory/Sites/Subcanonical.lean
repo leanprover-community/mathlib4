@@ -262,11 +262,11 @@ lemma uliftYonedaOpCompCoyoneda_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v 
 
 open Limits
 
-instance preservesLimitsOfShape_yoneda {I : Type*} [Category I] :
-    PreservesLimitsOfShape I J.yoneda :=
+instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
+  refine ⟨fun {I} _ ↦ ?_⟩
   have : PreservesLimitsOfShape I (J.yoneda ⋙ sheafToPresheaf J _) :=
     inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
-  preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
+  exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
 
 /--
 Let `{ Xᵢ ⟶ Y }` be a family of pairwise disjoint maps that form a cover in `J`. Then its
