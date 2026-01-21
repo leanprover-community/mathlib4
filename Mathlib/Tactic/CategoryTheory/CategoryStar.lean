@@ -7,7 +7,6 @@ module
 
 public import Lean.Util.CollectLevelParams
 public import Lean.Elab.Term.TermElabM
-public import Batteries.Data.Array.Basic
 public import Mathlib.Init
 public import Mathlib.Lean.Elab.Term
 meta import Batteries.Data.Array.Basic

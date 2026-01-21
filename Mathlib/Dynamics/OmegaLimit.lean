@@ -6,7 +6,7 @@ Authors: Jean Lo
 module
 
 public import Mathlib.Dynamics.Flow
-public import Mathlib.Tactic.Monotonicity
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # ω-limits

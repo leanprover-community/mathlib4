@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.ENat.Defs
-import Batteries.Data.MLList.Basic
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists
