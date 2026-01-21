@@ -217,7 +217,7 @@ theorem isCyclic_of_surjective {F : Type*} [hH : IsCyclic G']
   exact ⟨n, (map_zpow _ _ _).symm⟩
 
 @[to_additive]
-theorem isCyclic_quotient [IsCyclic G] (N : Subgroup G) : IsCyclic (G ⧸ N) :=
+instance [IsCyclic G] (N : Subgroup G) : IsCyclic (G ⧸ N) :=
     isCyclic_of_surjective _ <| QuotientGroup.mk'_surjective _
 
 @[to_additive]
