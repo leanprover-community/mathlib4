@@ -591,4 +591,12 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
   Eq.trans h (mod_eq_of_lt hb)
 
+theorem div_modEq_inj (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a ≡ b [MOD n] := div_mod_inj _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℕ} (h : a / n = b / n) : a ≡ b [MOD n] ↔ a = b := by
+  grind [div_modEq_inj]
+
+theorem eq_of_div_eq_of_modEq {n a b : ℕ} (H0 : a / n = b / n) (H1 : a ≡ b [MOD n]) :
+    a = b := eq_of_div_eq_of_mod_eq H0 H1
+
 end Nat
