@@ -239,7 +239,7 @@ lemma LSeries_eq_iff_of_abscissaOfAbsConv_lt_top {f g : ℕ → ℂ} (hf : absci
 of `f` converges somewhere. -/
 lemma LSeries_injOn : Set.InjOn LSeries {f | f 0 = 0 ∧ abscissaOfAbsConv f < ⊤} := by
   intro f hf g hg h
-  simp only [Set.mem_setOf] at hf hg
+  push _ ∈ _ at hf hg
   replace h := (LSeries_eq_iff_of_abscissaOfAbsConv_lt_top hf.2 hg.2).mp h
   ext1 n
   cases n with
