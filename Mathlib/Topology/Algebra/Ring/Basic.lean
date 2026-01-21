@@ -282,7 +282,7 @@ end
 
 namespace ContinuousAddEquiv
 
-variable [Ring R] [IsTopologicalRing R]
+variable [Semiring R] [IsTopologicalSemiring R]
 
 /-- The additive homeomorphism from a topological ring to itself,
 induced by left multiplication by a unit. -/
