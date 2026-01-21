@@ -219,9 +219,10 @@ abbrev divisorZeroIndex₀_val {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroI
 @[simp] lemma divisorZeroIndex₀_val_ne_zero {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroIndex₀ f U) :
     divisorZeroIndex₀_val p ≠ 0 := p.2
 
+/-- A (nonzero) divisor index has nonzero multiplicity at its underlying point. -/
 @[simp] lemma divisorZeroIndex₀_val_mem_divisor_support {f : ℂ → ℂ} {U : Set ℂ}
     (p : divisorZeroIndex₀ f U) :
-    divisorZeroIndex₀_val p ∈ (MeromorphicOn.divisor f U).support := by
+    MeromorphicOn.divisor f U (divisorZeroIndex₀_val p) ≠ 0 := by
   classical
   have hn :
       Int.toNat (MeromorphicOn.divisor f U (divisorZeroIndex₀_val p)) ≠ 0 := by
@@ -229,13 +230,14 @@ abbrev divisorZeroIndex₀_val {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroI
     have q0 : Fin 0 := by
       simpa [divisorZeroIndex₀_val, h0] using p.1.2
     exact Fin.elim0 q0
-  have hne :
-      MeromorphicOn.divisor f U (divisorZeroIndex₀_val p) ≠ 0 := by
-    intro hdiv
-    have : Int.toNat (MeromorphicOn.divisor f U (divisorZeroIndex₀_val p)) = 0 := by
-      simp [hdiv]
-    exact hn this
-  simpa [Function.locallyFinsuppWithin.support, Function.support, divisorZeroIndex₀_val] using hne
+  intro hdiv
+  have : Int.toNat (MeromorphicOn.divisor f U (divisorZeroIndex₀_val p)) = 0 := by
+    simp [hdiv]
+  exact hn this
+
+lemma divisorZeroIndex₀_val_mem_divisor_support' {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroIndex₀ f U) :
+    divisorZeroIndex₀_val p ∈ (MeromorphicOn.divisor f U).support := by
+  simp [Function.mem_support]
 
 lemma exists_ball_inter_divisor_support_eq_singleton_of_index
     {f : ℂ → ℂ} (p : divisorZeroIndex₀ f (Set.univ : Set ℂ)) :
@@ -244,7 +246,7 @@ lemma exists_ball_inter_divisor_support_eq_singleton_of_index
           (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support =
         {divisorZeroIndex₀_val p} :=
   exists_ball_inter_divisor_support_eq_singleton (f := f) (z₀ := divisorZeroIndex₀_val p)
-    (divisorZeroIndex₀_val_mem_divisor_support (p := p))
+    (divisorZeroIndex₀_val_mem_divisor_support' (p := p))
 
 /-- The canonical product attached to the (nonzero) divisor of `f` on `U`. -/
 def divisorCanonicalProduct (m : ℕ) (f : ℂ → ℂ) (U : Set ℂ) (z : ℂ) : ℂ :=
@@ -291,7 +293,7 @@ lemma divisorZeroIndex₀_val_eq_of_mem_ball
     (hp : divisorZeroIndex₀_val p ∈ Metric.ball z₀ ε) :
     divisorZeroIndex₀_val p = z₀ := by
   have hsupp : divisorZeroIndex₀_val p ∈ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support :=
-    divisorZeroIndex₀_val_mem_divisor_support (p := p)
+    divisorZeroIndex₀_val_mem_divisor_support' (p := p)
   have : divisorZeroIndex₀_val p ∈
       Metric.ball z₀ ε ∩ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support := ⟨hp, hsupp⟩
   simpa [hball] using this
@@ -310,7 +312,7 @@ lemma weierstrassFactor_div_ne_zero_on_ball_of_val_ne
     exact (div_eq_one_iff_eq ha).1 hdiv1
   have hz_support :
       z ∈ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support := by
-    simpa [hz_eq] using (divisorZeroIndex₀_val_mem_divisor_support (p := p))
+    simp [hz_eq]
   have hz0 : z = z₀ := by
     have : z ∈ Metric.ball z₀ ε ∩ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support :=
       ⟨hzball, hz_support⟩
@@ -346,6 +348,8 @@ Weierstrass factor `weierstrassFactor m (z / a)` is nonzero, hence can be viewed
 This is the entry-point for applying `tprod` splitting lemmas that require a **group** target.
 -/
 
+/-- View the Weierstrass factors `weierstrassFactor m (z / a)` as units on a punctured isolating
+ball around `z₀` (where none of the factors vanishes). -/
 noncomputable def weierstrassFactorUnits
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) (ε : ℝ)
     (hball :
@@ -407,7 +411,7 @@ lemma finite_divisorZeroIndex₀_subtype_norm_le {f : ℂ → ℂ} {U : Set ℂ}
             intro hD0
             apply hne_toNat
             simp [D, hD0]
-          simpa [D, Function.locallyFinsuppWithin.support, Function.support] using hne_D
+          simp [D, Function.locallyFinsuppWithin.support, Function.support]
         have hne0 : divisorZeroIndex₀_val p.1 ≠ 0 := divisorZeroIndex₀_val_ne_zero p.1
         exact ⟨⟨hball, hsupport⟩, by simp [Set.mem_singleton_iff]⟩⟩,
       p.1.1.2⟩
@@ -889,6 +893,8 @@ theorem divisorZeroIndex₀_fiber_finite (f : ℂ → ℂ) (z₀ : ℂ) :
       (B := ‖z₀‖) this)
   exact hfin.subset hsub
 
+/-- The finite fiber over `z₀` in the divisor-index type `divisorZeroIndex₀` (points counted with
+multiplicity). -/
 noncomputable def divisorZeroIndex₀_fiberFinset (f : ℂ → ℂ) (z₀ : ℂ) :
     Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) :=
   (divisorZeroIndex₀_fiber_finite (f := f) z₀).toFinset
@@ -1133,6 +1139,7 @@ This is a convenience API: many later arguments about multiplicities/quotients a
 using a named partial product function rather than repeating `∏ p ∈ s, ...`.
 -/
 
+/-- Finite partial product of Weierstrass factors indexed by a finset of divisor indices. -/
 noncomputable def divisorPartialProduct (m : ℕ) (f : ℂ → ℂ)
     (s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ))) (z : ℂ) : ℂ :=
   ∏ p ∈ s, weierstrassFactor m (z / divisorZeroIndex₀_val p)
@@ -1149,6 +1156,7 @@ This is the finitary version of the “fiber × complement” split that will la
 limit in the infinite product.
 -/
 
+/-- The partial product over indices *not* in the fiber over `z₀` (implemented via an `if`). -/
 noncomputable def divisorComplementPartialProduct
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ)
     (s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ))) (z : ℂ) : ℂ := by
@@ -1175,6 +1183,8 @@ To keep the definition total and Mathlib-idiomatic, we implement the complement 
 the neutral element `1` on the fiber indices.
 -/
 
+/-- The infinite product over indices *not* in the fiber over `z₀` (the “complement” canonical
+product). -/
 noncomputable def divisorComplementCanonicalProduct
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ) (z : ℂ) : ℂ := by
     classical
@@ -1182,6 +1192,8 @@ noncomputable def divisorComplementCanonicalProduct
         if p ∈ divisorZeroIndex₀_fiberFinset (f := f) z₀ then (1 : ℂ)
         else weierstrassFactor m (z / divisorZeroIndex₀_val p)
 
+/-- The factor used in the complement canonical product: it is `1` on the fiber over `z₀`, and
+otherwise the Weierstrass factor `weierstrassFactor m (z / p)`. -/
 noncomputable def divisorComplementFactor
     (m : ℕ) (f : ℂ → ℂ) (z₀ : ℂ)
     (p : divisorZeroIndex₀ f (Set.univ : Set ℂ)) (z : ℂ) : ℂ := by
@@ -2258,7 +2270,8 @@ theorem analyticAt_update_limUnder_divisorCanonicalProduct_div_pow
       (limUnder (𝓝[≠] z₀) fun z : ℂ =>
         (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) /
           (z - z₀) ^ (divisorZeroIndex₀_fiberFinset (f := f) z₀).card)
-  have hcont : ContinuousAt g z₀ := (hdiff.differentiableAt (Metric.ball_mem_nhds z₀ hrpos)).continuousAt
+  have hcont : ContinuousAt g z₀ :=
+    (hdiff.differentiableAt (Metric.ball_mem_nhds z₀ hrpos)).continuousAt
   have hd :
       ∀ᶠ z in 𝓝[≠] z₀, DifferentiableAt ℂ g z := by
     have hballWithin : Metric.ball z₀ r ∈ 𝓝[≠] z₀ := by
@@ -2306,7 +2319,8 @@ theorem analyticOrderNatAt_divisorCanonicalProduct_eq_fiber_card
       (z₀ := z₀)
     with ⟨ε, hε, u, huA, hu0, hEq⟩
   let g : ℂ → ℂ := fun z => (divisorComplementCanonicalProduct m f z₀ z) * u z
-  have hcompDiff : DifferentiableOn ℂ (divisorComplementCanonicalProduct m f z₀) (Set.univ : Set ℂ) :=
+  have hcompDiff : DifferentiableOn ℂ (divisorComplementCanonicalProduct m f z₀)
+      (Set.univ : Set ℂ) :=
     differentiableOn_divisorComplementCanonicalProduct_univ (m := m) (f := f) (z₀ := z₀) h_sum
   have hcompCont : ContinuousAt (divisorComplementCanonicalProduct m f z₀) z₀ :=
     (hcompDiff z₀ (by simp)).differentiableAt (by simp) |>.continuousAt
@@ -2413,7 +2427,8 @@ theorem analyticOrderNatAt_divisorCanonicalProduct_eq_analyticOrderNatAt
   have hcp :
       analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) z₀ =
         (divisorZeroIndex₀_fiberFinset (f := f) z₀).card :=
-    analyticOrderNatAt_divisorCanonicalProduct_eq_fiber_card (m := m) (f := f) (h_sum := h_sum) (z₀ := z₀)
+    analyticOrderNatAt_divisorCanonicalProduct_eq_fiber_card (m := m) (f := f) (h_sum := h_sum)
+      (z₀ := z₀)
   have hfib :
       (divisorZeroIndex₀_fiberFinset (f := f) z₀).card = analyticOrderNatAt f z₀ :=
     divisorZeroIndex₀_fiberFinset_card_eq_analyticOrderNatAt (hf := hf) (z₀ := z₀) hz₀
@@ -2421,3 +2436,5 @@ theorem analyticOrderNatAt_divisorCanonicalProduct_eq_analyticOrderNatAt
 
 end Hadamard
 end Complex
+
+#lint
