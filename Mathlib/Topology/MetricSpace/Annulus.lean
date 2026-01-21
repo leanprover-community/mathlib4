@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 James Sundstrom. All rights reserved.
+Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: James Sundstrom, Matteo Cipollina
+Authors: James Sundstrom
 -/
 module
 
@@ -41,11 +41,17 @@ variable {X : Type*} [PseudoMetricSpace X]
 
 /-! ### Annulus defined using `dist` -/
 
+/-- The annulus `{y | dist y x ∈ Set.Ioo r R}` in a pseudo metric space. -/
 def annulusIoo (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioo r R
+/-- The annulus `{y | dist y x ∈ Set.Ioc r R}` in a pseudo metric space. -/
 def annulusIoc (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioc r R
+/-- The annulus `{y | dist y x ∈ Set.Ico r R}` in a pseudo metric space. -/
 def annulusIco (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ico r R
+/-- The annulus `{y | dist y x ∈ Set.Icc r R}` in a pseudo metric space. -/
 def annulusIcc (x : X) (r R : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Icc r R
+/-- The exterior `{y | dist y x ∈ Set.Ioi r}` (complement of `closedBall x r`). -/
 def annulusIoi (x : X) (r : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ioi r
+/-- The exterior `{y | dist y x ∈ Set.Ici r}` (complement of `ball x r`). -/
 def annulusIci (x : X) (r : ℝ) : Set X := (fun y : X => dist y x) ⁻¹' Ici r
 
 lemma annulusIoo_eq {x : X} {r R : ℝ} :
@@ -223,11 +229,17 @@ variable {X : Type*} [PseudoEMetricSpace X]
 
 /-! ### Annulus defined using `edist` -/
 
+/-- The annulus `{y | edist y x ∈ Set.Ioo r R}` in a pseudo emetric space. -/
 def annulusIoo (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ioo r R
+/-- The annulus `{y | edist y x ∈ Set.Ioc r R}` in a pseudo emetric space. -/
 def annulusIoc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ioc r R
+/-- The annulus `{y | edist y x ∈ Set.Ico r R}` in a pseudo emetric space. -/
 def annulusIco (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ico r R
+/-- The annulus `{y | edist y x ∈ Set.Icc r R}` in a pseudo emetric space. -/
 def annulusIcc (x : X) (r R : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Icc r R
+/-- The exterior `{y | edist y x ∈ Set.Ioi r}`. -/
 def annulusIoi (x : X) (r : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ioi r
+/-- The exterior `{y | edist y x ∈ Set.Ici r}`. -/
 def annulusIci (x : X) (r : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻¹' Ici r
 
 @[simp] lemma annulusIoo_eq_preimage (x : X) (r R : ℝ≥0∞) :
@@ -243,16 +255,16 @@ def annulusIci (x : X) (r : ℝ≥0∞) : Set X := (fun y : X => edist y x) ⁻�
 @[simp] lemma annulusIci_eq_preimage (x : X) (r : ℝ≥0∞) :
     annulusIci x r = (fun y : X => edist y x) ⁻¹' Ici r := rfl
 
-@[simp] lemma annulusIoo_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoo x r R = ∅ := by
+lemma annulusIoo_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoo x r R = ∅ := by
   simp [annulusIoo, Ioo_eq_empty_of_le h]
 
-@[simp] lemma annulusIoc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoc x r R = ∅ := by
+lemma annulusIoc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIoc x r R = ∅ := by
   simp [annulusIoc, Ioc_eq_empty_of_le h]
 
-@[simp] lemma annulusIco_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIco x r R = ∅ := by
+lemma annulusIco_eq_empty {x : X} {r R : ℝ≥0∞} (h : R ≤ r) : annulusIco x r R = ∅ := by
   simp [annulusIco, Ico_eq_empty_of_le h]
 
-@[simp] lemma annulusIcc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R < r) : annulusIcc x r R = ∅ := by
+lemma annulusIcc_eq_empty {x : X} {r R : ℝ≥0∞} (h : R < r) : annulusIcc x r R = ∅ := by
   simp [annulusIcc, Icc_eq_empty_of_lt h]
 
 @[gcongr]
@@ -280,3 +292,5 @@ lemma annulusIcc_mono {x : X} {r₁ R₁ r₂ R₂ : ℝ≥0∞} (hr : r₂ ≤ 
   exact ⟨hr.trans hy.1, hy.2.trans hR⟩
 
 end EMetric
+
+#lint
