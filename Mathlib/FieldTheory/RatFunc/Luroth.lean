@@ -3,7 +3,9 @@ Copyright (c) 2025 Miriam Philipp, Justus Springer and Junyan Xu. All rights res
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
+module
+
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
 
 /-!
 # Lüroth's theorem
@@ -25,6 +27,8 @@ References:
 - N. Jacobson, *Basic Algebra II: Second Edition*, 1989 (Dover edition 2009), Theorem 8.38.
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
