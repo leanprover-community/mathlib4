@@ -48,6 +48,12 @@ instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
     Algebra.IsSeparable (WithAbs v) R' :=
   ‹Algebra.IsSeparable R R'›
 
+instance {R : Type*} [CommRing R] [Algebra R R'] (w : AbsoluteValue R' ℝ) :
+    UniformContinuousConstSMul R (WithAbs w) where
+  uniformContinuous_const_smul r := by
+    simp_rw [Algebra.smul_def]
+    exact (Ring.uniformContinuousConstSMul _).uniformContinuous_const_smul _
+
 end more_instances
 
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
@@ -63,8 +69,8 @@ theorem tendsto_one_div_one_add_pow_nhds_one {R : Type*} [Field R] {v : Absolute
 ### The completion of a field at an absolute value.
 -/
 
-variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
-  {L : Type*} [NormedField L] {f : WithAbs v →+* L}
+variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ} {L : Type*} [NormedField L]
+  {f : WithAbs v →+* L}
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
 `f` is an isometry. -/
@@ -111,8 +117,10 @@ abbrev Completion := UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
-instance : Coe K v.Completion :=
-  inferInstanceAs <| Coe (WithAbs v) (UniformSpace.Completion (WithAbs v))
+/-- This is a `CoeTail` so that it does not apply to the defeq `(WithAbs v`) and replace the
+already existing `Coe (WithAbs v) v.Completion` from `UniformSpace.Completion.instCoe`. -/
+instance : CoeTail K v.Completion where
+  coe k : v.Completion := ↑((WithAbs.equiv v).symm k)
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
