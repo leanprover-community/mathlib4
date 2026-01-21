@@ -95,7 +95,7 @@ def IsTorsion (F : IdealFilter A)
   ∀ m : M, IsTorsionElem F m
 
 /-- We say that the quotient `K/L` is `F`-torsion if every element `k ∈ K` is annihilated
-(modulo `L`) by some ideal in `F`.  Equivalently, for each `k ∈ K` there exists `I ∈ F`
+(modulo `L`) by some ideal in `F`. Equivalently, for each `k ∈ K` there exists `I ∈ F`
 such that `I ≤ L.colon {k}`. That is to say, every `a ∈ I` satisfies `a * k ∈ L`.
 This formulation avoids forming the quotient module explicitly. -/
 def IsTorsionQuot (F : IdealFilter A) (L K : Ideal A) : Prop :=
