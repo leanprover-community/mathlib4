@@ -40,7 +40,121 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 @[expose] public section
 
-open LinearMap Submodule
+theorem minimalPrimes.eq_of_le {R : Type*} [CommSemiring R] {I J : Ideal R}
+    (hJ : J ∈ I.minimalPrimes) (K : Ideal R) (hK : K ∈ I.minimalPrimes) (hJK : J ≤ K) : J = K :=
+  le_antisymm hJK (hK.2 hJ.1 hJK)
+
+open Ideal LinearMap Submodule
+
+namespace Submodule
+
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Submodule R M)
+  (I : Ideal R) (x : M)
+
+/-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
+and `I = (N.colon {x}).radical` for some `x : M`. -/
+protected def IsAssociatedPrime : Prop :=
+  I.IsPrime ∧ ∃ x, I = (N.colon {x}).radical
+
+/-- The set of associated primes of a submodule. -/
+protected def associatedPrimes : Set (Ideal R) :=
+  { I | N.IsAssociatedPrime I }
+
+variable {N I}
+
+theorem exists_eq_colon_of_mem_minimalPrimes [IsNoetherianRing R]
+    (hI : I ∈ (N.colon {x}).minimalPrimes) : ∃ x' : M, I = N.colon {x'} := by
+  by_cases hx : x ∈ N
+  · simp [show (N.colon {x}) = ⊤ by simpa, minimalPrimes_top] at hI
+  classical
+  set ann := N.colon {x}
+  -- there exists an integer `n ≠ 0` and an ideal `J` satisfying `I ^ n * J ≤ ann` and `¬ J ≠ I`
+  have key : ∃ n ≠ 0, ∃ J : Ideal R, I ^ n * J ≤ ann ∧ ¬ J ≤ I := by
+    -- let `n` be large enough so that `ann.radical ^ n ≤ ann` (uses Noetherian)
+    obtain ⟨n, hn⟩ := exists_radical_pow_le_of_fg ann ann.radical.fg_of_isNoetherianRing
+    have hn0 : n ≠ 0 := by contrapose! hn; simpa [hn, ann]
+    -- then take `J` to be the product of the other minimal primes raised to the `n`th power
+    have h := finite_minimalPrimes_of_isNoetherianRing R ann
+    rw [← sInf_minimalPrimes, ← h.coe_toFinset, ← h.toFinset.inf_id_eq_sInf,
+      ← Finset.insert_erase (h.mem_toFinset.mpr hI), Finset.inf_insert, id_eq] at hn
+    grw [← mul_le_inf, mul_pow] at hn
+    refine ⟨n, hn0, ((h.toFinset.erase I).inf id) ^ n, hn, ?_⟩
+    have (K : Ideal R) (hKI : K ≤ I) (hK : K ∈ ann.minimalPrimes) : K = I :=
+      le_antisymm hKI (hI.2 hK.1 hKI)
+    simpa [hI.1.1.pow_le_iff hn0, hI.1.1.inf_le', imp_not_comm, not_imp_not]
+  obtain ⟨hn0, J, hJ, hJI⟩ := Nat.find_spec key
+  -- let `n` be minimal such that there exists an ideal `J` with `I ^ n * J ≤ ann` and `¬ J ≠ I`
+  set n := Nat.find key
+  -- let `K = I ^ (n - 1) * J`
+  let K := I ^ (n - 1) * J
+  -- we want `I = N.colon {x'}`, and we have `I ≤ N.colon {y • x}` for every `y ∈ K` (uses `n ≠ 0`)
+  have step1 : ∀ y ∈ K, I ≤ N.colon {y • x} := by
+    intro y hy p hp
+    rw [mem_colon_singleton, smul_smul, ← mem_colon_singleton]
+    apply hJ
+    simpa [K, ← mul_assoc, mul_pow_sub_one hn0] using mul_mem_mul hp hy
+  clear hn0
+  -- so it suffices to find a single `y ∈ K` with `N.colon {y • x} ≤ I`
+  suffices step2 : ∃ y : K, N.colon {y • x} ≤ I by
+    obtain ⟨y, hyI⟩ := step2
+    exact ⟨y • x, le_antisymm (step1 y y.2) hyI⟩
+  by_contra! h'
+  -- if not, then for every `y ∈ K`, there exists an `f y ∈ N.colon {y • x}` with `f y ∉ I`
+  simp only [SetLike.not_le_iff_exists] at h'
+  choose f g h using h'
+  -- let `s` be a finite generating set for `K`
+  obtain ⟨s, hs⟩ : (⊤ : Submodule R K).FG := Module.Finite.fg_top
+  rw [← (map_injective_of_injective K.subtype_injective).eq_iff,
+    map_span, map_subtype_top, ← Finset.coe_image, submodule_span_eq] at hs
+  -- let `z` be the product of these finitely many `f y`'s
+  let z := ∏ y ∈ s, f y
+  -- then `z ∉ I`
+  have hz : z ∉ I := by
+    simp only [z, hI.1.1.prod_mem_iff, not_exists, not_and_or]
+    exact fun i ↦ Or.inr (h i)
+  -- and `K ≤ N.colon {z • x}`
+  have hz' : K ≤ N.colon {z • x} := by
+    rw [← hs, Ideal.span_le, Finset.coe_image, Set.image_subset_iff]
+    intro i hi
+    obtain ⟨y, hy : z = f i * y⟩ := Finset.dvd_prod_of_mem f hi
+    rw [Set.mem_preimage, SetLike.mem_coe, mem_colon_singleton, smul_comm, ← mem_colon_singleton]
+    exact hy ▸ mul_mem_right y _ (g i)
+  -- or equivalently `K * Ideal.span {z} ≤ ann`
+  replace hz' : K * Ideal.span {z} ≤ ann := by
+    rw [mul_comm, span_singleton_mul_le_iff]
+    intro i hi
+    simpa only [ann, mem_colon_singleton, mul_comm, mul_smul] using hz' hi
+  -- but now `K = I ^ (n - 1) * J` contradicts the minimality of `n`
+  have hK : I ^ (n - 1) * (J * Ideal.span {z}) ≤ ann ∧ ¬ J * Ideal.span {z} ≤ I := by
+    rw [← mul_assoc, hI.1.1.mul_le, not_or, Ideal.span_singleton_le_iff_mem]
+    exact ⟨hz', hJI, hz⟩
+  by_cases hn' : n - 1 = 0
+  · have : n = 1 := by
+      grind
+    simp [K, this] at hz'
+    exact (hK.2 (hz'.trans hI.1.2)).elim
+  · have h' : n ≤ n - 1 := Nat.find_min' key ⟨hn', J * Ideal.span {z}, hK⟩
+    rw [tsub_le_self.ge_iff_eq, Nat.sub_one_eq_self] at h'
+    simp [h'] at hn'
+
+protected theorem isAssociatedPrime_def :
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (N.colon {x}).radical :=
+  .rfl
+
+protected theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
+    N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = N.colon {x} := by
+  constructor
+  · rintro ⟨hx, x, rfl⟩
+    refine ⟨hx, exists_eq_colon_of_mem_minimalPrimes x ?_⟩
+    rw [← Ideal.radical_minimalPrimes, Ideal.minimalPrimes_eq_subsingleton_self,
+      Set.mem_singleton_iff]
+  · rintro ⟨hx, x, rfl⟩
+    exact ⟨hx, x, hx.radical.symm⟩
+
+protected theorem AssociatePrimes.mem_iff : I ∈ N.associatedPrimes ↔ N.IsAssociatedPrime I :=
+  .rfl
+
+end Submodule
 
 section Semiring
 
@@ -62,112 +176,9 @@ theorem AssociatePrimes.mem_iff : I ∈ associatedPrimes R M ↔ IsAssociatedPri
 
 theorem IsAssociatedPrime.isPrime (h : IsAssociatedPrime I M) : I.IsPrime := h.1
 
-theorem technical [h : IsNoetherianRing R] (P : Ideal R) (m : M)
-    (hP : P ∈ ((⊥ : Submodule R M).colon {m}).minimalPrimes) :
-    ∃ m' : M, P = ((⊥ : Submodule R M).colon {m'}) := by
-  have hP' := hP.1.1
-  by_cases hm : m = 0
-  · simp [hm] at hP
-    simp [Ideal.minimalPrimes_top, colon_singleton_zero] at hP
-  classical
-  set ann := (⊥ : Submodule R M).colon {m}
-  have key : ∃ k > 0, ∃ Q : Ideal R, P ^ k * Q ≤ ann ∧ ¬ Q ≤ P := by
-    have h := Ideal.finite_minimalPrimes_of_isNoetherianRing R ann
-    have key := Ideal.exists_radical_pow_le_of_fg ann ann.radical.fg_of_isNoetherianRing
-    obtain ⟨k, hk⟩ := key
-    have hk0 : k ≠ 0 := by
-      contrapose! hk
-      simpa [hk, ann]
-    replace hk0 : 0 < k := pos_of_ne_zero hk0
-    rw [← Ideal.sInf_minimalPrimes, ← h.coe_toFinset, ← h.toFinset.inf_id_eq_sInf] at hk
-    have tada : {P} ⊆ h.toFinset := by simpa
-    rw [← Finset.union_sdiff_of_subset tada, Finset.inf_union, Finset.inf_singleton, id_eq] at hk
-    replace hk := (Ideal.pow_right_mono Ideal.mul_le_inf k).trans hk
-    rw [mul_pow] at hk
-    refine ⟨k, hk0, ((h.toFinset \ {P}).inf id) ^ k, hk, ?_⟩
-    rw [Ideal.IsPrime.pow_le_iff hk0.ne', hP'.inf_le']
-    push_neg
-    intro Q hQ
-    simp only [Finset.mem_sdiff, h.mem_toFinset, Finset.mem_singleton] at hQ
-    obtain ⟨hQ, hQ'⟩ := hQ
-    contrapose! hQ'
-    exact le_antisymm hQ' (hP.2 ⟨hQ.1.1, hQ.1.2⟩ hQ')
-  obtain ⟨hn0, Q, hQ, hQP⟩ := Nat.find_spec key
-  set n := Nat.find key
-  let I := P ^ (n - 1) * Q
-  have step1 : ∀ y ∈ I, P ≤ (⊥ : Submodule R M).colon {y • m} := by
-    intro y hy p hp
-    rw [mem_colon_singleton, smul_smul, ← mem_colon_singleton]
-    apply hQ
-    simpa [I, ← mul_assoc, mul_pow_sub_one hn0.ne'] using mul_mem_mul hp hy
-  suffices step2 : ∃ y : I, (⊥ : Submodule R M).colon {y • m} ≤ P by
-    obtain ⟨y, hyP⟩ := step2
-    exact ⟨y • m, le_antisymm (step1 y y.2) hyP⟩
-  by_contra! h'
-  simp only [SetLike.not_le_iff_exists] at h'
-  choose f g h using h'
-  obtain ⟨s, hs⟩ : (⊤ : Submodule R I).FG := Module.Finite.fg_top
-  replace hs : Ideal.span (s.image (fun (x : I) ↦ (x : R)) : Set R) = I := by
-    apply_fun (map (Submodule.subtype I)) at hs
-    simp [← Submodule.span_image] at hs
-    simpa
-  let z := ∏ i ∈ s, f i
-  have hz : z ∉ P := by
-    simp only [z, hP'.prod_mem_iff, not_exists, not_and_or]
-    exact fun i ↦ Or.inr (h i)
-  have hz' : I ≤ ((⊥ : Submodule R M).colon {z • m}) := by
-    rw [← hs, Ideal.span_le]
-    intro w hw
-    simp only [Finset.coe_image, Set.mem_image] at hw
-    obtain ⟨i, hi, rfl⟩ := hw
-    specialize g i
-    obtain ⟨y, hy : z = f i * y⟩ := Finset.dvd_prod_of_mem f hi
-    rw [hy, mul_comm, SetLike.mem_coe, mem_colon_singleton, smul_comm,
-      ← mem_colon_singleton]
-    apply Ideal.mul_mem_left
-    exact g
-  replace hz' : I * Ideal.span {z} ≤ ann := by
-    rw [mul_comm, Ideal.span_singleton_mul_le_iff]
-    intro i hi
-    specialize hz' hi
-    rwa [mem_colon_singleton, smul_smul, mul_comm, ← mem_colon_singleton] at hz'
-  have tada : P ^ (n - 1) * (Q * Ideal.span {z}) ≤ ann ∧ ¬ Q * Ideal.span {z} ≤ P := by
-    rw [← mul_assoc]
-    use hz'
-    rw [hP'.mul_le, not_or, Ideal.span_singleton_le_iff_mem]
-    exact ⟨hQP, hz⟩
-  by_cases tada' : 0 < n - 1
-  · have h' := Nat.find_min' key ⟨tada', Q * Ideal.span {z}, tada⟩
-    change n ≤ n - 1 at h'
-    contrapose! h'
-    simpa
-  · have : n = 1 := by
-      simp only [tsub_pos_iff_lt, not_lt] at tada'
-      exact le_antisymm tada' hn0
-    simp [I, this] at hz'
-    apply tada.2
-    exact hz'.trans hP.1.2
-
-  -- there exists p ^ k * q ≤ ann(m) with ¬ q ≤ p
-  -- let k be minimal
-  -- let I = p ^ (k - 1) * q
-  -- any y ∈ I satisfies p ≤ ann(y * m) since z ∈ p implies z * y * m ∈ p ^ k * q * m = 0
-  -- we must find element y ∈ I satisfying ann(y * m) ≤ p
-  -- suppose not, then every y ∈ I has some z ∉ p with y * z * m = 0
-  -- I is finitely generated, take the product of these z's
-  -- then z ∉ p and I * z ≤ ann(m)
-  -- p ^ (k - 1) * z * q ≤ ann(m) and ¬ z * q ≤ p
-  -- contradicts minimality of k, unless k = 1, I = q, z * q ≤ ann(m) ≤ p contradiction
-
 theorem isAssociatedPrime_iff [h : IsNoetherianRing R] :
-    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x, I = (⊥ : Submodule R M).colon {x} := by
-  constructor; swap
-  · rintro ⟨hx, x, rfl⟩
-    exact ⟨hx, x, hx.radical.symm⟩
-  · rintro ⟨hx, x, rfl⟩
-    refine ⟨hx, technical ((⊥ : Submodule R M).colon {x}).radical x ?_⟩
-    rw [← Ideal.radical_minimalPrimes, Ideal.minimalPrimes_eq_subsingleton_self,
-      Set.mem_singleton_iff]
+    IsAssociatedPrime I M ↔ I.IsPrime ∧ ∃ x, I = (⊥ : Submodule R M).colon {x} :=
+  (⊥ : Submodule R M).isAssociatedPrime_iff
 
 theorem IsAssociatedPrime.map_of_injective (h : IsAssociatedPrime I M) (hf : Function.Injective f) :
     IsAssociatedPrime I M' := by
@@ -360,16 +371,3 @@ theorem associatedPrimes.eq_singleton_of_isPrimary [IsNoetherianRing R] (hI : I.
     exact hI.1
   obtain ⟨a, ha⟩ := associatedPrimes.nonempty R (R ⧸ I)
   exact ha.eq_radical hI ▸ ha
-
-namespace Submodule
-
-variable {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-  (N : Submodule R M)
-
-/-- The associated primes of `R ⧸ N` (but phrased without the quotient to allow semirings). -/
-def associatedPrimes : Set (Ideal R) :=
-  {p | p.IsPrime ∧ ∃ x : M, p = (N.colon {x}).radical}
-
-instance (p : N.associatedPrimes) : p.1.IsPrime := p.2.1
-
-end Submodule
