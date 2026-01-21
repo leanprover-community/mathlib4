@@ -459,8 +459,8 @@ theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k <
       k.factorial * ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, (v i - v j)) *
         ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
   classical
-  simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
-    ← mul_assoc, mul_comm (a := (k.factorial : F[X])), mul_assoc]
+  simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum s,
+    ← mul_assoc, mul_comm (k.factorial : F[X]), mul_assoc]
   congr! 2 with i hi
   have hvs' := hvs.mono (coe_subset.mpr (erase_subset i s))
   calc
