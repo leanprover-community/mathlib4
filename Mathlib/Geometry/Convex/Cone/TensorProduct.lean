@@ -106,32 +106,6 @@ theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : Po
 
 variable {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H}
 
-/-- A finite sum of elementary tensors is in minTensorProduct if each component is. -/
-theorem sum_tmul_mem_minTensorProduct {ι : Type*} [Fintype ι]
-    {x : ι → G} {y : ι → H} (hx : ∀ i, x i ∈ C₁) (hy : ∀ i, y i ∈ C₂) :
-    ∑ i, x i ⊗ₜ[R] y i ∈ minTensorProduct C₁ C₂ :=
-  Submodule.sum_mem _ fun i _ => tmul_mem_minTensorProduct (hx i) (hy i)
-
-/-- Evaluating the left factor of `z ∈ maxTensorProduct C₁ C₂` at `φ ∈ C₁*`
-yields an element in the double dual of `C₂`. -/
-theorem maxTensorProduct_lid_rTensor_mem_dual_dual (hz : z ∈ maxTensorProduct C₁ C₂)
-    (φ : Module.Dual R G) (hφ : φ ∈ dual (dualPairing R G).flip C₁) :
-    TensorProduct.lid R H (φ.rTensor H z) ∈
-      dual (dualPairing R H) (dual (dualPairing R H).flip C₂) := by
-  intro ψ hψ
-  rw [dualPairing_apply, ← dualDistrib_eq_lid_rTensor, mem_maxTensorProduct] at *
-  exact hz φ hφ ψ hψ
-
-/-- Evaluating the right factor of `z ∈ maxTensorProduct C₁ C₂` at `ψ ∈ C₂*`
-yields an element in the double dual of `C₁`. -/
-theorem maxTensorProduct_rid_lTensor_mem_dual_dual (hz : z ∈ maxTensorProduct C₁ C₂)
-    (ψ : Module.Dual R H) (hψ : ψ ∈ dual (dualPairing R H).flip C₂) :
-    TensorProduct.rid R G (ψ.lTensor G z) ∈ dual (dualPairing R G)
-      (dual (dualPairing R G).flip C₁) := by
-  intro φ hφ
-  rw [dualPairing_apply, ← dualDistrib_eq_rid_lTensor, mem_maxTensorProduct] at *
-  exact hz φ hφ ψ hψ
-
 /-- The minimal tensor product is commutative. -/
 @[simp]
 theorem minTensorProduct_comm :
