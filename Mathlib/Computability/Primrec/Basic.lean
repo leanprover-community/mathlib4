@@ -45,7 +45,6 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
-open List (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
