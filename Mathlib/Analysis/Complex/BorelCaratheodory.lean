@@ -107,7 +107,7 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
   set w := f z / (2 * M - f z)
   have hzR : ‖z‖ < R := mem_ball_zero_iff.mp hz
   have hwR := by simpa only [dist_zero_right, div_one, mul_comm (1 / R), mul_one_div]
-                   using schwarz_applied hM hf hf₁ hz hf₂
+    using schwarz_applied hM hf hf₁ hz hf₂
   have h_denom : 2 * M - f z ≠ 0 := sub_ne_zero_of_ne (fun h => by simpa [← h, hM] using hf₁ hz)
   calc ‖f z‖
     _ = ‖2 * M * w / (1 + w)‖ := by rw [eq_mul_div_one_add_of_eq_div_sub hM.ne' h_denom rfl]
