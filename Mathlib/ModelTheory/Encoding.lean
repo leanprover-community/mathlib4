@@ -310,7 +310,7 @@ instance : Countable (constantsOn α).Symbols := by
   change (constantsOn α).card ≤ ℵ₀
   simpa only [card_constantsOn, mk_le_aleph0_iff]
 
-instance : Countable (L[[α]].Symbols) := by
+instance : Countable L[[α]].Symbols := by
   simp only [←mk_le_aleph0_iff]
   change L[[α]].card ≤ ℵ₀
   simp only [withConstants, card_sum, add_le_aleph0, lift_le_aleph0]

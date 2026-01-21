@@ -85,7 +85,7 @@ theorem empty_definable_iff :
   simp
 
 theorem definable_iff_empty_definable_with_params :
-    A.Definable L s ↔ (∅ : Set M).Definable (L[[A]]) s :=
+    A.Definable L s ↔ (∅ : Set M).Definable L[[A]] s :=
   empty_definable_iff.symm
 
 theorem Definable.mono (hAs : A.Definable L s) (hAB : A ⊆ B) : B.Definable L s := by
@@ -432,7 +432,7 @@ theorem termDefinable_empty_iff :
   simp
 
 theorem termDefinable_empty_withConstants_iff :
-    (∅ : Set M).TermDefinable (L[[A]]) f ↔ A.TermDefinable L f :=
+    (∅ : Set M).TermDefinable L[[A]] f ↔ A.TermDefinable L f :=
   termDefinable_empty_iff
 
 @[fun_prop]
