@@ -236,7 +236,7 @@ theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E 
 /-- An injective affine map from a finite-dimensional space is automatically anti-Lipschitz. -/
 theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [MetricSpace PE]
     [NormedAddTorsor E PE] [MetricSpace PF] [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
-    (f : PE →ᵃ[𝕜] PF) (hf : Function.Injective f) :
+    {f : PE →ᵃ[𝕜] PF} (hf : Function.Injective f) :
     ∃ K : ℝ≥0, AntilipschitzWith K f := by
   obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
   refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
