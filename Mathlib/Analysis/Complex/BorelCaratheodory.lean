@@ -107,8 +107,11 @@ public theorem borelCaratheodory_zero (hM : 0 < M) (hf : DifferentiableOn ℂ f 
   have h_denom : 2 * M - f z ≠ 0 := sub_ne_zero_of_ne (fun h => by simpa [← h, hM] using hf₁ hz)
   calc ‖f z‖
     _ = ‖2 * M * w / (1 + w)‖ := by rw [eq_mul_div_one_add_of_eq_div_sub hM.ne' h_denom rfl]
-    _ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := norm_two_mul_div_one_add_le hM
-        (hwR.trans_lt ((div_lt_one₀ hR).mpr hzR))
+    _ ≤ 2 * M * ‖w‖ / (1 - ‖w‖) := by
+      simp only [norm_div, norm_mul, norm_ofNat, norm_real, Real.norm_eq_abs, abs_of_pos hM]
+      gcongr
+      · linarith [hwR.trans_lt ((div_lt_one₀ hR).mpr hzR)]
+      · simpa using norm_sub_le_norm_add 1 w
     _ = 2 * M * (‖w‖ / (1 - ‖w‖)) := by ring
     _ ≤ 2 * M * (‖z‖ / R / (1 - ‖z‖ / R)) := by gcongr; simpa [div_lt_one hR]
     _ = 2 * M * ‖z‖ / (R - ‖z‖) := by field_simp
