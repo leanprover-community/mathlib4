@@ -454,12 +454,10 @@ theorem interpolate_eq_sum : interpolate s v r =
   simp [Lagrange.basis, basisDivisor, div_eq_mul_inv, prod_mul_distrib, ← map_prod,
     ← prod_inv_distrib, mul_assoc]
 
-theorem iterate_derivative_interpolate
-    (hvs : Set.InjOn v s) {k : ℕ} (hk : k < #s) :
-    derivative^[k] (interpolate s v r) = k.factorial *
-      ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, (v i - v j)) *
-      ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)),
-      ∏ a ∈ t, (X - C (v a)) := by
+theorem iterate_derivative_interpolate (hvs : Set.InjOn v s) {k : ℕ} (hk : k < #s) :
+    derivative^[k] (interpolate s v r) =
+      k.factorial * ∑ i ∈ s, C (r i / ∏ j ∈ s.erase i, (v i - v j)) *
+        ∑ t ∈ (s.erase i).powersetCard (#s - (k + 1)), ∏ a ∈ t, (X - C (v a)) := by
   classical
   simp_rw [interpolate_eq_sum, iterate_derivative_sum, iterate_derivative_C_mul, mul_sum (s := s),
     ← mul_assoc, mul_comm (a := (k.factorial : F[X])), mul_assoc]
