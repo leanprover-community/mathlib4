@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
-import Mathlib.Condensed.Discrete.LocallyConstant
-import Mathlib.Condensed.Light.Module
-import Mathlib.Condensed.Module
-import Mathlib.Topology.LocallyConstant.Algebra
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Light.Module
+public import Mathlib.Condensed.Module
+public import Mathlib.Topology.LocallyConstant.Algebra
 /-!
 
 # Discrete condensed `R`-modules
@@ -19,6 +21,8 @@ That is, it defines the functor `CondensedMod.LocallyConstant.functor` which tak
 the condensed `R`-modules given by locally constant maps to it, and proves that this functor is
 naturally isomorphic to the constant sheaf functor (and the analogues for light condensed modules).
 -/
+
+@[expose] public section
 
 universe w u
 
@@ -38,7 +42,7 @@ constant maps.
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ModuleCat.of R (LocallyConstant S X)
-    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom) }
+    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
   map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]

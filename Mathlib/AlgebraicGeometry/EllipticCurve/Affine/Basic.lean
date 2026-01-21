@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Polynomial.Bivariate
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+module
+
+public import Mathlib.Algebra.Polynomial.Bivariate
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
 # Weierstrass equations and the nonsingular condition in affine coordinates
@@ -43,6 +45,8 @@ abbreviation for `WeierstrassCurve` that can be converted using `WeierstrassCurv
 
 elliptic curve, affine, Weierstrass equation, nonsingular
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -113,7 +117,6 @@ lemma natDegree_polynomial [Nontrivial R] : W.polynomial.natDegree = 2 := by
   exact Cubic.natDegree_of_b_ne_zero' one_ne_zero
 
 lemma monic_polynomial : W.polynomial.Monic := by
-  nontriviality R
   simpa only [polynomial_eq] using Cubic.monic_of_b_eq_one'
 
 lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
@@ -245,12 +248,6 @@ lemma equation_iff_nonsingular_of_Δ_ne_zero {x y : R} (hΔ : W.Δ ≠ 0) :
 lemma equation_iff_nonsingular [Nontrivial R] [W.IsElliptic] {x y : R} :
     W.toAffine.Equation x y ↔ W.toAffine.Nonsingular x y :=
   W.toAffine.equation_iff_nonsingular_of_Δ_ne_zero <| W.coe_Δ' ▸ W.Δ'.ne_zero
-
-@[deprecated (since := "2025-03-01")] alias nonsingular_zero_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular_of_Δ_ne_zero :=
-  equation_iff_nonsingular_of_Δ_ne_zero
-@[deprecated (since := "2025-03-01")] alias nonsingular := equation_iff_nonsingular
 
 /-! ## Maps and base changes -/
 

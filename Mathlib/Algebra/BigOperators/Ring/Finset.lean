@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Multiset
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Results about big operators with values in a (semi)ring
@@ -17,6 +19,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -140,7 +144,7 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
       congr with ⟨v, hv⟩
       congr
       exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
-    · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
+    · exact fun _ _ _ _ => Subtype.ext ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha
 
@@ -216,6 +220,11 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → R) :
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
+theorem prod_one_add_ordered [LinearOrder ι] (s : Finset ι) (f : ι → R) :
+    ∏ i ∈ s, (1 + f i) = 1 + ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 + f j) := by
+  rw [prod_add_ordered]
+  simp
+
 /-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
 gives `(a + b) ^ #s`. -/
 theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
@@ -223,7 +232,7 @@ theorem sum_pow_mul_eq_add_pow (a b : R) (s : Finset ι) :
   classical
   rw [← prod_const, prod_add]
   refine Finset.sum_congr rfl fun t ht => ?_
-  rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
+  rw [prod_const, prod_const, ← card_sdiff_of_subset (mem_powerset.1 ht)]
 
 /-- Summing `a^#s * b^(n-#s)` over all finite subsets `s` of a fintype of cardinality `n`
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that

@@ -3,11 +3,15 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Lean.Expr.Rat
-import Mathlib.Tactic.NormNum.Result
-import Mathlib.Util.AtLocation
-import Mathlib.Util.Qq
-import Lean.Elab.Tactic.Location
+module
+
+public meta import Mathlib.Lean.Expr.Rat
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Hint
+public import Mathlib.Tactic.NormNum.Result
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Util.Qq
 
 /-!
 ## `norm_num` core functionality
@@ -17,6 +21,8 @@ which allow for plugging in new normalization functionality around a simp-based 
 The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
 and elsewhere.
 -/
+
+public meta section
 
 open Lean
 open Lean.Meta Qq Lean.Elab Term
@@ -79,7 +85,7 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
   if e.isRawNatLit then
     let lit : Q(ℕ) := e
-    return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
+    return .isNat (q(Nat.instAddMonoidWithOne) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
@@ -168,6 +174,7 @@ initialize registerBuiltinAttribute {
   add := fun declName stx kind ↦ match stx with
     | `(attr| norm_num $es,*) => do
       let env ← getEnv
+      ensureAttrDeclIsMeta `norm_num declName kind
       unless (env.getModuleIdxFor? declName).isNone do
         throwError "invalid attribute 'norm_num', declaration is in an imported module"
       if (IR.getSorryDep env declName).isSome then return -- ignore in progress definitions
@@ -180,6 +187,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       normNumExt.add ((keys, declName), ext) kind
+      -- TODO: track what `[norm_num]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
     let s := normNumExt.getState (← getEnv)
@@ -301,3 +310,10 @@ macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
   `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
 
 end Mathlib.Tactic
+
+/-!
+We register `norm_num` with the `hint` tactic.
+-/
+
+register_hint 1000 norm_num
+register_try?_tactic (priority := 1000) norm_num

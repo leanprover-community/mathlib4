@@ -3,8 +3,10 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.Data.Matrix.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Hadamard product of matrices
@@ -29,6 +31,8 @@ and contains basic properties about them.
 
 hadamard product, hadamard
 -/
+
+@[expose] public section
 
 
 variable {α m n R : Type*}
@@ -116,9 +120,6 @@ variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]
 theorem single_hadamard_single_eq (i : m) (j : n) (a b : α) :
     single i j a ⊙ single i j b = single i j (a * b) :=
   ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
-
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_hadamard_stdBasisMatrix_eq := single_hadamard_single_eq
 
 theorem single_hadamard_single_of_ne
     {ia : m} {ja : n} {ib : m} {jb : n} (h : ¬(ia = ib ∧ ja = jb)) (a b : α) :

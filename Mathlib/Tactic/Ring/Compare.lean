@@ -3,8 +3,12 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+import all Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Tactic.Ring.Basic
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings
@@ -33,6 +37,8 @@ However, this automation serves as the discharger for the `linear_combination` t
 goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
 by calling `linear_combination` without arguments.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Ring
 
@@ -75,10 +81,10 @@ generality simply to require `OrderedCommSemiring`/`StrictOrderedCommSemiring`. 
 
 section Lemma
 
-theorem add_le_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
+theorem add_le_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     {b c : α} (bc : b ≤ c) (a : α) :
     b + a ≤ c + a :=
-  _root_.add_le_add_right bc a
+  _root_.add_le_add_left bc a
 
 theorem add_le_of_nonpos_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α]
     (a : α) {b : α} (h : b ≤ 0) :
@@ -90,10 +96,10 @@ theorem le_add_of_nonneg_left {α : Type*} [CommSemiring α] [PartialOrder α] [
     a ≤ b + a :=
   _root_.le_add_of_nonneg_left h
 
-theorem add_lt_add_right {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
+theorem add_lt_add_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
     {b c : α} (bc : b < c) (a : α) :
     b + a < c + a :=
-  _root_.add_lt_add_right bc a
+  _root_.add_lt_add_left bc a
 
 theorem add_lt_of_neg_left {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
     (a : α) {b : α} (h : b < 0) :
@@ -133,7 +139,7 @@ def evalLE {v : Level} {α : Q(Type v)}
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_le_add_right (a := $a') $pf):)
+    pure <| .ok (q(add_le_add_left (a := $a') $pf):)
   /- For a numeral `ca ≤ 0`, `ca + x ≤ x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable
@@ -171,7 +177,7 @@ def evalLT {v : Level} {α : Q(Type v)}
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
-    pure <| .ok (q(add_lt_add_right $pf $a'):)
+    pure <| .ok (q(add_lt_add_left $pf $a'):)
   /- For a numeral `ca < 0`, `ca + x < x` -/
   | .add (.const (e := xa) ca hypa) va', _ => do
     unless va'.eq vb do return .error notComparable

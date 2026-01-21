@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Basic facts about real (semi)normed spaces
@@ -20,6 +22,8 @@ In this file we prove some theorems about (semi)normed spaces over real numberes
 - `interior_closedBall'`, `frontier_closedBall'`, `interior_sphere'`, `frontier_sphere'`:
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
+
+@[expose] public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology

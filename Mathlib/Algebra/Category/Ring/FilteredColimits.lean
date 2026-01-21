@@ -3,9 +3,11 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Ring.ULift
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Ring.ULift
 
 /-!
 # The forgetful functor from (commutative) (semi-) rings preserves filtered colimits.
@@ -21,6 +23,8 @@ In particular, this implies that `forget SemiRingCat` preserves filtered colimit
 Similarly for `CommSemiRingCat`, `RingCat` and `CommRingCat`.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -260,8 +264,8 @@ abbrev R : SemiRingCat.{max v u} :=
 
 instance colimitRing : Ring.{max v u} <| R.{v, u} F :=
   { (R F).semiring,
-    AddCommGrp.FilteredColimits.colimitAddCommGroup.{v, u}
-      (F ⋙ forget₂ RingCat AddCommGrp.{max v u}) with }
+    AddCommGrpCat.FilteredColimits.colimitAddCommGroup.{v, u}
+      (F ⋙ forget₂ RingCat AddCommGrpCat.{max v u}) with }
 
 /-- The bundled ring giving the filtered colimit of a diagram. -/
 def colimit : RingCat.{max v u} :=

@@ -3,12 +3,14 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.PowMod
-import Mathlib.Tactic.ReduceModChar.Ext
-import Mathlib.Util.AtLocation
+module
+
+public meta import Mathlib.Util.AtLocation
+public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
+public import Mathlib.Tactic.NormNum.PowMod
+public import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
 # `reduce_mod_char` tactic
@@ -32,6 +34,8 @@ In addition to the main functionality, we call `normNeg` and `normNegCoeffMul` t
 with multiplication by `p - 1`, and simp lemmas tagged `@[reduce_mod_char]` to clean up the
 resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
+
+public meta section
 
 open Lean Meta Simp
 open Lean.Elab
@@ -75,7 +79,7 @@ mutual
       (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
     let .app (.app (f : Q($α → ℕ → $α)) (a : Q($α))) (b : Q(ℕ)) ← whnfR e | failure
     let .isNat sα na pa ← normIntNumeral' n n' pn a _ instCharP | failure
-    let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(instAddMonoidWithOneNat)
+    let ⟨nb, pb⟩ ← Mathlib.Meta.NormNum.deriveNat b q(Nat.instAddMonoidWithOne)
     guard <|← withNewMCtxDepth <| isDefEq f q(HPow.hPow (α := $α))
     haveI' : $e =Q $a ^ $b := ⟨⟩
     haveI' : $f =Q HPow.hPow := ⟨⟩
@@ -99,7 +103,7 @@ lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ)
 reduce `e` modulo `n`. -/
 partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (_ : Q(Ring $α))
     (instCharP : Q(CharP $α $n)) : MetaM (Result e) := do
-  let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
+  let ⟨n', pn⟩ ← deriveNat n q(Nat.instAddMonoidWithOne)
   normIntNumeral' n n' pn e _ instCharP
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)
@@ -284,7 +288,7 @@ The variant `reduce_mod_char!` also tries to use `CharP R n` hypotheses in the c
 `n` is not yet known; use `have : CharP R n := inferInstance; reduce_mod_char!` as a workaround.)
 -/
 syntax (name := reduce_mod_char) "reduce_mod_char" (location)? : tactic
-@[inherit_doc reduce_mod_char]
+@[tactic_alt reduce_mod_char]
 syntax (name := reduce_mod_char!) "reduce_mod_char!" (location)? : tactic
 
 open Mathlib.Tactic in

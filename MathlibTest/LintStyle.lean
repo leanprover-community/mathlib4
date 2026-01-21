@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 
@@ -7,7 +8,7 @@ import Mathlib.Order.SetNotation
 section setOption
 set_option linter.style.setOption true
 
--- All types of options are supported: boolean, numeric and string-valued.
+-- All types of options are supported: Boolean, numeric and string-valued.
 -- On the top level, i.e. as commands.
 
 /--
@@ -167,6 +168,19 @@ set_option synthInstance.maxHeartbeats 20 in
 section
 end
 
+/--
+warning: Unscoped option linter.flexible is not allowed:
+Please scope this to individual declarations, as in
+```
+set_option linter.flexible in
+-- comment explaining why this is necessary
+example : ... := ...
+```
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option linter.flexible false
 
 end setOption
 

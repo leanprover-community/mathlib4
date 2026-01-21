@@ -3,13 +3,16 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Analysis.Convex.EGauge
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Seminorm
+module
+
+public import Mathlib.Analysis.Convex.EGauge
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 import Mathlib.Tactic.Peel
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -24,7 +27,7 @@ we say that $f = o(g)$ (resp., $f = O(g)$)
 if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
 such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$
-(resp, $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$,
+(resp., $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$),
 where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
 
 In a normed space, we can use balls of positive radius as both `U` and `V`,
@@ -60,6 +63,8 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 - Prove a version of `Asymptotics.isBigO_One` for `IsBigOTVS`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
@@ -140,7 +145,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
   refine ⟨V, hV₀, fun ε hε ↦ ?_⟩
   cases ε with
-  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ mul_le_mul_right' le_top _
+  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ by dsimp; grw [← le_top]
   | coe ε => exact hV ε (mod_cast hε)
 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
@@ -165,9 +170,37 @@ theorem IsLittleOTVS.congr_left (h : f₁ =o[𝕜; l] g) (hf : ∀ x, f₁ x = f
 theorem IsLittleOTVS.congr_right (h : f =o[𝕜; l] g₁) (hg : ∀ x, g₁ x = g₂ x) : f =o[𝕜; l] g₂ :=
   h.congr (fun _ ↦ rfl) hg
 
+theorem isBigOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
+    f₁ =O[𝕜; l] g₁ ↔ f₂ =O[𝕜; l] g₂ := by
+  simp only [isBigOTVS_iff]
+  peel with U hU V hV
+  exact eventuallyLE_congr (hf.fun_comp (egauge 𝕜 U)) (hg.fun_comp (egauge 𝕜 V))
+
+/-- A stronger version of `IsBigOTVS.congr` that requires the functions only agree along the
+filter. -/
+theorem IsBigOTVS.congr' (h : f₁ =O[𝕜; l] g₁) (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
+    f₂ =O[𝕜; l] g₂ :=
+  (isBigOTVS_congr hf hg).mp h
+
+theorem IsBigOTVS.congr (h : f₁ =O[𝕜; l] g₁) (hf : ∀ x, f₁ x = f₂ x) (hg : ∀ x, g₁ x = g₂ x) :
+    f₂ =O[𝕜; l] g₂ :=
+  h.congr' (univ_mem' hf) (univ_mem' hg)
+
+theorem IsBigOTVS.congr_left (h : f₁ =O[𝕜; l] g) (hf : ∀ x, f₁ x = f₂ x) : f₂ =O[𝕜; l] g :=
+  h.congr hf fun _ ↦ rfl
+
+theorem IsBigOTVS.congr_right (h : f =O[𝕜; l] g₁) (hg : ∀ x, g₁ x = g₂ x) : f =O[𝕜; l] g₂ :=
+  h.congr (fun _ ↦ rfl) hg
+
 end congr
 
 variable {l l₁ l₂ : Filter α} {f : α → E} {g : α → F}
+
+protected theorem IsBigOTVS.refl (f : α → E) (l : Filter α) : f =O[𝕜; l] f := by
+  rw [isBigOTVS_iff]
+  exact fun U hU ↦ ⟨U, hU, EventuallyLE.rfl⟩
+
+protected theorem IsBigOTVS.rfl : f =O[𝕜; l] f := .refl f l
 
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
@@ -301,6 +334,18 @@ lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g ∘ f)
 lemma _root_.ContinuousLinearMap.isBigOTVS_fun_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
   g.isBigOTVS_comp
 
+lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (𝓝 0) ≤ 𝓝 0) :
+    f =O[𝕜; l] (g ∘ f) := by
+  constructor
+  intro U hU
+  rcases mem_comap.1 (hg hU) with ⟨V, hV, hgV⟩
+  use V, hV
+  filter_upwards with a
+  refine le_egauge_of_forall_ne_zero (mem_of_mem_nhds hV) fun c hc₀ hc ↦ ?_
+  apply egauge_le_of_mem_smul
+  grw [← hgV, ← (IsUnit.mk0 _ hc₀).preimage_smul_set]
+  exact hc
+
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
@@ -379,6 +424,98 @@ theorem IsBigOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     (h₁ : f₁ =O[𝕜; l] g) (h₂ : f₂ =O[𝕜; l] g) : (f₁ + f₂) =O[𝕜; l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans <| h₁.prodMk h₂
+
+theorem IsLittleOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
+    (h₁ : (f₁ - f₂) =o[𝕜; l] g) (h₂ : (f₂ - f₃) =o[𝕜; l] g) : (f₁ - f₃) =o[𝕜; l] g := by
+  simpa using h₁.add h₂
+
+theorem IsBigOTVS.triangle [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+    {f₁ f₂ f₃ : α → E} {g : α → F} {l : Filter α}
+    (h₁ : (f₁ - f₂) =O[𝕜; l] g) (h₂ : (f₂ - f₃) =O[𝕜; l] g) : (f₁ - f₃) =O[𝕜; l] g := by
+  simpa using h₁.add h₂
+
+section NegLeft
+
+variable [ContinuousNeg E]
+
+theorem IsBigOTVS.neg_left (h : f =O[𝕜; l] g) : (-f) =O[𝕜; l] g :=
+  .trans ((ContinuousLinearMap.mk (-.id (R := 𝕜)) continuous_neg).isBigOTVS_comp) h
+
+@[simp]
+theorem isBigOTVS_neg_left : (-f) =O[𝕜; l] g ↔ f =O[𝕜; l] g :=
+  ⟨fun h ↦ by simpa using h.neg_left, .neg_left⟩
+
+@[simp]
+theorem isBigOTVS_fun_neg_left : (-f ·) =O[𝕜; l] g ↔ f =O[𝕜; l] g :=
+  isBigOTVS_neg_left
+
+theorem IsLittleOTVS.neg_left (h : f =o[𝕜; l] g) : (-f) =o[𝕜; l] g :=
+  IsBigOTVS.rfl.neg_left.trans_isLittleOTVS h
+
+@[simp]
+theorem isLittleOTVS_neg_left : (-f) =o[𝕜; l] g ↔ f =o[𝕜; l] g :=
+  ⟨fun h ↦ by simpa using h.neg_left, .neg_left⟩
+
+@[simp]
+theorem isLittleOTVS_fun_neg_left : (-f ·) =o[𝕜; l] g ↔ f =o[𝕜; l] g :=
+  isLittleOTVS_neg_left
+
+@[to_fun]
+protected theorem IsLittleOTVS.symm {f₁ f₂ : α → E} (h : (f₁ - f₂) =o[𝕜; l] g) :
+    (f₂ - f₁) =o[𝕜; l] g := by
+  simpa using h.neg_left
+
+theorem isLittleOTVS_comm {f₁ f₂ : α → E} :
+    (f₁ - f₂) =o[𝕜; l] g ↔ (f₂ - f₁) =o[𝕜; l] g :=
+  ⟨.symm, .symm⟩
+
+theorem isLittleOTVS_fun_comm {f₁ f₂ : α → E} :
+    (fun a ↦ f₁ a - f₂ a) =o[𝕜; l] g ↔ (fun a ↦ f₂ a - f₁ a) =o[𝕜; l] g :=
+  isLittleOTVS_comm
+
+@[to_fun]
+protected theorem IsBigOTVS.symm {f₁ f₂ : α → E} (h : (f₁ - f₂) =O[𝕜; l] g) :
+    (f₂ - f₁) =O[𝕜; l] g := by
+  simpa using h.neg_left
+
+theorem isBigOTVS_comm {f₁ f₂ : α → E} :
+    (f₁ - f₂) =O[𝕜; l] g ↔ (f₂ - f₁) =O[𝕜; l] g :=
+  ⟨.symm, .symm⟩
+
+theorem isBigOTVS_fun_comm {f₁ f₂ : α → E} :
+    (fun a ↦ f₁ a - f₂ a) =O[𝕜; l] g ↔ (fun a ↦ f₂ a - f₁ a) =O[𝕜; l] g :=
+  isBigOTVS_comm
+
+end NegLeft
+
+section NegRight
+
+variable [ContinuousNeg F]
+
+theorem IsBigOTVS.neg_right (h : f =O[𝕜; l] g) : f =O[𝕜; l] (-g) :=
+  h.trans <| by simpa using (IsBigOTVS.refl (-g) l).neg_left
+
+@[simp]
+theorem isBigOTVS_neg_right : f =O[𝕜; l] (-g) ↔ f =O[𝕜; l] g :=
+  ⟨fun h ↦ by simpa using h.neg_right, .neg_right⟩
+
+@[simp]
+theorem isBigOTVS_fun_neg_right : f =O[𝕜; l] (-g ·) ↔ f =O[𝕜; l] g :=
+  isBigOTVS_neg_right
+
+theorem IsLittleOTVS.neg_right (h : f =o[𝕜; l] g) : f =o[𝕜; l] (-g) :=
+  h.trans_isBigOTVS (.neg_right .rfl)
+
+@[simp]
+theorem isLittleOTVS_neg_right : f =o[𝕜; l] (-g) ↔ f =o[𝕜; l] g :=
+  ⟨fun h ↦ by simpa using h.neg_right, .neg_right⟩
+
+@[simp]
+theorem isLittleOTVS_fun_neg_right : f =o[𝕜; l] (-g ·) ↔ f =o[𝕜; l] g :=
+  isLittleOTVS_neg_right
+
+end NegRight
 
 protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
     [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]

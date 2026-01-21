@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Polynomials and adjoining roots
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 * `Polynomial.instCommSemiringAdjoinSingleton, instCommRingAdjoinSingleton`:
   adjoining an element to a commutative (semi)ring gives a commutative (semi)ring
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -68,7 +72,7 @@ theorem _root_.Algebra.adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
     M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
     M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
-  aesop
+  grind
 
 instance instCommSemiringAdjoinSingleton :
     CommSemiring <| adjoin R {x} :=

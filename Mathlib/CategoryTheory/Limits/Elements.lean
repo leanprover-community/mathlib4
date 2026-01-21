@@ -3,10 +3,12 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # Limits in the category of elements
@@ -16,6 +18,8 @@ the category of elements of `A` has limits of shape `I` and the forgetful functo
 `π : A.Elements ⥤ C` creates them.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v u₁ u
 

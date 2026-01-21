@@ -3,15 +3,18 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Localization functors are preserved through equivalences
 
-In `Localization/Predicate.lean`, the lemma `Localization.of_equivalence_target` already
-showed that the predicate of localized categories is unchanged when we replace the
-target category (i.e. the candidate localized category) by an equivalent category.
+In `Mathlib/CategoryTheory/Localization/Predicate.lean`, the lemma
+`Localization.of_equivalence_target` already showed that the predicate of localized categories is
+unchanged when we replace the target category (i.e. the candidate localized category) by an
+equivalent category.
 In this file, we show the same for the source category (`Localization.of_equivalence_source`).
 More generally, `Localization.of_equivalences` shows that we may replace both the
 source and target categories by equivalent categories. This is obtained using
@@ -20,12 +23,14 @@ that a functor between localized categories is an equivalence.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D D₁ D₂ : Type*} [Category C₁] [Category C₂] [Category D]
-  [Category D₁] [Category D₂]
+variable {C₁ C₂ D D₁ D₂ : Type*} [Category* C₁] [Category* C₂] [Category* D]
+  [Category* D₁] [Category* D₂]
 
 namespace Localization
 
@@ -91,7 +96,7 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
               _ ≅ (E.inverse ⋙ E.functor) ⋙ W₂.Q := (Functor.associator _ _ _).symm
               _ ≅ 𝟭 C₂ ⋙ W₂.Q := isoWhiskerRight E.counitIso _
               _ ≅ W₂.Q := leftUnitor _)
-          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _)  ≪≫ iso) }
+          (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Lifting.iso W₂.Q W₂ _ _) ≪≫ iso) }
 
 /-- If `L₁ : C₁ ⥤ D₁` is a localization functor for `W₁ : MorphismProperty C₁`, then if we
 transport this functor `L₁` via equivalences `C₁ ≌ C₂` and `D₁ ≌ D₂` to get a functor

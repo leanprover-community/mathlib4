@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Matrix
-import Mathlib.Data.Matrix.PEquiv
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.Analysis.CStarAlgebra.Matrix
+public import Mathlib.Data.Matrix.PEquiv
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Permutation matrices
@@ -25,6 +26,8 @@ This file defines the matrix associated with a permutation
 - `Matrix.trace_permutation`: the trace is the number of fixed points of the permutation
 
 -/
+
+@[expose] public section
 
 open Equiv
 

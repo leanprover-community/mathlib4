@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Setoid.Partition
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Setoid.Partition
 
 /-! # Cardinality of parts of partitions
 
@@ -14,6 +15,8 @@ import Mathlib.Data.Setoid.Partition
   the cardinal of a set is the sum of the cardinalities of its trace on the parts of the partition
 
 -/
+
+public section
 
 section Finite
 

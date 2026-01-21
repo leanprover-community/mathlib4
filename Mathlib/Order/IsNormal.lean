@@ -3,8 +3,10 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.Order.SuccPred.InitialSeg
+module
+
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Normal functions
@@ -16,11 +18,10 @@ We opt for an equivalent definition that's both simpler and often more convenien
 is a strictly monotonic function `f` such that at successor limits `a`, `f a` is the least upper
 bound of `f b` with `b < a`.
 
-## TODO
-
-* Prove the equivalence with the standard definition (in some other file).
-* Replace `Ordinal.IsNormal` by this more general notion.
+See `Order.isNormal_iff_strictMono_and_continuous` for a proof that these notions are equivalent.
 -/
+
+@[expose] public section
 
 open Order Set
 
@@ -46,16 +47,14 @@ namespace IsNormal
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
+protected theorem monotone {f : α → β} (hf : IsNormal f) : Monotone f :=
+  hf.strictMono.monotone
+
 theorem isLUB_image_Iio_of_isSuccLimit {f : α → β} (hf : IsNormal f) {a : α} (ha : IsSuccLimit a) :
     IsLUB (f '' Iio a) (f a) := by
   refine ⟨?_, hf.2 ha⟩
   rintro - ⟨b, hb, rfl⟩
   exact (hf.1 hb).le
-
-@[deprecated "use the default constructor of `IsNormal` directly" (since := "2025-07-08")]
-theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
-    (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f :=
-  ⟨hf, hl⟩
 
 theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by

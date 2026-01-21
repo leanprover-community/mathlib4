@@ -3,13 +3,17 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Bilinear
+module
+
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm: Cartesian products
 
 Interaction of operator norm with Cartesian products.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
 

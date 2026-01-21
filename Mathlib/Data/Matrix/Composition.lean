@@ -3,9 +3,10 @@ Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yunzhou Xie, Eric Wieser
 -/
+module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Composition of matrices
@@ -23,6 +24,8 @@ Semiring, and Algebra over a CommSemiring K.
 
 -/
 
+@[expose] public section
+
 namespace Matrix
 
 variable (I J K L R R' : Type*)
@@ -36,6 +39,9 @@ def comp : Matrix I J (Matrix K L R) ≃ Matrix (I × K) (J × L) R where
 
 section Basic
 variable {R I J K L}
+
+theorem comp_one [DecidableEq I] [DecidableEq J] [Zero R] [One R] : comp I I J J R 1 = 1 := by
+  ext; simp only [comp, Equiv.coe_fn_mk, one_apply, apply_ite]; aesop
 
 theorem comp_map_map (M : Matrix I J (Matrix K L R)) (f : R → R') :
     comp I J K L _ (M.map (fun M' => M'.map f)) = (comp I J K L _ M).map f := rfl
@@ -62,16 +68,12 @@ theorem comp_single_single
       single_apply_of_col_ne _ _ (ne_of_apply_ne Prod.snd hj)]
   rw [single_apply_same, single_apply_same]
 
-@[deprecated (since := "2025-05-05")] alias comp_stdBasisMatrix_stdBasisMatrix := comp_single_single
-
 @[simp]
 theorem comp_symm_single
     [DecidableEq I] [DecidableEq J] [DecidableEq K] [DecidableEq L] [Zero R] (ii jj r) :
     (comp I J K L R).symm (single ii jj r) =
       (single ii.1 jj.1 (single ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_single_single _ _ _ _ _ |>.symm
-
-@[deprecated (since := "2025-05-05")] alias comp_symm_stdBasisMatrix := comp_symm_single
 
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
@@ -120,11 +122,7 @@ theorem compAddEquiv_apply (M : Matrix I J (Matrix K L R)) :
 theorem compAddEquiv_symm_apply (M : Matrix (I × K) (J × L) R) :
     (compAddEquiv I J K L R).symm M = (comp I J K L R).symm M := rfl
 
-end AddCommMonoid
-
-section Semiring
-
-variable [Semiring R] [Fintype I] [Fintype J]
+variable [Mul R] [Fintype I] [Fintype J]
 
 /-- `Matrix.comp` as `RingEquiv` -/
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
@@ -139,15 +137,20 @@ theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
 theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
     (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
-end Semiring
+instance (R) [MulOne R] [AddCommMonoid R] [Fintype I] [DecidableEq I] [IsStablyFiniteRing R] :
+    IsStablyFiniteRing (Matrix I I R) :=
+  ⟨fun n ↦ .of_injective (MonoidHom.mk ⟨_, comp_one⟩ (compRingEquiv (Fin n) I R).map_mul)
+    (RingEquiv.injective _)⟩
+
+end AddCommMonoid
 
 section LinearMap
 
-variable (K : Type*) [CommSemiring K] [AddCommMonoid R] [Module K R]
+variable (R₀ : Type*) [Semiring R₀] [AddCommMonoid R] [Module R₀ R]
 
 /-- `Matrix.comp` as `LinearEquiv` -/
 @[simps!]
-def compLinearEquiv : Matrix I J (Matrix K L R) ≃ₗ[K] Matrix (I × K) (J × L) R where
+def compLinearEquiv : Matrix I J (Matrix K L R) ≃ₗ[R₀] Matrix (I × K) (J × L) R where
   __ := Matrix.compAddEquiv I J K L R
   map_smul' _ _ := rfl
 

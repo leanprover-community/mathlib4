@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
-import Mathlib.CategoryTheory.Monoidal.Center
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
+public import Mathlib.CategoryTheory.Monoidal.Center
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Enriched categories
@@ -25,13 +27,15 @@ We don't yet define the `V`-object of natural transformations
 between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
-We verify that when `V = Type v`, all these notion reduce to the usual ones.
+We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 ## References
 
 * [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
   [morrison-penney-enriched]
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u₁ u₂ u₃
@@ -352,7 +356,7 @@ def forget (F : EnrichedFunctor W C D) :
   map_comp f g := by
     dsimp
     apply_fun ForgetEnrichment.homTo W
-    · simp only [Iso.cancel_iso_inv_left, Category.assoc, tensor_comp,
+    · simp only [Iso.cancel_iso_inv_left, Category.assoc, ← tensorHom_comp_tensorHom,
         ForgetEnrichment.homTo_homOf, EnrichedFunctor.map_comp, ForgetEnrichment.homTo_comp]
       rfl
     · intro f g w; apply_fun ForgetEnrichment.homOf W at w; simpa using w
@@ -382,7 +386,7 @@ variable {D : Type u₂} [EnrichedCategory V D]
 /-!
 We now turn to natural transformations between `V`-functors.
 
-The mostly commonly encountered definition of an enriched natural transformation
+The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
 ```
 (𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)
@@ -489,8 +493,8 @@ def enrichedNatTransYoneda (F G : EnrichedFunctor V C D) : Vᵒᵖ ⥤ Type max 
         have p := σ.naturality X Y
         dsimp at p ⊢
         rw [← id_tensor_comp_tensor_id (f.unop ≫ σ.app Y) _, id_tensor_comp, Category.assoc,
-          Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p, ←
-          tensor_comp_assoc, Category.id_comp] }
+          Category.assoc, ← braiding_naturality_assoc, id_tensor_comp_tensor_id_assoc, p,
+          tensorHom_comp_tensorHom_assoc, Category.id_comp] }
 
 -- TODO assuming `[HasLimits C]` construct the actual object of natural transformations
 -- and show that the functor category is `V`-enriched.
