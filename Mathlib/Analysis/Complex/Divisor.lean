@@ -235,7 +235,8 @@ abbrev divisorZeroIndex₀_val {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroI
     simp [hdiv]
   exact hn this
 
-lemma divisorZeroIndex₀_val_mem_divisor_support' {f : ℂ → ℂ} {U : Set ℂ} (p : divisorZeroIndex₀ f U) :
+lemma divisorZeroIndex₀_val_mem_divisor_support' {f : ℂ → ℂ} {U : Set ℂ}
+    (p : divisorZeroIndex₀ f U) :
     divisorZeroIndex₀_val p ∈ (MeromorphicOn.divisor f U).support := by
   simp [Function.mem_support]
 
@@ -296,7 +297,8 @@ lemma divisorZeroIndex₀_val_eq_of_mem_ball
     divisorZeroIndex₀_val_mem_divisor_support' (p := p)
   have : divisorZeroIndex₀_val p ∈
       Metric.ball z₀ ε ∩ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support := ⟨hp, hsupp⟩
-  simpa [hball] using this
+  simp [hball] at this
+  simpa using this
 
 lemma weierstrassFactor_div_ne_zero_on_ball_of_val_ne
     (m : ℕ) {f : ℂ → ℂ} {z₀ : ℂ} {ε : ℝ}
@@ -316,7 +318,8 @@ lemma weierstrassFactor_div_ne_zero_on_ball_of_val_ne
   have hz0 : z = z₀ := by
     have : z ∈ Metric.ball z₀ ε ∩ (MeromorphicOn.divisor f (Set.univ : Set ℂ)).support :=
       ⟨hzball, hz_support⟩
-    simpa [hball] using this
+    simp [hball] at this
+    simpa using this
   have : divisorZeroIndex₀_val p = z₀ := by
     calc
       divisorZeroIndex₀_val p = z := by simp [hz_eq]
