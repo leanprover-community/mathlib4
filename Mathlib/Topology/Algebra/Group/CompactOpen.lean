@@ -3,15 +3,19 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.UniformSpace.Ascoli
+module
+
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
 # The compact-open topology on continuous monoid morphisms.
 -/
+
+@[expose] public section
 
 open Function Topology
 open scoped Pointwise
@@ -30,15 +34,10 @@ instance : TopologicalSpace (ContinuousMonoidHom A B) :=
 theorem isInducing_toContinuousMap :
     IsInducing (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) := ⟨rfl⟩
 
-@[deprecated (since := "2024-10-28")] alias inducing_toContinuousMap := isInducing_toContinuousMap
-
 @[to_additive]
 theorem isEmbedding_toContinuousMap :
     IsEmbedding (toContinuousMap : ContinuousMonoidHom A B → C(A, B)) :=
   ⟨isInducing_toContinuousMap A B, toContinuousMap_injective⟩
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
 
 @[to_additive]
 instance instContinuousEvalConst : ContinuousEvalConst (ContinuousMonoidHom A B) A B :=
@@ -109,7 +108,7 @@ theorem continuous_comp_right (f : ContinuousMonoidHom B C) :
 
 variable (E) in
 /-- `ContinuousMonoidHom _ f` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom _ f` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom _ f` is a functor. -/]
 def compLeft (f : ContinuousMonoidHom A B) :
     ContinuousMonoidHom (ContinuousMonoidHom B E) (ContinuousMonoidHom A E) where
   toFun g := g.comp f
@@ -119,7 +118,7 @@ def compLeft (f : ContinuousMonoidHom A B) :
 
 variable (A) in
 /-- `ContinuousMonoidHom f _` is a functor. -/
-@[to_additive "`ContinuousAddMonoidHom f _` is a functor."]
+@[to_additive /-- `ContinuousAddMonoidHom f _` is a functor. -/]
 def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup B]
     (f : ContinuousMonoidHom B E) :
     ContinuousMonoidHom (ContinuousMonoidHom A B) (ContinuousMonoidHom A E) where

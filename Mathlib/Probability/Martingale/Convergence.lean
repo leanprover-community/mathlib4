@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Constructions.Polish.Basic
-import Mathlib.MeasureTheory.Function.UniformIntegrable
-import Mathlib.Probability.Martingale.Upcrossing
+module
+
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
+public import Mathlib.Probability.Martingale.Upcrossing
 
 /-!
 
@@ -21,16 +23,16 @@ theorems.
 ## Main results
 
 * `MeasureTheory.Submartingale.ae_tendsto_limitProcess`: the almost everywhere martingale
-  convergence theorem: an L¹-bounded submartingale adapted to the filtration `ℱ` converges almost
-  everywhere to its limit process.
+  convergence theorem: an L¹-bounded submartingale strongly adapted to the filtration `ℱ`
+  converges almost everywhere to its limit process.
 * `MeasureTheory.Submartingale.memLp_limitProcess`: the limit process of an Lᵖ-bounded
   submartingale is Lᵖ.
 * `MeasureTheory.Submartingale.tendsto_eLpNorm_one_limitProcess`: part a of the L¹ martingale
-  convergence theorem: a uniformly integrable submartingale adapted to the filtration `ℱ` converges
-  almost everywhere and in L¹ to an integrable function which is measurable with respect to
-  the σ-algebra `⨆ n, ℱ n`.
+  convergence theorem: a uniformly integrable submartingale strongly adapted to the filtration `ℱ`
+  converges almost everywhere and in L¹ to an integrable function which is measurable with respect
+  to the σ-algebra `⨆ n, ℱ n`.
 * `MeasureTheory.Martingale.ae_eq_condExp_limitProcess`: part b the L¹ martingale convergence
-  theorem: if `f` is a uniformly integrable martingale adapted to the filtration `ℱ`, then
+  theorem: if `f` is a uniformly integrable martingale strongly adapted to the filtration `ℱ`, then
   `f n` equals `𝔼[g | ℱ n]` almost everywhere where `g` is the limiting process of `f`.
 * `MeasureTheory.Integrable.tendsto_ae_condExp`: part c the L¹ martingale convergence theorem:
   given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges
@@ -40,6 +42,8 @@ theorems.
   L¹ to `g`.
 
 -/
+
+public section
 
 
 open TopologicalSpace Filter MeasureTheory.Filtration
@@ -87,7 +91,7 @@ $$
 $$
 as required.
 
-Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
+In terms of implementation, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
 that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
@@ -103,7 +107,7 @@ submartingale converges to its `limitProcess` almost everywhere.
 -/
 
 
-/-- If a stochastic process has bounded upcrossing from below `a` to above `b`,
+/-- If a stochastic process has a finite number of upcrossings from below `a` to above `b`,
 then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
@@ -130,7 +134,7 @@ theorem upcrossings_eq_top_of_frequently_lt (hab : a < b) (h₁ : ∃ᶠ n in at
     (h₂ : ∃ᶠ n in atTop, b < f n ω) : upcrossings a b f ω = ∞ :=
   by_contradiction fun h => not_frequently_of_upcrossings_lt_top hab h ⟨h₁, h₂⟩
 
-/-- A realization of a stochastic process with bounded upcrossings and bounded liminfs is
+/-- A realization of a stochastic process with bounded upcrossings and bounded limit inferiors is
 convergent.
 
 We use the spelling `< ∞` instead of the standard `≠ ∞` in the assumptions since it is not as easy
@@ -150,7 +154,7 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
 /-- An L¹-bounded submartingale has bounded upcrossings almost everywhere. -/
 theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) (hab : a < b) : ∀ᵐ ω ∂μ, upcrossings a b f ω < ∞ := by
-  refine ae_lt_top (hf.adapted.measurable_upcrossings hab) ?_
+  refine ae_lt_top (hf.stronglyAdapted.measurable_upcrossings hab) ?_
   have := hf.mul_lintegral_upcrossings_le_lintegral_pos_part a b
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine (lt_of_le_of_lt this (ENNReal.div_lt_top ?_ ?_)).ne
@@ -168,13 +172,13 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         fun n => le_trans ?_ (hR' n)⟩)
       refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
-      · by_cases hnonneg : 0 ≤ f n ω - a
+      · by_cases! hnonneg : 0 ≤ f n ω - a
         · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
-        · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
+        · rw [posPart_eq_zero.2 hnonneg.le]
           exact norm_nonneg _
       · finiteness
     · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · left;simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+  · left; simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
   · left; finiteness
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -232,9 +236,6 @@ theorem Submartingale.memLp_limitProcess {p : ℝ≥0∞} (hf : Submartingale f 
   memLp_limitProcess_of_eLpNorm_bdd
     (fun n => ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable) hbdd
 
-@[deprecated (since := "2025-02-21")]
-alias Submartingale.memℒp_limitProcess := Submartingale.memLp_limitProcess
-
 end AeConvergence
 
 section L1Convergence
@@ -248,8 +249,8 @@ variable [IsFiniteMeasure μ] {g : Ω → ℝ}
 We will now prove the L¹ martingale convergence theorems.
 
 The L¹ martingale convergence theorem states that:
-(a) if `f` is a uniformly integrable (in the probability sense) submartingale adapted to the
-  filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
+(a) if `f` is a uniformly integrable (in the probability sense) submartingale strongly adapted to
+  the filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
   respect to `ℱ∞ := ⨆ n, ℱ n` and
 (b) if `f` is actually a martingale, `f n = 𝔼[g | ℱ n]` almost everywhere.
 (c) Finally, if `h` is integrable and measurable with respect to `ℱ∞`, `(𝔼[h | ℱ n])ₙ` is a
@@ -264,7 +265,7 @@ equivalence is provided by `MeasureTheory.uniformIntegrable_iff`.
 (b) follows since given $n$, we have for all $m \ge n$,
 $$
   \|f_n - \mathbb{E}[g \mid \mathcal{F}_n]\|_1 =
-    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|\|f_m - g\|_1.
+    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|f_m - g\|_1.
 $$
 Thus, taking $m \to \infty$ provides the almost everywhere equality.
 
@@ -276,12 +277,12 @@ $\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
 $\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
 inequality, we have for all $n$,
 $$
-  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb|g| < \delta,
+  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb{E}|h| < \delta,
 $$
 we have for sufficiently large $\lambda$, for all $n$,
 $$
   \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
-    \mathbb|g|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
+    \mathbb{E}|h|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
 $$
 implying $(f_n)_n$ is uniformly integrable. Now, to prove $f_n \to h$ almost everywhere and in
 L¹, it suffices to show that $h = g$ almost everywhere where $g$ is the almost everywhere and L¹
@@ -291,7 +292,7 @@ $$
   \mathbb{E}g\mathbf{1}_s = \mathbb{E}[\mathbb{E}[g \mid \mathcal{F}_n]\mathbf{1}_s] =
     \mathbb{E}[\mathbb{E}[h \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}h\mathbf{1}_s
 $$
-where $\mathbb{E}[g \mid \mathcal{F}_n = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
+where $\mathbb{E}[g \mid \mathcal{F}_n] = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
 by part (b); the equality also holds for all $s \in \mathcal{F}_\infty$ by Dynkin's theorem.
 Thus, as both $h$ and $g$ are $\mathcal{F}_\infty$-measurable, $h = g$ almost everywhere as
 required.
@@ -306,7 +307,7 @@ and the a.e. limit of a submartingale coincide.
 
 
 /-- Part a of the **L¹ martingale convergence theorem**: a uniformly integrable submartingale
-adapted to the filtration `ℱ` converges a.e. and in L¹ to an integrable function which is
+strongly adapted to the filtration `ℱ` converges a.e. and in L¹ to an integrable function which is
 measurable with respect to the σ-algebra `⨆ n, ℱ n`. -/
 theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
@@ -324,8 +325,8 @@ theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submart
   let ⟨_, hR⟩ := hunif.2.2
   hf.ae_tendsto_limitProcess hR
 
-/-- If a martingale `f` adapted to `ℱ` converges in L¹ to `g`, then for all `n`, `f n` is almost
-everywhere equal to `𝔼[g | ℱ n]`. -/
+/-- If a martingale `f` strongly adapted to `ℱ` converges in L¹ to `g`, then for all `n`, `f n` is
+almost everywhere equal to `𝔼[g | ℱ n]`. -/
 theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Martingale f ℱ μ)
     (hg : Integrable g μ) (hgtends : Tendsto (fun n => eLpNorm (f n - g) 1 μ) atTop (𝓝 0)) (n : ℕ) :
     f n =ᵐ[μ] μ[g|ℱ n] := by
@@ -341,20 +342,14 @@ theorem Martingale.eq_condExp_of_tendsto_eLpNorm {μ : Measure Ω} (hf : Marting
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
 
-@[deprecated (since := "2025-01-21")]
-alias Martingale.eq_condexp_of_tendsto_eLpNorm := Martingale.eq_condExp_of_tendsto_eLpNorm
-
 /-- Part b of the **L¹ martingale convergence theorem**: if `f` is a uniformly integrable martingale
-adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the conditional
-expectation of its limiting process wrt. `ℱ n`. -/
+strongly adapted to the filtration `ℱ`, then for all `n`, `f n` is almost everywhere equal to the
+conditional expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ|ℱ n] :=
   let ⟨_, hR⟩ := hbdd.2.2
   hf.eq_condExp_of_tendsto_eLpNorm ((memLp_limitProcess_of_eLpNorm_bdd hbdd.1 hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
-
-@[deprecated (since := "2025-01-21")]
-alias Martingale.ae_eq_condexp_limitProcess := Martingale.ae_eq_condExp_limitProcess
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
@@ -410,9 +405,6 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_ae_condexp := Integrable.tendsto_ae_condExp
-
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
@@ -429,9 +421,6 @@ theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
       (fun n => (stronglyMeasurable_condExp.mono (ℱ.le n)).aestronglyMeasurable)
       (hg.tendsto_ae_condExp hgmeas))
 
-@[deprecated (since := "2025-01-21")]
-alias Integrable.tendsto_eLpNorm_condexp := Integrable.tendsto_eLpNorm_condExp
-
 /-- **Lévy's upward theorem**, almost everywhere version: given a function `g` and a filtration
 `ℱ`, the sequence defined by `𝔼[g | ℱ n]` converges almost everywhere to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_ae_condExp (g : Ω → ℝ) :
@@ -444,8 +433,6 @@ theorem tendsto_ae_condExp (g : Ω → ℝ) :
   filter_upwards [heq, ht] with x hxeq hxt
   exact hxt.congr hxeq
 
-@[deprecated (since := "2025-01-21")] alias tendsto_ae_condexp := tendsto_ae_condExp
-
 /-- **Lévy's upward theorem**, L¹ version: given a function `g` and a filtration `ℱ`, the
 sequence defined by `𝔼[g | ℱ n]` converges in L¹ to `𝔼[g | ⨆ n, ℱ n]`. -/
 theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
@@ -457,8 +444,6 @@ theorem tendsto_eLpNorm_condExp (g : Ω → ℝ) :
   refine ht.congr fun n => eLpNorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
-
-@[deprecated (since := "2025-01-21")] alias tendsto_eLpNorm_condexp := tendsto_eLpNorm_condExp
 
 end L1Convergence
 

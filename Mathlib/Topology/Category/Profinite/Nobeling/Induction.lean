@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Free
-import Mathlib.Topology.Category.Profinite.Nobeling.Span
-import Mathlib.Topology.Category.Profinite.Nobeling.Successor
-import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Free
+public import Mathlib.Topology.Category.Profinite.Nobeling.Span
+public import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+public import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
 /-!
 # Nöbeling's theorem
@@ -24,7 +26,9 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 - [scholze2019condensed], Theorem 5.4.
 -/
 
-open Topology
+@[expose] public section
+
+open Module Topology
 
 universe u
 
@@ -52,7 +56,7 @@ We also define
 
 theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   have : C ⊆ {(fun _ ↦ false)} := fun c hc ↦ by
-    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ (Ordinal.not_lt_zero (ord I x)) (hsC c hc x ht))
+    ext x; exact Bool.eq_false_iff.mpr (fun ht ↦ not_lt_zero (hsC c hc x ht))
   rw [Set.subset_singleton_iff_eq] at this
   cases this
   · subst C
@@ -60,7 +64,7 @@ theorem GoodProducts.P0 : P I 0 := fun _ C _ hsC ↦ by
   · subst C
     exact linearIndependentSingleton
 
-theorem GoodProducts.Plimit (o : Ordinal) (ho : Ordinal.IsLimit o) :
+theorem GoodProducts.Plimit (o : Ordinal) (ho : Order.IsSuccLimit o) :
     (∀ (o' : Ordinal), o' < o → P I o') → P I o := by
   intro h hho C hC hsC
   rw [linearIndependent_iff_union_smaller C ho hsC, linearIndependent_subtype_iff]
@@ -141,9 +145,6 @@ theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
     dsimp +unfoldPartialApp [ι] at h
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
-
-@[deprecated (since := "2024-10-26")]
-alias Nobeling.embedding := Nobeling.isClosedEmbedding
 
 end Profinite
 

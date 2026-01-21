@@ -3,8 +3,13 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.DiscrTree
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Lean.Meta.DiscrTree
+public import Lean.Meta.LazyDiscrTree
+import all Lean.Meta.DiscrTree
+public import Lean.Meta
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -26,6 +31,8 @@ To compute all the keys at once, we have
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
 
 -/
+
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 
@@ -63,8 +70,6 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
-open private toNatLit? from Lean.Meta.DiscrTree in
-
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
   withLams lambdas (← go)
@@ -82,7 +87,7 @@ where
   match e.getAppFn with
   | .const n _ =>
     unless root do
-      if let some v := toNatLit? e then
+      if let some v := LazyDiscrTree.MatchClone.toNatLit? e then
         return .lit v
     if e.getAppNumArgs != 0 then
       setEAsPrevious
@@ -192,9 +197,9 @@ private partial def evalLazyEntryAux (entry : LazyEntry) (eta : Bool) :
     match stackEntry with
     | .star =>
       return some [(.star, entry)]
-    | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
+    | .expr { expr, bvars, lctx, localInsts, cfg } =>
       withLCtx lctx localInsts do
-      withConfig (fun _ => cfg) do withTransparency transparency do
+      withConfig (fun _ => cfg) do
         if eta then
           return some (← encodingStepWithEta expr false entry |>.run { bvars := bvars })
         else
@@ -215,11 +220,7 @@ where
         if ← isIgnoredArg arg d bi then
           loop b (i+1) j (.star :: entries)
         else
-          -- Recall that on implicit arguments `isDefEq` switches to `default` transparency.
-          -- We don't want such strong reducibility, but `instances` transparency can be useful.
-          let info ← (if bi.isExplicit then id else withReducibleAndInstances) do
-            mkExprInfo arg bvars
-          loop b (i+1) j (.expr info :: entries)
+          loop b (i+1) j (.expr (← mkExprInfo arg bvars) :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
         | .forallE _ d b bi => cont i d b bi
@@ -241,12 +242,12 @@ where
 
 /--
 If `entry.previous.isSome`, then replace it with `none`, and add the required entries
-to entry.stack`.
+to `entry.stack`.
 -/
 private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
-  let some { expr, bvars, lctx, localInsts, cfg, transparency } := entry.previous | return entry
+  let some { expr, bvars, lctx, localInsts, cfg } := entry.previous | return entry
   let entry := { entry with previous := none }
-  withLCtx lctx localInsts do withConfig (fun _ => cfg) do withTransparency transparency do
+  withLCtx lctx localInsts do withConfig (fun _ => cfg) do
   expr.withApp fun fn args => do
 
     let stackArgs (entry : LazyEntry) : MetaM LazyEntry := do

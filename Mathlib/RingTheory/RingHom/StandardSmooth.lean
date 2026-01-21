@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms
@@ -13,12 +15,22 @@ import Mathlib.Tactic.Algebraize
 In this file we define standard smooth ring homomorphisms and show their
 meta properties.
 
+## Main definitions
+
+- `RingHom.IsStandardSmooth`: A ring homomorphism `R →+* S` is standard smooth if `S` is standard
+  smooth as `R`-algebra.
+- `RingHom.IsStandardSmoothOfRelativeDimension n`: A ring homomorphism `R →+* S` is standard
+  smooth of relative dimension `n` if `S` is standard smooth of relative dimension `n` as
+  `R`-algebra.
+
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
 
 -/
+
+@[expose] public section
 universe t t' w w' u v
 
 variable (n m : ℕ)
@@ -34,6 +46,10 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S]
 def IsStandardSmooth (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmooth _ _ _ _ f.toAlgebra
 
+lemma isStandardSmooth_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmooth ↔ Algebra.IsStandardSmooth R S := by
+  rw [RingHom.IsStandardSmooth, toAlgebra_algebraMap]
+
 /-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
     @Algebra.IsStandardSmooth R S _ _ f.toAlgebra := hf
@@ -43,6 +59,11 @@ lemma IsStandardSmooth.toAlgebra {f : R →+* S} (hf : IsStandardSmooth f) :
 @[algebraize RingHom.IsStandardSmoothOfRelativeDimension.toAlgebra]
 def IsStandardSmoothOfRelativeDimension (f : R →+* S) : Prop :=
   @Algebra.IsStandardSmoothOfRelativeDimension n _ _ _ _ f.toAlgebra
+
+lemma isStandardSmoothOfRelativeDimension_algebraMap [Algebra R S] :
+    (algebraMap R S).IsStandardSmoothOfRelativeDimension n ↔
+      Algebra.IsStandardSmoothOfRelativeDimension n R S := by
+  rw [RingHom.IsStandardSmoothOfRelativeDimension, toAlgebra_algebraMap]
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma IsStandardSmoothOfRelativeDimension.toAlgebra {f : R →+* S}

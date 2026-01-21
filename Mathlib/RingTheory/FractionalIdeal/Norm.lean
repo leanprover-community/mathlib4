@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Localization.NormTrace
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 
@@ -18,7 +20,7 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 
 ## Main definitions and results
 
-* `FractionalIdeal.absNorm`: the norm as a zero preserving morphism with values in `ℚ`.
+* `FractionalIdeal.absNorm`: the norm as a zero-preserving morphism with values in `ℚ`.
 * `FractionalIdeal.absNorm_eq'`: the value of the norm does not depend on the choice of
   `I.num` and `I.den`.
 * `FractionalIdeal.abs_det_basis_change`: the norm is given by the determinant
@@ -27,10 +29,12 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
   norm of its generator
 -/
 
-namespace FractionalIdeal
+@[expose] public section
 
+open Module
 open scoped Pointwise nonZeroDivisors
 
+namespace FractionalIdeal
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
@@ -46,7 +50,7 @@ theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R
     rw [h, Submonoid.smul_def, Submonoid.smul_def, ← Submodule.ideal_span_singleton_smul,
       ← Submodule.ideal_span_singleton_smul, ← Submodule.map_smul'', ← Submodule.map_smul'',
       (LinearMap.map_injective ?_).eq_iff, smul_eq_mul, smul_eq_mul] at h'
-    · simp_rw [← Int.cast_natAbs, ← Nat.cast_mul, ← Ideal.absNorm_span_singleton]
+    · simp_rw [← Nat.cast_natAbs, ← Nat.cast_mul, ← Ideal.absNorm_span_singleton]
       rw [← map_mul, ← map_mul, mul_comm, ← h', mul_comm]
     · exact LinearMap.ker_eq_bot.mpr (IsFractionRing.injective R K)
   all_goals simp [Algebra.norm_eq_zero_iff]
@@ -86,7 +90,7 @@ theorem absNorm_bot : absNorm (⊥ : FractionalIdeal R⁰ K) = 0 := absNorm.map_
 
 theorem absNorm_one : absNorm (1 : FractionalIdeal R⁰ K) = 1 := by convert absNorm.map_one'
 
-theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
+theorem absNorm_eq_zero_iff [IsDomain K] {I : FractionalIdeal R⁰ K} :
     absNorm I = 0 ↔ I = 0 := by
   refine ⟨fun h ↦ zero_of_num_eq_bot zero_notMem_nonZeroDivisors ?_, fun h ↦ h ▸ absNorm_bot⟩
   rw [absNorm_eq, div_eq_zero_iff] at h
@@ -102,14 +106,14 @@ section IsLocalization
 
 variable [IsLocalization (Algebra.algebraMapSubmonoid R ℤ⁰) K] [Algebra ℚ K]
 
-theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
+theorem abs_det_basis_change [IsDomain K] {ι : Type*} [Fintype ι]
     [DecidableEq ι] (b : Basis ι ℤ R) (I : FractionalIdeal R⁰ K) (bI : Basis ι ℤ I) :
     |(b.localizationLocalization ℚ ℤ⁰ K).det ((↑) ∘ bI)| = absNorm I := by
   have := IsFractionRing.nontrivial R K
   let b₀ : Basis ι ℚ K := b.localizationLocalization ℚ ℤ⁰ K
   let bI.num : Basis ι ℤ I.num := bI.map
       ((equivNum (nonZeroDivisors.coe_ne_zero _)).restrictScalars ℤ)
-  rw [absNorm_eq, ← Ideal.natAbs_det_basis_change b I.num bI.num, Int.cast_natAbs, Int.cast_abs,
+  rw [absNorm_eq, ← Ideal.natAbs_det_basis_change b I.num bI.num, Nat.cast_natAbs, Int.cast_abs,
     Int.cast_abs, Basis.det_apply, Basis.det_apply]
   change _ = |algebraMap ℤ ℚ _| / _
   rw [RingHom.map_det, show RingHom.mapMatrix (algebraMap ℤ ℚ) (b.toMatrix ((↑) ∘ bI.num)) =
@@ -134,7 +138,7 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
   obtain ⟨d, ⟨r, hr⟩⟩ := IsLocalization.exists_integer_multiple R⁰ x
   rw [absNorm_eq' d (Ideal.span {r})]
   · rw [Ideal.absNorm_span_singleton]
-    simp_rw [Int.cast_natAbs, Int.cast_abs, show ((Algebra.norm ℤ _) : ℚ) = algebraMap ℤ ℚ
+    simp_rw [Nat.cast_natAbs, Int.cast_abs, show ((Algebra.norm ℤ _) : ℚ) = algebraMap ℤ ℚ
       (Algebra.norm ℤ _) by rfl, ← Algebra.norm_localization ℤ ℤ⁰ (Sₘ := K) _]
     rw [hr, Algebra.smul_def, map_mul, abs_mul, mul_div_assoc, mul_div_cancel₀ _ (by
       rw [ne_eq, abs_eq_zero, Algebra.norm_eq_zero_iff, IsFractionRing.to_map_eq_zero_iff]

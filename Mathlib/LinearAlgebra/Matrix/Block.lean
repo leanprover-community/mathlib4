@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Transvection
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Block matrices and their determinant
@@ -31,6 +33,8 @@ matrices built out of blocks.
 matrix, diagonal, det, block triangular
 
 -/
+
+@[expose] public section
 
 
 open Finset Function OrderDual
@@ -150,14 +154,9 @@ theorem blockTriangular_single {i j : m} (hij : b i ≤ b j) (c : R) :
   rintro ⟨rfl, rfl⟩
   exact (hij.trans_lt hrs).false
 
-@[deprecated (since := "2025-05-05")] alias blockTriangular_stdBasisMatrix := blockTriangular_single
-
 theorem blockTriangular_single' {i j : m} (hij : b j ≤ b i) (c : R) :
     BlockTriangular (single i j c) (toDual ∘ b) :=
   blockTriangular_single (by exact toDual_le_toDual.mpr hij) _
-
-@[deprecated (since := "2025-05-05")]
-alias blockTriangular_stdBasisMatrix' := blockTriangular_single'
 
 end Zero
 
@@ -183,9 +182,9 @@ theorem BlockTriangular.mul [Fintype m] [NonUnitalNonAssocSemiring R]
   intro i j hij
   apply Finset.sum_eq_zero
   intro k _
-  by_cases hki : b k < b i
+  by_cases! hki : b k < b i
   · simp_rw [hM hki, zero_mul]
-  · simp_rw [hN (lt_of_lt_of_le hij (le_of_not_gt hki)), mul_zero]
+  · simp_rw [hN (lt_of_lt_of_le hij hki), mul_zero]
 
 end LinearOrder
 
@@ -335,7 +334,7 @@ theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockT
 /-- An upper-left subblock of an invertible block-triangular matrix is invertible. -/
 def BlockTriangular.invertibleToBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) : Invertible (M.toBlock (fun i => b i < k) fun i => b i < k) :=
-  invertibleOfLeftInverse _ ((⅟ M).toBlock (fun i => b i < k) fun i => b i < k) <| by
+  invertibleOfLeftInverse _ ((⅟M).toBlock (fun i => b i < k) fun i => b i < k) <| by
     simpa only [invOf_eq_nonsing_inv] using hM.toBlock_inverse_mul_toBlock_eq_one k
 
 /-- A lower-left subblock of the inverse of a block-triangular matrix is zero. This is a first step

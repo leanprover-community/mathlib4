@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
 # Exterior powers
@@ -18,8 +20,9 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file
+  `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
+  `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
@@ -30,6 +33,8 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -62,7 +67,7 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
-  (s : {s : Finset I // Finset.card s = n}) :
+    (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
 
 variable (M)
@@ -163,7 +168,7 @@ are equal. -/
 @[ext]
 lemma linearMap_ext {f : ⋀[R]^n M →ₗ[R] N} {g : ⋀[R]^n M →ₗ[R] N}
     (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g :=
-  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq )
+  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq)
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`: this is the universal property of the `n`th exterior power of `M`. -/
@@ -242,7 +247,7 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
 
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
-  (s : {s : Finset I // s.card = n}) :
+    (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl
@@ -267,7 +272,7 @@ noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
-      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
     (by aesop) (by aesop)
 
 @[simp]

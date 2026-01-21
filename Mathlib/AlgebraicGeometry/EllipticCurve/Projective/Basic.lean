@@ -3,10 +3,12 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
@@ -66,6 +68,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean`.
 
 elliptic curve, projective, Weierstrass equation, nonsingular
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -137,7 +141,8 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
   ⟨rfl, rfl, rfl⟩
 
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
-  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+  ext
+  simp
 
 /-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]
@@ -232,7 +237,7 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
     P y ^ 2 * P z + W'.a₁ * P x * P y * P z + W'.a₃ * P y * P z ^ 2
       - (P x ^ 3 + W'.a₂ * P x ^ 2 * P z + W'.a₄ * P x * P z ^ 2 + W'.a₆ * P z ^ 3) := by
   rw [polynomial]
-  eval_simp
+  simp
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
     W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
@@ -280,7 +285,7 @@ lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
     (hPz : P z = 0) : P x = 0 :=
-  pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
+  eq_zero_of_pow_eq_zero <| (equation_of_Z_eq_zero hPz).mp hP
 
 /-! ## The nonsingular condition in projective coordinates -/
 
@@ -299,7 +304,7 @@ lemma polynomialX_eq : W'.polynomialX =
 lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
     W'.a₁ * P y * P z - (3 * P x ^ 2 + 2 * W'.a₂ * P x * P z + W'.a₄ * P z ^ 2) := by
   rw [polynomialX_eq]
-  eval_simp
+  simp
 
 lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
@@ -322,7 +327,7 @@ lemma polynomialY_eq : W'.polynomialY =
 lemma eval_polynomialY (P : Fin 3 → R) :
     eval P W'.polynomialY = 2 * P y * P z + W'.a₁ * P x * P z + W'.a₃ * P z ^ 2 := by
   rw [polynomialY_eq]
-  eval_simp
+  simp
 
 lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
@@ -347,7 +352,7 @@ lemma eval_polynomialZ (P : Fin 3 → R) : eval P W'.polynomialZ =
     P y ^ 2 + W'.a₁ * P x * P y + 2 * W'.a₃ * P y * P z
       - (W'.a₂ * P x ^ 2 + 2 * W'.a₄ * P x * P z + 3 * W'.a₆ * P z ^ 2) := by
   rw [polynomialZ_eq]
-  eval_simp
+  simp
 
 /-- Euler's homogeneous function theorem in projective coordinates. -/
 theorem polynomial_relation (P : Fin 3 → R) : 3 * eval P W'.polynomial =

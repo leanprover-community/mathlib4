@@ -3,8 +3,10 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Cyclic linearly ordered groups
@@ -17,6 +19,8 @@ The definitions `LinearOrderedCommGroup.Subgroup.genLTOne` (*resp.*
 ordered commutative group with (*resp.* of a non-trivial linearly ordered commutative group) that
 is strictly less than `1`. The corresponding additive definitions are also provided.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -42,8 +46,8 @@ lemma exists_generator_lt_one : ∃ (a : G), a < 1 ∧ Subgroup.zpowers a = H :=
 
 /-- Given a subgroup of a cyclic linearly ordered commutative group, this is a generator of
 the subgroup that is `< 1`. -/
-@[to_additive negGen "Given an additive subgroup of an additive cyclic linearly ordered
-commutative group, this is a negative generator of the subgroup."]
+@[to_additive negGen /-- Given an additive subgroup of an additive cyclic linearly ordered
+commutative group, this is a negative generator of the subgroup. -/]
 protected noncomputable def genLTOne : G := H.exists_generator_lt_one.choose
 
 @[to_additive negGen_neg]
@@ -53,6 +57,10 @@ lemma genLTOne_lt_one : H.genLTOne < 1 :=
 @[to_additive (attr := simp) negGen_zmultiples_eq_top]
 lemma genLTOne_zpowers_eq_top : Subgroup.zpowers H.genLTOne = H :=
   H.exists_generator_lt_one.choose_spec.2
+
+lemma genLTOne_mem : H.genLTOne ∈ H := by
+  nth_rewrite 1 [← H.genLTOne_zpowers_eq_top]
+  exact Subgroup.mem_zpowers (Subgroup.genLTOne H)
 
 lemma genLTOne_unique {g : G} (hg : g < 1) (hH : Subgroup.zpowers g = H) : g = H.genLTOne := by
   have hg' : ¬ IsOfFinOrder g := not_isOfFinOrder_of_isMulTorsionFree (ne_of_lt hg)
@@ -82,8 +90,8 @@ section IsCyclic
 variable (G) [Nontrivial G] [IsCyclic G]
 
 /-- Given a cyclic linearly ordered commutative group, this is a generator that is `< 1`. -/
-@[to_additive negGen "Given an additive cyclic linearly ordered commutative group, this is a
-negative generator of it."]
+@[to_additive negGen /-- Given an additive cyclic linearly ordered commutative group, this is a
+negative generator of it. -/]
 noncomputable def genLTOne : G := (⊤ : Subgroup G).genLTOne
 
 @[to_additive (attr := simp) negGen_eq_of_top]

@@ -3,10 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Evgenia Karunus, Kyle Miller
 -/
-import Lean.Elab.Command
-import Lean.PrettyPrinter
-import Mathlib.Tactic.Explode.Datatypes
-import Mathlib.Tactic.Explode.Pretty
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.PrettyPrinter
+public meta import Mathlib.Tactic.Explode.Datatypes
+public import Mathlib.Tactic.Explode.Datatypes
+public import Mathlib.Tactic.Explode.Pretty
 
 /-!
 # Explode command
@@ -15,7 +18,8 @@ This file contains the main code behind the `#explode` command.
 If you have a theorem with a name `hi`, `#explode hi` will display a Fitch table.
 -/
 
-set_option linter.unusedVariables false
+public meta section
+
 open Lean
 
 namespace Mathlib.Explode

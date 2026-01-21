@@ -13,7 +13,6 @@ import Mathlib
 #guard_msgs in
 #check (max (min (max (max {0} {1}) (max {2} {3})) (max {4} {5})) (min (min {6} {7}) (min {8} {9})) : Set ℕ)
 
-
 section
 
 variable {α : Type*} (a b : α)
@@ -62,3 +61,24 @@ info: fun α [ConditionallyCompleteLinearOrder α] a b =>
 -/
 #guard_msgs in
 #check fun (α : Type u) [ConditionallyCompleteLinearOrder α] (a b : α) => max a b
+
+-- In this section we check that the delaborator respects the options `pp.explicit` and `pp.notation`.
+section
+
+variable [Min α] [Max α] (a b c : α)
+
+/-- info: (a ⊔ b) ⊓ c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+set_option pp.notation false in
+/-- info: min (max a b) c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+set_option pp.explicit true in
+/-- info: @min α inst✝¹ (@max α inst✝ a b) c : α -/
+#guard_msgs in
+#check min (max a b) c
+
+end

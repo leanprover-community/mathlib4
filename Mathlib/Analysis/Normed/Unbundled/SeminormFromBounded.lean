@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # seminormFromBounded
@@ -40,6 +42,8 @@ this condition holds.
 
 seminormFromBounded, RingSeminorm, Nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -139,7 +143,7 @@ theorem seminormFromBounded_ge (f_nonneg : 0 ≤ f)
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded function, then
   `seminormFromBounded' f` is nonnegative. -/
 theorem seminormFromBounded_nonneg (f_nonneg : 0 ≤ f)
-    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)  :
+    (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     0 ≤ seminormFromBounded' f := fun x ↦
   le_csSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul x) ⟨1, rfl⟩
     (div_nonneg (f_nonneg _) (f_nonneg _))
@@ -221,11 +225,10 @@ theorem seminormFromBounded_one (f_ne_zero : f ≠ 0) (f_nonneg : 0 ≤ f)
 theorem seminormFromBounded_one_le (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y) :
     seminormFromBounded' f 1 ≤ 1 := by
-  by_cases f_ne_zero : f ≠ 0
+  by_cases! f_ne_zero : f ≠ 0
   · exact le_of_eq (seminormFromBounded_one f_ne_zero f_nonneg f_mul)
   · simp_rw [seminormFromBounded', one_mul]
     refine ciSup_le (fun _ ↦ ?_)
-    push_neg at f_ne_zero
     simp only [f_ne_zero, Pi.zero_apply, div_zero, zero_le_one]
 
 /-- If `f : R → ℝ` is a nonnegative, multiplicatively bounded, subadditive function, then
@@ -241,9 +244,10 @@ theorem seminormFromBounded_add (f_nonneg : 0 ≤ f)
       (le_ciSup_of_le (seminormFromBounded_bddAbove_range f_nonneg f_mul y) z (le_refl _)))
   by_cases hz : f z = 0
   · simp only [hz, div_zero, zero_add, le_refl]
-  · rw [div_add_div_same, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
+  · rw [← add_div, div_le_div_iff_of_pos_right (lt_of_le_of_ne' (f_nonneg _) hz), add_mul]
     exact f_add _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `seminormFromBounded'` is a ring seminorm on `R`. -/
 def seminormFromBounded (f_zero : f 0 = 0) (f_nonneg : 0 ≤ f)
     (f_mul : ∀ x y : R, f (x * y) ≤ c * f x * f y)
@@ -282,7 +286,7 @@ theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
     by_cases hx : f x = 0
     · rw [hx, div_zero, mul_zero]; exact f_nonneg _
     · rw [div_self hx, mul_one]
-  · by_cases f_ne_zero : f ≠ 0
+  · by_cases! f_ne_zero : f ≠ 0
     · conv_lhs => rw [← mul_one (f x)]
       rw [← div_self (map_one_ne_zero f_ne_zero f_nonneg f_mul)]
       have h_bdd : BddAbove (Set.range fun y ↦ f x * (f y / f y)) := by
@@ -292,8 +296,7 @@ theorem seminormFromBounded_of_mul_apply (f_nonneg : 0 ≤ f)
         · simp only [hy0, div_zero, mul_zero]; exact f_nonneg _
         · simp only [div_self hy0, mul_one, le_refl]
       exact le_ciSup h_bdd (1 : R)
-    · push_neg at f_ne_zero
-      simp_rw [f_ne_zero, Pi.zero_apply, zero_div, zero_mul, ciSup_const]; rfl
+    · simp_rw [f_ne_zero, Pi.zero_apply, zero_div, zero_mul, ciSup_const]; rfl
 
 /-- If `f : R → ℝ` is a nonnegative function and `x : R` is submultiplicative for `f`, then
   `seminormFromBounded' f x = f x`. -/

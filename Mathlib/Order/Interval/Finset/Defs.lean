@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Prod
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Locally finite orders
@@ -78,7 +80,7 @@ We can provide `SuccOrder α` from `LinearOrder α` and `LocallyFiniteOrder α` 
 ```lean
 lemma exists_min_greater [LinearOrder α] [LocallyFiniteOrder α] {x ub : α} (hx : x < ub) :
     ∃ lub, x < lub ∧ ∀ y, x < y → lub ≤ y := by
-  -- very non golfed
+  -- very non-golfed
   have h : (Finset.Ioc x ub).Nonempty := ⟨ub, Finset.mem_Ioc.2 ⟨hx, le_rfl⟩⟩
   use Finset.min' (Finset.Ioc x ub) h
   constructor
@@ -93,6 +95,8 @@ Note that the converse is not true. Consider `{-2^z | z : ℤ} ∪ {2^z | z : �
 successor (and actually a predecessor as well), so it is a `SuccOrder`, but it's not locally finite
 as `Icc (-1) 1` is infinite.
 -/
+
+@[expose] public section
 
 open Finset Function
 
@@ -289,19 +293,19 @@ finset. -/
 def Ioo (a b : α) : Finset α :=
   LocallyFiniteOrder.finsetIoo a b
 
-@[simp]
+@[simp, grind =]
 theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
   LocallyFiniteOrder.finset_mem_Icc a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ico a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
   LocallyFiniteOrder.finset_mem_Ioc a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ioo a b x
 
@@ -355,11 +359,11 @@ def Ici (a : α) : Finset α :=
 def Ioi (a : α) : Finset α :=
   LocallyFiniteOrderTop.finsetIoi a
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ici : x ∈ Ici a ↔ a ≤ x :=
   LocallyFiniteOrderTop.finset_mem_Ici _ _
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
   LocallyFiniteOrderTop.finset_mem_Ioi _ _
 
@@ -395,11 +399,11 @@ def Iic (b : α) : Finset α :=
 def Iio (b : α) : Finset α :=
   LocallyFiniteOrderBot.finsetIio b
 
-@[simp]
+@[simp, grind =]
 theorem mem_Iic : x ∈ Iic a ↔ x ≤ a :=
   LocallyFiniteOrderBot.finset_mem_Iic _ _
 
-@[simp]
+@[simp, grind =]
 theorem mem_Iio : x ∈ Iio a ↔ x < a :=
   LocallyFiniteOrderBot.finset_mem_Iio _ _
 
@@ -448,7 +452,7 @@ section OrderBot
 variable [OrderBot α] [LocallyFiniteOrder α] {b x : α}
 
 -- See note [lower priority instance]
-instance (priority := 100) LocallyFiniteOrder.toLocallyFiniteOrderBot :
+instance (priority := 100) _root_.LocallyFiniteOrder.toLocallyFiniteOrderBot :
     LocallyFiniteOrderBot α where
   finsetIic := Icc ⊥
   finsetIio := Ico ⊥
@@ -519,7 +523,7 @@ See also
 TODO: Write a delaborator
 -/
 @[term_elab setBuilder]
-def elabFinsetBuilderIxx : TermElab
+meta def elabFinsetBuilderIxx : TermElab
   | `({ $x:ident ≤ $a | $p }), expectedType? => do
     -- If the expected type is not known to be `Finset ?α`, give up.
     unless ← knownToBeFinsetNotSet expectedType? do throwUnsupportedSyntax
@@ -1269,7 +1273,7 @@ instance (priority := low) [Preorder α] [DecidableLT α] [LocallyFiniteOrder α
     exact fun _ => b.property
 
 instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x ≤ y } := by
-  simpa only  [coe_Iic] using (Finset.Iic y).finite_toSet
+  simpa only [coe_Iic] using (Finset.Iic y).finite_toSet
 
 instance [Preorder α] [LocallyFiniteOrderBot α] : Finite { x : α // x < y } := by
   simpa only [coe_Iio] using (Finset.Iio y).finite_toSet
@@ -1324,7 +1328,7 @@ end LocallyFiniteOrderBot
 end Set
 
 /-- A `LocallyFiniteOrder` can be transferred across an order isomorphism. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder N]
     [EquivLike F M N] [OrderIsoClass F M N] (f : F) [LocallyFiniteOrder N] :
     LocallyFiniteOrder M where

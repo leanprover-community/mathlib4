@@ -3,12 +3,14 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Finset.Sort
-import Mathlib.ModelTheory.Complexity
-import Mathlib.ModelTheory.Fraisse
-import Mathlib.Order.CountableDenseLinearOrder
+module
+
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.ModelTheory.Complexity
+public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
 # Ordered First-Ordered Structures
@@ -49,6 +51,8 @@ This file defines ordered first-order languages and structures, as well as their
   `ℵ₀`-categorical, and thus complete.
 
 -/
+
+@[expose] public section
 
 
 universe u v w w'
@@ -168,17 +172,17 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
 /-- A sentence indicating that an order has no top element:
 $\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
-  ∀'∃'∼((&1).le &0)
+  ∀' ∃' ∼((&1).le &0)
 
 /-- A sentence indicating that an order has no bottom element:
 $\forall x, \exists y, \neg x \le y$. -/
 def noBotOrderSentence : L.Sentence :=
-  ∀'∃'∼((&0).le &1)
+  ∀' ∃' ∼((&0).le &1)
 
 /-- A sentence indicating that an order is dense:
 $\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y$. -/
 def denselyOrderedSentence : L.Sentence :=
-  ∀'∀'((&0).lt &1 ⟹ ∃'((&0).lt &2 ⊓ (&2).lt &1))
+  ∀' ∀' ((&0).lt &1 ⟹ ∃' ((&0).lt &2 ⊓ (&2).lt &1))
 
 /-- The theory of dense linear orders without endpoints. -/
 def dlo : L.Theory :=
@@ -349,7 +353,7 @@ variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
-  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   letI := L.leOfStructure M
@@ -424,7 +428,7 @@ variable [L.IsOrdered] [L.Structure M] {N : Type*} [L.Structure N]
 
 lemma monotone [Preorder M] [L.OrderedStructure M] [Preorder N] [L.OrderedStructure N] (f : F) :
     Monotone f := fun a b => by
-  have h := HomClass.map_rel f leSymb ![a,b]
+  have h := HomClass.map_rel f leSymb ![a, b]
   simp only [relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     Function.comp_apply] at h
   exact h
@@ -445,7 +449,7 @@ lemma StrongHomClass.toOrderIsoClass
     (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
     OrderIsoClass F M N where
   map_le_map_iff f a b := by
-    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    have h := StrongHomClass.map_rel f leSymb ![a, b]
     simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one] at h
     exact h

@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Some facts about finite rings
 -/
+
+public section
 
 
 open Finset ZMod
@@ -37,7 +41,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
   · have : Nontrivial R := by
       refine Fintype.one_lt_card_iff_nontrivial.1 ?_
       rw [h]
-      norm_num
+      simp
     rw [card_univ, h, card_insert_of_notMem, card_insert_of_notMem, card_singleton]
     · rw [mem_singleton]
       intro H
@@ -61,7 +65,7 @@ variable (M₀ : Type*) [MonoidWithZero M₀] [Nontrivial M₀]
 
 open scoped Classical in
 theorem card_units_lt [Fintype M₀] : Fintype.card M₀ˣ < Fintype.card M₀ :=
-  Fintype.card_lt_of_injective_of_notMem Units.val Units.ext not_isUnit_zero
+  Fintype.card_lt_of_injective_of_notMem Units.val Units.val_injective not_isUnit_zero
 
 lemma natCard_units_lt [Finite M₀] : Nat.card M₀ˣ < Nat.card M₀ := by
   have : Fintype M₀ := Fintype.ofFinite M₀

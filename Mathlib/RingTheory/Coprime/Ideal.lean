@@ -3,9 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # An additional lemma about coprime ideals
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.Operations
 This lemma generalises `exists_sum_eq_one_iff_pairwise_coprime` to the case of non-principal ideals.
 It is on a separate file due to import requirements.
 -/
+
+public section
 
 
 namespace Ideal
@@ -43,7 +47,6 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ
-    -- Porting note: `refine` yields goals in a different order than in lean3.
     refine ⟨ih.mp ⟨Pi.single h.choose ⟨μ a, ?a1⟩ + fun i => ⟨μ i, ?a2⟩, ?a3⟩, fun b hb ab => ?a4⟩
     case a1 =>
       have := Submodule.coe_mem (μ a)

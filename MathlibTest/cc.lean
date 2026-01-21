@@ -6,6 +6,22 @@ import Mathlib.Tactic.CC
 
 set_option linter.unusedVariables false
 
+/--
+warning: The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead.
+
+Please report any regressions at https://github.com/leanprover/lean4/issues/.
+Note that `cc` supports some goals that `grind` doesn't,
+but these rely on higher-order unification and can result in unpredictable performance.
+If a downstream library is relying on this functionality,
+please report this in an issue and we'll help find a solution.
+-/
+#guard_msgs in
+example (a b : Nat) : a = b → a = b := by
+  cc
+
+-- Turn off the warning for the rest of the file
+set_option mathlib.tactic.cc.warning false
+
 section CC1
 
 open List (Vector)

@@ -3,14 +3,19 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Embedding.Set
-import Mathlib.Logic.Equiv.Option
-import Mathlib.Data.Int.Init
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Logic.Equiv.Option
+public import Mathlib.Data.Int.Init
+public import Batteries.Data.Fin.Lemmas
 
 /-!
 # Equivalences for `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -148,9 +153,7 @@ theorem finSuccEquiv'_last_apply_castSucc (i : Fin n) :
 
 theorem finSuccEquiv'_last_apply {i : Fin (n + 1)} (h : i ≠ Fin.last n) :
     finSuccEquiv' (Fin.last n) i = Fin.castLT i (Fin.val_lt_last h) := by
-  rcases Fin.exists_castSucc_eq.2 h with ⟨i, rfl⟩
-  rw [finSuccEquiv'_last_apply_castSucc]
-  rfl
+  simp
 
 theorem finSuccEquiv'_ne_last_apply {i j : Fin (n + 1)} (hi : i ≠ Fin.last n) (hj : j ≠ i) :
     finSuccEquiv' i j = (i.castLT (Fin.val_lt_last hi)).predAbove j := by
@@ -200,7 +203,7 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 /-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
 the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
 def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
-    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
+    (Fin (n + 1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
   ((finSuccEquiv n).embeddingCongr (Equiv.refl ι)).trans
     (Function.Embedding.optionEmbeddingEquiv (Fin n) ι)
 
@@ -237,6 +240,11 @@ theorem finSumFinEquiv_apply_right (i : Fin n) :
 theorem finSumFinEquiv_symm_apply_castAdd (x : Fin m) :
     finSumFinEquiv.symm (Fin.castAdd n x) = Sum.inl x :=
   finSumFinEquiv.symm_apply_apply (Sum.inl x)
+
+@[simp]
+theorem finSumFinEquiv_symm_apply_castSucc (x : Fin m) :
+    finSumFinEquiv.symm (Fin.castSucc x) = Sum.inl x :=
+  finSumFinEquiv_symm_apply_castAdd x
 
 @[simp]
 theorem finSumFinEquiv_symm_apply_natAdd (x : Fin n) :
@@ -312,8 +320,8 @@ theorem finAddFlip_apply_mk_left {k : ℕ} (h : k < m) (hk : k < m + n := Nat.lt
 
 @[simp]
 theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) :
-    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by omega⟩ := by
-  convert @finAddFlip_apply_natAdd n ⟨k - m, by omega⟩ m
+    finAddFlip (⟨k, h₂⟩ : Fin (m + n)) = ⟨k - m, by lia⟩ := by
+  convert @finAddFlip_apply_natAdd n ⟨k - m, by lia⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
@@ -335,13 +343,11 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
         calc
           (y.1 + n * x.1) / n = y.1 / n + x.1 := Nat.add_mul_div_left _ _ H
           _ = 0 + x.1 := by rw [Nat.div_eq_of_lt y.2]
-          _ = x.1 := Nat.zero_add x.1
-          )
+          _ = x.1 := Nat.zero_add x.1)
       (Fin.eq_of_val_eq <|
         calc
           (y.1 + n * x.1) % n = y.1 % n := Nat.add_mul_mod_self_left _ _ _
-          _ = y.1 := Nat.mod_eq_of_lt y.2
-          )
+          _ = y.1 := Nat.mod_eq_of_lt y.2)
   right_inv _ := Fin.eq_of_val_eq <| Nat.mod_add_div _ _
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
@@ -370,7 +376,7 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   left_inv a := by
     simp_rw [Fin.val_ofNat, natCast_mod, natMod,
       toNat_of_nonneg (emod_nonneg _ <| natCast_eq_zero.not.2 (NeZero.ne n)), emod_emod,
-      ediv_add_emod']
+      ediv_mul_add_emod]
   right_inv := fun ⟨q, r, hrn⟩ => by
     simp only [Prod.mk_inj, Fin.ext_iff]
     obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
@@ -388,14 +394,6 @@ def Fin.castLEquiv {n m : ℕ} (h : n ≤ m) : Fin n ≃ { i : Fin m // (i : ℕ
   invFun i := ⟨i, i.prop⟩
   left_inv _ := by simp
   right_inv _ := by simp
-
-/-- `Fin 0` is a subsingleton. -/
-instance subsingleton_fin_zero : Subsingleton (Fin 0) :=
-  finZeroEquiv.subsingleton
-
-/-- `Fin 1` is a subsingleton. -/
-instance subsingleton_fin_one : Subsingleton (Fin 1) :=
-  finOneEquiv.subsingleton
 
 /-- The natural `Equiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α` -/
 @[simps]

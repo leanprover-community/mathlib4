@@ -3,17 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Range
+public import Mathlib.Data.List.Rotate
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
@@ -22,6 +24,8 @@ This file provides further results about `List.prod`, `List.sum`,
 which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
+
+public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -51,8 +55,8 @@ theorem prod_isUnit_iff {M : Type*} [CommMonoid M] {L : List M} :
 
 /-- If elements of a list commute with each other, then their product does not
 depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
+@[to_additive /-- If elements of a list additively commute with each other, then their sum does not
+depend on the order of elements. -/]
 lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
   refine h.foldr_eq' ?_ _
   apply Pairwise.forall_of_forall
@@ -101,12 +105,7 @@ theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
       by_cases hp : p a
       · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
         simp [hp, count_dedup]
-      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, mem_cons, true_or, hp,
-            and_false, false_and, reduceCtorEq] at ha'
-        · exact ha'.2.symm
+      · exact _root_.trans (List.sum_eq_zero fun n hn => by grind) (by simp [hp])
 
 theorem sum_map_count_dedup_eq_length (l : List α) :
     (l.dedup.map fun x => l.count x).sum = l.length := by
@@ -118,15 +117,15 @@ namespace List
 
 lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH => simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
   | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
-/-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicates -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range).1 s hs
 
@@ -134,9 +133,6 @@ theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
 lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
-
-@[deprecated (since := "2024-11-18")]
-alias mem_mem_ranges_iff_lt_natSum := mem_mem_ranges_iff_lt_sum
 
 /-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
 original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
@@ -146,7 +142,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
 

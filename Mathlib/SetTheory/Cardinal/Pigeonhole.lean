@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Infinite pigeonhole principle
@@ -15,6 +17,8 @@ This file proves variants of the infinite pigeonhole principle.
 
 Generalize universes of results.
 -/
+
+public section
 
 open Order Ordinal Set
 
@@ -30,8 +34,8 @@ theorem infinite_pigeonhole {β α : Type u} (f : β → α) (h₁ : ℵ₀ ≤ 
     apply mk_univ.not_lt
     rw [← preimage_univ, ← iUnion_of_singleton, preimage_iUnion]
     exact
-      mk_iUnion_le_sum_mk.trans_lt
-        ((sum_le_iSup _).trans_lt <| mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h))
+      mk_iUnion_le_sum_mk.trans_lt <| (sum_le_mk_mul_iSup _).trans_lt <|
+        mul_lt_of_lt h₁ (h₂.trans_le <| cof_ord_le _) (iSup_lt h₂ h)
   obtain ⟨x, h⟩ := this
   refine ⟨x, h.antisymm' ?_⟩
   rw [le_mk_iff_exists_set]
@@ -93,7 +97,7 @@ theorem le_range_of_union_finset_eq_top {α β : Type*} [Infinite β] (f : α �
   let u' : β → range f := fun b => ⟨f (u b).choose, by simp⟩
   have v' : ∀ a, u' ⁻¹' {⟨f a, by simp⟩} ≤ f a := by
     rintro a p m
-    simp? [u']  at m says simp only [mem_preimage, mem_singleton_iff, Subtype.mk.injEq, u'] at m
+    have m : f (u p).choose = f a := by simpa [u'] using m
     rw [← m]
     apply fun b => (u b).choose_spec
   obtain ⟨⟨-, ⟨a, rfl⟩⟩, p⟩ := exists_infinite_fiber u' h k

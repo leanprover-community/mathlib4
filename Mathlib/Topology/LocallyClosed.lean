@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -24,6 +26,8 @@ import Mathlib.Tactic.TFAE
   5. `s` is open in the closure of `s`.
 
 -/
+
+public section
 
 open Set Topology
 open scoped Set.Notation
@@ -121,17 +125,11 @@ lemma Topology.IsInducing.isLocallyClosed_iff {s : Set X}
   · rintro ⟨_, ⟨U, Z, hU, hZ, rfl⟩, rfl⟩
     exact ⟨_, _, ⟨U, hU, rfl⟩, ⟨Z, hZ, rfl⟩, rfl⟩
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.isLocallyClosed_iff := IsInducing.isLocallyClosed_iff
-
 lemma Topology.IsEmbedding.isLocallyClosed_iff {s : Set X}
     {f : X → Y} (hf : IsEmbedding f) :
     IsLocallyClosed s ↔ ∃ s' : Set Y, IsLocallyClosed s' ∧ s' ∩ range f = f '' s := by
   simp_rw [hf.isInducing.isLocallyClosed_iff,
     ← (image_injective.mpr hf.injective).eq_iff, image_preimage_eq_inter_range]
-
-@[deprecated (since := "2024-10-26")]
-alias Embedding.isLocallyClosed_iff := IsEmbedding.isLocallyClosed_iff
 
 lemma IsLocallyClosed.image {s : Set X} (hs : IsLocallyClosed s)
     {f : X → Y} (hf : IsInducing f) (hf' : IsLocallyClosed (range f)) :

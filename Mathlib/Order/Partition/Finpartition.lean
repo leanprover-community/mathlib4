@@ -3,13 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.SupIndep
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.SupIndep
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Finite partitions
@@ -59,6 +62,8 @@ the literature and turn the order around?
 The specialisation to `Finset α` could be generalised to atomistic orders.
 -/
 
+@[expose] public section
+
 
 open Finset Function
 
@@ -83,9 +88,6 @@ namespace Finpartition
 section Lattice
 
 variable [Lattice α] [OrderBot α]
-
-@[deprecated (since := "2025-05-23")]
-alias not_bot_mem := bot_notMem
 
 /-- A `Finpartition` constructor which does not insist on `⊥` not being a part. -/
 @[simps]
@@ -189,7 +191,7 @@ theorem parts_eq_empty_iff : P.parts = ∅ ↔ a = ⊥ := by
 
 @[simp]
 theorem parts_nonempty_iff : P.parts.Nonempty ↔ a ≠ ⊥ := by
-  rw [nonempty_iff_ne_empty, not_iff_not, parts_eq_empty_iff]
+  contrapose!; exact parts_eq_empty_iff
 
 theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty :=
   parts_nonempty_iff.2 ha
@@ -200,7 +202,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
       ext a
       exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- There's a unique partition of an atom. -/
 abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
   default := indiscrete ha.1
@@ -466,9 +468,6 @@ theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty 
 @[simp]
 theorem empty_notMem_parts : ∅ ∉ P.parts := P.bot_notMem
 
-@[deprecated (since := "2025-05-23")]
-alias not_empty_mem_parts := empty_notMem_parts
-
 theorem ne_empty (h : t ∈ P.parts) : t ≠ ∅ := P.ne_bot h
 
 lemma eq_of_mem_parts (ht : t ∈ P.parts) (hu : u ∈ P.parts) (hat : a ∈ t) (hau : a ∈ u) : t = u :=
@@ -526,7 +525,7 @@ lemma part_eq_empty : P.part a = ∅ ↔ a ∉ s :=
 
 @[simp]
 lemma part_nonempty : (P.part a).Nonempty ↔ a ∈ s := by
-  simpa only [nonempty_iff_ne_empty] using P.part_eq_empty.not_left
+  contrapose!; exact part_eq_empty P
 
 @[simp]
 lemma part_subset (a : α) : P.part a ⊆ s := by
@@ -732,7 +731,7 @@ theorem mem_atomise :
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
   simp only [atomise, powerset_empty, image_singleton, notMem_empty, IsEmpty.forall_iff,
-    imp_true_iff, filter_True]
+    imp_true_iff, filter_true]
   exact erase_eq_of_notMem (notMem_singleton.2 hs.ne_empty.symm)
 
 theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F :=

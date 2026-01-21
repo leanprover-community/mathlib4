@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Asymptotics
@@ -15,8 +17,8 @@ We introduce these relations:
 * `f =o[l] g` : "f is little o of g along l".
 
 Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
-of `f` and `g` do not need to be the same; all that is needed that there is a norm associated with
-these types, and it is the norm that is compared asymptotically.
+of `f` and `g` do not need to be the same; all that is needed is that there is a norm associated
+with these types, and it is the norm that is compared asymptotically.
 
 The relation `IsBigOWith c` is introduced to factor out common algebraic arguments in the proofs of
 similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this file should use
@@ -39,9 +41,17 @@ nonzero, we have
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
+
+Sometimes Landau notation may be embedded in more complex expressions, such as
+$f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
+
+  `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
+
 -/
 
-assert_not_exists IsBoundedSMul Summable PartialHomeomorph BoundedLENhdsClass
+@[expose] public section
+
+assert_not_exists IsBoundedSMul Summable OpenPartialHomeomorph BoundedLENhdsClass
 
 open Set Topology Filter NNReal
 
@@ -623,7 +633,7 @@ protected theorem IsLittleO.insert [TopologicalSpace α] {x : α} {s : Set α} {
     {g' : α → F'} (h1 : g =o[𝓝[s] x] g') (h2 : g x = 0) : g =o[𝓝[insert x s] x] g' :=
   (isLittleO_insert h2).mpr h1
 
-/-! ### Simplification : norm, abs -/
+/-! ### Simplification: norm, abs -/
 
 
 section NormAbs
@@ -986,28 +996,28 @@ theorem IsBigO.sub (h₁ : f₁ =O[l] g) (h₂ : f₂ =O[l] g) : (fun x => f₁ 
 theorem IsLittleO.sub (h₁ : f₁ =o[l] g) (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g := by
   simpa only [sub_eq_add_neg] using h₁.add h₂.neg_left
 
-theorem IsBigO.add_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₁ =O[l] g):=
+theorem IsBigO.add_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₁ =O[l] g) :=
   ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
 
-theorem IsBigO.add_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₂ =O[l] g):=
+theorem IsBigO.add_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₂ =O[l] g) :=
   ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
 
-theorem IsLittleO.add_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₁ =o[l] g):=
+theorem IsLittleO.add_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₁ =o[l] g) :=
   ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
 
-theorem IsLittleO.add_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₂ =o[l] g):=
+theorem IsLittleO.add_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₂ =o[l] g) :=
   ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
 
-theorem IsBigO.sub_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₁ =O[l] g):=
+theorem IsBigO.sub_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₁ =O[l] g) :=
   ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
 
-theorem IsBigO.sub_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₂ =O[l] g):=
+theorem IsBigO.sub_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₂ =O[l] g) :=
   ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
 
-theorem IsLittleO.sub_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₁ =o[l] g):=
+theorem IsLittleO.sub_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₁ =o[l] g) :=
   ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
 
-theorem IsLittleO.sub_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₂ =o[l] g):=
+theorem IsLittleO.sub_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₂ =o[l] g) :=
   ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
 
 end add_sub

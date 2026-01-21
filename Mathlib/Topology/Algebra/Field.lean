@@ -3,12 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Topological fields
@@ -17,6 +19,8 @@ A topological division ring is a topological ring whose inversion function is co
 non-zero element.
 
 -/
+
+@[expose] public section
 
 variable {K : Type*} [DivisionRing K] [TopologicalSpace K]
 
@@ -32,8 +36,9 @@ theorem Filter.tendsto_cocompact_mul_right₀ [ContinuousMul K] {a : K} (ha : a 
     Filter.Tendsto (fun x : K => x * a) (Filter.cocompact K) (Filter.cocompact K) :=
   Filter.tendsto_cocompact_mul_right (mul_inv_cancel₀ ha)
 
-/-- Compact hausdorff topological fields are finite. -/
-instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
+/-- Compact Hausdorff topological fields are finite. This is not an instance, as it would apply to
+every `Finite` goal, causing slowly failing typeclass search in some cases. -/
+theorem DivisionRing.finite_of_compactSpace_of_t2Space {K} [DivisionRing K] [TopologicalSpace K]
     [IsTopologicalRing K] [CompactSpace K] [T2Space K] : Finite K := by
   suffices DiscreteTopology K by
     exact finite_of_compact_of_discrete
@@ -43,10 +48,8 @@ instance (priority := 100) {K} [DivisionRing K] [TopologicalSpace K]
 variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
-    continuous, including inversion. -/
-class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
-
-@[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
+continuous, including inversion. -/
+class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, ContinuousInv₀ K
 
 section Subfield
 
@@ -75,6 +78,28 @@ theorem Subfield.topologicalClosure_minimal (s : Subfield α) {t : Subfield α} 
   closure_minimal h ht
 
 end Subfield
+
+section Units
+
+/-- In an ordered field, the units of the nonnegative elements are the positive elements. -/
+@[simps!]
+def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
+    [IsStrictOrderedRing R] [PosMulReflectLT R]
+    [TopologicalSpace R] [ContinuousInv₀ R] :
+    { r : R // 0 ≤ r }ˣ ≃ₜ { r : R // 0 < r } where
+  __ := Nonneg.unitsEquivPos R
+  continuous_toFun := by
+    rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
+    exact Continuous.subtype_val (p := (0 ≤ ·)) Units.continuous_val
+  continuous_invFun := by
+    rw [Units.continuous_iff]
+    refine ⟨by fun_prop, ?_⟩
+    suffices Continuous fun (x : { r : R // 0 < r }) ↦ (x⁻¹ : R) by
+      simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def]
+    rw [continuous_iff_continuousAt]
+    exact fun x ↦ ContinuousAt.inv₀ (by fun_prop) x.2.ne'
+
+end Units
 
 section affineHomeomorph
 
@@ -135,7 +160,7 @@ open Topology
 
 theorem IsLocalMin.inv {f : α → β} {a : α} (h1 : IsLocalMin f a) (h2 : ∀ᶠ z in 𝓝 a, 0 < f z) :
     IsLocalMax f⁻¹ a := by
-  filter_upwards [h1, h2] with z h3 h4 using(inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
+  filter_upwards [h1, h2] with z h3 h4 using (inv_le_inv₀ h4 h2.self_of_nhds).mpr h3
 
 end LocalExtr
 
@@ -153,15 +178,14 @@ variable {α 𝕜 : Type*} {f g : α → 𝕜} {S : Set α} [TopologicalSpace α
 theorem IsPreconnected.eq_one_or_eq_neg_one_of_sq_eq [Ring 𝕜] [NoZeroDivisors 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hsq : EqOn (f ^ 2) 1 S) :
     EqOn f 1 S ∨ EqOn f (-1) S := by
-  have : DiscreteTopology ({1, -1} : Set 𝕜) := Finite.instDiscreteTopology
   have hmaps : MapsTo f S {1, -1} := by
     simpa only [EqOn, Pi.one_apply, Pi.pow_apply, sq_eq_one_iff] using hsq
-  simpa using hS.eqOn_const_of_mapsTo hf hmaps
+  simpa using hS.eqOn_const_of_mapsTo (toFinite _).isDiscrete hf hmaps
 
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then either `f = g` or `f = -g` on
 `S`. -/
-theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
+theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [ContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) :
     EqOn f g S ∨ EqOn f (-g) S := by
@@ -173,7 +197,7 @@ theorem IsPreconnected.eq_or_eq_neg_of_sq_eq [Field 𝕜] [HasContinuousInv₀ �
 /-- If `f, g` are functions `α → 𝕜`, both continuous on a preconnected set `S`, with
 `f ^ 2 = g ^ 2` on `S`, and `g z ≠ 0` all `z ∈ S`, then as soon as `f = g` holds at
 one point of `S` it holds for all points. -/
-theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [HasContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
+theorem IsPreconnected.eq_of_sq_eq [Field 𝕜] [ContinuousInv₀ 𝕜] [ContinuousMul 𝕜]
     (hS : IsPreconnected S) (hf : ContinuousOn f S) (hg : ContinuousOn g S)
     (hsq : EqOn (f ^ 2) (g ^ 2) S) (hg_ne : ∀ {x : α}, x ∈ S → g x ≠ 0) {y : α} (hy : y ∈ S)
     (hy' : f y = g y) : EqOn f g S := fun x hx => by

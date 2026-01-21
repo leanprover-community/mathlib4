@@ -3,13 +3,17 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Centers of rings
 
 -/
+
+public section
 
 assert_not_exists RelIso Finset Subsemigroup Field
 
@@ -56,7 +60,7 @@ variable {M}
 
 @[simp]
 theorem add_mem_center [Distrib M] {a b : M} (ha : a ∈ Set.center M) (hb : b ∈ Set.center M) :
-    a + b ∈ Set.center M  where
+    a + b ∈ Set.center M where
   comm _ := by rw [commute_iff_eq, add_mul, mul_add, ha.comm, hb.comm]
   left_assoc _ _ := by rw [add_mul, ha.left_assoc, hb.left_assoc, ← add_mul, ← add_mul]
   right_assoc _ _ := by rw [mul_add, ha.right_assoc, hb.right_assoc, ← mul_add, ← mul_add]

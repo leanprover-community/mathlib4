@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Half braidings and the Drinfeld center of a monoidal category
@@ -28,6 +30,8 @@ More exciting, however, would be to make possible one of the following options:
 In this file, we take the second approach using the monoidal composition `⊗≫` and the
 `coherence` tactic.
 -/
+
+@[expose] public section
 
 
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -53,9 +57,9 @@ structure HalfBraiding (X : C) where
   monoidal : ∀ U U', (β (U ⊗ U')).hom =
       (α_ _ _ _).inv ≫
         ((β U).hom ▷ U') ≫ (α_ _ _ _).hom ≫ (U ◁ (β U').hom) ≫ (α_ _ _ _).inv := by
-    aesop_cat
+    cat_disch
   naturality : ∀ {U U'} (f : U ⟶ U'), (X ◁ f) ≫ (β U').hom = (β U).hom ≫ (f ▷ X) := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc, simp] HalfBraiding.monoidal -- the reassoc lemma is redundant as a simp lemma
 
@@ -78,7 +82,7 @@ variable {C}
 structure Hom (X Y : Center C) where
   /-- The underlying morphism between the first components of the objects involved -/
   f : X.1 ⟶ Y.1
-  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by aesop_cat
+  comm : ∀ U, (f ▷ U) ≫ (Y.2.β U).hom = (X.2.β U).hom ≫ (U ◁ f) := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
@@ -311,7 +315,7 @@ def forget : Center C ⥤ C where
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
@@ -340,7 +344,7 @@ def braiding (X Y : Center C) : X ⊗ Y ≅ Y ⊗ X :=
 instance braidedCategoryCenter : BraidedCategory (Center C) where
   braiding := braiding
 
--- `aesop_cat` handles the hexagon axioms
+-- `cat_disch` handles the hexagon axioms
 section
 
 variable [BraidedCategory C]

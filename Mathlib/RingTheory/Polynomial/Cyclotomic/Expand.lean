@@ -3,8 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # Cyclotomic polynomials and `expand`.
@@ -24,6 +26,8 @@ We gather results relating cyclotomic polynomials and `expand`.
 * `Polynomial.cyclotomic_mul_prime_pow_eq` : If `R` is of characteristic `p` and `¬p ∣ m`, then
   `cyclotomic (p ^ k * m) R = (cyclotomic m R) ^ (p ^ k - p ^ (k - 1))`.
 -/
+
+public section
 
 
 namespace Polynomial
@@ -53,14 +57,14 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne'
       rw [cyclotomic_eq_minpoly_rat hprim hpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+      rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
         @isRoot_cyclotomic_iff]
       convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
       rw [Nat.mul_div_cancel _ (Nat.Prime.pos hp)]
     · have hprim := Complex.isPrimitiveRoot_exp _ hnpos.ne.symm
       rw [cyclotomic_eq_minpoly_rat hprim hnpos]
       refine minpoly.dvd ℚ _ ?_
-      rw [aeval_def, ← eval_map, map_expand, expand_eval, ← IsRoot.def, ←
+      rw [← eval_map_algebraMap, map_expand, expand_eval, ← IsRoot.def, ←
         cyclotomic_eq_minpoly_rat hprim hnpos, map_cyclotomic, @isRoot_cyclotomic_iff]
       exact IsPrimitiveRoot.pow_of_prime hprim hp hdiv
   · rw [natDegree_expand, natDegree_cyclotomic,
@@ -68,6 +72,15 @@ theorem cyclotomic_expand_eq_cyclotomic_mul {p n : ℕ} (hp : Nat.Prime p) (hdiv
       natDegree_cyclotomic, mul_comm n,
       Nat.totient_mul ((Nat.Prime.coprime_iff_not_dvd hp).2 hdiv), Nat.totient_prime hp,
       mul_comm (p - 1), ← Nat.mul_succ, Nat.sub_one, Nat.succ_pred_eq_of_pos hp.pos]
+
+@[simp]
+lemma cyclotomic_six (R : Type*) [Ring R] : cyclotomic 6 R = X ^ 2 - X + 1 := by
+  suffices cyclotomic 6 ℤ = X ^ 2 - X + 1 by
+    rw [← map_cyclotomic_int, this]
+    simp
+  apply mul_right_cancel₀ (cyclotomic_ne_zero 2 ℤ)
+  rw [show 6 = 2 * 3 by rfl, ← cyclotomic_expand_eq_cyclotomic_mul Nat.prime_three (by norm_num1)]
+  simp; ring
 
 /-- If `p` is a prime such that `p ∣ n`, then
 `expand R p (cyclotomic n R) = cyclotomic (p * n) R`. -/
@@ -85,7 +98,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
     refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
-    rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
+    rw [← eval_map_algebraMap, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)
     rw [Nat.mul_div_cancel _ hp.pos]
@@ -99,11 +112,12 @@ theorem cyclotomic_irreducible_pow_of_irreducible_pow {p : ℕ} (hp : Nat.Prime 
   rcases m.eq_zero_or_pos with (rfl | hm)
   · simpa using irreducible_X_sub_C (1 : R)
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
-  induction' k with k hk
-  · simpa using h
-  have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
-  rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
-  exact hk (by omega) (of_irreducible_expand hp.ne_zero h)
+  induction k with
+  | zero => simpa using h
+  | succ k hk =>
+    have : m + k ≠ 0 := (add_pos_of_pos_of_nonneg hm k.zero_le).ne'
+    rw [Nat.add_succ, pow_succ, ← cyclotomic_expand_eq_cyclotomic hp <| dvd_pow_self p this] at h
+    exact hk (by lia) (of_irreducible_expand hp.ne_zero h)
 
 /-- If `Irreducible (cyclotomic (p ^ n) R)` then `Irreducible (cyclotomic p R).` -/
 theorem cyclotomic_irreducible_of_irreducible_pow {p : ℕ} (hp : Nat.Prime p) {R} [CommRing R]
@@ -162,7 +176,7 @@ theorem isRoot_cyclotomic_prime_pow_mul_iff_of_charP {m k p : ℕ} {R : Type*} [
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [IsRoot.def, cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, eval_pow]
       at h
-    replace h := pow_eq_zero h
+    replace h := eq_zero_of_pow_eq_zero h
     rwa [← IsRoot.def, isRoot_cyclotomic_iff] at h
   · rw [← isRoot_cyclotomic_iff, IsRoot.def] at h
     rw [cyclotomic_mul_prime_pow_eq R (NeZero.not_char_dvd R p m) hk, IsRoot.def, eval_pow,

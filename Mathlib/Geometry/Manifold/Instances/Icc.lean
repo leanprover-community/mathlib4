@@ -3,10 +3,12 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-! # Manifold structure on real intervals
 
@@ -30,7 +32,9 @@ embeddings. Once this is done,
   with the projection `ℝ → Icc x y` is
 -/
 
-open Set
+@[expose] public section
+
+open Set WithLp
 open scoped Manifold Topology
 
 noncomputable section
@@ -47,7 +51,7 @@ instance (x : ℝ) : One (TangentSpace 𝓘(ℝ) x) where
 under the canonical projection. It is also mapped to the unit vector in the real line through
 the canonical injection, see `mfderiv_subtype_coe_Icc_one`.
 
-Note that one can not abuse defeqs for this definition: this is *not* the same as the vector
+Note that one cannot abuse defeqs for this definition: this is *not* the same as the vector
 `fun _ ↦ 1` in `EuclideanSpace ℝ (Fin 1)` through defeqs, as one of the charts of `Icc x y` is
 orientation-reversing. -/
 irreducible_def oneTangentSpaceIcc {x y : ℝ} [h : Fact (x < y)] (z : Icc x y) :
@@ -68,39 +72,35 @@ lemma contMDiff_subtype_coe_Icc :
   -- We come back to the definition: we should check that, in each chart, the map is smooth.
   -- There are two charts, and we check things separately in each of them using the
   -- explicit formulas.
-  simp? says
-    simp only [extChartAt, PartialHomeomorph.extend, PartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
-      Icc_chartedSpaceChartAt, PartialEquiv.coe_trans_symm, PartialHomeomorph.coe_coe_symm,
-      ModelWithCorners.toPartialEquiv_coe_symm, CompTriple.comp_eq, PartialEquiv.coe_trans,
-      ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe, Function.comp_apply]
+  suffices ContDiffWithinAt ℝ n _ (range ↑(𝓡∂ 1)) _ by simpa
   split_ifs with hz
   · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccLeftChart, Fin.isValue, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
-      modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm, Function.comp_def,
-      Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+      simp only [IccLeftChart, Fin.isValue, OpenPartialHomeomorph.mk_coe_symm,
+        PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
+        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe,
+        OpenPartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ z 0 + x) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.1
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ z - x) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ z - x) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, min_eq_left]
     linarith
   · simp only [not_lt] at hz
     simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace] says
-      simp only [IccRightChart, Fin.isValue, PartialHomeomorph.mk_coe_symm,
+      simp only [IccRightChart, Fin.isValue, OpenPartialHomeomorph.mk_coe_symm,
         PartialEquiv.coe_symm_mk, modelWithCornersEuclideanHalfSpace, ModelWithCorners.mk_symm,
-        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe, PartialHomeomorph.mk_coe]
+        Function.comp_def, Function.update_self, ModelWithCorners.mk_coe,
+        OpenPartialHomeomorph.mk_coe]
     rw [Subtype.range_val_subtype]
     have : ContDiff ℝ n (fun (z : EuclideanSpace ℝ (Fin 1)) ↦ y - z 0) := by fun_prop
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem; swap
     · simpa using z.2.2
-    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (fun i ↦ y - z) := by
-      apply (isOpen_lt (continuous_apply 0) continuous_const).mem_nhds
+    have : {w : EuclideanSpace ℝ (Fin 1) | w 0 < y - x} ∈ 𝓝 (toLp 2 fun i ↦ y - z) := by
+      apply (isOpen_lt (PiLp.continuous_apply 2 _ 0) continuous_const).mem_nhds
       simpa using h.out.trans_le hz
     filter_upwards [self_mem_nhdsWithin, nhdsWithin_le_nhds this] with w hw h'w
     rw [max_eq_left hw, max_eq_left]
@@ -115,38 +115,28 @@ lemma contMDiffOn_projIcc :
   -- We come back to the definition: we should check that, in each chart, the map is smooth
   -- There are two charts, and we check things separately in each of them using the
   -- explicit formulas.
-  simp? says
-    simp only [extChartAt, PartialHomeomorph.extend, Icc_chartedSpaceChartAt,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.toFun_eq_coe,
-      PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-      PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-      PartialEquiv.trans_refl, PartialEquiv.refl_symm, PartialEquiv.refl_coe, CompTriple.comp_eq,
-      preimage_id_eq, id_eq, modelWithCornersSelf_coe, range_id, inter_univ]
+  suffices ContDiffWithinAt ℝ n _ (Icc x y) z by simpa
   split_ifs with h'z
-  · simp? [IccLeftChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
-      simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-        IccLeftChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
-    have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ w - x)) := by
+  · have : ContDiff ℝ n (fun (w : ℝ) ↦
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ w - x)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_left_inj]
+    suffices max x (min y w) - x = w - x by
+      simpa [modelWithCornersEuclideanHalfSpace, IccLeftChart]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
-  · simp? [IccRightChart, Function.comp_def, modelWithCornersEuclideanHalfSpace, projIcc] says
-      simp only [modelWithCornersEuclideanHalfSpace, Fin.isValue, ModelWithCorners.mk_coe,
-        IccRightChart, PartialHomeomorph.mk_coe, Function.comp_def, projIcc]
-    have : ContDiff ℝ n (fun (w : ℝ) ↦
-        (show EuclideanSpace ℝ (Fin 1) from fun (_ : Fin 1) ↦ y - w)) := by
+  · have : ContDiff ℝ n (fun (w : ℝ) ↦
+        (show EuclideanSpace ℝ (Fin 1) from toLp 2 fun (_ : Fin 1) ↦ y - w)) := by
       dsimp
       apply contDiff_euclidean.2 (fun i ↦ by fun_prop)
     apply this.contDiffWithinAt.congr_of_eventuallyEq_of_mem _ hz
     filter_upwards [self_mem_nhdsWithin] with w hw
     ext i
-    simp only [sub_right_inj]
+    suffices y - max x (min y w) = y - w by
+      simpa [modelWithCornersEuclideanHalfSpace, IccRightChart]
     rw [max_eq_right, min_eq_right hw.2]
     simp [hw.1, h.out.le]
 
@@ -172,12 +162,12 @@ lemma mdifferentiableWithinAt_comp_projIcc_iff {f : Icc x y → M} {w : Icc x y}
     MDifferentiableWithinAt 𝓘(ℝ) I (f ∘ (Set.projIcc x y h.out.le)) (Icc x y) w ↔
       MDifferentiableAt (𝓡∂ 1) I f w := by
   refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
-  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) (n := 1) w).mdifferentiableAt le_rfl
+  · have A := (contMDiff_subtype_coe_Icc (x := x) (y := y) w).mdifferentiableAt one_ne_zero
     rw [← mdifferentiableWithinAt_univ] at A ⊢
     convert hf.comp _ A (fun z hz ↦ z.2)
     ext z
     simp
-  · have := (contMDiffOn_projIcc (x := x) (y := y) (n := 1) w w.2).mdifferentiableWithinAt le_rfl
+  · have := (contMDiffOn_projIcc (x := x) (y := y) w w.2).mdifferentiableWithinAt one_ne_zero
     exact MDifferentiableAt.comp_mdifferentiableWithinAt_of_eq (w : ℝ) hf this (by simp)
 
 lemma mfderivWithin_projIcc_one {z : ℝ} (hz : z ∈ Icc x y) :
@@ -195,11 +185,11 @@ lemma mfderivWithin_comp_projIcc_one {f : Icc x y → M} {w : Icc x y} :
     · rwa [mdifferentiableWithinAt_comp_projIcc_iff]
   rw [mfderiv_comp_mfderivWithin (I' := 𝓡∂ 1)]; rotate_left
   · simp [hw]
-  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt le_rfl
+  · exact (contMDiffOn_projIcc _ w.2).mdifferentiableWithinAt one_ne_zero
   · exact (uniqueDiffOn_Icc h.out _ w.2).uniqueMDiffWithinAt
   simp only [Function.comp_apply, ContinuousLinearMap.coe_comp']
   have : w = projIcc x y h.out.le (w : ℝ) := by rw [projIcc_of_mem]
-  rw [projIcc_of_mem]
+  rw [projIcc_of_mem _ w.2]
   congr 1
   convert mfderivWithin_projIcc_one w.2
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Topology.Algebra.Group.CompactOpen
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Topology.Algebra.Group.CompactOpen
 
 /-!
 # Pontryagin dual
@@ -20,33 +22,20 @@ isomorphic to its double dual.
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
 -/
 
+@[expose] public section
+
 open Pointwise Function
 
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
 
+noncomputable section
+
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
   A →ₜ* Circle
--- The `TopologicalSpace, T2Space, CommGroup, IsTopologicalGroup, Inhabited` instances should be
--- constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : TopologicalSpace (PontryaginDual A) :=
-  (inferInstance : TopologicalSpace (A →ₜ* Circle))
-
-instance : T2Space (PontryaginDual A) :=
-  (inferInstance : T2Space (A →ₜ* Circle))
-
-noncomputable instance : CommGroup (PontryaginDual A) :=
-  (inferInstance : CommGroup (A →ₜ* Circle))
-
-instance : IsTopologicalGroup (PontryaginDual A) :=
-  (inferInstance : IsTopologicalGroup (A →ₜ* Circle))
-
-noncomputable instance : Inhabited (PontryaginDual A) :=
-  (inferInstance : Inhabited (A →ₜ* Circle))
+deriving TopologicalSpace
 
 instance [LocallyCompactSpace H] : LocallyCompactSpace (PontryaginDual H) := by
   let Vn : ℕ → Set Circle :=
@@ -82,21 +71,17 @@ namespace PontryaginDual
 
 open ContinuousMonoidHom
 
-instance : FunLike (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.instFunLike
-
-noncomputable instance instContinuousMapClass : ContinuousMapClass (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.instContinuousMapClass
-
-noncomputable instance instMonoidHomClass : MonoidHomClass (PontryaginDual A) A Circle :=
-  ContinuousMonoidHom.instMonoidHomClass
+deriving instance
+  T2Space, CommGroup, IsTopologicalGroup,
+  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
+  [DiscreteTopology A] → CompactSpace _
+for PontryaginDual A
 
 /-- A discrete monoid has compact Pontryagin dual. -/
-instance [DiscreteTopology A] : CompactSpace (PontryaginDual A) :=
-  ContinuousMonoidHom.instCompactSpace
+add_decl_doc instLocallyCompactSpacePontryaginDual
 
 /-- `PontryaginDual` is a contravariant functor. -/
-noncomputable def map (f : A →ₜ* B) :
+def map (f : A →ₜ* B) :
     (PontryaginDual B) →ₜ* (PontryaginDual A) :=
   f.compLeft Circle
 
@@ -121,7 +106,7 @@ nonrec theorem map_mul (f g : A →ₜ* G) : map (f * g) = map f * map g :=
 variable (A B C G)
 
 /-- `ContinuousMonoidHom.dual` as a `ContinuousMonoidHom`. -/
-noncomputable def mapHom [LocallyCompactSpace G] :
+def mapHom [LocallyCompactSpace G] :
     (A →ₜ* G) →ₜ* ((PontryaginDual G) →ₜ* (PontryaginDual A)) where
   toFun := map
   map_one' := map_one

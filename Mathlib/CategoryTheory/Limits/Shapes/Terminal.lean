@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Initial and terminal objects in a category.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 ## References
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -43,7 +47,7 @@ section Univ
 variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
-  ⟨⟨⟨⟨limit F₁, by aesop_cat, by simp⟩,
+  ⟨⟨⟨⟨limit F₁, by cat_disch, by simp⟩,
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -51,7 +55,7 @@ theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C]
   has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
 
 theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
-  ⟨⟨⟨⟨colimit F₁, by aesop_cat, by simp⟩,
+  ⟨⟨⟨⟨colimit F₁, by cat_disch, by simp⟩,
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -92,7 +96,7 @@ theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsin
     ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
-  { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by simp⟩,
+  { has_limit := fun F => HasLimit.mk ⟨⟨X, by cat_disch, by simp⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- We can more explicitly show that a category has an initial object by specifying the object,
@@ -104,7 +108,7 @@ theorem hasInitial_of_unique (X : C) [∀ Y, Nonempty (X ⟶ Y)] [∀ Y, Subsing
 
 theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=
-    HasColimit.mk ⟨⟨X, by aesop_cat, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
+    HasColimit.mk ⟨⟨X, by cat_disch, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
 
 /-- The map from an object to the terminal object. -/
 abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
@@ -172,7 +176,7 @@ theorem hasTerminal_of_hasInitial_op [HasInitial Cᵒᵖ] : HasTerminal C :=
 theorem hasInitial_of_hasTerminal_op [HasTerminal Cᵒᵖ] : HasInitial C :=
   (initialUnopOfTerminal terminalIsTerminal).hasInitial
 
-instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
+instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     HasLimit ((CategoryTheory.Functor.const J).obj (⊤_ C)) :=
   HasLimit.mk
     { cone :=
@@ -182,7 +186,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
-def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C] :
+def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
     limit ((CategoryTheory.Functor.const J).obj (⊤_ C)) ≅ ⊤_ C where
   hom := terminal.from _
   inv :=
@@ -191,12 +195,12 @@ def limitConstTerminal {J : Type*} [Category J] {C : Type*} [Category C] [HasTer
         π := { app := fun _ => terminal.from _ } }
 
 @[reassoc (attr := simp)]
-theorem limitConstTerminal_inv_π {J : Type*} [Category J] {C : Type*} [Category C] [HasTerminal C]
+theorem limitConstTerminal_inv_π {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C]
     {j : J} :
     limitConstTerminal.inv ≫ limit.π ((CategoryTheory.Functor.const J).obj (⊤_ C)) j =
-      terminal.from _ := by aesop_cat
+      terminal.from _ := by cat_disch
 
-instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
+instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     HasColimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) :=
   HasColimit.mk
     { cocone :=
@@ -206,7 +210,7 @@ instance {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
 
 /-- The colimit of the constant `⊥_ C` functor is `⊥_ C`. -/
 @[simps inv]
-def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C] :
+def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C] :
     colimit ((CategoryTheory.Functor.const J).obj (⊥_ C)) ≅ ⊥_ C where
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
@@ -215,10 +219,10 @@ def colimitConstInitial {J : Type*} [Category J] {C : Type*} [Category C] [HasIn
   inv := initial.to _
 
 @[reassoc (attr := simp)]
-theorem ι_colimitConstInitial_hom {J : Type*} [Category J] {C : Type*} [Category C] [HasInitial C]
+theorem ι_colimitConstInitial_hom {J : Type*} [Category* J] {C : Type*} [Category* C] [HasInitial C]
     {j : J} :
     colimit.ι ((CategoryTheory.Functor.const J).obj (⊥_ C)) j ≫ colimitConstInitial.hom =
-      initial.to _ := by aesop_cat
+      initial.to _ := by cat_disch
 
 instance (priority := 100) initial.mono_from [HasInitial C] [InitialMonoClass C] (X : C)
     (f : ⊥_ C ⟶ X) : Mono f :=

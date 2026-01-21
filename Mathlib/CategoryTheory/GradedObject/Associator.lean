@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-!
 # The associator for actions of bifunctors on graded objects
@@ -26,6 +28,8 @@ on graded objects indexed by an additive monoid.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
@@ -33,7 +37,7 @@ open Category
 namespace GradedObject
 
 variable {C₁ C₂ C₁₂ C₂₃ C₃ C₄ : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category C₄] [Category C₁₂] [Category C₂₃]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄] [Category* C₁₂] [Category* C₂₃]
   {F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂} {G : C₁₂ ⥤ C₃ ⥤ C₄}
   {F : C₁ ⥤ C₂₃ ⥤ C₄} {G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃}
   (associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
@@ -63,8 +67,6 @@ lemma ι_mapBifunctorAssociator_hom (i₁ : I₁) (i₂ : I₂) (i₃ : I₃) (j
       (mapBifunctorAssociator associator ρ₁₂ ρ₂₃ X₁ X₂ X₃).hom j =
         ((associator.hom.app (X₁ i₁)).app (X₂ i₂)).app (X₃ i₃) ≫
           ιMapBifunctorBifunctor₂₃MapObj F G₂₃ ρ₂₃ X₁ X₂ X₃ i₁ i₂ i₃ j h := by
-  have := H₁₂.hasMap
-  have := H₂₃.hasMap
   dsimp [mapBifunctorAssociator]
   rw [ι_mapBifunctorComp₁₂MapObjIso_inv_assoc, ιMapTrifunctorMapObj,
     ι_mapMap_assoc, mapTrifunctorMapNatTrans_app_app_app]
