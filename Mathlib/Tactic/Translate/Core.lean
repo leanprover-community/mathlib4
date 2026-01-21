@@ -12,7 +12,6 @@ public meta import Lean.Meta.Tactic.Rfl
 public meta import Lean.Meta.Tactic.Symm
 public meta import Mathlib.Data.Array.Defs
 public meta import Mathlib.Lean.Meta.Simp
-public meta import Mathlib.Lean.Name
 public meta import Mathlib.Tactic.Simps.Basic
 public meta import Lean.Meta.CoeAttr
 public import Batteries.Lean.NameMapAttribute
