@@ -140,6 +140,10 @@ theorem support_ofPathGraph : (ofPathGraph n).support = List.finRange (n + 1) :=
     rw [ofPathGraph, support_cons, support_map, ih]
     exact List.finRange_succ.symm
 
+@[simp]
+theorem length_ofPathGraph : (ofPathGraph n).length = n := by
+  grind [support_ofPathGraph, length_support]
+
 theorem IsPath.ofPathGraph : ofPathGraph n |>.IsPath :=
   .mk' <| support_ofPathGraph n ▸ List.nodup_finRange (n + 1)
 
