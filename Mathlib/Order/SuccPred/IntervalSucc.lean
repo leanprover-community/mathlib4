@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Jasper Mulder-Sohn
+Authors: Yury Kudryashov
 -/
 module
 
@@ -53,27 +53,19 @@ theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
   exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
 
-theorem iUnion_Ico_map_succ_eq_Ici [SuccOrder ℕ] [IsSuccArchimedean ℕ] [LinearOrder β] {f : ℕ → β}
-    (hf : ∀ n, f 0 ≤ f n) (h2f : ¬BddAbove (range f)) :
-    (⋃ n : ℕ, Ico (f n) (f (succ n))) = Ici (f 0) := by
-  have hI : (Ici (0 : ℕ)) = (univ : Set ℕ) := by
-    ext n
-    simp
-  have hf' : ∀ i ∈ Ici (0 : ℕ), f 0 ≤ f i := fun i _ => hf i
-  have h2f' : ¬BddAbove (f '' Ici (0 : ℕ)) := by
-    simpa [hI, image_univ] using h2f
-  simpa [hI] using (biUnion_Ici_Ico_map_succ (α := ℕ) (β := β) (f := f) (a := 0) hf' h2f')
+theorem iUnion_Ico_map_succ_eq_Ici [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+    (⋃ a : α, Ico (f a) (f (succ a))) = Ici (f ⊥) := by
+  have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
+  simpa [Set.Ici_bot] using biUnion_Ici_Ico_map_succ (fun i _ ↦ hf i) h2f'
 
-theorem iUnion_Ioc_map_succ_eq_Ioi [SuccOrder ℕ] [IsSuccArchimedean ℕ] [LinearOrder β] {f : ℕ → β}
-    (hf : ∀ n, f 0 ≤ f n) (h2f : ¬BddAbove (range f)) :
-    (⋃ n : ℕ, Ioc (f n) (f (succ n))) = Ioi (f 0) := by
-  have hI : (Ici (0 : ℕ)) = (univ : Set ℕ) := by
-    ext n
-    simp
-  have hf' : ∀ i ∈ Ici (0 : ℕ), f 0 ≤ f i := fun i _ => hf i
-  have h2f' : ¬BddAbove (f '' Ici (0 : ℕ)) := by
-    simpa [hI, image_univ] using h2f
-  simpa [hI] using (biUnion_Ici_Ioc_map_succ (α := ℕ) (β := β) (f := f) (a := 0) hf' h2f')
+theorem iUnion_Ioc_map_succ_eq_Ioi [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+     (⋃ a : α, Ioc (f a) (f (succ a))) = Ioi (f ⊥) := by
+
+
+  have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
+  simpa [Set.Ici_bot] using biUnion_Ici_Ioc_map_succ (fun i _ ↦ hf i) h2f'
 
 namespace Monotone
 
