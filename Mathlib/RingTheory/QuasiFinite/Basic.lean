@@ -428,35 +428,12 @@ lemma QuasiFiniteAt.exists_basicOpen_eq_singleton
   have : IsNoetherianRing S := Algebra.EssFiniteType.isNoetherianRing R S
   have : Module.FinitePresentation S (Localization.AtPrime p) :=
     Module.finitePresentation_of_finite _ _
-  obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers p.primeCompl
-      (Algebra.linearMap S (Localization.AtPrime p)) (.id (R := S) (M := Localization.AtPrime p))
-      (Algebra.linearMap S (Localization.AtPrime p)) <| by
-    convert show Function.Bijective LinearMap.id from Function.bijective_id
-    apply IsLocalizedModule.ext p.primeCompl (Algebra.linearMap S (Localization.AtPrime p))
-    · exact IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
-    · simp [IsLocalizedModule.map_comp]
-  have hrp' : .powers r ≤ p.primeCompl := by simpa [Submonoid.powers_le]
-  have : IsLocalizedModule (.powers r) (.id (R := S) (M := Localization.AtPrime p)) :=
-    ⟨fun x ↦ IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
-      ⟨x, hrp' x.2⟩, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simp [Submonoid.mem_powers_iff]⟩
-  let e₁ : LocalizedModule (.powers r) S ≃ₗ[S] Localization.Away r :=
-    IsLocalizedModule.iso (.powers r) (Algebra.linearMap _ _)
-  let e₂ : LocalizedModule (.powers r) (Localization.AtPrime p) ≃ₗ[S] Localization.AtPrime p :=
-    IsLocalizedModule.iso (.powers r) LinearMap.id
-  let φ₀ : Localization.Away r →ₐ[S] Localization.AtPrime p :=
-    ⟨IsLocalization.map (T := p.primeCompl) _ (.id S) hrp', by simp⟩
+  obtain ⟨r, hrp, H⟩ := IsLocalizedModule.exists_isLocalizedModule_powers_of_finitePresentation
+    p.primeCompl (Algebra.linearMap S (Localization.AtPrime p))
+  have : IsLocalization (.powers r) (Localization.AtPrime p) :=
+    (isLocalizedModule_iff_isLocalization' _ _).mp H
   let φ : Localization.Away r ≃ₐ[S] Localization.AtPrime p :=
-    .ofBijective φ₀ <| by
-      convert (e₂.bijective.comp (H r dvd_rfl)).comp e₁.symm.bijective
-      simp only [← LinearEquiv.coe_toLinearMap, ← AlgHom.coe_toLinearMap, ← LinearMap.coe_comp,
-        ← @LinearMap.coe_restrictScalars S (Localization (Submonoid.powers r))]
-      congr 1
-      apply IsLocalizedModule.ext (.powers r) (Algebra.linearMap _ _)
-      · exact IsLocalizedModule.map_units (.id (R := S) (M := Localization.AtPrime p))
-      · ext
-        dsimp [e₁, e₂]
-        rw [IsLocalizedModule.iso_symm_apply' _ _ _ 1 1 (by simp), LocalizedModule.map_mk]
-        simp
+    IsLocalization.algEquiv (.powers r) _ _
   refine ⟨r, hrp, subset_antisymm (fun q hrq ↦ ?_) (Set.singleton_subset_iff.mpr hrp)⟩
   obtain ⟨q, rfl⟩ := (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r).ge hrq
   obtain ⟨q, rfl⟩ := (PrimeSpectrum.comapEquiv φ.toRingEquiv).symm.surjective q
