@@ -89,11 +89,11 @@ theorem eq_of_eqOn {f f' : α → E} {s : Set α} (h : EqOn f f' s) :
     eVariationOn f s = eVariationOn f' s :=
   eq_of_edist_zero_on fun x xs => by rw [h xs, edist_self]
 
-theorem sum_le (f : α → E) {s : Set α} (n : ℕ) {u : ℕ → α} (hu : Monotone u) (us : ∀ i, u i ∈ s) :
+theorem sum_le {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α} (hu : Monotone u) (us : ∀ i, u i ∈ s) :
     (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s :=
   le_iSup_of_le ⟨n, u, hu, us⟩ le_rfl
 
-theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : ℕ → α}
+theorem sum_le_of_monotoneOn_Icc {f : α → E} {s : Set α} {m n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Icc m n)) (us : ∀ i ∈ Icc m n, u i ∈ s) :
     (∑ i ∈ Finset.Ico m n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
   rcases le_total n m with hnm | hmn
@@ -110,17 +110,53 @@ theorem sum_le_of_monotoneOn_Icc (f : α → E) {s : Set α} {m n : ℕ} {u : �
     _ ≤ ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) :=
       Finset.sum_mono_set _ (Nat.Iio_eq_range ▸ Finset.Ico_subset_Iio_self)
     _ ≤ eVariationOn f s :=
-      sum_le _ _ (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
+      sum_le (fun i j h ↦ hu (π i).2 (π j).2 (monotone_projIcc hmn h)) fun i ↦ us _ (π i).2
 
-theorem sum_le_of_monotoneOn_Iic (f : α → E) {s : Set α} {n : ℕ} {u : ℕ → α}
+theorem sum_le_of_monotoneOn_Iic {f : α → E} {s : Set α} {n : ℕ} {u : ℕ → α}
     (hu : MonotoneOn u (Iic n)) (us : ∀ i ≤ n, u i ∈ s) :
     (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))) ≤ eVariationOn f s := by
-  simpa using sum_le_of_monotoneOn_Icc f (m := 0) (hu.mono Icc_subset_Iic_self) fun i hi ↦ us i hi.2
+  simpa using sum_le_of_monotoneOn_Icc (m := 0) (hu.mono Icc_subset_Iic_self) fun i hi ↦ us i hi.2
+
+/-- The variation can be expressed using strictly monotone functions. This formulation is
+often less convenient than the one with monotone functions as it involves dependent types, but
+it is sometimes handy. -/
+theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
+    eVariationOn f s =
+      ⨆ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
+        ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
+  apply le_antisymm
+  · apply iSup_le
+    rintro ⟨n, u, u_mono, u_mem⟩
+    have : ∃ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
+        (p.2 : ℕ → α) p.1 = u n ∧
+        ∑ x ∈ Finset.range n, edist (f (u (x + 1))) (f (u x)) =
+        ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) := by
+      induction n with
+      | zero => exact ⟨⟨0, ⟨u, by grind [StrictMonoOn], fun i hi ↦ u_mem _⟩⟩, by simp⟩
+      | succ n ih =>
+        rcases ih with ⟨⟨m, v, v_mono, v_mem⟩, hv, h'v⟩
+        simp only [Finset.sum_range_succ, Sigma.exists, Subtype.exists, mem_Iic, exists_and_left,
+          exists_prop]
+        rcases (u_mono (Nat.le_add_right n 1)).eq_or_lt with hn | hn
+        · simp only [← hn, edist_self, add_zero]
+          exact ⟨m, v, hv, ⟨v_mono, v_mem⟩, h'v⟩
+        · refine ⟨m + 1, fun i ↦ if i ≤ m then v i else u (n + 1), by simp,
+            by grind [StrictMonoOn], ?_⟩
+          simp only [h'v, ← hv, Order.add_one_le_iff, Finset.sum_range_succ, lt_self_iff_false,
+            ↓reduceIte, le_refl]
+          congr 1
+          exact Finset.sum_congr rfl (by grind)
+    rcases this with ⟨p, -, hp⟩
+    rw [hp]
+    apply le_iSup _ p
+  · apply iSup_le
+    rintro ⟨n, u, u_mono, u_mem⟩
+    apply sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind)
 
 theorem mono (f : α → E) {s t : Set α} (hst : t ⊆ s) : eVariationOn f t ≤ eVariationOn f s := by
   apply iSup_le _
   rintro ⟨n, ⟨u, hu, ut⟩⟩
-  exact sum_le f n hu fun i => hst (ut i)
+  exact sum_le hu fun i => hst (ut i)
 
 theorem _root_.BoundedVariationOn.mono {f : α → E} {s : Set α} (h : BoundedVariationOn f s)
     {t : Set α} (ht : t ⊆ s) : BoundedVariationOn f t :=
@@ -142,7 +178,7 @@ theorem edist_le (f : α → E) {s : Set α} {x y : α} (hx : x ∈ s) (hy : y �
   have us : ∀ i, u i ∈ s := fun
   | 0 => hy
   | (_ + 1) => hx
-  simpa only [Finset.sum_range_one] using sum_le f 1 hu us
+  simpa only [Finset.sum_range_one] using sum_le (n := 1) hu us
 
 theorem eq_zero_iff (f : α → E) {s : Set α} :
     eVariationOn f s = 0 ↔ ∀ x ∈ s, ∀ y ∈ s, edist (f x) (f y) = 0 := by
@@ -178,7 +214,7 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
       (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
     apply tendsto_finset_sum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
-  exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le (F i) n um us)
+  exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le um us)
 
 /-- The map `(eVariationOn · s)` is lower semicontinuous for pointwise convergence *on `s`*.
 Pointwise convergence on `s` is encoded here as uniform convergence on the family consisting of the
@@ -324,7 +360,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       rw [← Finset.sum_union]
       · gcongr; grind
       · exact Finset.disjoint_left.2 (by grind)
-    _ ≤ eVariationOn f (s ∪ t) := sum_le f _ (by grind [Monotone]) (by grind)
+    _ ≤ eVariationOn f (s ∪ t) := sum_le (by grind [Monotone]) (by grind)
 
 /-- If a set `s` is to the left of a set `t`, and both contain the boundary point `x`, then
 the variation of `f` along `s ∪ t` is the sum of the variations. -/
@@ -349,7 +385,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
       rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
       refine add_le_add ?_ ?_
-      · apply sum_le_of_monotoneOn_Icc _ (hv.monotoneOn _) fun i hi => ?_
+      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
         rcases vst i with (h | h); · exact h
         have : v i = x := by
           apply le_antisymm
@@ -357,7 +393,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           · exact ht.2 h
         rw [this]
         exact hs.1
-      · apply sum_le_of_monotoneOn_Icc _ (hv.monotoneOn _) fun i hi => ?_
+      · apply sum_le_of_monotoneOn_Icc (hv.monotoneOn _) fun i hi => ?_
         rcases vst i with (h | h); swap; · exact h
         have : v i = x := by
           apply le_antisymm
@@ -398,70 +434,20 @@ theorem sum' (f : α → E) {I : ℕ → α} (hI : Monotone I) {n : ℕ} :
     gcongr <;> (apply hI; rw [Finset.mem_range] at hi; lia)
   · simp
 
-/-- The variation can be expressed using strictly monotone functions. This formulation is
-often less convenient than the one with monotone functions as it involves dependent types, but
-it is sometimes handy. -/
-theorem eVariationOn_eq_strictMonoOn (f : α → E) (s : Set α) :
-    eVariationOn f s =
-      ⨆ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
-        ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
-  apply le_antisymm
-  · apply iSup_le
-    rintro ⟨n, u, u_mono, u_mem⟩
-    have : ∃ p : (n : ℕ) × { u : ℕ → α // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s },
-        (p.2 : ℕ → α) p.1 = u n ∧
-        ∑ x ∈ Finset.range n, edist (f (u (x + 1))) (f (u x)) =
-        ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) := by
-      induction n with
-      | zero => exact ⟨⟨0, ⟨u, by grind [StrictMonoOn], fun i hi ↦ u_mem _⟩⟩, by simp⟩
-      | succ n ih =>
-        rcases ih with ⟨⟨m, v, v_mono, v_mem⟩, hv, h'v⟩
-        simp only [Finset.sum_range_succ, Sigma.exists, Subtype.exists, mem_Iic, exists_and_left,
-          exists_prop]
-        rcases (u_mono (Nat.le_add_right n 1)).eq_or_lt with hn | hn
-        · simp only [← hn, edist_self, add_zero]
-          exact ⟨m, v, hv, ⟨v_mono, v_mem⟩, h'v⟩
-        · refine ⟨m + 1, fun i ↦ if i ≤ m then v i else u (n + 1), by simp,
-            by grind [StrictMonoOn], ?_⟩
-          simp only [h'v, ← hv, Order.add_one_le_iff, Finset.sum_range_succ, lt_self_iff_false,
-            ↓reduceIte, le_refl]
-          congr 1
-          exact Finset.sum_congr rfl (by grind)
-    rcases this with ⟨p, -, hp⟩
-    rw [hp]
-    apply le_iSup _ p
-  · apply iSup_le
-    rintro ⟨n, u, u_mono, u_mem⟩
-    let v := fun i ↦ u (min i n)
-    let p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s } :=
-      ⟨n, v, by grind [Monotone, StrictMonoOn]⟩
-    calc ∑ x ∈ Finset.range n, edist (f (u (x + 1))) (f (u x))
-    _ = ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
-      Finset.sum_congr rfl (by grind)
-    _ ≤ eVariationOn f s := le_iSup (fun (p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ s }) ↦
-        ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i))) p
-
 private lemma eVariation_le_ofDual (f : α → E) (s : Set α) :
     eVariationOn f s ≤ eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) := by
   apply iSup_le
   rintro ⟨n, u, u_mono, u_mem⟩
-  dsimp
   let v (i : ℕ) := toDual (u (n - i))
   have M : Monotone v := by
     simp only [Monotone, toDual_le_toDual, v] at u_mono ⊢
     grind
-  have N i : v i ∈ ofDual ⁻¹' s := u_mem _
-  let q : ℕ × { v // Monotone v ∧ ∀ i, v i ∈ ofDual ⁻¹' s } := ⟨n, v, M, N⟩
   calc ∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))
-  _ = ∑ i ∈ Finset.range q.1, edist (f ((q.2 : ℕ → αᵒᵈ) (i + 1))) (f ((q.2 : ℕ → αᵒᵈ) i)) := by
-    simp only [toDual, v, q]
+  _ = ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by
+    simp only [toDual, v]
     rw [← Finset.sum_range_reflect]
-    apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-    rw [edist_comm]
-    grind
-  _ ≤ _ := le_iSup (fun (p : ℕ × { v // Monotone v ∧ ∀ i, v i ∈ ofDual ⁻¹' s }) ↦
-      ∑ x ∈ Finset.range p.1, edist (f (ofDual ((p.2 : ℕ → αᵒᵈ) (x + 1))))
-        (f (ofDual ((p.2 : ℕ → αᵒᵈ) x)))) q
+    grind [Finset.sum_congr, edist_comm]
+  _ ≤ _ := sum_le M (fun i ↦ u_mem _)
 
 @[simp] lemma eVariationOn_ofDual (f : α → E) (s : Set α) :
     eVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) = eVariationOn f s :=
@@ -474,12 +460,6 @@ lemma _root_.BoundedVariationOn.ofDual {f : α → E} {s : Set α} (hf : Bounded
 @[simp] lemma boundedVariation_ofDual {f : α → E} {s : Set α} :
     BoundedVariationOn (f ∘ ofDual) (ofDual ⁻¹' s) ↔ BoundedVariationOn f s :=
   ⟨fun h ↦ h.ofDual, fun h ↦ h.ofDual⟩
-
-
-lemma inter_mem_nhdsWithin_inter {α : Type*} [TopologicalSpace α]
-    {a b c d : Set α} {x : α} (h : a ∈ 𝓝[b] x) (h' : c ∈ 𝓝[d] x) :
-    a ∩ c ∈ 𝓝[b ∩ d] x :=
-  inter_mem (nhdsWithin_mono _ inter_subset_left h) (nhdsWithin_mono _ inter_subset_right h')
 
 /-- If a function is continuous on the left at a point `a`, then its variations on `Iio a` and
 on `Iic a` coincide. We give a version relative to a set `s`. -/
@@ -708,19 +688,19 @@ theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [Topolog
     ∃ l, Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l) :=
   hf.ofDual.exists_tendsto_right (toDual x)
 
-/-- A bounded variation function tends to its right-limit on its right. -/
-theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
-    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) := by
-  apply tendsto_rightLim_of_tendsto
-  convert hf.exists_tendsto_right x
-  simp
-
 /-- A bounded variation function tends to its left-limit on its left. -/
 theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace E] [TopologicalSpace α]
     [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
-    Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
-  hf.ofDual.tendsto_rightLim x
+    Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) := by
+  apply tendsto_leftLim_of_tendsto
+  convert hf.exists_tendsto_left x
+  simp
+
+/-- A bounded variation function tends to its right-limit on its right. -/
+theorem _root_.BoundedVariationOn.tendsto_rightLim [CompleteSpace E] [TopologicalSpace α]
+    [OrderTopology α] {f : α → E} (hf : BoundedVariationOn f univ) (x : α) :
+    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
+  hf.ofDual.tendsto_leftLim x
 
 /-- If a function `g` is at each point `x` a limit of `f` to the left or to the right (or more
 generally a cluster point of the values of `f` around `x`) then the variation of `g` is bounded
@@ -787,6 +767,18 @@ lemma _root_.BoundedVariationOn.leftLim [TopologicalSpace α] [OrderTopology α]
 lemma _root_.BoundedVariationOn.rightLim [TopologicalSpace α] [OrderTopology α] {f : α → E}
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.rightLim univ :=
   (eVariationOn_rightLim_le.trans_lt hf.lt_top).ne
+
+lemma _root_.BoundedVariation.continuousWithinAt_leftLim [TopologicalSpace α] [OrderTopology α]
+    [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
+    ContinuousWithinAt f.leftLim (Iic x) x := by
+  have : Tendsto f.leftLim (𝓝[<] x) (𝓝 (f.leftLim.leftLim x)) := hf.leftLim.tendsto_leftLim x
+  rw [leftLim_leftLim (hf.tendsto_leftLim x)] at this
+  exact continuousWithinAt_Iio_iff_Iic.1 this
+
+lemma _root_.BoundedVariation.continuousWithinAt_rightLim [TopologicalSpace α] [OrderTopology α]
+    [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
+    ContinuousWithinAt f.rightLim (Ici x) x :=
+  BoundedVariation.continuousWithinAt_leftLim hf.ofDual
 
 section Monotone
 
@@ -1058,7 +1050,7 @@ theorem LipschitzOnWith.comp_eVariationOn_le {f : E → F} {C : ℝ≥0} {t : Se
         ∑ i ∈ Finset.range n, C * edist (g (u (i + 1))) (g (u i)) :=
       Finset.sum_le_sum fun i _ => h (hg (us _)) (hg (us _))
     _ = C * ∑ i ∈ Finset.range n, edist (g (u (i + 1))) (g (u i)) := by rw [Finset.mul_sum]
-    _ ≤ C * eVariationOn g s := by grw [eVariationOn.sum_le _ _ hu us]
+    _ ≤ C * eVariationOn g s := by grw [eVariationOn.sum_le hu us]
 
 theorem LipschitzOnWith.comp_boundedVariationOn {f : E → F} {C : ℝ≥0} {t : Set E}
     (hf : LipschitzOnWith C f t) {g : α → E} {s : Set α} (hg : MapsTo g s t)
