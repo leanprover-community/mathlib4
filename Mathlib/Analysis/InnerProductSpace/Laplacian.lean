@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
@@ -133,16 +134,14 @@ noncomputable def laplacianWithin : E → F :=
 @[inherit_doc]
 scoped[InnerProductSpace] notation "Δ[" s "] " f:60 => laplacianWithin f s
 
-variable (f) in
-/--
-Laplacian for functions on real inner product spaces. Use `open InnerProductSpace` to access the
-notation `Δ` for `InnerProductSpace.Laplacian`.
--/
-noncomputable def laplacian : E → F :=
-  fun x ↦ tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
+noncomputable
+instance instLaplacian : Laplacian (E → F) (E → F) where
+  laplacian f x := tensorIteratedFDerivTwo ℝ f x (InnerProductSpace.canonicalCovariantTensor E)
 
-@[inherit_doc]
-scoped[InnerProductSpace] notation "Δ" => laplacian
+@[deprecated (since := "2025-12-31")]
+alias InnerProduct.laplacian := _root_.Laplacian.laplacian
+
+open Laplacian
 
 /--
 The Laplacian equals the Laplacian with respect to `Set.univ`.
@@ -176,8 +175,7 @@ theorem laplacian_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
     (v : OrthonormalBasis ι ℝ E) :
     Δ f = fun x ↦ ∑ i, iteratedFDeriv ℝ 2 f x ![v i, v i] := by
   ext x
-  simp [InnerProductSpace.laplacian, canonicalCovariantTensor_eq_sum E v,
-    tensorIteratedFDerivTwo_eq_iteratedFDeriv]
+  simp [laplacian, canonicalCovariantTensor_eq_sum E v, tensorIteratedFDerivTwo_eq_iteratedFDeriv]
 
 variable (f) in
 /--
