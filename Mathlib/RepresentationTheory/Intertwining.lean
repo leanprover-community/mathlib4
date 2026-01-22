@@ -20,9 +20,9 @@ open scoped MonoidAlgebra
 
 namespace Representation
 
-variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
-  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
-  (f : V →ₗ[A] W)
+variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
+  [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
+  (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
 /-- An unbundled version of `IntertwiningMap`. -/
 @[mk_iff] structure IsIntertwiningMap : Prop where
@@ -112,11 +112,76 @@ def equivLinearMapAsModule :
   right_inv f := rfl
 
 /-- The identity map, considered as an intertwining map from a representation to itself. -/
-noncomputable def id : IntertwiningMap ρ ρ where
+def id : IntertwiningMap ρ ρ where
   toLinearMap := LinearMap.id
   isIntertwining' := by simp
 
 @[simp] lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
+
+variable {ρ σ τ} in
+/-- Composition of intertwining maps. -/
+def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ where
+  toLinearMap := LinearMap.comp f.toLinearMap g.toLinearMap
+  isIntertwining' γ v := by simp [f.isIntertwining, g.isIntertwining]
+
+instance : Mul (IntertwiningMap ρ ρ) where
+  mul := comp
+
+@[simp] lemma coe_mul (f g : IntertwiningMap ρ ρ) :
+    (f * g).toLinearMap = f.toLinearMap * g.toLinearMap := rfl
+
+instance : One (IntertwiningMap ρ ρ) := ⟨id ρ⟩
+
+@[simp] lemma coe_one : ((1 : IntertwiningMap ρ ρ) : V → V) = (_root_.id : V → V) := rfl
+
+instance : Semigroup (IntertwiningMap ρ ρ) :=
+  Function.Injective.semigroup (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
+    (toLinearMap_injective ρ ρ) (coe_mul ρ)
+
+instance : Pow (IntertwiningMap ρ ρ) ℕ := ⟨fun f n => npowRecAuto n f⟩
+
+@[simp] lemma pow_succ (f : IntertwiningMap ρ ρ) (n : ℕ) : f ^ (n + 1) = f ^ n * f := rfl
+
+instance : Monoid (IntertwiningMap ρ ρ) :=
+  Function.Injective.monoid (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
+    (toLinearMap_injective ρ ρ) rfl (fun _ _ => rfl)
+    (fun f n => by
+      induction n with
+      | zero => rfl
+      | succ n ih => simp only [pow_succ, coe_mul] at *; rw [ih]; rfl)
+
+instance : NatCast (IntertwiningMap ρ ρ) where
+  natCast n := n • (1 : IntertwiningMap ρ ρ)
+
+instance instSemiring : Semiring (IntertwiningMap ρ ρ) :=
+  fast_instance%
+  Function.Injective.semiring (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
+    (toLinearMap_injective ρ ρ) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
+    (by
+      intro f n
+      induction n with
+      | zero => rfl
+      | succ n ih => simp [ih, _root_.pow_succ])
+    (fun _ => rfl)
+
+instance : Algebra A (IntertwiningMap ρ ρ) :=
+  Algebra.ofModule
+    (fun a f g => by
+      ext v
+      rfl)
+    (fun a f g => by
+      ext v
+      simp [map_smul]
+      rfl
+      )
+
+/-- Intertwining maps from `ρ` to itself are the same as `A[G]`-linear endomorphisms. -/
+def equivAlgEnd :
+    IntertwiningMap ρ ρ ≃ₐ[A] Module.End A[G] ρ.asModule :=
+  AlgEquiv.ofLinearEquiv
+    (equivLinearMapAsModule (ρ:=ρ) (σ:=ρ))
+    (by rfl)
+    (by intro f g; rfl)
 
 theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) :
     IsIntertwiningMap ρ ρ (ρ g) := by

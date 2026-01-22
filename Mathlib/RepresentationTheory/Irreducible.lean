@@ -41,11 +41,13 @@ theorem is_simple_module_iff_irreducible_of_module (M : Type*) [AddCommGroup M] 
 
 variable {ρ σ} (f : IntertwiningMap ρ σ) [IsIrreducible ρ]
 
+open IntertwiningMap
+
 theorem injective_or_eq_zero : Function.Injective f ∨ f = 0 := by
   haveI _ : IsSimpleModule k[G] ρ.asModule :=
     (irreducible_iff_is_simple_module_as_module ρ).mp (by assumption)
-  rw [← asLinearMap_zero_iff f]
-  exact LinearMap.injective_or_eq_zero (asLinearMap f)
+  rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
+  exact LinearMap.injective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
 theorem bijective_or_eq_zero [IsIrreducible σ] : Function.Bijective f ∨ f = 0 :=
     by
@@ -53,8 +55,8 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Function.Bijective f ∨ f = 0
     (irreducible_iff_is_simple_module_as_module ρ).mp (by assumption)
   haveI _ : IsSimpleModule k[G] σ.asModule :=
     (irreducible_iff_is_simple_module_as_module σ).mp (by assumption)
-  rw [← asLinearMap_zero_iff f]
-  exact LinearMap.bijective_or_eq_zero (asLinearMap f)
+  rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
+  exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
@@ -67,16 +69,15 @@ theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
   have : Function.Bijective (algebraMap k (Module.End k[G] ρ.asModule)) :=
     IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
   have h_comp :
-      (asLinearMap (ρ := ρ) (σ := ρ)) ∘ (algebraMap k (IntertwiningMap ρ ρ)) =
-      algebraMap k (Module.End k[G] ρ.asModule) := by
-    funext a
-    ext v
-    rfl
-  have h_bij : Function.Bijective
-      ((asLinearMap (ρ := ρ) (σ := ρ)) ∘ (algebraMap k (IntertwiningMap ρ ρ))) := by
-    simpa [h_comp] using this
-  exact (Function.Bijective.of_comp_iff' (asLinearMap_bijective (ρ := ρ) (σ := ρ))
-    (algebraMap k (IntertwiningMap ρ ρ))).1 h_bij
+      Function.Bijective
+        ((IntertwiningMap.equivAlgEnd (ρ:=ρ)) ∘ algebraMap k (IntertwiningMap ρ ρ)) := by
+    simpa [Function.comp] using this
+  have h_equiv :
+      Function.Bijective
+        (IntertwiningMap.equivAlgEnd (ρ:=ρ) :
+          IntertwiningMap ρ ρ → Module.End k[G] ρ.asModule) :=
+    (IntertwiningMap.equivAlgEnd (ρ:=ρ)).bijective
+  exact (Function.Bijective.of_comp_iff' h_equiv _).1 h_comp
 
 theorem finrank_eq_one_of_isMulCommutative (ρ : Representation k G V) [IsIrreducible ρ]
     [IsMulCommutative G] : Module.finrank k V = 1 := by
