@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
+import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 
 /-! # Support of distributions
 
@@ -18,7 +19,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 namespace TemperedDistribution
 
@@ -29,7 +30,7 @@ section IsVanishingOn
 def IsVanishingOn (f : 𝓢'(E, F)) (s : Set E) : Prop :=
     ∀ (u : 𝓢(E, ℂ)), tsupport u ⊆ s → f u = 0
 
-variable {f : 𝓢'(E, F)} {g : 𝓢'(E, F)} {s t : Set E}
+variable {f : 𝓢'(E, F)} {g : 𝓢'(E, F)} {s s₁ s₂ : Set E}
 
 variable (E F s) in
 @[simp, grind .]
@@ -42,8 +43,21 @@ theorem isVanishingOn_univ_iff : f.IsVanishingOn Set.univ ↔ f = 0 := by
   ext u
   simpa [IsVanishingOn] using hf u
 
-theorem IsVanishingOn.mono {s₁ s₂ : Set E} (hs : s₂ ⊆ s₁) (hf : f.IsVanishingOn s₁) :
-    f.IsVanishingOn s₂ := fun u hu ↦ hf u (hu.trans hs)
+theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : f.IsVanishingOn s₁) : f.IsVanishingOn s₂ :=
+  fun u hu ↦ hf u (hu.trans hs)
+
+@[grind .]
+theorem IsVanishingOn.union (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂) (hf₁ : f.IsVanishingOn s₁)
+    (hf₂ : f.IsVanishingOn s₂) :
+    f.IsVanishingOn (s₁ ∪ s₂) := by
+  sorry
+
+theorem IsVanishingOn.iUnion {s : ι → Set E} (hs : ∀ i, IsOpen (s i))
+    (hf : ∀ i, f.IsVanishingOn (s i)) :
+    f.IsVanishingOn (⋃ i, s i) := by
+  intro u hu
+  -- Need smooth partition of unity
+  sorry
 
 @[grind .]
 theorem IsVanishingOn.neg (hf : f.IsVanishingOn s) : (-f).IsVanishingOn s := by
@@ -51,15 +65,15 @@ theorem IsVanishingOn.neg (hf : f.IsVanishingOn s) : (-f).IsVanishingOn s := by
   simpa using hf u hu
 
 @[grind .]
-theorem IsVanishingOn.add (hf : f.IsVanishingOn s) (hg : g.IsVanishingOn t) :
-    (f + g).IsVanishingOn (s ∩ t) := by
+theorem IsVanishingOn.add (hf : f.IsVanishingOn s₁) (hg : g.IsVanishingOn s₂) :
+    (f + g).IsVanishingOn (s₁ ∩ s₂) := by
   intro u hu
   simp [UniformConvergenceCLM.add_apply, hf u (hu.trans Set.inter_subset_left),
     hg u (hu.trans Set.inter_subset_right)]
 
 @[grind .]
-theorem IsVanishingOn.sub (hf : f.IsVanishingOn s) (hg : g.IsVanishingOn t) :
-    (f - g).IsVanishingOn (s ∩ t) := by
+theorem IsVanishingOn.sub (hf : f.IsVanishingOn s₁) (hg : g.IsVanishingOn s₂) :
+    (f - g).IsVanishingOn (s₁ ∩ s₂) := by
   intro u hu
   simp [UniformConvergenceCLM.sub_apply, hf u (hu.trans Set.inter_subset_left),
     hg u (hu.trans Set.inter_subset_right)]
@@ -111,10 +125,19 @@ def support (f : 𝓢'(E, F)) : Set E := ⋂₀ { s | f.IsVanishingOn sᶜ ∧ I
 
 variable {f : 𝓢'(E, F)} {g : 𝓢'(E, F)} {s : Set E}
 
-@[simp]
 theorem mem_support_iff (x : E) :
     x ∈ f.support ↔ ∀ (s : Set E), f.IsVanishingOn sᶜ → IsClosed s → x ∈ s := by
   simp [support]
+
+theorem mem_support_of_forall_exists_ne (x : E) (h : ∀ (s : Set E) (_ : x ∈ s) (_ : IsOpen s),
+    ∃ u : 𝓢(E, ℂ), tsupport u ⊆ s ∧ f u ≠ 0) : x ∈ f.support := by
+  rw [mem_support_iff]
+  intro s hs hs'
+  by_cases! h' : x ∈ s
+  · exact h'
+  exfalso
+  obtain ⟨u, h₁, h₂⟩ := h sᶜ h' IsClosed.isOpen_compl
+  exact h₂ (hs u h₁)
 
 @[simp high]
 theorem mem_support_compl_iff (x : E) :
@@ -143,7 +166,15 @@ theorem isClosed_support : IsClosed f.support := by
   grind [support, isClosed_sInter]
 
 theorem isVanishingOn_support_compl : f.IsVanishingOn (f.support)ᶜ := by
-  sorry
+  suffices h : f.IsVanishingOn (⋃₀ { a | f.IsVanishingOn a ∧ IsOpen a }) by
+    convert h
+    simp [support, Set.compl_sInter, Set.compl_image_set_of]
+  rw [Set.sUnion_eq_iUnion]
+  apply IsVanishingOn.iUnion
+  · intro ⟨s, hs₁, hs₂⟩
+    exact hs₂
+  · intro ⟨s, hs₁, hs₂⟩
+    exact hs₁
 
 @[simp]
 theorem support_zero_eq_emptyset : (0 : 𝓢'(E, F)).support = ∅ := by
@@ -181,18 +212,22 @@ theorem support_lineDerivOp_subset (m : E) : (∂_{m} f).support ⊆ f.support :
 theorem support_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) :
     (∂^{m} f).support ⊆ f.support := by grind
 
-theorem support_delta (x : E) : (delta x).support = {x} := by
+open scoped Topology
+
+theorem support_delta [FiniteDimensional ℝ E] (x : E) : (delta x).support = {x} := by
   apply subset_antisymm
   · intro x' hx'
     rw [mem_support_iff] at hx'
     exact hx' {x} (isVanishingOn_delta x) (T1Space.t1 x)
   rintro x rfl
-  simp only [support, Set.mem_sInter, Set.mem_setOf_eq, and_imp]
-  intro s hs₁ hs₂
-  -- Need unions
-  sorry
-
-
+  apply mem_support_of_forall_exists_ne
+  intro s hx hs
+  obtain ⟨u, h₁, h₂, h₃, -, h₄⟩ :=
+    exists_contDiff_tsupport_subset (n := ⊤) ((IsOpen.mem_nhds_iff hs).mpr hx)
+  have h₁' : tsupport (Complex.ofRealCLM ∘ u) ⊆ s := (tsupport_comp_subset rfl _).trans h₁
+  have h₂' : HasCompactSupport (Complex.ofRealCLM ∘ u) := h₂.comp_left rfl
+  use h₂'.toSchwartzMap (Complex.ofRealCLM.contDiff.comp h₃)
+  exact ⟨h₁', by simp [h₄]⟩
 
 end Support
 
