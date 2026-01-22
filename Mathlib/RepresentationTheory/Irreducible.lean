@@ -29,7 +29,7 @@ subrepresentations. -/
 @[mk_iff] class IsIrreducible extends
   IsSimpleOrder (Subrepresentation ρ)
 
-theorem irreducible_iff_is_simple_module_as_module :
+theorem irreducible_iff_isSimpleModule_asModule :
     IsIrreducible ρ ↔ IsSimpleModule k[G] ρ.asModule := by
   rw [isSimpleModule_iff, isIrreducible_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
