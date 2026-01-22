@@ -67,12 +67,13 @@ lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
 -- End of suggested additions to #Monoid.ker
 
 -- Start of suggested additions to #FreeGroup
--- TODO review this
+/- We define that the free group on no generators as isomorphic to the trivial group. -/
 def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 { toEquiv := FreeGroup.freeGroupEmptyEquivUnit
   map_mul' := by intro x y; rfl }
 
 -- TODO review this
+/- We define that the free group on one element as isomorphic to ℤ. -/
 def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ := by
   refine
@@ -163,6 +164,8 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G
 -- end of suggested additions to #Group.FG
 
 -- Start of suggestion additions to #PresentedGroup
+
+/- A group is presented if it admits an isomorphism to a presented group.  -/
 class IsPresented (G : Type*) [Group G] : Prop where
  out: ∃ (α : Type*) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
 -- End of suggested additions to #PresentedGroup
@@ -170,11 +173,11 @@ class IsPresented (G : Type*) [Group G] : Prop where
 -- Start of NormalClosureFG statements
 open Subgroup
 
-/-- Definition of subgroup that is given by the normal closure of finitely many elements. -/
+/- Definition of subgroup that is given by the normal closure of finitely many elements. -/
 def IsNormalClosureFG {G : Type*} [Group G] (H : Subgroup G) : Prop :=
   ∃ S : Set G, S.Finite ∧ Subgroup.normalClosure S = H
 
-/-- `IsNormalClosureFG` is invariant under surjective homomorphism. -/
+/- `IsNormalClosureFG` is invariant under surjective homomorphism. -/
 theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   (f : G →* H) (hf : Function.Surjective f) (K : Subgroup G) (hK : IsNormalClosureFG K)
   : IsNormalClosureFG (K.map f) := by
@@ -185,6 +188,8 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 -- End of NormalClosureFG statements
 
+/- A finitely presented group is defined as a presented group with generators of a finite type
+and finite relations.  -/
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
 (_h : rels.Finite) := PresentedGroup (rels)
 
@@ -196,10 +201,13 @@ Group (FinitelyPresentedGroup rels h) :=
 
 end FinitelyPresentedGroup
 
+/- A group is finitely presented if it admits an isomorphism to a finitely presented group. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
   Nonempty (G ≃* (FinitelyPresentedGroup rels h))
 
+/- A group is one relator if it admits an isomorphism to a presented group such that the number
+of relations is one.  -/
 class IsOneRelator (G : Type*) [Group G] : Prop where
   out : ∃ (α : Type*) (rels : Set (FreeGroup α)) (hrels : rels.Finite),
       Nonempty (G ≃* PresentedGroup rels) ∧
@@ -436,7 +444,6 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
--- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
 def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
@@ -445,6 +452,7 @@ def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     simpa using (normalClosure_empty (G := FreeGroup α))
   exact (QuotientGroup.quotientMulEquivOfEq hbot).trans
     (QuotientGroup.quotientBot (G := FreeGroup α))
+-- TODO I think this needs to work for any presented group.
 
 /- Trivial group is finitely presented -/
 instance : IsFinitelyPresented (Unit) := by
