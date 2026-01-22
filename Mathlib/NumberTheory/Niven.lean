@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Complex.IsIntegral
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Rify
 public import Mathlib.Tactic.Qify
@@ -170,3 +171,19 @@ theorem niven_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q)
   have := niven_angle_eq ⟨r, h.symm⟩ hcos (by simpa using h_bnd)
   simp_all [Rat.smul_def]
   grind
+
+theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) = q) :
+    Int.fract r ∈ ({0, 1 / 3, 1 / 2, 2 / 3} : Set ℚ) := by
+  suffices Int.fract r ∈ ({0, 1 / 3, 1 / 2, 2 / 3, 1} : Set ℚ) by
+    grind [ne_of_lt (Int.fract_lt_one r)]
+  refine niven_angle_div_pi_eq (r := Int.fract r) ?_ (by simp [le_of_lt <| Int.fract_lt_one r])
+  obtain ⟨q, hq⟩ := hcos
+  exact ⟨(-1) ^ ⌊r⌋ * q, by rw [Int.fract]; push_cast; rw [sub_mul, cos_sub_int_mul_pi, hq]⟩
+
+theorem irrational_cos_rat_mul_pi {r : ℚ} (hr₁ : r.den ≠ 1) (hr₂ : r.den ≠ 2) (hr₃ : Even r.den) :
+    Irrational (cos (r * π)) := by
+  rw [← show (Int.fract r).den = r.den from Rat.sub_intCast_den r ⌊r⌋] at hr₁ hr₂ hr₃
+  by_contra! hnz
+  rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr | hr | hr | hr)
+  all_goals try rw [Set.mem_singleton_iff] at hr
+  all_goals simp [hr, even_iff_two_dvd] at hr₁ hr₂ hr₃; try norm_num at hr₃

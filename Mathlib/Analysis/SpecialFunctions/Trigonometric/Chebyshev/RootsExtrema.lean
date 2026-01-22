@@ -305,21 +305,19 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
 
 theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
     Irrational x := by
-  contrapose! hnz
-  obtain ⟨q, hq⟩ := exists_rational_of_not_irrational hnz
   rw [← mem_roots (T_ne_zero ℝ n), roots_T_real] at hroot
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
-  have hn : n ≠ 0 := by grind
-  set r := (2 * k + 1 : ℚ) / (2 * n) with rdef
-  have hcos : cos (r * π) = q := by rw [← hq, ← hk₂, rdef]; congr 1; push_cast; ring
-  have h_bnd : r ∈ Set.Icc 0 1 :=
-    Set.mem_Icc.mpr ⟨by positivity, by rw [rdef]; field_simp; norm_cast; grind⟩
-  rcases niven_angle_div_pi_eq ⟨q, hcos⟩ h_bnd with (hr | hr | hr | hr | hr)
-  all_goals simp only [Set.mem_singleton_iff, rdef] at hr; field_simp at hr; norm_cast at hr
-  all_goals try lia
-  rw [hq, ← hcos, rdef, ← cos_pi_div_two]
-  rw_mod_cast [hr]
-  push_cast
-  field_simp
+  suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
+    rw [← hk₂]; convert this using 2; push_cast; field_simp [show n ≠ 0 by grind]
+  have hden : (Rat.divInt (2 * k + 1) (2 * n)).den = 2 * n / (2 * n).gcd (2 * k + 1) := by
+    simp [Rat.den_divInt, show n ≠ 0 by grind]; norm_cast
+  rw [show (2 * n).gcd (2 * k + 1) = n.gcd (2 * k + 1) from
+    Nat.Coprime.gcd_mul_left_cancel n (by simp), Nat.mul_div_assoc _ (Nat.gcd_dvd_left ..)] at hden
+  apply irrational_cos_rat_mul_pi
+  all_goals rw [hden]; try (simp; done)
+  contrapose! hnz
+  suffices 2 * k + 1 = n by rw [← hk₂, ← cos_pi_div_two, ← this]; congr 1; field_simp; norm_cast
+  refine Nat.eq_of_dvd_of_lt_two_mul (by simp) ?hdvd (by grind)
+  exact Nat.gcd_eq_left_iff_dvd.mp <| Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind)
 
 end Polynomial.Chebyshev
