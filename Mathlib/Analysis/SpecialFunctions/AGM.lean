@@ -141,6 +141,9 @@ lemma agm_comm : agm x y = agm y x := by
 
 lemma agm_eq_ciInf : agm x y = ⨅ n, (agmSequences x y n).2 := rfl
 
+lemma tendsto_agmSequences_snd_agm : Tendsto (fun n ↦ (agmSequences x y n).2) atTop (𝓝 (agm x y)) :=
+  tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
+
 lemma agm_le_agmSequences_snd (n : ℕ) : agm x y ≤ (agmSequences x y n).2 := ciInf_le' _ n
 
 lemma agm_le_max : agm x y ≤ max x y := by
@@ -159,13 +162,17 @@ lemma bddAbove_range_agmSequences_fst : BddAbove (Set.range fun n ↦ (agmSequen
 
 /-- The AGM is also the supremum of the geometric means. -/
 lemma agm_eq_ciSup : agm x y = ⨆ n, (agmSequences x y n).1 := by
-  refine tendsto_nhds_unique ?_ <|
-    tendsto_atTop_ciSup agmSequences_fst_monotone bddAbove_range_agmSequences_fst
-  apply (tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)).congr_dist
+  refine tendsto_nhds_unique (tendsto_agmSequences_snd_agm.congr_dist ?_)
+    (tendsto_atTop_ciSup agmSequences_fst_monotone bddAbove_range_agmSequences_fst)
   conv =>
     enter [1, n]
     rw [dist_comm]
   exact tendsto_dist_agmSequences_atTop_zero
+
+lemma tendsto_agmSequences_fst_agm :
+    Tendsto (fun n ↦ (agmSequences x y n).1) atTop (𝓝 (agm x y)) := by
+  rw [agm_eq_ciSup]
+  exact tendsto_atTop_ciSup agmSequences_fst_monotone bddAbove_range_agmSequences_fst
 
 lemma agmSequences_fst_le_agm (n : ℕ) : (agmSequences x y n).1 ≤ agm x y := by
   rw [agm_eq_ciSup]
@@ -203,10 +210,8 @@ lemma agm_zero_right : agm x 0 = 0 := by
 
 lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
     agm x y = agm (agmSequences x y n).1 (agmSequences x y n).2 := by
-  refine tendsto_nhds_unique ?_ <|
-    tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
-  have key : Tendsto (fun n ↦ (agmSequences x y n).2) atTop (𝓝 (agm x y)) :=
-    tendsto_atTop_ciInf agmSequences_snd_antitone (OrderBot.bddBelow _)
+  refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
+  have key := @tendsto_agmSequences_snd_agm x y
   rw [← tendsto_add_atTop_iff_nat (n + 1)] at key
   convert key using 2 with m
   simp_rw [agmSequences, Prod.mk.eta, ← iterate_add_apply, add_right_comm]
