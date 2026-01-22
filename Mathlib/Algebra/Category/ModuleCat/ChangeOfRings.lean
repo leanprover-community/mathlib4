@@ -146,7 +146,7 @@ def semilinearMapAddEquiv {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f :
       map_smul' := g.hom.map_smul }
   map_add' _ _ := rfl
 
-/-- Restricting scalars along equal ring homomorphisms are natural isomorphic. -/
+/-- Restrictions scalars along equal ring homomorphisms are naturally isomorphic. -/
 def restrictScalarsCongr
     {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g) :
     ModuleCat.restrictScalars f ≅ ModuleCat.restrictScalars g :=
@@ -164,6 +164,12 @@ lemma restrictScalarsCongr_hom_app
     {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g)
     (M : ModuleCat S) (x : M) :
   (restrictScalarsCongr e).hom.app M x = x := rfl
+
+@[simp]
+lemma restrictScalarsCongr_inv_app
+    {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f g : R →+* S} (e : f = g)
+    (M : ModuleCat S) (x : M) :
+  (restrictScalarsCongr e).inv.app M x = x := rfl
 
 section
 
