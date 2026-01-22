@@ -32,7 +32,7 @@ variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMon
   between underlying modules which commutes with the `G`-actions. -/
 @[ext] structure IntertwiningMap extends V →ₗ[A] W where
   /-- An underlying `A`-linear map of the underlying `A`-modules. -/
-  isIntertwining (g : G) (v : V) : toFun (ρ g v) = σ g (toFun v)
+  isIntertwining' (g : G) (v : V) : toFun (ρ g v) = σ g (toFun v)
 
 namespace IntertwiningMap
 
@@ -47,8 +47,11 @@ lemma toFun_injective : Function.Injective fun f : IntertwiningMap ρ σ ↦ f.t
   exact congrFun h x
 
 instance : FunLike (IntertwiningMap ρ σ) V W where
-  coe f := f.toLinearMap
-  coe_injective' := to_fun_injective ρ σ
+  coe f := f.toFun
+  coe_injective' := toFun_injective ρ σ
+
+lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
+    f (ρ g v) = σ g (f v) := f.isIntertwining' g v
 
 @[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v  = f v := rfl
 
@@ -100,22 +103,18 @@ def equivLinearMapAsModule :
   invFun f :=
     { toLinearMap := { f with
         map_smul' a v := by simp }
-      isIntertwining g v := by simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
+      isIntertwining' g v := by simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
   map_add' g₁ g₂ := by ext; simp
   map_smul' t g := by ext; simp
   left_inv f := rfl
   right_inv f := rfl
 
 /-- The identity map, considered as an intertwining map from a representation to itself. -/
-noncomputable def IntertwiningMap.id : IntertwiningMap ρ ρ := ofLinearMap LinearMap.id
+noncomputable def id : IntertwiningMap ρ ρ where
+  toLinearMap := LinearMap.id
+  isIntertwining' := by simp
 
-@[simp] lemma IntertwiningMap.id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
-
-theorem as_linear_map_to_linear_map (f : IntertwiningMap ρ σ) : ofLinearMap (asLinearMap f) = f :=
-    by ext x; rfl
-
-theorem to_linear_map_as_linear_map (f : ρ.asModule →ₗ[A[G]] σ.asModule) :
-  asLinearMap (ofLinearMap f) = f := by ext x; rfl
+@[simp] lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
 
 theorem isIntertwiningMap_of_central (g : G) (hg : g ∈ Submonoid.center G) :
     IsIntertwiningMap ρ ρ (ρ g) := by
@@ -127,6 +126,10 @@ theorem isIntertwiningMap_of_central (g : G) (hg : g ∈ Submonoid.center G) :
 
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
   intertwining map from any representation of `G` to itself. -/
-def IntertwiningMap.CentralMul (g : G) (hg : g ∈ Submonoid.center G) : (IntertwiningMap ρ ρ) where
+def CentralMul (g : G) (hg : g ∈ Submonoid.center G) : (IntertwiningMap ρ ρ) where
   toLinearMap := ρ g
-  isIntertwining := (isIntertwiningMap_of_central ρ g hg).isIntertwining
+  isIntertwining' := (isIntertwiningMap_of_central ρ g hg).isIntertwining
+
+end IntertwiningMap
+
+end Representation
