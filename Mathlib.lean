@@ -4917,6 +4917,7 @@ public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 public import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 public import Mathlib.MeasureTheory.Constructions.Projective
 public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+public import Mathlib.MeasureTheory.Constructions.SimpleGraph
 public import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
 public import Mathlib.MeasureTheory.Covering.Besicovitch
