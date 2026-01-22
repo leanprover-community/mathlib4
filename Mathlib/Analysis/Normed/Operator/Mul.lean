@@ -201,7 +201,7 @@ theorem lsmul_flip_apply (x : E) :
     (lsmul 𝕜 𝕜).flip x = toSpanSingleton 𝕜 x :=
   rfl
 
-@[deprecated (since := "29-08-2025")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
+@[deprecated (since := "2025-08-29")] alias comp_lsmul_flip_apply := comp_toSpanSingleton
 
 variable {𝕜} in
 theorem lsmul_flip_inj {x y : E} :
