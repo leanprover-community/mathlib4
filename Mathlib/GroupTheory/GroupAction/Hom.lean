@@ -844,6 +844,8 @@ def inverse (f : A →*[M] B₁) (g : B₁ → A) (h₁ : Function.LeftInverse g
     (h₂ : Function.RightInverse g f) : B₁ →*[M] A :=
   { (f : A →* B₁).inverse g h₁ h₂, f.toMulActionHom.inverse g h₁ h₂ with toFun := g }
 
+end MulDistribMulActionHom
+
 section Semiring
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
@@ -855,13 +857,12 @@ variable [AddMonoid N'] [DistribMulAction S N']
 
 variable {σ : R →* S}
 @[ext]
-theorem ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
+theorem DistribMulActionHom.ext_ring {f g : R →ₑ+[σ] N'} (h : f 1 = g 1) : f = g := by
   ext x
   rw [← mul_one x, ← smul_eq_mul, f.map_smulₑ, g.map_smulₑ, h]
 
 end Semiring
 
-end MulDistribMulActionHom
 
 variable (R : Type*) [Semiring R] [MulSemiringAction M R]
 variable (R' : Type*) [Ring R'] [MulSemiringAction M R']
