@@ -415,7 +415,7 @@ lemma ωScottContinuous.apply₂ (hf : ωScottContinuous f) (a : α) : ωScottCo
     ⟨fun _ _ h ↦ hf.monotone h a, fun c ↦ congr_fun (hf.map_ωSup c) a⟩
 
 @[fun_prop]
-lemma ωScottContinuous.apply (x : α) : ωScottContinuous (fun f : ∀x, β x ↦ f x) :=
+lemma ωScottContinuous.apply (x : α) : ωScottContinuous (fun f : ∀ x, β x ↦ f x) :=
   apply₂ id x
 
 @[fun_prop]
