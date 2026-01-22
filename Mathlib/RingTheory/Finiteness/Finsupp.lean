@@ -117,6 +117,7 @@ theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
 /-- If $0 → M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
 
 This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`. -/
+@[stacks 0519 "(1)"]
 lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (h_exact : Function.Exact f g) (h_surj : Function.Surjective g)
     [Module.Finite R M] [Module.Finite R P] : Module.Finite R N := by
