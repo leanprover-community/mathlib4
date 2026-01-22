@@ -116,6 +116,7 @@ def asSubmodule' (σ : Subrepresentation (Representation.ofModule (k := A) (G :=
       exact σ.toSubmodule.smul_mem' ((algebraMap A A) a) <| by
         simpa [Representation.ofModule, RestrictScalars.lsmul] using σ.apply_mem_toSubmodule g hm
 
+@[simp]
 lemma mem_asSubmodule'_iff {σ : Subrepresentation (Representation.ofModule (k := A) (G := G) M)}
     {m : M} : m ∈ asSubmodule' σ ↔ m ∈ σ := by rfl
 
@@ -129,6 +130,7 @@ def ofSubmodule (N : Submodule A[G] M) :
     simpa [Representation.ofModule, RestrictScalars.lsmul] using
       Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
 
+@[simp]
 lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N ↔ m ∈ N := by rfl
 
 /-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
@@ -143,6 +145,7 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
     rw [Representation.single_smul, one_smul] at h
     exact h
 
+@[simp]
 lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
   by rfl
 
