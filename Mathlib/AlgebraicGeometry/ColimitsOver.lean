@@ -89,9 +89,8 @@ lemma transitionMap_id (i : 𝒰.I₀) :
     d.transitionMap (𝟙 i) = ((Over.mapId _ _ _).hom.app <| (d.cocone i).pt) := by
   apply (isColimitOfPreserves (Over.map ⊤ (d.prop_trans <| 𝟙 i)) (d.isColimit i)).hom_ext
   intro
-  rw [transitionMap, IsColimit.fac]
   ext
-  simp [transitionCocone]
+  simp [cocone_ι_transitionMap]
 
 @[simp]
 lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
@@ -99,8 +98,8 @@ lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
       (Over.mapComp ⊤ (d.prop_trans hij) (d.prop_trans hjk) (𝒰.trans (hij ≫ hjk))).hom.app _ ≫
       (Over.map ⊤ (d.prop_trans hjk)).map (d.transitionMap hij) ≫
         d.transitionMap hjk := by
-  apply (isColimitOfPreserves (Over.map ⊤ _) (d.isColimit i)).hom_ext
-  intro a
+  apply (isColimitOfPreserves (Over.map ⊤ <| d.prop_trans _) (d.isColimit i)).hom_ext
+  intro
   ext
   simp [← Functor.map_comp_assoc, cocone_ι_transitionMap, pullback.map_comp_assoc]
 
@@ -230,11 +229,11 @@ def isColimitGluedCocone : IsColimit d.gluedCocone := by
             (Over.map ⊤ (d.prop_trans hij)).map
             ((d.isColimit i).desc ((MorphismProperty.Over.pullback P ⊤ (𝒰.f i)).mapCocone s)) ≫
             (Over.pullbackMapHomPullback _ (d.prop_trans hij) trivial _ _).app _ := by
-        apply (isColimitOfPreserves (MorphismProperty.Over.map ⊤ _) (d.isColimit i)).hom_ext
-        intro a
+        apply (isColimitOfPreserves (MorphismProperty.Over.map ⊤ <| d.prop_trans _)
+          (d.isColimit i)).hom_ext
+        intro
         ext
-        apply pullback.hom_ext<;>
-        simp [cocone_ι_transitionMap_assoc, ← Functor.map_comp_assoc]
+        apply pullback.hom_ext <;> simp [cocone_ι_transitionMap_assoc, ← Functor.map_comp_assoc]
       rw [← Over.comp_left_assoc, ← Comma.comp_hom, this]
       simp
     · intro i
