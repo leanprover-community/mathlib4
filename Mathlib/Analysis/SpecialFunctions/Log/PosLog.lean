@@ -67,6 +67,7 @@ theorem half_mul_log_add_log_abs : 2⁻¹ * (log x + |log x|) = log⁺ x := by
 /-- The positive part of `log` is never negative. -/
 theorem posLog_nonneg : 0 ≤ log⁺ x := by simp [posLog]
 
+
 /-- The function `log⁺` is even. -/
 @[simp] theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
 
@@ -172,6 +173,18 @@ theorem posLog_one_div_abs_one_sub_le_sqrt_two_div (t : ℝ) :
     have hposLog : log⁺ (1 / |1 - t|) = 0 := (Real.posLog_eq_zero_iff _).2 habs
     rw [hposLog]
     exact Real.sqrt_nonneg _
+
+/-!
+## Inequalities relating `log` and `log⁺`
+-/
+
+/-- A convenient lower bound for `log` in terms of `log⁺`. -/
+theorem neg_posLog_inv_le_log (x : ℝ) : -log⁺ x⁻¹ ≤ Real.log x := by
+  have hx : Real.log x = log⁺ x - log⁺ x⁻¹ := by
+    simpa [sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
+      (Real.posLog_sub_posLog_inv (x := x)).symm
+  have hx0 : 0 ≤ log⁺ x := Real.posLog_nonneg (x := x)
+  linarith [hx, hx0]
 
 /-!
 ## Estimates for Products
