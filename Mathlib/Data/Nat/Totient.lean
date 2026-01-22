@@ -375,7 +375,7 @@ theorem totient_mul_of_prime_of_not_dvd {p n : ℕ} (hp : p.Prime) (h : ¬p ∣ 
   simpa [h] using coprime_or_dvd_of_prime hp n
 
 theorem totient_two_mul_of_even {n : ℕ} (hn : Even n) : (2 * n).totient = 2 * n.totient :=
-  totient_mul_of_prime_of_dvd prime_two (Even.two_dvd hn)
+  totient_mul_of_prime_of_dvd prime_two hn.two_dvd
 
 theorem totient_two_mul_of_odd {n : ℕ} (hn : Odd n) : (2 * n).totient = n.totient := by
   rw [totient_mul_of_prime_of_not_dvd prime_two (Odd.not_two_dvd_nat hn), Nat.add_one_sub_one 1,
