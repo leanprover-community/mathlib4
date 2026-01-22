@@ -15,6 +15,9 @@ The `vecPerm` simproc computes the new entries of a vector after applying a perm
 
 -/
 
+-- Turn this off since the only public thing in this module is the simproc declaration
+set_option linter.privateModule false
+
 meta section
 
 open Lean Elab Meta Simp Qq
@@ -36,7 +39,7 @@ partial def listOfVecQ {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
 Takes an expression representing a list of elements of type `α` and outputs the corresponding
 vector `Fin n → α`.
 -/
-partial def vecOfListQ {u : Level} {α : Q(Type u)}
+def vecOfListQ {u : Level} {α : Q(Type u)}
     (n : ℕ) (vec : List Q($α)) : MetaM Q(Fin $n → $α) := do
   match n, vec with
   | n + 1, head :: rest =>
