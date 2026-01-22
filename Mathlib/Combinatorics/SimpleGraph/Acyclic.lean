@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller , Yue Sun , Jiayi Huang
+Authors: Kyle Miller, Yue Sun, Jiayi Huang
 -/
 module
 
@@ -511,18 +511,23 @@ lemma IsTree.exists_vert_degree_one_of_nontrivial [Fintype V] [Nontrivial V] [De
 section
 
 open Finset
+
 variable {V : Type*} [Fintype V]
-/-- The set of all pendent vertices in a graph. -/
+
+/- The set of all pendent vertices (leaves) in a graph. -/
 def pendentVertices (G : SimpleGraph V) [DecidableRel G.Adj] : Finset V :=
   univ.filter (fun v => G.degree v = 1)
+
 /-- In a connected graph with more than one vertex, every vertex has degree at least 1. -/
 lemma Connected.one_le_degree (G : SimpleGraph V) [DecidableRel G.Adj]
     (hconn : G.Connected) (v : V) (hn : 1 < Fintype.card V) : 1 ≤ G.degree v := by
   haveI : Nontrivial V := Fintype.one_lt_card_iff_nontrivial.mp hn
-  have : 0 < G.minDegree := hconn.preconnected.minDegree_pos_of_nontrivial
-  have : 0 < G.degree v := lt_of_lt_of_le this (G.minDegree_le_degree v)
-  exact Nat.succ_le_iff.mpr this
-/-- Let G be a tree of order n ≥ 2. Then G has at least two pendent vertices. -/
+  have hmin : 0 < G.minDegree := hconn.preconnected.minDegree_pos_of_nontrivial
+  have hdegpos : 0 < G.degree v := lt_of_lt_of_le hmin (G.minDegree_le_degree v)
+  rw [Nat.one_le_iff_ne_zero]
+  exact ne_of_gt hdegpos
+
+/- A tree of order n ≥ 2 has at least two pendent vertices (leaves). -/
 theorem tree_has_at_least_two_pendent_vertices (G : SimpleGraph V) [DecidableRel G.Adj]
     (h_tree : G.IsTree) (h_order : 2 ≤ Fintype.card V) :
     2 ≤ (G.pendentVertices).card := by
