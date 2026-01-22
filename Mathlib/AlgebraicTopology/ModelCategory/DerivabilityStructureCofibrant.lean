@@ -44,8 +44,7 @@ instance (X : C) : IsConnected ((localizerMorphism C).LeftResolution X) := by
       hw := by simpa using mem_weakEquivalences (HoCat.pResolutionObj X) }
   have hR₀ (R) : Nonempty (Zigzag R R₀) := by
     have sq : CommSq (initial.to _) (initial.to _) R₀.w R.w := ⟨by simp⟩
-    exact ⟨Zigzag.of_hom
-      { f := homMk (sq.lift) }⟩
+    exact ⟨Zigzag.of_hom { f := homMk (sq.lift) }⟩
   have : Nonempty ((localizerMorphism C).LeftResolution X) := ⟨R₀⟩
   exact zigzag_isConnected (fun R₁ R₂ ↦ (hR₀ R₁).some.trans (hR₀ R₂).some.symm)
 
