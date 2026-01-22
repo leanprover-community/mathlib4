@@ -1074,66 +1074,16 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   contrapose! hT
   simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
-omit [IsStrictOrderedRing R] in
-/-- If `d` is strictly between `a` and `b`, and `a`, `b`, `c` are affine independent,
-   then replacing `b` with `d` in the triple yields affine independent points `a`, `d`, `c`. -/
-theorem affineIndependent_of_sbtw_affineIndependent {a b c d : P}
-    (hd : Sbtw R a d b) (hABC : AffineIndependent R ![a, b, c]) :
-    AffineIndependent R ![a, d, c] := by
-  rw [affineIndependent_iff_not_collinear_set]
-  have h_collinear: Collinear R {a, b, d} := by
-    apply Collinear.subset _ hd.wbtw.collinear
-    grind
-  have h_indep : AffineIndependent R ![c,a, b] := hABC.reverse_of_three.comm_right
-  have h := affineIndependent_of_affineIndependent_collinear_ne h_indep h_collinear hd.left_ne
-  rw [← affineIndependent_iff_not_collinear_set]
-  exact h.comm_right.reverse_of_three
-
-/-- If `d` is strictly between `a` and `b`, and `a`, `d`, `c` are affine independent,
-   then the original triple `a`, `b`, `c` is also affine independent. -/
-theorem affineIndependent_of_sbtw_affineIndependent_inv {a b c d : P}
-    (hd : Sbtw R a d b) (hADC : AffineIndependent R ![a, d, c]) :
-    AffineIndependent R ![a, b, c] := by
-  rw [affineIndependent_iff_not_collinear_set]
-  have h_collinear: Collinear R {a, d, b} := by
-    apply Collinear.subset _ hd.wbtw.collinear
-    grind
-  have h_indep: AffineIndependent R ![c, a, d] := hADC.reverse_of_three.comm_right
-  have h:= affineIndependent_of_affineIndependent_collinear_ne h_indep h_collinear hd.left_ne_right
-  rw [← affineIndependent_iff_not_collinear_set]
-  exact h.comm_right.reverse_of_three
-
-/-- Affine independence of `a`, `b`, `c` is equivalent to affine independence of `a`, `d`, `c`
-   when `d` is strictly between `a` and `b`. -/
-theorem affineIndependent_iff_affineIndependent_of_sbtw {a b c d : P} (hd : Sbtw R a d b) :
-    AffineIndependent R ![a, b, c] ↔ AffineIndependent R ![a, d, c] :=
-  ⟨affineIndependent_of_sbtw_affineIndependent hd,
-  affineIndependent_of_sbtw_affineIndependent_inv hd⟩
-
-omit [IsStrictOrderedRing R] in
-/-- If `a`, `b`, `c` are affine independent, `d` is strictly between `a` and `b`,
-   and `e` is strictly between `a` and `c`, then `a`, `d`, `e` are affine independent. -/
-theorem affineIndependent_of_sbtw_sbtw {a b c d e : P} (hABC : AffineIndependent R ![a, b, c])
-    (hd : Sbtw R a d b) (he : Sbtw R a e c) :
-    AffineIndependent R ![a, d, e] := by
-  have h_indep_adc: AffineIndependent R ![a, d, c] :=
-    affineIndependent_of_sbtw_affineIndependent hd hABC
-  have h_acd: AffineIndependent R ![a, c, d] := h_indep_adc.comm_right
-  have h_aed: AffineIndependent R ![a, e, d] := affineIndependent_of_sbtw_affineIndependent he h_acd
-  exact h_aed.comm_right
-
-omit [IsStrictOrderedRing R] in
-/-- If `a`, `b`, `c` are affine independent, `d` is strictly between `a` and `b`,
-   and `e` is strictly between `a` and `c`, then `d ≠ e`. -/
-theorem ne_of_affineIndependent_sbtw_sbtw {a b c d e : P} (hABC : AffineIndependent R ![a, b, c])
-    (hd : Sbtw R a d b) (he : Sbtw R a e c) :
-    d ≠ e := by
-  have hindep: AffineIndependent R ![a, d, e] :=
-    affineIndependent_of_sbtw_sbtw hABC hd he
-  have not_col: ¬Collinear R {a, d, e} := by
-    rw [affineIndependent_iff_not_collinear_set] at hindep
-    exact hindep
-  exact ne₂₃_of_not_collinear not_col
+/-- Affine independence of `a`, `b`, `c` is equivalent to affine independence of `a`, `c`, `d`
+   when `c` is strictly between `b` and `d`. -/
+theorem affineIndependent_iff_affineIndependent_of_sbtw {a b c d : P} (hd : Sbtw R b c d) :
+    AffineIndependent R ![a, b, c] ↔ AffineIndependent R ![a, b, d] := by
+  constructor
+  · intro h
+    exact affineIndependent_of_affineIndependent_collinear_ne h hd.wbtw.collinear hd.left_ne_right
+  · intro h
+    have hcol : Collinear R {b, d, c} := by grind [Collinear.subset _ hd.wbtw.collinear]
+    exact affineIndependent_of_affineIndependent_collinear_ne h hcol hd.left_ne
 
 variable (R)
 
