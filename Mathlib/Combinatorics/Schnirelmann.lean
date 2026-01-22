@@ -292,7 +292,7 @@ theorem sumset_univ_of_schirelmannDensity_ge_one {A B : Set ℕ} [DecidablePred 
       let sB := {b ∈ Ioc 0 n | b ∈ B}
       have hc : (image f (disjSum sA sB)).card < (disjSum sA sB).card := calc
         (image f (disjSum sA sB)).card ≤ (Ioo 0 n).card := card_le_card (by grind [mem_disjSum])
-        _ < n := by rw[Nat.card_Ioo, Nat.sub_zero]; exact lt_add_one (n - 1)
+        _ < n := by rw [Nat.card_Ioo, Nat.sub_zero]; exact lt_add_one (n - 1)
         _ ≤ sA.card + sB.card := by
           rify
           nlinarith [@schnirelmannDensity_mul_le_card_filter A _ n,
