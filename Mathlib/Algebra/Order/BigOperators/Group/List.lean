@@ -168,7 +168,7 @@ theorem le_prod_of_mem {xs : List M} {x : M} (h₁ : x ∈ xs) : x ≤ xs.prod :
 end Monoid
 
 section
-variable {α β : Type*} [Monoid α] [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β]
+variable {α β : Type*} [Monoid α] [CommMonoid β] [Preorder β] [MulLeftMono β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)

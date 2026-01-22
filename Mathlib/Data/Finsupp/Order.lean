@@ -42,7 +42,7 @@ section Zero
 variable [Zero α]
 
 section OrderedAddCommMonoid
-variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+variable [AddCommMonoid β] [Preorder β] [AddLeftMono β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
 
 @[gcongr]
 lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
