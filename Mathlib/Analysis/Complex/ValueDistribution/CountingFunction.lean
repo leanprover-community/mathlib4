@@ -305,16 +305,15 @@ The logarithmic counting function is even.
 theorem logCounting_even {f : 𝕜 → E} {e : WithTop E} :
     (logCounting f e).Even := by
   intro r
-  by_cases h : e = ⊤
-  all_goals simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
+  by_cases h : e = ⊤ <;> simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
 
 /--
 The logarithmic counting function is monotonous.
 -/
 theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
     MonotoneOn (logCounting f e) (Ioi 0) := by
-  by_cases h : e = ⊤
-  all_goals simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
+  by_cases h : e = ⊤ <;>
+    simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
