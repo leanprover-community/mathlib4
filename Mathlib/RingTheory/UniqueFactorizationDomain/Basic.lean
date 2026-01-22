@@ -10,7 +10,7 @@ public import Mathlib.Data.ENat.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
-# Basic results un unique factorization monoids
+# Basic results on unique factorization monoids
 
 ## Main results
 * `prime_factors_unique`: the prime factors of an element in a cancellative
@@ -230,18 +230,6 @@ theorem factors_pow {x : α} (n : ℕ) :
       refine Multiset.Rel.add ?_ <| factors_pow n
       exact Multiset.rel_refl_of_refl_on fun y _ => Associated.refl _
 
-@[simp]
-theorem factors_pos (x : α) (hx : x ≠ 0) : 0 < factors x ↔ ¬IsUnit x := by
-  constructor
-  · intro h hx
-    obtain ⟨p, hp⟩ := Multiset.exists_mem_of_ne_zero h.ne'
-    exact (prime_of_factor _ hp).not_unit (isUnit_of_dvd_unit (dvd_of_mem_factors hp) hx)
-  · intro h
-    obtain ⟨p, hp⟩ := exists_mem_factors hx h
-    exact
-      bot_lt_iff_ne_bot.mpr
-        (mt Multiset.eq_zero_iff_forall_notMem.mp (not_forall.mpr ⟨p, not_not.mpr hp⟩))
-
 open Multiset in
 theorem factors_pow_count_prod [DecidableEq α] {x : α} (hx : x ≠ 0) :
     (∏ p ∈ (factors x).toFinset, p ^ (factors x).count p) ~ᵤ x :=
@@ -257,6 +245,19 @@ theorem factors_rel_of_associated {a b : α} (h : Associated a b) :
   · simp
   · refine factors_unique irreducible_of_factor irreducible_of_factor ?_
     exact ((factors_prod ha).trans h).trans (factors_prod hb).symm
+
+@[simp]
+theorem factors_of_isUnit {x : α} (hx : IsUnit x) : factors x = 0 := by
+  simpa using factors_rel_of_associated (associated_one_iff_isUnit.mpr hx)
+
+@[simp]
+theorem factors_ne_zero {x : α} (hx : x ≠ 0) : factors x ≠ 0 ↔ ¬IsUnit x :=
+  ⟨fun h hx ↦ h (factors_of_isUnit hx), fun h ↦ by
+    simpa [Multiset.eq_zero_iff_forall_notMem] using exists_mem_factors hx h⟩
+
+@[simp]
+theorem factors_pos {x : α} (hx : x ≠ 0) : 0 < factors x ↔ ¬IsUnit x :=
+  bot_lt_iff_ne_bot.trans (factors_ne_zero hx)
 
 end UniqueFactorizationMonoid
 
