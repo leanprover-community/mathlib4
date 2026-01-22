@@ -40,13 +40,14 @@ abbrev CoFG (S : Submodule R M) : Prop := Module.Finite R (M ⧸ S)
 /-- The top submodule is CoFG. -/
 @[simp] theorem CoFG.top : (⊤ : Submodule R M).CoFG := inferInstance
 
+variable (R M) in
 /-- A module is finite if and only if the bottom submodule is CoFG. -/
 theorem _root_.Module.Finite.iff_cofg_bot : (⊥ : Submodule R M).CoFG ↔ Module.Finite R M :=
   ⟨fun _ => Module.Finite.equiv (quotEquivOfEqBot ⊥ rfl), fun _ => CoFG.of_finite⟩
 
 /-- A complement of a CoFG submodule is FG. -/
-theorem CoFG.fg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.CoFG) : T.FG
-  := Module.Finite.iff_fg.mp <| Module.Finite.equiv <| quotientEquivOfIsCompl S T hST
+theorem CoFG.fg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.CoFG) : T.FG :=
+  Module.Finite.iff_fg.mp <| Module.Finite.equiv <| quotientEquivOfIsCompl S T hST
 
 /-- A complement of an FG submodule is CoFG. -/
 theorem FG.cofg_of_isCompl {S T : Submodule R M} (hST : IsCompl S T) (hS : S.FG) : T.CoFG := by
