@@ -117,7 +117,7 @@ theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   have : b = 1 - a := by linarith
   subst this
   simp_rw [Function.comp_apply, smul_eq_mul]
-  simp only [mem_Ioi] at hx hy
+  push _ ∈ _ at hx hy
   rw [← log_rpow, ← log_rpow, ← log_mul]
   · gcongr
     exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
