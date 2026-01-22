@@ -23,6 +23,50 @@ open Filter Function Complex Finset Topology
 
 variable {α ι : Type*} {s : Set α} {K : Set α} {u : ι → ℝ}
 
+section Mul
+
+variable {R : Type*} [NormedRing R] {ι α : Type*} {K : Set α} {p : Filter ι}
+  {F : ι → α → R} {f h : α → R}
+
+/-- If `Fₙ` tends uniformly on `K` to `f` and `h` is bounded on `K`, then `h * Fₙ` tends uniformly
+on `K` to `h * f`. -/
+theorem TendstoUniformlyOn.mul_left_bounded (hF : TendstoUniformlyOn F f p K)
+    (hh : ∃ C, ∀ x ∈ K, ‖h x‖ ≤ C) :
+    TendstoUniformlyOn (fun n x => h x * F n x) (fun x => h x * f x) p K := by
+  classical
+  intro u hu
+  rcases Metric.mem_uniformity_dist.1 hu with ⟨ε, hεpos, hεu⟩
+  rcases hh with ⟨C, hC⟩
+  set C' : ℝ := max C 1
+  have hC'pos : 0 < C' := lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1) (le_max_right _ _)
+  have hC' : ∀ x ∈ K, ‖h x‖ ≤ C' := fun x hx => le_trans (hC x hx) (le_max_left _ _)
+  have hv : {p : R × R | dist p.1 p.2 < ε / C'} ∈ uniformity R := by
+    exact Metric.mem_uniformity_dist.2 ⟨ε / C', div_pos hεpos hC'pos, by intro a b hab; exact hab⟩
+  have hF' : ∀ᶠ n in p, ∀ x : α, x ∈ K → dist (f x) (F n x) < ε / C' := by
+    simpa using (hF _ hv)
+  filter_upwards [hF'] with n hn x hxK
+  have hn' : ‖f x - F n x‖ < ε / C' := by
+    simpa [dist_eq_norm] using hn x hxK
+  have hdist : dist (h x * f x) (h x * F n x) < ε := by
+    have hmul :
+        ‖h x * f x - h x * F n x‖ ≤ ‖h x‖ * ‖f x - F n x‖ := by
+      calc
+        ‖h x * f x - h x * F n x‖ = ‖h x * (f x - F n x)‖ := by simp [mul_sub]
+        _ ≤ ‖h x‖ * ‖f x - F n x‖ := norm_mul_le _ _
+    have hle : ‖h x‖ * ‖f x - F n x‖ ≤ C' * ‖f x - F n x‖ :=
+      mul_le_mul_of_nonneg_right (hC' x hxK) (norm_nonneg _)
+    have hlt : C' * ‖f x - F n x‖ < C' * (ε / C') :=
+      mul_lt_mul_of_pos_left hn' hC'pos
+    have : ‖h x * f x - h x * F n x‖ < ε := by
+      calc
+        ‖h x * f x - h x * F n x‖ ≤ C' * ‖f x - F n x‖ := hmul.trans hle
+        _ < C' * (ε / C') := hlt
+        _ = ε := by field_simp [hC'pos.ne']
+    simpa [dist_eq_norm] using this
+  exact hεu hdist
+
+end Mul
+
 section Complex
 
 variable {f : ι → α → ℂ}
