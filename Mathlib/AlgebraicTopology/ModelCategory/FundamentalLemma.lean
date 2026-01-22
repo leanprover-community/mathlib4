@@ -69,7 +69,7 @@ variable [IsCofibrant X] [IsFibrant Y]
 lemma bijective_rightHomotopyClassToHom :
     Function.Bijective (rightHomotopyClassToHom L : RightHomotopyClass X Y → _) := by
   wlog _ : IsCofibrant Y generalizing Y
-  · obtain ⟨Y', _, p, _, _⟩ := CofibrantObject.π.exists_resolution Y
+  · obtain ⟨Y', _, p, _, _⟩ := CofibrantObject.HoCat.exists_resolution Y
     have _ : IsFibrant Y' := isFibrant_of_fibration p
     have hY' := this Y' inferInstance
     simp only [← bijective_leftHomotopyClassToHom_iff_bijective_rightHomotopyClassToHom] at hY' ⊢
@@ -84,7 +84,7 @@ lemma bijective_rightHomotopyClassToHom :
   wlog _ : IsFibrant X generalizing X
   · obtain ⟨X', i, _, _, _⟩ : ∃ (X' : C) (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i ∧
         IsFibrant X' :=
-      ⟨_, FibrantObject.π.iResolutionObj X, inferInstance, inferInstance, inferInstance⟩
+      ⟨_, FibrantObject.HoCat.iResolutionObj X, inferInstance, inferInstance, inferInstance⟩
     have _ := isCofibrant_of_cofibration i
     have hX' := this X' inferInstance
     have := Localization.inverts L (weakEquivalences _) i
@@ -95,11 +95,12 @@ lemma bijective_rightHomotopyClassToHom :
     ext f
     obtain ⟨f, rfl⟩ := f.mk_surjective
     simp
-  let E := Localization.uniq BifibrantObject.toπ (BifibrantObject.ι ⋙ L) (weakEquivalences _)
-  let e : BifibrantObject.toπ ⋙ E.functor ≅ BifibrantObject.ι ⋙ L :=
-    Localization.compUniqFunctor BifibrantObject.toπ (BifibrantObject.ι ⋙ L) (weakEquivalences _)
+  let E := Localization.uniq BifibrantObject.toHoCat (BifibrantObject.ι ⋙ L) (weakEquivalences _)
+  let e : BifibrantObject.toHoCat ⋙ E.functor ≅ BifibrantObject.ι ⋙ L :=
+    Localization.compUniqFunctor BifibrantObject.toHoCat (BifibrantObject.ι ⋙ L)
+      (weakEquivalences _)
   have : rightHomotopyClassToHom L =
-      (BifibrantObject.π.homEquivRight.trans (E.fullyFaithfulFunctor.homEquiv.trans
+      (BifibrantObject.HoCat.homEquivRight.trans (E.fullyFaithfulFunctor.homEquiv.trans
         (Iso.homCongr (e.app (.mk X)) (e.app (.mk Y))))) := by
     ext f
     obtain ⟨f, rfl⟩ := RightHomotopyClass.mk_surjective f

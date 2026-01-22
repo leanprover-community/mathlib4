@@ -39,9 +39,9 @@ instance {X : C} (R : (localizerMorphism C).RightResolution X) :
 
 instance (X : C) : IsConnected ((localizerMorphism C).RightResolution X) := by
   let R₀ : (localizerMorphism C).RightResolution X :=
-    { X₁ := mk (π.resolutionObj X)
-      w := π.iResolutionObj X
-      hw := by simpa using mem_weakEquivalences (π.iResolutionObj X) }
+    { X₁ := mk (HoCat.resolutionObj X)
+      w := HoCat.iResolutionObj X
+      hw := by simpa using mem_weakEquivalences (HoCat.iResolutionObj X) }
   have hR₀ (R) : Nonempty (Zigzag R R₀) := by
     have sq : CommSq R.w R₀.w (terminal.from _) (terminal.from _) := ⟨by simp⟩
     exact ⟨Zigzag.of_inv
@@ -51,11 +51,11 @@ instance (X : C) : IsConnected ((localizerMorphism C).RightResolution X) := by
 
 instance : (localizerMorphism C).arrow.HasRightResolutions :=
   fun f ↦ ⟨{
-    X₁ := Arrow.mk (homMk (π.resolutionMap f.hom))
-    w := Arrow.homMk (π.iResolutionObj f.left) (π.iResolutionObj f.right)
-      (π.resolutionMap_fac f.hom)
-    hw := ⟨mem_weakEquivalences (π.iResolutionObj f.left),
-      mem_weakEquivalences (π.iResolutionObj f.right)⟩ }⟩
+    X₁ := Arrow.mk (homMk (HoCat.resolutionMap f.hom))
+    w := Arrow.homMk (HoCat.iResolutionObj f.left) (HoCat.iResolutionObj f.right)
+      (HoCat.resolutionMap_fac f.hom)
+    hw := ⟨mem_weakEquivalences (HoCat.iResolutionObj f.left),
+      mem_weakEquivalences (HoCat.iResolutionObj f.right)⟩ }⟩
 
 instance : (localizerMorphism C).IsRightDerivabilityStructure := .mk' _
 
