@@ -36,7 +36,6 @@ private lemma cartan_majorant_nonneg
   intro p
   let ap : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ := fun q => ‖divisorZeroIndex₀_val q‖
   have hap : ap p = ‖divisorZeroIndex₀_val p‖ := rfl
-  -- `ap` is just a readability abbreviation.
   by_cases hp : p ∈ small
   · have hφ : 0 ≤ LogSingularity.φ (r / ap p) := LogSingularity.φ_nonneg (t := r / ap p)
     have hm0 : 0 ≤ (m : ℝ) := by exact_mod_cast (Nat.zero_le m)
@@ -53,7 +52,8 @@ private lemma cartan_majorant_summable
     {f : ℂ → ℂ} {m : ℕ} {τ r : ℝ} (hr : 0 ≤ r)
     (small : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)))
     (hsumτ :
-      Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) => ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ)) :
+      Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+        ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ)) :
     letI : DecidableEq (divisorZeroIndex₀ f (Set.univ : Set ℂ)) := Classical.decEq _
     let ap : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ := fun p => ‖divisorZeroIndex₀_val p‖
     let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
@@ -73,7 +73,6 @@ private lemma cartan_majorant_summable
       else
         (2 : ℝ) * (r / ap p) ^ τ
   have hb : Summable b := by
-    -- Decompose `b` into a finite-support part plus a summable tail controlled by `hsumτ`.
     let b₁ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p =>
         if p ∈ small then
@@ -101,8 +100,7 @@ private lemma cartan_majorant_summable
         (fun p => by
           by_cases hp : p ∈ small
           · simp [b₂, hp]
-          ·
-            have : 0 ≤ (2 : ℝ) * (r / ap p) ^ τ := by positivity
+          · have : 0 ≤ (2 : ℝ) * (r / ap p) ^ τ := by positivity
             simpa [b₂, hp] using this)
         (fun p => ?_) hconst
       by_cases hp : p ∈ small
@@ -114,16 +112,86 @@ private lemma cartan_majorant_summable
             (Real.mul_rpow (x := r) (y := (‖divisorZeroIndex₀_val p‖⁻¹ : ℝ)) (z := τ) hr ha0)
         simp [b₂, hp, hrpow, mul_assoc, mul_left_comm, mul_comm]
     simpa [hb_decomp] using hb₁.add hb₂
-  -- The `ite` here can carry different (definitional) decidability instances; use pointwise
-  -- equality to transport summability.
   refine hb.congr ?_
   intro p
   by_cases hp : p ∈ small <;> simp [b, ap, hp]
 
+private lemma cartan_card_small_le
+    {f : ℂ → ℂ} {τ R : ℝ} (hRpos : 0 < R) (hτ_nonneg : 0 ≤ τ)
+    (small : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)))
+    (hsmall : ∀ p ∈ small, ‖divisorZeroIndex₀_val p‖ ≤ 4 * R)
+    (hsumτ :
+      Summable
+        (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+          ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ)) :
+    (small.card : ℝ)
+      ≤ (4 * R) ^ τ
+          * ((∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ),
+                ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ) + 1) := by
+  classical
+  set Sτ : ℝ :=
+    ∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ
+  have hsum_le : (∑ p ∈ small, ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ) ≤ Sτ := by
+    have hnn :
+        ∀ p : divisorZeroIndex₀ f (Set.univ : Set ℂ),
+          0 ≤ ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
+      intro p
+      exact Real.rpow_nonneg (inv_nonneg.2 (norm_nonneg _)) _
+    simpa [Sτ] using
+      (Summable.sum_le_tsum (s := small)
+        (f := fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+          ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ)
+        (fun p _ => hnn p) hsumτ)
+  have hgeom_sum :
+      (small.card : ℝ) ≤ ∑ p ∈ small, (4 * R) ^ τ * ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
+    have hcard_eq : (small.card : ℝ) = ∑ p ∈ small, (1 : ℝ) := by simp
+    rw [hcard_eq]
+    refine Finset.sum_le_sum (fun p hp => ?_)
+    have hp_le : ‖divisorZeroIndex₀_val p‖ ≤ 4 * R := hsmall p hp
+    have hap : 0 < ‖divisorZeroIndex₀_val p‖ :=
+      norm_pos_iff.2 (divisorZeroIndex₀_val_ne_zero p)
+    have hbase : (1 : ℝ) ≤ (4 * R) / ‖divisorZeroIndex₀_val p‖ := by
+      exact (le_div_iff₀ hap).2 (by simpa [mul_one] using hp_le)
+    have : (1 : ℝ) ≤ ((4 * R) / ‖divisorZeroIndex₀_val p‖) ^ τ :=
+      Real.one_le_rpow hbase hτ_nonneg
+    have hdiv :
+        ((4 * R) / ‖divisorZeroIndex₀_val p‖) ^ τ =
+          (4 * R) ^ τ * (‖divisorZeroIndex₀_val p‖)⁻¹ ^ τ := by
+      have h4 : 0 ≤ (4 * R : ℝ) := by nlinarith [le_of_lt hRpos]
+      have ha : 0 ≤ (‖divisorZeroIndex₀_val p‖ : ℝ)⁻¹ := by positivity
+      simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using
+        (Real.mul_rpow (x := (4 * R : ℝ))
+          (y := (‖divisorZeroIndex₀_val p‖ : ℝ)⁻¹) (z := τ) h4 ha)
+    have : (1 : ℝ) ≤ (4 * R) ^ τ * ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
+      simpa [hdiv] using this
+    exact this
+  have hgeom :
+      (small.card : ℝ) ≤ (4 * R) ^ τ * (∑ p ∈ small, ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ) := by
+    simpa [Finset.mul_sum] using hgeom_sum
+  have hsmall_le : (small.card : ℝ) ≤ (4 * R) ^ τ * Sτ := by
+    exact hgeom.trans (mul_le_mul_of_nonneg_left hsum_le (by positivity))
+  have hS_le : (4 * R) ^ τ * Sτ ≤ (4 * R) ^ τ * (Sτ + 1) := by
+    refine mul_le_mul_of_nonneg_left ?_ (by positivity)
+    linarith
+  have : (small.card : ℝ) ≤ (4 * R) ^ τ * (Sτ + 1) := hsmall_le.trans hS_le
+  simpa [Sτ, add_comm, add_left_comm, add_assoc, mul_assoc] using this
+
+private lemma cartan_rpow_mul_le
+    {τ R r : ℝ} (hRpos : 0 < R) (hrpos : 0 < r) (hR_le_r : R ≤ r) (hτ_nonneg : 0 ≤ τ) :
+    (4 * R) ^ τ ≤ (4 : ℝ) ^ τ * (1 + r) ^ τ := by
+  have hR_le_1r : R ≤ 1 + r := by linarith [hR_le_r, le_of_lt hrpos]
+  have hbase0 : 0 ≤ (4 * R : ℝ) := by nlinarith [le_of_lt hRpos]
+  have : (4 * R) ^ τ ≤ (4 * (1 + r)) ^ τ := by
+    refine Real.rpow_le_rpow hbase0 ?_ hτ_nonneg
+    nlinarith [hR_le_1r]
+  have hmul : (4 * (1 + r)) ^ τ = (4 : ℝ) ^ τ * (1 + r) ^ τ := by
+    have h4 : 0 ≤ (4 : ℝ) := by norm_num
+    have h1 : 0 ≤ (1 + r : ℝ) := by positivity
+    simpa [mul_assoc] using
+      (Real.mul_rpow (x := (4 : ℝ)) (y := (1 + r : ℝ)) (z := τ) h4 h1)
+  simpa [hmul] using this
+
 open Classical in
-set_option maxHeartbeats 800000 in
--- The `tsum` bookkeeping and `simp`/`nlinarith` steps below are expensive; we give this proof a
--- larger (but finite) heartbeat budget.
 theorem cartan_sum_majorant_le
     {f : ℂ → ℂ} {m : ℕ} {τ R r : ℝ}
     (hRpos : 0 < R)
@@ -169,66 +237,21 @@ theorem cartan_sum_majorant_le
   have hb_summable : Summable b := by
     simpa [ap, b] using
       (cartan_majorant_summable (f := f) (m := m) (τ := τ) (r := r) hr small hsumτ)
-  -- Sharp cardinal bound on `small` : `card(small) ≤ (4R)^τ * (Sτ+1)`.
+  have hsmall_norm : ∀ p ∈ small, ‖divisorZeroIndex₀_val p‖ ≤ 4 * R := by
+    intro p hp
+    have : p ∈ smallSet := (hsmall_mem p).1 hp
+    simpa [hsmallSet] using this
   have hcard_le : (small.card : ℝ) ≤ (4 * R) ^ τ * (Sτ + 1) := by
-    have hsum_le : (∑ p ∈ small, ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ) ≤ Sτ := by
-      have hnn :
-          ∀ p : divisorZeroIndex₀ f (Set.univ : Set ℂ), 0 ≤ ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
-        intro p; exact Real.rpow_nonneg (inv_nonneg.2 (norm_nonneg _)) _
-      simpa [Sτ] using
-        (Summable.sum_le_tsum (s := small)
-          (f := fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) => ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ)
-          (fun p _ => hnn p) hsumτ)
-    have hgeom_sum :
-        (small.card : ℝ) ≤ ∑ p ∈ small, (4 * R) ^ τ * ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
-      have hcard_eq : (small.card : ℝ) = ∑ p ∈ small, (1 : ℝ) := by simp
-      rw [hcard_eq]
-      refine Finset.sum_le_sum (fun p hp => ?_)
-      have hp_le : ‖divisorZeroIndex₀_val p‖ ≤ 4 * R := by
-        have : p ∈ smallSet := (hsmall_mem p).1 hp
-        simpa [hsmallSet] using this
-      have hap : 0 < ‖divisorZeroIndex₀_val p‖ := norm_pos_iff.2 (divisorZeroIndex₀_val_ne_zero p)
-      have hbase : (1 : ℝ) ≤ (4 * R) / ‖divisorZeroIndex₀_val p‖ := by
-        exact (le_div_iff₀ hap).2 (by simpa [mul_one] using hp_le)
-      have : (1 : ℝ) ≤ ((4 * R) / ‖divisorZeroIndex₀_val p‖) ^ τ :=
-        Real.one_le_rpow hbase hτ_nonneg
-      have hdiv :
-          ((4 * R) / ‖divisorZeroIndex₀_val p‖) ^ τ =
-            (4 * R) ^ τ * (‖divisorZeroIndex₀_val p‖)⁻¹ ^ τ := by
-        have h4 : 0 ≤ (4 * R : ℝ) := by nlinarith [le_of_lt hRpos]
-        have ha : 0 ≤ (‖divisorZeroIndex₀_val p‖ : ℝ)⁻¹ := by positivity
-        simpa [div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using
-          (Real.mul_rpow (x := (4 * R : ℝ)) (y := (‖divisorZeroIndex₀_val p‖ : ℝ)⁻¹) (z := τ) h4 ha)
-      have : (1 : ℝ) ≤ (4 * R) ^ τ * ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ := by
-        simpa [hdiv] using this
-      exact this
-    have hgeom :
-        (small.card : ℝ) ≤ (4 * R) ^ τ * (∑ p ∈ small, ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ) := by
-      simpa [Finset.mul_sum] using hgeom_sum
-    have hsmall_le : (small.card : ℝ) ≤ (4 * R) ^ τ * Sτ := by
-      exact hgeom.trans (mul_le_mul_of_nonneg_left hsum_le (by positivity))
-    have hS_le : (4 * R) ^ τ * Sτ ≤ (4 * R) ^ τ * (Sτ + 1) := by
-      refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-      linarith
-    exact hsmall_le.trans hS_le
-  have hR_le_1r : R ≤ 1 + r := by linarith [hR_le_r, le_of_lt hrpos]
-  have hpowR : (4 * R) ^ τ ≤ (4 : ℝ) ^ τ * (1 + r) ^ τ := by
-    have hbase0 : 0 ≤ (4 * R : ℝ) := by nlinarith [le_of_lt hRpos]
-    have : (4 * R) ^ τ ≤ (4 * (1 + r)) ^ τ := by
-      refine Real.rpow_le_rpow hbase0 ?_ hτ_nonneg
-      nlinarith [hR_le_1r]
-    have hmul : (4 * (1 + r)) ^ τ = (4 : ℝ) ^ τ * (1 + r) ^ τ := by
-      have h4 : 0 ≤ (4 : ℝ) := by norm_num
-      have h1 : 0 ≤ (1 + r : ℝ) := by positivity
-      simpa [mul_assoc] using (Real.mul_rpow (x := (4 : ℝ)) (y := (1 + r : ℝ)) (z := τ) h4 h1)
-    simpa [hmul] using this
+    simpa [Sτ, mul_assoc, add_assoc, add_left_comm, add_comm] using
+      (cartan_card_small_le (f := f) (τ := τ) (R := R) hRpos hτ_nonneg small hsmall_norm hsumτ)
+  have hpowR : (4 * R) ^ τ ≤ (4 : ℝ) ^ τ * (1 + r) ^ τ :=
+    cartan_rpow_mul_le (τ := τ) (R := R) (r := r) hRpos hrpos hR_le_r hτ_nonneg
   have hcard_le' : (small.card : ℝ) ≤ (4 : ℝ) ^ τ * (1 + r) ^ τ * (Sτ + 1) := by
     have : (4 * R) ^ τ * (Sτ + 1) ≤ (4 : ℝ) ^ τ * (1 + r) ^ τ * (Sτ + 1) := by
       exact mul_le_mul_of_nonneg_right hpowR (by linarith [hSτ_nonneg])
     exact le_trans hcard_le this
   have hb_tsum_le :
       (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b p) ≤ Cprod * (1 + r) ^ τ := by
-    -- Majorize `b` by `bφ + b0 + bmτ + bt` and bound each `tsum`.
     let bφ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p => if p ∈ small then LogSingularity.φ (r / ap p) else 0
     let b0 : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
@@ -316,20 +339,16 @@ theorem cartan_sum_majorant_le
           ≤ (2 : ℝ) * (Sτ + 1) * (1 + r) ^ τ := by
       have hbt_eq :
           (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p) = (2 : ℝ) * (r ^ τ) * Sτ := by
-        -- Avoid `simp` creating cancellation goals like `A * (r^τ) = B * (r^τ)`.
-        -- We rewrite pointwise and pull constants out of the `tsum`.
         have hpow :
             ∀ p : divisorZeroIndex₀ f (Set.univ : Set ℂ),
               (r / ap p) ^ τ = (r ^ τ) * (‖divisorZeroIndex₀_val p‖⁻¹ : ℝ) ^ τ := by
           intro p
           have ha0 : 0 ≤ (‖divisorZeroIndex₀_val p‖⁻¹ : ℝ) := by positivity
-          -- `ap p = ‖divisorZeroIndex₀_val p‖`
           simpa [ap, div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using
             (Real.mul_rpow (x := r) (y := (‖divisorZeroIndex₀_val p‖⁻¹ : ℝ)) (z := τ) hr ha0)
         calc
           (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p)
               = (2 : ℝ) * ∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), (r / ap p) ^ τ := by
-                -- Pull the constant `2` out of the `tsum` without any side-goals.
                 simpa [bt, mul_assoc] using
                   (tsum_mul_left (a := (2 : ℝ))
                     (f := fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) => (r / ap p) ^ τ))
@@ -493,7 +512,6 @@ theorem cartan_sum_majorant_le
             ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ
               + (2 : ℝ) * (Sτ + 1) * (1 + r) ^ τ := by
         rw [hsplit]
-        -- Avoid `nlinarith` on a huge goal: combine the component bounds by hand.
         set Y : ℝ := Sτ + 1 with hY
         have hφ_leY :
             (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
@@ -541,10 +559,10 @@ theorem cartan_sum_majorant_le
               ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
                 + (2 : ℝ) * Y * (1 + r) ^ τ := by
           have hbt_leY :
-              (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p) ≤ (2 : ℝ) * Y * (1 + r) ^ τ := by
+              (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p) ≤ (2 : ℝ) * Y *
+                (1 + r) ^ τ * (1 + r) ^ τ := by
             simpa [hY, mul_assoc] using hbt_le
           exact add_le_add h123' hbt_leY
-        -- Unfold `Y` (using `rw`).
         have h4' := h4
         rw [hY] at h4'
         exact h4'
@@ -553,7 +571,6 @@ theorem cartan_sum_majorant_le
               + (2 : ℝ) * (Sτ + 1) * (1 + r) ^ τ
             = (((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ := by
         ring
-      -- Avoid `simp` timeouts: rewrite the goal and close it with the expanded bound.
       rw [← hring]
       exact htsum_majorant'
     have hCprod' :
