@@ -152,6 +152,7 @@ def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
 theorem coe_restrict_apply {s : Set α} (h : IsInvariant ϕ s) (t : τ) (x : s) :
     restrict ϕ h t x = ϕ t x := rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Convert a flow to an additive monoid action. -/
 def toAddAction : AddAction τ α where
   vadd      := ϕ

@@ -25,7 +25,7 @@ See the sixth proof for the infinity of primes in Chapter 1 of [aigner1999proofs
 The proof is due to Erdős.
 -/
 
-@[expose] public section
+public section
 
 open Set Nat
 open scoped Topology

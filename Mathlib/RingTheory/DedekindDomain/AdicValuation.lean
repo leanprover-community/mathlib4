@@ -201,9 +201,6 @@ theorem intValuation_zero_lt (x : nonZeroDivisors R) : 0 < v.intValuation x := b
   rw [v.intValuation_if_neg (nonZeroDivisors.coe_ne_zero x)]
   exact WithZero.zero_lt_coe _
 
-@[deprecated (since := "2025-05-11")]
-alias intValuation_zero_le := intValuation_zero_lt
-
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   by_cases hx : x = 0
@@ -309,11 +306,6 @@ theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := 
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
 
 open scoped algebraMap in
-@[deprecated valuation_of_algebraMap (since := "2025-05-11")]
-lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
-  Valuation.extendToLocalization_apply_map_apply ..
-
-open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
 theorem valuation_le_one (r : R) : v.valuation K r ≤ 1 := by
   rw [valuation_of_algebraMap]; exact v.intValuation_le_one r
@@ -357,6 +349,10 @@ theorem valuation_exists_uniformizer : ∃ π : K,
   use algebraMap R K r
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
   exact hr
+
+instance : Valuation.IsNontrivial (v.valuation K) :=
+  have ⟨π, hπ⟩ := v.valuation_exists_uniformizer K
+  ⟨π, by aesop⟩
 
 lemma valuation_surjective :
     Function.Surjective (v.valuation K) := by
@@ -452,9 +448,6 @@ theorem notMem_adicCompletionIntegers {x : v.adicCompletion K} :
     x ∉ v.adicCompletionIntegers K ↔ 1 < Valued.v x := by
   rw [not_congr <| mem_adicCompletionIntegers R K v]
   exact not_le
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_adicCompletionIntegers := notMem_adicCompletionIntegers
 
 section AlgebraInstances
 
@@ -568,8 +561,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
     (↑(r • x) : v.adicCompletion K) = r • (x : v.adicCompletion K) :=
   rfl
 
-instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c x} := by simp
+instance : Module.IsTorsionFree R (v.adicCompletionIntegers K) := .of_smul_eq_zero <| by simp
 
 instance adicCompletion.instIsScalarTower' :
     IsScalarTower R (v.adicCompletionIntegers K) (v.adicCompletion K) where
@@ -598,54 +590,90 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
 
 section AbsoluteValue
 
-open WithZeroMulInt
+open WithZeroMulInt NNReal
 
-variable {R K} in
+variable {R K} {b : ℝ≥0} (hb : 1 < b) (r : R) (x : K)
+
+/-- The `v`-adic absolute value function on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbvDef (r : R) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.intValuation r)
+
+lemma isNonarchimedean_intAdicAbvDef : IsNonarchimedean (v.intAdicAbvDef hb) := by
+  intro x y
+  simp only [intAdicAbvDef]
+  have h_mono := (toNNReal_strictMono hb).monotone
+  rw [← h_mono.map_max]
+  exact h_mono <| v.intValuation.map_add x y
+
+/-- The `v`-adic absolute value on `R` defined as `b` raised to negative `v`-adic
+valuation, for some `b` in `ℝ≥0` -/
+def intAdicAbv : AbsoluteValue R ℝ where
+  toFun r := v.intAdicAbvDef hb r
+  map_mul' _ _ := by simp [intAdicAbvDef]
+  nonneg' _ := zero_le_coe
+  eq_zero' _ := by simp [intAdicAbvDef, intValuation_def]
+  add_le' _ _ := (isNonarchimedean_intAdicAbvDef v hb).add_le fun _ ↦ bot_le
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_intAdicAbv : IsNonarchimedean (v.intAdicAbv hb) :=
+  isNonarchimedean_intAdicAbvDef v hb
+
+theorem intAdicAbv_le_one : v.intAdicAbv hb r ≤ 1 := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_le_one_iff hb] using intValuation_le_one v r
+
+theorem intAdicAbv_lt_one_iff : v.intAdicAbv hb r < 1 ↔ r ∈ v.asIdeal := by
+  simpa [intAdicAbv, intAdicAbvDef, toNNReal_lt_one_iff hb] using intValuation_lt_one_iff_mem v r
+
+theorem intAdicAbv_eq_one_iff : v.intAdicAbv hb r = 1 ↔ r ∉ v.asIdeal := by
+  contrapose
+  rw [← v.intAdicAbv_lt_one_iff hb, ne_iff_lt_iff_le]
+  exact intAdicAbv_le_one v hb r
+
 /-- The `v`-adic absolute value function on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbvDef (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :=
-  fun x ↦ toNNReal (ne_zero_of_lt hb) (v.valuation K x)
+def adicAbvDef (x : K) : ℝ≥0 := toNNReal (ne_zero_of_lt hb) (v.valuation K x)
 
-variable {R K} in
-lemma isNonarchimedean_adicAbvDef {b : NNReal} (hb : 1 < b) :
-    IsNonarchimedean (α := K) (fun x ↦ v.adicAbvDef hb x) := by
+lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb) := by
   intro x y
   simp only [adicAbvDef]
   have h_mono := (toNNReal_strictMono hb).monotone
   rw [← h_mono.map_max]
   exact h_mono ((v.valuation _).map_add x y)
 
-variable {R K} in
 /-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) : AbsoluteValue K ℝ where
+def adicAbv : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
-  nonneg' _ := NNReal.zero_le_coe
+  nonneg' _ := zero_le_coe
   eq_zero' _ := by simp [adicAbvDef]
   add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
-variable {R K} in
 /-- The `v`-adic absolute value is nonarchimedean -/
-theorem isNonarchimedean_adicAbv (v : HeightOneSpectrum R) {b : NNReal} (hb : 1 < b) :
-    IsNonarchimedean (α := K) (v.adicAbv hb) := isNonarchimedean_adicAbvDef v hb
+theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
+  isNonarchimedean_adicAbvDef v hb
 
-variable {R K} in
-theorem adicAbv_coe_le_one {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) ≤ 1 := by
-  simpa [adicAbv, adicAbvDef, toNNReal_le_one_iff hb] using valuation_le_one v r
+/-- The `v`-adic absolute value of `r/s ∈ K` is the absolute value of `r` divided by the absolute
+value of `s`. -/
+theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
+    v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
-variable {R K} in
-theorem adicAbv_coe_lt_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
-  simpa [adicAbv, adicAbvDef, toNNReal_lt_one_iff hb] using valuation_lt_one_iff_mem v r
+/-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
+theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
+  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
-variable {R K} in
-theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
-    v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  contrapose
-  rw [← v.adicAbv_coe_lt_one_iff (K := K) hb, ne_iff_lt_iff_le]
-  exact adicAbv_coe_le_one v hb r
+theorem adicAbv_coe_le_one : v.adicAbv hb (algebraMap R K r) ≤ 1 := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_le_one v hb r
+
+theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_lt_one_iff v hb r
+
+theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+  rw [adicAbv_of_algebraMap]
+  exact intAdicAbv_eq_one_iff v hb r
 
 end AbsoluteValue
 
