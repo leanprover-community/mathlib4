@@ -60,6 +60,7 @@ The connection is specified by:
 -/
 public
 structure EhresmannConnection where
+  /-- The horizontal subspace at each point `e` in the total space. -/
   horizontal : (e : TotalSpace F E) → Submodule ℝ (TangentSpace (IM.prod 𝓘(ℝ, F)) e)
   complement : ∀ e : TotalSpace F E,
     horizontal e ⊔ verticalSubspace e = ⊤
