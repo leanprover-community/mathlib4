@@ -290,7 +290,7 @@ def Presentation.QuasicoherentData {M : SheafOfModules R} (P : Presentation M) :
   presentation := fun x => P.map (pushforward (𝟙 (R.over x))) (by rfl)
 
 /-- Given a sheaf of `R`-modules `M` and a `Presentation M`, then `M` is quasicoherent. -/
-def Presentation.isQuasicoherent {M : SheafOfModules.{u'} R} (P : Presentation M) :
+theorem Presentation.isQuasicoherent {M : SheafOfModules.{u'} R} (P : Presentation M) :
     IsQuasicoherent M where
   nonempty_quasicoherentData := Nonempty.intro (Presentation.QuasicoherentData P)
 
