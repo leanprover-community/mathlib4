@@ -45,59 +45,50 @@ private theorem aux (f : E → 𝔸) (f' : E →L[𝕜] 𝔸) (x : E) (n : ℕ) 
   simp only [Finset.mem_range, Nat.lt_succ_iff] at hx
   rw [tsub_add_eq_add_tsub hx]
 
-theorem HasStrictFDerivAt.fun_pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
-    HasStrictFDerivAt (fun x ↦ f x ^ n)
+@[to_fun]
+theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
+    HasStrictFDerivAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
   | 0 => by simpa using hasStrictFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
-    have := h.mul' (h.fun_pow' (n + 1))
+    have := h.mul' (h.pow' (n + 1))
     simp_rw [pow_succ' _ (n + 1)]
     refine this.congr_fderiv <| aux _ _ _ _
-
-theorem HasStrictFDerivAt.pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :
-    HasStrictFDerivAt (f ^ n)
-      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x := h.fun_pow' n
 
 theorem hasStrictFDerivAt_pow' (n : ℕ) {x : 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
       (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> ContinuousLinearMap.id 𝕜 _ <• x ^ i) x :=
   hasStrictFDerivAt_id _ |>.pow' n
 
-theorem HasFDerivWithinAt.fun_pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
-    HasFDerivWithinAt (fun x ↦ f x ^ n)
+@[to_fun]
+theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
+    HasFDerivWithinAt (f ^ n)
       (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) s x :=
   match n with
   | 0 => by simpa using hasFDerivWithinAt_const 1 x s
   | 1 => by simpa using h
   | n + 1 + 1 => by
-    have := h.mul' (h.fun_pow' (n + 1))
+    have := h.mul' (h.pow' (n + 1))
     simp_rw [pow_succ' _ (n + 1)]
     exact this.congr_fderiv <| aux _ _ _ _
-
-theorem HasFDerivWithinAt.pow' (h : HasFDerivWithinAt f f' s x) (n : ℕ) :
-    HasFDerivWithinAt (f ^ n)
-      (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) s x := h.fun_pow' n
 
 theorem hasFDerivWithinAt_pow' (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
     HasFDerivWithinAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
       (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> ContinuousLinearMap.id 𝕜 _ <• x ^ i) s x :=
   hasFDerivWithinAt_id _ _ |>.pow' n
 
-theorem HasFDerivAt.fun_pow' (h : HasFDerivAt f f' x) (n : ℕ) :
-    HasFDerivAt (fun x ↦ f x ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
+@[to_fun]
+theorem HasFDerivAt.pow' (h : HasFDerivAt f f' x) (n : ℕ) :
+    HasFDerivAt (f ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
   match n with
   | 0 => by simpa using hasFDerivAt_const 1 x
   | 1 => by simpa using h
   | n + 1 + 1 => by
-    have := h.mul' (h.fun_pow' (n + 1))
+    have := h.mul' (h.pow' (n + 1))
     simp_rw [pow_succ' _ (n + 1)]
     exact this.congr_fderiv <| aux _ _ _ _
-
-theorem HasFDerivAt.pow' (h : HasFDerivAt f f' x) (n : ℕ) :
-    HasFDerivAt (f ^ n) (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> f' <• f x ^ i) x :=
-  h.fun_pow' n
 
 theorem hasFDerivAt_pow' (n : ℕ) {x : 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ x ^ n)
@@ -118,67 +109,45 @@ theorem differentiableWithinAt_pow (n : ℕ) {x : 𝔸} {s : Set 𝔸} :
     DifferentiableWithinAt 𝕜 (fun x : 𝔸 => x ^ n) s x :=
   differentiableWithinAt_id.pow _
 
-@[simp, fun_prop]
-theorem DifferentiableAt.fun_pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    DifferentiableAt 𝕜 (fun x => f x ^ n) x :=
-  differentiableWithinAt_univ.mp <| hf.differentiableWithinAt.pow n
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem DifferentiableAt.pow (hf : DifferentiableAt 𝕜 f x) (n : ℕ) :
-    DifferentiableAt 𝕜 (f ^ n) x := hf.fun_pow n
+    DifferentiableAt 𝕜 (f ^ n) x :=
+    differentiableWithinAt_univ.mp <| hf.differentiableWithinAt.pow n
 
 theorem differentiableAt_pow (n : ℕ) {x : 𝔸} : DifferentiableAt 𝕜 (fun x : 𝔸 => x ^ n) x :=
   differentiableAt_id.pow _
 
-@[fun_prop]
-theorem DifferentiableOn.fun_pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
-    DifferentiableOn 𝕜 (fun x => f x ^ n) s := fun x h => (hf x h).pow n
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem DifferentiableOn.pow (hf : DifferentiableOn 𝕜 f s) (n : ℕ) :
-    DifferentiableOn 𝕜 (f ^ n) s := hf.fun_pow n
+    DifferentiableOn 𝕜 (f ^ n) s := fun x h => (hf x h).pow n
 
 theorem differentiableOn_pow (n : ℕ) {s : Set 𝔸} : DifferentiableOn 𝕜 (fun x : 𝔸 => x ^ n) s :=
   differentiableOn_id.pow n
 
-@[simp, fun_prop]
-theorem Differentiable.fun_pow (hf : Differentiable 𝕜 f) (n : ℕ) :
-    Differentiable 𝕜 fun x => f x ^ n :=
-  fun x => (hf x).pow n
-
-@[simp, fun_prop]
+@[to_fun (attr := simp, fun_prop)]
 theorem Differentiable.pow (hf : Differentiable 𝕜 f) (n : ℕ) : Differentiable 𝕜 (f ^ n) :=
-  hf.fun_pow n
+  fun x => (hf x).pow n
 
 theorem differentiable_pow (n : ℕ) : Differentiable 𝕜 fun x : 𝔸 => x ^ n :=
   differentiable_id.pow _
 
-theorem fderiv_fun_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun x ↦ f x ^ n) x
-      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderiv 𝕜 f x <• f x ^ i) :=
-  hf.hasFDerivAt.pow' n |>.fderiv
-
+@[to_fun fderiv_fun_pow']
 theorem fderiv_pow' (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (f ^ n) x
       = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderiv 𝕜 f x <• f x ^ i) :=
-  fderiv_fun_pow' n hf
+  hf.hasFDerivAt.pow' n |>.fderiv
 
 theorem fderiv_pow_ring' {x : 𝔸} (n : ℕ) :
     fderiv 𝕜 (fun x : 𝔸 ↦ x ^ n) x
       = (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> .id _ _ <• x ^ i) := by
   rw [fderiv_fun_pow' n differentiableAt_fun_id, fderiv_id']
 
-theorem fderivWithin_fun_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
-    fderivWithin 𝕜 (fun x ↦ f x ^ n) s x
-      = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderivWithin 𝕜 f s x <• f x ^ i) :=
-  hf.hasFDerivWithinAt.pow' n |>.fderivWithin hxs
-
+@[to_fun fderivWithin_fun_pow']
 theorem fderivWithin_pow' (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 (f ^ n) s x
       = (∑ i ∈ Finset.range n, f x ^ (n.pred - i) •> fderivWithin 𝕜 f s x <• f x ^ i) :=
-  fderivWithin_fun_pow' hxs n hf
+  hf.hasFDerivWithinAt.pow' n |>.fderivWithin hxs
 
 theorem fderivWithin_pow_ring' {s : Set 𝔸} {x : 𝔸} (n : ℕ) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : 𝔸 ↦ x ^ n) s x
@@ -234,21 +203,17 @@ theorem fderiv_fun_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
 
 theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
     fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
-  fderiv_fun_pow n hf
+  hf.hasFDerivAt.pow n |>.fderiv
 
 theorem fderiv_pow_ring {x : 𝔸} (n : ℕ) :
     fderiv 𝕜 (fun x : 𝔸 ↦ x ^ n) x = (n • x ^ (n - 1)) • .id _ _ := by
   rw [fderiv_fun_pow n differentiableAt_fun_id, fderiv_id']
 
-theorem fderivWithin_fun_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
-    (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
-    fderivWithin 𝕜 (fun x ↦ f x ^ n) s x = (n • f x ^ (n - 1)) • fderivWithin 𝕜 f s x :=
-  hf.hasFDerivWithinAt.pow n |>.fderivWithin hxs
-
+@[to_fun fderivWithin_fun_pow]
 theorem fderivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
     (n : ℕ) (hf : DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 (f ^ n) s x = (n • f x ^ (n - 1)) • fderivWithin 𝕜 f s x :=
-  fderivWithin_fun_pow hxs n hf
+  hf.hasFDerivWithinAt.pow n |>.fderivWithin hxs
 
 theorem fderivWithin_pow_ring {s : Set 𝔸} {x : 𝔸} (n : ℕ) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : 𝔸 ↦ x ^ n) s x = (n • x ^ (n - 1)) • .id _ _ := by
