@@ -78,6 +78,7 @@ instance : SMul ℕ (IntertwiningMap ρ σ) :=
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
 
 instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
+  fast_instance%
   DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
 
 /-- A coercion from intertwining maps to additive monoid homomorphisms. -/
