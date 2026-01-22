@@ -17,7 +17,7 @@ measurable space `m0`, and another measurable space structure `m` with `hm : m �
 - `𝔼[X|m]`: conditional expectation of `X` with respect to the measure `volume` and the
   measurable space `m`. The similar `P[X|m]` for a measure `P` is defined in
   `MeasureTheory.Function.ConditionalExpectation.Basic`.
-- `P⟦s|m⟧ = P[s.indicator (fun ω => (1 : ℝ)) | m]`, conditional probability of a set.
+- `P⟦s | m⟧ = P[s.indicator (fun ω => (1 : ℝ)) | m]`, conditional probability of a set.
 - `X =ₐₛ Y`: `X =ᵐ[volume] Y`
 - `X ≤ₐₛ Y`: `X ≤ᵐ[volume] Y`
 - `∂P/∂Q = P.rnDeriv Q`
@@ -55,8 +55,8 @@ end ProbabilityTheory
 /-- `𝔼[X]` is the expectation of `X`, defined as its Lebesgue integral. -/
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
-/-- `P⟦s|m⟧` is the conditional expectation of `s` with respect to `m` under measure `P`. -/
-scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
+/-- `P⟦s | m⟧` is the conditional expectation of `s` with respect to `m` under measure `P`. -/
+scoped[ProbabilityTheory] notation P "⟦" s " | " m "⟧" =>
   MeasureTheory.condExp m P (Set.indicator s fun ω => (1 : ℝ))
 
 /-- `X =ₐₛ Y` if `X = Y` almost surely. -/
