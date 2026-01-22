@@ -33,7 +33,7 @@ Each statement about `Complex.re` listed below has a counterpart about `Complex.
 complex, real part, imaginary part, closure, interior, frontier
 -/
 
-@[expose] public section
+public section
 
 open Set Topology
 

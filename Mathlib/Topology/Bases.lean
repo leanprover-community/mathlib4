@@ -45,7 +45,7 @@ conditions are equivalent in this case).
   the space.
 
 ## Implementation Notes
-For our applications we are interested that there exists a countable basis, but we do not need the
+For our applications we are interested in the existence of a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
 ## TODO
@@ -760,8 +760,6 @@ instance encodableCountableBasis [SecondCountableTopology α] : Encodable (count
 
 theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
-
-@[deprecated (since := "2025-05-24")] alias empty_nmem_countableBasis := empty_notMem_countableBasis
 
 theorem isBasis_countableBasis [SecondCountableTopology α] :
     IsTopologicalBasis (countableBasis α) :=

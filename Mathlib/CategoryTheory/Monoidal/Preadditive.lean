@@ -25,7 +25,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category* C] [Preadditive C] [MonoidalCategory C]
 
 /-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
 
@@ -74,7 +74,7 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
-theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
+theorem monoidalPreadditive_of_faithful {D} [Category* D] [Preadditive D] [MonoidalCategory D]
     (F : D ⥤ C) [F.Monoidal] [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by

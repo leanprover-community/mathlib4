@@ -308,7 +308,7 @@ lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [
   exact map_finite_biInf finite_univ f g
 
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsDirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
   induction s, hs using Set.Finite.induction_on with
   | empty => simp [iSup_const]
@@ -318,60 +318,60 @@ theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonemp
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
 
 theorem Finite.iSup_biInf_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsCodirectedOrder ι'] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j :=
   @Finite.iSup_biInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ hs _ fun i hi => (hf i hi).dual_left
 
 theorem Finite.iInf_biSup_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsCodirectedOrder ι'] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.iSup_biInf_of_antitone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 
 theorem Finite.iInf_biSup_of_antitone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
+    [IsDirectedOrder ι'] [Order.Coframe α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Antitone (f i)) : ⨅ j, ⨆ i ∈ s, f i j = ⨆ i ∈ s, ⨅ j, f i j :=
   hs.iSup_biInf_of_monotone (α := αᵒᵈ) fun i hi => (hf i hi).dual_right
 
 theorem iSup_iInf_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (· ≤ ·)] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
+    [IsDirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j := by
   simpa only [iInf_univ] using finite_univ.iSup_biInf_of_monotone fun i _ => hf i
 
 theorem iSup_iInf_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
+    [IsCodirectedOrder ι'] [Order.Frame α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨆ j, ⨅ i, f i j = ⨅ i, ⨆ j, f i j :=
   @iSup_iInf_of_monotone ι ι'ᵒᵈ α _ _ _ _ _ _ fun i => (hf i).dual_left
 
 theorem iInf_iSup_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
+    [IsCodirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Monotone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
   iSup_iInf_of_antitone (α := αᵒᵈ) fun i => (hf i).dual_right
 
 theorem iInf_iSup_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [Nonempty ι']
-    [IsDirected ι' (· ≤ ·)] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
+    [IsDirectedOrder ι'] [Order.Coframe α] {f : ι → ι' → α} (hf : ∀ i, Antitone (f i)) :
     ⨅ j, ⨆ i, f i j = ⨆ i, ⨅ j, f i j :=
   iSup_iInf_of_monotone (α := αᵒᵈ) fun i => (hf i).dual_right
 
 /-- An increasing union distributes over finite intersection. -/
-theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirected ι' (· ≤ ·)]
+theorem iUnion_iInter_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirectedOrder ι']
     [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
     ⋃ j : ι', ⋂ i : ι, s i j = ⋂ i : ι, ⋃ j : ι', s i j :=
   iSup_iInf_of_monotone hs
 
 /-- A decreasing union distributes over finite intersection. -/
 theorem iUnion_iInter_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
+    [IsCodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
     ⋃ j : ι', ⋂ i : ι, s i j = ⋂ i : ι, ⋃ j : ι', s i j :=
   iSup_iInf_of_antitone hs
 
 /-- An increasing intersection distributes over finite union. -/
 theorem iInter_iUnion_of_monotone {ι ι' α : Type*} [Finite ι] [Preorder ι']
-    [IsDirected ι' (swap (· ≤ ·))] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
+    [IsCodirectedOrder ι'] [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Monotone (s i)) :
     ⋂ j : ι', ⋃ i : ι, s i j = ⋃ i : ι, ⋂ j : ι', s i j :=
   iInf_iSup_of_monotone hs
 
 /-- A decreasing intersection distributes over finite union. -/
-theorem iInter_iUnion_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirected ι' (· ≤ ·)]
+theorem iInter_iUnion_of_antitone {ι ι' α : Type*} [Finite ι] [Preorder ι'] [IsDirectedOrder ι']
     [Nonempty ι'] {s : ι → ι' → Set α} (hs : ∀ i, Antitone (s i)) :
     ⋂ j : ι', ⋃ i : ι, s i j = ⋃ i : ι, ⋂ j : ι', s i j :=
   iInf_iSup_of_antitone hs
@@ -391,7 +391,7 @@ theorem iUnion_univ_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty 
 
 section
 
-variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsDirectedOrder α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above. -/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
@@ -411,7 +411,7 @@ end
 
 section
 
-variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
+variable [Preorder α] [IsCodirectedOrder α] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=

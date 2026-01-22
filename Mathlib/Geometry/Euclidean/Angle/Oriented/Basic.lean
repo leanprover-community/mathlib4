@@ -19,7 +19,7 @@ This file defines oriented angles in real inner product spaces.
 
 ## Implementation notes
 
-The definitions here use the `Real.angle` type, angles modulo `2 * π`. For some purposes,
+The definitions here use the `Real.Angle` type, angles modulo `2 * π`. For some purposes,
 angles modulo `π` are more convenient, because results are true for such angles with less
 configuration dependence. Results that are only equalities modulo `π` can be represented
 modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
@@ -362,7 +362,7 @@ swapped is `π`. -/
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {x y : V} : o.oangle x y = π ↔ o.oangle y x = π := by
   rw [oangle_rev, neg_eq_iff_eq_neg, Real.Angle.neg_coe_pi]
 
-/-- The oriented angle between two vectors is `π` if and only they are nonzero and the first is
+/-- The oriented angle between two vectors is `π` if and only if they are nonzero and the first is
 on the same ray as the negation of the second. -/
 theorem oangle_eq_pi_iff_sameRay_neg {x y : V} :
     o.oangle x y = π ↔ x ≠ 0 ∧ y ≠ 0 ∧ SameRay ℝ x (-y) := by
@@ -410,8 +410,7 @@ theorem oangle_eq_zero_or_eq_pi_iff_right_eq_smul {x y : V} :
 are linearly independent. -/
 theorem oangle_ne_zero_and_ne_pi_iff_linearIndependent {x y : V} :
     o.oangle x y ≠ 0 ∧ o.oangle x y ≠ π ↔ LinearIndependent ℝ ![x, y] := by
-  set_option push_neg.use_distrib true in
-  contrapose!; exact oangle_eq_zero_or_eq_pi_iff_not_linearIndependent o
+  contrapose! +distrib; exact oangle_eq_zero_or_eq_pi_iff_not_linearIndependent o
 
 /-- Two vectors are equal if and only if they have equal norms and zero angle between them. -/
 theorem eq_iff_norm_eq_and_oangle_eq_zero (x y : V) : x = y ↔ ‖x‖ = ‖y‖ ∧ o.oangle x y = 0 := by

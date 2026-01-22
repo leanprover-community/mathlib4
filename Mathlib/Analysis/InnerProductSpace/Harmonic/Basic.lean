@@ -22,7 +22,7 @@ variable
   {f f₁ f₂ : E → F}
   {x : E} {s t : Set E} {c : ℝ}
 
-open Topology
+open Topology Laplacian
 
 namespace InnerProductSpace
 

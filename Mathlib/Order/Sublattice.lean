@@ -185,8 +185,6 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥
@@ -387,7 +385,7 @@ attribute [norm_cast] coe_pi
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
-    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; grind
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
   simp_rw [← coe_inj]; simp

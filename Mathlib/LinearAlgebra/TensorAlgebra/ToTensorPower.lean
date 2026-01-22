@@ -87,8 +87,8 @@ def toDirectSum : TensorAlgebra R M →ₐ[R] ⨁ n, ⨂[R]^n M :=
 @[simp]
 theorem toDirectSum_ι (x : M) :
     toDirectSum (ι R x) =
-      DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) :=
-  TensorAlgebra.lift_ι_apply _ _
+      DirectSum.of (fun n => ⨂[R]^n M) _ (PiTensorProduct.tprod R fun _ : Fin 1 => x) := by
+  simp [toDirectSum, TensorAlgebra.lift_ι_apply, DirectSum.lof_eq_of]
 
 theorem ofDirectSum_comp_toDirectSum :
     ofDirectSum.comp toDirectSum = AlgHom.id R (TensorAlgebra R M) := by

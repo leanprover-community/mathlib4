@@ -11,23 +11,17 @@ public import Mathlib.LinearAlgebra.Span.Defs
 /-!
 # Subrepresentations
 
-This file defines subrepresentations of a group representation.
+This file defines subrepresentations of a monoid representation.
 
 -/
 
 @[expose] public section
 
 open Pointwise
+open scoped MonoidAlgebra
 
-universe u
-
-variable {A : Type*} [CommRing A]
-
-variable {G : Type*} [Group G]
-
-variable {W : Type*} [AddCommMonoid W] [Module A W]
-
-variable {ρ : Representation A G W}
+variable {A G W M : Type*} [CommRing A] [Monoid G] [AddCommMonoid W] [Module A W]
+  {ρ : Representation A G W} [AddCommMonoid M] [Module A[G] M]
 
 variable (ρ) in
 /-- A subrepresentation of `G` of the `A`-module `W` is a submodule of `W`

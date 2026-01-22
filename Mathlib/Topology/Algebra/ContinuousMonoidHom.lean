@@ -6,6 +6,7 @@ Authors: Thomas Browning, Nailin Guan
 module
 
 public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
@@ -139,6 +140,10 @@ theorem ext {f g : A →ₜ* B} (h : ∀ x, f x = g x) : f = g :=
 
 @[to_additive]
 theorem toContinuousMap_injective : Injective (toContinuousMap : _ → C(A, B)) := fun f g h =>
+  ext <| by convert DFunLike.ext_iff.1 h
+
+@[to_additive]
+theorem toMonoidHom_injective : Injective (toMonoidHom : _ → A →* B) := fun f g h =>
   ext <| by convert DFunLike.ext_iff.1 h
 
 /-- Composition of two continuous homomorphisms. -/
