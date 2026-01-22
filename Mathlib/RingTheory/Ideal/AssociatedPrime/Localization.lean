@@ -31,7 +31,7 @@ variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [
 variable {M M' : Type*} [AddCommGroup M] [Module R M] [AddCommGroup M'] [Module R M']
   (f : M →ₗ[R] M') [IsLocalizedModule S f] [Module R' M'] [IsScalarTower R R' M']
 
-open IsLocalRing LinearMap
+open IsLocalRing LinearMap Submodule
 
 namespace Module.associatedPrimes
 
@@ -49,11 +49,11 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
   · use f x
     ext t
     rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
-    rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_ker, toSpanSingleton_apply,
+    rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_colon_singleton, mem_bot,
       IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩
     · use 1
-      simp only [← toSpanSingleton_apply, one_smul, ← mem_ker, ← hx, Ideal.mem_comap]
+      simp only [← mem_colon_singleton, one_smul, ← mem_bot R, ← hx, Ideal.mem_comap]
       have : (algebraMap R R') r =
         IsLocalization.mk' R' r s * IsLocalization.mk' R' s.1 (1 : S) := by
         rw [← IsLocalization.mk'_one (M := S) R', ← sub_eq_zero, ← IsLocalization.mk'_mul,
@@ -62,7 +62,7 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
       rw [this]
       exact Ideal.IsTwoSided.mul_mem_of_left _ h
     · have : t • r • x = (t.1 * r) • x := smul_smul t.1 r x
-      rw [this, ← LinearMap.toSpanSingleton_apply, ← LinearMap.mem_ker, ← hx, Ideal.mem_comap,
+      rw [this, ← mem_bot R, ← mem_colon_singleton, ← hx, Ideal.mem_comap,
         ← IsLocalization.mk'_one (M := S) R'] at ht
       have : IsLocalization.mk' R' r s =
         IsLocalization.mk' (M := S) R' (t.1 * r) 1 * IsLocalization.mk' R' 1 (t * s) := by
@@ -98,20 +98,20 @@ lemma comap_mem_associatedPrimes_of_mem_associatedPrimes_of_isLocalizedModule_of
   simp only [Function.uncurry_apply_pair] at hx
   have mem (a : T) : algebraMap R R' a ∈ p := by
     simpa [← Ideal.mem_comap, ← hT] using Ideal.subset_span a.2
-  simp only [hx, mem_ker, toSpanSingleton_apply, algebraMap_smul,
+  simp only [hx, mem_bot, mem_colon_singleton, algebraMap_smul,
     ← IsLocalizedModule.mk'_smul, IsLocalizedModule.mk'_eq_zero' f] at mem
   choose g hg using mem
   refine ⟨.under R p, (∏ a, g a).1 • m, le_antisymm ?_ fun r hr ↦ ?_⟩
   · rw [← hT, Ideal.span_le]
     intro a ha
-    simp only [SetLike.mem_coe, mem_ker, toSpanSingleton_apply]
+    simp only [SetLike.mem_coe, mem_bot, mem_colon_singleton]
     obtain ⟨u, hu⟩ : g ⟨a, ha⟩ ∣ (∏ a, g a) := by
       apply Finset.dvd_prod_of_mem g (Finset.mem_univ ⟨a, ha⟩)
     rw [hu, Submonoid.coe_mul, smul_smul, ← mul_assoc, mul_comm, ← smul_smul, mul_comm, ← smul_smul]
     exact smul_eq_zero_of_right u.1 (hg ⟨a, ha⟩)
-  · simp only [mem_ker, toSpanSingleton_apply, smul_smul] at hr
+  · simp only [mem_bot, mem_colon_singleton, smul_smul] at hr
     have mem : r * (∏ a, g a).1 ∈ Ideal.comap (algebraMap R R') p := by
-      simpa only [hx, Ideal.mem_comap, mem_ker, toSpanSingleton_apply, algebraMap_smul,
+      simpa only [hx, Ideal.mem_comap, mem_bot, mem_colon_singleton, algebraMap_smul,
         ← IsLocalizedModule.mk'_smul, hr] using IsLocalizedModule.mk'_zero f s
     have := Set.disjoint_left.mp ((IsLocalization.disjoint_comap_iff S R' p).mpr hp.1) (∏ a, g a).2
     have := (Ideal.IsPrime.under R p).mul_mem_iff_mem_or_mem.mp mem

@@ -24,7 +24,7 @@ open CategoryTheory Category
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category* C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P Q : ObjectProperty C)
   {A : Type*} [AddMonoid A] [HasShift C A]
 
 namespace ObjectProperty
@@ -67,6 +67,11 @@ instance (a : A) [P.IsStableUnderShiftBy a] :
     rintro X ⟨Y, hY, ⟨e⟩⟩
     exact ⟨Y⟦a⟧, P.le_shift a _ hY, ⟨(shiftFunctor C a).mapIso e⟩⟩
 
+instance (a : A) [P.IsStableUnderShiftBy a]
+    [Q.IsStableUnderShiftBy a] : (P ⊓ Q).IsStableUnderShiftBy a where
+  le_shift _ hX :=
+    ⟨P.le_shift a _ hX.1, Q.le_shift a _ hX.2⟩
+
 variable (A) in
 /-- `P : ObjectProperty C` is stable under the shift by `A` if
 `P X` implies `P X⟦a⟧` for any `a : A`. -/
@@ -77,6 +82,9 @@ attribute [instance] IsStableUnderShift.isStableUnderShiftBy
 
 instance [P.IsStableUnderShift A] :
     P.isoClosure.IsStableUnderShift A where
+
+instance [P.IsStableUnderShift A]
+    [Q.IsStableUnderShift A] : (P ⊓ Q).IsStableUnderShift A where
 
 lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C G]
     [P.IsStableUnderShift G] [P.IsClosedUnderIsomorphisms] (X : C) (g : G) :
