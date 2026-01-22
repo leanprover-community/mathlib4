@@ -3,11 +3,12 @@ Copyright (c) 2025 William Coram. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Tactic.Bound
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Tactic.Bound
 
 /-!
 # Restricted power series
@@ -17,6 +18,8 @@ import Mathlib.Tactic.Bound
 
 -/
 
+@[expose] public section
+
 namespace PowerSeries
 
 variable {R : Type*} [NormedRing R] (c : ℝ)
@@ -24,7 +27,7 @@ variable {R : Type*} [NormedRing R] (c : ℝ)
 open PowerSeries Filter
 open scoped Topology
 
-/-- A power series over `R` is restricted of paramerter `c` if we have
+/-- A power series over `R` is restricted of parameter `c` if we have
 `‖coeff R i f‖ * c ^ i → 0`. -/
 def IsRestricted (f : PowerSeries R) :=
   Tendsto (fun (i : ℕ) ↦ (norm (coeff i f)) * c ^ i) atTop (𝓝 0)
@@ -45,7 +48,7 @@ lemma one : IsRestricted c (1 : PowerSeries R) := by
   simp only [isRestricted_iff, coeff_one, norm_mul, norm_pow, Real.norm_eq_abs]
   refine fun _ _ ↦ ⟨1, fun n hn ↦ ?_ ⟩
   split
-  · omega
+  · lia
   · simpa
 
 lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
@@ -53,7 +56,7 @@ lemma monomial (n : ℕ) (a : R) : IsRestricted c (monomial n a) := by
     Real.norm_eq_abs, abs_norm]
   refine fun _ _ ↦ ⟨n + 1, fun _ _ ↦ ?_⟩
   split
-  · omega
+  · lia
   · simpa
 
 lemma C (a : R) : IsRestricted c (C a) := by
@@ -103,7 +106,7 @@ lemma convergenceSet_BddAbove {f : PowerSeries R} (hf : IsRestricted c f) :
   · right
     apply le_max'
     simp only [mem_image, mem_range]
-    exact ⟨i, by omega, rfl⟩
+    exact ⟨i, by lia, rfl⟩
   · left
     calc _ ≤ ‖(coeff i) f‖ * |c ^ i| := by bound
          _ ≤ 1 := by simpa using (hf i h).le
@@ -131,8 +134,15 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
   calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound
        _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
-        grw [norm_mul_le]; grind
-  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
+        grw [norm_mul_le]
+        #adaptation_note
+        /--
+        Broken in `nightly-2025-10-26`: this was by `grind`, but is now no longer supported.
+        See https://github.com/leanprover/lean4/pull/10970.
+        -/
+        rw [pow_add]
+        grind
+  have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by lia
   rcases this with this | this
   · calc _ < ε / max a b * b := by
           grw [gBound1 snd]

@@ -3,12 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Says
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -21,6 +21,8 @@ For example, we can more easily work with `Nat.bits` and `Nat.size`.
 See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -99,7 +101,7 @@ lemma bodd_add_div2 : ∀ n, (bodd n).toNat + 2 * div2 n = n
     refine Eq.trans ?_ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
     · simp
-    · simp; cutsat
+    · simp; lia
 
 @[grind =]
 lemma div2_val (n) : div2 n = n / 2 := by
@@ -216,15 +218,15 @@ theorem div2_bit1 (n) : div2 (2 * n + 1) = n :=
 /-! ### `bit0` and `bit1` -/
 
 theorem bit_add : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit false n + bit b m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_add' : ∀ (b : Bool) (n m : ℕ), bit b (n + m) = bit b n + bit false m
-  | true, _, _ => by dsimp [bit]; cutsat
-  | false, _, _ => by dsimp [bit]; cutsat
+  | true, _, _ => by dsimp [bit]; lia
+  | false, _, _ => by dsimp [bit]; lia
 
 theorem bit_ne_zero (b) {n} (h : n ≠ 0) : bit b n ≠ 0 := by
-  cases b <;> dsimp [bit] <;> omega
+  cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem bitCasesOn_bit0 {motive : ℕ → Sort u} (H : ∀ b n, motive (bit b n)) (n : ℕ) :
@@ -248,12 +250,12 @@ theorem bit_cases_on_inj {motive : ℕ → Sort u} (H₁ H₂ : ∀ b n, motive 
   bit_cases_on_injective.eq_iff
 
 lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
-  | true, _, _, h => by dsimp [bit]; cutsat
-  | false, _, _, h => by dsimp [bit]; cutsat
+  | true, _, _, h => by dsimp [bit]; lia
+  | false, _, _, h => by dsimp [bit]; lia
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
-        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> lia
+        _ ≤ bit b n := by cases b <;> dsimp [bit] <;> lia
 
 @[simp]
 theorem zero_bits : bits 0 = [] := by simp [Nat.bits]

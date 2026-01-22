@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Defs.Induced
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.Defs.Induced
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -43,6 +45,8 @@ of sets in `α` (with the reversed inclusion ordering).
 
 finer, coarser, induced topology, coinduced topology
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 
@@ -304,7 +308,7 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
     isOpen_compl_iff
 
 theorem discreteTopology_iff_isOpen_singleton [TopologicalSpace α] :
-    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)):=
+    DiscreteTopology α ↔ (∀ a : α, IsOpen ({a} : Set α)) :=
   ⟨fun _ _ ↦ isOpen_discrete _, fun h ↦ ⟨eq_bot_of_singletons_open h⟩⟩
 
 @[deprecated discreteTopology_iff_isOpen_singleton (since := "2025-10-10")]
@@ -459,7 +463,7 @@ theorem Equiv.induced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.induced e.symm = TopologicalSpace.coinduced e := by
   ext t U
   rw [isOpen_induced_iff, isOpen_coinduced]
-  simp only [e.symm.preimage_eq_iff_eq_image, exists_eq_right, ← preimage_equiv_eq_image_symm]
+  simp only [e.symm.preimage_eq_iff_eq_image, exists_eq_right, Equiv.image_symm_eq_preimage]
 
 theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.coinduced e.symm = TopologicalSpace.induced e :=
@@ -808,6 +812,10 @@ theorem isOpen_induced_eq {s : Set α} :
 
 theorem isOpen_induced {s : Set β} (h : IsOpen s) : IsOpen[induced f t] (f ⁻¹' s) :=
   ⟨s, h, rfl⟩
+
+theorem isClosed_induced {s : Set β} (h : IsClosed s) : IsClosed[induced f t] (f ⁻¹' s) := by
+  simp_rw [← isOpen_compl_iff]
+  exact isOpen_induced h.isOpen_compl
 
 theorem map_nhds_induced_eq (a : α) : map f (@nhds α (induced f t) a) = 𝓝[range f] f a := by
   rw [nhds_induced, Filter.map_comap, nhdsWithin]

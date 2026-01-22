@@ -3,13 +3,17 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Order.Group.Equiv
-import Mathlib.Algebra.Order.Module.Synonym
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Order.Group.Equiv
+public import Mathlib.Algebra.Order.Module.Synonym
 
 /-!
 # Linear equivalence for order type synonyms
 -/
+
+@[expose] public section
 
 variable (α β : Type*)
 variable [Semiring α] [AddCommMonoid β] [Module α β]

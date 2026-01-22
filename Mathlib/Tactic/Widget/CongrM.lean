@@ -3,9 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
+module
 
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Tactic.CongrM
+public import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.OfRpcMethod
 
 /-! # CongrM widget
 
@@ -13,10 +17,12 @@ This file defines a `congrm?` tactic that displays a widget panel allowing to ge
 a `congrm` call with holes specified by selecting subexpressions in the goal.
 -/
 
+public meta section
+
 open Lean Meta Server ProofWidgets
 
 
-/-! # CongrM widget -/
+/-! ### CongrM widget -/
 
 /-- Return the link text and inserted text above and below of the congrm widget. -/
 @[nolint unusedArguments]

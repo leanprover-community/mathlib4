@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
 /-!
 # Refinements
@@ -14,7 +16,7 @@ Some of these can be carried out in more general abelian categories:
 for example, a morphism `X ⟶ Y` in an abelian category `C` is a
 monomorphism if and only if for all `A : C`, the induced map
 `(A ⟶ X) → (A ⟶ Y)` of abelian groups is a monomorphism, i.e. injective.
-Alternatively, the yoneda presheaf functor which sends `X` to the
+Alternatively, the Yoneda presheaf functor which sends `X` to the
 presheaf of maps `A ⟶ X` for all `A : C` preserves and reflects
 monomorphisms.
 
@@ -23,7 +25,7 @@ However, if `p : X ⟶ Y` is an epimorphism in `C` and `A : C`,
 epimorphism).
 
 In this file, the basic result is `epi_iff_surjective_up_to_refinements`
-which states that `f : X ⟶ Y` is a morphism in an abelian category,
+which states that if `f : X ⟶ Y` is a morphism in an abelian category,
 then it is an epimorphism if and only if for all `y : A ⟶ Y`,
 there exists an epimorphism `π : A' ⟶ A` and `x : A' ⟶ X` such
 that `π ≫ y = x ≫ f`. In other words, if we allow a precomposition
@@ -37,7 +39,7 @@ locally. Then, arguing "up to refinements" is very similar to
 arguing locally for a Grothendieck topology (TODO: indeed,
 show that it corresponds to the "refinements" topology on an
 abelian category `C` that is defined by saying that
-a sieve is covering if it contains an epimorphism).
+a sieve is covering if it contains an epimorphism)).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
@@ -68,11 +70,13 @@ these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type _} [Category C] [Abelian C] {X Y : C} (S : ShortComplex C)
+variable {C : Type _} [Category* C] [Abelian C] {X Y : C} (S : ShortComplex C)
   {S₁ S₂ : ShortComplex C}
 
 lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :

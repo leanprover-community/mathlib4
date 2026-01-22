@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
-# Homology of the extension of an homological complex
+# Homology of the extension of a homological complex
 
 Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we shall
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
@@ -17,12 +19,14 @@ the homology is obviously zero. When `e.f j = j`, we construct an isomorphism
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Limits Category
 
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
   [HasZeroObject C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
@@ -424,5 +428,9 @@ lemma quasiIso_extendMap_iff [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] :
     · rw [quasiIsoAt_iff_exactAt]
       all_goals
         exact extend_exactAt _ _ _ (by simpa using hj')
+
+instance [∀ j, K.HasHomology j] [∀ j, L.HasHomology j] [QuasiIso φ] :
+    QuasiIso (extendMap φ e) := by
+  rwa [quasiIso_extendMap_iff]
 
 end HomologicalComplex

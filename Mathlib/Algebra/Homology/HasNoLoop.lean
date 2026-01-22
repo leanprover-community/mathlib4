@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Complex shapes with no loop
@@ -14,6 +16,8 @@ Let `c : ComplexShape ι`. We define a type class `c.HasNoLoop`
 which expresses that `¬ c.Rel i i` for all `i : ι`.
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
@@ -40,17 +44,11 @@ instance : c.symm.HasNoLoop where
 
 lemma exists_distinct_prev_or :
     (∃ (k : ι), c.Rel j k ∧ j ≠ k) ∨ ∀ (k : ι), ¬ c.Rel j k := by
-  by_cases h : ∃ (k : ι), c.Rel j k
-  · obtain ⟨k, hk⟩ := h
-    exact Or.inl ⟨k, hk, fun hjk ↦ c.not_rel_of_eq hjk hk⟩
-  · exact Or.inr (by simpa using h)
+  grind +splitIndPred
 
 lemma exists_distinct_next_or :
     (∃ (i : ι), c.Rel i j ∧ i ≠ j) ∨ ∀ (i : ι), ¬ c.Rel i j := by
-  by_cases h : ∃ (i : ι), c.Rel i j
-  · obtain ⟨i, hi⟩ := h
-    exact Or.inl ⟨i, hi, fun hij ↦ c.not_rel_of_eq hij hi⟩
-  · exact Or.inr (by simpa using h)
+  grind +splitIndPred
 
 lemma hasNoLoop_up' {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
     (a : α) (ha : a ≠ 0) :

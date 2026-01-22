@@ -3,27 +3,33 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Util.AddRelatedDecl
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public meta import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `to_app` attribute
 
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
 in some bicategory, create a new lemma named `F_app`. This lemma is obtained by first specializing
-the bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.congr_app`
-to obtain a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion
-using some basic lemmas in the bicategory `Cat`:
-`Cat.whiskerLeft_app`, `Cat.whiskerRight_app`, `Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
+the bicategory in which the equality is taking place to `Cat`, then applying `toNatTrans_congr` and
+`NatTrans.congr_app` to obtain a proof of
+`∀ ... (X : Cat), η.toNatTrans.app X = θ.toNatTrans.app X`, and finally simplifying the conclusion
+using some basic lemmas in the bicategory `Cat`: `Cat.whiskerLeft_app`, `Cat.whiskerRight_app`,
+`Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
-`η.app (f.obj X) = θ.app X`.
+`η.toNatTrans.app (f.obj X) = θ.toNatTrans.app X`.
 
 This is useful for automatically generating lemmas that can be applied to expressions of 1-morphisms
 in `Cat` which contain components of 2-morphisms.
 
 There is also a term elaborator `to_app_of% t` for use within proofs.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
@@ -33,10 +39,10 @@ namespace CategoryTheory
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [
-    ``Cat.comp_obj, ``Cat.whiskerLeft_app, ``Cat.whiskerRight_app, ``Cat.id_app, ``Cat.comp_app,
-    ``Cat.eqToHom_app, ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app,
-    ``Cat.rightUnitor_hom_app, ``Cat.rightUnitor_inv_app,
-    ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
+    ``Cat.Hom.comp_toFunctor, ``Functor.comp_obj, ``Cat.Hom.comp_obj, ``Cat.whiskerLeft_app,
+    ``Cat.whiskerRight_app, ``Cat.Hom₂.id_app, ``Cat.Hom₂.comp_app, ``Cat.eqToHom_app,
+    ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app, ``Cat.rightUnitor_hom_app,
+    ``Cat.rightUnitor_inv_app, ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
     ``Category.comp_id, ``Category.id_comp] e
     (config := { decide := false })
 
@@ -87,9 +93,23 @@ def toCatExpr (e : Expr) : MetaM Expr := do
   let value ← apprec 0 value
   return value
 
+#adaptation_note /-- Removed `private`:
+`toNatTrans_congr` was marked `private` in #31807,
+but we have removed this when disabling `set_option backward.privateInPublic` as a global option. -/
+universe v u in
+lemma toNatTrans_congr {C D : Cat.{v, u}} {F G : C ⟶ D} {η θ : F ⟶ G} (h : η = θ) :
+  η.toNatTrans = θ.toNatTrans := congr(($h).toNatTrans)
+
 /--
 Given morphisms `f g : C ⟶ D` in the bicategory `Cat`, and an equation `η = θ` between 2-morphisms
-(possibly after a `∀` binder), produce the equation `∀ (X : C), f.app X = g.app X`, and simplify
+(possibly after a `∀` binder), produce the equation `η.toNatTrans = θ.toNatTrans`
+-/
+def toNatTransExpr (e : Expr) : MetaM Expr := do
+  mapForallTelescope (fun e => mkAppM ``toNatTrans_congr #[e]) e
+
+/--
+Given functors `F G : C ⥤ D`, and an equation `η = θ` between natural transformations
+(possibly after a `∀` binder), produce the equation `∀ (X : C), η.app X = θ.app X`, and simplify
 it using basic lemmas about `NatTrans.app`. -/
 def toAppExpr (e : Expr) : MetaM Expr := do
   mapForallTelescope (fun e => do simpType catAppSimp (← mkAppM ``NatTrans.congr_app #[e])) e
@@ -97,10 +117,10 @@ def toAppExpr (e : Expr) : MetaM Expr := do
 /--
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
 in some bicategory, create a new lemma named `F_app`. This lemma is obtained by first specializing
-the bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.congr_app`
-to obtain a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally simplifying the conclusion
-using some basic lemmas in the bicategory `Cat`:
-`Cat.whiskerLeft_app`, `Cat.whiskerRight_app`, `Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
+the bicategory in which the equality is taking place to `Cat`, then applying `toNatTrans_congr` and
+`NatTrans.congr_app` to obtain a proof of `∀ ... (X : Cat), η.app X = θ.app X`, and finally
+simplifying the conclusion using some basic lemmas in the bicategory `Cat` (see `catAppSimp` for
+the list of these).
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
 `η.app (f.obj X) = θ.app X`.
@@ -112,21 +132,20 @@ Note that if you want both the lemma and the new lemma to be `simp` lemmas, you 
 `@[to_app (attr := simp)]`. The variant `@[simp, to_app]` on a lemma `F` will tag `F` with
 `@[simp]`, but not `F_app` (this is sometimes useful).
 -/
-syntax (name := to_app) "to_app" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
+syntax (name := to_app) "to_app" optAttrArg : attr
 
 initialize registerBuiltinAttribute {
   name := `to_app
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| to_app $[(attr := $stx?,*)]?) => MetaM.run' do
+  | `(attr| to_app $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "_app" ref stx? fun type value levels => do
+    addRelatedDecl src (src.appendAfter "_app") ref optAttr fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
-      let value ← mkExpectedTypeHint value type
       let value := value.instantiateLevelParams levels levelMVars
-      let newValue ← toAppExpr (← toCatExpr value)
+      let newValue ← toAppExpr (← toNatTransExpr (← toCatExpr value))
       let r := (← getMCtx).levelMVarToParam (fun _ => false) (fun _ => false) newValue
       let output := (r.expr, r.newParamNames.toList)
       pure output

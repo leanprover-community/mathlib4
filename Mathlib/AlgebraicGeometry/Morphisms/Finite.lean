@@ -3,8 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Integral
-import Mathlib.Algebra.Category.Ring.Epi
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
+public import Mathlib.Algebra.Category.Ring.Epi
+public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -21,6 +24,8 @@ Also see `AlgebraicGeometry.IsFinite.finite_preimage_singleton` in
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory TopologicalSpace Opposite MorphismProperty
@@ -32,7 +37,9 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
-  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+  finite_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+
+alias Scheme.Hom.finite_app := IsFinite.finite_app
 
 namespace IsFinite
 
@@ -135,6 +142,14 @@ lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
 lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
     IsFinite (f ≫ g) ↔ IsFinite f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
+
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite g] :
+    IsFinite (Limits.coprod.desc f g) := by
+  refine HasAffineProperty.coprodDesc_affineAnd inferInstance RingHom.finite_respectsIso
+    ?_ _ _ ‹_› ‹_›
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g]
+  refine RingHom.finite_algebraMap.mpr inferInstance
 
 end IsFinite
 

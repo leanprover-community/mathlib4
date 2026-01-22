@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-import Mathlib.Analysis.Calculus.DSlope
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+public import Mathlib.Analysis.Calculus.DSlope
 
 /-!
 # Sinc function
@@ -21,6 +23,8 @@ This file contains the definition of the sinc function and some of its propertie
 * `continuous_sinc`: the sinc function is continuous.
 
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

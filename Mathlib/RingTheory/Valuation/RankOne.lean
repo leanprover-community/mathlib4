@@ -3,11 +3,14 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Embedding
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.WithZero
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Real.Embedding
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Rank one valuations
@@ -22,6 +25,8 @@ We define rank one valuations.
 
 valuation, rank one
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -90,7 +95,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   rw [map_zero, hx] at hs
   exact hs.false
 
-/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
+/-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
@@ -108,6 +113,16 @@ instance [RankOne v] : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne
+
+instance instRankOneCompletion {K : Type*} [Field K] {Γ : Type*}
+    [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) [h : v.RankOne] :
+    (Valued.v : Valuation v.Completion Γ).RankOne where
+  hom := Valuation.RankOne.hom v
+  strictMono' := Valuation.RankOne.strictMono v
+  exists_val_nontrivial := by
+    rcases h.exists_val_nontrivial with ⟨x, hx1, hx2⟩
+    use (WithVal.equiv v).symm x
+    simp_all
 
 end Valuation
 

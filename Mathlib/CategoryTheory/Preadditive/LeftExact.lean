@@ -3,9 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Left exactness of functors between preadditive categories
@@ -21,6 +23,8 @@ preserves kernels. The dual result holds for right exact functors and cokernels.
 * and then derive the preservation of all finite limits with the usual construction.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -115,7 +119,7 @@ lemma preservesFiniteLimits_of_preservesKernels [HasFiniteProducts C] [HasEquali
   have := preservesEqualizers_of_preservesKernels F
   have := preservesTerminalObject_of_preservesZeroMorphisms F
   have := preservesLimitsOfShape_pempty_of_preservesTerminal F
-  have : PreservesFiniteProducts F :=.of_preserves_binary_and_terminal F
+  have : PreservesFiniteProducts F := .of_preserves_binary_and_terminal F
   preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts F
 
 end FiniteLimits

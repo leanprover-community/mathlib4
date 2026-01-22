@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.RingTheory.RingHom.FiniteType
-import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Morphisms of finite type
@@ -18,6 +20,8 @@ A morphism of schemes is of finite type if it is both locally of finite type and
 We show that these properties are local, and are stable under compositions and base change.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -34,14 +38,21 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 -/
 @[mk_iff]
 class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
-  finiteType_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
+  finiteType_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      (f.appLE U V e).hom.FiniteType
+
+alias Scheme.Hom.finiteType_appLE := LocallyOfFiniteType.finiteType_appLE
+
+@[deprecated (since := "2026-01-20")]
+alias LocallyOfFiniteType.finiteType_of_affine_subset :=
+  Scheme.Hom.finiteType_appLE
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
   isLocal_ringHomProperty := RingHom.finiteType_isLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
+    rw [locallyOfFiniteType_iff, affineLocally_iff_forall_isAffineOpen]
 
 instance (priority := 900) locallyOfFiniteType_of_isOpenImmersion [IsOpenImmersion f] :
     LocallyOfFiniteType f :=

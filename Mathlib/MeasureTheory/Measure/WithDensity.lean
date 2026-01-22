@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Group.Convolution
-import Mathlib.Analysis.LConvolution
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.MeasureTheory.Group.Convolution
+public import Mathlib.Analysis.LConvolution
 
 /-!
 # Measure with a given density with respect to another measure
@@ -21,6 +23,8 @@ An important result about `withDensity` is the Radon-Nikodym theorem. It states 
 See `MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`.
 
 -/
+
+@[expose] public section
 
 open Set hiding restrict restrict_apply
 
@@ -345,6 +349,27 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
     AEMeasurable g (μ.withDensity fun x => (f x : ℝ≥0∞)) ↔
       AEMeasurable (fun x => (f x : ℝ≥0∞) * g x) μ :=
   aemeasurable_withDensity_ennreal_iff' <| hf.aemeasurable
+
+theorem dirac_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac' hf hs, dirac_apply' _ hs,
+    Set.indicator]
+
+theorem dirac_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) (a : α) :
+    (dirac a).withDensity f = f a • dirac a := by
+  ext s hs
+  classical
+  simp [withDensity_apply f hs, setLIntegral_dirac, Set.indicator]
+
+theorem count_withDensity' {f : α → ℝ≥0∞} (hf : Measurable f) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity' hf _]
+
+theorem count_withDensity [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
+    count.withDensity f = sum (fun a ↦ f a • dirac a) := by
+  simp [count, withDensity_sum, dirac_withDensity]
 
 open MeasureTheory.SimpleFunc
 
@@ -738,7 +763,7 @@ theorem mconv_withDensity_eq_mlconvolution₀ {f g : G → ℝ≥0∞}
     lintegral_congr (fun x ↦ by apply (lintegral_mul_left_eq_self _ x⁻¹).symm),
     lintegral_lintegral_swap]
   · simp only [Pi.mul_apply, mul_inv_cancel_left, mlconvolution_def]
-    conv in (∫⁻ _ , _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
+    conv in (∫⁻ _, _ ∂μ) * φ _ => rw [(lintegral_mul_const'' _ (by fun_prop)).symm]
   all_goals first | fun_prop | dsimp; fun_prop
 
 @[to_additive]

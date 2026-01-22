@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Geometry.Manifold.HasGroupoid
 
 /-!
 # Local properties invariant under a groupoid
@@ -41,6 +43,8 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 `LiftPropWithinAt.congr` as it is in the namespace associated to `LocalInvariantProp`, not
 in the one for `LiftPropWithinAt`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

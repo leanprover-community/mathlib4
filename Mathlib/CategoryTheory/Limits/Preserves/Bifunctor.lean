@@ -3,10 +3,12 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Fubini
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Fubini
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservations of limits for bifunctors
@@ -19,12 +21,14 @@ out of this typeclass.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Functor
 
-variable {J₁ J₂ : Type*} [Category J₁] [Category J₂]
-  {C₁ C₂ C : Type*} [Category C₁] [Category C₂] [Category C]
+variable {J₁ J₂ : Type*} [Category* J₁] [Category* J₂]
+  {C₁ C₂ C : Type*} [Category* C₁] [Category* C₂] [Category* C]
 
 /-- Given a bifunctor `G : C₁ ⥤ C₂ ⥤ C`, diagrams `K₁ : J₁ ⥤ C₁` and `K₂ : J₂ ⥤ C₂`, and cocones
 over these diagrams, `G.mapCocone₂ c₁ c₂` is the cocone over the diagram `J₁ × J₂ ⥤ C` obtained
@@ -203,9 +207,9 @@ instance of_preservesColimits_in_each_variable
     [∀ x : C₂, PreservesColimit K₁ (G.flip.obj x)] [∀ x : C₁, PreservesColimit K₂ (G.obj x)] :
     PreservesColimit₂ K₁ K₂ G where
   nonempty_isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ :=
-    let Q₀ : DiagramOfCocones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+    let Q₀ : DiagramOfCocones (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCocone c₂
-        map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
+        map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsColimit (Q₀.obj j₁) := fun j ↦ isColimitOfPreserves _ hc₂
     let E₀ : Q₀.coconePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
     let E₁ : (Cocones.precompose E₀.hom).obj (coconeOfCoconeUncurry P <| G.mapCocone₂ c₁ c₂) ≅
@@ -231,11 +235,11 @@ instance of_preservesColimits_in_each_variable
 theorem of_preservesColimit₂_flip : PreservesColimit₂ K₂ K₁ G.flip where
   nonempty_isColimit_mapCocone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
-    let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
-        uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G).flip :=
+    let E₀ : uncurry.obj (whiskeringLeft₂ C |>.obj K₂ |>.obj K₁ |>.obj G.flip) ≅
+        uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G).flip :=
       Iso.refl _
-    let E₁ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
-        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+    let E₁ : uncurry.obj (whiskeringLeft₂ C |>.obj K₂ |>.obj K₁ |>.obj G.flip) ≅
+        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       E₀ ≪≫ uncurryObjFlip _
     refine IsColimit.precomposeInvEquiv E₁ _ ?_
     apply IsColimit.ofWhiskerEquivalence (e := Prod.braiding _ _)
@@ -330,9 +334,9 @@ instance of_preservesLimits_in_each_variable
     [∀ x : C₂, PreservesLimit K₁ (G.flip.obj x)] [∀ x : C₁, PreservesLimit K₂ (G.obj x)] :
     PreservesLimit₂ K₁ K₂ G where
   nonempty_isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ :=
-    let Q₀ : DiagramOfCones (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+    let Q₀ : DiagramOfCones (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       { obj j₁ := G.obj (K₁.obj j₁) |>.mapCone c₂
-        map f := { hom := G.map (K₁.map f)|>.app c₂.pt }}
+        map f := { hom := G.map (K₁.map f) |>.app c₂.pt } }
     let P : ∀ j₁, IsLimit (Q₀.obj j₁) := fun _ => isLimitOfPreserves _ hc₂
     let E₀ : Q₀.conePoints ≅ K₁ ⋙ G.flip.obj c₂.pt := NatIso.ofComponents (fun _ ↦ Iso.refl _)
     let E₁ : (Cones.postcompose E₀.hom).obj (coneOfConeUncurry P <| G.mapCone₂ c₁ c₂) ≅
@@ -358,11 +362,11 @@ instance of_preservesLimits_in_each_variable
 theorem of_preservesLimit₂_flip : PreservesLimit₂ K₂ K₁ G.flip where
   nonempty_isLimit_mapCone₂ {c₁} hc₁ {c₂} hc₂ := by
     constructor
-    let E₀ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
-        uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G).flip :=
+    let E₀ : uncurry.obj (whiskeringLeft₂ C |>.obj K₂ |>.obj K₁ |>.obj G.flip) ≅
+        uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G).flip :=
       Iso.refl _
-    let E₁ : uncurry.obj (whiskeringLeft₂ C|>.obj K₂|>.obj K₁|>.obj G.flip) ≅
-        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C|>.obj K₁|>.obj K₂|>.obj G) :=
+    let E₁ : uncurry.obj (whiskeringLeft₂ C |>.obj K₂ |>.obj K₁ |>.obj G.flip) ≅
+        Prod.swap _ _ ⋙ uncurry.obj (whiskeringLeft₂ C |>.obj K₁ |>.obj K₂ |>.obj G) :=
       E₀ ≪≫ uncurryObjFlip _
     refine IsLimit.postcomposeHomEquiv E₁ _ ?_
     apply IsLimit.ofWhiskerEquivalence (e := Prod.braiding _ _)

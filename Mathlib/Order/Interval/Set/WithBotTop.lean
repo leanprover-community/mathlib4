@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.WithBot
 
 /-!
 # Intervals in `WithTop α` and `WithBot α`
@@ -13,6 +15,8 @@ import Mathlib.Order.WithBot
 In this file we prove various lemmas about `Set.image`s and `Set.preimage`s of intervals under
 `some : α → WithTop α` and `some : α → WithBot α`.
 -/
+
+public section
 
 open Set
 

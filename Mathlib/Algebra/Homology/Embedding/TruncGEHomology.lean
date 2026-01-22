@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.ExtendHomology
-import Mathlib.Algebra.Homology.Embedding.TruncGE
-import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
+public import Mathlib.Algebra.Homology.Embedding.TruncGE
+public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # The homology of a canonical truncation
 
@@ -20,12 +22,14 @@ quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
   (K L : HomologicalComplex C c') (φ : K ⟶ L) (e : c.Embedding c') [e.IsTruncGE]
   [∀ i', K.HasHomology i'] [∀ i', L.HasHomology i']
 
@@ -145,7 +149,7 @@ noncomputable def rightHomologyMapData {i j k : ι} {j' : ι'} (hj' : e.f j = j'
     · simp [K.truncGE'_d_eq_fromOpcycles e hjk hj' hk' hj,
         K.restrictionToTruncGE'_f_eq_iso_hom_iso_inv e hk' (e.not_boundaryGE_next hjk)]
       rfl
-    · obtain rfl : k = j := by rw [← c.next_eq_self j  (by simpa only [hk] using hjk), hk]
+    · obtain rfl : k = j := by rw [← c.next_eq_self j (by simpa only [hk] using hjk), hk]
       rw [shape _ _ _ hjk, zero_comp, comp_zero,
         K.restrictionToTruncGE'_f_eq_iso_hom_pOpcycles_iso_inv e hk' hj]
       simp only [restriction_X, restrictionXIso, eqToIso.inv, eqToIso.hom, assoc,

@@ -3,11 +3,13 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Statement of Fermat's Last Theorem
@@ -41,6 +43,8 @@ An ongoing Lean formalisation of the proof, using mathlib as a dependency, is ta
 https://github.com/ImperialCollegeLondon/FLT .
 
 -/
+
+@[expose] public section
 
 open List
 
@@ -172,9 +176,6 @@ lemma fermatLastTheoremWith'_of_semifield (𝕜 : Type*) [Semifield 𝕜] (n : �
   ⟨1, a, b, c,
     ⟨(mul_one a).symm, (mul_one b).symm, (mul_one c).symm⟩,
     ⟨ha.isUnit, hb.isUnit, hc.isUnit⟩⟩
-
-@[deprecated (since := "2025-03-21")]
-alias fermatLastTheoremWith'_of_field := fermatLastTheoremWith'_of_semifield
 
 lemma FermatLastTheoremWith'.fermatLastTheoremWith {R : Type*} [CommSemiring R] [IsDomain R]
     {n : ℕ} (h : FermatLastTheoremWith' R n)

@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Tilted
+module
+
+public import Mathlib.MeasureTheory.Measure.Tilted
 
 /-!
 # Log-likelihood Ratio
@@ -20,6 +22,8 @@ This file contains a definition of the log-likelihood ratio (llr) and its proper
   `x ↦ log (μ.rnDeriv ν x).toReal`.
 
 -/
+
+@[expose] public section
 
 open Real
 
@@ -75,11 +79,11 @@ lemma exp_neg_llr' [SigmaFinite μ] [SigmaFinite ν] (hμν : ν ≪ μ) :
   rw [Pi.neg_apply, neg_eq_iff_eq_neg] at hx
   rw [← hx, hx_exp_log]
 
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_llr (μ ν : Measure α) : Measurable (llr μ ν) :=
   (Measure.measurable_rnDeriv μ ν).ennreal_toReal.log
 
-@[measurability]
+@[fun_prop]
 lemma stronglyMeasurable_llr (μ ν : Measure α) : StronglyMeasurable (llr μ ν) :=
   (measurable_llr μ ν).stronglyMeasurable
 
@@ -165,7 +169,7 @@ lemma integral_llr_tilted_left [IsProbabilityMeasure μ] [SigmaFinite ν]
         rw [integral_add ?_ h_int]
         swap; · exact hf.sub (integrable_const _)
         rw [integral_sub hf (integrable_const _)]
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ + ∫ x, f x ∂μ - log (∫ x, exp (f x) ∂μ) := by abel
 
 lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
@@ -202,7 +206,7 @@ lemma integral_llr_tilted_right [IsProbabilityMeasure μ] [SigmaFinite ν]
         swap; · exact hfμ.neg.add (integrable_const _)
         rw [integral_add ?_ (integrable_const _)]
         swap; · exact hfμ.neg
-        simp only [integral_const, measureReal_univ_eq_one, smul_eq_mul, one_mul]
+        simp only [integral_const, probReal_univ, smul_eq_mul, one_mul]
   _ = ∫ x, llr μ ν x ∂μ - ∫ x, f x ∂μ + log (∫ x, exp (f x) ∂ν) := by abel
 
 end llr_tilted

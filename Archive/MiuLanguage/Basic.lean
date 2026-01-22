@@ -132,7 +132,7 @@ def lcharToMiustr : List Char → Miustr
     | _ => []
 
 instance stringCoeMiustr : Coe String Miustr :=
-  ⟨fun st => lcharToMiustr st.data⟩
+  ⟨fun st => lcharToMiustr st.toList⟩
 
 /-!
 ### Derivability

@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 # Restrict the domain of a function to a set
@@ -13,6 +15,8 @@ import Mathlib.Data.Set.Image
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -146,6 +150,14 @@ theorem injective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s
 
 alias ⟨_, _root_.Function.Injective.codRestrict⟩ := injective_codRestrict
 
+@[simp] theorem range_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    range (s.codRestrict f h) = (↑) ⁻¹' range f := by
+  ext; simp [Subtype.ext_iff]
+
+theorem surjective_codRestrict {f : ι → α} {s : Set α} (h : ∀ x, f x ∈ s) :
+    (s.codRestrict f h).Surjective ↔ range f = s := by
+  simp [← range_eq_univ, Subset.antisymm_iff (a := range f), range_subset_iff, h]
+
 theorem codRestrict_range_surjective (f : ι → α) :
     ((range f).codRestrict f mem_range_self).Surjective := by
   rintro ⟨b, ⟨a, rfl⟩⟩
@@ -256,7 +268,7 @@ end
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
-  ⟨fun H a b h => Subtype.eq <| H a.2 b.2 h, fun H a as b bs h =>
+  ⟨fun H a b h => Subtype.ext <| H a.2 b.2 h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective

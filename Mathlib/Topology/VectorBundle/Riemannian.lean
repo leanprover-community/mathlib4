@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Topology.VectorBundle.Constructions
-import Mathlib.Topology.VectorBundle.Hom
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -36,6 +38,8 @@ to the `Bundle` namespace.
 Vector bundle, Riemannian metric
 -/
 
+@[expose] public section
+
 open Bundle ContinuousLinearMap Filter
 open scoped Topology
 
@@ -65,7 +69,7 @@ section Trivial
 
 variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
-/-- A trivial vector bundle, in which the model fiber has a inner product,
+/-- A trivial vector bundle, in which the model fiber has an inner product,
 is a Riemannian bundle. -/
 instance : IsContinuousRiemannianBundle F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, ?_, fun x v w ↦ rfl⟩
@@ -203,16 +207,15 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' y w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' y w w := by ring
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
-  rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ )), div_eq_inv_mul] at this
+  rw [← (le_div_iff₀' (lt_of_le_of_lt (by positivity) hδ)), div_eq_inv_mul] at this
   grw [this]
   gcongr
-  · rw [← hgy, ← hg,real_inner_self_eq_norm_sq]
+  · rw [← hgy, ← hg, real_inner_self_eq_norm_sq]
     positivity
   · exact inv_le_of_inv_le₀ (by positivity) hδ.le
 
@@ -308,9 +311,8 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ ≤ δ * (‖(G : E x →L[ℝ] F)‖ * ‖G.symm w‖) ^ 2 + g' x w w := by
       grw [← le_opNorm]
       simp
-    _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * ‖G.symm w‖ ^ 2 + g' x w w := by ring
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
       rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
@@ -320,7 +322,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
     _ = (1 + δ * C) * g' x w w := by ring
     _ ≤ r' ^ 2 * g' x w w := by
       gcongr
-      rw [← hgx, ← hg,real_inner_self_eq_norm_sq]
+      rw [← hgx, ← hg, real_inner_self_eq_norm_sq]
       positivity
 
 /-- In a continuous Riemannian bundle, the inverse of the trivialization at a point is locally
@@ -378,7 +380,7 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 
@@ -463,7 +465,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
     let e : E b ≃L[ℝ] F := Trivialization.continuousLinearEquivAt ℝ (trivializationAt F E b) _
       (FiberBundle.mem_baseSet_trivializationAt' b)
     let m : (E b →L[ℝ] E b →L[ℝ] ℝ) ≃L[ℝ] (F →L[ℝ] F →L[ℝ] ℝ) :=
-      e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ ))
+      e.arrowCongr (e.arrowCongr (ContinuousLinearEquiv.refl ℝ ℝ))
     have A (v : E b) : g.inner b v v = ((fun w ↦ m (g.inner b) w w) ∘ e) v := by simp [m]
     simp only [A]
     fun_prop

@@ -3,9 +3,12 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Keeley Hoek, Patrick Massot, Kim Morrison
 -/
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Aesop
+public import Mathlib.Order.Hom.Basic
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `apply_fun` tactic.
@@ -16,6 +19,8 @@ Apply a function to an equality or inequality in either a local hypothesis or th
 
 Using the `mono` tactic, we can attempt to automatically discharge `Monotone f` goals.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser Elab Tactic Meta
@@ -31,7 +36,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
     | (``Eq, #[_, lhs, rhs]) => do
       let (eq', gs) ←
         withCollectingNewGoalsFrom (parentTag := ← g.getTag) (tagSuffix := `apply_fun) <|
-        withoutRecover <| runTermElab <| do
+        withoutRecover <| runTermElab do
           let f ← Term.elabTerm f none
           let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
           let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
