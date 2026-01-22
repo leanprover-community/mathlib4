@@ -517,8 +517,7 @@ lemma integral_phi_div_le_Cφ_mul {a R : ℝ} (ha : 0 < a) (hR : 0 ≤ R) :
   have hrew :
       (∫ (r : ℝ) in R..(2 * R), φ (r / a) ∂volume)
         = a * (∫ (t : ℝ) in (R / a)..(2 * R / a), φ t ∂volume) := by
-    simpa [smul_eq_mul, mul_left_comm, mul_comm, div_eq_mul_inv, ha0] using
-      (intervalIntegral.integral_comp_div (f := φ) (a := R) (b := 2 * R) ha0)
+    simp [smul_eq_mul, mul_left_comm, mul_comm, div_eq_mul_inv, ha0]
   rw [hrew]
   have hA : 0 ≤ R / a := by
     exact div_nonneg hR ha.le
@@ -569,9 +568,10 @@ lemma exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum
     have hall : Set.Ioc R (2 * R) ⊆ {r | (Cφ * (∑ i ∈ s, w i)) < g r} := by
       intro r hr
       simpa [g] using hforall r hr
-    have hpos' : (volume.restrict (Set.Ioc R (2 * R))) (Set.Ioc R (2 * R)) ≠ 0 := by
-      simpa [MeasureTheory.Measure.restrict_apply, measurableSet_Ioc, Set.inter_self]
-        using hIoc_meas
+    have hpos' :
+        (volume.restrict (Set.Ioc R (2 * R))) (Set.Ioc R (2 * R)) ≠ 0 := by
+      simpa [MeasureTheory.Measure.restrict_apply, measurableSet_Ioc, Set.inter_self] using
+        hIoc_meas
     have hle :
         (volume.restrict (Set.Ioc R (2 * R))) (Set.Ioc R (2 * R))
           ≤ (volume.restrict (Set.Ioc R (2 * R))) {r | (Cφ * (∑ i ∈ s, w i)) < g r} :=
