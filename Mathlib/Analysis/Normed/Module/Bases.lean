@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 
 /-!
 # Schauder bases in normed spaces
@@ -69,6 +68,7 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
     vectors, with coefficients given by the coordinate functionals. -/
 structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] (e : ℕ → X) where
+  -- Coordinate functionals
   coord : ℕ → StrongDual 𝕜 X
   -- Biorthogonality
   ortho : ∀ i j, coord i (e j) = if i = j then 1 else 0
