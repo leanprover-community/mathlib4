@@ -172,6 +172,14 @@ lemma weierstrassFactor_eq_zero_iff (m : ℕ) (z : ℂ) :
   · rintro rfl
     simp [weierstrassFactor]
 
+lemma weierstrassFactor_ne_zero_iff (m : ℕ) (z : ℂ) :
+    weierstrassFactor m z ≠ 0 ↔ z ≠ 1 := by
+  simpa [ne_eq] using (not_congr (weierstrassFactor_eq_zero_iff (m := m) (z := z)))
+
+lemma weierstrassFactor_ne_zero_of_ne_one (m : ℕ) {z : ℂ} (hz : z ≠ 1) :
+    weierstrassFactor m z ≠ 0 :=
+  (weierstrassFactor_ne_zero_iff (m := m) (z := z)).2 hz
+
 lemma differentiable_partialLogSum (m : ℕ) :
     Differentiable ℂ (fun z : ℂ => partialLogSum m z) := by
   classical
