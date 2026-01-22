@@ -85,7 +85,7 @@ end MatrixModCat
 
 universe w
 
-lemma MatrixModCat.toModuleCat_isScalarTower (M : ModuleCat (Matrix ι ι R)) :
+lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
     IsScalarTower R (Matrix ι ι R) M :=
   letI := Module.compHom M (Matrix.scalar (α := R) ι)
