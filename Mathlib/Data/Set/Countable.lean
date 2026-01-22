@@ -387,4 +387,7 @@ theorem Uncountable.infinite {s : Set α} (hs : s.Uncountable) : s.Infinite :=
 theorem Uncountable.nonempty {s : Set α} (hs : s.Uncountable) : s.Nonempty :=
   hs.infinite.nonempty
 
+theorem Uncountable.nontrivial {s : Set α} (hs : s.Uncountable) : s.Nontrivial :=
+  hs.infinite.nontrivial
+
 end Set
