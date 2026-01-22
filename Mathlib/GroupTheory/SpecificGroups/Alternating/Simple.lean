@@ -133,6 +133,8 @@ namespace alternatingGroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
+/-- The element of `alternatingGroup α` induced by an element
+of `alternatingGroup s`, when `s : Finset α`. -/
 def ofSubtype (s : Finset α) : -- {p : ℕ} (s : Nat.Combination α p) :
     alternatingGroup s →* alternatingGroup α where
   toFun x := ⟨Perm.ofSubtype (x : Perm s), by
@@ -234,8 +236,7 @@ theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
   simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 3`. -/
-def iwasawaStructure_three [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
-    IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
+def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
   T s := (alternatingGroup.ofSubtype s).range
   is_comm s := by
     suffices IsCyclic (alternatingGroup s) by
@@ -335,7 +336,7 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 4`,
 provided `α` has at least 5 elements. -/
-def iwasawaStructure_four [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] (h5 : 5 ≤ Nat.card α) :
+def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
     IwasawaStructure (alternatingGroup α) (Nat.Combination α 4) where
   T s := (kleinFour s).map (ofSubtype s)
   is_comm s := by
