@@ -9,8 +9,12 @@ public import Mathlib.RingTheory.IntegralClosure.GoingDown
 public import Mathlib.RingTheory.LocalProperties.Reduced
 public import Mathlib.RingTheory.Algebraic.StronglyTranscendental
 public import Mathlib.RingTheory.Polynomial.IsIntegral
-public import Mathlib.RingTheory.QuasiFinite
+public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.CFT.Prestuff
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 public import Mathlib.RingTheory.ZariskisMainTheorem
+public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.RingTheory.Conductor
 
 /-! # Algebraic ZMT -/
 
@@ -22,7 +26,6 @@ open scoped TensorProduct nonZeroDivisors
 
 open Polynomial
 
-attribute [local instance 1100] Algebra.toSMul in
 /-- Given a map `φ : R[X] →ₐ[R] S`. Suppose `t = φ r / φ p` is integral over `R[X]` where
 `p` is monic with `deg p > deg r`, then `t` is integral over `R`. -/
 lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
@@ -56,7 +59,7 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
     congr 1
     ext <;> simp [- Polynomial.algebraMap_apply, ← algebraMap_eq, ← IsScalarTower.algebraMap_apply]
   simpa using IsLocalization.Away.isIntegral_of_isIntegral_map t
-                (isIntegral_of_isIntegral_adjoin_of_mul_eq_one _ _ ht't this)
+    (isIntegral_of_isIntegral_adjoin_of_mul_eq_one _ _ ht't this)
 
 @[stacks 00PT]
 lemma exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range
@@ -210,9 +213,9 @@ lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed [Faithfu
     intro p hp
     by_contra hp'
     exact hx.transcendental ⟨p, hp', by rwa [aeval_algHom_apply, aeval_X_left_apply]⟩
-  have : (P.under R).map C < P.under R[X] := Ideal.map_under_lt_comap_of_quasiFiniteAt _ _
+  have : (P.under R).map C < P.under R[X] := Polynomial.map_under_lt_comap_of_quasiFiniteAt _ _
   obtain ⟨Q, hQ, _, ⟨e⟩⟩ := Ideal.exists_ideal_lt_liesOver_of_lt (S := S) P this
-  refine hQ.ne (Algebra.QuasiFiniteAt.eq_of_le_of_under_eq (R := R) _ _ hQ.le ?_)
+  refine hQ.ne (Algebra.QuasiFiniteAt.eq_of_le_of_under_eq (R := R) hQ.le ?_)
   rw [← Ideal.under_under (B := R[X]), ← e]
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
@@ -222,8 +225,7 @@ attribute [local instance 2000] Algebra.toSMul Subalgebra.toCommRing CommRing.to
   Ring.toAddCommGroup AddCommGroup.toAddCommMonoid SetLike.instIsScalarTower
   SetLike.instSMulCommClass Algebra.toModule Module.toDistribMulAction Algebra.id in
 @[stacks 00Q1]
-lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain [FaithfulSMul R S]
-    [IsDomain S]
+lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain [FaithfulSMul R S] [IsDomain S]
     {x : S} (hx : IsStronglyTranscendental R x) (hx' : (aeval (R := R) x).Finite)
     (P : Ideal S) [P.IsPrime] : ¬ Algebra.QuasiFiniteAt R P := by
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
@@ -300,6 +302,7 @@ nonrec lemma not_quasiFiniteAt_of_stronglyTranscendental [IsReduced S] [Faithful
       (RingHom.surjectiveOnStalks_of_surjective Ideal.Quotient.mk_surjective) _ ?_
     refine .trans ?_ (Ideal.comap_map_of_surjective _ Ideal.Quotient.mk_surjective _).symm
     simpa [← RingHom.ker_eq_comap_bot]
+
 namespace Algebra
 
 section FixedUniverse
@@ -326,7 +329,7 @@ lemma ZariskisMainProperty.of_adjoin_eq_top
   have H₀ : Function.Surjective (aeval (R := R) x) := by
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
   have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp
-    (Polynomial.ker_le_map_C_of_surjective_of_quasiFiniteAt _ H₀ p (p.under R))
+    (Polynomial.not_ker_le_map_C_of_surjective_of_quasiFiniteAt _ H₀ p)
   obtain ⟨n, hfn⟩ : ∃ x, algebraMap R S (f.coeff x) ∉ p := by simpa [Ideal.mem_map_C_iff] using hfp
   clear hfp
   induction hm : f.natDegree using Nat.strong_induction_on generalizing f n with | h m IH =>
@@ -398,7 +401,7 @@ lemma ZariskisMainProperty.of_algHom_polynomial
       exact .of_surjective_algHom e.symm.toAlgHom e.symm.surjective
     refine .of_adjoin_eq_top _ ⟨f X, X, rfl⟩ ?_
     simp [← (Subalgebra.map_injective (f := Subalgebra.val _) Subtype.val_injective).eq_iff,
-      ← AlgHom.map_adjoin_singleton f]
+      ← AlgHom.map_adjoin_singleton f, Subalgebra.range_val]
   · refine ⟨⟨x, by simpa using hx 1⟩, hxp, top_le_iff.mp fun s _ ↦ ⟨_, ⟨1, rfl⟩, ?_⟩⟩
     simpa [Algebra.mem_bot] using hx s
 
@@ -435,7 +438,7 @@ lemma ZariskisMainProperty.of_algHom_mvPolynomial
     have : Algebra.QuasiFiniteAt R (p.under R') := by
       let e : Localization.AtPrime (p.under R') ≃ₐ[R] Localization.AtPrime p :=
         .ofBijective (IsScalarTower.toAlgHom _ _ _) <| by
-          refine Localization.localRingHom_bijective_of_localized_inf_eq_top ?_ _
+          refine Localization.localRingHom_bijective_of_saturated_inf_eq_top ?_ _
           rw [← top_le_iff, ← hs, Algebra.adjoin_le_iff]
           intro x hx
           refine ⟨r ^ (s.sup m), pow_mem (by exact ⟨hrp, hrR'⟩) _, Algebra.subset_adjoin ?_⟩
@@ -472,7 +475,7 @@ lemma ZariskisMainProperty.of_algHom_mvPolynomial
         rw [AlgHom.toRingHom_eq_coe, φ.comp_algebraMap, RingHom.finiteType_algebraMap]
         exact ⟨(Subalgebra.fg_top _).mpr ⟨_, rfl⟩⟩
     refine this.trans _ ⟨⟨r, hrR'⟩, hrp, ?_⟩
-    suffices ⊤ ≤ R'.localized (.powers r) (by simpa [Submonoid.powers_le]) by
+    suffices ⊤ ≤ R'.saturation (.powers r) (by simpa [Submonoid.powers_le]) by
       simpa [SetLike.le_def, Subalgebra.smul_def, Submonoid.mem_powers_iff,
         SetLike.ext_iff, Algebra.mem_bot] using this
     rw [← hs, Algebra.adjoin_le_iff]
@@ -574,3 +577,4 @@ lemma ZariskisMainProperty.exists_fg_and_exists_notMem_and_awayMap_bijective
     ← IsLocalization.mk'_pow]
 
 end Algebra
+#min_imports
