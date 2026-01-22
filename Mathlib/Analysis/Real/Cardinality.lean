@@ -268,7 +268,7 @@ lemma Real.Ioo_countable_iff {x y : ℝ} :
     (Ioo x y).Countable ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   contrapose! h
-  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real h, not_le]
+  rw [← Cardinal.aleph0_lt_iff_set_uncountable, Cardinal.mk_Ioo_real h]
   exact Cardinal.aleph0_lt_continuum
 
 @[simp]
@@ -276,7 +276,7 @@ lemma Real.Ico_countable_iff {x y : ℝ} :
     (Ico x y).Countable ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   contrapose! h
-  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ico_real h, not_le]
+  rw [← Cardinal.aleph0_lt_iff_set_uncountable, Cardinal.mk_Ico_real h]
   exact Cardinal.aleph0_lt_continuum
 
 @[simp]
@@ -284,7 +284,7 @@ lemma Real.Ioc_countable_iff {x y : ℝ} :
     (Ioc x y).Countable ↔ y ≤ x := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   contrapose! h
-  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioc_real h, not_le]
+  rw [← Cardinal.aleph0_lt_iff_set_uncountable, Cardinal.mk_Ioc_real h]
   exact Cardinal.aleph0_lt_continuum
 
 @[simp]
@@ -295,7 +295,7 @@ lemma Real.Icc_countable_iff {x y : ℝ} :
     · simp [heq]
     · simp [hlt]⟩
   contrapose! h
-  rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Icc_real h, not_le]
+  rw [← Cardinal.aleph0_lt_iff_set_uncountable, Cardinal.mk_Icc_real h]
   exact Cardinal.aleph0_lt_continuum
 
 end Cardinal
