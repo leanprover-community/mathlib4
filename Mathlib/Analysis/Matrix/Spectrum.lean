@@ -40,7 +40,7 @@ instance [DecidableEq n] : Finite (spectrum ℝ A) := A.finite_real_spectrum
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
   AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
 
-@[deprecated (since := "13-08-2025")] alias IsHermitian.spectrum_toEuclideanLin :=
+@[deprecated (since := "2025-08-13")] alias IsHermitian.spectrum_toEuclideanLin :=
   spectrum_toEuclideanLin
 
 namespace IsHermitian
