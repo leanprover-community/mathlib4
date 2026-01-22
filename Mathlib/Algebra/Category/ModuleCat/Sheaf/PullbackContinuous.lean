@@ -88,7 +88,7 @@ noncomputable def adjunction :
         -- these erw seem difficult to remove
         erw [Adjunction.homEquiv_naturality_left_symm,
           Adjunction.homEquiv_naturality_left_symm]
-        dsimp
+        dsimp [pushforward_obj_val]
         simp only [Functor.map_comp, Category.assoc]
       homEquiv_naturality_right := by
         tauto }

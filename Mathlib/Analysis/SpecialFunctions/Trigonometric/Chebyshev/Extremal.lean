@@ -145,7 +145,7 @@ theorem sumNodes_eq_sumNodes_T_iff {n : ℕ} {c : ℕ → ℝ}
     simpa [negOnePow_mul_negOnePow_mul_cancel]
   have h_le {i : ℕ} (hi : i ∈ Finset.Iic n) :
     (-1) ^ i * P.eval (node n i) * ((-1) ^ i * c i) ≤
-    (-1) ^ i * (T ℝ n).eval (node n i)  * ((-1) ^ i * c i) := by
+    (-1) ^ i * (T ℝ n).eval (node n i) * ((-1) ^ i * c i) := by
     refine mul_le_mul_of_nonneg_right ?_ (le_of_lt (hcpos i (Finset.mem_Iic.mp hi)))
     rw [eval_T_real_node hi, ← neg_pow', neg_neg, one_pow]
     exact negOnePow_mul_le (hPbnd _ node_mem_Icc)
