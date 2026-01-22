@@ -568,15 +568,13 @@ theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Meas
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
-theorem MeasurableSpace.comap_le_comap_pi {g : ∀ a, β → X a} (a : δ) :
-    MeasurableSpace.comap (g a) inferInstance ≤
-    MeasurableSpace.comap (fun b c ↦ g c b) MeasurableSpace.pi := by
-  rw [MeasurableSpace.pi, MeasurableSpace.comap_iSup]
-  exact le_iSup_of_le a (by measurability)
-
 @[fun_prop]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
+
+theorem MeasurableSpace.comap_le_comap_pi {g : (a : δ) → β → X a} (a : δ) :
+    .comap (g a) inferInstance ≤ pi.comap (fun b c ↦ g c b) := by
+  simpa only [pi, comap_iSup] using le_iSup_of_le a <| by measurability
 
 theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
