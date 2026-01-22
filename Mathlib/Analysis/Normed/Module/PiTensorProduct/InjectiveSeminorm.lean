@@ -93,8 +93,6 @@ open scoped TensorProduct
 
 namespace PiTensorProduct
 
-section seminorm
-
 variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`.
@@ -172,40 +170,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
 
 set_option linter.deprecated false in
 @[deprecated "No replacement" (since := "2026-01-19")]
-lemma projectiveSeminorn_mem_dualSeminorms : projectiveSeminorm ∈ {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
-    p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
-    (toDualContinuousMultilinearMap G)} := by
-  use (⨂[𝕜] i, E i), inferInstance, inferInstance
-  ext x
-  refine le_antisymm ?_ (toDualContinuousMultilinearMap_le_projectiveSeminorm x)
-  have hn : ‖tprodL 𝕜 (E := E)‖ ≤ 1 := ContinuousMultilinearMap.opNorm_le_bound
-    zero_le_one fun m ↦ by simp [projectiveSeminorm_tprod_le]
-  have := ContinuousLinearMap.le_opNorm ((toDualContinuousMultilinearMap _) x) (tprodL 𝕜)
-  grw [hn, mul_one] at this
-  simpa
-
-set_option linter.deprecated false in
-@[deprecated "No replacement" (since := "2026-01-19")]
-theorem injectiveSeminorm_eq_projectiveSeminorm :
-    injectiveSeminorm (𝕜 := 𝕜) (E := E) = projectiveSeminorm := by
-  rw [injectiveSeminorm]
-  refine le_antisymm (csSup_le ⟨_, projectiveSeminorn_mem_dualSeminorms⟩ fun p ⟨G, _, _, h⟩ x ↦ ?_)
-    (le_csSup_of_le dualSeminorms_bounded projectiveSeminorn_mem_dualSeminorms (le_refl _))
-  simp [h, toDualContinuousMultilinearMap_le_projectiveSeminorm]
-
-set_option linter.deprecated false in
-@[deprecated
-  "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
-  (since := "2026-01-19")]
-theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
-    ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
-    rw [injectiveSeminorm_eq_projectiveSeminorm]
-    change ‖(lift f.toMultilinearMap) x‖ ≤ ‖f‖ * ‖x‖
-    apply norm_eval_le_projectiveSeminorm
-
-set_option linter.deprecated false in
-@[deprecated "No replacement" (since := "2026-01-19")]
 theorem injectiveSeminorm_le_projectiveSeminorm :
     injectiveSeminorm (𝕜 := 𝕜) (E := E) ≤ projectiveSeminorm := by
   rw [injectiveSeminorm]
@@ -230,13 +194,6 @@ set_option linter.deprecated false in
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
-
-end seminorm
-
--- All def's below this comment should be moved to ProjectiveSeminorm.lean before merging.
--- They are kept here for review, so that changes are more easily visible in `git diff`
-
-variable {F : Type uF} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F)
 
@@ -408,5 +365,39 @@ theorem mapLMultilinear_opNorm : ‖mapLMultilinear 𝕜 E E'‖ ≤ 1 :=
   MultilinearMap.mkContinuous_norm_le _ zero_le_one _
 
 end map
+
+set_option linter.deprecated false in
+@[deprecated "No replacement" (since := "2026-01-19")]
+lemma projectiveSeminorn_mem_dualSeminorms : projectiveSeminorm ∈ {p | ∃ (G : Type (max uι u𝕜 uE))
+    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
+    (toDualContinuousMultilinearMap G)} := by
+  use (⨂[𝕜] i, E i), inferInstance, inferInstance
+  ext x
+  refine le_antisymm ?_ (toDualContinuousMultilinearMap_le_projectiveSeminorm x)
+  have hn : ‖tprodL 𝕜 (E := E)‖ ≤ 1 := ContinuousMultilinearMap.opNorm_le_bound
+    zero_le_one fun m ↦ by simp [projectiveSeminorm_tprod_le]
+  have := ContinuousLinearMap.le_opNorm ((toDualContinuousMultilinearMap _) x) (tprodL 𝕜)
+  grw [hn, mul_one] at this
+  simpa
+
+set_option linter.deprecated false in
+@[deprecated "No replacement" (since := "2026-01-19")]
+theorem injectiveSeminorm_eq_projectiveSeminorm :
+    injectiveSeminorm (𝕜 := 𝕜) (E := E) = projectiveSeminorm := by
+  rw [injectiveSeminorm]
+  refine le_antisymm (csSup_le ⟨_, projectiveSeminorn_mem_dualSeminorms⟩ fun p ⟨G, _, _, h⟩ x ↦ ?_)
+    (le_csSup_of_le dualSeminorms_bounded projectiveSeminorn_mem_dualSeminorms (le_refl _))
+  simp [h, toDualContinuousMultilinearMap_le_projectiveSeminorm]
+
+set_option linter.deprecated false in
+@[deprecated
+  "`injectiveSeminorm` is deprecated in favor of the extensionally equal `projectiveSeminorm`"
+  (since := "2026-01-19")]
+theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
+    ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
+    rw [injectiveSeminorm_eq_projectiveSeminorm]
+    change ‖(lift f.toMultilinearMap) x‖ ≤ ‖f‖ * ‖x‖
+    apply norm_eval_le_projectiveSeminorm
 
 end PiTensorProduct
