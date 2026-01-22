@@ -42,25 +42,18 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing R] [CommRing A] [Algebra R A]
   leibnizA : ∀ (x : L) (a : A) (b : A), ⁅x, a•b⁆ = a•⁅x, b⁆ + ⁅x, a⁆•b
   leibnizL : ∀ (x : L) (a : A) (y : L), ⁅x, a•y⁆ = a•⁅x, y⁆ + ⁅x, a⁆•y
 
-section instDerivationLieRinehartAlgebra
-
-variable {R : Type*} [CommRing R]
-variable {A : Type*} [CommRing A] [Algebra R A]
-
-/-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra
--/
-instance : LieRinehartAlgebra R A (Derivation R A A) where
-  left_linearity _ _ _ := rfl
-  leibnizA _ _ _ := by simp [CommMonoid.mul_comm]
-  leibnizL _ _ _ := by
-    ext b
-    simp [Derivation.commutator_apply]
-    ring
-
-end instDerivationLieRinehartAlgebra
-
-
 namespace LieRinehartAlgebra
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
+instance : LieRinehartRing A (Derivation R A A) where
+  lie_smul_eq_mul _ _ _ := rfl
+  leibniz_mul_right _ _ _ := by simp [CommMonoid.mul_comm]
+  leibniz_smul_right _ _ _ := by ext; simp [Derivation.commutator_apply]; ring
+
+/-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra. -/
+instance : LieRinehartAlgebra R A (Derivation R A A) where
+
 
 variable {R : Type*} [CommRing R]
 
