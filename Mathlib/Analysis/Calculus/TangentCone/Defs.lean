@@ -81,6 +81,28 @@ theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
     simp +contextual
   · exact tendsto_comap.mono_left inf_le_left
 
+/-- In a vector space with first countable topology, a vector `y` belongs to `tangentConeAt 𝕜 s x`
+if and only if there exist sequences `c n` and `d n` such that
+
+- `d n` tends to zero as `n → ∞`;
+- `x + d n ∈ s` for sufficiently large `n`;
+- `c n • d n` tends to `y` as `n → ∞`.
+
+See `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
+for versions of two implications of this theorem that don't assume first countable topology. -/
+theorem mem_tangentConeAt_iff_exists_seq [FirstCountableTopology E] :
+    y ∈ tangentConeAt R s x ↔ ∃ (c : ℕ → R) (d : ℕ → E), Tendsto d atTop (𝓝 0) ∧
+      (∀ᶠ n in atTop, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) atTop (𝓝 y) := by
+  constructor
+  · intro h
+    simp only [tangentConeAt, mem_setOf, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
+      ← neBot_inf_comap_iff_map'] at h
+    rcases @exists_seq_tendsto _ _ _ h with ⟨cd, hcd⟩
+    simp only [tendsto_inf, tendsto_comap_iff, tendsto_prod_iff', tendsto_nhdsWithin_iff] at hcd
+    exact ⟨Prod.fst ∘ cd, Prod.snd ∘ cd, hcd.2.2.1, hcd.2.2.2, hcd.1⟩
+  · rintro ⟨c, d, hd₀, hds, hcd⟩
+    exact mem_tangentConeAt_of_seq atTop c d hd₀ hds hcd
+
 end TangentConeAt
 
 /-- "Positive" tangent cone to `s` at `x`. -/

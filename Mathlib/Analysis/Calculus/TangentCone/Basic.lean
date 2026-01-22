@@ -73,6 +73,13 @@ theorem tangentConeAt_congr (h : 𝓝[s] x = 𝓝[t] x) : tangentConeAt 𝕜 s x
 theorem tangentConeAt_inter_nhds (ht : t ∈ 𝓝 x) : tangentConeAt 𝕜 (s ∩ t) x = tangentConeAt 𝕜 s x :=
   tangentConeAt_congr (nhdsWithin_restrict' _ ht).symm
 
+theorem mem_closure_of_nonempty_tangentConeAt (h : (tangentConeAt 𝕜 s x).Nonempty) :
+    x ∈ closure s := by
+  rcases h with ⟨y, hy⟩
+  rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, -, d, hd, hds, -⟩
+  refine mem_closure_of_tendsto ?_ hds
+  simpa using tendsto_const_nhds.add hd
+
 variable [ContinuousConstSMul 𝕜 E]
 
 @[simp]
@@ -143,6 +150,10 @@ theorem zero_mem_tangentConeAt (hx : x ∈ closure s) :
 
 @[deprecated (since := "2026-01-21")]
 alias zero_mem_tangentCone := zero_mem_tangentConeAt
+
+@[simp]
+theorem zero_mem_tangentConeAt_iff : 0 ∈ tangentConeAt 𝕜 s x ↔ x ∈ closure s :=
+  ⟨fun h ↦ mem_closure_of_nonempty_tangentConeAt ⟨_, h⟩, zero_mem_tangentConeAt⟩
 
 /-- If `x` is not an accumulation point of `s`, then the tangent cone of `s` at `x`
 is a subset of `{0}`. -/
