@@ -39,10 +39,12 @@ partial def getLeadingTerm {basis : Q(Basis)} (ms : Q(PreMS $basis)) : MetaM Q(T
 
 /-- Given a trimmed multiseries `ms`, computes its leading term with a proof. -/
 partial def getLeadingTermWithProof {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
-    MetaM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
+    TacticM ((t : Q(Term)) × Q(PreMS.leadingTerm $ms = $t)) := do
   match basis with
   | ~q(List.nil) =>
-    return ⟨q(⟨($ms).toReal, List.nil⟩), q(PreMS.const_leadingTerm)⟩
+    let coef_t := q(($ms).toReal)
+    let ⟨coef_t', h_coef_t_eq⟩ ← normalizeReal q($coef_t)
+    return ⟨q(⟨$coef_t', List.nil⟩), q($h_coef_t_eq ▸ PreMS.const_leadingTerm)⟩
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(PreMS.mk .nil $f) =>
@@ -64,7 +66,7 @@ def getLeadingTermCoefPos {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     TacticM (Option Q(0 < (PreMS.leadingTerm $ms).coef)) := do
   match basis with
   | ~q(List.nil) =>
-    let .pos pf ← compareReal ms | return .none
+    let .pos pf ← compareReal q(($ms).toReal) | return .none
     return .some pf
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
@@ -87,11 +89,11 @@ partial def getFirstIs (x : Q(List ℝ)) : TacticM (FirstIsResult x) := do
   match x with
   | ~q(List.nil) => return .zero q(Term.AllZero_of_nil)
   | ~q(List.cons $hd $tl) =>
-    match ← compareReal hd with
+    match ← compareReal q($hd) with
     | .pos h_hd => return .pos q(Term.FirstIsPos_of_head $tl $h_hd)
     | .neg h_hd => return .neg q(Term.FirstIsNeg_of_head $tl $h_hd)
     | .zero h_hd =>
-      match ← getFirstIs tl with
+      match ← getFirstIs q($tl) with
       | .zero h_tl => return .zero q(Term.AllZero_of_tail $h_hd $h_tl)
       | .pos h_tl => return .pos q(Term.FirstIsPos_of_tail $h_hd $h_tl)
       | .neg h_tl => return .neg q(Term.FirstIsNeg_of_tail $h_hd $h_tl)

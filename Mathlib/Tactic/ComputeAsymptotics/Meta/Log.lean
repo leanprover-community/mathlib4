@@ -51,8 +51,7 @@ def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) 
   match ← proveLastExpZero exps with
   | .some h_last => return MS.log ms h_trimmed h_pos q(last_exp_zero_aux $h_leading $h_last)
   | .none =>
-    -- dbg_trace "boom"
-    let ⟨ms, h_trimmed⟩ ← trimMS (← ms.insertLastLog)
+    let ⟨ms, _, h_trimmed⟩ ← trimMS (← ms.insertLastLog)
     let ⟨leading, h_leading⟩ ← getLeadingTermWithProof ms.val
     let ~q(⟨$coef, $exps⟩) := leading | panic! "Unexpected leading in computeTendsto"
     -- TODO: prove h_pos' from h_pos
@@ -61,12 +60,12 @@ def createLogMS (arg : Q(ℝ)) (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) 
     let .some h_last ← proveLastExpZero exps | panic! "Unexpected last exp in log"
     let new_n_id ← mkAppM ``Fin.castSucc #[(← get).n_id]
     StateT.set {
-      basis := ms.basis
-      logBasis := ms.logBasis
-      h_basis := ms.h_basis
-      h_logBasis := ms.h_logBasis
+      basis := q($ms.basis)
+      logBasis := q($ms.logBasis)
+      h_basis := q($ms.h_basis)
+      h_logBasis := q($ms.h_logBasis)
       n_id := new_n_id
     }
-    return MS.log ms h_trimmed h_pos' q(last_exp_zero_aux $h_leading $h_last)
+    return MS.log ms q($h_trimmed) q($h_pos') q(last_exp_zero_aux $h_leading $h_last)
 
 end ComputeAsymptotics

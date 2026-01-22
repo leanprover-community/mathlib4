@@ -41,7 +41,7 @@ inductive CompareResult (x : Q(Real))
 open Mathlib.Meta.NormNum in
 /-- Normalize a real number using `norm_num` and `PreMS_const` simp lemmas. -/
 def normalizeReal (x : Q(ℝ)) : TacticM <| (x' : Q(ℝ)) × Q($x = $x') := do
-  let simpCtx ← Elab.Tactic.mkSimpContext (← `(tactic| simp -failIfUnchanged [PreMS_const])) false
+  let simpCtx ← Elab.Tactic.mkSimpContext (← `(tactic| simp -failIfUnchanged only [PreMS_const])) false
   let simpCtx := simpCtx.ctx
   let ⟨⟨(x1 : Q(ℝ)), pf1?, _⟩, _⟩ := ← simp x simpCtx
   let pf1 : Q($x = $x1) := pf1?.getD (← mkEqRefl x)
@@ -64,7 +64,7 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
 
   let e ← mkFreshExprMVar q($x = 0)
   let res ← evalTacticAt (← `(tactic|
-    norm_num <;> try field_simp <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
+    norm_num <;> (try field_simp) <;> (try linarith) <;> (try positivity) <;> ring_nf)) e.mvarId!
   if res.isEmpty then
     return .zero e
   throwError f!"Cannot compare real number {← ppExpr x} with zero. You can use a `have` " ++
@@ -72,9 +72,7 @@ def compareRealCore (x : Q(ℝ)) : TacticM (CompareResult x) := do
 
 /-- Compare a real number `x` with zero. -/
 def compareReal (x : Q(ℝ)) : TacticM (CompareResult x) := do
-  dbg_trace "compareReal: {← ppExpr x}"
   let ⟨x', pf⟩ ← normalizeReal x
-  dbg_trace "x': {x'}"
   let r ← compareRealCore x'
   return match r with
   | .pos e => .pos q(Eq.subst (motive := fun x ↦ 0 < x) (Eq.symm $pf) $e)

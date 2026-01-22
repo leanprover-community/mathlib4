@@ -200,13 +200,6 @@ example : (Tendsto ((log ∘ fun x => x) - log ∘ ((fun x => x) ^ ↑2)) atTop 
     (let f := fun x => log x - log (x ^ 2);
   Tendsto f atTop atBot) := rfl
 
-example : ComputeAsymptotics.PreMS.toReal
-  (ComputeAsymptotics.PreMS.toReal
-    ((1 : ℝ) +
-      ComputeAsymptotics.PreMS.toReal
-        (ComputeAsymptotics.PreMS.toReal (ComputeAsymptotics.PreMS.toReal (ComputeAsymptotics.PreMS.toReal (2 : ℝ)))))) > 0 := by
-  simp
-
 example :
     let f := fun (x : ℝ) ↦ Real.log x - Real.log (x ^ 2);
     Tendsto f atTop atBot := by
@@ -315,7 +308,7 @@ example :
     Tendsto f atTop (𝓝 0) := by
   compute_asymptotics
 
-example :
+lemma lol :
     let f := fun (x : ℝ) ↦ (Real.log (Real.exp (2 * x) - Real.exp (x))) * x⁻¹;
     Tendsto f atTop (𝓝 2) := by
   compute_asymptotics
@@ -582,19 +575,110 @@ example :
 section Gruntz
 
 -- 8.1
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦ exp x * (exp (x⁻¹) - exp (x⁻¹ - exp (-x)))
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
 
--- TODO
--- example :
---     let f := fun (x : ℝ) ↦ exp x * (exp (x⁻¹) - exp (x⁻¹ - exp (-x)))
---     Tendsto f atTop (𝓝 1) := by
---   compute_asymptotics
 
--- 8.5
+-- 8.2
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp x * (exp (x⁻¹ + exp (-x) + exp (-x^2)) - exp (x⁻¹ - exp (- exp x)))
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+
+-- 8.3
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp (exp (x - exp (-x)) / (1 - x⁻¹)) - exp (exp x)
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+
+-- -- 8.4: todo statement
 -- set_option maxHeartbeats 0 in
 -- example :
---     let f := fun (x : ℝ) ↦ exp (exp (exp (x + exp (-x)))) / exp (exp (exp x))
---     Tendsto f atTop (𝓝 1) := by
+--     let f := fun (x : ℝ) ↦
+--       exp (exp x / (1 - x⁻¹))
+--         - exp (exp x / (1 - x⁻¹ - log x - log x))
+--     Tendsto f atTop atBot := by
 --   compute_asymptotics
+
+
+-- 8.5
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp (exp (exp (x + exp (-x)))) / exp (exp (exp x))
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+
+-- 8.6
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp (exp (exp x)) / exp (exp (exp (x - exp (- exp x))))
+    Tendsto f atTop atTop := by
+  compute_asymptotics
+
+
+-- 8.7
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp (exp (exp x)) / exp (exp (exp (x - exp (- exp (exp x)))))
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+
+-- 8.8
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp (exp x) / exp (exp (x - exp (- exp (exp x))))
+    Tendsto f atTop (𝓝 1) := by
+  compute_asymptotics
+
+
+-- -- 8.9: todo statement
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       (log x)^2
+--         * exp (Real.sqrt (log x))
+--         * (log (log x))^2
+--         * exp (Real.sqrt (log (log x))^3)
+--         / Real.sqrt x
+--     Tendsto f atTop (𝓝 0) := by
+--   compute_asymptotics
+
+
+-- 8.10
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      x * log x * (log (x * exp x - x^2)) ^ 2
+        / log (log (x^2 + 2 * exp (exp (3 * x ^ 3 * log x))))
+    Tendsto f atTop (𝓝 (1 / 3 : ℝ)) := by
+  compute_asymptotics
+
+
+-- 8.11
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      (exp (x * exp (-x)
+        / (exp (-x) + exp (- 2 * x ^ 2 / (x + 1))))
+        - exp x) / x
+    Tendsto f atTop (𝓝 (-exp 2)) := by
+  compute_asymptotics
+
 
 -- 8.12
 example :
@@ -604,11 +688,104 @@ example :
     rw [one_lt_div (by positivity)]
     apply Real.strictMonoOn_log (by simp) (by simp) (by norm_num)
   compute_asymptotics
-  field_simp
   rw [Real.exp_log]
   norm_num
 
+
+-- -- 8.13: todo statement
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       x / log (x^(log x / log x))
+--     Tendsto f atTop atTop := by
+--   compute_asymptotics
+
+
+-- 8.14
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       exp (exp (2 * log (x^5 + x) * log (log x)))
+--         / exp (exp (10 * log x * log (log x)))
+--     Tendsto f atTop atTop := by
+--   compute_asymptotics
+
+
+-- -- 8.15
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       (4 / 9 : ℝ)
+--         * exp
+--             ((5 / 2) * x^(-5 / 7)
+--              + (21 / 8) * x^(-6 / 11)
+--              + 2 * x^(-8)
+--              + (54 / 17) * x^(-49 / 45))
+--             ^ (8 : ℝ)
+--         / log (log (-log (4 / 3 * x^(-5 / 14)))) ^ (7 / 6 : ℝ)
+--     Tendsto f atTop atTop := by
+--   compute_asymptotics
+
+
+-- -- 8.16
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       (exp (4 * x * exp (-x) / (1 / exp x + 1 / exp (2 * x^2 / (x + 1))))
+--         - exp x)
+--         / (exp x)^4
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
+
+
+-- -- 8.17
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       exp (exp x / (exp (-x) + exp (-2 * x / (x + 1)))) / exp x
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
+
+
+-- -- 8.18
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       (exp (-exp x / (1 + exp (-x)))
+--           * exp (x / (1 + exp (-x)))
+--           * exp (-exp x / (1 + exp (-x)))
+--         / (exp (x / (1 + exp (-x))))^2)
+--         - exp x + x
+--     Tendsto f atTop (𝓝 2) := by
+--   compute_asymptotics
+
+
+-- -- 8.19
+-- set_option maxHeartbeats 0 in
+-- example :
+--     let f := fun (x : ℝ) ↦
+--       (log (log x + log (log x)) - log (log x))
+--         / log (log x + log (log (log x))) * log x
+--     Tendsto f atTop (𝓝 1) := by
+--   compute_asymptotics
+
+
+-- 8.20
+set_option maxHeartbeats 0 in
+example :
+    let f := fun (x : ℝ) ↦
+      exp
+        (log (log (x + exp (log x * log (log x))))
+          / log (log (log (exp x + x + log x))))
+    Tendsto f atTop (𝓝 (exp 1)) := by
+  compute_asymptotics
+
 end Gruntz
+
+-- TODO: don't ask for unused argument
+example (x₀ : ℝ) (h : 0 < x₀) :
+    Tendsto (fun (x : ℝ) ↦ (exp (x₀ + x) - exp x₀) / x) (𝓝[≠] 0) (𝓝 (exp x₀)) := by
+  compute_asymptotics
 
 /--
 error: Function must me in the form fun x ↦ ...

@@ -78,7 +78,7 @@ theorem WellFormed_cons_toFun {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl 
   exact h.right.right.right.left
 
 /-- Tail of a `LogBasis`. -/
-abbrev tail {basis_hd : ℝ → ℝ} {basis_tl : Basis} (logBasis : LogBasis (basis_hd :: basis_tl)) :
+def tail {basis_hd : ℝ → ℝ} {basis_tl : Basis} (logBasis : LogBasis (basis_hd :: basis_tl)) :
     LogBasis basis_tl :=
   match logBasis with
   | .single f => .nil

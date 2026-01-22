@@ -584,6 +584,13 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
         simp
         ring
 
+@[simp]
+theorem sub_toFun {basis : Basis} {X Y : PreMS basis} :
+    (X.sub Y).toFun = X.toFun - Y.toFun := by
+  simp [sub, ← add_def]
+  ext t
+  ring_nf
+
 /-- `X - Y` is well-ordered when `X` and `Y` are well-ordered. -/
 theorem sub_WellOrdered {basis : Basis} {X Y : PreMS basis}
     (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) : (X.sub Y).WellOrdered := by

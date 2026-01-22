@@ -33,6 +33,16 @@ namespace ComputeAsymptotics
 
 open Filter Asymptotics Topology Stream'
 
+-- neg (x :: xs) := -x :: neg xs
+def neg (s : Stream' ℝ) : Stream' ℝ :=
+  let T := Stream' ℝ
+  let hd (s : T) : ℝ := -s.head
+  let tlArg (s : T) : T := s.tail
+  Stream'.corec hd tlArg s
+
+theorem neg_deg (s : Stream' ℝ) : neg s = (-s.head) :: (neg s.tail) := by
+  rw [neg, Stream'.corec_eq]; rfl
+
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
 
@@ -453,7 +463,7 @@ end simp
 
 end SeqMS
 
-abbrev ofReal (c : ℝ) : PreMS [] := c
+def ofReal (c : ℝ) : PreMS [] := c
 
 /-- Convert a multiseries in empty basis to a real number. -/
 def toReal (ms : PreMS []) : ℝ := ms

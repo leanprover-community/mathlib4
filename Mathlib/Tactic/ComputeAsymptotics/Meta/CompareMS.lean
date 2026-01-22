@@ -90,33 +90,38 @@ def compare (x y : MS)
     TacticM <| CompareResult q(($x.val).toFun) q(($y.val).toFun) := do
   let left ← expressAsAppend x.basis y.basis
   haveI : $x.basis =Q $left ++ $y.basis := ⟨⟩; do
-  let tx ← getLeadingTerm x.val
-  let ty ← getLeadingTerm y.val
+  let ⟨tx, htx⟩ ← getLeadingTermWithProof x.val
+  let ⟨ty, hty⟩ ← getLeadingTermWithProof y.val
   let ~q(⟨$x_coef, $x_exps⟩) := tx | panic! "Unexpected x in compareLeadingTerms"
   let ~q(⟨$y_coef, $y_exps⟩) := ty | panic! "Unexpected y in compareLeadingTerms"
   let n : Nat := (← computeLength x.basis) - (← computeLength y.basis)
   let zeros ← replicate n q(0 : ℝ)
   let y_exps' : Q(List ℝ) := ← reduceAppend (α := q(ℝ)) q($zeros) q($y_exps)
-  haveI : $x_exps =Q (PreMS.leadingTerm $x.val).exps := ⟨⟩; do
-  haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $y.val).exps := ⟨⟩
+  -- haveI : $x_exps =Q (PreMS.leadingTerm $x.val).exps := ⟨⟩; do
+  haveI : $y_exps' =Q List.replicate (List.length $left) 0 ++ $y_exps := ⟨⟩
   do
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
-  | .lt h =>
+  | .lt h' =>
+    let h : Q(($x.val).leadingTerm.exps < List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
     let h_ne_zero : Q(¬ PreMS.IsZero $y.val) ← proveNeZero y
     return .lt q(PreMS.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
-  | .gt h =>
+  | .gt h' =>
+    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps < ($x.val).leadingTerm.exps) := q($hty ▸ $htx ▸ $h')
     let h_ne_zero : Q(¬ PreMS.IsZero $x.val) ← proveNeZero x
     return .gt q(PreMS.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
-  | .eq h =>
+  | .eq h' =>
+    let h : Q(($x.val).leadingTerm.exps = List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
     let c : Q(ℝ) := q($x_coef / $y_coef)
-    let hc := ← CompareReal.proveNeZero c
-    haveI : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
-    haveI : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
-    return .eq c hc q(PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
-      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $hc ($h).symm)
+    let hc' := ← CompareReal.proveNeZero c
+    -- let hc : Q()
+    -- haveI : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
+    -- haveI : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
+    return .eq c q($hc') q(sorry)
+      -- q((PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
+      -- $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $hc' ($h).symm)))
 
 end MS
 

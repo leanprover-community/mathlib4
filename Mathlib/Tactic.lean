@@ -73,6 +73,7 @@ public import Mathlib.Tactic.ComputeAsymptotics.Meta.MS
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Misc
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Normalization
 public import Mathlib.Tactic.ComputeAsymptotics.Meta.Trimming
+public import Mathlib.Tactic.ComputeAsymptotics.Meta.ZeroOracle
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis

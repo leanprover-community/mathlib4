@@ -86,47 +86,19 @@ lemma consNormalize_aux_congr_exp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     ms = .cons exp' coef tl := by
   rw [h, h_exp]
 
-lemma consNormalize_aux_congr_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl}
-    {exp : ℝ} {coef coef' : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
-    (h : ms = .cons exp coef tl) (h_coef : coef = coef') :
-    ms = .cons exp coef' tl := by
-  rw [h, h_coef]
-
-lemma consNormalize_aux_congr_exp_coef {basis_hd : ℝ → ℝ}
-    {ms : SeqMS basis_hd []}
-    {exp exp' : ℝ} {coef coef' : PreMS []} {tl : SeqMS basis_hd []}
-    (h : ms = .cons exp coef tl) (h_exp : exp = exp') (h_coef : coef = coef') :
-    ms = .cons exp' coef' tl := by
-  rw [h, h_exp, h_coef]
-
-/-- The same as `Result.cons` but also normalizes `exp` as a real number,
-and the `coef` if `basis_tl` is `[]`. -/
-def consNormalize {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
+/-- The same as `Result.cons` but also normalizes `exp` as a real number. -/
+def consNormalizeExp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     {ms : Q(SeqMS $basis_hd $basis_tl)}
     (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(SeqMS $basis_hd $basis_tl))
     (h : Q($ms = .cons $exp $coef $tl)) :
     TacticM (Result ms) := do
   let ⟨exp', pf_exp⟩ ← normalizeReal exp
-  match basis_tl with
-  | ~q(List.nil) =>
-    let ⟨coef', pf_coef⟩ ← normalizeReal q(($coef).toReal)
-    return .cons q($exp') q($coef') q($tl) q(consNormalize_aux_congr_exp_coef $h $pf_exp $pf_coef)
-  | _ =>
+  -- match basis_tl with
+  -- | ~q(List.nil) =>
+  --   let ⟨coef', pf_coef⟩ ← normalizeReal q(($coef).toReal)
+  --   return .cons q($exp') q($coef') q($tl) q(consNormalize_aux_congr_exp_coef $h $pf_exp $pf_coef)
+  -- | _ =>
     return .cons q($exp') q($coef) q($tl) q(consNormalize_aux_congr_exp $h $pf_exp)
-
-/-- The same as `Result.cons` but also normalizes the `coef` if `basis_tl` is `[]`. -/
-def consNormalizeCoef {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
-    {ms : Q(SeqMS $basis_hd $basis_tl)}
-    (exp : Q(ℝ)) (coef : Q(PreMS $basis_tl)) (tl : Q(SeqMS $basis_hd $basis_tl))
-    (h : Q($ms = .cons $exp $coef $tl)) :
-    TacticM (Result ms) := do
-  match basis_tl with
-  | ~q(List.nil) =>
-    let ⟨coef', pf_coef⟩ ← normalizeReal coef
-    return .cons q($exp) q($coef') q($tl) q(consNormalize_aux_congr_coef $h $pf_coef)
-  | _ =>
-    return .cons q($exp) q($coef) q($tl) q($h)
 
 /-- Turns a `Result` for `ms` into a `Result` for `ms'` given the proof of `ms' = ms`. -/
 def Result.cast {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
@@ -141,6 +113,11 @@ section lemmas
 -- lemma extendBasisEnd_const (f : ℝ → ℝ) (ms : PreMS []) :
 --     SeqMS.extendBasisEnd f ms = .cons 0 ms .nil := by
 --   simp [PreMS.extendBasisEnd, PreMS.const]
+
+lemma extendBasisEnd_seq' {basis_hd : ℝ → ℝ} {basis_tl : List (ℝ → ℝ)} {b : ℝ → ℝ}
+    {ms : PreMS (basis_hd :: basis_tl)} {s : SeqMS basis_hd basis_tl} (h : ms.seq = s) :
+    (extendBasisEnd b ms).seq = SeqMS.extendBasisEnd b s := by
+  simp [h]
 
 lemma extendBasisEnd_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
     {ms : SeqMS basis_hd basis_tl} (h : ms = .nil) :
@@ -415,7 +392,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil h =>
       return .nil (q(extendBasisEnd_nil $f $h) : Expr)
     | .cons exp coef tl h =>
-      return ← consNormalize q($exp) q(($coef).extendBasisEnd $f) q(($tl).extendBasisEnd $f) (q(extendBasisEnd_cons $f $h) : Expr)
+      return ← consNormalizeExp q($exp) q(($coef).extendBasisEnd $f) q(($tl).extendBasisEnd $f) (q(extendBasisEnd_cons $f $h) : Expr)
   | (``SeqMS.updateBasis, #[(oldBasis_hd : Q(ℝ → ℝ)), (oldBasis_tl : Q(Basis)), (ex : Q(BasisExtension $oldBasis_tl)),
       (ms' : Q(SeqMS $oldBasis_hd $oldBasis_tl))]) =>
     have : $oldBasis_hd =Q $basis_hd := ⟨⟩
@@ -425,31 +402,31 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil h =>
       return .nil (q(updateBasis_keep_nil $ex $h) : Expr)
     | .cons exp coef tl h =>
-      return ← consNormalize q($exp) q(($coef).updateBasis $ex) q(($tl).updateBasis $ex) (q(updateBasis_keep_cons $ex $h) : Expr)
+      return ← consNormalizeExp q($exp) q(($coef).updateBasis $ex) q(($tl).updateBasis $ex) (q(updateBasis_keep_cons $ex $h) : Expr)
   | _ =>
   match ms with
   | ~q(SeqMS.nil) => return .nil q(rfl)
   | ~q(SeqMS.cons $exp $coef $tl) => return .cons q($exp) q($coef) q($tl) q(rfl)
   | ~q(SeqMS.const _ _ $c) =>
-    return ← consNormalizeCoef q(0) q(PreMS.const _ $c) q(SeqMS.nil) q(SeqMS.const.eq_def _ _ _)
+    return .cons q(0) q(PreMS.const _ $c) q(SeqMS.nil) q(SeqMS.const.eq_def _ _ _)
   | ~q(SeqMS.one) =>
-    return ← consNormalizeCoef q(0) q(PreMS.one) q(SeqMS.nil) q(SeqMS.const.eq_def _ _ _)
+    return .cons q(0) q(PreMS.one) q(SeqMS.nil) q(SeqMS.const.eq_def _ _ _)
   | ~q(SeqMS.monomial _ _ $n) =>
     match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
     | 0 =>
       have : $n =Q 0 := ⟨⟩
-      return ← consNormalizeCoef q(1) q(PreMS.one) q(SeqMS.nil) q(monomial_zero)
+      return .cons q(1) q(PreMS.one) q(SeqMS.nil) q(monomial_zero)
     | m + 1 =>
       have : $n =Q $m + 1 := ⟨⟩
-      return ← consNormalizeCoef q(0) q(PreMS.monomial _ $m) q(SeqMS.nil) q(monomial_succ $m)
+      return .cons q(0) q(PreMS.monomial _ $m) q(SeqMS.nil) q(monomial_succ $m)
   | ~q(SeqMS.monomialRpow _ _ $n $r) =>
     match (← getNatValue? (← withTransparency .all <| reduce n)).get! with
     | 0 =>
       have : $n =Q 0 := ⟨⟩
-      return ← consNormalize q($r) q(PreMS.one) q(SeqMS.nil) q(monomialRpow_zero $r)
+      return ← consNormalizeExp q($r) q(PreMS.one) q(SeqMS.nil) q(monomialRpow_zero $r)
     | m + 1 =>
       have : $n =Q $m + 1 := ⟨⟩
-      return ← consNormalizeCoef q(0) q(PreMS.monomialRpow _ $m $r) q(SeqMS.nil)
+      return .cons q(0) q(PreMS.monomialRpow _ $m $r) q(SeqMS.nil)
         q(monomialRpow_succ $m $r)
   | ~q(SeqMS.neg $arg) =>
     let res ← normalizeSeqMSImp arg
@@ -457,7 +434,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil h =>
       return .nil q(neg_nil $h)
     | .cons exp coef tl h =>
-      return ← consNormalize q($exp) q(PreMS.neg $coef) q(SeqMS.neg $tl) q(neg_cons $h)
+      return ← consNormalizeExp q($exp) q(PreMS.neg $coef) q(SeqMS.neg $tl) q(neg_cons $h)
   | ~q(SeqMS.add $arg1 $arg2) =>
     let res1 ← normalizeSeqMSImp arg1
     let res2 ← normalizeSeqMSImp arg2
@@ -467,17 +444,17 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .cons exp1 coef1 tl1 h1 =>
       match res2 with
       | .nil h2 =>
-        return ← consNormalize exp1 coef1 tl1 q(cons_add_nil $h1 $h2)
+        return ← consNormalizeExp exp1 coef1 tl1 q(cons_add_nil $h1 $h2)
       | .cons exp2 coef2 tl2 h2 =>
         match ← compareTwoReals exp1 exp2 with
         | .lt h_exp =>
-          return ← consNormalize exp2 coef2 q(SeqMS.add (SeqMS.cons $exp1 $coef1 $tl1) $tl2)
+          return ← consNormalizeExp exp2 coef2 q(SeqMS.add (SeqMS.cons $exp1 $coef1 $tl1) $tl2)
             q(cons_add_cons_right $h1 $h2 $h_exp)
         | .gt h_exp =>
-          return ← consNormalize exp1 coef1 q(SeqMS.add $tl1 (SeqMS.cons $exp2 $coef2 $tl2))
+          return ← consNormalizeExp exp1 coef1 q(SeqMS.add $tl1 (SeqMS.cons $exp2 $coef2 $tl2))
             q(cons_add_cons_left $h1 $h2 $h_exp)
         | .eq h_exp =>
-          return ← consNormalize exp1 q(PreMS.add $coef1 $coef2) q(SeqMS.add $tl1 $tl2)
+          return ← consNormalizeExp exp1 q(PreMS.add $coef1 $coef2) q(SeqMS.add $tl1 $tl2)
             q(cons_add_cons_both $h1 $h2 $h_exp)
   | ~q(SeqMS.mul $arg1 $arg2) =>
     let res1 ← normalizeSeqMSImp arg1
@@ -488,7 +465,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       match res2 with
       | .nil h2 => return .nil q(mul_nil $h2)
       | .cons exp2 coef2 tl2 h2 =>
-        return ← consNormalize q($exp1 + $exp2) q(PreMS.mul $coef1 $coef2)
+        return ← consNormalizeExp q($exp1 + $exp2) q(PreMS.mul $coef1 $coef2)
           q((SeqMS.mulMonomial $tl1 $coef2 $exp2).add
             ((SeqMS.cons $exp1 $coef1 $tl1).mul $tl2)) q(cons_mul_cons $h1 $h2)
   | ~q(SeqMS.mulMonomial $b $m_coef $m_exp) =>
@@ -497,14 +474,14 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil hb =>
       return .nil q(mulMonomial_nil $hb)
     | .cons b_exp b_coef b_tl hb =>
-      return ← consNormalize q($b_exp + $m_exp) q(PreMS.mul $b_coef $m_coef)
+      return ← consNormalizeExp q($b_exp + $m_exp) q(PreMS.mul $b_coef $m_coef)
         q(SeqMS.mulMonomial (basis_hd := $basis_hd) $b_tl $m_coef $m_exp) q(mulMonomial_cons $hb)
   | ~q(SeqMS.mulConst $c $arg) =>
     let res ← normalizeSeqMSImp arg
     match res with
     | .nil h => return .nil q(mulConst_nil $h)
     | .cons exp coef tl h =>
-      return ← consNormalize q($exp) q(PreMS.mulConst $c $coef) q(SeqMS.mulConst $c $tl)
+      return ← consNormalizeExp q($exp) q(PreMS.mulConst $c $coef) q(SeqMS.mulConst $c $tl)
         q(mulConst_cons $h)
   | ~q(SeqMS.apply $s $arg) =>
     let res_s ← normalizeLS s
@@ -512,7 +489,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .nil hs =>
       return .nil q(apply_nil $hs)
     | .cons s_hd s_tl hs =>
-      return ← consNormalizeCoef q(0) q(PreMS.const _ $s_hd)
+      return .cons q(0) q(PreMS.const _ $s_hd)
         q(($arg).mul (SeqMS.apply $s_tl $arg)) q(apply_cons $hs)
   | ~q(SeqMS.inv $arg) =>
     let res ← normalizeSeqMSImp arg
@@ -529,7 +506,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     match res with
     | .nil h =>
       match ← CompareReal.checkZero a with
-      | .eq ha => return ← consNormalizeCoef q(0) q(PreMS.one) q(SeqMS.nil) q(pow_nil_zero $h $ha)
+      | .eq ha => return .cons q(0) q(PreMS.one) q(SeqMS.nil) q(pow_nil_zero $h $ha)
       | .neq ha => return .nil q(pow_nil_nonzero $h $ha)
     | .cons exp coef tl h =>
       let ms' : Q(SeqMS $basis_hd $basis_tl) := q(SeqMS.mulMonomial
@@ -565,7 +542,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     let res ← normalizeSeqMSImp arg
     match res with
     | .nil h =>
-      return ← consNormalizeCoef q(0) q(PreMS.one) q(SeqMS.nil) q(exp_nil $h)
+      return .cons q(0) q(PreMS.one) q(SeqMS.nil) q(exp_nil $h)
     | .cons exp coef tl h =>
       match ← checkLtZero exp with
       | .lt h_exp =>
@@ -581,18 +558,24 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   | _ => panic! s!"normalizeSeqMS: unexpected ms: {← ppExpr ms}"
 
 partial def getFun {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
-    MetaM <| (f : Q(ℝ → ℝ)) × Q(($ms).toFun = $f) := do
+    TacticM <| (f : Q(ℝ → ℝ)) × Q(($ms).toFun = $f) := do
   match ms.getAppFnArgs with
   | (``PreMS.extendBasisEnd, #[(basis' : Q(Basis)), (f : Q(ℝ → ℝ)), (ms' : Q(PreMS $basis'))]) =>
     let ⟨f', h_f'⟩ ← getFun q($ms')
-    return ⟨q($f'), q(sorry)⟩
+    have : $basis =Q $basis' ++ [$f] := ⟨⟩
+    have : $ms =Q PreMS.extendBasisEnd $f $ms' := ⟨⟩
+    return ⟨q($f'), q($h_f' ▸ PreMS.extendBasisEnd_toFun)⟩
   | (``PreMS.updateBasis, #[(oldBasis : Q(Basis)), (ex : Q(BasisExtension $oldBasis)),
       (ms' : Q(PreMS $oldBasis))]) =>
     let ⟨f, h_f⟩ ← getFun q($ms')
-    return ⟨q($f), q(sorry)⟩
+    have : $basis =Q ($ex).getBasis := ⟨⟩
+    have : $ms =Q PreMS.updateBasis $ex $ms' := ⟨⟩
+    return ⟨q($f), q($h_f ▸ PreMS.updateBasis_toFun)⟩
   | _ =>
   match basis with
-  | ~q(List.nil) => return ⟨q(fun _ ↦ ($ms).toReal), q(by simp)⟩
+  | ~q(List.nil) =>
+    let ⟨c, hc⟩  := ← normalizeReal q(($ms).toReal)
+    return ⟨q(fun _ ↦ $c), q($hc ▸ PreMS.const_toFun _)⟩
   | ~q(List.cons $basis_hd $basis_tl) =>
   match ms with
   | ~q(PreMS.mk $s $f) => return ⟨q($f), q(PreMS.mk_toFun)⟩
@@ -672,17 +655,19 @@ partial def getSeq {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)} (ms : Q(Pre
     match basis' with
     | ~q(List.nil) =>
       have : $basis_tl =Q [] := ⟨⟩
-      let h' : Q(PreMS.extendBasisEnd $f $ms' = PreMS.mk (.cons 0 $ms' .nil) (fun _ ↦ ($ms'))) :=
+      have : $ms =Q PreMS.extendBasisEnd $f $ms' := ⟨⟩
+      let h' : Q($ms = PreMS.mk (.cons 0 $ms' .nil) (fun _ ↦ ($ms'))) :=
         q(extendBasisEnd_const $f $ms')
-      return ⟨q(SeqMS.cons 0 $ms' .nil), q(sorry)⟩
+      return ⟨q(SeqMS.cons 0 $ms' .nil), q($h' ▸ PreMS.mk_seq _ _)⟩
     | ~q(List.cons $basis_hd' $basis_tl') =>
+      have : $basis_hd =Q $basis_hd' := ⟨⟩
       have : $basis_tl =Q $basis_tl' ++ [$f] := ⟨⟩
       let ⟨s, h⟩ ← getSeq q($ms')
-      return ⟨q(SeqMS.extendBasisEnd $f $s), q(sorry)⟩
+      have : $ms =Q PreMS.extendBasisEnd $f $ms' := ⟨⟩
+      return ⟨q(SeqMS.extendBasisEnd $f $s), q(extendBasisEnd_seq' $h)⟩
   | (``PreMS.updateBasis, #[(oldBasis : Q(Basis)), (ex : Q(BasisExtension $oldBasis)),
       (ms' : Q(PreMS $oldBasis))]) =>
     have : ($basis_hd :: $basis_tl) =Q ($ex).getBasis := ⟨⟩
-    -- have : $ms =Q PreMS.updateBasis $ex $ms' := ⟨⟩
     let oldBasis' : Q(Basis) ← reduceBasis oldBasis
     have : $oldBasis =Q $oldBasis' := ⟨⟩
     match oldBasis', ex with
@@ -690,14 +675,12 @@ partial def getSeq {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)} (ms : Q(Pre
       have : $basis_hd =Q $oldBasis_hd := ⟨⟩
       have : $basis_tl =Q ($ex_tl).getBasis := ⟨⟩
       let ⟨s, h⟩ ← getSeq q($ms')
-      let ke := q(SeqMS.updateBasis $ex_tl $s)
-      return ⟨q(SeqMS.updateBasis $ex_tl $s), q(sorry)⟩
-    | ~q(List.cons $oldBasis_hd $oldBasis_tl), ~q(BasisExtension.insert $f $ex_tl) =>
+      have : $ms =Q PreMS.updateBasis $ex $ms' := ⟨⟩
+      return ⟨q(SeqMS.updateBasis $ex_tl $s), q($h ▸ PreMS.updateBasis_keep_seq)⟩
+    | _, ~q(BasisExtension.insert $f $ex_tl) =>
       have : ($ex_tl).getBasis =Q $basis_tl := ⟨⟩
-      return ⟨q(SeqMS.cons 0 (($ms').updateBasis $ex_tl) .nil), q(sorry)⟩
-    | ~q(List.nil), ~q(BasisExtension.insert $f $ex_tl) =>
-      have : $basis_tl =Q ($ex_tl).getBasis := ⟨⟩
-      return ⟨q(SeqMS.cons 0 (($ms').updateBasis $ex_tl) .nil), q(sorry)⟩
+      have : $ms =Q PreMS.updateBasis $ex $ms' := ⟨⟩
+      return ⟨q(SeqMS.cons 0 (($ms').updateBasis $ex_tl) .nil), q(updateBasis_insert_seq)⟩
     | _ =>
       panic!
         s!"getSeq: unexpected oldBasis and ex: {← ppExpr oldBasis} and {← ppExpr ex}"

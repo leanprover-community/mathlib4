@@ -223,11 +223,6 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ}
       simp
       ring
 
--- theorem mulConst_Approximates' {basis : Basis} {ms : PreMS basis} {c : ℝ} {f : ℝ → ℝ}
---     (h_approx : ms.Approximates) :
---     (ms.mulConst c).Approximates (fun t ↦ f t * c) := by
---   sorry
-
 theorem mulConst_not_zero {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_ne_zero : ¬ IsZero ms)
     (hc : c ≠ 0) : ¬ IsZero (ms.mulConst c) := by
   contrapose! h_ne_zero

@@ -20,9 +20,9 @@ namespace ComputeAsymptotics.PreMS
 
 section Const
 
-@[PreMS_const low]
-theorem real_toReal (c : ℝ) : PreMS.toReal c = c := by
-  rfl
+-- @[PreMS_const low]
+-- theorem real_toReal (c : ℝ) : PreMS.toReal c = c := by
+--   rfl
 
 @[PreMS_const]
 theorem const_const (c : ℝ) : (PreMS.const [] c).toReal = c := by
@@ -49,39 +49,40 @@ theorem mulConst_const (x : PreMS []) (c : ℝ) : (PreMS.mulConst c x).toReal = 
 
 @[PreMS_const]
 theorem inv_const (x : PreMS []) : (PreMS.inv x).toReal = (x.toReal)⁻¹ := by
-  simp [inv, toReal]
+  simp [inv, toReal, ofReal]
 
 @[PreMS_const]
 theorem pow_const (x : PreMS []) (a : ℝ) :
     (PreMS.pow x a).toReal = (x.toReal) ^ a := by
-  simp [pow, toReal]
+  simp [pow, toReal, ofReal]
 
 @[PreMS_const]
 theorem extendBasisEnd_const (f : ℝ → ℝ) (x : PreMS []) : (PreMS.extendBasisEnd f x) =
     PreMS.mk (.cons 0 x .nil) (fun _ ↦ x.toReal) := by
-  simp [PreMS.extendBasisEnd, PreMS.const, SeqMS.const, toReal]
+  simp [PreMS.extendBasisEnd, PreMS.const, SeqMS.const, toReal, ofReal]
 
 @[PreMS_const]
 theorem updateBasis_const (ms : PreMS []) (ex : BasisExtension []) :
-    (PreMS.updateBasis ex ms) = PreMS.const _ ms := by
+    (PreMS.updateBasis ex ms) = PreMS.const _ ms.toReal := by
   cases ex with
   | nil =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const, ofReal]
+    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const, toReal, ofReal]
   | insert f ex_tl =>
-    simp only [BasisExtension.getBasis, updateBasis, const_toFun, toReal, const, SeqMS.const,
-      ms_eq_mk_iff, mk_seq, SeqMS.cons_eq_cons, and_true, true_and, mk_toFun]
+    simp only [BasisExtension.getBasis, updateBasis, const_toFun, mk_eq_mk_iff_iff, const_seq,
+      SeqMS.const, SeqMS.cons_eq_cons, and_true, true_and, const_toFun']
     rw [updateBasis_const]
 
-@[PreMS_const]
-theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
-    (PreMS.updateBasis ex ms) = PreMS.const _ ms := by
-  cases ex with
-  | nil =>
-    simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const, ofReal]
-  | insert f ex_tl =>
-    simp only [BasisExtension.getBasis, updateBasis, const_toFun, toReal, const, SeqMS.const,
-      ms_eq_mk_iff, mk_seq, SeqMS.cons_eq_cons, and_true, true_and, mk_toFun]
-    rw [updateBasis_const]
+
+-- @[PreMS_const]
+-- theorem updateBasis_const_real (ms : ℝ) (ex : BasisExtension []) :
+--     (PreMS.updateBasis ex ms) = PreMS.const _ ms := by
+--   cases ex with
+--   | nil =>
+--     simp [PreMS.updateBasis, BasisExtension.getBasis, PreMS.const, ofReal]
+--   | insert f ex_tl =>
+--     simp only [BasisExtension.getBasis, updateBasis, const_toFun, toReal, const, SeqMS.const,
+--       ms_eq_mk_iff, mk_seq, SeqMS.cons_eq_cons, and_true, true_and, mk_toFun]
+--     rw [updateBasis_const]
 
 @[PreMS_const]
 theorem BasisExtension.nil_getBasis : BasisExtension.nil.getBasis = [] := rfl
@@ -93,7 +94,7 @@ theorem log_const (x : PreMS []) (logBasis : LogBasis []) : (PreMS.log logBasis 
 
 @[PreMS_const]
 theorem exp_const (x : PreMS []) : (PreMS.exp x).toReal = Real.exp x.toReal := by
-  simp [exp, toReal]
+  simp [exp, toReal, ofReal]
 
 end Const
 

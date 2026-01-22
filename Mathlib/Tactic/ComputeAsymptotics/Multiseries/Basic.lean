@@ -298,11 +298,19 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       · simp
 
 @[simp]
-theorem monomial_toFun {basis : Basis} {n : Fin (List.length basis)} :
+theorem monomial_toFun {basis : Basis} {n : Fin basis.length} :
     (@monomial basis n).toFun = basis[n] := by
   convert monomialRpow_toFun
   ext t
   simp
+
+@[simp]
+theorem monomial_toFun' {basis : Basis} {n : ℕ} (h : n < basis.length) :
+    (@monomial basis n).toFun = basis[n] := by
+  let n' : Fin basis.length := ⟨n, h⟩
+  conv_lhs => rw [show n = n'.val by simp [n']]
+  simp
+  grind
 
 @[simp]
 theorem monomial_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
@@ -418,9 +426,15 @@ lemma map_id_Approximates {basis_hd basis_tl basis_tl'}
   simp [h_tl]
 
 @[simp]
-theorem updateBasis_keep_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
+theorem updateBasis_keep_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex : BasisExtension basis_tl}
     {ms : PreMS (basis_hd :: basis_tl)} :
     (ms.updateBasis (.keep _ ex)).seq = ms.seq.updateBasis ex := by
+  simp [PreMS.updateBasis]
+
+@[simp]
+theorem updateBasis_insert_seq {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
+    {f : ℝ → ℝ} :
+    (ms.updateBasis (.insert f ex)).seq = SeqMS.cons 0 (ms.updateBasis ex) .nil := by
   simp [PreMS.updateBasis]
 
 @[simp]

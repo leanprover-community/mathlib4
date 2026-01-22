@@ -274,7 +274,7 @@ theorem log_Approximates {basis : Basis}
     have h_tendsto_zero : Tendsto (coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)) atTop (𝓝 0) := by
       convert tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx h_trimmed
       ext t
-      simp [inv, toReal]
+      simp [inv, toReal, ofReal]
       field
     set g := coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)
     apply logSeries_toFun.comp_tendsto at h_tendsto_zero

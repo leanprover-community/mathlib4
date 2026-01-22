@@ -189,7 +189,6 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
     let ⟨ms_extracted, h_eq_extracted⟩ ← normalizePreMS ms
-    -- dbg_trace f!"Normalized ms: {← ppExpr ms_extracted}"
     let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q($h_eq_extracted ▸ $h_wo)
     match ms_extracted with
     | ~q(PreMS.mk .nil $f) =>
@@ -203,7 +202,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
     | ~q(PreMS.mk (.cons $exp $coef $tl) $f) =>
       let mut allZeroNew := allZero
       if allZero then
-        match ← compareReal exp with
+        match ← compareReal q($exp) with
         | .neg _ =>
           return some {
             val := q($ms_extracted)
@@ -273,33 +272,35 @@ partial def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
 end
 
 /-- Trims a multiseries. -/
-def trimMS (ms : MS) : TacticM ((ms' : MS) × Q(PreMS.Trimmed $ms'.val)) := do
+def trimMS (ms : MS) :
+    TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) × Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo ms.h_approx ms.h_basis false
   let newMs : MS := {
-    basis := ms.basis
-    logBasis := ms.logBasis
-    val := res.val
-    h_wo := res.h_wo
+    basis := q($ms.basis)
+    logBasis := q($ms.logBasis)
+    val := q($res.val)
+    h_wo := q($res.h_wo)
     h_approx := q($res.h_approx)
-    h_basis := ms.h_basis
-    h_logBasis := ms.h_logBasis
+    h_basis := q($ms.h_basis)
+    h_logBasis := q($ms.h_logBasis)
   }
-  return ⟨newMs, res.h_trimmed.get!⟩
+  return ⟨newMs, q($res.h_fun), res.h_trimmed.get!⟩
 
 /-- Same as `trimMS` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true.
 In such case one can prove that the limit is zero without the `ms.Trimmed` assumption. -/
-def trimPartialMS (ms : MS) : TacticM ((ms' : MS) × Option Q(PreMS.Trimmed $ms'.val)) := do
+def trimPartialMS (ms : MS) :
+    TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) × Option Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo ms.h_approx ms.h_basis true
   let newMs : MS := {
-    basis := ms.basis
-    logBasis := ms.logBasis
-    val := res.val
-    h_wo := res.h_wo
+    basis := q($ms.basis)
+    logBasis := q($ms.logBasis)
+    val := q($res.val)
+    h_wo := q($res.h_wo)
     h_approx := q($res.h_approx)
-    h_basis := ms.h_basis
-    h_logBasis := ms.h_logBasis
+    h_basis := q($ms.h_basis)
+    h_logBasis := q($ms.h_logBasis)
   }
-  return ⟨newMs, res.h_trimmed⟩
+  return ⟨newMs, q($res.h_fun), res.h_trimmed⟩
 
 end Trimming
 

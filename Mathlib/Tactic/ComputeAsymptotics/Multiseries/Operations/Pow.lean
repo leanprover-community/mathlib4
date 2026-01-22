@@ -141,19 +141,19 @@ noncomputable def SeqMS.pow {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) (
 then `ms.pow a` approximates `f^a`. -/
 noncomputable def pow {basis : Basis} (ms : PreMS basis) (a : ℝ) : PreMS basis :=
   match basis with
-  | [] => ms.toReal ^ a
+  | [] => ofReal <| ms.toReal ^ a
   | List.cons _ _ => mk (SeqMS.pow ms.seq a) (ms.toFun ^ a)
 
 end
 
 noncomputable def npow {basis : Basis} (ms : PreMS basis) (a : ℕ) : PreMS basis :=
   match basis with
-  | [] => ms.toReal ^ a
+  | [] => ofReal <| ms.toReal ^ a
   | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
 
 noncomputable def zpow {basis : Basis} (ms : PreMS basis) (a : ℤ) : PreMS basis :=
   match basis with
-  | [] => ms.toReal ^ a
+  | [] => ofReal <| ms.toReal ^ a
   | List.cons _ _ => (ms.pow a).replaceFun (ms.toFun ^ a)
 
 @[simp]
@@ -480,6 +480,15 @@ theorem npow_Approximates {basis : Basis} {ms : PreMS basis} {a : ℕ}
     (ms.npow a).Approximates := by
   rw [npow_eq_pow, show (a : ℝ) = (a : ℤ) by simp, ← zpow_eq_pow]
   apply zpow_Approximates h_basis h_wo h_approx h_trimmed
+
+
+theorem sqrt_of_pow_toFun {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
+    (h : ms.toFun = (f ^ (1 / 2 : ℝ))) :
+    ms.toFun =ᶠ[atTop] (Real.sqrt ∘ f) := by
+  apply EventuallyEq.of_eq
+  convert h
+  ext t
+  simp [Real.sqrt_eq_rpow]
 
 end PreMS
 

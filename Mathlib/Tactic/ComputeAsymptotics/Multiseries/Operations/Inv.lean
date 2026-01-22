@@ -99,7 +99,7 @@ noncomputable def SeqMS.inv {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) :
 /-- If `ms` approximates `f`, then `ms.inv` approximates `f⁻¹`. -/
 noncomputable def inv {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
-  | [] => Inv.inv (α := ℝ) ms.toReal
+  | [] => ofReal <| ms.toReal⁻¹
   | List.cons _ _ =>
     mk (SeqMS.inv ms.seq) ms.toFun⁻¹
 

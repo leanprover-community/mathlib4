@@ -85,7 +85,7 @@ noncomputable def SeqMS.exp {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : Se
 then `ms.exp` approximates `Real.exp ∘ f`. -/
 noncomputable def exp {basis : Basis} (ms : PreMS basis) : PreMS basis :=
   match basis with
-  | [] => Real.exp ms.toReal
+  | [] => ofReal <| Real.exp ms.toReal
   | List.cons _ _ =>
     mk (SeqMS.exp ms.seq) (Real.exp ∘ ms.toFun)
 
@@ -101,7 +101,7 @@ theorem exp_toFun {basis : Basis} {ms : PreMS basis} :
     ms.exp.toFun = Real.exp ∘ ms.toFun := by
   ext t
   cases basis with
-  | nil => simp [exp, toReal]
+  | nil => simp [exp, toReal, ofReal]
   | cons => simp [exp]
 
 mutual
@@ -192,20 +192,20 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   ext t
   simp [← Real.exp_add]
 
--- theorem exp_Approximates_pow_of_pos
---     {basis1 basis2 : Basis} {ms1 : PreMS basis1} {ms2 : PreMS basis2}
---     {f g : ℝ → ℝ}
---     (h_basis1 : WellFormedBasis basis1)
---     (h_wo1 : ms1.WellOrdered) (h_approx1 : ms1.Approximates f) (h_trimmed1 : ms1.Trimmed)
---     (h_pos1 : 0 < ms1.leadingTerm.coef)
---     (h_approx2 : ms2.Approximates (Real.exp ∘ ((Real.log ∘ f) * g))) :
---     ms2.Approximates (fun x ↦ (f x) ^ (g x)) := by
---   apply Approximates_of_EventuallyEq _ h_approx2
---   have hf_pos : ∀ᶠ t in atTop, 0 < f t :=
---     eventually_pos_of_coef_pos h_pos1 h_wo1 h_approx1 h_trimmed1 h_basis1
---   apply hf_pos.mono
---   intro x hx
---   simp [Real.rpow_def_of_pos hx]
+theorem pow_eq_exp_toFun
+    {basis1 basis2 : Basis} {ms1 : PreMS basis1} {ms2 : PreMS basis2}
+    {f g : ℝ → ℝ}
+    (h_basis1 : WellFormedBasis basis1)
+    (h_wo1 : ms1.WellOrdered) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
+    (h_pos1 : 0 < ms1.leadingTerm.coef)
+    (h1 : ms1.toFun = f)
+    (h2 : ms2.toFun = (Real.exp ∘ ((Real.log ∘ f) * g))) :
+    ms2.toFun =ᶠ[atTop] (fun x ↦ (f x) ^ (g x)) := by
+  have := eventually_pos_of_coef_pos h_pos1 h_wo1 h_approx1 h_trimmed1 h_basis1
+  rw [h1] at this
+  apply this.mono
+  intro t h_pos
+  simp [h2, Real.rpow_def_of_pos h_pos]
 
 end PreMS
 

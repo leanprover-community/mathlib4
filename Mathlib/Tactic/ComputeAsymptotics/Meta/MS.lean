@@ -41,6 +41,10 @@ structure MS where
   h_logBasis : Q(LogBasis.WellFormed $logBasis)
 deriving Inhabited
 
+structure MSApproximation (f : Q(ℝ → ℝ)) where
+  ms : MS
+  h_fun : Q(($ms.val).toFun = $f)
+
 namespace MS
 
 /-- Multiseries representing a constant function. -/
@@ -275,7 +279,8 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
-def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) : MetaM MS := do
+def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) :
+    MetaM MS := do
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
   return {ms with
     val := q(PreMS.replaceFun $ms.val $f)
