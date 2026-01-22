@@ -48,7 +48,7 @@ instance : HomRel.IsStableUnderPrecomp (homRel C) where
 
 lemma homRel_equivalence_of_isFibrant_tgt {X Y : CofibrantObject C} [IsFibrant Y.obj] :
     Equivalence (homRel C (X := X) (Y := Y) · ·) :=
-  ((RightHomotopyRel.equivalence _ _).comap (fun (f : X ⟶ Y) ↦ f.hom))
+  (RightHomotopyRel.equivalence _ _).comap (fun (f : X ⟶ Y) ↦ f.hom)
 
 variable (C) in
 /-- The homotopy category of cofibrant objects. -/
