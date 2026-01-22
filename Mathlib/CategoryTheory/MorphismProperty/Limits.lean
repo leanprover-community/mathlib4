@@ -702,6 +702,11 @@ class IsStableUnderFiniteCoproducts : Prop where
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
 
+instance [W.IsStableUnderFiniteCoproducts] (J : Type w) [Finite J] :
+    W.IsStableUnderCoproductsOfShape J := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  exact IsStableUnderColimitsOfShape.of_equivalence (Discrete.equivalence e.symm)
+
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]
 class IsStableUnderCoproducts : Prop where

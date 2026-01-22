@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.JoyalTrick
 public import Mathlib.AlgebraicTopology.ModelCategory.Smith.Lemma19
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteCompositionCoproducts
 public import Mathlib.CategoryTheory.Presentable.SmallObject
 
 /-!
@@ -31,7 +32,6 @@ def CategoryWithSmithStructure
     [MorphismProperty.IsSmall.{w} I]
     [W.HasTwoOutOfThreeProperty] [W.IsStableUnderRetracts]
     [IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
-    [IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
     [IsStableUnderCobaseChange (I.rlp.llp ⊓ W)]
     (_ : I.rlp ≤ W) (_ : I ≤ solutionSetCondition.{w} W) := C
 
@@ -40,7 +40,6 @@ variable [IsLocallyPresentable.{w} C]
   [MorphismProperty.IsSmall.{w} I]
   [W.HasTwoOutOfThreeProperty] [W.IsStableUnderRetracts]
   [IsStableUnderTransfiniteComposition.{w} (I.rlp.llp ⊓ W)]
-  [IsStableUnderCoproducts.{w} (I.rlp.llp ⊓ W)]
   [IsStableUnderCobaseChange (I.rlp.llp ⊓ W)]
   (hIW₁ : I.rlp ≤ W) (hIW₃ : I ≤ solutionSetCondition.{w} W)
 

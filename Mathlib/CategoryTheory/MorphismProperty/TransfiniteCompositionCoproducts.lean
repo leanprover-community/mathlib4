@@ -254,16 +254,136 @@ instance [W.IsStableUnderTransfiniteCompositionOfShape J]
 
 end
 
-/-instance [HasCoproducts.{w} C] [IsStableUnderTransfiniteComposition.{w} W]
+section -- to be moved
+
+variable {α : Type*} {X : Option α → C} {c : Cofan X} (hc : IsColimit c)
+  [HasCoproduct (X ∘ Option.some)]
+
+variable (c) in
+@[simps!]
+noncomputable def binaryCofanOfIsColimitCofanOption :
+    BinaryCofan (∐ X ∘ Option.some) (X none) :=
+  BinaryCofan.mk (Sigma.desc (fun i ↦ c.inj (some i))) (c.inj none)
+
+noncomputable def isColimitBinaryCofanOfIsColimitCofanOption :
+    IsColimit (binaryCofanOfIsColimitCofanOption c) := by
+  have := hc
+  refine BinaryCofan.IsColimit.mk _
+    (fun s t ↦ Cofan.IsColimit.desc hc (Option.rec t (fun i ↦ Sigma.ι (X ∘ some) i ≫ s)))
+    (by cat_disch) (by cat_disch) (fun s t l hl₁ hl₂ ↦ ?_)
+  dsimp at l hl₁ hl₂
+  refine Cofan.IsColimit.hom_ext hc _ _ (fun i ↦ ?_)
+  induction i with
+  | none => simpa
+  | some i => simp [← hl₁]
+
+end
+
+lemma IsStableUnderFiniteCoproducts.mk'
+    [HasFiniteCoproducts C]
+    [W.IsStableUnderCoproductsOfShape PEmpty.{1}]
+    [W.IsStableUnderCoproductsOfShape WalkingPair] :
+    W.IsStableUnderFiniteCoproducts where
+  isStableUnderCoproductsOfShape := by
+    intro J _
+    induction J using Finite.induction_empty_option with
+    | of_equiv e =>
+      exact IsStableUnderColimitsOfShape.of_equivalence (Discrete.equivalence e)
+    | h_empty => infer_instance
+    | @h_option α =>
+      constructor
+      intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ hφ
+      let Y₁ (i : Option α) := X₁.obj (.mk i)
+      let Y₂ (i : Option α) := X₂.obj (.mk i)
+      let f' (i : Option α) : Y₁ i ⟶ Y₂ i := f.app _
+      let s₁ : Cofan Y₁ := Cofan.mk c₁.pt (fun _ ↦ c₁.ι.app _)
+      let s₂ : Cofan Y₂ := Cofan.mk c₂.pt (fun _ ↦ c₂.ι.app _)
+      let hs₁ : IsColimit s₁ := by
+        refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hc₁
+        · exact Discrete.natIso (fun _ ↦ Iso.refl _)
+        · refine Cofan.ext (Iso.refl _) ?_
+          dsimp [s₁, Cofan.inj]
+          cat_disch
+      let hs₂ : IsColimit s₂ := by
+        refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hc₂
+        · exact Discrete.natIso (fun _ ↦ Iso.refl _)
+        · refine Cofan.ext (Iso.refl _) ?_
+          dsimp [s₂, Cofan.inj]
+          cat_disch
+      refine colimitsOfShape_le (J := Discrete WalkingPair) _ ?_
+      refine colimitsOfShape.mk' _ _ _ _
+        (isColimitBinaryCofanOfIsColimitCofanOption hs₁)
+        (isColimitBinaryCofanOfIsColimitCofanOption hs₂)
+        (mapPair (Limits.Sigma.map (fun i ↦ f' (some i))) (f' none)) ?_ _ ?_
+      · rintro ⟨(_ | _)⟩
+        · exact MorphismProperty.colimMap _ (fun ⟨i⟩ ↦ hf ⟨some i⟩)
+        · exact hf ⟨none⟩
+      · cat_disch
+
+instance [W.ContainsIdentities] [W.RespectsIso] :
+    W.IsStableUnderCoproductsOfShape (PEmpty.{1}) where
+  condition X₁ X₂ c₁ c₂ hc₁ hc₂ f hf φ fac := by
+    let hX₁ : IsInitial c₁.pt :=
+      (IsColimit.equivOfNatIsoOfIso X₁.uniqueFromEmpty _ _
+        (by exact Cocones.ext (Iso.refl _))).1 hc₁
+    let hX₂ : IsInitial c₂.pt :=
+      (IsColimit.equivOfNatIsoOfIso X₂.uniqueFromEmpty _ _
+        (by exact Cocones.ext (Iso.refl _))).1 hc₂
+    have : IsIso φ := ⟨hX₂.to _, hX₁.hom_ext _ _, hX₂.hom_ext _ _⟩
+    exact W.of_isIso φ
+
+instance [HasFiniteCoproducts C] [W.IsMultiplicative]
+    [W.IsStableUnderCobaseChange] :
+    W.IsStableUnderCoproductsOfShape WalkingPair := by
+  suffices ∀ {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂),
+      W f₁ → W f₂ → W (coprod.map f₁ f₂) by
+    constructor
+    intro Z₁ Z₂ c₁ c₂ hc₁ hc₂ f hf φ hφ
+    replace hc₁ := (IsColimit.precomposeInvEquiv (diagramIsoPair Z₁) _).2 hc₁
+    replace hc₂ := (IsColimit.precomposeInvEquiv (diagramIsoPair Z₂) _).2 hc₂
+    let e₁ := IsColimit.coconePointUniqueUpToIso (coprodIsCoprod _ _) hc₁
+    let e₂ := IsColimit.coconePointUniqueUpToIso (coprodIsCoprod _ _) hc₂
+    have inl_e₁_hom : coprod.inl ≫ e₁.hom = c₁.ι.app (.mk (.left)) := by
+      simpa using IsColimit.comp_coconePointUniqueUpToIso_hom
+        (coprodIsCoprod _ _) hc₁ (.mk (.left))
+    have inr_e₁_hom : coprod.inr ≫ e₁.hom = c₁.ι.app (.mk (.right)) := by
+      simpa using IsColimit.comp_coconePointUniqueUpToIso_hom
+        (coprodIsCoprod _ _) hc₁ (.mk (.right))
+    have inl_e₂_hom : coprod.inl ≫ e₂.hom = c₂.ι.app (.mk (.left)) := by
+      simpa using IsColimit.comp_coconePointUniqueUpToIso_hom
+        (coprodIsCoprod _ _) hc₂ (.mk (.left))
+    have inr_e₂_hom : coprod.inr ≫ e₂.hom = c₂.ι.app (.mk (.right)) := by
+      simpa using IsColimit.comp_coconePointUniqueUpToIso_hom
+        (coprodIsCoprod _ _) hc₂ (.mk (.right))
+    refine (W.arrow_mk_iso_iff ?_).1
+      (this _ _ (hf (.mk .left)) (hf (.mk .right)))
+    refine Arrow.isoMk e₁ e₂ ?_
+    dsimp
+    ext
+    · simpa [reassoc_of% inl_e₁_hom, inl_e₂_hom] using hφ (.mk .left)
+    · simpa [reassoc_of% inr_e₁_hom, inr_e₂_hom] using hφ (.mk .right)
+  intro X₁ X₂ Y₁ Y₂ f₁ f₂ hf₁ hf₂
+  have h₁ : W (coprod.map f₁ (𝟙 X₂)) :=
+    W.of_isPushout (IsPushout.of_coprod_inl_with_id f₁ X₂) hf₁
+  have h₂ : W (coprod.map (𝟙 Y₁) f₂) :=
+    W.of_isPushout (IsPushout.of_coprod_inr_with_id Y₁ f₂) hf₂
+  convert W.comp_mem _ _ h₁ h₂
+  cat_disch
+
+instance [HasFiniteCoproducts C] [W.IsMultiplicative]
+    [W.IsStableUnderCobaseChange] : W.IsStableUnderFiniteCoproducts :=
+  IsStableUnderFiniteCoproducts.mk' _
+
+instance [HasCoproducts.{w} C] [IsStableUnderTransfiniteComposition.{w} W]
     [W.IsStableUnderCobaseChange] : W.IsStableUnderCoproductsOfShape J := by
   by_cases hJ : Finite J
-  · sorry
+  · have := hasFiniteCoproducts_of_hasCoproducts C
+    infer_instance
   · let κ := Cardinal.mk J
     have hκ : Cardinal.aleph0 ≤ κ := by
       simpa only [κ, ← Cardinal.infinite_iff, ← not_finite_iff_infinite]
-    let e : Discrete J ≌ Discrete κ.ord.ToType := by
-      apply Discrete.equivalence
-      sorry
+    let e : Discrete J ≌ Discrete κ.ord.ToType :=
+      Discrete.equivalence (Nonempty.some (by simp [κ, ← Cardinal.eq]))
     have : W.IsStableUnderColimitsOfShape (Discrete κ.ord.ToType) := by
       have := Cardinal.noMaxOrder hκ
       have : OrderBot κ.ord.ToType :=
@@ -271,7 +391,10 @@ end
           rintro h
           exact Cardinal.aleph0_ne_zero (by rwa [h, nonpos_iff_eq_zero] at hκ))
       infer_instance
-    exact IsStableUnderColimitsOfShape.of_equivalence e.symm-/
+    exact IsStableUnderColimitsOfShape.of_equivalence e.symm
+
+instance [HasCoproducts.{w} C] [IsStableUnderTransfiniteComposition.{w} W]
+    [W.IsStableUnderCobaseChange] : IsStableUnderCoproducts.{w} W where
 
 end MorphismProperty
 
