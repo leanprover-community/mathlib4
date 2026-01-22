@@ -683,12 +683,11 @@ def _root_.MulDistribMulActionSemiHomClass.toMulDistribMulActionHom
     (f : F) : A →ₑ*[φ] B :=
   { (f : A →* B), (f : A →ₑ[φ] B) with }
 
-  -- [AddMonoid A] [DistribMulAction M A] [AddMonoid B]
-  --   [DistribMulAction N B]
-
-/-- Any type satisfying `MulActionHomClass` can be cast into `MulActionHom`
-via `MulActionHomClass.toMulActionHom`. -/
-@[to_additive (dont_translate := M N) (relevant_arg := A)]
+/-- Any type satisfying `MulDistribMulActionSemiHomClass` can be cast into `MulDistribMulActionHom`
+via `MulDistribMulActionSemiHomClass.toMulDistribMulActionHom`. -/
+@[to_additive (dont_translate := M N) (relevant_arg := A)
+/-- Any type satisfying `DistribMulActionSemiHomClass` can be cast into `DistribMulActionHom`
+via `DistribMulActionSemiHomClass.toDistribMulActionHom`. -/]
 instance [MulDistribMulActionSemiHomClass F φ A B] : CoeTC F (A →ₑ*[φ] B) :=
   ⟨MulDistribMulActionSemiHomClass.toMulDistribMulActionHom⟩
 
@@ -727,7 +726,7 @@ theorem toMulActionHom_injective {f g : A →ₑ*[φ] B} (h : (f : A →ₑ[φ] 
   exact MulActionHom.congr_fun h a
 
 @[to_additive (dont_translate := M N) (relevant_arg := A)]
-theorem toAddMonoidHom_injective {f g : A →ₑ*[φ] B} (h : (f : A →* B) = (g : A →* B)) : f = g := by
+theorem toMonoidHom_injective {f g : A →ₑ*[φ] B} (h : (f : A →* B) = (g : A →* B)) : f = g := by
   ext a
   exact DFunLike.congr_fun h a
 
