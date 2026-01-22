@@ -14,8 +14,9 @@ public import Mathlib.MeasureTheory.Measure.Dirac
 This file is about probability mass functions or discrete probability measures:
 a function `α → ℝ≥0∞` such that the values have (infinite) sum `1`.
 
-Construction of monadic `pure` and `bind` is found in `ProbabilityMassFunction/Monad.lean`,
-other constructions of `PMF`s are found in `ProbabilityMassFunction/Constructions.lean`.
+Construction of monadic `pure` and `bind` is found in
+`Mathlib/Probability/ProbabilityMassFunction/Monad.lean`, other constructions of `PMF`s are found in
+`Mathlib/Probability/ProbabilityMassFunction/Constructions.lean`.
 
 Given `p : PMF α`, `PMF.toOuterMeasure` constructs an `OuterMeasure` on `α`,
 by assigning each set the sum of the probabilities of each of its elements.
@@ -280,8 +281,6 @@ theorem toMeasure_apply_finset (s : Finset α) : p.toMeasure s = ∑ x ∈ s, p 
 
 theorem toMeasure_apply_eq_tsum (s : Set α) : p.toMeasure s = ∑' x, s.indicator p x :=
   (p.toMeasure_apply_eq_toOuterMeasure s).trans (p.toOuterMeasure_apply s)
-
-@[deprecated (since := "2025-06-23")] alias toMeasure_apply_of_finite := toMeasure_apply_eq_tsum
 
 @[simp]
 theorem toMeasure_apply_fintype (s : Set α) [Fintype α] : p.toMeasure s = ∑ x, s.indicator p x :=

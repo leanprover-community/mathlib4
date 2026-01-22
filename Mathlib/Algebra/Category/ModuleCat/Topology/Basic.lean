@@ -59,6 +59,7 @@ abbrev of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Conti
 lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : (of R M) = M := rfl
 
+set_option backward.privateInPublic true in
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
@@ -67,11 +68,16 @@ structure Hom (X Y : TopModuleCat.{v} R) where
   /-- The underlying continuous linear map. Use `hom` instead. -/
   hom' : X →L[R] Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (TopModuleCat R) where
   Hom := Hom
   id M := ⟨ContinuousLinearMap.id R M⟩
   comp φ ψ := ⟨ψ.hom' ∘L φ.hom'⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (TopModuleCat R) (· →L[R] ·) where
   hom   := Hom.hom'
   ofHom := Hom.ofHom'
@@ -129,8 +135,8 @@ instance {X Y : TopModuleCat R} : AddCommGroup (X ⟶ Y) where
   __ := Equiv.addCommGroup CategoryTheory.ConcreteCategory.homEquiv
 
 instance : Preadditive (TopModuleCat R) where
-  add_comp _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
-  comp_add _ _ _ _ _ _  := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
+  add_comp _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.comp_add _ _ _)
+  comp_add _ _ _ _ _ _ := ConcreteCategory.ext (ContinuousLinearMap.add_comp _ _ _)
 
 section
 
@@ -139,7 +145,7 @@ variable {M₁ M₂ : TopModuleCat R}
 @[simp] lemma hom_zero : (0 : M₁ ⟶ M₂).hom = 0 := rfl
 @[simp] lemma hom_zero_apply (m : M₁) : (0 : M₁ ⟶ M₂).hom m = 0 := rfl
 @[simp] lemma hom_add (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ + φ₂).hom = φ₁.hom + φ₂.hom := rfl
-@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (- φ).hom = - φ.hom := rfl
+@[simp] lemma hom_neg (φ : M₁ ⟶ M₂) : (-φ).hom = -φ.hom := rfl
 @[simp] lemma hom_sub (φ₁ φ₂ : M₁ ⟶ M₂) : (φ₁ - φ₂).hom = φ₁.hom - φ₂.hom := rfl
 @[simp] lemma hom_nsmul (n : ℕ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
 @[simp] lemma hom_zsmul (n : ℤ) (φ : M₁ ⟶ M₂) : (n • φ).hom = n • φ.hom := rfl
@@ -174,7 +180,7 @@ instance : HasForget₂ (TopModuleCat R) (ModuleCat R) where
 instance : HasForget₂ (TopModuleCat R) TopCat where
   forget₂ :=
   { obj M := .of M
-    map φ   := TopCat.ofHom ⟨φ, φ.1.2⟩ }
+    map φ := TopCat.ofHom ⟨φ, φ.1.2⟩ }
 
 instance : (forget₂ (TopModuleCat R) TopCat).ReflectsIsomorphisms where
   reflects {X Y} f hf := by
@@ -319,7 +325,7 @@ instance {J : Type*} [Category* J] {F : J ⥤ TopModuleCat.{v} R}
     PreservesLimit F (forget₂ _ TopCat) :=
   preservesLimit_of_preserves_limit_cone (isLimit (limit.isLimit _))
     (TopCat.isLimitConeOfForget (F := F ⋙ forget₂ _ TopCat)
-      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1:)
+      ((forget _).mapCone (getLimitCone (F ⋙ forget₂ _ (ModuleCat.{v} R))).1 :)
       (isLimitOfPreserves (forget (ModuleCat R)) (limit.isLimit _)))
 
 instance {J : Type*} [Category* J]
@@ -333,6 +339,8 @@ end Limit
 
 section Adjunction
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The functor equipping a module over a topological ring with the finest possible
 topology making it into a topological module. This is left adjoint to the forgetful functor. -/
 def withModuleTopology : ModuleCat R ⥤ TopModuleCat R where

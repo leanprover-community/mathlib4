@@ -14,7 +14,7 @@ This file contains lemmas about how operator norm on continuous linear maps inte
 
 -/
 
-@[expose] public section
+public section
 
 open Asymptotics
 

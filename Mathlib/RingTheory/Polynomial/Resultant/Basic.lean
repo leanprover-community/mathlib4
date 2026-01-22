@@ -7,13 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.FieldTheory.Extension
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.Polynomial.DegreeLT
 
 /-!
 # Resultant of two polynomials
@@ -287,7 +283,7 @@ lemma resultant_C_mul_right (r : R) :
           lt_add_iff_pos_right, zero_lt_one, coeff_C_mul, M₁]
         induction j₂ using Fin.addCases with
         | left j₂ => simp
-        | right i => simp at hi; lia
+        | right i => simp at hi
       lia
   rw [resultant, resultant, ← this m le_rfl]
   congr 1
@@ -956,6 +952,7 @@ lemma discr_of_degree_eq_one {f : R[X]} (hf : f.degree = 1) : discr f = 1 := by
     simp [e, sylvesterDeriv, mul_comm, hf]
   simp [discr, ← Matrix.det_reindex_self e, this, hf]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Standard formula for the discriminant of a quadratic polynomial. -/
 lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
     discr f = f.coeff 1 ^ 2 - 4 * f.coeff 0 * f.coeff 2 := by
@@ -991,6 +988,7 @@ lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
   ring_nf
   rw [Nat.div_mul_cancel (by convert Nat.two_dvd_mul_add_one (f.natDegree - 1) using 2; lia)]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 private lemma sylvesterDeriv_of_natDegree_eq_three {f : R[X]} (hf : f.natDegree = 3) :
     f.sylvesterDeriv.reindex (finCongr <| by rw [hf]) (finCongr <| by rw [hf]) =
     !![ f.coeff 0,         0, 1 * f.coeff 1,             0,             0;

@@ -143,6 +143,13 @@ end
 
 variable {C}
 
+/-- A family of isomorphisms gives rise to an isomorphism of families. -/
+@[simps]
+def isoMk {X Y : ∀ i, C i} (iso : ∀ i, X i ≅ Y i) :
+    X ≅ Y where
+  hom := fun i => (iso i).hom
+  inv := fun i => (iso i).inv
+
 /-- An isomorphism between `I`-indexed objects gives an isomorphism between each
 pair of corresponding components. -/
 @[simps]

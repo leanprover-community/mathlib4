@@ -12,7 +12,7 @@ public import Mathlib.GroupTheory.Commutator.Basic
 
 This file defines the commutator and the abelianization of a group. It furthermore prepares for the
 result that the abelianization is left adjoint to the forgetful functor from abelian groups to
-groups, which can be found in `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
+groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 

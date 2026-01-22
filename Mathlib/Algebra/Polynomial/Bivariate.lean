@@ -247,7 +247,7 @@ attribute [local instance] Polynomial.algebra in
 theorem Bivariate.aveal_eq_map_swap (x : A) (p : R[X][Y]) :
     aeval (C x) p = mapAlgHom (aeval x) (swap p) := by
   induction p using Polynomial.induction_on' with
-  | add =>  aesop
+  | add => aesop
   | monomial n a =>
       simp
       induction a using Polynomial.induction_on'

@@ -14,7 +14,7 @@ In this file we prove that a set in the base field has the unique differentiabil
 iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Metric Set
 open scoped Topology
@@ -27,7 +27,7 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
   apply eq_univ_iff_forall.2 (fun y ↦ ?_)
   -- first deal with the case of `0`, which has to be handled separately.
   rcases eq_or_ne y 0 with rfl | hy
-  · exact zero_mem_tangentCone (mem_closure_iff_clusterPt.mpr hx.clusterPt)
+  · exact zero_mem_tangentConeAt (mem_closure_iff_clusterPt.mpr hx.clusterPt)
   /- Assume now `y` is a fixed nonzero scalar. Take a sequence `d n` tending to `0` such
   that `x + d n ∈ s`. Let `c n = y / d n`. Then `‖c n‖` tends to infinity, and `c n • d n`
   converges to `y` (as it is equal to `y`). By definition, this shows that `y` belongs to the
@@ -53,8 +53,6 @@ theorem tangentConeAt_eq_univ {s : Set 𝕜} {x : 𝕜} (hx : AccPt x (𝓟 s)) 
     exact squeeze_zero (fun n ↦ by positivity) B u_lim
   · convert tendsto_const_nhds (α := ℕ) (x := y) with n
     simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
-
-@[deprecated (since := "2025-04-27")] alias tangentCone_eq_univ := tangentConeAt_eq_univ
 
 /-- In one dimension, a point is a point of unique differentiability of a set
 iff it is an accumulation point of the set. -/

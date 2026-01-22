@@ -16,7 +16,7 @@ bicategories.
 
 Firstly, we define the constructors `pseudofunctorOfIsLocallyDiscrete` and
 `oplaxFunctorOfIsLocallyDiscrete` for defining pseudofunctors and oplax functors
-from a locally discrete bicategories. In this situation, we do not need to care about
+from a locally discrete bicategory. In this situation, we do not need to care about
 the field `map₂`, because all the `2`-morphisms in `B` are identities.
 
 We also define a specialized constructor `LocallyDiscrete.mkPseudofunctor` when
@@ -113,7 +113,7 @@ corresponding locally discrete bicategories.
 @[simps! obj map mapId mapComp]
 def Functor.toPseudoFunctor : LocallyDiscrete C ⥤ᵖ (LocallyDiscrete D) :=
   pseudofunctorOfIsLocallyDiscrete
-    (fun ⟨X⟩ ↦.mk <| F.obj X) (fun ⟨f⟩ ↦ (F.map f).toLoc)
+    (fun ⟨X⟩ ↦ .mk <| F.obj X) (fun ⟨f⟩ ↦ (F.map f).toLoc)
     (fun ⟨X⟩ ↦ eqToIso (by simp)) (fun f g ↦ eqToIso (by simp))
 
 /--

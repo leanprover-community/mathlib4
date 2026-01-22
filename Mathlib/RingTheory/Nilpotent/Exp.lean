@@ -199,6 +199,13 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
+theorem isNilpotent_exp_sub_one {a : A} (ha : IsNilpotent a) : IsNilpotent (exp a - 1) := by
+  nontriviality A
+  rw [exp, ← Nat.sub_add_cancel (pos_nilpotencyClass_iff.2 ha), Finset.sum_range_succ']
+  norm_num
+  apply Commute.isNilpotent_sum fun _ _ ↦ smul (pow_of_pos ha <| by positivity) _
+  simp [Nat.factorial_ne_zero]
+
 end IsNilpotent
 
 namespace Module.End

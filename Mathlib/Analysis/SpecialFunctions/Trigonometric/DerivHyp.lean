@@ -24,7 +24,7 @@ computed.
 sinh, cosh, tanh
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -791,9 +791,9 @@ end
 namespace Mathlib.Meta.Positivity
 open Lean Meta Qq
 
-private alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
-private alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
-private alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
+alias ⟨_, sinh_pos_of_pos⟩ := Real.sinh_pos_iff
+alias ⟨_, sinh_nonneg_of_nonneg⟩ := Real.sinh_nonneg_iff
+alias ⟨_, sinh_ne_zero_of_ne_zero⟩ := Real.sinh_ne_zero
 
 /-- Extension for the `positivity` tactic: `Real.sinh` is positive/nonnegative/nonzero if its input
 is. -/
