@@ -122,6 +122,44 @@ attribute [simp] fourierInv_smul
 attribute [fun_prop] continuous_fourier
 attribute [fun_prop] continuous_fourierInv
 
+section fourierAddHom
+
+variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E F]
+
+variable (E) in
+def fourierAddHom : AddHom E F where
+  toFun := 𝓕
+  map_add' := fourier_add
+
+@[simp]
+theorem fourier_zero : 𝓕 (0 : E) = 0 :=
+    map_zero (fourierAddHom E).toAddMonoidHom
+
+@[simp]
+theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
+    map_neg (fourierAddHom E).toAddMonoidHom f
+
+end fourierAddHom
+
+section fourierInvAddHom
+
+variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInvAdd E F]
+
+variable (E) in
+def fourierInvAddHom : AddHom E F where
+  toFun := 𝓕⁻
+  map_add' := fourierInv_add
+
+@[simp]
+theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
+    map_zero (fourierInvAddHom E).toAddMonoidHom
+
+@[simp]
+theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
+    map_neg (fourierInvAddHom E).toAddMonoidHom f
+
+end fourierInvAddHom
+
 variable [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
 
 section fourierCLM
@@ -137,11 +175,6 @@ def fourierₗ : E →ₗ[R] F where
 
 @[simp]
 lemma fourierₗ_apply (f : E) : fourierₗ R E f = 𝓕 f := rfl
-
-include R in
-variable (R) in
-lemma fourier_zero : 𝓕 (0 : E) = 0 :=
-  (fourierₗ R E).map_zero
 
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourier E F]
 
@@ -169,11 +202,6 @@ def fourierInvₗ : E →ₗ[R] F where
 
 @[simp]
 lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E f = 𝓕⁻ f := rfl
-
-include R in
-variable (R) in
-lemma fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
-  (fourierInvₗ R E).map_zero
 
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourierInv E F]
 
