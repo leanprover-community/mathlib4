@@ -23,7 +23,6 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 * `LocalizedModule.r`: the equivalence relation defining this localization, namely
   `(m, s) ≈ (m', s')` if and only if there is some `u : S` such that `u • s' • m = u • s • m'`.
 * `LocalizedModule M S`: the localized module by `S`.
-* `LocalizedModule.mk`: the canonical map sending `(m, s) : M × S ↦ m/s : LocalizedModule M S`
 * `LocalizedModule.liftOn`: any well-defined function `f : M × S → α` respecting `r` descents to
   a function `LocalizedModule M S → α`
 * `LocalizedModule.liftOn₂`: any well-defined function `f : M × S → M × S → α` respecting `r`
@@ -84,9 +83,9 @@ instance r.setoid : Setoid (M × S) where
   r := r S M
   iseqv := ⟨(r.isEquiv S M).refl, (r.isEquiv S M).symm _ _, (r.isEquiv S M).trans _ _ _⟩
 
-/-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
-we can localize `M` by `S`.
--/
+/-- This is the localization of an `R`-module `M` at a submonoid `S` of `R`.
+
+The normal form of elements in it is `m /ₒ s` for some `m : M` and `s : S`. -/
 abbrev _root_.LocalizedModule : Type max u v :=
   OreLocalization S M
 
@@ -98,7 +97,7 @@ section
 
 variable {M S}
 
-/-- The canonical map sending `(m, s) ↦ m/s` -/
+/-- The canonical map sending `(m, s) ↦ m / s` -/
 @[deprecated "Use `/ₒ` instead" (since := "2026-01-12")]
 abbrev mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
