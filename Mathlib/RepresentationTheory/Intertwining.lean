@@ -116,7 +116,7 @@ noncomputable def id : IntertwiningMap ρ ρ where
 
 @[simp] lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
 
-theorem isIntertwiningMap_of_central (g : G) (hg : g ∈ Submonoid.center G) :
+theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) :
     IsIntertwiningMap ρ ρ (ρ g) := by
   rw [isIntertwiningMap_iff]
   intro g' v
