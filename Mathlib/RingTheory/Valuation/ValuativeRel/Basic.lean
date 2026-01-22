@@ -142,7 +142,7 @@ protected alias ⟨_, vle.not_vlt⟩ := not_vlt
 protected alias ⟨_, vlt.not_vle⟩ := not_vle
 
 lemma veq_comm {x y : R} : x =ᵥ y ↔ y =ᵥ x := antisymmRel_comm
-protected alias ⟨veq.symm, _⟩ := veq_comm
+@[symm] protected alias ⟨veq.symm, _⟩ := veq_comm
 
 instance : @Std.Symm R (· =ᵥ ·) where
   symm _ _ := veq.symm
