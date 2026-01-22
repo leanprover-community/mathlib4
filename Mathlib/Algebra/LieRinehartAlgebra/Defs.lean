@@ -50,7 +50,20 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
 
 namespace LieRinehartAlgebra
 
-variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+variable {R : Type*} [CommRing R]
+
+variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
+  [LieRinehartRing A L] [Algebra R A] [LieAlgebra R L] [LieRinehartAlgebra R A L]
+
+variable {A' L' : Type*} [CommRing A'] [LieRing L'] [Module A' L'] [LieRingModule L' A']
+  [LieRinehartRing A' L'] [Algebra R A'] [LieAlgebra R L'] [LieRinehartAlgebra R A' L']
+
+variable {A'' L'' : Type*} [CommRing A''] [LieRing L''] [Module A'' L''] [LieRingModule L'' A'']
+  [LieRinehartRing A'' L''] [Algebra R A''] [LieAlgebra R L''] [LieRinehartAlgebra R A'' L'']
+
+variable (σ : A →ₐ[R] A')
+variable (σ' : A' →ₐ[R] A'')
+
 
 instance : LieRinehartRing A (Derivation R A A) where
   lie_smul_eq_mul _ _ _ := rfl
@@ -61,30 +74,13 @@ instance : LieRinehartRing A (Derivation R A A) where
 instance : LieRinehartAlgebra R A (Derivation R A A) where
 
 
-variable {R : Type*} [CommRing R]
-
-variable {A L : Type*} [CommRing A] [Algebra R A]
-  [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L] [LieRingModule L A]
-  [LieModule R L A] [LieRinehartAlgebra R A L]
-
-variable {A' L' : Type*} [CommRing A'] [Algebra R A']
-  [LieRing L'] [Module A' L'] [LieAlgebra R L'] [IsScalarTower R A' L'] [LieRingModule L' A']
-  [LieModule R L' A'] [LieRinehartAlgebra R A' L']
-
-variable {A'' L'' : Type*} [CommRing A''] [Algebra R A'']
-  [LieRing L''] [Module A'' L''] [LieAlgebra R L''] [IsScalarTower R A'' L'']
-  [LieRingModule L'' A''] [LieModule R L'' A''] [LieRinehartAlgebra R A'' L'']
-
-variable (σ : A →ₐ[R] A')
-variable (σ' : A' →ₐ[R] A'')
 /-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map
 `σ : A → A'` and an `A`-linear map `F : L → L'` which is also a Lie algebra homomorphism and is
 compatible with the anchors.
 -/
-structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [LieAlgebra R L]
-    [IsScalarTower R A L] [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L]
-    [LieRing L'] [Module A' L'] [LieAlgebra R L'] [IsScalarTower R A' L'] [LieRingModule L' A']
-    [LieModule R L' A'] [LieRinehartAlgebra R A' L']
+structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [LieRingModule L A]
+    [LieRinehartRing A L] [LieAlgebra R L] [LieRinehartAlgebra R A L] [LieRing L'] [Module A' L']
+    [LieRingModule L' A'] [LieRinehartRing A' L'] [LieAlgebra R L'] [LieRinehartAlgebra R A' L']
     extends LinearMap (R := A) (S := A') σ.toRingHom L L' where
   map_lie' : ∀ (x y : L), toLinearMap ⁅x, y⁆ = ⁅toLinearMap x, toLinearMap y⁆
   anchor_comp: ∀ (a : A) (l : L), σ (⁅l, a⁆) = ⁅(toLinearMap l), (σ a)⁆
@@ -137,13 +133,11 @@ variable (R A L) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`.
 -/
-def anchor [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L]
-    [LieRingModule L A] [LieModule R L A] [LieRinehartAlgebra R A L] :
-    L →ₗ⁅AlgHom.id R A⁆ (Derivation R A A) where
+def anchor : L →ₗ⁅AlgHom.id R A⁆ (Derivation R A A) where
   toFun x := Derivation.mk' ((LieModule.toEnd R L A) x) fun a b ↦ by
-      simpa [← smul_eq_mul, LieRinehartAlgebra.leibnizA R] using CommMonoid.mul_comm ⁅x, a⁆ b
+    simp [LieRinehartRing.leibniz_mul_right, CommMonoid.mul_comm]
   map_add' _ _ := by ext a; simp
-  map_smul' _ _ := by ext a; simp [LieRinehartAlgebra.left_linearity R]
+  map_smul' _ _ := by ext a; simp [LieRinehartRing.lie_smul_eq_mul]
   map_lie' _ _ := by ext a; simp [Derivation.commutator_apply]
   anchor_comp := by simp
 
