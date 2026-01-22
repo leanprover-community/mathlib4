@@ -100,6 +100,9 @@ lemma measurableSet_botSet [MeasurableSpace R] [MeasurableSingletonClass R] :
     MeasurableSet (botSet (R := R)) :=
   subsingleton_botSet.measurableSet
 
+lemma botSet_eq_singleton_of_isBot {x : R} (hx : IsBot x) : botSet = {x} :=
+  (subsingleton_botSet (R := R)).eq_singleton_of_mem hx
+
 end Prerequisites
 
 variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
@@ -614,8 +617,8 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
 
 @[simp]
 theorem measure_botSet : f.measure botSet = 0 := by
-  by_cases hx : ∃ (x : R), IsBot x
-  · simp [botSet, hx, leftLim_eq_of_isBot hx.choose_spec]
+  by_cases! hx : ∃ (x : R), IsBot x
+  · simp [botSet_eq_singleton_of_isBot hx.choose_spec, leftLim_eq_of_isBot hx.choose_spec]
   · simp [botSet, hx]
 
 theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
