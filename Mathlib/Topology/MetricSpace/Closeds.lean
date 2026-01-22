@@ -226,7 +226,10 @@ namespace NonemptyCompacts
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
 instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
-  __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
+  /- Since the topology on `NonemptyCompacts` is not defeq to the one induced by
+  `UniformSpace.hausdorff`, we replace the uniformity by `NonemptyCompacts.uniformSpace`, which has
+  the right topology. -/
+  __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
