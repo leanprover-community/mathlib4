@@ -389,7 +389,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
   have hs := d.argminOn_mem _ Hexists
   refine ⟨s, hs, fun t ht ↦ not_lt_iff_le_imp_ge.mp fun H ↦ ?_⟩
   have : t.Finite := by
-    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.nat_lt_aleph0]
+    simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.natCast_lt_aleph0]
   lift t to Finset E using this
   have : Module.Finite (adjoin F (s : Set E)) E := by
     apply (config := { allowSynthFailures := true }) Algebra.finite_of_essFiniteType_of_isAlgebraic

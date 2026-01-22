@@ -305,45 +305,12 @@ structure Config : Type where
 -- See https://github.com/leanprover/lean4/issues/10295
 attribute [nolint unusedArguments] instReprConfig.repr
 
-/-- Eta expands `e` at most `n` times. -/
+/-- Eta expands `e` exactly `n` times. -/
 def etaExpandN (n : Nat) (e : Expr) : MetaM Expr := do
-  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ mkLambdaFVars xs (mkAppN e xs)
-
-/-- `e.expand` eta-expands all expressions that have as head a constant `n` in `reorder`.
-They are expanded until they are applied to one more argument than the maximum in `reorder.find n`.
-It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
-def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
-  let env ← getEnv
-  let e₂ ← Meta.transform e (skipConstInApp := true) fun e ↦
-    e.withApp fun f args ↦ do
-    match f with
-    | .proj n i s =>
-      let some info := getStructureInfo? (← getEnv) n | return .continue -- e.g. if `n` is `Exists`
-      let some projName := info.getProjFn? i | unreachable!
-      -- if `projName` has a translation, replace `f` with the application `projName s`
-      -- and then visit `projName s args` again.
-      if findTranslation? env t projName |>.isNone then
-        return .continue
-      return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
-        mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
-    | .const c _ =>
-      let some info := t.argInfoAttr.find? env c | return .continue
-      if info.reorder.isEmpty then
-        -- no need to expand if nothing needs reordering
-        return .continue
-      let needed_n := info.reorder.flatten.foldl Nat.max 0 + 1
-      if needed_n ≤ args.size then
-        return .continue
-      else
-        -- in this case, we need to reorder arguments that are not yet
-        -- applied, so first η-expand the function.
-        let e' ← etaExpandN (needed_n - args.size) e
-        trace[translate_detail] "expanded {e} to {e'}"
-        return .continue e'
-    | _ => return .continue
-  if e != e₂ then
-    trace[translate_detail] "expand:\nBefore: {e}\nAfter: {e₂}"
-  return e₂
+  forallBoundedTelescope (← inferType e) (some n) fun xs _ ↦ do
+    if xs.size ≠ n then
+      throwError "{e} is not a function of arity at least {n}"
+    mkLambdaFVars xs (mkAppN e xs)
 
 /-- Implementation function for `shouldTranslate`.
 Failure means that in that subexpression there is no constant that blocks `e` from being translated.
@@ -419,24 +386,45 @@ is tested, instead of the first argument.
 It will also reorder arguments of certain functions, using `reorderFn`:
 e.g. `g x₁ x₂ x₃ ... xₙ` becomes `g x₂ x₁ x₃ ... xₙ` if `reorderFn g = some [1]`.
 -/
-def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FVarId := #[]) :
-    MetaM Expr := do
-  let e' := aux (← getEnv) (← isTracingEnabledFor `translate_detail) (← expand t e)
-  -- Make sure any new reserved names in the expr are realized; this needs to be done outside of
-  -- `aux` as it is monadic.
+partial def applyReplacementFun (t : TranslateData) (e : Expr)
+    (dontTranslate : Array FVarId := #[]) : MetaM Expr := do
+  let e' ← visit e |>.run {}
+  -- Make sure any new reserved names in the expr are realized
   e'.getUsedConstants.forM fun n => do
     if !(← hasConst (skipRealize := false) n) && isReservedName (← getEnv) n then
       executeReservedNameAction n
   return e'
-where /-- Implementation of `applyReplacementFun`. -/
-  aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  memoFix fun r e ↦ Id.run do
-    if trace then
-      dbg_trace s!"replacing at {e}"
-    if !(e matches .const .. | .app ..) then
-      e.traverseChildren r
-    else e.withApp fun f args ↦ do
-      let .const n₀ ls₀ := f | return mkAppN (← r f) (← args.mapM r)
+where
+  /-- The implementation of this function is based on `Meta.transform`.
+  We can't use `Meta.transform`, because that would cause the types of free variables to be
+  translated, which would create type-incorrect terms. Instead, we give the free variables
+  their original type and the translated type is only used when constructing the final term. -/
+  visit (e : Expr) : MonadCacheT ExprStructEq Expr MetaM Expr :=
+    checkCache { val := e : ExprStructEq } fun _ => do
+    match e with
+    | .forallE .. => visitForall e
+    | .lam ..     => visitLambda e
+    | .letE ..    => visitLet e
+    | .mdata _ b  => return e.updateMData! (← visit b)
+    | .proj ..    => visitApp e
+    | .app ..     => visitApp e
+    | .const ..   => visitApp e
+    | _           => return e
+  visitApp (e : Expr) := e.withApp fun f args ↦ do
+    let env ← getEnv
+    match f with
+    | .proj n i b =>
+      let some info := getStructureInfo? env n |
+        return mkAppN (f.updateProj! (← visit b)) (← args.mapM visit) -- e.g. if `n` is `Exists`
+      let some projName := info.getProjFn? i | unreachable!
+      -- if `projName` has a translation, replace `f` with the application `projName s`
+      -- and then visit `projName s args` again.
+      if findTranslation? env t projName |>.isNone then
+        return mkAppN (f.updateProj! (← visit b)) (← args.mapM visit)
+      visit <| (← whnfD (← inferType b)).withApp fun bf bargs ↦
+        mkAppN (.app (mkAppN (.const projName bf.constLevels!) bargs) b) args
+    | .const n₀ ls₀ =>
+      withTraceNode `translate_detail (fun res => return m!"{exceptEmoji res} replacing at {e}") do
       -- Replace numeral `1` with `0` when required
       if t.changeNumeral then
         if let some numeralArgs := changeNumeralAttr.find? env n₀ then
@@ -445,36 +433,72 @@ where /-- Implementation of `applyReplacementFun`. -/
               -- In this case, we still update all arguments of `g` that are not numerals,
               -- since all other arguments can contain subexpressions like
               -- `(fun x ↦ ℕ) (1 : G)`, and we have to update the `(1 : G)` to `(0 : G)`
-              if trace then
-                dbg_trace s!"applyReplacementFun: We change the numerals in this expression. \
-                  However, we will still recurse into all the non-numeral arguments."
+              trace[translate_detail] "applyReplacementFun: We change the numerals in this \
+                  expression. However, we will still recurse into all the non-numeral arguments."
               let args := numeralArgs.foldl (·.modify · changeNumeral) args
-              return mkAppN f (← args.mapM r)
+              return mkAppN f (← args.mapM visit)
       let some n₁ := findTranslation? env t n₀ <|> do
         let n₁ := findPrefixTranslation env n₀ t
         guard (n₀ != n₁ && (isReservedName env n₁ || env.contains n₁)); some n₁
-        | return mkAppN f (← args.mapM r)
+        | return mkAppN f (← args.mapM visit)
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
-        if let some fxd := shouldTranslate env t args[relevantArg] dontTranslate then
-          if trace then
-            match fxd with
-            | .inl fxd => dbg_trace s!"The application of {n₀} contains the fixed type \
-              {fxd}, so it is not changed."
-            | .inr _ => dbg_trace s!"The application of {n₀} contains a fixed \
-              variable so it is not changed."
-          return mkAppN f (← args.mapM r)
+        if let some fx := shouldTranslate env t args[relevantArg] dontTranslate then
+          let fx := match fx with | .inl fx => m!"type {fx}" | .inr fx => m!"variable {mkFVar fx}"
+          trace[translate_detail]
+            "The application of {n₀} contains the fixed {fx} so it is not changed."
+          return mkAppN f (← args.mapM visit)
+      -- If the number of arguments is too small for `reorder`, we need to eta expand first
+      unless reorder.isEmpty do
+        let reorderNumArgs := reorder.flatten.foldl Nat.max 0 + 1
+        if reorderNumArgs > args.size then
+          let e' ← etaExpandN (reorderNumArgs - args.size) e
+          trace[translate_detail] "eta expanded {e} to {e'}"
+          return ← visit e'
       let swapUniv := reorder.any (·.contains 0)
       let ls₁ := if swapUniv then ls₀.swapFirstTwo else ls₀
       let args := args.permute! reorder
-      if trace then
-        dbg_trace s!"changing {n₀} to {n₁}"
-        if swapUniv then
-          dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
-        unless reorder.isEmpty do
-          dbg_trace s!"reordering the arguments of {n₀} using the cyclic permutations {reorder}"
-      return mkAppN (.const n₁ ls₁) (← args.mapM r)
+      trace[translate_detail]"changing {n₀} to {n₁}"
+      if swapUniv then
+        trace[translate_detail] "reordering the universe variables from {ls₀} to {ls₁}"
+      unless reorder.isEmpty do
+        trace[translate_detail]
+          "reordering the arguments of {n₀} using the cyclic permutations {reorder}"
+      return mkAppN (.const n₁ ls₁) (← args.mapM visit)
+    | _ => return mkAppN (← visit f) (← args.mapM visit)
+  /- In `visitLambda`, `visitForall` and `visitLet`,
+  we use a fresh `tmpLCtx : LocalContext` to store the translated types of the free variables.
+  This is because the local context in the `MetaM` monad stores their original types. -/
+  visitLambda (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+    if let .lam n d b c := e then
+      withLocalDecl n c (d.instantiateRev fvars) fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type)
+        visitLambda b (fvars.push x) (tmpLCtx.addDecl decl)
+    else
+      let e ← visit (e.instantiateRev fvars)
+      return tmpLCtx.mkLambda fvars e
+  visitForall (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+    if let .forallE n d b c := e then
+      withLocalDecl n c (d.instantiateRev fvars) fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type)
+        visitForall b (fvars.push x) (tmpLCtx.addDecl decl)
+    else
+      let e ← visit (e.instantiateRev fvars)
+      return tmpLCtx.mkForall fvars e
+  visitLet (e : Expr) (fvars : Array Expr := #[]) (tmpLCtx : LocalContext := {}) := do
+    if let .letE n t v b nondep := e then
+      withLetDecl n (t.instantiateRev fvars) (v.instantiateRev fvars) (nondep := nondep)
+        fun x => do
+        let decl ← getFVarLocalDecl x
+        let decl := decl.setType (← visit decl.type) |>.setValue (← visit (decl.value true))
+        visitLet b (fvars.push x) (tmpLCtx.addDecl decl)
+    else
+      let e ← visit (e.instantiateRev fvars)
+      -- Note that `mkLambda` will make `let` expressions because it will see the `LocalDecl.ldecl`.
+      return tmpLCtx.mkLambda (usedLetOnly := false) fvars e
 
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
