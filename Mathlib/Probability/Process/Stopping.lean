@@ -100,7 +100,7 @@ theorem IsStoppingTime.measurableSet_lt_of_pred [PredOrder ι] (hτ : IsStopping
     | coe t => exact mod_cast hi_min t
   have : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iic (pred i : ι) := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_Iic]
+    push _ ∈ _
     cases τ ω with
     | top => simp
     | coe t =>
@@ -197,7 +197,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
     h_lub.exists_seq_monotone_tendsto (not_isMin_iff.mp hi_min)
   have h_Iio_eq_Union : Set.Iio (i : WithTop ι) = ⋃ j, {k : WithTop ι | k ≤ seq j} := by
     ext1 k
-    simp only [Set.mem_Iio, Set.mem_iUnion, Set.mem_setOf_eq]
+    push _ ∈ _
     refine ⟨fun hk_lt_i => ?_, fun h_exists_k_le_seq => ?_⟩
     · rw [tendsto_atTop'] at h_tendsto
       cases k with
@@ -211,7 +211,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
     · obtain ⟨j, hk_seq_j⟩ := h_exists_k_le_seq
       exact hk_seq_j.trans_lt (mod_cast h_bound j)
   have h_lt_eq_preimage : {ω | τ ω < i} = τ ⁻¹' Set.Iio i := by
-    ext1 ω; simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_Iio]
+    ext1 ω; push _ ∈ _; rfl
   rw [h_lt_eq_preimage, h_Iio_eq_Union]
   simp only [Set.preimage_iUnion, Set.preimage_setOf_eq]
   exact MeasurableSet.iUnion fun n => f.mono (h_bound n).le _ (hτ.measurableSet_le (seq n))
@@ -869,9 +869,6 @@ theorem ProgMeasurable.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias ProgMeasurable.adapted_stoppedProcess := ProgMeasurable.stronglyAdapted_stoppedProcess
-
 theorem ProgMeasurable.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : ProgMeasurable f u) (hτ : IsStoppingTime f τ) (i : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ i) :=
@@ -1125,34 +1122,21 @@ theorem StronglyAdapted.stoppedProcess [MetrizableSpace ι] (hu : StronglyAdapte
     StronglyAdapted f (stoppedProcess u τ) :=
   ((hu.progMeasurable_of_continuous hu_cont).stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stoppedProcess := StronglyAdapted.stoppedProcess
-
 /-- If the indexing order has the discrete topology, then the stopped process of a strongly adapted
 process is strongly adapted. -/
 theorem StronglyAdapted.stoppedProcess_of_discrete [DiscreteTopology ι] (hu : StronglyAdapted f u)
     (hτ : IsStoppingTime f τ) : StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (hu.progMeasurable_of_discrete.stoppedProcess hτ).stronglyAdapted
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stoppedProcess_of_discrete := StronglyAdapted.stoppedProcess_of_discrete
-
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess [MetrizableSpace ι]
     (hu : StronglyAdapted f u) (hu_cont : ∀ ω, Continuous fun i => u i ω) (hτ : IsStoppingTime f τ)
     (n : ι) : StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   (hu.progMeasurable_of_continuous hu_cont).stronglyMeasurable_stoppedProcess hτ n
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stronglyMeasurable_stoppedProcess := StronglyAdapted.stronglyMeasurable_stoppedProcess
-
 theorem StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete [DiscreteTopology ι]
     (hu : StronglyAdapted f u) (hτ : IsStoppingTime f τ) (n : ι) :
     StronglyMeasurable (MeasureTheory.stoppedProcess u τ n) :=
   hu.progMeasurable_of_discrete.stronglyMeasurable_stoppedProcess hτ n
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.stronglyMeasurable_stoppedProcess_of_discrete :=
-  StronglyAdapted.stronglyMeasurable_stoppedProcess_of_discrete
 
 end StronglyAdaptedStoppedProcess
 

@@ -87,6 +87,35 @@ instance : R.cochainComplex.IsGE 0 := by
   simp only [HomologicalComplex.isSupported_iff_of_quasiIso R.π']
   infer_instance
 
+namespace Hom
+
+variable {R} {X' : C} {R' : ProjectiveResolution X'} {f : X ⟶ X'}
+  (φ : Hom R R' f)
+
+/-- The morphism on cochain complexes indexed by `ℤ` that is induced by
+a (heterogeneous) morphism of projective resolutions. -/
+noncomputable def hom' : R.cochainComplex ⟶ R'.cochainComplex :=
+  HomologicalComplex.extendMap φ.hom _
+
+@[reassoc]
+lemma hom'_f (n : ℤ) (m : ℕ) (h : -m = n) :
+    φ.hom'.f n =
+    (R.cochainComplexXIso n m h).hom ≫ φ.hom.f m ≫ (R'.cochainComplexXIso n m h).inv := by
+  simp [hom', HomologicalComplex.extendMap_f _
+    ComplexShape.embeddingDownNat (i := m) (i' := n) (by dsimp; lia),
+    cochainComplexXIso]
+
+@[reassoc (attr := simp)]
+lemma hom'_comp_π' :
+    φ.hom' ≫ R'.π' = R.π' ≫ (CochainComplex.singleFunctor C 0).map f :=
+  HomologicalComplex.to_single_hom_ext (by
+    simp [hom'_f _ 0 0 rfl, π'_f_zero, CochainComplex.singleFunctor,
+      CochainComplex.singleFunctors,
+      HomologicalComplex.single, HomologicalComplex.singleObjXSelf,
+      HomologicalComplex.singleObjXIsoOfEq])
+
+end Hom
+
 end ProjectiveResolution
 
 end CategoryTheory

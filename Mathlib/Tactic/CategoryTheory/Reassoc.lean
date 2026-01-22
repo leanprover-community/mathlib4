@@ -81,13 +81,16 @@ that are already right associated.
 Note that if you want both the lemma and the reassociated lemma to be
 `simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
 The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
-but not `F_assoc` (this is sometimes useful).
+but not `F_assoc` (this is sometimes useful). This can be combined with `to_dual` in the form
+`@[to_dual (attr := reassoc (attr := simp))]`, which tags all 4 lemmas with `simp`, or
+`@[to_dual (attr := simp, reassoc)]`, which only tags `F` and its dual with `simp`.
+
+If `F` is tagged with `to_dual`, then `F_assoc` will automatically get a `@[to_dual none]` tag.
+This also applies when using `@[to_dual (attr := reassoc)]`.
+In the rare case that only `F_assoc` should be tagged with `to_dual`, use `@[reassoc +to_dual]`.
 
 This attribute also works for lemmas of shape `∀ .., f = g` where `f g : X ≅ Y` are
 isomorphisms, provided that `Tactic.CategoryTheory.IsoReassoc` has been imported.
-
-The lemma `F_assoc` is will be tagged with `@[to_dual none]` if `F` is tagged with `to_dual`,
-or if the syntax `@[reassoc +to_dual]` is used
 -/
 syntax (name := reassoc) "reassoc" (toDualOpt)? optAttrArg : attr
 
@@ -140,9 +143,10 @@ initialize registerBuiltinAttribute {
   descr := ""
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| reassoc $[$dual:toDualOpt]? $optAttr) => MetaM.run' do
+  | `(attr| reassoc $[$toDual:toDualOpt]? $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
+    let toDual := toDual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome
     let tgt := src.appendAfter "_assoc"
     addRelatedDecl src tgt ref optAttr fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
@@ -150,7 +154,7 @@ initialize registerBuiltinAttribute {
         pure (pf, levels)
     -- If the original declaration is tagged with `to_dual`,
     -- then tag the generated declaration with `to_dual none`.
-    if dual.isSome || (Translate.findTranslation? (← getEnv) ToDual.data src).isSome then
+    if toDual then
       liftCommandElabM <| Command.elabCommand <| ←
         `(command| attribute [to_dual none] $(mkIdent tgt))
   | _ => throwUnsupportedSyntax }
