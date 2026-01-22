@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.LinearAlgebra.Matrix.Module
 /-!
-# Morita Equivalece between `R` and `Mₙ(R)`
+# Morita Equivalence between `R` and `Mₙ(R)`
 
 ## Main definitions
 - `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
@@ -17,7 +17,7 @@ public import Mathlib.LinearAlgebra.Matrix.Module
   the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix.
 
 ## TODO (Edison)
-- Prove `R` and `Mₙ(R)` are morita-equivalent.
+- Prove `R` and `Mₙ(R)` are Morita-equivalent.
 -/
 
 @[expose] public section
@@ -104,7 +104,7 @@ def fromModuleCatToModuleCatLinearEquivtoModuleCatObj
   __ := AddEquiv.refl _
   map_smul' _ _ := Subtype.ext <| scalar_smul _ _
 
-/-- Auxilary isomorphism showing that compose two functors gives `id` on objects. -/
+/-- Auxiliary isomorphism showing that compose two functors gives `id` on objects. -/
 @[simps]
 def fromModuleCatToModuleCatLinearEquiv (M : Type*) [AddCommGroup M] [Module R M] (i : ι) :
     MatrixModCat.toModuleCatObj R (ι → M) i ≃ₗ[R] M where

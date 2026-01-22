@@ -152,6 +152,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Descent
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
@@ -1260,6 +1261,7 @@ public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.Cover.Over
+public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
@@ -1314,6 +1316,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.Proper
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiFinite
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
@@ -1386,6 +1389,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
@@ -1722,9 +1726,9 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
-public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
-public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Basic
@@ -1791,6 +1795,8 @@ public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.Distribution
+public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.SchwartzSpace
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
@@ -1818,6 +1824,7 @@ public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
+public import Mathlib.Analysis.InnerProductSpace.Coalgebra
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
 public import Mathlib.Analysis.InnerProductSpace.Continuous
@@ -2392,6 +2399,7 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
@@ -5199,6 +5207,7 @@ public import Mathlib.ModelTheory.Semantics
 public import Mathlib.ModelTheory.Skolem
 public import Mathlib.ModelTheory.Substructures
 public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Topology.Types
 public import Mathlib.ModelTheory.Types
 public import Mathlib.ModelTheory.Ultraproducts
 public import Mathlib.NumberTheory.ADEInequality
@@ -5861,6 +5870,7 @@ public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Adjoin.Field
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Adjoin.PowerBasis
+public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.AlgebraTower
@@ -6050,6 +6060,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Maximal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Ideal.NatInt
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -6069,6 +6080,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.RingTheory.IdealFilter.Basic
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
@@ -6318,6 +6330,7 @@ public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Injective
 public import Mathlib.RingTheory.RingHom.Integral
 public import Mathlib.RingTheory.RingHom.Locally
+public import Mathlib.RingTheory.RingHom.LocallyStandardSmooth
 public import Mathlib.RingTheory.RingHom.OpenImmersion
 public import Mathlib.RingTheory.RingHom.QuasiFinite
 public import Mathlib.RingTheory.RingHom.Smooth
@@ -6348,6 +6361,7 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import Mathlib.RingTheory.Smooth.AdicCompletion
 public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Smooth.Field
 public import Mathlib.RingTheory.Smooth.Flat
 public import Mathlib.RingTheory.Smooth.IntegralClosure
 public import Mathlib.RingTheory.Smooth.Kaehler
@@ -6703,6 +6717,7 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
@@ -7390,6 +7405,7 @@ public import Mathlib.Topology.Sets.Compacts
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sets.Order
+public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.Sheaves.Alexandrov
 public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.Topology.Sheaves.Forget
