@@ -43,6 +43,10 @@ instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
   infer_instance
 
+@[simp]
+lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
+  trivial
+
 namespace Presieve
 
 noncomputable instance : Inhabited (Presieve X) :=
@@ -564,6 +568,9 @@ theorem top_apply (f : Y ⟶ X) : (⊤ : Sieve X) f :=
 
 @[simp]
 lemma arrows_top : (⊤ : Sieve X).arrows = ⊤ := rfl
+
+lemma arrows_eq_top_iff {S : Sieve X} : S.arrows = ⊤ ↔ S = ⊤ :=
+  ⟨fun h ↦ arrows_ext (h ▸ arrows_top), fun h ↦ h ▸ arrows_top⟩
 
 /-- Generate the smallest sieve containing the given set of arrows. -/
 @[simps]
