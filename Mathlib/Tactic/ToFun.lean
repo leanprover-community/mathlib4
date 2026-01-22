@@ -38,7 +38,7 @@ You can specify the name of the new declaration manually, as in `@[to_fun Differ
 Use the `to_fun (attr := ...)` (or `to_fun (attr := ...) new_name`) syntax
 to add the same attribute to both declarations.
 -/
-syntax (name := to_fun) "to_fun" toFunArgs : attr --optAttrArg (str)? : attr
+syntax (name := to_fun) "to_fun" optAttrArg (ident)? : attr
 
 initialize registerBuiltinAttribute {
   name := `to_fun
