@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Data.Vector.Defs
 public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.OfFn
 public import Mathlib.Control.Applicative
 public import Mathlib.Control.Traversable.Basic
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Batteries.Data.Fin.Lemmas
+public import Mathlib.Data.Fin.SuccPred
 
 /-!
 # Additional theorems and definitions about the `Vector` type
@@ -316,7 +317,8 @@ into the provided starting value `b : β` and the recursed `scanl`
 This lemma is the `cons` version of `scanl_get`.
 -/
 @[simp]
-theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := rfl
+theorem scanl_cons (x : α) : scanl f b (x ::ᵥ v) = b ::ᵥ scanl f (f b x) v := by
+  apply Vector.eq; simp [scanl]
 
 /-- The underlying `List` of a `Vector` after a `scanl` is the `List.scanl`
 of the underlying `List` of the original `Vector`.
@@ -544,9 +546,6 @@ theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
-@[deprecated (since := "2025-06-17")]
-alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
-
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
@@ -573,7 +572,7 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
       (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine Subtype.ext ?_
-    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.val_castAdd]
     apply List.insertIdx_comm
     · assumption
     · rw [hl]

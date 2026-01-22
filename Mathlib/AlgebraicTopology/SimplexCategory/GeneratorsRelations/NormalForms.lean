@@ -121,7 +121,7 @@ theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
 
 @[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias sorted := pairwise
 
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
@@ -232,7 +232,7 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
-@[deprecated  (since := "2025-10-16")]
+@[deprecated (since := "2025-10-16")]
 alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
@@ -259,8 +259,8 @@ lemma simplicialEvalσ_of_isAdmissible
       simp only [Fin.predAbove, a₀]
       split_ifs with h₁ h₂ h₂
       · rfl
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
       · rfl
     have := h_rec _ _ hL.of_cons (by grind) hj
     have ha₀ : Fin.ofNat (m₂ + 1) a = a₀ := by ext; simpa [a₀] using hL.head.prop

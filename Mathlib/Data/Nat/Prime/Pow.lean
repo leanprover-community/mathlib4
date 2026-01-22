@@ -16,14 +16,14 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 
 theorem pow_minFac {n k : ℕ} (hk : k ≠ 0) : (n ^ k).minFac = n.minFac := by
   rcases eq_or_ne n 1 with (rfl | hn)
   · simp
-  have hnk : n ^ k ≠ 1 := fun hk' => hn ((pow_eq_one_iff hk).1 hk')
+  have hnk : n ^ k ≠ 1 := fun hk' => hn ((pow_eq_one_iff_left hk).1 hk')
   apply (minFac_le_of_dvd (minFac_prime hn).two_le ((minFac_dvd n).pow hk)).antisymm
   apply
     minFac_le_of_dvd (minFac_prime hnk).two_le

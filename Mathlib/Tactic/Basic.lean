@@ -3,15 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-module
+module  -- shake: keep-all, shake: keep-downstream
 
 public meta import Lean
-public meta import Mathlib.Tactic.PPWithUniv
-public meta import Mathlib.Tactic.ExtendDoc
-public meta import Mathlib.Tactic.Lemma
-public meta import Mathlib.Tactic.TypeStar
-public meta import Mathlib.Tactic.Linter.OldObtain
-public meta import Mathlib.Tactic.Simproc.ExistsAndEq
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Simproc.ExistsAndEq
 public import Batteries.Util.LibraryNote -- For `library_note` command.
 
 /-!
@@ -88,7 +88,7 @@ h₂ : b = c
 ⊢ a = c
 ```
 -/
-syntax (name := introv) "introv " (ppSpace colGt binderIdent)* : tactic
+syntax (name := introv) "introv" (ppSpace colGt binderIdent)* : tactic
 @[tactic introv] partial def evalIntrov : Tactic := fun stx ↦ do
   match stx with
   | `(tactic| introv)                     => introsDep
@@ -114,7 +114,11 @@ where
 /-- Try calling `assumption` on all goals; succeeds if it closes at least one goal. -/
 macro "assumption'" : tactic => `(tactic| any_goals assumption)
 
+/-- Deprecated: use `guard_target =~ t` instead. -/
+@[deprecated "Use `guard_target =~` instead." (since := "2025-12-11")]
 elab "match_target " t:term : tactic => do
+  logWarningAt t <|
+    m!"deprecation warning: replace `match_target {t}` with `guard_target =~ {t}`."
   withMainContext do
     let (val) ← elabTerm t (← inferType (← getMainTarget))
     if not (← isDefEq val (← getMainTarget)) then

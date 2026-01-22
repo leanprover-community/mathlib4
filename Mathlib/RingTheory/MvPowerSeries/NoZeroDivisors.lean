@@ -161,7 +161,7 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
       have : f.weightedHomogeneousComponent w p * g.weightedHomogeneousComponent w q ≠ 0 := by
         simp only [ne_eq, mul_eq_zero]
         intro H
-        rcases H with  H | H <;>
+        rcases H with H | H <;>
         · refine weightedHomogeneousComponent_of_weightedOrder ?_ H
           simp only [ENat.coe_toNat_eq_self, ne_eq, weightedOrder_eq_top_iff, p, q]
           rw [← ne_eq, ne_zero_iff_weightedOrder_finite w]

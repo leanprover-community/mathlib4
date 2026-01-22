@@ -34,7 +34,7 @@ namespace CategoryTheory.Monoidal.Reflective
 
 open Category MonoidalCategory MonoidalClosed BraidedCategory Functor
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
 variable [MonoidalCategory D] [SymmetricCategory D] [MonoidalClosed D]
 
@@ -208,7 +208,7 @@ instance (d d' : D) : IsIso (L.map ((adj.unit.app d) ⊗ₘ (adj.unit.app d'))) 
 
 instance (c : C) (d : D) : IsIso (adj.unit.app ((ihom d).obj (R.obj c))) := by
   revert c d
-  rw [((isIso_tfae adj).out 0 3:)]
+  rw [((isIso_tfae adj).out 0 3 :)]
   intro d d'
   infer_instance
 

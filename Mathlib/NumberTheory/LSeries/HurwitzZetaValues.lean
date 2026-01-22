@@ -37,7 +37,7 @@ sums in the convergence range.)
   methods in the library at the present time (May 2024).
 -/
 
-@[expose] public section
+public section
 
 open Complex Real Set
 

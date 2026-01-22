@@ -51,7 +51,8 @@ theorem quotientSpanXSubCAlgEquiv_symm_apply (x : R) (y : R) :
 isomorphism of $R$-algebras $R[X] / \langle x, X - y \rangle \cong R / \langle x \rangle$. -/
 noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
     (R[X] ⧸ (Ideal.span {C x, X - C y} : Ideal R[X])) ≃ₐ[R] R ⧸ (Ideal.span {x} : Ideal R) :=
-  (Ideal.quotientEquivAlgOfEq R <| by rw [Ideal.span_insert, sup_comm]).trans <|
+  (Ideal.quotientEquivAlgOfEq R (J := _ ⊔ Ideal.span {C x}) <| by
+      rw [Ideal.span_insert, sup_comm]).trans <|
     (DoubleQuot.quotQuotEquivQuotSupₐ R _ _).symm.trans <|
       (Ideal.quotientEquivAlg _ _ (quotientSpanXSubCAlgEquiv y) rfl).trans <|
         Ideal.quotientEquivAlgOfEq R <| by

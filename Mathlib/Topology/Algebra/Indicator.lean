@@ -13,7 +13,7 @@ public import Mathlib.Topology.Clopen
 # Continuity of indicator functions
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped Topology
