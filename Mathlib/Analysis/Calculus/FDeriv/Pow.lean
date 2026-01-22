@@ -184,7 +184,7 @@ theorem fderivWithin_pow_ring' {s : Set 𝔸} {x : 𝔸} (n : ℕ) (hxs : Unique
     fderivWithin 𝕜 (fun x : 𝔸 ↦ x ^ n) s x
       = (∑ i ∈ Finset.range n, x ^ (n.pred - i) •> .id _ _ <• x ^ i) := by
   rw [fderivWithin_fun_pow' hxs n differentiableAt_fun_id.differentiableWithinAt,
-    fderivWithin_id' hxs]
+    fderivWithin_fun_id hxs]
 
 end NormedRing
 
@@ -253,6 +253,6 @@ theorem fderivWithin_pow (hxs : UniqueDiffWithinAt 𝕜 s x)
 theorem fderivWithin_pow_ring {s : Set 𝔸} {x : 𝔸} (n : ℕ) (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (fun x : 𝔸 ↦ x ^ n) s x = (n • x ^ (n - 1)) • .id _ _ := by
   rw [fderivWithin_fun_pow hxs n differentiableAt_fun_id.differentiableWithinAt,
-    fderivWithin_id' hxs]
+    fderivWithin_fun_id hxs]
 
 end NormedCommRing
