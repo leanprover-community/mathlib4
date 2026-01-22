@@ -1085,7 +1085,7 @@ theorem associated_num_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (num x⁻
 
 theorem associated_denom_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
   apply Associated.symm
-  convert num_inv_associated (inv_ne_zero hx)
+  convert associated_num_inv (inv_ne_zero hx)
   rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]
