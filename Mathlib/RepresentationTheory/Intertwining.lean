@@ -88,6 +88,7 @@ def coeFnAddMonoidHom : IntertwiningMap ρ σ →+ V → W where
   map_add' := coe_add ρ σ
 
 instance : Module A (IntertwiningMap ρ σ) :=
+  fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
