@@ -16,11 +16,11 @@ We define a relation on walks stating that one walk is the subwalk of another.
 
 ## Main definitions
 
-* `SimpleGraph.Walk.IsSubwalk`:
-  A relation on walks stating that the first walk is a contiguous subwalk of the second walk
+* `SimpleGraph.Walk.IsSubwalk`: A relation on walks stating that the first walk is a contiguous
+  subwalk of the second walk.
 
 ## Tags
-walks
+walks, subwalks
 -/
 
 @[expose] public section
@@ -68,7 +68,7 @@ lemma IsSubwalk.trans {u₁ v₁ u₂ v₂ u₃ v₃} {p₁ : G.Walk u₁ v₁} 
   obtain ⟨q₁, r₁, rfl⟩ := h₁
   obtain ⟨q₂, r₂, rfl⟩ := h₂
   use q₂.append q₁, r₁.append r₂
-  simp only [append_assoc]
+  simp [append_assoc]
 
 lemma isSubwalk_nil_iff {u v u'} (p : G.Walk u v) :
     p.IsSubwalk (nil : G.Walk u' u') ↔ ∃ (hu : u' = u) (hv : u' = v), p = nil.copy hu hv := by
@@ -132,7 +132,7 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 @[simp]
 theorem IsSubwalk.support_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.support ⊆ p₁.support :=
-  List.IsInfix.subset <| isSubwalk_iff_support_isInfix.mp h
+  (isSubwalk_iff_support_isInfix.mp h).subset
 
 theorem IsSubwalk.edges_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.edges <:+: p₂.edges := by
@@ -141,7 +141,7 @@ theorem IsSubwalk.edges_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Wa
 @[simp]
 theorem IsSubwalk.edges_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.edges ⊆ p₁.edges :=
-  List.IsInfix.subset <| h.edges_isInfix
+  h.edges_isInfix.subset
 
 theorem IsSubwalk.darts_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₁.IsSubwalk p₂) : p₁.darts <:+: p₂.darts := by
@@ -150,26 +150,19 @@ theorem IsSubwalk.darts_isInfix {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Wa
 @[simp]
 theorem IsSubwalk.darts_subset {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) : p₂.darts ⊆ p₁.darts :=
-  List.IsInfix.subset <| h.darts_isInfix
+  h.darts_isInfix.subset
 
 protected lemma IsSubwalk.map {u v u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u' v'}
     (h : p₂.IsSubwalk p₁) (f : G →g G') : (p₂.map f).IsSubwalk (p₁.map f) := by
   simp [isSubwalk_iff_support_isInfix, isSubwalk_iff_support_isInfix.mp h, List.IsInfix.map]
 
 protected lemma IsSubwalk.dropLast {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
-    (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q := by
-  obtain ⟨r₁, r₂, rfl⟩ := hpq
-  cases h' : p
-  · grind [getVert_nil, append_nil, dropLast_nil, nil_isSubwalk_iff_exists]
-  · exact ⟨r₁, cons (Walk.adj_penultimate (by simp)) r₂, by
-      grind [=_ concat_append, concat_dropLast, _=_ append_assoc]⟩
+    (hpq : p.IsSubwalk q) : p.dropLast.IsSubwalk q :=
+  (isSubwalk_take _ _).trans hpq
 
 protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
-    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q := by
-  obtain ⟨r₁, r₂, rfl⟩ := hpq
-  cases h' : p
-  · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
-  · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
+    (hpq : p.IsSubwalk q) : p.tail.IsSubwalk q :=
+  (isSubwalk_drop _ _).trans hpq
 
 end Walk
 
