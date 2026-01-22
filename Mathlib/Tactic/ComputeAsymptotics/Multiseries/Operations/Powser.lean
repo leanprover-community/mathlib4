@@ -17,9 +17,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 open Filter Asymptotics Topology Stream'
@@ -97,13 +94,6 @@ theorem toFormalMultilinearSeries_coeff {s : LazySeries} {n : ℕ} :
   eta_expand
   simp_rw [Pi.one_apply, FormalMultilinearSeries.ofScalars_apply_eq, coeff]
   simp
-
-@[simp]
-theorem toFormalMultilinearSeries_norm {s : LazySeries} {n : ℕ} :
-    ‖(s.toFormalMultilinearSeries) n‖ = |(s.get? n).getD 0| := by
-  simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, Real.norm_eq_abs]
-  congr
-  exact toFormalMultilinearSeries_coeff
 
 /-- Predicate stating that a lazy series converges on some non-trivial ball. -/
 def Analytic (s : LazySeries) : Prop := 0 < s.toFormalMultilinearSeries.radius
@@ -271,12 +261,12 @@ theorem analytic_of_all_le_one {s : LazySeries} (h : ∀ x ∈ s, |x| ≤ 1) : s
   apply lt_of_lt_of_le (b := 1)
   · simp
   apply FormalMultilinearSeries.le_radius_of_bound (C := 1)
-  simp only [toFormalMultilinearSeries_norm]
+  simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
+    Real.norm_eq_abs, NNReal.coe_one, one_pow, mul_one]
   intro n
   cases h_get : s.get? n with
   | none => simp
   | some val =>
-  simp only [Option.getD_some, NNReal.coe_one, one_pow, mul_one]
   apply h
   exact get?_mem h_get
 
@@ -294,7 +284,7 @@ theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : maj
   · exact hf _ h_exp
   · exact hg
 
-/-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
+/-- `SeqMS`-part of `PreMS.apply`. -/
 noncomputable def SeqMS.apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
   let T := LazySeries
@@ -305,6 +295,7 @@ noncomputable def SeqMS.apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_t
       some (0, PreMS.const _ c, ms, cs)
   SeqMS.gcorec g SeqMS.mul s
 
+/-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
 noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
   mk (SeqMS.apply s ms.seq) (s.toFun ∘ ms.toFun)
@@ -363,7 +354,7 @@ theorem SeqMS.apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis
 theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
     (apply s ms).WellOrdered := by
-  simp at *
+  simp only [WellOrdered_iff_Seq_WellOrdered, leadingExp_def, apply_seq] at *
   exact SeqMS.apply_WellOrdered h_wo h_neg
 
 theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd : ℝ → ℝ}
@@ -384,13 +375,16 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd 
     simp [h_seq_eq, hf_eq]
   | cons s_hd s_tl =>
   right
-  simp at hf_eq
-  simp [h_seq_eq]
-  have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop] (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
+  simp only [apply_toFun] at hf_eq
+  simp only [↓existsAndEq, h_seq_eq, apply_seq, SeqMS.apply_cons, mul_seq, SeqMS.cons_eq_cons,
+    WellOrdered_iff_Seq_WellOrdered, true_and, const_toFun', real_real_rpow_zero, one_mul]
+  have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop]
+      (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact LazySeries.toFun_cons_eventually_eq h_analytic
   use ms, apply s_tl ms
-  simp [const_Approximates h_basis.tail, h_approx, SeqMS.apply_WellOrdered (by simpa using h_wo) h_neg]
+  simp only [apply_seq, const_Approximates h_basis.tail, apply_toFun, h_approx,
+    SeqMS.apply_WellOrdered (by simpa using h_wo) h_neg, true_and]
   constructorm* _ ∧ _
   · apply majorated_of_EventuallyEq hf_eq
     apply LazySeries.toFun_majorated_zero h_analytic hf_tendsto_zero
@@ -400,7 +394,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd 
     apply EventuallyEq.of_eq
     ext t
     simp
-  simp [motive]
+  simp only [equiv_def, apply_seq, apply_toFun, motive]
   refine ⟨s_tl, LazySeries.tail_analytic h_analytic, rfl, by rfl⟩
 
 section Zeros
@@ -435,7 +429,8 @@ theorem zeros_toFun : zeros.toFun = 0 := by
 @[simp]
 theorem zeros_radius : zeros.toFormalMultilinearSeries.radius = ⊤ := by
   apply FormalMultilinearSeries.radius_eq_top_of_summable_norm
-  simp
+  simp only [FormalMultilinearSeries.norm_apply_eq_norm_coef, toFormalMultilinearSeries_coeff,
+    zeros_get, Option.getD_some, norm_zero, zero_mul, forall_const]
   exact summable_zero
 
 theorem zeros_analytic : Analytic zeros := by

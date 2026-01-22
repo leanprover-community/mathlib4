@@ -33,16 +33,6 @@ namespace ComputeAsymptotics
 
 open Filter Asymptotics Topology Stream'
 
--- neg (x :: xs) := -x :: neg xs
-def neg (s : Stream' ℝ) : Stream' ℝ :=
-  let T := Stream' ℝ
-  let hd (s : T) : ℝ := -s.head
-  let tlArg (s : T) : T := s.tail
-  Stream'.corec hd tlArg s
-
-theorem neg_deg (s : Stream' ℝ) : neg s = (-s.head) :: (neg s.tail) := by
-  rw [neg, Stream'.corec_eq]; rfl
-
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
 
@@ -55,10 +45,13 @@ def PreMS (basis : Basis) : Type :=
 namespace PreMS
 
 set_option linter.unusedVariables false in
+/-- TODO -/
+@[nolint unusedArguments]
 def SeqMS (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Type := Seq (ℝ × PreMS basis_tl)
 
 namespace SeqMS
 
+/-- Converts a `SeqMS basis_hd basis_tl` to a `Seq (ℝ × PreMS basis_tl)`. -/
 def toSeq {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : Seq (ℝ × PreMS basis_tl) :=
   ms
 
@@ -71,10 +64,8 @@ def cons {basis_hd basis_tl} (exp : ℝ) (coef : PreMS basis_tl)
     SeqMS basis_hd basis_tl :=
   Seq.cons (exp, coef) tl
 
-/-- Recursion principle for multiseries with non-empty basis. It is equivalent to
-`Stream'.Seq.recOn` but provides some convenience. For example one can write
-`cases' ms with exp coef tl` while cannot `cases' ms with (exp, coef) tl` (`cases` tactic does
-not support argument deconstruction). -/
+/-- Recursion principle for `SeqMS basis_hd basis_tl`. It is equivalent to
+`Stream'.Seq.recOn` but provides some convenience. -/
 @[cases_eliminator]
 def recOn {basis_hd basis_tl} {motive : SeqMS basis_hd basis_tl → Sort*}
     (ms : SeqMS basis_hd basis_tl) (nil : motive nil)
@@ -238,13 +229,6 @@ theorem FriendOperation.head_eq_head {basis_hd basis_tl}
     (h : FriendOperation op) {x y : SeqMS basis_hd basis_tl}
     (h_head : x.head = y.head) : (op x).head = (op y).head :=
   Stream'.Seq.FriendOperation.head_eq_head h h_head
-
--- theorem FriendOperation.head_eq_head_of_cons {basis_hd basis_tl}
---     {op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
---     (h : FriendOperation op) {exp : ℝ} {coef : PreMS basis_tl}
---     {x y : SeqMS basis_hd basis_tl} :
---     (op (cons exp coef x)).head = (op (cons exp coef y)).head :=
---   Stream'.Seq.FriendOperation.head_eq_head_of_cons h
 
 theorem FriendOperation.id {basis_hd basis_tl} :
     FriendOperation (id : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) :=
@@ -463,6 +447,7 @@ end simp
 
 end SeqMS
 
+/-- Convert a real number to a multiseries in empty basis. -/
 def ofReal (c : ℝ) : PreMS [] := c
 
 /-- Convert a multiseries in empty basis to a real number. -/
@@ -473,15 +458,18 @@ def seq {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     SeqMS basis_hd basis_tl :=
   ms.1
 
+/-- Convert a multiseries to a function. -/
 def toFun {basis : Basis} (ms : PreMS basis) : ℝ → ℝ :=
   match basis with
   | [] => fun _ ↦ ms.toReal
   | .cons _ _ =>  ms.2
 
+/-- Constructs a multiseries from a `SeqMS basis_hd basis_tl` and a function. -/
 def mk {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
     PreMS (basis_hd :: basis_tl) :=
   (s, f)
 
+/-- Recursion principle for `PreMS (basis_hd :: basis_tl)`. -/
 @[cases_eliminator]
 def recOn {basis_hd basis_tl} {motive : PreMS (basis_hd :: basis_tl) → Sort*}
     (nil : ∀ f, motive (mk .nil f))
@@ -497,16 +485,9 @@ instance (basis : Basis) : Inhabited (PreMS basis) :=
   | [] => ⟨(default : ℝ)⟩
   | List.cons basis_hd basis_tl => ⟨(default : SeqMS basis_hd basis_tl × (ℝ → ℝ))⟩
 
--- @[simp]
--- theorem ofReal_toReal (c : ℝ) : (ofReal c).toReal = c := rfl
-
--- @[simp]
--- theorem toReal_ofReal (c : PreMS []) : (ofReal c.toReal) = c := rfl
-
 theorem eq_mk {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) :
     ms = mk ms.seq ms.toFun := rfl
 
-@[simp]
 theorem mk_eq_mk_iff {basis_hd basis_tl} (s t : SeqMS basis_hd basis_tl) (f g : ℝ → ℝ) :
     mk (basis_hd := basis_hd) s f = mk (basis_hd := basis_hd) t g ↔ s = t ∧ f = g where
   mp h := by rwa [mk, mk, Prod.mk_inj] at h
@@ -517,14 +498,13 @@ theorem ms_eq_mk_iff {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl))
     (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
     ms = mk s f ↔ ms.seq = s ∧ ms.toFun = f := by
   conv => lhs; lhs; rw [eq_mk ms]
-  simp
+  rw [mk_eq_mk_iff]
 
 @[simp]
 theorem mk_eq_mk_iff_iff {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl))
     (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
     mk s f = ms ↔ ms.seq = s ∧ ms.toFun = f := by
-  rw [@Eq.comm _ (mk s f) ms]
-  simp
+  rw [@Eq.comm _ (mk s f) ms, ms_eq_mk_iff]
 
 theorem ms_eq_ms_iff_mk_eq_mk {basis_hd basis_tl} (ms₁ ms₂ : PreMS (basis_hd :: basis_tl)) :
     ms₁ = ms₂ ↔ ms₁.seq = ms₂.seq ∧ ms₁.toFun = ms₂.toFun where
@@ -544,6 +524,7 @@ theorem mk_toFun {basis_hd basis_tl} {s : SeqMS basis_hd basis_tl} {f : ℝ → 
 theorem mk_seq {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) (f : ℝ → ℝ) :
     (mk (basis_hd := basis_hd) s f).seq = s := rfl
 
+/-- Replace the function attached to a multiseries. -/
 def replaceFun {basis_hd basis_tl} (ms : PreMS (basis_hd :: basis_tl)) (f : ℝ → ℝ) :
     PreMS (basis_hd :: basis_tl) :=
   mk ms.seq f
@@ -588,34 +569,15 @@ theorem leadingExp_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd
     (cons exp coef tl).leadingExp = exp :=
   rfl
 
--- @[simp]
--- theorem leadingExp_cons' {hd : ℝ × PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
---     leadingExp (.cons hd tl) = hd.1 :=
---   rfl
-
--- theorem leadingExp_of_head :
---     ms.leadingExp = ms.head.elim ⊥ (fun (exp, _) ↦ exp) := by
---   cases ms <;> simp
-
 /-- If `ms.leadingExp = ⊥` then `ms = []`. -/
 @[simp]
 theorem leadingExp_eq_bot (s : SeqMS basis_hd basis_tl) :
     s.leadingExp = ⊥ ↔ s = nil := by
   cases s <;> simp
 
--- /-- If `ms.leadingExp` is real number `exp` then `ms = cons (exp, coef) tl` for some `coef` and
--- `tl`. -/
--- theorem leadingExp_eq_coe {exp : ℝ} (h : ms.leadingExp = ↑exp) :
---     ∃ coef tl, ms = cons exp coef tl := by
---   cases ms with
---   | nil => simp at h
---   | cons exp coef tl =>
---     simp only [leadingExp_cons, WithBot.coe_inj] at h
---     subst h
---     use coef, tl
-
 end SeqMS
 
+/-- The leading exponent of multiseries with non-empty basis. For `ms = []` it is `⊥`. -/
 def leadingExp (ms : PreMS (basis_hd :: basis_tl)) : WithBot ℝ :=
   ms.seq.leadingExp
 
@@ -635,14 +597,14 @@ private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} 
     (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
   rfl
 
-/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are Pairwise by TODO. -/
+/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted. -/
 inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
 | const (ms : PreMS []) : WellOrdered ms
 | seq {hd} {tl} (ms : PreMS (hd :: tl))
     (h_coef : ∀ x ∈ ms.seq, x.2.WellOrdered)
     (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.WellOrdered
 
--- TODO: can be done nicer?
+/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted. -/
 def SeqMS.WellOrdered {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) : Prop :=
   (mk s 0).WellOrdered (basis := basis_hd :: basis_tl)
 
@@ -694,8 +656,8 @@ theorem WellOrdered.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
 
 /-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem WellOrdered_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
-    (h : WellOrdered (cons exp coef tl)) :
+theorem WellOrdered_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : SeqMS basis_hd basis_tl} (h : WellOrdered (cons exp coef tl)) :
     coef.WellOrdered ∧ leadingExp tl < exp ∧ tl.WellOrdered := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
@@ -707,7 +669,7 @@ theorem WellOrdered_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
   | cons tl_exp tl_coef tl_tl =>
   obtain ⟨h_all, h_Pairwise⟩ := Seq.Pairwise.cons_elim h_Pairwise
   constructor
-  · simp
+  · simp only [leadingExp_cons, WithBot.coe_lt_coe]
     apply h_all (tl_exp, tl_coef) (by simp [cons])
   constructor
   · intro x hx
@@ -752,6 +714,7 @@ theorem WellOrdered.coind {s : SeqMS basis_hd basis_tl}
       · specialize h_step exp coef tl h
         grind
 
+/-- A predicate that says that a function `op` preserves well-orderedness of multiseries. -/
 abbrev PreservesWellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) : Prop :=
   ∀ x, x.WellOrdered → (op x).WellOrdered
@@ -896,18 +859,19 @@ theorem WellOrdered.coind_friend' {ms : SeqMS basis_hd basis_tl}
 end SeqMS
 
 /-- `[]` is `WellOrdered`. -/
-@[simp]
 theorem WellOrdered.nil (f : ℝ → ℝ) : @WellOrdered (basis_hd :: basis_tl) (mk .nil f) := by
   simp
 
 /-- `[(exp, coef)]` is `WellOrdered` when `coef` is `WellOrdered`. -/
-theorem WellOrdered.cons_nil {exp : ℝ} {coef : PreMS basis_tl} {f : ℝ → ℝ} (h_coef : coef.WellOrdered) :
+theorem WellOrdered.cons_nil {exp : ℝ} {coef : PreMS basis_tl} {f : ℝ → ℝ}
+    (h_coef : coef.WellOrdered) :
     @WellOrdered (basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
   simp [SeqMS.WellOrdered.cons_nil h_coef]
 
 /-- `cons (exp, coef) tl` is `WellOrdered` when `coef` and `tl` are `WellOrdered` and leading
 exponent of `tl` is less than `exp`. -/
-theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ}
+theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+    {f : ℝ → ℝ}
     (h_coef : coef.WellOrdered)
     (h_comp : tl.leadingExp < exp)
     (h_tl : tl.WellOrdered) :
@@ -916,7 +880,8 @@ theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_h
 
 /-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ}
+theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+    {f : ℝ → ℝ}
     (h : @WellOrdered (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
     coef.WellOrdered ∧ tl.leadingExp < exp ∧ tl.WellOrdered := by
   apply SeqMS.WellOrdered_cons (by simpa using h)
@@ -1000,13 +965,6 @@ theorem smul_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorated f b
     {c : ℝ} : majorated (c • f) basis_hd exp := by
   intro exp h_exp
   apply IsLittleO.const_mul_left (h exp h_exp)
-
--- /-- `f * c` can be majorated with the same exponent as `f` for any constant `c`. -/
--- theorem mul_const_majorated {f basis_hd : ℝ → ℝ} {exp : ℝ} (h : majorated f basis_hd exp)
---     {c : ℝ} : majorated (fun t ↦ (f t) * c) basis_hd exp := by
---   intro exp h_exp
---   simp_rw [mul_comm]
---   apply IsLittleO.const_mul_left (h exp h_exp)
 
 /-- Sum of two function, that can be majorated with exponents `f_exp` and `g_exp`, can be
 majorated with exponent `f_exp ⊔ g_exp`. -/
@@ -1131,14 +1089,6 @@ theorem Approximates.coind {ms : PreMS (basis_hd :: basis_tl)}
   unfold Approximates
   aesop
 
--- @[simp]
--- theorem Approximates_const_iff {ms : PreMS []} {f : ℝ → ℝ} :
---     ms.Approximates f ↔ f =ᶠ[atTop] (fun _ ↦ ms) where
---   mp h := by
---     rw [Approximates.step] at h
---     simpa [Approximates.T] using h
---   mpr h := Approximates.const h
-
 /-- If `[]` approximates `f`, then `f = 0` eventually. -/
 theorem Approximates_nil (h : @Approximates (basis_hd :: basis_tl) (mk .nil f)) :
     f =ᶠ[atTop] 0 := by
@@ -1181,18 +1131,19 @@ theorem replaceFun_Approximates {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ →
   rintro _ ⟨ms, f, rfl, h_approx, h_eq⟩
   cases ms with
   | nil g =>
-    simp at h_approx h_eq ⊢
+    simp only [Approximates_nil_iff, mk_toFun, mk_replaceFun, mk_seq, true_and, SeqMS.nil_ne_cons,
+      false_and, exists_const, or_false] at h_approx h_eq ⊢
     grw [← h_eq, h_approx]
   | cons exp coef tl g =>
     right
     obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
     use exp, coef, tl
-    simp [h_coef]
-    simp at h_eq
+    simp only [mk_replaceFun, mk_seq, h_coef, mk_toFun, true_and]
+    simp only [mk_toFun] at h_eq
     constructor
     · exact majorated_of_EventuallyEq h_eq.symm h_maj
     refine ⟨mk tl (g - basis_hd ^ exp * coef.toFun), _, rfl, h_tl, ?_⟩
-    simp
+    simp only [mk_toFun]
     grw [h_eq]
 
 instance (basis_hd : ℝ → ℝ) (basis_tl : Basis) : Setoid (PreMS (basis_hd :: basis_tl)) where

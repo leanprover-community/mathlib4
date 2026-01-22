@@ -14,10 +14,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Basic
 
 -/
 
-
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 namespace ComputeAsymptotics
@@ -46,6 +42,7 @@ noncomputable def add {basis : Basis} (a b : PreMS basis) : PreMS basis :=
   | List.cons basis_hd basis_tl =>
     mk (SeqMS.add (basis_hd := basis_hd) a.seq b.seq) (a.toFun + b.toFun)
 
+/-- `SeqMS`-part of `PreMS.add`. -/
 noncomputable def SeqMS.add {basis_hd : ℝ → ℝ} {basis_tl : Basis} (X Y : SeqMS basis_hd basis_tl) :
     SeqMS basis_hd basis_tl :=
   let T := (SeqMS basis_hd basis_tl) × (SeqMS basis_hd basis_tl)
@@ -100,12 +97,11 @@ theorem add_toFun {basis : Basis} {X Y : PreMS basis} :
   rw [add_def]
   cases basis with
   | nil =>
-    simp [add]
+    simp only [add, const_toFun]
     ext
     rfl
   | cons basis_hd basis_tl =>
     simp [add]
-
 
 -- theorems
 open Filter Asymptotics
@@ -134,13 +130,6 @@ theorem SeqMS.nil_add {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS ba
     · rfl
     simp only [motive, add_def, add]
 
-@[simp]
-private theorem SeqMS.zero_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl} :
-    0 + ms = ms := by
-  simp [SeqMS.zero_def]
-
-@[simp]
 private theorem zero_add' {basis : Basis} {ms : PreMS basis} :
     0 + ms = ms := by
   cases basis with
@@ -174,13 +163,6 @@ theorem SeqMS.add_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS ba
     · rfl
     simp [motive, add_def, SeqMS.add]
 
-@[simp]
-private theorem SeqMS.add_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : SeqMS basis_hd basis_tl} :
-    ms + 0 = ms := by
-  simp [zero_def]
-
-@[simp]
 private theorem add_zero' {basis : Basis} {ms : PreMS basis} :
     ms + 0 = ms := by
   cases basis with
@@ -237,8 +219,8 @@ theorem SeqMS.add_cons_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   | cons Y_tl_exp Y_tl_coef Y_tl_tl => simp
 
 /-- `((X_exp, X_coef) :: X_tl) + Y = (X_exp, X_coef) :: (X_tl + Y)` when `X_exp > Y.leadingExp`. -/
-theorem SeqMS.add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ} {X_coef : PreMS basis_tl}
-    {X_tl Y : SeqMS basis_hd basis_tl} (h_lt : Y.leadingExp < X_exp) :
+theorem SeqMS.add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp : ℝ}
+    {X_coef : PreMS basis_tl} {X_tl Y : SeqMS basis_hd basis_tl} (h_lt : Y.leadingExp < X_exp) :
     (cons X_exp X_coef X_tl) + Y =
     cons X_exp X_coef (X_tl + Y) := by
   rw [add_unfold, add']
@@ -252,8 +234,8 @@ theorem SeqMS.add_cons_left {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X_exp :
     · linarith
 
 /-- `X + ((Y_exp, Y_coef) :: Y_tl) = (Y_exp, Y_coef) :: (X + Y_tl)` when `Y_exp > X.leadingExp`. -/
-theorem SeqMS.add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ} {Y_coef : PreMS basis_tl}
-    {Y_tl X : SeqMS basis_hd basis_tl} (h_lt : X.leadingExp < Y_exp) :
+theorem SeqMS.add_cons_right {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
+    {Y_coef : PreMS basis_tl} {Y_tl X : SeqMS basis_hd basis_tl} (h_lt : X.leadingExp < Y_exp) :
     X + (cons Y_exp Y_coef Y_tl) = cons Y_exp Y_coef (X + Y_tl) := by
   rw [add_unfold, add']
   cases X with
@@ -269,7 +251,8 @@ mutual
 
 /-- `add` commutes with `mulConst`. -/
 @[simp]
-theorem SeqMS.add_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : SeqMS basis_hd basis_tl} {c : ℝ} :
+theorem SeqMS.add_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : SeqMS basis_hd basis_tl}
+    {c : ℝ} :
     (X + Y).mulConst c = (X.mulConst c) + Y.mulConst c := by
   let motive (A B : SeqMS basis_hd basis_tl) : Prop :=
     ∃ (X Y : SeqMS basis_hd basis_tl), A = (X + Y).mulConst c ∧ B = X.mulConst c + Y.mulConst c
@@ -284,17 +267,18 @@ theorem SeqMS.add_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : Se
     | cons Y_exp Y_coef Y_tl =>
     right
     rw [SeqMS.add_cons_cons]
-    simp [motive, SeqMS.add_cons_cons]
+    simp only [SeqMS.mulConst_cons, SeqMS.add_cons_cons, exists_and_left, ↓existsAndEq, and_true,
+      motive]
     split_ifs with h1 h2
-    · simp
+    · simp only [SeqMS.mulConst_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, rfl, ?_⟩
       simp
-    · simp
+    · simp only [SeqMS.mulConst_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, rfl, ?_⟩
       simp
     · have : X_exp = Y_exp := by linarith
       subst this
-      simp
+      simp only [SeqMS.mulConst_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, rfl, ?_⟩
       rw [add_mulConst]
       simp
@@ -331,13 +315,16 @@ private theorem SeqMS.add_comm' {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_
   rw [SeqMS.add_cons_cons, SeqMS.add_cons_cons]
   split_ifs with h1 h2
   · linarith
-  · simp [motive]
+  · simp only [SeqMS.cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
+    exists_and_right, true_and, motive]
     use ?_, ?_
-  · simp [motive]
+  · simp only [SeqMS.cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, and_self_left,
+    exists_and_right, true_and, motive]
     use ?_, ?_
   · have : X_exp = Y_exp := by linarith
     subst this
-    simp [motive]
+    simp only [SeqMS.cons_eq_cons, exists_and_left, ↓existsAndEq, and_true, exists_eq_left',
+      true_and, motive]
     constructor
     · rw [add_comm']
     · use ?_, ?_
@@ -415,8 +402,8 @@ end
 
 /-- This instance is necessary for using `abel` tactic later. -/
 noncomputable instance (basis_hd basis_tl) : AddCommMonoid (SeqMS basis_hd basis_tl) where
-  zero_add := by apply SeqMS.zero_add'
-  add_zero := by apply SeqMS.add_zero'
+  zero_add := by simp
+  add_zero := by simp
   add_assoc _ _ _ := by apply SeqMS.add_assoc'.symm
   add_comm _ _ := by apply SeqMS.add_comm'
   nsmul := nsmulRec
@@ -443,11 +430,6 @@ theorem SeqMS.add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : 
     linarith
   }
 
--- @[simp]
--- theorem add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : PreMS (basis_hd :: basis_tl)} :
---     (X + Y).leadingExp = X.leadingExp ⊔ Y.leadingExp := by
---   simp
-
 mutual
 
 theorem SeqMS.add_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl}
@@ -463,7 +445,7 @@ theorem SeqMS.add_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl
     simp only [SeqMS.nil_add] at h_eq
     subst h_eq
     obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons hY_wo
-    simp [motive, h_coef_wo, h_comp]
+    simp only [h_coef_wo, h_comp, true_and, motive]
     use .nil, tl
     simp [SeqMS.WellOrdered.nil, h_tl_wo]
   | cons X_exp X_coef X_tl =>
@@ -477,14 +459,17 @@ theorem SeqMS.add_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl
     | cons Y_exp Y_coef Y_tl =>
       obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
       rw [SeqMS.add_cons_cons] at h_eq
-      split_ifs at h_eq with h1 h2 <;> simp at h_eq;
-      · simp [motive, h_eq, hX_coef_wo, hX_comp, h1]
+      split_ifs at h_eq with h1 h2 <;> simp at h_eq
+      · simp only [h_eq, hX_coef_wo, SeqMS.add_leadingExp, SeqMS.leadingExp_cons, sup_lt_iff,
+        hX_comp, WithBot.coe_lt_coe, h1, and_self, true_and, motive]
         use ?_, ?_
-      · simp [motive, h_eq, hY_coef_wo, hY_comp, h2]
+      · simp only [h_eq, hY_coef_wo, SeqMS.add_leadingExp, SeqMS.leadingExp_cons, sup_lt_iff,
+        WithBot.coe_lt_coe, h2, hY_comp, and_self, true_and, motive]
         use ?_, ?_
       · have h_exp : X_exp = Y_exp := by linarith
         subst h_exp
-        simp [motive, h_eq, hX_comp, hY_comp]
+        simp only [h_eq, SeqMS.add_leadingExp, sup_lt_iff, hX_comp, hY_comp, and_self, true_and,
+          motive]
         constructor
         · apply add_WellOrdered <;> assumption
         · use ?_, ?_
@@ -496,7 +481,7 @@ theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
-    simp at hX_wo hY_wo ⊢
+    simp only [WellOrdered_iff_Seq_WellOrdered, add_seq] at hX_wo hY_wo ⊢
     apply SeqMS.add_WellOrdered hX_wo hY_wo
 
 end
@@ -521,20 +506,22 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
     | nil fY =>
       apply Approximates_nil at hY_approx
       left
-      simp
+      simp only [add_seq, mk_seq, SeqMS.add_nil, add_toFun, mk_toFun, true_and]
       grw [hX_approx, hY_approx]
       simp
     | cons Y_exp Y_coef Y_tl fY =>
       obtain ⟨hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
       right
-      simp [hY_coef]
+      simp only [add_seq, mk_seq, SeqMS.nil_add, SeqMS.cons_eq_cons, add_toFun, mk_toFun,
+        ↓existsAndEq, and_true, hY_coef, true_and, exists_eq_left']
       constructor
       · apply majorated_of_EventuallyEq _ hY_maj
         grw [hX_approx]
         simp
-      simp [motive]
+      simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
       use mk .nil fX, mk Y_tl (fY - basis_hd ^ Y_exp * Y_coef.toFun)
-      simp [hX_approx, hY_tl]
+      simp only [mk_seq, SeqMS.nil_add, mk_toFun, true_and, Approximates_nil_iff, hX_approx, hY_tl,
+        and_self, and_true]
       ext t
       simp
       ring
@@ -544,42 +531,46 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
     cases Y with
     | nil fY =>
       apply Approximates_nil at hY_approx
-      simp [hX_coef]
+      simp only [add_seq, mk_seq, SeqMS.add_nil, SeqMS.cons_eq_cons, add_toFun, mk_toFun,
+        ↓existsAndEq, and_true, hX_coef, true_and, exists_eq_left']
       constructor
       · apply majorated_of_EventuallyEq _ hX_maj
         grw [hY_approx]
         simp
-      simp [motive]
+      simp only [mk_eq_mk_iff_iff, add_seq, add_toFun, motive]
       use mk X_tl (fX - basis_hd ^ X_exp * X_coef.toFun), mk .nil fY
-      simp [hY_approx, hX_tl]
+      simp only [mk_seq, SeqMS.add_nil, mk_toFun, true_and, hX_tl, Approximates_nil_iff, hY_approx,
+        and_self, and_true]
       ext t
       simp
       ring
     | cons Y_exp Y_coef Y_tl fY =>
       obtain ⟨hY_coef, hY_maj, hY_tl⟩ := Approximates_cons hY_approx
-      simp
+      simp only [add_seq, mk_seq, add_toFun, mk_toFun]
       rw [SeqMS.add_cons_cons]
       split_ifs with h1 h2
-      · simp [hX_coef, add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
+      · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, hX_coef, true_and, exists_eq_left',
+        add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
         refine ⟨_, _, ?_, hX_tl, hY_approx⟩
-        simp
+        simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
         simp
         ring
-      · simp [hY_coef, add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
+      · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, hY_coef, true_and, exists_eq_left',
+        add_majorated' hX_maj hY_maj (by linarith) (by linarith)]
         refine ⟨_, _, ?_, hX_approx, hY_tl⟩
-        simp
+        simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
         simp
         ring
       · have : X_exp = Y_exp := by linarith
         subst this
-        simp
+        simp only [SeqMS.cons_eq_cons, ↓existsAndEq, and_true, add_toFun, exists_eq_left']
         constructorm* _ ∧ _
         · apply add_Approximates hX_coef hY_coef
         · apply add_majorated' hX_maj hY_maj (by linarith) (by linarith)
         refine ⟨_, _, ?_, hX_tl, hY_tl⟩
-        simp
+        simp only [mk_eq_mk_iff_iff, add_seq, mk_seq, add_toFun, mk_toFun, true_and]
         ext t
         simp
         ring
@@ -587,7 +578,7 @@ theorem add_Approximates {basis : Basis} {X Y : PreMS basis}
 @[simp]
 theorem sub_toFun {basis : Basis} {X Y : PreMS basis} :
     (X.sub Y).toFun = X.toFun - Y.toFun := by
-  simp [sub, ← add_def]
+  simp only [sub, ← add_def, add_toFun, neg_toFun]
   ext t
   ring_nf
 
@@ -618,18 +609,21 @@ instance {basis_hd basis_tl} :
   | nil =>
     use fun hd? ↦ match hd? with
     | none => none
-    | some (exp, coef) => some (exp, coef, ⟨id, SeqMS.FriendOperation.id⟩, ⟨fun x ↦ .nil + x, _, rfl⟩)
+    | some (exp, coef) =>
+      some (exp, coef, ⟨id, SeqMS.FriendOperation.id⟩, ⟨fun x ↦ .nil + x, _, rfl⟩)
     intro x
     cases x <;> simp
   | cons c_exp c_coef c_tl =>
     use fun hd? ↦ match hd? with
-    | none => some (c_exp, c_coef, ⟨fun _ ↦ c_tl, SeqMS.FriendOperation.const⟩, ⟨fun x ↦ .nil + x, _, rfl⟩)
+    | none => some (c_exp, c_coef, ⟨fun _ ↦ c_tl, SeqMS.FriendOperation.const⟩,
+      ⟨fun x ↦ .nil + x, _, rfl⟩)
     | some (exp, coef) =>
       if exp < c_exp then
         some (c_exp, c_coef, ⟨.cons exp coef, SeqMS.FriendOperation.cons _ _⟩,
           ⟨fun x ↦ c_tl + x, _, rfl⟩)
       else if c_exp < exp then
-        some (exp, coef, ⟨id, SeqMS.FriendOperation.id⟩, ⟨fun x ↦ (.cons c_exp c_coef c_tl) + x, _, rfl⟩)
+        some (exp, coef, ⟨id, SeqMS.FriendOperation.id⟩,
+          ⟨fun x ↦ (.cons c_exp c_coef c_tl) + x, _, rfl⟩)
       else
         some (exp, c_coef + coef, ⟨id, SeqMS.FriendOperation.id⟩, ⟨fun x ↦ c_tl + x, _, rfl⟩)
     intro x
@@ -651,7 +645,8 @@ theorem SeqMS.eq_of_bisim_add {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       ∃ (c x' y' : SeqMS basis_hd basis_tl),
       x = .cons exp coef (c + x') ∧ y = .cons exp coef (c + y') ∧ motive x' y') :
     x = y :=
-  SeqMS.eq_of_bisim_friend (op := SeqMS.add (basis_hd := basis_hd) (basis_tl := basis_tl)) motive base step
+  SeqMS.eq_of_bisim_friend (op := SeqMS.add (basis_hd := basis_hd) (basis_tl := basis_tl))
+    motive base step
 
 theorem SeqMS.eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {x y : SeqMS basis_hd basis_tl}
@@ -691,8 +686,8 @@ theorem SeqMS.eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simpa
     | cons y_exp y_coef y_tl =>
       right
-      simp only [SeqMS.add_cons_left hx, SeqMS.cons_eq_cons, SeqMS.add_cons_left hy, exists_and_left, ↓existsAndEq,
-        true_and]
+      simp only [SeqMS.add_cons_left hx, SeqMS.cons_eq_cons, SeqMS.add_cons_left hy,
+        exists_and_left, ↓existsAndEq, true_and]
       use c_tl, .cons x_exp x_coef x_tl
       simp only [true_and]
       use .cons y_exp y_coef y_tl
@@ -747,8 +742,8 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         ∃ exp coef tl,
           ms.seq = .cons exp coef tl ∧ coef.Approximates ∧ majorated ms.toFun basis_hd exp ∧
           ∃ (A : PreMS (basis_hd :: basis_tl)) (B : SeqMS basis_hd basis_tl),
-            tl = A.seq + B ∧ A.Approximates ∧
-            motive (mk (basis_hd := basis_hd) B (ms.toFun - basis_hd ^ exp * coef.toFun - A.toFun))) :
+          tl = A.seq + B ∧ A.Approximates ∧
+          motive (mk (basis_hd := basis_hd) B (ms.toFun - basis_hd ^ exp * coef.toFun - A.toFun))) :
     ms.Approximates := by
   let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
     ∃ A B, ms ≈ A + B ∧ A.Approximates ∧ motive B
@@ -756,20 +751,21 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · use mk .nil 0, ms
     simp [h_base]
   rintro ms ⟨A, B, ⟨h_seq_eq, hf_eq⟩, hA, hB⟩
-  simp [motive']
+  simp only [equiv_def, add_seq, add_toFun, mk_seq, mk_toFun, ↓existsAndEq, true_and, motive']
   cases A with
   | nil fA =>
-    simp at hf_eq
+    simp only [add_toFun, mk_toFun] at hf_eq
     apply Approximates_nil at hA
     specialize h_step _ hB
     obtain ⟨hB_seq, hB_fun⟩ | ⟨exp, coef, tl, hB_seq, h_coef, h_maj, X, Y, h_tl, hX, hY⟩ := h_step
     · left
-      simp [h_seq_eq, hB_seq]
+      simp only [h_seq_eq, add_seq, mk_seq, hB_seq, SeqMS.add_nil, true_and]
       grw [hf_eq, hA, hB_fun]
       simp
     right
     use exp, coef, X, mk Y (B.toFun - basis_hd ^ exp * coef.toFun - X.toFun)
-    simp [h_seq_eq, hB_seq, h_tl, h_coef, hX, hY]
+    simp only [h_seq_eq, add_seq, mk_seq, hB_seq, h_tl, SeqMS.nil_add, h_coef, mk_toFun,
+      add_sub_cancel, hX, hY, and_self, and_true, true_and]
     constructor
     · apply majorated_of_EventuallyEq _ h_maj
       grw [hf_eq, hA]
@@ -780,10 +776,12 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     right
     obtain ⟨hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
     specialize h_step _ hB
-    simp at hf_eq
-    obtain ⟨hB_seq, hB_fun⟩ | ⟨B_exp, B_coef, B_tl, hB_seq, hB_coef, hB_maj, X, Y, h_tl, hX, hY⟩ := h_step
+    simp only [add_toFun, mk_toFun] at hf_eq
+    obtain ⟨hB_seq, hB_fun⟩ |
+      ⟨B_exp, B_coef, B_tl, hB_seq, hB_coef, hB_maj, X, Y, h_tl, hX, hY⟩ := h_step
     · use A_exp, A_coef, mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun), mk .nil B.toFun
-      simp [h_seq_eq, hB_seq, hA_coef, hA_tl]
+      simp only [h_seq_eq, add_seq, mk_seq, hB_seq, SeqMS.add_nil, hA_coef, mk_toFun, hA_tl,
+        true_and]
       constructorm* _ ∧ _
       · apply majorated_of_EventuallyEq _ hA_maj
         grw [hf_eq, hB_fun]
@@ -792,12 +790,11 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         simp
       · convert hB
         simp [hB_seq]
-    -- simp [hB_seq, SeqMS.add_cons_cons] at h_seq_eq
-    simp [h_seq_eq, hB_seq, SeqMS.add_cons_cons]
+    simp only [h_seq_eq, add_seq, mk_seq, hB_seq, SeqMS.add_cons_cons]
     split_ifs with h1 h2
-    · simp
+    · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       use mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun), B
-      simp [hA_coef, hB_seq, hA_tl, hB]
+      simp only [mk_seq, hB_seq, hA_coef, mk_toFun, hA_tl, hB, and_self, and_true, true_and]
       constructor
       · apply majorated_of_EventuallyEq hf_eq
         apply add_majorated' hA_maj hB_maj (by rfl) (by linarith)
@@ -806,9 +803,11 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       ext t
       simp
       ring
-    · simp
-      use (mk (.cons A_exp A_coef A_tl) fA) + X, mk Y (B.toFun - basis_hd ^ B_exp * B_coef.toFun - X.toFun)
-      simp [h_tl, add_assoc, hB_coef, hY, add_Approximates hA hX]
+    · simp only [SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
+      use (mk (.cons A_exp A_coef A_tl) fA) + X,
+        mk Y (B.toFun - basis_hd ^ B_exp * B_coef.toFun - X.toFun)
+      simp only [h_tl, add_seq, mk_seq, add_assoc, hB_coef, add_toFun, mk_toFun, add_sub_cancel,
+        add_Approximates hA hX, hY, and_self, and_true, true_and]
       constructor
       · apply majorated_of_EventuallyEq hf_eq
         apply add_majorated' hA_maj hB_maj (by linarith) (by rfl)
@@ -819,10 +818,11 @@ theorem Approximates.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
         ring
     · have : A_exp = B_exp := by linarith
       subst this
-      simp
+      simp only [SeqMS.cons_eq_cons, ↓existsAndEq, true_and, add_toFun]
       use mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun) + X,
         mk Y (B.toFun - basis_hd ^ A_exp * B_coef.toFun - X.toFun)
-      simp [h_tl, add_assoc, hY]
+      simp only [h_tl, add_seq, mk_seq, add_assoc, add_toFun, mk_toFun, add_sub_cancel, hY,
+        and_true, true_and]
       constructorm* _ ∧ _
       · apply add_Approximates hA_coef hB_coef
       · apply majorated_of_EventuallyEq hf_eq

@@ -12,9 +12,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Trimming
 # LogBasis
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 open Asymptotics Filter Topology
@@ -161,7 +158,7 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     (h_wo : ms.WellOrdered) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisMiddle f ms).WellFormed := by
-  simp at h_wo
+  simp only [PreMS.WellOrdered_iff_Seq_WellOrdered] at h_wo
   cases left with
   | nil =>
     cases logBasis with
@@ -173,9 +170,10 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   cases left_tl with
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp [WellFormed] at h_wf
-    simp [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed, h_wo, h_approx,
-      h_wf.right, and_true, true_and]
+    simp only [WellFormed, PreMS.WellOrdered_iff_Seq_WellOrdered] at h_wf
+    simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed,
+      PreMS.WellOrdered_iff_Seq_WellOrdered, PreMS.extendBasisMiddle_toFun, h_wf.right, h_wo,
+      h_approx, and_true, true_and]
     constructorm* _ ∧ _
     · rw [← PreMS.WellOrdered_iff_Seq_WellOrdered]
       apply PreMS.extendBasisMiddle_WellOrdered
@@ -184,8 +182,8 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     · apply PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
     · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
       apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
-      simp [h_wf]
-      left
+      · simp [h_wf]
+      · left
     · exact h_trimmed
     · exact hf
   | cons left_tl_hd left_tl_tl =>
@@ -199,9 +197,9 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     constructor
     · apply PreMS.extendBasisMiddle_Trimmed h_wf.right.right.left
       apply Approximates_log_basis_ne_zero h_basis h_wf.right.left (f := left_hd)
-      simp [h_wf]
-      left
-    · simp [h_wf]
+      · simp [h_wf]
+      · left
+    · simp only [List.append_eq, PreMS.extendBasisMiddle_toFun, List.cons_append, h_wf, true_and]
       exact extendBasisMiddle_WellFormed h_basis.tail (by grind) (by simpa) h_approx hf h_trimmed
 
 theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
@@ -227,7 +225,7 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
     · exact PreMS.extendBasisEnd_Approximates h_basis.tail h_wf.right.left
     constructor
     · exact PreMS.extendBasisEnd_Trimmed h_wf.right.right.left
-    · simp [h_wf]
+    · simp only [PreMS.extendBasisEnd_toFun, h_wf, true_and]
       apply extendBasisEnd_WellFormed h_basis.tail (by simp [h_wf]) h_wo h_approx hf h_trimmed
 
 theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -246,7 +244,8 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       apply h_basis.right
       simp
     exact PreMS.monomial_Approximates this (n := ⟨0, by simp⟩)
-  · simp [PreMS.monomial, PreMS.monomialRpow]
+  · simp only [PreMS.monomial, PreMS.monomialRpow, List.length_cons, List.length_nil, zero_add,
+    zero_lt_one, getElem!_pos, List.getElem_cons_zero, PreMS.mk_toFun]
     ext t
     simp
   · exact PreMS.monomial_Trimmed (by simp)

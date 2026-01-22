@@ -12,10 +12,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 # TODO
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-set_option linter.style.multiGoal false
-
 @[expose] public section
 
 namespace ComputeAsymptotics
@@ -35,16 +31,9 @@ lemma nil_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → 
 @[simp]
 theorem real_real_rpow_zero (f : ℝ → ℝ) : f ^ (0 : ℝ) = 1 := by ext; simp
 
--- def SeqMS.enclose (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ms : PreMS basis_tl) :
---     SeqMS basis_hd basis_tl :=
---   .cons 0 ms .nil
-
--- def enclose (basis_hd : ℝ → ℝ) {basis_tl : Basis} (ms : PreMS basis_tl) :
---     PreMS (basis_hd :: basis_tl) :=
---   mk (SeqMS.enclose basis_hd ms) ms.toFun
-
 mutual
 
+/-- `SeqMS`-part of `PreMS.const`. -/
 def SeqMS.const (basis_hd : ℝ → ℝ) (basis_tl : Basis) (c : ℝ) : SeqMS basis_hd basis_tl :=
   .cons 0 (const basis_tl c) .nil
 
@@ -72,6 +61,7 @@ necessary for using `abel` tactic in our proofs. -/
 instance {basis_hd : ℝ → ℝ} {basis_tl : Basis} : Zero (SeqMS basis_hd basis_tl) where
   zero := .nil
 
+/-- `SeqMS`-part of `PreMS.one`. -/
 def SeqMS.one {basis_hd : ℝ → ℝ} {basis_tl : Basis} : SeqMS basis_hd basis_tl :=
   SeqMS.const _ _ 1
 
@@ -81,6 +71,7 @@ def one {basis : Basis} : PreMS basis :=
 
 mutual
 
+/-- `SeqMS`-part of `PreMS.monomialRpow`. -/
 noncomputable def SeqMS.monomialRpow (basis_hd : ℝ → ℝ) (basis_tl : Basis) (n : ℕ) (r : ℝ) :
     SeqMS basis_hd basis_tl :=
   match n with
@@ -95,6 +86,7 @@ noncomputable def monomialRpow (basis : Basis) (n : ℕ) (r : ℝ) : PreMS basis
 
 end
 
+/-- `SeqMS`-part of `PreMS.monomial`. -/
 noncomputable def SeqMS.monomial (basis_hd : ℝ → ℝ) (basis_tl : Basis) (n : ℕ) :
     SeqMS basis_hd basis_tl :=
   SeqMS.monomialRpow _ _ n 1
@@ -108,8 +100,6 @@ theorem zero_def {basis_hd basis_tl} : (0 : PreMS (basis_hd :: basis_tl)) = mk .
 
 theorem SeqMS.zero_def {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (0 : SeqMS basis_hd basis_tl) = .nil := rfl
-
-#check SeqMS.const.eq_def
 
 theorem SeqMS.const_def {basis_hd basis_tl} (c : ℝ) :
     SeqMS.const basis_hd basis_tl c = SeqMS.cons 0 (PreMS.const basis_tl c) .nil := by
@@ -136,18 +126,6 @@ theorem zero_toFun {basis : Basis} : (@zero basis).toFun = 0 := by
 theorem zero_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
     (0 : SeqMS basis_hd basis_tl) = .nil := rfl
 
-@[simp]
-theorem cons_ne_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
-    mk (basis_hd := basis_hd) (.cons exp coef tl) f ≠ 0 := by
-  simp [zero_def]
-
-@[simp]
-theorem zero_ne_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
-    0 ≠ mk (basis_hd := basis_hd) (.cons exp coef tl) f :=
-  cons_ne_zero.symm
-
 theorem SeqMS.one_def {basis_hd basis_tl} :
     @SeqMS.one basis_hd basis_tl = SeqMS.cons 0 PreMS.one .nil := by
   simp [SeqMS.one, SeqMS.const_def, PreMS.one]
@@ -166,7 +144,7 @@ mutual
 
 theorem SeqMS.const_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
     (SeqMS.const basis_hd basis_tl c).WellOrdered := by
-  simp [SeqMS.const]
+  simp only [SeqMS.const]
   apply WellOrdered.cons_nil
   exact const_WellOrdered
 
@@ -176,7 +154,7 @@ theorem const_WellOrdered {basis : Basis} {c : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp [const]
+    simp only [const, WellOrdered_iff_Seq_WellOrdered, mk_seq]
     apply SeqMS.const_WellOrdered
 
 end
@@ -202,7 +180,7 @@ theorem const_Approximates {c : ℝ} {basis : Basis} (h_basis : WellFormedBasis 
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
-    simp [const, SeqMS.const]
+    simp only [const, SeqMS.const]
     have ih : (const basis_tl c).Approximates := by
       apply const_Approximates h_basis.tail
     apply Approximates.cons ih
@@ -218,17 +196,6 @@ theorem zero_Approximates {basis : Basis} :
   cases basis with
   | nil => simp [zero]
   | cons => exact Approximates.nil (by rfl)
-
--- theorem zero_Approximates_iff {basis : Basis} {f : ℝ → ℝ} :
---     (@zero basis).Approximates f ↔ (f =ᶠ[atTop] 0) where
---   mp h := by
---     cases basis with
---     | nil =>
---       simpa [zero] using h
---     | cons basis_hd basis_tl =>
---       simp only [zero] at h
---       exact Approximates_nil h
---   mpr h := Approximates_of_EventuallyEq h.symm zero_Approximates
 
 /-- `one` approximates unit function. -/
 theorem one_Approximates {basis : Basis} (h_basis : WellFormedBasis basis) :
@@ -253,11 +220,11 @@ theorem SeqMS.monomialRpow_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basi
     (@SeqMS.monomialRpow basis_hd basis_tl n r).WellOrdered := by
   cases n with
   | zero =>
-    simp [SeqMS.monomialRpow]
+    simp only [SeqMS.monomialRpow]
     apply WellOrdered.cons_nil
     exact const_WellOrdered
   | succ m =>
-    simp [SeqMS.monomialRpow]
+    simp only [SeqMS.monomialRpow]
     apply WellOrdered.cons_nil
     exact monomialRpow_WellOrdered
 
@@ -267,7 +234,7 @@ theorem monomialRpow_WellOrdered {basis : Basis} {n : ℕ} {r : ℝ} :
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp
+    simp only [WellOrdered_iff_Seq_WellOrdered, monomialRpow_seq]
     apply SeqMS.monomialRpow_WellOrdered
 
 end
@@ -279,10 +246,10 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
   cases basis with
   | nil => simp
   | cons basis_hd basis_tl =>
-    simp [monomialRpow]
+    simp only [List.length_cons, monomialRpow, Fin.is_lt, getElem!_pos]
     cases n using Fin.cases with
     | zero =>
-      simp [SeqMS.monomialRpow]
+      simp only [Fin.coe_ofNat_eq_mod, Nat.zero_mod, SeqMS.monomialRpow, List.getElem_cons_zero]
       apply Approximates.cons
       · exact one_Approximates h_basis.tail
       · apply PreMS.majorated_self
@@ -290,7 +257,7 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
         simp
       · simp
     | succ m =>
-      simp [SeqMS.monomialRpow]
+      simp only [Fin.val_succ, SeqMS.monomialRpow, List.getElem_cons_succ]
       apply Approximates.cons
       · exact monomialRpow_Approximates h_basis.tail
       · apply basis_tail_pow_majorated_head h_basis
@@ -298,17 +265,12 @@ theorem monomialRpow_Approximates {basis : Basis} {n : Fin (List.length basis)} 
       · simp
 
 @[simp]
-theorem monomial_toFun {basis : Basis} {n : Fin basis.length} :
-    (@monomial basis n).toFun = basis[n] := by
-  convert monomialRpow_toFun
-  ext t
-  simp
-
-@[simp]
-theorem monomial_toFun' {basis : Basis} {n : ℕ} (h : n < basis.length) :
+theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
     (@monomial basis n).toFun = basis[n] := by
   let n' : Fin basis.length := ⟨n, h⟩
   conv_lhs => rw [show n = n'.val by simp [n']]
+  convert monomialRpow_toFun
+  ext t
   simp
   grind
 
@@ -334,6 +296,7 @@ section BasisOperations
 
 mutual
 
+/-- `SeqMS`-part of `PreMS.updateBasis`. -/
 def SeqMS.updateBasis {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
     (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd ex.getBasis :=
   ms.map id (updateBasis ex ·)
@@ -359,6 +322,7 @@ def extendBasisMiddle {left right : Basis} (f : ℝ → ℝ) (ms : PreMS (left +
 
 mutual
 
+/-- `SeqMS`-part of `PreMS.extendBasisEnd`. -/
 def SeqMS.extendBasisEnd {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ)
     (ms : SeqMS basis_hd basis_tl) :
     SeqMS basis_hd (basis_tl ++ [f]) :=
@@ -421,7 +385,8 @@ lemma map_id_Approximates {basis_hd basis_tl basis_tl'}
   | cons exp coef tl g =>
   right
   obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
-  simp [hf_approx _ h_coef, h_maj, motive, hf_toFun]
+  simp only [mk_seq, SeqMS.map_cons, id_eq, mk_toFun, SeqMS.cons_eq_cons, ms_eq_mk_iff,
+    ↓existsAndEq, and_true, hf_approx _ h_coef, hf_toFun, true_and, exists_eq_left', h_maj, motive]
   use mk tl (g - basis_hd ^ exp * coef.toFun)
   simp [h_tl]
 
@@ -454,11 +419,10 @@ theorem SeqMS.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex :
 
 mutual
 
-theorem SeqMS.updateBasis_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ex : BasisExtension basis_tl)
-    {ms : SeqMS basis_hd basis_tl}
-    (h_wo : ms.WellOrdered) :
+theorem SeqMS.updateBasis_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ex : BasisExtension basis_tl) {ms : SeqMS basis_hd basis_tl} (h_wo : ms.WellOrdered) :
     (ms.updateBasis ex).WellOrdered := by
-  simp [SeqMS.updateBasis]
+  simp only [SeqMS.updateBasis]
   apply SeqMS.map_id_WellOrdered h_wo
   apply updateBasis_WellOrdered
 
@@ -472,7 +436,7 @@ theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms 
     apply WellOrdered.cons_nil
     exact updateBasis_WellOrdered h_wo
   | @keep basis_hd basis_tl ex_tl =>
-    simp [updateBasis] at h_wo ⊢
+    simp only [WellOrdered_iff_Seq_WellOrdered, updateBasis, mk_seq] at h_wo ⊢
     apply SeqMS.updateBasis_WellOrdered ex_tl h_wo
 
 end
@@ -484,20 +448,20 @@ theorem updateBasis_Approximates {basis : Basis} {ex : BasisExtension basis} {ms
   cases ex with
   | nil => simp
   | keep basis_hd ex_tl =>
-    simp [updateBasis, SeqMS.updateBasis]
+    simp only [updateBasis, SeqMS.updateBasis]
     apply map_id_Approximates h_approx
     · intro coef h_coef
       apply updateBasis_Approximates h_basis.tail h_coef
     · simp
   | insert g ex_tl =>
-    simp [updateBasis]
+    simp only [updateBasis]
     apply Approximates.cons
     · apply updateBasis_Approximates _ h_approx
       exact BasisExtension.insert_WellFormedBasis_tail h_basis
-    · simp [BasisExtension.getBasis] at h_basis
+    · simp only [BasisExtension.getBasis] at h_basis
       apply PreMS.Approximates_coef_majorated_head h_approx
       apply WellFormedBasis.of_sublist _ h_basis
-      simp
+      simp only [List.cons_sublist_cons]
       apply BasisExtension.getBasis_Sublist
     · apply Approximates.nil
       simp
@@ -515,7 +479,8 @@ theorem extendBasisMiddle_WellOrdered {left right : Basis} {b : ℝ → ℝ} {ms
     apply WellOrdered.cons_nil
     assumption
   | cons left_hd left_tl =>
-  simp [List.cons_append, extendBasisMiddle, List.append_eq]
+  simp only [List.cons_append, extendBasisMiddle, List.append_eq, WellOrdered_iff_Seq_WellOrdered,
+    mk_seq]
   apply SeqMS.map_id_WellOrdered
   · simpa using h_wo
   · apply extendBasisMiddle_WellOrdered
@@ -557,7 +522,8 @@ theorem SeqMS.extendBasisEnd_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f 
 
 theorem SeqMS.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl} :
-    (SeqMS.extendBasisEnd f (.cons exp coef tl)) = .cons exp (coef.extendBasisEnd f) (tl.extendBasisEnd f) := by
+    (SeqMS.extendBasisEnd f (.cons exp coef tl)) =
+    .cons exp (coef.extendBasisEnd f) (tl.extendBasisEnd f) := by
   simp [SeqMS.extendBasisEnd]
 
 mutual
@@ -565,7 +531,7 @@ mutual
 theorem SeqMS.extendBasisEnd_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
     {ms : SeqMS basis_hd basis_tl} (h_wo : ms.WellOrdered) :
     (ms.extendBasisEnd f).WellOrdered := by
-  simp [SeqMS.extendBasisEnd]
+  simp only [SeqMS.extendBasisEnd]
   apply SeqMS.map_id_WellOrdered h_wo
   apply extendBasisEnd_WellOrdered
 
@@ -574,7 +540,8 @@ theorem extendBasisEnd_WellOrdered {basis : Basis} {b : ℝ → ℝ} {ms : PreMS
   cases basis with
   | nil => simpa only [extendBasisEnd] using const_WellOrdered
   | cons basis_hd basis_tl =>
-  simp at *
+  simp only [WellOrdered_iff_Seq_WellOrdered, List.cons_append, List.append_eq,
+    extendBasisEnd_seq] at *
   exact SeqMS.extendBasisEnd_WellOrdered h_wo
 
 end

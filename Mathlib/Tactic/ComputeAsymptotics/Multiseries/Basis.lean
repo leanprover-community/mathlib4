@@ -224,19 +224,19 @@ theorem PreMS.Approximates_coef_majorated_head {basis_hd : ℝ → ℝ} {basis_t
     majorated ms.toFun basis_hd 0 := by
   cases basis_tl with
   | nil =>
-    simp
+    simp only [const_toFun]
     apply const_majorated
     apply basis_tendsto_top h_basis
     simp
   | cons basis_tl_hd basis_tl_tl =>
     cases ms with
     | nil f =>
-      simp at h_approx ⊢
+      simp only [Approximates_nil_iff, mk_toFun] at h_approx ⊢
       apply majorated_of_EventuallyEq h_approx
       apply zero_majorated
     | cons exp coef tl f =>
       obtain ⟨_, h_maj, _⟩ := Approximates_cons h_approx
-      simp
+      simp only [mk_toFun]
       intro exp' h_exp
       apply Asymptotics.IsLittleO.trans <| h_maj (exp + 1) (by linarith)
       apply basis_compare
@@ -286,10 +286,10 @@ theorem getBasis_Sublist {basis : Basis} {ex : BasisExtension basis} :
   induction ex with
   | nil => simp
   | keep _ ex ih =>
-    simp [getBasis]
+    simp only [getBasis, List.cons_sublist_cons]
     apply ih
   | insert _ ex ih =>
-    simp [getBasis]
+    simp only [getBasis]
     apply List.Sublist.cons
     apply ih
 

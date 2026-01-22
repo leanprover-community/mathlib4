@@ -41,10 +41,6 @@ structure MS where
   h_logBasis : Q(LogBasis.WellFormed $logBasis)
 deriving Inhabited
 
-structure MSApproximation (f : Q(ℝ → ℝ)) where
-  ms : MS
-  h_fun : Q(($ms.val).toFun = $f)
-
 namespace MS
 
 /-- Multiseries representing a constant function. -/
@@ -279,6 +275,8 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
 
+/-- Given a multiseries `ms` and a function `f`, returns the multiseries representing the same
+function as `ms` but with the function `f`. -/
 def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) :
     MetaM MS := do
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
@@ -287,6 +285,16 @@ def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter
     h_wo := q(PreMS.replaceFun_WellOrdered $ms.h_wo)
     h_approx := q(PreMS.replaceFun_Approximates $h $ms.h_approx)
   }
+
+/-- Given a multiseries `ms` and a function `f`, returns the multiseries `res` representing the same
+function as `ms` but with the function `f`. It also returns the proof that `res.toFun = f`. -/
+def replaceFun' (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) :
+    MetaM <| (res : MS) × Q(($res.val).toFun = $f) := do
+  let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
+  let res ← ms.replaceFun q($f) q($h)
+  have : $res.basis =Q $basis_hd :: $basis_tl := ⟨⟩
+  have : $res.val =Q ($ms.val).replaceFun $f := ⟨⟩
+  return ⟨res, q(PreMS.replaceFun_toFun _ _)⟩
 
 end MS
 

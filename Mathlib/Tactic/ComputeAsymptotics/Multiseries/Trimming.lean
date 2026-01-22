@@ -11,10 +11,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basic
 # Trimming of multiseries
 -/
 
-set_option linter.style.multiGoal false
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 namespace ComputeAsymptotics
@@ -23,6 +19,7 @@ namespace PreMS
 
 open Filter Topology Stream'
 
+/-- A multiseries is zero if it is constant zero or `[]`. -/
 inductive IsZero : {basis : Basis} → PreMS basis → Prop
 | const {c : PreMS []} (hc : c.toReal = 0) : IsZero c
 | nil {basis_hd} {basis_tl} (f) : @IsZero (basis_hd :: basis_tl) (mk .nil f)
@@ -52,18 +49,10 @@ theorem IsZero_Approximates_zero {basis : Basis} {ms : PreMS basis} (h_zero : Is
   | nil =>
     simpa using h_approx
 
--- @[simp]
--- theorem nil_IsZero {basis_hd} {basis_tl} {f} : @IsZero (basis_hd :: basis_tl) (mk .nil f) := by
---   constructor
-
-@[simp]
 theorem cons_not_IsZero {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} :
     ¬ @IsZero (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
-  intro h
-  generalize h_ms : (mk (.cons exp coef tl) f) = ms at h
-  cases h
-  simp at h_ms
+  simp
 
 /-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
 coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
@@ -76,7 +65,9 @@ inductive Trimmed : {basis : Basis} → PreMS basis → Prop
   (h_ne_zero : ¬ IsZero coef) :
   @Trimmed (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)
 
-
+/-- We call multiseries `Trimmed` if it is either constant, `[]` or `cons (exp, coef) tl` where
+coef is trimmed and is not zero. Intuitively, when multiseries is trimmed, it guarantees that
+leading term of multiseries is main asymptotics of the function, approximated by multiseries. -/
 def SeqMS.Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : SeqMS basis_hd basis_tl) : Prop :=
   (mk ms 0).Trimmed
 
@@ -93,8 +84,8 @@ theorem Trimmed_iff_seq_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp [hs]
     | cons h_trimmed h_ne_zero =>
       convert Trimmed.cons h_trimmed h_ne_zero (f := ms.toFun)
-      simp [hs]
-      exact ⟨rfl, rfl⟩
+      · simp only [ms_eq_mk_iff, hs, SeqMS.cons_eq_cons, true_and, and_true]
+        exact ⟨rfl, rfl⟩
 
 @[simp]
 theorem SeqMS.Trimmed.nil {basis_hd} {basis_tl} : @SeqMS.Trimmed basis_hd basis_tl .nil := by
@@ -125,14 +116,14 @@ theorem Trimmed_cons {basis_hd} {basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ}
     (h : Trimmed (mk (.cons exp coef tl) f)) :
     coef.Trimmed ∧ ¬ IsZero coef := by
-  simp [Trimmed_iff_seq_Trimmed] at h
+  simp only [Trimmed_iff_seq_Trimmed, mk_seq] at h
   exact SeqMS.Trimmed_cons h
 
 mutual
 
 theorem SeqMS.const_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} (hc : c ≠ 0) :
     (SeqMS.const basis_hd basis_tl c).Trimmed := by
-  simp [SeqMS.const]
+  simp only [SeqMS.const]
   constructor
   · exact const_Trimmed hc
   cases basis_tl <;> simp [const, SeqMS.const, ofReal, toReal, hc]
@@ -140,7 +131,7 @@ theorem SeqMS.const_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ
 theorem const_Trimmed {basis : Basis} {c : ℝ} (hc : c ≠ 0) : (const basis c).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp [const, Trimmed_iff_seq_Trimmed]
+  simp only [const, Trimmed_iff_seq_Trimmed, mk_seq]
   apply SeqMS.const_Trimmed hc
 
 end
@@ -152,13 +143,13 @@ theorem SeqMS.monomialRpow_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {
     (@SeqMS.monomialRpow basis_hd basis_tl n r).Trimmed := by
   cases n with
   | zero =>
-    simp [SeqMS.monomialRpow]
+    simp only [SeqMS.monomialRpow]
     apply SeqMS.Trimmed.cons
-    · simp [PreMS.one]
+    · simp only [one]
       apply PreMS.const_Trimmed (by simp)
     · cases basis_tl <;> simp [PreMS.one, PreMS.const, PreMS.ofReal, PreMS.toReal, SeqMS.const]
   | succ m =>
-    simp [SeqMS.monomialRpow]
+    simp only [SeqMS.monomialRpow]
     apply SeqMS.Trimmed.cons
     · apply monomialRpow_Trimmed (by simpa using h)
     · cases basis_tl
@@ -169,7 +160,8 @@ theorem monomialRpow_Trimmed {basis : Basis} {n : ℕ} (h : n < basis.length) {r
     (@monomialRpow basis n r).Trimmed := by
   obtain _ | ⟨basis_hd, basis_tl⟩ := basis
   · constructor
-  simp [monomialRpow, Trimmed_iff_seq_Trimmed]
+  simp only [monomialRpow, List.getElem!_eq_getElem?_getD, Pi.default_def, Trimmed_iff_seq_Trimmed,
+    mk_seq]
   exact SeqMS.monomialRpow_Trimmed h
 
 end
@@ -199,11 +191,11 @@ theorem SeqMS.extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases ms with
   | nil => simp [SeqMS.extendBasisEnd]
   | cons exp coef tl =>
-  simp [SeqMS.extendBasisEnd]
+  simp only [SeqMS.extendBasisEnd, SeqMS.map_cons, id_eq]
   constructor
   · cases basis_tl with
     | nil =>
-      simp [List.nil_append, extendBasisEnd]
+      simp only [List.nil_append, extendBasisEnd]
       apply const_Trimmed
       simpa using (Trimmed_cons h_trimmed).right
     | cons basis_tl_hd basis_tl_tl => exact extendBasisEnd_Trimmed (Trimmed_cons h_trimmed).left
@@ -214,7 +206,7 @@ theorem SeqMS.extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 theorem extendBasisEnd_Trimmed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {b : ℝ → ℝ}
     {ms : PreMS (basis_hd :: basis_tl)}
     (h_trimmed : ms.Trimmed) : (ms.extendBasisEnd b).Trimmed := by
-  simp [Trimmed_iff_seq_Trimmed] at *
+  simp only [Trimmed_iff_seq_Trimmed, List.cons_append, List.append_eq, extendBasisEnd_seq] at *
   apply SeqMS.extendBasisEnd_Trimmed h_trimmed
 
 end
@@ -233,7 +225,8 @@ theorem extendBasisMiddle_Trimmed {left right_tl : Basis} {right_hd b : ℝ → 
   · cases ms with
     | nil => simp at h_ne_zero
     | cons exp coef tl =>
-    simp [List.cons_append, extendBasisMiddle, List.append_eq]
+    simp only [List.cons_append, extendBasisMiddle, List.append_eq, mk_seq, SeqMS.map_cons, id_eq,
+      mk_toFun]
     apply Trimmed_cons at h_trimmed
     constructor
     · exact extendBasisMiddle_Trimmed h_trimmed.left h_trimmed.right
@@ -255,7 +248,7 @@ theorem neg_leadingExp_tendsto_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       apply Tendsto.congr' h_approx.symm
       apply tendsto_const_nhds
     · obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
-      simp [SeqMS.leadingExp_cons, WithBot.coe_lt_zero] at h_neg
+      simp only [leadingExp_def, mk_seq, SeqMS.leadingExp_cons, WithBot.coe_lt_zero] at h_neg
       apply majorated_tendsto_zero_of_neg h_neg h_maj
 
 end PreMS

@@ -98,7 +98,6 @@ theorem tendsto_nhds_left_of_tendsto_top (h : Tendsto (fun x ↦ f (c - x⁻¹))
   convert h using 3
   ring
 
--- set_option maxHeartbeats 0 in
 theorem tendsto_nhds_punctured_of_tendsto_top (h_neg : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l)
     (h_pos : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[≠] c) l := by

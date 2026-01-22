@@ -36,10 +36,12 @@ necessary for using `abel` tactic in our proofs. -/
 instance {basis : Basis} : Neg (PreMS basis) where
   neg := neg
 
+/-- `SeqMS`-part of `PreMS.mulConst`. -/
 def SeqMS.mulConst {basis_hd basis_tl} (c : ℝ) (ms : SeqMS basis_hd basis_tl) :
     SeqMS basis_hd basis_tl :=
   ms.map id (fun coef => coef.mulConst c)
 
+/-- `SeqMS`-part of `PreMS.neg`. -/
 def SeqMS.neg {basis_hd basis_tl} (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
   ms.mulConst (-1)
 
@@ -91,7 +93,8 @@ mutual
 @[simp]
 theorem SeqMS.const_mulConst {basis_hd : ℝ → ℝ} {basis_tl : Basis} {x y : ℝ} :
     (SeqMS.const basis_hd basis_tl x).mulConst y = SeqMS.const _ _ (y * x) := by
-  simp [SeqMS.const]
+  simp only [SeqMS.const, SeqMS.mulConst_cons, SeqMS.mulConst_nil, SeqMS.cons_eq_cons, and_true,
+    true_and]
   rw [const_mulConst]
 
 @[simp]
@@ -101,7 +104,7 @@ theorem const_mulConst {basis : Basis} {x y : ℝ} :
   | nil => simp [mulConst, const, ofReal, toReal]
   | cons =>
     rw [ms_eq_ms_iff_mk_eq_mk]
-    simp
+    simp only [mulConst_seq, const_seq, mulConst_toFun, const_toFun']
     refine ⟨?_, rfl⟩
     apply SeqMS.const_mulConst
 
@@ -122,7 +125,7 @@ theorem mulConst_one {basis} {ms : PreMS basis} :
   cases basis with
   | nil => simp [mulConst, ofReal, toReal]
   | cons =>
-    simp [ms_eq_ms_iff_mk_eq_mk]
+    simp only [ms_eq_ms_iff_mk_eq_mk, mulConst_seq, mulConst_toFun, one_smul, and_true]
     rw [SeqMS.mulConst_one]
 
 end
@@ -145,7 +148,7 @@ theorem mulConst_mulConst {basis : Basis} {ms : PreMS basis} {x y : ℝ} :
     simp [mulConst, ofReal, toReal]
     ring_nf
   | cons =>
-    simp [ms_eq_ms_iff_mk_eq_mk]
+    simp only [ms_eq_ms_iff_mk_eq_mk, mulConst_seq, mulConst_toFun]
     constructor
     · rw [SeqMS.mulConst_mulConst]
     · ext1
@@ -186,7 +189,7 @@ theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp
+    simp only [WellOrdered_iff_Seq_WellOrdered, mulConst_seq]
     apply SeqMS.mulConst_WellOrdered
     simpa using h_wo
 
@@ -210,15 +213,17 @@ theorem mulConst_Approximates {basis : Basis} {ms : PreMS basis} {c : ℝ}
     | nil =>
       left
       apply Approximates_nil at hX_approx
-      simp
+      simp only [mulConst_seq, mk_seq, SeqMS.mulConst_nil, mulConst_toFun, mk_toFun, true_and]
       grw [hX_approx]
       simp
     | cons X_exp X_coef X_tl fX =>
       obtain ⟨hX_coef, hX_maj, hX_tl⟩ := Approximates_cons hX_approx
       right
-      simp [mulConst_Approximates hX_coef, smul_majorated hX_maj]
+      simp only [mulConst_seq, mk_seq, SeqMS.mulConst_cons, SeqMS.cons_eq_cons, mulConst_toFun,
+        mk_toFun, ↓existsAndEq, and_true, mulConst_Approximates hX_coef, Algebra.mul_smul_comm,
+        true_and, exists_eq_left', smul_majorated hX_maj]
       refine ⟨_, ?_, hX_tl⟩
-      simp
+      simp only [mk_eq_mk_iff_iff, mulConst_seq, mk_seq, mulConst_toFun, mk_toFun, true_and]
       ext t
       simp
       ring
@@ -244,7 +249,7 @@ theorem mulConst_Trimmed {basis : Basis} {ms : PreMS basis} {c : ℝ} (h_trimmed
     cases ms with
     | nil => constructor
     | cons exp coef tl =>
-    simp [Trimmed_iff_seq_Trimmed] at h_trimmed ⊢
+    simp only [Trimmed_iff_seq_Trimmed, mk_seq, mulConst_seq, SeqMS.mulConst_cons] at h_trimmed ⊢
     apply SeqMS.Trimmed_cons at h_trimmed
     apply SeqMS.Trimmed.cons
     · exact mulConst_Trimmed h_trimmed.left hc
@@ -258,7 +263,7 @@ theorem mulConst_realCoef {basis : Basis} {ms : PreMS basis} {c : ℝ} :
     cases ms with
     | nil => simp [mulConst, realCoef]
     | cons exp coef tl =>
-      simp [mulConst, realCoef]
+      simp only [realCoef, mulConst, mk_seq, SeqMS.map_cons, id_eq, mk_toFun, SeqMS.head_cons]
       rw [mulConst_realCoef]
 
 mutual
@@ -269,7 +274,7 @@ theorem SeqMS.mulConst_exps {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} {
   cases ms with
   | nil => simp
   | cons exp coef tl =>
-  simp [SeqMS.mulConst, SeqMS.exps]
+  simp only [SeqMS.mulConst, SeqMS.map_cons, id_eq, SeqMS.cons_exps, List.cons.injEq, true_and]
   rw [mulConst_exps]
 
 @[simp]
@@ -278,7 +283,7 @@ theorem mulConst_exps {basis : Basis} {ms : PreMS basis} {c : ℝ} :
   cases basis with
   | nil => simp [mulConst, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp [exps]
+    simp only [exps_eq_Seq_exps, mulConst_seq]
     rw [SeqMS.mulConst_exps]
 
 end
@@ -316,11 +321,6 @@ theorem SeqMS.neg_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
 theorem SeqMS.neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : SeqMS basis_hd basis_tl} :
     X.neg.leadingExp = X.leadingExp := by
   simp [neg]
-
-@[simp]
-theorem neg_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : PreMS (basis_hd :: basis_tl)} :
-    X.neg.leadingExp = X.leadingExp := by
-  simp
 
 @[simp]
 theorem SeqMS.neg_neg {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} : ms.neg.neg = ms := by

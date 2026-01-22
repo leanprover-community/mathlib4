@@ -25,6 +25,7 @@ partial def computeLength (b : Q(Basis)) : MetaM Nat := do
   | ~q(List.cons $basis_hd $basis_tl) => return 1 + (← computeLength basis_tl)
   | _ => panic! s!"computeLength: unexpected basis: {← ppExpr b}"
 
+/-- Given a list `li` and a natural `n`, returns the `n`-th element of `li`. -/
 partial def getNth {α : Q(Type)} (li : Q(List $α)) (n : Nat) :
     MetaM <| Q($α) := do
   match n, li with
@@ -42,6 +43,7 @@ partial def getLast {α : Q(Type)} (li : Q(List $α)) : MetaM <| Option <| Q($α
     | ~q(List.nil) => return .some hd
   | _ => panic! s!"getLast: unexpected list: {← ppExpr li}"
 
+/-- Given naturals `n` and `m`, returns the expression of `Fin m` corresponding to `n`. -/
 def mkFin (n m : Q(ℕ)) : MetaM Q(Fin $m) := do
   let hn : Q($n < $m) := ← mkDecideProof q($n < $m)
   return q(Fin.mk $n $hn)

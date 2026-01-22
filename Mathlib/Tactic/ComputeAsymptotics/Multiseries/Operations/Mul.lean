@@ -13,9 +13,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Add
 
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 namespace ComputeAsymptotics
@@ -23,6 +20,8 @@ namespace ComputeAsymptotics
 namespace PreMS
 
 mutual
+
+  /-- `SeqMS`-part of `PreMS.mul`. -/
   noncomputable def SeqMS.mul {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       (X Y : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
     match X.destruct with
@@ -36,6 +35,7 @@ mutual
           some (X_exp + Y_exp, X_coef.mul Y_coef, SeqMS.mulMonomial X_tl Y_coef Y_exp, Y_tl)
       SeqMS.gcorec g SeqMS.add Y
 
+  /-- `SeqMS`-part of `PreMS.mulMonomial`. -/
   noncomputable def SeqMS.mulMonomial {basis_hd} {basis_tl} (B : SeqMS basis_hd basis_tl)
       (M_coef : PreMS basis_tl) (M_exp : ℝ) : SeqMS basis_hd basis_tl :=
     B.map (fun exp => exp + M_exp) (fun coef => coef.mul M_coef)
@@ -205,8 +205,10 @@ theorem SeqMS.one_mul' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS b
   cases B with
   | nil => simp
   | cons exp coef tl =>
-  simp [motive]
-  simp [SeqMS.one, SeqMS.const]
+  simp only [SeqMS.one, SeqMS.const, SeqMS.mul_cons_cons, zero_add, SeqMS.mulMonomial_nil,
+    SeqMS.nil_add, SeqMS.cons_ne_nil, and_self, SeqMS.cons_eq_cons, exists_and_left, ↓existsAndEq,
+    and_true, exists_eq_right_right, exists_eq_right_right', exists_eq_right', true_and, false_or,
+    motive]
   exact one_mul'
 
 @[simp]
@@ -215,7 +217,7 @@ theorem one_mul' {basis : Basis} {ms : PreMS basis} :
   cases basis with
   | nil => simp [mul, one, const, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp [ms_eq_ms_iff_mk_eq_mk]
+    simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, one_seq, mul_toFun, one_toFun, one_mul, and_true]
     rw [SeqMS.one_mul']
 
 end
@@ -239,8 +241,8 @@ mutual
       | nil => simp
       | cons B_exp B_coef B_tl =>
       right
-      simp only [↓existsAndEq, SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, SeqMS.mulConst_cons, and_self, and_true,
-        true_and]
+      simp only [↓existsAndEq, SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, SeqMS.mulConst_cons,
+        and_self, and_true, true_and]
       use B_tl
       simp [mul_mulConst_right (basis := basis_tl)]
 
@@ -261,8 +263,8 @@ mutual
       | nil => simp
       | cons Y_exp Y_coef Y_tl =>
       right
-      simp only [SeqMS.mulConst_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, SeqMS.add_mulConst, exists_and_left,
-        ↓existsAndEq, and_true, true_and, motive]
+      simp only [SeqMS.mulConst_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, SeqMS.add_mulConst,
+        exists_and_left, ↓existsAndEq, and_true, true_and, motive]
       refine ⟨_, _, rfl, ?_⟩
       constructor
       · rw [mul_mulConst_right]
@@ -275,7 +277,8 @@ mutual
       simp [mul, mulConst, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp [ms_eq_ms_iff_mk_eq_mk]
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
+        Algebra.mul_smul_comm, and_true]
       rw [SeqMS.mul_mulConst_right]
 
 end
@@ -283,7 +286,8 @@ end
 theorem mulMonomial_mulConst_right {basis_hd basis_tl} {B : PreMS (basis_hd :: basis_tl)}
     {M_coef : PreMS basis_tl} {M_exp c : ℝ} :
     B.mulMonomial (M_coef.mulConst c) M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
-  simp [ms_eq_ms_iff_mk_eq_mk]
+  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
+    mulConst_toFun, Algebra.mul_smul_comm, and_true]
   apply SeqMS.mulMonomial_mulConst_right
 
 mutual
@@ -305,8 +309,8 @@ mutual
       | nil => simp
       | cons B_exp B_coef B_tl =>
       right
-      simp only [↓existsAndEq, SeqMS.mulConst_cons, SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, and_self, and_true,
-        true_and]
+      simp only [↓existsAndEq, SeqMS.mulConst_cons, SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons,
+        and_self, and_true, true_and]
       exact ⟨B_tl, rfl, mul_mulConst_left.symm, rfl⟩
 
   theorem SeqMS.mul_mulConst_left {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl} {c : ℝ} :
@@ -325,8 +329,8 @@ mutual
       | nil => simp
       | cons Y_exp Y_coef Y_tl =>
       right
-      simp only [SeqMS.mulConst_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, SeqMS.add_mulConst, exists_and_left,
-        ↓existsAndEq, and_true, true_and, motive]
+      simp only [SeqMS.mulConst_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, SeqMS.add_mulConst,
+        exists_and_left, ↓existsAndEq, and_true, true_and, motive]
       refine ⟨_, _, rfl, ?_⟩
       constructor
       · rw [mul_mulConst_left]
@@ -339,7 +343,8 @@ mutual
       simp [mul, mulConst, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp [ms_eq_ms_iff_mk_eq_mk]
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, mulConst_seq, mul_toFun, mulConst_toFun,
+        Algebra.smul_mul_assoc, and_true]
       apply SeqMS.mul_mulConst_left
 
 end
@@ -347,7 +352,8 @@ end
 theorem mulMonomial_mulConst_left {basis_hd basis_tl} {B : PreMS (basis_hd :: basis_tl)}
     {M_coef : PreMS basis_tl} {M_exp c : ℝ} :
     (B.mulConst c).mulMonomial M_coef M_exp = (B.mulMonomial M_coef M_exp).mulConst c := by
-  simp [ms_eq_ms_iff_mk_eq_mk]
+  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, mulConst_seq, mulMonomial_toFun,
+    mulConst_toFun, Algebra.smul_mul_assoc, and_true]
   apply SeqMS.mulMonomial_mulConst_left
 
 theorem SeqMS.mulMonomial_neg_left {basis_hd : ℝ → ℝ} {basis_tl : Basis}
@@ -406,8 +412,9 @@ mutual
       | nil => simp
       | cons B_exp B_coef B_tl =>
       · right
-        simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, SeqMS.add_cons_cons, lt_self_iff_false, ↓reduceIte,
-          exists_and_left, ↓existsAndEq, and_true, exists_eq_left', true_and]
+        simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, SeqMS.add_cons_cons,
+          lt_self_iff_false, ↓reduceIte, exists_and_left, ↓existsAndEq, and_true, exists_eq_left',
+          true_and]
         constructor
         · rw [add_mul_left']
         simp only [motive]
@@ -434,19 +441,20 @@ mutual
     | nil => simp
     | cons Y_exp Y_coef Y_tl =>
     right
-    simp [SeqMS.add_cons_cons, motive]
+    simp only [SeqMS.add_cons_cons, SeqMS.mul_cons_cons, add_lt_add_iff_left, exists_and_left,
+      ↓existsAndEq, and_true, motive]
     split_ifs with h1 h2
-    · simp
+    · simp only [SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, _, rfl, ?_⟩
       simp [SeqMS.mul_cons_cons]
       abel
-    · simp
+    · simp only [SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, _, rfl, ?_⟩
       simp [SeqMS.mul_cons_cons]
       abel
     · have : X_exp = Y_exp := by linarith
       subst this
-      simp
+      simp only [SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
       refine ⟨_, _, _, rfl, ?_, ?_⟩
       · rw [add_mul_left']
       · simp [SeqMS.add_mulMonomial_left (basis_tl := basis_tl)]
@@ -460,7 +468,7 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp [ms_eq_ms_iff_mk_eq_mk]
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, add_seq, mul_toFun, add_toFun]
       constructor
       · apply SeqMS.add_mul_left'
       · ext t
@@ -473,7 +481,8 @@ theorem add_mulMonomial_left {basis_hd basis_tl} {B : PreMS (basis_hd :: basis_t
     {M_coef1 M_coef2 : PreMS basis_tl} {M_exp : ℝ} :
     (B.mulMonomial (M_coef1 + M_coef2) M_exp) =
     (B.mulMonomial M_coef1 M_exp) + (B.mulMonomial M_coef2 M_exp) := by
-  simp [ms_eq_ms_iff_mk_eq_mk]
+  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, SeqMS.add_mulMonomial_left, add_seq,
+    mulMonomial_toFun, add_toFun, true_and]
   ext t
   simp
   ring
@@ -502,17 +511,18 @@ mutual
       | nil => simp
       | cons B_exp B_coef B_tl =>
       right
-      simp [motive, SeqMS.add_cons_cons]
+      simp only [SeqMS.add_cons_cons, SeqMS.mulMonomial_cons, add_lt_add_iff_right, exists_and_left,
+        ↓existsAndEq, and_true, motive]
       split_ifs with h1 h2
-      · simp
+      · simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
         refine ⟨_, _, rfl, ?_⟩
         simp [SeqMS.mulMonomial_cons]
-      · simp
+      · simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
         refine ⟨_, _, rfl, ?_⟩
         simp [SeqMS.mulMonomial_cons]
       · have : A_exp = B_exp := by linarith
         subst this
-        simp
+        simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons, ↓existsAndEq, true_and]
         refine ⟨_, _, rfl, ?_, rfl⟩
         rw [add_mul_right' m_wo]
 
@@ -538,9 +548,10 @@ mutual
     · simp [hY]
     right
     obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := WellOrdered_cons hZ_wo
-    simp [motive, SeqMS.mul_cons hZ_wo, SeqMS.add_mulMonomial_right hZ_coef_wo]
+    simp only [SeqMS.mul_cons hZ_wo, SeqMS.add_mulMonomial_right hZ_coef_wo, exists_and_left,
+      ↓existsAndEq, SeqMS.add_leadingExp, SeqMS.mul_leadingExp, sup_lt_iff, true_and, motive]
     use (X + Y).mulMonomial Z_coef Z_exp, Z_tl
-    simp [SeqMS.add_mulMonomial_right hZ_coef_wo, SeqMS.add_leadingExp,
+    simp only [SeqMS.add_mulMonomial_right hZ_coef_wo, SeqMS.add_leadingExp,
       SeqMS.mulMonomial_leadingExp, lt_sup_iff, true_and]
     constructorm* _ ∧ _
     · abel
@@ -562,7 +573,7 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp [ms_eq_ms_iff_mk_eq_mk]
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, add_seq, mul_toFun, add_toFun]
       constructor
       · apply SeqMS.add_mul_right' (by simpa using hZ_wo)
       · ext t
@@ -575,7 +586,8 @@ theorem add_mulMonomial_right {basis_hd basis_tl} {A B : PreMS (basis_hd :: basi
     {M_coef : PreMS basis_tl} {M_exp : ℝ} (m_wo : M_coef.WellOrdered) :
     (A + B).mulMonomial M_coef M_exp =
     A.mulMonomial M_coef M_exp + B.mulMonomial M_coef M_exp := by
-  simp [ms_eq_ms_iff_mk_eq_mk, SeqMS.add_mulMonomial_right m_wo]
+  simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, add_seq, SeqMS.add_mulMonomial_right m_wo,
+    mulMonomial_toFun, add_toFun, true_and]
   ext t
   simp
   ring
@@ -614,8 +626,8 @@ mutual
     | nil => simp
     | cons B_exp B_coef B_tl =>
     right
-    simp only [SeqMS.mulMonomial_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, exists_and_left, ↓existsAndEq,
-      and_true, true_and, motive]
+    simp only [SeqMS.mulMonomial_cons, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons, exists_and_left,
+      ↓existsAndEq, and_true, true_and, motive]
     refine ⟨_, _, rfl, ?_⟩
     constructorm* _ ∧ _
     · ring
@@ -642,11 +654,11 @@ mutual
     · simp [hY]
     right
     obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := WellOrdered_cons hZ_wo
-    simp only [SeqMS.mul_cons hZ_wo, SeqMS.add_mul_left', exists_and_left, ↓existsAndEq, SeqMS.mul_leadingExp,
-      true_and, motive]
+    simp only [SeqMS.mul_cons hZ_wo, SeqMS.add_mul_left', exists_and_left, ↓existsAndEq,
+      SeqMS.mul_leadingExp, true_and, motive]
     use (X.mul Y).mulMonomial Z_coef Z_exp, Z_tl
-    simp only [SeqMS.mul_mulMonomial hZ_coef_wo, add_assoc, SeqMS.mulMonomial_leadingExp, SeqMS.mul_leadingExp,
-      hZ_tl_wo, and_true, and_self, true_and]
+    simp only [SeqMS.mul_mulMonomial hZ_coef_wo, add_assoc, SeqMS.mulMonomial_leadingExp,
+      SeqMS.mul_leadingExp, hZ_tl_wo, and_true, and_self, true_and]
     apply WithBot.add_lt_add_of_le_of_lt (by simp [hX]) (by rfl)
     apply WithBot.add_lt_add_of_le_of_lt (by simp [hY]) (by rfl) hZ_comp
 
@@ -668,7 +680,8 @@ mutual
       simp [mul, ofReal, toReal]
       ring_nf
     | cons basis_hd basis_tl =>
-      simp [ms_eq_ms_iff_mk_eq_mk, SeqMS.mul_assoc' (by simpa using hZ_wo)]
+      simp only [ms_eq_ms_iff_mk_eq_mk, mul_seq, SeqMS.mul_assoc' (by simpa using hZ_wo), mul_toFun,
+        true_and]
       ext t
       ring_nf
 
@@ -734,7 +747,7 @@ mutual
     cases basis with
     | nil => constructor
     | cons basis_hd basis_tl =>
-      simp at *
+      simp only [WellOrdered_iff_Seq_WellOrdered, mul_seq] at *
       exact SeqMS.mul_WellOrdered hX_wo hY_wo
 
 end
@@ -760,15 +773,17 @@ mutual
     | nil fB =>
       left
       apply Approximates_nil at hB_approx
-      simp at hf_eq
-      simp [h_seq_eq]
+      simp only [mulMonomial_toFun, mk_toFun] at hf_eq
+      simp only [h_seq_eq, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_nil, true_and]
       grw [hf_eq, hB_approx]
       simp
     | cons B_exp B_coef B_tl fB =>
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons hB_approx
     right
-    simp [motive, h_seq_eq]
-    simp at hf_eq
+    simp only [h_seq_eq, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons,
+      equiv_def, mulMonomial_toFun, mk_toFun, ↓existsAndEq, and_true, mul_toFun, exists_eq_left',
+      motive]
+    simp only [mulMonomial_toFun, mk_toFun] at hf_eq
     constructorm* _ ∧ _
     · apply mul_Approximates (h_basis.tail) h_coef_approx hM_approx
     · apply majorated_of_EventuallyEq hf_eq
@@ -783,7 +798,7 @@ mutual
       · exact Approximates_coef_majorated_head hM_approx h_basis
       · exact basis_head_eventually_pos h_basis
     use mk B_tl (fB - basis_hd ^ B_exp * B_coef.toFun)
-    simp [hM_approx, h_tl_approx]
+    simp only [mk_seq, mk_toFun, true_and, h_tl_approx, hM_approx, and_self, and_true]
     apply (hf_eq.and (basis_head_eventually_pos h_basis)).mono
     intro t ⟨hf_eq, h_pos⟩
     simp [hf_eq, Real.rpow_add h_pos]
@@ -805,24 +820,27 @@ mutual
       cases X with
       | nil fX =>
         apply Approximates_nil at hX_approx
-        simp at hf_eq
-        simp [h_seq_eq]
+        simp only [mul_toFun, mk_toFun] at hf_eq
+        simp only [h_seq_eq, mul_seq, mk_seq, SeqMS.nil_mul, true_and, ↓existsAndEq,
+          SeqMS.nil_ne_cons, false_and, exists_const, or_false]
         grw [hf_eq, hX_approx]
         simp
       | cons X_exp X_coef X_tl fX =>
       cases Y with
       | nil fY =>
-        simp at hf_eq
+        simp only [mul_toFun, mk_toFun] at hf_eq
         apply Approximates_nil at hY_approx
-        simp [h_seq_eq]
+        simp only [h_seq_eq, mul_seq, mk_seq, SeqMS.mul_nil, true_and, ↓existsAndEq,
+          SeqMS.nil_ne_cons, false_and, exists_const, or_false]
         grw [hf_eq, hY_approx]
         simp
       | cons Y_exp Y_coef Y_tl fY =>
       right
       obtain ⟨hX_coef_approx, hX_maj, hX_tl_approx⟩ := Approximates_cons hX_approx
       obtain ⟨hY_coef_approx, hY_maj, hY_tl_approx⟩ := Approximates_cons hY_approx
-      simp at hf_eq
-      simp [h_seq_eq]
+      simp only [mul_toFun, mk_toFun] at hf_eq
+      simp only [↓existsAndEq, h_seq_eq, mul_seq, mk_seq, SeqMS.mul_cons_cons, SeqMS.cons_eq_cons,
+        true_and, mul_toFun]
       use (mk X_tl (fX - basis_hd ^ X_exp * X_coef.toFun)).mulMonomial Y_coef Y_exp,
         (SeqMS.cons X_exp X_coef X_tl).mul Y_tl
       constructorm* _ ∧ _
@@ -832,11 +850,11 @@ mutual
         apply mul_majorated hX_maj hY_maj
         apply basis_head_eventually_pos h_basis
       · apply mulMonomial_Approximates h_basis hX_tl_approx hY_coef_approx
-      simp [motive]
+      simp only [equiv_def, mul_seq, mk_seq, mul_toFun, mk_toFun, mulMonomial_toFun, motive]
       use mk Y_tl (fY - basis_hd ^ Y_exp * Y_coef.toFun)
       constructorm* _ ∧ _
       · simp
-      · simp
+      · simp only [mk_toFun]
         grw [hf_eq]
         apply (basis_head_eventually_pos h_basis).mono
         intro t h
@@ -913,40 +931,44 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases A with
   | nil fA =>
     apply Approximates_nil at hA
-    simp at hf_eq
-    simp [h_seq_eq]
+    simp only [mul_toFun, mk_toFun] at hf_eq
+    simp only [h_seq_eq, mul_seq, mk_seq, SeqMS.nil_mul, true_and, ↓existsAndEq, SeqMS.nil_ne_cons,
+      false_and, exists_const, or_false]
     grw [hf_eq, hA]
     simp
   | cons A_exp A_coef A_tl fA =>
   specialize h_step _ hB
   obtain ⟨hB_seq, hB_fun⟩ | ⟨B_exp, B_coef, B_tl, hB_seq, hB_coef, hB_maj,
     X, Y, rfl, hfB, hX, hY_wo, hY⟩ := h_step
-  · simp [h_seq_eq, hB_seq]
-    simp at hf_eq
+  · simp only [h_seq_eq, mul_seq, mk_seq, hB_seq, SeqMS.mul_nil, true_and, ↓existsAndEq,
+    SeqMS.nil_ne_cons, false_and, exists_const, or_false]
+    simp only [mul_toFun, mk_toFun] at hf_eq
     grw [hf_eq, hB_fun]
     simp
   right
-  simp at hf_eq
-  simp [h_seq_eq, hB_seq]
+  simp only [mul_toFun, mk_toFun] at hf_eq
+  simp only [↓existsAndEq, h_seq_eq, mul_seq, mk_seq, hB_seq, SeqMS.mul_cons_cons,
+    SeqMS.cons_eq_cons, true_and, mul_toFun]
   obtain ⟨hA_coef, hA_maj, hA_tl⟩ := Approximates_cons hA
   use (mk A_tl (fA - basis_hd ^ A_exp * A_coef.toFun)).mulMonomial B_coef B_exp,
     (SeqMS.cons A_exp A_coef A_tl).mul (X.seq.mul Y.seq)
-  simp
+  simp only [mulMonomial_seq, mk_seq, mulMonomial_toFun, mk_toFun, true_and]
   constructorm* _ ∧ _
   · apply mul_Approximates (h_basis.tail) hA_coef hB_coef
   · apply majorated_of_EventuallyEq hf_eq
     apply mul_majorated hA_maj hB_maj
     apply basis_head_eventually_pos h_basis
   · apply mulMonomial_Approximates h_basis hA_tl hB_coef
-  simp [motive']
+  simp only [equiv_def, mul_seq, mul_toFun, WellOrdered_iff_Seq_WellOrdered, mk_seq, mk_toFun,
+    motive']
   use (mk (.cons A_exp A_coef A_tl) fA).mul X, Y
   constructorm* _ ∧ _
-  · simp
+  · simp only [mul_seq, mk_seq]
     rw [SeqMS.mul_assoc' (by simpa using hY_wo)]
   · grw [hf_eq, hfB]
     apply (basis_head_eventually_pos h_basis).mono
     intro t ht
-    simp
+    simp only [Pi.sub_apply, Pi.mul_apply, Pi.add_apply, Pi.pow_apply, mul_toFun, mk_toFun]
     rw [Real.rpow_add ht]
     ring
   · apply mul_Approximates h_basis hA hX

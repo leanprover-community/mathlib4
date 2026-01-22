@@ -10,6 +10,16 @@ public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Tactic.Field
 public import Qq
 
+/-!
+# Zeroness oracle
+
+This module implements the (eventual) zeroness oracle. The function
+`proveFunEqZero` tries to prove that a function is eventually zero.
+
+This is used in the trimming procedure when we suspect that a multiseries represents
+a zero function. Without the oracle, we would need to trim infinite amount of cancellations.
+-/
+
 public meta section
 
 open Filter
@@ -18,6 +28,7 @@ open Lean Elab Meta Tactic Qq
 
 namespace ComputeAsymptotics
 
+/-- Proves that `f` is eventually zero. -/
 def proveFunEqZero (f : Q(ℝ → ℝ)) : TacticM <| Q($f =ᶠ[atTop] 0) := do
   let e ← mkFreshExprMVarQ q(∀ x, $f x = 0)
   let res ← evalTacticAt (← `(tactic| intro; simp <;> field)) e.mvarId!

@@ -27,7 +27,7 @@ namespace ComputeAsymptotics
 
 section Trimming
 
-
+/-- Result of the `checkZero` function. -/
 inductive CheckZeroResult {basis : Q(Basis)} (ms : Q(PreMS $basis))
 | neq (h_ne_zero : Q(¬ PreMS.IsZero $ms))
 | eq (h_eq_zero : Q(PreMS.IsZero $ms))
@@ -36,25 +36,18 @@ theorem const_not_zero_not_IsZero {ms : PreMS []} (h : ms.toReal ≠ 0) :
   ¬ PreMS.IsZero ms := by
   simpa
 
+/-- Checks if a multiseries is zero. -/
 def checkZero {basis : Q(Basis)} (ms : Q(PreMS $basis)) : TacticM (CheckZeroResult ms) := do
   match basis with
   | ~q(List.nil) =>
     match ← CompareReal.checkZero q(($ms).toReal) with
-    | .eq h => return .eq q(PreMS.IsZero.const $h) --q($h)
-    | .neq h => return .neq q(const_not_zero_not_IsZero $h) --q($h)
+    | .eq h => return .eq q(PreMS.IsZero.const $h)
+    | .neq h => return .neq q(const_not_zero_not_IsZero $h)
   | ~q(List.cons $basis_hd $basis_tl) =>
     match ms with
     | ~q(PreMS.mk .nil $f) => return .eq q(PreMS.IsZero.nil $f)
     | ~q(PreMS.mk (.cons $exp $coef $tl) $f) => return .neq q(PreMS.cons_not_IsZero)
     | _ => throwError "checkZero: unexpected ms"
-
-
--- theorem Approximates_sub_zero {basis : Basis} {ms : PreMS basis} {f fC : ℝ → ℝ}
---     (h_approx : ms.Approximates (f - fC)) (hC : fC =ᶠ[Filter.atTop] 0) :
---     ms.Approximates f := by
---   apply PreMS.Approximates_of_EventuallyEq _ h_approx
---   have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ f) hC
---   simpa using this
 
 theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} {exp : ℝ}
     {coef coef' : PreMS basis_tl} {tl : PreMS.SeqMS basis_hd basis_tl}
@@ -67,25 +60,9 @@ theorem approx_cons_zero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ �
   convert PreMS.replaceFun_Approximates _ h_tl
   replace h_zero := PreMS.IsZero_Approximates_zero h_zero h_coef'_approx
   rw [h_coef_fun] at h_zero
-  simp
+  simp only [PreMS.mk_toFun]
   grw [h_zero]
   simp
-
--- theorem approx_cons_zero' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} {exp : ℝ}
---     {coef : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
---     (h_approx : (PreMS.cons exp coef tl).Approximates f)
---     (h_coef_approx : coef.Approximates 0) :
---     tl.Approximates f := by
---   apply PreMS.Approximates_erase_head h_approx h_coef_approx
-
--- theorem approx_cons_zero'' {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ} {exp : ℝ}
---     {coef coef' : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
---     (h_approx : (PreMS.cons exp coef tl).Approximates f)
---     (h_coef_approx : ∀ fC, coef.Approximates fC → coef'.Approximates fC)
---     (h_coef : coef' = PreMS.zero _) :
---     tl.Approximates f := by
---   apply approx_cons_zero h_approx
---   exact h_coef ▸ h_coef_approx
 
 -- TODO: rename
 theorem approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ) {exp : ℝ}
@@ -98,78 +75,22 @@ theorem approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ →
   apply PreMS.Approximates.cons h_coef'_approx h_maj
   convert h_tl
 
--- def proveApproximatesZero {basis : Q(Basis)} (ms : Q(PreMS $basis))
---     (h_basis : Q(WellFormedBasis $basis)) :
---     TacticM Q(($ms).Approximates 0) := do
---   let ⟨f, _, h_approx⟩ ← toFun ms q($h_basis)
---   let hf ← proveFunEqZero f
---   pure q(PreMS.Approximates_of_EventuallyEq $hf $h_approx)
-
--- theorem Approximates_sub_zero {basis : Basis} {ms : PreMS basis} {f fC : ℝ → ℝ}
---     (h_approx : ms.Approximates (f - fC)) (hC : fC =ᶠ[Filter.atTop] 0) :
---     ms.Approximates f := by
---   apply PreMS.Approximates_of_EventuallyEq _ h_approx
---   have := Filter.EventuallyEq.sub (Filter.EventuallyEq.refl _ f) hC
---   simpa using this
-
--- -- TODO: rename
--- theorem approx_cons_zero {basis_hd : ℝ → ℝ} {f : ℝ → ℝ} {exp : ℝ}
---     {coef : PreMS []} {tl : PreMS [basis_hd]}
---     (h_zero : coef = 0)
---     (h_approx : (PreMS.cons exp coef tl).Approximates f) :
---     tl.Approximates f := by
---   obtain ⟨fC, h_coef, h_maj, h_tl⟩ := PreMS.Approximates_cons h_approx
---   simp only [PreMS.Approximates_const_iff, h_zero] at h_coef
---   apply Approximates_sub_zero h_tl
---   rw [eventuallyEq_iff_sub]
---   eta_expand
---   simp only [Pi.zero_apply, Pi.sub_apply, sub_zero]
---   rw [show (fun a ↦ 0) = fun a ↦ (basis_hd a ^ exp * 0) by simp]
---   apply EventuallyEq.mul (by rfl) h_coef
-
--- -- TODO: rename
--- theorem approx_cons_nil {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis} {f : ℝ → ℝ} {exp : ℝ}
---     {coef : PreMS (basis_tl_hd :: basis_tl_tl)}
---     {tl : PreMS (basis_hd :: basis_tl_hd :: basis_tl_tl)}
---     (h_approx : (PreMS.cons exp coef tl).Approximates f)
---     (h_coef_approx : ∀ fC, coef.Approximates fC →
---       PreMS.Approximates (@PreMS.nil basis_tl_hd basis_tl_tl) fC) :
---     tl.Approximates f := by
---   obtain ⟨fC, h_coef, h_maj, h_tl⟩ := PreMS.Approximates_cons h_approx
---   specialize h_coef_approx fC h_coef
---   apply PreMS.Approximates_nil at h_coef_approx
---   apply Approximates_sub_zero h_tl
---   rw [eventuallyEq_iff_sub]
---   eta_expand
---   simp only [Pi.zero_apply, Pi.sub_apply, sub_zero]
---   rw [show (fun a ↦ 0) = fun a ↦ (basis_hd a ^ exp * 0) by simp]
---   exact EventuallyEq.mul (by rfl) h_coef_approx
-
--- -- TODO: rename
--- theorem approx_cons_aux {basis_hd : ℝ → ℝ} {basis_tl : Basis} (f : ℝ → ℝ) {exp : ℝ}
---     {coef coef' : PreMS basis_tl} {tl : PreMS (basis_hd :: basis_tl)}
---     (h_approx : (PreMS.cons exp coef tl).Approximates f)
---     (h_coef_approx : ∀ fC, coef.Approximates fC → coef'.Approximates fC) :
---     (PreMS.cons exp coef' tl).Approximates f := by
---   obtain ⟨fC, h_coef, h_maj, h_tl⟩ := PreMS.Approximates_cons h_approx
---   apply PreMS.Approximates.cons fC _ h_maj h_tl
---   exact h_coef_approx _ h_coef
-
 /-- Result of the `trim` function. -/
 structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   /-- Trimmed multiseries. -/
   val : Q(PreMS $basis)
   /-- Proof of its well-orderedness. -/
   h_wo : Q(PreMS.WellOrdered $val)
-  /-- Proof that it approximates the same function. -/
+  /-- Proof that it has the same function. -/
   h_fun : Q(PreMS.toFun $val = PreMS.toFun $ms)
+  /-- Proof that it approximates the same function. -/
   h_approx : Q(PreMS.Approximates $val)
   /-- Proof that it is trimmed. -/
   h_trimmed : Option Q(PreMS.Trimmed $val)
 
 mutual
 
-/-- Trims a multiseries. -/
+/-- Trims a multiseries without using the zero oracle. -/
 partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
     (h_wo : Q(PreMS.WellOrdered $ms)) (h_approx : Q(PreMS.Approximates $ms))
     (h_basis : Q(WellFormedBasis $basis))
@@ -179,7 +100,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
   let destructStepsLeftNext + 1 := destructStepsLeft
     | return none
   match basis with
-  | ~q(List.nil) => -- const; TODO: do we need it?
+  | ~q(List.nil) =>
     return some {
       val := q($ms)
       h_wo := q($h_wo)
@@ -223,22 +144,26 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
       let h_coef_approx : Q(PreMS.Approximates $coef) :=
         q((PreMS.Approximates_cons ($h_eq_extracted ▸ $h_approx)).left)
 
-      let coef_trimmed ← trim q($coef) q($h_coef_wo) q($h_coef_approx) q(WellFormedBasis.tail $h_basis) allZeroNew
+      let coef_trimmed ← trim q($coef) q($h_coef_wo) q($h_coef_approx)
+        q(WellFormedBasis.tail $h_basis) allZeroNew
       match ← checkZero coef_trimmed.val with
       | .neq h_coef_ne_zero =>
         return some {
           val := q(PreMS.mk (.cons $exp $coef_trimmed.val $tl) $f)
           h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
           h_approx :=
-            q(approx_cons_aux $f ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx $coef_trimmed.h_fun)
+            q(approx_cons_aux $f ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx
+              $coef_trimmed.h_fun)
           h_trimmed := coef_trimmed.h_trimmed.map fun h_coef_trimmed ↦
             q(PreMS.Trimmed.cons $h_coef_trimmed $h_coef_ne_zero)
           h_fun := q(PreMS.mk_toFun.trans ($h_eq_extracted ▸ rfl))
         }
       | .eq h_coef_eq_zero =>
         let h_tl_approx : Q(PreMS.Approximates (.mk $tl $f)) :=
-          q(approx_cons_zero ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx $coef_trimmed.h_fun $h_coef_eq_zero)
-        let .some tl_trimmed ← trimWithoutOracle q(.mk $tl $f) q(PreMS.WellOrdered_iff_Seq_WellOrdered.mpr $h_tl_wo) --q($h_tl_wo)
+          q(approx_cons_zero ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx
+            $coef_trimmed.h_fun $h_coef_eq_zero)
+        let .some tl_trimmed ← trimWithoutOracle q(.mk $tl $f)
+          q(PreMS.WellOrdered_iff_Seq_WellOrdered.mpr $h_tl_wo)
           q($h_tl_approx) q($h_basis) allZero destructStepsLeftNext | return none
         return some {
           val := q($tl_trimmed.val)
@@ -248,6 +173,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
           h_fun := q($tl_trimmed.h_fun ▸ (PreMS.mk_toFun.trans ($h_eq_extracted ▸ rfl)))
         }
 
+/-- Trims a multiseries. -/
 partial def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
     (h_wo : Q(PreMS.WellOrdered $ms)) (h_approx : Q(PreMS.Approximates $ms))
     (h_basis : Q(WellFormedBasis $basis))
@@ -289,7 +215,8 @@ def trimMS (ms : MS) :
 /-- Same as `trimMS` but stops when it is clear that `FirstIsNeg ms.leadingTerm.exps` is true.
 In such case one can prove that the limit is zero without the `ms.Trimmed` assumption. -/
 def trimPartialMS (ms : MS) :
-    TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) × Option Q(PreMS.Trimmed $ms'.val)) := do
+    TacticM ((ms' : MS) × Q(($ms'.val).toFun = ($ms.val).toFun) ×
+      Option Q(PreMS.Trimmed $ms'.val)) := do
   let res ← trim ms.val ms.h_wo ms.h_approx ms.h_basis true
   let newMs : MS := {
     basis := q($ms.basis)

@@ -16,11 +16,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.LeadingTerm
 
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-
-set_option linter.style.multiGoal false
-
 @[expose] public section
 
 -- TODO: refactor using Pow.lean
@@ -128,7 +123,7 @@ theorem SeqMS.neg_inv_comm {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} :
   cases ms with
   | nil => simp [SeqMS.inv]
   | cons exp coef tl =>
-    simp [SeqMS.inv]
+    simp only [SeqMS.neg_cons, SeqMS.inv, SeqMS.destruct_cons, SeqMS.neg_neg]
     rw [neg_inv_comm, SeqMS.mulMonomial_neg_left]
     congr 3
     simp [SeqMS.mulMonomial_neg_left, SeqMS.mulMonomial_neg_right]
@@ -139,7 +134,7 @@ theorem neg_inv_comm {basis : Basis} {ms : PreMS basis} :
   cases basis with
   | nil => simp [neg, inv, mulConst, ofReal, toReal]
   | cons basis_hd basis_tl =>
-    simp [ms_eq_ms_iff_mk_eq_mk]
+    simp only [ms_eq_ms_iff_mk_eq_mk, inv_seq, neg_seq, inv_toFun, neg_toFun, inv_neg, and_true]
     exact SeqMS.neg_inv_comm
 
 end
@@ -174,7 +169,7 @@ theorem inv_WellOrdered {basis : Basis} {ms : PreMS basis}
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp at *
+    simp only [WellOrdered_iff_Seq_WellOrdered, inv_seq] at *
     exact SeqMS.inv_WellOrdered h_wo
 
 end
@@ -186,20 +181,21 @@ theorem tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero
     (h_wo : WellOrdered (mk (.cons exp coef tl) f))
     (h_approx : (mk (.cons exp coef tl) f).Approximates)
     (h_trimmed : Trimmed (mk (.cons exp coef tl) f)) :
-    Tendsto ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).toFun atTop (𝓝 0) := by
+    Tendsto ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial
+      coef.inv (-exp)).toFun atTop (𝓝 0) := by
   obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
   obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
   have := IsEquivalent_coef h_approx h_wo h_coef_trimmed h_coef_ne_zero h_basis
   obtain ⟨φ, hφ, hf⟩ := this.exists_eq_mul
-  simp
+  simp only [mulMonomial_toFun, mk_toFun, inv_toFun]
   have h_basis_hd_pos := basis_head_eventually_pos h_basis
   have h_coef_ne_zero : ∀ᶠ t in atTop, coef.toFun t ≠ 0 :=
     eventually_ne_zero_of_not_zero h_coef_ne_zero h_coef_wo h_coef h_coef_trimmed h_basis.tail
   apply Filter.Tendsto.congr' (f₁ := φ - 1)
   · apply (hf.and (h_basis_hd_pos.and h_coef_ne_zero)).mono
     intro t ⟨hf, h_basis_hd_pos, h_coef_ne_zero⟩
-    simp [hf]
+    simp only [Pi.sub_apply, Pi.one_apply, Pi.mul_apply, hf, Pi.pow_apply, Pi.inv_apply]
     rw [Real.rpow_neg h_basis_hd_pos.le]
     field_simp
   convert hφ.sub (tendsto_const_nhds (x := 1)) using 1
@@ -215,7 +211,7 @@ theorem inv_Approximates {basis : Basis} {ms : PreMS basis}
     cases ms with
     | nil f =>
       apply Approximates_nil at h_approx
-      simp [inv, SeqMS.inv]
+      simp only [inv, mk_seq, SeqMS.inv, SeqMS.destruct_nil, mk_toFun, Approximates_nil_iff]
       grw [h_approx]
       apply EventuallyEq.of_eq
       ext t
@@ -229,20 +225,23 @@ theorem inv_Approximates {basis : Basis} {ms : PreMS basis}
           (h_basis.tail)
       have h_basis_hd_pos : ∀ᶠ t in atTop, 0 < basis_hd t :=
         basis_head_eventually_pos h_basis
-      simp [inv, SeqMS.inv]
-      let ms : PreMS (basis_hd :: basis_tl) := (PreMS.apply invSeries ((mk tl (f - basis_hd ^ exp * coef.toFun)).neg.mulMonomial coef.inv (-exp))).mulMonomial coef.inv (-exp)
+      simp only [inv, mk_seq, SeqMS.inv, SeqMS.destruct_cons, mk_toFun]
+      let ms : PreMS (basis_hd :: basis_tl) :=
+        (((mk tl (f - basis_hd ^ exp * coef.toFun)).neg.mulMonomial
+          coef.inv (-exp)).apply invSeries).mulMonomial coef.inv (-exp)
       have h : ms.Approximates := by
-        simp [ms]
+        simp only [ms]
         apply mulMonomial_Approximates h_basis
         swap
         · apply inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
         apply apply_Approximates invSeries_analytic h_basis
-        · simp
+        · simp only [leadingExp_def, mulMonomial_seq, neg_seq, mk_seq,
+          SeqMS.mulMonomial_leadingExp, SeqMS.neg_leadingExp]
           generalize tl.leadingExp = w at h_comp
           cases w with
           | bot => simp [Ne.bot_lt']
           | coe => simpa [← WithBot.coe_add] using h_comp
-        · simp
+        · simp only [WellOrdered_iff_Seq_WellOrdered, mulMonomial_seq, neg_seq, mk_seq]
           apply SeqMS.mulMonomial_WellOrdered
           · apply SeqMS.neg_WellOrdered h_tl_wo
           · apply inv_WellOrdered h_coef_wo
@@ -250,21 +249,24 @@ theorem inv_Approximates {basis : Basis} {ms : PreMS basis}
         · apply neg_Approximates h_tl
         · apply inv_Approximates (h_basis.tail) h_coef_wo h_coef h_coef_trimmed
       convert replaceFun_Approximates _ h
-      have h_tendsto_zero : Tendsto ((basis_hd ^ exp * coef.toFun - f) * basis_hd ^ (-exp) * coef.toFun⁻¹) atTop (𝓝 0) := by
-        convert (tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx h_trimmed).neg.congr' _
+      have h_tendsto_zero : Tendsto ((basis_hd ^ exp * coef.toFun - f) * basis_hd ^ (-exp) *
+          coef.toFun⁻¹) atTop (𝓝 0) := by
+        convert (tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx
+          h_trimmed).neg.congr' _
         · simp
-        simp
+        simp only [mulMonomial_toFun, mk_toFun, inv_toFun, Pi.mul_apply, Pi.sub_apply, Pi.pow_apply,
+          Pi.inv_apply]
         apply (h_coef_ne_zero.and h_basis_hd_pos).mono
         intro t ⟨h_coef_ne_zero, h_basis_hd_pos⟩
         simp
         field
-      simp [ms]
+      simp only [mulMonomial_toFun, apply_toFun, neg_toFun, mk_toFun, neg_sub, inv_toFun, ms]
       set g := (basis_hd ^ exp * coef.toFun - f) * basis_hd ^ (-exp) * coef.toFun⁻¹
       apply invSeries_toFun_eq'.comp_tendsto at h_tendsto_zero
       grw [h_tendsto_zero]
       apply (h_coef_ne_zero.and h_basis_hd_pos).mono
       intro t ⟨h_coef_ne_zero, h_basis_hd_pos⟩
-      simp [g]
+      simp only [Pi.mul_apply, Function.comp_apply, Pi.sub_apply, Pi.pow_apply, Pi.inv_apply, g]
       rw [Real.rpow_neg h_basis_hd_pos.le]
       field_simp
       congr

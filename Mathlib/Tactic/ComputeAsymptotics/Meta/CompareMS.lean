@@ -22,8 +22,6 @@ as lists using lexigraphic order. In this file we implement this procedure.
 
 -/
 
-set_option linter.docPrime false
-
 public meta section
 
 namespace ComputeAsymptotics
@@ -103,25 +101,23 @@ def compare (x y : MS)
   let res ← compareLists q($x_exps) q($y_exps')
   match res with
   | .lt h' =>
-    let h : Q(($x.val).leadingTerm.exps < List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
+    let h : Q(($x.val).leadingTerm.exps < List.replicate (List.length $left) 0 ++
+      ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
     let h_ne_zero : Q(¬ PreMS.IsZero $y.val) ← proveNeZero y
     return .lt q(PreMS.IsLittleO_of_lt_leadingTerm_left $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .gt h' =>
-    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps < ($x.val).leadingTerm.exps) := q($hty ▸ $htx ▸ $h')
+    let h : Q(List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps <
+      ($x.val).leadingTerm.exps) := q($hty ▸ $htx ▸ $h')
     let h_ne_zero : Q(¬ PreMS.IsZero $x.val) ← proveNeZero x
     return .gt q(PreMS.IsLittleO_of_lt_leadingTerm_right $x.h_wo $y.h_wo $x.h_approx $y.h_approx
       $hx_trimmed $hy_trimmed $x.h_basis $h_ne_zero $h)
   | .eq h' =>
-    let h : Q(($x.val).leadingTerm.exps = List.replicate (List.length $left) 0 ++ ($y.val).leadingTerm.exps) := q($htx ▸ $hty ▸ $h')
     let c : Q(ℝ) := q($x_coef / $y_coef)
     let hc' := ← CompareReal.proveNeZero c
-    -- let hc : Q()
-    -- haveI : $x_coef =Q (PreMS.leadingTerm $x.val).coef := ⟨⟩
-    -- haveI : $y_coef =Q (PreMS.leadingTerm $y.val).coef := ⟨⟩
-    return .eq c q($hc') q(sorry)
-      -- q((PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
-      -- $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $hc' ($h).symm)))
+    return .eq c q($hc')
+      q((PreMS.IsEquivalent_of_leadingTerm_zeros_append_mul_coef $x.h_wo $y.h_wo
+      $x.h_approx $y.h_approx $hx_trimmed $hy_trimmed $x.h_basis $htx $hty $hc' ($h').symm))
 
 end MS
 

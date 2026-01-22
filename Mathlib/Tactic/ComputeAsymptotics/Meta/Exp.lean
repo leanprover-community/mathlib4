@@ -12,9 +12,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Meta.CompareMS
 # TODO
 -/
 
-set_option linter.style.longLine false
-set_option linter.flexible false
-
 public meta section
 
 open Filter Topology Asymptotics Stream'.Seq
@@ -114,8 +111,8 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       -- have : ($log_hd'.val).toFun =Q (Real.log ∘ $cur) := ⟨⟩
       let h : Q($(ms.val).toFun =o[atTop] (Real.log ∘ $cur)) :=
         q(($h_log_hd_fun ▸ LogBasis.WellFormed_cons_toFun $h_logBasis) ▸ $h)
-      let h_left' : Q(∀ g ∈ List.getLast? ($left ++ [$cur]), $(ms.val).toFun =o[atTop] (Real.log ∘ g)) :=
-        q(log_left_concat $left $h)
+      let h_left' : Q(∀ g ∈ List.getLast? ($left ++ [$cur]),
+        $(ms.val).toFun =o[atTop] (Real.log ∘ g)) := q(log_left_concat $left $h)
       findPlaceAux ms h_trimmed h_pos q($left ++ [$cur]) right_hd right_tl
         q(LogBasis.tail $logBasis) q(LogBasis.tail_WellFormed $h_logBasis) q($h_left')
     | .eq c hc h =>
@@ -143,26 +140,24 @@ partial def findPlace (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
   findPlaceAux ms h_trimmed h_pos q(List.nil) basis_hd basis_tl (← get).logBasis (← get).h_logBasis
     q(by simp)
 
--- TODO: move
--- lemma PreMS.Approximates_coef {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
---     {exp : ℝ} {tl : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
---     (h_approx : PreMS.Approximates (PreMS.cons exp coef tl) f) :
---     PreMS.Approximates coef (PreMS.Approximates_cons h_approx).choose := by
---   generalize_proofs h
---   exact h.choose_spec.left
-
+/-- Result of the `extractDeepCoef` function. -/
 structure ExtractDeepCoefResult (ms : MS) (depth : Q(Nat)) where
+  /-- Deep coefficient -/
   coef : MS
+  /-- Proof that `coef` is trimmed -/
   trimmed : Q(($coef.val).Trimmed)
+  /-- Proof that `coef` has the same `exps` as `ms` -/
   h_exps : Q(List.replicate $depth 0 ++ (PreMS.leadingTerm $coef.val).exps =
     (PreMS.leadingTerm $ms.val).exps)
+  /-- Proof that `coef` has the same real coefficient as `ms` -/
   h_coef : Q(($ms.val).leadingTerm.coef = ($coef.val).leadingTerm.coef)
 
 lemma PreMS.leadingTerm_cons_exps {basis_hd : ℝ → ℝ} {basis_tl : Basis} {coef : PreMS basis_tl}
     {tl : SeqMS basis_hd basis_tl} {f : ℝ → ℝ} {depth : ℕ}
     {basis : Basis} {deepCoef : PreMS basis}
     (h : List.replicate depth 0 ++ deepCoef.leadingTerm.exps = coef.leadingTerm.exps) :
-    List.replicate (depth + 1) 0 ++ deepCoef.leadingTerm.exps = (PreMS.mk (.cons 0 coef tl) f).leadingTerm.exps := by
+    List.replicate (depth + 1) 0 ++ deepCoef.leadingTerm.exps =
+      (PreMS.mk (.cons 0 coef tl) f).leadingTerm.exps := by
   simp [PreMS.leadingTerm, List.replicate_succ]
   simpa [PreMS.leadingTerm] using h
 
@@ -197,7 +192,7 @@ theorem PreMS.inv_exp_neg_toFun {basis : Basis} {n : Fin basis.length}
     (h : basis[n] = Real.exp ∘ (-f)) :
     (monomialRpow basis n (-1)).toFun =ᶠ[atTop] (Real.exp ∘ f) := by
   apply EventuallyEq.of_eq
-  simp [h]
+  simp only [monomialRpow_toFun, h]
   ext t
   simp [Real.rpow_neg_one, Real.exp_neg]
 
@@ -245,19 +240,10 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
   haveI : $ms.basis =Q $left ++ $right_hd :: $right_tl := ⟨⟩; do
   -- extract deep coef `G`
   let depth := ← computeLength left
-  -- let depthQ : Q(ℕ) := q($depth)
-  -- have : $depth =Q List.length $left := ⟨⟩
   let ⟨G, hG_trimmed, hG_exps, hG_coef⟩ := ← extractDeepCoef ms h_trimmed depth
   let ⟨Gf, hGf⟩ ← Normalization.getFun G.val
   haveI : $G.basis =Q $right_hd :: $right_tl := ⟨⟩
   let h_ms_equiv_G : Q($(ms.val).toFun ~[atTop] $Gf) :=
-    -- let h_coef : Q((PreMS.leadingTerm $ms.val).coef = (PreMS.leadingTerm $G.val).coef) :=
-    --   q(sorry)
-    --   -- ← mkEqRefl q((PreMS.leadingTerm $ms.val).coef)
-    -- let h_exps : Q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps =
-    --     (PreMS.leadingTerm $ms.val).exps) :=
-    --   q(sorry)
-      -- ← mkEqRefl q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps)
     let hG_exps : Q(List.replicate (List.length $left) 0 ++ (PreMS.leadingTerm $G.val).exps =
         (PreMS.leadingTerm $ms.val).exps) := hG_exps
     q(PreMS.IsEquivalent_of_leadingTerm_zeros_append $ms.h_wo $G.h_wo $ms.h_approx $G.h_approx
@@ -319,15 +305,12 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
     }
     let new_idx := q(getInsertedIndex $left ($right_hd :: $right_tl) $expG)
     let G_exp ← BasisM.monomialRpow new_idx q(-1)
-    -- let ⟨G_exp_f, h_G_exp_f⟩ ← Normalization.getFun q($G_exp.val)
-    -- G_exp_f =Q expG ^ (-1)
-    -- haveI : $G_exp.basis =Q $left ++ $expG :: $right_hd :: $right_tl := ⟨⟩; do
     let new_idx : Q(Fin (List.length $G_exp.basis)) := new_idx
-    -- let h_eq : Q(List.get _ $new_idx = Real.exp ∘ (-$(G.val).toFun)) := ← mkEqRefl q(Real.exp ∘ (-$(G.val).toFun))
-    let ~q($basis_hd :: $basis_tl) := G_exp.basis | panic! "Unexpected basis in insertEquivalentToBasis"
+    let ~q($basis_hd :: $basis_tl) := G_exp.basis
+      | panic! "Unexpected basis in insertEquivalentToBasis"
     let h : Q(($G_exp.val).toFun =ᶠ[atTop] Real.exp ∘ $Gf) := ← mkAppOptM
       ``PreMS.inv_exp_neg_toFun #[G_exp.basis, new_idx, Gf, ← mkEqRefl q(Real.exp ∘ (-$Gf))]
-    let G_exp ← (G_exp.replaceFun q(Real.exp ∘ $Gf) q($h)) --q($hGf ▸ PreMS.inv_exp_neg_toFun rfl))
+    let G_exp ← (G_exp.replaceFun q(Real.exp ∘ $Gf) q($h))
     return (← updateBasis G, G_exp)
   | .zero _ => panic! "Unexpected coef = zero in insertEquivalentToBasis"
 
@@ -342,7 +325,7 @@ theorem PreMS.sub_exp_toFun {basis : Basis} {ms G G_exp H : PreMS basis} {f : �
     (G_exp.mul H.exp).toFun =ᶠ[atTop] Real.exp ∘ f := by
   apply EventuallyEq.of_eq
   subst hGf hf
-  simp [h_G_exp, hH]
+  simp only [mul_toFun, h_G_exp, exp_toFun, hH, sub_toFun]
   ext t
   simp [← Real.exp_add]
 
@@ -359,7 +342,7 @@ theorem PreMS.sub_log_exp_toFun {basis basis' : Basis} {ex : BasisExtension basi
     (hH : H.toFun = (ms.sub ((L.updateBasis ex).mulConst c)).toFun)
     (h_expH : expH.toFun = Real.exp ∘ H.toFun) :
     (B.mul expH).toFun =ᶠ[atTop] (Real.exp ∘ f) := by
-  simp [h_expH, hH]
+  simp only [mul_toFun, h_expH, hH, sub_toFun, mulConst_toFun, updateBasis_toFun]
   have : Real.exp ∘ f = (Real.exp ∘ (c • Real.log ∘ basis'[i])) *
       (Real.exp ∘ (f - c • Real.log ∘ basis'[i])) := by
     ext
@@ -367,20 +350,12 @@ theorem PreMS.sub_log_exp_toFun {basis basis' : Basis} {ex : BasisExtension basi
   rw [this]
   apply (basis_eventually_pos h_basis).mono
   intro t h_pos
-  simp [hB, hL, h_ms]
+  simp only [hB, Fin.getElem_fin, h_ms, hL, Pi.mul_apply, Pi.pow_apply, Function.comp_apply,
+    Pi.sub_apply, Pi.smul_apply, smul_eq_mul, mul_eq_mul_right_iff, Real.exp_ne_zero, or_false]
   rw [Real.rpow_def_of_pos, mul_comm]
   apply h_pos
   simp
 
-def MS.replaceFun' (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter.atTop] $f)) :
-    MetaM <| (res : MS) × Q(($res.val).toFun = $f) := do
-  let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
-  let res ← ms.replaceFun q($f) q($h)
-  have : $res.basis =Q $basis_hd :: $basis_tl := ⟨⟩
-  have : $res.val =Q ($ms.val).replaceFun $f := ⟨⟩
-  return ⟨res, q(PreMS.replaceFun_toFun _ _)⟩
-
-set_option maxHeartbeats 0 in
 /-- Given a partially trimmed `ms` returns the MS approximating `exp ∘ ms.f`. -/
 partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.val)) :
     BasisM <| (res : MS) × Q(($res.val).toFun = Real.exp ∘ ($ms.val).toFun) := do
@@ -410,7 +385,8 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
       let ⟨expH, h_expH⟩ := ← createExpMSImp H hH_trimmed? -- here basis may grow
       -- return b_i^c * exp (H)
       let n : Q(Fin (List.length $expH.basis)) := ← findIndex q($expH.basis) q($right_hd)
-      let B := MS.monomialRpow q($expH.basis) q($expH.logBasis) n q($c) q($expH.h_basis) q($expH.h_logBasis)
+      let B := MS.monomialRpow q($expH.basis) q($expH.logBasis) n q($c)
+        q($expH.h_basis) q($expH.h_logBasis)
       let hB : Q(($B.val).toFun = List.get _ $n ^ $c) :=
         ← mkAppOptM ``PreMS.monomialRpow_toFun #[expH.basis, n, c]
       -- B ~ b_i^c
@@ -418,23 +394,24 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
       let res := B.mul expH
       let ⟨ms_f, hms_f⟩ ← Normalization.getFun ms.val
       let h : Q(($res.val).toFun =ᶠ[atTop] (Real.exp ∘ $ms_f)) :=
-        ← mkAppOptM ``PreMS.sub_log_exp_toFun #[log_right_hd.basis, expH.basis, ex, log_right_hd.val,
-          ms.val, H.val, B.val, expH.val,
+        ← mkAppOptM ``PreMS.sub_log_exp_toFun #[log_right_hd.basis, expH.basis, ex,
+          log_right_hd.val, ms.val, H.val, B.val, expH.val,
           ms_f, c, n, expH.h_basis, hms_f, hB, h_log_right_hd_fun, hH_fun, h_expH]
       return ← res.replaceFun' q(Real.exp ∘ $ms_f) q($h)
     | .gt h_right =>
-      let (G, G_exp) ← insertEquivalentToBasis ms q($h_trimmed) q($left) q($right_hd) q($right_tl) q($coef) q($exps)
-        q($h_leading) q($h_first_is_pos') q($h_left) q($h_right)
+      let (G, G_exp) ← insertEquivalentToBasis ms q($h_trimmed) q($left) q($right_hd) q($right_tl)
+        q($coef) q($exps) q($h_leading) q($h_first_is_pos') q($h_left) q($h_right)
       let ⟨Gf, hGf⟩ ← Normalization.getFun q($G.val)
-      let ⟨G_exp_f, h_G_exp_f⟩ ← Normalization.getFun q($G_exp.val)
+      let ⟨_, h_G_exp_f⟩ ← Normalization.getFun q($G_exp.val)
       -- create H = F - G
       let ms ← updateBasis ms
-      let ⟨H, hH_fun, hH_trimmed?⟩ ← trimPartialMS (ms.sub G)
+      let ⟨H, hH_fun, _⟩ ← trimPartialMS (ms.sub G)
       -- prove `¬ FirstIsPos` for `H`
       let ⟨H_leading, hH_leading⟩ ← getLeadingTermWithProof H.val
       let ~q(⟨$H_coef, $H_exps⟩) := H_leading | panic! "Unexpected leading of H in createExpMS"
       let .wrong h_H_nonpos' := (← getFirstIsPos H_exps) | panic! "Unexpected nonpos in createExpMS"
-      let h_H_nonpos : Q(¬ Term.FirstIsPos ($H.val).leadingTerm.exps) := q($hH_leading ▸ $h_H_nonpos')
+      let h_H_nonpos : Q(¬ Term.FirstIsPos ($H.val).leadingTerm.exps) :=
+        q($hH_leading ▸ $h_H_nonpos')
       let H_exp := H.exp q($h_H_nonpos)
       -- g ~ G
       -- f - g ~ H
@@ -444,7 +421,8 @@ partial def createExpMSImp (ms : MS) (h_trimmed? : Option Q(PreMS.Trimmed $ms.va
       let ~q($basis_hd :: $basis_tl) := G_exp.basis | panic! "unexpected G_exp basis in createExpMS"
       let ⟨ms_f, hms_f⟩ ← Normalization.getFun ms.val
       let h : Q((($G_exp.val).mul $H_exp.val).toFun =ᶠ[atTop] Real.exp ∘ $ms_f) :=
-        ← mkAppOptM ``PreMS.sub_exp_toFun #[G_exp.basis, ms.val, G.val, G_exp.val, H.val, ms_f, Gf, hms_f, hGf, hH_fun, h_G_exp_f]
+        ← mkAppOptM ``PreMS.sub_exp_toFun #[G_exp.basis, ms.val, G.val, G_exp.val, H.val, ms_f, Gf,
+        hms_f, hGf, hH_fun, h_G_exp_f]
       return ← (G_exp.mul H_exp).replaceFun' q(Real.exp ∘ $ms_f) h
 
 /-- Given a partially trimmed `ms` returns the MS approximating `exp ∘ ms.f`. -/

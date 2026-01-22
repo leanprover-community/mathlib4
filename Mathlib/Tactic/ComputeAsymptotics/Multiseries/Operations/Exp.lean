@@ -13,9 +13,6 @@ public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Operations.Powser
 
 -/
 
-set_option linter.flexible false
-set_option linter.style.longLine false
-
 @[expose] public section
 
 open Filter Asymptotics Topology
@@ -113,7 +110,7 @@ theorem SeqMS.exp_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : 
   cases ms with
   | nil => simpa [SeqMS.exp] using SeqMS.one_WellOrdered
   | cons exp coef tl =>
-  simp [SeqMS.exp, SeqMS.destruct_cons]
+  simp only [SeqMS.exp, SeqMS.destruct_cons]
   split_ifs with h_if
   · apply SeqMS.apply_WellOrdered h
     simpa
@@ -129,7 +126,7 @@ theorem SeqMS.exp_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : 
   · exact SeqMS.apply_WellOrdered h_tl_wo h_comp
   · apply exp_WellOrdered h_coef_wo
     contrapose! h_nonpos
-    simp
+    simp only [SeqMS.cons_exps]
     exact Term.FirstIsPos_of_tail rfl h_nonpos
 
 theorem exp_WellOrdered {basis : Basis} {ms : PreMS basis}
@@ -139,7 +136,7 @@ theorem exp_WellOrdered {basis : Basis} {ms : PreMS basis}
   cases basis with
   | nil => apply WellOrdered.const
   | cons basis_hd basis_tl =>
-    simp at *
+    simp only [WellOrdered_iff_Seq_WellOrdered, exps_eq_Seq_exps, exp_seq] at *
     apply SeqMS.exp_WellOrdered h h_nonpos
 
 end
@@ -154,7 +151,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   · simp
   cases ms with
   | nil f =>
-    simp [exp, SeqMS.exp, SeqMS.destruct_nil]
+    simp only [exp, mk_seq, SeqMS.exp, SeqMS.destruct_nil, mk_toFun]
     apply Approximates_nil at h_approx
     convert replaceFun_Approximates _ (one_Approximates h_basis)
     · ext g
@@ -162,7 +159,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
     · apply h_approx.mono
       simp +contextual
   | cons exp coef tl f =>
-  simp [PreMS.exp, SeqMS.exp, SeqMS.destruct_cons]
+  simp only [PreMS.exp, mk_seq, SeqMS.exp, SeqMS.destruct_cons, mk_toFun]
   split_ifs with h_if
   · rw [← expSeries_toFun]
     exact apply_Approximates expSeries_analytic h_basis (by simpa) h_wo h_approx
@@ -177,17 +174,18 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   obtain ⟨h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
   let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).apply expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
-    simp [ms]
+    simp only [pow_zero, one_mul, ms]
     apply mulMonomial_Approximates h_basis
     · apply apply_Approximates expSeries_analytic h_basis (by simpa) (by simpa)
       convert h_tl
       simp
     · apply exp_Approximates h_basis.tail h_coef_wo h_coef
       contrapose! h_nonpos
-      simp
+      simp only [exps_eq_Seq_exps, mk_seq, SeqMS.cons_exps]
       exact Term.FirstIsPos_of_tail rfl h_nonpos
   apply replaceFun_Approximates _ h
-  simp [ms, expSeries_toFun]
+  simp only [pow_zero, one_mul, mulMonomial_toFun, apply_toFun, expSeries_toFun, mk_toFun,
+    real_real_rpow_zero, mul_one, exp_toFun, ms]
   apply EventuallyEq.of_eq
   ext t
   simp [← Real.exp_add]
