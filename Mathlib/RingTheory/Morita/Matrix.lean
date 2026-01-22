@@ -176,7 +176,7 @@ def MatrixModCat.counitIso (i : ι) :
 
 /-- `ModuleCat.toMatrixModCat R ι` and `MatrixModCat.toModuleCat R i` together form
   an equivalence of categories. -/
-@[simps, stacks 074D "1"]
+@[simps, stacks 074D "(1)"]
 def equivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) where
   functor := ModuleCat.toMatrixModCat R ι
   inverse := MatrixModCat.toModuleCat R i
