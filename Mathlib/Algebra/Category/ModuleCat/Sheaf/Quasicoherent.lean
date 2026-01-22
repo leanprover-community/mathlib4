@@ -7,12 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-<<<<<<< HEAD
 public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Equivalence.Symmetry
-=======
->>>>>>> refs/remotes/origin/isQuasicoherent
 
 /-!
 # Quasicoherent sheaves
@@ -254,7 +251,7 @@ noncomputable def quasicoherentDataOfIsFinitePresentation
 
 end
 
-section
+noncomputable section
 
 open CategoryTheory Limits
 
@@ -278,34 +275,36 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
 
--- noncomputable
--- def Presentation.QuasicoherentData {M : SheafOfModules.{u'} R} (P : Presentation M) :
---   QuasicoherentData M where
---   I := C
---   X := id
---   coversTop := fun x ↦ GrothendieckTopology.covering_of_eq_top J <| by
---     rw [Sieve.ext_iff]
---     intro _ f
---     simp only [Sieve.top_apply, iff_true]
---     use x, f
---   presentation := by
---     refine fun x ↦ @Presentation.map.{u'} C _ J R _ _ _ (Over x) _ _ (R.over x) _ _ _  M P
---       (pushforward.{u'} (𝟙 _)) ?_ (by rfl)
---     let ψ : R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
---       ⟨{app U := R.val.map Limits.prod.snd.op
---         naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
---     have Adj_aux : pushforward.{u'} (𝟙 (R.over x)) ⊣ pushforward.{u'} ψ := by
---       refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) ψ ?_ ?_
---       · ext y : 2
---         simp [ψ]
---       · ext y : 2
---         simp [ψ, ← Functor.map_comp, ← op_comp]
---     refine Adjunction.leftAdjoint_preservesColimits Adj_aux
+def pushforwardOver (x : C) :
+    R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
+  ⟨{app U := R.val.map Limits.prod.snd.op
+    naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
 
--- lemma Presentation.isQuasicoherent {M : SheafOfModules.{u'} R} (P : Presentation M) :
---     IsQuasicoherent M where
---   nonempty_quasicoherentData := Nonempty.intro (Presentation.QuasicoherentData P)
+def overPushforwardOverAdj (x : C) :
+    pushforward.{u'} (𝟙 (R.over x)) ⊣ pushforward.{u'} (pushforwardOver x) := by
+  refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) _ ?_ ?_
+  · ext y : 2
+    simp [pushforwardOver]
+  · ext y : 2
+    simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
 
+instance {x : C} : PreservesColimits (pushforward.{u'} (𝟙 (R.over x))) :=
+  (overPushforwardOverAdj x).leftAdjoint_preservesColimits
+
+@[simps I X]
+def Presentation.QuasicoherentData {M : SheafOfModules R} (P : Presentation M) :
+    QuasicoherentData M where
+  I := C
+  X := id
+  coversTop := fun x ↦ GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  presentation := fun x => P.map (pushforward (𝟙 (R.over x))) (by rfl)
+
+def Presentation.isQuasicoherent {M : SheafOfModules.{u'} R} (P : Presentation M) :
+    IsQuasicoherent M where
+  nonempty_quasicoherentData := Nonempty.intro (Presentation.QuasicoherentData P)
 
 end
 
