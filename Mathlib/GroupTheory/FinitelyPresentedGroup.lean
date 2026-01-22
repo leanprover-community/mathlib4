@@ -4,15 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
   Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
 -/
+module
 
-import Mathlib.Algebra.Group.PUnit
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Finite.Card
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.GroupTheory.Finiteness
+public import Mathlib.Algebra.Group.PUnit
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Finite.Card
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.PresentedGroup
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.GroupTheory.Finiteness
 
 /-!
 # Finitely Presented Groups
