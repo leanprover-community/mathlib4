@@ -473,11 +473,7 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
   rintro ⟨n, u, u_mono, u_mem⟩
   have : u n ≤ a := (u_mem n (by simp)).2
   rcases this.eq_or_lt with hn | hn; swap
-  · let q : (n : ℕ) × { u // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s ∩ Iio a } :=
-      ⟨n, u, u_mono, by grind [StrictMonoOn]⟩
-    rw [eVariationOn_eq_strictMonoOn]
-    exact le_iSup (fun (p : (n : ℕ) × {u // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s ∩ Iio a})
-      ↦ ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))) q
+  · exact sum_le_of_monotoneOn_Iic u_mono.monotoneOn (by grind [StrictMonoOn])
   cases n with
   | zero => simp
   | succ n =>
@@ -499,20 +495,13 @@ lemma eVariationOn_inter_Iio_eq_inter_Iic_of_continuousWithinAt
       exact Ioo_mem_nhdsLT (by grind [StrictMonoOn])
     filter_upwards [this] with b hb
     let v i := if i ≤ n then u i else b
-    let q : (n : ℕ) × { u // StrictMonoOn u (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s ∩ Iio a } :=
-      ⟨n + 1, v, by grind [StrictMonoOn]⟩
     calc edist (f b) (f (u n)) + ∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i))
-    _ = ∑ i ∈ Finset.range q.1, edist (f (q.2.1 (i + 1))) (f (q.2.1 i)) := by
+    _ = ∑ i ∈ Finset.range (n + 1), edist (f (v (i + 1))) (f (v i)) := by
       simp only [Finset.range_add_one, Finset.mem_range, lt_self_iff_false, not_false_eq_true,
-        Finset.sum_insert, q]
-      congr 1
-      · grind
-      exact Finset.sum_congr rfl (by grind)
-    _ ≤ eVariationOn f (s ∩ Iio a) := by
-      rw [eVariationOn_eq_strictMonoOn]
-      exact le_iSup (fun (p : (n : ℕ) × {u // StrictMonoOn u (Iic n)
-        ∧ ∀ i ∈ Iic n, u i ∈ s ∩ Iio a})
-        ↦ ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))) q
+        Finset.sum_insert]
+      congr 1 <;> grind [Finset.sum_congr]
+    _ ≤ eVariationOn f (s ∩ Iio a) :=
+      sum_le_of_monotoneOn_Iic (by grind [MonotoneOn, StrictMonoOn]) (by grind [StrictMonoOn])
 
 /-- If a function is continuous on the right at a point `a`, then its variations on `Ioi a` and
 on `Ioc a` coincide. We give a version relative to a set `s`. -/
@@ -531,19 +520,11 @@ lemma exists_lt_eVariationOn_inter_Icc {f : α → E} {ε : ℝ≥0∞} {s : Set
   have A : ε < eVariationOn f (s ∩ Icc (u 0) (u n)) := by
     apply hu.trans_le
     simp only [Monotone] at u_mono
-    let p : ℕ × { v // Monotone v ∧ ∀ (i : ℕ), v i ∈ s ∩ Icc (u 0) (u n) } := by
-      refine ⟨n, fun i ↦ min (u i) (u n), ?_, ?_⟩
-      · intro i j hij
-        have := u_mono hij
-        grind
-      · simp
-        grind
+    let v (i : ℕ) := min (u i) (u n)
     calc ∑ x ∈ Finset.range n, edist (f (u (x + 1))) (f (u x))
-    _ = ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i)) :=
-      Finset.sum_congr rfl (fun i hi ↦ by grind)
+    _ = ∑ i ∈ Finset.range n, edist (f (v (i + 1))) (f (v i)) := by grind [Finset.sum_congr]
     _ ≤ eVariationOn f (s ∩ Icc (u 0) (u n)) :=
-      le_iSup (fun (p : ℕ × { v // Monotone v ∧ ∀ (i : ℕ), v i ∈ s ∩ Icc (u 0) (u n) }) ↦
-        ∑ i ∈ Finset.range p.1, edist (f ((p.2 : ℕ → α) (i + 1))) (f ((p.2 : ℕ → α) i))) p
+      sum_le_of_monotoneOn_Iic (by grind [MonotoneOn]) (by grind)
   refine ⟨u 0, u_mem _, u n, u_mem _, ?_, A⟩
   by_contra!
   have : Set.Subsingleton (s ∩ Icc (u 0) (u n)) := by
@@ -738,17 +719,13 @@ lemma eVariationOn_le_of_mapClusterPt [TopologicalSpace α] [OrderTopology α] {
     suffices H : f ∘ v ∈ I.pi t from ht H
     grind
   apply this.trans_le
-  rw [eVariationOn_eq_strictMonoOn]
   have v_mono : StrictMonoOn v (Iic n) := by
     suffices v ∈ J.pi k by
       simp only [Finset.mem_filter, Finset.mem_product, Finset.mem_Iic, and_imp, Prod.forall] at hk
       have W := hk this
       grind [StrictMonoOn]
     grind
-  let q : (n : ℕ) × { u // StrictMonoOn (u : ℕ → α) (Iic n) ∧ ∀ i ∈ Iic n, u i ∈ s } :=
-    ⟨n, v, v_mono, by grind⟩
-  exact le_iSup (fun p : (n : ℕ) × {u // StrictMonoOn (u : ℕ → α) (Iic n)
-    ∧ ∀ i ∈ Iic n, u i ∈ s} ↦ ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))) q
+  exact sum_le_of_monotoneOn_Iic v_mono.monotoneOn (by grind)
 
 lemma eVariationOn_leftLim_le [TopologicalSpace α] [OrderTopology α] {f : α → E} :
     eVariationOn f.leftLim univ ≤ eVariationOn f univ := by
@@ -768,17 +745,17 @@ lemma _root_.BoundedVariationOn.rightLim [TopologicalSpace α] [OrderTopology α
     (hf : BoundedVariationOn f univ) : BoundedVariationOn f.rightLim univ :=
   (eVariationOn_rightLim_le.trans_lt hf.lt_top).ne
 
-lemma _root_.BoundedVariation.continuousWithinAt_leftLim [TopologicalSpace α] [OrderTopology α]
+lemma _root_.BoundedVariationOn.continuousWithinAt_leftLim [TopologicalSpace α] [OrderTopology α]
     [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
     ContinuousWithinAt f.leftLim (Iic x) x := by
   have : Tendsto f.leftLim (𝓝[<] x) (𝓝 (f.leftLim.leftLim x)) := hf.leftLim.tendsto_leftLim x
   rw [leftLim_leftLim (hf.tendsto_leftLim x)] at this
   exact continuousWithinAt_Iio_iff_Iic.1 this
 
-lemma _root_.BoundedVariation.continuousWithinAt_rightLim [TopologicalSpace α] [OrderTopology α]
+lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α] [OrderTopology α]
     [CompleteSpace E] [T3Space E] {f : α → E} (hf : BoundedVariationOn f univ) {x : α} :
     ContinuousWithinAt f.rightLim (Ici x) x :=
-  BoundedVariation.continuousWithinAt_leftLim hf.ofDual
+  BoundedVariationOn.continuousWithinAt_leftLim hf.ofDual
 
 section Monotone
 
@@ -1020,6 +997,30 @@ protected theorem comp_eq_of_monotoneOn {β : Type*} [LinearOrder β] (f : α �
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hx hy]
   · rw [variationOnFromTo.eq_of_ge _ _ h, variationOnFromTo.eq_of_ge _ _ (hφ hy hx h),
       eVariationOn.comp_inter_Icc_eq_of_monotoneOn f φ hφ hy hx]
+
+theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_Ici
+    [TopologicalSpace α] [OrderTopology α] (hf : BoundedVariationOn f univ) {a x : α}
+    (hx : ContinuousWithinAt f (Ici x) x) :
+    ContinuousWithinAt (variationOnFromTo f univ a) (Ici x) x := by
+  have : variationOnFromTo f univ a =
+      fun y ↦ variationOnFromTo f univ a x + variationOnFromTo f univ x y := by
+    ext y
+    rw [variationOnFromTo.add hf.locallyBoundedVariationOn (mem_univ _) (mem_univ _) (mem_univ _)]
+  rw [this]
+  apply continuousWithinAt_const.add
+  suffices H : ContinuousWithinAt (fun y ↦ (eVariationOn f (univ ∩ Icc x y)).toReal) (Ici x) x from
+    H.congr_of_mem (fun y hy ↦ by grind [variationOnFromTo]) self_mem_Iic
+  simp only [ContinuousWithinAt, Icc_self]
+  rw [eVariationOn.subsingleton _ (by grind [Set.Subsingleton])]
+  apply (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp
+  apply Tendsto.mono_left _ (nhdsWithin_mono _ (subset_univ _))
+  exact hf.tendsto_eVariationOn_Icc_zero_right _ (by simpa using hx)
+
+theorem _root_.BoundedVariationOn.continuousWithinAt_variationOnFromTo_rightLim_Ici
+    [TopologicalSpace α] [OrderTopology α] [T3Space E] [CompleteSpace E]
+    (hf : BoundedVariationOn f univ) {a x : α} :
+    ContinuousWithinAt (variationOnFromTo f.rightLim univ a) (Ici x) x :=
+  hf.rightLim.continuousWithinAt_variationOnFromTo_Ici hf.continuousWithinAt_rightLim
 
 end variationOnFromTo
 
