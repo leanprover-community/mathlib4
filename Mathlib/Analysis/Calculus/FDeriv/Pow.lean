@@ -197,12 +197,9 @@ theorem hasFDerivAt_pow (n : ℕ) {x : 𝔸} :
       (fun x : 𝔸 ↦ x ^ n) ((n • x ^ (n - 1)) • ContinuousLinearMap.id 𝕜 𝔸) x :=
   hasFDerivAt_id _ |>.pow n
 
-theorem fderiv_fun_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
-  hf.hasFDerivAt.pow n |>.fderiv
-
+@[to_fun fderiv_fun_pow]
 theorem fderiv_pow (n : ℕ) (hf : DifferentiableAt 𝕜 f x) :
-    fderiv 𝕜 (fun x ↦ f x ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
+    fderiv 𝕜 (f ^ n) x = (n • f x ^ (n - 1)) • fderiv 𝕜 f x :=
   hf.hasFDerivAt.pow n |>.fderiv
 
 theorem fderiv_pow_ring {x : 𝔸} (n : ℕ) :
