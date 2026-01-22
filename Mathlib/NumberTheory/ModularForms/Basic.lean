@@ -606,7 +606,7 @@ def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
 
 /-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
 those indexed by `s : Finset ι` with weight `#s * k`. -/
-@[simps!]
+@[simps! -fullyApplied]
 def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
      {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
     (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
