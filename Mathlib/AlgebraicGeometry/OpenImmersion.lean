@@ -255,7 +255,7 @@ lemma appIso_inv_app_presheafMap (U : X.Opens) :
 
 @[simp]
 lemma id_appIso (U : X.Opens) :
-    (𝟙 X:).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
+    (𝟙 X :).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
   ext; simp [appIso_hom]
 
 @[simp]
