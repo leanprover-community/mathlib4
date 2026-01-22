@@ -192,7 +192,7 @@ def equivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) whe
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
 
 open ModuleCat.Algebra in
-/-- Moreover `moritaEquivalentToMatrix` is a `MoritaEquivalence`. -/
+/-- Moreover `equivalentToMatrix` is a `MoritaEquivalence`. -/
 @[simps]
 def ModuleCat.matrixEquivalence (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
