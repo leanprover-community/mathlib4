@@ -146,9 +146,13 @@ theorem integral_add_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ :=
   integral_add_compl₀ hs.nullMeasurableSet hfi
 
-theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
+theorem setIntegral_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ := by
-  rw [← integral_add_compl (μ := μ) hs hfi, add_sub_cancel_left]
+  rw [← integral_add_compl₀ (μ := μ) hs hfi, add_sub_cancel_left]
+
+theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
+    ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ :=
+  setIntegral_compl₀ hs.nullMeasurableSet hfi
 
 /-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
 over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
@@ -191,7 +195,7 @@ theorem integral_biUnion_eq_sum_powerset {ι : Type*} {t : Finset ι} {s : ι �
   simp_rw [← integral_smul, ← integral_indicator (Finset.measurableSet_biUnion _ hs)]
   have A (u) (hu : u ∈ t.powerset.filter (·.Nonempty)) : MeasurableSet (⋂ i ∈ u, s i) := by
     refine u.measurableSet_biInter fun i hi ↦ hs i ?_
-    aesop
+    grind
   have : ∑ x ∈ t.powerset with x.Nonempty, ∫ (a : X) in ⋂ i ∈ x, s i, (-1 : ℝ) ^ (#x + 1) • f a ∂μ
       = ∑ x ∈ t.powerset with x.Nonempty, ∫ a, indicator (⋂ i ∈ x, s i)
         (fun a ↦ (-1 : ℝ) ^ (#x + 1) • f a) a ∂μ := by
