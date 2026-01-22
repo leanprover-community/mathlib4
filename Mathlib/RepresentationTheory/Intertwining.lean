@@ -125,7 +125,7 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
 
 /-- If `g` is a central element of a monoid `G`, then this is the action of `g`, considered as an
   intertwining map from any representation of `G` to itself. -/
-def CentralMul (g : G) (hg : g ∈ Submonoid.center G) : (IntertwiningMap ρ ρ) where
+def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ where
   toLinearMap := ρ g
   isIntertwining' := (isIntertwiningMap_of_central ρ g hg).isIntertwining
 
