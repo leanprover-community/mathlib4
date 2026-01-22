@@ -12,6 +12,7 @@ import Mathlib.Analysis.Complex.ExpPoly
 import Mathlib.Analysis.Complex.ExpPoly.Growth
 import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.Algebra.InfiniteSum.GroupWithZero
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.MetricSpace.Annulus
 
@@ -35,6 +36,64 @@ noncomputable section
 namespace Complex.Hadamard
 
 open Filter Topology Set Complex
+
+open scoped BigOperators Topology
+
+/-!
+### Helper: bounding the inverse of an infinite product
+
+If `∏' fac = F`, and each inverse factor satisfies `‖(fac a)⁻¹‖ ≤ exp (b a)`, and all finite sums
+`∑_{a∈s} b a` are bounded by `B`, then `‖F⁻¹‖ ≤ exp B`.
+
+This is exactly the estimate needed when turning Cartan-type partial-sum bounds on a majorant
+exponent into a uniform bound on the inverse canonical product.
+-/
+lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
+    {α : Type*} {L : SummationFilter α} [NeBot L.filter]
+    (fac : α → ℂ) {F : ℂ} (hprod : HasProd fac F L)
+    (b : α → ℝ) (B : ℝ)
+    (hterm : ∀ a, ‖(fac a)⁻¹‖ ≤ Real.exp (b a))
+    (hB : ∀ s : Finset α, (∑ a ∈ s, b a) ≤ B) :
+    ‖F⁻¹‖ ≤ Real.exp B := by
+  classical
+  by_cases hF0 : F = 0
+  · subst hF0
+    simp
+  · have hprod_inv : HasProd (fun a : α => (fac a)⁻¹) (F⁻¹) L :=
+      HasProd.inv₀ (hf := hprod) (ha := by simpa [hF0])
+    have hbound_fin : ∀ s : Finset α, ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ Real.exp B := by
+      intro s
+      have hnorm_le : ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ ∏ a ∈ s, ‖(fac a)⁻¹‖ :=
+        Finset.norm_prod_le (s := s) (f := fun a : α => (fac a)⁻¹)
+      have hprod_le :
+          (∏ a ∈ s, ‖(fac a)⁻¹‖) ≤ Real.exp (∑ a ∈ s, b a) := by
+        refine Finset.prod_le_exp_sum (s := s) (a := fun a => ‖(fac a)⁻¹‖) (b := b) ?_ ?_
+        · intro a ha
+          exact norm_nonneg _
+        · intro a ha
+          exact hterm a
+      have hexp_le : Real.exp (∑ a ∈ s, b a) ≤ Real.exp B :=
+        Real.exp_le_exp.2 (hB s)
+      exact hnorm_le.trans (hprod_le.trans hexp_le)
+    have hlim :
+        Tendsto (fun s : Finset α => ∏ a ∈ s, (fac a)⁻¹) L.filter (𝓝 (F⁻¹)) := by
+      simpa [HasProd] using hprod_inv
+    have hlim_norm :
+        Tendsto (fun s : Finset α => ‖∏ a ∈ s, (fac a)⁻¹‖) L.filter (𝓝 ‖F⁻¹‖) :=
+      (continuous_norm.tendsto _).comp hlim
+    have h_event_le : ∀ᶠ s in L.filter, ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ Real.exp B :=
+      Filter.Eventually.of_forall hbound_fin
+    -- if the limit were strictly bigger than `exp B`, we'd eventually be in `Ioi (exp B)`,
+    -- contradicting the eventual upper bound.
+    by_contra hcontra
+    have hgt : Real.exp B < ‖F⁻¹‖ := lt_of_not_ge hcontra
+    have hnhds : Set.Ioi (Real.exp B) ∈ 𝓝 ‖F⁻¹‖ := Ioi_mem_nhds hgt
+    have h_event_gt :
+        ∀ᶠ s in L.filter, ‖∏ a ∈ s, (fac a)⁻¹‖ ∈ Set.Ioi (Real.exp B) :=
+      hlim_norm.eventually hnhds
+    have hfalse : ∀ᶠ s in L.filter, False :=
+      (h_event_gt.and h_event_le).mono (fun _ hs => (not_lt_of_ge hs.2 hs.1).elim)
+    exact (Filter.not_eventually_false.2 hfalse)
 
 /-- The “denominator” in the Hadamard quotient construction: the product of the origin factor
 `z ^ (analyticOrderNatAt f 0)` and the canonical product built from the divisor of `f` (of genus `m`)
@@ -2775,16 +2834,14 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
 /-!
 ## Finite order hypothesis ⇒ Hadamard factorization
 
-Tao (246B, Theorem 22) assumes an “order at most `ρ`” hypothesis given by an `ε`-family of growth
+Tao (246B, Theorem 22 following Iwaniec and Kowalski) assumes an “order at most `ρ`” hypothesis given by an `ε`-family of growth
 bounds. Our proof pipeline is phrased in terms of a single explicit bound on `log (1 + ‖f z‖)`.
-
 The theorem below bridges this gap: from the `ε`-family of exponential bounds we pick an
 intermediate exponent `τ` with `ρ < τ < ⌊ρ⌋ + 1` and obtain the single growth hypothesis needed to
-apply `hadamard_factorization_of_growth`. The conclusion matches Tao’s form, with the canonical
-product indexed intrinsically by the divisor rather than by a chosen enumeration of zeros.
+apply `hadamard_factorization_of_growth`.
 -/
 
-theorem hadamard_factorization_of_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 ≤ ρ)
+theorem hadamard_factorization_of_order_bounded_order {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 ≤ ρ)
     (hentire : Differentiable ℂ f)
     (hnot : ∃ z : ℂ, f z ≠ 0)
     (horder :

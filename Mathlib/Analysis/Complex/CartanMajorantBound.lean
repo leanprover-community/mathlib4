@@ -1,7 +1,7 @@
 
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Analysis.Complex.Divisor
-import Mathlib.Analysis.Complex.CartanInverseFactorBound
+import Mathlib.Analysis.Complex.CartanBound
 /-!
 ## Cartan bookkeeping (intrinsic): Bound on finite sums of the majorant
 
@@ -15,16 +15,6 @@ The point is exclusively performance
 noncomputable section
 
 /-!
-## Cartan/minimum-modulus helpers (stubbed API)
-This repository previously imported `PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.CartanBound`.
-In this workspace we provide the small API surface that downstream files currently use:
-`LogSingularity.φ`, `LogSingularity.Cφ`, and the basic facts `φ_nonneg`, `Cφ_pos`.
-The heavy Cartan/minimum-modulus lemmas live elsewhere; this file is intentionally minimal.
--/
-
-noncomputable section
-
-/-!
 ## Cartan bookkeeping (intrinsic): Bound on finite sums of the majorant
 
 This file isolates the expensive  bookkeeping step used in the Cartan/minimum-modulus argument:
@@ -33,8 +23,6 @@ we bound finite partial sums `∑_{p∈s} b p` of the majorant exponent `b` by
 
 The point is exclusively performance
 -/
-
-noncomputable section
 
 namespace Complex.Hadamard
 
@@ -49,7 +37,7 @@ private lemma cartan_majorant_nonneg
     let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p =>
         if p ∈ small then
-          LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+          CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
         else
           (2 : ℝ) * (r / ap p) ^ τ
     ∀ p, 0 ≤ b p := by
@@ -59,10 +47,10 @@ private lemma cartan_majorant_nonneg
   let ap : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ := fun q => ‖divisorZeroIndex₀_val q‖
   have hap : ap p = ‖divisorZeroIndex₀_val p‖ := rfl
   by_cases hp : p ∈ small
-  · have hφ : 0 ≤ LogSingularity.φ (r / ap p) := LogSingularity.φ_nonneg (t := r / ap p)
+  · have hφ : 0 ≤ CartanBound.φ (r / ap p) := CartanBound.φ_nonneg (t := r / ap p)
     have hm0 : 0 ≤ (m : ℝ) := by exact_mod_cast (Nat.zero_le m)
     have h1 : 0 ≤ (1 + (r / ap p) ^ τ) := by positivity
-    have : 0 ≤ LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ) := by
+    have : 0 ≤ CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ) := by
       nlinarith [hφ, hm0, h1]
     simpa [hap, hp, ap] using this
   · have hbase : 0 ≤ r / ap p := div_nonneg hr (by positivity)
@@ -81,7 +69,7 @@ private lemma cartan_majorant_summable
     let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p =>
         if p ∈ small then
-          LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+          CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
         else
           (2 : ℝ) * (r / ap p) ^ τ
     Summable b := by
@@ -91,14 +79,14 @@ private lemma cartan_majorant_summable
   let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
     fun p =>
       if p ∈ small then
-        LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+        CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
       else
         (2 : ℝ) * (r / ap p) ^ τ
   have hb : Summable b := by
     let b₁ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p =>
         if p ∈ small then
-          LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+          CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
         else 0
     let b₂ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p => if p ∈ small then 0 else (2 : ℝ) * (r / ap p) ^ τ
@@ -229,18 +217,18 @@ theorem cartan_sum_majorant_le
     (hr_phi :
       let small : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) := hsmall_fin.toFinset
       let a : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ := fun p => ‖divisorZeroIndex₀_val p‖
-      (∑ p ∈ small, LogSingularity.φ (r / a p)) ≤ LogSingularity.Cφ * (small.card : ℝ)) :
+      (∑ p ∈ small, CartanBound.φ (r / a p)) ≤ CartanBound.Cφ * (small.card : ℝ)) :
     let small : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)) := hsmall_fin.toFinset
     letI : DecidableEq (divisorZeroIndex₀ f (Set.univ : Set ℂ)) := Classical.decEq _
     let ap : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ := fun p => ‖divisorZeroIndex₀_val p‖
     let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p =>
         if p ∈ small then
-          LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+          CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
         else
           (2 : ℝ) * (r / ap p) ^ τ
     let Sτ : ℝ := ∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), ‖divisorZeroIndex₀_val p‖⁻¹ ^ τ
-    let Cprod : ℝ := ((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1)
+    let Cprod : ℝ := ((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1)
     ∀ s : Finset (divisorZeroIndex₀ f (Set.univ : Set ℂ)),
       (∑ p ∈ s, b p) ≤ Cprod * (1 + r) ^ τ := by
   classical
@@ -252,7 +240,7 @@ theorem cartan_sum_majorant_le
     intro p
     simp [small, hsmall_fin.mem_toFinset]
   have hphi_sum :
-      (∑ p ∈ small, LogSingularity.φ (r / ap p)) ≤ LogSingularity.Cφ * (small.card : ℝ) := by
+      (∑ p ∈ small, CartanBound.φ (r / ap p)) ≤ CartanBound.Cφ * (small.card : ℝ) := by
     simpa [small, ap] using hr_phi
   have hb_nonneg : ∀ p, 0 ≤ b p := by
     simpa [ap, b] using (cartan_majorant_nonneg (f := f) (m := m) (τ := τ) (r := r) hr small)
@@ -275,7 +263,7 @@ theorem cartan_sum_majorant_le
   have hb_tsum_le :
       (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b p) ≤ Cprod * (1 + r) ^ τ := by
     let bφ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
-      fun p => if p ∈ small then LogSingularity.φ (r / ap p) else 0
+      fun p => if p ∈ small then CartanBound.φ (r / ap p) else 0
     let b0 : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
       fun p => if p ∈ small then (m : ℝ) else 0
     let bmτ : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
@@ -334,7 +322,7 @@ theorem cartan_sum_majorant_le
       (hasSum_le hb_pointwise hb_summable.hasSum hmaj_summ.hasSum)
     have htsum_bφ :
         (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
-          = ∑ p ∈ small, LogSingularity.φ (r / ap p) := by
+          = ∑ p ∈ small, CartanBound.φ (r / ap p) := by
       classical
       simpa [bφ] using
         (tsum_eq_sum (s := small) (f := fun p => bφ p) (by intro p hp; simp [bφ, hp]))
@@ -420,13 +408,13 @@ theorem cartan_sum_majorant_le
         mul_le_mul h1r hS (by positivity) (by positivity)
       simpa [this, mul_assoc, mul_left_comm, mul_comm] using hle
     have hm0 : 0 ≤ (m : ℝ) := by exact_mod_cast (Nat.zero_le m)
-    have hCφ : 0 ≤ LogSingularity.Cφ := le_of_lt LogSingularity.Cφ_pos
+    have hCφ : 0 ≤ CartanBound.Cφ := le_of_lt CartanBound.Cφ_pos
     have hS : 0 ≤ Sτ + 1 := by linarith [hSτ_nonneg]
     have htsum_majorant :
         (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), (bφ p + b0 p + bmτ p + bt p))
-          ≤ (((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ := by
+          ≤ (((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ := by
       have hφ_le :
-          (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p) ≤ LogSingularity.Cφ * (small.card : ℝ) := by
+          (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p) ≤ CartanBound.Cφ * (small.card : ℝ) := by
         simpa [htsum_bφ] using hphi_sum
       have hb0_le :
           (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p) ≤ (m : ℝ) * (small.card : ℝ) := by
@@ -518,9 +506,9 @@ theorem cartan_sum_majorant_le
         simpa [mul_assoc, mul_left_comm, mul_comm] using hcard_le'
       have hφ_le' :
           (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p) ≤
-            LogSingularity.Cφ * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ := by
-        have : LogSingularity.Cφ * (small.card : ℝ) ≤
-            LogSingularity.Cφ * ((4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ) :=
+            CartanBound.Cφ * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ := by
+        have : CartanBound.Cφ * (small.card : ℝ) ≤
+            CartanBound.Cφ * ((4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ) :=
           mul_le_mul_of_nonneg_left hcard_le'' hCφ
         exact hφ_le.trans (by simpa [mul_assoc, mul_left_comm, mul_comm] using this)
       have hb0_le' :
@@ -531,13 +519,13 @@ theorem cartan_sum_majorant_le
         exact hb0_le.trans (by simpa [mul_assoc, mul_left_comm, mul_comm] using this)
       have htsum_majorant' :
           (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), (bφ p + b0 p + bmτ p + bt p))
-            ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ
+            ≤ (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ
               + (2 : ℝ) * (Sτ + 1) * (1 + r) ^ τ := by
         rw [hsplit]
         set Y : ℝ := Sτ + 1 with hY
         have hφ_leY :
             (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
-              ≤ LogSingularity.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
+              ≤ CartanBound.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
           simpa [hY, mul_assoc] using hφ_le'
         have hb0_leY :
             (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p)
@@ -550,14 +538,14 @@ theorem cartan_sum_majorant_le
         have h12 :
             (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
               + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p)
-              ≤ LogSingularity.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
+              ≤ CartanBound.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
                 + (m : ℝ) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ :=
           add_le_add hφ_leY hb0_leY
         have h123 :
             ((∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
                 + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p))
               + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bmτ p)
-              ≤ (LogSingularity.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
+              ≤ (CartanBound.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
                     + (m : ℝ) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ)
                   + (m : ℝ) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ :=
           add_le_add h12 hbmτ_leY
@@ -565,12 +553,12 @@ theorem cartan_sum_majorant_le
             ((∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bφ p)
                 + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p))
               + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bmτ p)
-              ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
+              ≤ (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
           have :
-              (LogSingularity.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
+              (CartanBound.Cφ * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
                     + (m : ℝ) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ)
                   + (m : ℝ) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
-                = (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
+                = (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ := by
             ring
           simpa [this] using h123
         have h4 :
@@ -578,7 +566,7 @@ theorem cartan_sum_majorant_le
                   + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), b0 p))
                 + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bmτ p))
               + (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p)
-              ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
+              ≤ (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * Y * (1 + r) ^ τ
                 + (2 : ℝ) * Y * (1 + r) ^ τ := by
           have hbt_leY :
               (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p) ≤ (2 : ℝ) * Y *
@@ -589,18 +577,18 @@ theorem cartan_sum_majorant_le
         rw [hY] at h4'
         exact h4'
       have hring :
-          (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ
+          (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ * (Sτ + 1) * (1 + r) ^ τ
               + (2 : ℝ) * (Sτ + 1) * (1 + r) ^ τ
-            = (((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ := by
+            = (((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ := by
         ring
       rw [← hring]
       exact htsum_majorant'
     have hCprod' :
-        (((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ
+        (((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)) * (1 + r) ^ τ
           ≤ Cprod * (1 + r) ^ τ := by
       have hnr' : 0 ≤ (1 + r) ^ τ := by positivity
-      have : ((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)
-            ≤ ((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1) := by
+      have : ((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 2) * (Sτ + 1)
+            ≤ ((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1) := by
         nlinarith [hS]
       have := mul_le_mul_of_nonneg_right this hnr'
       simpa [Cprod, mul_assoc, mul_left_comm, mul_comm] using this
