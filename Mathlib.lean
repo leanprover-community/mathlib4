@@ -5848,6 +5848,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.RepresentationTheory.Induced
+public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RepresentationTheory.Rep
@@ -6295,6 +6296,7 @@ public import Mathlib.RingTheory.PowerSeries.Catalan
 public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.RingTheory.PowerSeries.Exp
 public import Mathlib.RingTheory.PowerSeries.Expand
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
 public import Mathlib.RingTheory.PowerSeries.Ideal
