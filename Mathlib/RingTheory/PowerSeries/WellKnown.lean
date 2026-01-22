@@ -188,9 +188,7 @@ def sin : PowerSeries A :=
 def cos : PowerSeries A :=
   mk fun n => if Even n then algebraMap ℚ A ((-1) ^ (n / 2) / n !) else 0
 
-variable {A A'} (n : ℕ)
-
-variable (f : A →+* A')
+variable {A A'} (n : ℕ) (f : A →+* A')
 
 @[simp]
 theorem map_sin : map f (sin A) = sin A' := by
