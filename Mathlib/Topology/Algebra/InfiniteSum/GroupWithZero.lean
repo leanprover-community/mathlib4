@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Maria Grazia. All rights reserved.
+Copyright (c) 2026 Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Maria Grazia
+Authors: Matteo Cipollina, Jonathan Washburn
 -/
 module
 
@@ -44,4 +44,3 @@ theorem HasProd.inv₀ (hf : HasProd f a L) (ha : a ≠ 0) : HasProd (fun i ↦ 
   simpa [HasProd] using (hinv.congr' hcongr)
 
 end
-
