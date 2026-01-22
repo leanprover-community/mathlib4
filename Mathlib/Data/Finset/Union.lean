@@ -166,7 +166,7 @@ theorem disjoint_disjUnion_right {s t u : Finset α} (h : Disjoint t u) :
 lemma disjoint_disjiUnion_left (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
     Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   induction s using Finset.cons_induction <;> simp_all
-    
+
 lemma disjoint_disjiUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint t f):
     Disjoint s (t.disjiUnion f hf) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_disjiUnion_left t f hf s
