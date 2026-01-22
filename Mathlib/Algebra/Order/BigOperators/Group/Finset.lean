@@ -139,7 +139,7 @@ theorem prod_le_prod_of_subset_of_one_le' [MulLeftMono N] (h : s ⊆ t)
 
 @[to_additive]
 theorem prod_le_prod_of_subset_of_le_one
-    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [Preorder N]
     {f : ι → N} {s t : Finset ι} [MulLeftMono N] (h : s ⊆ t) (hf : ∀ i ∈ t, i ∉ s → f i ≤ 1) :
     ∏ i ∈ t, f i ≤ ∏ i ∈ s, f i :=
   prod_le_prod_of_subset_of_one_le' (N := Nᵒᵈ) h hf
@@ -151,7 +151,7 @@ theorem prod_mono_set_of_one_le' [MulLeftMono N] (hf : ∀ x, 1 ≤ f x) :
 
 @[to_additive]
 theorem prod_anti_set_of_le_one
-    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [PartialOrder N]
+    {ι : Type u_1} {N : Type u_5} [CommMonoid N] [Preorder N]
     {f : ι → N} [MulLeftMono N] (hf : ∀ (x : ι), f x ≤ 1) :
     Antitone fun (s : Finset ι) => ∏ x ∈ s, f x :=
   fun _ _ hst ↦ prod_le_prod_of_subset_of_le_one hst (by simp [hf])
@@ -406,7 +406,15 @@ end DoubleCounting
 
 section CanonicallyOrderedMul
 
-variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {f : ι → M} {s t : Finset ι}
+variable [CommMonoid M] {f : ι → M} {s t : Finset ι}
+
+@[to_additive sum_pos_iff]
+lemma one_lt_prod_iff [PartialOrder M] [CanonicallyOrderedMul M] :
+    1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
+  have := CanonicallyOrderedMul.toMulLeftMono (α := M)
+  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
+
+variable [Preorder M] [CanonicallyOrderedMul M]
 
 /-- In a canonically-ordered monoid, a product bounds each of its terms.
 
@@ -447,11 +455,6 @@ theorem prod_le_prod_of_ne_one' (h : ∀ x ∈ s, f x ≠ 1 → x ∈ t) :
       mul_le_of_le_one_of_le
         (prod_le_one' <| by simp only [mem_filter, and_imp]; exact fun _ _ ↦ le_of_eq)
         (prod_le_prod_of_subset' <| by simpa only [subset_iff, mem_filter, and_imp])
-
-@[to_additive sum_pos_iff]
-lemma one_lt_prod_iff : 1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x :=
-  have := CanonicallyOrderedMul.toMulLeftMono (α := M)
-  Finset.one_lt_prod_iff_of_one_le <| fun _ _ => one_le _
 
 end CanonicallyOrderedMul
 
@@ -606,7 +609,20 @@ end Finset
 
 namespace Fintype
 section OrderedCommMonoid
-variable [Fintype ι] [CommMonoid M] [PartialOrder M] [MulLeftMono M] {f : ι → M}
+
+variable [Fintype ι] [CommMonoid M] {f : ι → M}
+
+@[to_additive]
+lemma prod_eq_one_iff_of_one_le [PartialOrder M] [MulLeftMono M] (hf : 1 ≤ f) :
+    ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [funext_iff]
+
+@[to_additive]
+lemma prod_eq_one_iff_of_le_one [PartialOrder M] [MulLeftMono M] (hf : f ≤ 1) :
+    ∏ i, f i = 1 ↔ f = 1 :=
+  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [funext_iff]
+
+variable [Preorder M] [MulLeftMono M]
 
 @[to_additive (attr := mono) sum_mono]
 theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
@@ -616,14 +632,6 @@ theorem prod_mono' : Monotone fun f : ι → M ↦ ∏ i, f i := fun _ _ hfg ↦
 lemma one_le_prod (hf : 1 ≤ f) : 1 ≤ ∏ i, f i := Finset.one_le_prod' fun _ _ ↦ hf _
 
 @[to_additive] lemma prod_le_one (hf : f ≤ 1) : ∏ i, f i ≤ 1 := Finset.prod_le_one' fun _ _ ↦ hf _
-
-@[to_additive]
-lemma prod_eq_one_iff_of_one_le (hf : 1 ≤ f) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_one_le' fun i _ ↦ hf i).trans <| by simp [funext_iff]
-
-@[to_additive]
-lemma prod_eq_one_iff_of_le_one (hf : f ≤ 1) : ∏ i, f i = 1 ↔ f = 1 :=
-  (Finset.prod_eq_one_iff_of_le_one' fun i _ ↦ hf i).trans <| by simp [funext_iff]
 
 end OrderedCommMonoid
 
