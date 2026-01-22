@@ -97,7 +97,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
 @[simps]
 def MatrixModCat.toModuleCat (i : ι) : ModuleCat (Matrix ι ι R) ⥤ ModuleCat R :=
   letI (M : ModuleCat (Matrix ι ι R)) := Module.compHom M (Matrix.scalar (α := R) ι)
-  haveI := MatrixModCat.toModuleCat_isScalarTower
+  haveI := MatrixModCat.isScalarTower_toModuleCat
   { obj M := ModuleCat.of R (MatrixModCat.toModuleCatObj R M i)
     map f := ModuleCat.ofHom <| fromMatrixLinear i f.hom
     map_id _ := rfl
@@ -139,14 +139,14 @@ def MatrixModCat.unitIso (i : ι) :
 /-- The linear equiv induced by the equality `toMatrixModCat (toModuleCat M) = Mⁿ` -/
 def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι) :
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI := MatrixModCat.toModuleCat_isScalarTower
+    haveI := MatrixModCat.isScalarTower_toModuleCat
     M ≃ₗ[Matrix ι ι R] (ι → MatrixModCat.toModuleCatObj R M j) where
   toFun m i := ⟨single j i (1 : R) • m, single j i (1 : R) • m, by
     simp [← SemigroupAction.mul_smul]⟩
   map_add' _ _ := by simpa using funext fun _ ↦ by rfl
   map_smul' x m := funext fun i ↦ Subtype.ext <| by
     letI := Module.compHom M (Matrix.scalar (α := R) ι)
-    haveI := MatrixModCat.toModuleCat_isScalarTower R M
+    haveI := MatrixModCat.isScalarTower_toModuleCat R M
     simp only [← SemigroupAction.mul_smul, RingHom.id_apply, Module.smul_apply,
       AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, ← smul_assoc, ← Finset.sum_smul]
     congr
@@ -194,7 +194,7 @@ def equivalentToMatrix (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι ι R) whe
 open ModuleCat.Algebra in
 /-- Moreover `moritaEquivalentToMatrix` is a `MoritaEquivalence`. -/
 @[simps]
-def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
+def ModuleCat.matrixEquivalence (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
   eqv := equivalentToMatrix R i
   linear.map_smul {X Y} f r := by
@@ -210,4 +210,4 @@ def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i :
 
 theorem IsMoritaEquivalent.matrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] [Nonempty ι] :
     IsMoritaEquivalent R₀ R (Matrix ι ι R) :=
-  ⟨Nonempty.map (moritaEquivalenceMatrix R R₀) inferInstance⟩
+  ⟨Nonempty.map (ModuleCat.matrixEquivalence R R₀) inferInstance⟩
