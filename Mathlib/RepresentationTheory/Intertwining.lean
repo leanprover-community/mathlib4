@@ -129,7 +129,7 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
   intertwining map from any representation of `G` to itself. -/
 def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ where
   toLinearMap := ρ g
-  isIntertwining' := (isIntertwiningMap_of_central ρ g hg).isIntertwining
+  isIntertwining' := (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining
 
 end IntertwiningMap
 
