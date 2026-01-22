@@ -363,6 +363,9 @@ theorem support_fderiv_subset : support (fderiv 𝕜 f) ⊆ tsupport f := fun x 
 theorem tsupport_fderiv_subset : tsupport (fderiv 𝕜 f) ⊆ tsupport f :=
   closure_minimal (support_fderiv_subset 𝕜) isClosed_closure
 
+theorem tsupport_fderiv_apply_subset (v : E) : tsupport (fderiv 𝕜 f · v) ⊆ tsupport f :=
+  (tsupport_comp_subset (g := fun L : E →L[𝕜] F ↦ L v) rfl _).trans (tsupport_fderiv_subset 𝕜)
+
 protected theorem HasCompactSupport.fderiv (hf : HasCompactSupport f) :
     HasCompactSupport (fderiv 𝕜 f) :=
   hf.mono' <| support_fderiv_subset 𝕜

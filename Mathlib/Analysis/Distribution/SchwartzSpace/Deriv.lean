@@ -156,6 +156,41 @@ alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end Derivatives
 
+section support
+
+variable (𝕜)
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+@[mono]
+theorem tsupport_derivCLM_subset (f : 𝓢(ℝ, F)) : tsupport (derivCLM 𝕜 F f) ⊆ tsupport f := by
+  change tsupport (deriv f ·) ⊆ _
+  simp_rw [← fderiv_apply_one_eq_deriv]
+  exact tsupport_fderiv_apply_subset ℝ 1
+
+variable [SMulCommClass ℝ 𝕜 F]
+
+@[mono]
+theorem tsupport_fderivCLM_subset (f : 𝓢(E, F)) : tsupport (fderivCLM 𝕜 E F f) ⊆ tsupport f :=
+  tsupport_fderiv_subset ℝ
+
+open LineDeriv
+
+@[mono]
+theorem tsupport_lineDerivOp_subset (m : E) (f : 𝓢(E, F)) :
+    tsupport (∂_{m} f : 𝓢(E, F)) ⊆ tsupport f :=
+  tsupport_fderiv_apply_subset ℝ m
+
+@[mono]
+theorem tsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) (f : 𝓢(E, F)) :
+    tsupport (∂^{m} f : 𝓢(E, F)) ⊆ tsupport f := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [iteratedLineDerivOp_succ_left]
+    exact (tsupport_lineDerivOp_subset (m 0) _).trans (IH <| Fin.tail m)
+
+end support
+
 section integration_by_parts
 
 open ENNReal MeasureTheory

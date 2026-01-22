@@ -722,10 +722,14 @@ def smulLeftCLM (g : E → 𝕜) : 𝓢(E, F) →L[𝕜] 𝓢(E, F) :=
     SchwartzMap.bilinLeftCLM (ContinuousLinearMap.lsmul 𝕜 𝕜).flip hg
   else 0
 
+theorem smulLeftCLM_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) :
+    smulLeftCLM F g f = fun x ↦ g x • f x := by
+  simp [smulLeftCLM, hg]
+
 @[simp]
 theorem smulLeftCLM_apply_apply {g : E → 𝕜} (hg : g.HasTemperateGrowth) (f : 𝓢(E, F)) (x : E) :
     smulLeftCLM F g f x = g x • f x := by
-  simp [smulLeftCLM, hg]
+  simp [smulLeftCLM_apply hg]
 
 @[simp]
 theorem smulLeftCLM_const (c : 𝕜) :
