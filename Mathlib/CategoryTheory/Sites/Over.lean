@@ -245,7 +245,7 @@ open CategoryTheory Limits
 
 variable {C : Type u'} [SmallCategory C] [HasBinaryProducts C] {J : GrothendieckTopology C}
 
-theorem over_star_coverPreserving (X : C) :
+theorem coverPreserving_over_star (X : C) :
     CoverPreserving J (J.over X) (Over.star X) where
   cover_preserve {U} S hs := by
     refine J.superset_covering ?_ (J.pullback_stable prod.snd hs)
@@ -256,7 +256,7 @@ theorem over_star_coverPreserving (X : C) :
 
 instance (X : C) : (Over.star X).IsContinuous J (J.over X) :=
   Functor.isContinuous_of_coverPreserving
-    (compatiblePreservingOfFlat (J.over X) (Over.star X)) (over_star_coverPreserving X)
+    (compatiblePreservingOfFlat (J.over X) (Over.star X)) (coverPreserving_over_star X)
 
 end
 
