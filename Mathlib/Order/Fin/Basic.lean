@@ -83,10 +83,12 @@ lemmas, this would be equivalent to the existing definition. -/
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
+/-
 instance instPartialOrder : PartialOrder (Fin n) := inferInstance
 instance instLattice : Lattice (Fin n) := inferInstance
 instance instHeytingAlgebra [NeZero n] : HeytingAlgebra (Fin n) := inferInstance
 instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInstance
+-/
 
 /-! ### Miscellaneous lemmas -/
 
