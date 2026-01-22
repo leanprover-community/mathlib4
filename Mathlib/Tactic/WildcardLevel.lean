@@ -8,8 +8,8 @@ module
 public import Lean.Parser.Term
 public import Batteries.Tactic.Lint.Misc
 
-meta import Lean.Elab.App
-import Mathlib.Lean.Elab.Term
+public meta import Lean.Elab.App
+public import Mathlib.Lean.Elab.Term
 
 /-!
 # Wildcard Universe Syntax
@@ -151,7 +151,7 @@ def reorganizeUniverseParams
   return result
 
 @[term_elab appWithWildcards, inherit_doc appWithWildcards]
-def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
+public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutErrToSorry do
   match stx with
   | `($[@%$expl]?$id:ident.{$u $us*} $args*) =>
     -- Check for local variables which shouldn't have explicit universe parameters
