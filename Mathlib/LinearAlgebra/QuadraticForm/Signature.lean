@@ -116,13 +116,13 @@ lemma sigPos_add_finrank_le_of_nonpos [LinearOrder 𝕜] [FiniteDimensional 𝕜
 variable {ι : Type*} [Fintype ι] {w : ι → 𝕜} [DecidableEq 𝕜]
 
 variable (𝕜) in
-abbrev spanFinset (s : Finset ι) : Submodule 𝕜 (ι → 𝕜) :=
+private abbrev spanFinset (s : Finset ι) : Submodule 𝕜 (ι → 𝕜) :=
   .span 𝕜 (s.image <| Pi.basisFun 𝕜 ι)
 
 private lemma mem_spanFinset_iff {s : Finset ι} {v : ι → 𝕜} :
     v ∈ spanFinset 𝕜 s ↔ ∀ i ∉ s, v i = 0 := by
-  simp only [spanFinset, Finset.coe_image, Module.Basis.mem_span_image, Finsupp.support_subset_iff,
-    SetLike.mem_coe, Pi.basisFun_repr]
+  simp [spanFinset, Module.Basis.mem_span_image,
+    Finsupp.support_subset_iff, -SetLike.coe_subset_coe]
 
 private lemma zero_spanFinset (s : Finset ι)
     (v) (hv : v ∈ spanFinset 𝕜 s) (i) (hi : i ∉ s) : v i = 0 :=
@@ -150,6 +150,8 @@ private lemma QuadraticForm.radical_sumSq_eq' [NeZero (2 : 𝕜)] :
       grind [mul_eq_zero]
 
 omit [DecidableEq 𝕜] in
+/-- The radical of the quadratic form `weightedSumSquares 𝕜 w` is precisely the span of the basis
+vectors having zero weights. -/
 lemma QuadraticForm.radical_sumSq_eq [NeZero (2 : 𝕜)] :
     radical (weightedSumSquares 𝕜 w) = .span 𝕜 (Pi.basisFun 𝕜 ι '' {i | w i = 0}) := by
   classical
