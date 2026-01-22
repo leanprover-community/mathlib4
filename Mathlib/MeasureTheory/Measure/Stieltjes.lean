@@ -46,6 +46,8 @@ element `x`: any Stieltjes measure gives zero mass to `{x}` in this case, so the
 is not representable as a Stieltjes measure.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Set Filter Function ENNReal NNReal Topology MeasureTheory
@@ -56,7 +58,6 @@ section Prerequisites
 
 variable {R : Type*} [LinearOrder R]
 
-set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 This makes sure that any element which is not bot belongs to an interval `Iotop a b`, and also
@@ -79,7 +80,6 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-set_option backward.privateInPublic true in
 open scoped Classical in
 /-- `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot. -/
 def botSet : Set R := if h : ∃ (x : R), IsBot x then {h.choose} else ∅
@@ -105,8 +105,6 @@ lemma measurableSet_botSet [MeasurableSpace R] [MeasurableSingletonClass R] :
   split_ifs <;> simp
 
 end Prerequisites
-
-@[expose] public section
 
 variable (R : Type*) [LinearOrder R] [TopologicalSpace R]
 

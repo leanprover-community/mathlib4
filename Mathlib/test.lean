@@ -31,21 +31,18 @@ soit d'abord sur les `j`.
 des intervalles semi-ouverts. Alors 3. est satisfait.
 -/
 
-open Filter
-open scoped symmDiff Topology NNReal
+open Filter Set MeasureTheory MeasurableSpace
+open scoped symmDiff Topology NNReal ENNReal
 
 variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup E]
 [CompleteSpace E]
 
 namespace MeasureTheory
 
-open scoped ENNReal symmDiff
-open MeasurableSpace
-
 lemma exists_measure_symmDiff_lt_of_generateFrom {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
     (hC : IsSetSemiring C)
-    (h'C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ μ (⋃ n, f n)ᶜ = 0) (h : mα = generateFrom C)
+    (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
     {s : Set α} {ε : ℝ≥0∞} (hs : MeasurableSet s) :
     ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := sorry
 
@@ -357,7 +354,7 @@ to a countably additive vector measure, which is dominated by `μ`. -/
 theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
-    (h'C : hα = generateFrom C) (h''C : ∃ f : ℕ → Set α, (∀ n, f n ∈ C) ∧ μ (⋃ n, f n)ᶜ = 0) :
+    (h'C : hα = generateFrom C) (h''C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
   apply VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense hCs ?_ hm ?_
   · intro s hs
@@ -366,12 +363,16 @@ theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generat
   · intro t ε ht εpos
     exact exists_measure_symmDiff_lt_of_generateFrom hCs h''C h'C ht
 
+end MeasureTheory
+
+open MeasureTheory
+
+namespace BoundedVariationOn
+
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCountableTopology α]
   [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E}
 
-open Set
-
-@[simps] noncomputable def _root_.BoundedVariationOn.stieltjesFunctionRightLim
+@[simps] noncomputable def stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
   toFun x := variationOnFromTo f.rightLim univ x₀ x
   mono' := by
@@ -380,7 +381,7 @@ open Set
   right_continuous' x := hf.continuousWithinAt_variationOnFromTo_rightLim_Ici
 
 open scoped Classical in
-noncomputable def _root_.BoundedVariationOn.measureAux
+noncomputable def measureAux
     (hf : BoundedVariationOn f univ) : Measure α :=
   if h : Nonempty α then (hf.stieltjesFunctionRightLim h.some).measure else 0
 
@@ -414,9 +415,20 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
     exact eVariationOn.edist_le _ (by grind) (by grind)
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
     borelize α
-    exact borel_eq_generateFrom_Ioc_le α
-  have C : (∃ f : ℕ → Set α, (∀ (n : ℕ), f n ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v})
-    ∧ hf.measureAux (⋃ n, f n)ᶜ = 0) := sorry
+    convert borel_eq_generateFrom_Ioc_le α using 2
+    grind only
+  have C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}
+      ∧ hf.measureAux (⋃₀ D)ᶜ = 0 := by
+    obtain ⟨s, s_count, s_dense, s_bot, s_top⟩ :
+        ∃ s, s.Countable ∧ Dense s ∧ (∀ (x : α), IsBot x → x ∈ s) ∧ ∀ (x : α), IsTop x → x ∈ s :=
+      exists_countable_dense_bot_top α
+    let D := {s : Set α | ∃ u v, u ≤ v ∧ s = Ioc u v ∧ u ∈ s ∧ v ∈ s}
+    refine ⟨D, ?_, by grind, ?_⟩
+    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by grind
+      exact Countable.mono this ((s_count.prod s_count).image _)
+    have : (⋃₀ D)ᶜ ⊆ botSet := by
+
+
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     (m := m) (μ := hf.measureAux) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
