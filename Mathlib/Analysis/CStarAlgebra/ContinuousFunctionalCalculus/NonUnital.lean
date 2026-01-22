@@ -778,7 +778,7 @@ lemma cfcₙHom_of_cfcHom_map_quasispectrum {a : A} (ha : p a) :
     obtain (hx | hx) := hx
     · exact Or.inl ⟨⟨x.1, hx⟩, rfl⟩
     · apply Or.inr
-      simp only [Set.mem_singleton_iff] at hx ⊢
+      push _ ∈ _ at hx ⊢
       rw [show x = 0 from Subtype.val_injective hx, map_zero]
 
 variable [CompleteSpace R]

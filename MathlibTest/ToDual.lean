@@ -80,6 +80,13 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+---
 error: `to_dual` validation failed: expected
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), b ≤ a → b ≤ a
 but 'le_imp_le'''' has type
@@ -96,18 +103,16 @@ theorem refl₁ (a b c d e : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 @[to_dual existing refl₁]
 theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
-/-
-TODO: If we tag something with `@[to_dual self]` and if there is no reorder, then this is useless.
-So, we should have a linter warning about this.
-The only exception is if we want to influence the translation heuristic.
-For example we tag `PUnit` with `@[to_dual self]`.
-Maybe we should have a new command `@[to_dual_translate]`, analogous to `@[to_dual_dont_translate]`,
-instead of using `@[to_dual self]` for those cases.
--/
-@[to_dual self]
-theorem not_lt_self : ¬ a < a := lt_irrefl a
-
 -- Test that we do not translate numerals like we do in `@[to_additive]`
+/--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_dual self]
 theorem one_le_one [One α] : (1 : α) ≤ 1 := le_rfl
 
