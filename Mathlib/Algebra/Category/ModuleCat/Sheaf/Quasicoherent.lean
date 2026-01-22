@@ -254,18 +254,6 @@ noncomputable section
 
 open CategoryTheory Limits
 
-@[simp]
-lemma _root_.CategoryTheory.Over.forgetAdjStar_counit
-    {C : Type u} [Category C] (X Y : C) [HasBinaryProducts C] :
-    (Over.forgetAdjStar X).counit.app Y = prod.snd := by
-  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
-
-@[simp]
-lemma _root_.CategoryTheory.Over.forgetAdjStar_unit
-    {C : Type u} [Category C] (X : C) (Y : Over X) [HasBinaryProducts C] :
-    ((Over.forgetAdjStar X).unit.app Y).left = prod.lift Y.hom (𝟙 _) := by
-  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
-
 variable {C : Type u'} [SmallCategory C] [HasBinaryProducts C] {J : GrothendieckTopology C}
   {R : Sheaf J RingCat} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
   [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
