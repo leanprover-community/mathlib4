@@ -54,9 +54,6 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 * Redefine and/or relate the definition of Chebyshev polynomials to `LinearRecurrence`.
 * Add explicit formula involving square roots for Chebyshev polynomials
-* Compute zeroes and extrema of Chebyshev polynomials.
-* Prove that the roots of the Chebyshev polynomials (except 0) are irrational.
-* Prove minimax properties of Chebyshev polynomials.
 -/
 
 @[expose] public section
@@ -982,11 +979,40 @@ theorem derivative_T_eval_one (n : ℤ) :
 theorem derivative_U_eval_one (n : ℤ) :
     3 * (derivative (U R n)).eval 1 = (n + 2) * (n + 1) * n := by
   have h := iterate_derivative_U_eval_one (R := R) n 1
-  simp only [Finset.range_one, Finset.prod_singleton, mul_zero, zero_add, Nat.cast_ofNat,
-    Function.iterate_one, CharP.cast_eq_zero, one_pow, Int.cast_sub, Int.cast_pow, Int.cast_add,
-    Int.cast_one] at h
-  rw [h]
+  simp only [Finset.range_one, Finset.prod_singleton, Function.iterate_one] at h
   grind
+
+variable {𝔽 : Type*} [Field 𝔽]
+
+theorem iterate_derivative_T_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (T 𝔽 n)).eval 1 =
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_T_eval_one]
+
+theorem iterate_derivative_U_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (U 𝔽 n)).eval 1 =
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
+      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_U_eval_one]
+
+theorem iterate_derivative_T_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣ (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
+
+theorem iterate_derivative_U_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 3) : ℕ) : 𝔽) ∣
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_U_eval_one n k
+
+theorem derivative_U_eval_one_eq_div [neZero3 : NeZero (3 : 𝔽)] (n : ℤ) :
+    (derivative (U 𝔽 n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
+  eq_div_of_mul_eq neZero3.ne ((mul_comm ..).trans (derivative_U_eval_one n))
+
+theorem derivative_U_eval_one_dvd (n : ℤ) :
+    (3 : 𝔽) ∣ (n + 2) * (n + 1) * n :=
+  dvd_of_mul_right_eq _ (derivative_U_eval_one n)
 
 variable (R)
 

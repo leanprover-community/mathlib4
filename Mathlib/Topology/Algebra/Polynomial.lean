@@ -8,9 +8,10 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # Polynomials and limits
@@ -137,6 +138,16 @@ theorem exists_forall_norm_le [ProperSpace R] (p : R[X]) : ∃ x, ∀ y, ‖p.ev
     p.continuous.norm.exists_forall_le <| p.tendsto_norm_atTop hp0 tendsto_norm_cocompact_atTop
   else
     ⟨p.coeff 0, by rw [eq_C_of_degree_le_zero (le_of_not_gt hp0)]; simp⟩
+
+theorem isProperMap_eval [ProperSpace R] (p : R[X]) (h : 0 < degree p) : IsProperMap p.eval :=
+  isProperMap_iff_tendsto_cocompact.mpr ⟨by fun_prop, by
+    rw [← Metric.cobounded_eq_cocompact, ← tendsto_norm_atTop_iff_cobounded]
+    exact p.tendsto_norm_atTop h tendsto_norm_cobounded_atTop⟩
+
+theorem isClosedMap_eval [ProperSpace R] (p : R[X]) : IsClosedMap p.eval := by
+  obtain h | h := le_or_gt p.degree 0
+  · rw [degree_le_zero_iff.mp h]; simpa using isClosedMap_const
+  · exact (p.isProperMap_eval h).isClosedMap
 
 section Roots
 
