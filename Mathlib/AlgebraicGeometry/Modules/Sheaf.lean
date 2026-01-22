@@ -45,15 +45,9 @@ instance : Category X.Modules where
   Hom := Modules.Hom
   __ := inferInstanceAs (Category (SheafOfModules.{u} X.ringCatSheaf))
 
-instance : Preadditive X.Modules :=
-  inferInstanceAs (Preadditive (SheafOfModules.{u} X.ringCatSheaf))
-
-instance : Abelian X.Modules :=
-  inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
-
-instance : HasLimits X.Modules := by delta Modules; infer_instance
-
-instance : HasColimits X.Modules := by delta Modules; infer_instance
+instance : Abelian X.Modules := inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
+instance : HasLimits X.Modules := inferInstanceAs (HasLimits (SheafOfModules X.ringCatSheaf))
+instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules X.ringCatSheaf))
 
 section Functor
 
@@ -115,6 +109,9 @@ lemma Hom.app_smul (φ : M ⟶ N) (r : Γ(X, U)) (x : Γ(M, U)) :
 @[simp] lemma Hom.add_app (φ ψ : M ⟶ N) : (φ + ψ).app U = φ.app U + ψ.app U := rfl
 @[simp] lemma Hom.sub_app (φ ψ : M ⟶ N) : (φ - ψ).app U = φ.app U - ψ.app U := rfl
 @[simp] lemma Hom.zero_app : (0 : M ⟶ N).app U = 0 := rfl
+@[simp] lemma Hom.id_app (M : X.Modules) : (𝟙 M : _ ⟶ _).app U = 𝟙 _ := rfl
+@[simp] lemma Hom.comp_app {K : X.Modules} (φ : M ⟶ N) (ψ : N ⟶ K) :
+    (φ ≫ ψ).app U = φ.app U ≫ ψ.app U := rfl
 
 @[ext]
 lemma hom_ext (f g : M ⟶ N) (H : ∀ U, f.app U = g.app U) : f = g := by
@@ -134,6 +131,11 @@ lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
   simp [Opposite.op_surjective.forall]
 
 instance [IsIso φ] : IsIso (φ.app U) := Hom.isIso_iff_isIso_app.mp ‹_› _
+
+@[simp, push ←]
+lemma inv_app [IsIso φ] : (inv φ).app U = inv (φ.app U) := by
+  apply IsIso.eq_inv_of_hom_inv_id
+  simp [← Hom.comp_app]
 
 end Presheaf
 
@@ -204,12 +206,12 @@ def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
-/-- Pushforward along equal morphisms are isomorphic. -/
+/-- Pushforwards along equal morphisms are isomorphic. -/
 def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
       SheafOfModules.pushforwardCongr (by cat_disch)
 
-/-- Inverse image along equal morphisms are isomorphic. -/
+/-- Inverse images along equal morphisms are isomorphic. -/
 def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
   eqToIso (hf ▸ rfl)
 
@@ -343,6 +345,16 @@ def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
       (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
     SheafOfModules.pushforwardId _
 
+@[simp]
+lemma restrictFunctorId_hom_app_app :
+    (restrictFunctorId.hom.app M).app U =
+      M.presheaf.map (eqToHom (show U = 𝟙 X ''ᵁ U by simp)).op := rfl
+
+@[simp]
+lemma restrictFunctorId_inv_app_app :
+    (restrictFunctorId.inv.app M).app U =
+      M.presheaf.map (eqToHom (show 𝟙 X ''ᵁ U = U by simp)).op := rfl
+
 /-- Restriction along the composition is isomorphic to the composition of restrictions. -/
 def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
@@ -353,11 +365,29 @@ def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
     SheafOfModules.pushforwardCongr (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
     (SheafOfModules.pushforwardComp _ _).symm
 
+@[simp]
+lemma restrictFunctorComp_hom_app_app [IsOpenImmersion g] (M : Z.Modules) :
+    ((restrictFunctorComp f g).hom.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
+
+@[simp]
+lemma restrictFunctorComp_inv_app_app [IsOpenImmersion g] (M : Z.Modules) :
+    ((restrictFunctorComp f g).inv.app M).app U = M.presheaf.map (eqToHom (by simp)).op := rfl
+
 /-- Restriction along equal morphisms are isomorphic. -/
 def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
     restrictFunctor f ≅ restrictFunctor g :=
   SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp [hf])) ≪≫
     SheafOfModules.pushforwardCongr (by ext : 3; subst hf; simp)
+
+@[simp]
+lemma restrictFunctorCongr_hom_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f]
+    [IsOpenImmersion g] (M : Y.Modules) :
+    ((restrictFunctorCongr hf).hom.app M).app U = M.presheaf.map (eqToHom (by simp [hf])).op := rfl
+
+@[simp]
+lemma restrictFunctorCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f]
+    [IsOpenImmersion g] (M : Y.Modules) :
+    ((restrictFunctorCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (by simp [hf])).op := rfl
 
 /-- Restriction along open immersions commutes with taking stalks. -/
 def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
@@ -367,6 +397,25 @@ def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
   (toPresheaf _ ⋙ (Functor.whiskeringLeft (OpenNhds (f x))ᵒᵖ Y.Opensᵒᵖ Ab).obj
       (OpenNhds.inclusion (f x)).op).isoWhiskerLeft
       (Functor.Final.colimIso (f.isOpenEmbedding.isOpenMap.functorNhds x).op)
+
+@[simp]
+lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
+    (x : X) (M : Y.Modules) (hxU : x ∈ U) :
+    ((restrictFunctor f).obj M).presheaf.germ U _ hxU ≫
+      (restrictStalkNatIso f x).hom.app M = M.presheaf.germ _ _ (by simpa) :=
+  haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
+  Functor.Final.ι_colimitIso_hom
+    (f.isOpenEmbedding.isOpenMap.functorNhds x).op
+    ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
+
+@[simp]
+lemma germ_restrictStalkNatIso_inv_app (f : X ⟶ Y) [IsOpenImmersion f]
+    (x : X) (M : Y.Modules) (hxU : x ∈ U) :
+    M.presheaf.germ _ _ (by simpa) ≫ (restrictStalkNatIso f x).inv.app M =
+      ((restrictFunctor f).obj M).presheaf.germ U _ hxU := by
+  rw [← germ_restrictStalkNatIso_hom_app f x M hxU, Category.assoc, ← NatTrans.comp_app,
+    Iso.hom_inv_id]
+  simp
 
 end Restriction
 
