@@ -1,12 +1,20 @@
 
 import Mathlib.Analysis.Complex.Divisor
+import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
+import Mathlib.MeasureTheory.Integral.CircleAverage
+import Mathlib.Analysis.Meromorphic.TrailingCoefficient
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
-import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Analysis.Complex.CartanBound
 import Mathlib.Analysis.Complex.CartanInverseFactorBound
 import Mathlib.Analysis.Complex.CartanMajorantBound
 import Mathlib.Analysis.Complex.ExpPoly
+import Mathlib.Analysis.Complex.ExpPoly.Growth
+import Mathlib.Analysis.SpecialFunctions.Exp
+import Mathlib.Topology.Algebra.GroupWithZero
+import Mathlib.Topology.Algebra.InfiniteSum.Order
+import Mathlib.Topology.MetricSpace.Annulus
+
 
 /-!
 ## The intrinsic Hadamard quotient (entire and zero-free)
@@ -2257,19 +2265,19 @@ theorem bddAbove_norm_divisorCanonicalProduct_div_pow_annulus
     BddAbove
       (norm ∘
         (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) / (z - z₀) ^ k) ''
-          (Set.Annulus.cc z₀ r₁ r₂)) := by
+          (Metric.annulusIcc z₀ r₁ r₂)) := by
   classical
-  set K : Set ℂ := Set.Annulus.cc z₀ r₁ r₂
+  set K : Set ℂ := Metric.annulusIcc z₀ r₁ r₂
   have hK : IsCompact K := by
     have hclosed : IsClosed (Metric.ball z₀ r₁)ᶜ := Metric.isOpen_ball.isClosed_compl
-    -- `cc x r R = closedBall x R ∩ (ball x r)ᶜ`
-    simpa [K, Set.Annulus.cc_eq] using (isCompact_closedBall z₀ r₂).inter_right hclosed
+    -- `annulusIcc x r R = closedBall x R ∩ (ball x r)ᶜ`
+    simpa [K, Metric.annulusIcc_eq] using (isCompact_closedBall z₀ r₂).inter_right hclosed
   have hKz : ∀ z ∈ K, z ≠ z₀ := by
     intro z hz hzz
     have hzBall : z ∈ Metric.ball z₀ r₁ := by
       simpa [hzz] using (Metric.mem_ball_self hr₁ : z₀ ∈ Metric.ball z₀ r₁)
     have hz' : z ∈ Metric.closedBall z₀ r₂ ∧ z ∉ Metric.ball z₀ r₁ := by
-      simpa [K, Set.Annulus.cc_eq] using hz
+      simpa [K, Metric.annulusIcc_eq] using hz
     exact hz'.2 hzBall
   -- continuity of the quotient on `K` (it avoids `z₀`)
   have hdiff :
@@ -2388,11 +2396,11 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
     have hSτ_nonneg : 0 ≤ Sτ := tsum_nonneg (fun _ => by
       exact Real.rpow_nonneg (inv_nonneg.2 (norm_nonneg _)) _)
     -- A coarse constant for the canonical product inverse bound on good circles.
-    let Cprod : ℝ := ((LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1)
+    let Cprod : ℝ := ((CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3) * (Sτ + 1)
     have hCprod_nonneg : 0 ≤ Cprod := by
       have hS : 0 ≤ Sτ + 1 := by linarith [hSτ_nonneg]
-      have hA : 0 ≤ (LogSingularity.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3 := by
-        have hCφ : 0 ≤ LogSingularity.Cφ := le_of_lt LogSingularity.Cφ_pos
+      have hA : 0 ≤ (CartanBound.Cφ + (2 : ℝ) * m) * (4 : ℝ) ^ τ + 3 := by
+        have hCφ : 0 ≤ CartanBound.Cφ := le_of_lt CartanBound.Cφ_pos
         have hm0 : 0 ≤ (m : ℝ) := by exact_mod_cast (Nat.zero_le m)
         have h4τ : 0 ≤ (4 : ℝ) ^ τ := by positivity
         nlinarith [hCφ, hm0, h4τ]
@@ -2417,7 +2425,7 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
       intro p hp; dsimp [a]
       exact norm_pos_iff.2 (divisorZeroIndex₀_val_ne_zero p)
     let bad : Finset ℝ := small.image a
-    rcases LogSingularity.exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum_avoid
+    rcases CartanBound.exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum_avoid
         (s := small) (w := fun _ => (1 : ℝ)) (a := a)
         (hw := by intro _ _; norm_num) (ha := ha_pos) (bad := bad) (R := R) hRpos with
       ⟨r, hr_mem, hr_not_bad, hr_phi⟩
@@ -2518,7 +2526,7 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
         let b : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℝ :=
           fun p =>
             if hp : p ∈ small then
-              LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
+              CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)
             else
               (2 : ℝ) * (r / ap p) ^ τ
         have hterm : ∀ p, ‖(fac p)⁻¹‖ ≤ Real.exp (b p) := by
@@ -2538,7 +2546,7 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
               exact le_trans hmρ (le_of_lt hτ)
             have hnear :
                 ‖(weierstrassFactor m (u / divisorZeroIndex₀_val p))⁻¹‖
-                  ≤ Real.exp (LogSingularity.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)) := by
+                  ≤ Real.exp (CartanBound.φ (r / ap p) + (m : ℝ) * (1 + (r / ap p) ^ τ)) := by
               simpa [ap] using
                 (norm_inv_weierstrassFactor_le_exp_near (m := m) (τ := τ) (r := r)
                     (u := u) (a := divisorZeroIndex₀_val p)
