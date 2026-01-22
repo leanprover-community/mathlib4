@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.QuasiFinite.Basic
 
 /-!
 # Etale local structure of finite maps
@@ -78,29 +79,6 @@ section
 universe u v
 
 variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
-
-attribute [local instance] RingHom.ker_isPrime in
-lemma Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Module.Finite R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
-    ∃ s ∉ q, ∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q' := by
-  classical
-  let F := p.Fiber S
-  let e := PrimeSpectrum.preimageEquivFiber _ S ⟨p, inferInstance⟩
-  let : IsArtinianRing F := .of_finite p.ResidueField _
-  obtain ⟨r : p.Fiber S, hr, hr'⟩ := IsArtinianRing.exists_not_mem_forall_mem_of_ne
-    (e ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).asIdeal
-  obtain ⟨s, hs, x, hsx⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ r
-  have : x ∉ q := by
-    rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal,
-        ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ s), ← Algebra.smul_def, hsx] at hr
-    · simpa using hr
-    · simpa [IsScalarTower.algebraMap_apply R S q.ResidueField, q.over_def p] using hs
-  refine ⟨x, this, fun q' _ hq' _ ↦ ?_⟩
-  have := Ideal.mul_mem_left _ (algebraMap _ _ s) (hr'.2 (e ⟨⟨q', ‹_›⟩,  PrimeSpectrum.ext
-    (q'.over_def p).symm⟩).asIdeal inferInstance (mt PrimeSpectrum.ext (e.injective.ne (by simpa))))
-  rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal, ← Algebra.smul_def, hsx] at this
-  simpa using this
 
 open Polynomial in
 /--
