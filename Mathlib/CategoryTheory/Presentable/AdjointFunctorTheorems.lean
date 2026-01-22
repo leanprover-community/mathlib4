@@ -10,14 +10,27 @@ open CategoryTheory Limits Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C D : Type u} [Category.{v} C] [Category.{v} D] [IsLocallyPresentable.{v} C]
-    [IsLocallyPresentable.{v} D]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
+
+instance (L : C ⥤ E) (R : D ⥤ E) [IsAccessible.{v} L] [IsAccessible.{v} R] :
+    IsAccessibleCategory.{v} (Comma L R) := sorry
+
+lemma solutionSetCondition_of_isAccessible (R : C ⥤ D) [IsAccessible.{v} R] :
+    SolutionSetCondition R := by
+  intro A
+  let CA : D ⥤ D := (Functor.const _).obj A
+  have : IsAccessible.{v} CA := by
+    dsimp [CA]
+    sorry
+  sorry
 
 lemma presentableAdjointFunctorTheorem₁ (L : C ⥤ D) [PreservesColimits L] [HasColimits C] :
     L.IsLeftAdjoint := by
   sorry
 
-lemma presentableAdjointFunctorTheorem₂ (R : C ⥤ D) [IsAccessible.{v} R] [PreservesLimits R]
+lemma presentableAdjointFunctorTheorem₂ {C D : Type u} [Category.{v} C] [Category.{v} D]
+    (R : C ⥤ D) [IsLocallyPresentable.{v} C] [IsLocallyPresentable.{v} D]
+    [IsAccessible.{v} R] [PreservesLimits R]
     [HasLimits C] : R.IsRightAdjoint := by
   refine isRightAdjoint_of_preservesLimits_of_solutionSetCondition _ fun A ↦ ?_
   obtain ⟨κ₁, _, ⟨h⟩⟩ := IsAccessible.exists_cardinal (F := R)

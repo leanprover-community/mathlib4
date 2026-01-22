@@ -42,7 +42,7 @@ Finally, we prove the following corollaries of the special adjoint functor theor
 @[expose] public section
 
 
-universe v u u'
+universe w v v₁ u u₁ u'
 
 namespace CategoryTheory
 
@@ -59,14 +59,14 @@ The key part of this definition is that the indexing set `ι` lives in `Type v`,
 universe of morphisms of the category: this is the "smallness" condition which allows the general
 adjoint functor theorem to go through.
 -/
-def SolutionSetCondition {D : Type u} [Category.{v} D] (G : D ⥤ C) : Prop :=
+def SolutionSetCondition {D : Type u₁} [Category.{v₁} D] (G : D ⥤ C) : Prop :=
   ∀ A : C,
-    ∃ (ι : Type v) (B : ι → D) (f : ∀ i : ι, A ⟶ G.obj (B i)),
+    ∃ (ι : Type w) (B : ι → D) (f : ∀ i : ι, A ⟶ G.obj (B i)),
       ∀ (X) (h : A ⟶ G.obj X), ∃ (i : ι) (g : B i ⟶ X), f i ≫ G.map g = h
 
 section GeneralAdjointFunctorTheorem
 
-variable {D : Type u} [Category.{v} D]
+variable {D : Type u₁} [Category.{v₁} D]
 variable (G : D ⥤ C)
 
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition. -/
@@ -82,7 +82,7 @@ theorem solutionSetCondition_of_isRightAdjoint [G.IsRightAdjoint] : SolutionSetC
 if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 lemma isRightAdjoint_of_preservesLimits_of_solutionSetCondition [HasLimits D]
-    [PreservesLimits G] (hG : SolutionSetCondition G) : G.IsRightAdjoint := by
+    [PreservesLimitsOfSize.{v₁, v₁} G] (hG : SolutionSetCondition.{v₁} G) : G.IsRightAdjoint := by
   refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
   intro A
   specialize hG A
