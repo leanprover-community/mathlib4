@@ -30,7 +30,7 @@ section MvPolynomial
 `{ dx | x ∈ σ }`. Also see `KaehlerDifferential.mvPolynomialBasis`. -/
 def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     Ω[MvPolynomial σ R⁄R] ≃ₗ[MvPolynomial σ R] σ →₀ MvPolynomial σ R where
-  __ := (MvPolynomial.mkDerivation _ (Finsupp.single · 1)).liftKaehlerDifferential
+  __ := (MvPolynomial.mkDerivation R (Finsupp.single · 1)).liftKaehlerDifferential
   invFun := Finsupp.linearCombination (α := σ) _ (fun x ↦ D _ _ (MvPolynomial.X x))
   right_inv := by
     intro x
