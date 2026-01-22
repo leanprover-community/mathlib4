@@ -48,6 +48,14 @@ lemma agmSequences_zero : agmSequences x y 0 = (sqrt (x * y), (x + y) / 2) := rf
 lemma agmSequences_succ : agmSequences x y (n + 1) = agmSequences (sqrt (x * y)) ((x + y) / 2) n :=
   rfl
 
+lemma agmSequences_succ' :
+    agmSequences x y (n + 1) =
+    (sqrt ((agmSequences x y n).1 * (agmSequences x y n).2),
+      ((agmSequences x y n).1 + (agmSequences x y n).2) / 2) := by
+  nth_rw 1 [agmSequences]
+  rw [iterate_succ', comp_apply]
+  rfl
+
 lemma agmSequences_comm : agmSequences x y = agmSequences y x := by
   funext n
   cases n with
@@ -112,10 +120,7 @@ lemma dist_agmSequences_fst_snd (n : ℕ) :
   induction n with
   | zero => simp [dist_gm_am_le]
   | succ n ih =>
-    set p := (agmSequences x y n).1
-    set q := (agmSequences x y n).2
-    rw [agmSequences, iterate_succ']
-    change dist (sqrt (p * q)) ((p + q) / 2) ≤ _
+    rw [agmSequences_succ']
     apply dist_gm_am_le.trans
     rw [pow_succ, ← div_div]
     gcongr
@@ -201,8 +206,7 @@ lemma agm_zero_left : agm 0 y = 0 := by
   induction n with
   | zero => simp [agmSequences]
   | succ n ih =>
-    simp_rw [agmSequences] at ih ⊢
-    rw [iterate_succ', comp_apply, ih, zero_mul, sqrt_zero]
+    rw [agmSequences_succ', ih, zero_mul, sqrt_zero]
 
 @[simp]
 lemma agm_zero_right : agm x 0 = 0 := by
