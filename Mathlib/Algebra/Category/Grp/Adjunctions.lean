@@ -126,7 +126,7 @@ def adj : free ⊣ forget GrpCat.{u} :=
         intros
         rfl }
 
-instance : (forget GrpCat.{u}).IsRightAdjoint  :=
+instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
 section Abelianization

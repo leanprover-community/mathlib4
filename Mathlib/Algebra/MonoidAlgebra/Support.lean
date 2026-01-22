@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 # Lemmas about the support of a finitely supported function
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 
@@ -54,8 +54,7 @@ theorem support_single_mul_eq_image [DecidableEq G] (f : k[G]) {r : k}
     (single x r * f : k[G]).support = Finset.image (x * ·) f.support := by
   refine subset_antisymm (support_single_mul_subset f _ _) fun y hy => ?_
   obtain ⟨y, yf, rfl⟩ : ∃ a : G, a ∈ f.support ∧ x * a = y := by grind
-  simp only [mul_apply, mem_support_iff.mp yf, hr, mem_support_iff, sum_single_index,
-    Finsupp.sum_ite_eq', Ne, not_false_iff, if_true, zero_mul, ite_self, sum_zero, lx.eq_iff]
+  simp [mul_apply, mem_support_iff.mp yf, hr, lx.eq_iff]
 
 @[to_additive (dont_translate := k) support_mul_single_eq_image]
 theorem support_mul_single_eq_image [DecidableEq G] (f : k[G]) {r : k}

@@ -254,7 +254,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     fun x ↦ (mfderivWithin I I' f s x).inverse
   have hv : MDifferentiableWithinAt I I'.tangent
       (fun x ↦ (v x : TangentBundle I' M')) (s ∩ f ⁻¹' t) x₀ := by
-    apply hV.comp x₀ ((hf.mdifferentiableWithinAt (one_le_two.trans hmn)).mono inter_subset_left)
+    apply hV.comp x₀ ((hf.mdifferentiableWithinAt (by positivity)).mono inter_subset_left)
     exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_right
   /- The only nontrivial fact, from which the conclusion follows, is
   that `ϕ` depends smoothly on `x`. -/
@@ -272,14 +272,14 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
       (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
         x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
-    ((hf.of_le hmn).mfderivWithin_const le_rfl hx₀ hs).mdifferentiableWithinAt le_rfl
+    ((hf.of_le hmn).mfderivWithin_const le_rfl hx₀ hs).mdifferentiableWithinAt one_ne_zero
   -- therefore, its inverse in coordinates also depends smoothly on the point
   have : MDifferentiableWithinAt I 𝓘(𝕜, E' →L[𝕜] E)
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
         x₀ x (f x₀) (f x) (mfderivWithin I I' f s x))) s x₀ := by
     apply MDifferentiableAt.comp_mdifferentiableWithinAt _ _ this
-    apply ContMDiffAt.mdifferentiableAt _ le_rfl
+    apply ContMDiffAt.mdifferentiableAt _ one_ne_zero
     apply ContDiffAt.contMDiffAt
     apply IsInvertible.contDiffAt_map_inverse
     rw [inCoordinates_eq (FiberBundle.mem_baseSet_trivializationAt' x₀)
@@ -522,17 +522,18 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField' {u : Set M
     (hst : f ⁻¹' t ∈ 𝓝[s] x₀) (hu : s ⊆ u) :
     ContMDiffWithinAt I I.tangent m
       (fun (y : M) ↦ (mpullbackWithin I I' f V u y : TangentBundle I M)) s x₀ := by
-  have hn : (1 : ℕ) ≤ n := le_trans le_add_self hmn
+  have hn : 1 ≤ n := le_trans (by simp) hmn
   have hh : (mfderivWithin I I' f s x₀).IsInvertible := by
     convert hf' using 1
-    exact (hf.mdifferentiableWithinAt hn).mfderivWithin_mono (hs _ hx₀) hu
+    exact (hf.mdifferentiableWithinAt <| by positivity).mfderivWithin_mono (hs _ hx₀) hu
   apply (hV.mpullbackWithin_vectorField_of_mem (hf.mono hu) hh hx₀ hs hmn
     hst).congr_of_eventuallyEq_of_mem _ hx₀
   have Y := (contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin (by simp)).1 (hf.of_le hn)
   simp_rw [insert_eq_of_mem (hu hx₀)] at Y
   filter_upwards [self_mem_nhdsWithin, nhdsWithin_mono _ hu Y] with y hy h'y
   simp only [mpullbackWithin, Bundle.TotalSpace.mk_inj]
-  rw [MDifferentiableWithinAt.mfderivWithin_mono (h'y.mdifferentiableWithinAt le_rfl) (hs _ hy) hu]
+  rw [MDifferentiableWithinAt.mfderivWithin_mono (h'y.mdifferentiableWithinAt one_ne_zero)
+    (hs _ hy) hu]
 
 /-- The pullback of a `C^m` vector field by a `C^n` function with invertible derivative and
 with `m + 1 ≤ n` is `C^m`.

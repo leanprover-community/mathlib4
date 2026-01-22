@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.Defs
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 -/
 
-@[expose] public section
+public section
 
 open Function
 

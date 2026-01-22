@@ -202,29 +202,38 @@ lemma proj_adjoin_singleton_val [IsGalois k K] (g : limit (asProfiniteGaloisGrou
     (proj (adjoin k {x}) g y).val = (proj L g ⟨y, adjoin_simple_le_iff.mpr h y.2⟩).val :=
   proj_of_le _ g y _ _
 
+set_option backward.privateInPublic true in
 /-- A function from `K` to `K` defined pointwise using a family of compatible elements of
 `Gal(L/k)` where `L` is a `FiniteGaloisIntermediateField` -/
 private noncomputable def toAlgEquivAux [IsGalois k K]
     (g : limit (asProfiniteGaloisGroupFunctor k K)) : K → K :=
   fun x ↦ (proj (adjoin k {x}) g ⟨x, subset_adjoin _ _ (by simp only [Set.mem_singleton_iff])⟩).val
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma toAlgEquivAux_eq_proj_of_mem [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (L : FiniteGaloisIntermediateField k K) (hx : x ∈ L.toIntermediateField) :
     toAlgEquivAux g x = (proj L g ⟨x, hx⟩).val :=
   proj_adjoin_singleton_val g _ _ L hx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma mk_toAlgEquivAux [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K)) (x : K)
     (L : FiniteGaloisIntermediateField k K) (hx' : toAlgEquivAux g x ∈ L.toIntermediateField)
     (hx : x ∈ L.toIntermediateField) :
     (⟨toAlgEquivAux g x, hx'⟩ : L.toIntermediateField) = proj L g ⟨x, hx⟩ := by
   rw [Subtype.ext_iff, Subtype.coe_mk, toAlgEquivAux_eq_proj_of_mem]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (asProfiniteGaloisGroupFunctor k K))
     (x : K) (L : FiniteGaloisIntermediateField k K) (hx : x ∈ L.toIntermediateField) :
     toAlgEquivAux g x = (proj L g).liftNormal K x := by
   rw [toAlgEquivAux_eq_proj_of_mem g x L hx]
   exact (AlgEquiv.liftNormal_commutes (proj L g) _ ⟨x, hx⟩).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `toAlgEquivAux` as an `AlgEquiv`.
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]

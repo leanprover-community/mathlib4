@@ -307,8 +307,7 @@ instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
 /-- forgetful functor to `TopCat` is the same as coercion -/
-unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
-  forgetToTop.obj X ≟ (X : TopCat)
+unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢ forgetToTop.obj X ≟ (X : TopCat)
 
 /-- The forgetful functor from `Scheme` to `Type`. -/
 nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCat
@@ -317,8 +316,7 @@ nonrec def forget : Scheme.{u} ⥤ Type u := Scheme.forgetToTop ⋙ forget TopCa
 -- Schemes are often coerced as types, and it would be useful to have definitionally equal types
 -- to be reducibly equal. The alternative is to make `forget` reducible but that option has
 -- poor performance consequences.
-unif_hint forget_obj_eq_coe (X : Scheme) where ⊢
-  forget.obj X ≟ (X : Type*)
+unif_hint forget_obj_eq_coe (X : Scheme) where ⊢ forget.obj X ≟ (X : Type*)
 
 @[simp] lemma forget_obj (X) : Scheme.forget.obj X = X := rfl
 @[simp] lemma forget_map {X Y} (f : X ⟶ Y) : forget.map f = f := rfl
@@ -592,7 +590,7 @@ The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natura
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
 

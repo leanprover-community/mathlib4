@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Inv
 
 /-!
 # `norm_num` extension for equalities
