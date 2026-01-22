@@ -66,7 +66,7 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
     In other words, every vector in X can be uniquely represented as a convergent series of basis
     vectors, with coefficients given by the coordinate functionals. -/
-structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
+structure SchauderBasis (𝕜 : Type*) {X : Type*} [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] (e : ℕ → X) where
   /-- Coordinate functionals -/
   coord : ℕ → StrongDual 𝕜 X
@@ -77,10 +77,10 @@ structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜
 
 namespace SchauderBasis
 
-variable {e : ℕ → X} (b : SchauderBasis 𝕜 X e)
+variable {e : ℕ → X} (b : SchauderBasis 𝕜 e)
 
 /-- The basis vectors are linearly independent. -/
-theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 e := by
+theorem linearIndependent (h : SchauderBasis 𝕜 e) : LinearIndependent 𝕜 e := by
   rw [linearIndependent_iff]
   intro l hl
   ext i
@@ -159,8 +159,33 @@ theorem proj_uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.pr
   rw [Set.forall_mem_range] at hM
   use M
 
-/-- The basis constant is the infimum of the bounds on the canonical projections. -/
-def basisConstant : ℝ := sInf { C : ℝ | ∀ n : ℕ, ‖b.proj n‖ ≤ C }
+/-- The basis constant is the supremum of the norms of the canonical projections. -/
+def basisConstant : ℝ := ⨆ n, ‖b.proj n‖
+
+/-- The basis constant is finite. -/
+theorem basisConstant_is_finite [CompleteSpace X] : ∃ C : ℝ, b.basisConstant ≤ C := by
+  rcases b.proj_uniform_bound with ⟨C, hC⟩
+  use C
+  exact ciSup_le hC
+
+/-- The norm of any canonical projection is less than or equal to the basis constant. -/
+theorem norm_proj_le_basisConstant [CompleteSpace X] (n : ℕ) : ‖b.proj n‖ ≤ b.basisConstant :=
+  have : BddAbove (Set.range fun n => ‖b.proj n‖) := by
+    rcases b.proj_uniform_bound with ⟨C, hC⟩
+    use C
+    rintro _ ⟨n, rfl⟩
+    exact hC n
+  le_ciSup this n
+
+/-- The basis constant is at least 1 in a non-trivial space. -/
+theorem one_le_basisConstant [CompleteSpace X] [Nontrivial X] : 1 ≤ b.basisConstant := by
+  rcases exists_ne (0 : X) with ⟨x, hx⟩
+  have h_bound n : ‖b.proj n x‖ ≤ b.basisConstant * ‖x‖ := (b.proj n).le_opNorm x |>.trans
+    (mul_le_mul_of_nonneg_right (b.norm_proj_le_basisConstant n) (norm_nonneg x))
+  have : ‖x‖ ≤ b.basisConstant * ‖x‖ := le_of_tendsto (b.proj_tendsto_id x).norm
+    (eventually_atTop.mpr ⟨0, fun n _ ↦ h_bound n⟩)
+  nth_rw 1 [← one_mul ‖x‖] at this
+  exact (le_of_mul_le_mul_right this (norm_pos_iff.mpr hx))
 
 /-- `Q_n = P_{n+1} - P_n`. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
@@ -202,7 +227,7 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     · rintro x ⟨y, rfl⟩; rw [ContinuousLinearMap.coe_coe, ← sub_add_cancel (P (n + 1) y) (P n y)]
       exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _)
     · rw [sup_le_iff]
-      have hV (y : X) :  P n y ∈ LinearMap.range (P (n + 1)).toLinearMap := by
+      have hV (y : X) : P n y ∈ LinearMap.range (P (n + 1)).toLinearMap := by
         use P n y
         rw [ContinuousLinearMap.coe_coe, hcomp (n + 1) n y, min_eq_right (Nat.le_succ n)]
       constructor
@@ -249,7 +274,7 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n).toLinearMap) = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x)) :
-    ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 X e) := by
+    ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 e) := by
   let Q := Q P
   have hrankQ := Q_rank_one h0 hdim hcomp
   have (n : ℕ) :  ∃ v, v ∈ LinearMap.range (Q n).toLinearMap ∧ v ≠ 0 := by
