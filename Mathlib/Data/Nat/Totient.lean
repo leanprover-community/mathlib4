@@ -378,8 +378,7 @@ theorem totient_two_mul_of_even {n : ℕ} (hn : Even n) : (2 * n).totient = 2 * 
   totient_mul_of_prime_of_dvd prime_two hn.two_dvd
 
 theorem totient_two_mul_of_odd {n : ℕ} (hn : Odd n) : (2 * n).totient = n.totient := by
-  rw [totient_mul_of_prime_of_not_dvd prime_two (Odd.not_two_dvd_nat hn), Nat.add_one_sub_one 1,
-    one_mul]
+  rw [totient_mul_of_prime_of_not_dvd prime_two hn.not_two_dvd_nat, Nat.add_one_sub_one 1, one_mul]
 
 theorem eq_or_eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (h' : a.totient = b.totient) :
     a = b ∨ 2 * a = b := by
