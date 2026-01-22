@@ -60,6 +60,7 @@ open MvPolynomial
 
 variable (r : R) [IsLocalization.Away r S]
 
+set_option backward.privateInPublic true in
 /-- The canonical algebra map from `MvPolynomial Unit R` quotiented by
 `C r * X () - 1` to the localization of `R` away from `r`. -/
 private noncomputable
@@ -80,6 +81,7 @@ private lemma auxHom_mk (p : MvPolynomial Unit R) :
     auxHom S r p = aeval (S₁ := S) (fun _ ↦ invSelf r) p :=
   rfl
 
+set_option backward.privateInPublic true in
 private noncomputable
 def auxInv : S →+* (MvPolynomial Unit R) ⧸ Ideal.span { C r * X () - 1 } :=
   letI g : R →+* MvPolynomial Unit R ⧸ (Ideal.span { C r * X () - 1 }) :=
@@ -108,6 +110,8 @@ private lemma auxInv_auxHom : (auxInv S r).comp (auxHom (S := S) r).toRingHom = 
       ← Ideal.neg_mem_iff, neg_sub]
     exact Ideal.mem_span_singleton_self (C r * X x - 1)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The canonical algebra isomorphism from `MvPolynomial Unit R` quotiented by
 `C r * X () - 1` to the localization of `R` away from `r`. -/
 noncomputable def mvPolynomialQuotientEquiv :

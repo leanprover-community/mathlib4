@@ -124,7 +124,7 @@ lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : t.Category) :
 @[simp]
 lemma shiftFunctorAdd'_inv_app (i j k : A) (h : i + j = k) (X : t.Category) :
     (shiftFunctorAdd' t.Category i j k h).inv.app X =
-      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _  ≫
+      ((t.z i j)⁻¹).val • (t.shiftIso j).hom.app _ ≫
         (shiftFunctor C j).map ((t.shiftIso i).hom.app X) ≫
         (shiftFunctorAdd' C i j k h).inv.app X ≫
         (t.shiftIso k).inv.app X := by

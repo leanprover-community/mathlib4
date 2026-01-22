@@ -19,7 +19,7 @@ a morphism `X ⟶ Y` in `Over S` is a cofibration
 (resp. a fibration, a weak equivalence) if the
 underlying morphism `f.left : X.left ⟶ Y.left` is.
 (Apart from the existence of (finite) limits
-from `Limits.Constructions.Over.Basic`, the verification
+from `Mathlib.CategoryTheory.Limits.Constructions.Over.Basic`, the verification
 of the axioms is straightforward.)
 
 ## TODO
@@ -49,8 +49,7 @@ lemma cofibrations_over_def :
 
 lemma cofibrations_over_iff {X Y : Over S} (f : X ⟶ Y) :
     Cofibration f ↔ Cofibration f.left := by
-  simp only [cofibration_iff]
-  rfl
+  simp only [cofibration_iff, cofibrations_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [Cofibration f] : Cofibration f.left := by
   rwa [← cofibrations_over_iff]
@@ -74,8 +73,7 @@ lemma fibrations_over_def :
 
 lemma fibrations_over_iff {X Y : Over S} (f : X ⟶ Y) :
     Fibration f ↔ Fibration f.left := by
-  simp only [fibration_iff]
-  rfl
+  simp only [fibration_iff, fibrations_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [Fibration f] : Fibration f.left := by
   rwa [← fibrations_over_iff]
@@ -99,8 +97,7 @@ lemma weakEquivalences_over_def :
 
 lemma weakEquivalences_over_iff {X Y : Over S} (f : X ⟶ Y) :
     WeakEquivalence f ↔ WeakEquivalence f.left := by
-  simp only [weakEquivalence_iff]
-  rfl
+  simp only [weakEquivalence_iff, weakEquivalences_over_def, MorphismProperty.over_iff]
 
 instance {X Y : Over S} (f : X ⟶ Y) [WeakEquivalence f] : WeakEquivalence f.left := by
   rwa [← weakEquivalences_over_iff]

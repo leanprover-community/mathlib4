@@ -17,7 +17,7 @@ The lemmas in this file have been moved out of
 `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean` to reduce its imports.
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ M N β : Type*}
 

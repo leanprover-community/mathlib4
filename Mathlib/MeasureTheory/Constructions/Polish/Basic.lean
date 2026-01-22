@@ -839,7 +839,7 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
       tγ _ _ _ (continuous_id_of_le t't) s hs
   exact
     @MeasurableSet.image_of_continuousOn_injOn γ
-      _ _ _ _  s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
+      _ _ _ _ s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
       M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
@@ -924,7 +924,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
   let t' := t ∩ g ⁻¹' u
   have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
+    have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
     rw [this]
     apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=

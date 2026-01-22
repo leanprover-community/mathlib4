@@ -228,7 +228,7 @@ theorem of_injective [IsDirectedOrder ι] [DirectedSystem G fun i j h ↦ f' i j
     Function.Injective (of G (fun i j h ↦ f' i j h) i) :=
   have := Nonempty.intro i
   ((ringEquiv _ _).comp_injective _).mp
-    fun _ _ eq ↦  DirectLimit.mk_injective f' hf _ (by simpa only [← ringEquiv_of])
+    fun _ _ eq ↦ DirectLimit.mk_injective f' hf _ (by simpa only [← ringEquiv_of])
 
 section functorial
 

@@ -6,6 +6,8 @@ Authors: Arthur Paulino
 
 import Mathlib.Tactic.Use
 import Mathlib.Tactic.Basic
+import Mathlib.Logic.Equiv.Defs
+import Mathlib.Data.PNat.Defs
 
 namespace UseTests
 
@@ -37,9 +39,9 @@ example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
 /--
 error: failed to synthesize instance of type class
-  OfNat (Nat × Nat) 42
+  OfNat (ℕ × ℕ) 42
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
-  Nat × Nat
+  ℕ × ℕ
 due to the absence of the instance above
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
@@ -63,6 +65,15 @@ example (r : Nat → Nat → Prop) (h : ∀ x, r x x) :
 example : ∃ x : String × String, x.1 = x.2 := by use ("a", "a")
 
 example : ∃ x : String × String, x.1 = x.2 := by use! "a", "a"
+
+example : Nonempty Nat := by use 5
+
+example : Nonempty (PNat ≃ Nat) := by
+  use PNat.natPred, Nat.succPNat
+  · exact PNat.succPNat_natPred
+  · intro; rfl
+
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 -- This example is why `use` always tries applying the constructor before refining.
 example : ∃ x : Nat, x = x := by
@@ -94,9 +105,9 @@ example : Σ _x _y : Int, (Int × Int) × Int := by
 -- There are two constructors, so applying a constructor fails and it tries to just refine
 /--
 error: failed to synthesize instance of type class
-  OfNat (Option Nat) 1
+  OfNat (Option ℕ) 1
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
-  Option Nat
+  Option ℕ
 due to the absence of the instance above
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
@@ -106,9 +117,9 @@ example : Option Nat := by use 1
 
 /--
 error: failed to synthesize instance of type class
-  OfNat (Nat → Nat) 1
+  OfNat (ℕ → ℕ) 1
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
-  Nat → Nat
+  ℕ → ℕ
 due to the absence of the instance above
 
 Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
@@ -172,7 +183,7 @@ example : Baz 0 3 := by use 4
 error: Type mismatch
   3
 has type
-  Nat
+  ℕ
 of sort `Type` but is expected to have type
   Baz 1 3
 of sort `Prop`

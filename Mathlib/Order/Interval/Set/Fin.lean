@@ -25,7 +25,7 @@ under the following operations:
 - `Fin.rev`.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

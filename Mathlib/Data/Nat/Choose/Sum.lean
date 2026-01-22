@@ -20,7 +20,7 @@ coefficients. Theorems whose proofs depend on such sums may also go in this file
 reasons.
 -/
 
-@[expose] public section
+public section
 
 open Nat Finset
 
@@ -173,17 +173,27 @@ theorem sum_range_mul_choose (n : ℕ) :
       rw [← mul_sum, Nat.sum_range_choose]
     _ = 2 * (n * 2 ^ (n - 1)) := by
       rw [← mul_assoc, mul_comm 2 n, mul_assoc, mul_pow_sub_one h]
+lemma sum_range_multichoose (n k : ℕ) :
+    ∑ i ∈ Finset.range (n + 1), k.multichoose i = (n + k).choose k := by
+  cases k with
+  | zero => simp [Finset.sum_range_succ']
+  | succ k => grind [multichoose_eq, choose_symm_of_eq_add, sum_range_add_choose]
 
 end Nat
+
+theorem Int.alternating_sum_range_choose_eq_choose {n m : ℕ} :
+    (∑ k ∈ range (m + 1), ((-1) ^ k * (n + 1).choose k : ℤ)) = (-1) ^ m * n.choose m := by
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [sum_range_succ, hm, choose_succ_succ]
+    grind
 
 theorem Int.alternating_sum_range_choose {n : ℕ} :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = if n = 0 then 1 else 0 := by
   cases n with
   | zero => simp
-  | succ n =>
-    have h := add_pow (-1 : ℤ) 1 n.succ
-    simp only [one_pow, mul_one, neg_add_cancel] at h
-    rw [← h, zero_pow n.succ_ne_zero, if_neg n.succ_ne_zero]
+  | succ n => simp [Int.alternating_sum_range_choose_eq_choose]
 
 theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
     (∑ m ∈ range (n + 1), ((-1) ^ m * n.choose m : ℤ)) = 0 := by

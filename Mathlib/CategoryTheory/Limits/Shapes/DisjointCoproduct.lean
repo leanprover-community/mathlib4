@@ -75,6 +75,14 @@ lemma CoproductDisjoint.of_cofan {c : Cofan X} (hc : IsColimit c)
     rw [show d.inj i = c.inj i ≫ (hd.uniqueUpToIso hc).inv.hom by simp]
     infer_instance
 
+lemma CoproductDisjoint.of_hasCoproduct [HasCoproduct X] [∀ i, Mono (Sigma.ι X i)]
+    (s : ∀ {i j : ι} (_ : i ≠ j), PullbackCone (Sigma.ι X i) (Sigma.ι X j))
+    (hs : ∀ {i j : ι} (hij : i ≠ j), IsLimit (s hij))
+    (H : ∀ {i j : ι} (hij : i ≠ j), IsInitial (s hij).pt) :
+    CoproductDisjoint X :=
+  have (i : ι) : Mono ((Cofan.mk (∐ X) (Sigma.ι X)).inj i) := inferInstanceAs <| Mono (Sigma.ι X i)
+  .of_cofan (coproductIsCoproduct X) s hs H
+
 variable [CoproductDisjoint X]
 
 lemma _root_.CategoryTheory.Mono.of_coproductDisjoint {c : Cofan X} (hc : IsColimit c) (i : ι) :
@@ -199,25 +207,6 @@ noncomputable def ofBinaryCoproductDisjointOfIsLimit
 
 end IsInitial
 
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfIsPullbackOfIsCoproduct :=
-  IsInitial.ofBinaryCoproductDisjointOfIsColimitOfIsLimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfIsPullbackOfCoproduct := IsInitial.ofBinaryCoproductDisjointOfIsLimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfPullbackOfIsCoproduct := IsInitial.ofBinaryCoproductDisjointOfIsColimit
-
-@[deprecated (since := "2025-06-18")]
-alias isInitialOfPullbackOfCoproduct := IsInitial.ofBinaryCoproductDisjoint
-
-@[deprecated (since := "2025-06-18")]
-alias CoproductDisjoint.mono_inl := CategoryTheory.Mono.of_binaryCoproductDisjoint_left
-
-@[deprecated (since := "2025-06-18")]
-alias CoproductDisjoint.mono_inr := CategoryTheory.Mono.of_binaryCoproductDisjoint_right
-
 end
 
 /-- `C` has disjoint coproducts if every coproduct is disjoint. -/
@@ -248,8 +237,5 @@ theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
           Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
         uniq := fun (_s : BinaryCofan _ _) _m w =>
           (id_comp _).symm.trans (w ⟨WalkingPair.right⟩) }
-
-@[deprecated (since := "2025-06-18")]
-alias initialMonoClass_of_disjoint_coproducts := initialMonoClass_of_coproductsDisjoint
 
 end CategoryTheory.Limits
