@@ -111,7 +111,7 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] theorem eta (h) : ({ p with smul_mem' := h } : Submodule R M) = p :=
   rfl
 
 @[simp]
