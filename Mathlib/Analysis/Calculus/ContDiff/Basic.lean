@@ -357,8 +357,8 @@ theorem HasFTaylorSeriesUpToOn.comp_continuousAffineMap
     (hf : HasFTaylorSeriesUpToOn n f p s) (g : G →ᴬ[𝕜] E) :
     HasFTaylorSeriesUpToOn n (f ∘ g)
       (fun x k => (p (g x) k).compContinuousLinearMap fun _ => g.contLinear) (g ⁻¹' s) := by
-  let A : ∀ m : ℕ, (E[×m]→L[𝕜] F) → G[×m]→L[𝕜] F :=
-    fun m h => h.compContinuousLinearMap fun _ => g.contLinear
+  let A : ∀ m : ℕ, (E [×m]→L[𝕜] F) → G [×m]→L[𝕜] F :=
+    fun m h ↦ h.compContinuousLinearMap fun _ ↦ g.contLinear
   have hA : ∀ m, IsBoundedLinearMap 𝕜 (A m) := fun m =>
     isBoundedLinearMap_continuousMultilinearMap_comp_linear g.contLinear
   constructor
@@ -1470,6 +1470,14 @@ theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂
   rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.2.continuousOn
 
+@[fun_prop]
+protected lemma ContDiffWithinAt.derivWithin {x : 𝕜}
+    (H : ContDiffWithinAt 𝕜 n f₂ s₂ x) (hs : UniqueDiffOn 𝕜 s₂)
+    (hmn : m + 1 ≤ n) (hx : x ∈ s₂) :
+    ContDiffWithinAt 𝕜 m (derivWithin f₂ s₂) s₂ x := by
+  exact ContDiffWithinAt.comp _ (by fun_prop) (g := fun f ↦ f 1) (t := .univ)
+    (H.fderivWithin_right hs hmn hx) (fun _ _ ↦ trivial)
+
 /-- A function is `C^(n + 1)` if and only if it is differentiable,
   and its derivative (formulated in terms of `deriv`) is `C^n`. -/
 theorem contDiff_succ_iff_deriv :
@@ -1499,6 +1507,11 @@ theorem ContDiff.continuous_deriv_one (h : ContDiff 𝕜 1 f₂) : Continuous (d
 @[fun_prop]
 theorem ContDiff.differentiable_deriv_two (h : ContDiff 𝕜 2 f₂) : Differentiable 𝕜 (deriv f₂) := by
   unfold deriv; fun_prop
+
+@[fun_prop]
+protected lemma ContDiffAt.derivWithin {x : 𝕜} (H : ContDiffAt 𝕜 n f₂ x) (hmn : m + 1 ≤ n) :
+    ContDiffAt 𝕜 m (deriv f₂) x := by
+  simpa using ContDiffWithinAt.derivWithin (s₂ := .univ) H.contDiffWithinAt (by simp) hmn
 
 @[fun_prop]
 theorem ContDiff.deriv' (h : ContDiff 𝕜 (n + 1) f₂) : ContDiff 𝕜 n (deriv f₂) := by
