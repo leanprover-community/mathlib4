@@ -618,6 +618,12 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
     simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, f.mono.leftLim_le,
       measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
 
+@[simp]
+theorem measure_botSet : f.measure botSet = 0 := by
+  by_cases hx : ∃ (x : R), IsBot x
+  · simp [botSet, hx, leftLim_eq_of_isBot hx.choose_spec]
+  · simp [botSet, hx]
+
 theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iic x) = ofReal (f x - l) := by
   have : Nonempty R := ⟨x⟩

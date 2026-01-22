@@ -424,7 +424,9 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
       exists_countable_dense_bot_top α
     let D := {t : Set α | ∃ u v, u ≤ v ∧ t = Ioc u v ∧ u ∈ s ∧ v ∈ s}
     refine ⟨D, ?_, by grind, ?_⟩
-    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by grind
+    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by
+        rintro - ⟨u, v, -, rfl, us, vs⟩
+        exact mem_image_of_mem (x := (u, v)) _ (by simp [us, vs])
       exact Countable.mono this ((s_count.prod s_count).image _)
     have : (⋃₀ D)ᶜ ⊆ botSet := by
       have : botSet = {x : α | IsBot x} := sorry
@@ -440,6 +442,7 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
         have : (Ioi x).Nonempty := by simpa [IsTop] using h'x
         exact s_dense.exists_mem_open isOpen_Ioi this
       exact ⟨Ioc y z, ⟨y, z, (hy.trans hz).le, rfl, ys, zs⟩, ⟨hy, hz.le⟩⟩
+    exact measure_mono_null this (by simp)
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     (m := m) (μ := hf.measureAux) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
