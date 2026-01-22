@@ -230,16 +230,11 @@ def isColimitGluedCocone : IsColimit d.gluedCocone := by
             (Over.map ⊤ (d.prop_trans hij)).map
             ((d.isColimit i).desc ((MorphismProperty.Over.pullback P ⊤ (𝒰.f i)).mapCocone s)) ≫
             (Over.pullbackMapHomPullback _ (d.prop_trans hij) trivial _ _).app _ := by
-        dsimp [transitionMap]
         apply (isColimitOfPreserves (MorphismProperty.Over.map ⊤ _) (d.isColimit i)).hom_ext
         intro a
-        rw [IsColimit.fac_assoc]
-        simp only [Functor.comp_obj, transitionCocone, Cocones.precompose_obj_pt,
-          Cocones.precompose_obj_ι, NatTrans.comp_app, Functor.const_obj_obj, Category.assoc,
-          IsColimit.fac, Functor.mapCocone_pt, Functor.mapCocone_ι_app]
-        rw [← Functor.map_comp_assoc, IsColimit.fac]
         ext
-        apply pullback.hom_ext <;> simp
+        apply pullback.hom_ext<;>
+        simp [cocone_ι_transitionMap_assoc, ← Functor.map_comp_assoc]
       rw [← Over.comp_left_assoc, ← Comma.comp_hom, this]
       simp
     · intro i
