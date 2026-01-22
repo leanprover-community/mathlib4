@@ -40,7 +40,7 @@ in the definition of `Is(Finitely)Presented`.
   `(_: Finite α)` such that the kernel is finitely generated in the normal closure.
 * `IsFinitelyPresented.iff_hom_surj_fintype` same as above but for `Fintype α`.
 * `IsFinitelyPresented.iff_hom_surj_fin_n` same as above but for `Fin n`.
-* `IsFinitelyPresented.if_hom_surj_finite` same as above but for `α: Type*` and the if direction only.
+* `IsFinitelyPresented.if_hom_surj_finite` same as above but for if direction with `α: Type*`.
 * `IsFinitelyPresented.iff_hom_surj_set_G` same as above but for `S: Set G` and the surjection being
   the canonical inclusion map.
 * `IsFinitelyPresented.iff_hom_surj_finset_G` same as above but for `S: Finset G` and the surjection
@@ -437,7 +437,7 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
 
 -- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
-lemma quotient_normalClosure_empty_mulEquiv (α : Type*) :
+def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
   have hbot :
       Subgroup.normalClosure (∅ : Set (FreeGroup α)) = (⊥ : Subgroup (FreeGroup α)) := by
