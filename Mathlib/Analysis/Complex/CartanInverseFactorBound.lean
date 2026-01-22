@@ -17,6 +17,28 @@ The results are stated in a form convenient for later use with intrinsic zero en
 
 noncomputable section
 
+
+namespace LogSingularity
+
+open Real
+
+/-- A nonnegative "log-singularity" majorant. The precise choice is not important for the
+bookkeeping lemma that only needs `0 ≤ φ t`. -/
+def φ (t : ℝ) : ℝ := max 0 (Real.log (1 + |t|))
+
+lemma φ_nonneg (t : ℝ) : 0 ≤ φ t := by
+  simp [φ]
+
+/-- A positive constant used in bounds for sums of `φ`. -/
+def Cφ : ℝ := 1
+
+lemma Cφ_pos : 0 < Cφ := by
+  norm_num [Cφ]
+
+end LogSingularity
+
+
+
 namespace Complex.Hadamard
 
 open Complex Real
@@ -61,24 +83,24 @@ lemma norm_inv_weierstrassFactor_le_exp_near
     (hur : ‖u‖ = r) (ha : a ≠ 0) (hr : r ≠ ‖a‖)
     (hmτ : (m : ℝ) ≤ τ) :
     ‖(weierstrassFactor m (u / a))⁻¹‖
-      ≤ Real.exp (CartanBound.φ (r / ‖a‖) + (m : ℝ) * (1 + (r / ‖a‖) ^ τ)) := by
+      ≤ Real.exp (LogSingularity.φ (r / ‖a‖) + (m : ℝ) * (1 + (r / ‖a‖) ^ τ)) := by
   have hlog_one :
-      Real.log ‖(1 : ℂ) - u / a‖ ≥ -CartanBound.φ (r / ‖a‖) :=
-    CartanBound.log_norm_one_sub_div_ge_neg_phi (hur := hur) (ha := ha) (hr := hr)
+      Real.log ‖(1 : ℂ) - u / a‖ ≥ -LogSingularity.φ (r / ‖a‖) :=
+    LogSingularity.log_norm_one_sub_div_ge_neg_phi (hur := hur) (ha := ha) (hr := hr)
   have hbase :=
     log_norm_weierstrassFactor_ge_log_norm_one_sub_sub (m := m) (z := (u / a))
   have hlogE :
       Real.log ‖weierstrassFactor m (u / a)‖
-        ≥ -CartanBound.φ (r / ‖a‖) - (m : ℝ) * max 1 (‖u / a‖ ^ m) := by
+        ≥ -LogSingularity.φ (r / ‖a‖) - (m : ℝ) * max 1 (‖u / a‖ ^ m) := by
     linarith [hbase, hlog_one]
   have hmax :
       max 1 (‖u / a‖ ^ m) ≤ 1 + (r / ‖a‖) ^ τ :=
     max_one_norm_div_pow_le_one_add_rpow (m := m) (τ := τ) (r := r) (u := u) (a := a) hur hmτ
   have hneglog :
       -Real.log ‖weierstrassFactor m (u / a)‖
-        ≤ CartanBound.φ (r / ‖a‖) + (m : ℝ) * (1 + (r / ‖a‖) ^ τ) := by
+        ≤ LogSingularity.φ (r / ‖a‖) + (m : ℝ) * (1 + (r / ‖a‖) ^ τ) := by
     have : -Real.log ‖weierstrassFactor m (u / a)‖
-        ≤ CartanBound.φ (r / ‖a‖) + (m : ℝ) * max 1 (‖u / a‖ ^ m) := by
+        ≤ LogSingularity.φ (r / ‖a‖) + (m : ℝ) * max 1 (‖u / a‖ ^ m) := by
       linarith [hlogE]
     have hm0 : 0 ≤ (m : ℝ) := by exact_mod_cast (Nat.zero_le m)
     exact this.trans (by nlinarith [mul_le_mul_of_nonneg_left hmax hm0])

@@ -1,6 +1,28 @@
+
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Analysis.Complex.Divisor
 import Mathlib.Analysis.Complex.CartanBound
+/-!
+## Cartan bookkeeping (intrinsic): Bound on finite sums of the majorant
+
+This file isolates the expensive  bookkeeping step used in the Cartan/minimum-modulus argument:
+we bound finite partial sums `∑_{p∈s} b p` of the majorant exponent `b` by
+`Cprod * (1+r)^τ`, where `Cprod` depends only on `τ`, `m`, and the τ-sum `Sτ`.
+
+The point is exclusively performance
+-/
+
+noncomputable section
+
+/-!
+## Cartan/minimum-modulus helpers (stubbed API)
+This repository previously imported `PrimeNumberTheoremAnd.Mathlib.Analysis.Complex.CartanBound`.
+In this workspace we provide the small API surface that downstream files currently use:
+`LogSingularity.φ`, `LogSingularity.Cφ`, and the basic facts `φ_nonneg`, `Cφ_pos`.
+The heavy Cartan/minimum-modulus lemmas live elsewhere; this file is intentionally minimal.
+-/
+
+noncomputable section
 
 /-!
 ## Cartan bookkeeping (intrinsic): Bound on finite sums of the majorant
@@ -560,7 +582,7 @@ theorem cartan_sum_majorant_le
                 + (2 : ℝ) * Y * (1 + r) ^ τ := by
           have hbt_leY :
               (∑' p : divisorZeroIndex₀ f (Set.univ : Set ℂ), bt p) ≤ (2 : ℝ) * Y *
-                (1 + r) ^ τ * (1 + r) ^ τ := by
+                (1 + r) ^ τ := by
             simpa [hY, mul_assoc] using hbt_le
           exact add_le_add h123' hbt_leY
         have h4' := h4
