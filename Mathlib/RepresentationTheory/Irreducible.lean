@@ -68,16 +68,7 @@ theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
   haveI _ : FiniteDimensional k ρ.asModule := by assumption
   have : Function.Bijective (algebraMap k (Module.End k[G] ρ.asModule)) :=
     IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
-  have h_comp :
-      Function.Bijective
-        ((IntertwiningMap.equivAlgEnd (ρ:=ρ)) ∘ algebraMap k (IntertwiningMap ρ ρ)) := by
-    simpa [Function.comp] using this
-  have h_equiv :
-      Function.Bijective
-        (IntertwiningMap.equivAlgEnd (ρ:=ρ) :
-          IntertwiningMap ρ ρ → Module.End k[G] ρ.asModule) :=
-    (IntertwiningMap.equivAlgEnd (ρ:=ρ)).bijective
-  exact (Function.Bijective.of_comp_iff' h_equiv _).1 h_comp
+  exact (Function.Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ:=ρ)).bijective _).1 this
 
 theorem finrank_eq_one_of_isMulCommutative (ρ : Representation k G V) [IsIrreducible ρ]
     [IsMulCommutative G] : Module.finrank k V = 1 := by
