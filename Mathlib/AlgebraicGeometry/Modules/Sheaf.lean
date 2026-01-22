@@ -101,6 +101,8 @@ noncomputable def Hom.mapPresheaf (φ : M ⟶ N) : M.presheaf ⟶ N.presheaf :=
 def Hom.app (φ : M ⟶ N) (U : X.Opens) : Γ(M, U) ⟶ Γ(N, U) :=
   (forget₂ _ _).map (φ.val.app (.op U))
 
+@[simp] lemma mapPresheaf_app (φ : M ⟶ N) (U) : φ.mapPresheaf.app U = φ.app U.unop := rfl
+
 @[simp]
 lemma Hom.app_smul (φ : M ⟶ N) (r : Γ(X, U)) (x : Γ(M, U)) :
     φ.app U (r • x) = r • φ.app U x :=
@@ -121,9 +123,19 @@ lemma hom_ext (f g : M ⟶ N) (H : ∀ U, f.app U = g.app U) : f = g := by
 
 lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 
-@[simp] lemma toPresheaf_obj (M : X.Modules) : (toPresheaf X).obj M = M.presheaf := rfl
-@[simp] lemma toPresheaf_map (φ : M ⟶ N) : (toPresheaf X).map φ = φ.mapPresheaf := rfl
-@[simp] lemma mapPresheaf_app (φ : M ⟶ N) (U) : φ.mapPresheaf.app U = φ.app U.unop := rfl
+section
+
+local notation "F" => toPresheafOfModules X
+
+variable {U V : X.Opensᵒᵖ} (i : U ⟶ V)
+
+@[simp] lemma toPresheaf_obj :                   (toPresheaf X).obj M = M.presheaf       := rfl
+@[simp] lemma toPresheaf_map :                   (toPresheaf X).map φ = φ.mapPresheaf    := rfl
+@[simp] lemma toPresheafOfModules_obj_presheaf : ((F).obj M).presheaf = M.presheaf       := rfl
+@[simp] lemma toPresheafOfModules_obj_obj_coe :  ↥(((F).obj M).obj U) = Γ(M, U.unop)     := rfl
+@[simp] lemma toPresheafOfModules_obj_map_coe :  ⇑(((F).obj M).map i) = M.presheaf.map i := rfl
+
+end
 
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
@@ -168,6 +180,8 @@ is left adjoint to the pushforward functor. -/
 def pullbackPushforwardAdjunction : pullback f ⊣ pushforward f :=
   SheafOfModules.pullbackPushforwardAdjunction _
 
+section
+
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
   preservesBinaryBiproducts_of_preservesBinaryProducts
 
@@ -176,11 +190,16 @@ instance : (pushforward f).IsRightAdjoint := (pullbackPushforwardAdjunction f).i
 instance : (pushforward f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 instance : (pullback f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 
+end
+
 variable (X) in
 /-- The pushforward of sheaves of modules by the identity morphism identifies
 to the identity functor. -/
 def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pushforwardId _
+
+@[simp] lemma pushforwardId_hom_app_app : ((pushforwardId X).hom.app M).app U = 𝟙 _ := rfl
+@[simp] lemma pushforwardId_inv_app_app : ((pushforwardId X).inv.app M).app U = 𝟙 _ := rfl
 
 variable (X) in
 /-- The pullback of sheaves of modules by the identity morphism identifies
@@ -200,6 +219,9 @@ def pushforwardComp :
     pushforward f ⋙ pushforward g ≅ pushforward (f ≫ g) :=
   SheafOfModules.pushforwardComp _ _
 
+@[simp] lemma pushforwardComp_hom_app_app (U) : ((pushforwardComp f g).hom.app M).app U = 𝟙 _ := rfl
+@[simp] lemma pushforwardComp_inv_app_app (U) : ((pushforwardComp f g).inv.app M).app U = 𝟙 _ := rfl
+
 /-- The composition of two pullback functors for sheaves of modules on schemes
 identify to the pullback for the composition. -/
 def pullbackComp :
@@ -210,6 +232,12 @@ def pullbackComp :
 def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
       SheafOfModules.pushforwardCongr (by cat_disch)
+
+@[simp] lemma pushforwardCongr_hom_app_app {f g : X ⟶ Y} (hf : f = g) (U : Y.Opens) :
+    ((pushforwardCongr hf).hom.app M).app U = M.presheaf.map (eqToHom (hf ▸ rfl)).op := rfl
+
+@[simp] lemma pushforwardCongr_inv_app_app {f g : X ⟶ Y} (hf : f = g) (U : Y.Opens) :
+    ((pushforwardCongr hf).inv.app M).app U = M.presheaf.map (eqToHom (hf ▸ rfl)).op := rfl
 
 /-- Inverse images along equal morphisms are isomorphic. -/
 def pullbackCongr {f g : X ⟶ Y} (hf : f = g) : pullback f ≅ pullback g :=
@@ -333,6 +361,16 @@ instance : IsIso (restrictAdjunction f).counit :=
 instance : (restrictFunctor f).IsLeftAdjoint := (restrictAdjunction f).isLeftAdjoint
 instance : (pushforward f).Full := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.full
 instance : (pushforward f).Faithful := (restrictAdjunction f).fullyFaithfulROfIsIsoCounit.faithful
+
+@[simp]
+lemma restrictAdjunction_unit_app_app (M : Y.Modules) (U : Y.Opens) :
+    ((restrictAdjunction f).unit.app M).app U =
+      M.presheaf.map (homOfLE (f.image_preimage_le U)).op := rfl
+
+@[simp]
+lemma restrictAdjunction_counit_app_app (M : X.Modules) (U : X.Opens) :
+    ((restrictAdjunction f).counit.app M).app U =
+      M.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op := rfl
 
 /-- Restriction is naturally isomorphic to the inverse image. -/
 def restrictFunctorIsoPullback : restrictFunctor f ≅ pullback f :=

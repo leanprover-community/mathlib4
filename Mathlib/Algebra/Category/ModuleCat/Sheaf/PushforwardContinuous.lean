@@ -60,7 +60,7 @@ noncomputable def pushforwardId :
     pushforward.{v} (S := R) (F := 𝟭 _) (𝟙 R) ≅ 𝟭 _ :=
   Iso.refl _
 
-/-- Pushforward along equal morphisms of sheaves of rings is isomorphic. -/
+/-- Pushforwards along equal morphisms of sheaves of rings is isomorphic. -/
 noncomputable
 def pushforwardCongr {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) :
     pushforward.{v} φ ≅ pushforward.{v} ψ :=
@@ -75,6 +75,10 @@ def pushforwardCongr {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J 
 @[simp] lemma pushforwardCongr_hom_app_val_app
     {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) (M U x) :
   ((pushforwardCongr e).hom.app M).val.app U x = x := rfl
+
+@[simp] lemma pushforwardCongr_inv_app_val_app
+    {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) (M U x) :
+  ((pushforwardCongr e).inv.app M).val.app U x = x := rfl
 
 section
 
@@ -175,7 +179,7 @@ lemma pushforwardNatTrans_app_val_app_apply (α : F ⟶ G) (X U x) :
     ((pushforwardNatTrans φ α).app X).val.app U x = X.val.map (α.app U.unop).op x := rfl
 
 /-- A natural isomorphism gives a natural isomorphism between the pushforward functors. -/
-@[simps hom inv]
+@[simps]
 noncomputable def pushforwardNatIso (α : F ≅ G) :
     pushforward.{v} φ ≅
       pushforward.{v} (φ ≫ (Functor.sheafPushforwardContinuousNatTrans α.hom _ _ _).app S) where
