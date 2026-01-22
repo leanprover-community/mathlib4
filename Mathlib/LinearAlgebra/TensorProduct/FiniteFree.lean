@@ -22,6 +22,7 @@ open TensorProduct
 The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the canonical
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
+@[simps! apply symm_apply]
 noncomputable def LinearEquiv.chooseBasis_piScalarRight (R : Type*) (M : Type*) (V : Type*)
     [CommSemiring M] [CommSemiring R] [Algebra R M]
     [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] :
