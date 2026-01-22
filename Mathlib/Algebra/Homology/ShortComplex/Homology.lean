@@ -694,6 +694,12 @@ lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
   dsimp
   rw [← leftRightHomologyComparison'_fac, leftRightHomologyComparison'_eq]
 
+lemma HomologyData.left_homologyIso_eq_right_homologyIso_trans_iso_symm
+    (h : S.HomologyData) [S.HasHomology] :
+    h.left.homologyIso = h.right.homologyIso ≪≫ h.iso.symm := by
+  rw [right_homologyIso_eq_left_homologyIso_trans_iso]
+  cat_disch
+
 lemma hasHomology_of_isIso_leftRightHomologyComparison'
     (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [IsIso (leftRightHomologyComparison' h₁ h₂)] :
