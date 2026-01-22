@@ -13,8 +13,10 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectiv
 public import Mathlib.Topology.Sheaves.Limits
 
 /-!
+# Sheaves of abelian groups.
+
 Results for sheaves of abelian groups on topological spaces, in preparation for sheaf cohomology.
-- `TopCat.Sheaf.AddCommGrpCat.Γ` : (Γ U) is the functor (Sheaf AddCommGrpCat X) ⥤ AddCommGrpCat
+- `TopCat.Sheaf.AddCommGrpCat.Γ` : (Γ U) is the functor `(Sheaf AddCommGrpCat X) ⥤ AddCommGrpCat`
   that sends 𝓕 to 𝓕(U) and and sends a morphism f: 𝓕 ⟶ 𝓖 to f(U): 𝓕(U) ⟶ 𝓖(U)
 -/
 
@@ -68,7 +70,7 @@ theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf A
 
 namespace Sheaf.AddCommGrpCat
 
-/- Given an open subset U of X, Γ U is the functor that sends a sheaf 𝓕 to 𝓕(U) and sends a
+/-- Given an open subset U of X, Γ U is the functor that sends a sheaf 𝓕 to 𝓕(U) and sends a
   morphism f: 𝓕 ⟶ 𝓖 to f(U): 𝓕(U) ⟶ 𝓖(U) -/
 abbrev Γ (U : Opens X) : (Sheaf AddCommGrpCat X) ⥤ AddCommGrpCat :=
   (sheafSections (Opens.grothendieckTopology X) AddCommGrpCat).obj (op U)
