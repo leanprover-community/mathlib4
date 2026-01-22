@@ -246,7 +246,6 @@ theorem factors_rel_of_associated {a b : α} (h : Associated a b) :
   · refine factors_unique irreducible_of_factor irreducible_of_factor ?_
     exact ((factors_prod ha).trans h).trans (factors_prod hb).symm
 
-@[simp]
 theorem factors_of_isUnit {x : α} (hx : IsUnit x) : factors x = 0 := by
   simpa using factors_rel_of_associated (associated_one_iff_isUnit.mpr hx)
 
