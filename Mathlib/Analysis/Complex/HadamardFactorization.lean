@@ -497,5 +497,4 @@ theorem exists_entire_nonzero_hadamardQuotient
   have hglobz : f z = H z * denom z := congrArg (fun g => g z) hglob
   simpa [denom, hadamardDenom, mul_assoc, mul_left_comm, mul_comm] using hglobz
 
-end Complex
 end Hadamard
