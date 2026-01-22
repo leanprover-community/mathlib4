@@ -101,15 +101,8 @@ lemma transitionMap_comp {i j k : 𝒰.I₀} (hij : i ⟶ j) (hjk : j ⟶ k) :
         d.transitionMap hjk := by
   apply (isColimitOfPreserves (Over.map ⊤ _) (d.isColimit i)).hom_ext
   intro a
-  simp only [transitionMap, IsColimit.fac]
-  simp only [Functor.comp_obj, transitionCocone_pt, Functor.mapCocone_pt, Functor.const_obj_obj,
-    Functor.mapCocone_ι_app, NatTrans.naturality_assoc, Functor.comp_map]
-  rw [← Functor.map_comp_assoc, ← Functor.mapCocone_ι_app, IsColimit.fac]
-  simp only [transitionCocone, Cocones.precompose_obj_ι, NatTrans.comp_app,
-    Functor.map_comp, Category.assoc]
-  rw [← Functor.mapCocone_ι_app, IsColimit.fac]
   ext
-  simp [pullback.map_comp_assoc]
+  simp [← Functor.map_comp_assoc, cocone_ι_transitionMap, pullback.map_comp_assoc]
 
 /-- (Implementation): Underlying functor of associated relative gluing datum. -/
 @[simps]
