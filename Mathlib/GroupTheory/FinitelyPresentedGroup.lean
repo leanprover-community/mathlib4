@@ -1,5 +1,5 @@
 /-
-Copyright (c) Hang Lu Su 2025 . All rights reserved.
+Copyright (c) 2025 Hang Lu Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
   Francesco Milizia, Valerio Proietti, Hang Lu Su, Lawrence Wu
@@ -23,28 +23,36 @@ between G and F_S / << R >> where S is the generating set and R are the relation
 in the definition of `Is(Finitely)Presented`.
 
 ## Main definitions
-* `IsPresented`
-* `IsNormalClosureFG`
-* `FinitelyPresentedGroup`
-* `IsFinitelyPresented`
-* `IsOneRelator`
+* `IsPresented`: defines when a group has an isomorphism to a presented group.
+* `IsNormalClosureFG`: defines when a subgroup is finitely generated in the normal closure.
+* `FinitelyPresentedGroup`: defines a finitely presented group.
+* `IsFinitelyPresented`: defines when a group has an isomorphism to a finitely presented group.
+* `IsOneRelator`: defines when a group is isomorphic to a one-relator group.
 
 ## Main results
-* `IsNormalClosureFG.invariant_surj_hom`
-* `isFP_isFG`
-* `isFP_isPresented`
-* `IsFinitelyPresented.FPgroup`
-* `IsFinitelyPresented.iff_hom_surj_finite`
-* `IsFinitelyPresented.iff_hom_surj_fintype`
-* `IsFinitelyPresented.iff_hom_surj_fin_n`
-* `IsFinitelyPresented.if_hom_surj_finite`
-* `IsFinitelyPresented.iff_hom_surj_set_G`
-* `IsFinitelyPresented.iff_hom_surj_finset_G`
-* `IsFinitelyPresented.of_mulEquiv`
+* `IsNormalClosureFG.invariant_surj_hom`: being finitely generated in the normal closure is closed
+  under surjective homomorphism.
+* `isFP_isFG`: a finitely presented group is finitely generated.
+* `isFP_isPresented`: a finitely presented group is a presented group.
+* `IsFinitelyPresented.FPgroup`: a finitely presented group is finitely presented.
+* `IsFinitelyPresented.iff_hom_surj_finite`: a finitely presented group is finitely presented if
+  and only if it admits a surjective homomorphism from `FreeGroup α` where `α: Type` and
+  `(_: Finite α)` such that the kernel is finitely generated in the normal closure.
+* `IsFinitelyPresented.iff_hom_surj_fintype` same as above but for `Fintype α`.
+* `IsFinitelyPresented.iff_hom_surj_fin_n` same as above but for `Fin n`.
+* `IsFinitelyPresented.if_hom_surj_finite` same as above but for `α: Type*` and the if direction only.
+* `IsFinitelyPresented.iff_hom_surj_set_G` same as above but for `S: Set G` and the surjection being
+  the canonical inclusion map.
+* `IsFinitelyPresented.iff_hom_surj_finset_G` same as above but for `S: Finset G` and the surjection
+  being the canonical inclusion map.
+* `IsFinitelyPresented.of_mulEquiv`: being finitely presented is invariant under isomorphism.
+* The trivial group and ℤ are instances of finitely presented groups.
 
 ## Tags
-finitely presented group, normal closure finitely generated
+finitely presented group, finitely generated normal closure
 -/
+
+@[expose] public section
 
 -- Start of suggested additions to #Monoid.ker
 -- TODO not sure if this is the right abstraction / right namespace for this.
@@ -225,7 +233,7 @@ instance isFP_isPresented {G : Type*} [Group G] [h : IsFinitelyPresented G] : Is
 namespace IsFinitelyPresented
 
 /- Every finitely presented group is finitely presented -/
-theorem FPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+theorem isFPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
   IsFinitelyPresented (FinitelyPresentedGroup rels h) := by
   refine ⟨α, inferInstance, rels, h, ?_⟩
   exact ⟨MulEquiv.refl _⟩
@@ -420,9 +428,16 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
       · simpa using hfsurj
       · simpa using hfker
 
+/- FP groups are closed under isomorphism -/
+theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
+(iso : G ≃* H) (h : IsFinitelyPresented G) :
+    IsFinitelyPresented H := by
+    obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
+    exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
+
 -- TODO I think this needs to work for any presented group.
 /- If you FreeGroup α by an empty set, you get the original group -/
-def quotient_normalClosure_empty_mulEquiv (α : Type*) :
+lemma quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
   have hbot :
       Subgroup.normalClosure (∅ : Set (FreeGroup α)) = (⊥ : Subgroup (FreeGroup α)) := by
@@ -430,7 +445,7 @@ def quotient_normalClosure_empty_mulEquiv (α : Type*) :
   exact (QuotientGroup.quotientMulEquivOfEq hbot).trans
     (QuotientGroup.quotientBot (G := FreeGroup α))
 
-/- Trivial group is FP -/
+/- Trivial group is finitely presented -/
 instance : IsFinitelyPresented (Unit) := by
   let α := Empty
   let rels := (∅ : Set (FreeGroup Empty))
@@ -464,10 +479,5 @@ instance : IsFinitelyPresented (Multiplicative ℤ) := by
 
 variable {G H : Type*} [Group G] [Group H]
 
-/- FP groups are closed under isomorphism -/
-theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
-(iso : G ≃* H) (h : IsFinitelyPresented G) :
-    IsFinitelyPresented H := by
-    obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
-    exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
+
 end IsFinitelyPresented
