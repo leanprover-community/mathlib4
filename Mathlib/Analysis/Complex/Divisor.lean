@@ -3,6 +3,7 @@ Copyright (c) 2026 Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
+
 import Mathlib.Analysis.Complex.CanonicalProduct
 import Mathlib.Analysis.Complex.DivisorIndex
 import Mathlib.Analysis.Complex.DivisorConvergence
@@ -97,6 +98,54 @@ lemma analyticOrderAt_ne_top_of_exists_ne_zero {f : ℂ → ℂ} (hf : Different
   exact AnalyticOnNhd.analyticOrderAt_ne_top_of_isPreconnected (hf := hf_an)
     (U := (Set.univ : Set ℂ)) (x := z1) (y := z) (by simpa using isPreconnected_univ)
     (by simp) (by simp) hz1_not_top
+
+/-!
+## Avoiding zeros on a circle
+
+If `f` is entire and not identically zero, and if a radius `r > 0` is different from the norms of
+all (nonzero) divisor-indexed zeros inside an ambient bound `B`, then `f` has no zeros on the circle
+`‖z‖ = r`.
+-/
+
+lemma no_zero_on_sphere_of_forall_val_norm_ne
+    {f : ℂ → ℂ} (hf : Differentiable ℂ f) (hnot : ∃ z : ℂ, f z ≠ 0)
+    {B r : ℝ} (hrpos : 0 < r) (hBr : r ≤ B)
+    (hr_not :
+      ∀ p : divisorZeroIndex₀ f (Set.univ : Set ℂ),
+        ‖divisorZeroIndex₀_val p‖ ≤ B → r ≠ ‖divisorZeroIndex₀_val p‖) :
+    ∀ u : ℂ, ‖u‖ = r → f u ≠ 0 := by
+  classical
+  intro u hur
+  have hu0 : u ≠ 0 := by
+    intro hu0
+    subst hu0
+    have : (0 : ℝ) = r := by simpa using hur
+    exact (ne_of_gt hrpos) this.symm
+  intro hfu0
+  have hnotTop : analyticOrderAt f u ≠ ⊤ :=
+    analyticOrderAt_ne_top_of_exists_ne_zero (f := f) hf hnot u
+  have hord_ne0 : analyticOrderNatAt f u ≠ 0 := by
+    intro h0
+    have hEN : (analyticOrderNatAt f u : ENat) = 0 := by simp [h0]
+    have hAt0 : analyticOrderAt f u = 0 := by
+      have hcast : (analyticOrderNatAt f u : ENat) = analyticOrderAt f u :=
+        Nat.cast_analyticOrderNatAt (f := f) (z₀ := u) hnotTop
+      simpa [hcast] using hEN
+    have han : AnalyticAt ℂ f u := Differentiable.analyticAt (f := f) hf u
+    exact ((han.analyticOrderAt_eq_zero).1 hAt0) hfu0
+  have hcard_pos : 0 < (divisorZeroIndex₀_fiberFinset (f := f) u).card := by
+    have hcard :=
+      divisorZeroIndex₀_fiberFinset_card_eq_analyticOrderNatAt (hf := hf) (z₀ := u) hu0
+    have : 0 < analyticOrderNatAt f u := Nat.pos_of_ne_zero hord_ne0
+    simpa [hcard] using this
+  rcases Finset.card_pos.mp hcard_pos with ⟨p, hp⟩
+  have hpval : divisorZeroIndex₀_val p = u :=
+    (mem_divisorZeroIndex₀_fiberFinset (f := f) (z₀ := u) p).1 hp
+  have hpB : ‖divisorZeroIndex₀_val p‖ ≤ B := by
+    have : ‖divisorZeroIndex₀_val p‖ = r := by simp [hpval, hur]
+    simpa [this] using hBr
+  have : r ≠ ‖divisorZeroIndex₀_val p‖ := hr_not p hpB
+  exact this (by simp [hpval, hur])
 
 /-!
 ## Basic correctness: the divisor canonical product vanishes at indexed zeros
