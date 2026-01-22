@@ -9,6 +9,48 @@ public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
 public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
 
+/-!
+# Schauder bases in normed spaces
+
+This file defines Schauder bases in a normed space and develops their basic theory.
+
+## Main definitions
+
+* `SchauderBasis 𝕜 X e`: A structure representing a Schauder basis for a normed space `X`
+  over a field `𝕜`, where `e : ℕ → X` is the sequence of basis vectors.
+  It includes:
+  - `coord`: The sequence of coordinate functionals (elements of the dual space).
+  - `ortho`: The biorthogonality condition $f_i(e_j) = \delta_{ij}$.
+  - `basis_expansion`: The requirement that for every $x \in X$, the series
+    $\sum_{n=0}^\infty f_n(x)e_n$ converges to $x$.
+
+* `SchauderBasis.proj b n`: The $n$-th canonical projection $P_n: X \to X$ associated
+  with the basis `b`, defined as $P_n(x) = \sum_{i < n} f_i(x)e_i$.
+
+* `SchauderBasis.basisConstant`: The supremum of the norms of the canonical projections
+  (often called the "basis constant").
+
+## Main results
+
+* `SchauderBasis.linearIndependent`: A Schauder basis is linearly independent.
+* `SchauderBasis.proj_tendsto_id`: The canonical projections $P_n$ converge pointwise
+  to the identity operator.
+* `SchauderBasis.proj_uniform_bound`: In a Banach space, the canonical projections
+  are uniformly bounded (a consequence of the Banach-Steinhaus Theorem).
+* `SchauderBasis.basis_of_canonical_projections`: A criterion to construct a Schauder
+  basis from a sequence of projections satisfying certain rank, composition, and
+  convergence properties.
+
+## Notation
+
+The file uses the `SummationFilter.conditional ℕ` to handle the convergence of the
+infinite sum, which corresponds to the convergence of partial sums.
+
+## Bibliography
+
+Based on Chapter 1. from Albiac, F., & Kalton, N. J. (2016). Topics in Banach Space Theory.
+-/
+
 @[expose] public section
 
 noncomputable section
