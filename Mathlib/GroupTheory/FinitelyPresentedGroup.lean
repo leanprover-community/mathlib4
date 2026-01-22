@@ -67,8 +67,8 @@ def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ := by
   refine
-    { toFun := fun x => Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-      invFun := fun z => FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
+    { toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
+      invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
       left_inv := by
         intro x
         simp
@@ -134,7 +134,7 @@ theorem Group.fg_iff_exists_freeGroup_hom_surjective_finite {G : Type*} [Group G
       let S : Set G := Set.image (fun a : α ↦ φ (FreeGroup.of a)) (Set.univ : Set α)
       have hS : S.Finite := by
         simpa [S] using (Set.Finite.image (s := (Set.univ : Set α))
-          (f := fun a : α => φ (FreeGroup.of a)) (Set.finite_univ))
+          (f := fun a : α ↦ φ (FreeGroup.of a)) (Set.finite_univ))
       -- This is copied from Group.FG.
       have hS' : S = φ '' Set.range (FreeGroup.of : α → FreeGroup α) := by
         ext g; constructor
@@ -342,7 +342,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
     use S, hS
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-    let g : α → S := fun a => ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
+    let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
     have hgsurj : Function.Surjective g := by
       intro s
       rcases s with ⟨y, ⟨a, rfl⟩⟩
@@ -354,7 +354,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       intro y
       obtain ⟨x, rfl⟩ := hhsurj y
       refine ⟨FreeGroup.map g x, ?_⟩
-      simpa [MonoidHom.comp_apply] using congrArg (fun m => m x) hh_fcompg
+      simpa [MonoidHom.comp_apply] using congrArg (fun m ↦ m x) hh_fcompg
     use hfsurj
     let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
     have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective g hgsurj
@@ -375,7 +375,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
     rw [hhker]
     exact hfker
   · intro ⟨S, hS, hfsurj, hfker⟩
-    set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
+    set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
     let α := S
     let _ : Finite α := hS
     apply if_hom_surj_finite -- this is a good justification for using Type* in general.
@@ -386,12 +386,12 @@ is surjective and the kernel is finitely generated as a normal subgroup. -/
 theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
   IsFinitelyPresented G ↔
       ∃ (S : Finset G),
-      Function.Surjective (FreeGroup.lift (fun s : S => (s : G))) ∧
-      IsNormalClosureFG (FreeGroup.lift (fun s : S => (s : G))).ker := by
+      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
     rw [iff_hom_surj_set_G]
     constructor
     · intro ⟨S, hS, hfsurj, hfker⟩
-      set f : FreeGroup S →* G := FreeGroup.lift (fun s => (s : G))
+      set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
       let S' : Finset G := hS.toFinset
       let e : S ≃ S'
         := hS.subtypeEquivToFinset
