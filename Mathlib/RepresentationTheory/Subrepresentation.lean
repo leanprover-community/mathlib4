@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Span.Defs
 /-!
 # Subrepresentations
 
-This file defines subrepresentations for a monoid representation.
+This file defines subrepresentations of a monoid representation.
 
 -/
 
@@ -36,7 +36,7 @@ namespace Subrepresentation
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
-  rintro ⟨_, _⟩
+  rintro ⟨_,_⟩
   congr!
 
 instance : SetLike (Subrepresentation ρ) W where
