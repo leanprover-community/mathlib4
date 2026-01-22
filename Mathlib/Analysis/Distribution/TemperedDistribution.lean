@@ -317,25 +317,25 @@ instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
 theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
     ∂_{m} f g = f (- ∂_{m} g) := rfl
 
-instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
   lineDerivOp_left_add x y f := by
     ext u
     simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
 
-instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
-instance instLineDerivSMul' : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
 
-instance instLineDerivLeftSMul : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_left_smul r x f := by
     ext u
     simp [lineDerivOp_left_smul, map_smul_of_tower f]
 
-instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
 
@@ -362,7 +362,7 @@ open scoped SchwartzMap
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
 
-instance instLaplacian : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
+instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
   laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
 
 @[simp]

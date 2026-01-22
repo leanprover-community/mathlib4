@@ -245,7 +245,7 @@ variable [CommRing R] [AddCommGroup E] [Module R E]
 open InnerProductSpace TensorProduct
 
 variable (R) in
-/-- The second derivative as a bilinear map.
+/-- The second derivative in terms `lineDerivOp` as a bilinear map.
 
 Mainly used to give an abstract definition of the Laplacian. -/
 def bilinearLineDerivTwo (f : V₁) : E →ₗ[R] E →ₗ[R] V₃ :=
@@ -254,7 +254,7 @@ def bilinearLineDerivTwo (f : V₁) : E →ₗ[R] E →ₗ[R] V₃ :=
     (by simp [lineDerivOp_left_smul, lineDerivOp_smul])
 
 variable (R) in
-/-- The second derivative as a linear map from the tensor product.
+/-- The second derivative in terms `lineDerivOp` as a linear map from the tensor product.
 
 Mainly used to give an abstract definition of the Laplacian. -/
 def tensorLineDerivTwo (f : V₁) : E ⊗[R] E →ₗ[R] V₃ :=

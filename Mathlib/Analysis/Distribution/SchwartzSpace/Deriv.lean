@@ -96,27 +96,27 @@ theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x 
 
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a
 continuous linear map on Schwartz space. -/
-instance instLineDeriv : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDeriv E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp m f := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F) f
 
 theorem lineDerivOp_apply_eq_fderiv (m : E) (f : 𝓢(E, F)) (x : E) :
     ∂_{m} f x = fderiv ℝ f x m := rfl
 
-instance instLineDerivAdd : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDerivAdd E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_add m := ((SchwartzMap.evalCLM ℝ E F m).comp (fderivCLM ℝ E F)).map_add
   lineDerivOp_left_add v w f := by
     ext x
     simp [lineDerivOp_apply_eq_fderiv]
 
-instance instLineDerivSMul : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDerivSMul 𝕜 E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_smul m := (SchwartzMap.evalCLM 𝕜 E F m ∘L fderivCLM 𝕜 E F).map_smul
 
-instance instLineDerivLeftSMul : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
+instance : LineDerivLeftSMul ℝ E 𝓢(E, F) 𝓢(E, F) where
   lineDerivOp_left_smul r y f := by
     ext x
     simp [lineDerivOp_apply_eq_fderiv]
 
-instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
+instance : ContinuousLineDeriv E 𝓢(E, F) 𝓢(E, F) where
   continuous_lineDerivOp m := (SchwartzMap.evalCLM ℝ E F m ∘L fderivCLM ℝ E F).continuous
 
 open LineDeriv
@@ -179,7 +179,7 @@ variable [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
 
 open Laplacian LineDeriv
 
-instance instLaplacian : Laplacian 𝓢(E, F) 𝓢(E, F) where
+instance : Laplacian 𝓢(E, F) 𝓢(E, F) where
   laplacian := laplacianCLM ℝ E 𝓢(E, F)
 
 theorem laplacianCLM_eq' (f : 𝓢(E, F)) : laplacianCLM ℝ E 𝓢(E, F) f = Δ f := rfl
