@@ -52,7 +52,7 @@ abbrev DivisibleHull := LocalizedModule (nonZeroDivisors ℕ) M
 namespace DivisibleHull
 
 /-- Create an element `m / s`. -/
-def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
+def mk (m : M) (s : ℕ+) : DivisibleHull M := m /ₒ (↑ⁿ s)
 
 noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
 
