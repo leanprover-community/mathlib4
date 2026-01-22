@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -13,9 +13,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 # The homotopy category of fibrant objects
 
 Let `C` be a model category. By using the left homotopy relation,
-we introduce the homotopy category `FibrantObject.π C` of fibrant objects
+we introduce the homotopy category `FibrantObject.HoCat C` of fibrant objects
 in `C`, and we define a fibrant resolution functor
-`FibrantObject.π.resolution : C ⥤ FibrantObject.π C`.
+`FibrantObject.HoCat.resolution : C ⥤ FibrantObject.HoCat C`.
 
 This file was obtained by dualizing the definitions in
 `Mathlib/AlgebraicTopology/ModelCategory/CofibrantObjectHomotopy.lean`.
@@ -49,37 +49,33 @@ instance : HomRel.IsStableUnderPostcomp (homRel C) where
 instance : HomRel.IsStableUnderPrecomp (homRel C) where
   comp_left _ _ _ h := h.precomp _
 
+lemma homRel_equivalence_of_isCofibrant_src {X Y : FibrantObject C} [IsCofibrant X.obj] :
+    Equivalence (homRel C (X := X) (Y := Y) · ·) :=
+  (LeftHomotopyRel.equivalence _ _).comap (fun (f : X ⟶ Y) ↦ f.hom)
+
 variable (C) in
 /-- The homotopy category of fibrant objects. -/
-abbrev π := Quotient (FibrantObject.homRel C)
+abbrev HoCat := Quotient (FibrantObject.homRel C)
 
 /-- The quotient functor from the category of fibrant objects to its
 homotopy category. -/
-def toπ : FibrantObject C ⥤ π C := Quotient.functor _
+def toHoCat : FibrantObject C ⥤ HoCat C := Quotient.functor _
 
-lemma toπ_obj_surjective : Function.Surjective (toπ (C := C)).obj :=
+lemma toHoCat_obj_surjective : Function.Surjective (toHoCat (C := C)).obj :=
   fun ⟨_⟩ ↦ ⟨_, rfl⟩
 
-instance : Functor.Full (toπ (C := C)) := by dsimp [toπ]; infer_instance
+instance : Functor.Full (toHoCat (C := C)) := by dsimp [toHoCat]; infer_instance
 
-lemma toπ_map_eq {X Y : FibrantObject C} {f g : X ⟶ Y}
+lemma toHoCat_map_eq {X Y : FibrantObject C} {f g : X ⟶ Y}
     (h : homRel C f g) :
-    toπ.map f = toπ.map g :=
+    toHoCat.map f = toHoCat.map g :=
   CategoryTheory.Quotient.sound _ h
 
-lemma toπ_map_eq_iff {X Y : FibrantObject C} [IsCofibrant X.1] (f g : X ⟶ Y) :
-    toπ.map f = toπ.map g ↔ homRel C f g := by
-  dsimp [toπ]
+lemma toHoCat_map_eq_iff {X Y : FibrantObject C} [IsCofibrant X.obj] (f g : X ⟶ Y) :
+    toHoCat.map f = toHoCat.map g ↔ homRel C f g := by
+  dsimp [toHoCat]
   rw [← Functor.homRel_iff, Quotient.functor_homRel_eq_compClosure_eqvGen,
-    HomRel.compClosure_eq_self]
-  refine ⟨?_, .rel _ _⟩
-  rw [homRel_iff_leftHomotopyRel]
-  intro h
-  induction h with
-  | rel _ _ h => exact h
-  | refl => exact .refl _
-  | symm _ _ _ h => exact .symm h
-  | trans _ _ _ _ _ h h' => exact .trans h h'
+    HomRel.compClosure_eq_self, homRel_equivalence_of_isCofibrant_src.eqvGen_eq]
 
 instance : (weakEquivalences (FibrantObject C)).HasQuotient (homRel C) where
   iff X Y f g h := by
@@ -87,24 +83,24 @@ instance : (weakEquivalences (FibrantObject C)).HasQuotient (homRel C) where
     obtain ⟨P, ⟨h⟩⟩ := h
     apply h.weakEquivalence_iff
 
-instance : CategoryWithWeakEquivalences (FibrantObject.π C) where
+instance : CategoryWithWeakEquivalences (FibrantObject.HoCat C) where
   weakEquivalences := (weakEquivalences _).quotient _
 
-lemma weakEquivalence_toπ_map_iff {X Y : FibrantObject C} (f : X ⟶ Y) :
-    WeakEquivalence (toπ.map f) ↔ WeakEquivalence f := by
+lemma weakEquivalence_toHoCat_map_iff {X Y : FibrantObject C} (f : X ⟶ Y) :
+    WeakEquivalence (toHoCat.map f) ↔ WeakEquivalence f := by
   simp only [weakEquivalence_iff]
   apply MorphismProperty.quotient_iff
 
 variable (C) in
-/-- The functor `FibrantObject C ⥤ π C`, considered as a localizer morphism. -/
-def toπLocalizerMorphism :
+/-- The functor `FibrantObject C ⥤ HoCat C`, considered as a localizer morphism. -/
+def toHoCatLocalizerMorphism :
     LocalizerMorphism (weakEquivalences (FibrantObject C))
-      (weakEquivalences (FibrantObject.π C)) where
-  functor := toπ
+      (weakEquivalences (FibrantObject.HoCat C)) where
+  functor := toHoCat
   map _ _ _ h := by
     simp only [← weakEquivalence_iff] at h
     simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff,
-      weakEquivalence_toπ_map_iff]
+      weakEquivalence_toHoCat_map_iff]
 
 variable (C) in
 lemma factorsThroughLocalization :
@@ -121,17 +117,16 @@ lemma factorsThroughLocalization :
     infer_instance)
   simp [← cancel_mono (L.map (homMk P.π)), ← L.map_comp]
 
-instance : (toπLocalizerMorphism C).IsLocalizedEquivalence := by
+instance : (toHoCatLocalizerMorphism C).IsLocalizedEquivalence := by
   apply (factorsThroughLocalization C).isLocalizedEquivalence
   apply MorphismProperty.eq_inverseImage_quotientFunctor
 
-instance {D : Type*} [Category* D] (L : FibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : FibrantObject.HoCat C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
-    (toπ ⋙ L).IsLocalization (weakEquivalences _) := by
-  change ((toπLocalizerMorphism C).functor ⋙ L).IsLocalization (weakEquivalences _)
-  infer_instance
+    (toHoCat ⋙ L).IsLocalization (weakEquivalences _) :=
+  inferInstanceAs (((toHoCatLocalizerMorphism C).functor ⋙ L).IsLocalization _)
 
-lemma π.exists_resolution (X : C) :
+lemma HoCat.exists_resolution (X : C) :
     ∃ (X' : C) (_ : IsFibrant X') (i : X ⟶ X'), Cofibration i ∧ WeakEquivalence i := by
   have h := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C)
     (terminal.from X)
@@ -140,81 +135,81 @@ lemma π.exists_resolution (X : C) :
   infer_instance
 
 /-- Given `X : C`, this is a fibrant object `X'` equipped with a
-trivial cofibration `X ⟶ X'` (see `π.iResolutionObj`). -/
-noncomputable def π.resolutionObj (X : C) : C :=
+trivial cofibration `X ⟶ X'` (see `HoCat.iResolutionObj`). -/
+noncomputable def HoCat.resolutionObj (X : C) : C :=
     (exists_resolution X).choose
 
-instance (X : C) : IsFibrant (π.resolutionObj X) :=
-  (π.exists_resolution X).choose_spec.choose
+instance (X : C) : IsFibrant (HoCat.resolutionObj X) :=
+  (HoCat.exists_resolution X).choose_spec.choose
 
-/-- This is the trivial cofibration `X ⟶ resolutionObj X` where
+/-- This is a trivial cofibration `X ⟶ resolutionObj X` where
 `resolutionObj X` is a choice of a fibrant resolution of `X`. -/
-noncomputable def π.iResolutionObj (X : C) : X ⟶ resolutionObj X :=
+noncomputable def HoCat.iResolutionObj (X : C) : X ⟶ resolutionObj X :=
   (exists_resolution X).choose_spec.choose_spec.choose
 
-instance (X : C) : Cofibration (π.iResolutionObj X) :=
-  (π.exists_resolution X).choose_spec.choose_spec.choose_spec.1
+instance (X : C) : Cofibration (HoCat.iResolutionObj X) :=
+  (HoCat.exists_resolution X).choose_spec.choose_spec.choose_spec.1
 
-instance (X : C) : WeakEquivalence (π.iResolutionObj X) :=
-  (π.exists_resolution X).choose_spec.choose_spec.choose_spec.2
+instance (X : C) : WeakEquivalence (HoCat.iResolutionObj X) :=
+  (HoCat.exists_resolution X).choose_spec.choose_spec.choose_spec.2
 
-lemma π.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
+lemma HoCat.exists_resolution_map {X Y : C} (f : X ⟶ Y) :
     ∃ (g : resolutionObj X ⟶ resolutionObj Y),
       iResolutionObj X ≫ g = f ≫ iResolutionObj Y := by
   have sq : CommSq (f ≫ iResolutionObj Y) (iResolutionObj X)
     (terminal.from _) (terminal.from _) := ⟨by simp⟩
   exact ⟨sq.lift, sq.fac_left⟩
 
-/-- The lifting of a morphism `f : X ⟶ Y` on fibrant resolutions.
-(This is functorial only up to homotopy, see `π.resolution`.) -/
-noncomputable def π.resolutionMap {X Y : C} (f : X ⟶ Y) :
+/-- A lifting of a morphism `f : X ⟶ Y` on fibrant resolutions.
+(This is functorial only up to homotopy, see `HoCat.resolution`.) -/
+noncomputable def HoCat.resolutionMap {X Y : C} (f : X ⟶ Y) :
     resolutionObj X ⟶ resolutionObj Y :=
   (exists_resolution_map f).choose
 
 @[reassoc (attr := simp)]
-lemma π.resolutionMap_fac {X Y : C} (f : X ⟶ Y) :
+lemma HoCat.resolutionMap_fac {X Y : C} (f : X ⟶ Y) :
     iResolutionObj X ≫ resolutionMap f =
       f ≫ iResolutionObj Y :=
   (exists_resolution_map f).choose_spec
 
 @[simp]
-lemma π.weakEquivalence_resolutionMap_iff {X Y : C} (f : X ⟶ Y) :
+lemma HoCat.weakEquivalence_resolutionMap_iff {X Y : C} (f : X ⟶ Y) :
     WeakEquivalence (resolutionMap f) ↔ WeakEquivalence f := by
   rw [← weakEquivalence_precomp_iff (iResolutionObj X),
-    π.resolutionMap_fac, weakEquivalence_postcomp_iff]
+    HoCat.resolutionMap_fac, weakEquivalence_postcomp_iff]
 
-lemma π.resolutionObj_hom_ext {X Y : C} [IsFibrant Y] {f g : resolutionObj X ⟶ Y}
+lemma HoCat.resolutionObj_hom_ext {X Y : C} [IsFibrant Y] {f g : resolutionObj X ⟶ Y}
     (h : RightHomotopyRel (iResolutionObj X ≫ f) (iResolutionObj X ≫ g)) :
-    toπ.map (homMk f) = toπ.map (homMk g) := by
-  apply toπ_map_eq
+    toHoCat.map (homMk f) = toHoCat.map (homMk g) := by
+  apply toHoCat_map_eq
   rw [homRel_iff_leftHomotopyRel]
   apply RightHomotopyRel.leftHomotopyRel
   rw [← RightHomotopyClass.mk_eq_mk_iff] at h ⊢
   exact (RightHomotopyClass.precomp_bijective_of_cofibration_of_weakEquivalence
     (f := iResolutionObj X) (Z := Y)).1 h
 
-/-- The fibrant resolution functor from a model category to the homotopy category
+/-- A fibrant resolution functor from a model category to the homotopy category
 of fibrant objects. -/
-noncomputable def π.resolution : C ⥤ FibrantObject.π C where
-  obj X := toπ.obj (mk (resolutionObj X))
-  map f := toπ.map (homMk (resolutionMap f))
+noncomputable def HoCat.resolution : C ⥤ FibrantObject.HoCat C where
+  obj X := toHoCat.obj (mk (resolutionObj X))
+  map f := toHoCat.map (homMk (resolutionMap f))
   map_id X := by
-    rw [← toπ.map_id]
+    rw [← toHoCat.map_id]
     exact resolutionObj_hom_ext (by simpa using .refl _)
   map_comp {X₁ X₂ X₃} f g := by
-    rw [← toπ.map_comp]
+    rw [← toHoCat.map_comp]
     exact resolutionObj_hom_ext (by simpa using .refl _)
 
 variable (C) in
-/-- The fibration resolution functor, as a localizer morphism. -/
+/-- The fibrant resolution functor `HoCat.resolution`, as a localizer morphism. -/
 @[simps]
-noncomputable def π.localizerMorphismResolution :
+noncomputable def HoCat.localizerMorphismResolution :
     LocalizerMorphism (weakEquivalences C)
-      (weakEquivalences (FibrantObject.π C)) where
-  functor := π.resolution
+      (weakEquivalences (FibrantObject.HoCat C)) where
+  functor := HoCat.resolution
   map _ _ _ h := by
-    simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff, π.resolution,
-      weakEquivalence_toπ_map_iff, weakEquivalence_resolutionMap_iff,
+    simpa only [MorphismProperty.inverseImage_iff, ← weakEquivalence_iff, HoCat.resolution,
+      weakEquivalence_toHoCat_map_iff, weakEquivalence_resolutionMap_iff,
       weakEquivalence_homMk_iff] using h
 
 end FibrantObject
