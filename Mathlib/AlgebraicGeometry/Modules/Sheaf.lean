@@ -52,12 +52,12 @@ instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules
 section Functor
 
 variable (X) in
-/-- The forgetful functor from `𝒪ₓ`-modules to presheaf of modules.
-This is mostly useful to transport results from (pre)sheaf of modules to `𝒪ₓ`-modules and
+/-- The forgetful functor from `𝒪ₓ`-modules to presheaves of modules.
+This is mostly useful to transport results from (pre)sheaves of modules to `𝒪ₓ`-modules and
 usually shouldn't be used directly when working with actual `𝒪ₓ`-modules. -/
 def toPresheafOfModules : X.Modules ⥤ X.PresheafOfModules := SheafOfModules.forget _
 
-/-- The forgetful functor from `𝒪ₓ`-modules to presheaf of modules is fully faithful. -/
+/-- The forgetful functor from `𝒪ₓ`-modules to presheaves of modules is fully faithful. -/
 def fullyFaithfulToPresheafOfModules : (Modules.toPresheafOfModules X).FullyFaithful :=
   SheafOfModules.fullyFaithfulForget _
 
@@ -67,7 +67,7 @@ instance : (toPresheafOfModules X).IsRightAdjoint :=
   (PresheafOfModules.sheafificationAdjunction (𝟙 X.ringCatSheaf.val)).isRightAdjoint
 
 variable (X) in
-/-- The forgetful functor from `𝒪ₓ`-modules to presheaf of abelain groups. -/
+/-- The forgetful functor from `𝒪ₓ`-modules to presheaves of abelian groups. -/
 noncomputable def toPresheaf : X.Modules ⥤ TopCat.Presheaf Ab X :=
   toPresheafOfModules X ⋙ PresheafOfModules.toPresheaf _
 

@@ -60,7 +60,7 @@ noncomputable def pushforwardId :
     pushforward.{v} (S := R) (F := 𝟭 _) (𝟙 R) ≅ 𝟭 _ :=
   Iso.refl _
 
-/-- Pushforwards along equal morphisms of sheaves of rings is isomorphic. -/
+/-- Pushforwards along equal morphisms of sheaves of rings are isomorphic. -/
 noncomputable
 def pushforwardCongr {φ ψ : S ⟶ (F.sheafPushforwardContinuous RingCat.{u} J K).obj R} (e : φ = ψ) :
     pushforward.{v} φ ≅ pushforward.{v} ψ :=
@@ -215,7 +215,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   (H₂ : φ.val ≫ F.op.whiskerLeft ψ.val ≫
     Functor.whiskerRight (NatTrans.op adj.unit) S.val = 𝟙 S.val)
 
-/-- If `F ⊣ G`, then the pushforward along `F` and `G` are also adjoint. -/
+/-- If `F ⊣ G`, then the pushforwards along `F` and `G` are also adjoint. -/
 noncomputable
 def pushforwardPushforwardAdj : pushforward.{v} φ ⊣ pushforward.{v} ψ where
   unit :=
