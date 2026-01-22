@@ -128,7 +128,7 @@ theorem eq_C_iff (f : RatFunc K) :
   rw [Polynomial.natDegree_eq_zero, Polynomial.natDegree_eq_zero]
   rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
   use a / b
-  rw [←num_div_denom f, ←ha, ←hb, algebraMap_C, algebraMap_C, map_div₀]
+  rw [← num_div_denom f, ← ha, ← hb, algebraMap_C, algebraMap_C, map_div₀]
 
 variable {L : Type u} [Field L]
 
