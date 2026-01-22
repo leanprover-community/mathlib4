@@ -22,7 +22,7 @@ public section
 
 open Order Ordinal Set
 
-universe u
+universe u v
 
 namespace Cardinal
 
@@ -125,3 +125,73 @@ theorem le_range_of_union_finset_eq_univ {α β : Type*} [Infinite β] (f : α �
   le_range_of_union_finset_eq_univ
 
 end Cardinal
+
+open Cardinal
+
+/-- **Δ-system lemma**: every uncountable family of finite sets must contain an uncountable
+Δ-system, i.e. an uncountable subfamily that share the same pairwise intersection. -/
+theorem Uncountable.exists_uncountable_pairwise_inter_eq {α : Type u} {ι : Type v} [DecidableEq α]
+    [Uncountable ι] (f : ι → Finset α) :
+    ∃ (s : Set ι) (t : Finset α), Uncountable s ∧ s.Pairwise (f · ∩ f · = t) := by
+  suffices ∀ (s : Set ι) (n : ℕ), (∀ i ∈ s, (f i).card = n) → Uncountable s →
+      ∃ s' ⊆ s, ∃ (t : Finset α), Uncountable s' ∧ s'.Pairwise (f · ∩ f · = t) by
+    rcases exists_uncountable_fiber (fun i => ULift.up (f i).card) (by simp) (by infer_instance)
+      with ⟨⟨n⟩, h⟩
+    rcases this _ n (by grind) h with ⟨s', -, t, hs, ht⟩
+    exact ⟨s', t, hs, ht⟩
+  intro s n hn hs
+  induction n generalizing f s with
+  | zero =>
+    exact ⟨s, subset_rfl, ∅, hs, fun i hi j hj hij => by grind⟩
+  | succ n ih =>
+    by_cases h : ∀ a, Countable {i ∈ s | a ∈ f i}
+    · let g : Ordinal.{v} → ι := WellFoundedLT.fix fun j ih =>
+        Classical.epsilon fun i => i ∈ s ∧ ∀ k (hk : k < j), f i ∩ f (ih k hk) = ∅
+      have hg : ∀ j < ω₁, g j ∈ s ∧ ∀ k < j, f (g j) ∩ f (g k) = ∅ := by
+        intro j hj
+        have hg : g j = Classical.epsilon fun i => i ∈ s ∧ ∀ k (hk : k < j), f i ∩ f (g k) = ∅ := by
+          simp only [g]
+          rw [WellFoundedLT.fix_eq]
+        suffices {i ∈ s | ∀ k (hk : k < j), f i ∩ f (g k) = ∅}.Nonempty by
+          simp only [nonempty_def, mem_setOf_eq] at this
+          apply Classical.epsilon_spec at this
+          rw [← hg] at this
+          exact this
+        apply Uncountable.nonempty
+        rw [setOf_and, setOf_mem_eq, ← diff_compl, ← diff_self_inter]
+        apply hs.to_set.diff
+        simp_rw [compl_setOf, not_forall, setOf_exists, ← mem_Iio, inter_iUnion₂]
+        apply Countable.biUnion
+        · rwa [← le_aleph0_iff_set_countable, mk_Iio_ordinal, lift_le_aleph0, ← lt_succ_iff,
+            succ_aleph0, ← lt_ord, ord_aleph]
+        · intro a ha
+          simp_rw [Finset.eq_empty_iff_forall_notMem, Finset.mem_inter, not_and', not_forall,
+            ← SetLike.mem_coe, setOf_exists, not_not, inter_iUnion₂]
+          apply Countable.biUnion
+          · apply Finite.countable
+            simp
+          · intro i hi
+            simp_rw [SetLike.mem_coe, inter_setOf_eq_sep]
+            exact h i
+      have hg' : InjOn g (Iio ω₁) := by
+        intro j hj k hk hjk
+        by_contra hjk'
+        wlog hjk'' : k < j generalizing j k
+        · exact this hk hj hjk.symm (ne_comm.1 hjk') (lt_of_le_of_ne (le_of_not_gt hjk'') hjk')
+        have := (hg j hj).2 k hjk''
+        simp only [← hjk, Finset.inter_self] at this
+        simpa [this] using hn _ (hg j hj).1
+      refine ⟨g '' Iio ω₁, by grind, ∅, .to_subtype (.image ?_ hg'), Pairwise.image ?_⟩
+      · rw [← uncountable_coe_iff, ← aleph0_lt_mk_iff, mk_Iio_ordinal, aleph0_lt_lift, card_omega]
+        exact aleph0_lt_aleph_one
+      intro j hj k hk hjk
+      simp only [Function.onFun_apply]
+      wlog hjk' : k < j generalizing j k
+      · rw [Finset.inter_comm]
+        exact this hk hj hjk.symm (lt_of_le_of_ne (le_of_not_gt hjk') hjk)
+      exact (hg j hj).2 k hjk'
+    · simp only [not_forall, not_countable_iff] at h
+      rcases h with ⟨a, ha⟩
+      rcases ih (fun i => f i \ {a}) _ (by grind) ha with ⟨s', hs', t, hs'', ht⟩
+      exact ⟨s', hs'.trans (sep_subset _ _), t ∪ {a}, hs'', fun i hi j hj hij => by
+        grind [Set.Pairwise]⟩
