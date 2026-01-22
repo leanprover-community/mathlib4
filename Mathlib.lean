@@ -5868,6 +5868,7 @@ public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Adjoin.Field
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Adjoin.PowerBasis
+public import Mathlib.RingTheory.Adjoin.Singleton
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.AlgebraTower
@@ -6057,6 +6058,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Maximal
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Ideal.NatInt
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
@@ -6076,6 +6078,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.RingTheory.IdealFilter.Basic
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
@@ -6712,6 +6715,7 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
@@ -7399,6 +7403,7 @@ public import Mathlib.Topology.Sets.Compacts
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sets.Order
+public import Mathlib.Topology.Sets.VietorisTopology
 public import Mathlib.Topology.Sheaves.Alexandrov
 public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.Topology.Sheaves.Forget
