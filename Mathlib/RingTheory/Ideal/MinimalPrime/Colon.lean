@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 
-# Minimal primes of a colon ideal
+# Minimal primes over a colon ideal
 
 We prove that a minimal prime over a colon ideal in a Noetherian ring is itself a colon ideal.
 
