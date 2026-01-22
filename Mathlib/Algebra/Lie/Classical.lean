@@ -151,8 +151,10 @@ theorem sl_non_abelian [Fintype n] [Nontrivial R] (h : 1 < Fintype.card n) :
     rw [← sub_eq_zero, ← sl_bracket, c.trivial, ZeroMemClass.coe_zero]
   simpa [A, B, Matrix.single, Matrix.mul_apply, hij.symm] using congr_fun (congr_fun c' i) i
 
-theorem finrank_sl (R : Type*) [Fintype n] [Nonempty n] [Field R] :
+theorem finrank_sl (R : Type*) [Fintype n] [Field R] :
     Module.finrank R (sl n R) = Fintype.card n ^ 2 - 1 := by
+  cases isEmpty_or_nonempty n
+  · simp [Module.finrank_zero_of_subsingleton]
   have := (Matrix.traceLinearMap n R R).range_eq_top_of_surjective Matrix.trace_surjective ▸
     LinearMap.finrank_range_add_finrank_ker _
   grind [Module.finrank_matrix, Module.finrank_self, finrank_top]
