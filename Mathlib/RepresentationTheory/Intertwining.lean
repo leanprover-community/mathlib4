@@ -87,30 +87,25 @@ def coeFnAddMonoidHom : IntertwiningMap ρ σ →+ V → W where
 instance : Module A (IntertwiningMap ρ σ) :=
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
-variable {ρ σ} in
-/-- An intertwining map considered an a linear map of corresponding modules over the group
-  algebra. -/
-def asLinearMap (f : IntertwiningMap ρ σ) : ρ.asModule →ₗ[A[G]] σ.asModule where
-  toFun := f.toLinearMap
-  map_add' := f.toLinearMap.map_add'
-  map_smul' m v := by
-    induction m using MonoidAlgebra.induction_linear with
-      | zero => simp [f.toLinearMap.map_zero]
-      | add x y hx hy => simp [add_smul, hx, hy]
-      | single g a => simp [f.isIntertwining]; rfl
-
-variable {ρ σ} in
-/-- A linear map between two modules over a group algebra considered as an intertwining map
-  between th corresponding representations. -/
-def ofLinearMap (f : ρ.asModule →ₗ[A[G]] σ.asModule) : IntertwiningMap ρ σ where
-  toLinearMap := { f with
-    map_smul' a v := by simp }
-  isIntertwining g v := by
-    simp only [LinearMap.coe_mk]
-    have h := f.map_smul' (MonoidAlgebra.single g 1) v
-    simp only [Representation.single_smul, one_smul, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-      RingHom.id_apply] at h
-    exact h
+/-- An intertwining map is the same thing as a linear map over the group ring. -/
+def equivLinearMapAsModule :
+    IntertwiningMap ρ σ ≃ₗ[A] ρ.asModule →ₗ[A[G]] σ.asModule where
+  toFun f :=
+    { toFun := f.toLinearMap
+      map_add' := f.toLinearMap.map_add'
+      map_smul' m v := by
+        induction m using MonoidAlgebra.induction_linear with
+          | zero => simp [f.toLinearMap.map_zero]
+          | add x y hx hy => simp [add_smul, map_add, hx, hy]
+          | single g a => simp [f.isIntertwining]; rfl}
+  invFun f :=
+    { toLinearMap := { f with
+        map_smul' a v := by simp }
+      isIntertwining g v := by simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
+  map_add' g₁ g₂ := by ext; simp
+  map_smul' t g := by ext; simp
+  left_inv f := rfl
+  right_inv f := rfl
 
 /-- The identity map, considered as an intertwining map from a representation to itself. -/
 noncomputable def IntertwiningMap.id : IntertwiningMap ρ ρ := ofLinearMap LinearMap.id
