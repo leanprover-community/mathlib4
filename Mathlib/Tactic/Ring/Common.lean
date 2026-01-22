@@ -252,7 +252,7 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   compare (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
   isOne (sα) : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 1)
   -- cast (sα) : ∀ (_ : Q($α)), Σ b, baseType b
-  one (sα) : baseType q((nat_lit 1).rawCast)
+  one (sα) : Result baseType q((nat_lit 1).rawCast)
 
 
 
@@ -310,8 +310,9 @@ def ExBase.toProd
     {a : Q($α)} {b : Q(ℕ)}
     (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
-      ⟨_, .mul va vb (.const  (RingCompute.one sα (baseType := bt))),
-        (q(Eq.refl ($a ^ $b * (nat_lit 1).rawCast))) ⟩
+      let ⟨_, one, pf⟩ := RingCompute.one sα (baseType := bt)
+      ⟨_, .mul va vb (.const  (one)),
+        (q($pf ▸ Eq.refl ($a ^ $b * (nat_lit 1).rawCast))) ⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
@@ -882,7 +883,8 @@ def extractCoeff [RingCompute btℕ sℕ] {a : Q(ℕ)} (va : ExProdNat a) : Extr
     have k : Q(ℕ) := a.appArg!
     have : $a =Q Nat.rawCast $k := ⟨⟩
     assumeInstancesCommute
-    return ⟨k, _, .const (RingCompute.one sℕ (u := 0)), q(coeff_one $k)⟩
+    let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+    return ⟨k, _, .const (one), q($pf ▸ coeff_one $k)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
@@ -955,12 +957,13 @@ def evalPow [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt s�
     MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
   match vb with
   | .zero =>
-    let test : ExSum bt sα _ := (ExProd.const (RingCompute.one sα)).toSum
+    let ⟨_, one, pf⟩ := RingCompute.one sα
+    let test : ExSum bt sα _ := (ExProd.const (one)).toSum
     assumeInstancesCommute
     return ⟨_,
       test
       ,
-      q(pow_zero $a)⟩ --TODO: Why doesn't assumeInstancesCommute work here?
+      q($pf ▸ pow_zero $a)⟩ --TODO: Why doesn't assumeInstancesCommute work here?
   | .add vb₁ vb₂ =>
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sα va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
@@ -1001,11 +1004,12 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
 --     IsRat a n d → a = Rat.rawCast n d + 0
 --   | ⟨_, e⟩ => by simp [e, div_eq_mul_inv]
 
-theorem toProd_pf (p : (a : R) = a') :
-    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast := by simp [*]
-theorem atom_pf (a : R) : a = a ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp
-theorem atom_pf' (p : (a : R) = a') :
-    a = a' ^ (nat_lit 1).rawCast * (nat_lit 1).rawCast + 0 := by simp [*]
+theorem toProd_pf (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
+    a = a' ^ e * (nat_lit 1).rawCast := by simp [← hone, *]
+theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
+    a = a ^ e * (nat_lit 1).rawCast + 0 := by simp [← hone]
+theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
+    a = a' ^ e * (nat_lit 1).rawCast + 0 := by simp [← hone, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
@@ -1016,15 +1020,16 @@ def evalAtom [RingCompute btℕ sℕ] (e : Q($α)) : AtomM (Result (ExSum bt sα
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
   let (i, ⟨a', _⟩) ← addAtomQ e'
-  let one := ExProdNat.const (RingCompute.one sℕ (u := 0))
+  let ⟨_, one, pf_one⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+  let one := ExProdNat.const (one)
   let ⟨_, vb, pb⟩ : Result (ExProd bt sα) _ := (ExBase.atom i (e := a')).toProd sα one
   let vc := vb.toSum
   pure ⟨_, vc, match r.proof? with
   | none =>
     have : $e =Q $e' := ⟨⟩
-    q($pb ▸ atom_pf $e)
+    q($pb ▸ atom_pf $e $pf_one)
   | some (p : Q($e = $a')) =>
-    q($pb ▸ atom_pf' $p)⟩
+    q($pb ▸ atom_pf' $p $pf_one)⟩
 
 theorem inv_mul {R} [Semifield R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -1062,9 +1067,10 @@ def ExProd.evalInv [RingCompute btℕ sℕ] {a : Q($α)} (czα : Option Q(CharZe
     | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>
         let ⟨_, vc, pc⟩ ← evalInvAtom sα dsα a
-        let ⟨_, vc', pc'⟩ := vc.toProd _ (ExProdNat.const (RingCompute.one sℕ (u := 0)))
+        let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+        let ⟨_, vc', pc'⟩ := vc.toProd _ (ExProdNat.const (one))
         -- TODO : instance issues
-        pure ⟨_, vc', q($pc' ▸ toProd_pf $pc)⟩
+        pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
     let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dsα a₁
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
@@ -1087,10 +1093,11 @@ def ExSum.evalInv [RingCompute btℕ sℕ] {a : Q($α)} (czα : Option Q(CharZer
     pure ⟨_, vb.toSum, (q(inv_single $pb) : Expr)⟩
   | va => do
     let ⟨_, vb, pb⟩ ← evalInvAtom sα dsα a
-    let ⟨_', vb', pb'⟩ := vb.toProd _ (ExProdNat.const (RingCompute.one sℕ (u := 0)))
+    let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+    let ⟨_', vb', pb'⟩ := vb.toProd _ (ExProdNat.const (one))
     assumeInstancesCommute
     -- FIXME: Instance issue
-    pure ⟨_, vb'.toSum, q($pb' ▸ atom_pf' $pb)⟩
+    pure ⟨_, vb'.toSum, q($pb' ▸ atom_pf' $pb $pf)⟩
 
 end
 

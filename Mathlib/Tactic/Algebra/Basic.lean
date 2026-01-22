@@ -794,12 +794,16 @@ def mkCache {u : Level} {A : Q(Type u)} (sA : Q(CommSemiring $A)) : MetaM (Cache
 --   | _, _, _ =>
 --     els
 
-open Ring
+open Mathlib.Tactic.Ring hiding ExSum ExProd ExBase
 
 section BaseType
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
+
+
+
+
 
 -- structure BaseType (a : Q($A)) where
 --   r : Q($R)
@@ -809,9 +813,56 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 inductive BaseType : (a : Q($A)) → Type
   | mk (r : Q($R)) (_ : Ring.ExSum q($sR) r) : BaseType q(algebraMap $R $A $r)
 
-def Algebra.ExBase := Common.ExBase (BaseType sAlg) sA
-def Algebra.ExProd := Common.ExProd (BaseType sAlg) sA
-def Algebra.ExSum := Common.ExSum (BaseType sAlg) sA
+
+
+@[expose]
+def ExBase := Common.ExBase (BaseType sAlg) sA
+@[expose]
+def ExProd := Common.ExProd (BaseType sAlg) sA
+@[expose]
+def ExSum := Common.ExSum (BaseType sAlg) sA
+
+
+
+variable {a} in
+/-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
+def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
+    NormNum.Result a → Option (Common.Result (ExSum sAlg) q($a))
+  | .isNat _ (.lit (.natVal 0)) p => do
+    assumeInstancesCommute
+    pure ⟨_, .zero, q(isNat_zero_eq $p)⟩
+  | .isNat _ lit p => do
+    assumeInstancesCommute
+    let ⟨r, vr⟩ := Ring.ExProd.mkNat sR lit.natLit!
+    -- Lift the literal to the base ring as a scalar multiple of 1
+    pure ⟨_, (Common.ExProd.const ⟨_, (vr.toSum)⟩).toSum,
+      (q(sorry))⟩
+  | .isNegNat rA lit p => do
+    let some crR := cR.rα | none
+    let some crA := cA.rα | none
+    -- let some rR := cR.rα | none
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNat q($sR) q(inferInstance) lit.natLit!
+    have : $r =Q Int.rawCast (Int.negOfNat $lit) := ⟨⟩
+    assumeInstancesCommute
+    pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, (q(isInt_negOfNat_eq $p))⟩
+  | .isNNRat rA q n d p => do
+    -- TODO: use semifields here.
+    let some dsR := cR.dsα | none
+    let some dsA := cA.dsα | none
+    assumeInstancesCommute
+    let ⟨r, vr⟩ := Ring.ExProd.mkNNRat q($sR) q(inferInstance) q n d q(IsNNRat.den_nz (α := $A) $p)
+    have : $r =Q (NNRat.rawCast $n $d : $R) := ⟨⟩
+    pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, q(isNNRat_eq_rawCast (a := $a) $p)⟩
+  | .isNegNNRat dA q n d p => do
+    let some fR := cR.field | none
+    let some fA := cA.field | none
+    assumeInstancesCommute
+    let ⟨r, vr⟩ := Ring.ExProd.mkNegNNRat q($sR) q(inferInstance) q n d q(IsRat.den_nz $p)
+    have : $r =Q (Rat.rawCast (.negOfNat $n) $d : $R) := ⟨⟩
+    pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, (q(isRat_eq_rawCast (a := $a) $p))⟩
+  | _ => none
+
+
 
 /-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
 into casts. -/
@@ -940,7 +991,7 @@ instance : Common.RingCompute (BaseType sAlg) sA where
   evalAdd a b za zb := do
     let ⟨r, vr⟩ := za
     let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalAdd sR vr vs
+    let ⟨t, vt, pt⟩ ← Common.evalAdd q($sR) vr vs
     match vt with
     | .zero =>
       -- TODO: Why doesn't the match substitute t?
@@ -951,19 +1002,24 @@ instance : Common.RingCompute (BaseType sAlg) sA where
   evalMul a b za zb := do
     let ⟨r, vr⟩ := za
     let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalMul sR vr vs
+    let ⟨t, vt, pt⟩ ← Common.evalMul q($sR) vr vs
     return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
   evalCast v R' sR' _ r' _ := do
     let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
     -- TODO: use existing cache here.
-    let cR ← mkCache sR
+    let cR ← mkCache q($sR)
     let ⟨_r'', vr, pr⟩ ← Common.eval (bt := Ring.baseType q($sR)) q($sR) cR.toCache q($r)
     return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
   evalNeg a rR za := do
     let ⟨r, vr⟩ := za
-    let ⟨t, vt, pt⟩ ← Common.evalNeg sR rR vr
-    return ⟨_, .mk _ vt, q(sorry)⟩
-  -- TODO: Regression? we can only handle literal exponents in the coefficient ring.
+    -- TODO: use existing cache
+    let cR ← mkCache q($sR)
+    match cR.rα with
+    | some rR =>
+      let ⟨t, vt, pt⟩ ← Common.evalNeg q($sR) q($rR) vr
+      return ⟨_, .mk _ vt, q(sorry)⟩
+    | none => failure
+  -- TODO: Regression: we can only handle literal exponents in the coefficient ring.
   evalPow a za lit := do
     let ⟨r, vr⟩ := za
     let ⟨s, vs, ps⟩ ← Common.evalPowNat sR vr lit
@@ -972,11 +1028,23 @@ instance : Common.RingCompute (BaseType sAlg) sA where
     let ⟨r, vr⟩ := za
     let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR fR czR vr
     return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
-  derive := sorry
-  eq := sorry
-  compare := sorry
-  isOne := sorry
-  one := sorry
+  derive x := do
+    -- TODO: use existing cache
+    let cR ← mkCache sR
+    let cA ← mkCache sA
+    return ← evalCast sAlg cR cA (← derive x)
+  eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq vy
+  compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp vy
+  -- TODO: implement or redesign evalPow
+  isOne := fun ⟨x, vx⟩ ↦
+    match vx with
+    | .add (.const c) .zero =>
+      match Common.RingCompute.isOne sR c with
+      | some pf => some q(sorry)
+      | none => none
+    | .zero => none
+    | _ => none
+  one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
 
 
 end BaseType
@@ -1148,6 +1216,7 @@ where
       let ⟨a, va, pa⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₁
       let ⟨b, vb, pb⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₂
       unless va.eq vb do
+        let _ := va.eq vb
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
       let pb : Q($e₂ = $a) := pb

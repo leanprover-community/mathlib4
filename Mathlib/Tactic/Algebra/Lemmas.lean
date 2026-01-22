@@ -18,8 +18,56 @@ open Mathlib.Meta.NormNum
 
 namespace Mathlib.Tactic.Algebra
 
+section ring
+
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+
+/- evalCast -/
+theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
+    a = algebraMap R A (Int.rawCast (Int.negOfNat lit) + 0 : R) + 0 := by
+  simp [h.out]
+
+
+-- /- eval -/
+-- theorem eval_neg {a a' b : A} (ha : a = a') (hb : -a' = b) :
+--     -a = b := by
+--   grind
+
+-- /- eval -/
+-- theorem eval_sub {a b a' b' c : A} (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
+--     a - b = c := by
+--   grind
+
+end ring
+
+section semifield
+
+variable {R A : Type*} [Semifield R] [Semifield A] [Algebra R A]
+
+/- evalCast -/
+theorem isNNRat_eq_rawCast {a : A} {n d : ℕ} (h : IsNNRat a n d) :
+    a = algebraMap R A (NNRat.rawCast n d + 0 : R) + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_nnrat h]
+
+end semifield
+
+section field
+
+variable {R A : Type*} [Field R] [Field A] [Algebra R A]
+
+/- evalCast -/
+theorem isRat_eq_rawCast {a : A} {n d : ℕ} (h : IsRat a (.negOfNat n) d) :
+    a = algebraMap R A (Rat.rawCast (.negOfNat n) d + 0 : R) + 0 := by
+  simp [Mathlib.Tactic.Ring.cast_rat h]
+
+end field
+
 variable {R A : Type*} [sR : CommSemiring R] [sA : CommSemiring A] [sAlg : Algebra R A]
 
+/- evalCast -/
+theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
+  have := h.out
+  simp [this]
 
 section cleanup
 

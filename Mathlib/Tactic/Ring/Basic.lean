@@ -114,8 +114,11 @@ def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
+@[reducible]
 def ExBase := Common.ExBase (Ring.baseType sα) sα
+@[reducible]
 def ExProd := Common.ExProd (Ring.baseType sα) sα
+@[reducible]
 def ExSum := Common.ExSum (Ring.baseType sα) sα
 
 
@@ -472,7 +475,7 @@ def ringCompute :
     else
       failure
   one :=
-    ⟨1, none⟩
+    ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
 
 
 instance : Common.RingCompute (baseType sα) sα := ringCompute sα
