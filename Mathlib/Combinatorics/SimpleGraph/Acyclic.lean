@@ -514,7 +514,7 @@ open Finset
 
 variable {V : Type*} [Fintype V]
 
-/- The set of all pendent vertices (leaves) in a graph. -/
+/-- The set of all pendent vertices (leaves) in a graph. -/
 def pendentVertices (G : SimpleGraph V) [DecidableRel G.Adj] : Finset V :=
   univ.filter (fun v => G.degree v = 1)
 
@@ -527,7 +527,7 @@ lemma Connected.one_le_degree (G : SimpleGraph V) [DecidableRel G.Adj]
   rw [Nat.one_le_iff_ne_zero]
   exact ne_of_gt hdegpos
 
-/- A tree of order n ≥ 2 has at least two pendent vertices (leaves). -/
+/-- A tree of order n ≥ 2 has at least two pendent vertices (leaves). -/
 theorem tree_has_at_least_two_pendent_vertices (G : SimpleGraph V) [DecidableRel G.Adj]
     (h_tree : G.IsTree) (h_order : 2 ≤ Fintype.card V) :
     2 ≤ (G.pendentVertices).card := by
@@ -576,6 +576,7 @@ theorem tree_has_at_least_two_pendent_vertices (G : SimpleGraph V) [DecidableRel
     rw [← card_union_of_disjoint h_disj, h_partition, card_univ]
   have h_lower_bound : 2 * n - 1 ≤ ∑ v, G.degree v := by lia
   omega
+
 end
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
