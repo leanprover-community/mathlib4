@@ -83,6 +83,16 @@ Use the `(attr := ...)` syntax to apply attributes to both the original and the 
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
 
+The `reassoc` attribute in category theory interacts with `to_dual` in a unique way, because it
+generates `_assoc` theorems that aren't dual to any other theorem. To deal with this, the `reassoc`
+attribute will add a `to_dual none` tag to an `_assoc` theorem if the original theorem was
+already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
+
+The `reassoc` attribute in category theory interacts with `to_dual` in a unique way, because it
+generates `_assoc` theorems that aren't dual to any other theorem. To deal with this, the `reassoc`
+attribute will add a `to_dual none` tag to an `_assoc` theorem if the original theorem was
+already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
+
 Some definitions are dual to something other than the dual of their value. Some examples:
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.

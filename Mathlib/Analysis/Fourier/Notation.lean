@@ -138,6 +138,11 @@ def fourierₗ : E →ₗ[R] F where
 @[simp]
 lemma fourierₗ_apply (f : E) : fourierₗ R E f = 𝓕 f := rfl
 
+include R in
+variable (R) in
+lemma fourier_zero : 𝓕 (0 : E) = 0 :=
+  (fourierₗ R E).map_zero
+
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourier E F]
 
 variable (R E) in
@@ -164,6 +169,11 @@ def fourierInvₗ : E →ₗ[R] F where
 
 @[simp]
 lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E f = 𝓕⁻ f := rfl
+
+include R in
+variable (R) in
+lemma fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
+  (fourierInvₗ R E).map_zero
 
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourierInv E F]
 
