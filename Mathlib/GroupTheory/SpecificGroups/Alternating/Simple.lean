@@ -57,8 +57,8 @@ namespace Equiv.Perm
 
 variable {α : Type*} [DecidableEq α] [Finite α]
 
-theorem conj_smul_range_ofSubtype {n : ℕ}
-    (g : Perm α) (s : n.Combination α)
+theorem conj_smul_range_ofSubtype
+    (g : Perm α) (s : Finset α)
     [DecidablePred fun x ↦ x ∈ g • s] [DecidablePred fun x ↦ x ∈ s] :
     (ofSubtype : Perm { x // x ∈ ↑(g • s) } →*  Perm α).range
       = MulAut.conj g • (ofSubtype : Perm {x // x ∈ s} →* Perm α).range := by
@@ -66,15 +66,14 @@ theorem conj_smul_range_ofSubtype {n : ℕ}
   ext k
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_range_ofSubtype_iff, SetLike.setOf_mem_eq, MulAut.smul_def, ← map_inv]
-  rw [← Nat.Combination.coe_coe, Nat.Combination.coe_smul,
-      Finset.coe_smul_finset, Nat.Combination.coe_coe]
+  rw [Finset.coe_smul_finset]
   rw [MulAut.conj_apply, Equiv.Perm.support_conj]
   simp [← Set.image_smul, Perm.smul_def]
 
-variable [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
-
 /-- The Iwasawa structure of `Perm α` acting on `Nat.Combination α 2`. -/
-def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
+def iwasawaStructure_two [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
+:
+    IwasawaStructure (Perm α) (Nat.Combination α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
     suffices IsCyclic (Perm s) by
@@ -82,7 +81,7 @@ def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) whe
       apply MonoidHom.range_isMulCommutative
     apply isCyclic_of_prime_card (p := 2)
     rw [Nat.card_perm, Nat.card_eq_finsetCard, s.prop, Nat.factorial_two]
-  is_conj g s := conj_smul_range_ofSubtype g s
+  is_conj g s := by convert conj_smul_range_ofSubtype g s
   is_generator := by
     rw [eq_top_iff, ← Equiv.Perm.closure_isSwap, Subgroup.closure_le]
     intro g hg
@@ -134,36 +133,36 @@ namespace alternatingGroup
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
--- The `convert` is bizarre
-def ofSubtype {p : ℕ} (s : Nat.Combination α p) :
+def ofSubtype (s : Finset α) : -- {p : ℕ} (s : Nat.Combination α p) :
     alternatingGroup s →* alternatingGroup α where
   toFun x := ⟨Perm.ofSubtype (x : Perm s), by
-    have := mem_alternatingGroup.mp x.prop
     rw [mem_alternatingGroup, sign_ofSubtype]
-    convert this⟩
+    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
+    convert mem_alternatingGroup.mp x.prop⟩
   map_mul' := by simp
   map_one' := by simp
 
-theorem map_ofSubtype {p : ℕ} (s : Nat.Combination α p) :
-    (alternatingGroup ↥(s : Finset α)).map (Perm.ofSubtype : Perm (s : Finset α) →* Perm α) =
-      (Perm.ofSubtype : Perm (s : Finset α) →* Perm α).range ⊓ (alternatingGroup α) := by
+theorem map_ofSubtype (s : Finset α) :
+    (alternatingGroup s).map (Perm.ofSubtype : Perm s →* Perm α) =
+      (Perm.ofSubtype : Perm s →* Perm α).range ⊓ (alternatingGroup α) := by
   ext k
   rw [Subgroup.mem_map, Subgroup.mem_inf, MonoidHom.mem_range]
   simp only [mem_alternatingGroup]
   refine ⟨fun ⟨x, hx, hk⟩ ↦ ?_, fun ⟨⟨x, hx⟩, hk⟩ ↦ ?_⟩
   · refine ⟨⟨x, hk⟩, ?_⟩
     rw [← hk, sign_ofSubtype]
-    -- exact doesn't work!
+    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
     convert hx
   · refine ⟨x, ?_, hx⟩
     rw [← hx, sign_ofSubtype] at hk
+    -- `Subtype.fintype fun x ↦ x ∈ ↑s` is not def. eq. to `Finset.Subtype.fintype ↑s`
     convert hk
 
-lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingGroup α) :
-    ((alternatingGroup ↥((g • s : Nat.Combination α p) : Finset α)).map
+lemma conj_map_subgroupOf (s : Finset α) (g : alternatingGroup α) :
+    ((alternatingGroup ↥(g • s)).map
       Perm.ofSubtype).subgroupOf (alternatingGroup α) =
     MulAut.conj g •
-      ((alternatingGroup ↥(s : Finset α)).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
+      ((alternatingGroup ↥s).map Perm.ofSubtype).subgroupOf (alternatingGroup α) := by
   classical
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
@@ -172,9 +171,9 @@ lemma conj_map_subgroupOf {p : ℕ} (s : Nat.Combination α p) (g : alternatingG
     MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [← MulAut.conj_symm_apply, ← MulAut.inv_apply, ← MulAut.smul_def,
     ← Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← conj_smul_range_ofSubtype]
-  exact and_congr (by convert Iff.rfl) (by simp [mul_right_comm])
+  exact and_congr Iff.rfl (by simp [mul_right_comm])
 
-theorem mem_range_ofSubtype {p : ℕ} (s : Nat.Combination α p) (k : alternatingGroup α) :
+theorem mem_range_ofSubtype (s : Finset α) (k : alternatingGroup α) :
     k ∈ (ofSubtype s).range ↔ (k : Perm α).support ⊆ s := by
   constructor
   · rintro ⟨⟨k, hk⟩, rfl⟩
@@ -190,21 +189,22 @@ theorem mem_range_ofSubtype {p : ℕ} (s : Nat.Combination α p) (k : alternatin
     suffices k ∈ (Perm.ofSubtype : Perm s →* Perm α).range by
       obtain ⟨k, rfl⟩ := this
       rw [mem_alternatingGroup, sign_ofSubtype] at hk'
-      refine ⟨k, ?_, rfl⟩
-      convert hk'
+      -- same `Fintype` issue
+      refine ⟨k, by convert hk', rfl⟩
     rw [mem_range_ofSubtype_iff]
     simpa using hk
 
-theorem range_ofSubtype_conj {p : ℕ} (s : Nat.Combination α p) (g : alternatingGroup α) :
+theorem range_ofSubtype_conj (s : Finset α) (g : alternatingGroup α) :
     (ofSubtype (g • s)).range = MulAut.conj g • (ofSubtype s).range := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
   simp only [mem_range_ofSubtype]
-  simp only [Subgroup.mk_smul, Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
+  simp only [Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
   rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
 
+-- [Mathlib.GroupTheory.SpecificGroups.Alternating]
 theorem closure_isThreeCycles_eq_top :
     Subgroup.closure
       {g : alternatingGroup α | Equiv.Perm.IsThreeCycle (g : Equiv.Perm α)} = ⊤ := by
@@ -217,6 +217,7 @@ theorem closure_isThreeCycles_eq_top :
   ext g
   refine ⟨fun ⟨k, _⟩ ↦ by simp_all, fun hg ↦ ⟨⟨g, hg.mem_alternatingGroup⟩, by simpa⟩⟩
 
+-- [Mathlib.GroupTheory.SpecificGroups.Alternating]
 theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
     Subgroup.closure
       {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2} } = ⊤ := by
@@ -239,7 +240,7 @@ def iwasawaStructure_three [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
   is_comm s := by
     suffices IsCyclic (alternatingGroup s) by
       let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
-      exact MonoidHom.range_isMulCommutative (ofSubtype s)
+      exact MonoidHom.range_isMulCommutative (ofSubtype (s : Finset α))
     apply isCyclic_of_prime_card (p := 3)
     have : Nontrivial s := by
       rw [← Fintype.one_lt_card_iff_nontrivial, Fintype.card_coe, s.prop]
@@ -290,7 +291,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
           Nat.ofNat_lt_cast]
         apply le_trans (by norm_num) hα)] at hg_ne
 
-theorem mem_map_kleinFour_ofSubtype (s : Nat.Combination α 4) (k : alternatingGroup α) :
+theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
       (k : Perm α).support ⊆ s ∧
         ((k : Perm α) = 1 ∨ (k : Perm α).cycleType = {2, 2}) := by
@@ -315,16 +316,18 @@ theorem mem_map_kleinFour_ofSubtype (s : Nat.Combination α 4) (k : alternatingG
       map_eq_one_iff _ ofSubtype_injective, OneMemClass.coe_eq_one] at hk'
     convert hk'
 
-theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) :
+theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGroup α) :
     (kleinFour _).map (ofSubtype (g • s)) =
         MulAut.conj g • ((kleinFour s).map (ofSubtype s)) := by
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem]
-  simp only [mem_map_kleinFour_ofSubtype, Subgroup.mk_smul,
-    Nat.Combination.coe_smul, MulAut.smul_def, MulAut.inv_apply,
+  simp only [mem_map_kleinFour_ofSubtype s hs, Subgroup.mk_smul,
+    MulAut.smul_def, MulAut.inv_apply,
     MulAut.conj_symm_apply, Subgroup.coe_mul, InvMemClass.coe_inv]
-  rw [Equiv.Perm.support_conj_eq_smul_support', Finset.subset_smul_finset_iff]
+  rw [Equiv.Perm.support_conj_eq_smul_support',
+    mem_map_kleinFour_ofSubtype (g • s) (by rw [Finset.card_smul_finset, hs]),
+    ← Finset.subset_smul_finset_iff]
   refine and_congr Iff.rfl (or_congr ?_ ?_)
   · simp [mul_eq_one_iff_inv_eq']
   · nth_rewrite 2 [← inv_inv g]
@@ -339,7 +342,7 @@ def iwasawaStructure_four [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] (h5 
     have : IsMulCommutative (kleinFour s) :=
       (kleinFour_isKleinFour (by aesop)).isMulCommutative
     apply Subgroup.map_isMulCommutative
-  is_conj g s := map_kleinFour_conj s g
+  is_conj g s := map_kleinFour_conj s.val s.prop g
   is_generator := by
     rw [eq_top_iff, ← closure_isCycleType22_eq_top h5, Subgroup.closure_le]
     intro g hg
@@ -348,7 +351,8 @@ def iwasawaStructure_four [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] (h5 
     apply Subgroup.mem_iSup_of_mem ⟨(g : Perm α).support, by
       simp [← sum_cycleType, hg]⟩
     rw [mem_map_kleinFour_ofSubtype]
-    simp [hg]
+    · simp [hg]
+    · simp [← sum_cycleType, hg]
 
 /-- If `α` has at least 5 elements, but not 8,
 then the only nontrivial normal subgroup of `alternatingGroup α`

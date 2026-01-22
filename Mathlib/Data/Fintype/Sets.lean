@@ -245,7 +245,7 @@ instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype {
   Fintype.ofMultiset s.attach s.mem_attach
 
 instance Finset.Subtype.fintype (s : Finset α) : Fintype { x // x ∈ s } :=
-  ⟨s.attach, s.mem_attach⟩
+    ⟨s.attach, s.mem_attach⟩
 
 instance FinsetCoe.fintype (s : Finset α) : Fintype (↑s : Set α) :=
   Finset.Subtype.fintype s
