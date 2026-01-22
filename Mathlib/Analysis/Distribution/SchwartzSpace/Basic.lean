@@ -797,6 +797,22 @@ theorem smulLeftCLM_real_smul {g : E → 𝕜'} (hg : g.HasTemperateGrowth) (c :
   rw [RCLike.real_smul_eq_coe_smul (K := 𝕜') c, smulLeftCLM_smul hg,
     ← RCLike.real_smul_eq_coe_smul c]
 
+theorem tsupport_smulLeftCLM_subset_left (g : E → 𝕜) (f : 𝓢(E, F)) :
+    tsupport (smulLeftCLM F g f) ⊆ tsupport g := by
+  by_cases hg : g.HasTemperateGrowth
+  · rw [smulLeftCLM_apply hg]
+    apply tsupport_smul_subset_left
+  · unfold smulLeftCLM
+    simp [hg]
+
+theorem tsupport_smulLeftCLM_subset_right (g : E → 𝕜) (f : 𝓢(E, F)) :
+    tsupport (smulLeftCLM F g f) ⊆ tsupport f := by
+  by_cases hg : g.HasTemperateGrowth
+  · rw [smulLeftCLM_apply hg]
+    apply tsupport_smul_subset_right
+  · unfold smulLeftCLM
+    simp [hg]
+
 end smul
 
 section pairing

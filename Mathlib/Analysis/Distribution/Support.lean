@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-! # Support of distributions
 
@@ -46,18 +47,65 @@ theorem isVanishingOn_univ_iff : f.IsVanishingOn Set.univ ↔ f = 0 := by
 theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : f.IsVanishingOn s₁) : f.IsVanishingOn s₂ :=
   fun u hu ↦ hf u (hu.trans hs)
 
-@[grind .]
-theorem IsVanishingOn.union (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂) (hf₁ : f.IsVanishingOn s₁)
-    (hf₂ : f.IsVanishingOn s₂) :
-    f.IsVanishingOn (s₁ ∪ s₂) := by
+open scoped Topology
+
+-- Hörmander 7.1.8
+theorem foo (f : 𝓢(E, F)) : ∃ (u : ℕ → 𝓢(E, F)), Filter.Tendsto u Filter.atTop (𝓝 f) ∧
+    ∀ i, tsupport (u i) ⊆ tsupport f ∧ HasCompactSupport (u i) := by
   sorry
 
+theorem isVanishingOn_iff_forall_hasCompactSupport : f.IsVanishingOn s ↔
+    ∀ (u : 𝓢(E, ℂ)), HasCompactSupport u → tsupport u ⊆ s → f u = 0 := by
+  constructor
+  · intro h u hu₁
+    exact h u
+  intro h u hu
+  obtain ⟨v, hv₁, hv₂⟩ := foo u
+  have hv₃ : f ∘ v = 0 := by
+    ext i
+    apply h (v i) (hv₂ i).2 ((hv₂ i).1.trans hu)
+  have lim₁ : Filter.Tendsto (f ∘ v) Filter.atTop (𝓝 (f u)) :=
+    (f.continuous.tendsto u).comp hv₁
+  have lim₂ : Filter.Tendsto (f ∘ v) Filter.atTop (𝓝 0) := by
+    rw [hv₃]
+    apply tendsto_const_nhds
+  exact tendsto_nhds_unique lim₁ lim₂
+
+variable [FiniteDimensional ℝ E] [Finite ι] in
 theorem IsVanishingOn.iUnion {s : ι → Set E} (hs : ∀ i, IsOpen (s i))
-    (hf : ∀ i, f.IsVanishingOn (s i)) :
+    (hs' : ∀ i, Bornology.IsBounded (s i)) (hf : ∀ i, f.IsVanishingOn (s i)) :
     f.IsVanishingOn (⋃ i, s i) := by
+  -- The boundedness condition is not strictly necessary, but we would need a partition of unity
+  -- with temperate growth functions to remove this restriction.
   intro u hu
-  -- Need smooth partition of unity
-  sorry
+  have : IsClosed (tsupport u) := isClosed_tsupport u
+  obtain ⟨g, hg⟩ := Normed.SmoothPartitionOfUnity.exists_isSubordinate (isClosed_tsupport u) s hs hu
+  have hg' : ∀ i, (g i).HasTemperateGrowth := by
+    intro i
+    --apply Complex.ofRealCLM.hasTemperateGrowth.comp
+    -- It remains to show that `g i` has temperate growth, which follows from being compactly
+    -- supported
+    have : HasCompactSupport (g i) := (hs' i).isCompact_closure.of_isClosed_subset
+      (isClosed_tsupport _) ((hg i).trans subset_closure)
+    exact this.hasTemperateGrowth (g.contDiff i)
+  set u' := fun i ↦ SchwartzMap.smulLeftCLM ℂ (g i) u
+  have hu' : ∀ i, u' i = fun x ↦ g i x • u x := fun i ↦ smulLeftCLM_apply (hg' i) u
+  haveI := Fintype.ofFinite ι
+  have : u = ∑ i, u' i := by
+    ext x
+    have : ∀ y ∈ tsupport u, ∑ i, g i y = 1 := by
+      intro y hy
+      simpa [finsum_eq_sum_of_fintype] using g.sum_eq_one' y hy
+    simp only [SchwartzMap.sum_apply, hu', ← Finset.sum_smul, u']
+    by_cases h : x ∈ tsupport u
+    · simp [this x h]
+    · simp [image_eq_zero_of_notMem_tsupport h]
+  rw [this, _root_.map_sum]
+  apply Fintype.sum_eq_zero
+  intro i
+  apply hf i
+  grw [← hg i]
+  exact tsupport_smulLeftCLM_subset_left (g i) u
 
 @[grind .]
 theorem IsVanishingOn.neg (hf : f.IsVanishingOn s) : (-f).IsVanishingOn s := by
@@ -152,6 +200,34 @@ theorem mem_support_compl_iff (x : E) :
     simp only [Set.mem_compl_iff, not_not, isClosed_compl_iff, exists_prop, compl_compl]
     exact ⟨hs₁, hs₂, h⟩
 
+/-- The complement of the support is given by all open sets on which `f` vanishes. -/
+theorem support_compl_eq : f.supportᶜ = ⋃₀ { a | f.IsVanishingOn a ∧ IsOpen a } := by
+  simp [support, Set.compl_sInter, Set.compl_image_set_of]
+
+/-- The complement of the support is given by all *bounded* open sets on which `f` vanishes. -/
+theorem support_compl_eq_sUnion_isBounded :
+    f.supportᶜ = ⋃₀ { a | f.IsVanishingOn a ∧ IsOpen a ∧ Bornology.IsBounded a } := by
+  rw [support_compl_eq]
+  apply subset_antisymm
+  · simp only [Set.sUnion_subset_iff, Set.mem_setOf_eq, and_imp]
+    intro s hs₁ hs₂
+    have : s = ⋃ (ε : ℝ) (_ : 0 < ε), s ∩ Metric.ball 0 ε := by
+      have : ⋃ (ε : ℝ) (_ : 0 < ε), Metric.ball (0 : E) ε = Set.univ := by
+        rw [Set.iUnion₂_eq_univ_iff]
+        intro x
+        use ‖x‖ + 1, by positivity
+        simp
+      simp [← Set.inter_iUnion₂, this]
+    rw [this]
+    simp only [Set.iUnion_subset_iff]
+    intro ε hε
+    apply Set.subset_sUnion_of_mem
+    refine ⟨hs₁.mono Set.inter_subset_left, hs₂.inter Metric.isOpen_ball, ?_⟩
+    exact Bornology.IsBounded.subset Metric.isBounded_ball Set.inter_subset_right
+  simp only [Set.sUnion_subset_iff, Set.mem_setOf_eq, and_imp]
+  intro s hs₁ hs₂ hs₃
+  exact Set.subset_sUnion_of_mem ⟨hs₁, hs₂⟩
+
 @[grind .]
 theorem support_subset_support
     (h : ∀ (s : Set E) (_ : IsOpen s), g.IsVanishingOn s → f.IsVanishingOn s) :
@@ -165,16 +241,16 @@ theorem support_subset_support
 theorem isClosed_support : IsClosed f.support := by
   grind [support, isClosed_sInter]
 
+variable [FiniteDimensional ℝ E] in
 theorem isVanishingOn_support_compl : f.IsVanishingOn (f.support)ᶜ := by
-  suffices h : f.IsVanishingOn (⋃₀ { a | f.IsVanishingOn a ∧ IsOpen a }) by
-    convert h
-    simp [support, Set.compl_sInter, Set.compl_image_set_of]
-  rw [Set.sUnion_eq_iUnion]
-  apply IsVanishingOn.iUnion
-  · intro ⟨s, hs₁, hs₂⟩
-    exact hs₂
-  · intro ⟨s, hs₁, hs₂⟩
-    exact hs₁
+  rw [support_compl_eq_sUnion_isBounded, isVanishingOn_iff_forall_hasCompactSupport,
+    Set.sUnion_eq_iUnion]
+  intro u hu hf
+  rw [hasCompactSupport_def] at hu
+  obtain ⟨s, hs⟩ := hu.elim_finite_subcover _ (fun ⟨s, _, h, _⟩ ↦ h) hf
+  apply IsVanishingOn.iUnion (s := fun (i : s) ↦ i) (fun ⟨⟨s, _, h, _⟩, _⟩ ↦ h)
+    (fun ⟨⟨s, _, _, h⟩, _⟩ ↦ h) (fun ⟨⟨s, h, _, _⟩, _⟩ ↦ h)
+  rwa [Set.iUnion_subtype]
 
 @[simp]
 theorem support_zero_eq_emptyset : (0 : 𝓢'(E, F)).support = ∅ := by
