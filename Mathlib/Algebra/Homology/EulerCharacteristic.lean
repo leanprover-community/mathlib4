@@ -25,12 +25,16 @@ uniformly for chain complexes, cochain complexes, and complexes with other index
 The definitions work on graded objects, with the homological complex versions
 defined as abbreviations that apply the graded object versions to `C.X` and `C.homology`.
 
+## Junk values
+
+These definitions may have junk values from `finsum` (0 for infinite support) and
+`Module.finrank` (0 for modules not free of finite rank).
+
 ## Main definitions
 
 * `ComplexShape.EulerCharSigns`: Typeclass providing alternating signs for Euler characteristic
 * `GradedObject.eulerChar`: The Euler characteristic of a graded object using `finsum`
-  (defaults to 0 if the support is infinite)
-* `GradedObject.finrankSupport`: The support of a graded object (indices with nonzero rank)
+* `GradedObject.finrankSupport`: Indices where `Module.finrank` is nonzero
 * `HomologicalComplex.eulerChar`: The Euler characteristic using `finsum`
 * `HomologicalComplex.homologyEulerChar`: The homological Euler characteristic using `finsum`
 
