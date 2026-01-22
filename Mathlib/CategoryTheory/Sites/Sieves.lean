@@ -562,7 +562,6 @@ theorem inter_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊓ S) f ↔ R f ∧ 
 theorem union_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊔ S) f ↔ R f ∨ S f :=
   Iff.rfl
 
-@[simp]
 theorem top_apply (f : Y ⟶ X) : (⊤ : Sieve X) f :=
   trivial
 
