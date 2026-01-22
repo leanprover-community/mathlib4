@@ -18,6 +18,8 @@ This file gives defines intertwining maps of representations (aka equivariant li
 
 open scoped MonoidAlgebra
 
+namespace Representation
+
 variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
   [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
   (f : V →ₗ[A] W)
