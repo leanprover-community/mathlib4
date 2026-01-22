@@ -68,11 +68,11 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
     vectors, with coefficients given by the coordinate functionals. -/
 structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup X] [NormedSpace 𝕜 X] (e : ℕ → X) where
-  -- Coordinate functionals
+  /-- Coordinate functionals -/
   coord : ℕ → StrongDual 𝕜 X
-  -- Biorthogonality
-  ortho : ∀ i j, coord i (e j) = if i = j then 1 else 0
-  -- Convergence of partial sums
+  /-- Biorthogonality -/
+  ortho : ∀ i j, coord i (e j) = (Pi.single j (1 : 𝕜) : ℕ → 𝕜) i
+  /-- Convergence of partial sums -/
   basis_expansion : ∀ x : X, HasSum (fun i ↦ (coord i) x • e i) x (SummationFilter.conditional ℕ)
 
 namespace SchauderBasis
@@ -91,7 +91,7 @@ theorem linearIndependent (h : SchauderBasis 𝕜 X e) : LinearIndependent 𝕜 
   simp_rw [ContinuousLinearMap.map_smul] at happ
   rw [Finset.sum_eq_single i, h.ortho i i] at happ
   · simpa using happ
-  · intro j _ hji; rw [h.ortho i j, if_neg hji.symm]; simp only [smul_eq_mul, mul_zero]
+  · intro j _ hji; rw [h.ortho i j, Pi.single_apply, if_neg hji.symm, smul_eq_mul, mul_zero]
   · intro hi; simp only [Finsupp.notMem_support_iff.mp hi, smul_eq_mul, zero_mul]
 
 /-- A canonical projection P_n associated to a Schauder basis given by coordinate functionals f_i:
@@ -108,12 +108,12 @@ theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else
   rw [proj_apply]
   by_cases hin : i < n
   · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
-    · simp only [b.ortho, ↓reduceIte, one_smul, if_pos hin]
-    · intro j _ hji; rw [b.ortho j i, if_neg hji, zero_smul]
+    · simp only [b.ortho, Pi.single_apply, ↓reduceIte, one_smul, if_pos hin]
+    · intro j _ hji; rw [b.ortho j i, Pi.single_apply, if_neg hji, zero_smul]
   rw [if_neg hin, Finset.sum_eq_zero]
   intro j hj
   push_neg at hin
-  rw [b.ortho j i, if_neg, zero_smul]
+  rw [b.ortho j i, Pi.single_apply, if_neg , zero_smul]
   exact (Finset.mem_range.mp hj).trans_le hin |>.ne
 
 /-- The range of the canonical projection is the span of the first n basis elements. -/
@@ -174,8 +174,9 @@ lemma Q_sum (P : ℕ → X →L[𝕜] X) (h0 : P 0 = 0) (n : ℕ) : ∑ i ∈ Fi
 
 /-- The operators `Q i` are orthogonal projections. -/
 lemma Q_ortho {P : ℕ → X →L[𝕜] X} (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
-    (i j : ℕ) (x : X) : (Q P i) (Q P j x) = if i = j then Q P j x else 0 := by
-  simp only [Q, ContinuousLinearMap.sub_apply, map_sub, hcomp, Nat.add_min_add_right]
+    (i j : ℕ) (x : X) : (Q P i) (Q P j x) = (Pi.single j (Q P j x) : ℕ → X) i := by
+  simp only [Pi.single_apply, Q, ContinuousLinearMap.sub_apply, map_sub, hcomp,
+    Nat.add_min_add_right]
   split_ifs with h
   · rw [h, min_self, min_eq_right (Nat.le_succ j), Nat.min_eq_left (Nat.le_succ j)]
     abel
@@ -218,7 +219,7 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
     have : Q n (P n z) = 0 := by
       simp_rw [Q, SchauderBasis.Q, ContinuousLinearMap.sub_apply, hcomp,
         min_eq_right (Nat.le_succ n), min_self, sub_self]
-    rw [← hz, ← this, hz, Q_ortho hcomp, if_pos rfl]
+    rw [← hz, ← this, hz, Q_ortho hcomp, Pi.single_apply, if_pos rfl]
   have h_fin_Pn (n : ℕ) : FiniteDimensional 𝕜 (LinearMap.range (P n).toLinearMap) := by
     by_cases hn : n = 0
     · rw [hn]
@@ -286,16 +287,17 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 
       calc ‖f_fun n x‖ * ‖e n‖ = ‖f_fun n x • e n‖ := (norm_smul _ _).symm
         _ = ‖Q n x‖ := by rw [hQf]
         _ ≤ ‖Q n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _)
-  have ortho : ∀ i j, f i (e j) = if i = j then 1 else 0 := by
+  have ortho : ∀ i j, f i (e j) = (Pi.single j (1 : 𝕜) : ℕ → 𝕜) i := by
     intro i j
     apply smul_left_injective 𝕜 (he_ne i)
     dsimp only [smul_eq_mul]
-    simp only [mkContinuous_apply, IsLinearMap.mk'_apply, ite_smul, one_smul, zero_smul, f]
-    have : Q i (e j) = if i = j then e j else 0 := by
+    simp only [mkContinuous_apply, IsLinearMap.mk'_apply, Pi.single_apply, ite_smul, one_smul,
+      zero_smul, f]
+    have : Q i (e j) = (Pi.single j (e j) : ℕ → X) i := by
       obtain ⟨x, hx⟩ := he_in_range j
       rw [ContinuousLinearMap.coe_coe] at hx
       rw [← hx, Q_ortho hcomp i j x]
-    rw [← hQf, this]
+    rw [← hQf, this, Pi.single_apply]
     split_ifs with hij
     · subst hij; simp only
     · simp only
