@@ -485,6 +485,19 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
       right_inv := fun x ↦ congr($H_right x) }
   exact eₛ.bijective
 
+/-- Let `M` be a finite `R`-module and `N` be a finitely presented `R`-module. If `f : M →ₗ[R] N`
+is a linear map whose localization at a prime ideal `p` is bijective, then there exists
+`g ∉ p` such that `f` is already bijective under the localization away from `g`. -/
+lemma Module.FinitePresentation.exists_notMem_bijective [Module.Finite R M]
+    [Module.FinitePresentation R N] (f : M →ₗ[R] N) (p : Ideal R) [p.IsPrime] {Mₚ Nₚ : Type*}
+    [AddCommGroup Mₚ] [AddCommGroup Nₚ] [Module R Mₚ] [Module R Nₚ]
+    (fM : M →ₗ[R] Mₚ) (fN : N →ₗ[R] Nₚ)
+    [IsLocalizedModule p.primeCompl fM] [IsLocalizedModule p.primeCompl fN]
+    (hf : Function.Bijective (IsLocalizedModule.map p.primeCompl fM fN f)) :
+    ∃ (g : R), g ∉ p ∧ Function.Bijective (LocalizedModule.map (Submonoid.powers g) f) := by
+  obtain ⟨g, hg, h⟩ := exists_bijective_map_powers p.primeCompl fM fN f hf
+  exact ⟨g, hg, h g (by rfl)⟩
+
 open IsLocalizedModule in
 /--
 Let `M` `N` be a finitely presented `R`-modules.

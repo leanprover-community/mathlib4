@@ -118,8 +118,7 @@ theorem compl_ne_univ : sᶜ ≠ univ ↔ s.Nonempty :=
 
 lemma inl_compl_union_inr_compl {s : Set α} {t : Set β} :
     Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ = (Sum.inl '' s ∪ Sum.inr '' t)ᶜ := by
-  rw [compl_union]
-  aesop
+  grind
 
 theorem nonempty_compl : sᶜ.Nonempty ↔ s ≠ univ :=
   (ne_univ_iff_exists_notMem s).symm
@@ -384,7 +383,7 @@ lemma _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.N
   simpa [inter_eq_self_of_subset_right hst]
 
 lemma ssubset_iff_sdiff_singleton : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t \ {a} := by
-  simp [ssubset_iff_insert, subset_diff, insert_subset_iff]; aesop
+  grind
 
 @[simp]
 lemma diff_singleton_subset_iff : s \ {a} ⊆ t ↔ s ⊆ insert a t := by
@@ -511,7 +510,8 @@ theorem inter_subset_ite (t s s' : Set α) : s ∩ s' ⊆ t.ite s s' :=
 theorem ite_inter_inter (t s₁ s₂ s₁' s₂' : Set α) :
     t.ite (s₁ ∩ s₂) (s₁' ∩ s₂') = t.ite s₁ s₁' ∩ t.ite s₂ s₂' := by
   ext x
-  simp only [Set.ite, Set.mem_inter_iff, Set.mem_diff, Set.mem_union]
+  unfold Set.ite
+  push _ ∈ _
   tauto
 
 theorem ite_inter (t s₁ s₂ s : Set α) : t.ite (s₁ ∩ s) (s₂ ∩ s) = t.ite s₁ s₂ ∩ s := by

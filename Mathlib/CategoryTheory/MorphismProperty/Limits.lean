@@ -528,7 +528,7 @@ lemma colimitsOfShape.of_isColimit
       naturality _ _ _ := by
         dsimp
         rw [Category.id_comp, ← Functor.map_comp]
-        rfl} h _ (by simp)
+        rfl } h _ (by simp)
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/
