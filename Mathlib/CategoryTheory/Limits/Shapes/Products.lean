@@ -257,6 +257,16 @@ def Fan.ext {f : β → C} {c₁ c₂ : Fan f} (e : c₁.pt ≅ c₂.pt)
     (w : ∀ (b : β), c₁.proj b = e.hom ≫ c₂.proj b := by cat_disch) : c₁ ≅ c₂ :=
   Cones.ext e (fun ⟨j⟩ => w j)
 
+/-- A fan `c` on `f` such that the induced map `c.pt ⟶ ∏ f` is an iso, is a product. -/
+def Fan.isLimitOfIsIsoPiLift {f : β → C} [HasProduct f] (c : Fan f)
+    [hc : IsIso (Pi.lift c.proj)] : IsLimit c :=
+  IsLimit.ofIsoLimit (limit.isLimit (Discrete.functor f))
+    (Fan.ext (@asIso _ _ _ _ _ hc) (fun _ => (limit.lift_π _ _).symm)).symm
+
+lemma Fan.nonempty_isLimit_iff_isIso_piLift {f : β → C} [HasProduct f] (c : Fan f) :
+    Nonempty (IsLimit c) ↔ IsIso (Pi.lift c.proj) :=
+  (limit.isLimit (Discrete.functor f)).nonempty_isLimit_iff_isIso_lift
+
 /-- A collection of morphisms `f b ⟶ P` induces a morphism `∐ f ⟶ P`. -/
 abbrev Sigma.desc {f : β → C} [HasCoproduct f] {P : C} (p : ∀ b, f b ⟶ P) : ∐ f ⟶ P :=
   colimit.desc _ (Cofan.mk P p)
@@ -285,7 +295,7 @@ def Cofan.isColimitOfIsIsoSigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f
 
 lemma Cofan.nonempty_isColimit_iff_isIso_sigmaDesc {f : β → C} [HasCoproduct f] (c : Cofan f) :
     Nonempty (IsColimit c) ↔ IsIso (Sigma.desc c.inj) :=
-  ((colimit.isColimit (Discrete.functor f)).nonempty_isColimit_iff_isIso_desc)
+  (colimit.isColimit (Discrete.functor f)).nonempty_isColimit_iff_isIso_desc
 
 @[deprecated (since := "2026-01-21")]
 alias Cofan.isColimit_iff_isIso_sigmaDesc := Cofan.nonempty_isColimit_iff_isIso_sigmaDesc
