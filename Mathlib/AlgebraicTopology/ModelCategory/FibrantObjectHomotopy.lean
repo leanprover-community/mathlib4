@@ -212,24 +212,24 @@ noncomputable def HoCat.localizerMorphismResolution :
       weakEquivalence_toHoCat_map_iff, weakEquivalence_resolutionMap_iff,
       weakEquivalence_homMk_iff] using h
 
-/-- The map `π.iResolutionObj`, when applied to already fibrant objects, gives
-a natural transformation `toπ ⟶ ι ⋙ π.resolution`. -/
+/-- The map `HoCat.iResolutionObj`, when applied to already fibrant objects, gives
+a natural transformation `toHoCat ⟶ ι ⋙ HoCat.resolution`. -/
 @[simps]
-noncomputable def π.ιCompResolutionNatTrans : toπ ⟶ ι ⋙ π.resolution (C := C) where
-  app X := toπ.map { hom := (π.iResolutionObj (ι.obj X)) }
-  naturality _ _ f :=  toπ.congr_map (by
+noncomputable def HoCat.ιCompResolutionNatTrans : toHoCat ⟶ ι ⋙ HoCat.resolution (C := C) where
+  app X := toHoCat.map { hom := (HoCat.iResolutionObj (ι.obj X)) }
+  naturality _ _ f :=  toHoCat.congr_map (by
     ext : 1
-    exact (π.resolutionMap_fac f.hom).symm )
+    exact (HoCat.resolutionMap_fac f.hom).symm )
 
 instance (X : FibrantObject C) :
-    WeakEquivalence (π.ιCompResolutionNatTrans.app X) := by
+    WeakEquivalence (HoCat.ιCompResolutionNatTrans.app X) := by
   dsimp
-  rw [weakEquivalence_toπ_map_iff, weakEquivalence_iff_of_objectProperty]
+  rw [weakEquivalence_toHoCat_map_iff, weakEquivalence_iff_of_objectProperty]
   infer_instance
 
-instance {D : Type*} [Category* D] (L : FibrantObject.π C ⥤ D)
+instance {D : Type*} [Category* D] (L : FibrantObject.HoCat C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
-    IsIso (Functor.whiskerRight π.ιCompResolutionNatTrans L) := by
+    IsIso (Functor.whiskerRight HoCat.ιCompResolutionNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   apply Localization.inverts L (weakEquivalences _)
@@ -240,28 +240,28 @@ section
 
 variable {D : Type*} [Category* D] (L : C ⥤ D) [L.IsLocalization (weakEquivalences C)]
 
-/-- The induced functor `FibrantObject.π C ⥤ D`, when `D` is a localization
+/-- The induced functor `FibrantObject.HoCat C ⥤ D`, when `D` is a localization
 of `C` with respect to weak equivalences. -/
-def π.toLocalization : π C ⥤ D :=
+def HoCat.toLocalization : HoCat C ⥤ D :=
   CategoryTheory.Quotient.lift _ (ι ⋙ L)
     (fun _ _ _ _ h ↦ (factorsThroughLocalization C h).map_eq_of_isInvertedBy _
       (fun _ _ _ ↦ Localization.inverts L (weakEquivalences _) _))
 
-/-- The isomorphism `toπ ⋙ toLocalization L ≅ ι ⋙ L` which expresses that
+/-- The isomorphism `toHoCat ⋙ toLocalization L ≅ ι ⋙ L` which expresses that
 if `L : C ⥤ D` is a localization functor, then its restriction on the
 full subcategory of fibrant objects factors through the homotopy category
 of fibrant objects. -/
-def π.toπCompToLocalizationIso : toπ ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
+def HoCat.toHoCatCompToLocalizationIso : toHoCat ⋙ toLocalization L ≅ ι ⋙ L := Iso.refl _
 
-/-- The natural isomorphism `L ⟶ π.resolution ⋙ π.toLocalization L` when
+/-- The natural isomorphism `L ⟶ HoCat.resolution ⋙ HoCat.toLocalization L` when
 `L : C ⥤ D` is a localization functor. -/
-noncomputable def π.resolutionCompToLocalizationNatTrans :
-    L ⟶ π.resolution ⋙ π.toLocalization L where
+noncomputable def HoCat.resolutionCompToLocalizationNatTrans :
+    L ⟶ HoCat.resolution ⋙ HoCat.toLocalization L where
   app X := L.map (iResolutionObj X)
   naturality _ _ f := by
-    simpa only [Functor.map_comp] using L.congr_map (π.resolutionMap_fac f).symm
+    simpa only [Functor.map_comp] using L.congr_map (HoCat.resolutionMap_fac f).symm
 
-instance : IsIso (π.resolutionCompToLocalizationNatTrans L) := by
+instance : IsIso (HoCat.resolutionCompToLocalizationNatTrans L) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
   apply Localization.inverts L (weakEquivalences _)
@@ -280,32 +280,33 @@ def localizerMorphism : LocalizerMorphism (weakEquivalences (FibrantObject C))
 
 open Functor in
 instance : (localizerMorphism C).IsLocalizedEquivalence := by
-  let Hfib := (weakEquivalences (π C)).Localization
-  let Lfibπ : π C ⥤ Hfib := (weakEquivalences (FibrantObject.π C)).Q
-  let Lfib : FibrantObject C ⥤ Hfib := toπ ⋙ Lfibπ
+  let Hfib := (weakEquivalences (HoCat C)).Localization
+  let Lfibπ : HoCat C ⥤ Hfib := (weakEquivalences (FibrantObject.HoCat C)).Q
+  let Lfib : FibrantObject C ⥤ Hfib := toHoCat ⋙ Lfibπ
   let H := (weakEquivalences C).Localization
   let L : C ⥤ H := (weakEquivalences C).Q
   let F := (localizerMorphism C).localizedFunctor Lfib L
   let eF : ι ⋙ L ≅ Lfib ⋙ F := CatCommSq.iso (localizerMorphism C).functor Lfib L F
-  let eF' : π.toLocalization L ≅ Lfibπ ⋙ F :=
+  let eF' : HoCat.toLocalization L ≅ Lfibπ ⋙ F :=
     CategoryTheory.Quotient.natIsoLift _
-      (π.toπCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
-  let G : H ⥤ Hfib := (π.localizerMorphismResolution C).localizedFunctor L Lfibπ
-  let eG : π.resolution ⋙ Lfibπ ≅ L ⋙ G :=
-    CatCommSq.iso (π.localizerMorphismResolution C).functor L Lfibπ G
+      (HoCat.toHoCatCompToLocalizationIso L ≪≫ eF ≪≫ associator _ _ _)
+  let G : H ⥤ Hfib := (HoCat.localizerMorphismResolution C).localizedFunctor L Lfibπ
+  let eG : HoCat.resolution ⋙ Lfibπ ≅ L ⋙ G :=
+    CatCommSq.iso (HoCat.localizerMorphismResolution C).functor L Lfibπ G
   have : Localization.Lifting L (weakEquivalences C)
-      (π.resolution ⋙ π.toLocalization L) (G ⋙ F) :=
+      (HoCat.resolution ⋙ HoCat.toLocalization L) (G ⋙ F) :=
     ⟨(associator _ _ _).symm ≪≫ isoWhiskerRight eG.symm _ ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ eF'.symm⟩
   have : Localization.Lifting Lfib (weakEquivalences (FibrantObject C))
-        (ι ⋙ π.resolution ⋙ Lfibπ) (F ⋙ G) :=
+        (ι ⋙ HoCat.resolution ⋙ Lfibπ) (F ⋙ G) :=
     ⟨(associator _ _ _).symm ≪≫ isoWhiskerRight eF.symm G ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ eG.symm⟩
   let E : Hfib ≌ H := CategoryTheory.Equivalence.mk F G
-    (Localization.liftNatIso Lfib (weakEquivalences _) Lfib (ι ⋙ π.resolution ⋙ Lfibπ) _ _
-        (asIso (whiskerRight π.ιCompResolutionNatTrans Lfibπ) ≪≫ associator _ _ _))
-    (Localization.liftNatIso L (weakEquivalences _) (π.resolution ⋙ π.toLocalization L) L _ _
-      (asIso (π.resolutionCompToLocalizationNatTrans L)).symm)
+    (Localization.liftNatIso Lfib (weakEquivalences _) Lfib (ι ⋙ HoCat.resolution ⋙ Lfibπ) _ _
+        (asIso (whiskerRight HoCat.ιCompResolutionNatTrans Lfibπ) ≪≫ associator _ _ _))
+    (Localization.liftNatIso L (weakEquivalences _)
+      (HoCat.resolution ⋙ HoCat.toLocalization L) L _ _
+      (asIso (HoCat.resolutionCompToLocalizationNatTrans L)).symm)
   have : F.IsEquivalence := E.isEquivalence_functor
   exact LocalizerMorphism.IsLocalizedEquivalence.mk' (localizerMorphism C) Lfib L F
 
