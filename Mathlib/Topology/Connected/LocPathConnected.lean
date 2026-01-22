@@ -109,6 +109,13 @@ theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connecte
   (pathComponent_subset_component x).antisymm <|
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
 
+theorem pathComponents_eq_connectedComponents : ZerothHomotopy X = ConnectedComponents X := by
+  unfold ZerothHomotopy pathSetoid
+  congr
+  ext x y
+  rw [← mem_pathComponent_iff, pathComponent_eq_connectedComponent, eq_comm]
+  exact connectedComponent_eq_iff_mem.symm
+
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
