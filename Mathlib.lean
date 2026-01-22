@@ -4231,6 +4231,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.EhresmannConnection
 public import Mathlib.Geometry.Manifold.GroupLieAlgebra
 public import Mathlib.Geometry.Manifold.Immersion
 public import Mathlib.Geometry.Manifold.Instances.Icc
@@ -4259,6 +4260,7 @@ public import Mathlib.Geometry.Manifold.Metrizable
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.Geometry.Manifold.PoincareConjecture
+public import Mathlib.Geometry.Manifold.PrincipalFiberBundle.FundamentalVectorField
 public import Mathlib.Geometry.Manifold.Riemannian.Basic
 public import Mathlib.Geometry.Manifold.Riemannian.PathELength
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
