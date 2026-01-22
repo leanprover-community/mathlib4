@@ -501,6 +501,24 @@ lemma map_comp_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) 
 
 end mul_one
 
+section toMonoidHom
+
+variable [Group G] [Group H]
+
+/-- Every `MulHom` between groups defines a `MonoidHom`. -/
+@[to_additive /-- Every `AddHom` between additive groups defines a `AddMonoidHom`. -/]
+def MulHom.toMonoidHom (f : G →ₙ* H) : G →* H where
+  toFun := f
+  map_one' := by
+    apply mul_left_cancel (a := f (1 : G))
+    simp [← map_mul]
+  map_mul' := map_mul f
+
+@[to_additive (attr := simp)]
+theorem MulHom.toMonoidHom_apply (f : G →ₙ* H) (x : G) : f.toMonoidHom x = f x := rfl
+
+end toMonoidHom
+
 /-- If the codomain of an injective monoid homomorphism is torsion free,
 then so is the domain. -/
 @[to_additive /-- If the codomain of an injective additive monoid homomorphism is torsion free,
