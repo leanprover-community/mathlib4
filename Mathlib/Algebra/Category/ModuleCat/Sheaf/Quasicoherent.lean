@@ -278,7 +278,7 @@ def overPushforwardOverAdj (x : C) :
 instance {x : C} : PreservesColimits (pushforward.{u'} (𝟙 (R.over x))) :=
   (overPushforwardOverAdj x).leftAdjoint_preservesColimits
 
-@[simps I X]
+@[simps]
 def Presentation.QuasicoherentData {M : SheafOfModules R} (P : Presentation M) :
     QuasicoherentData M where
   I := C
