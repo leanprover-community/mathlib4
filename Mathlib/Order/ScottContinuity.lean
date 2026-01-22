@@ -81,7 +81,7 @@ lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α 
   grind
 
 @[simp, fun_prop]
-lemma ScottContinuousOn.const' (x : β) : ScottContinuousOn D (fun _ : α ↦ x) :=
+lemma ScottContinuousOn.fun_const (x : β) : ScottContinuousOn D (fun _ : α ↦ x) :=
   ScottContinuousOn.const x
 
 theorem ScottContinuousOn.comp
@@ -89,8 +89,8 @@ theorem ScottContinuousOn.comp
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hD' : Set.MapsTo (f '' ·) D D')
     (hg : ScottContinuousOn D' g)
-    (hf : ScottContinuousOn D f)
-    : ScottContinuousOn D (g ∘ f) := by
+    (hf : ScottContinuousOn D f) :
+    ScottContinuousOn D (g ∘ f) := by
   intro d hd₁ hd₂ hd₃ a ha
   have hd₁' : f '' d ∈ D' := hD' hd₁
   have hd₂' : (f '' d).Nonempty := ⟨f hd₂.choose, by grind⟩
@@ -107,27 +107,27 @@ theorem ScottContinuousOn.image_comp
     {g : β → γ}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
-    (hf : ScottContinuousOn D f)
-    : ScottContinuousOn D (g ∘ f) :=
+    (hf : ScottContinuousOn D f) :
+    ScottContinuousOn D (g ∘ f) :=
   ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
 
 @[fun_prop]
-theorem ScottContinuousOn.comp'
+theorem ScottContinuousOn.fun_comp
     {g : β → γ} {D'}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hD' : ∀ d ∈ D, f '' d ∈ D')
     (hg : ScottContinuousOn D' g)
-    (hf : ScottContinuousOn D f)
-    : ScottContinuousOn D (fun x ↦ g (f x)) :=
+    (hf : ScottContinuousOn D f) :
+    ScottContinuousOn D (fun x ↦ g (f x)) :=
   ScottContinuousOn.comp hD hD' hg hf
 
 @[fun_prop]
-theorem ScottContinuousOn.image_comp'
+theorem ScottContinuousOn.image_fun_comp
     {g : β → γ}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
-    (hf : ScottContinuousOn D f)
-    : ScottContinuousOn D (fun x ↦ g (f x)) :=
+    (hf : ScottContinuousOn D f) :
+    ScottContinuousOn D (fun x ↦ g (f x)) :=
   ScottContinuousOn.image_comp hD hg hf
 
 @[fun_prop]
@@ -190,12 +190,12 @@ lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := 
   simp only [← scottContinuousOn_univ, ScottContinuousOn.const]
 
 @[simp, fun_prop]
-lemma ScottContinuous.const' (x : β) : ScottContinuous (fun _ : α ↦ x) := by
-  simp only [← scottContinuousOn_univ, ScottContinuousOn.const']
+lemma ScottContinuous.fun_const (x : β) : ScottContinuous (fun _ : α ↦ x) := by
+  simp only [← scottContinuousOn_univ, ScottContinuousOn.fun_const]
 
 lemma ScottContinuous.comp {g : β → γ}
-    (hf : ScottContinuous f) (hg : ScottContinuous g)
-    : ScottContinuous (g ∘ f) := by
+    (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    ScottContinuous (g ∘ f) := by
   intro d hd₁ hd₂ a ha
   have hd₁' : (f '' d).Nonempty := ⟨f hd₁.choose, by grind⟩
   have hd₂' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
@@ -206,9 +206,9 @@ lemma ScottContinuous.comp {g : β → γ}
   exact hg hd₁' hd₂' (hf hd₁ hd₂ ha)
 
 @[fun_prop]
-lemma ScottContinuous.comp' {g : β → γ}
-    (hf : ScottContinuous f) (hg : ScottContinuous g)
-    : ScottContinuous (fun x ↦ g (f x)) :=
+lemma ScottContinuous.fun_comp {g : β → γ}
+    (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    ScottContinuous (fun x ↦ g (f x)) :=
   ScottContinuous.comp hf hg
 
 @[fun_prop]

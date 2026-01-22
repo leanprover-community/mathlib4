@@ -268,7 +268,7 @@ lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
 lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuousOn.id
 
 @[fun_prop]
-lemma ωScottContinuous.id' : ωScottContinuous (fun x : α ↦ x) := ScottContinuousOn.id
+lemma ωScottContinuous.fun_id : ωScottContinuous (fun x : α ↦ x) := ScottContinuousOn.id
 
 lemma ωScottContinuous.map_ωSup (hf : ωScottContinuous f) (c : Chain α) :
     f (ωSup c) = ωSup (c.map ⟨f, hf.monotone⟩) := ωSup_eq_of_isLUB hf.isLUB
@@ -301,7 +301,7 @@ lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous 
     ⟨hg.monotone.comp hf.monotone, by simp [hf.map_ωSup, hg.map_ωSup, map_comp]⟩
 
 @[fun_prop]
-lemma ωScottContinuous.comp' (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
+lemma ωScottContinuous.fun_comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (fun x ↦ g (f x)) :=
   comp hg hf
 
@@ -310,7 +310,7 @@ lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x)
   ScottContinuousOn.const x
 
 @[fun_prop]
-lemma ωScottContinuous.const' {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
+lemma ωScottContinuous.fun_const {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
   const
 
 end Continuity
@@ -452,8 +452,8 @@ theorem ωSup_zip (c₀ : Chain α) (c₁ : Chain β) : ωSup (c₀.zip c₁) = 
 @[fun_prop]
 lemma ωScottContinuous.prodMk
     {f : α → β} (hf : ωScottContinuous f)
-    {g : α → γ} (hg : ωScottContinuous g)
-    : ωScottContinuous fun x ↦ (f x, g x) :=
+    {g : α → γ} (hg : ωScottContinuous g) :
+    ωScottContinuous fun x ↦ (f x, g x) :=
   ScottContinuousOn.prodMk (fun a b hab ↦ by
     use pair a b hab
     exact range_pair a b hab
@@ -742,8 +742,8 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
 @[fun_prop]
 lemma ωScottContinuous_apply
     {f : α → β →𝒄 γ} (hf : ωScottContinuous f)
-    {g : α → β} (hg : ωScottContinuous g)
-    : ωScottContinuous fun x ↦ f x (g x) := by
+    {g : α → β} (hg : ωScottContinuous g) :
+    ωScottContinuous fun x ↦ f x (g x) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · intro x y hxy
     apply OrderHom.apply_mono (hf.monotone hxy) (hg.monotone hxy)
