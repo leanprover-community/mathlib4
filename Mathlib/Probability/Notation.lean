@@ -14,7 +14,7 @@ This file defines the following notations, for functions `X,Y`, measures `P, Q` 
 measurable space `m0`, and another measurable space structure `m` with `hm : m ≤ m0`,
 - `P[X] = ∫ a, X a ∂P`
 - `𝔼[X] = ∫ a, X a`
-- `𝔼[X|m]`: conditional expectation of `X` with respect to the measure `volume` and the
+- `𝔼[X | m]`: conditional expectation of `X` with respect to the measure `volume` and the
   measurable space `m`. The similar `P[X|m]` for a measure `P` is defined in
   `MeasureTheory.Function.ConditionalExpectation.Basic`.
 - `P⟦s | m⟧ = P[s.indicator (fun ω => (1 : ℝ)) | m]`, conditional probability of a set.
@@ -38,8 +38,8 @@ open MeasureTheory
 
 open scoped MeasureTheory
 
-/-- `𝔼[f|m]` is the conditional expectation of `f` with respect to `m`. -/
-scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
+/-- `𝔼[f | m]` is the conditional expectation of `f` with respect to `m`. -/
+scoped[ProbabilityTheory] notation "𝔼[" X " | " m "]" =>
   MeasureTheory.condExp m MeasureTheory.MeasureSpace.volume X
 
 -- `scoped[ProbabilityTheory]` isn't legal for `macro`s.
