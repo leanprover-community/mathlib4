@@ -56,7 +56,7 @@ end ProbabilityTheory
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
 /-- `P⟦s|m⟧` is the conditional expectation of `s` with respect to `m` under measure `P`. -/
-scoped[ProbabilityTheory] notation P "⟦" s " | " m "⟧" =>
+scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
   MeasureTheory.condExp m P (Set.indicator s fun ω => (1 : ℝ))
 
 /-- `X =ₐₛ Y` if `X = Y` almost surely. -/
