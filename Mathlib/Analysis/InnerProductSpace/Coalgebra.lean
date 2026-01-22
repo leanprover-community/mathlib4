@@ -40,9 +40,6 @@ namespace InnerProductSpace
 section coalgebraOfAlgebra
 variable {A : Type*} [Semiring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
-/- TODO: When we unbundle the algebra and analysis hierachies, we should remove the
-linear equivalence and just have `Semiring` and `NormedAddCommGroup`.
-PR#24040 addresses this. -/
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
