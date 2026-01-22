@@ -13,35 +13,99 @@ public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 -- public import Mathlib.RingTheory.SimpleRing.Principal
 public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 @[expose] public section
 
-namespace DirichletCharacter
+@[to_additive (attr := simp)]
+theorem MulAction.orbitProdStabilizerEquivGroup_symm_apply_fst (α : Type*) {β : Type*} [Group α]
+    [MulAction α β] (b : β) (a : α) :
+    ((MulAction.orbitProdStabilizerEquivGroup α b).symm a).1 = a • b := rfl
 
-variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+@[to_additive (attr := simp)]
+theorem MulAction.orbitProdStabilizerEquivGroup_apply_smul (α : Type*) {β : Type*} [Group α]
+    [MulAction α β] (b : β) (x : orbit α b) (y : stabilizer α b) :
+    MulAction.orbitProdStabilizerEquivGroup α b (x, y) • b = x := by
+  rw [← MulAction.orbitProdStabilizerEquivGroup_symm_apply_fst, Equiv.symm_apply_apply]
 
-theorem conductor_le_of_mem_conductorSet {m : ℕ} (hm : m ∈ χ.conductorSet) :
-  χ.conductor ≤ m := Nat.sInf_le hm
+section Galois
 
-example [NeZero n] (m₁ m₂ : ℕ) (hm₁ : m₁ ∈ χ.conductorSet) (hm₂ : m₂ ∈ χ.conductorSet) :
-    m₁.gcd m₂ ∈ χ.conductorSet := by
-  have h₁ : m₁ ∣ n := hm₁.dvd
-  have h₂ : m₂ ∣ n := hm₂.dvd
-  have h : m₁.gcd m₂ ∣ n :=  Nat.dvd_trans (Nat.gcd_dvd_left m₁ m₂) h₁
-  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₁] at hm₁
-  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₂] at hm₂
-  rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h]
+open NumberField
 
-  refine le_trans ?_ (sup_le hm₁ hm₂)
-  intro x hx
-  rw [Subgroup.mem_sup_of_normal_left]
-  sorry
+variable (K G : Type*) [Field K] [Group G] [MulSemiringAction G K]
 
+@[simp]
+theorem RingOfIntegers.map_smul (g : G) (x : 𝓞 K) : algebraMap (𝓞 K) K (g • x) = g • (x : K) :=
+  algebraMap.coe_smul' g x K
 
+end Galois
 
+section Ideal
 
+open MulAction
 
-end DirichletCharacter
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B] (p : Ideal A) (P : Ideal B)
+  [hPp : P.IsPrime] [hp : P.LiesOver p] (G : Type*) [Group G] [Finite G] [MulSemiringAction G B]
+  [IsGaloisGroup G A B] [p.IsMaximal] [IsDedekindDomain A] [IsDedekindDomain B]
+  [Module.Finite A B] [Module.IsTorsionFree A B] (hp : p ≠ ⊥)
+
+open Pointwise in
+theorem Ideal.card_stabilizer (hp : p ≠ ⊥) :
+    Nat.card (stabilizer G P) = p.ramificationIdxIn B * p.inertiaDegIn B := by
+  convert_to Nat.card (stabilizer G (Ideal.primesOver.mk p P)) = _
+  · exact Nat.card_congr <| (Equiv.refl G).subtypeEquiv  <| by simp [Subtype.ext_iff]
+  have : (stabilizer G (Ideal.primesOver.mk p P)).index ≠ 0 := Subgroup.index_ne_zero_of_finite
+  rw [← mul_left_inj' this, Subgroup.card_mul_index,
+    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B G, mul_comm,
+    ← Nat.card_coe_set_eq, ← MulAction.index_stabilizer_of_transitive G]
+
+end Ideal
+section AlgEquiv
+
+variable {R S : Type*} {A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R A]
+  [Algebra S A] {e : S ≃+* R}
+
+def AlgEquivMulEquivAlgEquiv (h : ∀ x, algebraMap R A (e x) = algebraMap S A x) :
+    (A ≃ₐ[S] A) ≃* A ≃ₐ[R] A where
+  toFun φ :=
+    { __ := φ
+      commutes' r := by rw [← e.apply_symm_apply r, h, AlgEquiv.commutes'] }
+  invFun ψ :=
+    { __ := ψ
+      commutes' s := by rw [← h, AlgEquiv.commutes'] }
+  map_mul' _ _ := by ext; simp
+
+theorem AlgEquivMulEquivAlgEquiv_apply_apply (h : ∀ x, algebraMap R A (e x) = algebraMap S A x)
+    (σ : A ≃ₐ[S] A) (x : A) : AlgEquivMulEquivAlgEquiv h σ x = σ x := rfl
+
+theorem AlgEquivMulEquivAlgEquiv_symm_apply_apply (h : ∀ x, algebraMap R A (e x) = algebraMap S A x)
+    (σ : A ≃ₐ[R] A) (x : A) : (AlgEquivMulEquivAlgEquiv h).symm σ x = σ x := rfl
+
+end AlgEquiv
+
+-- namespace DirichletCharacter
+
+-- variable {R : Type*} [CommMonoidWithZero R] {n : ℕ} (χ : DirichletCharacter R n)
+
+-- theorem conductor_le_of_mem_conductorSet {m : ℕ} (hm : m ∈ χ.conductorSet) :
+--   χ.conductor ≤ m := Nat.sInf_le hm
+
+-- example [NeZero n] (m₁ m₂ : ℕ) (hm₁ : m₁ ∈ χ.conductorSet) (hm₂ : m₂ ∈ χ.conductorSet) :
+--     m₁.gcd m₂ ∈ χ.conductorSet := by
+--   have h₁ : m₁ ∣ n := hm₁.dvd
+--   have h₂ : m₂ ∣ n := hm₂.dvd
+--   have h : m₁.gcd m₂ ∣ n :=  Nat.dvd_trans (Nat.gcd_dvd_left m₁ m₂) h₁
+--   rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₁] at hm₁
+--   rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h₂] at hm₂
+--   rw [mem_conductorSet_iff, factorsThrough_iff_ker_unitsMap h]
+
+--   refine le_trans ?_ (sup_le hm₁ hm₂)
+--   intro x hx
+--   rw [Subgroup.mem_sup_of_normal_left]
+--   sorry
+
+-- end DirichletCharacter
+
 section IsPrimitiveRoot
 
 theorem IsPrimitiveRoot.isOfFinOrder {M : Type*} [CommMonoid M] {ζ : M} {k : ℕ} [NeZero k]
@@ -877,36 +941,36 @@ theorem Ideal.mem_primesOver_of_mem_primesOver_and_liesOver {A : Type*} [CommSem
 --     (Q : p.primesOver C) : p.primesOverRestrict B C Q = P ↔ Q.1 ∈ P.primesOver C := by
 --   simp [primesOver, primesOver.isPrime, liesOver_iff, under_def, eq_comm]
 
-theorem Ideal.card_primesOverFinset_eq_sum_card_primesOverFinset (A B C : Type*) [CommRing A]
-    [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
-    [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
-    [NoZeroSMulDivisors B C] [IsScalarTower A B C] (p : Ideal A) [p.IsMaximal] :
-    (primesOverFinset p C).card = ∑ P ∈ primesOverFinset p B, (primesOverFinset P C).card := by
-  classical
-  by_cases hp : p = ⊥
-  · simp [hp]
-  rw [Finset.card_eq_sum_ones, ← Finset.sum_fiberwise_of_maps_to (t := primesOverFinset p B)
-    (g := fun x ↦ comap (algebraMap B C) x)]
-  · refine Finset.sum_congr rfl fun P hP ↦ ?_
-    rw [← Finset.card_eq_sum_ones]
-    refine Finset.card_bijective (fun Q ↦ Q) Function.bijective_id fun Q ↦ ?_
-    rw [mem_primesOverFinset_iff hp] at hP
-    have hP' : P ≠ ⊥ := by
-      have := hP.2
-      apply ne_bot_of_liesOver_of_ne_bot hp
-    have : P.IsMaximal := by
-      have := hP.1
-      exact Ring.DimensionLEOne.maximalOfPrime hP' this
-    rw [Finset.mem_filter, mem_primesOverFinset_iff hp, mem_primesOverFinset_iff hP',
-      ← under_def, eq_comm, ← liesOver_iff]
-    have : P.LiesOver p := by
-      exact hP.2
-    exact mem_primesOver_of_mem_primesOver_and_liesOver p P Q
-  · intro Q hQ
-    rw [mem_primesOverFinset_iff hp] at hQ ⊢
-    have := hQ.1
-    have := hQ.2
-    exact ⟨IsPrime.under B Q, under_liesOver_of_liesOver B Q p⟩
+-- theorem Ideal.card_primesOverFinset_eq_sum_card_primesOverFinset (A B C : Type*) [CommRing A]
+--     [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]
+--     [NoZeroSMulDivisors A B] [Algebra A C] [NoZeroSMulDivisors A C] [Algebra B C]
+--     [NoZeroSMulDivisors B C] [IsScalarTower A B C] (p : Ideal A) [p.IsMaximal] :
+--     (primesOverFinset p C).card = ∑ P ∈ primesOverFinset p B, (primesOverFinset P C).card := by
+--   classical
+--   by_cases hp : p = ⊥
+--   · simp [hp]
+--   rw [Finset.card_eq_sum_ones, ← Finset.sum_fiberwise_of_maps_to (t := primesOverFinset p B)
+--     (g := fun x ↦ comap (algebraMap B C) x)]
+--   · refine Finset.sum_congr rfl fun P hP ↦ ?_
+--     rw [← Finset.card_eq_sum_ones]
+--     refine Finset.card_bijective (fun Q ↦ Q) Function.bijective_id fun Q ↦ ?_
+--     rw [mem_primesOverFinset_iff hp] at hP
+--     have hP' : P ≠ ⊥ := by
+--       have := hP.2
+--       apply ne_bot_of_liesOver_of_ne_bot hp
+--     have : P.IsMaximal := by
+--       have := hP.1
+--       exact Ring.DimensionLEOne.maximalOfPrime hP' this
+--     rw [Finset.mem_filter, mem_primesOverFinset_iff hp, mem_primesOverFinset_iff hP',
+--       ← under_def, eq_comm, ← liesOver_iff]
+--     have : P.LiesOver p := by
+--       exact hP.2
+--     exact mem_primesOver_of_mem_primesOver_and_liesOver p P Q
+--   · intro Q hQ
+--     rw [mem_primesOverFinset_iff hp] at hQ ⊢
+--     have := hQ.1
+--     have := hQ.2
+--     exact ⟨IsPrime.under B Q, under_liesOver_of_liesOver B Q p⟩
 
 -- theorem Ideal.ncard_primesOver_eq_sum_ncard_primesOver (A B C : Type*) [CommRing A] [Nontrivial A]
 --     [CommRing B] [IsDedekindDomain B] [CommRing C] [IsDedekindDomain C] [Algebra A B]

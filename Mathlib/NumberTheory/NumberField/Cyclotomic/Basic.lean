@@ -725,6 +725,23 @@ theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
   rw [← Nat.cast_pow, Int.natCast_dvd_natCast]
   exact Nat.prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _)
 
+open Nat in
+theorem discr_coprime_of_coprime (n₁ n₂ : ℕ) [NeZero n₁] [NeZero n₂] (F₁ F₂ : Type*) [Field F₁]
+    [Field F₂] [NumberField F₁] [NumberField F₂] [IsCyclotomicExtension {n₁} ℚ F₁]
+    [IsCyclotomicExtension {n₂} ℚ F₂] (h : n₁.Coprime n₂) :
+    IsCoprime (NumberField.discr F₁) (NumberField.discr F₂) := by
+  rw [Int.isCoprime_iff_nat_coprime, natAbs_discr n₁ F₁, natAbs_discr n₂ F₂]
+  refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+  refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+  exact Coprime.pow_left _ (Coprime.pow_right _ h)
+
+theorem linearDisjoint_of_coprime [NumberField K] (n₁ n₂ : ℕ) (F₁ F₂ : IntermediateField ℚ K)
+    [NeZero n₁] [NeZero n₂] [IsCyclotomicExtension {n₁} ℚ F₁] [IsCyclotomicExtension {n₂} ℚ F₂]
+    (h : n₁.Coprime n₂) : F₁.LinearDisjoint F₂ := by
+  have : IsGalois ℚ F₁ := IsCyclotomicExtension.isGalois {n₁} ℚ F₁
+  apply linearDisjoint_of_isGalois_isCoprime_discr
+  exact discr_coprime_of_coprime n₁ n₂ (↥F₁) (↥F₂) h
+
 open IntermediateField Nat in
 private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : IntermediateField ℚ K)
     {n₁ n₂ : ℕ} [NeZero n₁] [NeZero n₂] [IsCyclotomicExtension {n₁} ℚ F₁]
@@ -733,15 +750,9 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
     (h₂ : Algebra.adjoin ℤ {hζ₂.toInteger} = ⊤) (h : n₁.Coprime n₂) (htop : F₁ ⊔ F₂ = ⊤)
     {ζ : K} (hζ : IsPrimitiveRoot ζ (n₁ * n₂)) :
     Algebra.adjoin ℤ {hζ.toInteger} = ⊤ := by
-  have h_cpr : IsCoprime (NumberField.discr F₁) (NumberField.discr F₂) := by
-    rw [Int.isCoprime_iff_nat_coprime, natAbs_discr n₁ F₁, natAbs_discr n₂ F₂]
-    refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
-    refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
-    exact Coprime.pow_left _ (Coprime.pow_right _ h)
-  have h_disj : F₁.LinearDisjoint F₂ := by
-    have : IsGalois ℚ F₁ := IsCyclotomicExtension.isGalois {n₁} ℚ F₁
-    apply linearDisjoint_of_isGalois_isCoprime_discr
-    exact h_cpr
+  have h_cpr : IsCoprime (NumberField.discr F₁) (NumberField.discr F₂) :=
+    discr_coprime_of_coprime n₁ n₂ F₁ F₂ h
+  have h_disj : F₁.LinearDisjoint F₂ := linearDisjoint_of_coprime K n₁ n₂ F₁ F₂ h
   replace hζ₁ : IsPrimitiveRoot hζ₁.toInteger n₁ := hζ₁.toInteger_isPrimitiveRoot
   replace hζ₁ := hζ₁.map_of_injective (FaithfulSMul.algebraMap_injective (𝓞 F₁) (𝓞 K))
   replace hζ₂ : IsPrimitiveRoot hζ₂.toInteger n₂ := hζ₂.toInteger_isPrimitiveRoot

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Ideal of `ℤ`
