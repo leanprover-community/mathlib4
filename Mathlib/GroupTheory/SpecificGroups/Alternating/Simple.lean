@@ -47,6 +47,7 @@ public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
 -/
 
+@[expose] public section
 
 open scoped Pointwise
 
@@ -73,7 +74,7 @@ theorem conj_smul_range_ofSubtype {n : ℕ}
 variable [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
 
 /-- The Iwasawa structure of `Perm α` acting on `Nat.Combination α 2`. -/
-@[expose] public def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
+def iwasawaStructure_two : IwasawaStructure (Perm α) (Nat.Combination α 2) where
   T s := (ofSubtype : Perm (s : Set α) →* Perm α).range
   is_comm s := by
     suffices IsCyclic (Perm s) by
@@ -92,7 +93,7 @@ variable [∀ s : Set α, DecidablePred fun x ↦ x ∈ s]
 
 /-- If `α` has at least 5 elements, then the only nontrivial
 normal subgroup of `Equiv.Perm α` is `alternatingGroup α`. -/
-public theorem alternatingGroup_of_le_of_normal
+theorem alternatingGroup_of_le_of_normal
     {α : Type*} [DecidableEq α] [Fintype α] (hα : 5 ≤ Nat.card α)
     {N : Subgroup (Perm α)} (hnN : N.Normal) (ntN : Nontrivial N) :
     alternatingGroup α ≤ N := by
@@ -232,9 +233,9 @@ theorem closure_isCycleType22_eq_top (h5 : 5 ≤ Nat.card α) :
   simp [sign_of_cycleType, hg, ← Units.val_inj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 3`. -/
-@[expose] public
-def iwasawaStructure_three : IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
-  T s := (ofSubtype s).range
+def iwasawaStructure_three [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] :
+    IwasawaStructure (alternatingGroup α) (Nat.Combination α 3) where
+  T s := (alternatingGroup.ofSubtype s).range
   is_comm s := by
     suffices IsCyclic (alternatingGroup s) by
       let _ : CommGroup (alternatingGroup s) := IsCyclic.commGroup
@@ -259,7 +260,8 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 6)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
-  rw [Classical.or_iff_not_imp_left]
+  classical
+  rw [or_iff_not_imp_left]
   intro hN
   rw [Nat.card_eq_fintype_card] at hα
   have : IsPreprimitive (alternatingGroup α) (Nat.Combination α 3) := by
@@ -330,7 +332,7 @@ theorem map_kleinFour_conj (s : Nat.Combination α 4) (g : alternatingGroup α) 
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Nat.Combination α 4`,
 provided `α` has at least 5 elements. -/
-@[expose] public def iwasawaStructure_four (h5 : 5 ≤ Nat.card α) :
+def iwasawaStructure_four [∀ s : Set α, DecidablePred fun x ↦ x ∈ s] (h5 : 5 ≤ Nat.card α) :
     IwasawaStructure (alternatingGroup α) (Nat.Combination α 4) where
   T s := (kleinFour s).map (ofSubtype s)
   is_comm s := by
@@ -355,7 +357,8 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     (hα : 5 ≤ Nat.card α) (hα' : Nat.card α ≠ 8)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
-  rw [Classical.or_iff_not_imp_left]
+  classical
+  rw [or_iff_not_imp_left]
   intro hN
   rw [Nat.card_eq_fintype_card] at hα
   have : IsPreprimitive (alternatingGroup α) (Nat.Combination α 4) := by
@@ -388,7 +391,7 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
 /-- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
 is `⊤`. -/
-public theorem normal_subgroup_eq_bot_or_eq_top
+theorem normal_subgroup_eq_bot_or_eq_top
     (hα : 5 ≤ Nat.card α)
     {N : Subgroup (alternatingGroup α)} (hnN : N.Normal) :
     N = ⊥ ∨ N = ⊤ := by
