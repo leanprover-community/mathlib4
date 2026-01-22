@@ -9,9 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Data.Int.Star
 /-!
 
 # Acyclic graphs and trees
@@ -515,34 +512,16 @@ section
 
 open Finset
 variable {V : Type*} [Fintype V]
-/-- A pendent vertex (or leaf) is a vertex with degree 1. -/
-def IsPendentVertex (G : SimpleGraph V) [DecidableRel G.Adj] (v : V) : Prop :=
-  G.degree v = 1
 /-- The set of all pendent vertices in a graph. -/
 def pendentVertices (G : SimpleGraph V) [DecidableRel G.Adj] : Finset V :=
   univ.filter (fun v => G.degree v = 1)
+/-- In a connected graph with more than one vertex, every vertex has degree at least 1. -/
 lemma Connected.one_le_degree (G : SimpleGraph V) [DecidableRel G.Adj]
     (hconn : G.Connected) (v : V) (hn : 1 < Fintype.card V) : 1 ≤ G.degree v := by
-  classical
-  rw [Nat.one_le_iff_ne_zero]
-  intro h_deg_zero
-  have : Nontrivial V := Fintype.one_lt_card_iff_nontrivial.mp hn
-  obtain ⟨u, hvu⟩ : ∃ u, v ≠ u := by
-    obtain ⟨a, b, hab⟩ := this.exists_pair_ne
-    by_cases hav : a = v
-    · use b
-      intro h_bv
-      exact hab (hav.trans h_bv)
-    · use a
-      exact Ne.symm hav
-  obtain ⟨p⟩ := hconn v u
-  cases p with
-  | nil => exact hvu rfl
-  | cons h_adj _ =>
-    have : 0 < G.degree v := by
-      rw [degree_pos_iff_exists_adj]
-      exact ⟨_, h_adj⟩
-    omega
+  haveI : Nontrivial V := Fintype.one_lt_card_iff_nontrivial.mp hn
+  have : 0 < G.minDegree := hconn.preconnected.minDegree_pos_of_nontrivial
+  have : 0 < G.degree v := lt_of_lt_of_le this (G.minDegree_le_degree v)
+  exact Nat.succ_le_iff.mpr this
 /-- Let G be a tree of order n ≥ 2. Then G has at least two pendent vertices. -/
 theorem tree_has_at_least_two_pendent_vertices (G : SimpleGraph V) [DecidableRel G.Adj]
     (h_tree : G.IsTree) (h_order : 2 ≤ Fintype.card V) :
@@ -590,33 +569,8 @@ theorem tree_has_at_least_two_pendent_vertices (G : SimpleGraph V) [DecidableRel
           exact hv
   have h_card_total : pendent.card + non_pendent.card = n := by
     rw [← card_union_of_disjoint h_disj, h_partition, card_univ]
-  have h_lower_bound : 2 * n - 1 ≤ ∑ v, G.degree v := by
-    have h1 : ∑ v, G.degree v = pendent.card + ∑ v ∈ non_pendent, G.degree v := by
-      rw [h_sum_split, h_pendent_sum]
-    have h4 : non_pendent.card = n - pendent.card := by omega
-    have h5 : pendent.card ≤ 1 := h_at_most_one
-    have h6 : 0 < pendent.card ∨ pendent.card = 0 := by omega
-    cases h6 with
-    | inl h_pos =>
-      have : pendent.card = 1 := by omega
-      calc ∑ v, G.degree v
-          = pendent.card + ∑ v ∈ non_pendent, G.degree v := h1
-        _ ≥ pendent.card + 2 * non_pendent.card := by linarith [h_non_pendent_sum]
-        _ = 1 + 2 * non_pendent.card := by rw [this]
-        _ = 1 + 2 * (n - 1) := by
-            have : non_pendent.card = n - 1 := by rw [h4]; omega
-            rw [this]
-        _ = 2 * n - 1 := by omega
-    | inr h_zero =>
-      have h_calc : ∑ v, G.degree v ≥ 2 * n := by
-        calc ∑ v, G.degree v
-            = pendent.card + ∑ v ∈ non_pendent, G.degree v := h1
-          _ = 0 + ∑ v ∈ non_pendent, G.degree v := by rw [h_zero]
-          _ ≥ 2 * non_pendent.card := by linarith [h_non_pendent_sum]
-          _ = 2 * n := by rw [h4, h_zero]; omega
-      omega
+  have h_lower_bound : 2 * n - 1 ≤ ∑ v, G.degree v := by lia
   omega
-
 end
 
 /-- The graph resulting from removing a vertex of degree one from a connected graph is connected. -/
