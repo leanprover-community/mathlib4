@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
+Copyright (c) 2026 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Thomas Browning
 -/
+
 module
 
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
@@ -13,6 +14,8 @@ public import Mathlib.RingTheory.Noetherian.Defs
 # Finiteness of minimal primes
 
 We prove finiteness of minimal primes above an ideal.
+
+This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
 
 -/
 
