@@ -12,10 +12,16 @@ public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 # Colimits in `P.Over ⊤ S`
 
-Let `D : J ⥤ P.Over ⊤ S` be a diagram and `𝒰` a locally directed open cover of `S`
-(e.g., the cover of all affine opens of `S`). Suppose the restrictions
-of `D` to `Dᵢ : J ⥤ P.Over ⊤ (𝒰.X i)` have a colimit for every `i`, then we show
-that also `D` has a colimit under suitable assumptions.
+Let `P` be a morphism property in the category of schemes and `S` be a scheme. Let
+`D : J ⥤ P.Over ⊤ S` be a diagram and `𝒰` a locally directed open cover of `S`
+(e.g., the cover of all affine opens of `S`).
+Suppose the restrictions of `D` to `Dᵢ : J ⥤ P.Over ⊤ (𝒰.X i)` have a colimit for every `i`,
+then we show that also `D` has a colimit under the following assumptions:
+
+- `P` is local on the source.
+- For `i ⟶ j`, the transition map `𝒰.X i ⟶ 𝒰.X j` satisfies `P`.
+- For every `i ⟶ j`, the base change functor `P.Over ⊤ (𝒰.X j) ⟶ P.Over ⊤ (𝒰.X i)` preserves
+  colimits of shape `J`.
 
 This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to the case where
 `S` is affine.
@@ -55,9 +61,6 @@ def trans {i j : 𝒰.I₀} (hij : i ⟶ j) :
     D ⋙ Over.pullback P ⊤ (𝒰.f i) ⋙ Over.map _ (d.prop_trans hij) ⟶
       D ⋙ Over.pullback P ⊤ (𝒰.f j) :=
   D.whiskerLeft <| Over.pullbackMapHomPullback (P := P) (Q := ⊤) _ _ trivial _ _
-
-variable [∀ {i j} (hij : i ⟶ j),
-  PreservesColimitsOfShape J (Over.map ⊤ (d.prop_trans hij))]
 
 /-- (Implementation) Cocone for transition map for construction of
 `AlgebraicGeometry.Scheme.Cover.ColimitGluingData.functor`. -/
@@ -290,7 +293,6 @@ end ColimitGluingData
 
 lemma hasColimit_of_locallyDirected
     (H : ∀ {i j} (hij : i ⟶ j), P (𝒰.trans hij))
-    [∀ {i j : 𝒰.I₀} (hij : i ⟶ j), PreservesColimitsOfShape J (Over.map ⊤ (H hij))]
     [∀ {i j : 𝒰.I₀} (hij : i ⟶ j), PreservesColimitsOfShape J (Over.pullback P ⊤ (𝒰.trans hij))]
     [∀ i, HasColimit (D ⋙ Over.pullback _ _ (𝒰.f i))]
     [Quiver.IsThin 𝒰.I₀] [Small.{u} 𝒰.I₀] [IsZariskiLocalAtTarget P] :
