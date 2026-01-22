@@ -23,7 +23,7 @@ theorem.
 
 universe u v w
 
-variable {R E F : Type*}
+variable {ι R E F : Type*}
 
 /--
 The notation typeclass for the Fourier transform.
@@ -128,9 +128,7 @@ variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E 
 
 variable (E) in
 /-- The Fourier transform as an `AddHom`. -/
-def fourierAddHom : AddHom E F where
-  toFun := 𝓕
-  map_add' := fourier_add
+def fourierAddHom : AddHom E F := ⟨𝓕, fourier_add⟩
 
 @[simp]
 theorem fourier_zero : 𝓕 (0 : E) = 0 :=
@@ -140,6 +138,10 @@ theorem fourier_zero : 𝓕 (0 : E) = 0 :=
 theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
     map_neg (fourierAddHom E).toAddMonoidHom f
 
+@[simp]
+theorem fourier_sum (f : ι → E) (s : Finset ι) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
+    map_sum (fourierAddHom E).toAddMonoidHom f s
+
 end fourierAddHom
 
 section fourierInvAddHom
@@ -148,9 +150,7 @@ variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInv
 
 variable (E) in
 /-- The inverse Fourier transform as an `AddHom`. -/
-def fourierInvAddHom : AddHom E F where
-  toFun := 𝓕⁻
-  map_add' := fourierInv_add
+def fourierInvAddHom : AddHom E F := ⟨𝓕⁻, fourierInv_add⟩
 
 @[simp]
 theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
@@ -159,6 +159,10 @@ theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
 @[simp]
 theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
     map_neg (fourierInvAddHom E).toAddMonoidHom f
+
+@[simp]
+theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕⁻ (f i) :=
+    map_sum (fourierInvAddHom E).toAddMonoidHom f s
 
 end fourierInvAddHom
 
