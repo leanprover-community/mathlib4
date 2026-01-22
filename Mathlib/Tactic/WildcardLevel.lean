@@ -5,8 +5,8 @@ Authors: Adam Topaz
 -/
 module
 
-public import Lean.Parser.Term
-public import Batteries.Tactic.Lint.Misc
+import Lean.Parser.Term
+import Batteries.Tactic.Lint.Misc
 
 public meta import Lean.Elab.App
 public import Mathlib.Lean.Elab.Term
@@ -49,8 +49,10 @@ is indicated by the syntax.
 
 open Lean Meta Elab Term
 
+public section
 declare_syntax_cat wildcard_level
 declare_syntax_cat comma_wildcard_level
+end
 
 @[nolint docBlame] syntax "*" : wildcard_level
 @[nolint docBlame] syntax ident noWs "*" : wildcard_level
