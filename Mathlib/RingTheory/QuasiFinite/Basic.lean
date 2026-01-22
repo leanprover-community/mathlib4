@@ -400,10 +400,10 @@ lemma QuasiFiniteAt.eq_of_le_of_under_eq {P Q : Ideal S} [P.IsPrime] [Q.IsPrime]
     (Ideal.map (algebraMap S (Localization.AtPrime Q)) P) _
     (IsLocalRing.le_maximalIdeal_of_isPrime _) (by
       convert h₂ <;> rw [← Ideal.under_under (B := S), Ideal.under_def S]
-      · rw [IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ _ ‹P.IsPrime› this]
+      · rw [IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
       · rw [Localization.AtPrime.comap_maximalIdeal])
   rw [← Localization.AtPrime.comap_maximalIdeal (I := Q), ← H,
-    IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ _ ‹P.IsPrime› this]
+    IsLocalization.comap_map_of_isPrime_disjoint Q.primeCompl _ ‹P.IsPrime› this]
 
 instance (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] [QuasiFiniteAt R P] :
     Module.Finite p.ResidueField P.ResidueField := by
@@ -454,7 +454,7 @@ lemma QuasiFiniteAt.isClopen_singleton
   obtain ⟨f, hf, e⟩ := exists_basicOpen_eq_singleton (R := R) p.asIdeal
   exact e ▸ (PrimeSpectrum.basicOpen f).isOpen
 
-attribute [local instance high] RingHom.ker_isPrime DivisionRing.instIsArtinianRing in
+attribute [local instance] RingHom.ker_isPrime in
 lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.EssFiniteType R S] [Algebra.QuasiFiniteAt R q] :
