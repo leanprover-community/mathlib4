@@ -77,7 +77,7 @@ attribute [nolint unusedArguments] Mathlib.Tactic.RingNF.instReprConfig.repr
 declare_config_elab elabConfig Config
 
 local instance {u : Level} {arg : Q(Type u)} {sα : Q(CommSemiring $arg)} :
-    Algebra.RingCompute (Algebra.Ring.baseType sα) sα := Algebra.Ring.ringCompute sα
+    Common.RingCompute (Ring.baseType sα) sα := Ring.ringCompute sα
 
 /--
 Evaluates an expression `e` into a normalized representation as a polynomial.
@@ -92,10 +92,10 @@ def evalExpr (e : Expr) : AtomM Simp.Result := do
   guard e.isApp -- all interesting ring expressions are applications
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let sα ← synthInstanceQ q(CommSemiring $α)
-  let c ← Algebra.mkCache sα
+  let c ← Common.mkCache sα
   let ⟨a, _, pa⟩ ← match
-    (← Algebra.isAtomOrDerivable (bt := Algebra.Ring.baseType sα) sα c q($e)) with
-  | none => Algebra.eval sα c e -- `none` indicates that `eval` will find something algebraic.
+    (← Common.isAtomOrDerivable (bt := Ring.baseType sα) sα c q($e)) with
+  | none => Common.eval sα c e -- `none` indicates that `eval` will find something algebraic.
   | some none => failure -- No point rewriting atoms
   | some (some r) => pure r -- Nothing algebraic for `eval` to use, but `norm_num` simplifies.
   pure { expr := a, proof? := pa }
