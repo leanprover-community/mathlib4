@@ -52,7 +52,9 @@ instance : HasColimits X.Modules := inferInstanceAs (HasColimits (SheafOfModules
 section Functor
 
 variable (X) in
-/-- The forgetful functor from `𝒪ₓ`-modules to presheaf of modules. -/
+/-- The forgetful functor from `𝒪ₓ`-modules to presheaf of modules.
+This is mostly useful to transport results from (pre)sheaf of modules to `𝒪ₓ`-modules and
+usually shouldn't be used directly when working with actual `𝒪ₓ`-modules. -/
 def toPresheafOfModules : X.Modules ⥤ X.PresheafOfModules := SheafOfModules.forget _
 
 /-- The forgetful functor from `𝒪ₓ`-modules to presheaf of modules is fully faithful. -/
@@ -76,7 +78,7 @@ instance : (toPresheaf X).ReflectsIsomorphisms :=
 
 end Functor
 
-variable {M N : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
+variable {M N K : X.Modules} {φ : M ⟶ N} {U V : X.Opens}
 
 section Presheaf
 
@@ -111,9 +113,8 @@ lemma Hom.app_smul (φ : M ⟶ N) (r : Γ(X, U)) (x : Γ(M, U)) :
 @[simp] lemma Hom.add_app (φ ψ : M ⟶ N) : (φ + ψ).app U = φ.app U + ψ.app U := rfl
 @[simp] lemma Hom.sub_app (φ ψ : M ⟶ N) : (φ - ψ).app U = φ.app U - ψ.app U := rfl
 @[simp] lemma Hom.zero_app : (0 : M ⟶ N).app U = 0 := rfl
-@[simp] lemma Hom.id_app (M : X.Modules) : (𝟙 M : _ ⟶ _).app U = 𝟙 _ := rfl
-@[simp] lemma Hom.comp_app {K : X.Modules} (φ : M ⟶ N) (ψ : N ⟶ K) :
-    (φ ≫ ψ).app U = φ.app U ≫ ψ.app U := rfl
+@[simp] lemma Hom.id_app (M : X.Modules) : (𝟙 M :).app U = 𝟙 _ := rfl
+@[simp] lemma Hom.comp_app (φ : M ⟶ N) (ψ : N ⟶ K) : (φ ≫ ψ).app U = φ.app U ≫ ψ.app U := rfl
 
 @[ext]
 lemma hom_ext (f g : M ⟶ N) (H : ∀ U, f.app U = g.app U) : f = g := by
@@ -123,19 +124,8 @@ lemma hom_ext (f g : M ⟶ N) (H : ∀ U, f.app U = g.app U) : f = g := by
 
 lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 
-section
-
-local notation "F" => toPresheafOfModules X
-
-variable {U V : X.Opensᵒᵖ} (i : U ⟶ V)
-
-@[simp] lemma toPresheaf_obj :                   (toPresheaf X).obj M = M.presheaf       := rfl
-@[simp] lemma toPresheaf_map :                   (toPresheaf X).map φ = φ.mapPresheaf    := rfl
-@[simp] lemma toPresheafOfModules_obj_presheaf : ((F).obj M).presheaf = M.presheaf       := rfl
-@[simp] lemma toPresheafOfModules_obj_obj_coe :  ↥(((F).obj M).obj U) = Γ(M, U.unop)     := rfl
-@[simp] lemma toPresheafOfModules_obj_map_coe :  ⇑(((F).obj M).map i) = M.presheaf.map i := rfl
-
-end
+@[simp] lemma toPresheaf_obj : (toPresheaf X).obj M = M.presheaf := rfl
+@[simp] lemma toPresheaf_map : (toPresheaf X).map φ = φ.mapPresheaf := rfl
 
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
