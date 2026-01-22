@@ -267,7 +267,7 @@ lemma toENat_eq_iff_of_le_aleph0 (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) : toE
   toENat_strictMonoOn.injOn.eq_iff hc hc'
 
 @[simp] lemma natCast_le_toENat : n ≤ toENat c ↔ n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (nat_lt_aleph0 _).le]
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
 
 @[simp] lemma one_le_toENat : 1 ≤ toENat c ↔ 1 ≤ c := natCast_le_toENat
 @[simp] lemma ofNat_le_toENat [n.AtLeastTwo] : ofNat(n) ≤ toENat c ↔ ofNat(n) ≤ c :=
