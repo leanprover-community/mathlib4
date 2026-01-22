@@ -125,7 +125,8 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
     simpa
   refine ⟨?_, fun h ↦ ⟨⟨x, h⟩, hxV _⟩⟩
   rintro ⟨y, hxVy⟩
-  obtain ⟨U, r, hU, hr, hxV, hrV⟩ : ∃ (U : Y.Opens) (r : Γ(_, f.fromNormalization ⁻¹ᵁ U)),
+  obtain ⟨U, r, hU, hr, hxV, hrV⟩ :
+      ∃ (U : Y.Opens) (r : Γ(f.normalization, f.fromNormalization ⁻¹ᵁ U)),
       IsAffineOpen U ∧ IsAffineOpen (f.toNormalization ⁻¹ᵁ f.normalization.basicOpen r) ∧
       x ∈ f.toNormalization ⁻¹ᵁ f.normalization.basicOpen r ∧ Scheme.basicOpen _ r ≤ V y := by
     obtain ⟨_, ⟨W, hW, rfl⟩, hxW, hWV : W ≤ _⟩ := X.isBasis_affineOpens.exists_subset_of_mem_open
@@ -172,8 +173,7 @@ lemma Scheme.Hom.exists_isIso_morphismRestrict_toNormalization
       simp [Scheme.Hom.image_preimage_eq_opensRange_inf, -Scheme.preimage_basicOpen,
         f.toNormalization.preimage_mono, hrV, H]
   have : (f.appLE U W H).hom.QuasiFinite := by
-    have : (f.appLE U W H).hom.FiniteType :=
-      LocallyOfFiniteType.finiteType_of_affine_subset ⟨_, hU⟩ ⟨_, hr⟩ _
+    have : (f.appLE U W H).hom.FiniteType := f.finiteType_appLE hU hr H
     rw [← H', CommRingCat.hom_comp, RingHom.finiteType_respectsIso.cancel_right_isIso] at this
     rw [← H', CommRingCat.hom_comp, RingHom.QuasiFinite.respectsIso.cancel_right_isIso]
     exact .of_isIntegral_of_finiteType (IsIntegralHom.isIntegral_app f.fromNormalization _ hU)

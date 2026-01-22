@@ -4,6 +4,7 @@ public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.ZariskiMain
+public import Mathlib.RingTheory.Etale.QuasiFinite
 public import Mathlib.CFT.Stuff
 public import Mathlib.CFT.IsStandardEtale
 public import Mathlib.RingTheory.Localization.InvSubmonoid
@@ -79,105 +80,6 @@ lemma Ideal.comap_tensorProductEquivOfBijectiveResidueFieldMap_apply
   simpa using (Ideal.comap_tensorProductEquivOfBijectiveResidueFieldMap_symm H
     (Ideal.tensorProductEquivOfBijectiveResidueFieldMap H Q)).symm
 
-lemma Ideal.eq_of_comap_eq_comap_of_bijective_residueFieldMap
-    {R R' S : Type*} [CommRing R] [CommRing R'] [CommRing S] [Algebra R R'] [Algebra R S]
-    {p : Ideal R} {q : Ideal R'} [p.IsPrime] [q.IsPrime] [q.LiesOver p]
-    (H : Function.Bijective (Ideal.ResidueField.mapₐ p q (Algebra.ofId _ _) (q.over_def p)))
-    (P₁ P₂ : Ideal (R' ⊗[R] S)) [P₁.IsPrime] [P₂.IsPrime] [P₁.LiesOver q] [P₂.LiesOver q]
-    (H₂ : P₁.comap Algebra.TensorProduct.includeRight.toRingHom =
-      P₂.comap Algebra.TensorProduct.includeRight.toRingHom) : P₁ = P₂ := by
-  refine congr_arg Subtype.val ((Ideal.tensorProductEquivOfBijectiveResidueFieldMap
-  (S := S) H).injective (a₁ := ⟨P₁, ‹_›, ‹_›⟩) (a₂ := ⟨P₂, ‹_›, ‹_›⟩) (by ext1; simpa))
-
-lemma Algebra.QuasiFiniteAt.exists_basicOpen_eq_singleton
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal S) [p.IsPrime] [IsArtinianRing R] [Algebra.EssFiniteType R S]
-    [Algebra.QuasiFiniteAt R p] :
-    ∃ f ∉ p, (PrimeSpectrum.basicOpen f : Set (PrimeSpectrum S)) = {⟨p, ‹_›⟩} := by
-  have : IsLocalizedModule p.primeCompl (.id (R := S) (M := Localization.AtPrime p)) := by
-    exact ⟨IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p)),
-      fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simpa using ⟨1, p.primeCompl.one_mem⟩⟩
-  have : Module.Finite R (Localization.AtPrime p) := .of_quasiFinite
-  have : Module.Finite S (Localization.AtPrime p) := .of_restrictScalars_finite R _ _
-  have : IsArtinianRing (Localization.AtPrime p) := .of_finite R _
-  have : IsNoetherianRing S := .of_essFiniteType R S
-  have : Module.FinitePresentation S (Localization.AtPrime p) :=
-    Module.finitePresentation_of_finite _ _
-  obtain ⟨r, hrp, H⟩ := exists_bijective_map_powers p.primeCompl
-    (Algebra.linearMap S (Localization.AtPrime p)) (.id (R := S) (M := Localization.AtPrime p))
-    (Algebra.linearMap S (Localization.AtPrime p)) (by
-    convert show (Function.Bijective LinearMap.id) from Function.bijective_id
-    apply IsLocalizedModule.ext p.primeCompl (Algebra.linearMap S (Localization.AtPrime p))
-    · exact IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
-    simp [IsLocalizedModule.map_comp])
-  have hrp' : .powers r ≤ p.primeCompl := by simpa [Submonoid.powers_le]
-  have : IsLocalizedModule (.powers r) (.id (R := S) (M := Localization.AtPrime p)) := by
-    refine ⟨fun x ↦ IsLocalizedModule.map_units (Algebra.linearMap S (Localization.AtPrime p))
-      ⟨x, hrp' x.2⟩, fun y ↦ ⟨⟨y, 1⟩, by simp⟩, by simp [Submonoid.mem_powers_iff]⟩
-  let e₁ : LocalizedModule (.powers r) S ≃ₗ[S] Localization.Away r :=
-    IsLocalizedModule.iso (.powers r) (Algebra.linearMap _ _)
-  let e₂ : LocalizedModule (.powers r) (Localization.AtPrime p) ≃ₗ[S] Localization.AtPrime p :=
-    IsLocalizedModule.iso (.powers r) LinearMap.id
-  let φ₀ : Localization.Away r →ₐ[S] Localization.AtPrime p :=
-    ⟨IsLocalization.map (T := p.primeCompl) _ (.id S) hrp', by simp⟩
-  let φ : Localization.Away r ≃ₐ[S] Localization.AtPrime p :=
-    .ofBijective φ₀ <| by
-      convert (e₂.bijective.comp (H r dvd_rfl)).comp e₁.symm.bijective
-      simp only [← LinearEquiv.coe_toLinearMap, ← AlgHom.coe_toLinearMap, ← LinearMap.coe_comp,
-        ← @LinearMap.coe_restrictScalars S (Localization (Submonoid.powers r))]
-      congr 1
-      apply IsLocalizedModule.ext (.powers r) (Algebra.linearMap _ _)
-      · exact IsLocalizedModule.map_units (.id (R := S) (M := Localization.AtPrime p))
-      · ext
-        dsimp [e₁, e₂]
-        rw [IsLocalizedModule.iso_symm_apply' _ _ _ 1 1 (by simp), LocalizedModule.map_mk]
-        simp
-  refine ⟨r, hrp, subset_antisymm (fun q hrq ↦ ?_) (Set.singleton_subset_iff.mpr hrp)⟩
-  obtain ⟨q, rfl⟩ := (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r).ge hrq
-  obtain ⟨q, rfl⟩ := (PrimeSpectrum.comapEquiv φ.toRingEquiv).symm.surjective q
-  obtain rfl : q = IsLocalRing.closedPoint _ := Subsingleton.elim _ _
-  ext1
-  dsimp
-  rw [Ideal.comap_comap, ← AlgEquiv.toAlgHom_toRingHom, AlgHom.comp_algebraMap]
-  exact IsLocalization.AtPrime.comap_maximalIdeal _ _
-
-attribute [local instance high] Algebra.TensorProduct.leftAlgebra IsScalarTower.right
-  DivisionRing.instIsArtinianRing in
-set_option maxHeartbeats 0 in
-lemma exists_notMem_forall_mem_of_ne_of_liesOver
-    {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
-    [Algebra.FiniteType R S]
-    [Algebra.QuasiFiniteAt R q] :
-    ∃ s ∉ q, ∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q' := by
-  classical
-  let e := PrimeSpectrum.preimageHomeomorphFiber _ S ⟨p, inferInstance⟩
-  let qF : PrimeSpectrum (p.Fiber S) := e ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩
-  have : Algebra.QuasiFiniteAt p.ResidueField qF.asIdeal := .baseChange q _
-      congr($(e.symm_apply_apply ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).1.1).symm
-  have := Algebra.QuasiFiniteAt.exists_basicOpen_eq_singleton (R := p.ResidueField) qF.asIdeal
-  obtain ⟨r, hr, hrq⟩ := Algebra.QuasiFiniteAt.exists_basicOpen_eq_singleton
-    (R := p.ResidueField) qF.asIdeal
-  obtain ⟨s, hs, x, hsx⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ r
-  have : x ∉ q := by
-    have : r ∉ _ := hrq.ge rfl
-    simp only [PrimeSpectrum.preimageHomeomorphFiber, PrimeSpectrum.preimageOrderIsoFiber,
-      Homeomorph.homeomorph_mk_coe, qF, e] at this
-    rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal,
-        ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ s), ← Algebra.smul_def, hsx] at this
-    · simpa using this
-    · simpa [IsScalarTower.algebraMap_apply R S q.ResidueField, q.over_def p] using hs
-  refine ⟨x, this, fun q' _ hq' _ ↦ not_not.mp fun hxq' ↦ hq' ?_⟩
-  refine congr($(e.injective (a₁ := ⟨⟨q', ‹_›⟩, PrimeSpectrum.ext (q'.over_def p).symm⟩)
-    (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.1)
-  simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, PrimeSpectrum.preimageHomeomorphFiber,
-    PrimeSpectrum.preimageOrderIsoFiber, Homeomorph.homeomorph_mk_coe, Set.mem_compl_iff,
-    PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe, e]
-  rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal,
-    ← Ideal.IsPrime.mul_mem_left_iff (x := algebraMap _ _ s), ← Algebra.smul_def, hsx]
-  · simpa
-  · simpa [IsScalarTower.algebraMap_apply R S q'.ResidueField, ← Ideal.mem_comap, ← q'.over_def p]
-
 @[simp]
 lemma MonicDegreeEq.coe_mk {R : Type*} [CommRing R] {n : ℕ} (p : Polynomial R) (hp : p.Monic)
   (hp' : p.natDegree = n) : (Polynomial.MonicDegreeEq.mk p hp hp').1 = p := rfl
@@ -202,7 +104,7 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     ∃ s ∉ q, ∃ hs : IsIntegral R s, (∀ q' : Ideal S, q'.IsPrime → q' ≠ q → q'.LiesOver p → s ∈ q') ∧
       ∀ (q' : Ideal (integralClosure R S)), q'.IsPrime →
         q' ≠ q.under _ → q'.LiesOver p → ⟨s, hs⟩ ∈ q' := by
-  obtain ⟨s₁, hs₁q, hs₁⟩ := exists_notMem_forall_mem_of_ne_of_liesOver (R := R) p q
+  obtain ⟨s₁, hs₁q, hs₁⟩ := Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver (R := R) p q
   obtain ⟨s₂, hs₂q, hs₂⟩ := Algebra.ZariskisMainProperty.of_finiteType (R := R) q
   obtain ⟨s₃, hs₃⟩ := hs₂.2 (algebraMap _ _ s₁)
   obtain ⟨s₃, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers s₂) s₃
@@ -247,20 +149,6 @@ lemma exists_notMem_and_isIntegral_forall_mem_of_ne_of_liesOver
     replace this : s₃ ∈ q' := by simpa [← Ideal.mem_comap, ← q's.over_def q'] using this
     exact H (Ideal.mul_mem_left _ (s₂ ^ m) this)
   · rw [map_pow]; exact Ideal.notMem_of_isUnit _ (.pow _ (IsLocalization.Away.algebraMap_isUnit _))
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (s : S) [Algebra.FiniteType R S] :
-    Algebra.FiniteType R (Localization.Away s) :=
-  .trans (S := S) inferInstance inferInstance
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid S)
-    [Algebra.FormallySmooth R S] :
-    Algebra.FormallySmooth R (Localization M) :=
-  have : Algebra.FormallySmooth S (Localization M) := .of_isLocalization M
-  .comp _ S _
-
-instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid S)
-    [Algebra.FormallyEtale R S] : Algebra.FormallyEtale R (Localization M) :=
-  .of_formallyUnramified_and_formallySmooth
 
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (s : S) [Algebra.Etale R S] :
     Algebra.Etale R (Localization.Away s) where
@@ -470,6 +358,19 @@ lemma IsLocalization.tensorProductMap
   · ext x; simpa using congr($H x)
   · exact isBaseChange_tensorProduct_map _ (IsBaseChange.linearMap _ _)
 
+instance {K A : Type*} [Field K] [CommRing A] [Algebra K A] (P : Ideal A) [P.IsPrime] :
+    P.LiesOver (⊥ : Ideal K) :=
+  ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
+
+instance {A : Type*} [CommRing A] (P : Ideal A) [P.IsPrime] :
+    (⊥ : Ideal P.ResidueField).LiesOver P := ⟨P.ker_algebraMap_residueField.symm⟩
+
+attribute [-instance] Module.free_of_finite_type_torsion_free'
+  Module.Free.instFaithfulSMulOfNontrivial in
+instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (P : Ideal R) [P.IsPrime]
+    (Q' : Ideal (P.Fiber S)) [Q'.IsPrime] : Q'.LiesOver P :=
+  .trans _ (⊥ : Ideal P.ResidueField) _
+
 open Polynomial in
 set_option maxHeartbeats 0 in
 set_option synthInstance.maxHeartbeats 0 in
@@ -520,10 +421,9 @@ lemma exists_etale_isIdempotentElem_forall_liesOver_eq.{u, v}
     contrapose hgq
     obtain ⟨m, _, hm⟩ := Ideal.exists_le_maximal _ (Ideal.span_singleton_eq_top.not.mpr hgq)
     have := H (m.comap (Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap _ _)))
-      inferInstance (by
-      change (m.comap (Algebra.TensorProduct.includeRight.comp
-        (IsScalarTower.toAlgHom _ _ _))).LiesOver P
-      infer_instance) (Ideal.notMem_of_isUnit (m.comap Algebra.TensorProduct.includeRight)
+      inferInstance (m.comap_liesOver P (Algebra.TensorProduct.includeRight.comp
+        (IsScalarTower.toAlgHom _ _ _)))
+        (Ideal.notMem_of_isUnit (m.comap Algebra.TensorProduct.includeRight)
         (IsLocalization.Away.algebraMap_isUnit _))
     rw [← hP'q]
     exact this.le ((Ideal.span_singleton_le_iff_mem _).mp hm:))

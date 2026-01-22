@@ -53,6 +53,32 @@ theorem Algebra.FormallyEtale.isStandardEtale_of_finite_aux
     rfl
   · simpa [e] using Polynomial.fiberEquivQuotient_tmul _ hx' P 1 X
 
+instance {K A : Type*} [Field K] [CommRing A] [Algebra K A] (P : Ideal A) [P.IsPrime] :
+    P.LiesOver (⊥ : Ideal K) :=
+  ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
+
+instance {A : Type*} [CommRing A] (P : Ideal A) [P.IsPrime] :
+    (⊥ : Ideal P.ResidueField).LiesOver P := ⟨P.ker_algebraMap_residueField.symm⟩
+
+theorem Algebra.TensorProduct.map_surjective
+    {R S A B C D : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+    [Semiring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [Semiring B] [Algebra R B]
+    [Semiring C] [Algebra R C] [Algebra S C] [IsScalarTower R S C]
+    [Semiring D] [Algebra R D] (f : A →ₐ[S] C) (g : B →ₐ[R] D) (hf : Function.Surjective f)
+    (hg : Function.Surjective g) :
+    Function.Surjective (Algebra.TensorProduct.map f g) := by
+  intro x
+  induction x with
+  | zero => exact ⟨0, by simp⟩
+  | tmul x y =>
+    obtain ⟨x, rfl⟩ := hf x
+    obtain ⟨y, rfl⟩ := hg y
+    exact ⟨x ⊗ₜ y, by simp⟩
+  | add x y h₁ h₂ =>
+    obtain ⟨x, rfl⟩ := h₁
+    obtain ⟨y, rfl⟩ := h₂
+    exact ⟨x + y, by simp⟩
+
 set_option maxHeartbeats 0 in
 set_option synthInstance.maxHeartbeats 0 in
 theorem Algebra.FormallyEtale.isStandardEtale_of_finite_aux2

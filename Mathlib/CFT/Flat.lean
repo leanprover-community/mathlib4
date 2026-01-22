@@ -1,13 +1,7 @@
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
-public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.Topology.Sheaves.SheafCondition.EqualizerProducts
-public import Mathlib.Algebra.Category.CommAlgCat.Basic
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Category.AlgCat.Limits
-public import Mathlib.Algebra.Category.ModuleCat.AB
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Algebra.Category.Ring.Under.Limits
 
 @[expose] public section
 
@@ -16,137 +10,6 @@ open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 universe v u
 
 variable {R S : CommRingCat.{u}} (φ : R ⟶ S) (hφ : φ.hom.Flat)
-
-def CommAlgCat.fullyFaithful_forget₂_algCat :
-    (forget₂ (CommAlgCat R) (AlgCat R)).FullyFaithful where
-  preimage f := CommAlgCat.ofHom f.hom
-
-instance : (forget₂ (CommAlgCat R) (AlgCat R)).Full := CommAlgCat.fullyFaithful_forget₂_algCat.full
-instance : (forget₂ (CommAlgCat R) (AlgCat R)).Faithful :=
-  CommAlgCat.fullyFaithful_forget₂_algCat.faithful
-
-instance {R : Type u} [CommRing R] :
-    PreservesLimits (forget₂ (AlgCat.{u} R) (ModuleCat R)) :=
-  have : PreservesLimits (forget₂ (AlgCat R) (ModuleCat R) ⋙ forget (ModuleCat R)) := by
-    change PreservesLimits (forget _)
-    infer_instance
-  preservesLimits_of_reflects_of_preserves
-    (F := forget₂ (AlgCat R) (ModuleCat R)) (G := forget _)
-
-instance {R : Type u} [CommRing R] :
-    PreservesLimits (forget (CommAlgCat.{u} R)) :=
-  inferInstanceAs (PreservesLimits <| (commAlgCatEquivUnder (.of R)).functor ⋙
-    Under.forget _ ⋙ forget _)
-
-instance {R : Type u} [CommRing R] : ReflectsLimits (forget (AlgCat.{u} R)) :=
-  reflectsLimits_of_reflectsIsomorphisms
-
-instance {R : Type u} [CommRing R] :
-    PreservesLimits (forget₂ (CommAlgCat.{u} R) (AlgCat.{u} R)) :=
-  have : PreservesLimits (forget₂ (CommAlgCat R) (AlgCat R) ⋙ forget (AlgCat R)) := by
-    change PreservesLimits (forget _)
-    infer_instance
-  preservesLimits_of_reflects_of_preserves
-    (F := forget₂ (CommAlgCat R) (AlgCat R)) (G := forget _)
-
-instance {R : Type u} [CommRing R] :
-    (forget₂ (AlgCat.{u} R) (ModuleCat R)).ReflectsIsomorphisms :=
-  have : (forget₂ (AlgCat R) (ModuleCat R) ⋙ forget (ModuleCat R)).ReflectsIsomorphisms := by
-    change (forget _).ReflectsIsomorphisms
-    infer_instance
-  reflectsIsomorphisms_of_comp _ (forget _)
-
-instance {R : Type u} [CommRing R] :
-    ReflectsLimits (forget₂ (AlgCat.{u} R) (ModuleCat R)) :=
-  reflectsLimits_of_reflectsIsomorphisms
-
-instance {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) :
-    (ModuleCat.extendScalars f).Additive where
-  map_add {M N φ ψ} := by ext; simp [TensorProduct.tmul_add]
-
-lemma ModuleCat.preservesFiniteLimits_extendScalars.{u₁, u₂, w}
-    {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.Flat) :
-    PreservesFiniteLimits (ModuleCat.extendScalars.{u₁, u₂, max w u₂} f) := by
-  have := ((ModuleCat.extendScalars.{u₁, u₂, max w u₂}
-    f).preservesFiniteColimits_tfae.out 3 0 rfl).mp inferInstance
-  rw [(ModuleCat.extendScalars.{u₁, u₂, max w u₂} f).preservesFiniteLimits_tfae.out 3 0 rfl]
-  rintro S hS
-  refine ⟨(this S hS).1, ?_⟩
-  rw [ModuleCat.mono_iff_injective]
-  algebraize [f]
-  exact Module.Flat.lTensor_preserves_injective_linearMap _
-    ((ModuleCat.mono_iff_injective _).mp hS.mono_f)
-
-open TensorProduct in
-noncomputable
-def pushoutIsoExtendScalars : (((Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse) ⋙
-    forget₂ (CommAlgCat ↑S) (AlgCat ↑S)) ⋙ forget₂ (AlgCat ↑S) (ModuleCat ↑S)) ≅
-      (commAlgCatEquivUnder R).inverse ⋙ forget₂ (CommAlgCat R) (AlgCat R) ⋙
-        forget₂ (AlgCat R) (ModuleCat R) ⋙ ModuleCat.extendScalars φ.hom := by
-  letI := φ.hom.toAlgebra
-  letI e (A : Under R) : pushout A.hom φ ≅ .of (S ⊗[R] A.right) :=
-    pushoutSymmetry _ _ ≪≫ (colimit.isColimit _).coconePointUniqueUpToIso
-      (CommRingCat.pushoutCoconeIsColimit R _ _)
-  haveI hel (A : Under R) : pushout.inl _ _ ≫ (e A).hom =
-      CommRingCat.ofHom Algebra.TensorProduct.includeRight.toRingHom := by
-    simpa [e, -IsColimit.comp_coconePointUniqueUpToIso_hom] using
-      (colimit.isColimit _).comp_coconePointUniqueUpToIso_hom _ _
-  haveI her (A : Under R) : pushout.inr _ _ ≫ (e A).hom =
-      CommRingCat.ofHom (Algebra.TensorProduct.includeLeft (S := R)).toRingHom := by
-    simpa [e, -IsColimit.comp_coconePointUniqueUpToIso_hom] using
-      (colimit.isColimit _).comp_coconePointUniqueUpToIso_hom _ _
-  refine NatIso.ofComponents (fun A ↦
-    LinearEquiv.toModuleIso
-      { __ := (e A).commRingCatIsoToRingEquiv.toAddEquiv, map_smul' s m := ?_ }) ?_
-  · dsimp [Iso.commRingCatIsoToRingEquiv, ModuleCat.restrictScalars] at m ⊢
-    simp only [Algebra.smul_def, map_mul,
-      RingHom.algebraMap_toAlgebra, Under.mk_hom]
-    rw [@Algebra.smul_def S (↑S ⊗[↑R] ↑A.right)]
-    change (pushout.inr A.hom φ ≫ (e A).hom) s * _ =
-      (CommRingCat.ofHom (algebraMap S (S ⊗[R] A.right))) s * _
-    congr 3
-    simp only [Functor.const_obj_obj, Functor.id_obj, her]
-    rfl
-  · intros X Y f
-    ext x
-    change (pushout.desc (f.right ≫ pushout.inl Y.hom φ) (pushout.inr Y.hom φ) _ ≫ (e Y).hom) _ =
-      ((e X).hom ≫ CommRingCat.ofHom
-        (Algebra.TensorProduct.map (.id R S) (CommRingCat.toAlgHom f))) _
-    congr 2
-    ext1
-    · rw [reassoc_of% hel]
-      simp [hel, ← CommRingCat.ofHom_comp, ← AlgHom.comp_toRingHom]
-      rfl
-    · rw [reassoc_of% her]
-      simp [her, ← CommRingCat.ofHom_comp, ← AlgHom.comp_toRingHom]
-
-open TensorProduct in
-lemma CommRingCat.preservesFiniteLimits_pushout_of_flat
-    (hφ : φ.hom.Flat) : PreservesFiniteLimits (Under.pushout φ) := by
-  constructor
-  intro J _ _
-  suffices PreservesLimitsOfShape J (Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse) from
-    preservesLimitsOfShape_of_reflects_of_preserves (G := (commAlgCatEquivUnder _).inverse) _
-  suffices PreservesLimitsOfShape J ((Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse) ⋙
-      forget₂ _ (AlgCat S)) from
-    preservesLimitsOfShape_of_reflects_of_preserves  (G := (forget₂ _ (AlgCat S))) _
-  suffices PreservesLimitsOfShape J (((Under.pushout φ ⋙ (commAlgCatEquivUnder S).inverse) ⋙
-      forget₂ _ (AlgCat S)) ⋙ forget₂ _ (ModuleCat S)) from
-    preservesLimitsOfShape_of_reflects_of_preserves
-      (G := forget₂ _ (ModuleCat S)) _
-  have := ModuleCat.preservesFiniteLimits_extendScalars _ hφ
-  exact preservesLimitsOfShape_of_natIso (pushoutIsoExtendScalars φ).symm
-
-def Under.liftCone {J C : Type*} [Category J] [Category C] {F : J ⥤ C} (c : Cone F) {X : C}
-    (f : X ⟶ c.pt) : Cone (Under.lift F ((Functor.const J).map f ≫ c.π)) where
-  pt := Under.mk f
-  π.app j := Under.homMk (c.π.app j)
-
-noncomputable
-def Under.isLimitLiftCone
-    {J C : Type*} [Category J] [Category C] {F : J ⥤ C} (c : Cone F) {X : C}
-    (f : X ⟶ c.pt) (hc : IsLimit c) : IsLimit (liftCone c f) :=
-  isLimitOfReflects (Under.forget _) hc
 
 namespace AlgebraicGeometry
 
@@ -201,7 +64,6 @@ lemma isIso_pushoutSectionToSection_of_isAffineOpen
     simpa [← IsIso.eq_comp_inv, ← Spec.map_inv, Scheme.toSpecΓ_naturality] using
       congr(Spec.map $this)
 
--- -- #check Presheaf.isSheaf_iff_multifork
 open TensorProduct
 
 lemma pushoutSectionToSection_injective_of_isCompact
@@ -298,7 +160,7 @@ lemma isIso_pushoutSectionToSection_of_isQuasiSeparated
       pushoutSectionToSection _ _ _ _ H _  }
   let c : Cone F := (Under.pushout φ ⋙ Under.forget S).mapCone
     (Under.liftCone (X.presheaf.mapCone c₀.op) iXU)
-  have := CommRingCat.preservesFiniteLimits_pushout_of_flat _ hφ
+  have := CommRingCat.Under.preservesFiniteLimits_of_flat _ hφ
   let : Fintype s := hs.fintype
   let hc : IsLimit c :=
     haveI HX := ((TopCat.Presheaf.isSheaf_iff_isSheafPreservesLimitPairwiseIntersections
@@ -393,7 +255,7 @@ lemma isIso_pushoutDesc_appLE_appLE_of_isCompact_of_isQuasiSeparated_of_flat
   have inst : CompactSpace UX := isCompact_iff_compactSpace.mp hUX
   have inst : QuasiSeparatedSpace UX := (isQuasiSeparated_iff_quasiSeparatedSpace _ UX.2).mp hUX'
   have := isIso_pushoutSectionToSection_of_isQuasiSeparated _
-    (by exact Flat.flat_of_affine_subset ⟨_, hUS⟩ ⟨_, hUT⟩ hUST) _ _ _ H ⊤ isCompact_univ
+    (f.flat_appLE hUS hUT hUST) _ _ _ H ⊤ isCompact_univ
     isQuasiSeparated_univ
   have : IsIso (pushout.map (iX.appLE US UX hUSX) (f.appLE US UT hUST) _ _
     (X.presheaf.map (eqToHom (show UX.ι ''ᵁ ⊤ = UX by simp)).op) (𝟙 _) (𝟙 _)

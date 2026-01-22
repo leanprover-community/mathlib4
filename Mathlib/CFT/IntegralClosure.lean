@@ -1,7 +1,6 @@
 module
 
 public import Mathlib.CFT.IsStandardEtale
-public import Mathlib.CFT.StandardSmooth
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 public import Mathlib.RingTheory.RingHom.Etale

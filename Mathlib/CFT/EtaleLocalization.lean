@@ -36,8 +36,7 @@ theorem stacks02LN_easy [IsSeparated f]
     (Set.mem_univ (f x)) isOpen_univ
   obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hUV : V ≤ f ⁻¹ᵁ U⟩ :=
     X.isBasis_affineOpens.exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).2
-  have : (f.appLE U V hUV).hom.FiniteType :=
-    LocallyOfFiniteType.finiteType_of_affine_subset ⟨U, hU⟩ ⟨V, hV⟩ hUV
+  have : (f.appLE U V hUV).hom.FiniteType := f.finiteType_appLE hU hV hUV
   algebraize [(f.appLE U V hUV).hom]
   have : (hV.primeIdealOf ⟨x, hxV⟩).asIdeal.LiesOver (hU.primeIdealOf ⟨f x, hxU⟩).asIdeal := by
     suffices hU.primeIdealOf ⟨f x, hxU⟩ = Spec.map (f.appLE U V hUV) (hV.primeIdealOf ⟨x, hxV⟩) from
