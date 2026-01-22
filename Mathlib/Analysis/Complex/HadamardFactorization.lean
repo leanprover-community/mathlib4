@@ -994,4 +994,569 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
       exact this (hzero p)
     exact le_of_not_gt this
 
+
+/-!
+### Dyadic-shell summability for divisor-indexed zeros
+-/
+
+open scoped BigOperators
+
+private lemma two_pow_floor_logb_le {x : ℝ} (hx : 1 ≤ x) :
+    (2 : ℝ) ^ (⌊Real.logb 2 x⌋₊ : ℝ) ≤ x := by
+  have hx0 : 0 < x := lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1) hx
+  have hlog_nonneg : 0 ≤ Real.logb 2 x :=
+    Real.logb_nonneg (b := (2 : ℝ)) (by norm_num : (1 : ℝ) < 2) hx
+  have hfloor_le : (⌊Real.logb 2 x⌋₊ : ℝ) ≤ Real.logb 2 x := by
+    simpa using (Nat.floor_le hlog_nonneg)
+  exact (Real.le_logb_iff_rpow_le (b := (2 : ℝ)) (x := (⌊Real.logb 2 x⌋₊ : ℝ)) (y := x)
+    (by norm_num : (1 : ℝ) < 2) hx0).1 hfloor_le
+
+private lemma lt_two_pow_floor_logb_add_one {x : ℝ} (hx : 1 ≤ x) :
+    x < (2 : ℝ) ^ ((⌊Real.logb 2 x⌋₊ : ℝ) + 1) := by
+  have hx0 : 0 < x := lt_of_lt_of_le (by norm_num : (0 : ℝ) < 1) hx
+  have hlt : Real.logb 2 x < (⌊Real.logb 2 x⌋₊ : ℝ) + 1 := by
+    simpa using (Nat.lt_floor_add_one (Real.logb 2 x))
+  exact (Real.logb_lt_iff_lt_rpow (b := (2 : ℝ)) (x := x)
+    (y := (⌊Real.logb 2 x⌋₊ : ℝ) + 1) (by norm_num : (1 : ℝ) < 2) hx0).1 hlt
+
+private lemma card_shell_le_sum_divisor_closedBall
+    {f : ℂ → ℂ} (hf : Differentiable ℂ f) (_hnot : ∃ z : ℂ, f z ≠ 0)
+    {r0 R : ℝ} (hr0 : 0 < r0) (hR : r0 ≤ R) :
+    (Nat.card {p : divisorZeroIndex₀ f (Set.univ : Set ℂ) // ‖divisorZeroIndex₀_val p‖ ≤ R} : ℝ)
+      ≤
+      ((((Function.locallyFinsuppWithin.finiteSupport
+              (Function.locallyFinsuppWithin.toClosedBall R
+                (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
+              (isCompact_closedBall (0 : ℂ) |R|)).toFinset).filter fun z : ℂ => z ≠ 0).sum
+          fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ)) := by
+  classical
+  set U : Set ℂ := (Set.univ : Set ℂ)
+  set D : Function.locallyFinsuppWithin U ℤ := MeromorphicOn.divisor f U
+  haveI :
+      Fintype {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} := by
+    classical
+    have : Finite {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} := by
+      have : Metric.closedBall (0 : ℂ) R ⊆ U := by simp [U]
+      simpa using (finite_divisorZeroIndex₀_subtype_norm_le (f := f) (U := U) (B := R) this)
+    exact Fintype.ofFinite _
+  have hAnal : AnalyticOnNhd ℂ f U := by
+    intro z hz; simpa using (hf.analyticAt z)
+  have hDnonneg : 0 ≤ D := by
+    simpa [D] using
+      (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := U) hAnal)
+  let SR : Finset ℂ :=
+    (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R D)
+          (isCompact_closedBall (0 : ℂ) |R|)).toFinset
+  let S : Finset ℂ := SR.filter fun z : ℂ => z ≠ 0
+  let T : Type :=
+    Σ z : S, Fin (Int.toNat (D z.1))
+  let φ :
+      {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} → T := fun p =>
+    let z0 : ℂ := divisorZeroIndex₀_val p.1
+    have hz0_memSR : z0 ∈ SR := by
+      have hz0_ball : z0 ∈ Metric.closedBall (0 : ℂ) |R| := by
+        have hR0 : 0 < R := lt_of_lt_of_le hr0 hR
+        have : ‖z0‖ ≤ |R| := by
+          have : ‖z0‖ ≤ R := p.2
+          simpa [abs_of_pos hR0] using this
+        simpa [Metric.mem_closedBall, dist_zero_right] using this
+      have hz0_support : z0 ∈ (Function.locallyFinsuppWithin.toClosedBall R D).support := by
+        have hz0_suppD : z0 ∈ D.support := by
+          simpa [z0, D] using (divisorZeroIndex₀_val_mem_divisor_support (p := p.1))
+        have hEq : (Function.locallyFinsuppWithin.toClosedBall R D) z0 = D z0 := by
+          simpa using
+            (Function.locallyFinsuppWithin.toClosedBall_eval_within (r := R) (f := D) (z := z0) hz0_ball)
+        have hDz0_ne : D z0 ≠ 0 := by
+          simpa [Function.mem_support] using hz0_suppD
+        have : (Function.locallyFinsuppWithin.toClosedBall R D) z0 ≠ 0 := by simpa [hEq] using hDz0_ne
+        simpa [Function.mem_support] using this
+      exact (Set.Finite.mem_toFinset
+        (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R D)
+          (isCompact_closedBall (0 : ℂ) |R|))).2 hz0_support
+    have hz0_ne0 : z0 ≠ 0 := divisorZeroIndex₀_val_ne_zero p.1
+    have hz0_memS : z0 ∈ S := Finset.mem_filter.2 ⟨hz0_memSR, hz0_ne0⟩
+    ⟨⟨z0, hz0_memS⟩, by
+        simpa [z0, divisorZeroIndex₀_val, D] using p.1.1.2⟩
+  have hφ_inj : Function.Injective φ := by
+    intro p q hpq
+    have hσ := (Sigma.mk.inj_iff).1 hpq
+    have hzS : (φ p).1 = (φ q).1 := hσ.1
+    have hz : divisorZeroIndex₀_val p.1 = divisorZeroIndex₀_val q.1 := by
+      simpa [φ] using congrArg Subtype.val hzS
+    apply Subtype.ext
+    apply Subtype.ext
+    apply Sigma.ext
+    · exact hz
+    · simpa [φ] using hσ.2
+  have hcard_le :
+      Fintype.card {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} ≤ Fintype.card T :=
+    Fintype.card_le_of_injective φ hφ_inj
+  have hT_card :
+      (Fintype.card T : ℝ) =
+        (S.sum fun z : ℂ => (Int.toNat (D z) : ℝ)) := by
+    classical
+    have hNat :
+        Fintype.card T = ∑ z : S, Int.toNat (D z.1) := by
+      have h1 :
+          Fintype.card T = ∑ z : S, Fintype.card (Fin (Int.toNat (D z.1))) := by
+        change Fintype.card (Sigma (fun z : S => Fin (Int.toNat (D z.1))))
+            = ∑ z : S, Fintype.card (Fin (Int.toNat (D z.1)))
+        exact (Fintype.card_sigma (ι := S) (α := fun z : S => Fin (Int.toNat (D z.1))))
+      simpa using h1
+    have hR :
+        (Fintype.card T : ℝ) = ∑ z : S, (Int.toNat (D z.1) : ℝ) := by
+      exact_mod_cast hNat
+    have hR' :
+        (Fintype.card T : ℝ) = S.attach.sum (fun z : S => (Int.toNat (D z.1) : ℝ)) := by
+      simpa [Finset.univ_eq_attach] using hR
+    calc
+      (Fintype.card T : ℝ) = S.attach.sum (fun z : S => (Int.toNat (D z.1) : ℝ)) := hR'
+      _ = S.sum (fun z : ℂ => (Int.toNat (D z) : ℝ)) := by
+            -- `S.attach.sum (fun z => f z.1) = S.sum f`
+            simpa using (Finset.sum_attach (s := S) (f := fun z : ℂ => (Int.toNat (D z) : ℝ)))
+  have htoNat_le : ∀ z ∈ S, (Int.toNat (D z) : ℝ) ≤ (D z : ℝ) := by
+    intro z hz
+    have hDz_nonneg : 0 ≤ D z := by simpa [D] using hDnonneg z
+    have hEqZ : ((Int.toNat (D z) : ℕ) : ℤ) = D z := by
+      simpa using (Int.toNat_of_nonneg hDz_nonneg)
+    have hEqR : (Int.toNat (D z) : ℝ) = (D z : ℝ) := by
+      exact_mod_cast hEqZ
+    exact le_of_eq hEqR
+  calc
+    (Nat.card {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} : ℝ)
+        = (Fintype.card {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} : ℝ) := by
+          simp [Nat.card_eq_fintype_card]
+    _ ≤ (Fintype.card T : ℝ) := by exact_mod_cast hcard_le
+    _ = S.sum (fun z : ℂ => (Int.toNat (D z) : ℝ)) := hT_card
+    _ ≤ S.sum (fun z : ℂ => (D z : ℝ)) := by
+      refine Finset.sum_le_sum ?_
+      intro z hz
+      exact htoNat_le z hz
+    _ = ((((Function.locallyFinsuppWithin.finiteSupport
+              (Function.locallyFinsuppWithin.toClosedBall R
+                (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
+              (isCompact_closedBall (0 : ℂ) |R|)).toFinset).filter fun z : ℂ => z ≠ 0).sum
+          fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ)) := by
+      rfl
+
+--set_option maxHeartbeats 0 in
+theorem summable_norm_inv_pow_divisorZeroIndex₀_of_growth {f : ℂ → ℂ} {ρ : ℝ}
+    (hρ : 0 ≤ ρ) (hf : Differentiable ℂ f) (hnot : ∃ z : ℂ, f z ≠ 0)
+    (hgrowth : ∃ C > 0, ∀ z : ℂ, Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ ρ) :
+    Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+      ‖divisorZeroIndex₀_val p‖⁻¹ ^ (Nat.floor ρ + 1)) := by
+  classical
+  set m : ℕ := Nat.floor ρ
+  rcases exists_r0_le_norm_divisorZeroIndex₀_val (f := f) hf hnot with ⟨r0, hr0pos, hr0⟩
+  have hr0ne : (r0 : ℝ) ≠ 0 := ne_of_gt hr0pos
+  let kfun : divisorZeroIndex₀ f (Set.univ : Set ℂ) → ℕ :=
+    fun p => ⌊Real.logb 2 (‖divisorZeroIndex₀_val p‖ / r0)⌋₊
+  let S : ℕ → Set (divisorZeroIndex₀ f (Set.univ : Set ℂ)) :=
+    fun k => {p | kfun p = k}
+  have hS : ∀ p : divisorZeroIndex₀ f (Set.univ : Set ℂ), ∃! k : ℕ, p ∈ S k := by
+    intro p
+    refine ⟨kfun p, ?_, ?_⟩
+    · simp [S]
+    · intro k hk
+      simpa [S] using hk.symm
+  have hnonneg : 0 ≤ fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+      ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1) := by
+    intro p
+    exact pow_nonneg (inv_nonneg.2 (norm_nonneg _)) _
+  have hSk_summable : ∀ k : ℕ, Summable fun p : S k => ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1) := by
+    intro k
+    haveI : Finite (S k) := by
+      have hsub :
+          S k ⊆ {p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤ r0 * (2 : ℝ) ^ ((k : ℝ) + 1)} := by
+        intro p hp
+        have hk : kfun p = k := hp
+        have hx1 : (1 : ℝ) ≤ ‖divisorZeroIndex₀_val p‖ / r0 := by
+          have : r0 ≤ ‖divisorZeroIndex₀_val p‖ := hr0 p
+          have : r0 / r0 ≤ ‖divisorZeroIndex₀_val p‖ / r0 :=
+            div_le_div_of_nonneg_right this (le_of_lt hr0pos)
+          simpa [hr0ne] using this
+        have hlt :
+            ‖divisorZeroIndex₀_val p‖ / r0 < (2 : ℝ) ^ ((k : ℝ) + 1) := by
+          have := lt_two_pow_floor_logb_add_one (x := ‖divisorZeroIndex₀_val p‖ / r0) hx1
+          simpa [kfun, hk] using this
+        have := mul_lt_mul_of_pos_left hlt hr0pos
+        have hxEq : r0 * (‖divisorZeroIndex₀_val p‖ / r0) = ‖divisorZeroIndex₀_val p‖ := by
+          field_simp [hr0ne]
+        have : ‖divisorZeroIndex₀_val p‖ < r0 * (2 : ℝ) ^ ((k : ℝ) + 1) := by
+          simpa [mul_assoc, hxEq] using this
+        exact le_of_lt this
+      have hfin :
+          ({p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤ r0 * (2 : ℝ) ^ ((k : ℝ) + 1)} : Set _).Finite := by
+        have : Metric.closedBall (0 : ℂ) (r0 * (2 : ℝ) ^ ((k : ℝ) + 1)) ⊆ (Set.univ : Set ℂ) := by simp
+        simpa using (divisorZeroIndex₀_norm_le_finite (f := f) (U := (Set.univ : Set ℂ))
+          (B := r0 * (2 : ℝ) ^ ((k : ℝ) + 1)) this)
+      exact (hfin.subset hsub).to_subtype
+    exact Summable.of_finite
+  have hshell_summable :
+      Summable fun k : ℕ => ∑' p : S k, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1) := by
+    have hρ_lt : (ρ : ℝ) < (m + 1 : ℝ) := by
+      have : ρ < (m : ℝ) + 1 := by
+        simpa [m] using (Nat.lt_floor_add_one (a := ρ))
+      simpa [add_comm, add_left_comm, add_assoc] using this
+    let q : ℝ := (2 : ℝ) ^ (ρ - (m + 1 : ℝ))
+    let qσ : ℝ := (2 : ℝ) ^ (-(m + 1 : ℝ))
+    have hq_nonneg : 0 ≤ q := le_of_lt (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)
+    have hq_lt_one : q < 1 :=
+      Real.rpow_lt_one_of_one_lt_of_neg (x := (2 : ℝ)) (by norm_num : (1 : ℝ) < 2)
+        (sub_neg.2 hρ_lt)
+    have hqσ_nonneg : 0 ≤ qσ := le_of_lt (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)
+    have hqσ_lt_one : qσ < 1 :=
+      Real.rpow_lt_one_of_one_lt_of_neg (x := (2 : ℝ)) (by norm_num : (1 : ℝ) < 2)
+        (by
+          have : (0 : ℝ) < (m + 1 : ℝ) := by positivity
+          linarith)
+    have hgeom_q : Summable (fun k : ℕ => q ^ k) :=
+      summable_geometric_of_lt_one hq_nonneg hq_lt_one
+    have hgeom_qσ : Summable (fun k : ℕ => qσ ^ k) :=
+      summable_geometric_of_lt_one hqσ_nonneg hqσ_lt_one
+    have hlog2pos : 0 < Real.log 2 := Real.log_pos (by norm_num : (1 : ℝ) < 2)
+    have hlog2ne : (Real.log 2) ≠ 0 := ne_of_gt hlog2pos
+    let Cgrow : ℝ := Classical.choose hgrowth
+    let Ctrail : ℝ := |Real.log ‖meromorphicTrailingCoeffAt f 0‖|
+    let A : ℝ := ((Cgrow / Real.log 2) * (1 + 4 * r0) ^ ρ) * (r0⁻¹) ^ (m + 1)
+    let B : ℝ := ((Ctrail / Real.log 2) + 1) * (r0⁻¹) ^ (m + 1)
+    have htend : Tendsto (fun n : ℕ => (2 : ℝ) ^ n) atTop atTop :=
+      tendsto_pow_atTop_atTop_of_one_lt (r := (2 : ℝ)) (by norm_num : (1 : ℝ) < 2)
+    have hEvent : ∀ᶠ n in atTop, (1 / r0) ≤ (2 : ℝ) ^ n :=
+      (tendsto_atTop.1 htend) (1 / r0)
+    rcases (eventually_atTop.1 hEvent) with ⟨k0, hk0⟩
+    let A0 : ℝ := A * q ^ k0
+    let B0 : ℝ := B * qσ ^ k0
+    have hmajor : Summable (fun k : ℕ => A0 * q ^ k + B0 * qσ ^ k) :=
+      (hgeom_q.mul_left A0).add (hgeom_qσ.mul_left B0)
+    have hshell_summable_shift :
+        Summable fun k : ℕ => ∑' p : S (k + k0), ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1) := by
+      refine (Summable.of_nonneg_of_le
+        (f := fun k : ℕ => A0 * q ^ k + B0 * qσ ^ k)
+        (g := fun k : ℕ => ∑' p : S (k + k0), ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1))
+        (fun k => by
+          have : ∀ p : S (k + k0), 0 ≤ ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1) := by
+            intro p; exact pow_nonneg (inv_nonneg.2 (norm_nonneg _)) _
+          exact tsum_nonneg this)
+        (fun k => by
+          let kk : ℕ := k + k0
+          let rk : ℝ := r0 * (2 : ℝ) ^ (kk : ℝ)
+          let Rk : ℝ := r0 * (2 : ℝ) ^ ((kk : ℝ) + 1)
+          have hrk_pos : 0 < rk := mul_pos hr0pos (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)
+          have hRk_pos : 0 < Rk := mul_pos hr0pos (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)
+          have hk_lower : ∀ p : S kk, rk ≤ ‖divisorZeroIndex₀_val p.1‖ := by
+            intro p
+            have hp' : kfun p.1 = kk := p.2
+            have hx1 : (1 : ℝ) ≤ ‖divisorZeroIndex₀_val p.1‖ / r0 := by
+              have : r0 ≤ ‖divisorZeroIndex₀_val p.1‖ := hr0 p.1
+              have : r0 / r0 ≤ ‖divisorZeroIndex₀_val p.1‖ / r0 :=
+                div_le_div_of_nonneg_right this (le_of_lt hr0pos)
+              simpa [hr0ne] using this
+            have hle : (2 : ℝ) ^ (kk : ℝ) ≤ ‖divisorZeroIndex₀_val p.1‖ / r0 := by
+              have := two_pow_floor_logb_le (x := ‖divisorZeroIndex₀_val p.1‖ / r0) hx1
+              simpa [kfun, hp'] using this
+            have := mul_le_mul_of_nonneg_left hle (le_of_lt hr0pos)
+            have hxEq : r0 * (‖divisorZeroIndex₀_val p.1‖ / r0) = ‖divisorZeroIndex₀_val p.1‖ := by
+              field_simp [hr0ne]
+            simpa [rk, mul_assoc, hxEq] using this
+          have hk_upper : ∀ p : S kk, ‖divisorZeroIndex₀_val p.1‖ ≤ Rk := by
+            intro p
+            have hp' : kfun p.1 = kk := p.2
+            have hx1 : (1 : ℝ) ≤ ‖divisorZeroIndex₀_val p.1‖ / r0 := by
+              have : r0 ≤ ‖divisorZeroIndex₀_val p.1‖ := hr0 p.1
+              have : r0 / r0 ≤ ‖divisorZeroIndex₀_val p.1‖ / r0 :=
+                div_le_div_of_nonneg_right this (le_of_lt hr0pos)
+              simpa [hr0ne] using this
+            have hlt : ‖divisorZeroIndex₀_val p.1‖ / r0 < (2 : ℝ) ^ ((kk : ℝ) + 1) := by
+              have := lt_two_pow_floor_logb_add_one (x := ‖divisorZeroIndex₀_val p.1‖ / r0) hx1
+              simpa [kfun, hp'] using this
+            have := mul_lt_mul_of_pos_left hlt hr0pos
+            have hxEq : r0 * (‖divisorZeroIndex₀_val p.1‖ / r0) = ‖divisorZeroIndex₀_val p.1‖ := by
+              field_simp [hr0ne]
+            have : ‖divisorZeroIndex₀_val p.1‖ < Rk := by
+              simpa [Rk, mul_assoc, hxEq] using this
+            exact le_of_lt this
+          haveI : Finite (S kk) := by
+            have hfin :
+                ({p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤ Rk} : Set _).Finite := by
+              have : Metric.closedBall (0 : ℂ) Rk ⊆ (Set.univ : Set ℂ) := by simp
+              simpa [Rk] using
+                (divisorZeroIndex₀_norm_le_finite (f := f) (U := (Set.univ : Set ℂ)) (B := Rk) this)
+            have hsub : S kk ⊆ {p : divisorZeroIndex₀ f (Set.univ : Set ℂ) | ‖divisorZeroIndex₀_val p‖ ≤ Rk} := by
+              intro p hp; exact hk_upper ⟨p, hp⟩
+            exact (hfin.subset hsub).to_subtype
+          haveI : Fintype (S kk) := Fintype.ofFinite _
+          have hterm_le : ∀ p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1) ≤ rk⁻¹ ^ (m + 1) := by
+            intro p
+            have hrk_le : rk ≤ ‖divisorZeroIndex₀_val p.1‖ := hk_lower p
+            have hinv' : ‖divisorZeroIndex₀_val p.1‖⁻¹ ≤ rk⁻¹ := by
+              have : (1 / ‖divisorZeroIndex₀_val p.1‖ : ℝ) ≤ 1 / rk :=
+                one_div_le_one_div_of_le hrk_pos hrk_le
+              simpa [one_div] using this
+            exact pow_le_pow_left₀ (inv_nonneg.2 (norm_nonneg _)) hinv' _
+          have htsum_le :
+              (∑' p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1))
+                ≤ (Fintype.card (S kk) : ℝ) * (rk⁻¹ ^ (m + 1)) := by
+            classical
+            have hsum_le :
+                (∑ p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1))
+                  ≤ ∑ _p : S kk, (rk⁻¹ ^ (m + 1)) := by
+              refine Finset.sum_le_sum ?_
+              intro p _hp
+              exact hterm_le p
+            simpa [tsum_fintype, Finset.sum_const, nsmul_eq_mul] using
+              (hsum_le.trans_eq (by
+                simp [Finset.sum_const, nsmul_eq_mul, mul_comm]))
+          have hcard_le_mass :
+              (Fintype.card (S kk) : ℝ) ≤
+                ((((Function.locallyFinsuppWithin.finiteSupport
+                        (Function.locallyFinsuppWithin.toClosedBall Rk
+                          (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
+                        (isCompact_closedBall (0 : ℂ) |Rk|)).toFinset).filter fun z : ℂ => z ≠ 0).sum
+                    fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ)) := by
+            classical
+            let Aball : Type :=
+              {p : divisorZeroIndex₀ f (Set.univ : Set ℂ) // ‖divisorZeroIndex₀_val p‖ ≤ Rk}
+            haveI : Fintype Aball := by
+              classical
+              have : Finite Aball := by
+                have : Metric.closedBall (0 : ℂ) Rk ⊆ (Set.univ : Set ℂ) := by simp
+                simpa using
+                  (finite_divisorZeroIndex₀_subtype_norm_le (f := f) (U := (Set.univ : Set ℂ)) (B := Rk) this)
+              exact Fintype.ofFinite _
+            have hinj :
+                Function.Injective (fun p : S kk => (⟨p.1, hk_upper p⟩ : Aball)) := by
+              intro p q hpq
+              apply Subtype.ext
+              exact congrArg (fun x : Aball => x.1) hpq
+            have hcard_le : Fintype.card (S kk) ≤ Fintype.card Aball :=
+              Fintype.card_le_of_injective _ hinj
+            have hRk_lower : r0 ≤ Rk := by
+              dsimp [Rk]
+              have hpow : (1 : ℝ) ≤ (2 : ℝ) ^ ((kk : ℝ) + 1) :=
+                Real.one_le_rpow (by norm_num : (1 : ℝ) ≤ 2) (by linarith)
+              nlinarith [hr0pos.le, hpow]
+            have hAball :
+                (Nat.card Aball : ℝ) ≤
+                  ((((Function.locallyFinsuppWithin.finiteSupport
+                          (Function.locallyFinsuppWithin.toClosedBall Rk
+                            (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
+                          (isCompact_closedBall (0 : ℂ) |Rk|)).toFinset).filter fun z : ℂ => z ≠ 0).sum
+                      fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ)) :=
+              card_shell_le_sum_divisor_closedBall (f := f) hf hnot (r0 := r0) (R := Rk) hr0pos hRk_lower
+            calc
+              (Fintype.card (S kk) : ℝ) ≤ (Fintype.card Aball : ℝ) := by exact_mod_cast hcard_le
+              _ = (Nat.card Aball : ℝ) := by simp [Nat.card_eq_fintype_card]
+              _ ≤ _ := hAball
+          have hRk_ge_one : (1 : ℝ) ≤ Rk := by
+            have hpow_nat : (1 / r0) ≤ (2 : ℝ) ^ (kk + 1) := by
+              have hkk : k0 ≤ kk + 1 := by
+                simp [kk, Nat.add_assoc, Nat.add_comm]
+              exact hk0 (kk + 1) hkk
+            have hpow_rpow : (1 / r0) ≤ (2 : ℝ) ^ ((kk : ℝ) + 1) := by
+              have hEq : (2 : ℝ) ^ ((kk : ℝ) + 1) = (2 : ℝ) ^ (kk + 1) := by
+                calc
+                  (2 : ℝ) ^ ((kk : ℝ) + 1) = (2 : ℝ) ^ ((kk + 1 : ℕ) : ℝ) := by simp
+                  _ = (2 : ℝ) ^ (kk + 1) := by simpa using (Real.rpow_natCast (2 : ℝ) (kk + 1))
+              simpa [hEq] using hpow_nat
+            have : (r0 * (1 / r0) : ℝ) ≤ r0 * (2 : ℝ) ^ ((kk : ℝ) + 1) :=
+              mul_le_mul_of_nonneg_left hpow_rpow hr0pos.le
+            simpa [Rk, one_div, hr0ne, mul_assoc] using this
+          have hmass_le_growth :
+            ((((Function.locallyFinsuppWithin.finiteSupport
+                      (Function.locallyFinsuppWithin.toClosedBall Rk
+                        (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
+                      (isCompact_closedBall (0 : ℂ) |Rk|)).toFinset).filter fun z : ℂ => z ≠ 0).sum
+                  fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ))
+              ≤ (Cgrow * (1 + |2 * Rk|) ^ ρ + Ctrail) / (Real.log 2) := by
+            simpa [Cgrow, Ctrail] using
+              (sum_divisor_closedBall_le_of_growth (f := f) (ρ := ρ) hf hgrowth (R := Rk) hRk_ge_one)
+          have hrk_inv : rk⁻¹ ^ (m + 1) = (r0⁻¹ ^ (m + 1)) * qσ ^ kk := by
+            have h2 : ((2 : ℝ) ^ (-1 - (m : ℝ))) = (2⁻¹ : ℝ) ^ (m + 1) := by
+              have hneg0 :
+                  (2 : ℝ) ^ (-(m + 1 : ℝ)) = ((2 : ℝ) ^ (m + 1 : ℝ))⁻¹ :=
+                Real.rpow_neg (by positivity : (0 : ℝ) ≤ (2 : ℝ)) (m + 1 : ℝ)
+              have hneg :
+                  (2 : ℝ) ^ (-1 - (m : ℝ)) = ((2 : ℝ) ^ (m + 1 : ℝ))⁻¹ := by
+                simpa [sub_eq_add_neg, add_assoc, add_comm, add_left_comm] using hneg0
+              calc
+                (2 : ℝ) ^ (-1 - (m : ℝ)) = ((2 : ℝ) ^ (m + 1 : ℝ))⁻¹ := hneg
+                _ = ((2 : ℝ) ^ (m + 1))⁻¹ := by
+                      simpa [Nat.cast_add_one] using (Real.rpow_natCast (2 : ℝ) (m + 1))
+                _ = (2⁻¹ : ℝ) ^ (m + 1) := by simp
+            have hcombine : (2⁻¹ : ℝ) ^ kk * (2⁻¹ : ℝ) ^ (kk * m) = (2⁻¹ : ℝ) ^ (kk * (m + 1)) := by
+              calc
+                (2⁻¹ : ℝ) ^ kk * (2⁻¹ : ℝ) ^ (kk * m) = (2⁻¹ : ℝ) ^ (kk + kk * m) := by
+                  simp [pow_add]
+                _ = (2⁻¹ : ℝ) ^ (kk * (m + 1)) := by
+                  congr 1
+                  nlinarith [Nat.mul_add kk m 1]
+            have : rk⁻¹ ^ (m + 1) =
+                (r0⁻¹ ^ (m + 1)) * ((2⁻¹ : ℝ) ^ kk * (2⁻¹ : ℝ) ^ (kk * m)) := by
+              have h2ne : ((2 : ℝ) ^ kk) ≠ 0 := by
+                exact pow_ne_zero kk (by norm_num : (2 : ℝ) ≠ 0)
+              simp [rk, pow_add, pow_mul, mul_pow, inv_pow,
+                mul_assoc, mul_left_comm, mul_comm]
+            calc
+              rk⁻¹ ^ (m + 1)
+                  = (r0⁻¹ ^ (m + 1)) * ((2⁻¹ : ℝ) ^ kk * (2⁻¹ : ℝ) ^ (kk * m)) := this
+              _ = (r0⁻¹ ^ (m + 1)) * (2⁻¹ : ℝ) ^ (kk * (m + 1)) := by
+                    simpa [mul_assoc] using congrArg (fun x => (r0⁻¹ ^ (m + 1)) * x) hcombine
+              _ = (r0⁻¹ ^ (m + 1)) * ((2 : ℝ) ^ (-1 - (m : ℝ))) ^ kk := by
+                    have hb : (2⁻¹ : ℝ) ^ (kk * (m + 1)) = ((2 : ℝ) ^ (-1 - (m : ℝ))) ^ kk := by
+                      calc
+                        (2⁻¹ : ℝ) ^ (kk * (m + 1)) = ((2⁻¹ : ℝ) ^ (m + 1)) ^ kk := by
+                          simpa [Nat.mul_comm] using (pow_mul (2⁻¹ : ℝ) (m + 1) kk)
+                        _ = ((2 : ℝ) ^ (-1 - (m : ℝ))) ^ kk := by
+                          simp [h2]
+                    simp [hb]
+              _ = (r0⁻¹ ^ (m + 1)) * qσ ^ kk := by
+                    simp [qσ, sub_eq_add_neg, add_comm,]
+          have hpow_bound :
+              (1 + |2 * Rk|) ^ ρ ≤ (1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk := by
+            have hk1 : (1 : ℝ) ≤ (2 : ℝ) ^ (kk : ℝ) :=
+              Real.one_le_rpow (by norm_num : (1 : ℝ) ≤ 2) (by linarith)
+            have habs : |2 * Rk| = (4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := by
+              have hnonneg : 0 ≤ 2 * Rk := by nlinarith [hRk_pos.le]
+              have : 2 * Rk = (4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := by
+                have h2pos : (0 : ℝ) < 2 := by norm_num
+                calc
+                  2 * Rk
+                      = 2 * (r0 * (2 : ℝ) ^ ((kk : ℝ) + 1)) := by simp [Rk]
+                  _ = (2 * r0) * ((2 : ℝ) ^ (kk : ℝ) * (2 : ℝ) ^ (1 : ℝ)) := by
+                        simp [mul_assoc, Real.rpow_add h2pos]
+                  _ = (4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := by
+                        simp [Real.rpow_one]
+                        ring
+              have habs1 : |2 * Rk| = 2 * Rk := abs_of_nonneg hnonneg
+              calc
+                |2 * Rk| = 2 * Rk := habs1
+                _ = (4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := this
+            have hRk_le : 1 + |2 * Rk| ≤ (1 + 4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := by
+              have : 1 + (4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) ≤ (1 + 4 * r0) * ((2 : ℝ) ^ (kk : ℝ)) := by
+                nlinarith [hk1]
+              simpa [habs] using this
+            have hpow :
+                (1 + |2 * Rk|) ^ ρ ≤ ((1 + 4 * r0) * ((2 : ℝ) ^ (kk : ℝ))) ^ ρ :=
+              Real.rpow_le_rpow (by positivity : (0 : ℝ) ≤ 1 + |2 * Rk|) hRk_le hρ
+            have hrhs :
+                ((1 + 4 * r0) * ((2 : ℝ) ^ (kk : ℝ))) ^ ρ
+                  = (1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk := by
+              have hkk : ((2 : ℝ) ^ ρ) ^ kk = ((2 : ℝ) ^ ρ) ^ ((kk : ℕ) : ℝ) := by
+                simp
+              calc
+                ((1 + 4 * r0) * ((2 : ℝ) ^ (kk : ℝ))) ^ ρ
+                    = (1 + 4 * r0) ^ ρ * (((2 : ℝ) ^ (kk : ℝ)) ^ ρ) := by
+                        have hr0nonneg : 0 ≤ r0 := le_of_lt hr0pos
+                        have h14nonneg : 0 ≤ (1 + 4 * r0) := by nlinarith
+                        have h2nonneg : 0 ≤ (2 : ℝ) ^ (kk : ℝ) :=
+                          le_of_lt (Real.rpow_pos_of_pos (by norm_num : (0 : ℝ) < 2) _)
+                        simp [Real.mul_rpow, h14nonneg]
+                _ = (1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ((kk : ℝ) * ρ)) := by
+                        simp [Real.rpow_mul, (by positivity : (0 : ℝ) ≤ (2 : ℝ))]
+                _ = (1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk := by
+                        have h2mul :
+                            (2 : ℝ) ^ ((kk : ℝ) * ρ) = ((2 : ℝ) ^ ρ) ^ (kk : ℝ) := by
+                          calc
+                            (2 : ℝ) ^ ((kk : ℝ) * ρ) = (2 : ℝ) ^ (ρ * (kk : ℝ)) := by
+                              simp [mul_comm]
+                            _ = ((2 : ℝ) ^ ρ) ^ (kk : ℝ) := by
+                              simpa using (Real.rpow_mul (x := (2 : ℝ)) (by positivity) ρ (kk : ℝ))
+                        simp [h2mul, hkk.symm]
+            exact hpow.trans_eq hrhs
+          have : (∑' p : S (k + k0), ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1)) ≤
+            A0 * q ^ k + B0 * qσ ^ k := by
+            have hmain :
+                (∑' p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1)) ≤ A * q ^ kk + B * qσ ^ kk := by
+              have hcard_le_growth :
+                  (Fintype.card (S kk) : ℝ) ≤ (Cgrow * (1 + |2 * Rk|) ^ ρ + Ctrail) / (Real.log 2) := by
+                exact le_trans hcard_le_mass (le_trans hmass_le_growth (by
+                  simp [Ctrail, add_comm]))
+              have htsum' :
+                  (∑' p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1))
+                    ≤ ((Cgrow * (1 + |2 * Rk|) ^ ρ + Ctrail) / (Real.log 2)) * (rk⁻¹ ^ (m + 1)) := by
+                have :
+                    (Fintype.card (S kk) : ℝ) * (rk⁻¹ ^ (m + 1))
+                      ≤ ((Cgrow * (1 + |2 * Rk|) ^ ρ + Ctrail) / (Real.log 2)) * (rk⁻¹ ^ (m + 1)) := by
+                  exact mul_le_mul_of_nonneg_right hcard_le_growth (by
+                    exact pow_nonneg (inv_nonneg.2 hrk_pos.le) _)
+                exact le_trans htsum_le this
+              have hq_split : q ^ kk = ((2 : ℝ) ^ ρ) ^ kk * qσ ^ kk := by
+                have h2pos : (0 : ℝ) < 2 := by norm_num
+                have hq_fac : q = ((2 : ℝ) ^ ρ) * qσ := by
+                  simp [q, qσ, sub_eq_add_neg, Real.rpow_add h2pos]
+                simp [hq_fac, mul_pow]
+              calc
+                (∑' p : S kk, ‖divisorZeroIndex₀_val p.1‖⁻¹ ^ (m + 1))
+                    ≤ ((Cgrow * (1 + |2 * Rk|) ^ ρ + Ctrail) / (Real.log 2)) * (rk⁻¹ ^ (m + 1)) := htsum'
+                _ = ((Cgrow / Real.log 2) * (1 + |2 * Rk|) ^ ρ) * (rk⁻¹ ^ (m + 1))
+                      + ((Ctrail / Real.log 2) * (rk⁻¹ ^ (m + 1))) := by
+                        field_simp [hlog2ne]
+                _ ≤ ((Cgrow / Real.log 2) * ((1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk)) * (rk⁻¹ ^ (m + 1))
+                      + ((Ctrail / Real.log 2) * (rk⁻¹ ^ (m + 1))) := by
+                        have hCgrow_pos : 0 < Cgrow := (Classical.choose_spec hgrowth).1
+                        have hCgrow_nonneg : 0 ≤ Cgrow / Real.log 2 :=
+                          div_nonneg hCgrow_pos.le hlog2pos.le
+                        have hrk_nonneg : 0 ≤ (rk⁻¹ ^ (m + 1)) :=
+                          pow_nonneg (inv_nonneg.2 hrk_pos.le) _
+                        have hmul :
+                            ((Cgrow / Real.log 2) * (1 + |2 * Rk|) ^ ρ) * (rk⁻¹ ^ (m + 1))
+                              ≤ ((Cgrow / Real.log 2) * ((1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk))
+                                  * (rk⁻¹ ^ (m + 1)) := by
+                          exact mul_le_mul_of_nonneg_right
+                            (mul_le_mul_of_nonneg_left hpow_bound hCgrow_nonneg) hrk_nonneg
+                        simpa [mul_assoc, mul_left_comm, mul_comm] using
+                          add_le_add_right hmul ((Ctrail / Real.log 2) * (rk⁻¹ ^ (m + 1)))
+                _ ≤ A * q ^ kk + B * qσ ^ kk := by
+                      have hr0Inv_nonneg : 0 ≤ (r0⁻¹ : ℝ) ^ (m + 1) := by
+                        have : 0 ≤ (r0⁻¹ : ℝ) := inv_nonneg.2 (le_of_lt hr0pos)
+                        exact pow_nonneg this _
+                      have hqσ_nonneg' : 0 ≤ qσ ^ kk := by
+                        exact pow_nonneg hqσ_nonneg _
+                      have hAterm :
+                          ((Cgrow / Real.log 2) * ((1 + 4 * r0) ^ ρ * ((2 : ℝ) ^ ρ) ^ kk))
+                              * (rk⁻¹ ^ (m + 1))
+                            = A * q ^ kk := by
+                        rw [hrk_inv]
+                        dsimp [A]
+                        rw [hq_split]
+                        ac_rfl
+                      have hBterm :
+                          ((Ctrail / Real.log 2) * (rk⁻¹ ^ (m + 1))) ≤ B * qσ ^ kk := by
+                        rw [hrk_inv]
+                        have hcoeff :
+                            (Ctrail / Real.log 2) * ((r0⁻¹ : ℝ) ^ (m + 1))
+                              ≤ ((Ctrail / Real.log 2) + 1) * ((r0⁻¹ : ℝ) ^ (m + 1)) := by
+                          have : (Ctrail / Real.log 2) ≤ (Ctrail / Real.log 2) + 1 := by linarith
+                          exact mul_le_mul_of_nonneg_right this hr0Inv_nonneg
+                        have hmul' :
+                            ((Ctrail / Real.log 2) * ((r0⁻¹ : ℝ) ^ (m + 1))) * (qσ ^ kk)
+                              ≤ (((Ctrail / Real.log 2) + 1) * ((r0⁻¹ : ℝ) ^ (m + 1))) * (qσ ^ kk) :=
+                          mul_le_mul_of_nonneg_right hcoeff hqσ_nonneg'
+                        dsimp [B]
+                        simpa [mul_assoc, mul_left_comm, mul_comm] using hmul'
+                      have := add_le_add (le_of_eq hAterm) hBterm
+                      simpa [mul_assoc, mul_left_comm, mul_comm, add_assoc] using this
+            have : A * q ^ kk + B * qσ ^ kk = A0 * q ^ k + B0 * qσ ^ k := by
+              have hAshift : A * q ^ kk = A0 * q ^ k := by
+                dsimp [A0, kk]
+                rw [pow_add]
+                ac_rfl
+              have hBshift : B * qσ ^ kk = B0 * qσ ^ k := by
+                dsimp [B0, kk]
+                rw [pow_add]
+                ac_rfl
+              simp [hAshift, hBshift]
+            simpa [kk] using (hmain.trans_eq this)
+          simpa [kk] using this))
+        hmajor
+    exact (summable_nat_add_iff k0).1 hshell_summable_shift
+  have hpart :=
+    (summable_partition (f := fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+        ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1)) hnonneg (s := S) hS)
+  have : Summable (fun p : divisorZeroIndex₀ f (Set.univ : Set ℂ) =>
+        ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1)) :=
+    (hpart.2 ⟨hSk_summable, hshell_summable⟩)
+  simpa [m] using this
+
 end Complex.Hadamard
