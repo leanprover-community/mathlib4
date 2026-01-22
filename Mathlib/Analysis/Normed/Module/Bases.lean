@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2023 Michał Świętek. All rights reserved.
+Copyright (c) 2025 Michał Świętek. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michał Świętek
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Schauder bases in normed spaces
