@@ -265,7 +265,7 @@ theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedCo
   (isConnected_range h.somePath.continuous).subset_connectedComponent ⟨0, by simp⟩ ⟨1, by simp⟩
 
 /-- Every connected component is a union of path connected components -/
-theorem iUnion_connectedComponent_pathComponent_eq (x : X) :
+theorem biUnion_connectedComponent_pathComponent_eq (x : X) :
     (⋃ y ∈ connectedComponent x, pathComponent y) = connectedComponent x := by
   ext z
   refine ⟨fun h ↦ ?_, fun hz ↦ mem_iUnion₂.mpr ⟨z, hz, mem_pathComponent_self z⟩⟩

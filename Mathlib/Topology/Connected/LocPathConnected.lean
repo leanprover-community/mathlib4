@@ -109,7 +109,7 @@ theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connecte
   (pathComponent_subset_component x).antisymm <|
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
 
-theorem pathComponents_eq_connectedComponents : ZerothHomotopy X = ConnectedComponents X := by
+theorem zerothHomotopy_eq_connectedComponents : ZerothHomotopy X = ConnectedComponents X := by
   unfold ZerothHomotopy pathSetoid
   congr
   ext x y
