@@ -454,7 +454,7 @@ lemma QuasiFiniteAt.isClopen_singleton
   obtain ⟨f, hf, e⟩ := exists_basicOpen_eq_singleton (R := R) p.asIdeal
   exact e ▸ (PrimeSpectrum.basicOpen f).isOpen
 
-attribute [local instance] RingHom.ker_isPrime in
+attribute [local instance high] RingHom.ker_isPrime DivisionRing.instIsArtinianRing in
 lemma _root_.Ideal.exists_not_mem_forall_mem_of_ne_of_liesOver
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p]
     [Algebra.EssFiniteType R S] [Algebra.QuasiFiniteAt R q] :
