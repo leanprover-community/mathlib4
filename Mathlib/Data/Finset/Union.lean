@@ -149,39 +149,33 @@ theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β →
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
 
 theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
-    s.disjiUnion (fun a => {f a}) (fun _ _ _ _ => disjoint_singleton.mpr ∘ hf.ne) = s.map ⟨f, hf⟩ := by
+    s.disjiUnion (fun a ↦ {f a}) (fun _ _ _ _ ↦ disjoint_singleton.mpr ∘ hf.ne) =
+      s.map ⟨f, hf⟩ := by
   ext; simp [eq_comm]
 
-@[simp]
-theorem disjoint_disjUnion_left  {s t u : Finset α} (h : Disjoint s t) :
-    Disjoint (s.disjUnion t h) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_disjUnion, or_imp, forall_and]
-
-@[simp]
-theorem disjoint_disjUnion_right {s t u : Finset α} (h : Disjoint t u) :
-    Disjoint s (t.disjUnion u h) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_disjUnion, or_imp, forall_and]
-
-lemma disjoint_disjiUnion_left (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
+lemma disjoint_disjiUnion_left
+    (s : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint s f) (t : Finset β) :
     Disjoint (s.disjiUnion f hf) t ↔ ∀ i ∈ s, Disjoint (f i) t := by
   induction s using Finset.cons_induction <;> simp_all
 
-lemma disjoint_disjiUnion_right (s : Finset β) (t : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint t f):
+lemma disjoint_disjiUnion_right
+    (s : Finset β) (t : Finset α) (f : α → Finset β) (hf : Set.PairwiseDisjoint t f) :
     Disjoint s (t.disjiUnion f hf) ↔ ∀ i ∈ t, Disjoint s (f i) := by
   simpa only [_root_.disjoint_comm] using disjoint_disjiUnion_left t f hf s
 
 theorem pairwiseDisjoint_disjUnion {f g : α → Finset β}
     (hfg : ∀ a, Disjoint (f a) (g a))
-    (hfg' : Set.Pairwise s fun a₁ a₂ => Disjoint (f a₁) (g a₂))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
     (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
-    Set.PairwiseDisjoint s (fun a => (f a).disjUnion (g a) (hfg a)) := by
+    Set.PairwiseDisjoint s (fun a ↦ (f a).disjUnion (g a) (hfg a)) := by
   intros i hi j hj hij
   simp [hf hi hj hij, hg hi hj hij, hfg' hi hj hij, (hfg' hj hi hij.symm).symm]
 
 theorem disjiUnion_disjUnion {f g : α → Finset β} (hfg : ∀ a, Disjoint (f a) (g a))
-    (hfg' : Set.Pairwise s fun a₁ a₂ => Disjoint (f a₁) (g a₂))
+    (hfg' : Set.Pairwise s fun a₁ a₂ ↦ Disjoint (f a₁) (g a₂))
     (hf : Set.PairwiseDisjoint s f) (hg : Set.PairwiseDisjoint s g) :
-    s.disjiUnion (fun a => (f a).disjUnion (g a) (hfg a)) (pairwiseDisjoint_disjUnion hfg hfg' hf hg) =
+    s.disjiUnion (fun a ↦ (f a).disjUnion (g a) (hfg a))
+        (pairwiseDisjoint_disjUnion hfg hfg' hf hg) =
       (s.disjiUnion f hf).disjUnion (s.disjiUnion g hg) (by
         simp_rw [disjoint_disjiUnion_left, disjoint_disjiUnion_right]
         intros i hi j hj
