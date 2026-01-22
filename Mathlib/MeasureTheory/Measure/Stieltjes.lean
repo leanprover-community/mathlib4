@@ -728,24 +728,19 @@ lemma isFiniteMeasure {l u : ℝ}
 
 lemma isFiniteMeasure_of_forall_abs_le {C : ℝ} (h : ∀ x, |f x| ≤ C) :
     IsFiniteMeasure f.measure := by
-  constructor
   cases isEmpty_or_nonempty R
-  · simp [eq_empty_of_isEmpty]
+  · infer_instance
   obtain ⟨u, hu⟩ : ∃ u, Tendsto f atTop (𝓝 u) := by
-    rcases tendsto_of_monotone f.mono with H | H
+    rcases tendsto_atTop_of_monotone f.mono with H | H
     · obtain ⟨x, hx⟩ : ∃ x, C + 1 ≤ f x := (tendsto_atTop.1 H (C + 1)).exists
       grind
     exact H
   obtain ⟨l, hl⟩ : ∃ l, Tendsto f atBot (𝓝 l) := by
-    rcases tendsto_of_monotone f.mono with H | H
-    · obtain ⟨x, hx⟩ : ∃ x, C + 1 ≤ f x := (tendsto_atTop.1 H (C + 1)).exists
+    rcases tendsto_atBot_of_monotone f.mono with H | H
+    · obtain ⟨x, hx⟩ : ∃ x, f x ≤ - C - 1 := (tendsto_atBot.1 H (-C - 1)).exists
       grind
     exact H
-
-
-
-#exit
-
+  exact f.isFiniteMeasure hl hu
 
 lemma isProbabilityMeasure [Nonempty R]
     (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
