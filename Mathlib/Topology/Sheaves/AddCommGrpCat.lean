@@ -67,6 +67,8 @@ theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf A
 
 namespace Sheaf.AddCommGrpCat
 
+/- Given an open subset U of X, Γ U is the functor that sends a sheaf 𝓕 to 𝓕(U) and sends a
+  morphism f: 𝓕 ⟶ 𝓖 to f(U): 𝓕(U) ⟶ 𝓖(U) -/
 abbrev Γ (U : Opens X) := (sheafSections (Opens.grothendieckTopology X) AddCommGrpCat).obj (op U)
 
 lemma Γ.map_app {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) :
