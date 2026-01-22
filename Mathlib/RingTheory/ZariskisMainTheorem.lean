@@ -31,16 +31,16 @@ We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following
 2. `Algebra.ZariskisMainProperty.of_algHom_polynomial`:
   The case where `S` is finite over `R⟨x⟩` for some `x : S`.
   The following key results are first esablished:
+  - `isStronglyTranscendental_mk_radical_conductor`:
+    Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
+    `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
   - `Algebra.not_quasiFiniteAt_of_stronglyTranscendental`:
     If `R ⊆ S`, `S` is reduced, and `x : S` is strongly transcendental over `R`,
     then there's a contradiction.
     The proof first reduces to when `S` is a domain, and then to when `R` is integrally closed.
     We get a going down theorem when `R` is integrally closed, which we apply to
     `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
-  - `isStronglyTranscendental_mk_radical_conductor`:
-    Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
-    `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
-  The first result applied to `R/(√𝔣 ∩ R) ⊆ S/√𝔣` together with the second one implies that
+  The second result applied to `R/(√𝔣 ∩ R) ⊆ S/√𝔣` together with the first result implies that
   `p` does not contain `𝔣`.
   The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
 3. TODO (@erdOne): Induct on the number of `{ xᵢ }` such that `S` is finite over `R⟨xᵢ⟩` to get the
@@ -130,7 +130,7 @@ lemma ZariskisMainProperty.of_isIntegral (p : Ideal S) [p.IsPrime] [Algebra.IsIn
 
 end Algebra
 
-section
+section IsStronglyTranscendental
 
 variable (φ : R[X] →ₐ[R] S) (t : S) (p r : R[X])
 
@@ -298,11 +298,13 @@ lemma isStronglyTranscendental_mk_radical_conductor
     Algebra.smul_def] using exists_leadingCoeff_pow_smul_mem_radical_conductor _ u p hRS hx
       (by simpa using e) i
 
-end
+end IsStronglyTranscendental
 
 namespace Algebra
 
 attribute [local instance] Polynomial.isLocalization Polynomial.algebra
+
+section not_quasiFiniteAt
 
 /-- Use `not_quasiFiniteAt_of_stronglyTranscendental` below instead. -/
 private lemma not_quasiFiniteAt_of_stronglyTranscendental_of_isIntegrallyClosed [FaithfulSMul R S]
@@ -426,6 +428,8 @@ nonrec lemma not_quasiFiniteAt_of_stronglyTranscendental [IsReduced S] [Faithful
       exists_exists_eq_and, S']
     exact fun y ↦ ⟨1 ⊗ₜ y, by simp [g, S']; rfl⟩
   exact not_quasiFiniteAt_of_stronglyTranscendental_of_isDomain_aux K L f hf rfl hx hx' P
+
+end not_quasiFiniteAt
 
 section FixedUniverse
 
