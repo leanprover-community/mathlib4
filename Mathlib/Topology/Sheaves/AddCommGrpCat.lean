@@ -1,0 +1,87 @@
+/-
+Copyright (c) 2026 Brian Nugent. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Brian Nugent
+-/
+
+module
+
+public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+public import Mathlib.Topology.Sheaves.Limits
+
+/-!
+Results for sheaves of abelian groups on topological spaces, in preparation for sheaf cohomology.
+
+-/
+
+@[expose] public section
+
+universe u v w
+
+noncomputable section
+
+open TopologicalSpace Opposite CategoryTheory AlgebraicGeometry
+
+namespace TopCat
+
+variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
+
+instance [Abelian C] : Abelian (Presheaf C X) := Abelian.functorCategoryAbelian
+
+instance : Abelian (Sheaf AddCommGrpCat X) := sheafIsAbelian
+
+instance : (Sheaf.forget AddCommGrpCat X).Additive where
+
+instance : HasSeparator AddCommGrpCat.{u} where
+  hasSeparator := by
+    use AddCommGrpCat.of (ULift ℤ)
+    intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
+      AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
+    (intro x ; specialize h (AddCommGrpCat.ofHom
+    (AddMonoidHom.mk' (fun y => y • x) fun y z => by simp only [add_smul])) 1 ; aesop)
+
+instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
+
+instance : Abelian (Sheaf AddCommGrpCat.{u} X) := sheafIsAbelian
+
+instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
+  CategoryTheory.Sheaf.instIsGrothendieckAbelian (Opens.grothendieckTopology X) AddCommGrpCat
+
+instance : EnoughInjectives (Sheaf AddCommGrpCat.{u} X) := IsGrothendieckAbelian.enoughInjectives
+
+instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
+  hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)
+
+theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
+    {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
+    ∃(t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
+  dsimp [Presheaf] at S
+  let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
+  apply (ShortComplex.ab_exact_iff (S.map F)).mp
+  · have := ((Functor.exact_tfae F).out 1 3).mpr
+    exact this ⟨inferInstance, inferInstance⟩ S hS
+  exact h
+
+namespace Sheaf.AddCommGrpCat
+
+abbrev Γ (U : Opens X) := (sheafSections (Opens.grothendieckTopology X) AddCommGrpCat).obj (op U)
+
+lemma Γ.map_app {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) :
+    (Γ U).map g = g.val.app (op U) := rfl
+
+lemma restrict_sum {F : Sheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.val.obj (op U)) :
+    (s + t) |_ V = s |_V + t |_V := by
+  delta Presheaf.restrictOpen Presheaf.restrict
+  aesop_cat
+
+lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
+    (h : S.g.val.app (op U) s = 0) (hS : S.ShortExact) :
+    ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
+  have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
+    (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
+  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS.1, hS.2⟩).left
+
+end TopCat.Sheaf.AddCommGrpCat
