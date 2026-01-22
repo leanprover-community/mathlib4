@@ -59,16 +59,6 @@ theorem CoFG.of_cofg_le {S T : Submodule R M} (hT : S ≤ T) (hS : S.CoFG) : T.C
   rw [← sup_eq_right.mpr hT]
   exact Module.Finite.equiv (quotientQuotientEquivQuotientSup S T)
 
-/-- The sup of a CoFG submodule with another submodule is CoFG. -/
-theorem CoFG.sup_left {S : Submodule R M} (hS : S.CoFG) (T : Submodule R M) : (S ⊔ T).CoFG
-  := of_cofg_le le_sup_left hS
-
-alias CoFG.sup := CoFG.sup_left
-
-/-- The sup of a CoFG submodule with another submodule is CoFG. -/
-theorem CoFG.sup_right (S : Submodule R M) {T : Submodule R M} (hT : T.CoFG) : (S ⊔ T).CoFG
-  := of_cofg_le le_sup_right hT
-
 section LinearMap
 
 open LinearMap
