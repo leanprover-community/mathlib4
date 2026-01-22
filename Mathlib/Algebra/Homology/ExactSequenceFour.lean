@@ -13,7 +13,9 @@ public import Mathlib.Algebra.Homology.ExactSequence
 The main definition in this file is `ComposableArrows.Exact.cokerIsoKer`:
 given an exact sequence `S` (involving at least four objects),
 this is the isomorphism from the cokernel of `S.map' k (k + 1)`
-to the kernel of `S.map' (k + 2) (k + 3)`.
+to the kernel of `S.map' (k + 2) (k + 3)`. This is intended
+to be used for exact sequences in abelian categories, but the
+construction works for preadditive balanced categories.
 
 -/
 
