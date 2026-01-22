@@ -148,7 +148,6 @@ theorem filter_disjiUnion (s : Finset α) (f : α → Finset β) (h) (p : β →
     (s.disjiUnion f h).filter p
       = s.disjiUnion (fun a ↦ (f a).filter p) (pairwiseDisjoint_filter h p) := by grind
 
-
 theorem disjiUnion_singleton {f : α → β} (hf : f.Injective) :
     s.disjiUnion (fun a => {f a}) (fun _ _ _ _ => disjoint_singleton.mpr ∘ hf.ne) = s.map ⟨f, hf⟩ := by
   ext; simp [eq_comm]
