@@ -5,10 +5,11 @@ Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
 module
 
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.End
 public import Mathlib.Data.Finset.NoncommProd
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Fintype.EquivFin
 
 /-!
 # support of a permutation
@@ -511,8 +512,10 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   simp only [mem_support, swap_apply_def, mul_apply, f.injective.eq_iff] at *
   grind
 
-theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
+omit [Fintype α] in
+theorem disjoint_swap_swap [Finite α] {x y z t : α} (h : [x, y, z, t].Nodup) :
     Disjoint (swap x y) (swap z t) := by
+  have : Fintype α := Fintype.ofFinite α
   rw [Equiv.Perm.disjoint_iff_disjoint_support,
     (support_swap_iff x y).mpr (by grind),
     (support_swap_iff z t).mpr (by grind)]
