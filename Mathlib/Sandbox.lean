@@ -13,5 +13,3 @@ theorem MulAction.orbitProdStabilizerEquivGroup_symm_apply_fst (α : Type*) {β 
 theorem MulAction.orbitProdStabilizerEquivGroup_apply_smul (x : orbit α b) (y : stabilizer α b) :
     MulAction.orbitProdStabilizerEquivGroup α b (x, y) • b = x := by
   rw [← MulAction.orbitProdStabilizerEquivGroup_symm_apply_fst, Equiv.symm_apply_apply]
-
-

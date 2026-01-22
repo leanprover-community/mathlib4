@@ -1335,7 +1335,7 @@ example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
   rw [← e.symm.prod_comp] at this
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.toEquiv_symm, MulEquiv.coe_toEquiv_symm, e] at this
   simp_rw [GSVN_eq p f P L 𝓟 hζ h _ sorry, n𝓢_equivGalZMod] at this
-  
+
 
 
 #exit
