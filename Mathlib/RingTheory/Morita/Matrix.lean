@@ -15,7 +15,8 @@ public import Mathlib.RingTheory.Morita.Basic
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
 - `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
   the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix.
-- `equivalentToMatrix`: An equivalence of categories composed by `ModuleCat.toMatrixModCat R ι`
+- `ModuleCat.matrixEquivalence`: An equivalence of categories composed by
+  `ModuleCat.toMatrixModCat R ι`.
   and `MatrixModCat.toModuleCat R i`.
 - `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
@@ -192,7 +193,7 @@ def ModuleCat.matrixEquivalence (i : ι) : ModuleCat R ≌ ModuleCat (Matrix ι 
       fromModuleCatToModuleCatLinearEquivtoModuleCatObj, Finset.univ_sum_single]
 
 open ModuleCat.Algebra in
-/-- Moreover `equivalentToMatrix` is a `MoritaEquivalence`. -/
+/-- Moreover `ModuleCat.matrixEquivalence` is a `MoritaEquivalence`. -/
 @[simps]
 def moritaEquivalenceMatrix (R₀ : Type*) [CommRing R₀] [Algebra R₀ R] (i : ι) :
     MoritaEquivalence R₀ R (Matrix ι ι R) where
