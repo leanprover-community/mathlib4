@@ -419,19 +419,20 @@ def ringCompute :
     let ⟨qc, hc⟩ ← res.toRatNZ
     let ⟨c, pc⟩ := res.toRawEq
     return ⟨q($c), ⟨qc, hc⟩, pc⟩
-  evalCast v β sβ smul x vx := do
+  evalCast v β sβ smul x rx := do
+    let ⟨_, vx, px⟩ ← rx.get
     match v, β, sβ with
     | 0, ~q(ℕ), ~q(inferInstance) =>
       -- let _ := vx.cast
       let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα sβ vx
       assumeInstancesCommute
-      return ⟨y, vy, q(fun a => Nat.smul_eq_mul $py)⟩
+      return ⟨y, vy, q(fun a => $px ▸ Nat.smul_eq_mul $py)⟩
     | 0, ~q(ℤ), ~q(inferInstance) =>
       -- TODO: use the cache instead.
       let rα : Q(CommRing $α) ← synthInstanceQ q(CommRing $α)
       let ⟨y, vy, py⟩ ← ExSum.evalIntCast sα sβ rα vx
       assumeInstancesCommute
-      return ⟨y, vy, q(fun a => Int.smul_eq_mul $py)⟩
+      return ⟨y, vy, q(fun a => $px ▸ Int.smul_eq_mul $py)⟩
     | _ => failure
   evalNeg a crα za := do
     let ⟨qa, ha⟩ := za
@@ -461,7 +462,9 @@ def ringCompute :
       return some ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
     | none => return none
   derive x := do
+    Lean.logInfo m!"Ring: Deriving {x}"
     let res ← NormNum.derive x
+    Lean.logInfo m!"Ring: successfully derived {x}"
     let ⟨_, va, pa⟩ ← evalCast sα res
     return ⟨_, va, q($pa)⟩
   eq zx zy := zx.value == zy.value
@@ -476,6 +479,7 @@ def ringCompute :
       failure
   one :=
     ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
+  toString := fun zx => s!"{zx.value}"
 
 
 instance : Common.RingCompute (baseType sα) sα := ringCompute sα

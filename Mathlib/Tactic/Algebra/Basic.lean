@@ -1029,10 +1029,13 @@ instance : Common.RingCompute (BaseType sAlg) sA where
     let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR fR czR vr
     return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
   derive x := do
+    Lean.logInfo m!"Algebra: Deriving {x}"
     -- TODO: use existing cache
     let cR ← mkCache sR
     let cA ← mkCache sA
-    return ← evalCast sAlg cR cA (← derive x)
+    let res ← derive x
+    Lean.logInfo m!"Algebra: successfully derived {x}"
+    return ← evalCast sAlg cR cA res
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp vy
   -- TODO: implement or redesign evalPow
@@ -1045,6 +1048,7 @@ instance : Common.RingCompute (BaseType sAlg) sA where
     | .zero => none
     | _ => none
   one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
+  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString}"
 
 
 end BaseType
@@ -1068,7 +1072,8 @@ theorem Int.algebraMap_eq_cast (A : Type*) [CommRing A] (n : ℤ) :
 def preprocess (mvarId : MVarId) : MetaM MVarId := do
   -- collect the available `push_cast` lemmas
   let thms : SimpTheorems := {}
-  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap].foldlM (·.addConst ·) thms
+  let thms ← [``Nat.cast_eq_algebraMap, ``Int.cast_eq_algebraMap,
+    ``Algebra.algebraMap_eq_smul_one].foldlM (·.addConst ·) thms
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in polynomial tactic: preprocessing should not close goals"
@@ -1215,9 +1220,12 @@ where
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₁
       let ⟨b, vb, pb⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₂
+      logInfo s!"LHS = {Common.ExSum.toString _ va}"
+      logInfo s!"RHS = {vb.toString}"
       unless va.eq vb do
-        let _ := va.eq vb
+        -- let _ := va.eq vb
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
+        -- let g ← mkFreshExprMVar (q($a = $b))
         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
       let pb : Q($e₂ = $a) := pb
       return q(by simp_all)

@@ -9,6 +9,10 @@ example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
   algebra
 
 example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) :
+    a • y = a • y := by
+  algebra with R
+
+example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) :
     (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
   algebra
 

@@ -231,9 +231,10 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y →
     MetaM ((Result baseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   evalMul (sα) : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x * $y))
-  evalCast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β)) (hsmul : Q(HSMul $β $α $α)) (x : Q($β)),
-    ExSum (Ring.baseType sβ) q($sβ) q($x) →
-    /- We require the latter proof because we don't have any facts about Algebra imported in this file.-/
+  evalCast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v))
+    (sβ : Q(CommSemiring $β)) (hsmul : Q(HSMul $β $α $α)) (x : Q($β)), Thunk (AtomM <| Result (ExSum (Ring.baseType sβ) q($sβ)) q($x)) →
+    /- We require the latter proof because we don't have any facts about
+    Algebra imported in this file.-/
     AtomM (Σ y : Q($α), ExSum baseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
   -- recursiveSMul : Bool
   -- evalSMul (sα) :
@@ -251,8 +252,9 @@ class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   eq (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
   compare (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
   isOne (sα) : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 1)
-  -- cast (sα) : ∀ (_ : Q($α)), Σ b, baseType b
   one (sα) : Result baseType q((nat_lit 1).rawCast)
+  -- Used only for debugging.
+  toString : ∀ {x : Q($α)}, baseType x → String
 
 
 
@@ -298,6 +300,25 @@ partial def ExProd.toExProdNat (e : Q(ℕ)) : ExProd btℕ sℕ e → Σ e', ExP
 partial def ExSum.toExSumNat (e : Q(ℕ)) : ExSum btℕ sℕ e → Σ e', ExSumNat e' := fun
   | .zero => ⟨_, .zero⟩
   | .add va vb => ⟨_, .add va.toExProdNat.2 vb.toExSumNat.2⟩
+
+end
+
+
+mutual
+
+variable [RingCompute btℕ sℕ]
+
+partial def ExBase.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExBase bt sα e → String := fun
+  | .atom id => s!"id: {id}"
+  | .sum v => s!"{v.toString}"
+
+partial def ExProd.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExProd bt sα e → String := fun
+  | .const value => s!"({RingCompute.toString (sα := sα) value})"
+  | .mul vx ve vt => s!"({vx.toString})^({ve.toExProd.2.toString}) * {vt.toString}"
+
+partial def ExSum.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExSum bt sα e → String := fun
+  | .zero => s!"0"
+  | .add va vb => s!"{va.toString} + {vb.toString}"
 
 end
 
@@ -1231,11 +1252,14 @@ partial def eval [∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiri
         /- TODO: The tactic may reject the base ring (e.g. `ring` only supports ℕ and ℤ).
           In this case we don't need to do these evals at all.
           Maybe make them thunks for lazy evaluation? -/
-        let ⟨_, vs, ps⟩ ← eval (bt := Ring.baseType sR) sR cR r
+        -- let vs : Thunk (Ex)
+        let vs : Thunk (AtomM <| Result (ExSum (Ring.baseType sR) sR) q($r)) :=
+          .mk fun () => eval (bt := Ring.baseType sR) sR cR r
+          -- return ⟨_, vs, q(sorry)⟩
         let ⟨_, vb, pb⟩ ← eval (bt := bt) sα c a
         let ⟨_, vt, pt⟩ ← RingCompute.evalCast (baseType := bt) sα _ _ q($sR) q(inferInstance) _ vs
         let ⟨_, vc, pc⟩ ← evalMul sα vt vb
-        return ⟨_, vc, q(hsmul_congr $ps $pb $pt $pc)⟩
+        return ⟨_, vc, q(hsmul_congr rfl $pb $pt $pc)⟩
       catch _ => els
     | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
