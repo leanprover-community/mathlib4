@@ -620,23 +620,34 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
     simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, f.mono.leftLim_le,
       measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
 
-theorem measure_Iic [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
+theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iic x) = ofReal (f x - l) := by
   have : Nonempty R := ⟨x⟩
+  cases botOrderOrNoBotOrder R
+  · have : Iic x = Icc ⊥ x := by simp
+    rw [atBot_eq_pure_of_isBot isBot_bot] at hf
+    rw [this, measure_Icc, leftLim_eq_of_isBot isBot_bot,
+      tendsto_nhds_unique hf (tendsto_pure_nhds f ⊥)]
+  have : NoMinOrder R := NoBotOrder.to_noMinOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ioc_atBot _ _) ?_
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 
-lemma measure_Iio [NoMinOrder R] {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
+lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : R) :
     f.measure (Iio x) = ofReal (leftLim f x - l) := by
   have : Nonempty R := ⟨x⟩
   rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
     <;> simp
 
-theorem measure_Ici [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
+theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
   have : Nonempty R := ⟨x⟩
+  cases topOrderOrNoTopOrder R
+  · have : Ici x = Icc x ⊤ := by simp
+    rw [atTop_eq_pure_of_isTop isTop_top] at hf
+    rw [this, measure_Icc, tendsto_nhds_unique hf (tendsto_pure_nhds f ⊤)]
+  have : NoMaxOrder R := NoTopOrder.to_noMaxOrder R
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
   simp_rw [measure_Ico]
   refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
@@ -650,7 +661,7 @@ theorem measure_Ici [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x 
   · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
     exact (f.mono.leftLim_le le_rfl).trans_lt ha
 
-lemma measure_Ioi [NoMaxOrder R] {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
+lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : R) :
     f.measure (Ioi x) = ofReal (l - f x) := by
   rw [← Ici_diff_left, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
     f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
@@ -677,14 +688,18 @@ lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
   exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
     le_sub_comm.mp <| hN _ (min_le_right x N))).trans (measure_mono Ioc_subset_Iic_self)
 
-lemma measure_Iio_of_tendsto_atBot_atBot [NoMinOrder R] (hf : Tendsto f atBot atBot) (x : R) :
+lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : R) :
     f.measure (Iio x) = ∞ := by
   have : Nonempty R := ⟨x⟩
+  cases botOrderOrNoBotOrder R
+  · rw [atBot_eq_pure_of_isBot isBot_bot] at hf
+    simpa using (tendsto_pure_left.1 hf) _ (Iio_mem_atBot (f ⊥))
+  have : NoMinOrder R := NoBotOrder.to_noMinOrder R
   obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
   rw [← top_le_iff, ← f.measure_Iic_of_tendsto_atBot_atBot hf y]
   exact measure_mono <| Set.Iic_subset_Iio.mpr <| hy
 
-theorem measure_univ [Nonempty R] [NoMinOrder R]
+theorem measure_univ [Nonempty R]
     {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
   refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
@@ -697,13 +712,13 @@ lemma measure_univ_of_tendsto_atTop_atTop [Nonempty R] (hf : Tendsto f atTop atT
   rw [← top_le_iff, ← f.measure_Ioi_of_tendsto_atTop_atTop hf default]
   exact measure_mono (subset_univ _)
 
-lemma measure_univ_of_tendsto_atBot_atBot [Nonempty R] [NoMinOrder R] (hf : Tendsto f atBot atBot) :
+lemma measure_univ_of_tendsto_atBot_atBot [Nonempty R] (hf : Tendsto f atBot atBot) :
     f.measure univ = ∞ := by
   inhabit R
   rw [← top_le_iff, ← f.measure_Iio_of_tendsto_atBot_atBot hf default]
   exact measure_mono (subset_univ _)
 
-lemma isFiniteMeasure [NoMinOrder R] {l u : ℝ}
+lemma isFiniteMeasure {l u : ℝ}
     (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     IsFiniteMeasure f.measure := by
   constructor
@@ -711,7 +726,28 @@ lemma isFiniteMeasure [NoMinOrder R] {l u : ℝ}
   · simp [eq_empty_of_isEmpty]
   · simp [f.measure_univ hfl hfu]
 
-lemma isProbabilityMeasure [Nonempty R] [NoMinOrder R]
+lemma isFiniteMeasure_of_forall_abs_le {C : ℝ} (h : ∀ x, |f x| ≤ C) :
+    IsFiniteMeasure f.measure := by
+  constructor
+  cases isEmpty_or_nonempty R
+  · simp [eq_empty_of_isEmpty]
+  obtain ⟨u, hu⟩ : ∃ u, Tendsto f atTop (𝓝 u) := by
+    rcases tendsto_of_monotone f.mono with H | H
+    · obtain ⟨x, hx⟩ : ∃ x, C + 1 ≤ f x := (tendsto_atTop.1 H (C + 1)).exists
+      grind
+    exact H
+  obtain ⟨l, hl⟩ : ∃ l, Tendsto f atBot (𝓝 l) := by
+    rcases tendsto_of_monotone f.mono with H | H
+    · obtain ⟨x, hx⟩ : ∃ x, C + 1 ≤ f x := (tendsto_atTop.1 H (C + 1)).exists
+      grind
+    exact H
+
+
+
+#exit
+
+
+lemma isProbabilityMeasure [Nonempty R]
     (hf_bot : Tendsto f atBot (𝓝 0)) (hf_top : Tendsto f atTop (𝓝 1)) :
     IsProbabilityMeasure f.measure := ⟨by simp [f.measure_univ hf_bot hf_top]⟩
 
@@ -721,7 +757,7 @@ instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := by
     exists_Icc_mem_subset_of_mem_nhds (by simp)
   exact ⟨Icc b c, h, by simp⟩
 
-lemma eq_of_measure_of_tendsto_atBot [NoMinOrder R] (g : StieltjesFunction R) {l : ℝ}
+lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
     f = g := by
   ext x

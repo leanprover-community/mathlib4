@@ -72,10 +72,19 @@ theorem leftLim_eq_of_tendsto [hα : TopologicalSpace α] [h'α : OrderTopology 
   haveI := neBot_iff.2 h
   exact lim_eq h'
 
+theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
+    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
+    Function.rightLim f a = y :=
+  leftLim_eq_of_tendsto (α := αᵒᵈ) h h'
+
 theorem leftLim_eq_of_eq_bot [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : 𝓝[<] a = ⊥) : leftLim f a = f a := by
   rw [h'α.topology_eq_generate_intervals] at h
   simp [leftLim, h]
+
+theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
+    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
+  leftLim_eq_of_eq_bot (α := αᵒᵈ) f h
 
 theorem leftLim_eq_of_not_tendsto
     [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
@@ -83,19 +92,22 @@ theorem leftLim_eq_of_not_tendsto
   rw [h'α.topology_eq_generate_intervals] at h
   simp [leftLim, h]
 
-theorem rightLim_eq_of_tendsto [TopologicalSpace α] [OrderTopology α] [T2Space β]
-    {f : α → β} {a : α} {y : β} (h : 𝓝[>] a ≠ ⊥) (h' : Tendsto f (𝓝[>] a) (𝓝 y)) :
-    Function.rightLim f a = y :=
-  @leftLim_eq_of_tendsto αᵒᵈ _ _ _ _ _ _ f a y h h'
-
-theorem rightLim_eq_of_eq_bot [TopologicalSpace α] [OrderTopology α] (f : α → β) {a : α}
-    (h : 𝓝[>] a = ⊥) : rightLim f a = f a :=
-  @leftLim_eq_of_eq_bot αᵒᵈ _ _ _ _ _ f a h
-
 theorem rightLim_eq_of_not_tendsto
     [hα : TopologicalSpace α] [h'α : OrderTopology α] (f : α → β) {a : α}
     (h : ¬ ∃ y, Tendsto f (𝓝[>] a) (𝓝 y)) : rightLim f a = f a :=
   leftLim_eq_of_not_tendsto (α := αᵒᵈ) f h
+
+theorem leftLim_eq_of_isBot {f : α → β} {a : α} (ha : IsBot a) :
+    leftLim f a = f a := by
+  let A : TopologicalSpace α := Preorder.topology α
+  have : OrderTopology α :=  ⟨rfl⟩
+  apply leftLim_eq_of_eq_bot
+  have : Iio a = ∅ := by simp; grind [IsBot, IsMin]
+  simp [this]
+
+theorem rightLim_eq_of_isTop {f : α → β} {a : α} (ha : IsTop a) :
+    rightLim f a = f a :=
+  leftLim_eq_of_isBot (α := αᵒᵈ) ha
 
 theorem ContinuousWithinAt.leftLim_eq [TopologicalSpace α] [OrderTopology α] [T2Space β]
     {f : α → β} {a : α} (hf : ContinuousWithinAt f (Iic a) a) : leftLim f a = f a := by

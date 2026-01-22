@@ -197,17 +197,27 @@ instance Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α
     [InfConvergenceClass α] : InfConvergenceClass (ι → α) :=
   Pi.infConvergenceClass
 
-theorem tendsto_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
     Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) := by
   classical
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
-theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
+  tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
+
+theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
+    Tendsto f atBot atBot ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
+  tendsto_atTop_of_monotone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
+
+theorem tendsto_atBot_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    Tendsto f atBot atTop ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
+  tendsto_atTop_of_antitone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
 
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
     [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]

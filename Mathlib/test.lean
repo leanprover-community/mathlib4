@@ -371,16 +371,29 @@ variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCounta
 
 open Set
 
-noncomputable def _root_.BoundedVariationOn.measure
-    (hf : BoundedVariationOn f univ) (x₀ : α) : Measure α := by
-  have : Monotone (fun x ↦ variationOnFromTo f univ x₀ x) := by
+noncomputable def _root_.BoundedVariationOn.stieltjesFunctionRightLim
+    (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
+  toFun x := variationOnFromTo f.rightLim univ x₀ x
+  mono' := by
     rw [← monotoneOn_univ]
-    exact variationOnFromTo.monotoneOn hf.locallyBoundedVariationOn (mem_univ _)
-  exact this.stieltjesFunction.measure
+    exact variationOnFromTo.monotoneOn hf.rightLim.locallyBoundedVariationOn (mem_univ _)
+  right_continuous' x := hf.continuousWithinAt_variationOnFromTo_rightLim_Ici
 
-instance (hf : BoundedVariationOn f univ) (x₀ : α) : IsFiniteMeasure (hf.measure x₀) := by
-  suffices hf.measure x₀ univ ≤ eVariationOn f univ from ⟨this.trans_lt hf.lt_top⟩
-  sorry
+open scoped Classical in
+noncomputable def _root_.BoundedVariationOn.measureAux
+    (hf : BoundedVariationOn f univ) : Measure α :=
+  if h : Nonempty α then (hf.stieltjesFunctionRightLim h.some).measure else 0
+
+instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
+  by_cases h : Nonempty α; swap
+  · simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
+    infer_instance
+  simp [BoundedVariationOn.measureAux, h]
+  set x₀ := h.some
+
+
+
+#exit
 
 lemma foo (hf : BoundedVariationOn f univ) (x₀ : α) : ∃ m : VectorMeasure α E,
     (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧ ∀ s,
