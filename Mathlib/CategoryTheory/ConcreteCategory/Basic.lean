@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -22,10 +24,6 @@ has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
-
-Two classes helping construct concrete categories in the two most
-common cases are provided in the files `BundledHom` and
-`UnbundledHom`, see their documentation for details.
 
 ## Implementation notes
 
@@ -54,6 +52,8 @@ have a `HasForget` instance.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+
+@[expose] public section
 
 
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
@@ -349,7 +349,7 @@ theorem hom_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X �
 
 /-- Using the `FunLike` coercion of `HasForget` does the same as the original coercion.
 -/
-theorem coe_toHasForget_instFunLike {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+theorem coe_toHasForget_instFunLike {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
     [inst : ∀ X Y : C, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] {X Y : C}
     (f : X ⟶ Y) :
     @DFunLike.coe (X ⟶ Y) (ToType X) (fun _ => ToType Y) HasForget.instFunLike f = f := rfl
@@ -368,7 +368,7 @@ instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
   ((forget C).mapIso (asIso f)).isIso_hom
 
 @[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+lemma NatTrans.naturality_apply {C D : Type*} [Category* C] [Category* D] {FD : D → D → Type*}
     {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
     {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by
@@ -380,7 +380,7 @@ variable (C)
 
 /-- Build a coercion to functions out of `HasForget`.
 
-The intended usecase is to provide a `FunLike` instance in `HasForget.toConcreteCategory`.
+The intended use case is to provide a `FunLike` instance in `HasForget.toConcreteCategory`.
 See that definition for the considerations in making this an instance.
 
 See note [reducible non-instances].
@@ -392,7 +392,7 @@ abbrev HasForget.toFunLike [HasForget C] (X Y : C) :
 
 /-- Build a concrete category out of `HasForget`.
 
-The intended usecase is to prove theorems referencing only `(forget C)`
+The intended use case is to prove theorems referencing only `(forget C)`
 and not `(forget C).obj X` nor `(forget C).map f`: those should be written
 as `ToType X` and `ConcreteCategory.hom f` respectively.
 
@@ -444,23 +444,24 @@ instance InducedCategory.concreteCategory {C : Type u} {D : Type u'} [Category.{
     {FD : D → D → Type*} {CD : D → Type w} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
     [ConcreteCategory.{w} D FD] (f : C → D) :
     ConcreteCategory (InducedCategory D f) (fun X Y => FD (f X) (f Y)) where
-  hom := hom (C := D)
-  ofHom := ofHom (C := D)
-  hom_ofHom := hom_ofHom (C := D)
-  ofHom_hom := ofHom_hom (C := D)
-  comp_apply := ConcreteCategory.comp_apply (C := D)
-  id_apply := ConcreteCategory.id_apply (C := D)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
+open ObjectProperty in
 instance FullSubcategory.concreteCategory {C : Type u} [Category.{v} C]
     {FC : C → C → Type*} {CC : C → Type w} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
     [ConcreteCategory.{w} C FC]
     (P : ObjectProperty C) : ConcreteCategory P.FullSubcategory (fun X Y => FC X.1 Y.1) where
-  hom := hom (C := C)
-  ofHom := ofHom (C := C)
-  hom_ofHom := hom_ofHom (C := C)
-  ofHom_hom := ofHom_hom (C := C)
-  comp_apply := ConcreteCategory.comp_apply (C := C)
-  id_apply := ConcreteCategory.id_apply (C := C)
+  hom f := hom f.hom
+  ofHom g := homMk (ofHom g)
+  hom_ofHom _ := hom_ofHom _
+  ofHom_hom _ := by ext; simp [ofHom_hom]
+  comp_apply _ _ _ := ConcreteCategory.comp_apply _ _ _
+  id_apply _ := ConcreteCategory.id_apply _
 
 end ConcreteCategory
 

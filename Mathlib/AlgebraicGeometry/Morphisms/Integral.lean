@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
-import Mathlib.RingTheory.RingHom.Integral
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+public import Mathlib.RingTheory.RingHom.Integral
 
 /-!
 
@@ -18,6 +20,8 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 and the induced ring map is integral.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -94,6 +98,13 @@ lemma SpecMap_iff {R S : CommRingCat} {φ : R ⟶ S} :
 
 instance : IsMultiplicative @IsIntegralHom where
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsIntegralHom f] [IsIntegralHom g] :
+    IsIntegralHom (Limits.coprod.desc f g) := by
+  refine hasAffineProperty.coprodDesc_affineAnd RingHom.isIntegral_respectsIso ?_ _ _ ‹_› ‹_›
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g]
+  refine algebraMap_isIntegral_iff.mpr inferInstance
+
 instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
     UniversallyClosed f := by
   revert X Y f ‹IsIntegralHom f›
@@ -135,9 +146,7 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   rw [SpecMap_iff]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
   algebraize [φ.1, Polynomial.mapRingHom φ.1]
-  haveI : IsScalarTower R (Polynomial R) (Polynomial S) :=
-    .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
-  refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
+  exact H₁.universally_isClosedMap (Spec.map (CommRingCat.ofHom Polynomial.C))
     (Spec.map (CommRingCat.ofHom Polynomial.C)) (Spec.map _)
     (isPullback_SpecMap_of_isPushout _ _ _ _
     (CommRingCat.isPushout_of_isPushout R S (Polynomial R) (Polynomial S))).flip

@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Nakayama
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Nakayama
+public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Nakayama's lemma
@@ -27,7 +29,8 @@ This file contains some alternative statements of Nakayama's Lemma as found in
 * `Submodule.smul_le_of_le_smul_of_le_jacobson_bot` - Statement (4) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
-* `Submodule.le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot` - Statement (8) in
+* `Submodule.exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot` -
+  Statement (8) in
   [Stacks: Nakayama's Lemma](https://stacks.math.columbia.edu/tag/00DV).
 
 Note that a version of Statement (1) in
@@ -41,6 +44,8 @@ Note that a version of Statement (1) in
 ## Tags
 Nakayama, Jacobson
 -/
+
+public section
 
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -180,18 +185,47 @@ lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
   | add _ _ _ _ hx hy => exact N.add_mem hx hy
   | zero => exact N.zero_mem
 
-/-- **Nakayama's Lemma** - Statement (8) in
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV). -/
-@[stacks 00DV "(8)"]
-theorem le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot
-    {I : Ideal R} {N : Submodule R M} {t : Set M}
-    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (htspan : map (I • N).mkQ N ≤ map (I • N).mkQ (span R t)) :
-    N ≤ span R t := by
+lemma le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N ≤ map (I • N).mkQ N') : N ≤ N' := by
   apply le_of_le_smul_of_le_jacobson_bot hN hIjac
-  apply_fun comap (I • N).mkQ at htspan
+  apply_fun comap (I • N).mkQ at hmaple
   on_goal 2 => apply Submodule.comap_mono
-  simp only [comap_map_mkQ] at htspan
-  grw [sup_comm, ← htspan]
-  simp only [le_sup_right]
+  simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+  grw [sup_comm, ← hmaple]
+
+@[deprecated (since := "2026-01-03")]
+alias le_span_of_map_mkQ_le_map_mkQ_span_of_le_jacobson_bot :=
+  le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot
+
+lemma eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N N' : Submodule R M} (hN : N.FG) (hIjac : I ≤ jacobson ⊥)
+    (hmaple : map (I • N).mkQ N = map (I • N).mkQ N') : N = N' := by
+  apply le_antisymm
+  · exact le_of_map_mkQ_le_map_mkQ_of_le_jacobson_bot hN hIjac hmaple.le
+  · apply_fun comap (I • N).mkQ at hmaple
+    simp only [comap_map_mkQ, smul_le_right, sup_of_le_right] at hmaple
+    rw [hmaple]; apply le_sup_right
+
+/--
+**Nakayama's Lemma** - Statement (8) in
+[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
+
+If `N` is a finitely generated `R`-submodule of `M`,
+`I` is an ideal contained in the Jacobson radical of `R`,
+`s` is a set of `M / (I • N)` that spans the quotient image of `N`,
+then there exists a spanning set `t` of `N` in bijection with `s` via the quotient map.
+-/
+@[stacks 00DV "(8)"]
+theorem exists_injOn_mkQ_image_span_eq_of_span_eq_map_mkQ_of_le_jacobson_bot
+    {I : Ideal R} {N : Submodule R M} (s : Set (M ⧸ (I • N)))
+    (hN : N.FG) (hIjac : I ≤ jacobson ⊥) (hsspan : span R s = map (I • N).mkQ N) :
+    ∃ (t : Set M), t.InjOn (I • N).mkQ ∧ (I • N).mkQ '' t = s ∧ span R t = N := by
+  use Quotient.out '' s
+  split_ands
+  · simp [Set.InjOn]
+  · simp [Set.image_image]
+  · symm; apply eq_of_map_mkQ_eq_map_mkQ_of_le_jacobson_bot hN hIjac
+    simp [← hsspan, map_span, Set.image_image]
 
 end Submodule

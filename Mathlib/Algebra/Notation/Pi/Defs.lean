@@ -3,9 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Util.AssertExists
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Util.AssertExists
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Notation for algebraic operators on pi types
@@ -14,6 +16,8 @@ This file provides only the notation for (pointwise) `0`, `1`, `+`, `*`, `•`, 
 See `Mathlib/Algebra/Group/Pi/Basic.lean` for the `Monoid` and `Group` instances. There is also
 an instance of the `Star` notation typeclass, but no default notation is included.
 -/
+
+@[expose] public section
 
 assert_not_exists Set.range Monoid Preorder
 
@@ -104,7 +108,7 @@ variable [∀ i, Div (G i)]
 instance instDiv : Div (∀ i, G i) where div f g i := f i / g i
 
 @[to_additive (attr := simp)]
-lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i :=rfl
+lemma div_apply (f g : ∀ i, G i) (i : ι) : (f / g) i = f i / g i := rfl
 
 @[to_additive (attr := push ←)]
 lemma div_def (f g : ∀ i, G i) : f / g = fun i ↦ f i / g i := rfl

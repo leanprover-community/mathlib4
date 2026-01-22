@@ -3,7 +3,11 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
 # Lists in product and sigma types
@@ -12,6 +16,8 @@ This file proves basic properties of `List.product` and `List.sigma`, which are 
 living in `Prod` and `Sigma` types respectively. Their definitions can be found in
 [`Data.List.Defs`](./defs). Beware, this is not about `List.prod`, the multiplicative product.
 -/
+
+public section
 
 
 variable {α β : Type*}

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 /-!
 # Ends and coends
@@ -13,12 +15,14 @@ which is a suitable multiequalizer of the objects `(F.obj (op j)).obj j` for all
 For this shape of limits, cones are named wedges: the corresponding type is `Wedge F`.
 
 We also introduce `coend F` as multicoequalizers of
-`(F.obj (op j)).obj j` for all `j : J`. In this cases, cocones are named cowedges.
+`(F.obj (op j)).obj j` for all `j : J`. In these cases, cocones are named cowedges.
 
 ## References
 * https://ncatlab.org/nlab/show/end
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -144,7 +148,7 @@ variable {F}
 isomorphisms of cowedges. -/
 @[simps!]
 def ext {W₁ W₂ : Cowedge F} (e : W₁.pt ≅ W₂.pt)
-    (he : ∀ j : J, W₁.π j ≫ e.hom  = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
+    (he : ∀ j : J, W₁.π j ≫ e.hom = W₂.π j := by cat_disch) : W₁ ≅ W₂ :=
   Cocones.ext e (fun j =>
     match j with
     | .right _ => he _
@@ -220,9 +224,6 @@ lemma end_.hom_ext {X : C} {f g : X ⟶ end_ F} (h : ∀ j, f ≫ end_.π F j = 
     f = g :=
   Multiequalizer.hom_ext _ _ _ (fun _ ↦ h _)
 
-@[deprecated (since := "2025-06-06")] alias _root_.CategoryTheory.Limits.hom_ext :=
-  end_.hom_ext
-
 section
 
 variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)
@@ -289,7 +290,7 @@ noncomputable def coend.ι (j : J) : (F.obj (op j)).obj j ⟶ coend F :=
 
 @[reassoc]
 lemma coend.condition {i j : J} (f : i ⟶ j) :
-     (F.map f.op).app i ≫ ι F i  = (F.obj (op j)).map f ≫ ι F j := by
+     (F.map f.op).app i ≫ ι F i = (F.obj (op j)).map f ≫ ι F j := by
   apply Cowedge.condition
 
 variable {F}
@@ -316,7 +317,7 @@ variable {F' : Jᵒᵖ ⥤ J ⥤ C} [HasCoend F'] (f : F ⟶ F')
 
 /-- A natural transformation of functors F ⟶ F' induces a map coend F ⟶ coend F'. -/
 noncomputable def coend.map : coend F ⟶ coend F' :=
-  coend.desc (fun x ↦ (f.app (op x)).app x ≫ coend.ι _ _ ) (fun j j' φ ↦ by
+  coend.desc (fun x ↦ (f.app (op x)).app x ≫ coend.ι _ _) (fun j j' φ ↦ by
     simp [coend.condition])
 
 @[reassoc (attr := simp)]

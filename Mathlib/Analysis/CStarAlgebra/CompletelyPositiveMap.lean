@@ -3,9 +3,10 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
-import Mathlib.Analysis.CStarAlgebra.CStarMatrix
+public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 
 /-! # Completely positive maps
 
@@ -32,6 +33,8 @@ and only includes the order property; linearity is not mentioned at all. It is t
 to be used in conjunction with `LinearMapClass`. This is meant to avoid mixing order and algebra
 as much as possible.
 -/
+
+@[expose] public section
 
 open scoped CStarAlgebra
 

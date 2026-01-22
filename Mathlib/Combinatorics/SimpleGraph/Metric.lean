@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Graph metric
@@ -31,6 +33,8 @@ which is the `ℕ`-valued version of `SimpleGraph.edist`.
 graph metric, distance
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -130,6 +134,14 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
+lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+  by_cases huv : u = v
+  · simp [huv]
+  · simp only [huv, or_false]
+    have h : 0 < G.edist u v := edist_pos_of_ne huv
+    rw [LE.le.ge_iff_eq' (Order.one_le_iff_pos.mpr h)]
+    exact edist_eq_one_iff_adj
+
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
 
@@ -168,6 +180,10 @@ variable {G} {u v w : V}
 theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) :=
   ENat.iInf_toNat
 
+@[grind =]
+lemma Reachable.coe_dist_eq_edist (h : G.Reachable u v) : G.dist u v = G.edist u v :=
+  ENat.coe_toNat <| edist_ne_top_iff_reachable.mpr h
+
 protected theorem Reachable.exists_walk_length_eq_dist (hr : G.Reachable u v) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
   dist_eq_sInf ▸ Nat.sInf_mem (Set.range_nonempty_iff_nonempty.mpr hr)
@@ -183,6 +199,7 @@ theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
 theorem dist_eq_zero_iff_eq_or_not_reachable :
     G.dist u v = 0 ↔ u = v ∨ ¬G.Reachable u v := by simp [dist_eq_sInf, Nat.sInf_eq_zero, Reachable]
 
+@[simp, grind =]
 theorem dist_self : dist G v v = 0 := by simp
 
 protected theorem Reachable.dist_eq_zero_iff (hr : G.Reachable u v) :
@@ -195,7 +212,7 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
 protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
     (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
-    by_contra! hc
+    by_contra hc
     obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
     exact hnadj (Walk.exists_length_eq_one_iff.mp ⟨p, hc ▸ hp⟩))
 
@@ -226,6 +243,20 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
+lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
+    G.dist u w ≤ G.dist u v + G.dist v w := by
+  by_cases! h' : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
+  rw [← ENat.coe_le_coe, ENat.coe_add]
+  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+
+lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
+    G.dist u w ≤ G.dist u v + G.dist v w := by
+  by_cases! h' : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable]
+  rw [← ENat.coe_le_coe, ENat.coe_add]
+  grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
+
 theorem dist_comm : G.dist u v = G.dist v u := by
   rw [dist, dist, edist_comm]
 
@@ -247,13 +278,20 @@ theorem dist_eq_one_iff_adj : G.dist u v = 1 ↔ G.Adj u v := by
   rw [dist, ENat.toNat_eq_iff, ENat.coe_one, edist_eq_one_iff_adj]
   decide
 
-theorem Connected.diff_dist_adj (hG : G.Connected) (hadj : G.Adj v w) :
+theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
     G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  by_cases! huw : ¬G.Reachable u w
+  · grind [dist_eq_zero_iff_eq_or_not_reachable, Reachable.trans, Adj.reachable]
   have : G.dist v w = 1 := dist_eq_one_iff_adj.mpr hadj
   have : G.dist w v = 1 := dist_eq_one_iff_adj.mpr hadj.symm
-  have : G.dist u w ≤ G.dist u v + G.dist v w := hG.dist_triangle
-  have : G.dist u v ≤ G.dist u w + G.dist w v := hG.dist_triangle
-  omega
+  have : G.dist u w ≤ G.dist u v + G.dist v w := hadj.reachable.dist_triangle_right u
+  have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
+  lia
+
+@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
+theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
+    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  apply Adj.diff_dist_adj hadj
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
@@ -273,7 +311,7 @@ lemma Reachable.exists_path_of_dist (hr : G.Reachable u v) :
 
 lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
-  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist  u v
+  obtain ⟨p, h⟩ := hconn.exists_walk_length_eq_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
 
 @[simp]
@@ -295,7 +333,7 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   have : p₁.length = ru.length + p₂.length + rv.length := by simp [h]
   have : r.length = ru.length + s.length + rv.length := by simp [r]
   have := dist_le r
-  cutsat
+  lia
 
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
@@ -314,17 +352,17 @@ lemma Walk.exists_adj_adj_not_adj_ne {p : G.Walk v w} (hp : p.length = G.dist v 
   have : p.tail.tail.length < p.tail.length := by
     rw [← p.tail.length_tail_add_one (by
       simp only [not_nil_iff_lt_length, ← p.length_tail_add_one hnp] at hp ⊢
-      cutsat)]
-    omega
-  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; omega
+      lia)]
+    lia
+  have : p.tail.length < p.length := by rw [← p.length_tail_add_one hnp]; lia
   by_cases hv : v = p.getVert 2
   · have : G.dist v w ≤ p.tail.tail.length := by
       simpa [hv, p.getVert_tail] using dist_le p.tail.tail
-    cutsat
+    lia
   by_cases hadj : G.Adj v (p.getVert 2)
   · have : G.dist v w ≤ p.tail.tail.length + 1 :=
       dist_le <| p.tail.tail.cons <| p.getVert_tail ▸ hadj
-    cutsat
+    lia
   exact ⟨p.adj_snd hnp, p.adj_getVert_succ (hp ▸ hl), hadj, hv⟩
 
 end dist

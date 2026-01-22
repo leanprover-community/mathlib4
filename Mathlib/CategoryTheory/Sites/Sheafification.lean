@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
 
 # Sheafification
@@ -17,6 +19,8 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
 `Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -76,12 +80,12 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   L := presheafToSheaf J A
   adj := sheafificationAdjunction _ _
 
-instance [HasSheafify J A] :  PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
+instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
   inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
-variable {D : Type*} [Category D] [HasWeakSheafify J D]
+variable {D : Type*} [Category* D] [HasWeakSheafify J D]
 
 /-- The sheafification of a presheaf `P`. -/
 noncomputable abbrev sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
@@ -224,8 +228,18 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P) :=
   isIso_of_fully_faithful (sheafToPresheaf J D) _
 
+instance (P : Sheaf J D) :
+    IsIso ((sheafificationAdjunction J D).counit.app P).val :=
+  inferInstanceAs (IsIso ((sheafToPresheaf J D).map _))
+
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _
+
+@[reassoc]
+lemma sheafifyLift_id_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) :
+    sheafifyLift J (𝟙 P) hP ≫ toSheafify J P = 𝟙 (sheafify J P) := by
+  rw [← cancel_mono ((sheafificationAdjunction J D).counit.app ⟨P, hP⟩).val]
+  cat_disch
 
 variable (J D)
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Ring.Nat
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # e-transforms
@@ -27,6 +29,8 @@ as internals of other proofs.
 
 Prove the invariance property of the Dyson e-transform.
 -/
+
+@[expose] public section
 
 
 open MulOpposite

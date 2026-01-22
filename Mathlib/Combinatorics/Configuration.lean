@@ -3,9 +3,11 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.LinearAlgebra.Matrix.Rank
-import Mathlib.LinearAlgebra.Projectivization.Constructions
+module
+
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.LinearAlgebra.Matrix.Rank
+public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -30,6 +32,8 @@ Together, these four statements say that any two of the following properties imp
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -151,7 +155,7 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
       rw [hs₃]
       rw [Finset.eq_univ_iff_forall] at hs₃ ⊢
       exact fun p =>
-        Exists.elim (exists_line p)-- If `s = univ`, then show `s.bUnion t = univ`
+        Exists.elim (exists_line p) -- If `s = univ`, then show `s.bUnion t = univ`
         fun l hl => Finset.mem_biUnion.mpr ⟨l, Finset.mem_univ l, Set.mem_toFinset.mpr hl⟩
     · exact hs₂.trans (Nat.one_le_iff_ne_zero.mpr hs₃)
 
@@ -479,7 +483,7 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
-  rw [← Matrix.of_row (![a,b]), ← Matrix.of_row (![c,d])] at h
+  rw [← Matrix.of_row (![a, b]), ← Matrix.of_row (![c, d])] at h
   let A : Matrix (Fin 2) (Fin 3) K := .of ![a, b]
   let B : Matrix (Fin 2) (Fin 3) K := .of ![c, d]
   have hAB : A * B.transpose = 0 := by

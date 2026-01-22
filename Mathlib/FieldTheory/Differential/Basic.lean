@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.MapCoeffs
-import Mathlib.FieldTheory.PrimitiveElement
+module
+
+public import Mathlib.RingTheory.Derivation.MapCoeffs
+public import Mathlib.FieldTheory.PrimitiveElement
 
 /-!
 # Differential Fields
@@ -12,6 +14,8 @@ import Mathlib.FieldTheory.PrimitiveElement
 This file defines the logarithmic derivative `Differential.logDeriv` and proves properties of it.
 This is defined algebraically, compared to `logDeriv` which is analytical.
 -/
+
+@[expose] public section
 
 namespace Differential
 
@@ -101,7 +105,7 @@ noncomputable instance (p : F[X]) [Fact (Irreducible p)] [Fact p.Monic] :
       apply dvd_mul_of_dvd_right
       rw [← AdjoinRoot.mk_eq_zero]
       unfold implicitDeriv
-      simp only [ AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
+      simp only [AdjoinRoot.aeval_eq, Derivation.coe_add, Derivation.coe_smul, Pi.add_apply,
         Pi.smul_apply, Derivation.restrictScalars_apply, derivative'_apply, smul_eq_mul, map_add,
         map_mul, AdjoinRoot.mk_leftInverse Fact.out _]
       rw [div_mul_cancel₀, add_neg_cancel]

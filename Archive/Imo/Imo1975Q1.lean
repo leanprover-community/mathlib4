@@ -15,7 +15,7 @@ Let `x₁, x₂, ... , xₙ` and `y₁, y₂, ... , yₙ` be two sequences of re
 `x₁ ≥ x₂ ≥ ... ≥ xₙ` and `y₁ ≥ y₂ ≥ ... ≥ yₙ`. Prove that if `z₁, z₂, ... , zₙ` is any permutation
 of `y₁, y₂, ... , yₙ`, then `∑ (xᵢ - yᵢ)^2 ≤ ∑ (xᵢ - zᵢ)^2`
 
-# Solution
+## Solution
 
 Firstly, we expand the squares within both sums and distribute into separate finite sums. Then,
 noting that `∑ yᵢ ^ 2 = ∑ zᵢ ^ 2`, it remains to prove that `∑ xᵢ * zᵢ ≤ ∑ xᵢ * yᵢ`, which is true

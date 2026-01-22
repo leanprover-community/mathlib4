@@ -3,10 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Field.Equiv
 
 /-!
 # Simple ring and fields
@@ -16,6 +17,8 @@ import Mathlib.Algebra.Field.Equiv
 - `isSimpleRing_iff_isField`: a commutative ring is simple if and only if it is a field.
 
 -/
+
+public section
 
 namespace IsSimpleRing
 

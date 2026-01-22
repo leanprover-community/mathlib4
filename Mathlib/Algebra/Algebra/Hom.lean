@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -19,6 +21,8 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -285,6 +289,9 @@ def toLinearMap : A →ₗ[R] B where
 theorem toLinearMap_apply (p : A) : φ.toLinearMap p = φ p :=
   rfl
 
+@[simp]
+lemma coe_toLinearMap : ⇑φ.toLinearMap = φ := rfl
+
 theorem toLinearMap_injective :
     Function.Injective (toLinearMap : _ → A →ₗ[R] B) := fun _φ₁ _φ₂ h =>
   ext <| LinearMap.congr_fun h
@@ -488,7 +495,7 @@ variable [Monoid M] [MulSemiringAction M A] [SMulCommClass M R A]
 /-- Each element of the monoid defines an algebra homomorphism.
 
 This is a stronger version of `MulSemiringAction.toRingHom` and
-`DistribMulAction.toLinearMap`. -/
+`DistribSMul.toLinearMap`. -/
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with

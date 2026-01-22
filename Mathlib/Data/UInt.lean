@@ -3,10 +3,12 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Data.BitVec
+module
+
+public import Mathlib.Init
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Data.BitVec
 
 
 /-!
@@ -24,6 +26,9 @@ version also interferes more with software-verification use-cases, which is reas
 cautious here.
 -/
 
+@[expose] public section
+
+set_option linter.style.emptyLine false in
 -- these theorems are fragile, so do them first
 set_option hygiene false in
 run_cmd
@@ -68,6 +73,7 @@ run_cmd
     end $typeName
   ))
 
+set_option linter.style.emptyLine false in
 -- Note that these construct no new data, so cannot form diamonds with core.
 set_option hygiene false in
 run_cmd
@@ -102,7 +108,8 @@ run_cmd
         toBitVec_zero toBitVec_one toBitVec_add toBitVec_mul toBitVec_neg
         toBitVec_sub toBitVec_nsmul toBitVec_zsmul toBitVec_pow
         toBitVec_natCast toBitVec_intCast) in
-      local instance instCommRing : CommRing $typeName :=
+      -- `noncomputable` should not be necessary but triggers some codegen assertion
+      noncomputable local instance instCommRing : CommRing $typeName :=
         Function.Injective.commRing toBitVec toBitVec_injective
           toBitVec_zero toBitVec_one (fun _ _ => toBitVec_add) (fun _ _ => toBitVec_mul)
           (fun _ => toBitVec_neg) (fun _ _ => toBitVec_sub)

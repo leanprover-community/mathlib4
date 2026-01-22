@@ -3,11 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Normed.Lp.WithLp
-import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Topology.MetricSpace.Polish
+module
+
+public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # Fernique's theorem for rotation-invariant measures
@@ -73,6 +73,8 @@ we can deduce bounds on all the moments of the measure `μ` as function of power
 the first moment.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory Complex NormedSpace Filter
 open scoped ENNReal NNReal Real Topology
@@ -322,8 +324,7 @@ lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
     · exact sq_normThreshold_add_one_le n
   _ = 2⁻¹ * Real.log (c.toReal / (1 - c).toReal) * 2 ^ n := by
     unfold logRatio
-    field_simp
-    ring
+    field
 
 open Metric in
 /-- Auxiliary lemma for `lintegral_exp_mul_sq_norm_le_mul`, in which we find an upper bound on an
@@ -370,8 +371,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     rw [mul_comm _ c, mul_assoc, ← ENNReal.ofReal_mul (by positivity), ← Real.exp_add]
     congr
     norm_cast
-    simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div, neg_mul]
-    field_simp
+    simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
     ring
 
 open Metric in
@@ -412,7 +412,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
   -- We dispense with an edge case. If `μ {x | ‖x‖ ≤ a} = 1`, then the integral over
   -- the complement of the ball is zero and we are done.
   by_cases ha : μ {x | ‖x‖ ≤ a} = 1
-  · simp [c, ha] at ht_int_zero ⊢
+  · simp only [ha, one_mul, ENNReal.toReal_div, neg_mul, ge_iff_le, c] at ht_int_zero ⊢
     refine le_add_right ((le_of_eq ?_).trans ht_int_zero)
     rw [← setLIntegral_univ]
     refine setLIntegral_congr ?_

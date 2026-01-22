@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Int
-import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Int
+public import Mathlib.RingTheory.Localization.Algebra
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
@@ -25,6 +27,8 @@ In this file we establish behaviour of `Module.Finite` under localizations.
 
 -/
 
+@[expose] public section
+
 universe u v w t
 
 namespace Module.Finite
@@ -42,20 +46,7 @@ lemma of_isLocalizedModule [Module.Finite R M] : Module.Finite Rₚ Mₚ := by
   classical
   obtain ⟨T, hT⟩ := ‹Module.Finite R M›
   use T.image f
-  rw [eq_top_iff]
-  rintro x -
-  obtain ⟨⟨y, m⟩, (hyx : IsLocalizedModule.mk' f y m = x)⟩ :=
-    IsLocalizedModule.mk'_surjective S f x
-  have hy : y ∈ Submodule.span R T := by rw [hT]; trivial
-  have : f y ∈ Submodule.map f (Submodule.span R T) := Submodule.mem_map_of_mem hy
-  rw [Submodule.map_span] at this
-  have H : Submodule.span R (f '' T) ≤
-      (Submodule.span Rₚ (f '' T)).restrictScalars R := by
-    rw [Submodule.span_le]; exact Submodule.subset_span
-  convert (Submodule.span Rₚ (f '' T)).smul_mem
-    (IsLocalization.mk' Rₚ (1 : R) m) (H this) using 0
-  · rw [← hyx, ← IsLocalizedModule.mk'_one S, IsLocalizedModule.mk'_smul_mk']
-    simp
+  simpa using span_eq_top_of_isLocalizedModule Rₚ S f hT
 
 instance [Module.Finite R M] : Module.Finite (Localization S) (LocalizedModule S M) :=
   of_isLocalizedModule S (LocalizedModule.mkLinearMap S M)
@@ -166,7 +157,7 @@ lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
   apply Module.Finite.iff_fg.mp
   let k (g : t) : I →ₗ[R] (I.map (algebraMap R (Localization.Away g.val))) :=
     Algebra.idealMap I (S := Localization.Away g.val)
-  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ Module.Finite.iff_fg.mpr (H g))
+  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ .of_fg (H g))
 
 end Ideal
 

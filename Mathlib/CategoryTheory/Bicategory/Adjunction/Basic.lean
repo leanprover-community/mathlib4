@@ -3,13 +3,16 @@ Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+public import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
 /-!
 # Adjunctions in bicategories
 
 For 1-morphisms `f : a ⟶ b` and `g : b ⟶ a` in a bicategory, an adjunction between `f` and `g`
-consists of a pair of 2-morphism `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
+consists of a pair of 2-morphisms `η : 𝟙 a ⟶ f ≫ g` and `ε : g ≫ f ⟶ 𝟙 b` satisfying the triangle
 identities. The 2-morphism `η` is called the unit and `ε` is called the counit.
 
 ## Main definitions
@@ -24,6 +27,8 @@ identities. The 2-morphism `η` is called the unit and `ε` is called the counit
 * `Bicategory.mkOfAdjointifyUnit`: construct an adjoint equivalence from 2-isomorphisms
   `η : 𝟙 a ≅ f ≫ g` and `ε : g ≫ f ≅ 𝟙 b`, by upgrading `η` to a unit.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -76,6 +81,7 @@ theorem rightZigzag_idempotent_of_left_triangle
       rw [h]; bicategory
 
 /-- Adjunction between two 1-morphisms. -/
+@[ext]
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
   /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g

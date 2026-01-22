@@ -3,9 +3,11 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-import Mathlib.Analysis.NormedSpace.Normalize
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 
@@ -15,6 +17,8 @@ import Mathlib.Analysis.NormedSpace.Normalize
   combination of four unitary elements, and the norm of each coefficient does not exceed `‖x‖ / 2`.
 + `CStarAlgebra.span_unitary`: a unital C⋆-algebra is spanned by its unitary elements.
 -/
+
+@[expose] public section
 
 variable {A : Type*} [CStarAlgebra A]
 
@@ -39,7 +43,7 @@ lemma IsSelfAdjoint.self_add_I_smul_cfcSqrt_sub_sq_mem_unitary (a : A) (ha : IsS
       rwa [sub_nonneg, ← CStarAlgebra.norm_le_one_iff_of_nonneg (a ^ 2), sq, ha.norm_mul_self,
         sq_le_one_iff₀ (by positivity)]
     rw [cfc_add .., cfc_const_mul .., ← cfc_real_eq_complex (fun x ↦ x) ha, cfc_id' ℝ a,
-      ← cfc_real_eq_complex (fun x ↦ √(1 - x ^2)) ha, cfcₙ_eq_cfc, cfc_comp' (√·) (1 - · ^ 2) a,
+      ← cfc_real_eq_complex (fun x ↦ √(1 - x ^ 2)) ha, cfcₙ_eq_cfc, cfc_comp' (√·) (1 - · ^ 2) a,
       cfc_sub .., cfc_pow .., cfc_const_one .., cfc_id' ..]
   rw [key, cfc_unitary_iff ..]
   intro x hx
@@ -70,7 +74,7 @@ lemma CStarAlgebra.norm_smul_two_inv_smul_add_four_unitary (x : A) (hx : x ≠ 0
       (by simpa [norm_smul, inv_mul_le_one₀ (norm_pos_iff.2 hx)] using imaginaryPart.norm_le x)
     x = ‖x‖ • (2⁻¹ : ℝ) • (u₁ + star u₁ + I • (u₂ + star u₂) : A) := by
   intro u₁ u₂
-  rw [smul_add, smul_comm _ I, unitary.coe_star, unitary.coe_star,
+  rw [smul_add, smul_comm _ I, Unitary.coe_star, Unitary.coe_star,
     ← realPart_apply_coe (u₁ : A), ← realPart_apply_coe (u₂ : A)]
   simpa only [u₁, u₂, selfAdjoint.realPart_unitarySelfAddISMul, realPart_add_I_smul_imaginaryPart]
     using Eq.symm <| NormedSpace.norm_smul_normalize x

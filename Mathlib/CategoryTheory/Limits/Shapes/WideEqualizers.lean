@@ -3,8 +3,10 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Wide equalizers and wide coequalizers
@@ -33,13 +35,15 @@ Each of these has a dual.
 
 ## Implementation notes
 As with the other special shapes in the limits library, all the definitions here are given as
-`abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
+`abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -56,17 +60,17 @@ variable {J : Type w}
 inductive WalkingParallelFamily (J : Type w) : Type w
   | zero : WalkingParallelFamily J
   | one : WalkingParallelFamily J
+deriving Inhabited
 
 open WalkingParallelFamily
 
+-- We do not use `deriving DecidableEq` here
+-- because it generates an instance with unnecessary hypotheses.
 instance : DecidableEq (WalkingParallelFamily J)
   | zero, zero => isTrue rfl
-  | zero, one => isFalse fun t => WalkingParallelFamily.noConfusion t
-  | one, zero => isFalse fun t => WalkingParallelFamily.noConfusion t
+  | zero, one => isFalse fun t => by grind
+  | one, zero => isFalse fun t => by grind
   | one, one => isTrue rfl
-
-instance : Inhabited (WalkingParallelFamily J) :=
-  ⟨zero⟩
 
 -- Don't generate unnecessary `sizeOf_spec` lemma which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in

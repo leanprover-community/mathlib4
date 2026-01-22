@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,6 +53,8 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 
 rectangular box
 -/
+
+@[expose] public section
 
 open Set Function Metric Filter
 

@@ -3,15 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.Algebra.Ring.TransferInstance
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Ring.TransferInstance
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+
+@[expose] public section
 
 universe v
 variable {R α β : Type*} [CommSemiring R]
@@ -23,23 +26,24 @@ variable (R) in
 /-- Transfer `Algebra` across an `Equiv` -/
 protected abbrev algebra (e : α ≃ β) [Semiring β] :
     let _ := Equiv.semiring e
-    ∀ [Algebra R β], Algebra R α := by
-  intros
-  letI : Module R α := e.module R
-  fapply Algebra.ofModule
-  · intro r x y
-    change e.symm (e (e.symm (r • e x)) * e y) = e.symm (r • e.ringEquiv (x * y))
-    simp only [apply_symm_apply, Algebra.smul_mul_assoc, map_mul, ringEquiv_apply]
-  · intro r x y
-    change e.symm (e x * e (e.symm (r • e y))) = e.symm (r • e (e.symm (e x * e y)))
-    simp only [apply_symm_apply, Algebra.mul_smul_comm]
+    ∀ [Algebra R β], Algebra R α := fast_instance%
+  letI := Equiv.semiring e
+  letI := e.smul R
+  { algebraMap :=
+    { toFun r := e.symm (algebraMap R β r)
+      __ := e.ringEquiv.symm.toRingHom.comp (algebraMap R β) }
+    commutes' r x :=
+      show e.symm ((e (e.symm (algebraMap R β r)) * e x)) =
+          e.symm (e x * e (e.symm (algebraMap R β r))) by
+        simp [Algebra.commutes]
+    smul_def' r x :=
+      show e.symm (r • e x) = e.symm (e (e.symm (algebraMap R β r)) * e x) by
+        simp [Algebra.smul_def] }
 
 lemma algebraMap_def (e : α ≃ β) [Semiring β] [Algebra R β] (r : R) :
-    (@algebraMap R α _ (Equiv.semiring e) (Equiv.algebra R e)) r = e.symm ((algebraMap R β) r) := by
-  let _ := Equiv.semiring e
-  simp only [Algebra.algebraMap_eq_smul_one]
-  change e.symm (r • e 1) = e.symm (r • 1)
-  simp only [Equiv.one_def, apply_symm_apply]
+    letI := Equiv.semiring e
+    letI := Equiv.algebra R e
+    algebraMap R α r = e.symm (algebraMap R β r) := rfl
 
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives an algebra equivalence `α ≃ₐ[R] β`

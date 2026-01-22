@@ -3,18 +3,24 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Field.Power
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Util.Qq
+public meta import Mathlib.Algebra.Group.Int.Even
 
 /-! # Lemmas for the field_simp tactic
 
 -/
 
+public section
+
 open List
 
 namespace Mathlib.Tactic.FieldSimp
+@[expose] public section
 
 section zpow'
 
@@ -145,13 +151,13 @@ theorem eq_mul_of_eq_eq_eq_mul {M : Type*} [Mul M] {a b c D e f : M}
     a = D * f := by
   rw [h₁, h₂, h₃, h₄]
 
-theorem eq_eq_cancel_eq {M : Type*} [CancelMonoidWithZero M] {e₁ e₂ f₁ f₂ L : M}
+theorem eq_eq_cancel_eq {M : Type*} [MonoidWithZero M] [IsLeftCancelMulZero M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : L ≠ 0) :
     (e₁ = e₂) = (f₁ = f₂) := by
   subst H₁ H₂
   rw [mul_right_inj' HL]
 
-theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulMono M]
+theorem le_eq_cancel_le {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulMono M]
     [PosMulReflectLE M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ ≤ e₂) = (f₁ ≤ f₂) := by
@@ -159,7 +165,7 @@ theorem le_eq_cancel_le {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [P
   apply Iff.eq
   exact mul_le_mul_iff_right₀ HL
 
-theorem lt_eq_cancel_lt {M : Type*} [CancelMonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
+theorem lt_eq_cancel_lt {M : Type*} [MonoidWithZero M] [PartialOrder M] [PosMulStrictMono M]
     [PosMulReflectLT M] {e₁ e₂ f₁ f₂ L : M}
     (H₁ : e₁ = L * f₁) (H₂ : e₂ = L * f₂) (HL : 0 < L) :
     (e₁ < e₂) = (f₁ < f₂) := by
@@ -218,7 +224,7 @@ theorem cons_pos [GroupWithZero M] [PartialOrder M] [PosMulStrictMono M] [PosMul
 theorem atom_eq_eval [GroupWithZero M] (x : M) : x = NF.eval [(1, x)] := by simp [eval]
 
 variable (M) in
-theorem one_eq_eval [GroupWithZero M] : (1:M) = NF.eval (M := M) [] := rfl
+theorem one_eq_eval [GroupWithZero M] : (1:M) = NF.eval (M := M) [] := (rfl)
 
 theorem mul_eq_eval₁ [CommGroupWithZero M] (a₁ : ℤ × M) {a₂ : ℤ × M} {l₁ l₂ l : NF M}
     (h : l₁.eval * (a₂ ::ᵣ l₂).eval = l.eval) :
@@ -365,10 +371,11 @@ theorem eval_cons_eq_eval_of_eq_of_eq [CommGroupWithZero M] (r : ℤ) (x : M) {t
   rw [← h', eval_cons, eval_cons, h]
 
 end NF
+end
 
 /-! ### Negations of algebraic operations -/
 
-section Sign
+@[expose] public meta section Sign
 open Lean Qq
 
 variable {v : Level} {M : Q(Type v)}

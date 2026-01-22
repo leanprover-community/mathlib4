@@ -3,10 +3,12 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.FinCategory.AsType
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.FinCategory.AsType
 
 /-!
 # Creation of finite limits
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.FinCategory.AsType
 This file defines the classes `CreatesFiniteLimits`, `CreatesFiniteColimits`,
 `CreatesFiniteProducts` and `CreatesFiniteCoproducts`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 

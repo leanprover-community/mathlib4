@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Induction
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -27,6 +29,8 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -200,8 +204,8 @@ theorem mem_inits : ∀ s t : List α, s ∈ inits t ↔ s <+: t
       match s, mi with
       | [], ⟨_, rfl⟩ => Or.inl rfl
       | b :: s, ⟨r, hr⟩ =>
-        (List.noConfusion hr) fun ba (st : s ++ r = t) =>
-          Or.inr <| by rw [ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, st⟩, rfl⟩⟩
+        (List.noConfusion rfl (heq_of_eq hr)) fun ba (st : s ++ r ≍ t) =>
+          Or.inr <| by rw [eq_of_heq ba]; exact ⟨_, (mem_inits _ _).2 ⟨_, eq_of_heq st⟩, rfl⟩⟩
 
 @[simp]
 theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
@@ -218,7 +222,8 @@ theorem mem_tails : ∀ s t : List α, s ∈ tails t ↔ s <:+ t
           fun e =>
           match s, t, e with
           | _, t, ⟨[], rfl⟩ => Or.inl rfl
-          | s, t, ⟨b :: l, he⟩ => List.noConfusion he fun _ lt => Or.inr ⟨l, lt⟩⟩
+          | s, t, ⟨b :: l, he⟩ =>
+            List.noConfusion rfl (heq_of_eq he) fun _ lt => Or.inr ⟨l, eq_of_heq lt⟩⟩
 
 theorem inits_cons (a : α) (l : List α) : inits (a :: l) = [] :: l.inits.map fun t => a :: t := by
   simp

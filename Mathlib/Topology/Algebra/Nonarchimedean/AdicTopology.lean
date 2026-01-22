@@ -3,9 +3,13 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+
 
 /-!
 # Adic topology
@@ -39,6 +43,8 @@ The `I`-adic topology on a ring `R` has a contrived definition using `I^n ‚Ä¢ ‚ä
 to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R`-module.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]
@@ -232,7 +238,7 @@ instance (priority := 100) : NonarchimedeanRing R :=
   RingSubgroupsBasis.nonarchimedean _
 
 instance (priority := 100) : UniformSpace R :=
-  IsTopologicalAddGroup.toUniformSpace R
+  IsTopologicalAddGroup.rightUniformSpace R
 
 instance (priority := 100) : IsUniformAddGroup R :=
   isUniformAddGroup_of_addCommGroup

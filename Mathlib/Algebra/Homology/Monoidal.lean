@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.Algebra.Homology.BifunctorAssociator
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.GradedObject.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Transport
+module
+
+public import Mathlib.Algebra.Homology.BifunctorAssociator
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.GradedObject.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # The monoidal category structure on homological complexes
@@ -22,13 +24,15 @@ In particular, we obtain a monoidal category structure on
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Limits MonoidalCategory Category
 
 namespace HomologicalComplex
 
-variable {C : Type*} [Category C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
+variable {C : Type*} [Category* C] [MonoidalCategory C] [Preadditive C] [HasZeroObject C]
   [(curriedTensor C).Additive] [∀ (X₁ : C), ((curriedTensor C).obj X₁).Additive]
   {I : Type*} [AddMonoid I] {c : ComplexShape I} [c.TensorSigns]
 
@@ -220,7 +224,7 @@ variable [∀ X₁, PreservesColimit (Functor.empty.{0} C) ((curriedTensor C).ob
 /-- Auxiliary definition for `rightUnitor`. -/
 noncomputable def rightUnitor' :
     (tensorObj K (tensorUnit C c)).X ≅ K.X :=
-  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm)  ≪≫
+  GradedObject.Monoidal.tensorIso (Iso.refl _) ((tensorUnitIso C c).symm) ≪≫
     GradedObject.Monoidal.rightUnitor K.X
 
 lemma rightUnitor'_inv (i : I) :
@@ -321,7 +325,7 @@ noncomputable def Monoidal.inducingFunctorData :
 noncomputable instance monoidalCategory : MonoidalCategory (HomologicalComplex C c) :=
   Monoidal.induced _ (Monoidal.inducingFunctorData C c)
 
-noncomputable example {D : Type*} [Category D] [Preadditive D] [MonoidalCategory D]
+noncomputable example {D : Type*} [Category* D] [Preadditive D] [MonoidalCategory D]
     [HasZeroObject D] [HasFiniteCoproducts D] [((curriedTensor D).Additive)]
     [∀ (X : D), (((curriedTensor D).obj X).Additive)]
     [∀ (X : D), PreservesFiniteCoproducts ((curriedTensor D).obj X)]

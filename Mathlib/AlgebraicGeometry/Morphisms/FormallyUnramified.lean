@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.RingTheory.Ideal.IdempotentFG
-import Mathlib.RingTheory.RingHom.Unramified
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.RingHom.Unramified
 
 /-!
 # Formally unramified morphisms
@@ -16,6 +18,8 @@ A morphism of schemes `f : X ⟶ Y` is formally unramified if for each affine `U
 We show that these properties are local, and are stable under compositions and base change.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -44,9 +48,14 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified. -/
 @[mk_iff]
 class FormallyUnramified (f : X ⟶ Y) : Prop where
-  formallyUnramified_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+  formallyUnramified_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
       (f.appLE U V e).hom.FormallyUnramified
+
+alias Scheme.Hom.formallyUnramified_appLE := FormallyUnramified.formallyUnramified_appLE
+
+@[deprecated (since := "2026-01-20")]
+alias FormallyUnramified.formallyUnramified_of_affine_subset := Scheme.Hom.formallyUnramified_appLE
 
 namespace FormallyUnramified
 
@@ -54,7 +63,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
   isLocal_ringHomProperty := RingHom.FormallyUnramified.propertyIsLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [formallyUnramified_iff, affineLocally_iff_affineOpens_le]
+    rw [formallyUnramified_iff, affineLocally_iff_forall_isAffineOpen]
 
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
@@ -98,7 +107,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [FormallyUnramified (f ≫ g)] : FormallyUnramified f :=
   HasRingHomProperty.of_comp (fun {R S T _ _ _} f g H ↦ by
     algebraize [f, g, g.comp f]
-    exact Algebra.FormallyUnramified.of_comp R S T) ‹_›
+    exact Algebra.FormallyUnramified.of_restrictScalars R S T) ‹_›
 
 instance : MorphismProperty.IsMultiplicative @FormallyUnramified where
   id_mem _ := inferInstance
@@ -132,9 +141,6 @@ instance isOpenImmersion_diagonal [FormallyUnramified f] [LocallyOfFiniteType f]
   rw [show f = CommRingCat.ofHom (algebraMap R S) from rfl, diagonal_SpecMap R S,
     cancel_right_of_respectsIso (P := @IsOpenImmersion)]
   infer_instance
-
-@[deprecated (since := "2025-05-03")]
-alias AlgebraicGeometry.FormallyUnramified.isOpenImmersion_diagonal := isOpenImmersion_diagonal
 
 end FormallyUnramified
 

@@ -3,10 +3,12 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.NormedValued
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Topology.Algebra.Valued.NormedValued
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -35,6 +37,8 @@ integers.
 
 p-adic, p adic, padic, norm, valuation, Cauchy, completion, p-adic completion
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -91,6 +95,7 @@ theorem valuation_p (p : ℕ) [Fact p.Prime] : Valued.v (p : PadicAlgCl p) = 1 /
   rw [valuation_coe, norm_extends, Padic.norm_p, one_div, NNReal.coe_inv,
     NNReal.coe_natCast]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `PadicAlgCl p` has rank one. -/
 instance : RankOne (PadicAlgCl.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0
@@ -148,6 +153,7 @@ theorem valuation_p : Valued.v (p : ℂ_[p]) = 1 / (p : ℝ≥0) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]), ← coe_eq, valuation_extends,
     PadicAlgCl.valuation_p]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on `ℂ_[p]` has rank one. -/
 instance : RankOne (PadicComplex.valued p).v where
   hom         := MonoidWithZeroHom.id ℝ≥0

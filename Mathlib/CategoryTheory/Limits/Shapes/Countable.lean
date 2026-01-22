@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Countable
-import Mathlib.Data.Countable.Defs
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Countable
+public import Mathlib.Data.Countable.Defs
 /-!
 # Countable limits and colimits
 
@@ -24,9 +26,11 @@ limits, see `sequentialFunctor_initial`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Opposite CountableCategory
 
-variable (C : Type*) [Category C] (J : Type*) [Countable J]
+variable (C : Type*) [Category* C] (J : Type*) [Countable J]
 
 namespace CategoryTheory.Limits
 
@@ -166,8 +170,8 @@ instance sequentialFunctor_final : (sequentialFunctor J).Final where
     simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
       not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : j.right ≤ i.right
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : j.right ≤ i.right
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨StructuredArrow.homMk (homOfLE h) rfl⟩
 
@@ -217,13 +221,13 @@ instance sequentialFunctor_initial : (sequentialFunctor J).Initial where
     simp only [List.isChain_cons_cons, Zag, List.isChain_singleton, and_true, ne_eq,
       not_false_eq_true, List.getLast_cons, List.getLast_singleton', reduceCtorEq]
     clear! C
-    wlog h : (unop i.left) ≤ (unop j.left)
-    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt (not_le.mp h)))
+    wlog! h : (unop i.left) ≤ (unop j.left)
+    · exact or_comm.1 (this J d n g inferInstance j i (le_of_lt h))
     · right
       exact ⟨CostructuredArrow.homMk (homOfLE h).op rfl⟩
 
 @[stacks 0032]
-proof_wanted preorder_of_cofiltered (J : Type*) [Category J] [IsCofiltered J] :
+proof_wanted preorder_of_cofiltered (J : Type*) [Category* J] [IsCofiltered J] :
     ∃ (I : Type*) (_ : Preorder I) (_ : IsCofiltered I) (F : I ⥤ J), F.Initial
 
 /--

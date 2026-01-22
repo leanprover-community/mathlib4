@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Disjoint
+module
+
+public import Mathlib.Order.Disjoint
 
 /-!
 
@@ -12,6 +14,8 @@ import Mathlib.Order.Disjoint
 Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
+
+@[expose] public section
 
 /-- Propositions form a distributive lattice. -/
 instance Prop.instDistribLattice : DistribLattice Prop where
@@ -40,7 +44,7 @@ theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
 theorem Prop.top_eq_true : (⊤ : Prop) = True :=
   rfl
 
-instance Prop.le_isTotal : IsTotal Prop (· ≤ ·) :=
+instance Prop.le_total : @Std.Total Prop (· ≤ ·) :=
   ⟨fun p q => by by_cases h : q <;> simp [h]⟩
 
 noncomputable instance Prop.linearOrder : LinearOrder Prop := by

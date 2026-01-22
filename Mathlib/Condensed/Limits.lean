@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Module
+module
+
+public import Mathlib.Condensed.Module
 
 /-!
 
@@ -11,6 +13,8 @@ import Mathlib.Condensed.Module
 
 This file adds some instances for limits in condensed sets and condensed modules.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -34,18 +38,18 @@ instance : HasColimits (CondensedMod.{u} R) :=
 instance : HasLimitsOfSize.{u, u + 1} (CondensedMod.{u} R) :=
   hasLimitsOfSizeShrink.{u, u + 1, u + 1, u} _
 
-instance {A J : Type*} [Category A] [Category J] [HasColimitsOfShape J A]
+instance {A J : Type*} [Category* A] [Category* J] [HasColimitsOfShape J A]
     [HasWeakSheafify (coherentTopology CompHaus.{u}) A] :
     HasColimitsOfShape J (Condensed.{u} A) :=
   inferInstanceAs (HasColimitsOfShape J (Sheaf _ _))
 
-instance {A J : Type*} [Category A] [Category J] [HasLimitsOfShape J A] :
+instance {A J : Type*} [Category* A] [Category* J] [HasLimitsOfShape J A] :
     HasLimitsOfShape J (Condensed.{u} A) :=
   inferInstanceAs (HasLimitsOfShape J (Sheaf _ _))
 
-instance {A : Type*} [Category A] [HasFiniteLimits A] : HasFiniteLimits (Condensed.{u} A) :=
+instance {A : Type*} [Category* A] [HasFiniteLimits A] : HasFiniteLimits (Condensed.{u} A) :=
   inferInstanceAs (HasFiniteLimits (Sheaf _ _))
 
-instance {A : Type*} [Category A] [HasFiniteColimits A]
+instance {A : Type*} [Category* A] [HasFiniteColimits A]
     [HasWeakSheafify (coherentTopology CompHaus.{u}) A] : HasFiniteColimits (Condensed.{u} A) :=
   inferInstanceAs (HasFiniteColimits (Sheaf _ _))

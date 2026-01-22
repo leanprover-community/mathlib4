@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bryan Gin-ge Chen
 -/
-import Mathlib.Order.Heyting.Basic
+module
+
+public import Mathlib.Order.Heyting.Basic
 
 /-!
 # (Generalized) Boolean algebras
@@ -55,6 +57,8 @@ that for all `a, b : α` where `a ≤ b`, the equations `x ⊔ a = b` and `x ⊓
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso
 
 open Function OrderDual
@@ -96,7 +100,7 @@ Instead, we extend using the underlying `Bot` and `Top` data typeclasses, and re
 order axioms of those classes here. A "forgetful" instance back to `BoundedOrder` is provided.
 -/
 class BooleanAlgebra (α : Type u) extends
-    DistribLattice α, HasCompl α, SDiff α, HImp α, Top α, Bot α where
+    DistribLattice α, Compl α, SDiff α, HImp α, Top α, Bot α where
   /-- The infimum of `x` and `xᶜ` is at most `⊥` -/
   inf_compl_le_bot : ∀ x : α, x ⊓ xᶜ ≤ ⊥
   /-- The supremum of `x` and `xᶜ` is at least `⊤` -/
@@ -137,7 +141,7 @@ theorem Bool.sup_eq_bor : (· ⊔ ·) = or := by dsimp
 theorem Bool.inf_eq_band : (· ⊓ ·) = and := by dsimp
 
 @[simp]
-theorem Bool.compl_eq_bnot : HasCompl.compl = not :=
+theorem Bool.compl_eq_bnot : Compl.compl = not :=
   rfl
 
 instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where

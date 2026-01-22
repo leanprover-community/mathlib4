@@ -3,15 +3,19 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The category of abelian groups has finite biproducts
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

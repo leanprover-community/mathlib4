@@ -3,9 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # The Ruzsa-Szemerédi problem
@@ -24,6 +27,8 @@ original set.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
   `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
+
+@[expose] public section
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
@@ -88,13 +93,9 @@ noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumbe
 lemma ruzsaSzemerediNumberNat_card : ruzsaSzemerediNumberNat (card α) = ruzsaSzemerediNumber α :=
   ruzsaSzemerediNumber_congr (Fintype.equivFin _).symm
 
--- TODO: Remove once #28339 lands?
-@[gcongr] lemma ruzsaSzemerediNumberNat_le_ruzsaSzemerediNumberNat (hmn : m ≤ n) :
-    ruzsaSzemerediNumberNat m ≤ ruzsaSzemerediNumberNat n :=
-  ruzsaSzemerediNumber_mono (Fin.castLEEmb hmn)
-
-lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat :=
-  fun _m _n => ruzsaSzemerediNumberNat_le_ruzsaSzemerediNumberNat
+@[gcongr]
+lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat := fun _m _n h =>
+  ruzsaSzemerediNumber_mono (Fin.castLEEmb h)
 
 lemma ruzsaSzemerediNumberNat_le : ruzsaSzemerediNumberNat n ≤ n.choose 3 :=
   ruzsaSzemerediNumber_le.trans_eq <| by rw [Fintype.card_fin]
@@ -257,7 +258,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [IsBigO_def]
       refine ⟨12, ?_⟩
       simp only [IsBigOWith, norm_natCast, eventually_atTop]
-      exact ⟨15, fun x hx ↦ by norm_cast; cutsat⟩
+      exact ⟨15, fun x hx ↦ by norm_cast; lia⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
@@ -265,8 +266,8 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
-        cutsat
-      · cutsat
+        lia
+      · lia
   · refine .of_norm_eventuallyLE ?_
     filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith

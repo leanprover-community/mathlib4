@@ -3,9 +3,13 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-! ### List.splitOn -/
+
+public section
 
 namespace List
 
@@ -14,7 +18,7 @@ variable {α : Type*} (p : α → Bool) (xs : List α) (ls : List (List α))
 attribute [simp] splitAt_eq
 
 @[simp]
-theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
+theorem splitOn_nil [BEq α] (a : α) : [].splitOn a = [[]] :=
   rfl
 
 @[simp]
@@ -72,13 +76,21 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
     simp only [splitOnP_cons, h hd mem_cons_self, if_false, Bool.false_eq_true,
       modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
 
-/-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
-  assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
-theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as : List α) :
-    (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
+/-- When a list of the form `[...xs, sep, ...as]` is split at the `sep` element satisfying `p`,
+the result is the concatenation of `splitOnP` called on `xs` and `as` -/
+theorem splitOnP_append_cons (xs as : List α) (sep : α) (hsep : p sep) :
+    (xs ++ sep :: as).splitOnP p = List.splitOnP p xs ++ List.splitOnP p as := by
   induction xs with
   | nil => simp [hsep]
-  | cons hd tl ih => simp [h hd _, ih <| forall_mem_of_forall_mem_cons h]
+  | cons hd tl ih =>
+    obtain ⟨hd1, tl1, h1'⟩ := List.exists_cons_of_ne_nil (List.splitOnP_ne_nil p tl)
+    by_cases hPh : p hd <;> simp [*]
+
+/-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
+  assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
+theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep = true) (as : List α) :
+    (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
+  rw [splitOnP_append_cons p xs as sep hsep, splitOnP_eq_single p xs h, singleton_append]
 
 /-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by

@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
-import Mathlib.Algebra.Field.Equiv
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+module
+
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Artinian rings
@@ -42,6 +44,8 @@ Artinian, artinian, Artinian ring, artinian ring
 
 -/
 
+@[expose] public section
+
 open Set Submodule IsArtinian
 
 namespace IsArtinianRing
@@ -74,7 +78,7 @@ include S
 /-- Localizing an Artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
-  obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
+  obtain ⟨r₁, s, rfl⟩ := IsLocalization.exists_mk'_eq S r'
   rsuffices ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r
   · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)

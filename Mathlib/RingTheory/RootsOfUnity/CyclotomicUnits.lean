@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Cyclotomic units.
@@ -29,6 +31,8 @@ Often, `Associated a b` is everything one needs, and it is more convenient to us
 other version for completeness.
 -/
 
+public section
+
 open Polynomial Finset Nat
 
 variable {n i j p : ℕ} {A K : Type*} {ζ : A}
@@ -47,7 +51,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
   | 0 => simp_all
   | 1 => simp_all
   | n + 2 =>
-      obtain ⟨m, hm⟩ := exists_mul_emod_eq_one_of_coprime hj (by omega)
+      obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hj (by lia)
       use ∑ i ∈ range m, (ζ ^ j) ^ i
       rw [mul_geom_sum, ← pow_mul, ← pow_mod_orderOf, ← hζ.eq_orderOf, hm, pow_one]
 
@@ -55,7 +59,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
   associated for all `i` and `j` coprime with `n`. -/
 theorem associated_pow_sub_one_pow_of_coprime (hζ : IsPrimitiveRoot ζ n)
     (hi : i.Coprime n) (hj : j.Coprime n) : Associated (ζ ^ j - 1) (ζ ^ i - 1) := by
-  suffices ∀ {j}, (j.Coprime n) → Associated (ζ - 1) (ζ ^ j - 1) by
+  suffices ∀ {j}, j.Coprime n → Associated (ζ - 1) (ζ ^ j - 1) by
     grind [Associated.trans, Associated.symm]
   exact hζ.associated_sub_one_pow_sub_one_of_coprime
 
@@ -95,15 +99,9 @@ theorem geom_sum_isUnit' (hζ : IsPrimitiveRoot ζ n) (hj : j.Coprime n) (hj_Uni
   | 1 => simp_all
   | n + 2 => exact geom_sum_isUnit hζ (by linarith) hj
 
-/-- The explicit formula for the unit whose existence is the content of
-  `associated_pow_sub_one_pow_of_coprime`. -/
-theorem pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum (hζ : IsPrimitiveRoot ζ n)
-    (hn : 2 ≤ n) : (ζ ^ j - 1) * ∑ k ∈ range i, ζ ^ k = (ζ ^ i - 1) * ∑ k ∈ range j, ζ ^ k := by
-  apply mul_left_injective₀ (hζ.sub_one_ne_zero (by omega))
-  grind [geom_sum_mul]
-
 theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimitiveRoot ζ n)
-    (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) : (ζ ^ j - 1) =
+    (hn : 2 ≤ n) (hi : i.Coprime n) (hj : j.Coprime n) :
+    (ζ ^ j - 1) =
       (hζ.geom_sum_isUnit hn hj).unit * (hζ.geom_sum_isUnit hn hi).unit⁻¹ * (ζ ^ i - 1) := by
   grind [IsUnit.mul_val_inv, pow_sub_one_mul_geom_sum_eq_pow_sub_one_mul_geom_sum, IsUnit.unit_spec]
 
@@ -113,7 +111,7 @@ theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimit
   unit. -/
 theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (i : ℕ)
     (hjn : j.Coprime n) : Associated (ζ - 1) (ζ ^ (i + j) - ζ ^ i) := by
-  use (hζ.isUnit (by omega)).unit ^ i * (hζ.geom_sum_isUnit hn hjn).unit
+  use (hζ.isUnit (by lia)).unit ^ i * (hζ.geom_sum_isUnit hn hjn).unit
   suffices (ζ - 1) * ζ ^ i * ∑ i ∈ range j, ζ ^ i = (ζ ^ (i + j) - ζ ^ i) by
     simp [← this, mul_assoc]
   grind [mul_geom_sum]
@@ -121,8 +119,8 @@ theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ 
 /-- If `p` is prime and `ζ` is a `p`-th primitive root of unit, then `ζ - 1` and `η₁ - η₂` are
   associated for all distincts `p`-th root of unit `η₁` and `η₂`. -/
 lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveRoot ζ p)
-    (hp : p.Prime) : Set.Pairwise
-      (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
+    (hp : p.Prime) :
+    Set.Pairwise (nthRootsFinset p (1 : A)) (fun η₁ η₂ ↦ Associated (ζ - 1) (η₁ - η₂)) := by
   intro η₁ hη₁ η₂ hη₂ e
   have : NeZero p := ⟨hp.ne_zero⟩
   obtain ⟨i, hi, rfl⟩ :=
@@ -130,7 +128,7 @@ lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveR
   obtain ⟨j, hj, rfl⟩ :=
     hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₂)
   wlog hij : j ≤ i
-  · simpa using (this hζ ‹_› ‹_› _ hj ‹_› _ hi ‹_› e.symm (by omega)).neg_right
+  · simpa using (this hζ ‹_› ‹_› _ hj ‹_› _ hi ‹_› e.symm (by lia)).neg_right
   have H : (i - j).Coprime p := (coprime_of_lt_prime (by grind) (by grind) hp).symm
   obtain ⟨u, h⟩ := hζ.associated_pow_add_sub_sub_one hp.two_le j H
   simp only [hij, add_tsub_cancel_of_le] at h
