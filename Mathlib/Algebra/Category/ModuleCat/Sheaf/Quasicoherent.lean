@@ -262,11 +262,13 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
 
+/-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
 def pushforwardOver (x : C) :
     R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
   ⟨{app U := R.val.map Limits.prod.snd.op
     naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
 
+/-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
 def overPushforwardOverAdj (x : C) :
     pushforward.{u'} (𝟙 (R.over x)) ⊣ pushforward.{u'} (pushforwardOver x) := by
   refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) _ ?_ ?_
@@ -278,6 +280,7 @@ def overPushforwardOverAdj (x : C) :
 instance {x : C} : PreservesColimits (pushforward.{u'} (𝟙 (R.over x))) :=
   (overPushforwardOverAdj x).leftAdjoint_preservesColimits
 
+/-- Given a sheaf of `R`-modules `M` and a `Presentation M`, then there is a quasicoherent data. -/
 @[simps]
 def Presentation.QuasicoherentData {M : SheafOfModules R} (P : Presentation M) :
     QuasicoherentData M where
