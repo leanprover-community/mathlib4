@@ -52,6 +52,7 @@ lemma posLog_one_div_norm_one_sub_le_posLog_one_div_abs_one_sub
 
 /-! ### A coarse dyadic-interval bound for the singularity average -/
 
+/-- The one-dimensional logarithmic singularity used in the Cartan/dyadic averaging argument. -/
 def φ (t : ℝ) : ℝ :=
   log⁺ (1 / |1 - t|)
 
@@ -165,6 +166,7 @@ lemma log_norm_one_sub_div_ge_neg_phi {u a : ℂ} {r : ℝ}
     Real.log_le_log (by positivity) hnorm_ge
   linarith [hlog_mono, hlogx]
 
+/-- The integral of the square-root majorant for `φ` on `[1/4, 4]`. -/
 noncomputable def K : ℝ :=
   ∫ (t : ℝ) in (1 / 4 : ℝ)..(4 : ℝ), Real.sqrt (2 / |1 - t|) ∂volume
 
@@ -176,6 +178,7 @@ lemma K_nonneg : 0 ≤ K := by
   simpa [K] using (intervalIntegral.integral_nonneg
     (μ := (volume : MeasureTheory.Measure ℝ)) hle hnn)
 
+/-- A convenient explicit constant controlling dyadic averages of `φ`. -/
 noncomputable def Cφ : ℝ :=
   Real.log 2 + 4 * K + 1
 
@@ -514,8 +517,8 @@ lemma integral_phi_div_le_Cφ_mul {a R : ℝ} (ha : 0 < a) (hR : 0 ≤ R) :
   have hrew :
       (∫ (r : ℝ) in R..(2 * R), φ (r / a) ∂volume)
         = a * (∫ (t : ℝ) in (R / a)..(2 * R / a), φ t ∂volume) := by
-    simp [intervalIntegral.integral_comp_div, smul_eq_mul, mul_left_comm, mul_comm,
-      div_eq_mul_inv, ha0]
+    simpa [smul_eq_mul, mul_left_comm, mul_comm, div_eq_mul_inv, ha0] using
+      (intervalIntegral.integral_comp_div (f := φ) (a := R) (b := 2 * R) ha0)
   rw [hrew]
   have hA : 0 ≤ R / a := by
     exact div_nonneg hR ha.le
@@ -765,4 +768,3 @@ lemma exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum_avoid
 
 end CartanBound
 end Complex
-#lint
