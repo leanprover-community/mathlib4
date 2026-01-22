@@ -56,7 +56,7 @@ instance {M α : Type*} [Monoid M] [MulAction M α] :
     simp_rw [Submonoid.smul_def, smul_smul, this]
 
 instance {M α : Type*} [Monoid M] [MulAction M α] :
-    SMulCommClass M ↥(Submonoid.center M) α :=
+    SMulCommClass M (Submonoid.center M) α :=
   SMulCommClass.symm (Submonoid.center M) M α
 
 variable {M}

@@ -23,7 +23,7 @@ In what follows, `V` is assumed to be a free `R`-module.
 
 * `LinearMap.commute_transvections_iff_of_basis`:
   if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvections
-  (in a given basis), then it is an homothety whose central ratio.
+  (in a given basis), then it is an homothety with central ratio.
   (Assumes that the basis is provided and has a non trivial set of indices.)
 
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
@@ -63,7 +63,7 @@ theorem commute_transvections_iff_of_basis
     {f : V →ₗ[R] V}
     (hcomm : ∀ i j (r : R) (_ : i ≠ j), Commute f (transvection (b.coord i) (r • b j))) :
     ∃ a : Subring.center R, f = a • 1 := by
-  simp_rw [SetLike.exists, Subring.mem_center_iff]
+  simp only [SetLike.exists, Subring.mem_center_iff]
   rcases subsingleton_or_nontrivial V with hV | hV
   · refine ⟨1, by simp, ?_⟩
     ext x
@@ -82,9 +82,7 @@ theorem commute_transvections_iff_of_basis
     obtain ⟨j, hji⟩ := exists_ne i
     simpa [h_allEq j i] using hcomm j i hji r
   let i : ι := Classical.ofNonempty
-  refine ⟨b.coord i (f (b i)),
-    fun r ↦ by simpa using congr(b.coord i $(hcomm i r)),
-    ?_⟩
+  refine ⟨b.coord i (f (b i)), fun r ↦ by simpa using congr(b.coord i $(hcomm i r)), ?_⟩
   ext x
   rw [← b.linearCombination_repr x, linearCombination_apply, map_finsuppSum]
   simp only [smul_apply, End.one_apply, smul_sum]
@@ -204,13 +202,9 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
   let ι := Free.ChooseBasisIndex R V
   let b : Basis ι R V := Free.chooseBasis R V
   rcases subsingleton_or_nontrivial ι with hι | hι
-  · exfalso
-    contrapose hV1
-    have : Nonempty ι := Free.instNonemptyChooseBasisIndexOfNontrivial R V
+  · have : Nonempty ι := Free.instNonemptyChooseBasisIndexOfNontrivial R V
     have : Fintype ι := Fintype.ofFinite ι
-    rw [finrank_eq_card_basis b, ← Nat.card_eq_fintype_card,
-      Nat.card_eq_one_iff_unique]
-    aesop
+    simp_all [finrank_eq_card_basis b, ← Nat.card_eq_fintype_card]
   exact exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis b h
 
 /-- Over a commutative domain, an endomorphism `f` of a free module `V`
