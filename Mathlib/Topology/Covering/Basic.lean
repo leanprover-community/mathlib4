@@ -536,7 +536,7 @@ theorem IsClosedMap.isEvenlyCovered_of_openPartialHomeomorph [T2Space E] {x : X}
   have : Nonempty E := ⟨Classical.arbitrary (f ⁻¹' {x})⟩
   refine .of_trivialization (t := hU'.trivializationDiscrete _ _
     (fun e s hs ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩) (fun e ↦ ?_)
-    (fun e ↦  .mono subset_rfl (hUV e) (surjOn_image f _))
+    (fun e ↦ .mono subset_rfl (hUV e) (surjOn_image f _))
     (pairwise_disjoint_mono disj.subtype fun e ↦ inter_subset_left)
     ((preimage_mono (inter_subset_left.trans hUW)).trans hWV))
     ⟨hxU, Set.mem_iInter.mpr fun e ↦ ⟨e, ⟨(hV e).1, (hφ e).1⟩, e.2⟩⟩
