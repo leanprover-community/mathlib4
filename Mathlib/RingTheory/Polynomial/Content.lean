@@ -74,6 +74,7 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
   simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
 /-- In a field, the notion of primitive polynomials is degenerate. -/
+@[simp]
 theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
   ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
 
