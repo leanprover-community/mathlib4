@@ -124,11 +124,10 @@ lemma isPullback {i j : 𝒰.I₀} (hij : i ⟶ j) :
       d.transitionMap hij := by
     apply (isColimitOfPreserves (Over.map _ (d.prop_trans hij)) (d.isColimit i)).hom_ext
     intro a
-    dsimp
     simp only [IsColimit.coconePointsIsoOfNatIso_hom, Iso.trans_hom, Functor.isoWhiskerLeft_hom,
       iso1, ← Functor.map_comp_assoc, IsColimit.ι_map, Functor.mapCocone_pt,
-      Functor.mapCocone_ι_app, Functor.map_comp, Category.assoc, Adjunction.counit_naturality]
-    rw [transitionMap, ← Functor.mapCocone_ι_app, IsColimit.fac]
+      Functor.mapCocone_ι_app, Functor.map_comp, Category.assoc, Adjunction.counit_naturality,
+      cocone_ι_transitionMap]
     ext
     simp only [Comma.comp_hom, CategoryTheory.Comma.comp_left, ← Category.assoc]
     congr 1
