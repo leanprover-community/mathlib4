@@ -181,6 +181,9 @@ lemma inl'_eval (x y : SimplexCategory) (i : Fin (x.len + 1)) :
     tensorHom, WithInitial.down, rightUnitor, tensorObj]
   ext
   simp [OrderEmbedding.toOrderHom]
+  -- FIXME: for some reason there is a defeq mismatch between `(x.len + 1) + (y.len + 1)`
+  -- and `((x.len + 1) + y.len) + 1` now?
+  rfl
 
 lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     (inr' x y).toOrderHom i = (i.natAdd _).cast (Nat.succ_add x.len (y.len + 1)) := by
@@ -188,6 +191,9 @@ lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
     tensorHom, WithInitial.down, leftUnitor, tensorObj]
   ext
   simp [OrderEmbedding.toOrderHom]
+  -- FIXME: for some reason there is a defeq mismatch between `(x.len + 1) + (y.len + 1)`
+  -- and `((x.len + 1) + y.len) + 1` now?
+  rfl
 
 /-- We can characterize morphisms out of a tensor product via their precomposition with `inl` and
 `inr`. -/
