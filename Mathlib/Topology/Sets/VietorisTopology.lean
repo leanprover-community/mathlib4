@@ -37,7 +37,7 @@ incompatible with the Vietoris topology.
 
 open Set Topology
 
-variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] {f : α → β}
 
 namespace TopologicalSpace
 
@@ -207,6 +207,32 @@ theorem continuous_range_of_finite {ι : Type*} [Finite ι] :
   exact ⟨
     fun U hU => isOpen_iInter_of_finite fun i => hU.preimage <| continuous_apply i,
     fun F hF => isClosed_iInter fun i => hF.preimage <| continuous_apply i⟩
+
+/-- When `Set` is equipped with the Vietoris topology, taking the image under a continuous map is
+continuous. -/
+@[fun_prop]
+theorem _root_.Continuous.image_vietoris (hf : Continuous f) : Continuous (f '' ·) := by
+  simp_rw [continuous_iff, powerset, preimage_setOf_eq, image_subset_iff]
+  exact ⟨
+    fun U hU => (hU.preimage hf).powerset_vietoris,
+    fun F hF => (hF.preimage hf).powerset_vietoris⟩
+
+/-- When `Set` is equipped with the Vietoris topology, taking the image under an inducing map is
+inducing. -/
+@[fun_prop]
+theorem _root_.Topology.IsInducing.image_vietoris (hf : IsInducing f) : IsInducing (f '' ·) := by
+  constructor
+  have : {U : Set α | IsOpen U} = (f ⁻¹' ·) '' {V : Set β | IsOpen V} :=
+    Set.ext fun _ => hf.isOpen_iff
+  simp_rw [TopologicalSpace.vietoris, this, induced_generateFrom_eq, image_union, image_image,
+    powerset, preimage_setOf_eq, image_subset_iff, image_inter_nonempty_iff]
+
+/-- When `Set` is equipped with the Vietoris topology, taking the image under an embedding is an
+embedding. -/
+@[fun_prop]
+theorem _root_.Topology.IsEmbedding.image_vietoris (hf : IsEmbedding f) : IsEmbedding (f '' ·) where
+  __ := hf.isInducing.image_vietoris
+  injective := hf.injective.image_injective
 
 private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     {s : Set (Set α)} (hsK : s ⊆ K.powerset) (hs : ∀ L ∈ s, IsCompact L) :
@@ -382,6 +408,33 @@ theorem continuous_prod : Continuous fun p : Compacts α × Compacts β => p.1 �
       (isOpen_inter_nonempty_of_isOpen hV).prod (isOpen_inter_nonempty_of_isOpen hW),
       ⟨x, hx, hxV⟩, ⟨y, hy, hyW⟩⟩
 
+@[fun_prop]
+theorem _root_.Continuous.compacts_map (hf : Continuous f) :
+    Continuous (Compacts.map f hf) :=
+  isEmbedding_coe.continuous_iff.mpr <| hf.image_vietoris.comp continuous_coe
+
+@[fun_prop]
+theorem _root_.Topology.IsInducing.compacts_map (hf : IsInducing f) :
+    IsInducing (Compacts.map f hf.continuous) :=
+  isEmbedding_coe.isInducing.of_comp_iff.mp <| hf.image_vietoris.comp isEmbedding_coe.isInducing
+
+@[fun_prop]
+theorem _root_.Topology.IsEmbedding.compacts_map (hf : IsEmbedding f) :
+    IsEmbedding (Compacts.map f hf.continuous) :=
+  isEmbedding_coe.of_comp_iff.mp <| hf.image_vietoris.comp isEmbedding_coe
+
+@[fun_prop]
+theorem _root_.Topology.IsOpenEmbedding.compacts_map (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (Compacts.map f hf.continuous) where
+  __ := hf.isEmbedding.compacts_map
+  isOpen_range := range_map hf.isInducing ▸ isOpen_subsets_of_isOpen hf.isOpen_range
+
+@[fun_prop]
+theorem _root_.Topology.IsClosedEmbedding.compacts_map (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (Compacts.map f hf.continuous) where
+  __ := hf.isEmbedding.compacts_map
+  isClosed_range := range_map hf.isInducing ▸ isClosed_subsets_of_isClosed hf.isClosed_range
+
 instance [DiscreteTopology α] : DiscreteTopology (Compacts α) := by
   rw [discreteTopology_iff_isOpen_singleton]
   intro K
@@ -546,6 +599,34 @@ theorem continuous_prod :
     Continuous fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 := by
   simp_rw [isEmbedding_toCompacts.continuous_iff, Function.comp_def, toCompacts_prod]
   fun_prop
+
+@[fun_prop]
+theorem _root_.Continuous.nonemptyCompacts_map (hf : Continuous f) :
+    Continuous (NonemptyCompacts.map f hf) :=
+  isEmbedding_toCompacts.continuous_iff.mpr <| hf.compacts_map.comp continuous_toCompacts
+
+@[fun_prop]
+theorem _root_.Topology.IsInducing.nonemptyCompacts_map (hf : IsInducing f) :
+    IsInducing (NonemptyCompacts.map f hf.continuous) :=
+  .of_comp hf.continuous.nonemptyCompacts_map continuous_toCompacts <|
+    hf.compacts_map.comp isEmbedding_toCompacts.isInducing
+
+@[fun_prop]
+theorem _root_.Topology.IsEmbedding.nonemptyCompacts_map (hf : IsEmbedding f) :
+    IsEmbedding (NonemptyCompacts.map f hf.continuous) where
+  __ := hf.isInducing.nonemptyCompacts_map
+  injective := map_injective hf.continuous hf.injective
+
+@[fun_prop]
+theorem _root_.Topology.IsOpenEmbedding.nonemptyCompacts_map (hf : IsOpenEmbedding f) :
+    IsOpenEmbedding (NonemptyCompacts.map f hf.continuous) :=
+  .of_comp _ isOpenEmbedding_toCompacts <| hf.compacts_map.comp isOpenEmbedding_toCompacts
+
+@[fun_prop]
+theorem _root_.Topology.IsClosedEmbedding.nonemptyCompacts_map (hf : IsClosedEmbedding f) :
+    IsClosedEmbedding (NonemptyCompacts.map f hf.continuous) :=
+  isClosedEmbedding_toCompacts.of_comp_iff.mp <|
+    hf.compacts_map.comp isClosedEmbedding_toCompacts
 
 instance [DiscreteTopology α] : DiscreteTopology (NonemptyCompacts α) :=
   isEmbedding_toCompacts.discreteTopology
