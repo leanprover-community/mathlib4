@@ -1,7 +1,7 @@
 
 import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Analysis.Complex.Divisor
-import Mathlib.Analysis.Complex.CartanBound
+import Mathlib.Analysis.Complex.CartanInverseFactorBound
 /-!
 ## Cartan bookkeeping (intrinsic): Bound on finite sums of the majorant
 
