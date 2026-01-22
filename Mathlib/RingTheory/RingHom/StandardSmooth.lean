@@ -184,15 +184,16 @@ lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalization
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
     zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
 
+variable (R S) in
 /-- Every standard smooth homomorphism `R → S` factors into `R -> R[X₁,...,Xₙ] → S`
 where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
-theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
-    {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
-    ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
+theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
+    [Algebra R S] [Algebra.IsStandardSmoothOfRelativeDimension n R S] :
+    ∃ g : MvPolynomial (Fin n) R →ₐ[R] S, g.Etale := by
   classical
   let := Fintype.ofFinite
-  obtain ⟨ι, σ, _, _, P, e⟩ := hf
-  let := f.toAlgebra
+  obtain ⟨ι, σ, _, _, P, e⟩ :=
+    Algebra.IsStandardSmoothOfRelativeDimension.out (R := R) (S := S) (n := n)
   let e₀ : σ ⊕ Fin n ≃ ι := ((Equiv.ofInjective _ P.map_inj).sumCongr
       (Finite.equivFinOfCardEq (by rw [Nat.card_coe_set_eq, Set.ncard_compl,
         Set.ncard_range_of_injective P.map_inj, ← e, Algebra.Presentation.dimension])).symm).trans
@@ -203,7 +204,7 @@ theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
   algebraize [φ.toRingHom, (algebraMap P.Ring S).comp φ.toRingHom]
   have := IsScalarTower.of_algebraMap_eq' φ.comp_algebraMap.symm
   have : IsScalarTower R (MvPolynomial (Fin n) R) S := .to₁₂₄ _ _ P.Ring _
-  refine ⟨algebraMap _ _, (IsScalarTower.algebraMap_eq ..).symm, ?_⟩
+  refine ⟨IsScalarTower.toAlgHom _ _ _, ?_⟩
   have H : (MvPolynomial.aeval fun x ↦ (algebraMap P.Ring S) (e (MvPolynomial.X x))).toRingHom =
       (algebraMap P.Ring S).comp e.toRingHom := by
     ext
@@ -237,6 +238,16 @@ theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
         show e₀ (Sum.inl i) = P.map i from rfl] }
   exact etale_algebraMap.mpr (Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero.mpr
     ⟨_, _, _, inferInstance, P', by simp [Algebra.Presentation.dimension]⟩)
+
+/-- Every standard smooth homomorphism `R → S` factors into `R -> R[X₁,...,Xₙ] → S`
+where `n` is the relative dimension and `R[X₁,...,Xₙ] → S` is etale. -/
+theorem IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial
+    {f : R →+* S} {n : ℕ} (hf : f.IsStandardSmoothOfRelativeDimension n) :
+    ∃ g : MvPolynomial (Fin n) R →+* S, g.comp MvPolynomial.C = f ∧ g.Etale := by
+  classical
+  algebraize [f]
+  obtain ⟨g, hg⟩ := Algebra.IsStandardSmoothOfRelativeDimension.exists_etale_mvPolynomial n R S
+  exact ⟨_, g.comp_algebraMap, hg⟩
 
 theorem IsStandardSmooth.exists_etale_mvPolynomial
     {f : R →+* S} (hf : f.IsStandardSmooth) :
