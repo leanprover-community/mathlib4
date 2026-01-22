@@ -39,15 +39,8 @@ open Filter Topology Set Complex
 
 open scoped BigOperators Topology
 
-/-!
-### Helper: bounding the inverse of an infinite product
-
-If `∏' fac = F`, and each inverse factor satisfies `‖(fac a)⁻¹‖ ≤ exp (b a)`, and all finite sums
-`∑_{a∈s} b a` are bounded by `B`, then `‖F⁻¹‖ ≤ exp B`.
-
-This is exactly the estimate needed when turning Cartan-type partial-sum bounds on a majorant
-exponent into a uniform bound on the inverse canonical product.
--/
+/- If `∏' fac = F`, and each inverse factor satisfies `‖(fac a)⁻¹‖ ≤ exp (b a)`, and all finite sums
+`∑_{a∈s} b a` are bounded by `B`, then `‖F⁻¹‖ ≤ exp B`. -/
 lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
     {α : Type*} {L : SummationFilter α} [NeBot L.filter]
     (fac : α → ℂ) {F : ℂ} (hprod : HasProd fac F L)
@@ -58,9 +51,10 @@ lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
   classical
   by_cases hF0 : F = 0
   · subst hF0
-    simp
+    -- `‖0⁻¹‖ = 0 ≤ exp B`
+    simpa using (le_of_lt (Real.exp_pos B))
   · have hprod_inv : HasProd (fun a : α => (fac a)⁻¹) (F⁻¹) L :=
-      HasProd.inv₀ (hf := hprod) (ha := by simpa [hF0])
+      HasProd.inv₀ (hf := hprod) (ha := by simp [hF0])
     have hbound_fin : ∀ s : Finset α, ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ Real.exp B := by
       intro s
       have hnorm_le : ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ ∏ a ∈ s, ‖(fac a)⁻¹‖ :=
@@ -83,8 +77,6 @@ lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
       (continuous_norm.tendsto _).comp hlim
     have h_event_le : ∀ᶠ s in L.filter, ‖∏ a ∈ s, (fac a)⁻¹‖ ≤ Real.exp B :=
       Filter.Eventually.of_forall hbound_fin
-    -- if the limit were strictly bigger than `exp B`, we'd eventually be in `Ioi (exp B)`,
-    -- contradicting the eventual upper bound.
     by_contra hcontra
     have hgt : Real.exp B < ‖F⁻¹‖ := lt_of_not_ge hcontra
     have hnhds : Set.Ioi (Real.exp B) ∈ 𝓝 ‖F⁻¹‖ := Ioi_mem_nhds hgt
@@ -93,7 +85,9 @@ lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
       hlim_norm.eventually hnhds
     have hfalse : ∀ᶠ s in L.filter, False :=
       (h_event_gt.and h_event_le).mono (fun _ hs => (not_lt_of_ge hs.2 hs.1).elim)
-    exact (Filter.not_eventually_false.2 hfalse)
+    have hbot : (L.filter : Filter (Finset α)) = ⊥ :=
+      (Filter.eventually_false_iff_eq_bot).1 hfalse
+    exact (NeBot.ne (f := (L.filter : Filter (Finset α))) (by infer_instance)) hbot
 
 /-- The “denominator” in the Hadamard quotient construction: the product of the origin factor
 `z ^ (analyticOrderNatAt f 0)` and the canonical product built from the divisor of `f` (of genus `m`)
@@ -107,13 +101,11 @@ theorem differentiable_hadamardDenom (m : ℕ) (f : ℂ → ℂ)
     Differentiable ℂ (hadamardDenom m f) := by
   classical
   have hcprod : Differentiable ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) := by
-    -- `DifferentiableOn` on `univ` implies `Differentiable`
     intro z
     have hdiffOn :
         DifferentiableOn ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) (Set.univ : Set ℂ) :=
       differentiableOn_divisorCanonicalProduct_univ (m := m) (f := f) h_sum
     exact (hdiffOn z (by simp)).differentiableAt (by simp)
-  -- product of differentiable functions
   simpa [hadamardDenom] using (differentiable_id.pow (analyticOrderNatAt f 0)).mul hcprod
 
 theorem hadamardDenom_ne_zero_at {m : ℕ} {f : ℂ → ℂ} (hf : Differentiable ℂ f)
@@ -153,7 +145,6 @@ theorem hadamardDenom_ne_zero_at {m : ℕ} {f : ℂ → ℂ} (hf : Differentiabl
         (analyticOrderNatAt_divisorCanonicalProduct_eq_analyticOrderNatAt (m := m) (hf := hf)
           (h_sum := h_sum) (z₀ := z) hz0)
     have hcprod_ne : divisorCanonicalProduct m f (Set.univ : Set ℂ) z ≠ 0 := by
-      -- canonical product is entire and not identically zero (`cprod 0 = 1`), hence order is never `⊤`
       have hcprod_entire :
           Differentiable ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) := by
         intro w
@@ -170,7 +161,6 @@ theorem hadamardDenom_ne_zero_at {m : ℕ} {f : ℂ → ℂ} (hf : Differentiabl
         Nat.cast_analyticOrderNatAt
           (f := divisorCanonicalProduct m f (Set.univ : Set ℂ)) (z₀ := z) hcprod_not_top
       have : analyticOrderAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) z = 0 := by
-        -- cast `hcprod_order` to `ℕ∞` and use `hcprod_cast`
         have : (analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) z : ℕ∞) = 0 := by
           exact_mod_cast hcprod_order
         simp [hcprod_cast] at this
@@ -184,7 +174,6 @@ lemma analyticOrderNatAt_divisorCanonicalProduct_zero
       ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1))) :
     analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) 0 = 0 := by
   classical
-  -- The canonical product is analytic at 0 and equals 1 there.
   have hcprod_entire :
       Differentiable ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) := by
     intro w
@@ -218,7 +207,6 @@ theorem analyticOrderNatAt_hadamardDenom_eq
   classical
   by_cases hz0 : z = 0
   · subst hz0
-    -- at 0: order is `ord0` from the power factor, since the canonical product has order 0 there
     have hpowA : AnalyticAt ℂ (fun z : ℂ => z ^ analyticOrderNatAt f 0) 0 := by
       simpa using (analyticAt_id.pow (analyticOrderNatAt f 0))
     have hpow_not_top : analyticOrderAt (fun z : ℂ => z ^ analyticOrderNatAt f 0) 0 ≠ ⊤ :=
@@ -233,10 +221,8 @@ theorem analyticOrderNatAt_hadamardDenom_eq
           differentiableOn_divisorCanonicalProduct_univ (m := m) (f := f) h_sum
         exact (hdiffOn w (by simp)).differentiableAt (by simp)
       exact hcprod_entire.analyticAt 0
-    -- compute the canonical product part at 0
     have hcprod0 : analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) 0 = 0 :=
       analyticOrderNatAt_divisorCanonicalProduct_zero (m := m) (f := f) h_sum
-    -- compute the power part at 0 (order `ord0`)
     have hid0 : analyticOrderNatAt (fun z : ℂ => z) 0 = 1 := by
       have hid_entire : Differentiable ℂ (fun z : ℂ => z) := differentiable_id
       have hdiv :
@@ -244,23 +230,18 @@ theorem analyticOrderNatAt_hadamardDenom_eq
             (analyticOrderNatAt (fun z : ℂ => z) 0 : ℤ) := by
         simpa using (divisor_univ_eq_analyticOrderNatAt_int (f := fun z : ℂ => z) hid_entire 0)
       have hdiv1 : (MeromorphicOn.divisor (fun z : ℂ => z) (Set.univ : Set ℂ)) 0 = 1 := by
-        -- `z ↦ z` is `z ↦ z - 0`
         simpa using (MeromorphicOn.divisor_sub_const_self (z₀ := (0 : ℂ)) (U := (Set.univ : Set ℂ)) (by simp))
       have : (analyticOrderNatAt (fun z : ℂ => z) 0 : ℤ) = 1 := by
         simpa [hdiv] using hdiv1
       exact_mod_cast this
     have hpow0 : analyticOrderNatAt (fun z : ℂ => z ^ analyticOrderNatAt f 0) 0 = analyticOrderNatAt f 0 := by
-      -- use `analyticOrderNatAt_pow` for `id` and `analyticOrderNatAt id 0 = 1`
       have hidA : AnalyticAt ℂ (fun z : ℂ => z) 0 := by
         simpa [id] using (analyticAt_id : AnalyticAt ℂ (id : ℂ → ℂ) 0)
-      -- `((fun z => z) ^ n)` is definitional `fun z => z ^ n`
       simpa [hid0] using (analyticOrderNatAt_pow (hf := hidA) (n := analyticOrderNatAt f 0))
-    -- combine using additivity under multiplication
     have hmul :
         analyticOrderNatAt (hadamardDenom m f) 0 =
           analyticOrderNatAt (fun z : ℂ => z ^ analyticOrderNatAt f 0) 0 +
             analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) 0 := by
-      -- order is additive for analytic multiplication (orders are finite since neither factor is locally zero)
       have hcprod_not_top' : analyticOrderAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) 0 ≠ ⊤ :=
         analyticOrderAt_ne_top_of_exists_ne_zero
           (hf := (by
@@ -272,10 +253,8 @@ theorem analyticOrderNatAt_hadamardDenom_eq
           ⟨0, by simp [divisorCanonicalProduct_zero]⟩ 0
       simpa [hadamardDenom] using
         analyticOrderNatAt_mul (hf := hpowA) (hg := hcprodA) (hf' := hpow_not_top) (hg' := hcprod_not_top')
-    -- finish
     simp [hmul, hpow0, hcprod0]
-  · -- away from 0, the power factor has order 0 and the canonical product matches `f`
-    have hpowA : AnalyticAt ℂ (fun z : ℂ => z ^ analyticOrderNatAt f 0) z := by
+  · have hpowA : AnalyticAt ℂ (fun z : ℂ => z ^ analyticOrderNatAt f 0) z := by
       simpa using (analyticAt_id.pow (analyticOrderNatAt f 0))
     have hpow_not_top : analyticOrderAt (fun z : ℂ => z ^ analyticOrderNatAt f 0) z ≠ ⊤ :=
       analyticOrderAt_ne_top_of_exists_ne_zero (hf := (differentiable_id.pow (analyticOrderNatAt f 0)))
@@ -294,7 +273,6 @@ theorem analyticOrderNatAt_hadamardDenom_eq
     have hcprod_eq :
         analyticOrderNatAt (divisorCanonicalProduct m f (Set.univ : Set ℂ)) z = analyticOrderNatAt f z :=
       analyticOrderNatAt_divisorCanonicalProduct_eq_analyticOrderNatAt (m := m) (hf := hf) (h_sum := h_sum) (z₀ := z) hz0
-    -- additivity under multiplication
     have hcprodA : AnalyticAt ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) z := by
       have hcprod_entire :
           Differentiable ℂ (divisorCanonicalProduct m f (Set.univ : Set ℂ)) := by
@@ -329,11 +307,9 @@ theorem divisor_hadamardDenom_eq
       MeromorphicOn.divisor f (Set.univ : Set ℂ) := by
   classical
   ext z
-  -- both sides are analytic, so we can identify divisors with `analyticOrderNatAt`
   have hden_entire : Differentiable ℂ (hadamardDenom m f) :=
     differentiable_hadamardDenom (m := m) f h_sum
   have hf_entire : Differentiable ℂ f := hf
-  -- unfold the two divisors at `z`
   have hden :
       (MeromorphicOn.divisor (hadamardDenom m f) (Set.univ : Set ℂ)) z =
         (analyticOrderNatAt (hadamardDenom m f) z : ℤ) := by
@@ -342,7 +318,6 @@ theorem divisor_hadamardDenom_eq
       (MeromorphicOn.divisor f (Set.univ : Set ℂ)) z =
         (analyticOrderNatAt f z : ℤ) := by
     simpa using (divisor_univ_eq_analyticOrderNatAt_int (f := f) hf_entire z)
-  -- finish by the analytic-order computation
   simp [hden, hfz, analyticOrderNatAt_hadamardDenom_eq (m := m) (hf := hf) (h_sum := h_sum) z]
 
 theorem divisor_hadamardQuotient_eq_zero
@@ -351,7 +326,6 @@ theorem divisor_hadamardQuotient_eq_zero
       ‖divisorZeroIndex₀_val p‖⁻¹ ^ (m + 1))) :
     MeromorphicOn.divisor (fun z : ℂ => f z / hadamardDenom m f z) (Set.univ : Set ℂ) = 0 := by
   classical
-  -- Use the divisor formulas: `divisor (f * denom⁻¹) = divisor f - divisor denom`.
   have hf_mero : MeromorphicOn f (Set.univ : Set ℂ) := by
     intro z hz
     exact (hf.analyticAt z).meromorphicAt
@@ -360,13 +334,11 @@ theorem divisor_hadamardQuotient_eq_zero
   have hden_mero : MeromorphicOn (hadamardDenom m f) (Set.univ : Set ℂ) := by
     intro z hz
     exact (hden_entire.analyticAt z).meromorphicAt
-  -- Orders are finite everywhere (no local identically-zero) because we have a global nontriviality witness.
   rcases hnot with ⟨z1, hz1⟩
   have hden1 : hadamardDenom m f z1 ≠ 0 :=
     hadamardDenom_ne_zero_at (m := m) (f := f) hf ⟨z1, hz1⟩ h_sum hz1
   have hf_order_ne_top : ∀ z ∈ (Set.univ : Set ℂ), meromorphicOrderAt f z ≠ ⊤ := by
     intro z hzU
-    -- propagate from `z1` using connectedness
     have hz1_ne_top : meromorphicOrderAt f z1 ≠ ⊤ := by
       have hfAt : MeromorphicAt f z1 := hf_mero z1 (by simp)
       have hcont : ContinuousAt f z1 := (hf.differentiableAt).continuousAt
@@ -410,7 +382,6 @@ theorem divisor_hadamardQuotient_eq_zero
       exact (meromorphicOrderAt_ne_top_iff_eventually_ne_zero (hf := hinvAt)).2 hne_nhdsNE
     exact MeromorphicOn.meromorphicOrderAt_ne_top_of_isPreconnected (hf := hinv_mero)
       (x := z1) (hU := isPreconnected_univ) (h₁x := by simp) (hy := by simp) hz1_ne_top
-  -- Now compute the divisor.
   have hdiv_denom : MeromorphicOn.divisor (hadamardDenom m f) (Set.univ : Set ℂ) =
       MeromorphicOn.divisor f (Set.univ : Set ℂ) :=
     divisor_hadamardDenom_eq (m := m) (hf := hf) (h_sum := h_sum)
@@ -440,7 +411,6 @@ theorem exists_entire_nonzero_hadamardQuotient
           H z * z ^ (analyticOrderNatAt f 0) *
             divisorCanonicalProduct m f (Set.univ : Set ℂ) z := by
   classical
-  -- meromorphic quotient
   let denom : ℂ → ℂ := hadamardDenom m f
   let q : ℂ → ℂ := fun z => f z / denom z
   have hden_entire : Differentiable ℂ denom :=
@@ -450,14 +420,12 @@ theorem exists_entire_nonzero_hadamardQuotient
     have hf_m : MeromorphicAt f z := (hf.analyticAt z).meromorphicAt
     have hden_m : MeromorphicAt denom z := (hden_entire.analyticAt z).meromorphicAt
     simpa [q, denom, div_eq_mul_inv] using (hf_m.mul hden_m.inv)
-  -- normalize values everywhere
   let H : ℂ → ℂ := toMeromorphicNFOn q (Set.univ : Set ℂ)
   have hNF : MeromorphicNFOn H (Set.univ : Set ℂ) :=
     meromorphicNFOn_toMeromorphicNFOn q (Set.univ : Set ℂ)
   have hdivH : MeromorphicOn.divisor H (Set.univ : Set ℂ) = 0 := by
     have hdivq : MeromorphicOn.divisor q (Set.univ : Set ℂ) = 0 :=
       divisor_hadamardQuotient_eq_zero (m := m) (f := f) (hf := hf) (hnot := hnot) (h_sum := h_sum)
-    -- transport divisor through normal form
     simpa [H, hdivq] using (MeromorphicOn.divisor_of_toMeromorphicNFOn (f := q) (U := (Set.univ : Set ℂ)) hq_mero)
   have hA : AnalyticOnNhd ℂ H (Set.univ : Set ℂ) := by
     have : (0 : Function.locallyFinsuppWithin (Set.univ : Set ℂ) ℤ) ≤ MeromorphicOn.divisor H (Set.univ : Set ℂ) := by
@@ -466,8 +434,6 @@ theorem exists_entire_nonzero_hadamardQuotient
   have hH_entire : Differentiable ℂ H := by
     intro z
     exact (hA z (by simp)).differentiableAt
-
-  -- show `H` is not identically zero (evaluate at a point where `f` is nonzero)
   rcases hnot with ⟨z1, hz1⟩
   have hden1 : denom z1 ≠ 0 :=
     hadamardDenom_ne_zero_at (m := m) (f := f) hf ⟨z1, hz1⟩ h_sum hz1
@@ -477,7 +443,6 @@ theorem exists_entire_nonzero_hadamardQuotient
   have hqNF1 : MeromorphicNFAt q z1 := hqA1.meromorphicNFAt
   have htoEq : toMeromorphicNFAt q z1 = q := (toMeromorphicNFAt_eq_self (f := q) (x := z1)).2 hqNF1
   have hH1 : H z1 = q z1 := by
-    -- pointwise `toMeromorphicNFOn` agrees with `toMeromorphicNFAt` at the point
     have hx : z1 ∈ (Set.univ : Set ℂ) := by simp
     have : toMeromorphicNFOn q (Set.univ : Set ℂ) z1 = toMeromorphicNFAt q z1 z1 :=
       (toMeromorphicNFOn_eq_toMeromorphicNFAt (f := q) (U := (Set.univ : Set ℂ)) hq_mero hx)
@@ -485,7 +450,6 @@ theorem exists_entire_nonzero_hadamardQuotient
   have hH1_ne : H z1 ≠ 0 := by
     have : q z1 ≠ 0 := div_ne_zero hz1 hden1
     simpa [hH1] using this
-
   have hH_not_top : ∀ z : ℂ, analyticOrderAt H z ≠ ⊤ := by
     exact analyticOrderAt_ne_top_of_exists_ne_zero (hf := hH_entire) ⟨z1, hH1_ne⟩
   have hH_orderNat_zero : ∀ z : ℂ, analyticOrderNatAt H z = 0 := by
@@ -505,28 +469,22 @@ theorem exists_entire_nonzero_hadamardQuotient
       have : (analyticOrderNatAt H z : ℕ∞) = 0 := by exact_mod_cast (hH_orderNat_zero z)
       simpa [hcast] using this
     exact ((hA z (by simp)).analyticOrderAt_eq_zero).1 this
-
-  -- now show the global factorization by analytic continuation from a neighborhood of `z1`
   have hfA : AnalyticOnNhd ℂ f (Set.univ : Set ℂ) := fun z hzU => hf.analyticAt z
   have hdenA : AnalyticOnNhd ℂ denom (Set.univ : Set ℂ) := fun z hzU => hden_entire.analyticAt z
   have hprodA : AnalyticOnNhd ℂ (fun z => H z * denom z) (Set.univ : Set ℂ) :=
     (hA.mul hdenA)
   have hlocal : f =ᶠ[𝓝 z1] fun z => H z * denom z := by
-    -- near `z1`, the normal form equals the quotient, and `denom` is nonzero
     have hden_ne : ∀ᶠ z in 𝓝 z1, denom z ≠ 0 :=
       (hden_entire.differentiableAt.continuousAt.ne_iff_eventually_ne continuousAt_const).1 hden1
     have hH_eq_q : H =ᶠ[𝓝 z1] q := by
-      -- `toMeromorphicNFOn` agrees with `toMeromorphicNFAt` on a neighborhood
       have hx : z1 ∈ (Set.univ : Set ℂ) := by simp
       have hloc :
           toMeromorphicNFOn q (Set.univ : Set ℂ) =ᶠ[𝓝 z1] toMeromorphicNFAt q z1 := by
         simpa [H] using (toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (f := q)
           (U := (Set.univ : Set ℂ)) hq_mero hx)
-      -- and `toMeromorphicNFAt q z1 = q` since `q` is analytic at `z1`
       simpa [H, htoEq] using hloc
     filter_upwards [hden_ne, hH_eq_q] with z hzden hHz
     have hcancel : q z * denom z = f z := by
-      -- `(f / denom) * denom = f` since `denom ≠ 0`
       dsimp [q]
       field_simp [hzden]
     calc
@@ -536,9 +494,7 @@ theorem exists_entire_nonzero_hadamardQuotient
     AnalyticOnNhd.eq_of_eventuallyEq (hf := hfA) (hg := hprodA) hlocal
   refine ⟨H, hH_entire, hH_ne, ?_⟩
   intro z
-  -- rewrite into the advertised shape
   have hglobz : f z = H z * denom z := congrArg (fun g => g z) hglob
-  -- expand `denom`
   simpa [denom, hadamardDenom, mul_assoc, mul_left_comm, mul_comm] using hglobz
 
 /-!
@@ -558,11 +514,9 @@ lemma logCounting_divisor_univ_eq_circleAverage_sub_log_trailingCoeff {f : ℂ �
     (Function.locallyFinsuppWithin.logCounting (MeromorphicOn.divisor f (Set.univ : Set ℂ)) R)
       = Real.circleAverage (fun z : ℂ => Real.log ‖f z‖) 0 R
         - Real.log ‖meromorphicTrailingCoeffAt f 0‖ := by
-  -- `ValueDistribution.CountingFunction` reformulation of Jensen's formula, specialized to `univ`.
   have hmero : Meromorphic f := by
     intro z
     exact (hf.analyticAt z).meromorphicAt
-  -- `divisor f ⊤ = divisor f univ` by definitional equality `⊤ = univ`
   simpa [top_eq_univ] using
     (Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const (f := f)
       (h := hmero) (hR := hR))
@@ -580,9 +534,7 @@ lemma logCounting_divisor_univ_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
   have hC : ∀ z : ℂ, Real.log (1 + ‖f z‖) ≤ C * (1 + ‖z‖) ^ ρ :=
     (Classical.choose_spec hgrowth).2
   have hR : R ≠ 0 := ne_of_gt hR0
-  -- use Jensen reformulation: logCounting = circleAverage(log ‖f‖) - log ‖trailingCoeff‖
   have hEq := logCounting_divisor_univ_eq_circleAverage_sub_log_trailingCoeff (f := f) hf (R := R) hR
-  -- bound circleAverage(log ‖f‖) by the constant `C * (1 + |R|)^ρ`
   have hf_sphere : MeromorphicOn f (Metric.sphere (0 : ℂ) |R|) := by
     intro z hz
     exact (hf.analyticAt z).meromorphicAt
@@ -605,14 +557,12 @@ lemma logCounting_divisor_univ_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
       Real.circleAverage (fun z : ℂ => Real.log ‖f z‖) 0 R ≤ C * (1 + |R|) ^ ρ :=
     Real.circleAverage_mono_on_of_le_circle (c := (0 : ℂ)) (R := R) (f := fun z => Real.log ‖f z‖)
       hInt hbound_circle
-  -- assemble: logCounting ≤ circleAverage + |log trailingCoeff|
   calc
     Function.locallyFinsuppWithin.logCounting (MeromorphicOn.divisor f (Set.univ : Set ℂ)) R
         = Real.circleAverage (fun z : ℂ => Real.log ‖f z‖) 0 R
             - Real.log ‖meromorphicTrailingCoeffAt f 0‖ := hEq
     _ ≤ Real.circleAverage (fun z : ℂ => Real.log ‖f z‖) 0 R
           + |Real.log ‖meromorphicTrailingCoeffAt f 0‖| := by
-          -- `a - b ≤ a + |b|`
           have : -Real.log ‖meromorphicTrailingCoeffAt f 0‖ ≤ |Real.log ‖meromorphicTrailingCoeffAt f 0‖| :=
             neg_le_abs (Real.log ‖meromorphicTrailingCoeffAt f 0‖)
           linarith
@@ -628,11 +578,9 @@ lemma countable_divisor_support_univ {f : ℂ → ℂ} :
     simpa [D] using (D.closedSupport (hU := isClosed_univ))
   have hdisc : IsDiscrete D.support := by
     simpa [D] using (D.discreteSupport)
-  -- `ℂ` is Lindelöf, hence any closed discrete subset is countable.
   have hL : IsLindelof (Set.univ : Set ℂ) := isLindelof_univ
   have hL' : IsLindelof D.support :=
     IsLindelof.of_isClosed_subset hL hclosed (by simp)
-  -- convert `IsDiscrete` to a discrete topology on the subtype
   simpa [D] using hL'.countable_of_isDiscrete hdisc
 
 lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
@@ -653,14 +601,11 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
   have hrpos : 0 < r := by dsimp [r]; nlinarith
   have hr : r ≠ 0 := ne_of_gt hrpos
   have hDnonneg : 0 ≤ D := by
-    -- entire ⇒ analytic on `univ`
     have hAnal : AnalyticOnNhd ℂ f (Set.univ : Set ℂ) := by
       intro z hz
       simpa using (hf.analyticAt z)
     simpa [D] using
       (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := (Set.univ : Set ℂ)) hAnal)
-
-  -- Abbreviations for the restricted divisor on the closed ball of radius `r = 2R`.
   let Dr : Function.locallyFinsuppWithin (Metric.closedBall (0 : ℂ) |r|) ℤ :=
     Function.locallyFinsuppWithin.toClosedBall r D
   have hDr_fin : Set.Finite Dr.support := Dr.finiteSupport (isCompact_closedBall (0 : ℂ) |r|)
@@ -669,8 +614,6 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
     (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R D)
           (isCompact_closedBall (0 : ℂ) |R|)).toFinset
   let S : Finset ℂ := SR.filter fun z : ℂ => z ≠ 0
-
-  -- `S ⊆ F`: if `‖z‖ ≤ R` and `D z ≠ 0`, then also `‖z‖ ≤ r` so it appears in the `r`-restricted support.
   have hS_sub : S ⊆ F := by
     intro z hzS
     have hz0 : z ≠ 0 := (Finset.mem_filter.1 hzS).2
@@ -682,7 +625,6 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
     have hz_in_ballR : z ∈ Metric.closedBall (0 : ℂ) |R| := by
       exact (Function.locallyFinsuppWithin.toClosedBall R D).supportWithinDomain hzR
     have hz_norm_le_R : ‖z‖ ≤ R := by
-      -- `|R| = R` since `0 < R`
       have : ‖z‖ ≤ |R| := by
         simpa [Metric.mem_closedBall, dist_zero_right] using hz_in_ballR
       simpa [abs_of_pos hR0] using this
@@ -692,11 +634,9 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
     have hz_in_ballr : z ∈ Metric.closedBall (0 : ℂ) |r| := by
       simpa [Metric.mem_closedBall, dist_zero_right] using hz_norm_le_r
     have hDrz : Dr z = D z := by
-      -- `toClosedBall_eval_within`
       simpa [Dr] using (Function.locallyFinsuppWithin.toClosedBall_eval_within (r := r) (f := D)
         (z := z) hz_in_ballr)
     have hDz_ne : D z ≠ 0 := by
-      -- since `z` is in the support of `toClosedBall R D`, and evaluation there equals `D z`
       have hDz' : (Function.locallyFinsuppWithin.toClosedBall R D) z ≠ 0 := by
         simpa [Function.mem_support] using hzR
       have hz_in_ballR' : z ∈ Metric.closedBall (0 : ℂ) |R| := hz_in_ballR
@@ -707,33 +647,25 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
     have : z ∈ Dr.support := by
       simp [Function.mem_support, hDrz, hDz_ne]
     exact (Set.Finite.mem_toFinset hDr_fin).2 this
-
-  -- Rewrite the finsum part of `logCounting D r` as a finite sum over `F`.
   have hlogCounting :
       Function.locallyFinsuppWithin.logCounting D r
         = (F.sum fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) + (D 0 : ℝ) * Real.log r := by
-    -- `finsum` is a finite sum over the support; we can use any finset containing the support.
     have hsupp :
         Function.support (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) ⊆ F := by
       intro z hz
       have : Dr z ≠ 0 := by
-        -- if the product is nonzero then the coefficient is nonzero
         by_contra h0
         simp [Function.mem_support, h0] at hz
       have : z ∈ Dr.support := by simpa [Function.mem_support] using this
       exact (Set.Finite.mem_toFinset hDr_fin).2 this
-    -- expand the definition and rewrite the finsum as a finite sum over `F`
     simp [Function.locallyFinsuppWithin.logCounting, D, Dr, r,
       finsum_eq_sum_of_support_subset (f := fun z : ℂ =>
         (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) (s := F) hsupp]
-
-  -- Lower bound the `F`-sum by the `S`-sum, then use `log 2 ≤ log(r/‖z‖)` for `‖z‖ ≤ R`.
   have hsum_le :
       (Real.log 2) * (S.sum fun z : ℂ => (D z : ℝ))
         ≤ F.sum (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) := by
     have hterm_nonneg : ∀ z ∈ F, 0 ≤ (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹) := by
       intro z hzF
-      -- `z ∈ Dr.support` ⇒ `z ∈ closedBall 0 |r|`
       have hz_sup : z ∈ Dr.support := (Set.Finite.mem_toFinset hDr_fin).1 hzF
       have hz_in : z ∈ Metric.closedBall (0 : ℂ) |r| := Dr.supportWithinDomain hz_sup
       have hDz : 0 ≤ Dr z := by
@@ -751,25 +683,20 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
             have : ‖z‖ ≤ |r| := by simpa [Metric.mem_closedBall, dist_zero_right] using hz_in
             simpa [abs_of_pos hrpos] using this
           have : 1 ≤ r * ‖z‖⁻¹ := by
-            -- `‖z‖ ≤ r` ↔ `1 ≤ r / ‖z‖`
             have : 1 ≤ r / ‖z‖ := (one_le_div hzpos).2 hzle
             simpa [div_eq_mul_inv] using this
           exact Real.log_nonneg this
       exact mul_nonneg (by exact_mod_cast hDz) hlog
-    -- subset monotonicity: sum over `S` ≤ sum over `F` because all summands are nonneg
     have hsumSF :
         S.sum (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹))
           ≤ F.sum (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) :=
       Finset.sum_le_sum_of_subset_of_nonneg hS_sub (by
         intro z hzF hznot; exact hterm_nonneg z hzF)
-    -- termwise bound on `S`: replace `log(...)` by `log 2`, and `Dr z` by `D z`.
     have hterm_ge : ∀ z ∈ S,
         (Real.log 2) * (D z : ℝ) ≤ (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹) := by
       intro z hzS
       have hz0 : z ≠ 0 := (Finset.mem_filter.1 hzS).2
-      -- show `z ∈ closedBall 0 |r|`
       have hz_norm_le_R : ‖z‖ ≤ R := by
-        -- membership in support of `toClosedBall R D` implies `‖z‖ ≤ |R|`
         have hz_mem_SR : z ∈ SR := (Finset.mem_filter.1 hzS).1
         have hzRsup : z ∈ (Function.locallyFinsuppWithin.toClosedBall R D).support := by
           exact (Set.Finite.mem_toFinset
@@ -781,7 +708,6 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
         simpa [abs_of_pos hR0] using this
       have hzpos : 0 < ‖z‖ := norm_pos_iff.2 hz0
       have hle2 : (2 : ℝ) ≤ r * ‖z‖⁻¹ := by
-        -- since `‖z‖ ≤ R`, `r/‖z‖ ≥ 2R/R = 2`
         have hRdiv : 1 ≤ R / ‖z‖ := (one_le_div hzpos).2 hz_norm_le_R
         have : (2 : ℝ) ≤ 2 * (R / ‖z‖) := by nlinarith
         simpa [r, div_eq_mul_inv, mul_assoc, mul_left_comm, mul_comm] using this
@@ -804,18 +730,14 @@ lemma logCounting_two_mul_lower_bound_sum_divisor_closedBall {f : ℂ → ℂ}
       _ ≤ S.sum (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) := by
             exact Finset.sum_le_sum fun z hz => hterm_ge z hz
       _ ≤ F.sum (fun z : ℂ => (Dr z : ℝ) * Real.log (r * ‖z‖⁻¹)) := hsumSF
-
   have hcenter_nonneg : 0 ≤ (D 0 : ℝ) * Real.log r := by
     have hD0 : 0 ≤ D 0 := hDnonneg 0
     have hlogr : 0 ≤ Real.log r := Real.log_nonneg (by nlinarith [hR])
     exact mul_nonneg (by exact_mod_cast hD0) hlogr
-
-  -- Put everything together: logCounting = finsum + center term, and center term is nonnegative.
   have : (Real.log 2) * (S.sum fun z : ℂ => (D z : ℝ))
       ≤ Function.locallyFinsuppWithin.logCounting D r := by
     rw [hlogCounting]
     nlinarith [hsum_le, hcenter_nonneg]
-  -- rewrite the statement's sum
   simpa [D, r, S, SR] using this
 
 lemma sum_divisor_closedBall_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
@@ -834,7 +756,6 @@ lemma sum_divisor_closedBall_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
   have hlog2pos : 0 < Real.log 2 := by
     have : (1 : ℝ) < 2 := by norm_num
     exact Real.log_pos this
-  -- lower bound: `log 2 * sum ≤ logCounting (2R)`
   have hlow :
       (Real.log 2) *
           ((((Function.locallyFinsuppWithin.finiteSupport
@@ -845,15 +766,12 @@ lemma sum_divisor_closedBall_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
         ≤ Function.locallyFinsuppWithin.logCounting
             (MeromorphicOn.divisor f (Set.univ : Set ℂ)) (2 * R) :=
     logCounting_two_mul_lower_bound_sum_divisor_closedBall (f := f) hf (R := R) hR
-  -- upper bound: `logCounting (2R) ≤ C * (1 + |2R|)^ρ + |log trailing|`.
   have hupp :
       Function.locallyFinsuppWithin.logCounting (MeromorphicOn.divisor f (Set.univ : Set ℂ)) (2 * R)
         ≤ (Classical.choose hgrowth) * (1 + |2 * R|) ^ ρ
           + |Real.log ‖meromorphicTrailingCoeffAt f 0‖| := by
-    -- `logCounting_divisor_univ_le_of_growth` expects a positive radius.
     have h2R0 : 0 < (2 * R) := by nlinarith [hR0]
     simpa using (logCounting_divisor_univ_le_of_growth (f := f) (ρ := ρ) hf hgrowth (R := 2 * R) h2R0)
-  -- combine and divide by `log 2`.
   have : (Real.log 2) *
         ((((Function.locallyFinsuppWithin.finiteSupport
                 (Function.locallyFinsuppWithin.toClosedBall R
@@ -862,7 +780,6 @@ lemma sum_divisor_closedBall_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
           fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ))
       ≤ (Classical.choose hgrowth) * (1 + |2 * R|) ^ ρ + |Real.log ‖meromorphicTrailingCoeffAt f 0‖| :=
     le_trans hlow hupp
-  -- `a * x ≤ b` with `a>0` ⇒ `x ≤ b/a`
   have : ((((Function.locallyFinsuppWithin.finiteSupport
               (Function.locallyFinsuppWithin.toClosedBall R
                 (MeromorphicOn.divisor f (Set.univ : Set ℂ)))
@@ -870,7 +787,6 @@ lemma sum_divisor_closedBall_le_of_growth {f : ℂ → ℂ} {ρ : ℝ}
           fun z : ℂ => (MeromorphicOn.divisor f (Set.univ : Set ℂ) z : ℝ))
       ≤ ((Classical.choose hgrowth) * (1 + |2 * R|) ^ ρ + |Real.log ‖meromorphicTrailingCoeffAt f 0‖|)
           / (Real.log 2) := by
-    -- divide the inequality `log 2 * x ≤ B` by `log 2`
     have hx :
         ((((Function.locallyFinsuppWithin.finiteSupport
                 (Function.locallyFinsuppWithin.toClosedBall R
@@ -906,12 +822,10 @@ lemma sum_divisor_closedBall_mono {f : ℂ → ℂ} (hf : Differentiable ℂ f)
   have hDnonneg : 0 ≤ D := by
     simpa [D] using
       (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := U) hAnal)
-
   let SR (R : ℝ) : Finset ℂ :=
     (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R D)
           (isCompact_closedBall (0 : ℂ) |R|)).toFinset
   let S (R : ℝ) : Finset ℂ := (SR R).filter fun z : ℂ => z ≠ 0
-
   have hsub : S R₁ ⊆ S R₂ := by
     intro z hz
     have hzSR₁ : z ∈ SR R₁ := (Finset.mem_filter.1 hz).1
@@ -952,12 +866,10 @@ lemma sum_divisor_closedBall_mono {f : ℂ → ℂ} (hf : Differentiable ℂ f)
         (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R₂ D)
           (isCompact_closedBall (0 : ℂ) |R₂|))).2 hz_sup₂
     exact Finset.mem_filter.2 ⟨hzSR₂, hz0⟩
-
   have hterm_nonneg : ∀ z ∈ S R₂, 0 ≤ (MeromorphicOn.divisor f U z : ℝ) := by
     intro z hz
     have : 0 ≤ D z := hDnonneg z
     exact_mod_cast this
-
   exact Finset.sum_le_sum_of_subset_of_nonneg hsub (fun z hz₂ _hznot => hterm_nonneg z hz₂)
 
 lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
@@ -966,33 +878,26 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
   classical
   set U : Set ℂ := (Set.univ : Set ℂ)
   set D : Function.locallyFinsuppWithin U ℤ := MeromorphicOn.divisor f U
-
   have hAnal : AnalyticOnNhd ℂ f U := by
     intro z hz
     simpa using (hf.analyticAt z)
   have hDnonneg : 0 ≤ D := by
     simpa [D] using
       (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := U) hAnal)
-
-  -- Any divisor index corresponds to a genuine zero (since `f` is entire, so no poles).
   have hzero : ∀ p : divisorZeroIndex₀ f U, f (divisorZeroIndex₀_val p) = 0 := by
     intro p
     set z : ℂ := divisorZeroIndex₀_val p
     have hneTop : meromorphicOrderAt f z ≠ ⊤ := by
-      -- `analyticOrderAt` is finite since `f` is not identically zero; then so is `meromorphicOrderAt`.
       have hzAnal : AnalyticAt ℂ f z := hf.analyticAt z
       have hzA : analyticOrderAt f z ≠ ⊤ :=
         analyticOrderAt_ne_top_of_exists_ne_zero (f := f) (hf := hf) hnot (z := z)
       intro htop
-      -- compare with `AnalyticAt.meromorphicOrderAt_eq`
       have hm : meromorphicOrderAt f z = (analyticOrderAt f z).map (↑) :=
         hzAnal.meromorphicOrderAt_eq (𝕜 := ℂ)
-      -- `map (↑)` never turns a finite order into `⊤`
       cases h : analyticOrderAt f z with
       | top =>
           exact hzA (by simp [h])
       | coe n =>
-          -- RHS is a coercion, hence not `⊤`
           have : (analyticOrderAt f z).map (↑) ≠ (⊤ : WithTop ℤ) := by
             simp [h]
           exact this (by simpa [hm] using htop)
@@ -1013,7 +918,6 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
         simpa [hdiv] using hDz
       exact lt_of_le_of_ne hge0 (by simpa [eq_comm] using hne0)
     have hpos : (0 : WithTop ℤ) < meromorphicOrderAt f z := by
-      -- `order ≠ ⊤` so `order = ↑order.untop₀`
       have : (0 : WithTop ℤ) < ((meromorphicOrderAt f z).untop₀ : WithTop ℤ) :=
         WithTop.coe_lt_coe.2 hposZ
       simpa [WithTop.coe_untop₀_of_ne_top hneTop] using this
@@ -1022,15 +926,11 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
     have hcontz : ContinuousAt f z := (hf z).continuousAt
     have htendz : Tendsto f (𝓝[≠] z) (𝓝 (f z)) :=
       (hcontz.tendsto.mono_left (nhdsWithin_le_nhds : 𝓝[≠] z ≤ 𝓝 z))
-    -- uniqueness of limits
     exact tendsto_nhds_unique htendz htend0
-
   by_cases h0 : f 0 = 0
-  · -- isolate the support point `0` inside `D.support`, then any nonzero divisor index lies outside that ball.
-    have hD0 : D 0 ≠ 0 := by
+  · have hD0 : D 0 ≠ 0 := by
       have hmero0 : MeromorphicAt f (0 : ℂ) := (hf.analyticAt 0).meromorphicAt
       have hneTop0 : meromorphicOrderAt f (0 : ℂ) ≠ ⊤ := by
-        -- same reasoning as above: analytic order at `0` is finite
         have hA0 : analyticOrderAt f (0 : ℂ) ≠ ⊤ :=
           analyticOrderAt_ne_top_of_exists_ne_zero (f := f) (hf := hf) hnot (z := 0)
         intro htop
@@ -1049,11 +949,9 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
       have hpos0 : (0 : WithTop ℤ) < meromorphicOrderAt f (0 : ℂ) :=
         (tendsto_zero_iff_meromorphicOrderAt_pos hmero0).1 htend0
       have hpos0' : (0 : ℤ) < (meromorphicOrderAt f (0 : ℂ)).untop₀ := by
-        -- rewrite `hpos0` through the coercion `coe_untop₀_of_ne_top`
         have : (0 : WithTop ℤ) < ((meromorphicOrderAt f (0 : ℂ)).untop₀ : WithTop ℤ) := by
           simpa [WithTop.coe_untop₀_of_ne_top hneTop0] using hpos0
         simpa using (WithTop.coe_lt_coe.1 this)
-      -- `D 0 = order.untop₀` and `untop₀ > 0`
       have hdiv0 : D 0 = (meromorphicOrderAt f (0 : ℂ)).untop₀ := by
         have hmon : MeromorphicOn f U := by
           intro w hw; exact (hf.analyticAt w).meromorphicAt
@@ -1076,15 +974,13 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
       have : divisorZeroIndex₀_val p ∈ ({(0 : ℂ)} : Set ℂ) := by simp [hr0] at this
       have : divisorZeroIndex₀_val p = 0 := by simp [Set.mem_singleton_iff] at this
       exact (divisorZeroIndex₀_val_ne_zero p) this
-    -- not in ball means `r0 ≤ ‖val‖`
     have : r0 ≤ ‖divisorZeroIndex₀_val p‖ := by
       have : ¬ ‖divisorZeroIndex₀_val p‖ < r0 := by
         intro hlt
         exact hnotBall (by simpa [Metric.mem_ball, dist_zero_right] using hlt)
       exact le_of_not_gt this
     exact this
-  · -- `f 0 ≠ 0`: a small ball around `0` is zero-free, hence no divisor index lies inside.
-    have hcont0 : ContinuousAt f (0 : ℂ) := (hf 0).continuousAt
+  · have hcont0 : ContinuousAt f (0 : ℂ) := (hf 0).continuousAt
     have hne : ∀ᶠ z in 𝓝 (0 : ℂ), f z ≠ 0 := hcont0.eventually_ne h0
     rcases Metric.mem_nhds_iff.1 hne with ⟨r0, hr0pos, hr0⟩
     refine ⟨r0, hr0pos, ?_⟩
@@ -1096,7 +992,6 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
       have : f (divisorZeroIndex₀_val p) ≠ 0 := hr0 hzball
       exact this (hzero p)
     exact le_of_not_gt this
-
 
 /-!
 ### Dyadic-shell summability for divisor-indexed zeros
@@ -1128,7 +1023,6 @@ private lemma lt_two_pow_floor_logb_add_one {x : ℝ} (hx : 1 ≤ x) :
   exact (Real.logb_lt_iff_lt_rpow (b := (2 : ℝ)) (x := x)
     (y := (⌊Real.logb 2 x⌋₊ : ℝ) + 1) (by norm_num : (1 : ℝ) < 2) hx0).1 hlt
 
---set_option maxHeartbeats 0 in
 private lemma card_shell_le_sum_divisor_closedBall
     {f : ℂ → ℂ} (hf : Differentiable ℂ f) (_hnot : ∃ z : ℂ, f z ≠ 0)
     {r0 R : ℝ} (hr0 : 0 < r0) (hR : r0 ≤ R) :
@@ -1142,7 +1036,6 @@ private lemma card_shell_le_sum_divisor_closedBall
   classical
   set U : Set ℂ := (Set.univ : Set ℂ)
   set D : Function.locallyFinsuppWithin U ℤ := MeromorphicOn.divisor f U
-  -- Provide the `Fintype` instance for the left-hand side via the intrinsic finiteness lemma.
   haveI :
       Fintype {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} := by
     classical
@@ -1155,23 +1048,16 @@ private lemma card_shell_le_sum_divisor_closedBall
   have hDnonneg : 0 ≤ D := by
     simpa [D] using
       (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := U) hAnal)
-
-  -- The finite support finset of points in the closed ball.
   let SR : Finset ℂ :=
     (Function.locallyFinsuppWithin.finiteSupport (Function.locallyFinsuppWithin.toClosedBall R D)
           (isCompact_closedBall (0 : ℂ) |R|)).toFinset
   let S : Finset ℂ := SR.filter fun z : ℂ => z ≠ 0
-
-  -- Inject indices-with-‖val‖≤R into a sigma over the finite set `S` (counting multiplicity via `Fin`).
   let T : Type :=
     Σ z : S, Fin (Int.toNat (D z.1))
-  -- `T` is a sigma type, so `Fintype T` is inferred canonically.
-
   let φ :
       {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} → T := fun p =>
     let z0 : ℂ := divisorZeroIndex₀_val p.1
     have hz0_memSR : z0 ∈ SR := by
-      -- `z0` is in the support of `toClosedBall R D`, hence in the `finiteSupport` finset.
       have hz0_ball : z0 ∈ Metric.closedBall (0 : ℂ) |R| := by
         have hR0 : 0 < R := lt_of_lt_of_le hr0 hR
         have : ‖z0‖ ≤ |R| := by
@@ -1179,7 +1065,6 @@ private lemma card_shell_le_sum_divisor_closedBall
           simpa [abs_of_pos hR0] using this
         simpa [Metric.mem_closedBall, dist_zero_right] using this
       have hz0_support : z0 ∈ (Function.locallyFinsuppWithin.toClosedBall R D).support := by
-        -- inside the ball, `toClosedBall` agrees with `D`, and `z0 ∈ D.support`.
         have hz0_suppD : z0 ∈ D.support := by
           simpa [z0, D] using (divisorZeroIndex₀_val_mem_divisor_support (p := p.1))
         have hEq : (Function.locallyFinsuppWithin.toClosedBall R D) z0 = D z0 := by
@@ -1194,28 +1079,19 @@ private lemma card_shell_le_sum_divisor_closedBall
           (isCompact_closedBall (0 : ℂ) |R|))).2 hz0_support
     have hz0_ne0 : z0 ≠ 0 := divisorZeroIndex₀_val_ne_zero p.1
     have hz0_memS : z0 ∈ S := Finset.mem_filter.2 ⟨hz0_memSR, hz0_ne0⟩
-    -- The second coordinate already is the `Fin` index at `z0`.
     ⟨⟨z0, hz0_memS⟩, by
         simpa [z0, divisorZeroIndex₀_val, D] using p.1.1.2⟩
-
   have hφ_inj : Function.Injective φ := by
     intro p q hpq
-    -- Peel sigma equality in the target.
     have hσ := (Sigma.mk.inj_iff).1 hpq
     have hzS : (φ p).1 = (φ q).1 := hσ.1
     have hz : divisorZeroIndex₀_val p.1 = divisorZeroIndex₀_val q.1 := by
-      -- `z` is the underlying point in `S`.
       simpa [φ] using congrArg Subtype.val hzS
-    -- Now show equality of the underlying sigma `divisorZeroIndex` coordinates.
     apply Subtype.ext
     apply Subtype.ext
     apply Sigma.ext
     · exact hz
-    · -- the `Fin` coordinate is equal (after transporting along `hz`)
-      -- `hσ.2` is an `HEq`; `simp [φ]` turns it into the desired `HEq` between the original indices.
-      simpa [φ] using hσ.2
-
-  -- Compare cardinalities via the injection, then compute card(T) as a sum of fiber sizes.
+    · simpa [φ] using hσ.2
   have hcard_le :
       Fintype.card {p : divisorZeroIndex₀ f U // ‖divisorZeroIndex₀_val p‖ ≤ R} ≤ Fintype.card T :=
     Fintype.card_le_of_injective φ hφ_inj
@@ -1223,13 +1099,10 @@ private lemma card_shell_le_sum_divisor_closedBall
       (Fintype.card T : ℝ) =
         (S.sum fun z : ℂ => (Int.toNat (D z) : ℝ)) := by
     classical
-    -- `card (Σ z : S, Fin (toNat (D z))) = ∑ z : S, toNat (D z)`
     have hNat :
         Fintype.card T = ∑ z : S, Int.toNat (D z.1) := by
-      -- First compute using `card_sigma`, then `card (Fin n) = n`.
       have h1 :
           Fintype.card T = ∑ z : S, Fintype.card (Fin (Int.toNat (D z.1))) := by
-        -- Avoid `simp` looping on `Fintype.card_sigma` itself; just unfold `T` and apply it.
         change Fintype.card (Sigma (fun z : S => Fin (Int.toNat (D z.1))))
             = ∑ z : S, Fintype.card (Fin (Int.toNat (D z.1)))
         exact (Fintype.card_sigma (ι := S) (α := fun z : S => Fin (Int.toNat (D z.1))))
@@ -1237,19 +1110,14 @@ private lemma card_shell_le_sum_divisor_closedBall
     have hR :
         (Fintype.card T : ℝ) = ∑ z : S, (Int.toNat (D z.1) : ℝ) := by
       exact_mod_cast hNat
-    -- Convert the `Fintype` sum over `S` into a `Finset.sum` over the underlying finset `S : Finset ℂ`.
-    -- Here we use `Finset.univ_eq_attach` for the subtype `S`.
     have hR' :
         (Fintype.card T : ℝ) = S.attach.sum (fun z : S => (Int.toNat (D z.1) : ℝ)) := by
-      -- `∑ z : S, ...` is `Finset.univ.sum ...`, and `Finset.univ = S.attach`.
       simpa [Finset.univ_eq_attach] using hR
-    -- Finally, turn the sum over `S.attach` into a sum over the underlying finset `S`.
     calc
       (Fintype.card T : ℝ) = S.attach.sum (fun z : S => (Int.toNat (D z.1) : ℝ)) := hR'
       _ = S.sum (fun z : ℂ => (Int.toNat (D z) : ℝ)) := by
             -- `S.attach.sum (fun z => f z.1) = S.sum f`
             simpa using (Finset.sum_attach (s := S) (f := fun z : ℂ => (Int.toNat (D z) : ℝ)))
-  -- Convert `toNat` to `D z` using nonnegativity.
   have htoNat_le : ∀ z ∈ S, (Int.toNat (D z) : ℝ) ≤ (D z : ℝ) := by
     intro z hz
     have hDz_nonneg : 0 ≤ D z := by simpa [D] using hDnonneg z
@@ -2659,7 +2527,11 @@ theorem hadamard_factorization_of_growth {f : ℂ → ℂ} {ρ : ℝ} (hρ : 0 �
             (Complex.Hadamard.cartan_sum_majorant_le (f := f) (m := m) (τ := τ) (R := R) (r := r)
               (hRpos := hRpos) (hrpos := hrpos) (hR_le_r := hR_le_r) (hτ_nonneg := hτ_nonneg)
               (smallSet := smallSet) (hsmall_fin := hsmall_fin) (hsmallSet := hsmallSet')
-              (hsumτ := hsumτ) (hr_phi := hr_phi) s)
+              (hsumτ := hsumτ)
+              (hr_phi := by
+                -- `exists_radius...` gives weights `w ≡ 1`; rewrite the RHS `∑ 1` as `card`.
+                simpa [one_mul, Finset.sum_const] using hr_phi)
+              s)
         have hcprod_inv :
             ‖(divisorCanonicalProduct m f (Set.univ : Set ℂ) u)⁻¹‖ ≤ Real.exp (Cprod * (1 + r) ^ τ) := by
           -- Use the reusable lemma: pointwise `‖fac⁻¹‖ ≤ exp(b)` plus a bound on all partial sums of `b`
