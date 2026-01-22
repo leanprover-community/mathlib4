@@ -122,6 +122,14 @@ theorem denom_X : denom (X : RatFunc K) = 1 :=
 theorem X_ne_zero : (X : RatFunc K) ≠ 0 :=
   RatFunc.algebraMap_ne_zero Polynomial.X_ne_zero
 
+theorem eq_C_iff (f : RatFunc K) :
+    (∃ c, f = C c) ↔ f.num.natDegree = 0 ∧ f.denom.natDegree = 0 := by
+  refine ⟨by rintro ⟨c, rfl⟩; simp, ?_⟩
+  rw [Polynomial.natDegree_eq_zero, Polynomial.natDegree_eq_zero]
+  rintro ⟨⟨a, ha⟩, ⟨b, hb⟩⟩
+  use a / b
+  rw [← num_div_denom f, ← ha, ← hb, algebraMap_C, algebraMap_C, map_div₀]
+
 variable {L : Type u} [Field L]
 
 /-- Evaluate a rational function `p` given a ring hom `f` from the scalar field
