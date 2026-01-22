@@ -371,7 +371,7 @@ variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCounta
 
 open Set
 
-noncomputable def _root_.BoundedVariationOn.stieltjesFunctionRightLim
+@[simps] noncomputable def _root_.BoundedVariationOn.stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
   toFun x := variationOnFromTo f.rightLim univ x₀ x
   mono' := by
@@ -388,27 +388,37 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
   by_cases h : Nonempty α; swap
   · simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
     infer_instance
-  simp [BoundedVariationOn.measureAux, h]
+  simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
   set x₀ := h.some
+  apply StieltjesFunction.isFiniteMeasure_of_forall_abs_le
+    (C := (eVariationOn f.rightLim univ).toReal) _ (fun x ↦ ?_)
+  exact variationOnFromTo.abs_le_eVariationOn hf.rightLim
 
-
-
-#exit
-
-lemma foo (hf : BoundedVariationOn f univ) (x₀ : α) : ∃ m : VectorMeasure α E,
+lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
     (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧ ∀ s,
-    ‖m s‖ₑ ≤ hf.measure x₀ s := by
-  have : Nonempty α := ⟨x₀⟩
+    ‖m s‖ₑ ≤ hf.measureAux s := by
+  rcases isEmpty_or_nonempty α with h'α | h'α
+  · refine ⟨0, by simp⟩
   let m := AddContent.onIoc f.rightLim
-  have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ (hf.measure x₀) s := by
+  have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ hf.measureAux s := by
     rintro s ⟨u, v, huv, rfl⟩
     rw [AddContent.onIoc_apply huv]
-    simp [BoundedVariationOn.measure, Monotone.stieltjesFunction]
-  have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := sorry
+    simp only [BoundedVariationOn.measureAux, h'α, ↓reduceDIte, StieltjesFunction.measure_Ioc,
+      BoundedVariationOn.stieltjesFunctionRightLim_apply]
+    rw [← variationOnFromTo.add hf.rightLim.locallyBoundedVariationOn
+      (mem_univ h'α.some) (mem_univ u) (mem_univ v)]
+    simp only [add_sub_cancel_left, variationOnFromTo, huv, ↓reduceIte, univ_inter]
+    rw [ENNReal.ofReal_toReal]; swap
+    · exact ((eVariationOn.mono _ (subset_univ _)).trans_lt hf.rightLim.lt_top).ne
+    rw [← edist_eq_enorm_sub]
+    exact eVariationOn.edist_le _ (by grind) (by grind)
+  have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
+    borelize α
+    exact borel_eq_generateFrom_Ioc_le α
   have C : (∃ f : ℕ → Set α, (∀ (n : ℕ), f n ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v})
-    ∧ (hf.measure x₀) (⋃ n, f n)ᶜ = 0) := sorry
+    ∧ hf.measureAux (⋃ n, f n)ᶜ = 0) := sorry
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
-    (m := m) (μ := hf.measure x₀) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
+    (m := m) (μ := hf.measureAux) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
   rw [hm']
   · exact AddContent.onIoc_apply huv

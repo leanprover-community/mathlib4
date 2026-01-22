@@ -896,6 +896,15 @@ protected theorem nonpos_of_ge {a b : α} (h : b ≤ a) : variationOnFromTo f s 
   rw [variationOnFromTo.eq_neg_swap]
   exact neg_nonpos_of_nonneg (variationOnFromTo.nonneg_of_le f s h)
 
+variable {f s} in
+theorem abs_le_eVariationOn (hf : BoundedVariationOn f s) {a b : α} :
+    |variationOnFromTo f s a b| ≤ (eVariationOn f s).toReal := by
+  by_cases hab : a ≤ b
+  · simp only [variationOnFromTo, hab, ↓reduceIte, ENNReal.abs_toReal]
+    exact ENNReal.toReal_mono hf (eVariationOn.mono _ inter_subset_left)
+  · simp only [variationOnFromTo, hab, ↓reduceIte, abs_neg, ENNReal.abs_toReal]
+    exact ENNReal.toReal_mono hf (eVariationOn.mono _ inter_subset_left)
+
 protected theorem eq_of_le {a b : α} (h : a ≤ b) :
     variationOnFromTo f s a b = (eVariationOn f (s ∩ Icc a b)).toReal :=
   if_pos h
