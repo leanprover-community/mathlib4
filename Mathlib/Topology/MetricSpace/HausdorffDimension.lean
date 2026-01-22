@@ -476,15 +476,18 @@ theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH
 /- The Hausdorff dimension of a nonempty convex set equals the dimension of its affine span. -/
 theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne : s.Nonempty) :
     dimH s = finrank ℝ (vectorSpan ℝ s) := by
-  haveI : Nonempty (affineSpan ℝ s) := ⟨⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩⟩
-  let p' : affineSpan ℝ s := ⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩
-  let s' : Set (affineSpan ℝ s) := (↑) ⁻¹' s
-  let φ := AffineIsometryEquiv.constVSub ℝ p'
-  have hs_eq : s = (↑) '' s' := (image_preimage_eq_of_subset <|
-    (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
-  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
-      Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
-  simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
+  haveI := hne.to_subtype
+  rw [(image_preimage_eq_of_subset <|
+    (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm,
+    isometry_subtype_coe.dimH_image,
+    ← (AffineIsometryEquiv.constVSub ℝ
+    (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)).isometry.dimH_image,
+    Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← (image_preimage_eq_of_subset <|
+    (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm]
+  simp_rw [← AffineIsometryEquiv.coe_toHomeomorph,
+    ← (AffineIsometryEquiv.constVSub ℝ
+    (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)).toHomeomorph.image_interior,
+    image_nonempty]
   simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne
 
 variable (E)
