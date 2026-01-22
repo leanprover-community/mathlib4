@@ -498,3 +498,4 @@ theorem exists_entire_nonzero_hadamardQuotient
   simpa [denom, hadamardDenom, mul_assoc, mul_left_comm, mul_comm] using hglobz
 
 end Hadamard
+end Complex
