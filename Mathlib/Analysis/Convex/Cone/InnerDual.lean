@@ -186,11 +186,6 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
 
-namespace ProperCone
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-
-end ProperCone
-
 end CompleteSpace
 
 end Dual

@@ -337,7 +337,7 @@ lemma map_jacobianRelationsOfHasCoeffs (i : σ) :
 
 lemma sum_jacobianRelationsOfHasCoeffs_mul_relationOfHasCoeffs [FaithfulSMul R₀ R] [Fintype σ] :
     ∑ i, P.jacobianRelationsOfHasCoeffs R₀ i * P.relationOfHasCoeffs R₀ i =
-        P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
+      P.jacobianOfHasCoeffs R₀ * P.invJacobianOfHasCoeffs R₀ - 1 := by
   classical
   apply MvPolynomial.map_injective _ (FaithfulSMul.algebraMap_injective R₀ R)
   simp [P.map_relationOfHasCoeffs, jacobianRelations_spec]
@@ -356,6 +356,6 @@ def ofHasCoeffs [FaithfulSMul R₀ R] :
       map_sub, map_one, @eq_comm (P.ModelOfHasCoeffs R₀) 0, sub_eq_zero] at this
     convert IsUnit.of_mul_eq_one _ this
     rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
-    rfl
+    simp [jacobianOfHasCoeffs]
 
 end Algebra.SubmersivePresentation
