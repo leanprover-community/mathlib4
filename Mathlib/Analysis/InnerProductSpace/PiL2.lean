@@ -1181,11 +1181,11 @@ variable [Fintype n] [DecidableEq n]
 abbrev toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
   toLpLin 2 2
 
-@[simp, deprecated toLpLin_toLp (since := "2026-01-22")]
+@[deprecated toLpLin_toLp (since := "2026-01-22")]
 lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :
     Matrix.toEuclideanLin A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
 
-@[simp, deprecated ofLp_toLpLin (since := "2026-01-22")]
+@[deprecated ofLp_toLpLin (since := "2026-01-22")]
 theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (Matrix.toEuclideanLin A x) = Matrix.toLin' A (ofLp x) :=
   rfl
@@ -1194,12 +1194,12 @@ theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
     toEuclideanLin M v = toLp _ (M *ᵥ ofLp v) := rfl
 
-@[simp, deprecated ofLp_toLpLin (since := "2026-01-22")]
+@[deprecated ofLp_toLpLin (since := "2026-01-22")]
 theorem ofLp_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanLin M v) = M *ᵥ ofLp v :=
   rfl
 
-@[simp, deprecated toLpLin_toLp (since := "2026-01-22")]
+@[deprecated toLpLin_toLp (since := "2026-01-22")]
 theorem toEuclideanLin_apply_piLp_toLp (M : Matrix m n 𝕜) (v : n → 𝕜) :
     toEuclideanLin M (toLp _ v) = toLp _ (M *ᵥ v) :=
   rfl
