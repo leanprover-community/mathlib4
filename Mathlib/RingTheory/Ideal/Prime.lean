@@ -102,7 +102,7 @@ theorem IsPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsPrime) {r : α} (n : �
 
 lemma IsPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
-  rw [Ideal.IsPrime.mul_mem_iff_mem_or_mem] <;> aesop
+  grind [Ideal.IsPrime.mul_mem_iff_mem_or_mem]
 
 lemma IsPrime.mul_mem_right_iff {I : Ideal α} [I.IsTwoSided] [I.IsPrime]
     {x y : α} (hx : y ∉ I) : x * y ∈ I ↔ x ∈ I := by

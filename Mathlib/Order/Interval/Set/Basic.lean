@@ -757,6 +757,10 @@ section OrderTop
 theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
   isMax_top.Ici_eq
 
+@[to_dual]
+theorem Iio_top [PartialOrder α] [OrderTop α] : Iio (⊤ : α) = {⊤}ᶜ :=
+  ext fun _ ↦ lt_top_iff_ne_top
+
 variable [Preorder α] [OrderTop α] {a : α}
 
 @[to_dual]
