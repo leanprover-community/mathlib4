@@ -199,4 +199,17 @@ entries. -/
 theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j ∧ f j < f i :=
   antitone_pair_of_not_sorted' (id h : f ∘ Equiv.refl _ ≠ _)
 
+/-- The sorted version of a permutation `σ` is its inverse `σ⁻¹`. -/
+@[simp]
+theorem sort_perm (σ : Equiv.Perm (Fin n)) :
+    sort σ = σ⁻¹ := by
+  apply (eq_sort_iff.2 ⟨?_ , ?_⟩).symm
+  · simpa using monotone_id
+  · intro _ _ hij h
+    exact (hij.ne (by simpa using h)).elim
+
 end Tuple
+
+theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
+    Monotone σ ↔ σ = 1 := by
+  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]
