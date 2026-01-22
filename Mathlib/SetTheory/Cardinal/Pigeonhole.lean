@@ -132,12 +132,12 @@ open Cardinal
 Δ-system, i.e. an uncountable subfamily that share the same pairwise intersection. -/
 theorem Uncountable.exists_uncountable_pairwise_inter_eq {α : Type u} {ι : Type v} [DecidableEq α]
     [Uncountable ι] (f : ι → Finset α) :
-    ∃ (s : Set ι) (t : Finset α), Uncountable s ∧ s.Pairwise (f · ∩ f · = t) := by
-  suffices ∀ (s : Set ι) (n : ℕ), (∀ i ∈ s, (f i).card = n) → Uncountable s →
-      ∃ s' ⊆ s, ∃ (t : Finset α), Uncountable s' ∧ s'.Pairwise (f · ∩ f · = t) by
+    ∃ (s : Set ι) (t : Finset α), s.Uncountable ∧ s.Pairwise (f · ∩ f · = t) := by
+  suffices ∀ (s : Set ι) (n : ℕ), (∀ i ∈ s, (f i).card = n) → s.Uncountable →
+      ∃ s' ⊆ s, ∃ (t : Finset α), s'.Uncountable ∧ s'.Pairwise (f · ∩ f · = t) by
     rcases exists_uncountable_fiber (fun i => ULift.up (f i).card) (by simp) (by infer_instance)
       with ⟨⟨n⟩, h⟩
-    rcases this _ n (by grind) h with ⟨s', -, t, hs, ht⟩
+    rcases this _ n (by grind) h.to_set with ⟨s', -, t, hs, ht⟩
     exact ⟨s', t, hs, ht⟩
   intro s n hn hs
   induction n generalizing f s with
@@ -146,7 +146,7 @@ theorem Uncountable.exists_uncountable_pairwise_inter_eq {α : Type u} {ι : Typ
   | succ n ih =>
     by_cases h : ∃ a, Uncountable {i ∈ s | a ∈ f i}
     · rcases h with ⟨a, ha⟩
-      rcases ih (fun i => f i \ {a}) _ (by grind) ha with ⟨s', hs', t, hs'', ht⟩
+      rcases ih (fun i => f i \ {a}) _ (by grind) ha.to_set with ⟨s', hs', t, hs'', ht⟩
       exact ⟨s', hs'.trans (sep_subset _ _), t ∪ {a}, hs'', fun i hi j hj hij => by
         grind [Set.Pairwise]⟩
     simp only [coe_setOf, not_exists, not_uncountable_iff] at h
@@ -160,7 +160,7 @@ theorem Uncountable.exists_uncountable_pairwise_inter_eq {α : Type u} {ι : Typ
         unfold g
         rwa [WellFoundedLT.fix_eq]
       rw [setOf_and, setOf_mem_eq, ← diff_compl, ← diff_self_inter]
-      refine (hs.to_set.diff ?_).nonempty
+      refine (hs.diff ?_).nonempty
       simp_rw [compl_setOf, not_forall, setOf_exists, ← mem_Iio, inter_iUnion₂]
       refine .biUnion ?_ fun a ha => ?_
       · rwa [← le_aleph0_iff_set_countable, mk_Iio_ordinal, lift_le_aleph0, ← lt_succ_iff,
@@ -178,7 +178,7 @@ theorem Uncountable.exists_uncountable_pairwise_inter_eq {α : Type u} {ι : Typ
       have := (hg j hj).2 k hjk''
       simp only [← hjk, Finset.inter_self] at this
       simpa [this] using hn _ (hg j hj).1
-    refine ⟨g '' Iio ω₁, by grind, ∅, .to_subtype (.image ?_ hg'), Pairwise.image ?_⟩
+    refine ⟨g '' Iio ω₁, by grind, ∅, .image ?_ hg', Pairwise.image ?_⟩
     · rw [← uncountable_coe_iff, ← aleph0_lt_mk_iff, mk_Iio_ordinal, aleph0_lt_lift, card_omega]
       exact aleph0_lt_aleph_one
     intro j hj k hk hjk
