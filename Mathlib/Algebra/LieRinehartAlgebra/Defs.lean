@@ -28,19 +28,25 @@ Derivation
 
 @[expose] public section
 
-/-- A Lie-Rinehart algebra over a commutative ring `R` is a commutative `R`-algebra `A` together
-with an `A`-module `L` equipped with a Lie bracket and a Lie algebra and module homomorphism
-`anchor : L → Derivation R A A` to the derivations of `A`, such that the Leibniz rule
-`⁅x,a•y⁆=a•⁅x,y⁆+(anchor x)(a)•y` is satisfied.
-In this version of the definition we are encoding the anchor implictly by a Lie action of L on A.
-The anchor is later derived as a consequence of the definition.
--/
-class LieRinehartAlgebra (R A L : Type*) [CommRing R] [CommRing A] [Algebra R A]
-    [LieRing L] [Module A L] [LieAlgebra R L] [IsScalarTower R A L] [LieRingModule L A]
-    [LieModule R L A] where
-  left_linearity : ∀ (a b : A) (x : L) , ⁅a•x, b⁆ = a * ⁅x, b⁆
-  leibnizA : ∀ (x : L) (a : A) (b : A), ⁅x, a•b⁆ = a•⁅x, b⁆ + ⁅x, a⁆•b
-  leibnizL : ∀ (x : L) (a : A) (y : L), ⁅x, a•y⁆ = a•⁅x, y⁆ + ⁅x, a⁆•y
+/-- A Lie-Reinhart ring is a pair consisting of a commutative ring `A` and a Lie ring `L` such that
+`A` and `L` are each a module over the other, satisfying compatibility conditions. -/
+class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
+    [Module A L] [LieRingModule L A] : Prop where
+  lie_smul_eq_mul (a b : A) (x : L) : ⁅a • x, b⁆ = a * ⁅x, b⁆
+  leibniz_mul_right (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
+  leibniz_smul_right (x y : L) (a : A) : ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y
+
+/-- A Lie-Reinhart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
+commutative `R`-algebra `A` and a Lie algebra `L` with coefficients in `R`, such that `A` and `L`
+are each a module over the other, satisfying compatibility conditions.
+
+As shown below, this data determines a linear map `L → Derivation R A A` satisfying a Leibniz-like
+compatibility condition. This could even be taken as a definition, however the definition here has
+the advantage of being `Prop`-valued, thus mitigating potential diamonds. -/
+class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
+    [Module A L] [LieRingModule L A] [LieRinehartRing A L]
+    [CommRing R] [Algebra R A] [LieAlgebra R L] : Prop extends
+    IsScalarTower R A L, LieModule R L A
 
 namespace LieRinehartAlgebra
 
