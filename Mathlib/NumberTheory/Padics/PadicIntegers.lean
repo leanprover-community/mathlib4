@@ -138,6 +138,12 @@ lemma coe_sum {α : Type*} (s : Finset α) (f : α → ℤ_[p]) :
     (((∑ z ∈ s, f z) : ℤ_[p]) : ℚ_[p]) = ∑ z ∈ s, (f z : ℚ_[p]) := by
   simp [← Coe.ringHom_apply, map_sum PadicInt.Coe.ringHom f s]
 
+open Topology in
+lemma isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℤ_[p] → ℚ_[p]) := by
+  refine (?_ : IsOpen {y : ℚ_[p] | ‖y‖ ≤ 1}).isOpenEmbedding_subtypeVal
+  simpa only [Metric.closedBall, dist_eq_norm_sub, sub_zero] using
+    IsUltrametricDist.isOpen_closedBall (0 : ℚ_[p]) one_ne_zero
+
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
 def inv : ℤ_[p] → ℤ_[p]
