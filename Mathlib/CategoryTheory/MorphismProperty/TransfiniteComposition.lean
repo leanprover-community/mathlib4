@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 public import Mathlib.Order.Interval.Set.SuccOrder
 public import Mathlib.Order.Shrink
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -626,6 +628,8 @@ lemma isPushout (i : J) :
 
 end transfiniteCompositionOfShapeSigmaMap
 
+section
+
 variable [HasCoproductsOfShape J C] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [NoMaxOrder J]
 
 open transfiniteCompositionOfShapeSigmaMap in
@@ -639,14 +643,36 @@ noncomputable def transfiniteCompositionOfShapeSigmaMap :
   map_mem i hi := MorphismProperty.pushouts_mk _ (isPushout f i) ⟨i⟩
   fac := by dsimp [isoBot]; cat_disch
 
-variable (hf : ∀ (j : J), W (f j))
-
-variable [W.IsStableUnderTransfiniteCompositionOfShape J]
-variable [W.IsStableUnderCobaseChange]
-
-/-instance : W.IsStableUnderCoproductsOfShape J :=
+instance [W.IsStableUnderTransfiniteCompositionOfShape J]
+    [W.IsStableUnderCobaseChange] :
+    W.IsStableUnderCoproductsOfShape J :=
   IsStableUnderCoproductsOfShape.mk _ _ (fun X Y _ _ f hf ↦ by
-    sorry)-/
+    refine transfiniteCompositionsOfShape_le _ _ _
+      ((transfiniteCompositionOfShapeSigmaMap f).ofLE ?_).mem
+    simp only [pushouts_le_iff]
+    rintro _ _ _ ⟨j⟩
+    exact hf j)
+
+end
+
+/-instance [HasCoproducts.{w} C] [IsStableUnderTransfiniteComposition.{w} W]
+    [W.IsStableUnderCobaseChange] : W.IsStableUnderCoproductsOfShape J := by
+  by_cases hJ : Finite J
+  · sorry
+  · let κ := Cardinal.mk J
+    have hκ : Cardinal.aleph0 ≤ κ := by
+      simpa only [κ, ← Cardinal.infinite_iff, ← not_finite_iff_infinite]
+    let e : Discrete J ≌ Discrete κ.ord.ToType := by
+      apply Discrete.equivalence
+      sorry
+    have : W.IsStableUnderColimitsOfShape (Discrete κ.ord.ToType) := by
+      have := Cardinal.noMaxOrder hκ
+      have : OrderBot κ.ord.ToType :=
+        Cardinal.toTypeOrderBot (by
+          rintro h
+          exact Cardinal.aleph0_ne_zero (by rwa [h, nonpos_iff_eq_zero] at hκ))
+      infer_instance
+    exact IsStableUnderColimitsOfShape.of_equivalence e.symm-/
 
 end
 
