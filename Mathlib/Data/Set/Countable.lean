@@ -354,6 +354,9 @@ theorem uncountable_univ_iff : (@univ α).Uncountable ↔ Uncountable α := by
 theorem uncountable_univ [h : Uncountable α] : (@univ α).Uncountable :=
   uncountable_univ_iff.2 h
 
+protected lemma Uncountable.mono {s t : Set α} (h : s ⊆ t) : s.Uncountable → t.Uncountable :=
+  mt (·.mono h)
+
 theorem uncountable_of_countable_compl [Uncountable α] {s : Set α} (hs : sᶜ.Countable) :
     s.Uncountable := fun h =>
   Set.uncountable_univ (α := α) (by simpa using hs.union h)
