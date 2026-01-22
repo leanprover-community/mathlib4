@@ -149,7 +149,7 @@ instance category : Category (CatCospanTransform F G F' G') where
   comp α β :=
     { left := α.left ≫ β.left
       right := α.right ≫ β.right
-      base := α.base ≫ β.base}
+      base := α.base ≫ β.base }
 
 attribute [local ext] CatCospanTransformMorphism in
 @[ext]
