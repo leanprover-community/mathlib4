@@ -422,13 +422,27 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
     obtain ⟨s, s_count, s_dense, s_bot, s_top⟩ :
         ∃ s, s.Countable ∧ Dense s ∧ (∀ (x : α), IsBot x → x ∈ s) ∧ ∀ (x : α), IsTop x → x ∈ s :=
       exists_countable_dense_bot_top α
-    let D := {s : Set α | ∃ u v, u ≤ v ∧ s = Ioc u v ∧ u ∈ s ∧ v ∈ s}
+    let D := {t : Set α | ∃ u v, u ≤ v ∧ t = Ioc u v ∧ u ∈ s ∧ v ∈ s}
     refine ⟨D, ?_, by grind, ?_⟩
-    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by grind
+    · have : D ⊆ (fun (p : α × α) ↦ Ioc p.1 p.2) '' (s ×ˢ s) := by
+        rintro - ⟨u, v, -, rfl, us, vs⟩
+        exact mem_image_of_mem (x := (u, v)) _ (by simp [us, vs])
       exact Countable.mono this ((s_count.prod s_count).image _)
     have : (⋃₀ D)ᶜ ⊆ botSet := by
-
-
+      have : botSet = {x : α | IsBot x} := sorry
+      rw [compl_subset_comm, this]
+      intro x hx
+      simp only [mem_sUnion]
+      obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := by
+        have : (Iio x).Nonempty := by simpa [IsBot] using hx
+        exact s_dense.exists_mem_open isOpen_Iio this
+      by_cases h'x : IsTop x
+      · exact ⟨Ioc y x, ⟨y, x, hy.le, rfl, ys, s_top _ h'x⟩, ⟨hy, le_rfl⟩⟩
+      obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := by
+        have : (Ioi x).Nonempty := by simpa [IsTop] using h'x
+        exact s_dense.exists_mem_open isOpen_Ioi this
+      exact ⟨Ioc y z, ⟨y, z, (hy.trans hz).le, rfl, ys, zs⟩, ⟨hy, hz.le⟩⟩
+    exact measure_mono_null this (by simp)
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     (m := m) (μ := hf.measureAux) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
   refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
