@@ -53,7 +53,7 @@ theorem expSeries_analytic : expSeries.Analytic := by
   rw [expSeries_toFormalMultilinearSeries_eq]
   convert NormedSpace.exp_hasFPowerSeriesAt_zero
   · exact Real.exp_eq_exp_ℝ
-  · infer_instance
+  all_goals infer_instance
 
 theorem expSeries_toFun : expSeries.toFun = Real.exp := by
   have := NormedSpace.exp_hasFPowerSeriesOnBall (𝕂 := ℝ) (𝔸 := ℝ)

@@ -576,7 +576,7 @@ partial def getFun {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
     let nNat := (← getNatValue? (← withTransparency .all <| reduce n)).get!
     let nFin ← mkFin q($n) q(List.length ($basis_hd :: $basis_tl))
     let f ← getNth q($basis_hd :: $basis_tl) nNat
-    return ⟨q($f), (q(PreMS.monomial_toFun (basis := $basis_hd :: $basis_tl) (n := $nFin)) : Expr)⟩
+    return ⟨q($f), (q(PreMS.monomial_toFun' (basis := $basis_hd :: $basis_tl) (n := $nFin)) : Expr)⟩
   | ~q(PreMS.monomialRpow _ $n $r) =>
     let nNat := (← getNatValue? (← withTransparency .all <| reduce n)).get!
     let nFin ← mkFin q($n) q(List.length ($basis_hd :: $basis_tl))

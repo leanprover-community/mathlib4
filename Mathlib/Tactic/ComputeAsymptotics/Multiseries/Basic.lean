@@ -274,6 +274,10 @@ theorem monomial_toFun {basis : Basis} {n : ℕ} (h : n < basis.length) :
   simp
   grind
 
+theorem monomial_toFun' {basis : Basis} {n : Fin basis.length} :
+    (@monomial basis n).toFun = basis[n] := by
+  simp
+
 @[simp]
 theorem monomial_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
     (monomial (basis_hd :: basis_tl) n).seq = SeqMS.monomial _ _ n :=
