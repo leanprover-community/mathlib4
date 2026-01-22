@@ -198,13 +198,6 @@ attribute [local instance] Gal.splits_ℚ_ℂ
 
 open NumberField
 
-theorem _root_.Polynomial.ncard_rootSet_le {R : Type*}
-    (S : Type*) [CommRing R] [CommRing S] [IsDomain S]
-    [Algebra R S] (f : R[X]) : (f.rootSet S).ncard ≤ f.natDegree := by
-  classical
-  grw [rootSet, Set.ncard_coe_finset, Multiset.toFinset_card_le]
-  exact f.card_roots_map_le_natDegree
-
 theorem tada'' (f₀ : ℤ[X]) (hf₀ : Monic f₀) (hf₀' : Irreducible f₀)
     (h : ∀ (F : Type) [Field F], (f₀.map (algebraMap ℤ F)).Splits →
       f₀.natDegree ≤ (f₀.rootSet F).ncard + 1) :
