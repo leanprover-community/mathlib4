@@ -26,8 +26,9 @@ open Real Polynomial
 
 namespace Polynomial
 
-variable {P : ℝ[X]} {x : ℝ}
 section PolynomialSign
+
+variable {P : ℝ[X]} {x : ℝ}
 
 theorem zero_lt_eval_of_roots_lt_of_leadingCoeff_pos
     (hroots : ∀ y, P.IsRoot y → y < x) (hlc : 0 < P.leadingCoeff) : 0 < P.eval x := by
