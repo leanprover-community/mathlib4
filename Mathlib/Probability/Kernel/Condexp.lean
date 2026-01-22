@@ -242,7 +242,7 @@ lemma condDistrib_apply_ae_eq_condExpKernel_map {β γ : Type*} {mβ : Measurabl
 
 theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hf_int : Integrable f μ) :
-    μ[f|m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
+    μ[f | m ⊓ mΩ] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω := by
   rcases isEmpty_or_nonempty Ω with h | h
   · have : μ = 0 := Measure.eq_zero_of_isEmpty μ
     simpa [this] using trivial
@@ -255,14 +255,14 @@ theorem condExp_ae_eq_integral_condExpKernel' [NormedAddCommGroup F] {f : Ω →
 the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
 theorem condExp_ae_eq_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
+    μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂condExpKernel μ m ω :=
   ((condExp_ae_eq_integral_condExpKernel' hf_int).symm.trans (by rw [inf_of_le_left hm])).symm
 
 /-- Auxiliary lemma for `condExp_ae_eq_trim_integral_condExpKernel`. -/
 theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
     [NormedAddCommGroup F] {f : Ω → F} [NormedSpace ℝ F] [CompleteSpace F]
     (hm : m ≤ mΩ) (hf : StronglyMeasurable f) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+    μ[f | m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
   refine StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm ?_ ?_ ?_
   · exact stronglyMeasurable_condExp
   · exact hf.integral_condExpKernel
@@ -272,7 +272,7 @@ theorem condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable
 (`μ.trim hm`)-almost everywhere equal to the integral `∫ y, f y ∂(condExpKernel μ m ω)`. -/
 theorem condExp_ae_eq_trim_integral_condExpKernel [NormedAddCommGroup F] {f : Ω → F}
     [NormedSpace ℝ F] [CompleteSpace F] (hm : m ≤ mΩ) (hf_int : Integrable f μ) :
-    μ[f|m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
+    μ[f | m] =ᵐ[μ.trim hm] fun ω ↦ ∫ y, f y ∂condExpKernel μ m ω := by
   refine (condExp_congr_ae_trim hm hf_int.1.ae_eq_mk).trans ?_
   refine (condExp_ae_eq_trim_integral_condExpKernel_of_stronglyMeasurable hm
     hf_int.1.stronglyMeasurable_mk ?_).trans ?_
@@ -291,7 +291,7 @@ variable {s t : Set Ω} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpac
 omit [StandardBorelSpace Ω]
 
 lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf : Integrable f μ) :
-    μ[f|generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
+    μ[f | generateFrom {s}] =ᵐ[μ.restrict s] fun _ ↦ ∫ x, f x ∂μ[|s] := by
   by_cases hμs : μ s = 0
   · rw [Measure.restrict_eq_zero.2 hμs]
     rfl
@@ -328,7 +328,7 @@ lemma condExp_set_generateFrom_singleton (hs : MeasurableSet s) (ht : Measurable
 lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : MeasurableSet s)
     (ht : MeasurableSet t) :
     ∀ᵐ ω ∂μ.restrict s,
-      condExpKernel μ (generateFrom {s}) ω t = μ[t|s] := by
+      condExpKernel μ (generateFrom {s}) ω t = μ[t | s] := by
   have : (fun ω ↦ (condExpKernel μ (generateFrom {s}) ω).real t) =ᵐ[μ.restrict s]
       μ⟦t | generateFrom {s}⟧ :=
     ae_restrict_le <| condExpKernel_ae_eq_condExp
