@@ -3,20 +3,15 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 
 /-!
-## Cartan / minimum-modulus infrastructure for intrinsic Hadamard factorization
+## Cartan / minimum-modulus infrastructure for Hadamard factorization
 
-This file contains the “probabilistic radius” / averaging lemmas used in Tao’s proof of
-Hadamard factorization
-(Theorem 22 in https://terrytao.wordpress.com/tag/hadamard-factorisation-theorem/).
-The key analytic input is the soft bound
+This file provides the “probabilistic radius” / averaging lemmas used in Tao’s proof of Hadamard
+factorization. The key analytic input is the pointwise bound
 
 `log⁺ (1 / |1 - t|) ≤ sqrt (2 / |1 - t|)`,
 
 which yields an integrable majorant for the logarithmic singularity when averaging on dyadic
 intervals.
-
-The later “application” layer will plug in `a := ‖zero‖` and weights equal to the divisor
-multiplicity.
 -/
 
 noncomputable section
@@ -394,9 +389,10 @@ lemma integral_phi_le_Cφ_mul {A : ℝ} (hA : 0 ≤ A) :
       have hφ_int : IntervalIntegrable φ volume A (2 * A) :=
         IntervalIntegrable.mono_fun hconst hmeas hdom
       have hle_int :
-          (∫ (t : ℝ) in A..(2 * A), φ t ∂volume) ≤ ∫ (t : ℝ) in A..(2 * A), (Real.log 2 : ℝ) ∂volume := by
-        refine
-          intervalIntegral.integral_mono_on (μ := (volume : MeasureTheory.Measure ℝ)) hA_le hφ_int hconst ?_
+          (∫ (t : ℝ) in A..(2 * A), φ t ∂volume)
+            ≤ ∫ (t : ℝ) in A..(2 * A), (Real.log 2 : ℝ) ∂volume := by
+        refine intervalIntegral.integral_mono_on (μ := (volume : MeasureTheory.Measure ℝ))
+          hA_le hφ_int hconst ?_
         intro t ht
         exact hφ_le t ht
       have hRHS : (∫ (t : ℝ) in A..(2 * A), (Real.log 2 : ℝ) ∂volume) = A * Real.log 2 := by
@@ -423,13 +419,13 @@ lemma integral_phi_le_Cφ_mul {A : ℝ} (hA : 0 ≤ A) :
             have ht2 : 2 ≤ t := le_trans hbig htA
             have hden : 1 ≤ |1 - t| := by
               have : (1 : ℝ) ≤ t - 1 := by linarith
-              have : (1 : ℝ) ≤ |t - 1| := by simpa [abs_of_nonneg (by linarith : 0 ≤ t - 1)]
-                using this
+              have : (1 : ℝ) ≤ |t - 1| := by
+                simpa [abs_of_nonneg (by linarith : 0 ≤ t - 1)] using this
               simpa [abs_sub_comm] using this
             simpa using (phi_eq_zero_of_one_le_abs_one_sub (t := t) hden)
           have : (∫ (t : ℝ) in A..(2 * A), φ t ∂volume) = 0 := by
-            simpa using intervalIntegral.integral_congr (μ := (volume : MeasureTheory.Measure ℝ))
-              hφ0
+            simpa using
+              intervalIntegral.integral_congr (μ := (volume : MeasureTheory.Measure ℝ)) hφ0
           have hnonneg : (0 : ℝ) ≤ Cφ * A := mul_nonneg hCφ_nn hA
           simpa [this] using hnonneg
       | inr hA_le_two =>
@@ -518,7 +514,8 @@ lemma integral_phi_div_le_Cφ_mul {a R : ℝ} (ha : 0 < a) (hR : 0 ≤ R) :
   have hrew :
       (∫ (r : ℝ) in R..(2 * R), φ (r / a) ∂volume)
         = a * (∫ (t : ℝ) in (R / a)..(2 * R / a), φ t ∂volume) := by
-    simp [smul_eq_mul, mul_left_comm, mul_comm, div_eq_mul_inv, ha0]
+    simp [intervalIntegral.integral_comp_div, smul_eq_mul, mul_left_comm, mul_comm,
+      div_eq_mul_inv, ha0]
   rw [hrew]
   have hA : 0 ≤ R / a := by
     exact div_nonneg hR ha.le
@@ -570,7 +567,8 @@ lemma exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum
       intro r hr
       simpa [g] using hforall r hr
     have hpos' : (volume.restrict (Set.Ioc R (2 * R))) (Set.Ioc R (2 * R)) ≠ 0 := by
-      simpa [MeasureTheory.Measure.restrict_apply, measurableSet_Ioc, Set.inter_self] using hIoc_meas
+      simpa [MeasureTheory.Measure.restrict_apply, measurableSet_Ioc, Set.inter_self]
+        using hIoc_meas
     have hle :
         (volume.restrict (Set.Ioc R (2 * R))) (Set.Ioc R (2 * R))
           ≤ (volume.restrict (Set.Ioc R (2 * R))) {r | (Cφ * (∑ i ∈ s, w i)) < g r} :=
@@ -672,7 +670,8 @@ lemma exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum_avoid
     simp [Real.volume_Ioc, ENNReal.ofReal_eq_zero, not_le_of_gt hpos]
   have hbad_meas : (volume : MeasureTheory.Measure ℝ) (bad : Set ℝ) = 0 := by
     simpa using (bad.measure_zero (μ := (volume : MeasureTheory.Measure ℝ)))
-  have hIoc_diff_meas : (volume : MeasureTheory.Measure ℝ) (Set.Ioc R (2 * R) \ (bad : Set ℝ)) ≠ 0 := by
+  have hIoc_diff_meas :
+      (volume : MeasureTheory.Measure ℝ) (Set.Ioc R (2 * R) \ (bad : Set ℝ)) ≠ 0 := by
     have : (volume : MeasureTheory.Measure ℝ) (Set.Ioc R (2 * R) \ (bad : Set ℝ))
         = (volume : MeasureTheory.Measure ℝ) (Set.Ioc R (2 * R)) := by
       simpa [Set.diff_eq, Set.inter_assoc, Set.inter_left_comm, Set.inter_comm] using
@@ -715,7 +714,8 @@ lemma exists_radius_Ioc_sum_mul_phi_div_le_Cφ_mul_sum_avoid
       MeasureTheory.ae_restrict_mem (by simp)
     have hnotBad :
         ∀ᵐ r ∂ (volume.restrict (Set.Ioc R (2 * R))), r ∉ (bad : Set ℝ) := by
-      simpa using (bad.finite_toSet.countable.ae_notMem (μ := (volume.restrict (Set.Ioc R (2 * R)))))
+      simpa using
+        (bad.finite_toSet.countable.ae_notMem (μ := (volume.restrict (Set.Ioc R (2 * R)))))
     filter_upwards [hmem, hnotBad] with r hrIoc hrNotBad
     have hrNotBad' : r ∉ bad := by simpa using hrNotBad
     exact le_of_lt (by simpa [g] using hforall r hrIoc hrNotBad')
