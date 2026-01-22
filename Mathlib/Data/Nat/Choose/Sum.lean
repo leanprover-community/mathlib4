@@ -173,6 +173,7 @@ theorem sum_range_mul_choose (n : ℕ) :
       rw [← mul_sum, Nat.sum_range_choose]
     _ = 2 * (n * 2 ^ (n - 1)) := by
       rw [← mul_assoc, mul_comm 2 n, mul_assoc, mul_pow_sub_one h]
+
 lemma sum_range_multichoose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), k.multichoose i = (n + k).choose k := by
   cases k with
