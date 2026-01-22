@@ -127,6 +127,7 @@ section fourierAddHom
 variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E F]
 
 variable (E) in
+/-- The Fourier transform as an `AddHom`. -/
 def fourierAddHom : AddHom E F where
   toFun := 𝓕
   map_add' := fourier_add
@@ -146,6 +147,7 @@ section fourierInvAddHom
 variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInvAdd E F]
 
 variable (E) in
+/-- The inverse Fourier transform as an `AddHom`. -/
 def fourierInvAddHom : AddHom E F where
   toFun := 𝓕⁻
   map_add' := fourierInv_add
