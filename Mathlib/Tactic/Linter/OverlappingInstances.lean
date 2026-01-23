@@ -90,17 +90,24 @@ to group and nest appropriately. -/
 private def _root_.Lean.MessageData.ofInstanceType (e : Expr) : MessageData :=
   m!"{e}".sbracket
 
-/-- Creates a message from some `Overlaps`, assumed to be nonempty. -/
-def Overlaps.toMsg (ctx : ContextInfo) (overlaps : Overlaps) : MetaM MessageData := do
-  -- For now, no hovers, since the name clashes with the aux decl of the same name in
-  -- the lctx. TODO: account for this.
-  let mut msg := m!"The \
-    {if let some decl := ctx.parentDecl? then
-      m!"declaration `{privateToUserName decl}`"
-    else
-      "current declaration"} \
-    has instance hypotheses which overlap on data-carrying components."
+/--
+Creates a description of the current declaration in messages: "declaration <declName>" if the `parentDecl?` is known, and "current declaration" otherwise. May be preceded by "the".
 
+TODO: For now, this does not produce hovers on `<declName>`, since the name may clash with the aux
+decl of the same name in the local context. In the future, we should account for this, and render
+the name within a more appropriate message context. The type of this declaration is therefore
+subject to change.
+-/
+def _root_.Lean.Elab.ContextInfo.toDeclDescr (ctx : ContextInfo) : MessageData :=
+  if let some decl := ctx.parentDecl? then
+    m!"declaration `{privateToUserName decl}`"
+  else
+    "current declaration"
+
+/-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/
+def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM MessageData := do
+  let mut msg := m!"The {declDescr} \
+    has instance hypotheses which overlap on data-carrying components."
   for (overlap, fvars) in overlaps do
     let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
       if isDirect then .inl fvar else .inr fvar
@@ -154,15 +161,15 @@ def overlappingInstances : Linter where
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
           but these could be passed to `k`. -/
-          let forallTelescope? expectedType? (k : MetaM Unit) :=
-            if let some type := expectedType? then
+          let forallTelescopeRemainingType (k : MetaM Unit) :=
+            if let some type := remainingType? then
               forallTelescope type fun _ _ => k
             else
               k
-          forallTelescope? remainingType? do
+          forallTelescopeRemainingType do
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
-              logWarning <|← overlaps.toMsg ctx
+              logWarning <|← overlaps.toMsg ctx.toDeclDescr
 
 initialize addLinter overlappingInstances
