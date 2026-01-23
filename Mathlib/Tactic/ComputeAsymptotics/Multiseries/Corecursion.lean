@@ -21,10 +21,12 @@ def foo (x : X) := hd x :: foo (tlArg x)
 
 It is not enough, however, to define multiplication and powser operation for multiseries.
 
-This file implement a more general form of corecursion in the spirit of [blanchette2015].
+This file implements a more general form of corecursion in the spirit of [blanchette2015].
+This is a bare minimum that needed for the tactic, it justifies a weaker class of
+corecursive definitions than [blanchette2015] does, and only works for `Seq`.
 
 A function `f : Seq α → Seq α` is called *friendly* if for all `n : ℕ` the `n`-prefix of its result
-`f n` depends only on the `n`-prefix of its input `s`.
+`f s` depends only on the `n`-prefix of its input `s`.
 
 In this file we develop a theory that justifies corecursive definitions of the form
 ```
@@ -157,7 +159,7 @@ theorem dist_nil_cons (x : α) (s : Seq α) : dist nil (cons x s) = 1 := by
   rw [dist_comm]
   simp
 
-/-- A function on sequences called a "friend" if any `n`-prefix of its output depends only on
+/-- A function on sequences is called a "friend" if any `n`-prefix of its output depends only on
 the `n`-prefix of the input. Such functions can be used in the tail of (non-primitive) corecursive
 definitions. -/
 def FriendlyOperation (op : Seq α → Seq α) : Prop := LipschitzWith 1 op
@@ -262,7 +264,7 @@ theorem FriendlyOperation.exists_fixed_point (F : β → Option (α × γ × β)
     change f b' = T f b'
     rw [hf]
 
-/-- Non-primitive corecursor for `Seq α` allowing to use a friendly operation in the tail of the
+/-- Non-primitive corecursor for `Seq α` that allows using a friendly operation in the tail of the
 corecursive definition. -/
 noncomputable def gcorec (F : β → Option (α × γ × β)) (op : γ → Seq α → Seq α)
     [FriendlyOperationClass op] :
