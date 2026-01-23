@@ -54,7 +54,7 @@ def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
 decreasing_by exact Nat.div_lt_self (Nat.succ_pos _) h
 
 @[simp]
-theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := by rw [digitsAux]
+theorem digitsAux_zero (b : ℕ) (h : 2 ≤ b) : digitsAux b h 0 = [] := rfl
 
 theorem digitsAux_def (b : ℕ) (h : 2 ≤ b) (n : ℕ) (w : 0 < n) :
     digitsAux b h n = (n % b) :: digitsAux b h (n / b) := by
