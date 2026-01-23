@@ -39,6 +39,8 @@ function with finite support, module, linear algebra
 
 @[expose] public section
 
+open Module
+
 variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
 namespace DFinsupp
@@ -631,11 +633,10 @@ theorem iSupIndep.linearEquiv_symm_apply {p : ι → Submodule R N} (ind : iSupI
 forms a linearly independent family.
 
 See also `iSupIndep.linearIndependent'`. -/
-theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Submodule R N)
-    (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i) (hv' : ∀ i, v i ≠ 0) :
-    LinearIndependent R v := by
-  let _ := Classical.decEq ι
-  let _ := Classical.decEq R
+theorem iSupIndep.linearIndependent [IsDomain R] [IsTorsionFree R N] {ι : Type*}
+    (p : ι → Submodule R N) (hp : iSupIndep p) {v : ι → N} (hv : ∀ i, v i ∈ p i)
+    (hv' : ∀ i, v i ≠ 0) : LinearIndependent R v := by
+  classical
   rw [linearIndependent_iff]
   intro l hl
   let a :=
@@ -650,11 +651,11 @@ theorem iSupIndep.linearIndependent [NoZeroSMulDivisors R N] {ι} (p : ι → Su
   simp only [coe_zero, Pi.zero_apply, ZeroMemClass.coe_zero, smul_eq_zero, ha] at this
   simpa
 
-theorem iSupIndep_iff_linearIndependent_of_ne_zero [NoZeroSMulDivisors R N] {ι} {v : ι → N}
-    (h_ne_zero : ∀ i, v i ≠ 0) : (iSupIndep fun i => R ∙ v i) ↔ LinearIndependent R v :=
-  let _ := Classical.decEq ι
-  ⟨fun hv => hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero,
-    fun hv => hv.iSupIndep_span_singleton⟩
+theorem iSupIndep_iff_linearIndependent_of_ne_zero [IsDomain R] [IsTorsionFree R N]
+    {ι : Type*} {v : ι → N} (h_ne_zero : ∀ i, v i ≠ 0) :
+    iSupIndep (R ∙ v ·) ↔ LinearIndependent R v where
+  mp hv := hv.linearIndependent _ (fun i => Submodule.mem_span_singleton_self <| v i) h_ne_zero
+  mpr hv := hv.iSupIndep_span_singleton
 
 end Ring
 

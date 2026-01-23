@@ -119,12 +119,24 @@ variable {x y : ℝ}
 theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 
-@[continuity]
-theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by
-  unfold sqrt
-  exact NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
+@[continuity, fun_prop]
+theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by unfold sqrt; fun_prop
 
-theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
+@[simp]
+lemma map_sqrt_atTop : map (√·) atTop = atTop := by
+  unfold sqrt
+  simp_rw [← Function.comp_def]
+  simp [← map_map]
+
+@[simp]
+lemma comap_sqrt_atTop : comap (√·) atTop = atTop := by
+  unfold sqrt
+  simp_rw [← Function.comp_def]
+  simp [← comap_comap]
+
+lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := map_sqrt_atTop.le
+
+theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : √x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
 @[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := by
   unfold sqrt
@@ -300,7 +312,7 @@ positive. -/
 meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    let ra ← core  q(inferInstance) q(inferInstance) a
+    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
@@ -413,6 +425,11 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   calc 1 + x
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
+
+theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
+    √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
+  convert congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+    simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real
 

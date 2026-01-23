@@ -193,7 +193,7 @@ def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrd
   obj X := ForgetEnrichment.to V X
   map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
   map_id X := by rw [ForgetEnrichment.homTo_id, ← eHomEquiv_id, Equiv.symm_apply_apply]
-  map_comp {X} {Y} {Z} f g :=  Equiv.injective
+  map_comp {X} {Y} {Z} f g := Equiv.injective
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V Z))
     (by simp [eHomEquiv_comp])
 

@@ -110,6 +110,22 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   · simp_rw [← norm_inv]
     apply circleIntegrable_posLog_norm_meromorphicOn h₁f.inv.meromorphicOn
 
+/--
+The proximity function is even.
+-/
+theorem proximity_even : (proximity f a).Even := by
+  intro r
+  by_cases h : a = ⊤ <;> simp [proximity, h]
+
+/--
+The proximity function is non-negative.
+-/
+theorem proximity_nonneg {a : WithTop E} :
+    0 ≤ proximity f a := by
+  by_cases h : a = ⊤ <;>
+  · intro r
+    simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+
 /-!
 ## Behaviour under Arithmetic Operations
 -/
@@ -173,7 +189,7 @@ theorem proximity_mul_top_le {f₁ f₂ : ℂ → ℂ} (h₁f₁ : Meromorphic f
       · apply (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x)).add
           (circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₂ x))
       · exact fun _ _ ↦ posLog_mul
-    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0:= by
+    _ = circleAverage (log⁺ ‖f₁ ·‖) 0 + circleAverage (log⁺ ‖f₂ ·‖) 0 := by
       ext r
       apply circleAverage_add
       · exact circleIntegrable_posLog_norm_meromorphicOn (fun x a ↦ h₁f₁ x)
