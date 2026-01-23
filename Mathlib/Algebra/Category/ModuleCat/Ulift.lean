@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
 
-# Ulift Functor of ModuleCat
+# Ulift functor for ModuleCat
 
 In this file, we define the obvious functor `ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R` and prove
 it is exact, fully faithful and preverves projective and injective objects.
@@ -61,7 +61,7 @@ instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).fa
 instance : (uliftFunctor R).Additive where
 
 instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
-  let :  Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
+  let : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
     change Limits.PreservesLimitsOfSize.{v, v} (forget _ ⋙ CategoryTheory.uliftFunctor.{v'})
     infer_instance
   Limits.preservesLimits_of_reflects_of_preserves (uliftFunctor.{v', v} R) (forget _)
