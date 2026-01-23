@@ -27,7 +27,7 @@ open Pointwise
 
 section OrderedCommMonoid
 
-variable {α : Type*} [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α} {x : α}
+variable {α : Type*} [CommMonoid α] [Preorder α] [IsOrderedMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
