@@ -25,10 +25,9 @@ open Finset QuadraticMap
 
 variable {ι : Type*} [Fintype ι] {K : Type*} [Field K] [IsAlgClosed K]
 
-open Classical in
 /-- The isometry between a weighted sum of squares on an algebraically closed field and the
 sum of squares, i.e. `weightedSumSquares` with weights 1 or 0. -/
-noncomputable def isometryEquivSumSquares (w : ι → K) :
+noncomputable def isometryEquivSumSquares [DecidableEq K] (w : ι → K) :
     IsometryEquiv (weightedSumSquares K w)
       (weightedSumSquares K (fun i => if w i = 0 then 0 else 1 : ι → K)) := by
   refine isometryEquivWeightedSumSquares₂ _ _ (fun i => if h : w i = 0 then 1 else
@@ -45,9 +44,14 @@ noncomputable def isometryEquivSumSquares (w : ι → K) :
 
 /-- The isometry between a weighted sum of squares on an algebraically closed field and the
 sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/
-noncomputable def isometryEquivSumSquaresUnits (w : ι → Units K) :
+noncomputable def isometryEquivSumSquaresUnits (w : ι → Kˣ) :
     IsometryEquiv (weightedSumSquares K w) (weightedSumSquares K (1 : ι → K)) := by
-  simpa using isometryEquivSumSquares (((↑) : Units K → K) ∘ w)
+  refine isometryEquivWeightedSumSquares₂ _ _
+    (fun i => Units.mk0 (IsAlgClosed.exists_eq_mul_self (w i).val).choose ?_) ?_
+  · rw [← mul_self_eq_zero.ne, ← (IsAlgClosed.exists_eq_mul_self (w i).val).choose_spec]
+    simp
+  · intro i
+    simp [pow_two, ← (IsAlgClosed.exists_eq_mul_self (w i).val).choose_spec]
 
 /-- A nondegenerate quadratic form on an algebraically closed field of characteristic not equal to 2
 is equivalent to the sum of squares, i.e. `weightedSumSquares` with weight `fun (i : ι) => 1`. -/

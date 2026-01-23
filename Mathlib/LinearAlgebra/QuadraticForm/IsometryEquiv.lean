@@ -167,7 +167,7 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
 
 /-- The isometry between two weighted sum of squares, give that each weight is scaled by the square
 of a unit. -/
-def isometryEquivWeightedSumSquares₂ {ι : Type*} [Fintype ι] [DecidableEq ι]
+def isometryEquivWeightedSumSquares₂ {ι : Type*} [Fintype ι]
     {S R : Type*} [CommSemiring R]
     [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] [IsScalarTower S R R]
     (w : ι → S) (w' : ι → S) (u : ι → Sˣ) (h : ∀ i, w' i * u i ^ 2 = w i) :
