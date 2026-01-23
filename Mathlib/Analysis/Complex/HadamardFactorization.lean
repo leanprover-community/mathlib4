@@ -1039,8 +1039,7 @@ private lemma card_shell_le_sum_divisor_closedBall
       have : Metric.closedBall (0 : ℂ) R ⊆ U := by simp [U]
       simpa using (finite_divisorZeroIndex₀_subtype_norm_le (f := f) (U := U) (B := R) this)
     exact Fintype.ofFinite _
-  have hAnal : AnalyticOnNhd ℂ f U := by
-    intro z hz; simpa using (hf.analyticAt z)
+  have hAnal : AnalyticOnNhd ℂ f U := by intro z hz; simpa using (hf.analyticAt z)
   have hDnonneg : 0 ≤ D := by
     simpa [D] using
       (MeromorphicOn.AnalyticOnNhd.divisor_nonneg (𝕜 := ℂ) (f := f) (U := U) hAnal)
