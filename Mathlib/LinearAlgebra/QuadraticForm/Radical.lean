@@ -7,6 +7,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.Quotient.Bilinear
 
 /-!
 # The radical of a quadratic form
@@ -19,48 +20,6 @@ Chapter II, §7 of [elman-karpenko-merkurjev-2008][].
 open Finset QuadraticMap
 
 @[expose] public noncomputable section
-
-section Quotient
-/-!
-## Lifting bilinear forms through quotients
--/
-
-variable {R R₂ S S₂ M N P : Type*} [Ring R] [Ring R₂] [Ring S] [Ring S₂]
-    [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module S N] [Module R₂ P]
-    [Module S₂ P] [SMulCommClass R₂ S₂ P] [SMulCommClass S₂ R₂ P] {ρ : R →+* R₂} {σ : S →+* S₂}
-
-/-- Lift a bilinear form from `M × N → P` to `(M ⧸ M') × (N ⧸ N') → P`. -/
-def LinearMap.liftQ₂ (M' : Submodule R M) (N' : Submodule S N) (f : M →ₛₗ[ρ] N →ₛₗ[σ] P)
-    (hM' : M' ≤ f.ker) (hN' : N' ≤ f.flip.ker) :
-    M ⧸ M' →ₛₗ[ρ] N ⧸ N' →ₛₗ[σ] P :=
-  have : ∀ n ∈ N', n ∈ (M'.liftQ f hM').flip.ker := fun n hn ↦ by
-    simp_rw [LinearMap.mem_ker, LinearMap.ext_iff, LinearMap.flip_apply, Submodule.Quotient.forall,
-      Submodule.liftQ_apply, ← f.flip_apply, show f.flip n = 0 from hN' hn, LinearMap.zero_apply,
-      forall_true_iff]
-  (N'.liftQ (M'.liftQ f hM').flip this).flip
-
--- This is weird, the `def` requires both versions of `SMulCommClass` to state but somehow
--- only one of them is needed to prove a lemma about it?
-omit [SMulCommClass R₂ S₂ P] in
-@[simp]
-lemma LinearMap.liftQ₂_mk (M' : Submodule R M) (N' : Submodule S N) (f : M →ₛₗ[ρ] N →ₛₗ[σ] P)
-    (hM' : M' ≤ f.ker) (hN' : N' ≤ f.flip.ker) (m : M) (n : N) :
-    f.liftQ₂ M' N' hM' hN' (Submodule.Quotient.mk m) (Submodule.Quotient.mk n) = f m n :=
-  rfl
-
-end Quotient
-
-section QuotientRefl
-
-/-- Special case of `Submodule.liftQ₂` with  `M × M → P` to `(M ⧸ N) × (M ⧸ N) → P`. Reducible so
-that simp lemmas about `Submodule.liftQ₂` apply to it. -/
-abbrev LinearMap.IsRefl.liftQ₂ {R S M P : Type*} [AddCommGroup M] [CommRing R] [CommRing S]
-    [Module R M] [AddCommGroup P] [Module S P] {I₁ I₂ : R →+* S} (f : M →ₛₗ[I₁] M →ₛₗ[I₂] P)
-    (N : Submodule R M) (hf : f.IsRefl) (hN : N ≤ f.ker) :
-    M ⧸ N →ₛₗ[I₁] M ⧸ N →ₛₗ[I₂] P :=
-  f.liftQ₂ N N hN (hf.ker_flip ▸ hN)
-
-end QuotientRefl
 
 namespace QuadraticMap
 
@@ -98,6 +57,12 @@ lemma mem_radical_iff' {m : M} :
   simp only [Submodule.mem_map_equiv, coe_symm_toLinearEquiv, coe_toLinearEquiv,
     QuadraticMap.mem_radical_iff', ← e.map_app, e.apply_symm_apply, map_add,
     e.toEquiv.forall_congr_left, LinearEquiv.coe_symm_toEquiv]
+
+/-- The rank of the radical of a quadratic map is invariant under equivalences. -/
+lemma Equivalent.rank_radical_eq {Q' : QuadraticMap R M' P} (h : Equivalent Q Q') :
+    Module.finrank R Q.radical = Module.finrank R Q'.radical := by
+  obtain ⟨e⟩ := h
+  rw [← e.map_radical, LinearEquiv.finrank_map_eq]
 
 -- auxiliary lemma for lifting quadratic maps to quotients
 private lemma lift_aux {N : Submodule R M} (hN : N ≤ Q.radical)
@@ -140,6 +105,15 @@ lemma radical_le_ker_polarBilin : Q.radical ≤ Q.polarBilin.ker := by
   intro m
   simp +contextual [mem_radical_iff', LinearMap.ext_iff, QuadraticMap.polar]
 
+/--
+A quadratic map is said to be **nondegenerate** if its radical is 0, and the radical of
+its associated polar form has rank ≤ 1. (The second condition is automatic if 2 is invertible in
+`R`, but not in general.) See Elman-Karpenko-Merkurjev, Chapter II, §7.
+-/
+structure Nondegenerate : Prop where
+  radical_eq_bot : Q.radical = ⊥
+  rank_rad_polar_le : Module.rank R Q.polarBilin.ker ≤ 1
+
 section InvertibleTwo
 
 variable [Invertible (2 : R)]
@@ -163,38 +137,8 @@ lemma radical_eq_ker_associated : Q.radical = (QuadraticMap.associated Q).ker :=
   ext m
   simp [LinearMap.ext_iff, QuadraticMap.polar, -smul_eq_mul, invOf_smul_eq_iff]
 
-end InvertibleTwo
-
-end QuadraticMap
-
-/-!
-## Nondegenerate quadratic forms
--/
-
-namespace QuadraticForm
-
-variable {R M M' : Type*} [AddCommGroup M] [AddCommGroup M']
-  [CommRing R] [Module R M] (Q : QuadraticForm R M)
-
-/--
-A quadratic form is said to be **nondegenerate** if its radical is 0, and the radical of
-its associated polar form has rank ≤ 1. (The second condition is automatic if 2 is invertible in
-`R`, but not in general.) See Elman-Karpenko-Merkurjev, Chapter II, §7.
-
-We do not define this for general quadratic maps (only for quadratic _forms_) because I don't know
-if this is a sensible definition in that generality.
--/
-structure Nondegenerate : Prop where
-  radical_eq_bot : Q.radical = ⊥
-  rank_rad_polar_le : Module.rank R Q.polarBilin.ker ≤ 1
-
-variable {Q}
-
-section InvertibleTwo
-
-variable [Invertible (2 : R)]
-
-/-- In characteristic `≠ 2`, a quadratic form is nondegenerate iff its radical is 0. -/
+/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its radical is 0. (Use
+`QuadraticMap.Nondegenerate.radical_eq_bot` for the one-way implication in all characteristics.) -/
 lemma nondegenerate_iff_radical_eq_bot :
     Q.Nondegenerate ↔ Q.radical = ⊥ := by
   refine ⟨Nondegenerate.radical_eq_bot, fun h ↦ ⟨h, ?_⟩⟩
@@ -202,12 +146,22 @@ lemma nondegenerate_iff_radical_eq_bot :
   nontriviality R
   simp only [rank_subsingleton', zero_le]
 
+/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its associated bilinear map
+is nondegenerate. -/
 lemma nondegenerate_associated_iff :
     (QuadraticMap.associated Q).Nondegenerate ↔ Q.Nondegenerate := by
-  rw [QuadraticForm.nondegenerate_iff_radical_eq_bot, radical_eq_ker_associated,
+  rw [nondegenerate_iff_radical_eq_bot, radical_eq_ker_associated,
     LinearMap.IsRefl.nondegenerate_iff_separatingLeft, LinearMap.separatingLeft_iff_ker_eq_bot]
-  exact (associated_isSymm R Q).isRefl
+  exact fun x y ↦ (congr_arg (· x y) (associated_flip R Q)).trans
+
+/-- In characteristic `≠ 2`, a quadratic map is nondegenerate iff its polar bilinear map
+is nondegenerate. -/
+lemma nondegenerate_polar_iff :
+    (QuadraticMap.polarBilin Q).Nondegenerate ↔ Q.Nondegenerate := by
+  rw [nondegenerate_iff_radical_eq_bot, radical_eq_ker_polarBilin,
+    LinearMap.IsRefl.nondegenerate_iff_separatingLeft, LinearMap.separatingLeft_iff_ker_eq_bot]
+  exact fun x y ↦ (polar_comm Q y x).trans
 
 end InvertibleTwo
 
-end QuadraticForm
+end QuadraticMap

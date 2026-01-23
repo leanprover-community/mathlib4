@@ -113,33 +113,14 @@ lemma sigPos_add_finrank_le_of_nonpos [LinearOrder 𝕜] [FiniteDimensional 𝕜
   simp_all only [restrict_apply]
   grind
 
-variable {ι : Type*} [Fintype ι] {w : ι → 𝕜} [DecidableEq 𝕜]
-
-variable (𝕜) in
-private abbrev spanFinset (s : Finset ι) : Submodule 𝕜 (ι → 𝕜) :=
-  .span 𝕜 (s.image <| Pi.basisFun 𝕜 ι)
-
-private lemma mem_spanFinset_iff {s : Finset ι} {v : ι → 𝕜} :
-    v ∈ spanFinset 𝕜 s ↔ ∀ i ∉ s, v i = 0 := by
-  simp [spanFinset, Module.Basis.mem_span_image,
-    Finsupp.support_subset_iff, -SetLike.coe_subset_coe]
-
-private lemma zero_spanFinset (s : Finset ι)
-    (v) (hv : v ∈ spanFinset 𝕜 s) (i) (hi : i ∉ s) : v i = 0 :=
-  (mem_spanFinset_iff.mp hv) i hi
-
-private lemma dim_spanFinset (s : Finset ι) :
-    Module.finrank 𝕜 (spanFinset 𝕜 s) = #s := by
-  rw [finrank_span_finset_eq_card, card_image_of_injective _ (Pi.basisFun 𝕜 ι).injective]
-  simpa using (Pi.basisFun 𝕜 ι).linearIndepOn.id_image
+variable {ι : Type*} [Fintype ι] {w : ι → 𝕜}
 
 private lemma QuadraticForm.radical_sumSq_eq' [NeZero (2 : 𝕜)] :
-    radical (weightedSumSquares 𝕜 w) = spanFinset 𝕜 {i | w i = 0} := by
+    radical (weightedSumSquares 𝕜 w) = Pi.spanSubset 𝕜 {i | w i = 0} := by
   classical
   ext v
   simp only [mem_radical_iff', weightedSumSquares_apply, ← pow_two, smul_eq_mul, Pi.add_apply,
-    add_sq, mul_add, sum_add_distrib, add_eq_right, mem_spanFinset_iff, mem_filter, mem_univ,
-    true_and]
+    add_sq, mul_add, sum_add_distrib, add_eq_right, Pi.mem_spanSubset_iff]
   constructor
   · rintro ⟨hv, hvv'⟩ i
     simp only [hv, zero_add] at hvv'
@@ -149,65 +130,61 @@ private lemma QuadraticForm.radical_sumSq_eq' [NeZero (2 : 𝕜)] :
     · apply sum_eq_zero
       grind [mul_eq_zero]
 
-omit [DecidableEq 𝕜] in
 /-- The radical of the quadratic form `weightedSumSquares 𝕜 w` is precisely the span of the basis
 vectors having zero weights. -/
 lemma QuadraticForm.radical_sumSq_eq [NeZero (2 : 𝕜)] :
     radical (weightedSumSquares 𝕜 w) = .span 𝕜 (Pi.basisFun 𝕜 ι '' {i | w i = 0}) := by
   classical
-  simp [radical_sumSq_eq', spanFinset]
+  simp [radical_sumSq_eq', Pi.spanSubset]
 
 variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
-private lemma posDef_spanFinset (s : Finset ι) (hs : ∀ i ∈ s, 0 < w i) :
-    (weightedSumSquares 𝕜 w).restrict (spanFinset 𝕜 s) |>.PosDef := by
+private lemma posDef_spanSubset (s : Set ι) (hs : ∀ i ∈ s, 0 < w i) :
+    (weightedSumSquares 𝕜 w).restrict (Pi.spanSubset 𝕜 s) |>.PosDef := by
   intro ⟨v, hv⟩ hv'
   rw [restrict_apply, weightedSumSquares_apply]
   apply sum_pos'
   · intro i _
     by_cases hi : i ∈ s
     · exact smul_nonneg (hs i hi).le (mul_self_nonneg _)
-    · simp [zero_spanFinset s v hv i hi]
+    · simp [Pi.mem_spanSubset_iff.mp hv i hi]
   · simp only [ne_eq, Submodule.mk_eq_zero, funext_iff, not_forall, Pi.zero_apply] at hv'
     obtain ⟨i, hi⟩ := hv'
     refine ⟨i, mem_univ _, ?_⟩
     have : i ∈ s := by
       contrapose hi
-      exact zero_spanFinset s v hv i hi
+      exact Pi.mem_spanSubset_iff.mp hv i hi
     exact smul_pos (hs i this) (mul_self_pos.mpr hi)
 
-private lemma negSemidef_spanFinset (s : Finset ι) (hs : ∀ i ∈ s, w i ≤ 0) :
-    ∀ x ∈ spanFinset 𝕜 s, (weightedSumSquares 𝕜 w) x ≤ 0 := by
+private lemma negSemidef_spanSubset (s : Set ι) (hs : ∀ i ∈ s, w i ≤ 0) :
+    ∀ x ∈ Pi.spanSubset 𝕜 s, (weightedSumSquares 𝕜 w) x ≤ 0 := by
   intro x hx
   simp only [weightedSumSquares_apply, smul_eq_mul]
   apply sum_nonpos
   intro i _
   by_cases hi : i ∈ s
   · exact mul_nonpos_of_nonpos_of_nonneg (hs i hi) (mul_self_nonneg _)
-  · rw [zero_spanFinset s x hx i hi, mul_zero, mul_zero]
-
-omit [DecidableEq 𝕜]
+  · rw [Pi.mem_spanSubset_iff.mp hx i hi, mul_zero, mul_zero]
 
 /-- Key lemma for Sylvester's law of inertia: compute the signature of a weighted sum of squares. -/
 lemma QuadraticForm.sigPos_sumSq_eq :
-    sigPos (weightedSumSquares 𝕜 w) = #{i | 0 < w i} := by
+    sigPos (weightedSumSquares 𝕜 w) = {i | 0 < w i}.ncard := by
   classical
-  let p : Finset ι := {i | 0 < w i}
-  let m : Finset ι := {i | w i ≤ 0}
-  convert_to sigPos _ = #p
-  have : #p + #m = Fintype.card ι := by
-    convert card_add_card_compl p
-    grind [mem_compl]
-  have : #p ≤ sigPos (weightedSumSquares 𝕜 w) :=
-    (sigPos_isGreatest _).2 ⟨spanFinset 𝕜 p, dim_spanFinset _, posDef_spanFinset p (by grind)⟩
-  suffices sigPos (weightedSumSquares 𝕜 w) + #m ≤ Fintype.card ι by lia
-  have : ∀ x ∈ spanFinset 𝕜 m, (weightedSumSquares 𝕜 w) x ≤ 0 := negSemidef_spanFinset m (by aesop)
-  convert sigPos_add_finrank_le_of_nonpos this
-  · exact (dim_spanFinset m).symm
-  · simp
+  let p : Set ι := {i | 0 < w i}
+  let m : Set ι := {i | w i ≤ 0}
+  convert_to sigPos _ = p.ncard
+  have : p.ncard + m.ncard = Nat.card ι := by
+    convert Set.ncard_add_ncard_compl p
+    ext
+    grind
+  have : p.ncard ≤ sigPos (weightedSumSquares 𝕜 w) :=
+    (sigPos_isGreatest _).2 ⟨Pi.spanSubset 𝕜 p, Pi.dim_spanSubset,
+      posDef_spanSubset p (by grind)⟩
+  suffices sigPos (weightedSumSquares 𝕜 w) + m.ncard ≤ Nat.card ι by lia
+  simpa using sigPos_add_finrank_le_of_nonpos <| negSemidef_spanSubset m (fun _ hi ↦ hi)
 
 lemma QuadraticForm.sigNeg_sumSq_eq :
-    sigNeg (weightedSumSquares 𝕜 w) = #{i | w i < 0} := by
+    sigNeg (weightedSumSquares 𝕜 w) = {i | w i < 0}.ncard := by
   simp only [sigNeg]
   convert sigPos_sumSq_eq (w := -w) using 2
   · ext; simp
@@ -215,18 +192,20 @@ lemma QuadraticForm.sigNeg_sumSq_eq :
 
 lemma QuadraticForm.sigPos_add_sigNeg_add_radical :
     sigPos (weightedSumSquares 𝕜 w) + sigNeg (weightedSumSquares 𝕜 w) +
-      Module.finrank 𝕜 (weightedSumSquares 𝕜 w).radical = Fintype.card ι := by
+      Module.finrank 𝕜 (weightedSumSquares 𝕜 w).radical = Nat.card ι := by
   classical
-  rw [radical_sumSq_eq', sigPos_sumSq_eq, sigNeg_sumSq_eq, dim_spanFinset]
-  calc #{i | 0 < w i} + #{i | w i < 0} + #{i | w i = 0}
-  _ = #{i | 0 < w i} + #{i | w i ≤ 0} := by
-    rw [add_assoc, add_left_cancel_iff, ← card_union_of_disjoint]
+  rw [radical_sumSq_eq', sigPos_sumSq_eq, sigNeg_sumSq_eq, Pi.dim_spanSubset]
+  calc {i | 0 < w i}.ncard + {i | w i < 0}.ncard + {i | w i = 0}.ncard
+  _ = {i | 0 < w i}.ncard + {i | w i ≤ 0}.ncard := by
+    rw [add_assoc, add_left_cancel_iff, ← Set.ncard_union_eq]
     · congr! 1
+      ext
       grind
     · grind [disjoint_iff_ne]
-  _ = #univ := by
-    rw [← card_union_of_disjoint]
+  _ = Set.univ.ncard := by
+    rw [← Set.ncard_union_eq]
     · congr! 1
+      ext
       grind [le_iff_lt_or_eq]
     · grind [disjoint_iff_ne]
-  _ = Fintype.card ι := card_univ
+  _ = Nat.card ι := Set.ncard_univ _
