@@ -72,7 +72,7 @@ lemma iInf_maxGenEigenspace_restrict_map_subtype_eq
     ext
     rw [p.inf_genEigenspace (f _) (h _)]
 
-variable [NoZeroSMulDivisors R M]
+variable [IsDomain R] [IsTorsionFree R M]
 
 lemma disjoint_iInf_maxGenEigenspace {χ₁ χ₂ : ι → R} (h : χ₁ ≠ χ₂) :
     Disjoint (⨅ i, (f i).maxGenEigenspace (χ₁ i)) (⨅ i, (f i).maxGenEigenspace (χ₂ i)) := by

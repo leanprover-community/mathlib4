@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Infinite sum in the reals

@@ -56,7 +56,6 @@ lemma mem_nhds_iff' {s : Set R} {x : R} :
     s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, { z | v (z - x) < γ } ⊆ s := by
   convert mem_nhds_iff (s := s) using 4
-  ext z
   simp [neg_add_eq_sub]
 
 @[deprecated (since := "2025-08-01")]
