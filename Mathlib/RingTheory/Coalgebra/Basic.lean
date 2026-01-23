@@ -5,6 +5,7 @@ Authors: Ali Ramsey, Eric Wieser
 -/
 module
 
+public import Mathlib.LinearAlgebra.Finsupp.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
@@ -462,59 +463,55 @@ theorem comul_comp_proj (i : n) :
 
 @[simp] theorem counit_comp_single (i : n) : counit ∘ₗ .single R A i = counit := by ext; simp
 
-theorem counit_comp_DFinsuppLinearEquivFunOnFintype :
-    counit (R := R) (A := Π i, A i) ∘ₗ DFinsupp.linearEquivFunOnFintype.toLinearMap = counit := by
+theorem counit_comp_dFinsuppCoeFnLinearMap :
+    counit (R := R) (A := Π i, A i) ∘ₗ DFinsupp.coeFnLinearMap _ = counit := by
   apply LinearMap.ext fun x ↦ ?_
   have (i : n) (x : A i) : Decidable (x ≠ 0) := Classical.propDecidable _
   rw [← DFinsupp.sum_single (f := x)]
-  simp [DFinsupp.linearEquivFunOnFintype]
+  simp [DFinsupp.single_eq_pi_single]
 
-@[simp] theorem counit_coe_DFinsupp (x : Π₀ i, A i) :
-    counit (R := R) ⇑x = counit x := congr($counit_comp_DFinsuppLinearEquivFunOnFintype x)
+@[simp] theorem counit_coe_dFinsupp (x : Π₀ i, A i) :
+    counit (R := R) ⇑x = counit x := congr($counit_comp_dFinsuppCoeFnLinearMap x)
 
 open DFinsupp in
-theorem comul_comp_DFinsuppLinearEquivFunOnFintype :
-    comul (R := R) (A := Π i, A i) ∘ₗ linearEquivFunOnFintype.toLinearMap =
-      map linearEquivFunOnFintype.toLinearMap linearEquivFunOnFintype.toLinearMap ∘ₗ comul := by
+theorem comul_comp_dFinsuppCoeFnLinearMap :
+    comul (R := R) (A := Π i, A i) ∘ₗ coeFnLinearMap _ =
+      map (coeFnLinearMap _) (coeFnLinearMap _) ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   have (i : n) (x : A i) : Decidable (x ≠ 0) := Classical.propDecidable _
   rw [← DFinsupp.sum_single (f := x)]
-  aesop (add simp [map_map, DFinsupp.single_eq_pi_single, linearEquivFunOnFintype])
+  aesop (add simp [map_map, DFinsupp.single_eq_pi_single])
 
 open DFinsupp in
-@[simp] theorem comul_coe_DFinsupp (x : Π₀ i, A i) :
-    comul (R := R) ⇑x =
-      map linearEquivFunOnFintype.toLinearMap linearEquivFunOnFintype.toLinearMap (comul x) :=
-  congr($comul_comp_DFinsuppLinearEquivFunOnFintype x)
+@[simp] theorem comul_coe_Finsupp (x : Π₀ i, A i) :
+    comul (R := R) ⇑x = map (coeFnLinearMap _) (coeFnLinearMap _) (comul x) :=
+  congr($comul_comp_dFinsuppCoeFnLinearMap x)
 
 variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
 
-theorem counit_comp_finsuppLinearEquivFunOnFintype :
-    counit ∘ₗ (Finsupp.linearEquivFunOnFinite R M n).toLinearMap = counit := by
+theorem counit_comp_finsuppLcoeFun :
+    counit (R := R) (A := n → M) ∘ₗ Finsupp.lcoeFun = counit := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp [-Finsupp.univ_sum_single]
+  simp [-Finsupp.univ_sum_single, Finsupp.lcoeFun, Finsupp.single_eq_pi_single]
 
 @[simp] theorem counit_coe_finsupp (x : n →₀ M) :
-    counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLinearEquivFunOnFintype x)
+    counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLcoeFun x)
 
 open Finsupp in
-theorem comul_comp_finsuppLinearEquivFunOnFintype :
-    comul ∘ₗ (linearEquivFunOnFinite R M n).toLinearMap =
-      map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap ∘ₗ
-        comul := by
+theorem comul_comp_finsuppLcoeFun :
+    comul (R := R) (A := n → M) ∘ₗ lcoeFun = map lcoeFun lcoeFun ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp only [map_sum, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-    Finsupp.linearEquivFunOnFinite_single, comul_single, Finsupp.comul_single, map_map]
+  simp only [map_sum, coe_comp, Function.comp_apply, Finsupp.comul_single, map_map,
+    lcoeFun_single, comul_single]
   apply Finset.sum_congr rfl fun _ _ ↦ ?_
   congr <;> ext <;> simp [Finsupp.single_eq_pi_single]
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :
-    comul ⇑x =
-      map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap
-        (comul x) := congr($comul_comp_finsuppLinearEquivFunOnFintype x)
+    comul (R := R) ⇑x = map lcoeFun lcoeFun (comul x) :=
+  congr($comul_comp_finsuppLcoeFun x)
 
 end coalgebraStruct
 

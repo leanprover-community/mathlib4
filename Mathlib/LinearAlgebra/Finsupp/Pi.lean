@@ -78,6 +78,9 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
     ext
     simp
 
+@[simp] theorem lcoeFun_single (x : α) (m : M) :
+    lcoeFun (R := R) (single x m : α →₀ M) = single x m := by simp [lcoeFun]
+
 end Finsupp
 
 variable {R M N P : Type*}
