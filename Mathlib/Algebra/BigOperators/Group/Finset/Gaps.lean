@@ -37,55 +37,31 @@ variable {α β : Type*} [LinearOrder α] [CommGroup β]
 
 @[to_additive]
 theorem Finset.prod_intervalGapsWithin_mul_prod_eq_div :
-    (∏ i, g (F.intervalGapsWithin h a b i).2 / g (F.intervalGapsWithin h a b i).1) *
+    (∏ i ∈ Finset.range (k + 1),
+      g (F.intervalGapsWithin h a b i).2 / g (F.intervalGapsWithin h a b i).1) *
       ∏ z ∈ F, g z.2 / g z.1 = g b / g a := by
   set p := F.intervalGapsWithin h a b
   have : ∏ z ∈ F, g z.2 / g z.1 = ∏ i ∈ range k, g (p i.succ).1 / g (p i).2 := by
     symm
     apply prod_bij (fun (i : ℕ) hi ↦ ((p i).2, (p i.succ).1))
-    · intro i hi
-      rw [mem_range] at hi
-      convert F.intervalGapsWithin_mapsTo h a b (x := ⟨i, hi⟩) trivial
-      · ext
-        suffices i < k + 1 by simp [*]
-        omega
-      · ext; simp [hi]
+    · exact fun i _ ↦ F.intervalGapsWithin_mapsTo h a b (x := i) (by grind)
     · intro i hi j hj hij
       rw [mem_range] at hi hj
-      by_cases hk : k = 0
-      · grind
-      have : NeZero k := { out := hk }
-      suffices (i : Fin k) = (j : Fin k) by
-        rw [← mk_eq_mk (h := hi) (h' := hj)]
-        convert this
-        · rw [val_cast_of_lt hi]
-        · rw [val_cast_of_lt hj]
-      apply F.intervalGapsWithin_injective h a b
-      convert hij <;> ext
-      · rw [val_castSucc, val_cast_of_lt hi, val_cast_of_lt (by omega)]
-      · rw [val_succ, val_cast_of_lt hi,  val_cast_of_lt (by omega)]
-      · rw [val_castSucc, val_cast_of_lt hj, val_cast_of_lt (by omega)]
-      · rw [val_succ, val_cast_of_lt hj,  val_cast_of_lt (by omega)]
+      apply F.intervalGapsWithin_injective h a b <;> grind
     · intro z hz
-      obtain ⟨i, _, hi⟩ := F.intervalGapsWithin_surjOn h a b hz
-      refine ⟨i, by simp [mem_range], ?_⟩
-      convert hi
-      · exact coe_eq_castSucc
-      · ext; simp
+      obtain ⟨i, hi₁, hi₂⟩ := F.intervalGapsWithin_surjOn h a b hz
+      exact ⟨i, by grind, hi₂⟩
     · simp
-  rw [this,
-      prod_congr rfl (g := fun (i : Fin (k + 1)) ↦ g (p (i : ℕ)).2 / g (p (i : ℕ)).1)
-        (fun i _ ↦ by congr <;> simp),
-      ← prod_range (f := fun i ↦ g (p i).2 / g (p i).1), mul_comm,
+  rw [this, mul_comm,
       prod_range_succ, ← mul_assoc,
       ← prod_mul_distrib,
       prod_congr rfl (fun _ _ ↦ div_mul_div_cancel _ _ _),
       prod_range_div (fun i ↦ g (F.intervalGapsWithin h a b i).1)]
-  have : ((0 : ℕ) : Fin (k + 1)) = 0 := (eq_of_val_eq rfl).symm
-  simp [p, this]
+  simp [p, -natCast_eq_last]
 
 @[to_additive]
 theorem Finset.prod_intervalGapsWithin_eq_div_div_prod :
-    ∏ i, g (F.intervalGapsWithin h a b i).2 / g (F.intervalGapsWithin h a b i).1 =
-    g b / g a / ∏ z ∈ F, g z.2 / g z.1 :=
+    (∏ i ∈ Finset.range (k + 1),
+      g (F.intervalGapsWithin h a b i).2 / g (F.intervalGapsWithin h a b i).1) =
+    (g b / g a) / ∏ z ∈ F, g z.2 / g z.1 :=
   eq_div_iff_mul_eq'.mpr (F.prod_intervalGapsWithin_mul_prod_eq_div h g)
