@@ -6,6 +6,7 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Data.Real.Sqrt
 
 /-!
 # The Positive Part of the Logarithm
@@ -66,6 +67,7 @@ theorem half_mul_log_add_log_abs : 2⁻¹ * (log x + |log x|) = log⁺ x := by
 /-- The positive part of `log` is never negative. -/
 theorem posLog_nonneg : 0 ≤ log⁺ x := by simp [posLog]
 
+
 /-- The function `log⁺` is even. -/
 @[simp] theorem posLog_neg (x : ℝ) : log⁺ (-x) = log⁺ x := by simp [posLog]
 
@@ -117,6 +119,72 @@ lemma posLog_le_posLog (hx : 0 ≤ x) (hxy : x ≤ y) : log⁺ x ≤ log⁺ y :=
   rw [not_le] at hx
   have : 1 ≤ |x ^ n| := by simp_all [one_le_pow₀, hx.le]
   simp [posLog_eq_log this, posLog_eq_log hx.le]
+
+/-!
+## Pointwise bounds
+-/
+
+private lemma neg_log_le_sqrt_two_div {x : ℝ} (hx : 0 < x) (hxle : x ≤ 1) :
+    -Real.log x ≤ Real.sqrt (2 / x) := by
+  have hx0 : 0 ≤ x := le_of_lt hx
+  have ht : 0 ≤ -Real.log x := by
+    have : Real.log x ≤ 0 := Real.log_nonpos hx0 hxle
+    linarith
+  have hquad : 1 + (-Real.log x) + (-Real.log x) ^ 2 / 2 ≤ Real.exp (-Real.log x) :=
+    Real.quadratic_le_exp_of_nonneg ht
+  have hsq_div : (-Real.log x) ^ 2 / 2 ≤ Real.exp (-Real.log x) := by
+    have : 0 ≤ (1 : ℝ) + (-Real.log x) := by linarith
+    linarith
+  have hsq : (-Real.log x) ^ 2 ≤ 2 * Real.exp (-Real.log x) := by
+    nlinarith
+  have hexp : Real.exp (-Real.log x) = x⁻¹ := by
+    simp [Real.exp_neg, Real.exp_log hx]
+  have hsq' : (-Real.log x) ^ 2 ≤ 2 / x := by
+    simpa [hexp, div_eq_mul_inv, mul_assoc] using hsq
+  have hy : 0 ≤ (2 / x) := by
+    exact div_nonneg (by norm_num : (0 : ℝ) ≤ 2) hx0
+  exact (Real.le_sqrt ht hy).2 hsq'
+
+/-- A soft bound for the logarithmic singularity, in `log⁺` form. -/
+theorem posLog_one_div_abs_one_sub_le_sqrt_two_div (t : ℝ) :
+    log⁺ (1 / |1 - t|) ≤ Real.sqrt (2 / |1 - t|) := by
+  by_cases h : |1 - t| ≤ 1
+  · by_cases h0 : |1 - t| = 0
+    · simp [Real.posLog, h0]
+    · have hpos : 0 < |1 - t| := lt_of_le_of_ne (abs_nonneg _) (Ne.symm h0)
+      have hone_le : (1 : ℝ) ≤ 1 / |1 - t| := (one_le_div hpos).2 h
+      have habs : 1 ≤ |(1 / |1 - t| : ℝ)| := by
+        have : 0 ≤ (1 / |1 - t| : ℝ) := by positivity
+        simpa [abs_of_nonneg this] using hone_le
+      have hposLog : log⁺ (1 / |1 - t|) = Real.log (1 / |1 - t|) :=
+        Real.posLog_eq_log habs
+      have hle : -Real.log |1 - t| ≤ Real.sqrt (2 / |1 - t|) :=
+        neg_log_le_sqrt_two_div (x := |1 - t|) hpos h
+      have hlog : Real.log (1 / |1 - t|) = -Real.log |1 - t| := by
+        simp [Real.log_inv]
+      rw [hposLog, hlog]
+      exact hle
+  · have hgt : 1 < |1 - t| := lt_of_not_ge h
+    have hpos : 0 < |1 - t| := lt_trans (by norm_num) hgt
+    have hle1 : (1 / |1 - t| : ℝ) ≤ 1 := (div_le_one hpos).2 (le_of_lt hgt)
+    have habs : |(1 / |1 - t| : ℝ)| ≤ 1 := by
+      have : 0 ≤ (1 / |1 - t| : ℝ) := by positivity
+      simpa [abs_of_nonneg this] using hle1
+    have hposLog : log⁺ (1 / |1 - t|) = 0 := (Real.posLog_eq_zero_iff _).2 habs
+    rw [hposLog]
+    exact Real.sqrt_nonneg _
+
+/-!
+## Inequalities relating `log` and `log⁺`
+-/
+
+/-- A convenient lower bound for `log` in terms of `log⁺`. -/
+theorem neg_posLog_inv_le_log (x : ℝ) : -log⁺ x⁻¹ ≤ Real.log x := by
+  have hx : Real.log x = log⁺ x - log⁺ x⁻¹ := by
+    simpa [sub_eq_add_neg, add_comm, add_left_comm, add_assoc] using
+      (Real.posLog_sub_posLog_inv (x := x)).symm
+  have hx0 : 0 ≤ log⁺ x := Real.posLog_nonneg (x := x)
+  linarith [hx, hx0]
 
 /-!
 ## Estimates for Products
