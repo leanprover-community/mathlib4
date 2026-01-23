@@ -51,7 +51,6 @@ lemma hasProd_norm_inv_le_exp_of_pointwise_le_exp
   classical
   by_cases hF0 : F = 0
   · subst hF0
-    -- `‖0⁻¹‖ = 0 ≤ exp B`
     simpa using (le_of_lt (Real.exp_pos B))
   · have hprod_inv : HasProd (fun a : α => (fac a)⁻¹) (F⁻¹) L :=
       HasProd.inv₀ (hf := hprod) (ha := by simp [hF0])
