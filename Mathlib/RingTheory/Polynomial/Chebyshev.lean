@@ -982,6 +982,38 @@ theorem derivative_U_eval_one (n : ℤ) :
   simp only [Finset.range_one, Finset.prod_singleton, Function.iterate_one] at h
   grind
 
+variable {𝔽 : Type*} [Field 𝔽]
+
+theorem iterate_derivative_T_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (T 𝔽 n)).eval 1 =
+      (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2)) / (∏ l ∈ Finset.range k, (2 * l + 1)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_T_eval_one]
+
+theorem iterate_derivative_U_eval_one_eq_div [CharZero 𝔽] (n : ℤ) (k : ℕ) :
+    (derivative^[k] (U 𝔽 n)).eval 1 =
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) /
+      (∏ l ∈ Finset.range k, (2 * l + 3)) := by
+  rw [eq_div_iff (Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr (fun _ _ => by positivity))),
+    mul_comm, iterate_derivative_U_eval_one]
+
+theorem iterate_derivative_T_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 1) : ℕ) : 𝔽) ∣ (∏ l ∈ Finset.range k, (n ^ 2 - l ^ 2) : ℤ) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_T_eval_one n k
+
+theorem iterate_derivative_U_eval_one_dvd (n : ℤ) (k : ℕ) :
+    ((∏ l ∈ Finset.range k, (2 * l + 3) : ℕ) : 𝔽) ∣
+      ((∏ l ∈ Finset.range k, ((n + 1) ^ 2 - (l + 1) ^ 2) : ℤ) * (n + 1)) :=
+  dvd_of_mul_right_eq _ <| iterate_derivative_U_eval_one n k
+
+theorem derivative_U_eval_one_eq_div [neZero3 : NeZero (3 : 𝔽)] (n : ℤ) :
+    (derivative (U 𝔽 n)).eval 1 = ((n + 2) * (n + 1) * n) / 3 :=
+  eq_div_of_mul_eq neZero3.ne ((mul_comm ..).trans (derivative_U_eval_one n))
+
+theorem derivative_U_eval_one_dvd (n : ℤ) :
+    (3 : 𝔽) ∣ (n + 2) * (n + 1) * n :=
+  dvd_of_mul_right_eq _ (derivative_U_eval_one n)
+
 variable (R)
 
 /-- Twice the product of two Chebyshev `T` polynomials is the sum of two other Chebyshev `T`
