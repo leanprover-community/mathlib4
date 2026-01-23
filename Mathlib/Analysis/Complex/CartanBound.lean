@@ -20,6 +20,7 @@ namespace Complex
 namespace CartanBound
 
 open Real MeasureTheory intervalIntegral
+
 open scoped Topology ENNReal
 
 /-! ### A radial majorant for the logarithmic singularity on a circle -/
