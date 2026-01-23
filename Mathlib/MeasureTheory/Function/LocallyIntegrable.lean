@@ -637,15 +637,8 @@ theorem IntegrableOn.mul_continuousOn_of_subset (hg : IntegrableOn g A μ) (hg' 
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
     IntegrableOn (fun x => g x * g' x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg' with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_mul_le _ _).trans ?_
-    rw [mul_comm]
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg (hg.aestronglyMeasurable.mul <| (hg'.mono hAK).aestronglyMeasurable hA) this
+  exact hg.mul_bdd ((hg'.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.mul_continuousOn [T2Space X] (hg : IntegrableOn g K μ)
     (hg' : ContinuousOn g' K) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
@@ -655,14 +648,8 @@ theorem IntegrableOn.continuousOn_mul_of_subset (hg : ContinuousOn g K) (hg' : I
     (hK : IsCompact K) (hA : MeasurableSet A) (hAK : A ⊆ K) :
     IntegrableOn (fun x => g x * g' x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg' ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖g x * g' x‖ ≤ C * ‖g' x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_mul_le _ _).trans ?_
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg' (((hg.mono hAK).aestronglyMeasurable hA).mul hg'.aestronglyMeasurable) this
+  exact hg'.bdd_mul ((hg.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.continuousOn_mul [T2Space X] (hg : ContinuousOn g K)
     (hg' : IntegrableOn g' K μ) (hK : IsCompact K) : IntegrableOn (fun x => g x * g' x) K μ :=
@@ -679,14 +666,8 @@ theorem IntegrableOn.continuousOn_smul_of_subset [SecondCountableTopologyEither 
     (hK : IsCompact K) (hA : MeasurableSet A) (hAK : A ⊆ K) :
     IntegrableOn (fun x => f x • g x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hf with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hg ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖g x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_smul_le _ _).trans ?_
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hg (((hf.mono hAK).aestronglyMeasurable hA).smul hg.aestronglyMeasurable) this
+  exact hg.bdd_smul C ((hf.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.continuousOn_smul [T2Space X] [SecondCountableTopologyEither X 𝕜] {g : X → E}
     (hg : IntegrableOn g K μ) {f : X → 𝕜} (hf : ContinuousOn f K) (hK : IsCompact K) :
@@ -698,15 +679,8 @@ theorem IntegrableOn.smul_continuousOn_of_subset [SecondCountableTopologyEither 
     (hA : MeasurableSet A) (hK : IsCompact K) (hAK : A ⊆ K) :
     IntegrableOn (fun x => f x • g x) A μ := by
   rcases IsCompact.exists_bound_of_continuousOn hK hg with ⟨C, hC⟩
-  rw [IntegrableOn, ← memLp_one_iff_integrable] at hf ⊢
-  have : ∀ᵐ x ∂μ.restrict A, ‖f x • g x‖ ≤ C * ‖f x‖ := by
-    filter_upwards [ae_restrict_mem hA] with x hx
-    refine (norm_smul_le _ _).trans ?_
-    rw [mul_comm]
-    gcongr
-    exact hC x (hAK hx)
-  exact
-    MemLp.of_le_mul hf (hf.aestronglyMeasurable.smul <| (hg.mono hAK).aestronglyMeasurable hA) this
+  exact hf.smul_bdd C ((hg.mono hAK).aestronglyMeasurable hA)
+    (ae_restrict_of_forall_mem hA fun x hx => hC x (hAK hx))
 
 theorem IntegrableOn.smul_continuousOn [T2Space X] [SecondCountableTopologyEither X E] {f : X → 𝕜}
     (hf : IntegrableOn f K μ) {g : X → E} (hg : ContinuousOn g K) (hK : IsCompact K) :
