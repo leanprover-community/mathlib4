@@ -226,8 +226,8 @@ theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant
 
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   have hn : n ≠ 0 := by grind [not_abundant_zero]
-  have hmn : m * n ≠ 0 := by simpa [hm]
-  exact Abundant.ofDvd h (by simp) (by grind)
+  have hmn : m * n ≠ 0 := mul_ne_zero hm hn
+  exact Abundant.ofDvd h (Nat.dvd_mul_left n m) hmn
 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
