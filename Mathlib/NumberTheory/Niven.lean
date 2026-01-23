@@ -180,10 +180,9 @@ theorem niven_fract_angle_div_pi_eq {r : ℚ} (hcos : ∃ q : ℚ, cos (r * π) 
   obtain ⟨q, hq⟩ := hcos
   exact ⟨(-1) ^ ⌊r⌋ * q, by rw [Int.fract]; push_cast; rw [sub_mul, cos_sub_int_mul_pi, hq]⟩
 
-theorem irrational_cos_rat_mul_pi {r : ℚ} (hr₁ : r.den ≠ 1) (hr₂ : r.den ≠ 2) (hr₃ : Even r.den) :
+theorem irrational_cos_rat_mul_pi {r : ℚ} (hr : 3 < r.den) :
     Irrational (cos (r * π)) := by
-  rw [← show (Int.fract r).den = r.den from Rat.sub_intCast_den r ⌊r⌋] at hr₁ hr₂ hr₃
+  rw [← show (Int.fract r).den = r.den from Rat.sub_intCast_den r ⌊r⌋] at hr
   by_contra! hnz
-  rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr | hr | hr | hr)
-  all_goals try rw [Set.mem_singleton_iff] at hr
-  all_goals simp [hr, even_iff_two_dvd] at hr₁ hr₂ hr₃; try norm_num at hr₃
+  rcases niven_fract_angle_div_pi_eq (exists_rat_of_not_irrational hnz) with (hr' | hr' | hr' | hr')
+  all_goals (try rw [Set.mem_singleton_iff] at hr'); rw [hr'] at hr; norm_num at hr
