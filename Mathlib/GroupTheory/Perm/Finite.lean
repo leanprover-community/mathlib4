@@ -289,8 +289,7 @@ lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
   apply disjoint_support_closure_of_disjoint_support
   exact h
 
-theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p]
-{g : Perm α} :
+theorem mem_range_ofSubtype_iff {p : α → Prop} [DecidablePred p] {g : Perm α} :
     g ∈ (ofSubtype : Perm (Subtype p) →* Perm α).range ↔
       (g.support : Set α) ⊆ setOf p := by
   constructor
