@@ -513,9 +513,9 @@ private lemma ncard_edges_from_set_to_vertex (t : Finset V) (a : V) :
   simp only [Set.ncard_coe_finset] at h₆
   refine ⟨h₂, Nat.le_trans h₅ h₆⟩
 
-/-- The upper limit on cardinality of the set of edges in the case of
-bipartite graph made from two finsets.
-This is proof that the limit is equal to the product of the cardinalities of both finsets. -/
+/-- An upper bound on the cardinality of the edge set of a bipartite graph when it is formed
+by two finite vertex sets: the edge set is finite, and its maximum cardinality equals the product
+of the cardinalities of these two sets. The statement uses `Set.ncard`. -/
 theorem IsBipartiteWith.edgeSet_ncard_le_of_finsets {s t : Finset V}
     (hG : G.IsBipartiteWith ↑s ↑t) :
     G.edgeSet.Finite ∧ G.edgeSet.ncard ≤ s.card * t.card := by
@@ -544,8 +544,9 @@ theorem IsBipartiteWith.edgeSet_ncard_le_of_finsets {s t : Finset V}
       exact Nat.add_le_add hG'₁ h₂
     · exact disjoint_edgeSet_decompose t a
 
-/-- The upper limit on cardinality of the set of edges, including the cases with infinite sets.
-In other words, using `Set.encard`. -/
+/-- An upper bound on the cardinality of the edge set of a bipartite graph when the vertex sets
+forming it may also be infinite: in that case as well, the upper bound is the product of
+the cardinalities of these two sets. The statement uses `Set.encard`. -/
 theorem IsBipartiteWith.encard_edgeSet_le {s t : Set V} (h : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
   by_cases hst : s.Finite ∧ t.Finite
@@ -575,9 +576,10 @@ theorem IsBipartiteWith.encard_edgeSet_le {s t : Set V} (h : G.IsBipartiteWith s
         apply h.mem_of_adj at hxy; simp at hs₀; simp [hs₀] at hxy
       · simp [hs₀]
 
-/-- The upper limit of the cardinality of the edge set of bipartite graph, depending on the
-cardinality of vertex set. Four times of edge set cardinality is less or equal to square of
-vertex set cardinality. -/
+/-- An upper bound on the cardinality of the edge set of a bipartite graph when the cardinality
+of the entire vertex set of the graph is known. That is, the cardinality of the edge set times `4`
+is less or equal to the square of the cardinality of the vertex set.
+The statement uses `Set.encard` and `ENat.card`. -/
 theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
     4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
   rw [isBipartite_iff_exists_isBipartiteWith] at h
@@ -640,8 +642,10 @@ private lemma edgeSet_encard_of_induce_support :
       Prod.swap_prod_mk] at h ⊢
     grind
 
-/-- Similar to the ` IsBipartite.four_mul_encard_edgeSet_le` but in this case the upper limit of
-four times of edge set cardinality is square of graph's support set cardinality. -/
+/-- An upper bound on the cardinality of the edge set of a bipartite graph when the cardinality of
+the graph’s support vertex set is known. That is, the cardinality of the edge set times `4`
+is less or equal to the square of the cardinality of the support vertex set.
+The statement uses `Set.encard`. -/
 theorem IsBipartite.four_mul_encard_edgeSet_le_support_encard_sq (h : G.IsBipartite) :
     4 * G.edgeSet.encard ≤ G.support.encard ^ 2 := by
   set G' := G.induce ↑G.support
