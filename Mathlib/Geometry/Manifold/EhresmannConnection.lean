@@ -4,13 +4,25 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dominic Steinitz
 -/
 module
-/-- A module doc-string -/
 
-public import Mathlib.Init
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
+/-!
+# Ehresmann Connections
+
+This file defines Ehresmann connections on fiber bundles and establishes basic properties.
+
+## Main definitions
+
+* `verticalSubspace`: The vertical subspace at a point in the total space
+* `EhresmannConnection`: A smooth distribution of horizontal subspaces complementary to the vertical
+
+## References
+
+* [Kobayashi and Nomizu, *Foundations of Differential Geometry*][kobayashi1963]
+-/
 
 open scoped Manifold
 open Bundle
