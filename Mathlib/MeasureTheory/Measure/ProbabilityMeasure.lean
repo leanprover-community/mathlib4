@@ -670,9 +670,9 @@ theorem isProbabilityMeasure_join {α : Type*} [MeasurableSpace α] {m : Measure
 theorem isProbabilityMeasure_bind {α : Type*} {β : Type*} [MeasurableSpace α] [MeasurableSpace β]
     {m : Measure α} [IsProbabilityMeasure m] {f : α → Measure β} (hf₀ : AEMeasurable f m)
     (hf₁ : ∀ᵐ μ ∂m, IsProbabilityMeasure (f μ)) : IsProbabilityMeasure (m.bind f) := by
-  simp only [Measure.bind]
-  apply @isProbabilityMeasure_join _ _ _ (Measure.isProbabilityMeasure_map hf₀)
-    ((ae_map_iff hf₀ ProbabilityMeasure.measurableSet_isProbabilityMeasure).mpr hf₁)
+  simp only [isProbabilityMeasure_iff, MeasurableSet.univ, Measure.bind_apply _ hf₀]
+  simp_rw [isProbabilityMeasure_iff] at hf₁
+  exact lintegral_eq_const hf₁
 
 end join_bind
 

@@ -147,11 +147,8 @@ theorem join_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
 
 lemma join_sum {ι : Type*} (m : ι → Measure (Measure α)) :
     (sum m).join = sum fun (i : ι) ↦ (m i).join := by
-  simp_rw [Measure.join, lintegral_sum_measure]
   ext s hs
-  rw [ofMeasurable_apply s hs, Measure.sum_apply _ hs]
-  apply tsum_congr (fun i ↦ ?_)
-  rw [ofMeasurable_apply s hs]
+  simp_rw [sum_apply _ hs, join_apply hs, lintegral_sum_measure]
 
 @[simp]
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ := by
@@ -278,7 +275,11 @@ theorem aemeasurable_bind {g : α → Measure β} {m : Measure (Measure α)}
 theorem sum_bind {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
     (h : AEMeasurable f (sum fun i => m i)) :
     (sum fun (i : ι) ↦ m i).bind f = sum fun (i : ι) ↦ (m i).bind f := by
-  simp_rw [Measure.bind, Measure.map_sum h, Measure.join_sum]
+  simp_rw [bind, map_sum h, join_sum]
+
+lemma bind_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (m : Measure α)
+    (f : α → Measure β) : (c • m).bind f = c • (m.bind f) := by
+  simp_rw [bind, Measure.map_smul, join_smul]
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : AEMeasurable μ m)
     (hf : AEMeasurable f (bind m μ)) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
