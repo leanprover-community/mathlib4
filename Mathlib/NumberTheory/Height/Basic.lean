@@ -6,6 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.Group.Indicator
@@ -149,6 +150,36 @@ lemma logHeight₁_one : logHeight₁ (1 : K) = 0 := by
 lemma zero_le_logHeight₁ (x : K) : 0 ≤ logHeight₁ x :=
   Real.log_nonneg <| one_le_mulHeight₁ x
 
+end Height
+
+/-!
+### Positivity extension for mulHeight₁, logHeight₁
+-/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq Height
+
+/-- Extension for the `positivity` tactic: `Height.mulHeight₁` is always positive. -/
+@[positivity Height.mulHeight₁ _]
+meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
+    assertInstancesCommute
+    pure (.positive q(@mulHeight₁_pos $K $KF $KA $a))
+  | _, _, _ => throwError "not Height.mulHeight₁"
+
+/-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
+@[positivity Height.logHeight₁ _]
+meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
+    assertInstancesCommute
+    pure (.nonnegative q(@zero_le_logHeight₁ $K $KF $KA $a))
+  | _, _, _ => throwError "not Height.logHeight₁"
+
+end Mathlib.Meta.Positivity
+
 /-!
 ### Heights of tuples and finitely supported maps
 
@@ -162,7 +193,11 @@ For a finitely supported function `x : ι →₀ K`, we define the height as the
 restricted to its support.
 -/
 
-variable {ι : Type*}
+namespace Height
+
+open Height.AdmissibleAbsValues Real
+
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*}
 
 /-- The multiplicative height of a tuple of elements of `K`.
 For the zero tuple we take the junk value `1`. -/
@@ -289,6 +324,58 @@ lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
 
 lemma zero_le_logHeight {x : ι → K} : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
+
+end Height
+
+/-!
+### Positivity extension for mulHeight, logHeight
+-/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean.Meta Qq Height
+
+/-- Extension for the `positivity` tactic: `Height.mulHeight` is always positive. -/
+@[positivity Height.mulHeight _]
+meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
+    assertInstancesCommute
+    -- Check wether there is a `Finite` instance for `$ι` around.
+    let o : Option Q(Finite $ι) := ← do
+      let .some instFinite ← trySynthInstanceQ q(Finite $ι) | return none
+      return some instFinite
+    match o with
+    | some instFinite =>
+      assertInstancesCommute
+      return .positive q(@mulHeight_pos $K $KF $KA $ι $instFinite $a)
+    | none => throwError "index type in Height.mulHeight not known to be finite"
+  | _, _, _ => throwError "not Height.mulHeight"
+
+/-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
+@[positivity Height.logHeight _]
+meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
+    assertInstancesCommute
+    -- Check wether there is a `Finite` instance for `$ι` around.
+    let o : Option Q(Finite $ι) := ← do
+      let .some instFinite ← trySynthInstanceQ q(Finite $ι) | return none
+      return some instFinite
+    match o with
+    | some instFinite =>
+      assertInstancesCommute
+      return .nonnegative q(@zero_le_logHeight $K $KF $KA $ι $instFinite $a)
+    | none => throwError "index type in Height.logHeight not known to be finite"
+  | _, _, _ => throwError "not Height.logHeight"
+
+end Mathlib.Meta.Positivity
+
+namespace Height
+
+open Height.AdmissibleAbsValues Real
+
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} {α : Type*} [Finite ι]
 
 /-- The logarithmic height of a tuple does not change under scaling. -/
 lemma logHeight_smul_eq_logHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
