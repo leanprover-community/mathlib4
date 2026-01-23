@@ -702,7 +702,7 @@ theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases q with ⟨g : ℕ →₀ R⟩
   simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 
-@[ext]
+@[ext, grind ext]
 theorem ext {p q : R[X]} : (∀ n, coeff p n = coeff q n) → p = q :=
   ext_iff.2
 
