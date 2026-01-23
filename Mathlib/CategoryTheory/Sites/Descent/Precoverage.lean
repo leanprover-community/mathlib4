@@ -32,7 +32,9 @@ open Limits Opposite Bicategory
 
 namespace Pseudofunctor
 
-open DescentData LocallyDiscreteOpToCat
+open LocallyDiscreteOpToCat
+
+namespace DescentData
 
 variable {C : Type u} [Category.{v} C] (F : LocallyDiscrete Cᵒᵖ ⥤ᵖ Cat.{v', u'})
 
@@ -255,7 +257,7 @@ include w hf' in
 lemma full_pullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).Full where
   map_surjective {D₁ D₂} φ :=
-    ⟨{ hom := fun i ↦ hom w hf' φ i, comm := comm _ _ _ }, by
+    ⟨{ hom := fun i ↦ full_pullFunctor.hom w hf' φ i, comm := comm _ _ _ }, by
       ext i
       dsimp
       rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch),
@@ -264,6 +266,8 @@ lemma full_pullFunctor :
         Category.id_comp, Category.comp_id]⟩
 
 end
+
+end DescentData
 
 end Pseudofunctor
 
