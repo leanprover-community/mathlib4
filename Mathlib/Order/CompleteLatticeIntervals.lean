@@ -3,9 +3,11 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.Interval.Set.OrdConnected
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.Interval.Set.OrdConnected
 
 /-! # Subtypes of conditionally complete linear orders
 
@@ -19,6 +21,8 @@ We check that an `OrdConnected` set satisfies these conditions.
 Add appropriate instances for all `Set.Ixx`. This requires a refactor that will allow different
 default values for `sSup` and `sInf`.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset
 
@@ -209,7 +213,7 @@ noncomputable instance Set.Icc.completeLattice [ConditionallyCompleteLattice α]
 /-- Complete linear order structure on `Set.Icc` -/
 noncomputable instance [ConditionallyCompleteLinearOrder α] {a b : α} [Fact (a ≤ b)] :
     CompleteLinearOrder (Set.Icc a b) :=
-  { Set.Icc.completeLattice, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra with }
+  { Set.Icc.completeLattice, Subtype.instLinearOrder _, LinearOrder.toBiheytingAlgebra _ with }
 
 lemma Set.Icc.coe_sSup [ConditionallyCompleteLattice α] {a b : α} (h : a ≤ b)
     {S : Set (Set.Icc a b)} (hS : S.Nonempty) : have : Fact (a ≤ b) := ⟨h⟩

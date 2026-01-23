@@ -3,15 +3,19 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero
 -/
+
+public section
 
 
 variable {R : Type*} [DivisionRing R] [CharZero R] {p : R}
@@ -36,7 +40,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
       exact (Int.emod_lt_abs _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
-    nth_rewrite 3 [← Int.ediv_add_emod k z]
+    nth_rewrite 3 [← Int.mul_ediv_add_emod k z]
     rfl
   · rintro ⟨k, n, h⟩
     exact ⟨_, h⟩
@@ -56,10 +60,6 @@ theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + ((k : ℕ) • (p / z) : R) := by
   induction ψ using Quotient.inductionOn
   induction θ using Quotient.inductionOn
-  -- Porting note: Introduced Zp notation to shorten lines
-  let Zp := AddSubgroup.zmultiples p
-  have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
-  simp only [Zp, this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz

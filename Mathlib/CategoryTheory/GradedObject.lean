@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Algebra.Group.Int.Defs
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -29,6 +31,8 @@ introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -100,7 +104,7 @@ end GradedObject
 
 namespace Iso
 
-variable {C D E J : Type*} [Category C] [Category D] [Category E]
+variable {C D E J : Type*} [Category* C] [Category* D] [Category* E]
   {X Y : GradedObject J C}
 
 @[reassoc (attr := simp)]
@@ -265,7 +269,8 @@ instance : (total β C).Faithful where
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
     erw [colimit.ι_map, colimit.ι_map] at w
-    simp? at * says simp only [Discrete.functor_obj_eq_as, Discrete.natTrans_app] at *
+    replace w : f i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ =
+      g i ≫ colimit.ι (Discrete.functor Y) ⟨i⟩ := by simpa
     exact Mono.right_cancellation _ _ w
 
 end GradedObject
@@ -288,7 +293,7 @@ end GradedObject
 
 namespace GradedObject
 
-variable {I J K : Type*} {C : Type*} [Category C]
+variable {I J K : Type*} {C : Type*} [Category* C]
   (X Y Z : GradedObject I C) (φ : X ⟶ Y) (e : X ≅ Y) (ψ : Y ⟶ Z) (p : I → J)
 
 /-- If `X : GradedObject I C` and `p : I → J`, `X.mapObjFun p j` is the family of objects `X i`

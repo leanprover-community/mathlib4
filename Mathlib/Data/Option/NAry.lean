@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Batteries.Tactic.Init
-import Mathlib.Logic.Function.Defs
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Binary map of options
@@ -24,6 +26,8 @@ This file is very similar to the n-ary section of `Mathlib/Data/Set/Basic.lean`,
 We do not define `Option.map₃` as its only purpose so far would be to prove properties of
 `Option.map₂` and casing already fulfills this task.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -62,7 +66,6 @@ theorem map₂_none_right (f : α → β → γ) (a : Option α) : map₂ f a no
 theorem map₂_coe_left (f : α → β → γ) (a : α) (b : Option β) : map₂ f a b = b.map fun b => f a b :=
   rfl
 
--- Porting note: This proof was `rfl` in Lean3, but now is not.
 @[simp]
 theorem map₂_coe_right (f : α → β → γ) (a : Option α) (b : β) :
     map₂ f a b = a.map fun a => f a b := by grind

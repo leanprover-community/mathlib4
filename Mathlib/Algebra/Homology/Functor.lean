@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Complexes in functor categories
@@ -15,6 +17,8 @@ a functor from `T` to complexes valued in `V`.
 In fact this is an equivalence of categories.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -30,7 +34,7 @@ variable {ι : Type*} {c : ComplexShape ι}
 
 /-- A complex of functors gives a functor to complexes. -/
 @[simps obj map]
-def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
+def asFunctor {T : Type*} [Category* T] (C : HomologicalComplex (T ⥤ V) c) :
     T ⥤ HomologicalComplex V c where
   obj t :=
     { X := fun i => (C.X i).obj t
@@ -58,7 +62,7 @@ def asFunctor {T : Type*} [Category T] (C : HomologicalComplex (T ⥤ V) c) :
 -- TODO in fact, this is an equivalence of categories.
 /-- The functorial version of `HomologicalComplex.asFunctor`. -/
 @[simps]
-def complexOfFunctorsToFunctorToComplex {T : Type*} [Category T] :
+def complexOfFunctorsToFunctorToComplex {T : Type*} [Category* T] :
     HomologicalComplex (T ⥤ V) c ⥤ T ⥤ HomologicalComplex V c where
   obj C := C.asFunctor
   map f :=

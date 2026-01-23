@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.PartialOrder
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass
@@ -12,6 +14,8 @@ import Mathlib.Order.Defs.PartialOrder
 We give basic facts about the `NeZero n` typeclass.
 
 -/
+
+public section
 
 variable {R : Type*} [Zero R]
 
@@ -29,13 +33,10 @@ variable {α : Type*} [Zero α]
 
 lemma ne_zero_of_eq_one [One α] [NeZero (1 : α)] {a : α} (h : a = 1) : a ≠ 0 := h ▸ one_ne_zero
 
-@[field_simps]
 lemma two_ne_zero [OfNat α 2] [NeZero (2 : α)] : (2 : α) ≠ 0 := NeZero.ne (2 : α)
 
-@[field_simps]
 lemma three_ne_zero [OfNat α 3] [NeZero (3 : α)] : (3 : α) ≠ 0 := NeZero.ne (3 : α)
 
-@[field_simps]
 lemma four_ne_zero [OfNat α 4] [NeZero (4 : α)] : (4 : α) ≠ 0 := NeZero.ne (4 : α)
 
 variable (α)

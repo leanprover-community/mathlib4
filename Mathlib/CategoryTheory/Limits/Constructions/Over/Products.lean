@@ -3,7 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 
 /-!
 # Products in the over category
@@ -21,6 +23,8 @@ category.
 * Dualise to get the `Under X` results.
 -/
 
+@[expose] public section
+
 
 universe w v u -- morphism levels before object levels. See note [category_theory universes].
 
@@ -37,7 +41,7 @@ In this section we construct binary products in `Over X` and binary coproducts i
 explicitly as the pullbacks and pushouts of binary (co)fans in the base category.
 
 For `Over X`, one could construct these binary products from the general theory of arbitrary
-products from the next section, ie
+products from the next section, i.e.
 ```
 (Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
@@ -184,7 +188,7 @@ lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 
-/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+/-- The product of `Y` and `Z` in `Over X` is isomorphic to `Y ×ₓ Z`. -/
 noncomputable
 def prodLeftIsoPullback :
     (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=

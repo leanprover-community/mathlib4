@@ -60,7 +60,8 @@ example (h : b ~ d) : myAdd a (myAdd b c) ~ myAdd a (myAdd d c) := by
   gcongr
 
 /--
-error: tactic 'gcongr' failed, subgoal a~a is not allowed by the provided pattern and is not closed by `rfl`
+error: Tactic `gcongr` failed: subgoal a~a is not allowed by the provided pattern and is not closed by `rfl`
+
 case a
 a b c d : ℕ
 h : b~d

@@ -3,13 +3,17 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Action.ConjAct
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
-# Conjugation action on a field on itself
+# Conjugation action of a field on itself
 -/
+
+@[expose] public section
 
 namespace ConjAct
 

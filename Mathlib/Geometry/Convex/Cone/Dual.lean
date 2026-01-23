@@ -3,14 +3,16 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Geometry.Convex.Cone.Pointed
+module
+
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
 # The algebraic dual of a cone
 
 Given a bilinear pairing `p` between two `R`-modules `M` and `N` and a set `s` in `M`, we define
-`PointedCone.dual p C` to be the pointed cone in `N` consisting of all points `y` such that
+`PointedCone.dual p s` to be the pointed cone in `N` consisting of all points `y` such that
 `0 ≤ p x y` for all `x ∈ s`.
 
 When the pairing is perfect, this gives us the algebraic dual of a cone. This is developed here.
@@ -20,7 +22,7 @@ dual instead. See `Mathlib/Analysis/Convex/Cone/Dual.lean` for that case.
 ## Implementation notes
 
 We do not provide a `ConvexCone`-valued version of `PointedCone.dual` since the dual cone of any set
-always contains `0`, ie is a pointed cone.
+always contains `0`, i.e. is a pointed cone.
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to the name
 `ConvexCone.dual`.
 
@@ -28,6 +30,8 @@ Furthermore, the strict version `{y | ∀ x ∈ s, 0 < p x y}` is a candidate to
 
 Deduce from `dual_flip_dual_dual_flip` that polyhedral cones are invariant under taking double duals
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace Real Cardinal
 
@@ -90,7 +94,7 @@ variable (s) in
     dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
 
 @[simp]
-lemma dual_span (s : Set M) : dual p (Submodule.span R≥0 s) = dual p s := by
+lemma dual_span (s : Set M) : dual p (span R s) = dual p s := by
   refine le_antisymm (dual_le_dual Submodule.subset_span) (fun x hx y hy => ?_)
   induction hy using Submodule.span_induction with
   | mem _y h => exact hx h

@@ -3,49 +3,53 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.RingHom.Smooth
-import Mathlib.RingTheory.RingHom.Unramified
+module
+
+public import Mathlib.RingTheory.RingHom.Smooth
+public import Mathlib.RingTheory.RingHom.Unramified
 
 /-!
-# Etale ring homomorphisms
+# Étale ring homomorphisms
 
 We show the meta properties of étale morphisms.
 -/
+
+@[expose] public section
 
 universe u
 
 namespace RingHom
 
-variable {R S : Type u} [CommRing R] [CommRing S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
-/-- A ring hom `R →+* S` is etale, if `S` is an etale `R`-algebra. -/
+/-- A ring hom `R →+* S` is étale, if `S` is an étale `R`-algebra. -/
 @[algebraize RingHom.Etale.toAlgebra]
-def Etale {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
-  @Algebra.Etale R _ S _ f.toAlgebra
+def Etale {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S) : Prop :=
+  @Algebra.Etale R S _ _ f.toAlgebra
 
 /-- Helper lemma for the `algebraize` tactic -/
 lemma Etale.toAlgebra {f : R →+* S} (hf : Etale f) :
-    @Algebra.Etale R _ S _ f.toAlgebra := hf
+    @Algebra.Etale R S _ _ f.toAlgebra := hf
 
-variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
+variable {R S : Type*} [CommRing R] [CommRing S] (f : R →+* S)
 
 lemma etale_algebraMap [Algebra R S] : (algebraMap R S).Etale ↔ Algebra.Etale R S := by
-  simp only [RingHom.Etale]
-  congr!
-  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+  rw [RingHom.Etale, toAlgebra_algebraMap]
 
 lemma etale_iff_formallyUnramified_and_smooth : f.Etale ↔ f.FormallyUnramified ∧ f.Smooth := by
   algebraize [f]
   simp only [Etale, Smooth, FormallyUnramified]
-  refine ⟨fun h ↦ ⟨inferInstance, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨?_, inferInstance⟩⟩
-  · constructor <;> infer_instance
-  · rw [Algebra.FormallyEtale.iff_unramified_and_smooth]
-    constructor <;> infer_instance
+  exact ⟨fun h ↦ ⟨inferInstance, inferInstance, inferInstance⟩,
+    fun ⟨h1, h2⟩ ↦ ⟨.of_formallyUnramified_and_formallySmooth, inferInstance⟩⟩
 
 lemma Etale.eq_formallyUnramified_and_smooth :
     @Etale = fun R S (_ : CommRing R) (_ : CommRing S) f ↦ f.FormallyUnramified ∧ f.Smooth := by
   ext
   rw [etale_iff_formallyUnramified_and_smooth]
+
+lemma Etale.of_bijective {f : R →+* S} (hf : Function.Bijective f) : f.Etale := by
+  rw [etale_iff_formallyUnramified_and_smooth]
+  exact ⟨.of_surjective hf.2, .of_bijective hf⟩
 
 lemma Etale.isStableUnderBaseChange : IsStableUnderBaseChange Etale := by
   rw [eq_formallyUnramified_and_smooth]

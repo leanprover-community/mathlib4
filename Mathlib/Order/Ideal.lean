@@ -3,11 +3,13 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Cofinal
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -44,6 +46,8 @@ in line with most presentations of forcing.
 ideal, cofinal, dense, countable, generic
 
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -157,8 +161,6 @@ theorem isProper_of_notMem {I : Ideal P} {p : P} (notMem : p ∉ I) : IsProper I
     rw [← hp] at this
     exact notMem this⟩
 
-@[deprecated (since := "2025-05-23")] alias isProper_of_not_mem := isProper_of_notMem
-
 /-- An ideal is maximal if it is maximal in the collection of proper ideals.
 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
@@ -168,7 +170,7 @@ class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
-theorem inter_nonempty [IsDirected P (· ≥ ·)] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
+theorem inter_nonempty [IsCodirectedOrder P] (I J : Ideal P) : (I ∩ J : Set P).Nonempty := by
   obtain ⟨a, ha⟩ := I.nonempty
   obtain ⟨b, hb⟩ := J.nonempty
   obtain ⟨c, hac, hbc⟩ := exists_le_le a b
@@ -178,9 +180,9 @@ end
 
 section Directed
 
-variable [IsDirected P (· ≤ ·)] [Nonempty P] {I : Ideal P}
+variable [IsDirectedOrder P] [Nonempty P] {I : Ideal P}
 
-/-- In a directed and nonempty order, the top ideal of a is `univ`. -/
+/-- In a directed and nonempty order, the top ideal is `univ`. -/
 instance : OrderTop (Ideal P) where
   top := ⟨⊤, univ_nonempty, directedOn_univ⟩
   le_top _ _ _ := LowerSet.mem_top
@@ -238,8 +240,6 @@ theorem top_of_top_mem (h : ⊤ ∈ I) : I = ⊤ := by
   exact iff_of_true (I.lower le_top h) trivial
 
 theorem IsProper.top_notMem (hI : IsProper I) : ⊤ ∉ I := fun h ↦ hI.ne_top <| top_of_top_mem h
-
-@[deprecated (since := "2025-05-23")] alias IsProper.top_not_mem := IsProper.top_notMem
 
 end OrderTop
 
@@ -327,7 +327,7 @@ end SemilatticeSup
 
 section SemilatticeSupDirected
 
-variable [SemilatticeSup P] [IsDirected P (· ≥ ·)] {x : P} {I J s t : Ideal P}
+variable [SemilatticeSup P] [IsCodirectedOrder P] {x : P} {I J s t : Ideal P}
 
 /-- The infimum of two ideals of a co-directed order is their intersection. -/
 instance : Min (Ideal P) :=
@@ -390,9 +390,6 @@ theorem mem_sup : x ∈ I ⊔ J ↔ ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j :=
 
 theorem lt_sup_principal_of_notMem (hx : x ∉ I) : I < I ⊔ principal x :=
   le_sup_left.lt_of_ne fun h ↦ hx <| by simpa only [left_eq_sup, principal_le_iff] using h
-
-@[deprecated (since := "2025-05-23")]
-alias lt_sup_principal_of_not_mem := lt_sup_principal_of_notMem
 
 end SemilatticeSupDirected
 
@@ -461,15 +458,9 @@ theorem IsProper.notMem_of_compl_mem (hI : IsProper I) (hxc : xᶜ ∈ I) : x �
   have ht : x ⊔ xᶜ ∈ I := sup_mem ‹_› ‹_›
   rwa [sup_compl_eq_top] at ht
 
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_of_compl_mem := IsProper.notMem_of_compl_mem
-
 theorem IsProper.notMem_or_compl_notMem (hI : IsProper I) : x ∉ I ∨ xᶜ ∉ I := by
   have h : xᶜ ∈ I → x ∉ I := hI.notMem_of_compl_mem
   tauto
-
-@[deprecated (since := "2025-05-23")]
-alias IsProper.not_mem_or_compl_not_mem := IsProper.notMem_or_compl_notMem
 
 end BooleanAlgebra
 

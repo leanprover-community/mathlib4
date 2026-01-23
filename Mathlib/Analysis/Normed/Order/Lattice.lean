@@ -3,10 +3,12 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Rat
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Rat
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Normed lattice ordered groups
@@ -27,6 +29,8 @@ topology.
 
 normed, lattice, ordered, group
 -/
+
+@[expose] public section
 
 
 /-!
@@ -57,26 +61,10 @@ instance : HasSolidNorm ℝ := ⟨fun _ _ => id⟩
 
 instance : HasSolidNorm ℚ := ⟨fun _ _ _ => by simpa only [norm, ← Rat.cast_abs, Rat.cast_le]⟩
 
-end SolidNorm
-
-/--
-Let `α` be a normed commutative group equipped with a partial order covariant with addition, with
-respect which `α` forms a lattice. Suppose that `α` is *solid*, that is to say, for `a` and `b` in
-`α`, with absolute values `|a|` and `|b|` respectively, `|a| ≤ |b|` implies `‖a‖ ≤ ‖b‖`. Then `α` is
-said to be a normed lattice ordered group.
--/
-@[deprecated
-  "Use `[NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]` instead."
-  (since := "2025-04-10")]
-structure NormedLatticeAddCommGroup (α : Type*) extends
-    NormedAddCommGroup α, Lattice α, HasSolidNorm α where
-  add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
-
 instance Int.hasSolidNorm : HasSolidNorm ℤ where
   solid x y h := by simpa [← Int.norm_cast_real, ← Int.cast_abs] using h
 
-instance Rat.hasSolidNorm : HasSolidNorm ℚ where
-  solid x y h := by simpa [← Rat.norm_cast_real, ← Rat.cast_abs] using h
+end SolidNorm
 
 variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
 

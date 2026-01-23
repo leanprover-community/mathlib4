@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Isomorphisms about functors which preserve (co)limits
@@ -14,8 +16,10 @@ We also show that we can commute `IsLimit.lift` of a preserved limit with `Funct
 `(PreservesLimit.preserves t).lift (G.mapCone c₂) = G.map (t.lift c₂)`.
 
 The duals of these are also given. For functors which preserve (co)limits of specific shapes, see
-`preserves/shapes.lean`.
+the files in the directory `Mathlib/CategoryTheory/Limits/Preserves/Shapes/`.
 -/
+
+@[expose] public section
 
 
 universe w' w v₁ v₂ u₁ u₂
@@ -72,7 +76,7 @@ instance : IsIso (limit.post F G) :=
 variable [PreservesLimitsOfShape J G] [HasLimitsOfShape J D] [HasLimitsOfShape J C]
 
 /-- If `C, D` has all limits of shape `J`, and `G` preserves them, then `preservesLimitsIso` is
-functorial wrt `F`. -/
+functorial w.r.t. `F`. -/
 @[simps!]
 def preservesLimitNatIso : lim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ lim :=
   NatIso.ofComponents (fun F => preservesLimitIso G F)
@@ -139,7 +143,7 @@ instance : IsIso (colimit.post F G) :=
 variable [PreservesColimitsOfShape J G] [HasColimitsOfShape J D] [HasColimitsOfShape J C]
 
 /-- If `C, D` has all colimits of shape `J`, and `G` preserves them, then `preservesColimitIso`
-is functorial wrt `F`. -/
+is functorial w.r.t. `F`. -/
 @[simps!]
 def preservesColimitNatIso : colim ⋙ G ≅ (Functor.whiskeringRight J C D).obj G ⋙ colim :=
   NatIso.ofComponents (fun F => preservesColimitIso G F)

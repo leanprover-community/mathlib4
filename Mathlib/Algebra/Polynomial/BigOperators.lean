@@ -3,7 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
@@ -22,6 +24,8 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 - `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
+
+public section
 
 
 open Finset
@@ -60,6 +64,20 @@ lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
 
+/-- The leading coefficient of a sum of polynomials with the same degree is
+the sum of the leading coefficients, provided that this sum is nonzero.
+-/
+theorem leadingCoeff_sum_of_degree_eq {f : ι → S[X]} {s : Finset ι} {d}
+    (hd : ∀ k ∈ s, (f k).degree = d) (hf : ∑ k ∈ s, (f k).leadingCoeff ≠ 0) :
+    (∑ k ∈ s, f k).leadingCoeff = ∑ k ∈ s, (f k).leadingCoeff := by
+  obtain _ | d := d
+  · simp_all [WithBot.none_eq_bot]
+  · replace hd k (hk : k ∈ s) : (f k).natDegree = d := natDegree_eq_of_degree_eq_some <| hd k hk
+    suffices (∑ k ∈ s, f k).natDegree = d by simp_all [leadingCoeff]
+    apply natDegree_eq_of_le_of_coeff_ne_zero
+    · aesop (add safe natDegree_sum_le_of_forall_le)
+    · simp_all [leadingCoeff]
+
 theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
     (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :
     degree l.sum ≤ n := by
@@ -73,7 +91,7 @@ theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
 
 theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).maximum := by
   apply degree_list_sum_le_of_forall_degree_le
-  intros p hp
+  intro p hp
   by_cases h : p = 0
   · subst h
     simp
@@ -83,21 +101,18 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     use p
     simp [hp]
 
-theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
-  induction' l with hd tl IH
-  · simp
-  · simpa using natDegree_mul_le.trans (add_le_add_left IH _)
+theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum :=
+  l.apply_prod_le_sum_map _ natDegree_one.le fun _ _ => natDegree_mul_le
 
-theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum := by
-  induction' l with hd tl IH
-  · simp
-  · simpa using (degree_mul_le _ _).trans (add_le_add_left IH _)
+theorem degree_list_prod_le (l : List S[X]) : degree l.prod ≤ (l.map degree).sum :=
+  l.apply_prod_le_sum_map _ degree_one_le degree_mul_le
 
 theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p ∈ l, natDegree p ≤ n) :
     coeff (List.prod l) (l.length * n) = (l.map fun p => coeff p n).prod := by
-  induction' l with hd tl IH
-  · simp
-  · have hl' : ∀ p ∈ tl, natDegree p ≤ n := fun p hp => hl p (List.mem_cons_of_mem _ hp)
+  induction l with
+  | nil => simp
+  | cons hd tl IH =>
+    have hl' : ∀ p ∈ tl, natDegree p ≤ n := fun p hp => hl p (List.mem_cons_of_mem _ hp)
     simp only [List.prod_cons, List.map, List.length]
     rw [add_mul, one_mul, add_comm, ← IH hl', mul_comm tl.length]
     have h : natDegree tl.prod ≤ n * tl.length := by
@@ -136,7 +151,7 @@ where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
-  induction' t using Multiset.induction_on with a t ih; · simp
+  induction t using Multiset.induction_on with | empty => simp | cons a t ih => ?_
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Polynomial.leadingCoeff_mul']
   · rw [ih]

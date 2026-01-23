@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.MeasureTheory.Covering.Vitali
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Measure.Doubling
+public import Mathlib.MeasureTheory.Covering.Vitali
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Uniformly locally doubling measures and Lebesgue's density theorem
@@ -25,6 +27,8 @@ form of Lebesgue's density theorem.
   fixed.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
