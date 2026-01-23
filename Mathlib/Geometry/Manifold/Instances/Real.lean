@@ -162,7 +162,7 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   let f i : PiLp p (fun _ : Fin n ↦ ℝ) → ℝ := fun x ↦ x i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i) ⁻¹' Ici a := by
     ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i) ⁻¹' Ioi a := by
     ext; simp; rfl
   rw [h, h', interior_iInter_of_finite]
   apply iInter_congr fun i ↦ ?_
@@ -501,7 +501,7 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart,
       update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
-  ·-- `e = right chart`, `e' = right chart`
+  · -- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of

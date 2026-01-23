@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
-public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Injective modules
@@ -78,6 +78,18 @@ lemma of_equiv (e : Q ≃ₗ[R] M) (h : Module.Baer R Q) : Module.Baer R M := fu
   ⟨e ∘ₗ g', by simpa [LinearEquiv.eq_symm_apply] using h'⟩
 
 lemma congr (e : Q ≃ₗ[R] M) : Module.Baer R Q ↔ Module.Baer R M := ⟨of_equiv e, of_equiv e.symm⟩
+
+lemma iff_surjective {R : Type u} [CommRing R] [Module R M] : Module.Baer R M ↔
+    ∀ (I : Ideal R), Function.Surjective (LinearMap.lcomp R M I.subtype) := by
+  refine ⟨fun h I g ↦ ?_, fun h I g ↦ ?_⟩
+  · rcases h I g with ⟨g', hg'⟩
+    use g'
+    ext x
+    simp [hg']
+  · rcases h I g with ⟨g', hg'⟩
+    use g'
+    intro x hx
+    simp [← hg']
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
 between `M` and `N` is a submodule `N'` of `N`. To prove Baer's criterion, we need to consider
@@ -415,8 +427,8 @@ lemma Module.injective_of_ulift_injective
     (inj : Module.Injective R (ULift.{v'} M)) :
     Module.Injective R M where
   out X Y _ _ _ _ f hf g :=
-    let eX := ULift.moduleEquiv.{_,_,v'} (R := R) (M := X)
-    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_,_,v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
+    let eX := ULift.moduleEquiv.{_, _, v'} (R := R) (M := X)
+    have ⟨g', hg'⟩ := inj.out (ULift.moduleEquiv.{_, _, v'}.symm.toLinearMap ∘ₗ f ∘ₗ eX.toLinearMap)
       (by exact ULift.moduleEquiv.symm.injective.comp <| hf.comp eX.injective)
       (ULift.moduleEquiv.symm.toLinearMap ∘ₗ g ∘ₗ eX.toLinearMap)
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
@@ -459,3 +471,30 @@ instance Module.Injective.pi
     refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
     ext i
     exact DFunLike.congr_fun (hl i) x⟩
+
+universe u' in
+attribute [local instance] RingHomInvPair.of_ringEquiv in
+theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
+    {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
+    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
+    [inj : Module.Injective R M] : Module.Injective S N := by
+  apply Module.Baer.injective (fun I g ↦ ?_)
+  let I' := Ideal.comap e₁ I
+  have {x : S} (h : x ∈ I) : e₁.symm x ∈ I' := by
+    rw [← Ideal.mem_comap, Ideal.comap_symm]
+    simpa [I', Ideal.map_comap_eq_self_of_equiv e₁ I] using h
+  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := {
+    toFun x := ⟨e₁ x.1, x.2⟩
+    map_add' x y := SetCoe.ext (by simp)
+    map_smul' r x := SetCoe.ext (by simp)
+    invFun x := ⟨e₁.symm x.1, this x.2⟩
+    left_inv := by simp [Function.LeftInverse]
+    right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
+  let f : I' →ₗ[R] M := e₂.symm.toLinearMap.comp (g.comp e.toLinearMap)
+  have MB : Module.Baer R M := Module.Baer.of_injective ‹_›
+  rcases MB I' f with ⟨f', hf'⟩
+  use e₂.toLinearMap.comp (f'.comp e₁.toSemilinearEquiv.symm.toLinearMap)
+  intro x hx
+  change e₂ (f' (e₁.symm x)) = g ⟨x, hx⟩
+  rw [hf' _ (this hx)]
+  simp [f, e]

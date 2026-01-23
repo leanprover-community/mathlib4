@@ -5,7 +5,6 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
