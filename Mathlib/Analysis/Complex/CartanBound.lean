@@ -37,4 +37,3 @@ lemma Cφ_pos : 0 < Cφ := by
   norm_num [Cφ]
 
 end LogSingularity
-
