@@ -439,7 +439,7 @@ theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
   rintro - ⟨g, hg, rfl⟩
   exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
 
-theorem conj_smul_eq_of_mem {G : Type*} [Group G] {H : Subgroup G} {h : G} (hh : h ∈ H) :
+theorem conj_smul_eq_self_of_mem {G : Type*} [Group G] {H : Subgroup G} {h : G} (hh : h ∈ H) :
     MulAut.conj h • H = H := by
   refine le_antisymm ?_ ?_
   · exact (conj_smul_le_of_le (le_refl H) ⟨h, hh⟩)
