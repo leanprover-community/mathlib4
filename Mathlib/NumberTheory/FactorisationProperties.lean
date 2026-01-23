@@ -209,7 +209,7 @@ theorem abundant_iff_two_lt_abundancyIndex (h : n ≠ 0) : Abundant n ↔ 2 < n.
   rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
   norm_cast
 
-theorem abundancyIndex_le_ofDvd (hm : n ≠ 0) (hd : m ∣ n) :
+theorem abundancyIndex_le_ofDvd (hn : n ≠ 0) (hd : m ∣ n) :
     m.abundancyIndex ≤ n.abundancyIndex := by
   obtain ⟨k, hk⟩ := hd
   have hk0 : k ≠ 0 := by grind
