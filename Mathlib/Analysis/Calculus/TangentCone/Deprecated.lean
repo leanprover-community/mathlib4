@@ -40,7 +40,6 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
   rw [tendsto_norm_atTop_iff_cobounded] at hc
   simpa using Tendsto.congr' this <| (tendsto_inv₀_cobounded.comp hc).smul hd
 
-
 @[deprecated mem_tangentConeAt_of_add_smul_mem (since := "2026-01-22")]
 theorem mem_tangentConeAt_of_pow_smul (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) :
