@@ -37,7 +37,11 @@ The key estimate is a fixed-constant, sequence-friendly bound:
 - `Complex.weierstrassFactor_sub_one_pow_bound`: the power bound `‖E_m(z) - 1‖ ≤ 4‖z‖^(m+1)` for
   `‖z‖ ≤ 1 / 2`
 - `Complex.weierstrassFactor_eq_exp_neg_tail`: representation of `E_m` as `exp (- logTail m z)` on
-  `‖z‖ < 1`, away from `z = 1`
+  `‖z‖ < 1`
+
+On the domain `‖z‖ < 1`, we use the principal branch `Complex.log`. This coincides with the
+analytic logarithm on `1 - z` since `‖z‖ < 1` implies `0 < (1 - z).re`, so `1 - z` stays in the
+right half-plane and away from the branch cut.
 -/
 
 noncomputable section
@@ -196,10 +200,14 @@ lemma differentiable_weierstrassFactor (m : ℕ) :
     differentiable_exp.comp (differentiable_partialLogSum m)
   simpa [weierstrassFactor] using hsub.mul hexp
 
-/-- `E_m(z) = exp(-logTail_m(z))` for `‖z‖ < 1` with `z ≠ 1`. -/
-lemma weierstrassFactor_eq_exp_neg_tail (m : ℕ) {z : ℂ} (hz : ‖z‖ < 1) (hz1 : z ≠ 1) :
+/-- `E_m(z) = exp(-logTail_m(z))` for `‖z‖ < 1`. -/
+lemma weierstrassFactor_eq_exp_neg_tail (m : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     weierstrassFactor m z = exp (-logTail m z) := by
   unfold weierstrassFactor partialLogSum logTail
+  have hz1 : z ≠ (1 : ℂ) := by
+    intro hz1
+    subst hz1
+    simp at hz
   have hz_ne_1 : 1 - z ≠ 0 := sub_ne_zero.mpr hz1.symm
   have h_log : log (1 - z) = -∑' k : ℕ, z ^ (k + 1) / (k + 1) := by
     -- rewrite `-log(1-z) = S` as `log(1-z) = -S`
@@ -248,10 +256,8 @@ theorem weierstrassFactor_sub_one_pow_bound {m : ℕ} {z : ℂ} (hz : ‖z‖ �
         _ ≤ 4 * ‖z‖ ^ 1 := by nlinarith [pow_nonneg (norm_nonneg z) 1]
     simpa [hE0] using hmain
   · have hz_lt : ‖z‖ < 1 := lt_of_le_of_lt hz (by norm_num)
-    by_cases hz1 : z = 1
-    · exfalso; rw [hz1] at hz; norm_num at hz
     have h_eq : weierstrassFactor m z = exp (-logTail m z) :=
-      weierstrassFactor_eq_exp_neg_tail m hz_lt hz1
+      weierstrassFactor_eq_exp_neg_tail m hz_lt
     rw [h_eq]
     have h_tail_bound : ‖logTail m z‖ ≤ 2 * ‖z‖ ^ (m + 1) := by
       refine le_trans (norm_logTail_le hz_lt m) ?_
@@ -292,13 +298,8 @@ factorization: one “near” estimate (small `‖z‖`) and one general lower b
 lemma log_norm_weierstrassFactor_ge_neg_two_pow {m : ℕ} {z : ℂ} (hz : ‖z‖ ≤ (1 / 2 : ℝ)) :
     (-2 : ℝ) * ‖z‖ ^ (m + 1) ≤ Real.log ‖weierstrassFactor m z‖ := by
   have hz_lt : ‖z‖ < (1 : ℝ) := lt_of_le_of_lt hz (by norm_num)
-  have hz1 : z ≠ (1 : ℂ) := by
-    intro h
-    have : (1 : ℝ) ≤ (1 / 2 : ℝ) := by
-      simpa [h] using hz
-    norm_num at this
   have hEq : weierstrassFactor m z = Complex.exp (-logTail m z) :=
-    weierstrassFactor_eq_exp_neg_tail m hz_lt hz1
+    weierstrassFactor_eq_exp_neg_tail m hz_lt
   have hlog :
       Real.log ‖weierstrassFactor m z‖ = (-logTail m z).re := by
     simp [hEq, Complex.norm_exp, Real.log_exp]
@@ -322,6 +323,12 @@ lemma log_norm_weierstrassFactor_ge_neg_two_pow {m : ℕ} {z : ℂ} (hz : ‖z�
             nlinarith [htail]
   simpa [hlog, mul_assoc, mul_left_comm, mul_comm] using this
 
+/-!
+## A general lower bound for `Real.log ‖weierstrassFactor m z‖`
+-/
+
+/-- A crude lower bound on `Real.log ‖weierstrassFactor m z‖`, expressed in terms of
+`Real.log ‖1 - z‖` and a bound for `partialLogSum`. -/
 lemma log_norm_weierstrassFactor_ge_log_norm_one_sub_sub
     (m : ℕ) (z : ℂ) :
     Real.log ‖1 - z‖ - (m : ℝ) * max 1 (‖z‖ ^ m) ≤ Real.log ‖weierstrassFactor m z‖ := by
