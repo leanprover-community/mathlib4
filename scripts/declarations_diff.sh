@@ -193,5 +193,5 @@ def testingLongDiff3 im a def
 @[trying to fool you] instance. the messing dot
 alias ⟨d1, d2⟩ := d  check the "split an iff alias"
 private abbrev a_new_one := I was not here before, but I was not private
-private abbrev made it private := should be accounted for
+private abbrev made_it_private := should be accounted for
 ReferenceTest
