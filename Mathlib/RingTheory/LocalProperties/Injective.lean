@@ -31,18 +31,6 @@ universe u v
 
 variable {R : Type u} [CommRing R] {M : Type v} [AddCommGroup M] [Module R M] (S : Submonoid R)
 
-lemma Module.Baer.iff_surjective : Module.Baer R M ↔
-    ∀ (I : Ideal R), Function.Surjective (LinearMap.lcomp R M I.subtype) := by
-  refine ⟨fun h I g ↦ ?_, fun h I g ↦ ?_⟩
-  · rcases h I g with ⟨g', hg'⟩
-    use g'
-    ext x
-    simp [hg']
-  · rcases h I g with ⟨g', hg'⟩
-    use g'
-    intro x hx
-    simp [← hg']
-
 section
 
 universe u' v'
@@ -153,38 +141,6 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   rw [← LinearMap.coe_restrictScalars (R := R),
     LocalizedModule.restrictScalars_map_eq m.primeCompl hM gM]
   simpa using surj
-
-namespace Module
-
-universe u' v'
-
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-theorem Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : Type u'} [Ring S]
-    {M : Type v} {N : Type v'} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module S N]
-    (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
-    [inj : Injective R M] : Injective S N := by
-  apply Baer.injective (fun I g ↦ ?_)
-  let I' := I.comap e₁
-  have {x : S} (h : x ∈ I) : e₁.symm x ∈ I' := by
-    rw [← Ideal.mem_comap, Ideal.comap_symm]
-    simpa [I', Ideal.map_comap_eq_self_of_equiv e₁ I] using h
-  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := {
-    toFun x := ⟨e₁ x.1, x.2⟩
-    map_add' x y := SetCoe.ext (by simp)
-    map_smul' r x := SetCoe.ext (by simp)
-    invFun x := ⟨e₁.symm x.1, this x.2⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
-  let f : I' →ₗ[R] M := e₂.symm.toLinearMap.comp (g.comp e.toLinearMap)
-  have MB : Baer R M := Baer.of_injective ‹_›
-  rcases MB I' f with ⟨f', hf'⟩
-  use e₂.toLinearMap.comp (f'.comp e₁.toSemilinearEquiv.symm.toLinearMap)
-  intro x hx
-  change e₂ (f' (e₁.symm x)) = g ⟨x, hx⟩
-  rw [hf' _ (this hx)]
-  simp [f, e]
-
-end Module
 
 section
 
