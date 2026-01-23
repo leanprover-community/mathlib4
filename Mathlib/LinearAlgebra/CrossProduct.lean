@@ -62,21 +62,6 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
 
 @[inherit_doc] scoped[Matrix] infixl:74 " ⨯₃ " => crossProduct
 
-namespace Matrix
-/-- A deprecated notation for `⨯₃`. -/
-@[deprecated «term_⨯₃_» (since := "2025-07-11")]
-scoped syntax:74 (name := _root_.«term_×₃_») term:74 " ×₃ " term:75 : term
-end Matrix
-
-open Lean Elab Meta.Tactic Term in
-@[term_elab Matrix._root_.«term_×₃_», inherit_doc «term_×₃_»]
-meta def elabDeprecatedCross : TermElab
-| `($x ×₃%$tk $y) => fun ty? => do
-  logWarningAt tk <| .tagged ``Linter.deprecatedAttr <| m!"The ×₃ notation has been deprecated"
-  TryThis.addSuggestion tk { suggestion := "⨯₃" }
-  elabTerm (← `($x ⨯₃ $y)) ty?
-| _ => fun _ => throwUnsupportedSyntax
-
 theorem cross_apply (a b : Fin 3 → R) :
     a ⨯₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
 
@@ -144,7 +129,7 @@ def Cross.lieRing : LieRing (Fin 3 → R) :=
   { Pi.addCommGroup with
     bracket := fun u v => u ⨯₃ v
     add_lie := LinearMap.map_add₂ _
-    lie_add := fun _ => LinearMap.map_add _
+    lie_add := fun _ => map_add _
     lie_self := cross_self
     leibniz_lie := leibniz_cross }
 
@@ -171,7 +156,7 @@ lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fi
   constructor
   · rw [LinearIndependent.pair_iff' hv, not_forall_not]
     rintro ⟨a, rfl⟩
-    rw [LinearMap.map_smul, cross_self, smul_zero]
+    rw [map_smul, cross_self, smul_zero]
   have hv' : v = ![v 0, v 1, v 2] := by simp [← List.ofFn_inj]
   have hw' : w = ![w 0, w 1, w 2] := by simp [← List.ofFn_inj]
   intro h1 h2

@@ -44,7 +44,7 @@ Generally useful lemmas which are not related to integrals:
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory TopologicalSpace NormedSpace Filter
@@ -99,7 +99,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     intro h
     apply lt_irrefl ‖s x x‖
     calc
-      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, ContinuousLinearMap.map_sub]
+      ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, map_sub]
       _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
@@ -114,8 +114,6 @@ theorem ae_eq_zero_of_forall_dual [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) : f =ᵐ[μ] 0 :=
   ae_eq_zero_of_forall_dual_of_isSeparable 𝕜 (.of_separableSpace Set.univ) hf
     (Eventually.of_forall fun _ => Set.mem_univ _)
-
-variable {𝕜}
 
 end AeEqOfForall
 
@@ -239,7 +237,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     exact ContinuousLinearMap.integrable_comp c (hf_int_finite s hs hμs)
   · intro s hs hμs
     rw [ContinuousLinearMap.integral_comp_comm c (hf_int_finite s hs hμs), hf_zero s hs hμs]
-    exact ContinuousLinearMap.map_zero _
+    exact map_zero _
 
 theorem ae_eq_restrict_of_forall_setIntegral_eq {f g : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)

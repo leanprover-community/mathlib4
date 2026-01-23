@@ -18,7 +18,7 @@ In this file we prove that derivatives of polynomials in the analysis sense agre
 derivatives in the algebraic sense.
 
 For a more detailed overview of one-dimensional derivatives in mathlib, see the module docstring of
-`analysis/calculus/deriv/basic`.
+`Mathlib/Analysis/Calculus/Deriv/Basic.lean`.
 
 ## TODO
 
@@ -30,7 +30,7 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, polynomial
 -/
 
-@[expose] public section
+public section
 
 
 universe u

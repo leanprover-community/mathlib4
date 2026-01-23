@@ -27,7 +27,7 @@ open Limits Category Preadditive Pretriangulated
 
 open ZeroObject
 
-variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] [Pretriangulated C]
 
 namespace Triangulated
@@ -147,7 +147,7 @@ def ofIso {X₁' X₂' X₃' Z₁₂' Z₂₃' Z₁₃' : C} (u₁₂' : X₁' �
       iso₂₃.inv_hom_id_triangle_hom₃, eq₂₃]
     dsimp
     rw [comp_id]
-  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc,assoc, eq₂₃',
+  · rw [← cancel_mono (e₂.hom⟦(1 : ℤ)⟧'), assoc, assoc, assoc, assoc, eq₂₃',
       iso₂₃.inv_hom_id_triangle_hom₃_assoc, ← rel₂₃, ← Functor.map_comp, comm₁₂,
       Functor.map_comp, reassoc_of% eq₁₃']
   · refine isomorphic_distinguished _ H.mem _ ?_

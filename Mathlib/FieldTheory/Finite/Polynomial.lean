@@ -90,7 +90,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
-    AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
+    map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
   · refine Finset.sum_eq_single n ?_ ?_
     · intro b _ ne
@@ -199,11 +199,8 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
-  classical
-  exact
-    IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
-        simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
+  rw [FiniteDimensional, ← IsNoetherian.iff_fg, IsNoetherian.iff_rank_lt_aleph0]
+  simpa only [rank_R] using Cardinal.natCast_lt_aleph0
 
 open Classical in
 theorem finrank_R [Fintype σ] : Module.finrank K (R σ K) = Fintype.card (σ → K) :=

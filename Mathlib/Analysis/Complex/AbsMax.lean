@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
-public import Mathlib.Analysis.NormedSpace.Extr
+public import Mathlib.Analysis.Normed.Module.Extr
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Order.ExtrClosure
 
@@ -80,7 +80,7 @@ are continuous on its closure. We prove the following theorems.
 maximum modulus principle, complex analysis
 -/
 
-@[expose] public section
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology

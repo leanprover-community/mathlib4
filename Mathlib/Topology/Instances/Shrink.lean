@@ -6,8 +6,7 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Logic.Small.Defs
-public import Mathlib.Topology.Defs.Induced
-public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Homeomorph.TransferInstance
 
 /-!
 # Topological space structure on `Shrink X`
@@ -21,17 +20,12 @@ namespace Shrink
 
 noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     TopologicalSpace (Shrink.{v} X) :=
-  .coinduced (equivShrink X) inferInstance
+  (equivShrink X).symm.topologicalSpace
 
 /-- `equivShrink` as a homeomorphism. -/
-@[simps toEquiv]
+@[simps! toEquiv]
 noncomputable def homeomorph (X : Type u) [TopologicalSpace X] [Small.{v} X] :
-    X ≃ₜ Shrink.{v} X where
-  __ := equivShrink X
-  continuous_toFun := continuous_coinduced_rng
-  continuous_invFun := by
-    convert continuous_induced_dom
-    simp only [Equiv.invFun_as_coe, Equiv.induced_symm]
-    rfl
+    X ≃ₜ Shrink.{v} X :=
+  (equivShrink X).symm.homeomorph.symm
 
 end Shrink

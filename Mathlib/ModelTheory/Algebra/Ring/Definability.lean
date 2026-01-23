@@ -18,7 +18,7 @@ This file proves that the set of zeros of a multivariable polynomial is a defina
 
 -/
 
-@[expose] public section
+public section
 
 namespace FirstOrder
 

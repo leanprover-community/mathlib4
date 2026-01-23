@@ -173,6 +173,10 @@ protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
+theorem intCast_apply [AddGroupWithOne α] {i j} {d : ℤ} :
+    (d : Matrix n n α) i j = if i = j then d else 0 := by
+  rw [Int.cast_ite, Int.cast_zero, ← diagonal_intCast, diagonal_apply]
+
 theorem diagonal_unique [Unique m] [DecidableEq m] [Zero α] (d : m → α) :
     diagonal d = of fun _ _ => d default := by
   ext i j

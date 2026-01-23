@@ -225,9 +225,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s 
   apply lt_irrefl (ρ s')
   calc
     ρ s' ≤ c * μ s' := v.measure_le_of_frequently_le (c • μ) hρ s' fun x hx => hc x hx.1
-    _ < d * μ s' := by
-      apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hcd)
-      exact (lt_of_le_of_lt (measure_mono inter_subset_right) μo).ne
+    _ < d * μ s' := by gcongr; exact measure_ne_top_of_subset inter_subset_right μo.ne
     _ ≤ ρ s' := v.measure_le_of_frequently_le ρ smul_absolutelyContinuous s' fun x hx ↦ hd x hx.1
 
 /-- If `ρ` is absolutely continuous with respect to `μ`, then for almost every `x`,
@@ -477,7 +475,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
     Measure.exists_isOpen_measure_lt_top ρ x
   let s := {x : α | v.limRatioMeas hρ x = ∞} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
-  have ρs : ρ s ≠ ∞ := ((measure_mono inter_subset_right).trans_lt μo).ne
+  have ρs : ρ s ≠ ∞ := measure_ne_top_of_subset inter_subset_right μo.ne
   have A : ∀ q : ℝ≥0, 1 ≤ q → μ s ≤ (q : ℝ≥0∞)⁻¹ * ρ s := by
     intro q hq
     rw [mul_comm, ← div_eq_mul_inv, ENNReal.le_div_iff_mul_le _ (Or.inr ρs), mul_comm]
@@ -489,7 +487,7 @@ theorem measure_limRatioMeas_top : μ {x | v.limRatioMeas hρ x = ∞} = 0 := by
         not_false_iff]
   have B : Tendsto (fun q : ℝ≥0 => (q : ℝ≥0∞)⁻¹ * ρ s) atTop (𝓝 (∞⁻¹ * ρ s)) := by
     apply ENNReal.Tendsto.mul_const _ (Or.inr ρs)
-    exact ENNReal.tendsto_inv_iff.2 (ENNReal.tendsto_coe_nhds_top.2 tendsto_id)
+    exact tendsto_inv_iff.2 (ENNReal.tendsto_coe_nhds_top.2 tendsto_id)
   simp only [zero_mul, ENNReal.inv_top] at B
   apply ge_of_tendsto B
   exact eventually_atTop.2 ⟨1, A⟩
@@ -501,7 +499,7 @@ theorem measure_limRatioMeas_zero : ρ {x | v.limRatioMeas hρ x = 0} = 0 := by
     Measure.exists_isOpen_measure_lt_top μ x
   let s := {x : α | v.limRatioMeas hρ x = 0} ∩ o
   refine ⟨s, inter_mem_nhdsWithin _ (o_open.mem_nhds xo), le_antisymm ?_ bot_le⟩
-  have μs : μ s ≠ ∞ := ((measure_mono inter_subset_right).trans_lt μo).ne
+  have μs : μ s ≠ ∞ := measure_ne_top_of_subset inter_subset_right μo.ne
   have A : ∀ q : ℝ≥0, 0 < q → ρ s ≤ q * μ s := by
     intro q hq
     apply v.measure_le_mul_of_subset_limRatioMeas_lt hρ

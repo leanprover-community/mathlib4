@@ -90,6 +90,10 @@ namespace Equiv.Perm
 theorem mem_alternatingGroup {f : Perm α} : f ∈ alternatingGroup α ↔ sign f = 1 :=
   sign.mem_ker
 
+theorem mul_mem_alternatingGroup_of_isSwap {g g' : Perm α} (hg : IsSwap g) (hg' : IsSwap g') :
+    g * g' ∈ alternatingGroup α := by
+  simp [mem_alternatingGroup, map_mul, hg.sign_eq, hg'.sign_eq]
+
 theorem prod_list_swap_mem_alternatingGroup_iff_even_length {l : List (Perm α)}
     (hl : ∀ g ∈ l, IsSwap g) : l.prod ∈ alternatingGroup α ↔ Even l.length := by
   rw [mem_alternatingGroup, sign_prod_list_swap hl, neg_one_pow_eq_one_iff_even]
@@ -160,7 +164,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
       exact hσ
     obtain ⟨a, ha, b, hb, ab⟩ := Finset.one_lt_card.1 h2
     refine isConj_iff.2 ⟨⟨π * swap a b, ?_⟩, Subtype.val_injective ?_⟩
-    · rw [mem_alternatingGroup, MonoidHom.map_mul, h, sign_swap ab, Int.units_mul_self]
+    · rw [mem_alternatingGroup, map_mul, h, sign_swap ab, Int.units_mul_self]
     · simp only [← hπ, Subgroup.coe_mul]
       have hd : Disjoint (swap a b) σ := by
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,

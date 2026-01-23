@@ -51,7 +51,7 @@ For the next statements, `s` is a measurable set and `f` is differentiable on `s
 * `integral_image_eq_integral_abs_det_fderiv_smul`: for `g : E → F`, one has
     `∫ x in f '' s, g x ∂μ = ∫ x in s, |(f' x).det| • g (f x) ∂μ`.
 * `integrableOn_image_iff_integrableOn_abs_det_fderiv_smul`: for `g : E → F`, the function `g` is
-  integrable on `f '' s` if and only if `|(f' x).det| • g (f x))` is integrable on `s`.
+  integrable on `f '' s` if and only if `|(f' x).det| • g (f x)` is integrable on `s`.
 
 ## Implementation
 
@@ -94,7 +94,7 @@ Change of variables in integrals
 [Fremlin, *Measure Theory* (volume 2)][fremlin_vol2]
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory MeasureTheory.Measure Metric Filter Set Module Asymptotics
   TopologicalSpace
@@ -229,7 +229,7 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
       rcases s_subset x xs with ⟨n, z, _⟩
       exact ⟨z⟩
     inhabit ↥T
-    exact ⟨_, Encodable.surjective_decode_iget (ℕ × T × ℕ)⟩
+    exact ⟨_, Encodable.surjective_decode_getD (ℕ × T × ℕ) default⟩
   -- these sets `t q = K n z p` will do
   refine
     ⟨fun q => K (F q).1 (F q).2.1 (F q).2.2, fun q => f' (F q).2.1, fun n => K_closed _ _ _,
@@ -314,10 +314,8 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
         (𝓝 (d * μ (closedBall 0 1))) := by
       convert L1
       exact (addHaar_image_continuousLinearMap _ _ _).symm
-    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) :=
-      (ENNReal.mul_lt_mul_right (measure_closedBall_pos μ _ zero_lt_one).ne'
-            measure_closedBall_lt_top.ne).2
-        hm
+    have I : d * μ (closedBall 0 1) < m * μ (closedBall 0 1) := by
+      gcongr; exacts [(measure_closedBall_pos μ _ zero_lt_one).ne', measure_closedBall_lt_top.ne]
     have H :
       ∀ᶠ b : ℝ in 𝓝[>] 0, μ (closedBall 0 b + A '' closedBall 0 1) < m * μ (closedBall 0 1) :=
       (tendsto_order.1 L2).2 _ I
@@ -524,10 +522,10 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
   have I : r * ‖(f' x - A) a‖ ≤ r * (δ + ε) * (‖z‖ + ε) :=
     calc
       r * ‖(f' x - A) a‖ = ‖(f' x - A) (r • a)‖ := by
-        simp only [ContinuousLinearMap.map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
+        simp only [map_smul, norm_smul, Real.norm_eq_abs, abs_of_nonneg rpos.le]
       _ = ‖f y - f x - A (y - x) - (f y - f x - (f' x) (y - x))‖ := by
         simp only [ya, add_sub_cancel_left, sub_sub_sub_cancel_left, ContinuousLinearMap.coe_sub',
-          Pi.sub_apply, ContinuousLinearMap.map_smul, smul_sub]
+          Pi.sub_apply, map_smul, smul_sub]
       _ ≤ ‖f y - f x - A (y - x)‖ + ‖f y - f x - (f' x) (y - x)‖ := norm_sub_le _ _
       _ ≤ δ * ‖y - x‖ + ε * ‖y - x‖ := (add_le_add (hf _ ys _ xs) (hρ ⟨rρ hy, ys⟩))
       _ = r * (δ + ε) * ‖a‖ := by
