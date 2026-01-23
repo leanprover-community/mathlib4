@@ -442,8 +442,7 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
 end Finsupp
 
 namespace Pi
-variable {M R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
-  [AddCommMonoid M] [Module R M]
+variable {R M n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
 
 open TensorProduct LinearMap
 
