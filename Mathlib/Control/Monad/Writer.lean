@@ -54,7 +54,7 @@ instance [MonadWriter ω M] : MonadWriter ω (ReaderT ρ M) where
 
 instance [Monad M] [MonadWriter ω M] : MonadWriter ω (StateT σ M) where
   tell w := (tell w : M _)
-  listen x s := (fun ((a,w), s) ↦ ((a,s), w)) <$> listen (x s)
+  listen x s := (fun ((a, w), s) ↦ ((a, s), w)) <$> listen (x s)
   pass x s := pass <| (fun ((a, f), s) ↦ ((a, s), f)) <$> (x s)
 
 namespace WriterT
@@ -81,7 +81,7 @@ This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and
 -/
 @[reducible, inline]
 def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
-  map := fun f (cmd : M _) ↦ WriterT.mk <| (fun (a,w) ↦ (f a, w)) <$> cmd
+  map := fun f (cmd : M _) ↦ WriterT.mk <| (fun (a, w) ↦ (f a, w)) <$> cmd
   pure := fun a ↦ pure (f := M) (a, empty)
   bind := fun (cmd : M _) f ↦
     WriterT.mk <| cmd >>= fun (a, w₁) ↦
@@ -106,8 +106,8 @@ instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad
 
 instance : MonadWriter ω (WriterT ω M) where
   tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
-  listen := fun cmd ↦ WriterT.mk <| (fun (a,w) ↦ ((a,w), w)) <$> cmd
-  pass := fun cmd ↦ WriterT.mk <| (fun ((a,f), w) ↦ (a, f w)) <$> cmd
+  listen := fun cmd ↦ WriterT.mk <| (fun (a, w) ↦ ((a, w), w)) <$> cmd
+  pass := fun cmd ↦ WriterT.mk <| (fun ((a, f), w) ↦ (a, f w)) <$> cmd
 
 instance {ε : Type*} [MonadExcept ε M] : MonadExcept ε (WriterT ω M) where
   throw := fun e ↦ WriterT.mk <| throw e

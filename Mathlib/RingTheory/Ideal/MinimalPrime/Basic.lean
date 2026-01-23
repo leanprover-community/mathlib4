@@ -111,7 +111,7 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [CommRing S] {I J : Ideal R}
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J
@@ -132,7 +132,6 @@ theorem Ideal.minimalPrimes_eq_subsingleton_self [I.IsPrime] : I.minimalPrimes =
 variable (R) in
 theorem IsDomain.minimalPrimes_eq_singleton_bot [IsDomain R] :
     minimalPrimes R = {⊥} :=
-  have := Ideal.bot_prime (α := R)
   Ideal.minimalPrimes_eq_subsingleton_self
 
 end

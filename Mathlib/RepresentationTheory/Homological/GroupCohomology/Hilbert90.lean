@@ -164,8 +164,8 @@ Then there exists `ε : B` such that `ε ≠ 0` and `η * g ε = ε`. -/
 lemma exists_mul_galRestrict_of_norm_eq_one (hg : ∀ x, x ∈ Subgroup.zpowers g) {η : B}
     (hη : Algebra.norm K (algebraMap B L η) = 1) :
     ∃ ε : B, ε ≠ 0 ∧ η * galRestrict A K L B g ε = ε := by
-  have : NoZeroSMulDivisors A L := by
-    rw [NoZeroSMulDivisors.iff_algebraMap_injective, IsScalarTower.algebraMap_eq A K L]
+  have : Module.IsTorsionFree A L := by
+    rw [Module.isTorsionFree_iff_algebraMap_injective, IsScalarTower.algebraMap_eq A K L]
     exact (algebraMap K L).injective.comp (IsFractionRing.injective A K)
   have : IsLocalization (Algebra.algebraMapSubmonoid B A⁰) L :=
     IsIntegralClosure.isLocalization A K L B
