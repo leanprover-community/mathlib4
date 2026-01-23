@@ -22,6 +22,10 @@ open Function Matrix LinearMap
 
 variable {R : Type*} [Semiring R]
 
+instance (priority := low) [OrzechProperty R] : IsStablyFiniteRing R :=
+  isStablyFiniteRing_iff_injective_of_surjective.mpr fun _ ↦
+    OrzechProperty.injective_of_surjective_endomorphism
+
 instance (priority := low) [IsStablyFiniteRing R] [Nontrivial R] : RankCondition R where
   le_of_fin_surjective {n m} f hf := by
     by_contra! lt
@@ -58,7 +62,7 @@ protected theorem MulOpposite.rankCondition_iff : RankCondition Rᵐᵒᵖ ↔ R
   refine forall_swap.trans <| .trans (forall_congr' ?_) (transposeAddEquiv ..).forall_congr_right
   refine fun f ↦ .trans (forall_congr' fun g ↦ ?_) (transposeAddEquiv ..).forall_congr_right
   rw [← (transposeAddEquiv ..).injective.eq_iff]
-  congrm(?_ = ?_ → _)
+  congrm (?_ = ?_ → _)
   · ext; simp [map, mul_apply]
   · simp
 
@@ -71,7 +75,7 @@ protected theorem MulOpposite.invariantBasisNumber_iff :
   refine forall_swap.trans <| .trans (forall_congr' ?_) (transposeAddEquiv ..).forall_congr_right
   refine fun f ↦ .trans (forall_congr' fun g ↦ ?_) (transposeAddEquiv ..).forall_congr_right
   rw [← (transposeAddEquiv ..).injective.eq_iff, ← (transposeAddEquiv (Fin m) ..).injective.eq_iff]
-  congrm(?_ = ?_ → ?_ = ?_ → _)
+  congrm (?_ = ?_ → ?_ = ?_ → _)
   iterate 2 ext; simp [map, mul_apply]; simp
 
 instance [RankCondition R] : RankCondition Rᵐᵒᵖ := MulOpposite.rankCondition_iff.mpr ‹_›
