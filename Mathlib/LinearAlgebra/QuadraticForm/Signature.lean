@@ -10,6 +10,25 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 
 /-!
 # Signature of a quadratic form
+
+We define the signature of a quadratic form over a linearly ordered field, and show that it can be
+computed from any sum-of-squares representation.
+
+## Main results and definitions
+
+* `QuadraticForm.sigPos`, `QuadraticForm.sigNeg`: for a quadratic form `Q`, the maximal dimension
+  of a subspace on which `Q` is positive-definite (resp. negative-definite).
+* `QuadraticForm.sigPos_of_equiv_weightedSumOfSquares`,
+  `QuadraticForm.sigNeg_of_equiv_weightedSumOfSquares`: for any isomorphism from `Q` to a
+  weighted sum of squares, `Q.sigPos` and `Q.sigNeg` are the number of positive and negative
+  weights. (This is the uniqueness part of **Sylvester's law of inertia**; the existence is proved
+  elsewhere.)
+
+## Acknowledgements
+
+This file is based on work carried out by Sina Keller, Philipp Schumann, and Nicolas Trutmann in
+the course of their studies at ETH Zürich.
+
 -/
 open Finset QuadraticMap
 
@@ -92,13 +111,14 @@ lemma QuadraticMap.Equivalent.sigNeg_eq (h : Equivalent Q Q') : sigNeg Q = sigNe
 end LinearOrder
 
 section Field
+namespace QuadraticForm
 
-variable {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] [Module 𝕜 M']
-  {Q : QuadraticForm 𝕜 M}
+variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜]
+  [Module 𝕜 M] [Module 𝕜 M'] {Q : QuadraticForm 𝕜 M}
 
 /-- Key lemma for Sylvester's law of inertia: the sum of `sigPos Q` and the dimension of any
 negative-semidefinite subspace is bounded above by the dimension of the whole space. -/
-lemma sigPos_add_finrank_le_of_nonpos [LinearOrder 𝕜] [FiniteDimensional 𝕜 M]
+lemma sigPos_add_finrank_le_of_nonpos [FiniteDimensional 𝕜 M]
     {V : Subspace 𝕜 M} (hV : ∀ x ∈ V, Q x ≤ 0) :
     sigPos Q + Module.finrank 𝕜 V ≤ Module.finrank 𝕜 M := by
   obtain ⟨Vp, hr, hVp⟩ := (sigPos_isGreatest Q).1
@@ -113,31 +133,7 @@ lemma sigPos_add_finrank_le_of_nonpos [LinearOrder 𝕜] [FiniteDimensional 𝕜
   simp_all only [restrict_apply]
   grind
 
-variable {ι : Type*} [Fintype ι] {w : ι → 𝕜}
-
-private lemma QuadraticForm.radical_sumSq_eq' [NeZero (2 : 𝕜)] :
-    radical (weightedSumSquares 𝕜 w) = Pi.spanSubset 𝕜 {i | w i = 0} := by
-  classical
-  ext v
-  simp only [mem_radical_iff', weightedSumSquares_apply, ← pow_two, smul_eq_mul, Pi.add_apply,
-    add_sq, mul_add, sum_add_distrib, add_eq_right, Pi.mem_spanSubset_iff]
-  constructor
-  · rintro ⟨hv, hvv'⟩ i
-    simp only [hv, zero_add] at hvv'
-    specialize hvv' (Pi.single i 1)
-    simp_all [Pi.single_apply, NeZero.ne, or_iff_not_imp_left]
-  · refine fun h ↦ ⟨?_, fun v ↦ ?_⟩ <;> [skip ; simp only [← sum_add_distrib]] <;>
-    · apply sum_eq_zero
-      grind [mul_eq_zero]
-
-/-- The radical of the quadratic form `weightedSumSquares 𝕜 w` is precisely the span of the basis
-vectors having zero weights. -/
-lemma QuadraticForm.radical_sumSq_eq [NeZero (2 : 𝕜)] :
-    radical (weightedSumSquares 𝕜 w) = .span 𝕜 (Pi.basisFun 𝕜 ι '' {i | w i = 0}) := by
-  classical
-  simp [radical_sumSq_eq', Pi.spanSubset]
-
-variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+variable {ι : Type*} [Fintype ι] {w : ι → 𝕜} [IsStrictOrderedRing 𝕜]
 
 private lemma posDef_spanSubset (s : Set ι) (hs : ∀ i ∈ s, 0 < w i) :
     (weightedSumSquares 𝕜 w).restrict (Pi.spanSubset 𝕜 s) |>.PosDef := by
@@ -167,7 +163,7 @@ private lemma negSemidef_spanSubset (s : Set ι) (hs : ∀ i ∈ s, w i ≤ 0) :
   · rw [Pi.mem_spanSubset_iff.mp hx i hi, mul_zero, mul_zero]
 
 /-- Key lemma for Sylvester's law of inertia: compute the signature of a weighted sum of squares. -/
-lemma QuadraticForm.sigPos_sumSq_eq :
+lemma sigPos_weightedSumSquares :
     sigPos (weightedSumSquares 𝕜 w) = {i | 0 < w i}.ncard := by
   classical
   let p : Set ι := {i | 0 < w i}
@@ -183,18 +179,19 @@ lemma QuadraticForm.sigPos_sumSq_eq :
   suffices sigPos (weightedSumSquares 𝕜 w) + m.ncard ≤ Nat.card ι by lia
   simpa using sigPos_add_finrank_le_of_nonpos <| negSemidef_spanSubset m (fun _ hi ↦ hi)
 
-lemma QuadraticForm.sigNeg_sumSq_eq :
+lemma sigNeg_weightedSumSquares :
     sigNeg (weightedSumSquares 𝕜 w) = {i | w i < 0}.ncard := by
   simp only [sigNeg]
-  convert sigPos_sumSq_eq (w := -w) using 2
+  convert sigPos_weightedSumSquares (w := -w) using 2
   · ext; simp
   · simp
 
-lemma QuadraticForm.sigPos_add_sigNeg_add_radical :
+private lemma sigPos_add_sigNeg_add_radical₁ :
     sigPos (weightedSumSquares 𝕜 w) + sigNeg (weightedSumSquares 𝕜 w) +
       Module.finrank 𝕜 (weightedSumSquares 𝕜 w).radical = Nat.card ι := by
   classical
-  rw [radical_sumSq_eq', sigPos_sumSq_eq, sigNeg_sumSq_eq, Pi.dim_spanSubset]
+  rw [radical_weightedSumSquares, sigPos_weightedSumSquares, sigNeg_weightedSumSquares,
+    Pi.dim_spanSubset]
   calc {i | 0 < w i}.ncard + {i | w i < 0}.ncard + {i | w i = 0}.ncard
   _ = {i | 0 < w i}.ncard + {i | w i ≤ 0}.ncard := by
     rw [add_assoc, add_left_cancel_iff, ← Set.ncard_union_eq]
@@ -209,3 +206,23 @@ lemma QuadraticForm.sigPos_add_sigNeg_add_radical :
       grind [le_iff_lt_or_eq]
     · grind [disjoint_iff_ne]
   _ = Nat.card ι := Set.ncard_univ _
+
+lemma sigPos_add_sigNeg_add_radical [FiniteDimensional 𝕜 M] :
+    sigPos Q + sigNeg Q + Module.finrank 𝕜 Q.radical = Module.finrank 𝕜 M := by
+  have : Invertible (2 : 𝕜) := invertibleOfNonzero (NeZero.ne _)
+  obtain ⟨w, e⟩ := Q.equivalent_weightedSumSquares
+  rw [e.sigPos_eq, e.sigNeg_eq, e.rank_radical_eq]
+  convert QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
+  exact Eq.symm (Nat.card_fin (Module.finrank 𝕜 M))
+
+lemma sigPos_of_equiv_weightedSumSquares (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
+    sigPos Q = {i | 0 < w i}.ncard := by
+  rw [hQ.sigPos_eq]
+  exact sigPos_weightedSumSquares
+
+lemma sigNeg_of_equiv_weightedSumSquares (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
+    sigNeg Q = {i | w i < 0}.ncard := by
+  rw [hQ.sigNeg_eq]
+  exact sigNeg_weightedSumSquares
+
+end QuadraticForm

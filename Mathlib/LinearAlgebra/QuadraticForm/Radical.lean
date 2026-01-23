@@ -165,3 +165,29 @@ lemma nondegenerate_polar_iff :
 end InvertibleTwo
 
 end QuadraticMap
+
+namespace QuadraticForm
+variable {𝕜 ι : Type*} [Field 𝕜] [NeZero (2 : 𝕜)] [Fintype ι] {w : ι → 𝕜}
+
+/-- Over a field of characteristic `≠ 2`, the radical of a weighted-sum-of-squares quadratic form
+is the number of zero weights. -/
+lemma radical_weightedSumSquares :
+    radical (weightedSumSquares 𝕜 w) = Pi.spanSubset 𝕜 {i | w i = 0} := by
+  classical
+  ext v
+  simp only [mem_radical_iff', weightedSumSquares_apply, ← pow_two, smul_eq_mul, Pi.add_apply,
+    add_sq, mul_add, sum_add_distrib, add_eq_right, Pi.mem_spanSubset_iff]
+  constructor
+  · rintro ⟨hv, hvv'⟩ i
+    simpa [hv, Pi.single_apply, NeZero.ne, or_iff_not_imp_left] using hvv' (Pi.single i 1)
+  · simpa only [← sum_add_distrib]
+      using fun h ↦ ⟨sum_eq_zero (by grind), fun v ↦ sum_eq_zero (by grind)⟩
+
+/-- If the quadratic form `Q` is equivalent to a weighted sum of squares with weights `w`, then
+the rank of `Q.radical` is equal to the number of zero weights. -/
+lemma finrank_radical_of_equiv_weightedSumSquares {M : Type*} [AddCommGroup M] [Module 𝕜 M]
+    {Q : QuadraticForm 𝕜 M} (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
+    Module.finrank 𝕜 Q.radical = {i | w i = 0}.ncard := by
+  rw [hQ.rank_radical_eq, radical_weightedSumSquares, Pi.dim_spanSubset]
+
+end QuadraticForm
