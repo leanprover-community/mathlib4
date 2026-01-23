@@ -9,7 +9,6 @@ public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Category.BoolAlg
 public import Mathlib.Order.Category.FinBddDistLat
 public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Tactic.ApplyFun
 public import Mathlib.Data.Set.Subsingleton
 
 /-!

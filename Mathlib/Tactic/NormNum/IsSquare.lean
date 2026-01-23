@@ -5,7 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.GCD
+public meta import Batteries.Data.Nat.Basic
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # `norm_num` extension for `IsSquare`

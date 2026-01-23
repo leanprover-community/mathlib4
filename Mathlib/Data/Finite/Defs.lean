@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Set.CoeSort
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Tactic.Set
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of the `Finite` typeclass
@@ -213,6 +214,8 @@ theorem not_infinite {s : Set α} : ¬s.Infinite ↔ s.Finite :=
   not_not
 
 alias ⟨_, Finite.not_infinite⟩ := not_infinite
+
+@[simp] lemma Infinite.not_finite {s : Set α} (hs : s.Infinite) : ¬ s.Finite := hs
 
 attribute [simp] Finite.not_infinite
 

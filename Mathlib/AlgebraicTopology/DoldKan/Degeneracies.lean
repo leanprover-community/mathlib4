@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
 
 /-!
 

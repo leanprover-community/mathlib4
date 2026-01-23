@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pointwise.Set
 public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Order.Basic
@@ -212,7 +211,7 @@ theorem nhdsLT_basis [NoMinOrder α] (a : α) : (𝓝[<] a).HasBasis (· < a) (I
   nhdsLT_basis_of_exists_lt <| exists_lt a
 
 theorem nhdsLT_eq_bot_iff {a : α} : 𝓝[<] a = ⊥ ↔ IsBot a ∨ ∃ b, b ⋖ a := by
-  convert (config := {preTransparency := .default}) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
+  convert (config := { preTransparency := .default }) nhdsGT_eq_bot_iff (a := OrderDual.toDual a)
     using 4
   exact ofDual_covBy_ofDual_iff
 

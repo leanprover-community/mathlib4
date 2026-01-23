@@ -9,8 +9,10 @@ public import Mathlib.Logic.Relator
 public import Mathlib.Tactic.Use
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.SimpRw
-public import Mathlib.Logic.Basic
 public import Mathlib.Order.Defs.Unbundled
+public import Batteries.Logic
+public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.Basic
 
 /-!
 # Relation closures
@@ -57,6 +59,8 @@ section NeImp
 variable {r : α → α → Prop}
 
 theorem Std.Refl.reflexive [Std.Refl r] : Reflexive r := fun x ↦ Std.Refl.refl x
+
+@[deprecated (since := "2026-01-09")] alias IsRefl.reflexive := Std.Refl.reflexive
 
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/

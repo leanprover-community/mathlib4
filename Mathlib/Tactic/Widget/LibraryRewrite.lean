@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid, Anand Rao
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.Widget.InteractiveUnfold
-public meta import ProofWidgets.Component.FilterDetails
+public import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Tactic.Widget.InteractiveUnfold
+public import ProofWidgets.Component.FilterDetails
 
 /-!
 # Point & click library rewriting
