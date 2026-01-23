@@ -128,10 +128,17 @@ lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
 lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
   ⟨1, Path.target γ⟩
 
+/-- The path 0 ⟶ 1 in `I` -/
+@[simps!]
+protected def id : Path (0 : I) 1 where
+  toContinuousMap := .id _
+  source' := rfl
+  target' := rfl
+
 /-- The constant path from a point to itself -/
 @[refl, simps! (attr := grind =)]
 def refl (x : X) : Path x x where
-  toContinuousMap  := .const I x
+  toContinuousMap := .const I x
   source' := rfl
   target' := rfl
 

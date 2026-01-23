@@ -109,7 +109,7 @@ space, the space decomposes as an internal direct sum of simultaneous eigenspace
 operators. -/
 theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : Commute A B) :
-    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
+    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)) := by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB
