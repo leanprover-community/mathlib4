@@ -22,8 +22,6 @@ This file defines the lattice structure on submodules, `Submodule.CompleteLattic
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-Many results about operations on this lattice structure are defined in `LinearAlgebra/Basic.lean`,
-most notably those which use `span`.
 
 ## Implementation notes
 
