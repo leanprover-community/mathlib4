@@ -86,6 +86,14 @@ lemma mulHeight₁_eq (x : K) :
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight₁_eq,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ max (v x) 1]
 
+/-- This is the familiar definition of the multiplicative height on (nonzero) tuples
+of number field elements. -/
+lemma mulHeight_eq {ι : Type*} {x : ι → K} (hx : x ≠ 0) :
+    mulHeight x =
+      (∏ v : InfinitePlace K, (⨆ i, v (x i)) ^ v.mult) * ∏ᶠ v : FinitePlace K, ⨆ i, v (x i) := by
+  simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight_eq hx,
+    prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ ⨆ i, v (x i)]
+
 end NumberField
 
 end
