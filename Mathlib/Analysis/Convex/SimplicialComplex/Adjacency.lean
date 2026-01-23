@@ -602,7 +602,7 @@ theorem num_containing_simplices_boundary
       -- The formal proof would show that having two distinct top-simplices
       -- sharing a facet on the boundary of stdSimplex and both extending inward
       -- violates the simplicial complex covering property.
-      exact simplices_same_side_overlap S s1 s2 hs1.1 hs2.1 hs1.2.1 hs2.2.1 t 
+      exact simplices_same_side_overlap S s1 s2 hs1.1 hs2.1 hs1.2.1 hs2.2.1 t
         hs1.2.2 hs2.2.2 ht_card k hk v1 hv1_s1 hv1_not_t hv1_k_pos v2 hv2_s2 hv2_not_t hv2_k_pos
     · exact h_eq
 
@@ -752,7 +752,7 @@ theorem num_containing_simplices_interior
       -- v' must be in some top-simplex containing t.
       -- But the only such simplex is s, and v' ∉ s (v' is on the opposite side).
       -- Contradiction.
-      obtain ⟨s1, s2, hs1_face, hs2_face, hs1_card, hs2_card, hs1_sub, hs2_sub, hs_ne⟩ := 
+      obtain ⟨s1, s2, hs1_face, hs2_face, hs1_card, hs2_card, hs1_sub, hs2_sub, hs_ne⟩ :=
         interior_face_has_both_sides S hS t ht ht_card ht_int
       have h_s1_in : s1 ∈ containingSimplices S t n := by
         simp only [containingSimplices, Set.mem_sep_iff]
@@ -767,7 +767,7 @@ theorem num_containing_simplices_interior
           rcases hx with rfl | rfl
           · exact h_s1_in
           · exact h_s2_in
-        calc (containingSimplices S t n).ncard 
+        calc (containingSimplices S t n).ncard
             ≥ ({s1, s2} : Set _).ncard := Set.ncard_le_ncard h_two (by
               apply Set.Finite.subset hSfin.toFinite
               intro x hx
