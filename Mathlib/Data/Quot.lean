@@ -592,6 +592,34 @@ protected theorem nonempty (q : Trunc α) : Nonempty α :=
 
 end Trunc
 
+def Quotient.dependentChoiceExists
+    {α : Sort*} {s : Setoid α} (f : α → Quotient s) (init : α)
+    : Nonempty (Trunc { seq : Nat → α //
+        seq 0 = init ∧
+        ∀ n, f (seq n) = Quotient.mk s (seq (n + 1)) }) := by
+  constructor
+  apply Trunc.mk
+  use Nat.rec init (fun _ x ↦ (f x).out)
+  simp only [Quotient.out_eq, implies_true, and_true]
+  rfl
+
+attribute [local instance] Quotient.dependentChoiceExists in
+partial def Quotient.dependentChoice {α : Sort*} {s : Setoid α} (f : α → Quotient s) (init : α) :
+    Trunc { seq : Nat → α // seq 0 = init ∧ ∀ n, f (seq n) = Quotient.mk s (seq (n + 1)) } :=
+  Quotient.recOnSubsingleton (motive := fun a ↦ a = f init → _) (f init) (fun a h ↦
+  Quotient.recOnSubsingleton (Quotient.dependentChoice f a) (fun s ↦
+    ⟦{
+      val
+        | 0 => init
+        | n + 1 => s.val n
+      property := by
+        simp only [true_and]
+        intro n
+        cases n
+        · simp only [s.property.1, h]
+        · simp only [s.property.2]
+    }⟧)) rfl
+
 /-! ### `Quotient` with implicit `Setoid` -/
 
 
