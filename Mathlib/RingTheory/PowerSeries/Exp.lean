@@ -115,6 +115,7 @@ theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTors
 theorem isUnit_exp (A : Type*) [Ring A] [Algebra ℚ A] : IsUnit (exp A) :=
   isUnit_iff_constantCoeff.mpr (by simp)
 
+@[simp]
 theorem order_exp (A : Type*) [Ring A] [Algebra ℚ A] [Nontrivial A] : (exp A).order = 0 :=
   order_zero_of_unit (isUnit_exp A)
 
