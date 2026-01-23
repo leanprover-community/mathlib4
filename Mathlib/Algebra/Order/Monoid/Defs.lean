@@ -23,13 +23,13 @@ variable {α : Type*}
 
 -- TODO: assume weaker typeclasses
 
-/-- An ordered (additive) monoid is a monoid with a partial order such that addition is monotone. -/
+/-- An ordered (additive) monoid is a monoid with a `≤` relation such that addition is monotone. -/
 class IsOrderedAddMonoid (α : Type*) [AddCommMonoid α] [LE α] where
   protected add_le_add_left (a b : α) : a ≤ b → ∀ c, a + c ≤ b + c
   protected add_le_add_right (a b : α) : a ≤ b → ∀ c, c + a ≤ c + b := fun h c ↦ by
     rw [add_comm c, add_comm c]; exact add_le_add_left a b h c
 
-/-- An ordered monoid is a monoid with a partial order such that multiplication is monotone. -/
+/-- An ordered monoid is a monoid with a `≤` relation such that multiplication is monotone. -/
 @[to_additive]
 class IsOrderedMonoid (α : Type*) [CommMonoid α] [LE α] where
   protected mul_le_mul_left (a b : α) : a ≤ b → ∀ c, a * c ≤ b * c
