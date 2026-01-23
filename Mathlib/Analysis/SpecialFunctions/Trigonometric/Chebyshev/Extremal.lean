@@ -247,10 +247,7 @@ private theorem sumNodes_eq_eval_iterate_derivative {n k : ℕ} (hk : k ≤ n) (
     sumNodes n (iterateDerivativeC n k x) P = (derivative^[k] P).eval x := by
   simp_rw [sumNodes, iterateDerivativeC]
   have h₁ : P.degree < (Finset.range (n + 1)).card := by
-    rw [Finset.card_range]
-    grw [hP]
-    norm_cast
-    simp
+    rw [Finset.card_range]; grw [hP]; norm_cast; simp
   convert (Lagrange.eval_iterate_derivative_eq_sum (strictAntiOn_node n).injOn h₁
     (show k < _ by simp [hk]) x).symm
   rw [Finset.mul_sum]
@@ -264,9 +261,7 @@ private theorem negOnePow_mul_iterateDerivativeC_nonneg
   · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
     exact le_of_lt <| mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k)
       (negOnePow_mul_leadingCoeffC_pos hi)
-  · refine fun t => Finset.prod_nonneg (fun a _ => ?_)
-    have : node n a ≤ 1 := cos_le_one _
-    linarith
+  · exact fun t => Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
 
 private theorem negOnePow_mul_iterateDerivativeC_pos
     {n k i : ℕ} (hk₁ : 0 < k) (hk₂ : k ≤ n) (hi : i ≤ n) {x : ℝ} (hx : 1 ≤ x) :
@@ -275,9 +270,7 @@ private theorem negOnePow_mul_iterateDerivativeC_pos
   refine mul_pos ?_ (Finset.sum_pos' ?_ ?_)
   · rw [← mul_assoc, mul_comm (a := (-1) ^ i), mul_assoc]
     exact mul_pos (Nat.cast_pos.mpr <| Nat.factorial_pos k) (negOnePow_mul_leadingCoeffC_pos hi)
-  · refine fun t _ => Finset.prod_nonneg (fun a _ => ?_)
-    have : node n a ≤ 1 := cos_le_one _
-    linarith
+  · exact fun t _ => Finset.prod_nonneg (fun a _ => by grind [show node n a ≤ 1 from cos_le_one _])
   · have : ∃ s ⊆ (Finset.range (n + 1)).erase i, s.card = n - k ∧ 0 ∉ s := by
       by_cases 1 ≤ i ∧ i ≤ n - k
       case neg => exact ⟨Finset.Icc 1 (n - k), by grind, by grind [Nat.card_Icc], by simp⟩
@@ -285,10 +278,7 @@ private theorem negOnePow_mul_iterateDerivativeC_pos
         by simp⟩
     obtain ⟨s, hs, hscard, hsn⟩ := this
     refine ⟨s, by simp [hs, hscard], Finset.prod_pos (fun a ha => ?_)⟩
-    have : node n a < 1 := by
-      rw [← node_eq_one (n := n)]
-      exact node_lt (by grind) (by grind)
-    linarith
+    grind [show node n a < 1 by rw [← node_eq_one (n := n)]; exact node_lt (by grind) (by grind)]
 
 theorem eval_iterate_derivative_le_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]}
     {k : ℕ} {x : ℝ} (hx : 1 ≤ x)
