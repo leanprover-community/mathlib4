@@ -70,8 +70,6 @@ theorem derivative_exp (A : Type*) [CommRing A] [Algebra ℚ A] :
     d⁄dX A (exp A) = exp A := by
   ext n
   rw [coeff_derivative, coeff_exp, coeff_exp]
-  -- Goal: algebraMap ℚ A (1 / (n + 1)!) * (n + 1) = algebraMap ℚ A (1 / n!)
-  -- In ℚ-algebras: (n + 1 : A) = algebraMap ℚ A (n + 1)
   have key : (n + 1 : A) = algebraMap ℚ A (n + 1) := by
     rw [map_add, map_natCast, map_one]
   rw [key, ← map_mul, factorial_succ, Nat.cast_mul, Nat.cast_add_one]
@@ -94,19 +92,13 @@ theorem exp_unique_of_derivative_eq_self [CommRing A] [Algebra ℚ A] [IsAddTors
   | zero =>
     rw [coeff_zero_eq_constantCoeff, hc, constantCoeff_exp]
   | succ n ih =>
-    -- From hd: coeff n (d⁄dX A f) = coeff n f
     have eq1 : coeff n (d⁄dX A f) = coeff n f := congrArg (coeff n) hd
     rw [coeff_derivative] at eq1
-    -- eq1: coeff (n + 1) f * (n + 1) = coeff n f
     have eq2 : coeff n (d⁄dX A (exp A)) = coeff n (exp A) := congrArg (coeff n) (derivative_exp A)
     rw [coeff_derivative] at eq2
-    -- eq2: coeff (n + 1) (exp A) * (n + 1) = coeff n (exp A)
     rw [ih] at eq1
-    -- eq1: coeff (n + 1) f * (n + 1) = coeff n (exp A)
-    -- eq2: coeff (n + 1) (exp A) * (n + 1) = coeff n (exp A)
     have h : coeff (n + 1) f * (n + 1) = coeff (n + 1) (exp A) * (n + 1) := by
       rw [eq1, eq2]
-    -- Convert to nsmul form and use smul_right_inj
     rw [← Nat.cast_succ, mul_comm, ← nsmul_eq_mul, mul_comm, ← nsmul_eq_mul] at h
     exact (smul_right_inj (Nat.succ_ne_zero n)).mp h
 
