@@ -1,8 +1,4 @@
-/-
-Copyright (c) 2021 Yael Dillies, Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yael Dillies, Bhavik Mehta, Kaan Tahti
--/
+
 /-
 Copyright (c) 2025 Kaan Tahti. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -11,6 +7,8 @@ Authors: Kaan Tahti
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 import Mathlib.Analysis.Convex.StdSimplex
 import Mathlib.Data.Set.Card
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Adjacency properties of simplicial complexes
@@ -37,6 +35,148 @@ open Set Finset
 namespace Geometry.SimplicialComplex
 
 variable {n : ℕ}
+
+/-!
+## Helper lemmas for affine dimension arguments
+-/
+
+/-- The face of stdSimplex where coordinate k is zero consists of points in the affine span
+of the other standard basis vectors. There are n such vectors, so at most n points
+can be affinely independent on this face. -/
+lemma stdSimplex_face_affineIndependent_card_le (n : ℕ) (k : Fin (n + 1))
+    (s : Finset (Fin (n + 1) → ℝ))
+    (hs_indep : AffineIndependent ℝ ((↑) : s → Fin (n + 1) → ℝ))
+    (hs_face : ∀ x ∈ s, x ∈ stdSimplex ℝ (Fin (n + 1)) ∧ x k = 0) :
+    s.card ≤ n := by
+  -- The face {x | x k = 0} ∩ stdSimplex is the convex hull of n standard basis vectors.
+  -- Its affine span has dimension n-1, so at most n affinely independent points fit.
+  -- We use that these points lie in affineSpan of {Pi.single j 1 | j ≠ k}.
+  by_contra h_gt
+  push_neg at h_gt
+  -- s has at least n+1 points
+  -- The face vertices are {Pi.single j 1 | j ≠ k}, which has exactly n elements
+  let faceVerts : Finset (Fin (n + 1) → ℝ) :=
+    Finset.univ.filter (fun j => j ≠ k) |>.image (fun j => Pi.single j (1 : ℝ))
+  have hfv_card : faceVerts.card = n := by
+    simp only [faceVerts]
+    rw [Finset.card_image_of_injective]
+    · simp only [Finset.card_filter, Finset.card_univ, Fintype.card_fin]
+      -- Count of j ≠ k in Fin (n+1) is n
+      have : (Finset.univ : Finset (Fin (n + 1))).filter (fun j => j ≠ k) =
+             Finset.univ.erase k := by
+        ext j
+        simp [Finset.mem_filter, Finset.mem_erase]
+      rw [this, Finset.card_erase_of_mem (Finset.mem_univ k)]
+      simp
+    · intro i j hij
+      exact Pi.single_injective _ hij
+  -- All points of s are in the affine span of faceVerts
+  have hs_in_span : (s : Set _) ⊆ affineSpan ℝ (faceVerts : Set _) := by
+    intro x hx
+    obtain ⟨hx_std, hx_k⟩ := hs_face x hx
+    -- x is in stdSimplex with x k = 0
+    -- So x = ∑ j, x j • e_j with x k = 0, x j ≥ 0, ∑ x j = 1
+    -- This means x = ∑ j≠k, x j • e_j, which is in affineSpan of faceVerts
+    rw [mem_stdSimplex_iff] at hx_std
+    -- x is a convex combination of faceVerts, hence in affineSpan
+    have hx_in_convex : x ∈ convexHull ℝ (faceVerts : Set _) := by
+      rw [convexHull_eq_sum_eq_one]
+      -- x = ∑ j≠k (x j) • (Pi.single j 1)
+      use fun v => if h : ∃ j ≠ k, v = Pi.single j 1 then x (Classical.choose h) else 0
+      constructor
+      · intro v
+        split_ifs with hv
+        · exact hx_std.1 _
+        · linarith
+      constructor
+      · -- Sum equals 1
+        have hsum : ∑ j, x j = 1 := hx_std.2
+        have hk_zero : x k = 0 := hx_k
+        calc ∑ v ∈ faceVerts, (if h : ∃ j ≠ k, v = Pi.single j 1 then x (Classical.choose h) else 0)
+            = ∑ j ∈ Finset.univ.filter (fun j => j ≠ k), x j := by
+              rw [← Finset.sum_image (f := fun j => Pi.single j (1 : ℝ))]
+              · congr 1
+                ext v
+                simp only [faceVerts, Finset.mem_image, Finset.mem_filter, Finset.mem_univ,
+                           true_and]
+                constructor
+                · rintro ⟨j, hj, rfl⟩
+                  simp only [Pi.single_injective _ |>.eq_iff]
+                  use j, hj
+                · rintro ⟨j, hj, rfl⟩
+                  use j, hj
+              · intro i _ j _ hij
+                exact Pi.single_injective _ hij
+          _ = ∑ j, x j - x k := by
+              rw [← Finset.sum_filter_add_sum_filter_not (s := Finset.univ) (p := fun j => j ≠ k)]
+              simp only [Finset.filter_not, ne_eq]
+              have : Finset.univ.filter (fun j => ¬j ≠ k) = {k} := by
+                ext j
+                simp [Finset.mem_filter, Finset.mem_singleton]
+              rw [this, Finset.sum_singleton]
+              ring
+          _ = 1 - 0 := by rw [hsum, hk_zero]
+          _ = 1 := by ring
+      · -- The combination equals x
+        ext i
+        simp only [Finset.sum_apply, Pi.smul_apply, smul_eq_mul]
+        by_cases hi : i = k
+        · subst hi
+          simp only [hx_k]
+          apply Finset.sum_eq_zero
+          intro v hv
+          split_ifs with hv'
+          · obtain ⟨j, hj_ne, hj_eq⟩ := hv'
+            simp [hj_eq, Pi.single_apply, hj_ne.symm]
+          · ring
+        · -- i ≠ k, so Pi.single i 1 ∈ faceVerts
+          have hi_in : Pi.single i (1 : ℝ) ∈ faceVerts := by
+            simp only [faceVerts, Finset.mem_image, Finset.mem_filter, Finset.mem_univ, true_and]
+            exact ⟨i, hi, rfl⟩
+          rw [← Finset.sum_filter_add_sum_filter_not (s := faceVerts)
+                (p := fun v => v = Pi.single i 1)]
+          have h1 : (faceVerts.filter (fun v => v = Pi.single i 1)).sum
+              (fun v => (if h : ∃ j ≠ k, v = Pi.single j 1 then x (Classical.choose h) else 0) * v i)
+              = x i := by
+            have hfilt : faceVerts.filter (fun v => v = Pi.single i 1) = {Pi.single i 1} := by
+              ext v
+              simp only [Finset.mem_filter, Finset.mem_singleton]
+              constructor
+              · exact fun ⟨_, hv⟩ => hv
+              · intro hv
+                exact ⟨hv ▸ hi_in, hv⟩
+            rw [hfilt, Finset.sum_singleton]
+            simp only [Pi.single_apply, if_pos rfl, mul_one]
+            split_ifs with h
+            · obtain ⟨j, _, hj_eq⟩ := h
+              have : j = i := Pi.single_injective _ hj_eq
+              simp [this]
+            · exfalso
+              apply h
+              exact ⟨i, hi, rfl⟩
+          have h2 : (faceVerts.filter (fun v => ¬v = Pi.single i 1)).sum
+              (fun v => (if h : ∃ j ≠ k, v = Pi.single j 1 then x (Classical.choose h) else 0) * v i)
+              = 0 := by
+            apply Finset.sum_eq_zero
+            intro v hv
+            simp only [Finset.mem_filter] at hv
+            obtain ⟨hv_in, hv_ne⟩ := hv
+            simp only [faceVerts, Finset.mem_image, Finset.mem_filter, Finset.mem_univ,
+                       true_and] at hv_in
+            obtain ⟨j, hj_ne, hj_eq⟩ := hv_in
+            have hj_ne_i : j ≠ i := by
+              intro heq
+              apply hv_ne
+              rw [heq] at hj_eq
+              exact hj_eq.symm
+            simp [hj_eq, Pi.single_apply, hj_ne_i]
+          linarith [h1, h2]
+    exact convexHull_subset_affineSpan _ hx_in_convex
+  -- Now apply the cardinality bound
+  have hcard_le := AffineIndependent.card_le_card_of_subset_affineSpan hs_indep hs_in_span
+  rw [hfv_card] at hcard_le
+  omega
+
 
 /-- A face is a facet of a simplex if it has codimension 1. -/
 def IsFacetOf (t s : Finset (Fin (n + 1) → ℝ)) : Prop :=
@@ -263,16 +403,60 @@ theorem num_containing_simplices_boundary
       -- We need: affineIndependent implies card ≤ dim + 1
       -- In the face {x_k = 0} ∩ stdSimplex, dim = n - 1, so card ≤ n.
       -- But s1.card = n + 1 > n. Contradiction.
-      -- This requires affine dimension theory from Mathlib.
-      -- For now, we use omega with the assumption that this contradicts.
-      sorry -- TODO: requires affine dimension theory
+      have h_indep := S.indep hs1.1
+      have h_face : ∀ x ∈ s1, x ∈ stdSimplex ℝ (Fin (n + 1)) ∧ x k = 0 := by
+        intro x hx
+        exact ⟨hs1_in_face hx |>.1, hs1_hyp x hx⟩
+      have hcard_bound := stdSimplex_face_affineIndependent_card_le n k s1 h_indep h_face
+      omega
 
     have hv2_k_pos : v2 k > 0 := by
       by_contra h
       push_neg at h
       have hv2_k_zero : v2 k = 0 := le_antisymm h hv2_k
-      -- Same argument as above
-      sorry -- TODO: requires affine dimension theory
+      -- Same argument as above - all of s2 is on the hyperplane
+      have hs2_hyp : ∀ x ∈ s2, x k = 0 := by
+        intro x hx
+        by_cases hx_t : x ∈ t
+        · exact hk x hx_t
+        · have : x = v2 := by
+            have hs2_eq : s2 = insert v2 t := by
+              apply Finset.eq_of_subset_of_card_le
+              · intro y hy
+                by_cases hyt : y ∈ t
+                · exact Finset.mem_insert_of_mem hyt
+                · have : (s2 \ t).card = 1 := by
+                    have h1 : s2.card = n + 1 := hs2.2.1
+                    have h2 : t.card = n := ht_card
+                    have h3 : t ⊆ s2 := hs2.2.2.subset
+                    calc (s2 \ t).card = s2.card - t.card := Finset.card_sdiff h3
+                      _ = (n + 1) - n := by rw [h1, h2]
+                      _ = 1 := by omega
+                  have hy_in : y ∈ s2 \ t := Finset.mem_sdiff.mpr ⟨hy, hyt⟩
+                  have hv2_in : v2 ∈ s2 \ t := Finset.mem_sdiff.mpr ⟨hv2_s2, hv2_not_t⟩
+                  have := Finset.card_eq_one.mp this
+                  obtain ⟨w, hw⟩ := this
+                  have hy_w : y = w := Finset.mem_singleton.mp (hw ▸ hy_in)
+                  have hv2_w : v2 = w := Finset.mem_singleton.mp (hw ▸ hv2_in)
+                  rw [hy_w, hv2_w]
+                  exact Finset.mem_insert_self _ _
+              · simp [hv2_not_t, ht_card, hs2.2.1]
+            rw [hs2_eq] at hx
+            exact (Finset.mem_insert.mp hx).resolve_right hx_t
+          rw [this]
+          exact hv2_k_zero
+      have hs2_in_face : (s2 : Set _) ⊆ stdSimplex ℝ (Fin (n + 1)) ∩ {x | x k = 0} := by
+        intro x hx
+        constructor
+        · rw [← hS]
+          exact S.subset_space (S.mem_vertices_of_mem_faces hs2.1 hx)
+        · exact hs2_hyp x hx
+      have h_indep2 := S.indep hs2.1
+      have h_face2 : ∀ x ∈ s2, x ∈ stdSimplex ℝ (Fin (n + 1)) ∧ x k = 0 := by
+        intro x hx
+        exact ⟨hs2_in_face hx |>.1, hs2_hyp x hx⟩
+      have hcard_bound2 := stdSimplex_face_affineIndependent_card_le n k s2 h_indep2 h_face2
+      omega
 
     -- Now v1 k > 0 and v2 k > 0.
     -- s1 and s2 are both n-simplices containing t and extending "above" the hyperplane.
