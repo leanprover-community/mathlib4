@@ -73,7 +73,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
 
 variable (I I') in
-/-- Property in the model space of a model with corners of being `C^n` within at set at a point,
+/-- Property in the model space of a model with corners of being `C^n` within a set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
 functions between manifolds. -/
 def ContDiffWithinAtProp (n : WithTop ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop :=
@@ -622,7 +622,7 @@ theorem contMDiffWithinAt_iff_le_ne_infty :
   | coe n =>
     exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
 
-/-- A function is `C^n`at a point iff it is `C^m`at this point, for
+/-- A function is `C^n` at a point iff it is `C^m` at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
 theorem contMDiffAt_iff_le_ne_infty :

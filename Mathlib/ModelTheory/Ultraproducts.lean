@@ -134,13 +134,11 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
     simp only [Function.comp_def, ih, h']
     refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
-      simp_rw [← Ultrafilter.eventually_not, not_forall] at h
       refine
         ⟨fun a : α =>
           Classical.epsilon fun m : M a =>
             ¬φ.Realize (fun i => x i a) (Fin.snoc (fun i => v i a) m),
           ?_⟩
-      rw [← Ultrafilter.eventually_not]
       exact Filter.mem_of_superset h fun a ha => Classical.epsilon_spec ha
     · rw [Filter.eventually_iff] at *
       exact Filter.mem_of_superset h fun a ha => ha (m a)

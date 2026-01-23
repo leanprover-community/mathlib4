@@ -18,7 +18,7 @@ If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/�
 holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
 -/
 
-@[expose] public section
+public section
 
 open Complex InnerProductSpace Metric Topology
 
@@ -88,18 +88,18 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   intro x hx
   apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
   · exact reCLM.differentiable.comp_differentiableOn h₃F
-  · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 one_le_two).differentiableWithinAt
+  · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 two_ne_zero).differentiableWithinAt
   · exact isOpen_ball.uniqueDiffOn
   · intro y hy
     have h₄F := (h₁F y hy).differentiableAt
     have h₅F := h₄F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
     rw [fderivWithin_eq_fderiv (isOpen_ball.uniqueDiffWithinAt hy)
       (reCLM.differentiableAt.comp y h₅F), fderivWithin_eq_fderiv
-      (isOpen_ball.uniqueDiffWithinAt hy) ((hf y hy).1.differentiableAt one_le_two), fderiv_comp y
+      (isOpen_ball.uniqueDiffWithinAt hy) ((hf y hy).1.differentiableAt two_ne_zero), fderiv_comp y
       (by fun_prop) h₅F, ContinuousLinearMap.fderiv, h₄F.fderiv_restrictScalars (𝕜 := ℝ)]
     ext a
     nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
-    rw [ContinuousLinearMap.map_add, ContinuousLinearMap.map_smul, ContinuousLinearMap.map_smul]
+    rw [map_add, map_smul, map_smul]
     simp [HasDerivAt.deriv (h₁F y hy), g]
   · simp_all
   · simp [F]

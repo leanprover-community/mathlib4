@@ -5,12 +5,8 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Ideal.Span
 
@@ -30,7 +26,7 @@ This file contains results in number theory relating to multiplicity.
   (https://en.wikipedia.org/wiki/Lifting-the-exponent_lemma)
 -/
 
-@[expose] public section
+public section
 
 
 open Ideal Ideal.Quotient Finset
@@ -267,7 +263,7 @@ lemma Int.eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 :
 
 lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
   rcases hk with ⟨m, rfl⟩
-  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring_nf; grind
+  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by grind
   simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
@@ -373,8 +369,21 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
-  · cutsat
+  · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
+
+theorem pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+    padicValNat 2 (x ^ n - 1) + 1 = padicValNat 2 (x + 1) +
+    padicValNat 2 (x - 1) + padicValNat 2 n := by
+  simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
+
+lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+    padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
+  have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
+    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
+    simpa [← Nat.pow_two_sub_pow_two x 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+  have := pow_two_sub_one h1x hx hn hneven
+  grind [← padicValNat.mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1

@@ -106,8 +106,6 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   simp [mem_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
-
 variable (R)
 
 theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
@@ -118,19 +116,11 @@ alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
 theorem zero_notMem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
-
-alias ⟨isUnit_of_zero_notMem, zero_notMem⟩ := spectrum.zero_not_mem_iff
-
-@[deprecated (since := "2025-05-23")] alias isUnit_of_zero_not_mem := isUnit_of_zero_notMem
-@[deprecated (since := "2025-05-23")] alias zero_not_mem := zero_notMem
+alias ⟨isUnit_of_zero_notMem, zero_notMem⟩ := spectrum.zero_notMem_iff
 
 @[simp]
 lemma _root_.Units.zero_notMem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
   spectrum.zero_notMem R a.isUnit
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Units.zero_not_mem_spectrum := _root_.Units.zero_notMem_spectrum
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_notMem R ha
@@ -187,7 +177,7 @@ theorem units_smul_resolvent {r : Rˣ} {s : R} {a : A} :
 
 theorem units_smul_resolvent_self {r : Rˣ} {a : A} :
     r • resolvent a (r : R) = resolvent (r⁻¹ • a) (1 : R) := by
-  simpa only [Units.smul_def, Algebra.id.smul_eq_mul, Units.inv_mul] using
+  simpa only [Units.smul_def, smul_eq_mul, Units.inv_mul] using
     @units_smul_resolvent _ _ _ _ _ r r a
 
 /-- The resolvent is a unit when the argument is in the resolvent set. -/
@@ -231,7 +221,7 @@ theorem unit_smul_eq_smul (a : A) (r : Rˣ) : σ (r • a) = r • σ a := by
   constructor
   · exact fun h => ⟨r⁻¹ • x, ⟨h, show r • r⁻¹ • x = x by simp⟩⟩
   · rintro ⟨w, _, (x'_eq : r • w = x)⟩
-    simpa [← x'_eq ]
+    simpa [← x'_eq]
 
 -- `r ∈ σ(a*b) ↔ r ∈ σ(b*a)` for any `r : Rˣ`
 theorem unit_mem_mul_comm {a b : A} {r : Rˣ} : ↑r ∈ σ (a * b) ↔ ↑r ∈ σ (b * a) := by

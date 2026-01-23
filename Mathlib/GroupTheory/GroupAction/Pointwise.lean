@@ -22,7 +22,7 @@ public import Mathlib.Algebra.Group.Units.Hom
   It requires that `c` acts surjectively and `σ c` acts injectively and
   is provided with specific versions:
   - `preimage_smul_setₛₗ_of_isUnit_isUnit` when `c` and `σ c` are units
-  - `IsUnit.preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass`and `c` is a unit
+  - `IsUnit.preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass` and `c` is a unit
   - `MonoidHom.preimage_smul_setₛₗ` when `σ` is a `MonoidHom` and `c` is a unit
   - `Group.preimage_smul_setₛₗ` : when the types of `c` and `σ c` are groups.
 
@@ -31,7 +31,7 @@ public import Mathlib.Algebra.Group.Units.Hom
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set Pointwise
 

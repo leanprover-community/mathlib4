@@ -91,8 +91,8 @@ theorem sum_schlomilch_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f 
     suffices (u (n + 1) - u n) • f (u (n + 1)) ≤ ∑ k ∈ Ico (u n + 1) (u (n + 1) + 1), f k by
       rw [sum_range_succ, ← sum_Ico_consecutive]
       exacts [add_le_add ihn this,
-        (add_le_add_right (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
-        add_le_add_right (hu n.le_succ) _]
+        (add_le_add_left (hu n.zero_le) _ : u 0 + 1 ≤ u n + 1),
+        add_le_add_left (hu n.le_succ) _]
     have : ∀ k ∈ Ico (u n + 1) (u (n + 1) + 1), f (u (n + 1)) ≤ f k := fun k hk =>
       hf (Nat.lt_of_le_of_lt (Nat.succ_le_of_lt (h_pos n)) <| (Nat.lt_succ_of_le le_rfl).trans_le
         (mem_Ico.mp hk).1) (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)

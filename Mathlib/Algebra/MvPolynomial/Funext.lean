@@ -24,7 +24,7 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
 
 -/
 
-@[expose] public section
+public section
 
 namespace MvPolynomial
 
@@ -36,7 +36,7 @@ private theorem funext_fin {n : ℕ} {p : MvPolynomial (Fin n) R}
   induction n with
   | zero =>
     apply (MvPolynomial.isEmptyRingEquiv R (Fin 0)).injective
-    rw [RingEquiv.map_zero]
+    rw [map_zero]
     convert h _ finZeroElim
   | succ n ih =>
     apply (finSuccEquiv R n).injective

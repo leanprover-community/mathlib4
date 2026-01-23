@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators
@@ -44,8 +45,7 @@ See the documentation of `to_additive.attr` for more information.
 
 @[expose] public section
 
--- TODO
--- assert_not_exists AddCommMonoidWithOne
+assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
 assert_not_exists IsOrderedMonoid
@@ -79,7 +79,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note2 «operator precedence of big operators» /--
+library_note «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -106,9 +106,9 @@ open Batteries.ExtendedBinder Lean Meta
 /-- A `bigOpBinder` is like an `extBinder` and has the form `x`, `x : ty`, or `x pred`
 where `pred` is a `binderPred` like `< 2`.
 Unlike `extBinder`, `x` is a term. -/
-syntax bigOpBinder := term:max ((" : " term) <|> binderPred)?
+syntax bigOpBinder := term:max((" : "term) <|> binderPred)?
 /-- A BigOperator binder in parentheses -/
-syntax bigOpBinderParenthesized := " (" bigOpBinder ")"
+syntax bigOpBinderParenthesized := " ("bigOpBinder")"
 /-- A list of parenthesized binders -/
 syntax bigOpBinderCollection := bigOpBinderParenthesized+
 /-- A single (unparenthesized) binder, or a list of parenthesized binders -/
@@ -265,7 +265,7 @@ to show the domain type when the product is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (⟨i⟩, ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -296,7 +296,7 @@ to show the domain type when the sum is over `Finset.univ`. -/
   whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
-  let ppDomain ← getPPOption getPPFunBinderTypes
+  let ppDomain ← withAppArg <| getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return ((⟨i⟩ : Ident), ← delab)
   let res ← withNaryArg 3 <| delabFinsetArg i
@@ -622,22 +622,30 @@ theorem prod_dvd_prod_of_subset {ι M : Type*} [CommMonoid M] (s t : Finset ι) 
 
 end CommMonoid
 
-section Opposite
+section MulOpposite
+variable [AddCommMonoid M] (s : Finset ι)
 
 open MulOpposite
 
 /-- Moving to the opposite additive commutative monoid commutes with summing. -/
-@[simp]
-theorem op_sum [AddCommMonoid M] {s : Finset ι} (f : ι → M) :
-    op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ) _ _
+@[simp] lemma op_sum (f : ι → M) : op (∑ x ∈ s, f x) = ∑ x ∈ s, op (f x) := map_sum opAddEquiv ..
 
-@[simp]
-theorem unop_sum [AddCommMonoid M] {s : Finset ι} (f : ι → Mᵐᵒᵖ) :
-    unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
-  map_sum (opAddEquiv : M ≃+ Mᵐᵒᵖ).symm _ _
+@[simp] lemma unop_sum (f : ι → Mᵐᵒᵖ) : unop (∑ x ∈ s, f x) = ∑ x ∈ s, unop (f x) :=
+  map_sum opAddEquiv.symm ..
 
-end Opposite
+end MulOpposite
+
+section AddOpposite
+variable [CommMonoid M] (s : Finset ι)
+
+open AddOpposite
+
+@[simp] lemma op_prod (f : ι → M) : op (∏ i ∈ s, f i) = ∏ i ∈ s, op (f i) := map_prod opMulEquiv ..
+
+@[simp] lemma unop_prod (f : ι → Mᵐᵒᵖ) : unop (∏ i ∈ s, f i) = ∏ i ∈ s, unop (f i) :=
+  map_prod opMulEquiv.symm ..
+
+end AddOpposite
 
 section DivisionCommMonoid
 

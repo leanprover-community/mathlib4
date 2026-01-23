@@ -183,6 +183,8 @@ variable {F : C ⥤ D}
       ∀ X : C, (ρ_ (F.obj X)).hom = (𝟙 (F.obj X) ⊗ₘ ε) ≫ μ X (𝟙_ C) ≫ F.map (ρ_ X).hom := by
         cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /--
 A constructor for lax monoidal functors whose axioms are described by `tensorHom` instead of
 `whiskerLeft` and `whiskerRight`.
@@ -637,7 +639,7 @@ def toOplaxMonoidal : F.OplaxMonoidal where
       associativity_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv, comp_id]
   oplax_left_unitality _ := by
     rw [← cancel_epi (λ_ _).hom, Iso.hom_inv_id, h.left_unitality, assoc, assoc,
-      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc,hom_inv_whiskerRight]
+      Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, hom_inv_whiskerRight]
   oplax_right_unitality _ := by
     rw [← cancel_epi (ρ_ _).hom, Iso.hom_inv_id, h.right_unitality, assoc, assoc,
       Iso.map_hom_inv_id_assoc, Iso.hom_inv_id_assoc, whiskerLeft_hom_inv]
@@ -686,6 +688,8 @@ noncomputable def Monoidal.ofOplaxMonoidal
 
 section Prod
 
+open scoped Prod
+
 variable (F : C ⥤ D) (G : E ⥤ C') [MonoidalCategory C']
 
 section
@@ -693,36 +697,8 @@ section
 variable [F.LaxMonoidal] [G.LaxMonoidal]
 
 instance : (prod F G).LaxMonoidal where
-  ε := (ε F, ε G)
-  μ X Y := (μ F _ _, μ G _ _)
-  μ_natural_left _ _ := by
-    ext
-    all_goals
-      simp only [prod_obj, prodMonoidal_tensorObj, prod_map,
-        prodMonoidal_whiskerRight, prod_comp, μ_natural_left]
-  μ_natural_right _ _ := by
-    ext
-    all_goals
-      simp only [prod_obj, prodMonoidal_tensorObj, prod_map, prodMonoidal_whiskerLeft, prod_comp,
-        μ_natural_right]
-  associativity _ _ _ := by
-    ext
-    all_goals
-      simp only [prod_obj, prodMonoidal_tensorObj, prodMonoidal_whiskerRight,
-        prodMonoidal_associator, Iso.prod_hom, prod_map, prod_comp,
-        LaxMonoidal.associativity, prodMonoidal_whiskerLeft]
-  left_unitality _ := by
-    ext
-    all_goals
-      simp only [prodMonoidal_tensorUnit, prod_obj, prodMonoidal_tensorObj,
-        prodMonoidal_leftUnitor_hom_fst, LaxMonoidal.left_unitality, prodMonoidal_whiskerRight,
-        prod_map, prodMonoidal_leftUnitor_hom_snd, prod_comp]
-  right_unitality _ := by
-    ext
-    all_goals
-      simp only [prod_obj, prodMonoidal_tensorUnit, prodMonoidal_tensorObj,
-        prodMonoidal_rightUnitor_hom_fst, LaxMonoidal.right_unitality, prodMonoidal_whiskerLeft,
-        prod_map, prodMonoidal_rightUnitor_hom_snd, prod_comp]
+  ε := ε F ×ₘ ε G
+  μ X Y := μ F _ _ ×ₘ μ G _ _
 
 @[simp] lemma prod_ε_fst : (ε (prod F G)).1 = ε F := rfl
 @[simp] lemma prod_ε_snd : (ε (prod F G)).2 = ε G := rfl
@@ -733,11 +709,13 @@ end
 
 section
 
+open scoped Prod
+
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 
 instance : (prod F G).OplaxMonoidal where
-  η := (η F, η G)
-  δ X Y := (δ F _ _, δ G _ _)
+  η := η F ×ₘ η G
+  δ X Y := δ F _ _ ×ₘ δ G _ _
 
 @[simp] lemma prod_η_fst : (η (prod F G)).1 = η F := rfl
 @[simp] lemma prod_η_snd : (η (prod F G)).2 = η G := rfl
@@ -828,8 +806,6 @@ instance OplaxMonoidal.prod' : (prod' F G).OplaxMonoidal :=
 
 end
 
-@[deprecated (since := "2025-06-08")] alias prod_comp_fst := CategoryTheory.prod_comp_fst
-@[deprecated (since := "2025-06-08")] alias prod_comp_snd := CategoryTheory.prod_comp_snd
 -- TODO: when clearing these deprecations, remove the `CategoryTheory.` in the proof below.
 
 /-- The functor `C ⥤ D × E` obtained from two monoidal functors is monoidal. -/

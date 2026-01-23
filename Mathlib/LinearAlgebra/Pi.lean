@@ -578,10 +578,9 @@ theorem sumArrowLequivProdArrow_symm_apply_inr {α β} (f : α → M) (g : β �
 /-- If `ι` has a unique element, then `ι → M` is linearly equivalent to `M`. -/
 @[simps +simpRhs -fullyApplied symm_apply]
 def funUnique (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
-    (ι → M) ≃ₗ[R] M :=
-  { Equiv.funUnique ι M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    (ι → M) ≃ₗ[R] M where
+  toAddEquiv := .funUnique ι M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem funUnique_apply (ι R M : Type*) [Unique ι] [Semiring R] [AddCommMonoid M] [Module R M] :
@@ -611,7 +610,7 @@ def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
 end LinearEquiv
 
 lemma Pi.mem_span_range_single_inl_iff
-    [DecidableEq ι] [DecidableEq ι'] [Fintype ι] [Semiring R] {x : ι ⊕ ι' → R} :
+    [DecidableEq ι] [DecidableEq ι'] [Finite ι] [Semiring R] {x : ι ⊕ ι' → R} :
     x ∈ span R (Set.range fun i ↦ single (Sum.inl i) 1) ↔ ∀ k, x (Sum.inr k) = 0 := by
   refine ⟨fun hx k ↦ ?_, fun hx ↦ ?_⟩
   · induction hx using span_induction with
@@ -619,7 +618,8 @@ lemma Pi.mem_span_range_single_inl_iff
     | zero => simp
     | add u v _ _ hu hv => simp [hu, hv]
     | smul t u _ hu => simp [hu]
-  · suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
+  · have := Fintype.ofFinite ι
+    suffices x = ∑ i : ι, x (Sum.inl i) • Pi.single (M := fun _ ↦ R) (Sum.inl i) (1 : R) by
       rw [this]
       exact sum_mem <| fun i _ ↦ SMulMemClass.smul_mem _ <| subset_span <| Set.mem_range_self i
     ext (i | i)
