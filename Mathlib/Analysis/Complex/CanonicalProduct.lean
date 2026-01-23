@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
 
-import Mathlib.Analysis.Complex.WeierstrassFactor
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Complex.WeierstrassFactor
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Canonical products
@@ -31,6 +33,8 @@ and proves uniform convergence on compact sets assuming the standard summability
 -/
 
 noncomputable section
+
+@[expose] public section
 
 open Complex Real Set Filter Topology
 open scoped BigOperators Topology
