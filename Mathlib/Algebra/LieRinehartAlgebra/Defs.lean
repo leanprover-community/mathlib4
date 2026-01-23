@@ -68,21 +68,26 @@ instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
 instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
 
 
-/-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map
-`σ : A → A'` and an `A`-linear map `F : L → L'` which is also a Lie algebra homomorphism and is
-compatible with the anchors.
--/
-structure Hom (σ : A →ₐ[R] A') (L L' : Type*) [LieRing L] [Module A L] [LieRingModule L A]
-    [LieRinehartRing A L] [LieAlgebra R L] [LieRinehartAlgebra R A L] [LieRing L'] [Module A' L']
-    [LieRingModule L' A'] [LieRinehartRing A' L'] [LieAlgebra R L'] [LieRinehartAlgebra R A' L']
-    extends LinearMap (R := A) (S := A') σ.toRingHom L L' where
-  map_lie' : ∀ (x y : L), toLinearMap ⁅x, y⁆ = ⁅toLinearMap x, toLinearMap y⁆
-  anchor_comp: ∀ (a : A) (l : L), σ (⁅l, a⁆) = ⁅(toLinearMap l), (σ a)⁆
+/-- A morphism of Lie-Rinehart algebras, from `(A, L)` to `(A₂, L₂)`, consists of a pair of maps
+`(σ, F)` where `σ : A → A₂` is a morphism of algebras and `F` is a morphism of Lie algebras, which
+respect the module structures. -/
+structure Hom (σ : A₁ →ₐ[R] A₂) (L₁ L₂ : Type*)
+    [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁] [LieAlgebra R L₁]
+    [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂] [LieAlgebra R L₂]
+    extends L₁ →ₗ⁅R⁆ L₂ where
+  map_smul_apply (a : A₁) (x : L₁) : toLinearMap (a • x) = σ a • toLinearMap x
+  apply_lie (a : A₁) (x : L₁) : σ ⁅x, a⁆ = ⁅toLinearMap x, σ a⁆
 
 @[inherit_doc]
-scoped notation:25 L " →ₗ⁅" σ:25 "⁆ " L':0 => LieRinehartAlgebra.Hom σ L L'
+scoped notation:25 L " →ₗ⁅" σ:25 "⁆ " L₂:0 => LieRinehartAlgebra.Hom σ L L₂
 
-instance : CoeFun (L →ₗ⁅σ⁆ L') (fun _ => L → L') := ⟨fun f => f.toLinearMap⟩
+instance : CoeFun (L₁ →ₗ⁅σ₁₂⁆ L₂) (fun _ => L₁ → L₂) := ⟨fun f => f.toLinearMap⟩
+
+/-- A morphism of Lie-Rinehart algebras as a semilinear map. -/
+def Hom.toLinearMap' (f : L₁ →ₗ⁅σ₁₂⁆ L₂) : L₁ →ₛₗ[σ₁₂.toRingHom] L₂ where
+  toFun := f
+  map_add' := f.map_add'
+  map_smul' := f.map_smul_apply
 
 
 lemma anchor_comp (f : L →ₗ⁅σ⁆ L') (l : L) (a : A): σ ⁅l, a⁆ = ⁅f l, σ a⁆ := f.anchor_comp a l
