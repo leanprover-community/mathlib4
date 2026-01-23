@@ -513,18 +513,15 @@ lemma LinearIndepOn.id_insert' {s : Set M} {x : M} (hs : LinearIndepOn R id s)
   hs.insert' <| by simpa
 
 /-- If `v : ι → M` is a family of vectors and there exists a family of linear forms
-`dv : ι → (M →ₗ[R] R)` such that `dv i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
+`f : ι → Dual R M` such that `f i (v j)` is `1` for `i = j` and `0` for `i ≠ j`, then
 `v` is linearly independent. -/
-theorem LinearIndependent.ofDualFamily (v : ι → M) (dv : ι → Module.Dual R M)
-    (h1 : ∀ (a : ι) (b : ι), a ≠ b → (dv a) (v b) = 0) (h2 : ∀ (a : ι), (dv a) (v a) = 1) :
+theorem LinearIndependent.of_pairwise_dual_eq_zero_one (v : ι → M) (f : ι → Dual R M)
+    (h1 : Pairwise fun i j ↦ f i (v j) = 0)
+    (h2 : ∀ i, (f i) (v i) = 1) :
     LinearIndependent R v := by
-  rw [linearIndependent_iff']
-  intro s g hrel i hi
-  apply_fun (fun x => dv i x) at hrel
-  simp only [map_sum, map_smul, smul_eq_mul, _root_.map_zero] at hrel
-  rw [Finset.sum_eq_single i (fun j _ hj ↦ by rw [h1 i j (Ne.symm hj), mul_zero])
-    (fun hi' ↦ False.elim (hi' hi)), h2 i, mul_one] at hrel
-  exact hrel
+  refine linearIndependent_iff'.mpr fun s g hrel i hi ↦ ?_
+  have aux (j : ι) (hjs : j ∈ s) (hji : j ≠ i) : g j * (f i) (v j) = 0 := by simp [h1 hji.symm]
+  simpa [s.sum_eq_single i aux (by aesop), h2 i] using congr_arg (f i) hrel
 
 end Module
 
