@@ -44,15 +44,15 @@ theorem dvd_zero (a : α) : a ∣ 0 :=
 
 end SemigroupWithZero
 
-/-- Given two elements `b`, `c` of a `CancelMonoidWithZero` and a nonzero element `a`,
+/-- Given two elements `b`, `c` of a cancellative `MonoidWithZero` and a nonzero element `a`,
 `a*b` divides `a*c` iff `b` divides `c`. -/
-theorem mul_dvd_mul_iff_left [CancelMonoidWithZero α] {a b c : α} (ha : a ≠ 0) :
+theorem mul_dvd_mul_iff_left [MonoidWithZero α] [IsLeftCancelMulZero α] {a b c : α} (ha : a ≠ 0) :
     a * b ∣ a * c ↔ b ∣ c :=
   exists_congr fun d => by rw [mul_assoc, mul_right_inj' ha]
 
-/-- Given two elements `a`, `b` of a commutative `CancelMonoidWithZero` and a nonzero
+/-- Given two elements `a`, `b` of a commutative cancellative `MonoidWithZero` and a nonzero
 element `c`, `a*c` divides `b*c` iff `a` divides `b`. -/
-theorem mul_dvd_mul_iff_right [CancelCommMonoidWithZero α] {a b c : α} (hc : c ≠ 0) :
+theorem mul_dvd_mul_iff_right [CommMonoidWithZero α] [IsCancelMulZero α] {a b c : α} (hc : c ≠ 0) :
     a * c ∣ b * c ↔ a ∣ b :=
   exists_congr fun d => by rw [mul_right_comm, mul_left_inj' hc]
 
@@ -95,7 +95,7 @@ theorem isRelPrime_of_no_nonunits_factors [MonoidWithZero α] {x y : α} (nonzer
   refine fun z hx hy ↦ by_contra fun h ↦ H z h ?_ hx hy
   rintro rfl; exact nonzero ⟨zero_dvd_iff.1 hx, zero_dvd_iff.1 hy⟩
 
-theorem dvd_and_not_dvd_iff [CancelCommMonoidWithZero α] {x y : α} :
+theorem dvd_and_not_dvd_iff [CommMonoidWithZero α] [IsCancelMulZero α] {x y : α} :
     x ∣ y ∧ ¬y ∣ x ↔ DvdNotUnit x y :=
   ⟨fun ⟨⟨d, hd⟩, hyx⟩ =>
     ⟨fun hx0 => by simp [hx0] at hyx,
@@ -121,7 +121,7 @@ theorem ne_zero_of_dvd_ne_zero {p q : α} (h₁ : q ≠ 0) (h₂ : p ∣ q) : p 
 theorem isPrimal_zero : IsPrimal (0 : α) :=
   fun a b h ↦ ⟨a, b, dvd_rfl, dvd_rfl, (zero_dvd_iff.mp h).symm⟩
 
-theorem IsPrimal.mul {α} [CancelCommMonoidWithZero α] {m n : α}
+theorem IsPrimal.mul {α} [CommMonoidWithZero α] [IsCancelMulZero α] {m n : α}
     (hm : IsPrimal m) (hn : IsPrimal n) : IsPrimal (m * n) := by
   obtain rfl | h0 := eq_or_ne m 0; · rwa [zero_mul]
   intro b c h
@@ -134,7 +134,7 @@ end MonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α] {a b : α} {m n : ℕ}
+variable [CommMonoidWithZero α] [IsCancelMulZero α] {a b : α} {m n : ℕ}
 
 section Subsingleton
 variable [Subsingleton αˣ]

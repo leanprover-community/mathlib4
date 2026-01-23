@@ -75,15 +75,12 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
 
-/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
-    (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!]
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
+  toEquiv := .finsuppUnique
   map_add' _ _ := rfl
-
-@[simp]
-lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
-    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
@@ -157,7 +154,7 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
   rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
   · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
+  · simp [support_single_ne_zero, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by

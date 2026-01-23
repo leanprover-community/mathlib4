@@ -173,7 +173,7 @@ lemma sortedGT_map_snd_divisorsAntidiagonalList {n : ℕ} :
   (List.pairwise_map.mpr <| pairwise_divisorsAntidiagonalList_snd).sortedGT
 
 lemma nodup_divisorsAntidiagonalList {n : ℕ} : n.divisorsAntidiagonalList.Nodup :=
-  have : IsIrrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
+  have : @Std.Irrefl (ℕ × ℕ) (·.fst < ·.fst) := ⟨by simp⟩
   pairwise_divisorsAntidiagonalList_fst.nodup
 
 /-- The `Finset` and `List` versions agree by definition. -/
@@ -551,7 +551,6 @@ theorem prod_divisorsAntidiagonal' {M : Type*} [CommMonoid M] (f : ℕ → ℕ �
 /-- The factors of `n` are the prime divisors -/
 theorem primeFactors_eq_to_filter_divisors_prime (n : ℕ) :
     n.primeFactors = {p ∈ divisors n | p.Prime} := by
-  ext
   grind
 
 lemma primeFactors_filter_dvd_of_dvd {m n : ℕ} (hn : n ≠ 0) (hmn : m ∣ n) :

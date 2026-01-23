@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
+public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Data.Sym.Sym2
 
 deprecated_module (since := "2025-11-12")
