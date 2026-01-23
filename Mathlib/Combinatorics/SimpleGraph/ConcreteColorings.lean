@@ -225,7 +225,7 @@ lemma bypass_eq_nil
 theorem even_length_cons_of_isPath
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
-    Even (SimpleGraph.Walk.cons ha q).length := by
+    Even (Walk.cons ha q).length := by
   by_cases hq' : q.length = 1
   · simp [hq']
   apply h_cycles u (SimpleGraph.Walk.cons ha q)
@@ -239,9 +239,7 @@ theorem even_length_cons_of_isPath
     · rw [cons_isPath_iff] at hq
       exact hq.2 <| snd_mem_support_of_mem_edges _ ha
 
-/-
-If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1.
--/
+/-- If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1. -/
 lemma IsPath.length_eq_one_of_mem_edges
 {u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
   by_contra h_non_simple_cycle
