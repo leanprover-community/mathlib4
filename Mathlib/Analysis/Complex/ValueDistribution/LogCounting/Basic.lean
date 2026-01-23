@@ -71,6 +71,11 @@ lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
+lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
+    (f : locallyFinsuppWithin (univ : Set E) ℤ) :
+    (toClosedBall r f).support ⊆ closedBall 0 |r| := by
+  simp_all [toClosedBall, restrict_apply]
+
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
 -/
@@ -118,6 +123,50 @@ Evaluation of the logarithmic counting function at zero yields zero.
     (D : locallyFinsuppWithin (univ : Set E) ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]
+
+/--
+The logarithmic counting function is even.
+-/
+lemma logCounting_even [ProperSpace E] (D : locallyFinsuppWithin (univ : Set E) ℤ) :
+    (logCounting D).Even := fun r ↦ by simp [logCounting, toClosedBall, restrict_apply]
+
+/--
+The logarithmic counting function is monotonous.
+-/
+lemma logCounting_mono [ProperSpace E] {D : locallyFinsuppWithin (univ : Set E) ℤ} (hD : 0 ≤ D) :
+    MonotoneOn (logCounting D) (Ioi 0) := by
+  intro a ha b hb _
+  simp_all only [mem_Ioi, logCounting, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  gcongr
+  · let s := (toClosedBall b D).support
+    have hs : s.Finite := (toClosedBall b D).finiteSupport (isCompact_closedBall 0 |b|)
+    repeat rw [finsum_eq_sum_of_support_subset (s := hs.toFinset)]
+    · gcongr 1 with z hz
+      by_cases h₂z : z = 0
+      · simp [h₂z]
+      · have := (toClosedBall_support_subset_closedBall D (hs.mem_toFinset.1 hz))
+        rw [toClosedBall_eval_within _ this]
+        by_cases h₃z : z ∈ closedBall 0 |a|
+        · rw [toClosedBall_eval_within _ h₃z]
+          gcongr
+          exact Int.cast_nonneg (hD z)
+        · simp only [h₃z, not_false_eq_true, apply_eq_zero_of_notMem, Int.cast_zero, zero_mul,
+            ge_iff_le]
+          apply mul_nonneg (Int.cast_nonneg (hD z)) (log_nonneg _)
+          apply (le_mul_inv_iff₀ (norm_pos_iff.mpr h₂z)).2
+          simp_all [abs_of_pos hb]
+    · intro z
+      aesop
+    · intro z
+      simp only [support_mul, mem_inter_iff, mem_support, ne_eq, Int.cast_eq_zero, log_eq_zero,
+        mul_eq_zero, inv_eq_zero, norm_eq_zero, not_or, Finite.coe_toFinset, and_imp, s]
+      intro h₁ _ _ _ _
+      have : z ∈ closedBall 0 |a| := mem_of_indicator_ne_zero h₁
+      rw [toClosedBall_eval_within _ this] at h₁
+      rwa [toClosedBall_eval_within]
+      · simp_all only [abs_of_pos ha, mem_closedBall, dist_zero_right, abs_of_pos hb]
+        linarith
+  · exact Int.cast_nonneg (hD 0)
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
@@ -250,6 +299,39 @@ The logarithmic counting function of the constant function zero is zero.
 @[simp] theorem logCounting_const_zero {e : WithTop E} :
     logCounting (0 : 𝕜 → E) e = 0 := logCounting_const
 
+/--
+The logarithmic counting function is even.
+-/
+theorem logCounting_even {f : 𝕜 → E} {e : WithTop E} :
+    (logCounting f e).Even := by
+  intro r
+  by_cases h : e = ⊤ <;> simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
+
+/--
+The logarithmic counting function is monotonous.
+-/
+theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
+    MonotoneOn (logCounting f e) (Ioi 0) := by
+  by_cases h : e = ⊤ <;>
+    simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
+
+/--
+For `1 ≤ r`, the logarithmic counting function is non-negative.
+-/
+theorem logCounting_nonneg {r : ℝ} {f : 𝕜 → E} {e : WithTop E} (hr : 1 ≤ r) :
+    0 ≤ logCounting f e r := by
+  by_cases h : e = ⊤
+  · simp [logCounting, h, locallyFinsuppWithin.logCounting_nonneg
+      (negPart_nonneg (MeromorphicOn.divisor f univ)) hr]
+  · simp [logCounting, h, locallyFinsuppWithin.logCounting_nonneg
+      (posPart_nonneg (MeromorphicOn.divisor (f · - e.untop₀) univ)) hr]
+
+/--
+The logarithmic counting function is asymptotically non-negative.
+-/
+theorem logCounting_eventually_nonneg {f : 𝕜 → E} {e : WithTop E} :
+    0 ≤ᶠ[Filter.atTop] logCounting f e := by
+  filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [logCounting_nonneg hr]
 
 /-!
 ## Elementary Properties of the Logarithmic Counting Function
@@ -299,8 +381,8 @@ theorem logCounting_add_top_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : Me
     (h₁f₂ : Meromorphic f₂) (hr : 1 ≤ r) :
     logCounting (f₁ + f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
   simp only [logCounting, ↓reduceDIte]
-  rw [← Function.locallyFinsuppWithin.logCounting.map_add]
-  exact Function.locallyFinsuppWithin.logCounting_le
+  rw [← locallyFinsuppWithin.logCounting.map_add]
+  exact locallyFinsuppWithin.logCounting_le
     (negPart_divisor_add_le_add h₁f₁.meromorphicOn h₁f₂.meromorphicOn) hr
 
 /--
@@ -364,9 +446,9 @@ theorem logCounting_mul_zero_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 �
     logCounting (f₁ * f₂) 0 r ≤ (logCounting f₁ 0 + logCounting f₂ 0) r := by
   simp only [logCounting, WithTop.zero_ne_top, reduceDIte, WithTop.untop₀_zero, sub_zero]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
-    ← Function.locallyFinsuppWithin.logCounting.map_add]
-  apply Function.locallyFinsuppWithin.logCounting_le _ hr
-  apply Function.locallyFinsuppWithin.posPart_add
+    ← locallyFinsuppWithin.logCounting.map_add]
+  apply locallyFinsuppWithin.logCounting_le _ hr
+  apply locallyFinsuppWithin.posPart_add
 
 @[deprecated (since := "2025-12-11")] alias logCounting_zero_mul_le := logCounting_mul_zero_le
 
@@ -394,9 +476,9 @@ theorem logCounting_mul_top_le {f₁ f₂ : 𝕜 → 𝕜} {r : ℝ} (hr : 1 ≤
     logCounting (f₁ * f₂) ⊤ r ≤ (logCounting f₁ ⊤ + logCounting f₂ ⊤) r := by
   simp only [logCounting, reduceDIte]
   rw [divisor_mul h₁f₁.meromorphicOn h₁f₂.meromorphicOn (fun z _ ↦ h₂f₁ z) (fun z _ ↦ h₂f₂ z),
-    ← Function.locallyFinsuppWithin.logCounting.map_add]
-  apply Function.locallyFinsuppWithin.logCounting_le _ hr
-  apply Function.locallyFinsuppWithin.negPart_add
+    ← locallyFinsuppWithin.logCounting.map_add]
+  apply locallyFinsuppWithin.logCounting_le _ hr
+  apply locallyFinsuppWithin.negPart_add
 
 @[deprecated (since := "2025-12-11")] alias logCounting_top_mul_le := logCounting_mul_top_le
 

@@ -12,7 +12,8 @@ public import Mathlib.RingTheory.Localization.BaseChange
 # Kähler differential module under base change
 
 ## Main results
-- `KaehlerDifferential.tensorKaehlerEquiv`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
+- `KaehlerDifferential.tensorKaehlerEquivBase`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
+- `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
 - `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
@@ -27,6 +28,8 @@ variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 open TensorProduct
 
 attribute [local instance] SMulCommClass.of_commMonoid
+
+attribute [local irreducible] KaehlerDifferential
 
 namespace KaehlerDifferential
 
@@ -180,9 +183,10 @@ lemma tensorKaehlerEquiv_left_inv [Algebra.IsPushout R S A B] :
     rfl
   · simp only [map_add, TensorProduct.tmul_add, *]
 
-/-- The canonical isomorphism `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`. -/
+/-- The canonical isomorphism `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
+Also see `KaehlerDifferential.tensorKaehlerEquiv` for the version with `B ⊗[A] Ω[A⁄R]`. -/
 @[simps! symm_apply] noncomputable
-def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
+def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
     (S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S] where
   __ := ((map R S A B).restrictScalars R).liftBaseChange S
   invFun := (derivationTensorProduct R S A B).liftKaehlerDifferential
@@ -208,9 +212,11 @@ def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
       · simp only [map_add, smul_add, *]
 
 @[simp]
-lemma tensorKaehlerEquiv_tmul [Algebra.IsPushout R S A B] (a b) :
-    tensorKaehlerEquiv R S A B (a ⊗ₜ b) = a • map R S A B b :=
+lemma tensorKaehlerEquivBase_tmul [Algebra.IsPushout R S A B] (a b) :
+    tensorKaehlerEquivBase R S A B (a ⊗ₜ b) = a • map R S A B b :=
   LinearMap.liftBaseChange_tmul _ _ _ _
+
+@[deprecated (since := "2026-01-01")] alias tensorKaehlerEquiv_tmul := tensorKaehlerEquivBase_tmul
 
 /--
 If `B` is the tensor product of `S` and `A` over `R`,
@@ -219,10 +225,10 @@ then `Ω[B⁄S]` is the base change of `Ω[A⁄R]` along `R → S`.
 lemma isBaseChange [h : Algebra.IsPushout R S A B] :
     IsBaseChange S ((map R S A B).restrictScalars R) := by
   convert (TensorProduct.isBaseChange R Ω[A⁄R] S).comp
-    (IsBaseChange.ofEquiv (tensorKaehlerEquiv R S A B))
+    (IsBaseChange.ofEquiv (tensorKaehlerEquivBase R S A B))
   refine LinearMap.ext fun x ↦ ?_
   simp only [LinearMap.coe_restrictScalars, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply, mk_apply, tensorKaehlerEquiv_tmul, one_smul]
+    Function.comp_apply, mk_apply, tensorKaehlerEquivBase_tmul, one_smul]
 
 instance isLocalizedModule (p : Submonoid R) [IsLocalization p S]
       [IsLocalization (Algebra.algebraMapSubmonoid A p) B] :
@@ -236,5 +242,75 @@ instance isLocalizedModule_of_isLocalizedModule (p : Submonoid R) [IsLocalizatio
   have : IsLocalization (Algebra.algebraMapSubmonoid A p) B :=
     isLocalizedModule_iff_isLocalization.mp inferInstance
   inferInstance
+
+/-- The canonical isomorphism `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
+Also see `KaehlerDifferential.tensorKaehlerEquivBase` for the version with `S ⊗[R] Ω[A⁄R]`. -/
+noncomputable
+def tensorKaehlerEquiv [h : Algebra.IsPushout R S A B] :
+    B ⊗[A] Ω[A⁄R] ≃ₗ[B] Ω[B⁄S] := by
+  have : Algebra.IsPushout R A S B := .symm inferInstance
+  let e₁ : B ⊗[A] Ω[A⁄R] ≃ₗ[A] Ω[A⁄R] ⊗[R] S :=
+    AlgebraTensorModule.congr (Algebra.IsPushout.equiv R A S B).symm.toLinearEquiv (.refl _ _)
+      ≪≫ₗ _root_.TensorProduct.comm _ _ _ ≪≫ₗ AlgebraTensorModule.cancelBaseChange ..
+  let e₂ : B ⊗[A] Ω[A⁄R] ≃ₗ[R] Ω[B⁄S] :=
+    e₁.restrictScalars R ≪≫ₗ _root_.TensorProduct.comm _ _ _ ≪≫ₗ
+      (KaehlerDifferential.tensorKaehlerEquivBase R S A B).restrictScalars R
+  refine { __ := e₂, map_smul' := ?_ }
+  intro m x
+  obtain ⟨m, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective m
+  dsimp
+  induction m with
+  | zero => simp
+  | add x y _ _ => simp only [add_smul, map_add, *]
+  | tmul a b =>
+  induction x with
+  | zero => simp
+  | add x y _ _ => simp only [smul_add, map_add, *]
+  | tmul x y =>
+  obtain ⟨x, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective x
+  induction x with
+  | zero => simp
+  | add x y _ _ => simp only [smul_add, map_add, *, add_tmul]
+  | tmul x z =>
+  suffices b • z • a • x • KaehlerDifferential.map R S A B y =
+      (algebraMap A B a * algebraMap S B b) • z • x • KaehlerDifferential.map R S A B y by
+    simpa [e₂, e₁, smul_tmul', Algebra.IsPushout.equiv_tmul, ← mul_smul,
+      Algebra.IsPushout.equiv_symm_algebraMap_left, Algebra.IsPushout.equiv_symm_algebraMap_right]
+  simp only [← mul_smul, ← @algebraMap_smul S _ B, ← @algebraMap_smul A _ B]
+  ring_nf
+
+@[simp]
+lemma tensorKaehlerEquiv_tmul_D [Algebra.IsPushout R S A B] (b a) :
+    tensorKaehlerEquiv R S A B (b ⊗ₜ D _ _ a) = b • D S B (algebraMap A B a) := by
+  have : Algebra.IsPushout R A S B := .symm inferInstance
+  obtain ⟨b, rfl⟩ := (Algebra.IsPushout.equiv R A S B).surjective b
+  induction b with
+  | zero => simp
+  | add x y _ _ => simp only [map_add, *, add_tmul, add_smul]
+  | tmul a' s =>
+  trans s • a' • D S B (algebraMap A B a)
+  · simp [tensorKaehlerEquiv]
+  · simp [Algebra.IsPushout.equiv_tmul, mul_smul, smul_comm]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma tensorKaehlerEquiv_symm_D_tmul (s a) :
+    (tensorKaehlerEquiv R S A (S ⊗[R] A)).symm (D _ _ (s ⊗ₜ a)) = algebraMap _ _ s ⊗ₜ D _ _ a := by
+  apply (tensorKaehlerEquiv R S A _).symm_apply_eq.mpr ?_
+  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
+    tensorKaehlerEquiv_tmul_D]
+  rw [show s ⊗ₜ 1 = algebraMap S (S ⊗ A) s by simp, Algebra.TensorProduct.right_algebraMap_apply,
+    algebraMap_smul, ← Derivation.map_smul, smul_tmul', smul_eq_mul, mul_one]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+@[simp]
+lemma tensorKaehlerEquiv_symm_D_tmul' (s a) :
+    (tensorKaehlerEquiv R S A (A ⊗[R] S)).symm (D _ _ (a ⊗ₜ s)) = algebraMap _ _ s ⊗ₜ D _ _ a := by
+  apply (tensorKaehlerEquiv R S A _).symm_apply_eq.mpr ?_
+  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
+    tensorKaehlerEquiv_tmul_D]
+  rw [algebraMap_smul, ← Derivation.map_smul, Algebra.smul_def,
+    Algebra.TensorProduct.right_algebraMap_apply]
+  simp only [Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one]
 
 end KaehlerDifferential
