@@ -18,7 +18,7 @@ When the underlying category is abelian:
   `Q : ProjectiveResolution Y`, any morphism `X ⟶ Y` admits a lifting to a chain map
   `P.complex ⟶ Q.complex`. It is a lifting in the sense that `P.ι` intertwines the lift and
   the original morphism, see `CategoryTheory.ProjectiveResolution.lift_commutes`.
-* `CategoryTheory.ProjectiveResolution.liftHomotopy`: Any two such descents are homotopic.
+* `CategoryTheory.ProjectiveResolution.liftHomotopy`: Any two such lifts are homotopic.
 * `CategoryTheory.ProjectiveResolution.homotopyEquiv`: Any two projective resolutions of the same
   object are homotopy equivalent.
 * `CategoryTheory.projectiveResolutions`: If every object admits a projective resolution, we can
@@ -86,7 +86,7 @@ def liftFSucc {Y Z : C} (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z
     (P.complex.d (n + 2) (n + 1) ≫ g') (by simp [w]),
       (Q.exact_succ n).liftFromProjective_comp _ _⟩
 
-/-- A morphism in `C` lift to a chain map between projective resolutions. -/
+/-- A morphism in `C` lifts to a chain map between projective resolutions. -/
 def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex ⟶ Q.complex :=
   ChainComplex.mkHom _ _ (liftFZero f _ _) (liftFOne f _ _) (liftFOne_zero_comm f P Q)
