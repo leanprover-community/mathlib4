@@ -41,8 +41,7 @@ lemma max_one_norm_div_pow_le_one_add_rpow
     have hle2 : ‖u / a‖ ^ m ≤ 1 + (r / ‖a‖) ^ τ := hpowm_le1.trans hle1
     exact (max_le_iff).2 ⟨hle1, hle2⟩
   · have hx1 : 1 < ‖u / a‖ := lt_of_not_ge hx
-    have hpow :
-        (‖u / a‖ : ℝ) ^ (m : ℝ) ≤ (‖u / a‖ : ℝ) ^ τ :=
+    have hpow : (‖u / a‖ : ℝ) ^ (m : ℝ) ≤ (‖u / a‖ : ℝ) ^ τ :=
       Real.rpow_le_rpow_of_exponent_le (le_of_lt hx1) hmτ
     have hpow' : ‖u / a‖ ^ m ≤ (‖u / a‖ : ℝ) ^ τ := by
       simpa [Real.rpow_natCast] using hpow
