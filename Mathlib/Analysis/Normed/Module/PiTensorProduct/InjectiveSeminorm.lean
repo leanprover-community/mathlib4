@@ -93,13 +93,10 @@ open scoped TensorProduct
 
 namespace PiTensorProduct
 
-section seminorm
-
 variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`.
 -/
-@[simps!, deprecated "No replacement" (since := "2026-01-19")]
 noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
     ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
   toFun x := LinearMap.mkContinuous
@@ -122,14 +119,11 @@ noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[�
       LinearMap.flip_apply, LinearEquiv.coe_coe, RingHom.id_apply, ContinuousLinearMap.coe_smul',
       Pi.smul_apply]
 
-set_option linter.deprecated false in
-@[deprecated "No replacement" (since := "2026-01-19")]
 theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
     ‖toDualContinuousMultilinearMap F x‖ ≤ projectiveSeminorm x := by
   simp only [toDualContinuousMultilinearMap, LinearMap.coe_mk, AddHom.coe_mk]
   apply LinearMap.mkContinuous_norm_le _ (apply_nonneg _ _)
 
-set_option linter.deprecated false in
 /-- The injective seminorm on `⨂[𝕜] i, Eᵢ`. Morally, it sends `x` in `⨂[𝕜] i, Eᵢ` to the
 `sup` of the operator norms of the `PiTensorProduct.toDualContinuousMultilinearMap F x`, for all
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then

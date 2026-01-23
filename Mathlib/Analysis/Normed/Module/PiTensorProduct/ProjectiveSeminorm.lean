@@ -6,7 +6,8 @@ Authors: Sophie Morel
 module
 
 public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.LinearAlgebra.PiTensorProduct
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
@@ -35,6 +36,8 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `Πᵢ (Eᵢ →L[𝕜] E'ᵢ)` to `(⨂[𝕜] i, Eᵢ) →L[𝕜] (⨂[𝕜] i, E'ᵢ)` sending a family
   `f` to `PiTensorProduct.mapL f`.
 
+* `PiTensorProduct.dualDistribL`: A continuous version of `PiTensorProduct.dualDistrib`.
+
 ## Main results
 
 * `PiTensorProduct.norm_eval_le_projectiveSeminorm`: If `f` is a continuous multilinear map on
@@ -43,6 +46,11 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
+
+* `projectiveSeminorm_tprod`. For normed spaces over `ℝ, ℂ`, the projective seminorm is
+  multiplicative w.r.t. tensor products: `‖⨂ m i‖ = ∏ ‖m i‖`.
+
+* `PiTensorProduct.projectiveSeminorm_of_bidual_iso`. TBD.
 
 ## TODO
 
@@ -141,7 +149,7 @@ theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
   rw [norm_def, mul_comm, Real.iInf_mul_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun ⟨p, hp⟩ ↦ ?_
   simp_rw [← ((mem_lifts_iff x p).mp hp), ← List.sum_map_hom, ← Multiset.sum_coe]
-  refine le_trans (norm_multiset_sum_le _) ?_
+  grw [norm_multiset_sum_le]
   simp only [mul_comm, ← smul_eq_mul, List.smul_sum, projectiveSeminormAux]
   refine List.Forall₂.sum_le_sum ?_
   simp only [smul_eq_mul, List.forall₂_map_right_iff, Function.comp_apply,
@@ -159,7 +167,7 @@ induced by `PiTensorProduct.lift`, for every normed space `F`. -/
 @[simps]
 noncomputable def liftEquiv : ContinuousMultilinearMap 𝕜 E F ≃ₗ[𝕜] (⨂[𝕜] i, E i) →L[𝕜] F where
   toFun f := LinearMap.mkContinuous (lift f.toMultilinearMap) ‖f‖ fun x ↦
-      norm_eval_le_projectiveSeminorm f x
+    norm_eval_le_projectiveSeminorm f x
   map_add' f g := by ext; simp
   map_smul' a f := by ext; simp
   invFun l := MultilinearMap.mkContinuous (lift.symm l.toLinearMap) ‖l‖ fun x ↦
@@ -196,7 +204,8 @@ noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
 
 @[simp]
-theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by ext; simp
+theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
+  ext; simp
 
 @[simp]
 theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
@@ -205,7 +214,8 @@ theorem liftIsometry_symm_apply (l : (⨂[𝕜] i, E i) →L[𝕜] F) :
 
 @[simp]
 theorem liftIsometry_tprodL :
-    liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by ext; simp
+    liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by
+  ext; simp
 
 section map
 
@@ -294,12 +304,9 @@ protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[�
   simp [mapL_add_smul_aux, PiTensorProduct.map_update_smul]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
-  refine (ContinuousLinearMap.opNorm_le_iff (by positivity)).mpr fun x ↦ ?_
-  apply le_trans (norm_eval_le_projectiveSeminorm ..) (mul_le_mul_of_nonneg_right _ (norm_nonneg x))
-  refine (ContinuousMultilinearMap.opNorm_le_iff (by positivity)).mpr fun m ↦ ?_
-  apply le_trans (projectiveSeminorm_tprod_le fun i ↦ f i (m i))
-  rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
+  conv_lhs => apply LinearIsometryEquiv.norm_map
+  grw [ContinuousMultilinearMap.norm_compContinuousLinearMap_le,
+    opNorm_tprodL_eq_id, ContinuousLinearMap.norm_id_le, one_mul]
 
 variable (𝕜 E E')
 
@@ -314,8 +321,262 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
     map_update_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact mapL_opNorm f)
 
+variable {𝕜 E E'}
+
+/-
+#  WIP new material below.
+--------------------------
+-/
+
+@[simp]
+theorem opNorm_tprodL_eq_id :
+    ‖tprodL (𝕜 := 𝕜) (E := E)‖ = ‖ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i)‖ :=
+  LinearIsometryEquiv.norm_map _ _
+
+/-- Continuous version of `PiTensorProduct.piTensorHomMap`. -/
+noncomputable def piTensorHomMapL :
+    (⨂[𝕜] i, E i →L[𝕜] E' i) →L[𝕜] (⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i :=
+  (liftIsometry 𝕜 _ _) (mapLMultilinear 𝕜 E E')
+
+@[simp]
+theorem piTensorHomMapL_tprod_tprod (f : Π i, E i →L[𝕜] E' i) (x : Π i, E i) :
+    piTensorHomMapL (tprod 𝕜 f) (tprod 𝕜 x) = tprodL 𝕜 fun i ↦ f i (x i) := by
+  simp [piTensorHomMapL, liftAux_tprod]
+
+theorem piTensorHomMapL_tprod_eq_mapL (f : Π i, E i →L[𝕜] E' i) :
+    piTensorHomMapL (tprod 𝕜 f) = mapL f := by
+  simp [piTensorHomMapL, mapLMultilinear]
+
+theorem opNorm_piTensorHomMapL_le : ‖piTensorHomMapL (𝕜 := 𝕜) (E := E) (E' := E')‖ ≤ 1 := by
+  simp only [piTensorHomMapL, LinearIsometryEquiv.norm_map]
+  apply MultilinearMap.mkContinuous_norm_le _ zero_le_one
+
 end map
+
+/-
+## Characterize the projective seminorm as an operator norm
+-/
+section dualCharacterization
+
+/- Implementation note.
+
+In the definition below, `ContinuousLinearMap.flip (liftIsometry 𝕜 E F)` also works.
+But then the coercion to `ContinuousLinearMap` goes via `LinearIsometricEquiv` and
+there's currently no analogue for `LinearIsometry.norm_toContinuousLinearMap_le`
+for isometric equivalences. Should this be added? See
+`norm_toContinuousLinearEquiv_toContinuousLinearMap_le` at bottom of file.  -/
+variable (F) in
+/-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
+`x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`. -/
+noncomputable def toDualContinuousMultilinearMapL :
+    (⨂[𝕜] i, E i) →L[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] F :=
+  ContinuousLinearMap.flip (liftIsometry 𝕜 E F).toLinearIsometry.toContinuousLinearMap
+
+@[simp]
+theorem toDualContinuousMultilinearMapL_apply_apply
+    (x : ⨂[𝕜] i, E i) (f : ContinuousMultilinearMap 𝕜 E F) :
+    toDualContinuousMultilinearMapL F x f = liftIsometry 𝕜 E F f x := rfl
+
+-- Analogue of `toDualContinuousMultilinearMap_le_projectiveSeminorm`
+theorem norm_toDualContinuousMultilinearMapL_apply_le (x : ⨂[𝕜] i, E i) :
+    ‖toDualContinuousMultilinearMapL F x‖ ≤ ‖x‖ := by
+  grw [toDualContinuousMultilinearMapL, ContinuousLinearMap.le_opNorm,
+    ContinuousLinearMap.opNorm_flip, LinearIsometry.norm_toContinuousLinearMap_le, one_mul]
+
+/-- The projective seminorm of `x` is the maximum over operator norms
+`‖toDualContinuousMultilinearMapL G x‖`, where `G` ranges over normed spaces
+with universe level `(max uι u𝕜 uE)`.
+
+(This characterizes the projective seminorm in terms of the previous Mathlib
+definition of `injectiveSeminor`). -/
+theorem projectiveSeminorm_dual_characterization (x : ⨂[𝕜] i, E i) : IsGreatest
+    { p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+      p = ‖toDualContinuousMultilinearMapL G x‖ } ‖x‖ := by
+  refine .intro ?_ (by simp_all [mem_upperBounds, norm_toDualContinuousMultilinearMapL_apply_le])
+  simp only [Set.mem_setOf_eq]
+  use (⨂[𝕜] i, E i), inferInstance, inferInstance
+  refine le_antisymm ?_ (norm_toDualContinuousMultilinearMapL_apply_le x)
+  have := ContinuousLinearMap.le_opNorm ((toDualContinuousMultilinearMapL _) x) (tprodL 𝕜)
+  grw [opNorm_tprodL_eq_id, ContinuousLinearMap.norm_id_le, mul_one] at this
+  simpa
+
+open NormedSpace in
+/-- If `x` imbeds isometrically into the bidual, to projective seminorm is equal
+to the operator norm `‖toDualContinuousMultilinearMapL 𝕜 x‖`. -/
+theorem projectiveSeminorm_of_bidual_iso (x : ⨂[𝕜] i, E i)
+    (h_iso : ‖inclusionInDoubleDual 𝕜 _ x‖ = ‖x‖) :
+    ‖toDualContinuousMultilinearMapL 𝕜 x‖ = ‖x‖ := by
+  refine le_antisymm (norm_toDualContinuousMultilinearMapL_apply_le x) ?_
+  choose g lim using ContinuousLinearMap.exists_norming_sequence (inclusionInDoubleDual 𝕜 _ x)
+  simp only [dual_def, h_iso] at lim
+  refine le_of_tendsto' lim fun n ↦ ?_
+  grw [← ContinuousLinearMap.ratio_le_opNorm _ ((liftIsometry 𝕜 E 𝕜).symm (g n))]
+  simp only [LinearIsometryEquiv.norm_map, toDualContinuousMultilinearMapL_apply_apply,
+    LinearIsometryEquiv.apply_symm_apply, le_refl]
+
+end dualCharacterization
+
+/-
+## Sufficient conditions for the projective seminorm to factorize on product tensors
+-/
+section projectiveSeminorm_tprod
+
+open Filter NormedSpace ContinuousLinearMap
+
+/-- The projective seminorm is multiplicative w.r.t. tensor products: `‖⨂ m i‖ = ∏ ‖m i‖`
+assuming that all `mᵢ` embed isometrically into the bidual.
+
+TBD: Can assumptions be weakened further? Is this unconditionally true?
+TBD: How does that relate to the norm of factorizing multilinear maps? -/
+theorem projectiveSeminorm_tprod_of_bidual_iso
+    (m : Π i, E i) (h_bidual : ∀ i, ‖inclusionInDoubleDual 𝕜 _ (m i)‖ = ‖m i‖) :
+    ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ := by
+  refine le_antisymm (projectiveSeminorm_tprod_le m) ?_
+  choose g lim using fun i ↦ exists_norming_sequence (inclusionInDoubleDual 𝕜 _ (m i))
+  simp only [dual_def, h_bidual] at lim
+  refine le_ciInf (fun p ↦ le_of_tendsto' (tendsto_finset_prod _ (fun i _ ↦ lim i)) fun n ↦ ?_)
+  have hp := congr_arg (fun x ↦ ‖dualDistrib (⨂ₜ[𝕜] i, g i n) x‖ / (∏ i, ‖g i n‖))
+    ((mem_lifts_iff _ _).mp p.prop)
+  simp only [dualDistrib_apply, coe_coe, norm_prod] at hp
+  rw [Finset.prod_div_distrib, ← hp, map_list_sum, List.map_map]
+  by_cases hz : ∏ i, ‖g i n‖ = 0
+  · simp_all [projectiveSeminormAux_nonneg]
+  · grw [div_le_iff₀' (by positivity), List.le_sum_of_subadditive norm norm_zero.le norm_add_le,
+      List.map_map, projectiveSeminormAux, ← List.sum_map_mul_left]
+    refine List.sum_le_sum (fun q _ ↦ ?_)
+    simp only [Function.comp_apply, map_smul, dualDistrib_apply, coe_coe, smul_eq_mul, norm_mul,
+      norm_prod, mul_left_comm, ← Finset.prod_mul_distrib]
+    gcongr with i
+    exact le_opNorm _ _
+
+section RCLike
+
+-- TBD: In principle, `E i` can be weakened to `SeminormedAddCommGroup`
+variable {𝕜 : Type*} [RCLike 𝕜]
+variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+
+@[simp]
+theorem projectiveSeminorm_tprod (m : Π i, E i) : ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ :=
+  projectiveSeminorm_tprod_of_bidual_iso m
+      (fun i ↦ LinearIsometry.norm_map (inclusionInDoubleDualLi 𝕜) (m i))
+
+
+variable {E' : ι → Type*}
+variable [∀ i, NormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable (f : Π i, E i →L[𝕜] E' i)
+
+@[simp]
+theorem mapL_opNorm_eq : ‖mapL f‖ = ∏ i, ‖f i‖ := by
+  apply le_antisymm (mapL_opNorm _)
+  choose g lim using fun i ↦ exists_norming_sequence (f i)
+  apply le_of_tendsto' (tendsto_finset_prod _ (fun i _ ↦ lim i)) fun n ↦ ?_
+  grw [← ratio_le_opNorm (mapL f) (⨂ₜ[𝕜] i, g i n)]
+  simp only [Finset.prod_div_distrib, mapL_apply, map_tprod, coe_coe, projectiveSeminorm_tprod,
+    le_refl]
+
+end RCLike
+
+end projectiveSeminorm_tprod
+
+/-
+Things become more experimental below.
+
+## Isometric version of `constantBaseRingIsometry`
+-/
+
+section constantBaseRingIsometry
+
+section RingTheory
+
+variable {ι R' R : Type*} {A : ι → Type*}
+variable [CommSemiring R'] [CommSemiring R] [∀ i, Semiring (A i)]
+variable [Algebra R' R]
+variable [∀ i, Algebra R (A i)]
+
+/-
+The following definitional equality is used in `PiTensorProduct.algebraMap_apply`, but does not seem
+to be registered as a `simp` lemma.
+
+Adding this to RingTheory/PiTensorProduct.lean would mirror the idiom used for the pair
+`Pi.algebraMap_def`, `Pi.algebraMap_apply`.
+-/
+theorem algebraMap_def (r : R') : algebraMap R' (⨂[R] i, A i) r = r • (⨂ₜ[R] _ : ι, 1)
+  := rfl
+
+end RingTheory
+
+open NormedSpace in
+theorem projectiveSeminorm_tprod_field (m : ι → 𝕜) : ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ :=
+  projectiveSeminorm_tprod_of_bidual_iso m
+    fun i ↦ le_antisymm
+      (double_dual_bound ..)
+      (by simpa using ((inclusionInDoubleDual 𝕜 𝕜) (m i)).ratio_le_opNorm 1)
+
+variable (ι 𝕜) in
+/-- Isometric version of `PiTensorProduct.constantBaseRingEquiv`. -/
+noncomputable def constantBaseRingIsometry : (⨂[𝕜] _ : ι, 𝕜) ≃ₗᵢ[𝕜] 𝕜 :=
+  { (constantBaseRingEquiv ι 𝕜).toLinearEquiv with
+    norm_map' x := by
+      have h_symm_iso (r : 𝕜) : ‖r‖ = ‖(constantBaseRingEquiv ι 𝕜).toLinearEquiv.symm r‖ := by
+        simp [algebraMap_def, norm_smul, projectiveSeminorm_tprod_field]
+      simpa using h_symm_iso ((constantBaseRingEquiv ι 𝕜).toLinearEquiv x) }
+
+@[simp]
+theorem constantBaseRingIsometry_apply (m : ι → 𝕜) :
+    constantBaseRingIsometry ι 𝕜 (⨂ₜ[𝕜] i , m i) = ∏ i, m i := by
+  simp [constantBaseRingIsometry]
+
+end constantBaseRingIsometry
+
+/-
+## Continuous version of `dualDistrib`
+-/
+
+section dualDistribL
+
+variable {E' : ι → Type*}
+variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable (f : Π i, E i →L[𝕜] E' i)
+
+/-- Continuous version of `PiTensorProduct.dualDistrib`. -/
+noncomputable def dualDistribL : (⨂[𝕜] i, StrongDual 𝕜 (E i)) →L[𝕜] StrongDual 𝕜 (⨂[𝕜] i, E i) :=
+  (ContinuousLinearMap.compL 𝕜 _ _ 𝕜 (constantBaseRingIsometry ι 𝕜)).comp piTensorHomMapL
+
+/-- Warning: *Not* an analogue of `dualDistrib_apply`! See `dualDistrib_apply_apply`. -/
+@[simp]
+theorem dualDistribL_apply (f : Π i, StrongDual 𝕜 (E i)) (x : (⨂[𝕜] i, E i)) :
+    dualDistribL (⨂ₜ[𝕜] i, f i) x = (constantBaseRingIsometry ι 𝕜) (mapL f x) := by
+  simp [dualDistribL, piTensorHomMapL_tprod_eq_mapL]
+
+/-- Corresponds to `dualDistrib_apply`. See also `dualDistribL_apply` -/
+theorem dualDistribL_apply_apply (f : Π i, StrongDual 𝕜 (E i)) (g : Π i, E i) :
+    dualDistribL (⨂ₜ[𝕜] i, f i) (⨂ₜ[𝕜] i, g i) = ∏ i, f i (g i) := by
+  simp
+
+end dualDistribL
 
 end NontriviallyNormedField
 
 end PiTensorProduct
+
+
+/-
+Analogue of `LinearIsometry.norm_toContinuousLinearMap_le` in Analysis/Normed/Operator/Basic.lean.
+
+Wanted?
+-/
+
+namespace LinearIsometry
+
+variable {𝕜 𝕜₂ E F : Type*}
+variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NormedSpace 𝕜 E]
+  [NormedSpace 𝕜₂ F] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜₂ →+* 𝕜}
+variable [RingHomInvPair σ₁₂ σ₂₁]
+variable [RingHomInvPair σ₂₁ σ₁₂]
+
+theorem norm_toContinuousLinearEquiv_toContinuousLinearMap_le (f : E ≃ₛₗᵢ[σ₁₂] F) :
+    ‖f.toContinuousLinearEquiv.toContinuousLinearMap‖ ≤ 1 :=
+  ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun x ↦ by simp
+
+end LinearIsometry
