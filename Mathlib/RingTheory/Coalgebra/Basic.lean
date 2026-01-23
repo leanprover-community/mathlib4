@@ -472,18 +472,6 @@ theorem counit_comp_DFinsuppLinearEquivFunOnFintype :
 @[simp] theorem counit_coe_DFinsupp (x : Π₀ i, A i) :
     counit (R := R) ⇑x = counit x := congr($counit_comp_DFinsuppLinearEquivFunOnFintype x)
 
-variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
-
-theorem counit_comp_finsuppLinearEquivFunOnFintype :
-    counit (R := R) (A := n → M) ∘ₗ
-      (Finsupp.linearEquivFunOnFinite R M n).toLinearMap = counit := by
-  apply LinearMap.ext fun x ↦ ?_
-  rw [← Finsupp.univ_sum_single x]
-  simp [-Finsupp.univ_sum_single]
-
-@[simp] theorem counit_coe_finsupp (x : n →₀ M) :
-    counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLinearEquivFunOnFintype x)
-
 open DFinsupp in
 theorem comul_comp_DFinsuppLinearEquivFunOnFintype :
     comul (R := R) (A := Π i, A i) ∘ₗ linearEquivFunOnFintype.toLinearMap =
@@ -499,9 +487,20 @@ open DFinsupp in
       map linearEquivFunOnFintype.toLinearMap linearEquivFunOnFintype.toLinearMap (comul x) :=
   congr($comul_comp_DFinsuppLinearEquivFunOnFintype x)
 
+variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
+
+theorem counit_comp_finsuppLinearEquivFunOnFintype :
+    counit ∘ₗ (Finsupp.linearEquivFunOnFinite R M n).toLinearMap = counit := by
+  apply LinearMap.ext fun x ↦ ?_
+  rw [← Finsupp.univ_sum_single x]
+  simp [-Finsupp.univ_sum_single]
+
+@[simp] theorem counit_coe_finsupp (x : n →₀ M) :
+    counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLinearEquivFunOnFintype x)
+
 open Finsupp in
 theorem comul_comp_finsuppLinearEquivFunOnFintype :
-    comul (R := R) (A := n → M) ∘ₗ (linearEquivFunOnFinite R M n).toLinearMap =
+    comul ∘ₗ (linearEquivFunOnFinite R M n).toLinearMap =
       map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap ∘ₗ
         comul := by
   apply LinearMap.ext fun x ↦ ?_
@@ -513,7 +512,7 @@ theorem comul_comp_finsuppLinearEquivFunOnFintype :
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :
-    comul (R := R) ⇑x =
+    comul ⇑x =
       map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap
         (comul x) := congr($comul_comp_finsuppLinearEquivFunOnFintype x)
 
