@@ -32,7 +32,4 @@ instance : lightProfiniteToLightCondSet.PreservesEpimorphisms where
 instance : IsRegularEpiCategory LightCondSet.{u} :=
   inferInstanceAs <| IsRegularEpiCategory (Sheaf _ _)
 
-instance : lightProfiniteToLightCondSet.PreservesEffectiveEpis where
-  preserves _ _ := by
-    rw [← isRegularEpi_iff_effectiveEpi]
-    apply IsRegularEpiCategory.regularEpiOfEpi
+example : lightProfiniteToLightCondSet.PreservesEffectiveEpis := inferInstance

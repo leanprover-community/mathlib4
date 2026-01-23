@@ -34,7 +34,4 @@ instance : compHausToCondensed.PreservesEpimorphisms where
 instance : IsRegularEpiCategory CondensedSet.{u} :=
   inferInstanceAs <| IsRegularEpiCategory (Sheaf _ _)
 
-instance : compHausToCondensed.PreservesEffectiveEpis where
-  preserves _ _ := by
-    rw [← isRegularEpi_iff_effectiveEpi]
-    apply IsRegularEpiCategory.regularEpiOfEpi
+example : compHausToCondensed.PreservesEffectiveEpis := inferInstance
