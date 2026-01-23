@@ -211,35 +211,13 @@ theorem abundant_iff_two_lt_abundancyIndex (h : n ≠ 0) : Abundant n ↔ 2 < n.
 
 theorem abundancyIndex_le_ofDvd (hm : n ≠ 0) (hd : m ∣ n) :
     m.abundancyIndex ≤ n.abundancyIndex := by
-  obtain ⟨ k , he ⟩ := hd
-  rw [he, mul_comm]
-  by_cases hn : m = 0
-  · grind
-  · have hk : k ≠ 0 := by grind
-    unfold abundancyIndex
-    suffices hs : k * ∑ i ∈ m.divisors, i ≤ ∑ i ∈ (k * m).divisors, i by
-      rw [(div_le_div_iff₀ (by positivity) (by positivity))]
-      norm_cast
-      rwa [← mul_assoc, Nat.mul_le_mul_right_iff (by grind), mul_comm]
-    letI : SMul ℕ (Finset ℕ) := Finset.smulFinset
-    calc
-      _ = ∑ i ∈ (k • m.divisors), i := by
-        let f := Function.Embedding.mk (fun x : ℕ => k • x) (by
-          intro y z ho
-          simp only [smul_eq_mul, mul_eq_mul_left_iff] at ho
-          grind)
-        have ht : ∑ i ∈ m.divisors.map f, i = ∑ i ∈ m.divisors, k • i := sum_map m.divisors f id
-        rw [← smul_eq_mul, ← sum_nsmul, ← ht]
-        congr
-        ext z
-        simp [f, mem_smul_finset]
-      _ ≤ _ := by
-        apply sum_le_sum_of_subset
-        intro i h2
-        rw [mem_smul_finset] at h2
-        obtain ⟨ j, ⟨ hd , hj ⟩ ⟩ := h2
-        rw [← hj, divisors_mul, smul_eq_mul]
-        exact mul_mem_mul (mem_divisors_self _ (by grind)) hd
+  obtain ⟨k, hk⟩ := hd
+  have hk0 : k ≠ 0 := by grind
+  rw [abundancyIndex, abundancyIndex, hk, cast_mul, div_mul_eq_div_div_swap]
+  refine div_le_div_of_nonneg_right ?_ m.cast_nonneg
+  rw [le_div_iff₀ (by grind [cast_pos]), ← cast_mul, cast_le, sum_mul]
+  exact (sum_image (f := fun i ↦ i) (mul_left_injective₀ hk0).injOn).symm.trans_le
+    (sum_le_sum_of_subset (by grind [mul_dvd_mul_iff_right hk0]))
 
 theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
   have hm : m ≠ 0 := by grind [not_abundant_zero]
