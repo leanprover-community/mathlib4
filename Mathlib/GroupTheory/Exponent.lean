@@ -658,10 +658,8 @@ variable [Group G]
 If `H` is a normal subgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
 -/
 @[to_additive
-/--
-If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
-exponent of `G`.
--/]
+/-- If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
+exponent of `G`. -/]
 theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
     Monoid.exponent (G ⧸ H) ∣ Monoid.exponent G :=
   MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)
