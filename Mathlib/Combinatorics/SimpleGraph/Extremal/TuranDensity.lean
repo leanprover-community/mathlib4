@@ -11,6 +11,8 @@ public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Data.Nat.Choose.Cast
 
+import Mathlib.Topology.Instances.Real.Lemmas
+
 /-!
 # Turán density
 
@@ -78,11 +80,15 @@ noncomputable def turanDensity (H : SimpleGraph W) :=
 
 theorem isGLB_turanDensity (H : SimpleGraph W) :
     IsGLB { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } (turanDensity H) := by
-  apply Real.isGLB_limUnder_of_bddBelow_antitoneOn_Ici
-  · refine ⟨0, fun x ⟨_, _, hx⟩ ↦ ?_⟩
+  have h_bdd : BddBelow { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } := by
+    refine ⟨0, fun x ⟨_, _, hx⟩ ↦ ?_⟩
     rw [← hx]
     positivity
-  · exact antitoneOn_extremalNumber_div_choose_two H
+  refine Real.isGLB_of_tendsto_antitoneOn_bddBelow_nat_Ici ?_
+    (antitoneOn_extremalNumber_div_choose_two H) h_bdd
+  have h_tto := Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici
+    (antitoneOn_extremalNumber_div_choose_two H) h_bdd
+  rwa [← h_tto.limUnder_eq] at h_tto
 
 theorem turanDensity_eq_csInf (H : SimpleGraph W) :
     turanDensity H = sInf { (extremalNumber n H / n.choose 2 : ℝ) | n ∈ Set.Ici 2 } :=
@@ -92,8 +98,8 @@ theorem turanDensity_eq_csInf (H : SimpleGraph W) :
 /-- The **Turán density** of a simple graph `H` is well-defined. -/
 theorem tendsto_turanDensity (H : SimpleGraph W) :
     Tendsto (fun n ↦ (extremalNumber n H / n.choose 2 : ℝ)) atTop (𝓝 (turanDensity H)) := by
-  have h_tendsto := Real.tendsto_csInf_of_bddBelow_antitoneOn_Ici
-    (isGLB_turanDensity H).bddBelow (antitoneOn_extremalNumber_div_choose_two H)
+  have h_tendsto := Real.tendsto_atTop_csInf_of_antitoneOn_bddBelow_nat_Ici
+    (antitoneOn_extremalNumber_div_choose_two H) (isGLB_turanDensity H).bddBelow
   rwa [turanDensity, h_tendsto.limUnder_eq]
 
 /-- `extremalNumber n H` is asymptotically equivalent to `turanDensity H * n.choose 2` as `n`
