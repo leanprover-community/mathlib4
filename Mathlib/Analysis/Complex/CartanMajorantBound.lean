@@ -17,6 +17,7 @@ noncomputable section
 namespace Complex.Hadamard
 
 open scoped BigOperators
+
 open Filter Finset Real Topology
 
 private lemma cartan_majorant_nonneg
