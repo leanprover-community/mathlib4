@@ -320,6 +320,13 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
+lemma AnalyticAt.of_meromorphicOrderAt_pos {f : 𝕜 → E} {x : 𝕜}
+    (h : 0 < meromorphicOrderAt f x) (hf : f x = 0) :
+    AnalyticAt 𝕜 f x := by
+  refine (meromorphicAt_of_meromorphicOrderAt_ne_zero h.ne').analyticAt ?_
+  rw [continuousAt_iff_punctured_nhds, hf]
+  exact tendsto_zero_of_meromorphicOrderAt_pos h
+
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
@@ -328,6 +335,10 @@ theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
   split_ifs with he
   · simp [he, meromorphicOrderAt_eq_top_iff]
   · exact (meromorphicOrderAt_eq_int_iff (.const e z₀)).2 ⟨fun _ ↦ e, by fun_prop, by simpa⟩
+
+@[simp]
+lemma meromorphicOrderAt_id : meromorphicOrderAt (𝕜 := 𝕜) id 0 = 1 := by
+  simp [analyticAt_id.meromorphicOrderAt_eq]
 
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
@@ -584,7 +595,7 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
-        simp only [mem_compl_iff, mem_setOf_eq]
+        push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
         · rw [meromorphicOrderAt_eq_top_iff, not_eventually]
