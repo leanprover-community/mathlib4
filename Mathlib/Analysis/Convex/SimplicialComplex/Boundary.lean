@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2021 Yael Dillies, Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yael Dillies, Bhavik Mehta, Kaan Tahti
+-/
 import Mathlib.Analysis.Convex.SimplicialComplex.Basic
 import Mathlib.Analysis.Convex.StdSimplex
 

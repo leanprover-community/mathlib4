@@ -1,4 +1,9 @@
 /-
+Copyright (c) 2021 Yael Dillies, Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yael Dillies, Bhavik Mehta, Kaan Tahti
+-/
+/-
 Copyright (c) 2025 Kaan Tahti. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kaan Tahti
@@ -260,14 +265,14 @@ theorem num_containing_simplices_boundary
       -- But s1.card = n + 1 > n. Contradiction.
       -- This requires affine dimension theory from Mathlib.
       -- For now, we use omega with the assumption that this contradicts.
-      omega  -- placeholder; real proof needs affine dimension bounds
+      sorry -- TODO: requires affine dimension theory
 
     have hv2_k_pos : v2 k > 0 := by
       by_contra h
       push_neg at h
       have hv2_k_zero : v2 k = 0 := le_antisymm h hv2_k
       -- Same argument as above
-      omega  -- placeholder
+      sorry -- TODO: requires affine dimension theory
 
     -- Now v1 k > 0 and v2 k > 0.
     -- s1 and s2 are both n-simplices containing t and extending "above" the hyperplane.
@@ -364,7 +369,7 @@ theorem num_containing_simplices_boundary
       -- The formal proof would show that having two distinct top-simplices
       -- sharing a facet on the boundary of stdSimplex and both extending inward
       -- violates the simplicial complex covering property.
-      omega  -- placeholder
+      sorry -- TODO: requires affine dimension theory
     · exact h_eq
 
   exact Set.ncard_eq_one.mpr ⟨h_exists.some, Set.Subsingleton.eq_singleton_of_mem h_unique h_exists.some_mem⟩
@@ -456,7 +461,7 @@ theorem num_containing_simplices_interior
         have := Set.eq_empty_of_forall_not_mem fun s hs => by
           simp only [Set.mem_sep_iff] at hs
           exact h_empty hs.1 hs.2.1 hs.2.2
-        omega  -- placeholder
+        sorry -- TODO: requires affine dimension theory
       simp only [Set.ncard_eq_zero, Set.not_nonempty_iff_eq_empty] at h_lt
       exact h_nonempty h_lt
     · -- ncard = 1: exactly one containing simplex.
@@ -510,7 +515,7 @@ theorem num_containing_simplices_interior
       -- v' must be in some top-simplex containing t.
       -- But the only such simplex is s, and v' ∉ s (v' is on the opposite side).
       -- Contradiction.
-      omega  -- placeholder
+      sorry -- TODO: requires affine dimension theory
 
   -- Step 3: Show there are at most 2 containing simplices
   have h_at_most_two : (containingSimplices S t n).ncard ≤ 2 := by
@@ -585,7 +590,7 @@ theorem num_containing_simplices_interior
     -- By pigeonhole, at least two vi's are on the same side of aff(t).
     -- Those two simplices would overlap. Contradiction.
     -- The formal proof requires orientation/signed volume arguments.
-    omega  -- placeholder
+    sorry -- TODO: requires affine dimension theory
 
   omega
 

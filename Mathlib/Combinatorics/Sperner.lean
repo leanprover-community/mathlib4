@@ -1007,7 +1007,7 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
       -- Counting argument: by Adjacency lemmas + panchromatic facet lemmas,
       -- both |P| and |T_bdy| count the same quantity mod 2.
       -- Apply the Euler characteristic / handshaking argument directly.
-      omega_nat  -- This simplifies the mod 2 arithmetic once we establish the key equalities
+      sorry -- TODO: requires double-counting lemma infrastructure
 
     -- Final conclusion
     have h_Pan_odd : Odd P.ncard := by
