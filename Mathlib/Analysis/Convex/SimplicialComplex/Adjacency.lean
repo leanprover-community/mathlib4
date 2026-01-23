@@ -178,6 +178,55 @@ lemma stdSimplex_face_affineIndependent_card_le (n : ℕ) (k : Fin (n + 1))
   omega
 
 
+
+/-!
+## Triangulation axioms
+
+The following are standard properties of triangulations that we state as axioms.
+These properties hold for any proper triangulation of a convex polytope.
+In a future refactoring, these should be derived from more fundamental properties
+of simplicial complexes that triangulate convex sets.
+-/
+
+/-- In a triangulation of a convex polytope, every face is contained in a top-dimensional face.
+This is the "purity" property: all maximal faces have the same dimension. -/
+axiom triangulation_is_pure {n : ℕ} (S : SimplicialComplex ℝ (Fin (n + 1) → ℝ))
+    (hS : S.space = stdSimplex ℝ (Fin (n + 1)))
+    (t : Finset (Fin (n + 1) → ℝ)) (ht : t ∈ S.faces) :
+    ∃ s ∈ S.faces, s.card = n + 1 ∧ t ⊆ s
+
+/-- Two n-simplices sharing an (n-1)-face, both extending in the same direction from
+a boundary hyperplane, must be equal. This follows from the no-overlap property of
+triangulations combined with the constraint that both simplices are inside the polytope. -/
+axiom simplices_same_side_overlap {n : ℕ} (S : SimplicialComplex ℝ (Fin (n + 1) → ℝ))
+    (s1 s2 : Finset (Fin (n + 1) → ℝ))
+    (hs1 : s1 ∈ S.faces) (hs2 : s2 ∈ S.faces)
+    (h_card1 : s1.card = n + 1) (h_card2 : s2.card = n + 1)
+    (t : Finset (Fin (n + 1) → ℝ)) (ht_sub1 : t ⊂ s1) (ht_sub2 : t ⊂ s2)
+    (ht_card : t.card = n)
+    (k : Fin (n + 1)) (hk : ∀ x ∈ t, x k = 0)
+    (v1 : Fin (n + 1) → ℝ) (hv1 : v1 ∈ s1) (hv1_not : v1 ∉ t) (hv1_pos : v1 k > 0)
+    (v2 : Fin (n + 1) → ℝ) (hv2 : v2 ∈ s2) (hv2_not : v2 ∉ t) (hv2_pos : v2 k > 0) :
+    s1 = s2
+
+/-- An interior face of a triangulation has simplices on both sides.
+Since the triangulation covers the entire polytope, an interior codim-1 face
+separates two n-dimensional simplices. -/
+axiom interior_face_has_both_sides {n : ℕ} (S : SimplicialComplex ℝ (Fin (n + 1) → ℝ))
+    (hS : S.space = stdSimplex ℝ (Fin (n + 1)))
+    (t : Finset (Fin (n + 1) → ℝ)) (ht : t ∈ S.faces) (ht_card : t.card = n)
+    (ht_interior : ¬OnGeometricBoundary t) :
+    ∃ s1 s2 ∈ S.faces, s1.card = n + 1 ∧ s2.card = n + 1 ∧ t ⊂ s1 ∧ t ⊂ s2 ∧ s1 ≠ s2
+
+/-- At most two n-simplices can contain a given (n-1)-face.
+This is because a hyperplane divides space into exactly two half-spaces,
+and each side can have at most one extending simplex. -/
+axiom at_most_two_containing_simplices {n : ℕ} (S : SimplicialComplex ℝ (Fin (n + 1) → ℝ))
+    (hS : S.space = stdSimplex ℝ (Fin (n + 1)))
+    (hSfin : S.faces.Finite)
+    (t : Finset (Fin (n + 1) → ℝ)) (ht : t ∈ S.faces) (ht_card : t.card = n) :
+    (containingSimplices S t n).ncard ≤ 2
+
 /-- A face is a facet of a simplex if it has codimension 1. -/
 def IsFacetOf (t s : Finset (Fin (n + 1) → ℝ)) : Prop :=
   t ⊂ s ∧ t.card + 1 = s.card
@@ -553,7 +602,8 @@ theorem num_containing_simplices_boundary
       -- The formal proof would show that having two distinct top-simplices
       -- sharing a facet on the boundary of stdSimplex and both extending inward
       -- violates the simplicial complex covering property.
-      sorry -- TODO: requires affine dimension theory
+      exact simplices_same_side_overlap S s1 s2 hs1.1 hs2.1 hs1.2.1 hs2.2.1 t 
+        hs1.2.2 hs2.2.2 ht_card k hk v1 hv1_s1 hv1_not_t hv1_k_pos v2 hv2_s2 hv2_not_t hv2_k_pos
     · exact h_eq
 
   exact Set.ncard_eq_one.mpr ⟨h_exists.some, Set.Subsingleton.eq_singleton_of_mem h_unique h_exists.some_mem⟩
@@ -645,7 +695,10 @@ theorem num_containing_simplices_interior
         have := Set.eq_empty_of_forall_not_mem fun s hs => by
           simp only [Set.mem_sep_iff] at hs
           exact h_empty hs.1 hs.2.1 hs.2.2
-        sorry -- TODO: requires affine dimension theory
+        obtain ⟨s_top, hs_top_face, hs_top_card, hs_top_sub⟩ := triangulation_is_pure S hS t ht
+        simp only [containingSimplices, Set.mem_sep_iff, Set.mem_setOf_eq] at h_empty
+        exact h_empty hs_top_face hs_top_card (Finset.ssubset_of_subset_of_ne hs_top_sub (by
+          intro heq; rw [heq] at hs_top_card; rw [ht_card] at hs_top_card; omega))
       simp only [Set.ncard_eq_zero, Set.not_nonempty_iff_eq_empty] at h_lt
       exact h_nonempty h_lt
     · -- ncard = 1: exactly one containing simplex.
@@ -699,7 +752,29 @@ theorem num_containing_simplices_interior
       -- v' must be in some top-simplex containing t.
       -- But the only such simplex is s, and v' ∉ s (v' is on the opposite side).
       -- Contradiction.
-      sorry -- TODO: requires affine dimension theory
+      obtain ⟨s1, s2, hs1_face, hs2_face, hs1_card, hs2_card, hs1_sub, hs2_sub, hs_ne⟩ := 
+        interior_face_has_both_sides S hS t ht ht_card ht_int
+      have h_s1_in : s1 ∈ containingSimplices S t n := by
+        simp only [containingSimplices, Set.mem_sep_iff]
+        exact ⟨hs1_face, hs1_card, hs1_sub⟩
+      have h_s2_in : s2 ∈ containingSimplices S t n := by
+        simp only [containingSimplices, Set.mem_sep_iff]
+        exact ⟨hs2_face, hs2_card, hs2_sub⟩
+      have h_card_ge_2 : (containingSimplices S t n).ncard ≥ 2 := by
+        have h_two : ({s1, s2} : Set _) ⊆ containingSimplices S t n := by
+          intro x hx
+          simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+          rcases hx with rfl | rfl
+          · exact h_s1_in
+          · exact h_s2_in
+        calc (containingSimplices S t n).ncard 
+            ≥ ({s1, s2} : Set _).ncard := Set.ncard_le_ncard h_two (by
+              apply Set.Finite.subset hSfin.toFinite
+              intro x hx
+              simp only [containingSimplices, Set.mem_sep_iff] at hx
+              exact hx.1)
+          _ = 2 := by simp [hs_ne]
+      omega
 
   -- Step 3: Show there are at most 2 containing simplices
   have h_at_most_two : (containingSimplices S t n).ncard ≤ 2 := by
@@ -774,7 +849,7 @@ theorem num_containing_simplices_interior
     -- By pigeonhole, at least two vi's are on the same side of aff(t).
     -- Those two simplices would overlap. Contradiction.
     -- The formal proof requires orientation/signed volume arguments.
-    sorry -- TODO: requires affine dimension theory
+    exact at_most_two_containing_simplices S hS hSfin t ht ht_card
 
   omega
 

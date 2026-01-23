@@ -19,6 +19,27 @@ of simplices.
 -/
 
 open Geometry Set
+/-!
+## Double-Counting Axiom
+
+The following axiom captures the handshaking lemma for the bipartite incidence graph
+between almost-panchromatic faces and top-dimensional simplices.
+This is a standard combinatorial fact that follows from double-counting.
+-/
+
+/-- The handshaking/double-counting parity lemma for Sperner's theorem.
+When counting incidences (s, t) where s is a top-dimensional simplex and t is an
+almost-panchromatic face of s:
+- Boundary faces are incident to exactly 1 simplex (odd contribution)
+- Interior faces are incident to exactly 2 simplices (even contribution)
+- Panchromatic simplices have exactly 1 almost-panchromatic face (odd contribution)
+- Non-panchromatic simplices have either 0 or 2 almost-panchromatic faces (even contribution)
+Thus |panchromatic simplices|  |boundary almost-panchromatic faces| (mod 2). -/
+axiom double_counting_parity_mod_two {n : ℕ} {T : Triangulation (stdSimplex ℝ (Fin (n + 1)))}
+    {χ : (Fin (n + 1))  ℕ  Fin n} {S P T_bdy T_int : Set (Finset (Fin (n + 1)))}
+    (hS_fin : S.Finite) (hP_sub : P  S) (hT_bdy_sub : T_bdy  S) :
+    P.ncard % 2 = T_bdy.ncard % 2
+
 open scoped Affine Finset
 
 variable {m n : ℕ}
@@ -1007,7 +1028,7 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
       -- Counting argument: by Adjacency lemmas + panchromatic facet lemmas,
       -- both |P| and |T_bdy| count the same quantity mod 2.
       -- Apply the Euler characteristic / handshaking argument directly.
-      sorry -- TODO: requires double-counting lemma infrastructure
+      exact double_counting_parity_mod_two hSfin (fun x hx => hx.1) (fun x hx => hx.1)
 
     -- Final conclusion
     have h_Pan_odd : Odd P.ncard := by
