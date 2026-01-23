@@ -132,8 +132,6 @@ theorem disjiUnion_singleton_eq_self (s : Finset α) :
     s.disjiUnion singleton (fun _ _ => by simp) = s := by
   grind
 
-section
-
 variable {f : α → β} {op : β → β → β} [hc : Std.Commutative op] [ha : Std.Associative op]
 
 theorem fold_disjiUnion {ι : Type*} {s : Finset ι} {t : ι → Finset α} {b : ι → β} {b₀ : β} (h) :
@@ -182,8 +180,6 @@ theorem disjiUnion_disjUnion {f g : α → Finset β} (hfg : ∀ a, Disjoint (f 
         specialize hfg' hi hj
         grind) := by
   grind
-
-end
 
 end DisjiUnion
 
