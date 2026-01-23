@@ -16,7 +16,7 @@ functions. It is defined recursively as `PreMS [] = ℝ` (constants), and
 `PreMS (b₁ :: tl) = Seq (ℝ × PreMS tl)`. This is lazy possibly infinite list of pairs, where each
 pair `(exp, coef)` represents the monomial `b₁ ^ exp * coef`. The type is isomorphic to the type
 of trees of finite fixed depth with possibly infinite branching and `ℝ`-valued labels in vertexes.
-* `WellOrdered ms` is the predicate meaning that at each level of `ms` as a nested tree all
+* `Sorted ms` is the predicate meaning that at each level of `ms` as a nested tree all
 exponents are Pairwise by TODO (убывание).
 * `Approximates ms f` is the predicate meaning that the multiseries `ms` can be used to obtain
 an asymptotical approximations of the real function `f`.
@@ -587,9 +587,9 @@ theorem leadingExp_def (ms : PreMS (basis_hd :: basis_tl)) :
 
 end leadingExp
 
-section WellOrdered
+section Sorted
 
-/-- Auxilary instance for order on pairs `(exp, coef)` used below to define `WellOrdered` in terms
+/-- Auxilary instance for order on pairs `(exp, coef)` used below to define `Sorted` in terms
 of `Stream'.Seq.Pairwise`. `(exp₁, coef₁) ≤ (exp₂, coef₂)` iff `exp₁ ≤ exp₂`. -/
 scoped instance {basis} : Preorder (ℝ × PreMS basis) := Preorder.lift Prod.fst
 
@@ -597,22 +597,22 @@ private theorem lt_iff_lt {basis} {exp1 exp2 : ℝ} {coef1 coef2 : PreMS basis} 
     (exp1, coef1) < (exp2, coef2) ↔ exp1 < exp2 := by
   rfl
 
-/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted. -/
-inductive WellOrdered : {basis : Basis} → (PreMS basis) → Prop
-| const (ms : PreMS []) : WellOrdered ms
+/-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
+inductive Sorted : {basis : Basis} → (PreMS basis) → Prop
+| const (ms : PreMS []) : Sorted ms
 | seq {hd} {tl} (ms : PreMS (hd :: tl))
-    (h_coef : ∀ x ∈ ms.seq, x.2.WellOrdered)
-    (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.WellOrdered
+    (h_coef : ∀ x ∈ ms.seq, x.2.Sorted)
+    (h_Pairwise : Seq.Pairwise (· > ·) ms.seq) : ms.Sorted
 
-/-- Multiseries `ms` is `WellOrdered` when at each its level exponents are sorted. -/
-def SeqMS.WellOrdered {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) : Prop :=
-  (mk s 0).WellOrdered (basis := basis_hd :: basis_tl)
+/-- Multiseries `ms` is `Sorted` when at each its level exponents are sorted. -/
+def SeqMS.Sorted {basis_hd basis_tl} (s : SeqMS basis_hd basis_tl) : Prop :=
+  (mk s 0).Sorted (basis := basis_hd :: basis_tl)
 
 variable {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 
 @[simp]
-theorem WellOrdered_iff_Seq_WellOrdered {ms : PreMS (basis_hd :: basis_tl)} :
-    ms.WellOrdered ↔ SeqMS.WellOrdered ms.seq where
+theorem Sorted_iff_Seq_Sorted {ms : PreMS (basis_hd :: basis_tl)} :
+    ms.Sorted ↔ SeqMS.Sorted ms.seq where
   mp h := by
     cases h with | seq _ h_coef h_Pairwise =>
     constructor
@@ -627,24 +627,24 @@ theorem WellOrdered_iff_Seq_WellOrdered {ms : PreMS (basis_hd :: basis_tl)} :
 namespace SeqMS
 
 @[simp]
-theorem WellOrdered.nil : WellOrdered (nil : SeqMS basis_hd basis_tl) := by
-  unfold WellOrdered
+theorem Sorted.nil : Sorted (nil : SeqMS basis_hd basis_tl) := by
+  unfold Sorted
   constructor <;> simp
 
-/-- `[(exp, coef)]` is `WellOrdered` when `coef` is `WellOrdered`. -/
-theorem WellOrdered.cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    (h_coef : coef.WellOrdered) :
-    WellOrdered (cons exp coef (.nil : SeqMS basis_hd basis_tl)) := by
+/-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
+theorem Sorted.cons_nil {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    (h_coef : coef.Sorted) :
+    Sorted (cons exp coef (.nil : SeqMS basis_hd basis_tl)) := by
   constructor
   · simpa
   · simp
 
-theorem WellOrdered.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+theorem Sorted.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     {tl : SeqMS basis_hd basis_tl}
-    (h_coef : coef.WellOrdered)
+    (h_coef : coef.Sorted)
     (h_comp : leadingExp tl < exp)
-    (h_tl : tl.WellOrdered) :
-    WellOrdered (cons exp coef tl) := by
+    (h_tl : tl.Sorted) :
+    Sorted (cons exp coef tl) := by
   cases h_tl with | seq _ h_tl_coef h_tl_tl =>
   constructor
   · simp at h_tl_coef ⊢
@@ -654,11 +654,11 @@ theorem WellOrdered.cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     apply Seq.Pairwise.cons_cons_of_trans _ h_tl_tl
     simpa [lt_iff_lt] using h_comp
 
-/-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
+/-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem WellOrdered_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
-    {tl : SeqMS basis_hd basis_tl} (h : WellOrdered (cons exp coef tl)) :
-    coef.WellOrdered ∧ leadingExp tl < exp ∧ tl.WellOrdered := by
+theorem Sorted_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
+    {tl : SeqMS basis_hd basis_tl} (h : Sorted (cons exp coef tl)) :
+    coef.Sorted ∧ leadingExp tl < exp ∧ tl.Sorted := by
   cases h with | seq _ h_coef h_Pairwise =>
   constructor
   · specialize h_coef (exp, coef) (by simp)
@@ -678,24 +678,24 @@ theorem WellOrdered_cons {basis_hd basis_tl} {exp : ℝ} {coef : PreMS basis_tl}
     grind
   · assumption
 
-theorem WellOrdered.tail {ms : SeqMS basis_hd basis_tl} (h : ms.WellOrdered) :
-    ms.tail.WellOrdered := by
+theorem Sorted.tail {ms : SeqMS basis_hd basis_tl} (h : ms.Sorted) :
+    ms.tail.Sorted := by
   cases ms with
   | nil => simp
-  | cons exp coef tl => simpa using (WellOrdered_cons h).right.right
+  | cons exp coef tl => simpa using (Sorted_cons h).right.right
 
-/-- Coinduction principle for proving `WellOrdered`. For some predicate `motive` on multiseries,
+/-- Coinduction principle for proving `Sorted`. For some predicate `motive` on multiseries,
 if `motive ms` (base case) and the predicate "survives" destruction of its argument, then `ms` is
-`WellOrdered`. Here "survive" means that if `x = cons (exp, coef) tl` than `motive x` must imply
-`coef.wellOrdered`, `tl.leadingExp < exp` and `motive tl`. -/
-theorem WellOrdered.coind {s : SeqMS basis_hd basis_tl}
+`Sorted`. Here "survive" means that if `x = cons (exp, coef) tl` than `motive x` must imply
+`coef.Sorted`, `tl.leadingExp < exp` and `motive tl`. -/
+theorem Sorted.coind {s : SeqMS basis_hd basis_tl}
     (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
     (h_base : motive s)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
-        coef.WellOrdered ∧
+        coef.Sorted ∧
         leadingExp tl < exp ∧
         motive tl) :
-    s.WellOrdered := by
+    s.Sorted := by
   constructor
   · apply Seq.all_coind
     · exact h_base
@@ -715,71 +715,71 @@ theorem WellOrdered.coind {s : SeqMS basis_hd basis_tl}
         grind
 
 /-- A predicate that says that a function `op` preserves well-orderedness of multiseries. -/
-abbrev PreservesWellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+abbrev PreservesSorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl) : Prop :=
-  ∀ x, x.WellOrdered → (op x).WellOrdered
+  ∀ x, x.Sorted → (op x).Sorted
 
-theorem PreservesWellOrdered.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem PreservesSorted.comp {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {op op' : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl}
-    (h_preserves : PreservesWellOrdered op) (h_preserves' : PreservesWellOrdered op') :
-    PreservesWellOrdered (op ∘ op') := by
-  simp [PreservesWellOrdered] at *
+    (h_preserves : PreservesSorted op) (h_preserves' : PreservesSorted op') :
+    PreservesSorted (op ∘ op') := by
+  simp [PreservesSorted] at *
   grind
 
-theorem WellOrdered.coind_friend {ms : SeqMS basis_hd basis_tl}
+theorem Sorted.coind_friend {ms : SeqMS basis_hd basis_tl}
     (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
     (h_base : motive ms)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
-        coef.WellOrdered ∧
+        coef.Sorted ∧
         tl.leadingExp < exp ∧
         ∃ (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
         (x : SeqMS basis_hd basis_tl), tl = op x ∧
-        FriendOperation op ∧ PreservesWellOrdered op ∧ motive x) :
-    ms.WellOrdered := by
+        FriendOperation op ∧ PreservesSorted op ∧ motive x) :
+    ms.Sorted := by
   let motive' (ms : SeqMS basis_hd basis_tl) : Prop :=
     ∃ (op : SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
       (x : SeqMS basis_hd basis_tl), ms = op x ∧ FriendOperation op ∧
-      PreservesWellOrdered op ∧ motive x
-  apply WellOrdered.coind motive'
+      PreservesSorted op ∧ motive x
+  apply Sorted.coind motive'
   · use id, ms
-    simp [h_base, FriendOperation.id, PreservesWellOrdered]
+    simp [h_base, FriendOperation.id, PreservesSorted]
   intro exp coef tl ⟨op, x, h_eq, h_friend, h_preserves, hx⟩
   cases x with
   | nil =>
-    have : WellOrdered (.cons exp coef tl) := by
+    have : Sorted (.cons exp coef tl) := by
       rw [h_eq]
       apply h_preserves
-      apply WellOrdered.nil
-    obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+      apply Sorted.nil
+    obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
     exact ⟨h_coef_wo, h_comp, fun _ ↦ tl, .nil, rfl, FriendOperation.const,
       fun _ _ ↦ h_tl, hx⟩
   | cons x_exp x_coef x_tl =>
   obtain ⟨hx_coef, hx_comp, op', y, hx_tl, h_friend', h_preserves', hy⟩ :=
     h_step x_exp x_coef x_tl hx
   obtain ⟨x_tl', hx_tl_head, this⟩ : ∃ (x_tl' : SeqMS basis_hd basis_tl),
-      x_tl.head = x_tl'.head ∧ WellOrdered (.cons x_exp x_coef x_tl') := by
+      x_tl.head = x_tl'.head ∧ Sorted (.cons x_exp x_coef x_tl') := by
     cases x_tl with
     | nil =>
       use .nil
       simp only [head_nil, true_and]
-      apply WellOrdered.cons_nil hx_coef
+      apply Sorted.cons_nil hx_coef
     | cons x_tl_exp x_tl_coef x_tl_tl =>
       use .cons x_tl_exp x_tl_coef .nil
       simp only [head_cons, true_and]
-      apply WellOrdered.cons hx_coef
+      apply Sorted.cons hx_coef
       · simpa using hx_comp
-      apply WellOrdered.cons_nil
+      apply Sorted.cons_nil
       cases y with
       | nil =>
-        have : WellOrdered (.cons x_tl_exp x_tl_coef x_tl_tl) := by
+        have : Sorted (.cons x_tl_exp x_tl_coef x_tl_tl) := by
           rw [hx_tl]
           apply h_preserves'
-          apply WellOrdered.nil
-        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+          apply Sorted.nil
+        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
         assumption
       | cons y_exp y_coef y_tl =>
-        have : WellOrdered (basis_hd := basis_hd) (.cons y_exp y_coef .nil) := by
-          apply WellOrdered.cons_nil
+        have : Sorted (basis_hd := basis_hd) (.cons y_exp y_coef .nil) := by
+          apply Sorted.cons_nil
           grind
         apply h_preserves' at this
         obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend'
@@ -796,7 +796,7 @@ theorem WellOrdered.coind_friend {ms : SeqMS basis_hd basis_tl}
         obtain ⟨rfl, rfl, rfl⟩ := h2
         apply destruct_eq_cons at h1
         rw [h1] at this
-        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+        obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
         assumption
   apply h_preserves at this
   obtain ⟨T, hT⟩ := FriendOperation.destruct h_friend
@@ -812,7 +812,7 @@ theorem WellOrdered.coind_friend {ms : SeqMS basis_hd basis_tl}
   obtain ⟨rfl, rfl, h_tl_eq⟩ := h2
   apply destruct_eq_cons at h1
   rw [h1] at this
-  obtain ⟨h_coef_wo, h_comp, h_tl⟩ := WellOrdered_cons this
+  obtain ⟨h_coef_wo, h_comp, h_tl⟩ := Sorted_cons this
   refine ⟨h_coef_wo, ?_, ?_⟩
   · simpa [h_tl_eq, leadingExp, FriendOperation.head_eq_head h_friend'' hx_tl_head] using h_comp
   simp only [motive']
@@ -832,25 +832,25 @@ theorem WellOrdered.coind_friend {ms : SeqMS basis_hd basis_tl}
   · intro z hz
     dsimp
     split_ifs with h_if
-    · apply WellOrdered.tail
+    · apply Sorted.tail
       apply h_preserves
-      apply WellOrdered.cons hx_coef h_if (h_preserves' z hz)
-    · apply WellOrdered.nil
+      apply Sorted.cons hx_coef h_if (h_preserves' z hz)
+    · apply Sorted.nil
   · exact hy
 
-theorem WellOrdered.coind_friend' {ms : SeqMS basis_hd basis_tl}
+theorem Sorted.coind_friend' {ms : SeqMS basis_hd basis_tl}
     {γ : Type*} (op : γ → SeqMS basis_hd basis_tl → SeqMS basis_hd basis_tl)
     [FriendOperationClass op]
     (motive : (ms : SeqMS basis_hd basis_tl) → Prop)
     (C : γ → Prop)
-    (h_op : ∀ c x, C c → x.WellOrdered → (op c x).WellOrdered)
+    (h_op : ∀ c x, C c → x.Sorted → (op c x).Sorted)
     (h_base : motive ms)
     (h_step : ∀ exp coef tl, motive (.cons exp coef tl) →
-        coef.WellOrdered ∧
+        coef.Sorted ∧
         tl.leadingExp < exp ∧
         ∃ c x, tl = op c x ∧ C c ∧ motive x) :
-    ms.WellOrdered := by
-  apply WellOrdered.coind_friend motive h_base
+    ms.Sorted := by
+  apply Sorted.coind_friend motive h_base
   intro exp coef tl ih
   specialize h_step exp coef tl ih
   obtain ⟨h_coef_wo, h_comp, c, x, h_tl, h_C, hx⟩ := h_step
@@ -858,35 +858,35 @@ theorem WellOrdered.coind_friend' {ms : SeqMS basis_hd basis_tl}
 
 end SeqMS
 
-/-- `[]` is `WellOrdered`. -/
-theorem WellOrdered.nil (f : ℝ → ℝ) : @WellOrdered (basis_hd :: basis_tl) (mk .nil f) := by
+/-- `[]` is `Sorted`. -/
+theorem Sorted.nil (f : ℝ → ℝ) : @Sorted (basis_hd :: basis_tl) (mk .nil f) := by
   simp
 
-/-- `[(exp, coef)]` is `WellOrdered` when `coef` is `WellOrdered`. -/
-theorem WellOrdered.cons_nil {exp : ℝ} {coef : PreMS basis_tl} {f : ℝ → ℝ}
-    (h_coef : coef.WellOrdered) :
-    @WellOrdered (basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
-  simp [SeqMS.WellOrdered.cons_nil h_coef]
+/-- `[(exp, coef)]` is `Sorted` when `coef` is `Sorted`. -/
+theorem Sorted.cons_nil {exp : ℝ} {coef : PreMS basis_tl} {f : ℝ → ℝ}
+    (h_coef : coef.Sorted) :
+    @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef .nil) f) := by
+  simp [SeqMS.Sorted.cons_nil h_coef]
 
-/-- `cons (exp, coef) tl` is `WellOrdered` when `coef` and `tl` are `WellOrdered` and leading
+/-- `cons (exp, coef) tl` is `Sorted` when `coef` and `tl` are `Sorted` and leading
 exponent of `tl` is less than `exp`. -/
-theorem WellOrdered.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+theorem Sorted.cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     {f : ℝ → ℝ}
-    (h_coef : coef.WellOrdered)
+    (h_coef : coef.Sorted)
     (h_comp : tl.leadingExp < exp)
-    (h_tl : tl.WellOrdered) :
-    @WellOrdered (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
-  simp [SeqMS.WellOrdered.cons h_coef h_comp h_tl]
+    (h_tl : tl.Sorted) :
+    @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f) := by
+  simp [SeqMS.Sorted.cons h_coef h_comp h_tl]
 
-/-- The fact `WellOrdered (cons (exp, coef) tl)` implies that `coef` and `tl` are `WellOrdered`, and
+/-- The fact `Sorted (cons (exp, coef) tl)` implies that `coef` and `tl` are `Sorted`, and
 leading exponent of `tl` is less than `exp`. -/
-theorem WellOrdered_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
+theorem Sorted_cons {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     {f : ℝ → ℝ}
-    (h : @WellOrdered (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
-    coef.WellOrdered ∧ tl.leadingExp < exp ∧ tl.WellOrdered := by
-  apply SeqMS.WellOrdered_cons (by simpa using h)
+    (h : @Sorted (basis_hd :: basis_tl) (mk (.cons exp coef tl) f)) :
+    coef.Sorted ∧ tl.leadingExp < exp ∧ tl.Sorted := by
+  apply SeqMS.Sorted_cons (by simpa using h)
 
-end WellOrdered
+end Sorted
 
 section Approximates
 
@@ -1113,9 +1113,9 @@ theorem Approximates_cons {exp : ℝ}
   rw [Approximates.step] at h
   simpa [Approximates.T] using h
 
-theorem replaceFun_WellOrdered {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
-    (h_wo : ms.WellOrdered) :
-    (ms.replaceFun f).WellOrdered := by
+theorem replaceFun_Sorted {ms : PreMS (basis_hd :: basis_tl)} {f : ℝ → ℝ}
+    (h_wo : ms.Sorted) :
+    (ms.replaceFun f).Sorted := by
   simpa using h_wo
 
 /-- One can replace `f` in `Approximates` with the funcion that eventually equals `f`. -/

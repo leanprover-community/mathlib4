@@ -109,13 +109,13 @@ noncomputable def SeqMS.log {basis_hd basis_tl}
   | some (exp, coef, tl) =>
     match basis_tl with
     | [] => (SeqMS.const _ _ (Real.log coef.toReal)) +
-        (tl.mulConst coef.toReal⁻¹).apply logSeries -- here exp = 0 by assumption
+        (tl.mulConst coef.toReal⁻¹).powser logSeries -- here exp = 0 by assumption
     | List.cons _ _ =>
       match logBasis with
       | .cons _ _ _ logBasis_tl log_hd =>
         let logC := log logBasis_tl coef
         (.cons 0 (logC + log_hd.mulConst exp) .nil) +
-          (tl.mulMonomial coef.inv (-exp)).apply logSeries
+          (tl.mulMonomial coef.inv (-exp)).powser logSeries
 
 /-- If `ms` approximates `f` and the last exponent of the leading term of `ms` is 0,
 then `ms.log logBasis` approximates `Real.log ∘ f`. -/
@@ -143,13 +143,13 @@ theorem log_toFun {basis_hd basis_tl} {logBasis : LogBasis (basis_hd :: basis_tl
 
 mutual
 
-theorem SeqMS.log_WellOrdered {basis_hd basis_tl}
+theorem SeqMS.log_Sorted {basis_hd basis_tl}
     {logBasis : LogBasis (basis_hd :: basis_tl)}
     {ms : SeqMS basis_hd basis_tl}
     (h_logBasis : logBasis.WellFormed)
     (h_last : ∀ x, ms.exps.getLast? = .some x → x = 0)
-    (h_wo : ms.WellOrdered) :
-    (ms.log logBasis).WellOrdered := by
+    (h_wo : ms.Sorted) :
+    (ms.log logBasis).Sorted := by
   cases ms with
   | nil => simp [SeqMS.log]
   | cons exp coef tl =>
@@ -158,11 +158,11 @@ theorem SeqMS.log_WellOrdered {basis_hd basis_tl}
     have h_exp : exp = 0 := by
       simp at h_last
       simpa [leadingTerm] using h_last
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
     simp only [SeqMS.log, SeqMS.destruct_cons]
-    apply SeqMS.add_WellOrdered SeqMS.const_WellOrdered
-    apply SeqMS.apply_WellOrdered
-    · apply SeqMS.mulConst_WellOrdered h_tl_wo
+    apply SeqMS.add_Sorted SeqMS.const_Sorted
+    apply SeqMS.powser_Sorted
+    · apply SeqMS.mulConst_Sorted h_tl_wo
     · simp only [SeqMS.mulConst_leadingExp]
       generalize tl.leadingExp = x at h_comp
       cases x
@@ -171,25 +171,25 @@ theorem SeqMS.log_WellOrdered {basis_hd basis_tl}
         norm_cast
         linarith
   | cons basis_tl_hd basis_tl_tl =>
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
     obtain ⟨_, _, _, _, logBasis_tl, log_hd, h_wo, h_approx⟩ := logBasis
     unfold SeqMS.log
     simp only [SeqMS.destruct_cons]
-    apply SeqMS.add_WellOrdered
-    · apply WellOrdered.cons
-      · apply add_WellOrdered
-        · apply log_WellOrdered (basis := basis_tl_hd :: basis_tl_tl)
+    apply SeqMS.add_Sorted
+    · apply Sorted.cons
+      · apply add_Sorted
+        · apply log_Sorted (basis := basis_tl_hd :: basis_tl_tl)
             (LogBasis.tail_WellFormed h_logBasis) _ h_coef_wo
           intro x h
           specialize h_last x
           simpa [-exps_eq_Seq_exps, List.getLast?_cons, h] using h_last
-        · apply mulConst_WellOrdered
+        · apply mulConst_Sorted
           exact h_logBasis.left
       · simp
-      · exact SeqMS.WellOrdered.nil
-    · apply SeqMS.apply_WellOrdered
-      · apply SeqMS.mulMonomial_WellOrdered h_tl_wo
-        exact inv_WellOrdered h_coef_wo
+      · exact SeqMS.Sorted.nil
+    · apply SeqMS.powser_Sorted
+      · apply SeqMS.mulMonomial_Sorted h_tl_wo
+        exact inv_Sorted h_coef_wo
       · -- copypaste from above
         simp only [SeqMS.mulMonomial_leadingExp]
         generalize tl.leadingExp = x at h_comp
@@ -200,18 +200,18 @@ theorem SeqMS.log_WellOrdered {basis_hd basis_tl}
           linarith
 termination_by 2 *basis_tl.length + 1
 
-theorem log_WellOrdered {basis : Basis}
+theorem log_Sorted {basis : Basis}
     {logBasis : LogBasis basis}
     {ms : PreMS basis}
     (h_logBasis : logBasis.WellFormed)
     (h_last : ∀ x, ms.exps.getLast? = .some x → x = 0)
-    (h_wo : ms.WellOrdered) :
-    (ms.log logBasis).WellOrdered := by
+    (h_wo : ms.Sorted) :
+    (ms.log logBasis).Sorted := by
   cases basis with
-  | nil => apply WellOrdered.const
+  | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, log_seq]
-    exact SeqMS.log_WellOrdered h_logBasis (by simpa [exps] using h_last) (by simpa using h_wo)
+    simp only [Sorted_iff_Seq_Sorted, log_seq]
+    exact SeqMS.log_Sorted h_logBasis (by simpa [exps] using h_last) (by simpa using h_wo)
 termination_by 2 * basis.length
 decreasing_by grind
 
@@ -222,7 +222,7 @@ theorem log_Approximates {basis : Basis}
     {ms : PreMS basis}
     (h_basis : WellFormedBasis basis)
     (h_logBasis : logBasis.WellFormed)
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_pos : 0 < ms.realCoef)
@@ -239,7 +239,7 @@ theorem log_Approximates {basis : Basis}
     simp at hx ⊢
     grind
   | cons exp coef tl f =>
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
   obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
   obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
   have h_f_pos : ∀ᶠ t in atTop, 0 < f t :=
@@ -252,15 +252,15 @@ theorem log_Approximates {basis : Basis}
       simpa [leadingTerm] using h_last
     subst h_exp
     simp only [WithBot.coe_zero] at h_comp
-    let ms := (PreMS.const [basis_hd] (Real.log coef.toReal)) + (PreMS.apply logSeries
+    let ms := (PreMS.const [basis_hd] (Real.log coef.toReal)) + (powser logSeries
       (PreMS.mulConst coef.toReal⁻¹ (mk tl (f - basis_hd ^ 0 * coef.toFun))))
     have h : ms.Approximates := by
       simp only [pow_zero, const_toFun, one_mul, ms]
       apply add_Approximates
       · apply const_Approximates h_basis
-      · apply apply_Approximates logSeries_analytic h_basis
+      · apply powser_Approximates logSeries_analytic h_basis
         · simp [h_comp]
-        · apply mulConst_WellOrdered
+        · apply mulConst_Sorted
           simpa
         apply mulConst_Approximates
         convert h_tl using 4
@@ -268,8 +268,8 @@ theorem log_Approximates {basis : Basis}
     convert replaceFun_Approximates _ h
     · ext g
       simp [ms_eq_ms_iff_mk_eq_mk, ms]
-    simp only [pow_zero, const_toFun, one_mul, add_toFun, const_toFun', apply_toFun, mulConst_toFun,
-      mk_toFun, ms]
+    simp only [pow_zero, const_toFun, one_mul, add_toFun, const_toFun', powser_toFun,
+      mulConst_toFun, mk_toFun, ms]
     have h_tendsto_zero : Tendsto (coef.toReal⁻¹ • (f - fun x ↦ coef.toReal)) atTop (𝓝 0) := by
       convert tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx h_trimmed
       ext t
@@ -298,7 +298,7 @@ theorem log_Approximates {basis : Basis}
     simp only [mk_seq, SeqMS.log, SeqMS.destruct_cons, mk_toFun]
     let ms := (mk (.cons 0 ((log logBasis_tl coef) + (mulConst exp log_hd)) .nil)
       (Real.log ∘ coef.toFun + exp • log_hd.toFun)) +
-      ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).apply logSeries
+      ((mk tl (f - basis_hd ^ exp * coef.toFun)).mulMonomial coef.inv (-exp)).powser logSeries
     have h : ms.Approximates := by
       have h_coef_last : ∀ (x : ℝ), coef.exps.getLast? = some x → x = 0 := by
         simp
@@ -330,7 +330,7 @@ theorem log_Approximates {basis : Basis}
               simp
             exact isLittleO_log_rpow_atTop h_exp'
         · simp [h_log_hd_fun]
-      · apply apply_Approximates logSeries_analytic h_basis
+      · apply powser_Approximates logSeries_analytic h_basis
         · simp only [leadingExp_def, mulMonomial_seq, mk_seq, SeqMS.mulMonomial_leadingExp]
           generalize tl.leadingExp = x at h_comp
           cases x
@@ -338,9 +338,9 @@ theorem log_Approximates {basis : Basis}
           · simp only [WithBot.coe_lt_coe] at h_comp
             norm_cast
             linarith
-        · simp only [WellOrdered_iff_Seq_WellOrdered, mulMonomial_seq, mk_seq] at h_tl_wo ⊢
-          apply SeqMS.mulMonomial_WellOrdered h_tl_wo
-          apply inv_WellOrdered h_coef_wo
+        · simp only [Sorted_iff_Seq_Sorted, mulMonomial_seq, mk_seq] at h_tl_wo ⊢
+          apply SeqMS.mulMonomial_Sorted h_tl_wo
+          apply inv_Sorted h_coef_wo
         apply mulMonomial_Approximates h_basis h_tl
         exact inv_Approximates h_basis.tail h_coef_wo h_coef h_coef_trimmed
     convert replaceFun_Approximates _ h
@@ -348,7 +348,7 @@ theorem log_Approximates {basis : Basis}
       simp [ms_eq_ms_iff_mk_eq_mk, ms]
     have h_tendsto_zero := tl_mulMonomial_coef_inv_neg_exp_toFun_tendsto_zero h_basis h_wo h_approx
       h_trimmed
-    simp only [mulMonomial_toFun, mk_toFun, inv_toFun, h_log_hd_fun, add_toFun, apply_toFun,
+    simp only [mulMonomial_toFun, mk_toFun, inv_toFun, h_log_hd_fun, add_toFun, powser_toFun,
       ms] at h_tendsto_zero ⊢
     set g := (f - basis_hd ^ exp * coef.toFun) * basis_hd ^ (-exp) * coef.toFun⁻¹
     have hg_gt : ∀ᶠ t in atTop, -1/2 ≤ g t := by

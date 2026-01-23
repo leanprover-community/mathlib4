@@ -80,7 +80,7 @@ structure TrimmingResult {basis : Q(Basis)} (ms : Q(PreMS $basis)) where
   /-- Trimmed multiseries. -/
   val : Q(PreMS $basis)
   /-- Proof of its well-orderedness. -/
-  h_wo : Q(PreMS.WellOrdered $val)
+  h_wo : Q(PreMS.Sorted $val)
   /-- Proof that it has the same function. -/
   h_fun : Q(PreMS.toFun $val = PreMS.toFun $ms)
   /-- Proof that it approximates the same function. -/
@@ -92,7 +92,7 @@ mutual
 
 /-- Trims a multiseries without using the zero oracle. -/
 partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms)) (h_approx : Q(PreMS.Approximates $ms))
+    (h_wo : Q(PreMS.Sorted $ms)) (h_approx : Q(PreMS.Approximates $ms))
     (h_basis : Q(WellFormedBasis $basis))
     (allZero : Bool)
     (destructStepsLeft := 5) :
@@ -110,7 +110,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
     }
   | ~q(List.cons $basis_hd $basis_tl) =>
     let ⟨ms_extracted, h_eq_extracted⟩ ← normalizePreMS ms
-    let h_extracted_wo : Q(PreMS.WellOrdered $ms_extracted) := q($h_eq_extracted ▸ $h_wo)
+    let h_extracted_wo : Q(PreMS.Sorted $ms_extracted) := q($h_eq_extracted ▸ $h_wo)
     match ms_extracted with
     | ~q(PreMS.mk .nil $f) =>
       return some {
@@ -135,12 +135,12 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
         | .pos _ => allZeroNew := false
         | .zero _ => pure ()
 
-      let h_coef_wo : Q(($coef).WellOrdered) :=
-        q((PreMS.WellOrdered_cons $h_extracted_wo).left)
+      let h_coef_wo : Q(($coef).Sorted) :=
+        q((PreMS.Sorted_cons $h_extracted_wo).left)
       let h_comp : Q(($tl).leadingExp < $exp) :=
-        q((PreMS.WellOrdered_cons $h_extracted_wo).right.left)
-      let h_tl_wo : Q(($tl).WellOrdered) :=
-        q((PreMS.WellOrdered_cons $h_extracted_wo).right.right)
+        q((PreMS.Sorted_cons $h_extracted_wo).right.left)
+      let h_tl_wo : Q(($tl).Sorted) :=
+        q((PreMS.Sorted_cons $h_extracted_wo).right.right)
       let h_coef_approx : Q(PreMS.Approximates $coef) :=
         q((PreMS.Approximates_cons ($h_eq_extracted ▸ $h_approx)).left)
 
@@ -150,7 +150,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
       | .neq h_coef_ne_zero =>
         return some {
           val := q(PreMS.mk (.cons $exp $coef_trimmed.val $tl) $f)
-          h_wo := q(PreMS.WellOrdered.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
+          h_wo := q(PreMS.Sorted.cons $coef_trimmed.h_wo $h_comp $h_tl_wo)
           h_approx :=
             q(approx_cons_aux $f ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx
               $coef_trimmed.h_fun)
@@ -163,7 +163,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
           q(approx_cons_zero ($h_eq_extracted ▸ $h_approx) $coef_trimmed.h_approx
             $coef_trimmed.h_fun $h_coef_eq_zero)
         let .some tl_trimmed ← trimWithoutOracle q(.mk $tl $f)
-          q(PreMS.WellOrdered_iff_Seq_WellOrdered.mpr $h_tl_wo)
+          q(PreMS.Sorted_iff_Seq_Sorted.mpr $h_tl_wo)
           q($h_tl_approx) q($h_basis) allZero destructStepsLeftNext | return none
         return some {
           val := q($tl_trimmed.val)
@@ -175,7 +175,7 @@ partial def trimWithoutOracle {basis : Q(Basis)} (ms : Q(PreMS $basis))
 
 /-- Trims a multiseries. -/
 partial def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
-    (h_wo : Q(PreMS.WellOrdered $ms)) (h_approx : Q(PreMS.Approximates $ms))
+    (h_wo : Q(PreMS.Sorted $ms)) (h_approx : Q(PreMS.Approximates $ms))
     (h_basis : Q(WellFormedBasis $basis))
     (allZero : Bool) :
     TacticM (TrimmingResult ms) := do
@@ -189,7 +189,7 @@ partial def trim {basis : Q(Basis)} (ms : Q(PreMS $basis))
     let hf ← proveFunEqZero q($f)
     return {
       val := q(PreMS.mk .nil $f)
-      h_wo := q(PreMS.WellOrdered.nil $f)
+      h_wo := q(PreMS.Sorted.nil $f)
       h_approx := q(PreMS.Approximates.nil $hf)
       h_trimmed := some q(PreMS.Trimmed.nil)
       h_fun := q($h_eq_extracted ▸ rfl)

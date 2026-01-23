@@ -32,7 +32,7 @@ structure MS where
   /-- `PreMS` value of the multiseries. -/
   val : Q(PreMS $basis)
   /-- Proof of well-ordering of the multiseries. -/
-  h_wo : Q(PreMS.WellOrdered $val)
+  h_wo : Q(PreMS.Sorted $val)
   /-- Proof of approximation of the multiseries. -/
   h_approx : Q(PreMS.Approximates $val)
   /-- Proof of well-formedness of the basis. -/
@@ -50,7 +50,7 @@ def const (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (c : Q(ℝ))
   logBasis := logBasis
   val := q(PreMS.const $basis $c)
   -- f := q(fun _ ↦ $c)
-  h_wo := q(PreMS.const_WellOrdered)
+  h_wo := q(PreMS.const_Sorted)
   h_approx := q(PreMS.const_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -63,7 +63,7 @@ def monomialRpow (basis : Q(Basis)) (logBasis : Q(LogBasis $basis))
   logBasis := logBasis
   val := q(PreMS.monomialRpow $basis $n $r)
   -- f := q(fun x ↦ (List.get $basis $n x)^$r)
-  h_wo := q(PreMS.monomialRpow_WellOrdered)
+  h_wo := q(PreMS.monomialRpow_Sorted)
   h_approx := q(PreMS.monomialRpow_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -75,7 +75,7 @@ def monomial (basis : Q(Basis)) (logBasis : Q(LogBasis $basis)) (n : Q(Fin (List
   logBasis := logBasis
   val := q(PreMS.monomial $basis $n)
   -- f := q(List.get $basis $n)
-  h_wo := q(PreMS.monomial_WellOrdered)
+  h_wo := q(PreMS.monomial_Sorted)
   h_approx := q(PreMS.monomial_Approximates $h_basis)
   h_basis := h_basis
   h_logBasis := h_logBasis
@@ -86,7 +86,7 @@ def mulConst (x : MS) (c : Q(ℝ)) : MS where
   logBasis := x.logBasis
   val := q(PreMS.mulConst $c $x.val)
   -- f := q($c • $x.f)
-  h_wo := q(PreMS.mulConst_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.mulConst_Sorted $x.h_wo)
   h_approx := q(PreMS.mulConst_Approximates $x.h_approx)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -97,7 +97,7 @@ def neg (x : MS) : MS where
   logBasis := x.logBasis
   val := q(PreMS.neg $x.val)
   -- f := q(-$x.f)
-  h_wo := q(PreMS.neg_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.neg_Sorted $x.h_wo)
   h_approx := q(PreMS.neg_Approximates $x.h_approx)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -110,7 +110,7 @@ def add (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(PreMS.add $x.val $y.val)
     -- f := q($x.f + $y.f)
-    h_wo := q(PreMS.add_WellOrdered $x.h_wo $y.h_wo)
+    h_wo := q(PreMS.add_Sorted $x.h_wo $y.h_wo)
     h_approx := q(PreMS.add_Approximates $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -124,7 +124,7 @@ def sub (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(PreMS.add $x.val (PreMS.neg $y.val))
     -- f := q($x.f - $y.f)
-    h_wo := q(PreMS.sub_WellOrdered $x.h_wo $y.h_wo)
+    h_wo := q(PreMS.sub_Sorted $x.h_wo $y.h_wo)
     h_approx := q(PreMS.sub_Approximates $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -138,7 +138,7 @@ def mul (x y : MS) : MS :=
     logBasis := x.logBasis
     val := q(PreMS.mul $x.val $y.val)
     -- f := q($x.f * $y.f)
-    h_wo := q(PreMS.mul_WellOrdered $x.h_wo $y.h_wo)
+    h_wo := q(PreMS.mul_Sorted $x.h_wo $y.h_wo)
     h_approx := q(PreMS.mul_Approximates $x.h_basis $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -150,7 +150,7 @@ def inv (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   logBasis := x.logBasis
   val := q(PreMS.inv $x.val)
   -- f := q($x.f⁻¹)
-  h_wo := q(PreMS.inv_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.inv_Sorted $x.h_wo)
   h_approx := q(PreMS.inv_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -163,7 +163,7 @@ def div (x y : MS) (h_trimmed : Q(PreMS.Trimmed $y.val)) : MS :=
     logBasis := x.logBasis
     val := q(PreMS.mul $x.val (PreMS.inv $y.val))
     -- f := q($x.f / $y.f)
-    h_wo := q(PreMS.div_WellOrdered $x.h_wo $y.h_wo)
+    h_wo := q(PreMS.div_Sorted $x.h_wo $y.h_wo)
     h_approx := q(PreMS.div_Approximates $x.h_basis $y.h_wo $h_trimmed $x.h_approx $y.h_approx)
     h_basis := x.h_basis
     h_logBasis := x.h_logBasis
@@ -176,7 +176,7 @@ def npow (x : MS) (a : Q(ℕ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   logBasis := x.logBasis
   val := q(PreMS.npow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(PreMS.npow_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.npow_Sorted $x.h_wo)
   h_approx := q(PreMS.npow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -188,7 +188,7 @@ def zpow (x : MS) (a : Q(ℤ)) (h_trimmed : Q(PreMS.Trimmed $x.val)) : MS where
   logBasis := x.logBasis
   val := q(PreMS.zpow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(PreMS.zpow_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.zpow_Sorted $x.h_wo)
   h_approx := q(PreMS.zpow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -201,7 +201,7 @@ def rpow (x : MS) (a : Q(ℝ)) (h_trimmed : Q(PreMS.Trimmed $x.val))
   logBasis := x.logBasis
   val := q(PreMS.pow $x.val $a)
   -- f := q($x.f ^ $a)
-  h_wo := q(PreMS.pow_WellOrdered $x.h_wo)
+  h_wo := q(PreMS.pow_Sorted $x.h_wo)
   h_approx := q(PreMS.pow_Approximates $x.h_basis $x.h_wo $x.h_approx $h_trimmed $h_pos)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -219,7 +219,7 @@ def updateBasis (ms : MS) (ex : Q(BasisExtension $ms.basis))
     logBasis := logBasis
     val := q(PreMS.updateBasis $ex $ms.val)
     -- f := ms.f
-    h_wo := q(PreMS.updateBasis_WellOrdered $ms.h_wo)
+    h_wo := q(PreMS.updateBasis_Sorted $ms.h_wo)
     h_approx := q(PreMS.updateBasis_Approximates $h_basis $ms.h_approx)
     h_basis := h_basis
     h_logBasis := h_logBasis
@@ -242,7 +242,7 @@ def insertLastLog (ms : MS) : MetaM MS := do
     basis := basis
     val := q(PreMS.extendBasisEnd (Real.log ∘ $last) $ms.val)
     -- f := ms.f
-    h_wo := q(PreMS.extendBasisEnd_WellOrdered $ms.h_wo)
+    h_wo := q(PreMS.extendBasisEnd_Sorted $ms.h_wo)
     h_approx := q(PreMS.extendBasisEnd_Approximates $h_basis $ms.h_approx)
     h_basis := h_basis
     logBasis := logBasis
@@ -257,7 +257,7 @@ def log (x : MS) (h_trimmed : Q(PreMS.Trimmed $x.val))
   basis := q($x.basis)
   val := q(PreMS.log $x.logBasis $x.val)
   -- f := q(Real.log ∘ $x.f)
-  h_wo := q(PreMS.log_WellOrdered $x.h_logBasis $h_last $x.h_wo)
+  h_wo := q(PreMS.log_Sorted $x.h_logBasis $h_last $x.h_wo)
   h_approx := q(PreMS.log_Approximates $x.h_basis $x.h_logBasis $x.h_wo $x.h_approx
     $h_trimmed $h_pos $h_last)
   h_basis := x.h_basis
@@ -270,7 +270,7 @@ def exp (x : MS) (h_nonpos : Q(¬ Term.FirstIsPos (PreMS.leadingTerm $x.val).exp
   logBasis := x.logBasis
   val := q(PreMS.exp $x.val)
   -- f := q(Real.exp ∘ $x.f)
-  h_wo := q(PreMS.exp_WellOrdered $x.h_wo $h_nonpos)
+  h_wo := q(PreMS.exp_Sorted $x.h_wo $h_nonpos)
   h_approx := q(PreMS.exp_Approximates $x.h_basis $x.h_wo $x.h_approx $h_nonpos)
   h_basis := x.h_basis
   h_logBasis := x.h_logBasis
@@ -282,7 +282,7 @@ def replaceFun (ms : MS) (f : Q(ℝ → ℝ)) (h : Q(($ms.val).toFun =ᶠ[Filter
   let ~q($basis_hd :: $basis_tl) := ms.basis | panic! "replaceFun: unexpected basis"
   return {ms with
     val := q(PreMS.replaceFun $ms.val $f)
-    h_wo := q(PreMS.replaceFun_WellOrdered $ms.h_wo)
+    h_wo := q(PreMS.replaceFun_Sorted $ms.h_wo)
     h_approx := q(PreMS.replaceFun_Approximates $h $ms.h_approx)
   }
 

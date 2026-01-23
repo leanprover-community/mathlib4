@@ -161,7 +161,7 @@ open PreMS
 lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
     {ms : PreMS (left ++ right_hd :: right_tl)}
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : PreMS.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : 0 < (ms.leadingTerm).coef)
@@ -180,7 +180,7 @@ lemma WellFormedBasis.insert_pos_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
 lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (right_tl : Basis)
     {f' : ℝ → ℝ}
     {ms : PreMS (left ++ right_hd :: right_tl)}
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : PreMS.Trimmed ms)
     (h_exps : Term.FirstIsPos (ms.leadingTerm).exps)
     (h_coef : (ms.leadingTerm).coef < 0)
@@ -190,7 +190,7 @@ lemma WellFormedBasis.insert_neg_exp (left : Basis) (right_hd : ℝ → ℝ) (ri
     (h_right : (Real.log ∘ right_hd) =o[atTop] ms.toFun) :
     WellFormedBasis (left ++ (Real.exp ∘ (-f')) :: right_hd :: right_tl) := by
   apply WellFormedBasis.insert_pos_exp _ _ _ (ms := ms.neg)
-    (neg_WellOrdered h_wo) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
+    (neg_Sorted h_wo) (neg_Approximates h_approx) (neg_Trimmed h_trimmed)
   · simpa [neg_leadingTerm]
   · simpa [neg_leadingTerm]
   · exact h_basis

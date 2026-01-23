@@ -6,141 +6,118 @@ private axiom test_sorry : ∀ {α}, α
 open Real Filter Topology Asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ -x;
-  Tendsto f atTop atBot := by
-  simp only
+    let f := fun (x : ℝ) ↦ -x;
+    Tendsto f atTop atBot := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x + x;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x + x;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (-x) + x;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (-x) + x;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (-x) * x;
-  Tendsto f atTop atBot := by
-  simp only
+    let f := fun (x : ℝ) ↦ (-x) * x;
+    Tendsto f atTop atBot := by
   compute_asymptotics
 
 example :
-  let f := fun (_ : ℝ) ↦ (42 : ℝ);
-  Tendsto f atTop (nhds 42) := by
-  simp only
+    let f := fun (_ : ℝ) ↦ (42 : ℝ);
+    Tendsto f atTop (nhds 42) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ -2 * x;
-  Tendsto f atTop atBot := by
-  simp only
+    let f := fun (x : ℝ) ↦ -2 * x;
+    Tendsto f atTop atBot := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x * 2;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x * 2;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 0 * x;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ 0 * x;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x * 0;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x * 0;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (-x) + x + x + (-x);
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (-x) + x + x + (-x);
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (-x) + 2 * x + (-x);
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (-x) + 2 * x + (-x);
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x - x;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x - x;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 11 * x*x*x  +  12 * x*x  +  x  +  1;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ 11 * x*x*x  +  12 * x*x  +  x  +  1;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1 + x + x*x + x*x*x + x*x*x*x - x - x*x - x*x*x - x*x*x*x;
-  Tendsto f atTop (nhds 1) := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1 + x + x*x + x*x*x + x*x*x*x - x - x*x - x*x*x - x*x*x*x;
+    Tendsto f atTop (nhds 1) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x⁻¹;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x⁻¹;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1/x;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1/x;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1/(1 + x);
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1/(1 + x);
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (4 * x)/(3 + 2 * x);
-  Tendsto f atTop (nhds 2) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (4 * x)/(3 + 2 * x);
+    Tendsto f atTop (nhds 2) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x/(1 + x);
-  Tendsto f atTop (nhds 1) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x/(1 + x);
+    Tendsto f atTop (nhds 1) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x*x/(1 + x);
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x*x/(1 + x);
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
-  Tendsto f atTop (nhds (-1/2)) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (( - 6  *  x  *  x  *  x)  +  ((2  *  x  *  x)  +  ((1)  *  ((4  *  x)  -  ( - 2  *  x)))))  *  ((( - 6  *  x)  -  ( - 2))  /  ((8  *  x)  *  ( - 9  *  x  *  x  *  x)));
+    Tendsto f atTop (nhds (-1/2)) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x ^ (1 / 2 : ℝ) / (x ^ (1 / 3 : ℝ) + x ^ (-1 / 3 : ℝ) + 18);
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (1 / 2 : ℝ) / (x ^ (1 / 3 : ℝ) + x ^ (-1 / 3 : ℝ) + 18);
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 section log
@@ -195,10 +172,6 @@ example :
     let f := fun (x : ℝ) ↦ Real.log x - Real.log (Real.log x);
     Tendsto f atTop atTop := by
   compute_asymptotics
-
-example : (Tendsto ((log ∘ fun x => x) - log ∘ ((fun x => x) ^ ↑2)) atTop atBot) =
-    (let f := fun x => log x - log (x ^ 2);
-  Tendsto f atTop atBot) := rfl
 
 example :
     let f := fun (x : ℝ) ↦ Real.log x - Real.log (x ^ 2);
@@ -356,34 +329,29 @@ section pow_fun
 example :
     let f := fun (x : ℝ) ↦ (1 + x⁻¹) ^ x;
     Tendsto f atTop (𝓝 (Real.exp 1)) := by
-  have : 0 < Real.exp 1 := Real.exp_pos 1
   compute_asymptotics
 
 end pow_fun
 
 example :
-  let f := fun (x : ℝ) ↦ x ^ (-Real.pi);
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (-Real.pi);
+    Tendsto f atTop (nhds 0) := by
   have : 0 < Real.pi := Real.pi_pos
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x ^ (-1 : ℝ) - 1/x;
-  Tendsto f (𝓝[>] 0) (𝓝 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (-1 : ℝ) - 1/x;
+    Tendsto f (𝓝[>] 0) (𝓝 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x ^ (1 : ℕ) - (1/x)⁻¹;
-  Tendsto f (𝓝[>] 0) (𝓝 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (1 : ℕ) - (1/x)⁻¹;
+    Tendsto f (𝓝[>] 0) (𝓝 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x ^ (-1 : ℤ) - 1/x;
-  Tendsto f (𝓝[<] 0) (𝓝 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (-1 : ℤ) - 1/x;
+    Tendsto f (𝓝[<] 0) (𝓝 0) := by
   compute_asymptotics
 
 /--
@@ -391,42 +359,36 @@ error: The tactic proved that the function fun x => x ^ (-1) - 1 / x tends to �
 -/
 #guard_msgs in
 example :
-  let f := fun (x : ℝ) ↦ x ^ (-1 : ℝ) - 1/x;
-  Tendsto f (𝓝[>] 0) atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ x ^ (-1 : ℝ) - 1/x;
+    Tendsto f (𝓝[>] 0) atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (1 + x) ^ (Real.pi) / (3 + 2 * x ^ (314/100 : ℝ))
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ (1 + x) ^ (Real.pi) / (3 + 2 * x ^ (314/100 : ℝ))
+    Tendsto f atTop atTop := by
   have : 3141592 / 1000000 < Real.pi := by convert Real.pi_gt_d6; norm_num
   compute_asymptotics
 
 section Variables
 
 example (a : ℝ) (h : 0 < a) :
-  let f := fun (x : ℝ) ↦ a * x;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ a * x;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ Real.pi * x;
-  Tendsto f atTop atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ Real.pi * x;
+    Tendsto f atTop atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1 / (1 + Real.pi * x) - 1 / (1 + 3 * x);
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1 / (1 + Real.pi * x) - 1 / (1 + 3 * x);
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x / (1 + Real.pi * x) - x / (1 + 3 * x);
-  Tendsto f atTop (nhds (1 / Real.pi - 1/3)) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x / (1 + Real.pi * x) - x / (1 + 3 * x);
+    Tendsto f atTop (nhds (1 / Real.pi - 1/3)) := by
   have : 3141592 / 1000000 < Real.pi := by convert Real.pi_gt_d6; norm_num
   have : Real.pi⁻¹ < 1/3 := by
     rw [inv_lt_comm₀] <;> linarith
@@ -434,9 +396,8 @@ example :
   rfl
 
 example (a b : ℝ) (h : a < b) :
-  let f := fun (x : ℝ) ↦ (x + 3) ^ a / x ^ b;
-  Tendsto f atTop (nhds 0) := by
-  simp only
+    let f := fun (x : ℝ) ↦ (x + 3) ^ a / x ^ b;
+    Tendsto f atTop (nhds 0) := by
   compute_asymptotics
 
 end Variables
@@ -444,27 +405,23 @@ end Variables
 section DifferentFilters
 
 example :
-  let f := fun (x : ℝ) ↦ x/(1 + x);
-  Tendsto f atTop (nhds 1) := by
-  simp only
+    let f := fun (x : ℝ) ↦ x/(1 + x);
+    Tendsto f atTop (nhds 1) := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1/x;
-  Tendsto f (𝓝[>] 0) atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1/x;
+    Tendsto f (𝓝[>] 0) atTop := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1/x;
-  Tendsto f (𝓝[<] 0) atBot := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1/x;
+    Tendsto f (𝓝[<] 0) atBot := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ 1/(x * x);
-  Tendsto f (𝓝[≠] 0) atTop := by
-  simp only
+    let f := fun (x : ℝ) ↦ 1/(x * x);
+    Tendsto f (𝓝[≠] 0) atTop := by
   compute_asymptotics
 
 example (a : ℝ) :
@@ -480,38 +437,33 @@ end DifferentFilters
 section ONotation
 
 example :
-  let f := fun (x : ℝ) ↦ Real.exp x;
-  let g := fun (x : ℝ) ↦ x ^ x;
-  f =o[atTop] g := by
-  simp only
+    let f := fun (x : ℝ) ↦ Real.exp x;
+    let g := fun (x : ℝ) ↦ x ^ x;
+    f =o[atTop] g := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x;
-  let g := fun (x : ℝ) ↦ x ^ x;
-  f =o[𝓝[>] 0] g := by
-  simp only
+    let f := fun (x : ℝ) ↦ x;
+    let g := fun (x : ℝ) ↦ x ^ x;
+    f =o[𝓝[>] 0] g := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ (1 + x⁻¹) ^ x;
-  let g := fun (x : ℝ) ↦ x / (x + 1);
-  f =O[atTop] g := by
-  simp only
+    let f := fun (x : ℝ) ↦ (1 + x⁻¹) ^ x;
+    let g := fun (x : ℝ) ↦ x / (x + 1);
+    f =O[atTop] g := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x;
-  let g := fun (x : ℝ) ↦ Real.log (Real.exp x + x ^ 420);
-  f ~[atTop] g := by
-  simp only
+    let f := fun (x : ℝ) ↦ x;
+    let g := fun (x : ℝ) ↦ Real.log (Real.exp x + x ^ 420);
+    f ~[atTop] g := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ √x;
-  let g := fun (x : ℝ) ↦ x;
-  f =o[atTop] g := by
-  simp only
+    let f := fun (x : ℝ) ↦ √x;
+    let g := fun (x : ℝ) ↦ x;
+    f =o[atTop] g := by
   compute_asymptotics
 
 end ONotation
@@ -563,8 +515,6 @@ example (p b ε : ℝ) (hb1 : 0 < b) (hb2 : b < 1) (hε : 0 < ε) :
     (1 + 1 / log (b * x + x / (log x) ^ (1 + ε)) ^ (ε / 2)) -
     (1 + 1 / (log x) ^ (ε / 2));
   Tendsto f atTop (𝓝 0) := by
-  intro f
-  dsimp only [f]
   compute_asymptotics
 
 example :
@@ -699,14 +649,13 @@ error: proveTendstoInf proved that the function fun x => id x / id (x ^ 2) tends
 -/
 #guard_msgs in
 example :
-  let f := fun (x : ℝ) ↦ x;
-  let g := fun (x : ℝ) ↦ x ^ 2;
-  g =o[atTop] f := by
-  simp only
+    let f := fun (x : ℝ) ↦ x;
+    let g := fun (x : ℝ) ↦ x ^ 2;
+    g =o[atTop] f := by
   compute_asymptotics
 
 example :
-  let f := fun (x : ℝ) ↦ x;
-  Tendsto f atTop atTop := by
+    let f := fun (x : ℝ) ↦ x;
+    Tendsto f atTop atTop := by
   compute_limit (fun x ↦ x) at atTop with h
   exact h

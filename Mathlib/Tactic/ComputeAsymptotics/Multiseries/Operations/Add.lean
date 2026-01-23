@@ -432,32 +432,32 @@ theorem SeqMS.add_leadingExp {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X Y : 
 
 mutual
 
-theorem SeqMS.add_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl}
-    (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) : (X + Y).WellOrdered := by
+theorem SeqMS.add_Sorted {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl}
+    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X + Y).Sorted := by
   let motive : (SeqMS basis_hd basis_tl) → Prop := fun ms =>
     ∃ (X Y : SeqMS basis_hd basis_tl),
-      ms = X + Y ∧ X.WellOrdered ∧ Y.WellOrdered
-  apply SeqMS.WellOrdered.coind motive
+      ms = X + Y ∧ X.Sorted ∧ Y.Sorted
+  apply SeqMS.Sorted.coind motive
   · use X, Y
   intro exp coef tl ⟨X, Y, h_eq, hX_wo, hY_wo⟩
   cases X with
   | nil =>
     simp only [SeqMS.nil_add] at h_eq
     subst h_eq
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons hY_wo
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons hY_wo
     simp only [h_coef_wo, h_comp, true_and, motive]
     use .nil, tl
-    simp [SeqMS.WellOrdered.nil, h_tl_wo]
+    simp [SeqMS.Sorted.nil, h_tl_wo]
   | cons X_exp X_coef X_tl =>
-    obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+    obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := Sorted_cons hX_wo
     cases Y with
     | nil =>
       simp at h_eq
       simp only [h_eq, hX_coef_wo, hX_comp, true_and, motive]
       use .nil, X_tl
-      simp [SeqMS.WellOrdered.nil, hX_tl_wo]
+      simp [SeqMS.Sorted.nil, hX_tl_wo]
     | cons Y_exp Y_coef Y_tl =>
-      obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := WellOrdered_cons hY_wo
+      obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := Sorted_cons hY_wo
       rw [SeqMS.add_cons_cons] at h_eq
       split_ifs at h_eq with h1 h2 <;> simp at h_eq
       · simp only [h_eq, hX_coef_wo, SeqMS.add_leadingExp, SeqMS.leadingExp_cons, sup_lt_iff,
@@ -471,18 +471,18 @@ theorem SeqMS.add_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl
         simp only [h_eq, SeqMS.add_leadingExp, sup_lt_iff, hX_comp, hY_comp, and_self, true_and,
           motive]
         constructor
-        · apply add_WellOrdered <;> assumption
+        · apply add_Sorted <;> assumption
         · use ?_, ?_
 
 /-- `X + Y` is well-ordered when `X` and `Y` are well-ordered. -/
-theorem add_WellOrdered {basis : Basis} {X Y : PreMS basis}
-    (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) : (X + Y).WellOrdered := by
+theorem add_Sorted {basis : Basis} {X Y : PreMS basis}
+    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X + Y).Sorted := by
   cases basis with
   | nil =>
     constructor
   | cons basis_hd basis_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, add_seq] at hX_wo hY_wo ⊢
-    apply SeqMS.add_WellOrdered hX_wo hY_wo
+    simp only [Sorted_iff_Seq_Sorted, add_seq] at hX_wo hY_wo ⊢
+    apply SeqMS.add_Sorted hX_wo hY_wo
 
 end
 
@@ -583,10 +583,10 @@ theorem sub_toFun {basis : Basis} {X Y : PreMS basis} :
   ring_nf
 
 /-- `X - Y` is well-ordered when `X` and `Y` are well-ordered. -/
-theorem sub_WellOrdered {basis : Basis} {X Y : PreMS basis}
-    (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) : (X.sub Y).WellOrdered := by
-  apply add_WellOrdered hX_wo
-  apply neg_WellOrdered hY_wo
+theorem sub_Sorted {basis : Basis} {X Y : PreMS basis}
+    (hX_wo : X.Sorted) (hY_wo : Y.Sorted) : (X.sub Y).Sorted := by
+  apply add_Sorted hX_wo
+  apply neg_Sorted hY_wo
 
 /-- If `X` approximates `fX` and `Y` approximates `fY`, then `X - Y` approximates `fX - fY`. -/
 theorem sub_Approximates {basis : Basis} {X Y : PreMS basis}
@@ -692,25 +692,25 @@ theorem SeqMS.eq_of_bisim_add' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
       simp only [true_and]
       use .cons y_exp y_coef y_tl
 
-theorem SeqMS.WellOrdered.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem SeqMS.Sorted.add_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : SeqMS basis_hd basis_tl}
     (motive : SeqMS basis_hd basis_tl → Prop) (h_base : motive ms)
     (h_step :
       ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : SeqMS basis_hd basis_tl),
-        motive (.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < ↑exp ∧
-        ∃ A B, tl = A + B ∧ A.WellOrdered ∧ motive B) :
-    ms.WellOrdered :=
-  SeqMS.WellOrdered.coind_friend' SeqMS.add motive SeqMS.WellOrdered
-    (by apply SeqMS.add_WellOrdered) h_base h_step
+        motive (.cons exp coef tl) → coef.Sorted ∧ tl.leadingExp < ↑exp ∧
+        ∃ A B, tl = A + B ∧ A.Sorted ∧ motive B) :
+    ms.Sorted :=
+  SeqMS.Sorted.coind_friend' SeqMS.add motive SeqMS.Sorted
+    (by apply SeqMS.add_Sorted) h_base h_step
 
-theorem SeqMS.WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem SeqMS.Sorted.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : SeqMS basis_hd basis_tl}
     (motive : SeqMS basis_hd basis_tl → Prop) (h_base : motive ms)
     (h_step :
-      ∀ ms, motive ms → (ms = .nil) ∨ ∃ A B, ms = A + B ∧ A.WellOrdered ∧
+      ∀ ms, motive ms → (ms = .nil) ∨ ∃ A B, ms = A + B ∧ A.Sorted ∧
       B.leadingExp < A.leadingExp ∧ motive B) :
-    ms.WellOrdered := by
-  apply WellOrdered.add_coind motive h_base
+    ms.Sorted := by
+  apply Sorted.add_coind motive h_base
   intro exp coef tl ih
   specialize h_step _ ih
   simp only [cons_ne_nil, false_or] at h_step
@@ -718,7 +718,7 @@ theorem SeqMS.WellOrdered.add_coind' {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   cases A with
   | nil => simp at hBA
   | cons A_exp A_coef A_tl =>
-  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := WellOrdered_cons hA_wo
+  obtain ⟨hA_coef_wo, hA_comp, hA_tl⟩ := Sorted_cons hA_wo
   cases B with
   | nil =>
     simp only [add_nil, cons_eq_cons] at h_eq

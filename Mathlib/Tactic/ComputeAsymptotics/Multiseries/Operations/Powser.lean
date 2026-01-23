@@ -284,8 +284,8 @@ theorem mul_bounded_majorated {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : maj
   · exact hf _ h_exp
   · exact hg
 
-/-- `SeqMS`-part of `PreMS.apply`. -/
-noncomputable def SeqMS.apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+/-- `SeqMS`-part of `PreMS.powser`. -/
+noncomputable def SeqMS.powser (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : SeqMS basis_hd basis_tl) : SeqMS basis_hd basis_tl :=
   let T := LazySeries
   let g : T → Option (ℝ × PreMS basis_tl × SeqMS basis_hd basis_tl × T) := fun s =>
@@ -296,77 +296,78 @@ noncomputable def SeqMS.apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_t
   SeqMS.gcorec g SeqMS.mul s
 
 /-- Applies a lazy series to a multiseries: `c0 * ms + c1 * ms^2 + c2 * ms^3 + ...`. -/
-noncomputable def apply (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+noncomputable def powser (s : LazySeries) {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (ms : PreMS (basis_hd :: basis_tl)) : PreMS (basis_hd :: basis_tl) :=
-  mk (SeqMS.apply s ms.seq) (s.toFun ∘ ms.toFun)
+  mk (SeqMS.powser s ms.seq) (s.toFun ∘ ms.toFun)
 
 @[simp]
-theorem apply_toFun {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem powser_toFun {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply s ms).toFun = s.toFun ∘ ms.toFun :=
+    (powser s ms).toFun = s.toFun ∘ ms.toFun :=
   rfl
 
 @[simp]
-theorem apply_seq {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem powser_seq {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)} :
-    (apply s ms).seq = SeqMS.apply s ms.seq :=
+    (powser s ms).seq = SeqMS.powser s ms.seq :=
   rfl
 
 @[simp]
-theorem SeqMS.apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
-    apply .nil ms = .nil := by
-  simp [apply, SeqMS.gcorec_nil]
+theorem SeqMS.powser_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
+    SeqMS.powser .nil ms = .nil := by
+  simp [SeqMS.powser, SeqMS.gcorec_nil]
 
 @[simp]
-theorem SeqMS.apply_cons {s_hd : ℝ} {s_tl : LazySeries}
+theorem SeqMS.powser_cons {s_hd : ℝ} {s_tl : LazySeries}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl} :
-    (apply (.cons s_hd s_tl) ms) = .cons 0 (PreMS.const _ s_hd) (ms.mul (apply s_tl ms)) := by
-  simp only [apply]
+    (SeqMS.powser (.cons s_hd s_tl) ms) =
+    .cons 0 (PreMS.const _ s_hd) (ms.mul (SeqMS.powser s_tl ms)) := by
+  simp only [SeqMS.powser]
   rw [SeqMS.gcorec_some]
   rfl
 
-theorem SeqMS.apply_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem SeqMS.powser_leadingExp_le_zero {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : SeqMS basis_hd basis_tl} :
-    (apply s ms).leadingExp ≤ 0 := by
+    (SeqMS.powser s ms).leadingExp ≤ 0 := by
   cases s <;> simp
 
-theorem SeqMS.apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem SeqMS.powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : SeqMS basis_hd basis_tl}
-    (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
-    (apply s ms).WellOrdered := by
+    (h_wo : ms.Sorted) (h_neg : ms.leadingExp < 0) :
+    (SeqMS.powser s ms).Sorted := by
   let motive (X : SeqMS basis_hd basis_tl) : Prop :=
-    ∃ s, X = apply s ms
-  apply SeqMS.WellOrdered.mul_coind motive
+    ∃ s, X = SeqMS.powser s ms
+  apply SeqMS.Sorted.mul_coind motive
   · use s
   intro exp coef tl ⟨s, h_eq⟩
   cases s with
   | nil => simp at h_eq
   | cons s_hd s_tl =>
-  simp only [apply_cons, SeqMS.cons_eq_cons] at h_eq
-  simp only [h_eq, PreMS.const_WellOrdered, SeqMS.mul_leadingExp, WithBot.coe_zero, true_and]
+  simp only [powser_cons, SeqMS.cons_eq_cons] at h_eq
+  simp only [h_eq, PreMS.const_Sorted, SeqMS.mul_leadingExp, WithBot.coe_zero, true_and]
   constructor
   · generalize ms.leadingExp = x at *
-    have : (apply s_tl ms).leadingExp ≤ 0 := apply_leadingExp_le_zero
-    generalize (apply s_tl ms).leadingExp = y at *
+    have : (SeqMS.powser s_tl ms).leadingExp ≤ 0 := powser_leadingExp_le_zero
+    generalize (SeqMS.powser s_tl ms).leadingExp = y at *
     cases x <;> cases y <;> simp; norm_cast at this h_neg ⊢; linarith
   exact ⟨_, _, rfl, h_wo, s_tl, rfl⟩
 
-theorem apply_WellOrdered {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    {ms : PreMS (basis_hd :: basis_tl)} (h_wo : ms.WellOrdered) (h_neg : ms.leadingExp < 0) :
-    (apply s ms).WellOrdered := by
-  simp only [WellOrdered_iff_Seq_WellOrdered, leadingExp_def, apply_seq] at *
-  exact SeqMS.apply_WellOrdered h_wo h_neg
+theorem powser_Sorted {s : LazySeries} {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    {ms : PreMS (basis_hd :: basis_tl)} (h_wo : ms.Sorted) (h_neg : ms.leadingExp < 0) :
+    (powser s ms).Sorted := by
+  simp only [Sorted_iff_Seq_Sorted, leadingExp_def, powser_seq] at *
+  exact SeqMS.powser_Sorted h_wo h_neg
 
-theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd : ℝ → ℝ}
+theorem powser_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd : ℝ → ℝ}
     {basis_tl : Basis} {ms : PreMS (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
-    (h_neg : ms.leadingExp < 0) (h_wo : ms.WellOrdered)
-    (h_approx : ms.Approximates) : (apply s ms).Approximates := by
+    (h_neg : ms.leadingExp < 0) (h_wo : ms.Sorted)
+    (h_approx : ms.Approximates) : (powser s ms).Approximates := by
   have hf_tendsto_zero : Tendsto ms.toFun atTop (𝓝 0) := by
     apply neg_leadingExp_tendsto_zero h_neg h_approx
   let motive (X : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ (s : LazySeries), s.Analytic ∧ X ≈ apply s ms
-  apply Approximates.mul_coind h_basis motive (apply_WellOrdered h_wo h_neg)
+    ∃ (s : LazySeries), s.Analytic ∧ X ≈ powser s ms
+  apply Approximates.mul_coind h_basis motive (powser_Sorted h_wo h_neg)
   · use s
   rintro X ⟨s, h_analytic, h_seq_eq, hf_eq⟩
   cases s with
@@ -375,16 +376,16 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd 
     simp [h_seq_eq, hf_eq]
   | cons s_hd s_tl =>
   right
-  simp only [apply_toFun] at hf_eq
-  simp only [↓existsAndEq, h_seq_eq, apply_seq, SeqMS.apply_cons, mul_seq, SeqMS.cons_eq_cons,
-    WellOrdered_iff_Seq_WellOrdered, true_and, const_toFun', real_real_rpow_zero, one_mul]
+  simp only [powser_toFun] at hf_eq
+  simp only [↓existsAndEq, h_seq_eq, powser_seq, SeqMS.powser_cons, mul_seq, SeqMS.cons_eq_cons,
+    Sorted_iff_Seq_Sorted, true_and, const_toFun', real_real_rpow_zero, one_mul]
   have : LazySeries.toFun (Seq.cons s_hd s_tl) ∘ ms.toFun =ᶠ[atTop]
       (fun t ↦ s_hd + t * ((LazySeries.toFun s_tl) t)) ∘ ms.toFun := by
     apply Filter.EventuallyEq.comp_tendsto _ hf_tendsto_zero
     exact LazySeries.toFun_cons_eventually_eq h_analytic
-  use ms, apply s_tl ms
-  simp only [apply_seq, const_Approximates h_basis.tail, apply_toFun, h_approx,
-    SeqMS.apply_WellOrdered (by simpa using h_wo) h_neg, true_and]
+  use ms, powser s_tl ms
+  simp only [powser_seq, const_Approximates h_basis.tail, powser_toFun, h_approx,
+    SeqMS.powser_Sorted (by simpa using h_wo) h_neg, true_and]
   constructorm* _ ∧ _
   · apply majorated_of_EventuallyEq hf_eq
     apply LazySeries.toFun_majorated_zero h_analytic hf_tendsto_zero
@@ -394,7 +395,7 @@ theorem apply_Approximates {s : LazySeries} (h_analytic : s.Analytic) {basis_hd 
     apply EventuallyEq.of_eq
     ext t
     simp
-  simp only [equiv_def, apply_seq, apply_toFun, motive]
+  simp only [equiv_def, powser_seq, powser_toFun, motive]
   refine ⟨s_tl, LazySeries.tail_analytic h_analytic, rfl, by rfl⟩
 
 section Zeros
@@ -444,11 +445,11 @@ theorem zeros_analytic : Analytic zeros := by
     simp
 
 -- I am almost sure we don't really need `h_wo` and `h_approx`
-theorem zeros_apply_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
-    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.WellOrdered)
+theorem zeros_powser_Approximates {basis_hd} {basis_tl} {ms : PreMS (basis_hd :: basis_tl)}
+    (h_basis : WellFormedBasis (basis_hd :: basis_tl)) (h_wo : ms.Sorted)
     (h_approx : ms.Approximates) (h_neg : ms.leadingExp < 0) :
-    (ms.apply zeros).Approximates :=
-  apply_Approximates zeros_analytic h_basis h_neg h_wo h_approx
+    (ms.powser zeros).Approximates :=
+  powser_Approximates zeros_analytic h_basis h_neg h_wo h_approx
 
 end Zeros
 

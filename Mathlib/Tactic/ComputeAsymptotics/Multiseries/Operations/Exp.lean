@@ -74,9 +74,9 @@ noncomputable def SeqMS.exp {basis_hd : ℝ → ℝ} {basis_tl : Basis} (ms : Se
   | .none => SeqMS.one
   | .some (exp, coef, tl) =>
     if exp < 0 then
-      ms.apply expSeries
+      ms.powser expSeries
     else -- assume that exp = 0
-      (tl.apply expSeries).mulMonomial coef.exp 0
+      (tl.powser expSeries).mulMonomial coef.exp 0
 
 /-- If `ms` approximates an eventually bounded function `f` and,
 then `ms.exp` approximates `Real.exp ∘ f`. -/
@@ -103,16 +103,16 @@ theorem exp_toFun {basis : Basis} {ms : PreMS basis} :
 
 mutual
 
-theorem SeqMS.exp_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
-    (h : ms.WellOrdered)
+theorem SeqMS.exp_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
+    (h : ms.Sorted)
     (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
-    ms.exp.WellOrdered := by
+    ms.exp.Sorted := by
   cases ms with
-  | nil => simpa [SeqMS.exp] using SeqMS.one_WellOrdered
+  | nil => simpa [SeqMS.exp] using SeqMS.one_Sorted
   | cons exp coef tl =>
   simp only [SeqMS.exp, SeqMS.destruct_cons]
   split_ifs with h_if
-  · apply SeqMS.apply_WellOrdered h
+  · apply SeqMS.powser_Sorted h
     simpa
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
@@ -121,29 +121,29 @@ theorem SeqMS.exp_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : 
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h
-  apply SeqMS.mulMonomial_WellOrdered
-  · exact SeqMS.apply_WellOrdered h_tl_wo h_comp
-  · apply exp_WellOrdered h_coef_wo
+  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h
+  apply SeqMS.mulMonomial_Sorted
+  · exact SeqMS.powser_Sorted h_tl_wo h_comp
+  · apply exp_Sorted h_coef_wo
     contrapose! h_nonpos
     simp only [SeqMS.cons_exps]
     exact Term.FirstIsPos_of_tail rfl h_nonpos
 
-theorem exp_WellOrdered {basis : Basis} {ms : PreMS basis}
-    (h : ms.WellOrdered)
+theorem exp_Sorted {basis : Basis} {ms : PreMS basis}
+    (h : ms.Sorted)
     (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
-    ms.exp.WellOrdered := by
+    ms.exp.Sorted := by
   cases basis with
-  | nil => apply WellOrdered.const
+  | nil => apply Sorted.const
   | cons basis_hd basis_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, exps_eq_Seq_exps, exp_seq] at *
-    apply SeqMS.exp_WellOrdered h h_nonpos
+    simp only [Sorted_iff_Seq_Sorted, exps_eq_Seq_exps, exp_seq] at *
+    apply SeqMS.exp_Sorted h h_nonpos
 
 end
 
 theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
     (h_basis : WellFormedBasis basis)
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_nonpos : ¬ Term.FirstIsPos ms.exps) :
     ms.exp.Approximates := by
@@ -162,7 +162,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
   simp only [PreMS.exp, mk_seq, SeqMS.exp, SeqMS.destruct_cons, mk_toFun]
   split_ifs with h_if
   · rw [← expSeries_toFun]
-    exact apply_Approximates expSeries_analytic h_basis (by simpa) h_wo h_approx
+    exact powser_Approximates expSeries_analytic h_basis (by simpa) h_wo h_approx
   have h_exp : exp = 0 := by
     contrapose! h_nonpos
     simp
@@ -170,13 +170,13 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
     grind
   subst h_exp
   clear h_if
-  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+  obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
   obtain ⟨h_coef, h_majorated, h_tl⟩ := Approximates_cons h_approx
-  let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).apply expSeries).mulMonomial coef.exp 0
+  let ms := ((mk tl (f - basis_hd ^ 0 * coef.toFun)).powser expSeries).mulMonomial coef.exp 0
   have h : ms.Approximates := by
     simp only [pow_zero, one_mul, ms]
     apply mulMonomial_Approximates h_basis
-    · apply apply_Approximates expSeries_analytic h_basis (by simpa) (by simpa)
+    · apply powser_Approximates expSeries_analytic h_basis (by simpa) (by simpa)
       convert h_tl
       simp
     · apply exp_Approximates h_basis.tail h_coef_wo h_coef
@@ -184,7 +184,7 @@ theorem exp_Approximates {basis : Basis} {ms : PreMS basis}
       simp only [exps_eq_Seq_exps, mk_seq, SeqMS.cons_exps]
       exact Term.FirstIsPos_of_tail rfl h_nonpos
   apply replaceFun_Approximates _ h
-  simp only [pow_zero, one_mul, mulMonomial_toFun, apply_toFun, expSeries_toFun, mk_toFun,
+  simp only [pow_zero, one_mul, mulMonomial_toFun, powser_toFun, expSeries_toFun, mk_toFun,
     real_real_rpow_zero, mul_one, exp_toFun, ms]
   apply EventuallyEq.of_eq
   ext t
@@ -194,7 +194,7 @@ theorem pow_eq_exp_toFun
     {basis1 basis2 : Basis} {ms1 : PreMS basis1} {ms2 : PreMS basis2}
     {f g : ℝ → ℝ}
     (h_basis1 : WellFormedBasis basis1)
-    (h_wo1 : ms1.WellOrdered) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
+    (h_wo1 : ms1.Sorted) (h_approx1 : ms1.Approximates) (h_trimmed1 : ms1.Trimmed)
     (h_pos1 : 0 < ms1.leadingTerm.coef)
     (h1 : ms1.toFun = f)
     (h2 : ms2.toFun = (Real.exp ∘ ((Real.log ∘ f) * g))) :

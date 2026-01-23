@@ -146,12 +146,12 @@ theorem SeqMS.mul_leadingExp {basis_hd} {basis_tl} {X Y : SeqMS basis_hd basis_t
   | nil => simp
   | cons Y_exp Y_coef Y_tl => simp
 
--- Note: the condition `X.WellOrdered` is necessary.
+-- Note: the condition `X.Sorted` is necessary.
 -- Counterexample: `X = [1, 2]`, `Y = [1]` (well-ordered).
 -- Then `lhs = [1, 2]` while `rhs = [2, 1]`.
 theorem SeqMS.mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ} {Y_coef : PreMS basis_tl}
     {Y_tl X : SeqMS basis_hd basis_tl}
-    (hX_wo : (cons Y_exp Y_coef Y_tl).WellOrdered) :
+    (hX_wo : (cons Y_exp Y_coef Y_tl).Sorted) :
     X.mul (cons Y_exp Y_coef Y_tl) = (mulMonomial X Y_coef Y_exp) + X.mul Y_tl := by
   cases X with
   | nil => simp
@@ -159,7 +159,7 @@ theorem SeqMS.mul_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {Y_exp : ℝ}
     simp only [mul_cons_cons, mulMonomial_cons]
     rw [add_cons_left]
     simp
-    obtain ⟨_, hX_comp, hX_tail_wo⟩ := WellOrdered_cons hX_wo
+    obtain ⟨_, hX_comp, hX_tail_wo⟩ := Sorted_cons hX_wo
     cases Y_tl
     · simp
     · simp at hX_comp ⊢
@@ -190,7 +190,7 @@ theorem SeqMS.mul_eq_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis}
 --     cases Y with
 --     | nil => simp
 --     | cons exp coef tl =>
---     simpa [one, const, motive, mul_cons (WellOrdered.cons_nil const_WellOrdered)] using mul_one'
+--     simpa [one, const, motive, mul_cons (Sorted.cons_nil const_Sorted)] using mul_one'
 
 mutual
 
@@ -491,7 +491,7 @@ mutual
 
   theorem SeqMS.add_mulMonomial_right {basis_hd} {basis_tl} {A B : SeqMS basis_hd basis_tl}
       {M_coef : PreMS basis_tl} {M_exp : ℝ}
-      (m_wo : M_coef.WellOrdered) :
+      (m_wo : M_coef.Sorted) :
       (SeqMS.mulMonomial (A + B) M_coef M_exp) =
       (SeqMS.mulMonomial A M_coef M_exp) + (SeqMS.mulMonomial B M_coef M_exp) := by
     let motive (X Y : SeqMS basis_hd basis_tl) : Prop :=
@@ -526,16 +526,16 @@ mutual
         refine ⟨_, _, rfl, ?_, rfl⟩
         rw [add_mul_right' m_wo]
 
-  -- Note: `Z.WellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
+  -- Note: `Z.Sorted` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
   theorem SeqMS.add_mul_right' {basis_hd basis_tl} {X Y Z : SeqMS basis_hd basis_tl}
-      (hZ_wo : Z.WellOrdered) :
+      (hZ_wo : Z.Sorted) :
       (X + Y).mul Z = X.mul Z + Y.mul Z := by
     let motive (A B : SeqMS basis_hd basis_tl) : Prop :=
       ∃ (Z : SeqMS basis_hd basis_tl),
         A = (X + Y).mul Z ∧
         B = X.mul Z + Y.mul Z ∧
-        Z.WellOrdered
+        Z.Sorted
     apply SeqMS.eq_of_bisim_add' motive
     · use Z
     rintro A B ⟨Z, rfl, rfl, hZ_wo⟩
@@ -547,7 +547,7 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := WellOrdered_cons hZ_wo
+    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := Sorted_cons hZ_wo
     simp only [SeqMS.mul_cons hZ_wo, SeqMS.add_mulMonomial_right hZ_coef_wo, exists_and_left,
       ↓existsAndEq, SeqMS.add_leadingExp, SeqMS.mul_leadingExp, sup_lt_iff, true_and, motive]
     use (X + Y).mulMonomial Z_coef Z_exp, Z_tl
@@ -563,10 +563,10 @@ mutual
       grind [WithBot.add_lt_add_of_le_of_lt]
     · assumption
 
-  -- Note: `Z.WellOrdered` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
+  -- Note: `Z.Sorted` is necessary. Counterexample: `X = [0]`, `Y = [1]`, `Z = [0, 2]`.
   -- Then `lhs = [0, 2] * [1, 0] = [1, 3, 2, 0]` while `rhs = [0, 2] + [1, 3] = [1, 3, 0, 2]`.
   theorem add_mul_right' {basis : Basis} {X Y Z : PreMS basis}
-      (hZ_wo : Z.WellOrdered) :
+      (hZ_wo : Z.Sorted) :
       (X + Y).mul Z = X.mul Z + Y.mul Z := by
     cases basis with
     | nil =>
@@ -583,7 +583,7 @@ mutual
 end
 
 theorem add_mulMonomial_right {basis_hd basis_tl} {A B : PreMS (basis_hd :: basis_tl)}
-    {M_coef : PreMS basis_tl} {M_exp : ℝ} (m_wo : M_coef.WellOrdered) :
+    {M_coef : PreMS basis_tl} {M_exp : ℝ} (m_wo : M_coef.Sorted) :
     (A + B).mulMonomial M_coef M_exp =
     A.mulMonomial M_coef M_exp + B.mulMonomial M_coef M_exp := by
   simp only [ms_eq_ms_iff_mk_eq_mk, mulMonomial_seq, add_seq, SeqMS.add_mulMonomial_right m_wo,
@@ -596,7 +596,7 @@ mutual
 
   theorem SeqMS.mulMonomial_mul {basis_hd} {basis_tl} {B : SeqMS basis_hd basis_tl}
       {M_coef1 M_coef2 : PreMS basis_tl} {M_exp1 M_exp2 : ℝ}
-      (h_coef2_wo : M_coef2.WellOrdered) :
+      (h_coef2_wo : M_coef2.Sorted) :
       (B.mulMonomial M_coef1 M_exp1).mulMonomial M_coef2 M_exp2 =
       B.mulMonomial (M_coef1.mul M_coef2) (M_exp1 + M_exp2) := by
     simp only [SeqMS.mulMonomial, ← SeqMS.map_comp, comp_add_right]
@@ -609,7 +609,7 @@ mutual
 
   theorem SeqMS.mul_mulMonomial {basis_hd} {basis_tl} {A B : SeqMS basis_hd basis_tl}
       {M_coef : PreMS basis_tl} {M_exp : ℝ}
-      (hM_wo : M_coef.WellOrdered) :
+      (hM_wo : M_coef.Sorted) :
       A.mul (B.mulMonomial M_coef M_exp) =
       (A.mul B).mulMonomial M_coef M_exp := by
     let motive (X Y : SeqMS basis_hd basis_tl) : Prop :=
@@ -635,13 +635,13 @@ mutual
     · rw [SeqMS.add_mulMonomial_right hM_wo, SeqMS.mulMonomial_mul hM_wo]
 
   theorem SeqMS.mul_assoc' {basis_hd basis_tl} {X Y Z : SeqMS basis_hd basis_tl}
-      (hZ_wo : Z.WellOrdered) :
+      (hZ_wo : Z.Sorted) :
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     let motive (A B : SeqMS basis_hd basis_tl) : Prop :=
       ∃ Z : SeqMS basis_hd basis_tl,
         A = (X.mul Y).mul Z ∧
         B = X.mul (Y.mul Z) ∧
-        Z.WellOrdered
+        Z.Sorted
     apply SeqMS.eq_of_bisim_add' motive
     · use Z
     rintro A B ⟨Z, rfl, rfl, hZ_wo⟩
@@ -653,7 +653,7 @@ mutual
     by_cases hY : Y = .nil
     · simp [hY]
     right
-    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := WellOrdered_cons hZ_wo
+    obtain ⟨hZ_coef_wo, hZ_comp, hZ_tl_wo⟩ := Sorted_cons hZ_wo
     simp only [SeqMS.mul_cons hZ_wo, SeqMS.add_mul_left', exists_and_left, ↓existsAndEq,
       SeqMS.mul_leadingExp, true_and, motive]
     use (X.mul Y).mulMonomial Z_coef Z_exp, Z_tl
@@ -663,7 +663,7 @@ mutual
     apply WithBot.add_lt_add_of_le_of_lt (by simp [hY]) (by rfl) hZ_comp
 
   -- TODO: update example
-  -- Note: `Z.WellOrdered` is necessary. Counterexample: `basis = [f, g]`.
+  -- Note: `Z.Sorted` is necessary. Counterexample: `basis = [f, g]`.
   -- `Z = f^0 * (g^0 + g^2)`
   -- `Y = f^0 * g^0 + f^(-1) * g^1` (well-ordered)
   -- `X = f^2 * g^(-1) + f^1 * g^1` (well-ordered)
@@ -673,7 +673,7 @@ mutual
   -- There is a difference in the second coefficient.
   -- It is enough, however, if all coefs of `Z` is well-ordered.
   theorem mul_assoc' {basis : Basis} {X Y Z : PreMS basis}
-      (hZ_wo : Z.WellOrdered) :
+      (hZ_wo : Z.Sorted) :
       (X.mul Y).mul Z = X.mul (Y.mul Z) := by
     cases basis with
     | nil =>
@@ -689,14 +689,14 @@ end
 
 mutual
 
-  theorem SeqMS.mulMonomial_WellOrdered {basis_hd} {basis_tl} {B : SeqMS basis_hd basis_tl}
+  theorem SeqMS.mulMonomial_Sorted {basis_hd} {basis_tl} {B : SeqMS basis_hd basis_tl}
       {M_coef : PreMS basis_tl} {M_exp : ℝ}
-      (hB_wo : B.WellOrdered) (hM_wo : M_coef.WellOrdered) :
-      (B.mulMonomial M_coef M_exp).WellOrdered := by
+      (hB_wo : B.Sorted) (hM_wo : M_coef.Sorted) :
+      (B.mulMonomial M_coef M_exp).Sorted := by
     let motive (X : SeqMS basis_hd basis_tl) : Prop :=
       ∃ (B : SeqMS basis_hd basis_tl), X = B.mulMonomial M_coef M_exp ∧
-      B.WellOrdered
-    apply SeqMS.WellOrdered.coind motive
+      B.Sorted
+    apply SeqMS.Sorted.coind motive
     · simp only [motive]
       use B
     · intro exp coef tl ih
@@ -705,23 +705,23 @@ mutual
       cases B with
       | nil => simp at h_eq
       | cons B_exp B_coef B_tl =>
-      obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := SeqMS.WellOrdered_cons hB_wo
+      obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := SeqMS.Sorted_cons hB_wo
       simp only [SeqMS.mulMonomial_cons, SeqMS.cons_eq_cons] at h_eq
       simp only [h_eq, SeqMS.mulMonomial_leadingExp, WithBot.coe_add, motive]
       constructorm* _ ∧ _
-      · apply mul_WellOrdered h_coef_wo hM_wo
+      · apply mul_Sorted h_coef_wo hM_wo
       · apply WithBot.add_lt_add_right
         · simp
         · assumption
       use B_tl
 
-  theorem SeqMS.mul_WellOrdered {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl}
-      (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) :
-      (X.mul Y).WellOrdered := by
+  theorem SeqMS.mul_Sorted {basis_hd basis_tl} {X Y : SeqMS basis_hd basis_tl}
+      (hX_wo : X.Sorted) (hY_wo : Y.Sorted) :
+      (X.mul Y).Sorted := by
     let motive (ms : SeqMS basis_hd basis_tl) : Prop :=
       ∃ Y : SeqMS basis_hd basis_tl,
-        ms = X.mul Y ∧ Y.WellOrdered
-    apply SeqMS.WellOrdered.add_coind' motive
+        ms = X.mul Y ∧ Y.Sorted
+    apply SeqMS.Sorted.add_coind' motive
     · use Y
     rintro ms ⟨Y, rfl, hY_wo⟩
     cases Y with
@@ -729,26 +729,26 @@ mutual
     | cons Y_exp Y_coef Y_tl =>
     by_cases hX : X = .nil
     · simp [hX]
-    obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := SeqMS.WellOrdered_cons hY_wo
+    obtain ⟨hY_coef_wo, hY_comp, hY_tl_wo⟩ := SeqMS.Sorted_cons hY_wo
     right
     simp only [SeqMS.mul_cons hY_wo]
     refine ⟨_, _, rfl, ?_⟩
     simp only [SeqMS.mul_leadingExp, SeqMS.mulMonomial_leadingExp, motive]
     constructorm* _ ∧ _
-    · apply SeqMS.mulMonomial_WellOrdered hX_wo hY_coef_wo
+    · apply SeqMS.mulMonomial_Sorted hX_wo hY_coef_wo
     · apply WithBot.add_lt_add_left
       · simpa
       · exact hY_comp
     · use Y_tl
 
-  theorem mul_WellOrdered {basis : Basis} {X Y : PreMS basis}
-      (hX_wo : X.WellOrdered) (hY_wo : Y.WellOrdered) :
-      (X.mul Y).WellOrdered := by
+  theorem mul_Sorted {basis : Basis} {X Y : PreMS basis}
+      (hX_wo : X.Sorted) (hY_wo : Y.Sorted) :
+      (X.mul Y).Sorted := by
     cases basis with
     | nil => constructor
     | cons basis_hd basis_tl =>
-      simp only [WellOrdered_iff_Seq_WellOrdered, mul_seq] at *
-      exact SeqMS.mul_WellOrdered hX_wo hY_wo
+      simp only [Sorted_iff_Seq_Sorted, mul_seq] at *
+      exact SeqMS.mul_Sorted hX_wo hY_wo
 
 end
 
@@ -890,17 +890,17 @@ instance {basis_hd basis_tl} :
   | cons x_exp x_coef x_tl =>
   simp [SeqMS.mul_cons_cons, SeqMS.add_def]
 
-theorem SeqMS.WellOrdered.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem SeqMS.Sorted.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : SeqMS basis_hd basis_tl}
     (motive : SeqMS basis_hd basis_tl → Prop) (h_base : motive ms)
     (h_step :
       ∀ (exp : ℝ) (coef : PreMS basis_tl) (tl : SeqMS basis_hd basis_tl),
-        motive (.cons exp coef tl) → coef.WellOrdered ∧ tl.leadingExp < exp ∧
-        ∃ (A B : SeqMS basis_hd basis_tl), tl = A.mul B ∧ A.WellOrdered ∧ motive B) :
-    ms.WellOrdered := by
-  apply WellOrdered.coind_friend' (@SeqMS.mul basis_hd basis_tl) motive SeqMS.WellOrdered
+        motive (.cons exp coef tl) → coef.Sorted ∧ tl.leadingExp < exp ∧
+        ∃ (A B : SeqMS basis_hd basis_tl), tl = A.mul B ∧ A.Sorted ∧ motive B) :
+    ms.Sorted := by
+  apply Sorted.coind_friend' (@SeqMS.mul basis_hd basis_tl) motive SeqMS.Sorted
   · intros
-    apply mul_WellOrdered <;> assumption
+    apply mul_Sorted <;> assumption
   · assumption
   · grind
 
@@ -908,7 +908,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     {ms : PreMS (basis_hd :: basis_tl)}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (motive : PreMS (basis_hd :: basis_tl) → Prop)
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_base : motive ms)
     (h_step :
       ∀ (ms : PreMS (basis_hd :: basis_tl)),
@@ -919,10 +919,10 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
           ∃ (A B : PreMS (basis_hd :: basis_tl)),
           tl = (A.mul B).seq ∧
           ms.toFun =ᶠ[atTop] (basis_hd ^ exp * coef.toFun + A.toFun * B.toFun) ∧
-          A.Approximates ∧ B.WellOrdered ∧ motive B) :
+          A.Approximates ∧ B.Sorted ∧ motive B) :
     ms.Approximates := by
   let motive' (ms : PreMS (basis_hd :: basis_tl)) : Prop :=
-    ∃ A B, ms ≈ PreMS.mul A B ∧ A.Approximates ∧ B.WellOrdered ∧ motive B
+    ∃ A B, ms ≈ PreMS.mul A B ∧ A.Approximates ∧ B.Sorted ∧ motive B
   apply Approximates.add_coind motive'
   · use one, ms
     simp at h_wo
@@ -959,7 +959,7 @@ theorem Approximates.mul_coind {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     apply mul_majorated hA_maj hB_maj
     apply basis_head_eventually_pos h_basis
   · apply mulMonomial_Approximates h_basis hA_tl hB_coef
-  simp only [equiv_def, mul_seq, mul_toFun, WellOrdered_iff_Seq_WellOrdered, mk_seq, mk_toFun,
+  simp only [equiv_def, mul_seq, mul_toFun, Sorted_iff_Seq_Sorted, mk_seq, mk_toFun,
     motive']
   use (mk (.cons A_exp A_coef A_tl) fA).mul X, Y
   constructorm* _ ∧ _

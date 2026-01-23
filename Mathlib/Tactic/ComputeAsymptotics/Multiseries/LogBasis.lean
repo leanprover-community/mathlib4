@@ -36,7 +36,7 @@ def WellFormed {basis : Basis} (logBasis : LogBasis basis) : Prop :=
   | .nil => True
   | .single f => True
   | .cons basis_hd _ _ logBasis_tl ms =>
-    ms.WellOrdered ∧
+    ms.Sorted ∧
     ms.Approximates ∧
     ms.Trimmed ∧
     ms.toFun = (Real.log ∘ basis_hd) ∧
@@ -46,10 +46,10 @@ theorem nil_WellFormed : WellFormed (.nil) := by simp [WellFormed]
 
 theorem single_WellFormed (f : ℝ → ℝ) : WellFormed (.single f) := by simp [WellFormed]
 
-theorem WellFormed_cons_WellOrdered {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
+theorem WellFormed_cons_Sorted {basis_hd basis_tl_hd : ℝ → ℝ} {basis_tl_tl : Basis}
     {logBasis_tl : LogBasis (basis_tl_hd :: basis_tl_tl)} {ms : PreMS (basis_tl_hd :: basis_tl_tl)}
     (h : WellFormed (.cons basis_hd _ _ logBasis_tl ms)) :
-    ms.WellOrdered := by
+    ms.Sorted := by
   simp only [WellFormed] at h
   exact h.left
 
@@ -155,10 +155,10 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     {logBasis : LogBasis (left ++ right_hd :: right_tl)} {ms : PreMS (right_hd :: right_tl)}
     (h_basis : WellFormedBasis (left ++ f :: right_hd :: right_tl))
     (h_wf : logBasis.WellFormed)
-    (h_wo : ms.WellOrdered) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
+    (h_wo : ms.Sorted) (h_approx : ms.Approximates) (hf : ms.toFun = Real.log ∘ f)
     (h_trimmed : ms.Trimmed) :
     (logBasis.extendBasisMiddle f ms).WellFormed := by
-  simp only [PreMS.WellOrdered_iff_Seq_WellOrdered] at h_wo
+  simp only [PreMS.Sorted_iff_Seq_Sorted] at h_wo
   cases left with
   | nil =>
     cases logBasis with
@@ -170,13 +170,13 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
   cases left_tl with
   | nil =>
     cases logBasis with | cons _ _ _ logBasis_tl ms' =>
-    simp only [WellFormed, PreMS.WellOrdered_iff_Seq_WellOrdered] at h_wf
+    simp only [WellFormed, PreMS.Sorted_iff_Seq_Sorted] at h_wf
     simp only [List.cons_append, List.nil_append, extendBasisMiddle, WellFormed,
-      PreMS.WellOrdered_iff_Seq_WellOrdered, PreMS.extendBasisMiddle_toFun, h_wf.right, h_wo,
+      PreMS.Sorted_iff_Seq_Sorted, PreMS.extendBasisMiddle_toFun, h_wf.right, h_wo,
       h_approx, and_true, true_and]
     constructorm* _ ∧ _
-    · rw [← PreMS.WellOrdered_iff_Seq_WellOrdered]
-      apply PreMS.extendBasisMiddle_WellOrdered
+    · rw [← PreMS.Sorted_iff_Seq_Sorted]
+      apply PreMS.extendBasisMiddle_Sorted
       simp
       grind
     · apply PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
@@ -191,7 +191,7 @@ theorem extendBasisMiddle_WellFormed {right_hd : ℝ → ℝ} {left right_tl : B
     simp only [WellFormed, List.append_eq] at h_wf
     simp only [List.append_eq]
     constructor
-    · exact PreMS.extendBasisMiddle_WellOrdered h_wf.left
+    · exact PreMS.extendBasisMiddle_Sorted h_wf.left
     constructor
     · exact PreMS.extendBasisMiddle_Approximates h_basis.tail h_wf.right.left
     constructor
@@ -206,7 +206,7 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
     {logBasis : LogBasis (basis_hd :: basis_tl)} {ms : PreMS [f]}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl ++ [f]))
     (h_wf : logBasis.WellFormed)
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (hf : ms.toFun = Real.log ∘ (basis_hd :: basis_tl).getLast (basis_tl.cons_ne_nil basis_hd))
     (h_trimmed : ms.Trimmed) :
@@ -220,7 +220,7 @@ theorem extendBasisEnd_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
     unfold extendBasisEnd
     simp only [WellFormed, List.append_eq]
     constructor
-    · exact PreMS.extendBasisEnd_WellOrdered h_wf.left
+    · exact PreMS.extendBasisEnd_Sorted h_wf.left
     constructor
     · exact PreMS.extendBasisEnd_Approximates h_basis.tail h_wf.right.left
     constructor
@@ -237,7 +237,7 @@ theorem insertLastLog_WellFormed {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   apply extendBasisEnd_WellFormed
   · exact insertLastLog_WellFormedBasis h_basis
   · exact h_wf
-  · exact PreMS.monomial_WellOrdered
+  · exact PreMS.monomial_Sorted
   · have : WellFormedBasis [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)] := by
       apply WellFormedBasis.single
       apply Filter.Tendsto.comp Real.tendsto_log_atTop

@@ -222,12 +222,12 @@ mutual
   theorem IsEquivalent_coef {basis_hd f : ℝ → ℝ} {basis_tl : Basis} {exp : ℝ}
       {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
       (h_approx : Approximates (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
-      (h_wo : WellOrdered (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
+      (h_wo : Sorted (basis := basis_hd :: basis_tl) (mk (.cons exp coef tl) f))
       (h_coef_trimmed : coef.Trimmed)
       (h_coef_ne_zero : ¬ IsZero coef)
       (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
       f ~[atTop] basis_hd ^ exp * coef.toFun := by
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
     obtain ⟨h_coef, h_maj, h_tl⟩ := Approximates_cons h_approx
     have coef_ih := coef.IsEquivalent_leadingTerm h_coef_wo h_coef h_coef_trimmed
       (h_basis.tail)
@@ -289,7 +289,7 @@ mutual
   /-- If `f` is approximated by trimmed multiseries `ms`, then it is asymptotically equivalent to
   `ms.leadingTerm.toFun`. -/
   theorem IsEquivalent_leadingTerm {basis : Basis} {ms : PreMS basis}
-      (h_wo : ms.WellOrdered)
+      (h_wo : ms.Sorted)
       (h_approx : ms.Approximates) (h_trimmed : ms.Trimmed)
       (h_basis : WellFormedBasis basis) :
       ms.toFun ~[atTop] ms.leadingTerm.toFun basis := by
@@ -310,7 +310,7 @@ mutual
       | cons exp coef tl f =>
         obtain ⟨h_coef, _, h_tl⟩ := Approximates_cons h_approx
         obtain ⟨h_coef_trimmed, h_coef_ne_zero⟩ := Trimmed_cons h_trimmed
-        obtain ⟨h_coef_wo, h_comp, _⟩ := WellOrdered_cons h_wo
+        obtain ⟨h_coef_wo, h_comp, _⟩ := Sorted_cons h_wo
         have coef_ih := coef.IsEquivalent_leadingTerm h_coef_wo h_coef h_coef_trimmed
           (h_basis.tail)
         have : f ~[atTop] basis_hd ^ exp * coef.toFun :=
@@ -339,7 +339,7 @@ lemma eventually_pos_of_IsEquivallent {l : Filter ℝ} {f g : ℝ → ℝ} (h : 
 /-- If `f` is approximated by `ms`, and `ms.leadingTerm.coef > 0`, then
 `f` is eventually positive. -/
 theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis}
-    (h_pos : 0 < ms.realCoef) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_pos : 0 < ms.realCoef) (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, 0 < ms.toFun t := by
   apply eventually_pos_of_IsEquivallent (IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis)
@@ -348,7 +348,7 @@ theorem eventually_pos_of_coef_pos {basis : Basis} {ms : PreMS basis}
 /-- If `f` is approximated by `ms`, and `ms` is not zero, then
 `f` is eventually non-zero. -/
 theorem eventually_ne_zero_of_not_zero {basis : Basis} {ms : PreMS basis}
-    (h_ne_zero : ¬ IsZero ms) (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    (h_ne_zero : ¬ IsZero ms) (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_basis : WellFormedBasis basis) :
     ∀ᶠ t in atTop, ms.toFun t ≠ 0 := by
   have := IsEquivalent_leadingTerm h_wo h_approx h_trimmed h_basis
@@ -461,7 +461,7 @@ theorem Term.IsLittleO_of_lt_exps_right {left right : Basis} {t1 t2 : Term}
 
 theorem IsLittleO_of_lt_leadingTerm_left {left right : Basis}
     {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_basis : WellFormedBasis (left ++ right))
@@ -480,7 +480,7 @@ theorem IsLittleO_of_lt_leadingTerm_left {left right : Basis}
 
 theorem IsLittleO_of_lt_leadingTerm_right {left right : Basis}
     {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_basis : WellFormedBasis (left ++ right))
@@ -500,7 +500,7 @@ theorem IsLittleO_of_lt_leadingTerm_right {left right : Basis}
 
 theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
     {ms1 ms2 : PreMS basis}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_basis : WellFormedBasis basis)
@@ -512,7 +512,7 @@ theorem IsLittleO_of_lt_leadingTerm {basis : Basis}
 
 theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis} {f2 : ℝ → ℝ}
     {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_f2 : ms2.toFun = f2)
@@ -540,7 +540,7 @@ theorem IsEquivalent_of_leadingTerm_zeros_append {left right : Basis} {f2 : ℝ 
 theorem IsEquivalent_of_leadingTerm_zeros_append_mul_coef {left right : Basis}
     {ms1 : PreMS (left ++ right)} {ms2 : PreMS right}
     {coef1 coef2 : ℝ} {exps1 exps2 : List ℝ}
-    (h_wo1 : ms1.WellOrdered) (h_wo2 : ms2.WellOrdered)
+    (h_wo1 : ms1.Sorted) (h_wo2 : ms2.Sorted)
     (h_approx1 : ms1.Approximates) (h_approx2 : ms2.Approximates)
     (h_trimmed1 : ms1.Trimmed) (h_trimmed2 : ms2.Trimmed)
     (h_basis : WellFormedBasis (left ++ right))
@@ -685,7 +685,7 @@ lemma log_basis_getLast_IsLittleO_aux {basis : Basis}
   exact id
 
 theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis basis)
-    {ms : PreMS basis} (h_wo : ms.WellOrdered) (h_approx : ms.Approximates)
+    {ms : PreMS basis} (h_wo : ms.Sorted) (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed) (h_pos : Term.FirstIsPos ms.leadingTerm.exps) :
     (Real.log ∘ (basis.getLast (log_basis_getLast_IsLittleO_aux h_pos))) =o[atTop] ms.toFun := by
   simp only [leadingTerm] at h_pos
@@ -695,7 +695,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   have h_basis' := insertLastLog_WellFormedBasis h_basis
   let ms' : PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     ms.extendBasisEnd (Real.log ∘ (basis_hd :: basis_tl).getLast (by simp))
-  have h_wo' : ms'.WellOrdered := PreMS.extendBasisEnd_WellOrdered h_wo
+  have h_wo' : ms'.Sorted := PreMS.extendBasisEnd_Sorted h_wo
   have h_approx' : ms'.Approximates := PreMS.extendBasisEnd_Approximates h_basis' h_approx
   have h_trimmed' : ms'.Trimmed := extendBasisEnd_Trimmed h_trimmed
   have h_toFun : ms'.toFun = ms.toFun := by
@@ -703,7 +703,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
   let ms_log :
       PreMS (basis_hd :: basis_tl ++ [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) :=
     PreMS.monomial _ (basis_tl.length + 1)
-  have h_log_wo : ms_log.WellOrdered := monomial_WellOrdered
+  have h_log_wo : ms_log.Sorted := monomial_Sorted
   have h_log_approx : ms_log.Approximates :=
     monomial_Approximates (n := ⟨basis_tl.length + 1, by simp⟩) h_basis'
   have h_log_trimmed : ms_log.Trimmed := monomial_Trimmed (by simp)
@@ -741,7 +741,7 @@ theorem log_basis_getLast_IsLittleO {basis : Basis} (h_basis : WellFormedBasis b
 
 -- TODO: remove assumptions here using `zero_of_leadingTerm_zero_coef`
 theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
@@ -755,7 +755,7 @@ theorem tendsto_zero_of_zero_coef {basis : Basis} {ms : PreMS basis}
   apply Term.tendsto_zero_of_coef_zero _ h_coef
 
 theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
@@ -773,7 +773,7 @@ theorem tendsto_const_of_AllZero {basis : Basis} {ms : PreMS basis} {f : ℝ →
     simp [h_eq]
 
 theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
@@ -788,7 +788,7 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
     apply Tendsto.congr' h_approx.symm
     apply tendsto_const_nhds
   | cons exp coef tl f =>
-    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := WellOrdered_cons h_wo
+    obtain ⟨h_coef_wo, h_comp, h_tl_wo⟩ := Sorted_cons h_wo
     obtain ⟨h_coef_approx, h_maj, h_tl_approx⟩ := Approximates_cons h_approx
     simp only [leadingTerm, realCoef, mk_seq, SeqMS.head_cons, exps_eq_Seq_exps, SeqMS.cons_exps,
       Term.mk.injEq] at h_eq
@@ -810,7 +810,7 @@ theorem tendsto_zero_of_FirstIsNeg_aux {basis : Basis} {ms : PreMS basis}
     simpa using Tendsto.add h_tl hC
 
 theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     {t_coef : ℝ} {t_exps : List ℝ}
     (h_eq : ms.leadingTerm = ⟨t_coef, t_exps⟩)
@@ -821,7 +821,7 @@ theorem tendsto_zero_of_FirstIsNeg {basis : Basis} {ms : PreMS basis} {f : ℝ �
   apply tendsto_zero_of_FirstIsNeg_aux h_wo h_approx h_eq h_exps
 
 theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)
@@ -839,7 +839,7 @@ theorem tendsto_top_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ �
   all_goals simpa [leadingTerm, h_eq]
 
 theorem tendsto_bot_of_FirstIsPos {basis : Basis} {ms : PreMS basis} {f : ℝ → ℝ}
-    (h_wo : ms.WellOrdered)
+    (h_wo : ms.Sorted)
     (h_approx : ms.Approximates)
     (h_trimmed : ms.Trimmed)
     (h_basis : WellFormedBasis basis)

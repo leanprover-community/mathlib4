@@ -159,11 +159,11 @@ end
 
 mutual
 
-theorem SeqMS.mulConst_WellOrdered {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} {c : ℝ}
-    (h_wo : ms.WellOrdered) : (ms.mulConst c).WellOrdered := by
+theorem SeqMS.mulConst_Sorted {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} {c : ℝ}
+    (h_wo : ms.Sorted) : (ms.mulConst c).Sorted := by
   let motive (ms : SeqMS basis_hd basis_tl) : Prop :=
-    ∃ (X : SeqMS basis_hd basis_tl), ms = X.mulConst c ∧ X.WellOrdered
-  apply SeqMS.WellOrdered.coind motive
+    ∃ (X : SeqMS basis_hd basis_tl), ms = X.mulConst c ∧ X.Sorted
+  apply SeqMS.Sorted.coind motive
   · simp only [motive]
     use ms
   · intro exp' coef' tl' ih
@@ -172,11 +172,11 @@ theorem SeqMS.mulConst_WellOrdered {basis_hd basis_tl} {ms : SeqMS basis_hd basi
     cases X with
     | nil => simp at h_ms_eq
     | cons exp coef tl =>
-      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := WellOrdered_cons hX_wo
+      obtain ⟨hX_coef_wo, hX_comp, hX_tl_wo⟩ := Sorted_cons hX_wo
       simp at h_ms_eq
       constructor
       · simp only [h_ms_eq]
-        exact mulConst_WellOrdered hX_coef_wo
+        exact mulConst_Sorted hX_coef_wo
       constructor
       · simpa [h_ms_eq]
       simp only [motive]
@@ -184,13 +184,13 @@ theorem SeqMS.mulConst_WellOrdered {basis_hd basis_tl} {ms : SeqMS basis_hd basi
       simpa [h_ms_eq]
 
 /-- Multiplication by constant preserves well-orderedness. -/
-theorem mulConst_WellOrdered {basis : Basis} {ms : PreMS basis} {c : ℝ}
-    (h_wo : ms.WellOrdered) : (ms.mulConst c).WellOrdered := by
+theorem mulConst_Sorted {basis : Basis} {ms : PreMS basis} {c : ℝ}
+    (h_wo : ms.Sorted) : (ms.mulConst c).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, mulConst_seq]
-    apply SeqMS.mulConst_WellOrdered
+    simp only [Sorted_iff_Seq_Sorted, mulConst_seq]
+    apply SeqMS.mulConst_Sorted
     simpa using h_wo
 
 end
@@ -330,13 +330,13 @@ theorem SeqMS.neg_neg {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl} : ms.ne
 theorem neg_neg {basis : Basis} {ms : PreMS basis} : ms.neg.neg = ms := by
   cases basis <;> simp [neg]
 
-theorem SeqMS.neg_WellOrdered {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl}
-    (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
-  SeqMS.mulConst_WellOrdered h_wo
+theorem SeqMS.neg_Sorted {basis_hd basis_tl} {ms : SeqMS basis_hd basis_tl}
+    (h_wo : ms.Sorted) : ms.neg.Sorted :=
+  SeqMS.mulConst_Sorted h_wo
 
-theorem neg_WellOrdered {basis : Basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) : ms.neg.WellOrdered :=
-  mulConst_WellOrdered h_wo
+theorem neg_Sorted {basis : Basis} {ms : PreMS basis}
+    (h_wo : ms.Sorted) : ms.neg.Sorted :=
+  mulConst_Sorted h_wo
 
 theorem neg_Approximates {basis : Basis} {ms : PreMS basis}
     (h_approx : ms.Approximates) : ms.neg.Approximates :=

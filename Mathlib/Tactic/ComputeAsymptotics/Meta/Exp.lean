@@ -88,7 +88,7 @@ partial def findPlaceAux (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val))
       val := q($log_hd)
       -- f := q(Real.log ∘ $cur)
       h_approx := q(LogBasis.WellFormed_cons_Approximates $h_logBasis)
-      h_wo := q(LogBasis.WellFormed_cons_WellOrdered $h_logBasis)
+      h_wo := q(LogBasis.WellFormed_cons_Sorted $h_logBasis)
       h_basis := q($h_basis')
       h_logBasis := q(LogBasis.tail_WellFormed $h_logBasis)
     }
@@ -174,7 +174,7 @@ def extractDeepCoef (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (depth : Na
       logBasis := q(LogBasis.tail $ms.logBasis)
       val := q($coef)
       h_approx := q((PreMS.Approximates_cons $ms.h_approx).left)
-      h_wo := q((PreMS.WellOrdered_cons $ms.h_wo).left)
+      h_wo := q((PreMS.Sorted_cons $ms.h_wo).left)
       h_basis := q(WellFormedBasis.tail $ms.h_basis)
       h_logBasis := q(LogBasis.tail_WellFormed $ms.h_logBasis)
     }
@@ -299,7 +299,7 @@ def insertEquivalentToBasis (ms : MS) (h_trimmed : Q(PreMS.Trimmed $ms.val)) (le
       h_basis := q($h_basis)
       logBasis := q($logBasis)
       h_logBasis := q(LogBasis.extendBasisMiddle_WellFormed $h_basis $ms.h_logBasis
-        (PreMS.neg_WellOrdered $G.h_wo) (PreMS.neg_Approximates $G.h_approx)
+        (PreMS.neg_Sorted $G.h_wo) (PreMS.neg_Approximates $G.h_approx)
         (PreMS.neg_log_exp_toFun $hGf) (PreMS.neg_Trimmed $hG_trimmed))
       n_id := q($new_n_id)
     }

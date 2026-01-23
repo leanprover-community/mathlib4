@@ -260,17 +260,17 @@ lemma mulConst_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {X : SeqMS basis
   subst hX
   simp
 
-lemma apply_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
-    {s : LazySeries} (h : s = .nil) : ms.apply s = .nil := by
+lemma powser_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
+    {s : LazySeries} (h : s = .nil) : ms.powser s = .nil := by
   subst h
-  simp [SeqMS.apply_nil]
+  simp [SeqMS.powser_nil]
 
-lemma apply_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
+lemma powser_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
     {s : LazySeries}
     {s_hd : ℝ} {s_tl : LazySeries} (h : s = Seq.cons s_hd s_tl) :
-    ms.apply s = .cons 0 (PreMS.const _ s_hd) (ms.mul (ms.apply s_tl)) := by
+    ms.powser s = .cons 0 (PreMS.const _ s_hd) (ms.mul (ms.powser s_tl)) := by
   subst h
-  simp [SeqMS.apply_cons]
+  simp [SeqMS.powser_cons]
 
 lemma inv_nil {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
     (h : ms = .nil) : ms.inv = .nil := by
@@ -281,7 +281,7 @@ lemma inv_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd 
     {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h : ms = .cons exp coef tl) :
     ms.inv = .mulMonomial
-      ((tl.neg.mulMonomial coef.inv (-exp)).apply invSeries) coef.inv (-exp) := by
+      ((tl.neg.mulMonomial coef.inv (-exp)).powser invSeries) coef.inv (-exp) := by
   subst h
   simp [SeqMS.inv]
 
@@ -301,7 +301,7 @@ lemma pow_nil_nonzero {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS ba
 lemma pow_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS basis_hd basis_tl}
     {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h : ms = .cons exp coef tl) (a : ℝ) :
-    ms.pow a = SeqMS.mulMonomial ((tl.mulMonomial coef.inv (-exp)).apply
+    ms.pow a = SeqMS.mulMonomial ((tl.mulMonomial coef.inv (-exp)).powser
       (PreMS.powSeries a)) (coef.pow a) (exp * a) := by
   subst h
   simp [SeqMS.pow]
@@ -319,7 +319,7 @@ lemma log_cons_basis_tl_nil {basis_hd : ℝ → ℝ} {ms : SeqMS basis_hd []}
     (logBasis : LogBasis [basis_hd]) :
     ms.log logBasis =
       (SeqMS.const basis_hd [] (Real.log coef.toReal)).add
-        ((tl.mulConst coef.toReal⁻¹ ).apply logSeries) := by
+        ((tl.mulConst coef.toReal⁻¹ ).powser logSeries) := by
   subst h
   unfold SeqMS.log
   rfl
@@ -332,7 +332,7 @@ lemma log_cons_basis_tl_cons {basis_hd : ℝ → ℝ} {basis_tl_hd : ℝ → ℝ
     (log_hd : PreMS (basis_tl_hd :: basis_tl_tl)) :
     ms.log (LogBasis.cons basis_hd basis_tl_hd basis_tl_tl logBasis_tl log_hd) =
     SeqMS.add ((.cons 0 ((coef.log logBasis_tl).add <| log_hd.mulConst exp) .nil))
-      ((tl.mulMonomial  coef.inv (-exp)).apply logSeries) := by
+      ((tl.mulMonomial  coef.inv (-exp)).powser logSeries) := by
   subst h
   conv_lhs => unfold SeqMS.log
   rfl
@@ -346,7 +346,7 @@ lemma exp_cons_of_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS bas
     {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h : ms = .cons exp coef tl)
     (h_lt : exp < 0) :
-    ms.exp = (SeqMS.cons exp coef tl).apply expSeries := by
+    ms.exp = (SeqMS.cons exp coef tl).powser expSeries := by
   subst h
   simp [SeqMS.exp, h_lt]
 
@@ -354,7 +354,7 @@ lemma exp_cons_of_not_lt {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ms : SeqMS
     {exp : ℝ} {coef : PreMS basis_tl} {tl : SeqMS basis_hd basis_tl}
     (h : ms = .cons exp coef tl)
     (h_not_lt : ¬ exp < 0) :
-    ms.exp = ((tl.apply expSeries).mulMonomial coef.exp 0) := by
+    ms.exp = ((tl.powser expSeries).mulMonomial coef.exp 0) := by
   subst h
   simp [SeqMS.exp, h_not_lt]
 
@@ -469,14 +469,14 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
     | .cons exp coef tl h =>
       return ← consNormalizeExp q($exp) q(PreMS.mulConst $c $coef) q(SeqMS.mulConst $c $tl)
         q(mulConst_cons $h)
-  | ~q(SeqMS.apply $s $arg) =>
+  | ~q(SeqMS.powser $s $arg) =>
     let res_s ← normalizeLS s
     match res_s with
     | .nil hs =>
-      return .nil q(apply_nil $hs)
+      return .nil q(powser_nil $hs)
     | .cons s_hd s_tl hs =>
       return .cons q(0) q(PreMS.const _ $s_hd)
-        q(($arg).mul (SeqMS.apply $s_tl $arg)) q(apply_cons $hs)
+        q(($arg).mul (SeqMS.powser $s_tl $arg)) q(powser_cons $hs)
   | ~q(SeqMS.inv $arg) =>
     let res ← normalizeSeqMSImp arg
     match res with
@@ -484,7 +484,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       return .nil q(inv_nil $h)
     | .cons exp coef tl h =>
       let ms' : Q(SeqMS $basis_hd $basis_tl) := q(SeqMS.mulMonomial
-        (((SeqMS.neg $tl).mulMonomial ($coef).inv (-$exp)).apply invSeries) ($coef).inv (-$exp))
+        (((SeqMS.neg $tl).mulMonomial ($coef).inv (-$exp)).powser invSeries) ($coef).inv (-$exp))
       let res' ← normalizeSeqMSImp ms'
       return res'.cast q(inv_cons $h)
   | ~q(SeqMS.pow $arg $a) =>
@@ -496,7 +496,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | .neq ha => return .nil q(pow_nil_nonzero $h $ha)
     | .cons exp coef tl h =>
       let ms' : Q(SeqMS $basis_hd $basis_tl) := q(SeqMS.mulMonomial
-        ((SeqMS.mulMonomial $tl ($coef).inv (-$exp)).apply (powSeries $a)) (($coef).pow $a)
+        ((SeqMS.mulMonomial $tl ($coef).inv (-$exp)).powser (powSeries $a)) (($coef).pow $a)
         ($exp * $a))
       let res' ← normalizeSeqMSImp ms'
       return res'.cast q(pow_cons $h $a)
@@ -510,7 +510,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       | ~q(List.nil) =>
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q(SeqMS.add (SeqMS.const _ _ (Real.log ($coef).toReal)) <|
-            (SeqMS.mulConst ($coef).toReal⁻¹ $tl).apply logSeries)
+            (SeqMS.mulConst ($coef).toReal⁻¹ $tl).powser logSeries)
         let res' ← normalizeSeqMSImp ms'
         return res'.cast q(log_cons_basis_tl_nil $h $logBasis)
       | ~q(List.cons $basis_tl_hd $basis_tl_tl) =>
@@ -521,7 +521,7 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
         let logC := q(PreMS.log $logBasis_tl $coef)
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
           q(SeqMS.add (.cons 0 (($logC).add <| ($log_hd).mulConst $exp) .nil) <|
-            (SeqMS.mulMonomial $tl ($coef).inv (-$exp)).apply logSeries)
+            (SeqMS.mulMonomial $tl ($coef).inv (-$exp)).powser logSeries)
         let res' ← normalizeSeqMSImp ms'
         return res'.cast q(log_cons_basis_tl_cons $h $logBasis_tl $log_hd)
   | ~q(SeqMS.exp $arg) =>
@@ -533,12 +533,12 @@ partial def normalizeSeqMSImp {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
       match ← checkLtZero exp with
       | .lt h_exp =>
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
-          q((SeqMS.cons $exp $coef $tl).apply expSeries)
+          q((SeqMS.cons $exp $coef $tl).powser expSeries)
         let res' ← normalizeSeqMSImp ms'
         return res'.cast q(exp_cons_of_lt $h $h_exp)
       | .not_lt h_exp =>
         let ms' : Q(SeqMS $basis_hd $basis_tl) :=
-          q((SeqMS.apply expSeries $tl).mulMonomial ($coef).exp 0)
+          q((SeqMS.powser expSeries $tl).mulMonomial ($coef).exp 0)
         let res' ← normalizeSeqMSImp ms'
         return res'.cast q(exp_cons_of_not_lt $h $h_exp)
   | _ => panic! s!"normalizeSeqMS: unexpected ms: {← ppExpr ms}"
@@ -600,9 +600,9 @@ partial def getFun {basis : Q(Basis)} (ms : Q(PreMS $basis)) :
   | ~q(PreMS.mulConst $c $arg) =>
     let ⟨f, h⟩ ← getFun q($arg)
     return ⟨q($c • $f), q($h ▸ PreMS.mulConst_toFun)⟩
-  | ~q(PreMS.apply $s $arg) =>
+  | ~q(powser $s $arg) =>
     let ⟨f, h⟩ ← getFun q($arg)
-    return ⟨q(($s).toFun ∘ $f), q($h ▸ PreMS.apply_toFun)⟩
+    return ⟨q(($s).toFun ∘ $f), q($h ▸ PreMS.powser_toFun)⟩
   | ~q(PreMS.inv $arg) =>
     let ⟨f, h⟩ ← getFun q($arg)
     return ⟨q($f⁻¹), q($h ▸ PreMS.inv_toFun)⟩
@@ -692,9 +692,9 @@ partial def getSeq {basis_hd : Q(ℝ → ℝ)} {basis_tl : Q(Basis)}
   | ~q(PreMS.mulConst $c $arg) =>
     let ⟨s, h⟩ ← getSeq q($arg)
     return ⟨q(SeqMS.mulConst $c $s), q($h ▸ PreMS.mulConst_seq)⟩
-  | ~q(PreMS.apply $s $arg) =>
+  | ~q(powser $s $arg) =>
     let ⟨ms, h⟩ ← getSeq q($arg)
-    return ⟨q(SeqMS.apply $s $ms), q($h ▸ PreMS.apply_seq)⟩
+    return ⟨q(SeqMS.powser $s $ms), q($h ▸ PreMS.powser_seq)⟩
   | ~q(PreMS.inv $arg) =>
     let ⟨s, h⟩ ← getSeq q($arg)
     return ⟨q(SeqMS.inv $s), q($h ▸ PreMS.inv_seq)⟩

@@ -142,36 +142,36 @@ theorem one_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
 
 mutual
 
-theorem SeqMS.const_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
-    (SeqMS.const basis_hd basis_tl c).WellOrdered := by
+theorem SeqMS.const_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {c : ℝ} :
+    (SeqMS.const basis_hd basis_tl c).Sorted := by
   simp only [SeqMS.const]
-  apply WellOrdered.cons_nil
-  exact const_WellOrdered
+  apply Sorted.cons_nil
+  exact const_Sorted
 
 /-- Constants are well-ordered. -/
-theorem const_WellOrdered {basis : Basis} {c : ℝ} :
-    (const basis c).WellOrdered := by
+theorem const_Sorted {basis : Basis} {c : ℝ} :
+    (const basis c).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [const, WellOrdered_iff_Seq_WellOrdered, mk_seq]
-    apply SeqMS.const_WellOrdered
+    simp only [const, Sorted_iff_Seq_Sorted, mk_seq]
+    apply SeqMS.const_Sorted
 
 end
 
 /-- Zero is well-ordered. -/
-theorem zero_WellOrdered {basis : Basis} : (0 : PreMS basis).WellOrdered := by
+theorem zero_Sorted {basis : Basis} : (0 : PreMS basis).Sorted := by
   cases basis with
   | nil => constructor
-  | cons => apply WellOrdered.nil
+  | cons => apply Sorted.nil
 
-theorem SeqMS.one_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
-    (SeqMS.one : SeqMS basis_hd basis_tl).WellOrdered :=
-  SeqMS.const_WellOrdered
+theorem SeqMS.one_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} :
+    (SeqMS.one : SeqMS basis_hd basis_tl).Sorted :=
+  SeqMS.const_Sorted
 
-/-- `one` is wellOrdered. -/
-theorem one_WellOrdered {basis : Basis} : one.WellOrdered (basis := basis) :=
-  const_WellOrdered
+/-- `one` is Sorted. -/
+theorem one_Sorted {basis : Basis} : one.Sorted (basis := basis) :=
+  const_Sorted
 
 -- TODO : move it
 /-- Constant multiseries approximates constant function. -/
@@ -216,26 +216,26 @@ theorem monomialRpow_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {
 
 mutual
 
-theorem SeqMS.monomialRpow_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
-    (@SeqMS.monomialRpow basis_hd basis_tl n r).WellOrdered := by
+theorem SeqMS.monomialRpow_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} {r : ℝ} :
+    (@SeqMS.monomialRpow basis_hd basis_tl n r).Sorted := by
   cases n with
   | zero =>
     simp only [SeqMS.monomialRpow]
-    apply WellOrdered.cons_nil
-    exact const_WellOrdered
+    apply Sorted.cons_nil
+    exact const_Sorted
   | succ m =>
     simp only [SeqMS.monomialRpow]
-    apply WellOrdered.cons_nil
-    exact monomialRpow_WellOrdered
+    apply Sorted.cons_nil
+    exact monomialRpow_Sorted
 
 /-- `monomial` is well-ordered. -/
-theorem monomialRpow_WellOrdered {basis : Basis} {n : ℕ} {r : ℝ} :
-    (@monomialRpow basis n r).WellOrdered := by
+theorem monomialRpow_Sorted {basis : Basis} {n : ℕ} {r : ℝ} :
+    (@monomialRpow basis n r).Sorted := by
   cases basis with
   | nil => constructor
   | cons basis_hd basis_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, monomialRpow_seq]
-    apply SeqMS.monomialRpow_WellOrdered
+    simp only [Sorted_iff_Seq_Sorted, monomialRpow_seq]
+    apply SeqMS.monomialRpow_Sorted
 
 end
 
@@ -283,13 +283,13 @@ theorem monomial_seq {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
     (monomial (basis_hd :: basis_tl) n).seq = SeqMS.monomial _ _ n :=
   monomialRpow_seq
 
-theorem SeqMS.monomial_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
-    (@SeqMS.monomial basis_hd basis_tl n).WellOrdered :=
-  SeqMS.monomialRpow_WellOrdered
+theorem SeqMS.monomial_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {n : ℕ} :
+    (@SeqMS.monomial basis_hd basis_tl n).Sorted :=
+  SeqMS.monomialRpow_Sorted
 
 /-- `monomial` is well-ordered. -/
-theorem monomial_WellOrdered {basis : Basis} {n : ℕ} : (@monomial basis n).WellOrdered :=
-  monomialRpow_WellOrdered
+theorem monomial_Sorted {basis : Basis} {n : ℕ} : (@monomial basis n).Sorted :=
+  monomialRpow_Sorted
 
 /-- `monomial` approximates monomial function. -/
 theorem monomial_Approximates {basis : Basis} {n : Fin (List.length basis)}
@@ -352,22 +352,22 @@ lemma SeqMS.map_leadingExp {basis_hd basis_hd' basis_tl basis_tl'}
     (ms.map (basis_hd' := basis_hd') f g).leadingExp = ms.leadingExp.map f := by
   cases ms <;> simp
 
-lemma SeqMS.map_id_WellOrdered {basis_hd basis_hd' basis_tl basis_tl'}
+lemma SeqMS.map_id_Sorted {basis_hd basis_hd' basis_tl basis_tl'}
     {f : PreMS basis_tl → PreMS basis_tl'}
     {ms : SeqMS basis_hd basis_tl}
-    (h_wo : ms.WellOrdered)
-    (hf : ∀ coef, coef.WellOrdered → (f coef).WellOrdered) :
-    (ms.map (basis_hd' := basis_hd') id f).WellOrdered := by
+    (h_wo : ms.Sorted)
+    (hf : ∀ coef, coef.Sorted → (f coef).Sorted) :
+    (ms.map (basis_hd' := basis_hd') id f).Sorted := by
   let motive (ms : SeqMS basis_hd' basis_tl') : Prop :=
-    ∃ (ms' : SeqMS basis_hd basis_tl), ms = ms'.map id f ∧ ms'.WellOrdered
-  apply SeqMS.WellOrdered.coind motive
+    ∃ (ms' : SeqMS basis_hd basis_tl), ms = ms'.map id f ∧ ms'.Sorted
+  apply SeqMS.Sorted.coind motive
   · use ms
   intro exp coef tl ⟨ms, h_eq, h_wo⟩
   cases ms with
   | nil => simp at h_eq
   | cons exp' coef' tl' =>
   simp at h_eq
-  obtain ⟨h_coef, h_comp, h_tl⟩ := WellOrdered_cons h_wo
+  obtain ⟨h_coef, h_comp, h_tl⟩ := Sorted_cons h_wo
   simp [h_eq, h_comp, motive]
   grind
 
@@ -423,25 +423,25 @@ theorem SeqMS.updateBasis_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {ex :
 
 mutual
 
-theorem SeqMS.updateBasis_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis}
-    (ex : BasisExtension basis_tl) {ms : SeqMS basis_hd basis_tl} (h_wo : ms.WellOrdered) :
-    (ms.updateBasis ex).WellOrdered := by
+theorem SeqMS.updateBasis_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+    (ex : BasisExtension basis_tl) {ms : SeqMS basis_hd basis_tl} (h_wo : ms.Sorted) :
+    (ms.updateBasis ex).Sorted := by
   simp only [SeqMS.updateBasis]
-  apply SeqMS.map_id_WellOrdered h_wo
-  apply updateBasis_WellOrdered
+  apply SeqMS.map_id_Sorted h_wo
+  apply updateBasis_Sorted
 
-theorem updateBasis_WellOrdered {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) :
-    (ms.updateBasis ex).WellOrdered := by
+theorem updateBasis_Sorted {basis : Basis} {ex : BasisExtension basis} {ms : PreMS basis}
+    (h_wo : ms.Sorted) :
+    (ms.updateBasis ex).Sorted := by
   cases ex with
   | nil => simpa [updateBasis]
   | insert f ex_tl =>
     simp only [updateBasis]
-    apply WellOrdered.cons_nil
-    exact updateBasis_WellOrdered h_wo
+    apply Sorted.cons_nil
+    exact updateBasis_Sorted h_wo
   | @keep basis_hd basis_tl ex_tl =>
-    simp only [WellOrdered_iff_Seq_WellOrdered, updateBasis, mk_seq] at h_wo ⊢
-    apply SeqMS.updateBasis_WellOrdered ex_tl h_wo
+    simp only [Sorted_iff_Seq_Sorted, updateBasis, mk_seq] at h_wo ⊢
+    apply SeqMS.updateBasis_Sorted ex_tl h_wo
 
 end
 
@@ -475,19 +475,19 @@ theorem extendBasisMiddle_toFun {left right : Basis} {b : ℝ → ℝ} {ms : Pre
     (ms.extendBasisMiddle b).toFun = ms.toFun := by
   fun_cases extendBasisMiddle <;> rfl
 
-theorem extendBasisMiddle_WellOrdered {left right : Basis} {b : ℝ → ℝ} {ms : PreMS (left ++ right)}
-    (h_wo : ms.WellOrdered) : (ms.extendBasisMiddle b).WellOrdered := by
+theorem extendBasisMiddle_Sorted {left right : Basis} {b : ℝ → ℝ} {ms : PreMS (left ++ right)}
+    (h_wo : ms.Sorted) : (ms.extendBasisMiddle b).Sorted := by
   cases left with
   | nil =>
     simp only [List.nil_append, extendBasisMiddle]
-    apply WellOrdered.cons_nil
+    apply Sorted.cons_nil
     assumption
   | cons left_hd left_tl =>
-  simp only [List.cons_append, extendBasisMiddle, List.append_eq, WellOrdered_iff_Seq_WellOrdered,
+  simp only [List.cons_append, extendBasisMiddle, List.append_eq, Sorted_iff_Seq_Sorted,
     mk_seq]
-  apply SeqMS.map_id_WellOrdered
+  apply SeqMS.map_id_Sorted
   · simpa using h_wo
-  · apply extendBasisMiddle_WellOrdered
+  · apply extendBasisMiddle_Sorted
 
 theorem extendBasisMiddle_Approximates {left right : Basis} {b : ℝ → ℝ}
     {ms : PreMS (left ++ right)}
@@ -532,21 +532,21 @@ theorem SeqMS.extendBasisEnd_cons {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f
 
 mutual
 
-theorem SeqMS.extendBasisEnd_WellOrdered {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
-    {ms : SeqMS basis_hd basis_tl} (h_wo : ms.WellOrdered) :
-    (ms.extendBasisEnd f).WellOrdered := by
+theorem SeqMS.extendBasisEnd_Sorted {basis_hd : ℝ → ℝ} {basis_tl : Basis} {f : ℝ → ℝ}
+    {ms : SeqMS basis_hd basis_tl} (h_wo : ms.Sorted) :
+    (ms.extendBasisEnd f).Sorted := by
   simp only [SeqMS.extendBasisEnd]
-  apply SeqMS.map_id_WellOrdered h_wo
-  apply extendBasisEnd_WellOrdered
+  apply SeqMS.map_id_Sorted h_wo
+  apply extendBasisEnd_Sorted
 
-theorem extendBasisEnd_WellOrdered {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
-    (h_wo : ms.WellOrdered) : (ms.extendBasisEnd b).WellOrdered := by
+theorem extendBasisEnd_Sorted {basis : Basis} {b : ℝ → ℝ} {ms : PreMS basis}
+    (h_wo : ms.Sorted) : (ms.extendBasisEnd b).Sorted := by
   cases basis with
-  | nil => simpa only [extendBasisEnd] using const_WellOrdered
+  | nil => simpa only [extendBasisEnd] using const_Sorted
   | cons basis_hd basis_tl =>
-  simp only [WellOrdered_iff_Seq_WellOrdered, List.cons_append, List.append_eq,
+  simp only [Sorted_iff_Seq_Sorted, List.cons_append, List.append_eq,
     extendBasisEnd_seq] at *
-  exact SeqMS.extendBasisEnd_WellOrdered h_wo
+  exact SeqMS.extendBasisEnd_Sorted h_wo
 
 end
 
