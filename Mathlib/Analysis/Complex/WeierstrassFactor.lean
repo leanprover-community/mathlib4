@@ -208,7 +208,6 @@ lemma weierstrassFactor_eq_exp_neg_tail (m : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     intro hz1
     subst hz1
     simp at hz
-    exact (lt_irrefl (1 : ℝ)) hz
   have hz_ne_1 : 1 - z ≠ 0 := sub_ne_zero.mpr hz1.symm
   have h_log : log (1 - z) = -∑' k : ℕ, z ^ (k + 1) / (k + 1) := by
     -- rewrite `-log(1-z) = S` as `log(1-z) = -S`
