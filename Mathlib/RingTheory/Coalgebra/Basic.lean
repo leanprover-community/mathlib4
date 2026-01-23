@@ -483,7 +483,7 @@ theorem comul_comp_dFinsuppCoeFnLinearMap :
   aesop (add simp [map_map, DFinsupp.single_eq_pi_single])
 
 open DFinsupp in
-@[simp] theorem comul_coe_Finsupp (x : Π₀ i, A i) :
+@[simp] theorem comul_coe_dFinsupp (x : Π₀ i, A i) :
     comul (R := R) ⇑x = map (coeFnLinearMap _) (coeFnLinearMap _) (comul x) :=
   congr($comul_comp_dFinsuppCoeFnLinearMap x)
 
