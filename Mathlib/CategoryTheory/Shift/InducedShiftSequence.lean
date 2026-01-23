@@ -34,7 +34,7 @@ open CategoryTheory Category Functor
 
 namespace CategoryTheory
 
-variable {C D A : Type*} [Category C] [Category D] [Category A]
+variable {C D A : Type*} [Category* C] [Category* D] [Category* A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
   [AddMonoid M] [HasShift C M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)

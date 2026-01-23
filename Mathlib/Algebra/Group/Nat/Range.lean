@@ -13,7 +13,7 @@ public import Mathlib.Data.Finset.Image
 # `Finset.range` and addition of natural numbers
 -/
 
-@[expose] public section
+public section
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 
 variable {α β γ : Type*}

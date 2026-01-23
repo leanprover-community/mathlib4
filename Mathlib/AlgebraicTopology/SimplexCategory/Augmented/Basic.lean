@@ -35,7 +35,7 @@ abbrev AugmentedSimplexCategory := WithInitial SimplexCategory
 
 namespace AugmentedSimplexCategory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /-- The canonical inclusion from `SimplexCategory` to `AugmentedSimplexCategory`. -/
 @[simps!]

@@ -382,6 +382,11 @@ def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ
 
 variable [NonAssocRing R] [Pow R ℕ] [BinomialRing R]
 
+theorem multichoose_eq (r : R) (n : ℕ) : multichoose r n = choose (r + n - 1) n := by
+  rw [choose]
+  congr
+  abel
+
 theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ) :
     (descPochhammer ℤ n).smeval r = n.factorial • choose r n := by
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
@@ -433,6 +438,10 @@ theorem choose_neg [NatPowAssoc R] (r : R) (n : ℕ) :
   rw [← descPochhammer_eq_factorial_smul_choose, smul_comm,
     ← descPochhammer_eq_factorial_smul_choose, descPochhammer_smeval_eq_ascPochhammer,
     show (-r - n + 1) = -(r + n - 1) by abel, ascPochhammer_smeval_neg_eq_descPochhammer]
+
+theorem choose_neg' [NatPowAssoc R] (r : R) (n : ℕ) :
+    choose (-r) n = Int.negOnePow n • multichoose r n := by
+  rw [choose_neg, multichoose_eq]
 
 theorem descPochhammer_succ_succ_smeval {R} [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
     (r : R) (k : ℕ) : smeval (descPochhammer ℤ (k + 1)) (r + 1) =

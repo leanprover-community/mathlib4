@@ -22,7 +22,7 @@ Since `Res(S)` is also exact,
 given a projective resolution `P` of `k` as a trivial `k`-linear `G`-representation,
 `Res(S)(P)` is a projective resolution of `k` as a trivial `k`-linear `S`-representation.
 
-In `Mathlib/RepresentationTheory/Homological/GroupHomology/Induced.lean`,
+In `Mathlib/RepresentationTheory/Induced.lean`,
 given a `G`-representation `X`,
 we define a natural isomorphism between the functors `Rep k S ⥤ ModuleCat k` sending `A` to
 `(Ind_S^G A ⊗ X)_G` and to `(A ⊗ Res(S)(X))_S`. Hence a projective resolution `P` of `k` as a

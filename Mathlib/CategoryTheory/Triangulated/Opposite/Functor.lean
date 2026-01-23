@@ -28,7 +28,7 @@ assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] [HasShift C ℤ] [HasShift D ℤ] (F : C ⥤ D)
   [F.CommShift ℤ]
 
 open Category Limits Pretriangulated Opposite

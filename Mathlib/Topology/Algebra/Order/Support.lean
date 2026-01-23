@@ -17,7 +17,7 @@ has compact support if so do `f` and `g`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {X M : Type*} [TopologicalSpace X] [One M]
 

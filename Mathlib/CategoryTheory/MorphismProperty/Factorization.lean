@@ -39,7 +39,7 @@ namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+variable {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
 
 /-- Given two classes of morphisms `W₁` and `W₂` on a category `C`, this is
 the data of the factorization of a morphism `f : X ⟶ Y` as `i ≫ p` with
@@ -180,7 +180,7 @@ end
 
 section
 
-variable (J : Type*) [Category J]
+variable (J : Type*) [Category* J]
 
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
@@ -247,7 +247,7 @@ noncomputable def functorialFactorizationData [HasFunctorialFactorization W₁ W
 instance [HasFunctorialFactorization W₁ W₂] : HasFactorization W₁ W₂ where
   nonempty_mapFactorizationData f := ⟨(functorialFactorizationData W₁ W₂).factorizationData f⟩
 
-instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category J] :
+instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 

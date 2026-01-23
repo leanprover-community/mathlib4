@@ -6,9 +6,11 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform
@@ -353,16 +355,16 @@ lemma differentiableAt_one_add_smoothingFn {x : ℝ} (hx : 1 < x) :
 lemma differentiableOn_one_add_smoothingFn : DifferentiableOn ℝ (fun z => 1 + ε z) (Set.Ioi 1) :=
   fun _ hx => (differentiableAt_one_add_smoothingFn hx).differentiableWithinAt
 
-lemma deriv_smoothingFn {x : ℝ} (hx : 1 < x) : deriv ε x = -x⁻¹ / (log x ^ 2) := by
-  have : log x ≠ 0 := Real.log_ne_zero_of_pos_of_ne_one (by positivity) (ne_of_gt hx)
-  change deriv (fun z => 1 / log z) x = -x⁻¹ / (log x ^ 2)
-  rw [deriv_fun_div] <;> aesop
+lemma deriv_smoothingFn {x : ℝ} : deriv ε x = -x⁻¹ / (log x ^ 2) := by
+  unfold smoothingFn
+  simp_rw [one_div]
+  apply deriv_inv_log
 
 lemma isLittleO_deriv_smoothingFn : deriv ε =o[atTop] fun x => x⁻¹ :=
   calc deriv ε
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      rw [deriv_smoothingFn hx]
+      filter_upwards with x
+      rw [deriv_smoothingFn]
     _ = fun x => (-x * log x ^ 2)⁻¹ := by
       simp_rw [neg_div, div_eq_mul_inv, ← mul_inv, neg_inv, neg_mul]
     _ =o[atTop] fun x => (x * 1)⁻¹ := by
@@ -381,8 +383,8 @@ lemma eventually_deriv_one_sub_smoothingFn :
     _ =ᶠ[atTop] -(deriv ε) := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_sub] <;> aesop
     _ =ᶠ[atTop] fun x => x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx, neg_div]
+      filter_upwards with x
+      simp [deriv_smoothingFn, neg_div]
 
 lemma eventually_deriv_one_add_smoothingFn :
     deriv (fun x => 1 + ε x) =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) :=
@@ -390,8 +392,8 @@ lemma eventually_deriv_one_add_smoothingFn :
     _ =ᶠ[atTop] deriv ε := by
       filter_upwards [eventually_gt_atTop 1] with x hx; rw [deriv_fun_add] <;> aesop
     _ =ᶠ[atTop] fun x => -x⁻¹ / (log x ^ 2) := by
-      filter_upwards [eventually_gt_atTop 1] with x hx
-      simp [deriv_smoothingFn hx]
+      filter_upwards with x
+      simp [deriv_smoothingFn]
 
 lemma isLittleO_deriv_one_sub_smoothingFn :
     deriv (fun x => 1 - ε x) =o[atTop] fun (x : ℝ) => x⁻¹ :=
@@ -643,7 +645,7 @@ lemma eventually_atTop_sumTransform_le :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u     := by exact_mod_cast hu'.1
+                  _ ≤ u := by exact_mod_cast hu'.1
       _ ≤ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         rw [Finset.mem_Ico] at hu
@@ -660,7 +662,7 @@ lemma eventually_atTop_sumTransform_le :
         congr; rw [Nat.card_Ico, Nat.cast_sub (le_of_lt <| hr_lt_n i)]
       _ ≤ n ^ (p a b) * n * (c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr; simp only [tsub_le_iff_right, le_add_iff_nonneg_right, Nat.cast_nonneg]
-      _ = c₂ * (n^((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
+      _ = c₂ * (n ^ ((p a b) + 1) / n ^ ((p a b) + 1)) * g n := by
         rw [← Real.rpow_add_one (by positivity) (p a b)]; ring
       _ = c₂ * g n := by rw [div_self (by positivity), mul_one]
       _ ≤ max c₂ (c₂ / c₁ ^ ((p a b) + 1)) * g n := by gcongr; exact le_max_left _ _
@@ -681,8 +683,8 @@ lemma eventually_atTop_sumTransform_ge :
   cases le_or_gt 0 (p a b + 1) with
   | inl hp => -- 0 ≤ (p a b) + 1
     calc sumTransform (p a b) g (r i n) n
-      _ = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))    := rfl
-      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u^((p a b) + 1)) := by
+      _ = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := rfl
+      _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
         have hu' : u ∈ Set.Icc (r i n) n := ⟨hu.1, by lia⟩
@@ -690,7 +692,7 @@ lemma eventually_atTop_sumTransform_ge :
         rw [Set.mem_Icc]
         refine ⟨?_, by norm_cast; lia⟩
         calc c₁ * n ≤ r i n := by exact hn₁ i
-                  _ ≤ u     := by exact_mod_cast hu'.1
+                  _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / n ^ ((p a b) + 1)) := by
         gcongr with u hu
         · rw [Finset.mem_Ico] at hu
@@ -715,7 +717,7 @@ lemma eventually_atTop_sumTransform_ge :
         gcongr; exact min_le_left _ _
   | inr hp => -- (p a b) + 1 < 0
     calc sumTransform (p a b) g (r i n) n
-        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u^((p a b) + 1))        := by rfl
+        = n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1)) := by rfl
       _ ≥ n ^ (p a b) * (∑ u ∈ Finset.Ico (r i n) n, c₂ * g n / u ^ ((p a b) + 1)) := by
         gcongr with u hu
         rw [Finset.mem_Ico] at hu
@@ -726,7 +728,7 @@ lemma eventually_atTop_sumTransform_ge :
         calc c₁ * n ≤ r i n := by exact hn₁ i
                   _ ≤ u := by exact_mod_cast hu'.1
       _ ≥ n ^ (p a b) * (∑ _u ∈ Finset.Ico (r i n) n, c₂ * g n / (r i n) ^ ((p a b) + 1)) := by
-        gcongr n^(p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
+        gcongr n ^ (p a b) * (Finset.Ico (r i n) n).sum (fun _ => c₂ * g n / ?_) with u hu
         · rw [Finset.mem_Ico] at hu
           have := calc 0 < r i n := hrpos_i
                       _ ≤ u := hu.1

@@ -148,6 +148,20 @@ lemma Hom.id_eq_id (X : WalkingMulticospan J) :
 lemma Hom.comp_eq_comp {X Y Z : WalkingMulticospan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
 
+/-- Construct a natural isomorphism between functors out of a walking multicospan from its
+components. -/
+@[simps!]
+def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
+    (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
+    (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
+    (wl : ∀ i, F.map (WalkingMulticospan.Hom.fst i) ≫ (right i).hom =
+      (left _).hom ≫ G.map (WalkingMulticospan.Hom.fst i) := by cat_disch)
+    (wr : ∀ i, F.map (WalkingMulticospan.Hom.snd i) ≫ (right i).hom =
+      (left _).hom ≫ G.map (WalkingMulticospan.Hom.snd i) := by cat_disch) :
+    F ≅ G :=
+  NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
+    rintro _ _ ⟨_⟩ <;> simp [wl, wr]
+
 end WalkingMulticospan
 
 namespace WalkingMultispan
@@ -195,6 +209,20 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 @[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+
+/-- Construct a natural isomorphism between functors out of a walking multispan from its
+components. -/
+@[simps!]
+def functorExt {C : Type*} [Category* C] {F G : WalkingMultispan J ⥤ C}
+    (left : ∀ i, F.obj (.left i) ≅ G.obj (.left i))
+    (right : ∀ i, F.obj (.right i) ≅ G.obj (.right i))
+    (wl : ∀ i, F.map (WalkingMultispan.Hom.fst i) ≫ (right _).hom =
+      (left i).hom ≫ G.map (WalkingMultispan.Hom.fst _) := by cat_disch)
+    (wr : ∀ i, F.map (WalkingMultispan.Hom.snd i) ≫ (right _).hom =
+      (left i).hom ≫ G.map (WalkingMultispan.Hom.snd _) := by cat_disch) :
+    F ≅ G :=
+  NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
+    rintro _ _ ⟨_⟩ <;> simp [wl, wr]
 
 instance (a : WalkingMultispan J) : Unique (a ⟶ a) where
   default := 𝟙 _
@@ -506,9 +534,27 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
           dsimp <;> simp only [Category.id_comp, Category.comp_id]
         apply w }
 
+@[simp]
+lemma ι_ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
+    (P : C) (ι : ∀ a, P ⟶ I.left a)
+    (w : ∀ b, ι (J.fst b) ≫ I.fst b = ι (J.snd b) ≫ I.snd b) (i) :
+    (ofι I P ι w).ι i = ι i :=
+  rfl
+
 @[reassoc (attr := simp)]
 theorem condition (b) : K.ι (J.fst b) ≫ I.fst b = K.ι (J.snd b) ≫ I.snd b := by
   rw [← app_right_eq_ι_comp_fst, ← app_right_eq_ι_comp_snd]
+
+/-- Constructor for isomorphisms between multiforks. -/
+@[simps!]
+def ext {t s : Multifork I} (e : t.pt ≅ s.pt)
+    (h : ∀ i : J.L, e.hom ≫ s.ι i = t.ι i := by cat_disch) : t ≅ s :=
+  Cones.ext e (by rintro (i | j) <;> simp [← h])
+
+/-- Every multifork is isomorphic to one of the form `Multifork.ofι`. -/
+@[simps!]
+def isoOfι (t : Multifork I) : t ≅ ofι _ t.pt t.ι t.condition :=
+  ext (Iso.refl _)
 
 /-- This definition provides a convenient way to show that a multifork is a limit. -/
 @[simps]
@@ -552,6 +598,18 @@ lemma IsLimit.fac (hK : IsLimit K) {T : C} (k : ∀ a, T ⟶ I.left a)
     IsLimit.lift hK k hk ≫ K.ι a = k a :=
   hK.fac _ _
 
+/-- Given two multiforks with isomorphic components in such a way that the natural diagrams
+commute, then one is a limit if and only if the other one is. -/
+def isLimitEquivOfIsos {I I' : MulticospanIndex J C} (c : Multifork I) (c' : Multifork I')
+    (e : c.pt ≅ c'.pt) (el : ∀ i, I.left i ≅ I'.left i) (er : ∀ i, I.right i ≅ I'.right i)
+    (hl : ∀ (i : J.R), I.fst i ≫ (er i).hom = (el (J.fst i)).hom ≫ I'.fst i := by cat_disch)
+    (hr : ∀ (i : J.R), I.snd i ≫ (er i).hom = (el (J.snd i)).hom ≫ I'.snd i := by cat_disch)
+    (he : ∀ (i : J.L), e.hom ≫ c'.ι i = c.ι i ≫ (el i).hom := by cat_disch) :
+    IsLimit c ≃ IsLimit c' :=
+  letI i : I.multicospan ≅ I'.multicospan :=
+    WalkingMulticospan.functorExt el er hl hr
+  IsLimit.equivOfNatIsoOfIso i _ _ (Multifork.ext e he)
+
 variable (K)
 variable {c : Fan I.left} (hc : IsLimit c) {d : Fan I.right} (hd : IsLimit d)
 
@@ -576,7 +634,7 @@ theorem toPiFork_π_app_zero :
 @[simp]
 theorem toPiFork_π_app_one :
     (K.toPiFork hc hd).π.app WalkingParallelPair.one =
-      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd  :=
+      Fan.IsLimit.desc hc K.ι ≫ I.fstPiMapOfIsLimit c hd :=
   rfl
 
 variable {hd} in
@@ -671,6 +729,43 @@ preserves and reflects limit cones.
 @[simps!]
 noncomputable def multiforkEquivPiFork : Multifork I ≌ Fork I.fstPiMap I.sndPiMap :=
   multiforkEquivPiForkOfIsLimit I (limit.isLimit _) (limit.isLimit _)
+
+/-- The constant `MulticospanShape` for a pair of parallel morphisms. -/
+@[simps]
+def ofParallelHoms (J : MulticospanShape) {X Y : C} (f g : X ⟶ Y) : MulticospanIndex J C where
+  left _ := X
+  right _ := Y
+  fst _ := f
+  snd _ := g
+
+/-- A fork on a pair of morphisms `f` and `g` is the same as a multifork on the
+single point index defined by `f` and `g`. -/
+def multiforkOfParallelHomsEquivFork (J : MulticospanShape) [Unique J.L] [Unique J.R] {X Y : C}
+    (f g : X ⟶ Y) :
+    Multifork (ofParallelHoms J f g) ≌ Fork f g := by
+  refine (multiforkEquivPiForkOfIsLimit _
+      (Fan.isLimitMkOfUnique (Iso.refl X) _) (Fan.isLimitMkOfUnique (Iso.refl Y) _)).trans
+      (Fork.equivOfIsos (.refl _) (.refl _) ?_ ?_)
+  · refine Fan.IsLimit.hom_ext (Fan.isLimitMkOfUnique (Iso.refl Y) J.R) _ _ fun _ ↦ ?_
+    rw [Category.assoc, Iso.refl_hom ((Fan.mk Y fun x ↦ (Iso.refl Y).hom).pt),
+      Category.comp_id, fstPiMapOfIsLimit_proj]
+    simp
+  · refine Fan.IsLimit.hom_ext (Fan.isLimitMkOfUnique (Iso.refl Y) J.R) _ _ fun _ ↦ ?_
+    rw [Category.assoc, Iso.refl_hom ((Fan.mk Y fun x ↦ (Iso.refl Y).hom).pt),
+      Category.comp_id, sndPiMapOfIsLimit_proj]
+    simp
+
+@[simp]
+lemma multiforkOfParallelHomsEquivFork_functor_obj_ι (J : MulticospanShape) [Unique J.L]
+    [Unique J.R] {X Y : C} (f g : X ⟶ Y) (c : Multifork (ofParallelHoms J f g)) :
+    ((multiforkOfParallelHomsEquivFork J f g).functor.obj c).ι = c.ι default :=
+  Fan.IsLimit.fac (Fan.isLimitMkOfUnique (Iso.refl X) J.L) _ default
+
+@[simp]
+lemma multiforkOfParallelHomsEquivFork_inverse_obj_ι (J : MulticospanShape) [Unique J.L]
+    [Unique J.R] {X Y : C} (f g : X ⟶ Y) (c : Fork f g) (a : J.L) :
+    ((multiforkOfParallelHomsEquivFork J f g).inverse.obj c).ι a = c.ι := by
+  simp [multiforkOfParallelHomsEquivFork]
 
 end MulticospanIndex
 
@@ -826,6 +921,11 @@ def ext {K K' : Multicofork I}
     (e : K.pt ≅ K'.pt) (h : ∀ (i : J.R), K.π i ≫ e.hom = K'.π i := by cat_disch) :
     K ≅ K' :=
   Cocones.ext e (by rintro (i | j) <;> simp [h])
+
+/-- Every multicofork is isomorphic to one of the form `Multicofork.ofπ`. -/
+@[simps!]
+def isoOfπ (t : Multicofork I) : t ≅ ofπ _ t.pt t.π t.condition :=
+  ext (Iso.refl _)
 
 end Multicofork
 

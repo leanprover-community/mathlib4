@@ -108,6 +108,13 @@ theorem nhds_mul_nhds_one {M} [MulOneClass M] [TopologicalSpace M] [ContinuousMu
   ((le_nhds_mul _ _).trans_eq <| congr_arg _ (mul_one a)).antisymm <|
     le_mul_of_one_le_right' <| pure_le_nhds 1
 
+/-- This lemma exists to ensure that we can still do the simplification `pure_le_nhds_iff`
+after simplifying with `pure_one`. -/
+@[to_additive (attr := simp) /-- This lemma exists to ensure that we can still do the simplification
+`pure_le_nhds_iff` after simplifying with `pure_zero`. -/]
+theorem one_le_nhds_iff [T1Space X] [One X] {b : X} : 1 ≤ 𝓝 b ↔ 1 = b :=
+  pure_le_nhds_iff
+
 section tendsto_nhds
 
 variable {𝕜 : Type*} [Preorder 𝕜] [Zero 𝕜] [Mul 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]
@@ -340,7 +347,7 @@ theorem continuousMul_induced {M N F : Type*} [Mul M] [Mul N] [FunLike F M N] [M
 @[to_additive]
 instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [ContinuousMul M]
     (S : Subsemigroup M) : ContinuousMul S :=
-  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl} : MulHom S M) ⟨rfl⟩
+  IsInducing.continuousMul ({ toFun := (↑), map_mul' := fun _ _ => rfl } : MulHom S M) ⟨rfl⟩
 
 @[to_additive]
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]

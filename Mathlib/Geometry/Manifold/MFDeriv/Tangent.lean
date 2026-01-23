@@ -95,7 +95,7 @@ lemma inTangentCoordinates_eq_mfderiv_comp
 open Bundle
 variable (I) in
 /-- The canonical identification between the tangent bundle to the model space and the product,
-as a diffeomorphism -/
+as a diffeomorphism. -/
 def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
     TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
   __ := TotalSpace.toProd H E
