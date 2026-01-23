@@ -369,12 +369,9 @@ end DFinsupp
 
 namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)
-variable [CommSemiring R] [AddCommMonoid A] [Module R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
 
 open LinearMap
-
-section coalgebraStruct
-variable [CoalgebraStruct R A]
 
 noncomputable instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>
@@ -406,10 +403,6 @@ theorem comul_comp_lapply (i : ι) :
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
   ext; simp
-
-end coalgebraStruct
-
-variable [Coalgebra R A]
 
 /-- The `R`-module whose elements are functions `ι → A` which are zero on all but finitely many
 elements of `ι` has a coalgebra structure. The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂`
