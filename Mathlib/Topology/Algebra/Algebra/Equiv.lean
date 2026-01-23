@@ -97,6 +97,8 @@ instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B w
 
 theorem coe_apply (e : A ≃A[R] B) (a : A) : (e : A →A[R] B) a = e a := rfl
 
+@[simp] theorem coe_mk (e : A ≃ₐ[R] B) (he he') : ⇑(mk e he he') = e := rfl
+
 @[simp]
 theorem coe_coe (e : A ≃A[R] B) : ⇑(e : A →A[R] B) = e := rfl
 

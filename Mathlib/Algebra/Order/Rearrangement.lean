@@ -48,7 +48,7 @@ Add equality cases for when the permute function is injective. This comes from t
 If `Monovary f g`, `Injective g` and `σ` is a permutation, then `Monovary f (g ∘ σ) ↔ σ = 1`.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv Equiv.Perm Finset Function OrderDual

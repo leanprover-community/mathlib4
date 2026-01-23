@@ -23,7 +23,7 @@ By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 `Mathlib.Algebra.Group.Basic`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

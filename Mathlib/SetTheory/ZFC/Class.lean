@@ -33,7 +33,7 @@ practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
 @[pp_with_univ]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
+  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
 
 instance : Insert ZFSet Class :=
   ⟨Set.insert⟩
@@ -78,8 +78,6 @@ theorem mem_def (A B : Class.{u}) : A ∈ B ↔ ∃ x : ZFSet, ↑x = A ∧ B x 
 
 @[simp]
 theorem notMem_empty (x : Class.{u}) : x ∉ (∅ : Class.{u}) := fun ⟨_, _, h⟩ => h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
 @[simp]
 theorem not_empty_hom (x : ZFSet.{u}) : ¬(∅ : Class.{u}) x :=
@@ -126,8 +124,6 @@ This is stated as `univ ∉ univ`, meaning that `univ` (the class of all sets) i
 belong to the class of all sets). -/
 theorem univ_notMem_univ : univ ∉ univ :=
   mem_irrefl _
-
-@[deprecated (since := "2025-05-23")] alias univ_not_mem_univ := univ_notMem_univ
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
 def congToClass (x : Set Class.{u}) : Class.{u} :=
@@ -380,7 +376,5 @@ theorem isOrdinal_notMem_univ : IsOrdinal ∉ Class.univ.{u} := by
     rwa [Class.coe_mem, hx]
   refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
   exacts [hy.mem hz, hwx.mem_trans hyz hzw]
-
-@[deprecated (since := "2025-05-23")] alias isOrdinal_not_mem_univ := isOrdinal_notMem_univ
 
 end ZFSet

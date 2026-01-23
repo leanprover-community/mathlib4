@@ -13,7 +13,7 @@ public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 Presheaves on `PUnit` satisfy sheaf condition iff its value at empty set is a terminal object.
 -/
 
-@[expose] public section
+public section
 
 
 namespace TopCat.Presheaf

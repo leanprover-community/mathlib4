@@ -63,14 +63,14 @@ variable {ι : Type v} [Small.{u} ι] (F : Discrete ι ⥤ LocallyRingedSpace.{u
 
 /-- The explicit coproduct for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproduct : LocallyRingedSpace where
-  toSheafedSpace := colimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
+  toSheafedSpace := colimit (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
     (F ⋙ forgetToSheafedSpace)
   isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
     haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
       (F.obj i).isLocalRing _
     exact
-      (asIso ((colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
+      (asIso ((colimit.ι (C := SheafedSpace.{u + 1, u, u} CommRingCat.{u})
         (F ⋙ forgetToSheafedSpace) i :).hom.stalkMap y)).symm.commRingCatIsoToRingEquiv.isLocalRing
 
 /-- The explicit coproduct cofan for `F : discrete ι ⥤ LocallyRingedSpace`. -/
@@ -257,7 +257,7 @@ noncomputable def coequalizerCofork : Cofork f g :=
   Cofork.ofπ (P := coequalizer f g)
     (homMk (coequalizer.π f.toShHom g.toShHom)
       -- Porting note: this used to be automatic
-      (HasCoequalizer.coequalizer_π_stalk_isLocalHom  _ _))
+      (HasCoequalizer.coequalizer_π_stalk_isLocalHom _ _))
     (forgetToSheafedSpace.map_injective (coequalizer.condition f.toShHom g.toShHom))
 
 theorem isLocalHom_stalkMap_congr {X Y : RingedSpace} (f g : X ⟶ Y) (H : f = g) (x)

@@ -601,9 +601,6 @@ theorem notMem_map_subtype_of_not_property {p : α → Prop} (s : Finset { x // 
     (h : ¬p a) : a ∉ s.map (Embedding.subtype _) :=
   mt s.property_of_mem_map_subtype h
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_map_subtype_of_not_property := notMem_map_subtype_of_not_property
-
 /-- If a `Finset` of a subtype is converted to the main type with
 `Embedding.subtype`, the result is a subset of the set giving the
 subtype. -/

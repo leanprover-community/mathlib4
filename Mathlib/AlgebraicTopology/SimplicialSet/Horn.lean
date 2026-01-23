@@ -82,8 +82,8 @@ section
 variable (n : ℕ) (i k : Fin (n + 3))
 
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
-def const (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].obj m :=
-  SSet.yonedaEquiv (X := Λ[n+2, i])
+def const (m : SimplexCategoryᵒᵖ) : Λ[n + 2, i].obj m :=
+  SSet.yonedaEquiv (X := Λ[n + 2, i])
     (SSet.const ⟨stdSimplex.obj₀Equiv.symm k, by simp⟩)
 
 @[simp]
@@ -146,7 +146,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))
-    (k : ℕ) (h : k < n + 2) : (Λ[n+3, i] : SSet.{u}) _⦋2⦌ := by
+    (k : ℕ) (h : k < n + 2) : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ := by
   refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by lia⟩ ⟨k+1, by lia⟩ ⟨k+2, by lia⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]

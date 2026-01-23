@@ -5,8 +5,11 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Data.List.Chain
-public import Mathlib.Data.List.OfFn
+public import Batteries.Data.List
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Tactic.ToDual
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas about `IsChain` and `ofFn`
@@ -14,7 +17,7 @@ public import Mathlib.Data.List.OfFn
 This file provides lemmas involving both `List.IsChain` and `List.ofFn`.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

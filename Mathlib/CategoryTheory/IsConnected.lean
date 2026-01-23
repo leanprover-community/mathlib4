@@ -421,7 +421,7 @@ theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPrec
   | refl => rfl
   | tail _ hj ih =>
     rw [ih]
-    rcases hj with (⟨⟨hj⟩⟩|⟨⟨hj⟩⟩)
+    rcases hj with (⟨⟨hj⟩⟩ | ⟨⟨hj⟩⟩)
     exacts [hF hj, (hF hj).symm]
 
 /-- If any two objects in a nonempty category are related by `Zigzag`, the category is connected.
