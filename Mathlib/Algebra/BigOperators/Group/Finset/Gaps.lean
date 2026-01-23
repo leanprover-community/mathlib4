@@ -47,7 +47,7 @@ theorem Finset.prod_intervalGapsWithin_mul_prod_eq_div :
     · exact fun i _ ↦ F.intervalGapsWithin_mapsTo h a b (x := i) (by grind)
     · intro i hi j hj hij
       rw [mem_range] at hi hj
-      apply F.intervalGapsWithin_injective h a b <;> grind
+      apply F.intervalGapsWithin_injOn h a b <;> grind
     · intro z hz
       obtain ⟨i, hi₁, hi₂⟩ := F.intervalGapsWithin_surjOn h a b hz
       exact ⟨i, by grind, hi₂⟩

@@ -76,7 +76,7 @@ theorem intervalGapsWithin_succ_fst_of_lt (hj : j < k) :
   have : (j.succ : Fin (k + 1)) = (⟨j, hj⟩ : Fin k).succ := by ext; simp [hj]
   grind [intervalGapsWithin, intervalGapsWithin.fst]
 
-theorem intervalGapsWithin_fst_of_lt (hj₁ : 0 < j) (hj₂ : j - 1 < k) :
+theorem intervalGapsWithin_fst_of_lt_lt (hj₁ : 0 < j) (hj₂ : j - 1 < k) :
     (F.intervalGapsWithin h a b j).1 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j - 1, hj₂⟩).2 := by
   convert F.intervalGapsWithin_succ_fst_of_lt h a b (j - 1) hj₂
   omega
@@ -103,7 +103,7 @@ theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
     Prod.mk.eta, SetLike.mem_coe, hj]
   convert F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
-theorem intervalGapsWithin_injective : (Set.Iio k).InjOn
+theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
     (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1)) := by
   intro j hj j' hj' hjj'
   rw [mem_Iio] at hj hj'
@@ -158,7 +158,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
     convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right
       using 1
     simp [hj₂, hk, -natCast_eq_last]
-  rw [intervalGapsWithin_fst_of_lt (hj₁ := by omega) (hj₂ := by omega),
+  rw [intervalGapsWithin_fst_of_lt_lt (hj₁ := by omega) (hj₂ := by omega),
       intervalGapsWithin_snd_of_lt (hj := by omega)]
   have hj₃ : (⟨j - 1, by omega⟩ : Fin k) ≠ ⟨j, by omega⟩ := by grind
   set G := F.orderEmbOfFin (α := α ×ₗ α) h
