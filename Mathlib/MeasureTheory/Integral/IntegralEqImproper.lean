@@ -615,9 +615,8 @@ theorem iicIntegral_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
     Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
   have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
     filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
-    rw [intervalIntegral.integral_of_le hi, sub_eq_iff_eq_add, ← setIntegral_union
-      (Iic_disjoint_Ioc (refl _)) measurableSet_Ioc (hfi.mono_set (Iic_subset_Iic.2 hi))
-      (hfi.mono_set Ioc_subset_Iic_self), Iic_union_Ioc_eq_Iic hi]
+    rw [sub_eq_iff_sub_eq, intervalIntegral.integral_Iic_sub_Iic (hfi.mono_set
+      (Iic_subset_Iic.2 hi)) hfi]
   exact Tendsto.congr' this (sub_self (∫ x in Iic b, f x ∂μ) ▸ (Tendsto.const_sub _ <|
     intervalIntegral_tendsto_integral_Iic b hfi ha))
 
