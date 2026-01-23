@@ -38,7 +38,7 @@ open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 namespace InnerProductSpace
 
 section coalgebraOfAlgebra
-variable {A : Type*} [Semiring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+variable {A : Type*} [Ring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
