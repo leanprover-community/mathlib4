@@ -91,7 +91,8 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   tauto
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
-    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
+    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber :=
+  Classical.by_contradiction <| by
   intro h
   have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
@@ -253,13 +254,9 @@ lemma IsPath.length_eq_one_of_mem_edges
       have := by exact SimpleGraph.Walk.fst_mem_support_of_mem_edges p h_3
       exact Classical.not_forall_not.mp fun a ↦ right this
   obtain ⟨q, hq⟩ := h_cycle
-  cases q <;> simp_all +decide only [isCycle_def, IsTrail.nil, ne_eq, not_true_eq_false,
-    support_nil, List.tail_cons, List.nodup_nil, and_true, and_false]
-  cases p <;> simp_all +decide only [isTrail_def, edges_cons, List.nodup_cons, reduceCtorEq,
-    not_false_eq_true, support_cons, List.tail_cons, true_and, isPath_iff_eq_nil, edges_nil,
-    List.not_mem_nil]
-  simp_all only [cons_isPath_iff, List.mem_cons, Sym2.eq, Sym2.rel_iff',
-  Prod.mk.injEq, true_and, Prod.swap_prod_mk, length_cons, Nat.add_eq_right]
+  cases q <;> simp_all +decide
+  cases p <;> simp_all +decide
+  simp_all
   obtain ⟨left, right⟩ := hq
   obtain ⟨left_1, right_1⟩ := hp
   obtain ⟨left, right_2⟩ := left
@@ -280,7 +277,7 @@ lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
   · exact h_cycles _ _ hc
   · -- If `c` is not a cycle, then `s(u, v) ∈ p.edges`.
     have h_edge : s(u, v) ∈ (q.takeUntil u hs).edges := by
-      contrapose! hc; simp_all +decide only [cons_isCycle_iff, not_false_eq_true, and_true]
+      contrapose! hc; simp_all +decide
       exact IsPath.takeUntil hq hs
     have h_length : (q.takeUntil u hs).length = 1 := by
       apply IsPath.length_eq_one_of_mem_edges
@@ -305,9 +302,9 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
       · assumption
     simp_all +decide [SimpleGraph.Walk.length_cons, parity_simps]
     have h_even :
-    Even (SimpleGraph.Walk.length p.bypass) ↔
-    Even (SimpleGraph.Walk.length (p.bypass.takeUntil _ ‹_›) +
-    SimpleGraph.Walk.length (p.bypass.dropUntil _ ‹_›)) := by
+        Even (SimpleGraph.Walk.length p.bypass) ↔
+        Even (SimpleGraph.Walk.length (p.bypass.takeUntil _ ‹_›) +
+              SimpleGraph.Walk.length (p.bypass.dropUntil _ ‹_›)) := by
       rw [← SimpleGraph.Walk.length_append, SimpleGraph.Walk.take_spec]
     grind
 
