@@ -183,14 +183,19 @@ instance commGroupWithZero :
       rfl }
 
 noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .., commGroupWithZero .. with
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    bot := 0
-    bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
+    LinearOrderedCommGroupWithZero (ValueGroup A K) where
+  bot := 0
+  bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  zero_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  mul_lt_mul_of_pos_left := by
+    simp_rw [← not_le]
+    rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
+    contrapose! hbc
+    obtain ⟨d, hd⟩ := hbc
+    simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
+    obtain rfl | rfl := hd
+    · exact ⟨d, by simp [Algebra.smul_def]⟩
+    · cases ha le_rfl
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 noncomputable def valuation : Valuation K (ValueGroup A K) where
@@ -267,7 +272,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
       refine .of_mul_eq_one (c + 1) ?_
       simp [mul_add, h]
 
-instance le_total_ideal : IsTotal (Ideal A) LE.le := by
+instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   constructor; intro α β
   by_cases! h : ∀ x : A, x ∈ α → x ∈ β
   · exact Or.inl h
@@ -294,35 +299,35 @@ section dvd
 variable {R : Type*}
 
 theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
-    PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
+    PreValuationRing R ↔ @Std.Total R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
-  · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
+  · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := H.total a b <;> use c <;> simp
 
 theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
-    PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
+    PreValuationRing R ↔ @Std.Total (Ideal R) (· ≤ ·) := by
   classical
   refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
-  have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
+  have := H.total (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
 
 variable (K)
 
 theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
-  @IsTotal.total _ _ (PreValuationRing.iff_dvd_total.mp h) x y
+  (PreValuationRing.iff_dvd_total.mp h).total x y
 
 end dvd
 
 variable {R : Type*} [CommRing R] [IsDomain R] (K : Type*)
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
-theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) :=
+theorem iff_dvd_total : ValuationRing R ↔ @Std.Total R (· ∣ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_dvd_total
 
-theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
+theorem iff_ideal_total : ValuationRing R ↔ @Std.Total (Ideal R) (· ≤ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_ideal_total
 
@@ -400,7 +405,7 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
-        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), IsLocalRing R ∧ IsBezout R] := by
+        @Std.Total R (· ∣ ·), @Std.Total (Ideal R) (· ≤ ·), IsLocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
   tfae_have 1 ↔ 3 := iff_dvd_total
   tfae_have 1 ↔ 4 := iff_ideal_total

@@ -6,7 +6,6 @@ Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 module
 
 public import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -71,7 +70,7 @@ variable {C : Type u} [Category.{v} C] {X Y Z : C}
 
 namespace Iso
 
-set_option linter.style.commandStart false in -- false positive, calc blocks
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[ext, grind ext]
 theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
   suffices α.inv = β.inv by grind [Iso]
@@ -246,31 +245,13 @@ noncomputable def inv (f : X ⟶ Y) [I : IsIso f] : Y ⟶ X :=
 
 namespace IsIso
 
-@[simp, grind =]
+@[reassoc (attr := simp), grind =]
 theorem hom_inv_id (f : X ⟶ Y) [I : IsIso f] : f ≫ inv f = 𝟙 X :=
   (Classical.choose_spec I.1).left
 
-@[simp, grind =]
+@[reassoc (attr := simp), grind =]
 theorem inv_hom_id (f : X ⟶ Y) [I : IsIso f] : inv f ≫ f = 𝟙 Y :=
   (Classical.choose_spec I.1).right
-
--- FIXME putting @[reassoc] on the `hom_inv_id` above somehow unfolds `inv`
--- This happens even if we make `inv` irreducible!
--- I don't understand how this is happening: it is likely a bug.
-
--- attribute [reassoc] hom_inv_id inv_hom_id
--- #print hom_inv_id_assoc
---   theorem CategoryTheory.IsIso.hom_inv_id_assoc {X Y : C} (f : X ⟶ Y) [I : IsIso f]
---     {Z : C} (h : X ⟶ Z),
---     f ≫ Classical.choose (_ : Exists fun inv ↦ f ≫ inv = 𝟙 X ∧ inv ≫ f = 𝟙 Y) ≫ h = h := ...
-
-@[simp]
-theorem hom_inv_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : X ⟶ Z) : f ≫ inv f ≫ g = g := by
-  simp [← Category.assoc]
-
-@[simp]
-theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f ≫ f ≫ g = g := by
-  simp [← Category.assoc]
 
 end IsIso
 
@@ -359,22 +340,22 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp, reassoc]
+@[simp, reassoc, push]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem inv_inv [IsIso f] : inv (inv f) = f := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_inv (f : X ≅ Y) : inv f.inv = f.hom := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, push]
 theorem Iso.inv_hom (f : X ≅ Y) : inv f.hom = f.inv := by
   apply inv_eq_of_hom_inv_id
   simp
@@ -562,7 +543,7 @@ theorem mapIso_refl (F : C ⥤ D) (X : C) : F.mapIso (Iso.refl X) = Iso.refl (F.
 instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
   (F.mapIso (asIso f)).isIso_hom
 
-@[simp]
+@[simp, push ←]
 theorem map_inv (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) [IsIso f] : F.map (inv f) = inv (F.map f) := by
   apply eq_inv_of_hom_inv_id
   simp [← F.map_comp]
