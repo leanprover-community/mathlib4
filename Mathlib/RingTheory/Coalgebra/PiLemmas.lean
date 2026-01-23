@@ -56,24 +56,16 @@ open scoped ConvolutionProduct
 variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype n] [DecidableEq n]
   (G : SimpleGraph n) [DecidableRel G.Adj]
 
-namespace Pi
+open scoped IntrinsicStar in
+@[simp] theorem Pi.intrinsicStar_comul [StarRing R] :
+    star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul := by
+  ext; simp
 
-noncomputable instance : Coalgebra R (n → R) := Finsupp.equivFunOnFinite.symm.coalgebra R
-
-@[simp] theorem comul_single (i a) : comul (single i a : n → R) = single i 1 ⊗ₜ[R] single i a := by
-  simp [comul, Equiv.linearEquiv]
-
-theorem comul_apply (x : n → R) : comul x = ∑ i, x i • (Pi.single i 1 ⊗ₜ[R] Pi.single i 1) := by
+private theorem Pi.comul_apply (x : n → R) :
+    comul x = ∑ i, x i • (Pi.single i 1 ⊗ₜ[R] Pi.single i 1) := by
   conv_lhs => rw [← Finset.univ_sum_single x]
   simp only [map_sum, comul_single, smul_tmul', smul_tmul]
   simp [Pi.single, Function.update_eq_ite, Pi.smul_def]
-
-open scoped IntrinsicStar in
-@[simp] theorem intrinsicStar_comul [Fintype m] [StarRing R] :
-    star (comul (R := R) (A := m → R)) = TensorProduct.comm R (m → R) (m → R) ∘ₗ comul := by
-  ext; classical simp [comul_apply]
-
-end Pi
 
 /-- The convolutive product corresponds to the Hadamard product. -/
 @[simp] theorem LinearMap.toMatrix'_convMul_eq_hadamard {f g : (n → R) →ₗ[R] m → R} :
@@ -102,10 +94,7 @@ theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n K}
 
 /-- The matrix of the convolutive unit is all `1`s. -/
 @[simp] theorem LinearMap.toMatrix'_convOne :
-    (1 : (n → R) →ₗ[R] m → R).toMatrix' = fun _ _  ↦ 1 := by
-  simp only [convOne_def, ← toSpanSingleton_one_eq_algebraLinearMap, counit, Equiv.linearEquiv]
-  ext i j
-  simp [Finsupp.equivFunOnFinite_symm_eq_sum, eq_comm (b := j), Finset.sum_single_ite]
+    (1 : (n → R) →ₗ[R] m → R).toMatrix' = fun _ _  ↦ 1 := by simp [counit, ← ext_iff]
 
 /-- The matrix of `1 - id` is exactly the adjacency matrix of `SimpleGraph.completeGraph`. -/
 @[simp] theorem SimpleGraph.toMatrix'_convOne_sub_id_eq_adjMatrix_completeGraph :
@@ -170,7 +159,6 @@ theorem Matrix.toLin'_convMul_id_eq_id_iff {A : Matrix n n R} :
 section intrinsicStar
 open scoped IntrinsicStar
 
-omit [DecidableEq n] in
 /-- All linear maps on euclidean spaces are intrinsically self-adjoint if they are
 convolutively idempotent. -/
 theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoint [StarRing K]
