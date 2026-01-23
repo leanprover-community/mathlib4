@@ -194,25 +194,24 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 -- End of NormalClosureFG statements
 
-set_option linter.unusedVariables false in
-/-- A finitely presented group is defined as a presented group with generators of a finite type
-and finite relations. -/
-def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
-(_ : rels.Finite)
-:= PresentedGroup (rels)
+-- set_option linter.unusedVariables false in
+-- /-- A finitely presented group is defined as a presented group with generators of a finite type
+-- and finite relations. -/
+-- def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
+-- (_ : rels.Finite) := PresentedGroup (rels)
 
-namespace FinitelyPresentedGroup
+-- namespace FinitelyPresentedGroup
 
-instance (α : Type) [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
-Group (FinitelyPresentedGroup rels h) :=
-  QuotientGroup.Quotient.group _
+-- instance (α : Type) [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+-- Group (FinitelyPresentedGroup rels h) :=
+--   QuotientGroup.Quotient.group _
 
-end FinitelyPresentedGroup
+-- end FinitelyPresentedGroup
 
 /-- A group is finitely presented if it admits an isomorphism to a finitely presented group. -/
 class IsFinitelyPresented (G : Type*) [Group G] : Prop where
-  out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (h : rels.Finite),
-  Nonempty (G ≃* (FinitelyPresentedGroup rels h))
+  out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (_ : rels.Finite),
+  Nonempty (G ≃* (PresentedGroup rels))
 
 /-- A group is one relator if it admits an isomorphism to a presented group such that the number
 of relations is one. -/
@@ -228,7 +227,7 @@ class IsOneRelator (G : Type*) [Group G] : Prop where
 instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
-  unfold FinitelyPresentedGroup at iso
+  -- unfold FinitelyPresentedGroup at iso
   unfold PresentedGroup at iso
   use α, hα
   -- TODO probably a nicer way to do this.
@@ -249,11 +248,11 @@ instance isFP_isPresented {G : Type*} [Group G] [h : IsFinitelyPresented G] : Is
 
 namespace IsFinitelyPresented
 
-/-- Every finitely presented group is finitely presented -/
-theorem isFPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
-  IsFinitelyPresented (FinitelyPresentedGroup rels h) := by
-  refine ⟨α, inferInstance, rels, h, ?_⟩
-  exact ⟨MulEquiv.refl _⟩
+-- /-- Every finitely presented group is finitely presented -/
+-- theorem isFPgroup {α : Type} [Finite α] (rels : Set (FreeGroup α)) (h : rels.Finite) :
+--   IsFinitelyPresented (FinitelyPresentedGroup rels h) := by
+--   refine ⟨α, inferInstance, rels, h, ?_⟩
+--   exact ⟨MulEquiv.refl _⟩
 
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
 a free group on a `Finite` type such that the kernel is finitely generated as a normal subgroup. -/
@@ -262,7 +261,7 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
   Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)  := by
   constructor
   · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
-    unfold FinitelyPresentedGroup at iso
+    -- unfold FinitelyPresentedGroup at iso
     unfold PresentedGroup at iso
     let f : FreeGroup α →* G :=
       iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
@@ -278,7 +277,7 @@ IsFinitelyPresented G ↔ ∃ (α : Type) (_ : Finite α) (f : (FreeGroup α) �
     obtain ⟨S, hSfinite, hSnormalClosure⟩ := hfker
     use α, hα, S, hSfinite
     refine ⟨?_⟩
-    unfold FinitelyPresentedGroup
+    -- unfold FinitelyPresentedGroup
     unfold PresentedGroup
     let iso1 : FreeGroup α ⧸ f.ker ≃* G :=
       QuotientGroup.quotientKerEquivOfSurjective (φ := f) hfsurj
@@ -355,7 +354,7 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
   · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
-    simp [FinitelyPresentedGroup, PresentedGroup] at iso
+    simp [PresentedGroup] at iso
     let _ : Fintype α := Fintype.ofFinite α
     let h : FreeGroup α →* G :=
       iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
@@ -471,7 +470,7 @@ instance : IsFinitelyPresented (Unit) := by
     simp [rels]
   use α, inferInstance, rels, hrels
   let iso := FreeGroup.freeGroupEmptyMulEquivUnit
-  unfold FinitelyPresentedGroup
+  -- unfold FinitelyPresentedGroup
   unfold PresentedGroup
   refine ⟨?_⟩
   have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
@@ -486,7 +485,7 @@ instance : IsFinitelyPresented (Multiplicative ℤ) := by
   have hrels : rels.Finite := by
     simp [rels]
   use α, inferInstance, rels, hrels
-  unfold FinitelyPresentedGroup
+  -- unfold FinitelyPresentedGroup
   unfold PresentedGroup
   refine ⟨?_⟩
   have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
