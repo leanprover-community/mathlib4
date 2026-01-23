@@ -691,13 +691,13 @@ theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l 
 theorem LinearMap.toMatrix_smulBasis_left {G} [Group G] [DistribMulAction G M₁]
     [SMulCommClass G R M₁] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix (g • v₁) v₂ f =
-      LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribMulAction.toLinearMap _ _ g) := by
+      LinearMap.toMatrix v₁ v₂ (f ∘ₗ DistribSMul.toLinearMap _ _ g) := by
   rfl
 
 theorem LinearMap.toMatrix_smulBasis_right {G} [Group G] [DistribMulAction G M₂]
     [SMulCommClass G R M₂] (g : G) (f : M₁ →ₗ[R] M₂) :
     LinearMap.toMatrix v₁ (g • v₂) f =
-      LinearMap.toMatrix v₁ v₂ (DistribMulAction.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
+      LinearMap.toMatrix v₁ v₂ (DistribSMul.toLinearMap _ _ g⁻¹ ∘ₗ f) := by
   rfl
 
 end Finite
@@ -899,10 +899,10 @@ theorem Matrix.toLin_finTwoProd (a b c d : R) :
 
 @[simp]
 theorem toMatrix_distrib_mul_action_toLinearMap (x : R) :
-    LinearMap.toMatrix v₁ v₁ (DistribMulAction.toLinearMap R M₁ x) =
+    LinearMap.toMatrix v₁ v₁ (DistribSMul.toLinearMap R M₁ x) =
     Matrix.diagonal fun _ ↦ x := by
   ext
-  rw [LinearMap.toMatrix_apply, DistribMulAction.toLinearMap_apply, map_smul,
+  rw [LinearMap.toMatrix_apply, DistribSMul.toLinearMap_apply, map_smul,
     Basis.repr_self, Finsupp.smul_single_one, Finsupp.single_eq_pi_single, Matrix.diagonal_apply,
     Pi.single_apply]
 
