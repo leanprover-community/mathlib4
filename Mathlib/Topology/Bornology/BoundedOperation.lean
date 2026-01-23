@@ -210,6 +210,7 @@ section NonUnitalSeminormedRing
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
