@@ -25,7 +25,7 @@ jobs:
     steps:
     - name: Add / remove label based on comment
       run: |
-        labelArray=("awaiting-author" "WIP" "easy")
+        labelArray=("awaiting-author" "WIP" "easy" "brownian" "carleson" "CFT" "FLT" "sphere-packing" "toric")
 
         # we strip `\r` since line endings from GitHub contain this character
         COMMENT="${COMMENT//$'\r'/}"
