@@ -220,7 +220,7 @@ theorem abundancyIndex_le_ofDvd (hn : n ≠ 0) (hd : m ∣ n) :
     (sum_le_sum_of_subset (by grind [mul_dvd_mul_iff_right hk0]))
 
 theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
-  have := abundancyIndex_le_ofDvd hd hn
+  have := abundancyIndex_le_ofDvd hn hd
   have := ne_zero_of_dvd_ne_zero hn hd
   grind [abundant_iff_two_lt_abundancyIndex]
 
@@ -233,12 +233,12 @@ theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := b
   rw [Set.infinite_iff_exists_gt]
   intro a
   use (2 * (a + 1)) * 945
-  grind [Abundant.mul abundant_945 (show 2 * (a + 1) ≠ 0 by grind)]
+  grind [Abundant.mul_left abundant_945 (show 2 * (a + 1) ≠ 0 by grind)]
 
 theorem infinite_odd_abundant : {n : ℕ | Odd n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
   use (2 * a + 1) * 945
-  grind [Abundant.mul abundant_945 (show 2 * a + 1 ≠ 0 by grind)]
+  grind [Abundant.mul_left abundant_945 (show 2 * a + 1 ≠ 0 by grind)]
 
 end Nat
