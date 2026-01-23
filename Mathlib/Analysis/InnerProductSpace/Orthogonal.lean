@@ -443,9 +443,7 @@ variable (K)
 theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
-  simp only [toSubmodule_inf, orthogonal_toSubmodule_eq, Submodule.mem_inf, toSubmodule_bot,
-    Submodule.mem_bot, and_imp]
-  exact fun hx ho => inner_self_eq_zero.1 (ho x hx)
+  simpa using fun hx ho => inner_self_eq_zero.1 (ho x hx)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
 theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
