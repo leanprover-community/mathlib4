@@ -90,6 +90,39 @@ to group and nest appropriately. -/
 private def _root_.Lean.MessageData.ofInstanceType (e : Expr) : MessageData :=
   m!"{e}".sbracket
 
+/-- Creates a message from some `Overlaps`, assumed to be nonempty. -/
+def Overlaps.toMsg (ctx : ContextInfo) (overlaps : Overlaps) : MetaM MessageData := do
+  -- For now, no hovers, since the name clashes with the aux decl of the same name in
+  -- the lctx. TODO: account for this.
+  let mut msg := m!"The \
+    {if let some decl := ctx.parentDecl? then
+      m!"declaration `{privateToUserName decl}`"
+    else
+      "current declaration"} \
+    has instance hypotheses which overlap on data-carrying components."
+
+  for (overlap, fvars) in overlaps do
+    let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
+      if isDirect then .inl fvar else .inr fvar
+    let overlapType := m!"`{.ofInstanceType overlap}`"
+    let indirectTypes := MessageData.andList <|← indirect.mapM fun fvar =>
+      return m!"`{.ofInstanceType <|← inferType fvar}`"
+    msg := msg ++ "\n\n"
+    msg := msg ++
+      if indirect.isEmpty then
+        -- Necessarily plural:
+        m!"There are {direct.length} instances of {overlapType}."
+      else
+        if direct.isEmpty then
+          m!"{overlapType} is provided by {indirectTypes}."
+        else if let [_] := direct then
+          m!"There is an instance of {overlapType} in the local context, but it is \
+            also provided by {indirectTypes}."
+        else
+          m!"There are {direct.length} instances of {overlapType} in the local \
+            context, and it is also provided by {indirectTypes}."
+  addMessageContextFull msg
+
 open Linter in
 /--
 Lints against data-carrying overlaps between instances in the local contexts of declarations.
@@ -121,7 +154,7 @@ def overlappingInstances : Linter where
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
           but these could be passed to `k`. -/
-          letI forallTelescope? expectedType? (k : MetaM Unit) :=
+          let forallTelescope? expectedType? (k : MetaM Unit) :=
             if let some type := expectedType? then
               forallTelescope type fun _ _ => k
             else
@@ -129,37 +162,7 @@ def overlappingInstances : Linter where
           forallTelescope? remainingType? do
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
-
-              -- For now, no hovers, since the name clashes with the aux decl of the same name in
-              -- the lctx. TODO: account for this.
-              let mut msg := m!"The \
-                {if let some decl := ctx.parentDecl? then
-                  m!"declaration `{privateToUserName decl}`"
-                else
-                  "current declaration"} \
-                has instance hypotheses which overlap on data-carrying components."
-
-              for (overlap, fvars) in overlaps do
-                let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
-                  if isDirect then .inl fvar else .inr fvar
-                let overlapType := m!"`{.ofInstanceType overlap}`"
-                let indirectTypes := MessageData.andList <|← indirect.mapM fun fvar =>
-                  return m!"`{.ofInstanceType <|← inferType fvar}`"
-                msg := msg ++ "\n\n"
-                msg := msg ++
-                  if indirect.isEmpty then
-                    -- Necessarily plural:
-                    m!"There are {direct.length} instances of {overlapType}."
-                  else
-                    if direct.isEmpty then
-                      m!"{overlapType} is provided by {indirectTypes}."
-                    else if let [direct] := direct then
-                      m!"There is an instance of {overlapType} in the local context, but it is \
-                        also provided by {indirectTypes}."
-                    else
-                      m!"There are {direct.length} instances of {overlapType} in the local \
-                        context, and it is also provided by {indirectTypes}."
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
-              logWarning <|← addMessageContextFull msg
+              logWarning <|← overlaps.toMsg ctx
 
 initialize addLinter overlappingInstances
