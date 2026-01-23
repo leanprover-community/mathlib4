@@ -146,8 +146,7 @@ theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} {l :
   have := calc
     (fun n ↦ c n • (f (x + d n) - f x) - f' (c n • d n)) =o[𝕜; l] fun n ↦ c n • d n := by
       simpa [smul_sub] using h.isLittleOTVS.comp_tendsto tendsto_arg |>.smul_left c
-    _ =O[𝕜; l] (1 : α → 𝕜) := by
-      exact cdlim.isBigOTVS_one _
+    _ =O[𝕜; l] (1 : α → 𝕜) := cdlim.isBigOTVS_one _
   rw [isLittleOTVS_one] at this
   simpa using this.add <| ((map_continuous f').tendsto v).comp cdlim
 

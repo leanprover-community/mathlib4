@@ -44,29 +44,71 @@ section TangentConeAt
 
 variable [AddCommGroup E] [SMul R E] [TopologicalSpace E] {s : Set E} {x y : E}
 
-/-- The set of all tangent directions to the set `s` at the point `x`. -/
-def tangentConeAt (s : Set E) (x : E) : Set E :=
+/-- The set of all tangent directions to the set `s` at the point `x`.
+
+A point `y` belongs to the tangent cone of `s` at `x` iff
+there exist a family of scalars `c n`, a family of vectors `d n`,
+and a nontrivial filter in the index type such that
+
+- `d n → 0` along the filter;
+- `x + d n ∈ s` eventually along the filter;
+- `c n • d n → y` along the filter,
+
+The actual definition is given in terms of cluster points of a filter,
+see `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
+for the two implications unfolding this definition in more convenient way.
+
+In a space with first countable topology,
+one can assume that the index type is `ℕ` and the filter is `atTop`,
+but the definition we use is more useful without that assumption.
+-/
+irreducible_def tangentConeAt (s : Set E) (x : E) : Set E :=
   {y : E | ClusterPt y ((⊤ : Filter R) • 𝓝[(x + ·) ⁻¹' s] 0)}
 
 variable {R}
 
+/-- Let `c n` be a family of scalars, `d n` be a family of vectors, and `l` be a filter such that
+
+- `d n → 0` along `l`;
+- `x + d n ∈ s` frequently along `l`;
+- `c n • d n → y` along `l`.
+
+Then `y` belongs to the tangent cone of `s` at `x`.
+See also
+
+- `mem_tangentConeAt_of_seq` for a version assuming that `x + d n ∈ s` eventually along `l`.
+- `exists_fun_of_mem_tangentConeAt` for the other implication.
+-/
 theorem mem_tangentConeAt_of_frequently {α : Type*} (l : Filter α) (c : α → R) (d : α → E)
     (hd₀ : Tendsto d l (𝓝 0)) (hds : ∃ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x := by
   suffices Tendsto (fun n ↦ c n • d n) (l ⊓ 𝓟 {y | x + d y ∈ s}) (⊤ • 𝓝[(x + ·) ⁻¹' s] 0) by
     rw [frequently_iff_neBot] at hds
+    rw [tangentConeAt_def]
     exact ClusterPt.mono (hcd.mono_left inf_le_left).mapClusterPt this
   rw [← map₂_smul, ← map_prod_eq_map₂]
   refine tendsto_map.comp (tendsto_top.prodMk (tendsto_nhdsWithin_iff.mpr ⟨?_, ?_⟩))
   · exact hd₀.mono_left inf_le_left
   · simp [eventually_inf_principal]
 
-/-- A special case of `mem_tangentConeAt_of_frequently` which is convenient for XXX. -/
+/-- A special case of `mem_tangentConeAt_of_frequently`, which avoids `Filter.Frequently`. -/
 theorem mem_tangentConeAt_of_seq {α : Type*} (l : Filter α) [l.NeBot] (c : α → R) (d : α → E)
     (hd₀ : Tendsto d l (𝓝 0)) (hds : ∀ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x :=
   mem_tangentConeAt_of_frequently l c d hd₀ hds.frequently hcd
 
+/-- If `y` belongs to the tangent cone of `s` at `x`, then there exist
+
+- an index type `α` and a nontrivial filter `l` on `α`;
+- a family of scalars `c n`, `n : α`, and a family of vectors `d n`, `n : α` such that
+- `d n → 0` along `l`;
+- `x + d n ∈ s` eventually along `l`;
+- `c n • d n → y` along `l`.
+
+In fact, one can take `α = R × E`, `c = Prod.fst`, and `d = Prod.snd`, but this is not important,
+so the lemma statement hides these details.
+
+This lemma provides a convenient way to unfold the definition of `tangentConeAt`. -/
 theorem exists_fun_of_mem_tangentConeAt (h : y ∈ tangentConeAt R s x) :
     ∃ (α : Type (max u v)) (l : Filter α) (_hl : l.NeBot) (c : α → R) (d : α → E),
       Tendsto d l (𝓝 0) ∧ (∀ᶠ n in l, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) l (𝓝 y) := by

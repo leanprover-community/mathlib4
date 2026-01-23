@@ -17,7 +17,7 @@ and `UniqueDiffOn`.
 
 public section
 
-open Filter Set Metric NormedField
+open Filter Set Metric
 open scoped Topology Pointwise
 
 variable {𝕜 E : Type*}
@@ -27,16 +27,19 @@ section SMul
 variable [AddCommGroup E] [SMul 𝕜 E] [TopologicalSpace E] {s t : Set E} {x : E}
 
 @[gcongr]
-theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := fun y hy ↦
-  hy.mono <| by gcongr
+theorem tangentConeAt_mono (h : s ⊆ t) : tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
+  simp only [tangentConeAt_def, setOf_subset_setOf]
+  refine fun y hy ↦ hy.mono ?_
+  gcongr
 
 /--
-Given `x ∈ s` and a field extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
+Given `x ∈ s` and a semiring extension `𝕜 ⊆ 𝕜'`, the tangent cone of `s` at `x` with
 respect to `𝕜` is contained in the tangent cone of `s` at `x` with respect to `𝕜'`.
 -/
 theorem tangentConeAt_mono_field
     {𝕜' : Type*} [Monoid 𝕜'] [SMul 𝕜 𝕜'] [MulAction 𝕜' E] [IsScalarTower 𝕜 𝕜' E] :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜' s x := by
+  simp only [tangentConeAt_def, setOf_subset_setOf]
   refine fun y hy ↦ hy.mono ?_
   rw [← smul_one_smul (Filter 𝕜')]
   grw [le_top (a := ⊤ • 1)]
@@ -45,7 +48,7 @@ theorem Filter.HasBasis.tangentConeAt_eq_biInter_closure {ι} {p : ι → Prop} 
     (h : (𝓝 0).HasBasis p U) :
     tangentConeAt 𝕜 s x = ⋂ (i) (_ : p i), closure ((univ : Set 𝕜) • (U i ∩ (x + ·) ⁻¹' s)) := by
   ext y
-  simp only [tangentConeAt, mem_setOf_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
+  simp only [tangentConeAt_def, mem_setOf_eq, mem_iInter₂, ← map₂_smul, ← map_prod_eq_map₂,
     ((nhdsWithin_hasBasis h _).top_prod.map _).clusterPt_iff_forall_mem_closure, image_prod,
     image2_smul]
 
@@ -57,6 +60,7 @@ variable [ContinuousAdd E]
 
 theorem tangentConeAt_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
+  simp only [tangentConeAt_def, setOf_subset_setOf]
   refine fun y hy ↦ hy.mono ?_
   gcongr _ • ?_
   rw [nhdsWithin_le_iff]
@@ -227,9 +231,10 @@ theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = 
 variable {𝕜' : Type*} [Semiring 𝕜'] [SMul 𝕜 𝕜'] [Module 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 
 /--
-Assume that `E` is a normed vector space over normed fields `𝕜 ⊆ 𝕜'` and that `x ∈ s` is a point
-of unique differentiability with respect to the set `s` and the smaller field `𝕜`, then `x` is also
-a point of unique differentiability with respect to the set `s` and the larger field `𝕜'`.
+Assume that `E` is a normed vector space over semirings `𝕜 ⊆ 𝕜'` and that `x ∈ s` is a point
+of unique differentiability with respect to the set `s` and the smaller semiring `𝕜`,
+then `x` is also a point of unique differentiability with respect to the set `s`
+and the larger semiring `𝕜'`.
 -/
 theorem UniqueDiffWithinAt.mono_field (hs : UniqueDiffWithinAt 𝕜 s x) :
     UniqueDiffWithinAt 𝕜' s x := by
@@ -239,9 +244,10 @@ theorem UniqueDiffWithinAt.mono_field (hs : UniqueDiffWithinAt 𝕜 s x) :
     simp [Submodule.span_mono tangentConeAt_mono_field]
 
 /--
-Assume that `E` is a normed vector space over normed fields `𝕜 ⊆ 𝕜'` and all points of `s` are
-points of unique differentiability with respect to the smaller field `𝕜`, then they are also points
-of unique differentiability with respect to the larger field `𝕜`.
+Assume that `E` is a normed vector space over semirings `𝕜 ⊆ 𝕜'`
+and all points of `s` are points of unique differentiability
+with respect to the smaller semiring `𝕜`,
+then they are also points of unique differentiability with respect to the larger semiring `𝕜`.
 -/
 theorem UniqueDiffOn.mono_field (hs : UniqueDiffOn 𝕜 s) : UniqueDiffOn 𝕜' s :=
   fun x hx ↦ (hs x hx).mono_field
