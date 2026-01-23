@@ -230,8 +230,8 @@ theorem card_le_of_injective (f : α → β) (hf : Function.Injective f) : card 
   Finset.card_le_card_of_injOn f (fun _ _ => Finset.mem_univ _) fun _ _ _ _ h => hf h
 
 theorem not_injective_of_card_lt (f : α → β) (h : card β < card α) :
-    ¬Function.Injective f := fun hinj =>
-  Nat.not_lt.mpr (card_le_of_injective f hinj) h
+    ¬Function.Injective f :=
+  Nat.not_le_of_lt h ∘ card_le_of_injective f
 
 theorem card_le_of_embedding (f : α ↪ β) : card α ≤ card β :=
   card_le_of_injective f f.2
