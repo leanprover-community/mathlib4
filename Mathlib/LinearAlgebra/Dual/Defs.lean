@@ -50,15 +50,53 @@ noncomputable section
 namespace Module
 
 variable (R A M : Type*)
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+
+section Semiring
+
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 /-- The left dual space of an R-module M is the R-module of linear maps `M → R`. -/
-abbrev Dual (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] :=
-  M →ₗ[R] R
+abbrev Dual := M →ₗ[R] R
+
+variable {R A M}
+
+/-- right module structure on `Module.Dual R M`. -/
+def Dual.rightSMul (f : Dual R M) (a : R) :
+    Dual R M where
+  toFun x := f x * a
+  map_add' x y := by simp [add_mul]
+  map_smul' r x := by simp [mul_assoc]
+
+theorem Dual.rightSMul_apply (f : Dual R M) (a : R) (x : M) :
+    f.rightSMul a x = f x * a := rfl
+
+theorem Dual.rightSMul_eq_smul
+    {R : Type*} [CommSemiring R] [Module R M] (f : Dual R M) (a : R) :
+    f.rightSMul a = a • f := by
+  ext x
+  simp [Dual.rightSMul_apply, mul_comm]
+
+theorem Dual.rightSMul_add_left (f g : Dual R M) (a : R) :
+    (f + g).rightSMul a = f.rightSMul a + g.rightSMul a := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, add_mul]
+
+theorem Dual.rightSMul_add_right (f : Dual R M) (a b : R) :
+    f.rightSMul (a + b) = f.rightSMul a + f.rightSMul b := by
+  ext x
+  simp [Module.Dual.rightSMul_apply, mul_add]
+
+theorem Dual.rightSMul_rightSMul (f : Dual R M) (a b : R) :
+    (f.rightSMul a).rightSMul b = f.rightSMul (a * b) := by
+  ext x
+  simp [Dual.rightSMul_apply, mul_assoc]
+
+end Semiring
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 /-- The canonical pairing of a vector space and its algebraic dual. -/
-def dualPairing (R M) [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    Module.Dual R M →ₗ[R] M →ₗ[R] R :=
+def dualPairing : Module.Dual R M →ₗ[R] M →ₗ[R] R :=
   LinearMap.id
 
 @[simp]

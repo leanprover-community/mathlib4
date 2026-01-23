@@ -4559,6 +4559,7 @@ public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.Center
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
@@ -4844,7 +4845,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
 public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.Transvection
+public import Mathlib.LinearAlgebra.Transvection.Basic
+public import Mathlib.LinearAlgebra.Transvection.Generation
+public import Mathlib.LinearAlgebra.Transvection.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
 public import Mathlib.Logic.Basic
