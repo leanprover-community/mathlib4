@@ -54,10 +54,9 @@ variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
   [CommRing A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
   [CommRing A₂] [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂]
   [CommRing A₃] [LieRing L₃] [Module A₃ L₃] [LieRingModule L₃ A₃]
-  [LieRinehartRing A₁ L₁] [Algebra R A₁] [LieAlgebra R L₁] [LieRinehartAlgebra R A₁ L₁]
-  [LieRinehartRing A₂ L₂] [Algebra R A₂] [LieAlgebra R L₂] [LieRinehartAlgebra R A₂ L₂]
-  [LieRinehartRing A₃ L₃] [Algebra R A₃] [LieAlgebra R L₃] [LieRinehartAlgebra R A₃ L₃]
-  (σ₁₂ : A₁ →ₐ[R] A₂) (σ₂₃ : A₂ →ₐ[R] A₃)
+  [Algebra R A₁] [LieAlgebra R L₁] [Algebra R A₂] [LieAlgebra R L₂]
+  [Algebra R A₃] [LieAlgebra R L₃]
+  {σ₁₂ : A₁ →ₐ[R] A₂} {σ₂₃ : A₂ →ₐ[R] A₃}
 
 instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
   lie_smul_eq_mul _ _ _ := rfl
@@ -75,13 +74,13 @@ structure Hom (σ : A₁ →ₐ[R] A₂) (L₁ L₂ : Type*)
     [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁] [LieAlgebra R L₁]
     [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂] [LieAlgebra R L₂]
     extends L₁ →ₗ⁅R⁆ L₂ where
-  map_smul_apply (a : A₁) (x : L₁) : toLinearMap (a • x) = σ a • toLinearMap x
-  apply_lie (a : A₁) (x : L₁) : σ ⁅x, a⁆ = ⁅toLinearMap x, σ a⁆
+  map_smul_apply (a : A₁) (x : L₁) : toLieHom (a • x) = σ a • toLieHom x
+  apply_lie (a : A₁) (x : L₁) : σ ⁅x, a⁆ = ⁅toLieHom x, σ a⁆
 
 @[inherit_doc]
 scoped notation:25 L " →ₗ⁅" σ:25 "⁆ " L₂:0 => LieRinehartAlgebra.Hom σ L L₂
 
-instance : CoeFun (L₁ →ₗ⁅σ₁₂⁆ L₂) (fun _ => L₁ → L₂) := ⟨fun f => f.toLinearMap⟩
+instance : CoeFun (L₁ →ₗ⁅σ₁₂⁆ L₂) (fun _ => L₁ → L₂) := ⟨fun f => f.toLieHom⟩
 
 /-- A morphism of Lie-Rinehart algebras as a semilinear map. -/
 def Hom.toLinearMap' (f : L₁ →ₗ⁅σ₁₂⁆ L₂) : L₁ →ₛₗ[σ₁₂.toRingHom] L₂ where
@@ -90,58 +89,54 @@ def Hom.toLinearMap' (f : L₁ →ₗ⁅σ₁₂⁆ L₂) : L₁ →ₛₗ[σ₁
   map_smul' := f.map_smul_apply
 
 
-lemma anchor_comp (f : L →ₗ⁅σ⁆ L') (l : L) (a : A): σ ⁅l, a⁆ = ⁅f l, σ a⁆ := f.anchor_comp a l
-
-
-/-- Recovers the Lie algebra morphism underlying a Lie-Rinehart algebra homomorphism
--/
-def Hom.toLieHom (f : L →ₗ⁅σ⁆ L') : L →ₗ⁅R⁆ L' where
-  __ := f
-  map_smul' _ _ := by simp [← IsScalarTower.algebraMap_smul A]
+lemma anchor_comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (l : L₁) (a : A₁): σ₁₂ ⁅l, a⁆ = ⁅f l, σ₁₂ a⁆ :=
+  f.apply_lie a l
 
 
 /-- The module homomorphism and the Lie algebra homomorphism undelying a Lie-Rinehart homomorphism
 are the same function
 -/
 @[simp]
-lemma linearMap_eq_lieHom (f : L →ₗ⁅σ⁆ L') (x : L) : f.toLinearMap x = (f.toLieHom) x := rfl
+lemma linearMap_eq_lieHom (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (x : L₁) : f.toLinearMap' x = (f.toLieHom) x := rfl
 
 
 /-- The composition of Lie-Rinehart algebra homomorphisms is again a homomorphism
 -/
-def Hom.comp (f : L →ₗ⁅σ⁆ L') (g : L' →ₗ⁅σ'⁆ L'') : L →ₗ⁅(AlgHom.comp σ' σ)⁆ L'' where
-  toLinearMap := g.toLinearMap.comp f.toLinearMap
-  map_lie' _ _ := by
-    dsimp
-    repeat rw [linearMap_eq_lieHom]
-    simp
-  anchor_comp _ _ := by
-    dsimp
-    repeat rw [← anchor_comp]
+def Hom.comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (g : L₂ →ₗ⁅σ₂₃⁆ L₃) : L₁ →ₗ⁅(AlgHom.comp σ₂₃ σ₁₂)⁆ L₃ where
+  toLieHom := g.toLieHom.comp f.toLieHom
+  map_smul_apply _ _ := by simp [Hom.map_smul_apply]
+  apply_lie _ _ := by simp [f.apply_lie, g.apply_lie]
+
 
 /-- The identity morphism of a Lie-Rinehart algebra over the identity algebra homomorphism of the
 underlying algebra.
 -/
-def Hom.id : L →ₗ⁅AlgHom.id R A⁆ L where
-  __ := LinearMap.id
-  map_lie' _ _ := rfl
-  anchor_comp a l:= AlgHom.id_apply ⁅l, a⁆
+def Hom.id : L₁ →ₗ⁅AlgHom.id R A₁⁆ L₁ where
+  __ := LieHom.id
+  map_smul_apply _ _ := by simp
+  apply_lie _ _ := by simp
 
 
-variable (R A L) in
+variable [LieRinehartRing A₁ L₁] [LieRinehartAlgebra R A₁ L₁]
+
+variable (R A₁ L₁) in
 /-- The anchor of a given Lie-Rinehart algebra `L` over `A` interpreted as a Lie-Rinehart morphism
 to the module of derivations of `A`.
 -/
-def anchor : L →ₗ⁅AlgHom.id R A⁆ (Derivation R A A) where
-  toFun x := Derivation.mk' ((LieModule.toEnd R L A) x) fun a b ↦ by
+def anchor : L₁ →ₗ⁅AlgHom.id R A₁⁆ (Derivation R A₁ A₁) where
+  toFun x := Derivation.mk' ((LieModule.toEnd R L₁ A₁) x) fun a b ↦ by
     simp [LieRinehartRing.leibniz_mul_right, CommMonoid.mul_comm]
-  map_add' _ _ := by ext a; simp
-  map_smul' _ _ := by ext a; simp [LieRinehartRing.lie_smul_eq_mul]
-  map_lie' _ _ := by ext a; simp [Derivation.commutator_apply]
-  anchor_comp := by simp
+  map_add' _ _ := by ext _; simp
+  map_smul' _ _ := by ext _; simp
+  map_lie' := by
+    intros _ _
+    ext _
+    simp [Derivation.commutator_apply]
+  map_smul_apply _ _ := by ext _ ; simp [LieRinehartRing.lie_smul_eq_mul]
+  apply_lie _ _ := by simp
 
 @[simp]
-lemma anchor_derivation : anchor R A (Derivation R A A) = Hom.id :=
+lemma anchor_derivation : anchor R A₁ (Derivation R A₁ A₁) = Hom.id :=
   rfl
 
 end LieRinehartAlgebra
