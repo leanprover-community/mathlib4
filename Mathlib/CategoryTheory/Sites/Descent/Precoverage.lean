@@ -66,7 +66,7 @@ lemma sieve_mem (i : ι) : sieve f f' i ∈ J.over _ _ := by
   simpa only [J.mem_over_iff, Equiv.apply_symm_apply] using J.pullback_stable (f i) hf'
 
 lemma mem_sieve {i : ι} {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
-    (fac : a ≫ f' j = q ≫ f i) :
+    (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     sieve f f' i (Over.homMk q : Over.mk q ⟶ Over.mk (𝟙 (X i))) :=
   ⟨_, a, f' j, ⟨j⟩, fac⟩
 
@@ -100,13 +100,13 @@ two objects `D₁ D₂ : F.DescentData f`, a morphism `φ` between the images in
 `a ≫ f' j = q ≫ f i`, this is the section on `Over.mk q` of the presheaf
 of morphisms from `D₁.obj i` to `D₂.obj i` that is obtained by pulling back `φ.hom j`. -/
 def mor ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
-    (fac : a ≫ f' j = q ≫ f i) :
+    (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     (F.presheafHom (D₁.obj i) (D₂.obj i)).obj (op (Over.mk q)) :=
   D₁.hom (q ≫ f i) q (a ≫ p' j) ≫ pullHom (φ.hom j) a _ _ ≫ D₂.hom (q ≫ f i) (a ≫ p' j) q
 
 lemma mor_eq ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
-    (fac : a ≫ f' j = q ≫ f i) (q' : Z ⟶ S) (hq' : q ≫ f i = q')
-    (a' : Z ⟶ X (α j)) (ha' : a ≫ p' j = a') :
+    (fac : a ≫ f' j = q ≫ f i) (q' : Z ⟶ S) (a' : Z ⟶ X (α j))
+    (hq' : q ≫ f i = q' := by cat_disch) (ha' : a ≫ p' j = a' := by cat_disch) :
     mor w φ q a fac =
       D₁.hom q' q a' ≫ pullHom (φ.hom j) a _ _ ≫ D₂.hom q' a' q := by
   subst hq' ha'
@@ -115,13 +115,13 @@ lemma mor_eq ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
 include w φ in
 lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ X' j)
     (fac : a ≫ f' j = q ≫ f i) {Z' : C} (r : Z' ⟶ Z)
-    (r' : Z' ⟶ X i) (hr' : r ≫ q = r')
-    (a' : Z' ⟶ X' j) (ha' : r ≫ a = a') :
+    (r' : Z' ⟶ X i) (a' : Z' ⟶ X' j) (hr' : r ≫ q = r' := by cat_disch)
+    (ha' : r ≫ a = a' := by cat_disch) :
     mor w φ r' a' (by cat_disch) =
       (F.presheafHom (D₁.obj i) (D₂.obj i)).map (Over.homMk r).op (mor w φ q a fac) := by
   dsimp
-  rw [mor_eq _ _ _ _ _ (r ≫ q ≫ f i) (by cat_disch) (r ≫ a ≫ p' j) (by cat_disch),
-    mor_eq _ _ _ _ _ _ rfl _ rfl,
+  rw [mor_eq _ _ _ _ _ (r ≫ q ≫ f i) (r ≫ a ≫ p' j),
+    mor_eq _ _ _ _ _ _ _ rfl rfl,
     ← D₁.pullHom_hom r (q ≫ f i) _ rfl q (a ≫ p' j) rfl (by cat_disch) r' _ hr' rfl,
     ← D₂.pullHom_hom r (q ≫ f i) _ rfl (a ≫ p' j) q (by cat_disch) rfl _ r' rfl hr']
   have := F.mapComp'_naturality_2 a.op.toLoc r.op.toLoc a'.op.toLoc (by cat_disch) (φ.hom j)
@@ -136,8 +136,9 @@ lemma mor_precomp ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i) ⦃j : ι'⦄ (a : Z ⟶ 
       (((p' j).op.toLoc ≫ a.op.toLoc) ≫ r.op.toLoc) rfl (by grind) (by grind)]
 
 lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
-    ⦃j₁ : ι'⦄ (a₁ : Z ⟶ X' j₁) (fac₁ : a₁ ≫ f' j₁ = q ≫ f i)
-    ⦃j₂ : ι'⦄ (a₂ : Z ⟶ X' j₂) (fac₂ : a₂ ≫ f' j₂ = q ≫ f i) :
+    ⦃j₁ : ι'⦄ (a₁ : Z ⟶ X' j₁) ⦃j₂ : ι'⦄ (a₂ : Z ⟶ X' j₂)
+    (fac₁ : a₁ ≫ f' j₁ = q ≫ f i := by cat_disch)
+    (fac₂ : a₂ ≫ f' j₂ = q ≫ f i := by cat_disch) :
     mor w φ q a₁ fac₁ = mor w φ q a₂ fac₂ := by
   have := φ.comm (q ≫ f i) a₁ a₂ fac₁ fac₂
   dsimp at this
@@ -149,7 +150,7 @@ lemma mor_unique ⦃i : ι⦄ {Z : C} (q : Z ⟶ X i)
   simp only [← Category.assoc, cancel_mono] at this
   rw [← cancel_mono (D₂.hom (q ≫ f i) (a₂ ≫ p' j₂) q), Category.assoc,
     D₂.hom_comp] at this
-  rw [mor_eq _ _ _ _ _ _ rfl _ rfl, mor_eq _ _ _ _ _ _ rfl _ rfl, this]
+  rw [mor_eq _ _ _ _ _ _ _ rfl rfl, mor_eq _ _ _ _ _ _ _ rfl rfl, this]
   simp
 
 /-- Given two family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S`,
@@ -167,7 +168,7 @@ noncomputable def familyOfElements (i : ι) :
       simpa using (Over.w q).symm))
 
 lemma familyOfElements_eq {i : ι} {Z : Over (X i)} (g : Z ⟶ Over.mk (𝟙 (X i)))
-    ⦃j : ι'⦄ (a : Z.left ⟶ X' j) (fac : a ≫ f' j = Z.hom ≫ f i) :
+    ⦃j : ι'⦄ (a : Z.left ⟶ X' j) (fac : a ≫ f' j = Z.hom ≫ f i := by cat_disch) :
     familyOfElements w φ i g (by
       rw [show g = Over.homMk Z.hom by ext; simpa using Over.w g]
       exact mem_sieve _ _ fac) = mor w φ _ _ fac :=
@@ -184,8 +185,8 @@ lemma compatible_familyOfElements (i : ι) :
   obtain ⟨_, a₂, _, ⟨j₂⟩, fac₂⟩ := h₂
   dsimp at a₁ a₂ fac₁ fac₂
   rw [familyOfElements_eq _ _ _ _ fac₁, familyOfElements_eq _ _ _ _ fac₂,
-    ← mor_precomp w φ Y₁.hom a₁ fac₁ _ _ hg₁ _ rfl,
-    ← mor_precomp w φ Y₂.hom a₂ fac₂ _ _ hg₂ _ rfl]
+    ← mor_precomp w φ Y₁.hom a₁ fac₁ _ _ _ hg₁ rfl,
+    ← mor_precomp w φ Y₂.hom a₂ fac₂ _ _ _ hg₂ rfl]
   apply mor_unique
 
 include hf' in
@@ -202,7 +203,7 @@ noncomputable def hom (i : ι) : D₁.obj i ⟶ D₂.obj i :=
         (compatible_familyOfElements w φ i))
 
 lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
-    (a : Y ⟶ X' j) (fac : a ≫ f' j = q ≫ f i) :
+    (a : Y ⟶ X' j) (fac : a ≫ f' j = q ≫ f i := by cat_disch) :
     (F.map q.op.toLoc).toFunctor.map (hom w hf' φ i) = mor w φ q a fac := by
   let s := Presieve.IsSheafFor.amalgamate (Presieve.IsSheaf.isSheafFor _
     ((isSheaf_iff_isSheaf_of_type _ _).1 (IsPrestack.isSheaf J _ _)) _
@@ -219,7 +220,8 @@ lemma map_hom ⦃i : ι⦄ ⦃Y : C⦄ (q : Y ⟶ X i) ⦃j : ι'⦄
 
 @[reassoc]
 lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
-    (f₁ : W ⟶ X i₁) (f₂ : W ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    (f₁ : W ⟶ X i₁) (f₂ : W ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q := by cat_disch)
+    (hf₂ : f₂ ≫ f i₂ = q := by cat_disch) :
     (F.map f₁.op.toLoc).toFunctor.map (hom w hf' φ i₁) ≫ D₂.hom q f₁ f₂ =
     D₁.hom q f₁ f₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (hom w hf' φ i₂) := by
   rw [← cancel_mono (D₂.hom q f₂ f₁), Category.assoc,
@@ -239,8 +241,8 @@ lemma comm ⦃W : C⦄ (q : W ⟶ S) ⦃i₁ i₂ : ι⦄
     Cat.Hom.hom_inv_id_toNatTrans_app_assoc, Functor.map_comp, Category.assoc]
   rw [← F.mapComp'_naturality_1 f₂.op.toLoc p.op.toLoc (p ≫ f₂).op.toLoc (by grind),
     map_hom _ _ _ _ g (by grind), map_hom _ _ _ _ g (by grind),
-    mor_eq _ _ _ _ (by grind) (p ≫ q) (by grind) _ rfl,
-    mor_eq _ _ _ _ (by grind) (p ≫ q) (by grind) _ rfl,
+    mor_eq _ _ _ _ (by grind) (p ≫ q) _ (by grind) rfl,
+    mor_eq _ _ _ _ (by grind) (p ≫ q) _ (by grind) rfl,
     map_eq_pullHom _ _ _ _ rfl rfl, map_eq_pullHom _ _ _ _ rfl rfl,
     pullHom_hom _ _ _ _ rfl _ _ hf₁ hf₂ _ _ rfl rfl,
     pullHom_hom _ _ _ _ rfl _ _ hf₂ hf₁ _ _ rfl rfl]
@@ -257,7 +259,7 @@ lemma full_pullFunctor :
       ext i
       dsimp
       rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch),
-        mor_eq _ _ _ _ _ (f' i) (by cat_disch) (p' i) (by simp), pullHom_id,
+        mor_eq _ _ _ _ _ (f' i) (p' i), pullHom_id,
         D₁.hom_self _ _ (by cat_disch), D₂.hom_self _ _ (by cat_disch),
         Category.id_comp, Category.comp_id]⟩
 
