@@ -179,10 +179,6 @@ lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
   ext x
   simp [LinearMap.ext_iff, H.eq_iff]
 
-lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
-  ext x
-  simp [LinearMap.ext_iff, H.eq_iff]
-
 theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
   rwa [H.ker_flip]
 
