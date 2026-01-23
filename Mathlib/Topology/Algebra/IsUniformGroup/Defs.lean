@@ -150,8 +150,6 @@ theorem uniformity_eq_comap_nhds_one_swapped :
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
 
-variable {Gₗ Gᵣ}
-
 end LeftRight
 
 section IsUniformGroup
@@ -412,8 +410,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
   rw [uniformity_eq_comap_nhds_one]
   exact Filter.comap.isCountablyGenerated _ _
 
-open MulOpposite
-
 end
 
 section OfLeftAndRight
@@ -642,7 +638,6 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-open Set
 
 end
 

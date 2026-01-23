@@ -382,7 +382,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
         MulEquiv.coe_monoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
-        (he ▸ G'.le_comap_map (e : G →* H)) ]
+        (he ▸ G'.le_comap_map (e : G →* H))]
       simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
         MulEquiv.coe_monoidHom_refl, map_id_apply] }
 

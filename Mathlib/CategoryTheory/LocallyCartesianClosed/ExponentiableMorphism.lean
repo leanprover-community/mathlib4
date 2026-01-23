@@ -194,7 +194,7 @@ pushforward functors. -/
 def pushforwardComp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
     [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)]
     [ExponentiableMorphism f] [ExponentiableMorphism g] [ExponentiableMorphism (f ≫ g)] :
-    pushforward (C:= C) (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
+    pushforward (C := C) (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
   Adjunction.rightAdjointUniq (pullbackPushforwardAdj (f ≫ g)) ((comp f g).pullbackPushforwardAdj)
 
 @[reassoc (attr := simp)]

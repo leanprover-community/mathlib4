@@ -22,7 +22,7 @@ This file defines group-like elements in a coalgebra, i.e. elements `a` such tha
 
 @[expose] public section
 
-open Coalgebra Function TensorProduct
+open Coalgebra Function Module TensorProduct
 
 variable {F R A B : Type*}
 
@@ -93,7 +93,7 @@ end CommSemiring
 
 section CommRing
 variable [CommRing R] [IsDomain R] [AddCommGroup A] [Module R A] [Coalgebra R A]
-  [NoZeroSMulDivisors R A]
+  [IsTorsionFree R A]
 
 open Submodule in
 /-- Group-like elements over a domain are linearly independent. -/
