@@ -16,7 +16,7 @@ In this file we define `Coalgebra`, and provide instances for:
 * Commutative semirings: `CommSemiring.toCoalgebra`
 * Binary products: `Prod.instCoalgebra`
 * Finitely supported functions: `DFinsupp.instCoalgebra`, `Finsupp.instCoalgebra`
-* Finite pi functions `n → R`: `Pi.instCoalgebraForall`
+* Finite pi functions: `Pi.instCoalgebra`, `Pi.instCoalgebraForall`
 
 ## References
 
@@ -419,45 +419,48 @@ end Finsupp
 
 namespace Pi
 variable {R n M : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
+  {A : n → Type*} [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
 
 open TensorProduct LinearMap
 
 section coalgebraStruct
-variable [CoalgebraStruct R M]
+variable [∀ i, CoalgebraStruct R (A i)]
 
-instance : CoalgebraStruct R (n → M) where
+instance instCoalgebraStruct : CoalgebraStruct R (Π i, A i) where
   comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
   counit := .lsum R _ R fun _ ↦ counit
 
-@[simp] theorem comul_single (i : n) (a : M) :
-    comul (single i a : n → M) = map (.single R _ i) (.single R _ i) (comul a) :=
+instance [CoalgebraStruct R M] : CoalgebraStruct R (n → M) := instCoalgebraStruct
+
+@[simp] theorem comul_single (i : n) (a : A i) :
+    comul (single i a) = map (.single R _ i) (.single R _ i) (comul a) :=
   lsum_piSingle _ _ _ _ _ _
 
-@[simp] theorem counit_single (i : n) (a : M) : counit (single i a : n → M) = counit (R := R) a :=
+@[simp] theorem counit_single (i : n) (a : A i) : counit (single i a) = counit (R := R) a :=
   lsum_piSingle _ _ _ _ _ _
 
 theorem comul_comp_single (i : n) :
-    comul (A := n → M) ∘ₗ .single R _ i =
-      map (.single R _ i) (.single R _ i) ∘ₗ comul (A := M) := by
+    comul (A := Π i, A i) ∘ₗ .single R _ i =
+      map (.single R _ i) (.single R _ i) ∘ₗ comul (A := A i) := by
   ext; simp
 
 theorem comul_comp_proj (i : n) :
-    comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = map (proj i) (proj i) ∘ₗ comul := by
+    comul ∘ₗ (proj i : (Π i, A i) →ₗ[R] A i) = map (proj i) (proj i) ∘ₗ comul := by
   ext j; have := eq_or_ne i j
   aesop (add simp [map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_single (i : n) :
-    counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
+    counit (R := R) (A := Π i, A i) ∘ₗ .single R _ i = counit := by ext; simp
 
 end coalgebraStruct
 
-variable [Coalgebra R M]
+variable [Coalgebra R M] [∀ i, Coalgebra R (A i)]
 
-/-- The `R`-module whose elements are functions `n → M` for finite `n` has a coalgebra structure.
+/-- The `R`-module whose elements are functions `Π i, A i` for finite `n` has a coalgebra structure.
 The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and
 the counit `ε` by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending `i` to `a` and all
 other elements of `ι` to zero. -/
-instance : Coalgebra R (n → M) where
+instance instCoalgebra : Coalgebra R (Π i, A i) where
   rTensor_counit_comp_comul := by
     ext : 1
     rw [comp_assoc, comul_comp_single, ← comp_assoc, rTensor_comp_map, counit_comp_single,
@@ -473,7 +476,11 @@ instance : Coalgebra R (n → M) where
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
       map_map_comp_assoc_eq]
 
-instance [IsCocomm R M] : IsCocomm R (n → M) where comm_comp_comul := by ext; simp [← map_comm]
+instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π i, A i) where
+  comm_comp_comul := by ext; simp [← map_comm]
+
+instance : Coalgebra R (n → M) := instCoalgebra
+instance [IsCocomm R M] : IsCocomm R (n → M) := instIsCocomm
 
 end Pi
 
