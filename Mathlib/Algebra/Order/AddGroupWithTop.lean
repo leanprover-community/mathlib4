@@ -230,6 +230,16 @@ lemma sub_pos : 0 < a - b ↔ b < a ∨ b = ⊤ := by
   · simp
   · simp [← sub_self_eq_zero_of_ne_top hb, hb]
 
+@[simp]
+lemma sub_self_nonneg : 0 ≤ a - a := by
+  obtain rfl | ha := eq_or_ne a ⊤
+  · simp
+  · rw [sub_self_eq_zero_of_ne_top ha]
+
+@[simp]
+lemma sub_eq_zero (ha : a ≠ ⊤) : b - a = 0 ↔ b = a := by
+  rw [← sub_self_eq_zero_of_ne_top ha, sub_left_inj_of_ne_top ha]
+
 end LinearOrderedAddCommGroupWithTop
 
 namespace WithTop
