@@ -316,7 +316,7 @@ theorem bipartite_iff_all_cycles_even :
     rcases h_bip with ⟨color⟩
     intro v c hc
     have h_color_eq : color v = color v := rfl
-    rw [even_length_iff_same_color]
+    rw [Coloring.even_length_iff_same_color]
     exact color
   · intro h
     have h_colorable : G.Colorable 2 := by
