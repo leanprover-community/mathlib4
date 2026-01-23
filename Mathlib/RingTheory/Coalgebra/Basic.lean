@@ -503,10 +503,7 @@ theorem comul_comp_finsuppLcoeFun :
     comul (R := R) (A := n → M) ∘ₗ lcoeFun = map lcoeFun lcoeFun ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp only [map_sum, coe_comp, Function.comp_apply, Finsupp.comul_single, map_map,
-    lcoeFun_single, single_eq_pi_single, comul_single]
-  apply Finset.sum_congr rfl fun _ _ ↦ ?_
-  congr <;> ext <;> simp [single_eq_pi_single]
+  simp [-univ_sum_single, lcoeFun_comp_lsingle, single_eq_pi_single, map_map]
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :

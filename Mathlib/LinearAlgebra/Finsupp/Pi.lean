@@ -81,6 +81,10 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
 @[simp] theorem lcoeFun_single (x : α) (m : M) :
     lcoeFun (R := R) (single x m : α →₀ M) = single x m := by simp [lcoeFun]
 
+theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
+    (lcoeFun ∘ₗ lsingle x : M →ₗ[R] α → M) = .single R (fun _ ↦ M) x := by
+  ext; simp [single_eq_pi_single]
+
 end Finsupp
 
 variable {R M N P : Type*}
