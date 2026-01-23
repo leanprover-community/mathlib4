@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Violeta Hernández Palacios. All rights reserved.
+Copyright (c) 2026 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández Palacios
+Authors: Kenny Lau
 -/
 module
 
