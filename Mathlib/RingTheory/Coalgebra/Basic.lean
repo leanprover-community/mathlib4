@@ -446,22 +446,20 @@ instance : CoalgebraStruct R (n → M) where
   comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
   counit := .lsum R _ R fun _ ↦ counit
 
-@[simp]
-theorem comul_single (i : n) (a : M) :
+@[simp] theorem comul_single (i : n) (a : M) :
     comul (R := R) (single i a : n → M) = map (.single R _ i) (.single R _ i) (comul a) :=
   lsum_piSingle _ _ _ _ _ _
 
-@[simp]
-theorem counit_single (i : n) (a : M) : counit (single i a : n → M) = counit (R := R) a :=
+@[simp] theorem counit_single (i : n) (a : M) : counit (single i a : n → M) = counit (R := R) a :=
   lsum_piSingle _ _ _ _ _ _
 
 theorem comul_comp_single (i : n) :
-    comul (R := R) (A := n → M) ∘ₗ (.single R _ i) =
+    comul (R := R) (A := n → M) ∘ₗ .single R _ i =
       map (.single R _ i) (.single R _ i) ∘ₗ comul (R := R) (A := M) := by
   ext; simp
 
 theorem comul_comp_proj (i : n) :
-    comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = TensorProduct.map (proj i) (proj i) ∘ₗ comul := by
+    comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = map (proj i) (proj i) ∘ₗ comul := by
   ext1 j
   conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j <;>
