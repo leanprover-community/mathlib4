@@ -308,10 +308,10 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   have hx' : x ∈ (Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n)))
       (Finset.range n)).val := by
     simpa [roots_T_real n] using (mem_roots_iff_aeval_eq_zero (T_ne_zero ℝ n)).mpr hroot
-  have : x ∈ Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n))) (Finset.range n) :=
+  have : x ∈ (Finset.range n).image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n))) :=
     (Multiset.mem_coe).1 hx'
   rcases Finset.mem_image.1 this with ⟨k, hkRange, rfl⟩
-  norm_cast at ⊢ hroot hnz
+  norm_cast at ⊢ hnz
   exact irrational_cos_chebyshev_angle (odd_two_mul_add_one k) (even_two_mul n) (by grind) hnz
 
 end Polynomial.Chebyshev
