@@ -653,9 +653,6 @@ theorem order_add_le_mul {x y : HahnSeries Γ R} (hxy : x * y ≠ 0) :
 @[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
   orderTop_add_le_mul
 
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
   have hx : x.leadingCoeff ≠ 0 := by aesop
@@ -998,37 +995,7 @@ end HahnModule
 
 namespace HahnSeries
 
-instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] :
-    NoZeroDivisors R⟦Γ⟧ where
-  eq_zero_or_eq_zero_of_mul_eq_zero {x y} xy := by
-    haveI : NoZeroSMulDivisors R⟦Γ⟧ R⟦Γ⟧ :=
-      HahnModule.instNoZeroSMulDivisors
-    exact eq_zero_or_eq_zero_of_smul_eq_zero xy
-
-instance {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ] [Ring R] [IsDomain R] :
-    IsDomain R⟦Γ⟧ :=
-  NoZeroDivisors.to_isDomain _
-
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
-@[simp]
-theorem order_mul {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [NonUnitalNonAssocSemiring R]
-    [NoZeroDivisors R] {x y : R⟦Γ⟧} (hx : x ≠ 0) (hy : y ≠ 0) :
-    (x * y).order = x.order + y.order :=
-  order_mul_of_ne_zero (mul_ne_zero (leadingCoeff_ne_zero.mpr hx) (leadingCoeff_ne_zero.mpr hy))
-
-@[simp]
-theorem order_pow {Γ} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [Semiring R] [NoZeroDivisors R]
-    (x : R⟦Γ⟧) (n : ℕ) : (x ^ n).order = n • x.order := by
-  induction n with
-  | zero => simp
-  | succ h IH =>
-    rcases eq_or_ne x 0 with (rfl | hx); · simp
-    rw [pow_succ, order_mul (pow_ne_zero _ hx) hx, succ_nsmul, IH]
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
 section NonUnitalNonAssocSemiring
 
@@ -1190,7 +1157,8 @@ section Mul
 
 namespace HahnSeries
 
-variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ']
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+variable [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAddMonoid Γ']
 
 theorem embDomain_mul [NonUnitalNonAssocSemiring R] (f : Γ ↪o Γ')
     (hf : ∀ x y, f (x + y) = f x + f y) (x y : R⟦Γ⟧) :
@@ -1336,6 +1304,8 @@ end Mul
 
 namespace HahnModule
 
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+
 /-- The Hahn-semilinear equivalence between Hahn modules induced by an order equivalence. -/
 def equivDomainModuleHom_base {Γ₁ Γ₂ : Type*} [PartialOrder Γ₁] [PartialOrder Γ₂] [Semiring R]
     [AddCommMonoid V] [Module R V] (f : Γ₁ ≃o Γ₂) :
@@ -1457,7 +1427,7 @@ end Domain
 namespace HahnSeries
 
 section Algebra
-
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
 instance : Algebra R A⟦Γ⟧ where
@@ -1524,7 +1494,7 @@ def embDomainAlgHom (f : Γ →+ Γ') (hfi : Function.Injective f)
 end Domain
 
 end Algebra
-end PartialOrder
+end HahnSeries
 
 variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
@@ -1548,7 +1518,8 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_left_iff, Prod.mk.injEq,
-        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
+        ne_eq, ← and_or_left, ← or_and_right, or_false, and_imp, Prod.forall,
+        HahnSeries.mem_support, not_and]
       rintro b c hxb - hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq (order_le_of_coeff_ne_zero hxb)
@@ -1570,7 +1541,7 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R⟦Γ⟧ where
     · simp [hx]
       grind
     · simp +contextual only [mem_union, mem_addAntidiagonal, mul_eq_mul_right_iff, Prod.mk.injEq,
-        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, mem_support, not_and]
+        ne_eq, ← or_and_right, or_false, and_imp, Prod.forall, HahnSeries.mem_support, not_and]
       rintro b c - hxb hbc hbc'
       contrapose! hbc'
       rwa [eq_comm, eq_comm (a := c), ← add_eq_add_iff_eq_and_eq
@@ -1607,6 +1578,5 @@ variable [Semiring R]
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R⟦Γ⟧ where
 
 end Semiring
-end HahnSeries
 
 set_option linter.style.longFile 1700

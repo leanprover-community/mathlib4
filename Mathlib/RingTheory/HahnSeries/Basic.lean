@@ -716,22 +716,6 @@ variable [LocallyFiniteOrder Γ]
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
   hf.isWF.isPWO
-variable [Zero R]
-
-theorem suppBddBelow_supp_PWO [LinearOrder Γ] [LocallyFiniteOrder Γ] (f : Γ → R)
-    (hf : BddBelow (Function.support f)) : (Function.support f).IsPWO :=
-  Set.isPWO_iff_isWF.mpr hf.wellFoundedOn_lt
-
-theorem forallLTEqZero_supp_BddBelow [LinearOrder Γ] (f : Γ → R) (n : Γ)
-    (hn : ∀ (m : Γ), m < n → f m = 0) : BddBelow (Function.support f) := by
-  simp only [BddBelow, Set.Nonempty, lowerBounds]
-  use n
-  intro m hm
-  rw [Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
-
-theorem BddBelow_zero [Preorder Γ] [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
@@ -751,13 +735,13 @@ theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔
   HahnSeries.ext_iff
 
 @[simp]
-theorem coeff_ofSuppBddBelow [LinearOrder Γ] [LocallyFiniteOrder Γ] {f : Γ → R} {hf} :
+theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} :
     (ofSuppBddBelow f hf).coeff = f :=
   rfl
 
 set_option linter.deprecated false in
 @[deprecated le_order_iff_forall (since := "2026-01-02")]
-theorem order_ofForallLtEqZero [LinearOrder Γ] [LocallyFiniteOrder Γ] [Zero Γ] (f : Γ → R)
+theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R)
     (hf : f ≠ 0) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   rw [le_order_iff_forall]
