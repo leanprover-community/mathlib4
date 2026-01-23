@@ -419,12 +419,12 @@ end Finsupp
 
 namespace Pi
 variable {R n M : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
-  {A : n → Type*} [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
+  {A : n → Type*} [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)]
 
 open TensorProduct LinearMap
 
 section coalgebraStruct
-variable [∀ i, CoalgebraStruct R (A i)]
+variable [Π i, CoalgebraStruct R (A i)]
 
 instance instCoalgebraStruct : CoalgebraStruct R (Π i, A i) where
   comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
@@ -454,7 +454,7 @@ theorem comul_comp_proj (i : n) :
 
 end coalgebraStruct
 
-variable [Coalgebra R M] [∀ i, Coalgebra R (A i)]
+variable [Coalgebra R M] [Π i, Coalgebra R (A i)]
 
 /-- The `R`-module whose elements are functions `Π i, A i` for finite `n` has a coalgebra structure.
 The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and
