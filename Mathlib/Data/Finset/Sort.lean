@@ -31,17 +31,17 @@ section sort
 /-- `sort s` constructs a sorted list from the unordered set `s`.
   (Uses merge sort algorithm.) -/
 def sort (s : Finset α) (r : α → α → Prop := by exact fun a b => a ≤ b)
-    [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
+    [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r] : List α :=
   Multiset.sort s.1 r
 
 section
 
 variable (f : α ↪ β) (s : Finset α)
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
-variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [Std.Antisymm r'] [IsTotal β r']
 
 @[simp]
-theorem sort_val : Multiset.sort s.val r  = sort s r :=
+theorem sort_val : Multiset.sort s.val r = sort s r :=
   rfl
 
 @[simp]
@@ -103,7 +103,7 @@ end
 section
 
 variable {m : Multiset α} {s : Finset α}
-variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [Std.Antisymm r] [IsTotal α r]
 
 @[simp]
 theorem sort_mk (h : m.Nodup) : sort ⟨m, h⟩ r = m.sort r := rfl

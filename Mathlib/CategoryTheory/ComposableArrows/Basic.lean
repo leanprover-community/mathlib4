@@ -16,7 +16,7 @@ public import Mathlib.Tactic.SuppressCompilation
 # Composable arrows
 
 If `C` is a category, the type of `n`-simplices in the nerve of `C` identifies
-to the type of functors `Fin (n + 1) ⥤ C`, which can be thought as families of `n` composable
+to the type of functors `Fin (n + 1) ⥤ C`, which can be thought of as families of `n` composable
 arrows in `C`. In this file, we introduce and study this category `ComposableArrows C n`
 of `n` composable arrows in `C`.
 
@@ -42,6 +42,8 @@ TODO (@joelriou):
 
 @[expose] public section
 
+set_option backward.privateInPublic true
+
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
 
@@ -60,7 +62,7 @@ namespace CategoryTheory
 
 open Category
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- `ComposableArrows C n` is the type of functors `Fin (n + 1) ⥤ C`. -/
 abbrev ComposableArrows (n : ℕ) := Fin (n + 1) ⥤ C
@@ -70,6 +72,7 @@ namespace ComposableArrows
 variable {C} {n m : ℕ}
 variable (F G : ComposableArrows C n)
 
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- A wrapper for `omega` which prefaces it with some quick and useful attempts -/
 macro "valid" : tactic =>
   `(tactic| first | assumption | apply zero_le | apply le_rfl | transitivity <;> assumption | omega)
@@ -345,7 +348,7 @@ lemma map_zero_one' : map F f 0 ⟨0 + 1, by simp⟩ (by simp) = f := rfl
 
 @[simp]
 lemma map_zero_succ_succ (j : ℕ) (hj : j + 2 < n + 1 + 1) :
-    map F f 0 ⟨j + 2, hj⟩ (by simp) = f ≫ F.map' 0 (j+1) := rfl
+    map F f 0 ⟨j + 2, hj⟩ (by simp) = f ≫ F.map' 0 (j + 1) := rfl
 
 @[simp]
 lemma map_succ_succ (i j : ℕ) (hi : i + 1 < n + 1 + 1) (hj : j + 1 < n + 1 + 1)
@@ -599,8 +602,8 @@ lemma hom_ext₂ {f g : ComposableArrows C 2} {φ φ' : f ⟶ g}
 @[simps]
 def isoMk₂ {f g : ComposableArrows C 2}
     (app₀ : f.obj' 0 ≅ g.obj' 0) (app₁ : f.obj' 1 ≅ g.obj' 1) (app₂ : f.obj' 2 ≅ g.obj' 2)
-    (w₀ : f.map' 0 1 ≫ app₁.hom = app₀.hom ≫ g.map' 0 1)
-    (w₁ : f.map' 1 2 ≫ app₂.hom = app₁.hom ≫ g.map' 1 2) : f ≅ g where
+    (w₀ : f.map' 0 1 ≫ app₁.hom = app₀.hom ≫ g.map' 0 1 := by cat_disch)
+    (w₁ : f.map' 1 2 ≫ app₂.hom = app₁.hom ≫ g.map' 1 2 := by cat_disch) : f ≅ g where
   hom := homMk₂ app₀.hom app₁.hom app₂.hom w₀ w₁
   inv := homMk₂ app₀.inv app₁.inv app₂.inv
     (by rw [← cancel_epi app₀.hom, ← reassoc_of% w₀, app₁.hom_inv_id,
@@ -917,7 +920,7 @@ section
 
 open ComposableArrows
 
-variable {C} {D : Type*} [Category D] (G : C ⥤ D) (n : ℕ)
+variable {C} {D : Type*} [Category* D] (G : C ⥤ D) (n : ℕ)
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` obtained by postcomposition
 with a functor `C ⥤ D`. -/
@@ -925,6 +928,21 @@ with a functor `C ⥤ D`. -/
 def Functor.mapComposableArrows :
     ComposableArrows C n ⥤ ComposableArrows D n :=
   (whiskeringRight _ _ _).obj G
+
+/-- The isomorphism between `(G.mapComposableArrows 1).obj (.mk₁ f)` and
+`.mk₁ (G.map f)`. -/
+@[simps!]
+def Functor.mapComposableArrowsObjMk₁Iso {X Y : C} (f : X ⟶ Y) :
+    (G.mapComposableArrows 1).obj (.mk₁ f) ≅ .mk₁ (G.map f) :=
+  isoMk₁ (Iso.refl _) (Iso.refl _)
+
+/-- The isomorphism between `(G.mapComposableArrows 2).obj (.mk₂ f g)` and
+`.mk₂ (G.map f) (G.map g)`. -/
+@[simps!]
+def Functor.mapComposableArrowsObjMk₂Iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (G.mapComposableArrows 2).obj (.mk₂ f g) ≅ .mk₂ (G.map f) (G.map g) :=
+  isoMk₂ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+
 
 suppress_compilation in
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows D n` induced by `G : C ⥤ D`

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -76,9 +77,6 @@ theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
   simp [mul_assoc]
 
 end Semigroup
-
-@[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 
 section MulOneClass
 
@@ -207,7 +205,7 @@ lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 @[to_additive]
 lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma pow_iterate (k : ℕ) : ∀ n : ℕ, (fun x : M ↦ x ^ k)^[n] = (· ^ k ^ n)
   | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_iterate, Nat.pow_succ', pow_mul]
@@ -848,7 +846,7 @@ theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma zpow_iterate (k : ℤ) : ∀ n : ℕ, (fun x : G ↦ x ^ k)^[n] = (· ^ k ^ n)
   | 0 => by ext; simp [Int.pow_zero]
   | n + 1 => by ext; simp [zpow_iterate, Int.pow_succ', zpow_mul]

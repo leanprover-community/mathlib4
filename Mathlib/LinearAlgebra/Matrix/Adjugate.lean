@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
 
@@ -135,7 +136,6 @@ theorem cramer_zero [Nontrivial n] : cramer (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 /-- Use linearity of `cramer` to take it out of a summation. -/
@@ -150,10 +150,8 @@ theorem sum_cramer_apply {β} (s : Finset β) (f : n → β → α) (i : n) :
     (∑ x ∈ s, cramer A (fun j => f j x) i) = (∑ x ∈ s, cramer A fun j => f j x) i :=
       (Finset.sum_apply i s _).symm
     _ = cramer A (fun j : n => ∑ x ∈ s, f j x) i := by
-      rw [sum_cramer, cramer_apply, cramer_apply]
-      simp only [updateCol]
+      rw [sum_cramer, cramer_apply]
       congr with j
-      congr
       apply Finset.sum_apply
 
 theorem cramer_submatrix_equiv (A : Matrix m m α) (e : n ≃ m) (b : n → α) :
@@ -225,6 +223,9 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
     intro h'
     exact h ((symm_apply_eq σ).mp h')
 
+theorem IsSymm.adjugate {A : Matrix n n α} (hA : A.IsSymm) : A.adjugate.IsSymm := by
+  rw [IsSymm, Matrix.adjugate_transpose, hA.eq]
+
 @[simp]
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
@@ -295,7 +296,6 @@ theorem adjugate_zero [Nontrivial n] : adjugate (0 : Matrix n n α) = 0 := by
   ext i j
   obtain ⟨j', hj'⟩ : ∃ j', j' ≠ j := exists_ne j
   apply det_eq_zero_of_column_eq_zero j'
-  intro j''
   simp [updateCol_ne hj']
 
 @[simp]
@@ -388,7 +388,7 @@ theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
   rw [adjugate_fin_succ_eq_det_submatrix, det_fin_two]
   fin_cases i <;> fin_cases j <;> simp [Fin.succAbove, Fin.lt_def] <;> ring
 
-set_option linter.style.commandStart false in -- Use spaces to format a matrix.
+set_option linter.style.whitespace false in -- Use spaces to format a matrix.
 @[simp]
 theorem adjugate_fin_three_of (a b c d e f g h i : α) :
     adjugate !![a, b, c; d, e, f; g, h, i] =

@@ -6,7 +6,6 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
-public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
 
 /-!
 # The bicategory of pseudofunctors
@@ -44,7 +43,7 @@ abbrev whiskerLeft (η : F ⟶ G) {θ ι : G ⟶ H} (Γ : θ ⟶ ι) : η ≫ θ
       rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc]
       simp }
 
-/-- Right whiskering of an strong natural transformation between pseudofunctors
+/-- Right whiskering of a strong natural transformation between pseudofunctors
 and a modification. -/
 abbrev whiskerRight {η θ : F ⟶ G} (Γ : η ⟶ θ) (ι : G ⟶ H) : η ≫ ι ⟶ θ ≫ ι where
   as := {

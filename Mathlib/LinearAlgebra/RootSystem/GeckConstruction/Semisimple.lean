@@ -53,7 +53,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       ∃ (k : ι) (x : ℕ), P.root k = P.root j + n • P.root i ∧
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   letI := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
@@ -99,7 +99,7 @@ lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   letI := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
@@ -179,7 +179,7 @@ section Field
 
 variable {ι K M N : Type*} [Field K] [CharZero K] [DecidableEq ι] [Fintype ι]
   [AddCommGroup M] [Module K M] [AddCommGroup N] [Module K N]
-  {P : RootSystem ι K M N} [P.IsCrystallographic] {b : P.Base}
+  {P : RootPairing ι K M N} [P.IsRootSystem] [P.IsCrystallographic] {b : P.Base}
 
 open LieModule Matrix
 
@@ -264,6 +264,7 @@ private lemma instIsIrreducible_aux₁ (U : LieSubmodule K H (b.support ⊕ ι �
   have : ⨆ (χ : H → K), ⨆ (_ : χ ≠ 0), (⊥ : LieSubmodule K H U) = ⊥ := biSup_const ⟨1, one_ne_zero⟩
   rw [← iSup_genWeightSpace_eq_top K H U, iSup_split_single _ 0, biSup_congr hU, this, sup_bot_eq]
 
+omit [P.IsRootSystem] in
 private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     {U : LieSubmodule K (lieAlgebra b) (b.support ⊕ ι → K)} {i : ι} (hi : v b i ∈ U) :
     U = ⊤ := by
@@ -330,6 +331,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
       exact U.lie_mem (hk aux)
     exact (U.smul_mem_iff (by norm_cast)).mp this
 
+omit [P.IsRootSystem] in
 lemma coe_genWeightSpace_zero_eq_span_range_u :
     genWeightSpace (b.support ⊕ ι → K) (0 : H → K) = span K (range <| u (b := b)) := by
   refine le_antisymm (fun w hw ↦ Pi.mem_span_range_single_inl_iff.mpr fun i ↦ ?_) ?_

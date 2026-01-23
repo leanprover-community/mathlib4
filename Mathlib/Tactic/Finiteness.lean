@@ -5,7 +5,7 @@ Authors: Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Finiteness tactic
@@ -76,3 +76,4 @@ macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_c
  We register `finiteness` with the `hint` tactic.
  -/
 register_hint 1000 finiteness
+register_try?_tactic (priority := 1000) finiteness

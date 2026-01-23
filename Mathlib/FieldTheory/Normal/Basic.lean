@@ -111,7 +111,8 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
     exact fun _ ⟨a, _, h⟩ => h ▸ a.2
   have := hF.splits ⟨x, hx⟩
   rw [minpoly_eq, Subtype.coe_mk, ← minpoly_eq] at this
-  simpa [Polynomial.map_map] using this.map (inclusion hE).toRingHom
+  have := this.map (inclusion hE).toRingHom -- necessary for performance reasons
+  rwa [Polynomial.map_map] at this
 
 /-- If a set of algebraic elements in a field extension `K/F` have minimal polynomials that
   split in another extension `L/F`, then all minimal polynomials in the intermediate field
@@ -147,7 +148,7 @@ instance normal_iInf {ι : Type*} [hι : Nonempty ι]
       intro i
       rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
       exact (h i).splits' (inclusion (iInf_le t i) x)
-    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    simp only [splits_iff_mem (Splits.of_isScalarTower K (hx hι.some))] at hx ⊢
     rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
     exact hx i y hy
 
@@ -293,4 +294,5 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     intro x
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact Splits.of_natDegree_le_one <| natDegree_map_le.trans (by rwa [Nat.le_iff_lt_add_one])
-    · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
+    · exact Splits.of_natDegree_eq_two ((natDegree_map _).trans h)
+        ((eval_map_algebraMap _ _).trans (minpoly.aeval F x))

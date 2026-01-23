@@ -72,7 +72,7 @@ variable (F : C ⥤ D)
 
 instance (G : C' ⥤ C) [F.IsDense] [G.IsEquivalence] :
     (G ⋙ F).IsDense where
-  isDenseAt Y := ⟨(F.denseAt Y).precompEquivalence G⟩
+  isDenseAt Y := ⟨(F.denseAt Y).precompOfFinal G⟩
 
 lemma IsDense.comp_left_iff_of_isEquivalence (G : C' ⥤ C) [G.IsEquivalence] :
     (G ⋙ F).IsDense ↔ F.IsDense := by

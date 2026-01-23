@@ -160,11 +160,7 @@ def radical (a : M) : M :=
   (primeFactors a).prod id
 
 @[simp] theorem radical_zero : radical (0 : M) = 1 := by simp [radical]
-@[deprecated (since := "2025-05-31")] alias radical_zero_eq := radical_zero
-
 @[simp] theorem radical_one : radical (1 : M) = 1 := by simp [radical]
-@[deprecated (since := "2025-05-31")] alias radical_one_eq := radical_one
-
 theorem radical_eq_of_associated (h : Associated a b) : radical a = radical b := by
   rw [radical, radical, Associated.primeFactors_eq h]
 
@@ -362,34 +358,6 @@ namespace UniqueFactorizationDomain
 
 variable {R : Type*} [CommRing R] [IsDomain R] [NormalizationMonoid R]
   [UniqueFactorizationMonoid R] {a b : R}
-
-/-- Coprime elements have disjoint prime factors (as multisets). -/
-@[deprecated "UniqueFactorizationMonoid.disjoint_normalizedFactors, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem disjoint_normalizedFactors (hc : IsCoprime a b) :
-    Disjoint (normalizedFactors a) (normalizedFactors b) :=
-  UniqueFactorizationMonoid.disjoint_normalizedFactors hc.isRelPrime
-
-/-- Coprime elements have disjoint prime factors (as finsets). -/
-@[deprecated "UniqueFactorizationMonoid.disjoint_primeFactors, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem disjoint_primeFactors (hc : IsCoprime a b) :
-    Disjoint (primeFactors a) (primeFactors b) :=
-  UniqueFactorizationMonoid.disjoint_primeFactors hc.isRelPrime
-
-set_option linter.deprecated false in
-@[deprecated "UniqueFactorizationMonoid.primeFactors_mul_eq_disjUnion, IsCoprime.isRelPrime"
-  (since := "2025-05-31")]
-theorem mul_primeFactors_disjUnion
-    (hc : IsCoprime a b) : primeFactors (a * b) =
-    (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) :=
-  UniqueFactorizationMonoid.primeFactors_mul_eq_disjUnion hc.isRelPrime
-
-/-- Radical is multiplicative for coprime elements. -/
-@[deprecated "UniqueFactorizationMonoid.radical_mul, IsCoprime.isRelPrime" (since := "2025-05-31")]
-theorem radical_mul (hc : IsCoprime a b) :
-    radical (a * b) = radical a * radical b :=
-  UniqueFactorizationMonoid.radical_mul hc.isRelPrime
 
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=

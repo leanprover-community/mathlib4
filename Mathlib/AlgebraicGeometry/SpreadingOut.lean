@@ -356,7 +356,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
-Given `S`-schemes `X Y`, a point `x : X`, and a `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
+Given `S`-schemes `X Y`, a point `x : X`, and an `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
 we may spread it out to an `S`-morphism `f : U ⟶ Y`
 provided that `Y` is locally of finite type over `S` and
 `X` is "germ-injective" at `x` (e.g. when it's integral or locally Noetherian).

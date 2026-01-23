@@ -35,7 +35,7 @@ noncomputable section
 
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
-manifold notions from the vector spaces notions. For instance, the Lie bracket of two vector
+manifold notions from the vector space notions. For instance, the Lie bracket of two vector
 fields in a manifold is denoted with `VectorField.mlieBracket I V W x`, where `I` is the relevant
 model with corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, and `x : M` is
 the basepoint.
@@ -307,7 +307,7 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
     I.uniqueMDiffOn le_rfl (extChartAt_to_inv x).symm
   rw [inter_comm]
   exact ((contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt
-    le_rfl).comp_mdifferentiableWithinAt _ this
+    one_ne_zero).comp_mdifferentiableWithinAt _ this
 
 lemma mlieBracketWithin_const_smul_left
     (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -448,7 +448,7 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ := by
   have A : (extChartAt I x₀).symm (extChartAt I x₀ x₀) = x₀ := by simp
   have A' : x₀ = (extChartAt I x₀).symm (extChartAt I x₀ x₀) := by simp
-  have h'f : MDifferentiableWithinAt I I' f s x₀ := (hf x₀ hx₀).mdifferentiableWithinAt one_le_two
+  have h'f : MDifferentiableWithinAt I I' f s x₀ := (hf x₀ hx₀).mdifferentiableWithinAt two_ne_zero
   simp only [mlieBracketWithin_apply, mpullbackWithin_apply]
   -- first, rewrite the pullback of the Lie bracket as a pullback in `E` under the map
   -- `F = extChartAt I' (f x₀) ∘ f ∘ (extChartAt I x₀).symm` of a Lie bracket computed in `E'`,
@@ -509,13 +509,13 @@ private lemma mpullbackWithin_mlieBracketWithin_aux [CompleteSpace E']
     simp only [mpullbackWithin_apply, hF, comp_apply]
     rw [mfderivWithin_comp (I' := I) (u := s)]; rotate_left
     · apply (mdifferentiableAt_extChartAt h''y).comp_mdifferentiableWithinAt (I' := I')
-      exact (hf _ hy.1).mdifferentiableWithinAt one_le_two
+      exact (hf _ hy.1).mdifferentiableWithinAt two_ne_zero
     · exact (mdifferentiableWithinAt_extChartAt_symm h'''y).mono inter_subset_right
     · exact inter_subset_left
     · exact huy
     rw [mfderiv_comp_mfderivWithin (I' := I')]; rotate_left
     · exact mdifferentiableAt_extChartAt h''y
-    · exact (hf _ hy.1).mdifferentiableWithinAt one_le_two
+    · exact (hf _ hy.1).mdifferentiableWithinAt two_ne_zero
     · exact hu _ hy.1
     rw [← ContinuousLinearMap.IsInvertible.inverse_comp_apply_of_right]; swap
     · exact isInvertible_mfderivWithin_extChartAt_symm h'''y
@@ -724,7 +724,7 @@ lemma mpullback_mlieBracketWithin
     simp only [mpullback, mpullbackWithin]
     congr
     apply (mfderivWithin_eq_mfderiv (hu _ hx₀) _).symm
-    exact hf.mdifferentiableAt (one_le_two.trans (le_minSmoothness.trans hn))
+    exact hf.mdifferentiableAt (two_pos.trans_le (le_minSmoothness.trans hn)).ne'
   rw [this, mpullbackWithin_mlieBracketWithin' hV hW hu uniqueMDiffOn_univ hf.contMDiffWithinAt
     hx₀ hn hst (by simp) (subset_univ _)]
   apply Filter.EventuallyEq.mlieBracketWithin_vectorField_of_insert
@@ -734,14 +734,14 @@ lemma mpullback_mlieBracketWithin
     simp only [mpullback, mpullbackWithin]
     congr
     apply mfderivWithin_eq_mfderiv (hu _ h'y)
-    exact hy.mdifferentiableAt one_le_two
+    exact hy.mdifferentiableAt two_ne_zero
   · rw [insert_eq_of_mem hx₀]
     filter_upwards [nhdsWithin_le_nhds ((contMDiffAt_iff_contMDiffAt_nhds (by simp)).1
       (hf.of_le (le_minSmoothness.trans hn))), self_mem_nhdsWithin] with y hy h'y
     simp only [mpullback, mpullbackWithin]
     congr
     apply mfderivWithin_eq_mfderiv (hu _ h'y)
-    exact hy.mdifferentiableAt one_le_two
+    exact hy.mdifferentiableAt two_ne_zero
 
 lemma mpullback_mlieBracket
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M}
@@ -814,8 +814,9 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
     nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin]
     with y hy hyU hyV h'yU h'yV hy_chart hys
   simp only [Bundle.TotalSpace.mk_inj]
-  rw [mpullback_mlieBracketWithin (h'yU.mdifferentiableWithinAt hn)
-    (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys min2 hy]
+  rw [mpullback_mlieBracketWithin (h'yU.mdifferentiableWithinAt <| by positivity)
+    (h'yV.mdifferentiableWithinAt <| by positivity) hs (contMDiffAt_extChartAt' hy_chart)
+    hys min2 hy]
   exact Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem hyU hyV hys
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
@@ -925,13 +926,13 @@ theorem leibniz_identity_mlieBracketWithin_apply
       nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin] with y hy hyV hyW h'y ys
     symm
     exact mpullback_mlieBracketWithin (n := minSmoothness 𝕜 2)
-      (hyV.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness))
-      (hyW.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness)) hs
+      (hyV.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne')
+      (hyW.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne') hs
       (contMDiffAt_extChartAt' h'y) ys le_rfl hy
   rw [Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem EventuallyEq.rfl this hx,
-    ← mpullback_mlieBracketWithin (J0U.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness))
-      _ hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
-  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+    ← mpullback_mlieBracketWithin (J0U.mdifferentiableWithinAt
+      (two_pos.trans_le le_minSmoothness).ne') _ hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
+  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ one_ne_zero
     apply J0V.mlieBracketWithin_vectorField J0W (m := 1)
     · exact hs.uniqueMDiffOn_target_inter x
     · exact ⟨mem_extChartAt_target x, by simp [hx]⟩
@@ -945,13 +946,13 @@ theorem leibniz_identity_mlieBracketWithin_apply
       nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin] with y hy hyU hyV h'y ys
     symm
     exact mpullback_mlieBracketWithin (n := minSmoothness 𝕜 2)
-      (hyU.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness))
-      (hyV.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness)) hs
+      (hyU.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne')
+      (hyV.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne') hs
       (contMDiffAt_extChartAt' h'y) ys le_rfl hy
   rw [Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem this EventuallyEq.rfl hx,
     ← mpullback_mlieBracketWithin _ (J0W.mdifferentiableWithinAt
-      (one_le_two.trans le_minSmoothness)) hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
-  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+      (two_pos.trans_le le_minSmoothness).ne') hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
+  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ one_ne_zero
     apply J0U.mlieBracketWithin_vectorField J0V (m := 1)
     · exact hs.uniqueMDiffOn_target_inter x
     · exact ⟨mem_extChartAt_target x, by simp [hx]⟩
@@ -965,13 +966,13 @@ theorem leibniz_identity_mlieBracketWithin_apply
       nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin] with y hy hyU hyW h'y ys
     symm
     exact mpullback_mlieBracketWithin (n := minSmoothness 𝕜 2)
-      (hyU.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness))
-      (hyW.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness)) hs
+      (hyU.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne')
+      (hyW.mdifferentiableWithinAt (two_pos.trans_le le_minSmoothness).ne') hs
       (contMDiffAt_extChartAt' h'y) ys le_rfl hy
   rw [Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem EventuallyEq.rfl this hx,
-    ← mpullback_mlieBracketWithin (J0V.mdifferentiableWithinAt (one_le_two.trans le_minSmoothness))
-      _ hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
-  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ le_rfl
+    ← mpullback_mlieBracketWithin (J0V.mdifferentiableWithinAt
+      (two_pos.trans_le le_minSmoothness).ne') _ hs contMDiffAt_extChartAt hx le_rfl pre_mem]; swap
+  · apply ContMDiffWithinAt.mdifferentiableWithinAt _ one_ne_zero
     apply J0U.mlieBracketWithin_vectorField J0W (m := 1)
     · exact hs.uniqueMDiffOn_target_inter x
     · exact ⟨mem_extChartAt_target x, by simp [hx]⟩

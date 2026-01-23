@@ -50,31 +50,32 @@ algebraic closure, algebraically closed
 
 universe u v w
 
-open Polynomial
+open Module Polynomial
 
 variable (k : Type u) [Field k]
 
 /-- Typeclass for algebraically closed fields.
 
 To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
-see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
+see `IsAlgClosed.splits_domain`.
 -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
   splits : ∀ p : k[X], p.Splits
 
+@[deprecated (since := "2025-12-09")]
+alias IsAlgClosed.factors := IsAlgClosed.splits
+
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
+@[deprecated "This is a special case of `IsAlgClosed.splits`." (since := "2025-12-09")]
 theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
     {f : K →+* k} (p : K[X]) : (p.map f).Splits :=
   IsAlgClosed.splits (p.map f)
 
-/-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
-
-See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically closed.
--/
+/-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed. -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
     (p : k[X]) : (p.map f).Splits :=
   (IsAlgClosed.splits p).map f
@@ -270,7 +271,7 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
 /-- Typeclass for an extension being an algebraic closure. -/
 @[stacks 09GS]
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
-    [NoZeroSMulDivisors R K] : Prop where
+    [IsTorsionFree R K] : Prop where
   isAlgClosed : IsAlgClosed K
   isAlgebraic : Algebra.IsAlgebraic R K
 
@@ -283,7 +284,7 @@ theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K where
   toIsAlgebraic := IsAlgClosure.isAlgebraic
-  splits' _ := @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.isAlgClosed R) _ _ _
+  splits' _ := (IsAlgClosure.isAlgClosed R).splits _
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
@@ -294,13 +295,13 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
   isAlgebraic := .of_finite F F
 
 theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
-    [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
+    [Algebra.IsIntegral R K] [IsTorsionFree R K]
     (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) :
     IsAlgClosure R K where
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
-    ((h g monic irred).splits_of_dvd (map_monic_ne_zero monic) dvd).exists_eval_eq_zero <|
+    ((h g monic irred).of_dvd (map_monic_ne_zero monic) dvd).exists_eval_eq_zero <|
       degree_ne_of_natDegree_ne p_irred.natDegree_pos.ne'
 
 namespace IsAlgClosed
@@ -315,22 +316,25 @@ theorem surjective_restrictDomain_of_isAlgebraic {E : Type*}
     [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E] [Algebra.IsAlgebraic L E] :
     Function.Surjective fun φ : E →ₐ[K] M ↦ φ.restrictDomain L :=
   fun f ↦ IntermediateField.exists_algHom_of_splits'
-    (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits_codomain _⟩
+    (E := E) f fun s ↦ ⟨Algebra.IsIntegral.isIntegral s, IsAlgClosed.splits _⟩
 
 variable [Algebra.IsAlgebraic K L] (K L M)
 
+set_option backward.privateInPublic true in
 /-- Less general version of `lift`. -/
 private noncomputable irreducible_def liftAux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
-    (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits_codomain (minpoly K x)⟩)
+    (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits _⟩)
     (IntermediateField.adjoin_univ K L)
 
-variable {R : Type u} [CommRing R]
-variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZeroSMulDivisors R S]
-  [NoZeroSMulDivisors R M] [Algebra.IsAlgebraic R S]
+variable {R : Type u} [CommRing R] [IsDomain R]
+variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M]
+  [IsTorsionFree R S] [IsTorsionFree R M] [Algebra.IsAlgebraic R S]
 
 variable {M}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private instance FractionRing.isAlgebraic :
     letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
@@ -344,6 +348,8 @@ private instance FractionRing.isAlgebraic :
   exact (IsFractionRing.isAlgebraic_iff R (FractionRing R) (FractionRing S)).1
       (Algebra.IsAlgebraic.isAlgebraic _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
 @[stacks 09GU]
@@ -395,9 +401,9 @@ namespace IsAlgClosure
 
 section
 
-variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
-variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
-variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
+variable (R : Type u) [CommRing R] [IsDomain R] (L : Type v) (M : Type w) [Field L] [Field M]
+variable [Algebra R M] [IsTorsionFree R M] [IsAlgClosure R M]
+variable [Algebra R L] [IsTorsionFree R L] [IsAlgClosure R L]
 
 attribute [local instance] IsAlgClosure.isAlgClosed in
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
@@ -411,8 +417,8 @@ end
 
 variable (K : Type*) (J : Type*) (R : Type u) (S : Type*) (L : Type v) (M : Type w)
   [Field K] [Field J] [CommRing R] [CommRing S] [Field L] [Field M]
-  [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
-  [Algebra S L] [NoZeroSMulDivisors S L] [IsAlgClosure S L]
+  [Algebra R M] [IsTorsionFree R M] [IsAlgClosure R M] [Algebra K M] [IsAlgClosure K M]
+  [Algebra S L] [IsTorsionFree S L] [IsAlgClosure S L]
 
 section EquivOfAlgebraic
 
@@ -426,9 +432,9 @@ theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
-noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
+noncomputable def equivOfAlgebraic' [IsDomain R] [IsDomain S] [IsTorsionFree R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
-  have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R S L
+  have : IsTorsionFree R L := .trans_faithfulSMul R S L
   have : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }
@@ -444,14 +450,13 @@ end EquivOfAlgebraic
 
 section EquivOfEquiv
 
-variable {R S}
+variable {R S} [IsDomain R] [IsDomain S]
 
 /-- Used in the definition of `equivOfEquiv` -/
 noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
     { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.toRingHom
   letI : Algebra S R := RingHom.toAlgebra hSR.toRingHom
-  have : IsDomain S := (FaithfulSMul.algebraMap_injective S L).isDomain _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
   haveI : IsScalarTower R S L := .of_algebraMap_eq fun _ => rfl
   haveI : IsScalarTower S R L := .of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
@@ -505,7 +510,7 @@ variable {F K : Type*} (A : Type*) [Field F] [Field K] [Field A] [Algebra F K] [
   the roots in `A` of the minimal polynomial of `x` over `F`. -/
 theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K) :
     (Set.range fun ψ : K →ₐ[F] A ↦ ψ x) = (minpoly F x).rootSet A :=
-  range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits_codomain _) x
+  range_eval_eq_rootSet_minpoly_of_splits A (fun _ ↦ IsAlgClosed.splits _) x
 
 /-- All `F`-embeddings of a field `K` into another field `A` factor through any intermediate
 field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
@@ -530,7 +535,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Fie
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
   (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
     IntermediateField.algHomEquivAlgHomOfSplits A (IsScalarTower.toAlgHom F L A).fieldRange
-    fun x ↦ splits_of_algHom (hL x) (AlgHom.rangeRestrict _)
+    fun x ↦ Splits.of_algHom (hL x) (AlgHom.rangeRestrict _)
 
 theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
@@ -552,7 +557,7 @@ theorem Polynomial.isRoot_of_isRoot_iff_dvd_derivative_mul {K : Type*} [Field K]
   by_cases hdf0 : derivative f = 0
   · rw [eq_C_of_derivative_eq_zero hdf0]
     simp only [derivative_C, zero_mul, dvd_zero, implies_true]
-  have hdg :  f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
+  have hdg : f.derivative * g ≠ 0 := mul_ne_zero hdf0 hg0
   classical rw [IsAlgClosed.dvd_iff_roots_le_roots hf0 hdg, Multiset.le_iff_count]
   simp only [count_roots, rootMultiplicity_mul hdg]
   refine forall_imp fun a => ?_

@@ -302,7 +302,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
     rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
-    have e : n' ≤ n := by omega
+    have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
     exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
@@ -449,8 +449,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 open IsLocalRing in
-theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
-    [IsNoetherianRing R] [NoZeroSMulDivisors R M]
+theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
+    [IsNoetherianRing R] [Module.IsTorsionFree R M]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
@@ -463,5 +463,5 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors (M := R) h
+  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

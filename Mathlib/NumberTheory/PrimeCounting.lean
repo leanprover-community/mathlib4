@@ -109,7 +109,7 @@ lemma primeCounting'_eq_zero_iff {n : ℕ} : n.primeCounting' = 0 ↔ n ≤ 2 :=
 
 @[simp]
 lemma primeCounting_eq_zero_iff {n : ℕ} : n.primeCounting = 0 ↔ n ≤ 1 := by
-  simp [primeCounting]
+  simp [primeCounting, -Order.add_one_le_iff]
 
 @[simp]
 lemma primeCounting_zero : primeCounting 0 = 0 :=

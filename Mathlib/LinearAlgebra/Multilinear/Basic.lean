@@ -6,13 +6,14 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
-public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
+
+import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 # Multilinear maps
@@ -292,15 +293,10 @@ we use is the canonical (increasing) bijection. -/
 def restr {k n : ℕ} (f : MultilinearMap R (fun _ : Fin n => M') M₂) (s : Finset (Fin n))
     (hk : #s = k) (z : M') : MultilinearMap R (fun _ : Fin k => M') M₂ where
   toFun v := f fun j => if h : j ∈ s then v ((s.orderIsoOfFin hk).symm ⟨j, h⟩) else z
-  map_update_add' v i x y := by
-    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
-    simp
-  map_update_smul' v i c x := by
-    erw [dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv,
-      dite_comp_equiv_update (s.orderIsoOfFin hk).toEquiv]
-    simp
+  map_update_add' := by
+    simp [dite_comp_equiv_update (s.orderIsoOfFin hk).symm]
+  map_update_smul' := by
+    simp [dite_comp_equiv_update (s.orderIsoOfFin hk).symm]
 
 /-- In the specific case of multilinear maps on spaces indexed by `Fin (n+1)`, where one can build
 an element of `∀ (i : Fin (n+1)), M i` using `cons`, one can express directly the additivity of a
@@ -872,6 +868,9 @@ addition and scalar multiplication. -/
 instance : Module S (MultilinearMap R M₁ M₂) := fast_instance%
   coe_injective.module _ coeAddMonoidHom fun _ _ ↦ rfl
 
+instance [Module.IsTorsionFree S M₂] : Module.IsTorsionFree S (MultilinearMap R M₁ M₂) :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
+
 instance [NoZeroSMulDivisors S M₂] : NoZeroSMulDivisors S (MultilinearMap R M₁ M₂) :=
   coe_injective.noZeroSMulDivisors _ rfl coe_smul
 
@@ -1081,7 +1080,7 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
     intro _ f i f₁ f₂
     ext g x
     change (g fun j ↦ update f i (f₁ + f₂) j <| x j) =
-        (g fun j ↦ update f i f₁ j <|x j) + g fun j ↦ update f i f₂ j (x j)
+        (g fun j ↦ update f i f₁ j <| x j) + g fun j ↦ update f i f₂ j (x j)
     let c : Π (i : ι), (M₁ i →ₗ[R] M₁' i) → M₁' i := fun i f ↦ f (x i)
     convert g.map_update_add (fun j ↦ f j (x j)) i (f₁ (x i)) (f₂ (x i)) with j j j
     · exact Function.apply_update c f i (f₁ + f₂) j

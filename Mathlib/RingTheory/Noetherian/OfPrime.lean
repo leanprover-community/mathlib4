@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.Ideal.BigOperators
 - [cohen1950]: *Commutative rings with restricted minimum condition*, I. S. Cohen, Theorem 2
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R]
 

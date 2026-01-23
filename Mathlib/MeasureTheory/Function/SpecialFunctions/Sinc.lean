@@ -19,7 +19,7 @@ public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 

@@ -79,12 +79,12 @@ instance : InfSet (Submonoid M) :=
 theorem coe_sInf (S : Set (Submonoid M)) : ((sInf S : Submonoid M) : Set M) = ⋂ s ∈ S, ↑s :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem mem_sInf {S : Set (Submonoid M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
-@[to_additive]
-theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+@[to_additive (attr := simp)]
+theorem mem_iInf {ι : Sort*} {S : ι → Submonoid M} {x : M} : x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[to_additive (attr := simp, norm_cast)]
@@ -130,12 +130,6 @@ theorem mem_closure_of_mem {s : Set M} {x : M} (hx : x ∈ s) : x ∈ closure s 
 @[to_additive]
 theorem notMem_of_notMem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubmonoid.not_mem_of_not_mem_closure := AddSubmonoid.notMem_of_notMem_closure
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 variable {S}
 

@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Ring.Basic
 # Non-zero divisors in a ring
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 
@@ -30,8 +30,8 @@ theorem IsLeftRegular.pow_injective [IsMulTorsionFree R]
   intro n m hnm
   have main {n m} (h₁ : n ≤ m) (h₂ : r ^ n = r ^ m) : n = m := by
     obtain ⟨l, rfl⟩ := Nat.exists_eq_add_of_le h₁
-    rw [pow_add, eq_comm, IsLeftRegular.mul_left_eq_self_iff (hx.pow n),
-      IsMulTorsionFree.pow_eq_one_iff_right hx'] at h₂
+    rw [pow_add, eq_comm, IsLeftRegular.mul_left_eq_self_iff (hx.pow n), pow_eq_one_iff_right hx']
+      at h₂
     rw [h₂, Nat.add_zero]
   obtain h | h := Nat.le_or_le n m
   · exact main h hnm
@@ -40,7 +40,7 @@ theorem IsLeftRegular.pow_injective [IsMulTorsionFree R]
 @[to_additive]
 theorem IsRightRegular.pow_injective {M : Type*} [Monoid M] [IsMulTorsionFree M] {x : M}
     (hx : IsRightRegular x) (hx' : x ≠ 1) : Function.Injective (fun n ↦ x ^ n) :=
-  MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective  <|
+  MulOpposite.unop_injective.comp <| (isLeftRegular_op.mpr hx).pow_injective <|
     (MulOpposite.op_eq_one_iff x).not.mpr hx'
 
 theorem IsMulTorsionFree.pow_right_injective {M : Type*} [CancelMonoid M] [IsMulTorsionFree M]

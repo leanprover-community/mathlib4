@@ -140,7 +140,7 @@ namespace Functor
 
 open Limits
 
-variable {C : Type u} [Category C] [HasZeroObject C] [Preadditive C]
+variable {C : Type u} [Category* C] [HasZeroObject C] [Preadditive C]
   {D : Type u'} [Category.{v'} D] [HasZeroObject D] [Preadditive D] [CategoryWithHomology D]
 
 /-- An additive functor `F` which preserves homology and sends projective objects to projective

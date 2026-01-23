@@ -336,7 +336,7 @@ instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
 instance : HImp (Clopens α) where himp s t := ⟨s ⇨ t, s.isClopen.himp t.isClopen⟩
-instance : HasCompl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
+instance : Compl (Clopens α) := ⟨fun s => ⟨sᶜ, s.isClopen.compl⟩⟩
 
 @[simp, norm_cast] lemma coe_sup (s t : Clopens α) : ↑(s ⊔ t) = (s ∪ t : Set α) := rfl
 @[simp, norm_cast] lemma coe_inf (s t : Clopens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
@@ -440,16 +440,16 @@ The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducibl
 -/
 @[simps apply symm_apply]
 def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x } where
-  toFun a   := ⟨a.1, a.2, a.3⟩
-  invFun a  := ⟨a.1, a.2.1, a.2.2⟩
+  toFun a  := ⟨a.1, a.2, a.3⟩
+  invFun a := ⟨a.1, a.2.1, a.2.2⟩
 
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
 -/
 @[simps apply symm_apply]
 def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x } where
-  toFun a   := ⟨a.1, a.3, a.2⟩
-  invFun a  := ⟨a.1, a.2.2, a.2.1⟩
+  toFun a  := ⟨a.1, a.3, a.2⟩
+  invFun a := ⟨a.1, a.2.2, a.2.1⟩
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an

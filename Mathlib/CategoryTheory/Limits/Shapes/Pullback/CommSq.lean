@@ -220,6 +220,11 @@ lemma lift_snd (hP : IsPullback fst snd f g) {W : C} (h : W ⟶ X) (k : W ⟶ Y)
     (w : h ≫ f = k ≫ g) : hP.lift h k w ≫ snd = k :=
   PullbackCone.IsLimit.lift_snd hP.isLimit h k w
 
+lemma exists_lift (hP : IsPullback fst snd f g)
+    {W : C} (h : W ⟶ X) (k : W ⟶ Y) (w : h ≫ f = k ≫ g) :
+    ∃ (l : W ⟶ P), l ≫ fst = h ∧ l ≫ snd = k :=
+  ⟨hP.lift h k w, by simp, by simp⟩
+
 lemma hom_ext (hP : IsPullback fst snd f g) {W : C} {k l : W ⟶ P}
     (h₀ : k ≫ fst = l ≫ fst) (h₁ : k ≫ snd = l ≫ snd) : k = l :=
   PullbackCone.IsLimit.hom_ext hP.isLimit h₀ h₁
@@ -462,6 +467,11 @@ lemma inl_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
 lemma inr_desc (hP : IsPushout f g inl inr) {W : C} (h : X ⟶ W) (k : Y ⟶ W)
     (w : f ≫ h = g ≫ k) : inr ≫ hP.desc h k w = k :=
   PushoutCocone.IsColimit.inr_desc hP.isColimit h k w
+
+lemma exists_desc (hP : IsPushout f g inl inr)
+    {W : C} (h : X ⟶ W) (k : Y ⟶ W) (w : f ≫ h = g ≫ k) :
+    ∃ (d : P ⟶ W), inl ≫ d = h ∧ inr ≫ d = k :=
+  ⟨hP.desc h k w, by simp, by simp⟩
 
 lemma hom_ext (hP : IsPushout f g inl inr) {W : C} {k l : P ⟶ W}
     (h₀ : inl ≫ k = inl ≫ l) (h₁ : inr ≫ k = inr ≫ l) : k = l :=
@@ -1510,7 +1520,7 @@ theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [F.Faithful
     (H : IsPullback (F.map f) (F.map g) (F.map h) (F.map i)) : IsPullback f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 
-theorem IsPullback.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
+theorem IsPullback.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesLimit (cospan h i) F]
     [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i) :
     IsPullback (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPullback f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
@@ -1528,7 +1538,7 @@ theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [F.Faithful]
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 
-theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColimit (span f g) F]
+theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColimit (span f g) F]
     [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i) :
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩

@@ -22,7 +22,7 @@ complements of the closed sets, and `s` and `sᶜ` which are neither closed nor 
 This reduces `14*13/2 = 91` inequalities to check down to `6*5/2 = 15` inequalities.
 We'll further show that the 15 inequalities follow from a subset of 6 by algebra.
 
-There are charaterizations and criteria for a set to be a 14-set in the paper
+There are characterizations and criteria for a set to be a 14-set in the paper
 "Characterization of Kuratowski 14-Sets" by Eric Langford which we do not formalize.
 
 ## Main definitions
@@ -63,7 +63,7 @@ theorem sum_map_theClosedSix_add_compl (s : Set X) :
     ((theClosedSix s).map fun t ↦ {t} + {tᶜ}).sum = theClosedSix s + theOpenSix s :=
   Multiset.sum_map_add
 
-/-- `theFourteen s` can be splitted into 3 subsets. -/
+/-- `theFourteen s` can be split into 3 subsets. -/
 theorem theFourteen_eq_pair_add_theClosedSix_add_theOpenSix (s : Set X) :
     theFourteen s = {s, sᶜ} + theClosedSix s + theOpenSix s := by
   rw [add_assoc, ← sum_map_theClosedSix_add_compl]; rfl
@@ -81,6 +81,7 @@ theorem isOpen_of_mem_theOpenSix (h : t ∈ theOpenSix s) : IsOpen t := by
 theorem mem_theOpenSix_iff : t ∈ theOpenSix s ↔ tᶜ ∈ theClosedSix s := by
   conv_lhs => rw [theOpenSix, ← compl_compl t, Multiset.mem_map_of_injective compl_injective]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Six inequalities that suffice to deduce the six closed sets obtained from a given set
 contain no duplicates. -/
 def TheSixIneq (s : Set X) : Prop :=
@@ -232,12 +233,12 @@ theorem not_eq_univ_of_mem_theClosedSix_fourteenSet {s}
   rw [Ne, eq_univ_iff_forall]
   push_neg
   repeat obtain _ | ⟨_, h⟩ := h; rotate_left
-  · use 1/2; norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
-  · use 6;   norm_num
-  · use 1/2; norm_num
-  · use 6;   norm_num
+  · use 1 / 2; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
+  · use 6; norm_num
+  · use 1 / 2; norm_num
+  · use 6; norm_num
 
 /-- The fourteen different operations applied to the `fourteenSet` generate no duplicates. -/
 theorem nodup_theFourteen_fourteenSet : (theFourteen fourteenSet).Nodup :=

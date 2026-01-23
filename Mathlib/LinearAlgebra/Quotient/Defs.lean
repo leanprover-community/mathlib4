@@ -71,6 +71,10 @@ theorem mk''_eq_mk {p : Submodule R M} (x : M) : (Quotient.mk'' x : M ⧸ p) = m
 theorem quot_mk_eq_mk {p : Submodule R M} (x : M) : (Quot.mk _ x : M ⧸ p) = mk x :=
   rfl
 
+theorem quotientAddGroupMk_eq_mk {p : Submodule R M} (x : M) :
+    (QuotientAddGroup.mk x : M ⧸ p) = mk x :=
+  rfl
+
 protected theorem eq' {x y : M} : (mk x : M ⧸ p) = mk y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 

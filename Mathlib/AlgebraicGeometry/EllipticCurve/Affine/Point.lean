@@ -130,7 +130,7 @@ lemma basis_apply (n : Fin 2) :
   classical
   nontriviality R
   rw [CoordinateRing.basis, Or.by_cases, dif_neg <| not_subsingleton R, Basis.reindex_apply,
-    PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.coe_cast]
+    PowerBasis.basis_eq_pow, finCongr_symm_apply, Fin.val_cast]
 
 @[simp]
 lemma basis_zero : CoordinateRing.basis W' 0 = 1 := by
@@ -372,6 +372,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_simp
     ring1
 
+set_option backward.proofsInPublic true in
 /-- The non-zero fractional ideal `⟨X - x, Y - y⟩` of `F(W)` for some `x` and `y` in `F`. -/
 noncomputable def XYIdeal' {x y : F} (h : W.Nonsingular x y) :
     (FractionalIdeal W.CoordinateRing⁰ W.FunctionField)ˣ :=

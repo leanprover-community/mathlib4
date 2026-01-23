@@ -30,7 +30,7 @@ well as such computations in `ℝ` when the natural proof passes through a fact 
 
 noncomputable section
 
-open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
+open Set Function Filter Finset Metric Module Asymptotics Topology Nat NNReal ENNReal
 
 variable {α : Type*}
 
@@ -196,7 +196,7 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
 lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
     Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
   simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
-    (tendsto_pow_atTop hk) ) r
+    (tendsto_pow_atTop hk)) r
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
@@ -303,7 +303,7 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
   · simp only [tsum_eq_zero_of_not_summable hx, norm_zero]
     nontriviality R
     have : 1 ≤ ‖(1 : R)‖ := one_le_norm_one R
-    have : 0 ≤ (1 - ‖x‖) ⁻¹ := inv_nonneg.2 (by linarith)
+    have : 0 ≤ (1 - ‖x‖)⁻¹ := inv_nonneg.2 (by linarith)
     linarith
 
 variable [HasSummableGeomSeries R]
@@ -337,7 +337,7 @@ def Units.oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
 
 theorem geom_series_eq_inverse (x : R) (h : ‖x‖ < 1) :
     ∑' i, x ^ i = Ring.inverse (1 - x) := by
-  change (Units.oneSub x h) ⁻¹ = Ring.inverse (1 - x)
+  change (Units.oneSub x h)⁻¹ = Ring.inverse (1 - x)
   rw [← Ring.inverse_unit]
   rfl
 
@@ -472,7 +472,7 @@ lemma hasSum_choose_mul_geometric_of_norm_lt_one
   simp
 
 lemma tsum_choose_mul_geometric_of_norm_lt_one (k : ℕ) {r : 𝕜} (hr : ‖r‖ < 1) :
-    ∑' n, (n + k).choose k * r ^ n = 1/ (1 - r) ^ (k + 1) :=
+    ∑' n, (n + k).choose k * r ^ n = 1 / (1 - r) ^ (k + 1) :=
   (hasSum_choose_mul_geometric_of_norm_lt_one k hr).tsum_eq
 
 lemma summable_descFactorial_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r‖ < 1) :
@@ -493,7 +493,7 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
     have dP : P.natDegree = k := by
       simp only [P, natDegree_comp, ascPochhammer_natDegree, mul_one, natDegree_X_add_C]
     have A : (n + k).descFactorial k = P.eval n := by
-      have : n + 1 + k - 1 = n + k := by omega
+      have : n + 1 + k - 1 = n + k := by lia
       simp [P, ascPochhammer_nat_eq_descFactorial, this]
     conv_lhs => rw [A, mP.as_sum, dP]
     simp [eval_finset_sum]
@@ -933,8 +933,8 @@ lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded [NormedAddGroup K
 
 section
 
-variable [NormedRing K] [NormedAddCommGroup R]
-variable [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R]
+variable [NormedRing K] [NormedAddCommGroup R] [IsDomain K]
+variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
 
 lemma tendsto_smul_congr_of_tendsto_left_cobounded_of_isBoundedUnder
     {f₁ f₂ : α → K} {g : α → R} {t : R} {l : Filter α}
@@ -967,7 +967,7 @@ lemma tendsto_smul_comp_nat_floor_of_tendsto_nsmul [NormSMulClass ℤ K] [Linear
 end
 
 lemma tendsto_smul_comp_nat_floor_of_tendsto_mul [NormedRing K] [NormedRing R]
-    [Module K R] [NoZeroSMulDivisors K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
+    [Module K R] [IsTorsionFree K R] [NormSMulClass K R] [NormSMulClass ℤ K] [LinearOrder K]
     [IsStrictOrderedRing K] [FloorSemiring K] [HasSolidNorm K] {g : ℕ → R} {t : R}
     (hg : Tendsto (fun n : ℕ ↦ (n : R) * g n) atTop (𝓝 t)) :
     Tendsto (fun x : K ↦ x • g ⌊x⌋₊) atTop (𝓝 t) :=
