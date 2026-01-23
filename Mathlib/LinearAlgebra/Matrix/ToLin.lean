@@ -426,7 +426,7 @@ theorem Matrix.toLin'_one : Matrix.toLin' (1 : Matrix n n R) = LinearMap.id :=
 @[simp]
 theorem LinearMap.toMatrix'_id : LinearMap.toMatrix' (LinearMap.id : (n → R) →ₗ[R] n → R) = 1 := by
   ext
-  rw [Matrix.one_apply, LinearMap.toMatrix'_apply, id_apply]
+  rw [Matrix.one_apply, LinearMap.toMatrix'_apply, id_apply, Pi.single_apply]
 
 @[simp]
 theorem LinearMap.toMatrix'_one : LinearMap.toMatrix' (1 : (n → R) →ₗ[R] n → R) = 1 :=
@@ -530,8 +530,8 @@ theorem Matrix.toLinAlgEquiv'_toMatrixAlgEquiv' (f : (n → R) →ₗ[R] n → R
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_apply (f : (n → R) →ₗ[R] n → R) (i j) :
-    LinearMap.toMatrixAlgEquiv' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
-  simp [LinearMap.toMatrixAlgEquiv']
+    LinearMap.toMatrixAlgEquiv' f i j = f (Pi.single j 1) i :=
+  rfl
 
 @[simp]
 theorem Matrix.toLinAlgEquiv'_apply (M : Matrix n n R) (v : n → R) :
@@ -617,13 +617,7 @@ theorem LinearMap.toMatrix_toLin (M : Matrix m n R) :
 theorem LinearMap.toMatrix_apply (f : M₁ →ₗ[R] M₂) (i : m) (j : n) :
     LinearMap.toMatrix v₁ v₂ f i j = v₂.repr (f (v₁ j)) i := by
   rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearMap.toMatrix'_apply,
-    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_apply, Finset.sum_eq_single j, if_pos rfl,
-    one_smul, Basis.equivFun_apply]
-  · intro j' _ hj'
-    rw [if_neg hj', zero_smul]
-  · intro hj
-    have := Finset.mem_univ j
-    contradiction
+    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_single, Basis.equivFun_apply]
 
 theorem LinearMap.toMatrix_transpose_apply (f : M₁ →ₗ[R] M₂) (j : n) :
     (LinearMap.toMatrix v₁ v₂ f)ᵀ j = v₂.repr (f (v₁ j)) :=
