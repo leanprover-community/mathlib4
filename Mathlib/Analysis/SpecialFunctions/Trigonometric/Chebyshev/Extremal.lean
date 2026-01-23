@@ -236,7 +236,7 @@ theorem leadingCoeff_eq_iff_of_forall_abs_le_one {n : ℕ} {P : ℝ[X]} (hn : 2 
   calc P.leadingCoeff ≤ 2 ^ (d - 1) := leadingCoeff_le_of_forall_abs_le_one (le_of_eq hd.symm) hPbnd
   _ < 2 ^ (n - 1) := by gcongr; norm_num
 
-/-- Coefficients use to compute the iterated derivative of a polynomial given its values on the
+/-- Coefficients used to compute the iterated derivative of a polynomial given its values on the
 Chebyshev nodes. -/
 private noncomputable def iterateDerivativeC (n k : ℕ) (x : ℝ) (i : ℕ) :=
     k.factorial * (∏ j ∈ (Finset.range (n + 1)).erase i, ((node n i) - (node n j)))⁻¹ *
