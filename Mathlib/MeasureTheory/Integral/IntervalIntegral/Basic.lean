@@ -1087,24 +1087,24 @@ theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn
     Iic_union_Ioc_eq_Iic hab]
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
 
-theorem integral_interval_add_Ioi (ha : IntegrableOn f (Set.Ioi a) μ)
-    (hb : IntegrableOn f (Set.Ioi b) μ) :
-    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Set.Ioi b, f x ∂μ
-    = ∫ (x : ℝ) in Set.Ioi a, f x ∂μ := by
+theorem integral_interval_add_Ioi (ha : IntegrableOn f (Ioi a) μ)
+    (hb : IntegrableOn f (Ioi b) μ) :
+    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Ioi b, f x ∂μ
+    = ∫ (x : ℝ) in Ioi a, f x ∂μ := by
   wlog hab : a ≤ b generalizing a b
   · rw [integral_symm, ← this hb ha (le_of_not_ge hab)]; grind
-  rw [integral_of_le hab, ← setIntegral_union Set.Ioc_disjoint_Ioi_same measurableSet_Ioi
-    (ha.mono_set Set.Ioc_subset_Ioi_self) hb, Set.Ioc_union_Ioi_eq_Ioi hab]
+  rw [integral_of_le hab, ← setIntegral_union Ioc_disjoint_Ioi_same measurableSet_Ioi
+    (ha.mono_set Ioc_subset_Ioi_self) hb, Ioc_union_Ioi_eq_Ioi hab]
 
 theorem integral_interval_add_Ioi' (ha : IntervalIntegrable f μ a b)
-    (hb : IntegrableOn f (Set.Ioi b) μ) :
-    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Set.Ioi b, f x ∂μ
-    = ∫ (x : ℝ) in Set.Ioi a, f x ∂μ := by
+    (hb : IntegrableOn f (Ioi b) μ) :
+    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Ioi b, f x ∂μ
+    = ∫ (x : ℝ) in Ioi a, f x ∂μ := by
   rw [integral_interval_add_Ioi _ hb]
   by_cases! h : a ≤ b
-  · exact (Set.Ioc_union_Ioi_eq_Ioi h) ▸ IntegrableOn.union
+  · exact (Ioc_union_Ioi_eq_Ioi h) ▸ IntegrableOn.union
       ((intervalIntegrable_iff_integrableOn_Ioc_of_le h).1 ha) hb
-  · exact hb.mono_set <| Set.Ioi_subset_Ioi h.le
+  · exact hb.mono_set <| Ioi_subset_Ioi h.le
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :
