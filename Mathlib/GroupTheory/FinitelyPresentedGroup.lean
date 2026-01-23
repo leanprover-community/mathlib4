@@ -194,10 +194,11 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
   · rw [ ← hSclosure, Subgroup.map_normalClosure _ _ hf]
 -- End of NormalClosureFG statements
 
+set_option linter.unusedVariables false in
 /-- A finitely presented group is defined as a presented group with generators of a finite type
 and finite relations. -/
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
-(_ : rels.Finite)
+(h : rels.Finite)
 := PresentedGroup (rels)
 
 namespace FinitelyPresentedGroup
