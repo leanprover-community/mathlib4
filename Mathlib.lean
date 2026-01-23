@@ -1671,6 +1671,7 @@ public import Mathlib.Analysis.Complex.Angle
 public import Mathlib.Analysis.Complex.Arg
 public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Complex.CanonicalProduct
 public import Mathlib.Analysis.Complex.Cardinality
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.Circle
@@ -1722,6 +1723,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
 public import Mathlib.Analysis.Complex.ValueDistribution.FirstMainTheorem
 public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.WeierstrassFactor
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Basic
