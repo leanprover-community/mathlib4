@@ -407,8 +407,8 @@ theorem Matrix.toLin'_toMatrix' (f : (n → R) →ₗ[R] m → R) :
 
 @[simp]
 theorem LinearMap.toMatrix'_apply (f : (n → R) →ₗ[R] m → R) (i j) :
-    LinearMap.toMatrix' f i j = f (fun j' ↦ if j' = j then 1 else 0) i := by
-  simp [toMatrix', ← Pi.single_apply]
+    LinearMap.toMatrix' f i j = f (Pi.single j 1) i :=
+  rfl
 
 @[simp]
 theorem Matrix.toLin'_apply (M : Matrix m n R) (v : n → R) : Matrix.toLin' M v = M *ᵥ v :=
