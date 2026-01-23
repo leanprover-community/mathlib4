@@ -63,6 +63,7 @@ namespace Complex.Hadamard
 -/
 
 open scoped Topology
+
 open Set
 
 /-!
