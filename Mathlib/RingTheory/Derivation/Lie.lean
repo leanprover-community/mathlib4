@@ -61,7 +61,7 @@ instance : LieRingModule (Derivation R A A) A where
   bracket X a := X a
   add_lie _ _ m := add_apply m
   lie_add _ _ _ := Derivation.map_add _ _ _
-  leibniz_lie _ _ _ := Eq.symm (add_eq_of_eq_sub rfl)
+  leibniz_lie _ _ _ := by rw [commutator_apply]; abel
 
 instance : LieModule R (Derivation R A A) A where
   smul_lie _ _ _ := rfl
