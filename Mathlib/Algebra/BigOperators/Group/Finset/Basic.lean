@@ -1088,7 +1088,6 @@ theorem prod_sum {ι : Type*} [CommMonoid M] (f : ι → Multiset M) (s : Finset
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
   induction s using Finset.cons_induction with grind
 
-
 end Multiset
 
 @[to_additive (attr := simp)]
