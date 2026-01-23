@@ -96,12 +96,6 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects wher
 
 end Ring
 
-section CommRing
-
-variable [CommRing R]
-
-instance : (uliftFunctor.{v', v} R).Linear R where
-
-end CommRing
+instance [CommRing R] : (uliftFunctor.{v', v} R).Linear R where
 
 end ModuleCat
