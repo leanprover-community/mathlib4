@@ -198,7 +198,7 @@ set_option linter.unusedVariables false in
 /-- A finitely presented group is defined as a presented group with generators of a finite type
 and finite relations. -/
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
-(h : rels.Finite)
+(_ : rels.Finite)
 := PresentedGroup (rels)
 
 namespace FinitelyPresentedGroup
