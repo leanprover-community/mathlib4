@@ -5,7 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Tactic.Order.CollectFacts
+public import Mathlib.Tactic.Order.CollectFacts
+public meta import Mathlib.Util.AtomM
 
 /-!
 # Facts preprocessing for the `order` tactic

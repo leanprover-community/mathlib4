@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 # Lemmas about subtraction in an unbundled canonically ordered monoids
 -/
 
-@[expose] public section
+public section
 
 -- These are about *unbundled* canonically ordered monoids
 assert_not_exists IsOrderedMonoid

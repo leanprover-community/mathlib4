@@ -286,6 +286,10 @@ example (ha : a ≠ 0) : 0 < a * 37 := by positivity
 example (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b := by positivity
 example (ha : a ≠ 0) : 0 ≤ a * b := by positivity
 
+/- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20superfluous.20hypotheses.20makes.20positivity.20fail/with/568774307 -/
+example {x y : ℝ≥0∞} : x + y + 1 ≠ 0 := by positivity
+example {x y : ℝ≥0∞} (hx : x ≠ 0) : x + y + 1 ≠ 0 := by positivity
+
 end ENNReal
 
 section EReal

@@ -21,7 +21,7 @@ The main results are the following:
   related to the first element of the next list.
 -/
 
-@[expose] public section
+public section
 
 namespace List
 

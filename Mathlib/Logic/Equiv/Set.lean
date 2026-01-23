@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Data.Set.Function
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.Says
 
 /-!
 # Equivalences and sets
@@ -313,9 +312,6 @@ theorem sumCompl_symm_apply_of_notMem {α : Type u} {s : Set α} [DecidablePred 
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
   sumCompl_symm_apply_of_neg hx
 
-@[deprecated (since := "2025-05-23")]
-alias sumCompl_symm_apply_of_not_mem := sumCompl_symm_apply_of_notMem
-
 @[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] (x : s) :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
@@ -355,9 +351,6 @@ theorem sumDiffSubset_symm_apply_of_notMem {α} {s t : Set α} (h : s ⊆ t) [De
   apply (Equiv.Set.sumDiffSubset h).injective
   simp only [apply_symm_apply, sumDiffSubset_apply_inr, Set.inclusion_mk]
 
-@[deprecated (since := "2025-05-23")]
-alias sumDiffSubset_symm_apply_of_not_mem := sumDiffSubset_symm_apply_of_notMem
-
 /-- If `s` is a set with decidable membership, then the sum of `s ∪ t` and `s ∩ t` is equivalent
 to `s ⊕ t`. -/
 protected def unionSumInter {α : Type u} (s t : Set α) [DecidablePred (· ∈ s)] :
@@ -396,8 +389,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
       (calc
         α ≃ s ⊕ (sᶜ : Set α) := (Set.sumCompl s).symm
         _ ≃ t ⊕ (tᶜ : Set β) := e₀.sumCongr e₁
-        _ ≃ β := Set.sumCompl t
-        )
+        _ ≃ β := Set.sumCompl t)
       fun x => by
       simp only [Sum.map_inl, trans_apply, sumCongr_apply, Set.sumCompl_apply_inl,
         Set.sumCompl_symm_apply, Trans.trans]
