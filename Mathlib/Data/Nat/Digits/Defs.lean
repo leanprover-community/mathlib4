@@ -47,7 +47,7 @@ def digitsAux1 (n : ℕ) : List ℕ :=
   List.replicate n 1
 
 /-- (Impl.) An auxiliary definition for `digits`, to help get the desired definitional unfolding. -/
-def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
+@[semireducible] def digitsAux (b : ℕ) (h : 2 ≤ b) : ℕ → List ℕ
   | 0 => []
   | n + 1 =>
     ((n + 1) % b) :: digitsAux b h ((n + 1) / b)
