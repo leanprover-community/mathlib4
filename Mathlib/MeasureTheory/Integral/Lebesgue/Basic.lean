@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.Algebra.Order.Pi
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -82,11 +83,6 @@ theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν
 
 theorem lintegral_mono ⦃f g : α → ℝ≥0∞⦄ (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono' (le_refl μ) hfg
-
-@[deprecated lintegral_mono (since := "2025-07-10")]
-theorem lintegral_mono_fn ⦃f g : α → ℝ≥0∞⦄ (hfg : ∀ x, f x ≤ g x) :
-    ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
-  lintegral_mono hfg
 
 theorem lintegral_mono_nnreal {f g : α → ℝ≥0} (h : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂μ :=
   lintegral_mono fun a => ENNReal.coe_le_coe.2 (h a)
@@ -230,10 +226,8 @@ theorem lintegral_mono_ae {f g : α → ℝ≥0∞} (h : ∀ᵐ a ∂μ, f a ≤
       simp only [restrict_apply s ht.compl, mem_compl_iff, h, not_true, not_false_eq_true,
         indicator_of_notMem, zero_le, not_false_eq_true, indicator_of_mem]
     exact le_trans (hfs a) (by_contradiction fun hnfg => h (hts hnfg))
-  · refine le_of_eq (SimpleFunc.lintegral_congr <| this.mono fun a hnt => ?_)
-    by_cases hat : a ∈ t <;> simp only [restrict_apply s ht.compl, mem_compl_iff, hat, not_true,
-      not_false_eq_true, indicator_of_notMem, not_false_eq_true, indicator_of_mem]
-    exact (hnt hat).elim
+  · exact le_of_eq <| SimpleFunc.lintegral_congr <| this.mono fun a hnt => by
+      simp [restrict_apply s ht.compl, hnt]
 
 /-- Lebesgue integral over a set is monotone in function.
 
@@ -328,7 +322,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
       _ = _ := setLIntegral_const _ _
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
-    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    ext x
+    rw [mem_iUnion, mem_setOf_eq, ← pos_iff_ne_zero]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl

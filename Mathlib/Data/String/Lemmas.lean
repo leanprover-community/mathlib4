@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Data.String.Defs
 public import Mathlib.Tactic.Basic
-public import Batteries.Tactic.Alias
 
 /-!
 # Miscellaneous lemmas about strings
