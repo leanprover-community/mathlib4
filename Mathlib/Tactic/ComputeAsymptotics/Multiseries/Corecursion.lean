@@ -60,7 +60,9 @@ Then `f` is friendly iff it is `1`-Lipschitz.
 
 @[expose] public section
 
-namespace Stream'.Seq
+namespace Tactic.ComputeAsymptotics.Seq
+
+open Stream' Seq
 
 open scoped UniformConvergence
 
@@ -309,7 +311,7 @@ theorem FriendlyOperation.head_eq {op : Seq α → Seq α} (h : FriendlyOperatio
     cases ht : op (.cons a t) with
     | nil => norm_num [hs, ht] at h
     | cons t_hd t_tl =>
-      simp only [head_cons, Option.some.injEq]
+      simp only [Seq.head_cons, Option.some.injEq]
       by_contra! h_hd
       rw [hs, ht, dist_cons_cons_eq_one h_hd] at h
       norm_num at h
@@ -371,7 +373,7 @@ theorem FriendlyOperation.destruct {op : Seq α → Seq α} (h : FriendlyOperati
     generalize op nil = t
     cases t <;> simp
   | cons s_hd s_tl =>
-    simp only [tail_cons, head_cons]
+    simp only [Seq.tail_cons, Seq.head_cons]
     generalize ht0 : op (.cons s_hd nil) = t0 at *
     generalize ht : op (.cons s_hd s_tl) = t at *
     have : t0.head = t.head := by
@@ -484,7 +486,7 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   | cons s_hd s_tl =>
   simp only [destruct_cons] at hT
   specialize hF (.cons s_hd s_tl)
-  simp only [hF, tail_cons, head_cons]
+  simp only [hF, Seq.tail_cons, Seq.head_cons]
   generalize T s.head = t? at *
   cases t? with
   | none => simp at hT
@@ -574,4 +576,4 @@ theorem FriendlyOperationClass.eq_of_bisim {s t : Seq α} {op : γ → Seq α �
       _ ≤ _ := by
         grw [ih, pow_succ']
 
-end Stream'.Seq
+end Tactic.ComputeAsymptotics.Seq
