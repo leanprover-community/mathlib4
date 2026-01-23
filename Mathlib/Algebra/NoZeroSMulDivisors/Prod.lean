@@ -6,23 +6,6 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Module.Prod
 
-/-!
-# Prod instances for NoZeroSMulDivisors
-
-This file defines a NoZeroSMulDivisors instance for the binary product of actions.
--/
-
-@[expose] public section
-
-variable {R M N : Type*}
-
-namespace Prod
-
-instance noZeroSMulDivisors [Zero R] [Zero M] [Zero N]
-    [SMulWithZero R M] [SMulWithZero R N] [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] :
-    NoZeroSMulDivisors R (M × N) where
-  eq_zero_or_eq_zero_of_smul_eq_zero {c xy} h := by simpa [Prod.ext_iff, or_and_left] using h
-
-end Prod
+deprecated_module (since := "2026-01-19")
