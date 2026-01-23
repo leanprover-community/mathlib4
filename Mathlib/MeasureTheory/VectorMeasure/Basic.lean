@@ -325,6 +325,38 @@ instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
 
 end Module
 
+section Dirac
+
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [MeasurableSpace β]
+  {x : β} {v : M} {s : Set β}
+
+open scoped Classical in
+def dirac (x : β) (v : M) : VectorMeasure β M where
+  measureOf' s := if MeasurableSet s ∧ x ∈ s then v else 0
+  empty' := by simp
+  not_measurable' := by simp +contextual
+  m_iUnion' f f_meas f_disj := by
+    by_cases hx : x ∈ ⋃ i, f i; swap
+    · simp only [mem_iUnion, not_exists] at hx
+      simp [hx, hasSum_zero]
+    have : MeasurableSet (⋃ i, f i) := by
+      apply MeasurableSet.iUnion f_meas
+    simp only [f_meas, true_and, MeasurableSet.iUnion f_meas, hx, and_self, ↓reduceIte]
+    obtain ⟨j, hj⟩ : ∃ j, x ∈ f j := by simpa using hx
+    nth_rewrite 2 [show v = if x ∈ f j then v else 0 by simp [hj]]
+    apply hasSum_single
+    intro i hi
+    have : Disjoint (f i) (f j) := f_disj hi
+    grind
+
+@[simp] lemma dirac_apply_of_mem (hs : MeasurableSet s) (hx : x ∈ s) : dirac x v s = v := by
+  simp [dirac, hs, hx]
+
+@[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
+  simp [dirac, hx]
+
+end Dirac
+
 end VectorMeasure
 
 namespace Measure

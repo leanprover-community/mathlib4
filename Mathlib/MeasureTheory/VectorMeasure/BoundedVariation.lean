@@ -5,10 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib
+public import Mathlib.MeasureTheory.Measure.Stieltjes
+public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
-# Vector valued Stieltjes measure
+# Vector valued Stieltjes measure associated to a bounded variation function
 
 -/
 
@@ -395,11 +397,11 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
     (C := (eVariationOn f.rightLim univ).toReal) _ (fun x ↦ ?_)
   exact variationOnFromTo.abs_le_eVariationOn hf.rightLim
 
-lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
-    (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧ ∀ s,
-    ‖m s‖ₑ ≤ hf.measureAux s := by
+lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
+    ∃ m : VectorMeasure α E, (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧
+      m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by
   rcases isEmpty_or_nonempty α with h'α | h'α
-  · refine ⟨0, by simp⟩
+  · exact ⟨0, by simp⟩
   let m := AddContent.onIoc f.rightLim
   have A : ∀ s ∈ {s | ∃ u v, u ≤ v ∧ s = Ioc u v}, ‖m s‖ₑ ≤ hf.measureAux s := by
     rintro s ⟨u, v, huv, rfl⟩
@@ -429,8 +431,7 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
         exact mem_image_of_mem (x := (u, v)) _ (by simp [us, vs])
       exact Countable.mono this ((s_count.prod s_count).image _)
     have : (⋃₀ D)ᶜ ⊆ botSet := by
-      have : botSet = {x : α | IsBot x} := sorry
-      rw [compl_subset_comm, this]
+      rw [compl_subset_comm, botSet]
       intro x hx
       simp only [mem_sUnion]
       obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := by
@@ -442,10 +443,17 @@ lemma foo (hf : BoundedVariationOn f univ) : ∃ m : VectorMeasure α E,
         have : (Ioi x).Nonempty := by simpa [IsTop] using h'x
         exact s_dense.exists_mem_open isOpen_Ioi this
       exact ⟨Ioc y z, ⟨y, z, (hy.trans hz).le, rfl, ys, zs⟩, ⟨hy, hz.le⟩⟩
-    exact measure_mono_null this (by simp)
+    exact measure_mono_null this (by simp [measureAux, h'α])
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
-    (m := m) (μ := hf.measureAux) IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
-  refine ⟨m', fun u v huv ↦ ?_, h'm'⟩
-  rw [hm']
-  · exact AddContent.onIoc_apply huv
-  · exact ⟨u, v, huv, rfl⟩
+    IsSetSemiring.Ioc A B C with ⟨m', hm', h'm'⟩
+  refine ⟨m', fun u v huv ↦ ?_, ?_, h'm'⟩
+  · rw [hm']
+    · exact AddContent.onIoc_apply huv
+    · exact ⟨u, v, huv, rfl⟩
+  · apply enorm_eq_zero.1
+    apply le_bot_iff.1
+    exact (h'm' _).trans (by simp [measureAux, h'α])
+
+irreducible_def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
+  hf.exists_vectorMeasure_le_measureAux.choose +
+    (if h : ∃ x, IsBot x then dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
