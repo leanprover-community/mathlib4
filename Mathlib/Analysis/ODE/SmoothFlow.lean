@@ -458,40 +458,34 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
       ((continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))
         (integralCMLM (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm
           (fderiv ℝ g x)) u t₀ α)) (α' - α)‖ ≤ ε * ‖α' - α‖ := by
-  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
-  intro dα
+  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun dα ↦ ?_
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
   have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
-  rw [sub_apply, sub_apply, continuousMultilinearCurryLeftEquiv_apply,
-    integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg.continuousOn,
-    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, ContinuousMap.sub_apply,
-    integralCM_apply_if_pos hα', integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
-    integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
+  simp only [sub_apply, continuousMultilinearCurryLeftEquiv_apply,
+    integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg',
+    ContinuousMap.sub_apply, integralCM_apply_if_pos hα', integralCM_apply_if_pos hα,
+    integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
     ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
   set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
-  apply (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) _).trans
-  · -- repeated
-    have : |(t : ℝ) - t₀| ≤ |tmax - tmin| := by
+  refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) ?_).trans ?_
+  · intro τ _
+    simp only [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def,
+      Fin.cons_succ, ← ContinuousMultilinearMap.sub_apply, hC]
+    refine (ContinuousMultilinearMap.le_opNorm _ _).trans ?_
+    apply mul_le_mul (h τ)
+      (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ (dα _).norm_coe_le_norm _)
+      (by positivity) (by positivity)
+  · have : |(t : ℝ) - t₀| ≤ |tmax - tmin| := by
       apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
     rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
     gcongr
     apply mul_le_of_le_one_right hε.le
     rw [div_le_one (by positivity)]
-    apply (le_add_of_nonneg_left zero_le_one).trans
-    gcongr
-  · intro τ hτ
-    rw [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def]
-    simp_rw [Fin.cons_succ]
-    rw [← ContinuousMultilinearMap.sub_apply, ← ContinuousMultilinearMap.sub_apply, hC]
-    refine (ContinuousMultilinearMap.le_opNorm _ _).trans ?_
-    apply mul_le_mul _
-      (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ (dα _).norm_coe_le_norm  _))
-      (by positivity) (by positivity)
-    exact h τ
+    linarith [abs_nonneg (tmax - tmin)]
 
 /--
 The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by `integralCMLM g' u t₀`,
