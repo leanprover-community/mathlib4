@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Quotient
 public import Mathlib.LinearAlgebra.FreeModule.Determinant
 public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Ideal.Basis
@@ -300,7 +299,6 @@ theorem absNorm_span_singleton (r : S) :
   by_cases hr : r = 0
   · simp only [hr, Ideal.span_zero, Ideal.absNorm_bot,
       LinearMap.det_zero'', Set.singleton_zero, map_zero, Int.natAbs_zero]
-  letI := Ideal.finiteQuotientOfFreeOfNeBot (span {r}) (mt span_singleton_eq_bot.mp hr)
   let b := Module.Free.chooseBasis ℤ S
   rw [← natAbs_det_equiv _ (b.equiv (basisSpanSingleton b hr) (Equiv.refl _))]
   congr

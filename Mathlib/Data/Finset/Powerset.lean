@@ -73,6 +73,19 @@ theorem powerset_empty : (∅ : Finset α).powerset = {∅} :=
 theorem powerset_eq_singleton_empty : s.powerset = {∅} ↔ s = ∅ := by
   rw [← powerset_empty, powerset_inj]
 
+theorem image_injOn_powerset_of_injOn {β : Type*} [DecidableEq β] {f : α → β} (H : Set.InjOn f s) :
+    Set.InjOn (α := Finset α) (·.image f) s.powerset := by
+  have {z a} (_ : z ⊆ s) (_ : a ∈ s) : a ∈ z ↔ f a ∈ z.image f := by grind [H.eq_iff]
+  exact fun _ _ _ _ _ => by grind
+
+theorem image_surjOn_powerset {β : Type*} [DecidableEq β] {f : α → β} :
+    Set.SurjOn (α := Finset α) (·.image f) s.powerset (s.image f).powerset :=
+  fun t ht => ⟨{ x ∈ s | f x ∈ t}, by grind⟩
+
+theorem powerset_image {β : Type*} [DecidableEq β] {f : α → β} :
+    (s.image f).powerset = s.powerset.image (·.image f) :=
+  ext fun a => ⟨fun _ => mem_image.mpr ⟨{ x ∈ s | f x ∈ a}, by grind⟩, by grind⟩
+
 /-- **Number of Subsets of a Set** -/
 @[simp]
 theorem card_powerset (s : Finset α) : card (powerset s) = 2 ^ card s :=

@@ -41,7 +41,7 @@ and the set of factors of `a`.
 
 assert_not_exists Field
 
-variable {M : Type*} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
@@ -130,6 +130,8 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
     simpa only [Fin.coe_eq_castSucc] using Fin.castSucc_lt_succ
 
+omit [IsCancelMulZero M]
+
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
     {c : Fin (n + 1) → Associates M} (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) {m : Finset (Associates M)}
     (hm : ∀ r, r ∈ m → r ≤ q) : m.card ≤ n + 1 := by
@@ -212,9 +214,9 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
 
 end DivisorChain
 
-variable {N : Type*} [CancelCommMonoidWithZero N]
+variable {N : Type*} [CommMonoidWithZero N]
 
-theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
+theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
   letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
@@ -223,7 +225,8 @@ theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
   letI : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
-theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
+theorem coe_factor_orderIso_map_eq_one_iff [IsCancelMulZero N]
+    {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
     (d : Set.Iic m ≃o Set.Iic n) : (d ⟨u, hu'⟩ : Associates N) = 1 ↔ u = 1 :=
   ⟨fun hu => by
     rw [show u = (d.symm ⟨d ⟨u, hu'⟩, (d ⟨u, hu'⟩).prop⟩) by
@@ -338,7 +341,8 @@ variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
 @[simps]
-def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
+def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
+    {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
     Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
   toFun l :=
