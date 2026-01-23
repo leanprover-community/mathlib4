@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -48,12 +50,12 @@ section general_exponential
 variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
-    exp 𝕜 f = (⟨exp 𝕜 ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
+    exp f = (⟨exp ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
-  simp only [NormedSpace.exp, FormalMultilinearSeries.sum]
+  simp_rw [NormedSpace.exp_eq_expSeries_sum (𝔸 := C(α, 𝕜)) 𝕜, FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
-  simp [NormedSpace.exp_eq_tsum]
+  simp [NormedSpace.exp_eq_tsum 𝕜]
 
 end general_exponential
 
@@ -65,11 +67,12 @@ variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A
 
 open scoped ContinuousFunctionalCalculus in
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
+    cfc (exp : 𝕜 → 𝕜) a = exp a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
   have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
-  have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := exp_continuous.continuousOn
-  simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp 𝕜) a ha]
+  have _ : ContinuousOn exp (spectrum 𝕜 a) := exp_continuous.continuousOn
+  let +nondep : Algebra ℚ A := RestrictScalars.algebra ℚ 𝕜 A
+  simp_rw [← map_exp _ h, cfc_apply exp a ha]
   congr 1
   ext
   simp [exp_continuousMap_eq]
@@ -83,14 +86,14 @@ variable {A : Type*} [NormedRing A] [StarRing A]
   [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
-    cfc Real.exp a = exp ℝ a :=
+    cfc Real.exp a = exp a :=
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 A]
+lemma _root_.IsSelfAdjoint.exp_nonneg
     [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
-    0 ≤ exp 𝕜 a := by
-  rw [exp_eq_exp 𝕜 ℝ, ← real_exp_eq_normedSpace_exp]
+    0 ≤ exp a := by
+  rw [← real_exp_eq_normedSpace_exp]
   exact cfc_nonneg fun x _ => Real.exp_nonneg x
 
 end RealNormed
@@ -101,7 +104,7 @@ variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
   [NormedAlgebra ℂ A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc Complex.exp a = exp ℂ a :=
+    cfc Complex.exp a = exp a :=
   Complex.exp_eq_exp_ℂ ▸ exp_eq_normedSpace_exp ha
 
 end ComplexNormed
@@ -159,7 +162,7 @@ lemma log_pow' [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] 
 
 open NormedSpace in
 @[grind =]
-lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp ℝ a) = a := by
+lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
@@ -167,12 +170,18 @@ lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (exp ℝ a) = a
 open NormedSpace in
 @[grind =]
 lemma exp_log [PartialOrder A] [StarOrderedRing A] [NonnegSpectrumClass ℝ A] (a : A)
-    (ha : IsStrictlyPositive a := by cfc_tac) : exp ℝ (log a) = a := by
+    (ha : IsStrictlyPositive a := by cfc_tac) : exp (log a) = a := by
   have ha₂ : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by grind
   rw [← real_exp_eq_normedSpace_exp .log, log, ← cfc_comp' Real.exp Real.log a (by fun_prop)]
   conv_rhs => rw [← cfc_id (R := ℝ) a]
   refine cfc_congr fun x hx => ?_
   grind [Real.exp_log]
+
+lemma continuousOn_log {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
+    [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [ContinuousStar A] [CompleteSpace A] :
+    ContinuousOn log {a : A | IsSelfAdjoint a ∧ IsUnit a} :=
+  continuousOn_id.cfc_of_mem_nhdsSet _ (s := {0}ᶜ) <| by
+    simpa using fun _ _ ↦ spectrum.zero_notMem ℝ
 
 end real_log
 end CFC

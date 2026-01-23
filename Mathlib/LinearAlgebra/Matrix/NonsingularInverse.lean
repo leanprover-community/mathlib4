@@ -289,6 +289,9 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
 
+lemma IsSymm.inv {A : Matrix n n α} (hA : A.IsSymm) : A⁻¹.IsSymm :=
+  hA.adjugate.smul _
+
 end Inv
 
 section InjectiveMul
@@ -494,7 +497,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     subsingleton
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
     refine nonsing_inv_apply_not_isUnit _ ?_
-    simp
+    simp [det]
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
