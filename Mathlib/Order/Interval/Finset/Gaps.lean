@@ -56,7 +56,7 @@ Then `F.intervalGapsWithin h a b i` is
 - `(y (i - 1), x i)` if `0 < i < k`;
 - `(y (i - 1), b)` if `0 < i = k`.
 -/
-noncomputable def intervalGapsWithin : α × α := (fst, snd) where
+noncomputable def intervalGapsWithin (i : Fin (k + 1)) : α × α := (fst, snd) where
   /-- The first coordinate of `F.intervalGapsWithin h a b i` is `a` if `i = 0`,
   `y (i - 1)` otherwise. -/
   fst := if hi : i = 0 then a else
