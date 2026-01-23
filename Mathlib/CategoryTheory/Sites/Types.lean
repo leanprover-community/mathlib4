@@ -119,7 +119,7 @@ noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
     (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit)) where
   toFun := eval S α
-  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _ ).1 hs) α
+  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α
   left_inv := typesGlue_eval
   right_inv := eval_typesGlue
 
