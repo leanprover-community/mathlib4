@@ -181,7 +181,7 @@ open OmegaCompletePartialOrder
 instance [OmegaCompletePartialOrder A] : OmegaCompletePartialOrder (ΩPart A) where
   ωSup c := {
     Dom := .any fun n ↦ (c n).Dom
-    get h := Quot.recOn (ΩProp.find h)
+    get h := Quot.recOn (ΩProp.find (ΩProp.coe_any.mp h))
       (fun n ↦ ωSup {
         toFun m := (c (m + n)).get (by
           obtain ⟨_, ⟨h, _⟩, _⟩ := c.monotone
@@ -204,17 +204,15 @@ instance [OmegaCompletePartialOrder A] : OmegaCompletePartialOrder (ΩPart A) wh
   le_ωSup c i a ha := by
     rcases ha with ⟨ha, rfl⟩
     simp only [eq_rec_constant, mem_mk, ↓existsAndEq, true_and]
-    have : ↑(ΩProp.any fun n ↦ (c n).Dom) := by
-      simp only [ΩProp.coe_any]
-      use i
-    use this
+    have : ∃n, (c n).Dom := by use i
+    use ΩProp.coe_any.mpr this
     induction ΩProp.find this using Quot.ind with | mk n =>
     apply le_ωSup_of_le i (get_mono (c.monotone (Nat.le_add_right i n)) ha)
   ωSup_le c x h a ha := by
     rcases ha with ⟨ha, rfl⟩
     simp only [eq_rec_constant]
     dsimp only at ha
-    induction ΩProp.find ha using Quot.ind with | mk n =>
+    induction ΩProp.find (ΩProp.coe_any.mp ha) using Quot.ind with | mk n =>
     use x.get (dom_mono (h n) n.property)
     simp only [mem_get, ωSup_le_iff, true_and]
     intro i
@@ -253,7 +251,7 @@ lemma ωSup_some [OmegaCompletePartialOrder A] (a : A) : ωSup (Chain.some a) = 
     ΩProp.any_const, ΩProp.coe_true, exists_true_left, mem_some]
   have : ↑(ΩProp.any fun n ↦ ((Chain.some b) n).Dom) := by
     simp only [Chain.some_coe, some_Dom, ΩProp.any_const, ΩProp.coe_true]
-  induction ΩProp.find this using Quot.ind with | mk c =>
+  induction ΩProp.find (ΩProp.coe_any.mp this) using Quot.ind with | mk c =>
   have : ωSup { toFun := fun m ↦ a, monotone' _ _ _ := by rfl } = a := by
     apply le_antisymm
     · simp only [ωSup_le_iff, Chain, OrderHom.coe_mk, le_refl, implies_true]

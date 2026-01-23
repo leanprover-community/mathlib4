@@ -336,9 +336,9 @@ The function `find` computes such an `n`.
 Note that we cannot know _which_ `n` it is because `any p` is
 equal to `any q` for any `q : ℕ → Bool` satisfying `∃m, q m = true`.
 Hence the return type of this function must be `Squash`ed. -/
-def find {p : ℕ → ΩProp} : ↑(any p) → Squash { n // p n } :=
+def find {p : ℕ → ΩProp} : (∃ n, p n) → Squash { n // p n } :=
   elimOnPiSubsingleton p fun p hp ↦ by
-    simp only [coe_any, coe_mk] at hp
+    simp only [coe_mk] at hp
     have : ∃n : ℕ, p n.unpair.1 n.unpair.2 := by
       rcases hp with ⟨m, n, h⟩
       use Nat.pair m n
