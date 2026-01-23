@@ -35,7 +35,7 @@ fractional ideal, fractional ideals, extended, extension
 
 @[expose] public section
 
-open IsLocalization FractionalIdeal Submodule
+open IsLocalization FractionalIdeal Module Submodule
 
 namespace FractionalIdeal
 
@@ -184,9 +184,9 @@ section Algebra
 
 open scoped nonZeroDivisors
 
-variable {A K : Type*} (L B : Type*) [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
-  [NoZeroSMulDivisors A B] [Field K] [Field L] [Algebra A K] [Algebra B L] [IsFractionRing A K]
-  [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
+variable {A K : Type*} (L B : Type*) [CommRing A] [IsDomain A] [CommRing B] [IsDomain B]
+  [Algebra A B] [IsTorsionFree A B] [Field K] [Field L] [Algebra A K] [Algebra B L]
+  [IsFractionRing A K] [IsFractionRing B L] {I : FractionalIdeal A⁰ K}
 
 /--
 The ring homomorphisme that extends a fractional ideal of `A` to a fractional ideal of `B` for
@@ -204,7 +204,7 @@ theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
     (I : FractionalIdeal A⁰ K).extendedHomₐ L B =
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
 
-variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
+variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
   [Algebra.IsIntegral A B]
 
 theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :

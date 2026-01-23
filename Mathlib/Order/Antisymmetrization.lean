@@ -303,7 +303,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
@@ -419,15 +419,5 @@ def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
 @[simp] lemma prodEquiv_symm_apply_mk {a b} : (prodEquiv α β).symm (⟦a⟧, ⟦b⟧) = ⟦(a, b)⟧ := rfl
 
 end Antisymmetrization
-
-attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
-
-instance Prod.wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
-  wellFoundedLT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
-
-instance Prod.wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
-  wellFoundedGT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
 
 end Prod

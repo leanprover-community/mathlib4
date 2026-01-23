@@ -49,9 +49,6 @@ theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
 
-@[deprecated (since := "2025-07-04")]
-alias continuous_iff_continuousOn_univ := continuousOn_univ
-
 theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
   tendsto_nhdsWithin_iff_subtype h f _
@@ -116,7 +113,7 @@ theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : M
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
 
-@[deprecated (since := "05-09-2025")]
+@[deprecated (since := "2025-09-05")]
 alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :
