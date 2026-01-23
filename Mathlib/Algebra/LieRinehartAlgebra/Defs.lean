@@ -50,28 +50,22 @@ class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
 
 namespace LieRinehartAlgebra
 
-variable {R : Type*} [CommRing R]
+variable {R A₁ L₁ A₂ L₂ A₃ L₃ : Type*} [CommRing R]
+  [CommRing A₁] [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁]
+  [CommRing A₂] [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂]
+  [CommRing A₃] [LieRing L₃] [Module A₃ L₃] [LieRingModule L₃ A₃]
+  [LieRinehartRing A₁ L₁] [Algebra R A₁] [LieAlgebra R L₁] [LieRinehartAlgebra R A₁ L₁]
+  [LieRinehartRing A₂ L₂] [Algebra R A₂] [LieAlgebra R L₂] [LieRinehartAlgebra R A₂ L₂]
+  [LieRinehartRing A₃ L₃] [Algebra R A₃] [LieAlgebra R L₃] [LieRinehartAlgebra R A₃ L₃]
+  (σ₁₂ : A₁ →ₐ[R] A₂) (σ₂₃ : A₂ →ₐ[R] A₃)
 
-variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
-  [LieRinehartRing A L] [Algebra R A] [LieAlgebra R L] [LieRinehartAlgebra R A L]
-
-variable {A' L' : Type*} [CommRing A'] [LieRing L'] [Module A' L'] [LieRingModule L' A']
-  [LieRinehartRing A' L'] [Algebra R A'] [LieAlgebra R L'] [LieRinehartAlgebra R A' L']
-
-variable {A'' L'' : Type*} [CommRing A''] [LieRing L''] [Module A'' L''] [LieRingModule L'' A'']
-  [LieRinehartRing A'' L''] [Algebra R A''] [LieAlgebra R L''] [LieRinehartAlgebra R A'' L'']
-
-variable (σ : A →ₐ[R] A')
-variable (σ' : A' →ₐ[R] A'')
-
-
-instance : LieRinehartRing A (Derivation R A A) where
+instance : LieRinehartRing A₁ (Derivation R A₁ A₁) where
   lie_smul_eq_mul _ _ _ := rfl
-  leibniz_mul_right _ _ _ := by simp [CommMonoid.mul_comm]
+  leibniz_mul_right _ _ _ := by simp; ring
   leibniz_smul_right _ _ _ := by ext; simp [Derivation.commutator_apply]; ring
 
 /-- The derivations of a commutative Algebra themselves form a LieRinehart-Algebra. -/
-instance : LieRinehartAlgebra R A (Derivation R A A) where
+instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
 
 
 /-- A homomorphism of Lie-Rinehart algebras `(A,L)`, `(A',L')` consists of an algebra map
