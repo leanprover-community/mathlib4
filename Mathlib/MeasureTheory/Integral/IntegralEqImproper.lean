@@ -610,6 +610,17 @@ theorem intervalIntegral_tendsto_integral_Iic (b : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hai, Measure.restrict_restrict (hφ.measurableSet i)]
   rfl
 
+theorem iicIntegral_tendsto_zero (b : ℝ) (hfi : IntegrableOn f (Iic b) μ)
+    (ha : Tendsto a l atBot) :
+    Tendsto (fun i => ∫ x in Iic (a i), f x ∂μ) l (𝓝 0) := by
+  have : ∀ᶠ i in l, ∫ x in Iic b, f x ∂μ - ∫ x in a i..b, f x ∂μ = ∫ x in Iic (a i), f x ∂μ := by
+    filter_upwards [ha.eventually_mem (Iic_mem_atBot b)] with i hi
+    rw [intervalIntegral.integral_of_le hi, sub_eq_iff_eq_add, ← setIntegral_union
+      (Iic_disjoint_Ioc (refl _)) measurableSet_Ioc (hfi.mono_set (Iic_subset_Iic.2 hi))
+      (hfi.mono_set Ioc_subset_Iic_self), Iic_union_Ioc_eq_Iic hi]
+  exact Tendsto.congr' this (sub_self (∫ x in Iic b, f x ∂μ) ▸ (Tendsto.const_sub _ <|
+    intervalIntegral_tendsto_integral_Iic b hfi ha))
+
 theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
     (hb : Tendsto b l atTop) :
     Tendsto (fun i => ∫ x in a..b i, f x ∂μ) l (𝓝 <| ∫ x in Ioi a, f x ∂μ) := by
@@ -620,6 +631,17 @@ theorem intervalIntegral_tendsto_integral_Ioi (a : ℝ) (hfi : IntegrableOn f (I
   rw [intervalIntegral.integral_of_le hbi, Measure.restrict_restrict (hφ.measurableSet i),
     inter_comm]
   rfl
+
+theorem ioiIntegral_tendsto_zero (a : ℝ) (hfi : IntegrableOn f (Ioi a) μ)
+    (hb : Tendsto b l atTop) :
+    Tendsto (fun i => ∫ x in Ioi (b i), f x ∂μ) l (𝓝 0) := by
+  have : ∀ᶠ i in l, ∫ x in Ioi a, f x ∂μ - ∫ x in a..b i, f x ∂μ = ∫ x in Ioi (b i), f x ∂μ := by
+    filter_upwards [hb.eventually_mem (Ici_mem_atTop a)] with i hi
+    rw [intervalIntegral.integral_of_le hi, sub_eq_iff_eq_add', ← setIntegral_union
+      Ioc_disjoint_Ioi_same measurableSet_Ioi (hfi.mono_set Ioc_subset_Ioi_self)
+      (hfi.mono_set (Ioi_subset_Ioi hi)), Ioc_union_Ioi_eq_Ioi hi]
+  exact Tendsto.congr' this (sub_self (∫ x in Ioi a, f x ∂μ) ▸ (Tendsto.const_sub _ <|
+    intervalIntegral_tendsto_integral_Ioi a hfi hb))
 
 end IntegralOfIntervalIntegral
 
