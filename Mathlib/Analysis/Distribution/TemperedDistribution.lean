@@ -490,8 +490,7 @@ theorem lineDerivOp_fourier_eq (f : 𝓢'(E, F)) (m : E) :
     ∂_{m} (𝓕 f) = 𝓕 (- (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
   ext u
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
-  have f_neg : ∀ (x : 𝓢(E, ℂ)), 𝓕 (-x) = -𝓕 x := (fourierCLM ℂ 𝓢(E, ℂ)).map_neg
-  simp [SchwartzMap.fourier_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this, f_neg]
+  simp [SchwartzMap.fourier_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
 
 /- The Fourier transform of line derivative in direction `m` is given by multiplication of
 `(2 * π * Complex.I) • (inner ℝ · m)` with the Fourier transform. -/
@@ -499,8 +498,7 @@ theorem fourier_lineDerivOp_eq (f : 𝓢'(E, F)) (m : E) :
     𝓕 (∂_{m} f) = (2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) (𝓕 f) := by
   ext u
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
-  have f_neg : ∀ (x : 𝓢(E, ℂ)), 𝓕 (-x) = -𝓕 x := (fourierCLM ℂ 𝓢(E, ℂ)).map_neg
-  simp [SchwartzMap.lineDerivOp_fourier_eq, ← smulLeftCLM_ofReal ℂ this, f_neg]
+  simp [SchwartzMap.lineDerivOp_fourier_eq, ← smulLeftCLM_ofReal ℂ this]
 
 /- The line derivative in direction `m` of the inverse Fourier transform is given by the inverse
 Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner ℝ · m)`. -/
@@ -508,8 +506,7 @@ theorem lineDerivOp_fourierInv_eq (f : 𝓢'(E, F)) (m : E) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM F (inner ℝ · m) f) := by
   ext u
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
-  have fi_neg : ∀ (x : 𝓢(E, ℂ)), 𝓕⁻ (-x) = -𝓕⁻ x := (fourierInvCLM ℂ 𝓢(E, ℂ)).map_neg
-  simp [SchwartzMap.fourierInv_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this, fi_neg]
+  simp [SchwartzMap.fourierInv_lineDerivOp_eq, ← smulLeftCLM_ofReal ℂ this]
 
 /- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
 `-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
