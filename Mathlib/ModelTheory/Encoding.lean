@@ -119,7 +119,7 @@ theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ 
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩
       refine max_le (le_max_left _ _) ?_
       grw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
-        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, nat_lt_aleph0]
+        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, natCast_lt_aleph0]
     · rw [← one_le_iff_ne_zero]
       refine _root_.trans ?_ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
@@ -310,8 +310,8 @@ instance : Countable (constantsOn α).Symbols := by
   change (constantsOn α).card ≤ ℵ₀
   simpa only [card_constantsOn, mk_le_aleph0_iff]
 
-instance : Countable (L[[α]].Symbols) := by
-  simp only [←mk_le_aleph0_iff]
+instance : Countable L[[α]].Symbols := by
+  simp only [← mk_le_aleph0_iff]
   change L[[α]].card ≤ ℵ₀
   simp only [withConstants, card_sum, add_le_aleph0, lift_le_aleph0]
   simp only [card, mk_le_aleph0_iff]
