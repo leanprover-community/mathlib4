@@ -5,7 +5,7 @@ Authors: Bjørn Solheim
 -/
 module
 
-public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.Geometry.Convex.Cone.Pointed.Dual
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 

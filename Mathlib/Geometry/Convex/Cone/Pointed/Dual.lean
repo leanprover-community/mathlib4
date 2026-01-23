@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Module.Submodule.Pointwise
-public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Geometry.Convex.Cone.Pointed.Basic
 
 /-!
 # The algebraic dual of a cone
