@@ -38,7 +38,9 @@ on a semiring that depend on absolute values.
 
 This is also helpful when dealing with several absolute values on the same semiring. -/
 structure WithAbs [Semiring R] (v : AbsoluteValue R S) where
+  /-- Converts an element of `R` to an element of `WithAbs v`. -/
   toAbs (v) ::
+  /-- Converts an element of `WithAbs v` to an element of `R`. -/
   ofAbs : R
 
 section Notation
@@ -117,25 +119,22 @@ def equiv : WithAbs v ≃+* R where
 variable {T : Type*} [Semiring T] (w : AbsoluteValue T S)
 
 /-- Lift a ring hom to `WithAbs`. -/
-@[simp]
 def map (f : R →+* T) : WithAbs v →+* WithAbs w :=
   (equiv w).symm.toRingHom.comp (f.comp (equiv v).toRingHom)
 
 @[simp]
-theorem map_id : WithAbs.map v v (RingHom.id R) = RingHom.id (WithAbs v) :=
-  rfl
+theorem map_id : WithAbs.map v v (RingHom.id R) = RingHom.id (WithAbs v) := rfl
 
-theorem map_comp {R'' : Type*} [Semiring R''] (v'' : AbsoluteValue R'' S) (f : T →+* R'')
-    (g : R →+* T) : WithAbs.map v v'' (f.comp g) = WithAbs.map w v'' f ∘ WithAbs.map v w g :=
+theorem map_comp {U : Type*} [Semiring U] (u : AbsoluteValue U S) (f : T →+* U)
+    (g : R →+* T) : map v u (f.comp g) = (map w u f).comp (map v w g) :=
   rfl
 
 /-- Lift a `RingEquiv` to `WithAbs`. -/
-@[simp]
 def congr (f : R ≃+* T) : WithAbs v ≃+* WithAbs w where
   __ := (WithAbs.map v w f.toRingHom)
   invFun := (WithAbs.map w v f.symm.toRingHom)
-  left_inv x := by simp
-  right_inv x := by simp
+  left_inv x := by simp [← RingHom.comp_apply, ← map_comp]
+  right_inv x := by simp [← RingHom.comp_apply, ← map_comp]
 
 @[simp]
 theorem congr_refl : congr v v (RingEquiv.refl R) = RingEquiv.refl (WithAbs v) :=
