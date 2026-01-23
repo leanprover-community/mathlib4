@@ -21,8 +21,7 @@ def foo (x : X) := hd x :: foo (tlArg x)
 
 It is not enough, however, to define multiplication and powser operation for multiseries.
 
-This file implement a more general form of corecursion in the spirit of
-https://arxiv.org/pdf/1501.05425.
+This file implement a more general form of corecursion in the spirit of [blanchette2015].
 
 A function `f : Seq α → Seq α` is called *friendly* if for all `n : ℕ` the `n`-prefix of its result
 `f n` depends only on the `n`-prefix of its input `s`.
@@ -55,7 +54,6 @@ Banach fixed point theorem. We treat `Seq α` as a metric space here with the me
 `d(s, t) := 2 ^ (-n)` where `n` is the minimal index where `s` and `t` differ.
 
 Then `f` is friendly iff it is `1`-Lipschitz.
-
 -/
 
 @[expose] public section
@@ -98,15 +96,10 @@ theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   bound
 
 @[simp]
-theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := by
-  rw [Subtype.dist_eq]
-  apply Stream'.dist_le_one
+theorem dist_le_one (s t : Seq α) : dist s t ≤ 1 := PiNat.dist_le_one _ _
 
--- TODO: upstream to PiNat
-local instance instBoundedSpaceStream' : BoundedSpace (Stream' α) := by
-  rw [Metric.boundedSpace_iff]
-  use 1
-  apply Stream'.dist_le_one
+local instance : BoundedSpace (Stream' α) :=
+  @PiNat.boundedSpace _ (fun _ ↦ ⊥) (fun _ ↦ discreteTopology_bot _)
 
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
