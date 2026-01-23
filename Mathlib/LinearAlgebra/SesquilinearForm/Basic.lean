@@ -173,7 +173,11 @@ end
 
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
-  ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
+  forall_comm
+
+lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
+  ext x
+  simp [LinearMap.ext_iff, H.eq_iff]
 
 lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
   ext x
