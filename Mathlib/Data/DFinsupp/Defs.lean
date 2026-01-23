@@ -579,7 +579,7 @@ theorem filter_ne_eq_erase (f : Π₀ i, β i) (i : ι) : f.filter (· ≠ i) = 
 
 @[simp]
 theorem filter_ne_eq_erase' (f : Π₀ i, β i) (i : ι) : f.filter (i ≠ ·) = f.erase i := by
-  ext; grind
+  grind
 
 theorem erase_single (j : ι) (i : ι) (x : β i) :
     (single i x).erase j = if i = j then 0 else single i x := by
@@ -1082,7 +1082,6 @@ theorem comapDomain'_add [∀ i, AddZeroClass (β i)] (h : κ → ι) {h' : ι �
 theorem comapDomain'_single [DecidableEq ι] [DecidableEq κ] [∀ i, Zero (β i)] (h : κ → ι)
     {h' : ι → κ} (hh' : Function.LeftInverse h' h) (k : κ) (x : β (h k)) :
     comapDomain' h hh' (single (h k) x) = single k x := by
-  ext
   grind
 
 /-- Reindexing terms of a dfinsupp.
