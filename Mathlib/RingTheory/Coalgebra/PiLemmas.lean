@@ -61,16 +61,12 @@ open scoped IntrinsicStar in
     star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul := by
   ext; simp
 
-private theorem Pi.comul_apply (x : n → R) :
-    comul x = ∑ i, x i • (Pi.single i 1 ⊗ₜ[R] Pi.single i 1) := by
-  conv_lhs => rw [← Finset.univ_sum_single x]
-  simp only [map_sum, comul_single, smul_tmul', smul_tmul]
-  simp [Pi.single, Function.update_eq_ite, Pi.smul_def]
-
 /-- The convolutive product corresponds to the Hadamard product. -/
 @[simp] theorem LinearMap.toMatrix'_convMul_eq_hadamard {f g : (n → R) →ₗ[R] m → R} :
     (f * g).toMatrix' = f.toMatrix' ⊙ g.toMatrix' := by
-  ext; simp [comul_apply, Pi.single, Function.update_eq_ite]
+  have (x : n → R) : comul x = ∑ i, x i • (Pi.single i 1 ⊗ₜ[R] Pi.single i 1) := by
+    simp [comul, Pi.single, Function.update_eq_ite, Pi.smul_def, ← tmul_smul]
+  ext; simp [this, Pi.single, Function.update_eq_ite]
 
 @[simp] theorem Matrix.toLin'_hadamard_eq_convMul {A B : Matrix m n R} :
     (A ⊙ B).toLin' = A.toLin' * B.toLin' := by simp [← toMatrix'.injective.eq_iff]
