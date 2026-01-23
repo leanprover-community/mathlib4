@@ -72,8 +72,7 @@ instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact]
-  simp only [uliftFunctor, ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_X₃,
-    ShortComplex.map_f, hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe, ShortComplex.map_g]
+  dsimp [uliftFunctor]
   intro x
   simp only [Function.comp_apply, Set.mem_range, LinearEquiv.symm_apply_eq, map_zero]
   rw [(CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mp h]
