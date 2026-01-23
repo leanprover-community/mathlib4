@@ -265,10 +265,8 @@ lemma ωScottContinuous.isLUB {c : Chain α} (hf : ωScottContinuous f) :
   simpa [map_coe, OrderHom.coe_mk, Set.range_comp]
     using hf (by simp) (Set.range_nonempty _) (isChain_range c).directedOn (isLUB_range_ωSup c)
 
+@[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.id : ωScottContinuous (id : α → α) := ScottContinuousOn.id
-
-@[fun_prop]
-lemma ωScottContinuous.fun_id : ωScottContinuous (fun x : α ↦ x) := ScottContinuousOn.id
 
 lemma ωScottContinuous.map_ωSup (hf : ωScottContinuous f) (c : Chain α) :
     f (ωSup c) = ωSup (c.map ⟨f, hf.monotone⟩) := ωSup_eq_of_isLUB hf.isLUB
@@ -305,11 +303,11 @@ lemma ωScottContinuous.fun_comp (hg : ωScottContinuous g) (hf : ωScottContinu
     ωScottContinuous (fun x ↦ g (f x)) :=
   comp hg hf
 
-@[fun_prop]
+@[simp, fun_prop]
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
   ScottContinuousOn.const x
 
-@[fun_prop]
+@[simp, fun_prop]
 lemma ωScottContinuous.fun_const {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
   const
 
