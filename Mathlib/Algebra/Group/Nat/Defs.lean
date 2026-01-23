@@ -66,7 +66,7 @@ instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-set_option linter.style.commandStart false
+set_option linter.style.whitespace false -- manual alignment is not recognised
 
 instance instAddCommMonoid    : AddCommMonoid ℕ    := by infer_instance
 instance instAddMonoid        : AddMonoid ℕ        := by infer_instance
@@ -77,7 +77,7 @@ instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 instance instOne              : One ℕ              := inferInstance
 
-set_option linter.style.commandStart true
+set_option linter.style.whitespace true
 
 /-! ### Miscellaneous lemmas -/
 

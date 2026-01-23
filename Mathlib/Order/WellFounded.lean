@@ -61,12 +61,14 @@ variable {r r' : α → α → Prop}
 
 protected theorem asymm (h : WellFounded r) : Std.Asymm r := ⟨h.asymmetric⟩
 
-protected theorem isIrrefl (h : WellFounded r) : IsIrrefl α r := @Std.Asymm.isIrrefl α r h.asymm
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := WellFounded.asymm
+
+protected theorem irrefl (h : WellFounded r) : Std.Irrefl r := @Std.Asymm.irrefl α r h.asymm
+
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := WellFounded.irrefl
 
 instance [WellFoundedRelation α] : Std.Asymm (α := α) WellFoundedRelation.rel :=
   WellFoundedRelation.wf.asymm
-
-instance : IsIrrefl α WellFoundedRelation.rel := Std.Asymm.isIrrefl
 
 theorem mono (hr : WellFounded r) (h : ∀ a b, r' a b → r a b) : WellFounded r' :=
   Subrelation.wf (h _ _) hr

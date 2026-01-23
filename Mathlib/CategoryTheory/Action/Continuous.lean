@@ -207,7 +207,7 @@ def Equivalence.mapContAction (E : V ≌ W)
   functor := E.functor.mapContAction G H₁
   inverse := E.inverse.mapContAction G H₂
   unitIso := Functor.mapContActionCongr G E.unitIso
-      (fun X ↦ X.2) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X))  ≪≫
+      (fun X ↦ X.2) (fun X ↦ H₂ ((E.functor.mapContAction G H₁).obj X)) ≪≫
     Functor.mapContActionComp G _ _ _ _
   counitIso := (Functor.mapContActionComp G _ _ _ _).symm ≪≫
     Functor.mapContActionCongr G E.counitIso _ (fun X ↦ X.2)

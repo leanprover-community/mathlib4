@@ -82,7 +82,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R where
-  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slow
+  __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slow
   __ := h.toSemifield
   qsmul := _
   qsmul_def := fun _ _ => rfl
