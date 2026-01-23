@@ -315,7 +315,7 @@ def forget : Center C ⥤ C where
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _}
+      μIso := fun _ _ ↦ Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
