@@ -234,7 +234,7 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   | .app (.app rel lhs) rhs => if isLhs then mkApp2 rel e rhs else mkApp2 rel lhs e
   | _ => r
 
-/-- Try to cnstruct the `GCongrLemma` for a lemma with hypotheses `hyps` and conclusion `target`. -/
+/-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and conclusion `target`. -/
 def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
     MetaM GCongrLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
