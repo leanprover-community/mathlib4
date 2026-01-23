@@ -53,6 +53,18 @@ theorem biUnion_Ici_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
   suffices ∀ i, a ≤ i → f i < b from ⟨b, by aesop (add simp [upperBounds, le_of_lt])⟩
   exact Succ.rec (P := fun i _ ↦ f i < b) hb (by aesop)
 
+theorem iUnion_Ico_map_succ_eq_Ici [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+    (⋃ a : α, Ico (f a) (f (succ a))) = Ici (f ⊥) := by
+  have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
+  simpa [Set.Ici_bot] using biUnion_Ici_Ico_map_succ (fun i _ ↦ hf i) h2f'
+
+theorem iUnion_Ioc_map_succ_eq_Ioi [OrderBot α] [SuccOrder α] [IsSuccArchimedean α] [LinearOrder β]
+    {f : α → β} (hf : ∀ a, f ⊥ ≤ f a) (h2f : ¬BddAbove (range f)) :
+     (⋃ a : α, Ioc (f a) (f (succ a))) = Ioi (f ⊥) := by
+  have h2f' : ¬BddAbove (f '' Ici (⊥ : α)) := by simpa [Set.image_univ, Set.Ici_bot] using h2f
+  simpa [Set.Ici_bot] using biUnion_Ici_Ioc_map_succ (fun i _ ↦ hf i) h2f'
+
 namespace Monotone
 
 /-- If `α` is a linear archimedean succ order and `β` is a linear order, then for any monotone
