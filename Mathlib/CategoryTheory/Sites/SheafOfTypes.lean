@@ -158,7 +158,7 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
 
 /-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
-  simp [isSheafFor_top_sieve]
+  simp [isSheafFor_top]
 
 /-- The composition of a sheaf with a ULift functor is still a sheaf. -/
 theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=

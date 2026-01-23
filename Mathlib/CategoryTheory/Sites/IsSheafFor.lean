@@ -650,10 +650,13 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (Presie
 
 [Elephant] C2.1.5(ii)
 -/
-theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sieve X) : Presieve X) := by
-  rw [← generate_of_singleton_isSplitEpi (𝟙 X)]
+theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X) := by
+  rw [← arrows_top, ← generate_of_singleton_isSplitEpi (𝟙 X)]
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
+
+@[deprecated (since := "2026-01-22")]
+alias isSheafFor_top_sieve := isSheafFor_top
 
 /-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
 presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/

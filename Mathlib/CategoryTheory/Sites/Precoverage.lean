@@ -231,6 +231,12 @@ lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
   simp
 
+lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
+    J.comap (F ⋙ G) = (J.comap G).comap F := by
+  ext X R
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  simp
+
 instance [HasIsos J] : HasIsos (J.comap F) where
   mem_coverings_of_isIso {S T} f hf := by simpa using mem_coverings_of_isIso (F.map f)
 
