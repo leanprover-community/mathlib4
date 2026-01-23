@@ -523,25 +523,6 @@ theorem disjoint_swap_swap [Finite α] {x y z t : α} (h : [x, y, z, t].Nodup) :
     Finset.disjoint_singleton_right]
   grind
 
-theorem support_swap_mul_swap'
-    {x y z t : α} (h : [x, y, z, t].Nodup) :
-    (swap x y * swap z t).support = {x, y, z, t} := by
-  apply le_antisymm
-  · apply le_trans (Perm.support_mul_le _ _)
-    apply _root_.sup_le
-    · rw [support_swap (by grind)]
-      simp
-    · rw [support_swap (by grind)]
-      simp only [Finset.le_eq_subset, Finset.subset_insert_iff, Finset.subset_singleton_iff]
-      grind
-  · apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    apply Finset.insert_subset
-    · simp only [mem_support, coe_mul, Function.comp_apply]; grind
-    · simp only [Finset.singleton_subset_iff, mem_support, coe_mul, Function.comp_apply]; grind
-
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
 
