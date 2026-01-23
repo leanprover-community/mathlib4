@@ -153,7 +153,7 @@ theorem mapClusterPt_rightLim [TopologicalSpace α] [OrderTopology α]
     (f : α → β) (a : α) : MapClusterPt (f.rightLim a) (𝓝[≥] a) f :=
   mapClusterPt_leftLim (α := αᵒᵈ) _ _
 
-theorem leftLim_leftLim [hα : TopologicalSpace α] [OrderTopology α] [T3Space β]
+theorem leftLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
     f.leftLim.leftLim a = f.leftLim a := by
   rcases eq_or_neBot (𝓝[<] a) with h' | h'
@@ -177,6 +177,29 @@ theorem rightLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) :
     f.rightLim.rightLim a = f.rightLim a :=
   leftLim_leftLim (α := αᵒᵈ) h
+
+theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) (h' : (𝓝[<] a).NeBot) :
+    f.rightLim.leftLim a = f.leftLim a := by
+  obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
+  apply leftLim_eq_of_tendsto (neBot_iff.mp h')
+  apply (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.2
+  rintro s ⟨s_mem, s_closed⟩
+  obtain ⟨u, au, hu⟩ :  ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
+    have := (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.1 h s ⟨s_mem, s_closed⟩
+    simpa using (mem_nhdsLT_iff_exists_Ioo_subset' hb).1 this
+  filter_upwards [Ioo_mem_nhdsLT au] with c hc
+  rcases eq_or_neBot (𝓝[>] c) with h'c | h'c
+  · simpa [h'c, rightLim_eq_of_eq_bot] using hu hc
+  by_cases! h''c : ¬ ∃ y, Tendsto f (𝓝[>] c) (𝓝 y)
+  · simpa [rightLim_eq_of_not_tendsto _ h''c] using hu hc
+  apply s_closed.mem_of_tendsto (tendsto_rightLim_of_tendsto h''c)
+  filter_upwards [Ioo_mem_nhdsGT_of_mem ⟨hc.1.le, hc.2⟩] with d hd using hu hd
+
+theorem rightLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) (h' : (𝓝[>] a).NeBot) :
+    f.leftLim.rightLim a = f.rightLim a :=
+  leftLim_rightLim (α := αᵒᵈ) h h'
 
 end
 

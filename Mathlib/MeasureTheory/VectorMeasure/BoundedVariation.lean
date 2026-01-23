@@ -492,22 +492,22 @@ theorem vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     replace hx : ∀ (i : ℕ), u i < x ∧ x ≤ a := by simpa using hx
     have : a ≤ x := le_of_tendsto' u_lim fun n => (hx n).1.le
     simp [le_antisymm this (hx 0).2]
-  have L1 : Tendsto (fun n => hf.vectorMeasure (Ioc (u n) a)) atTop (𝓝 (hf.vectorMeasure {a})) := by
+  have L1 : Tendsto (fun n ↦ hf.vectorMeasure (Ioc (u n) a)) atTop (𝓝 (hf.vectorMeasure {a})) := by
     rw [A]
-    refine tendsto_measure_iInter_atTop (fun n => nullMeasurableSet_Ioc)
-      (fun m n hmn => ?_) ?_
-    · exact Ioc_subset_Ioc_left (u_mono.monotone hmn)
-    · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩
+    apply VectorMeasure.tendsto_vectorMeasure_iInter_atTop_nat ?_ (fun n ↦ measurableSet_Ioc)
+    exact fun m n hmn ↦ Ioc_subset_Ioc_left (u_mono.monotone hmn)
   have L2 :
-      Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (ofReal (f a - leftLim f a))) := by
-    simp only [measure_Ioc]
-    have : Tendsto (fun n => f (u n)) atTop (𝓝 (leftLim f a)) := by
-      apply (f.mono.tendsto_leftLim a).comp
-      exact
-        tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ u_lim
-          (Eventually.of_forall fun n => u_lt_a n)
-    exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
+      Tendsto (fun n ↦ hf.vectorMeasure (Ioc (u n) a)) atTop (𝓝 (f.rightLim a - f.leftLim a)) := by
+    simp_rw [hf.vectorMeasure_Ioc (u_lt_a _).le]
+    apply tendsto_const_nhds.sub
+    have : Tendsto u atTop (𝓝[<] a) := tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+      u_lim (Eventually.of_forall u_lt_a)
+    convert (hf.rightLim.tendsto_leftLim a).comp this using 2
+
+
   exact tendsto_nhds_unique L1 L2
+
+#exit
 
 @[simp]
 theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
