@@ -94,6 +94,9 @@ open Lean Meta Elab Tactic
 open Mathlib.Tactic
 open Qq
 
+set_option linter.style.whitespace false -- TODO: pretty-printing of message data
+-- is completely undesirable; too many false positives!
+
 namespace Manifold.Elab
 
 /- Note: these functions are convenient in this file, and may be convenient elsewhere, but their

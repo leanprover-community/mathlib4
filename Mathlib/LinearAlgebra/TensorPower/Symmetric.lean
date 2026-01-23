@@ -54,6 +54,7 @@ def SymmetricPower : Type max u v :=
 @[inherit_doc]
 scoped[TensorProduct] notation:max "Sym[" R "] " ι:arg M:arg => SymmetricPower R ι M
 
+set_option linter.style.whitespace false in -- pretty-printing false positive
 /-- The `n`th symmetric tensor power of a semimodule `M` over a commutative semiring `R` -/
 scoped[TensorProduct] notation:max "Sym[" R "]^" n:arg M:arg => Sym[R] (Fin n) M
 

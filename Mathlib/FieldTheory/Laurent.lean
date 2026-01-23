@@ -46,6 +46,7 @@ theorem taylor_mem_nonZeroDivisors (hp : p ∈ R[X]⁰) : taylor r p ∈ R[X]⁰
     LinearMap.map_eq_zero_iff _ (taylor_injective _), mul_right_mem_nonZeroDivisors_eq_zero_iff hp,
     LinearMap.map_eq_zero_iff _ (taylor_injective _)] at hx
 
+set_option linter.style.whitespace false in -- right style not clear
 /-- The Laurent expansion of rational functions about a value.
 Auxiliary definition, usage when over integral domains should prefer `RatFunc.laurent`. -/
 def laurentAux : RatFunc R →+* RatFunc R :=
