@@ -13,7 +13,7 @@ public import Mathlib.Topology.MetricSpace.TransferInstance
 /-!
 # Transfer normed algebraic structures across `Equiv`s
 
-In this file, we transfer a normed field across an equivalence.
+In this file, we transfer a normed field structure across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
