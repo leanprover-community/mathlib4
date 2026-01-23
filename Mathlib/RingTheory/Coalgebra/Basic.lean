@@ -467,14 +467,14 @@ theorem comul_comp_single (i : n) :
       map (.single R _ i) (.single R _ i) ∘ₗ comul (R := R) (A := M) := by
   ext; simp
 
-theorem comul_comp_apply (i : n) :
+theorem comul_comp_proj (i : n) :
     comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = TensorProduct.map (proj i) (proj i) ∘ₗ comul := by
   ext1 j
   conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← TensorProduct.map_comp]
   obtain rfl | hij := eq_or_ne i j <;>
     simp_all [comp_assoc, proj_comp_single_same, proj_comp_single_ne]
 
-@[simp] theorem counit_comp_lsingle (i : n) :
+@[simp] theorem counit_comp_single (i : n) :
     counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
 
 end coalgebraStruct
@@ -488,11 +488,11 @@ other elements of `ι` to zero. -/
 instance : Coalgebra R (n → M) where
   rTensor_counit_comp_comul := by
     ext : 1
-    rw [comp_assoc, comul_comp_single, ← comp_assoc, rTensor_comp_map, counit_comp_lsingle,
+    rw [comp_assoc, comul_comp_single, ← comp_assoc, rTensor_comp_map, counit_comp_single,
       ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, lTensor_comp_mk]
   lTensor_counit_comp_comul := by
     ext : 1
-    rw [comp_assoc, comul_comp_single, ← comp_assoc, lTensor_comp_map, counit_comp_lsingle,
+    rw [comp_assoc, comul_comp_single, ← comp_assoc, lTensor_comp_map, counit_comp_single,
       ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
   coassoc := by
     ext : 1
