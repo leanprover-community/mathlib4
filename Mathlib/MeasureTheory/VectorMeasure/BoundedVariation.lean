@@ -53,6 +53,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom {α : Type*}
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
 a distance on it given by `edist s t = μ (s ∆ t)` -/
+@[nolint unusedArguments]
 def MeasuredSets (μ : Measure α) : Type _ :=
   {s : Set α // MeasurableSet s}
 
@@ -376,6 +377,9 @@ namespace BoundedVariationOn
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCountableTopology α]
   [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E} {a b : α}
 
+/-- The Stieltjes function associated to a bounded variation function. It is given by
+the variation between a base point and the current point of the function `f.rightLim`.
+Using right limits ensures the right continuity, which is used to construct Sieltjes measures. -/
 @[simps] noncomputable def stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
   toFun x := variationOnFromTo f.rightLim univ x₀ x
@@ -385,6 +389,9 @@ variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCounta
   right_continuous' x := hf.continuousWithinAt_variationOnFromTo_rightLim_Ici
 
 open scoped Classical in
+/-- Auxiliary measure used to construct the vector measure associated to a bounded variation
+function. This is *not* the total variation of this measure in general, as we need to adjust things
+when there is a bot element by adding a Dirac mass there. -/
 noncomputable def measureAux
     (hf : BoundedVariationOn f univ) : Measure α :=
   if h : Nonempty α then (hf.stieltjesFunctionRightLim h.some).measure else 0
@@ -456,8 +463,9 @@ lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
     apply le_bot_iff.1
     exact (h'm' _).trans (by simp [measureAux, h'α])
 
-
 open scoped Classical in
+/-- The vector measure associated to a bounded variation function `f`, giving mass
+`f.rightLim b - f.leftLim a` to closed intervals `[a, b]`, and similarly for other intervals. -/
 noncomputable irreducible_def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
   hf.exists_vectorMeasure_le_measureAux.choose +
   (if h : ∃ x, IsBot x then VectorMeasure.dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
@@ -478,10 +486,21 @@ lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     · simp [hx]
   simp [vectorMeasure, A, B]
 
-theorem vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
+lemma vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure {a} = f.rightLim a - f.leftLim a := by
   by_cases ha : IsBot a
-  · sorry
+  · have h : ∃ x, IsBot x := ⟨a, ha⟩
+    have heqa : h.choose = a := by
+      have := h.choose_spec
+      apply subsingleton_isBot _ h.choose_spec ha
+    have A : hf.exists_vectorMeasure_le_measureAux.choose {a} = 0 := by
+      rw [← botSet_eq_singleton_of_isBot ha]
+      exact hf.exists_vectorMeasure_le_measureAux.choose_spec.2.1
+    simp only [vectorMeasure, h, ↓reduceDIte, VectorMeasure.coe_add, Pi.add_apply, A,
+      zero_add]
+    rw [VectorMeasure.dirac_apply_of_mem (MeasurableSet.singleton a)]
+    · simpa only [heqa, sub_right_inj] using (leftLim_eq_of_isBot ha).symm
+    · simp [heqa]
   obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
@@ -503,49 +522,32 @@ theorem vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     have : Tendsto u atTop (𝓝[<] a) := tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       u_lim (Eventually.of_forall u_lt_a)
     convert (hf.rightLim.tendsto_leftLim a).comp this using 2
-    symm
-    apply leftLim_rightLim
-
-
-
-
-
+    have : (𝓝[<] a).NeBot := by
+      rw [← mem_closure_iff_nhdsWithin_neBot, closure_Iio' ⟨b, hb⟩]
+      exact self_mem_Iic
+    exact (leftLim_rightLim (hf.tendsto_leftLim _)).symm
   exact tendsto_nhds_unique L1 L2
 
-#exit
+lemma vectorMeasure_Icc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+    hf.vectorMeasure (Icc a b) = f.rightLim b - f.leftLim a := by
+  rw [← Icc_union_Ioc_eq_Icc le_rfl h, VectorMeasure.of_union (by simp)
+    measurableSet_Icc measurableSet_Ioc, Icc_self, hf.vectorMeasure_singleton,
+    hf.vectorMeasure_Ioc h]
+  simp
 
-@[simp]
-theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
-  rcases le_or_gt a b with (hab | hab)
-  · have A : Disjoint {a} (Ioc a b) := by simp
-    simp [← Icc_union_Ioc_eq_Icc le_rfl hab, -singleton_union, ← ENNReal.ofReal_add,
-      f.mono.leftLim_le, measure_union A measurableSet_Ioc, f.mono hab]
-  · simp only [hab, measure_empty, Icc_eq_empty, not_le]
-    symm
-    simp [ENNReal.ofReal_eq_zero, f.mono.le_leftLim hab]
+theorem vectorMeasure_Ioo (hf : BoundedVariationOn f univ) (h : a < b) :
+    hf.vectorMeasure (Ioo a b) = f.leftLim b - f.rightLim a := by
+  have := hf.vectorMeasure_Ioc h.le
+  rw [← Ioo_union_Icc_eq_Ioc h le_rfl, VectorMeasure.of_union (by simp) measurableSet_Ioo
+    measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
+  grind
 
-@[simp]
-theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
-  rcases le_or_gt b a with (hab | hab)
-  · simp only [hab, measure_empty, Ioo_eq_empty, not_lt]
-    symm
-    simp [ENNReal.ofReal_eq_zero, f.mono.leftLim_le hab]
-  · have A : Disjoint (Ioo a b) {b} := by simp
-    have D : f b - f a = f b - leftLim f b + (leftLim f b - f a) := by abel
-    have := f.measure_Ioc a b
-    simp only [← Ioo_union_Icc_eq_Ioc hab le_rfl, measure_singleton,
-      measure_union A (measurableSet_singleton b), Icc_self] at this
-    rw [D, ENNReal.ofReal_add, add_comm] at this
-    · simpa only [ENNReal.add_right_inj ENNReal.ofReal_ne_top]
-    · simp only [f.mono.leftLim_le le_rfl, sub_nonneg]
-    · simp only [f.mono.le_leftLim hab, sub_nonneg]
+theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+    hf.vectorMeasure (Ico a b) = f.leftLim b - f.leftLim a := by
+  rcases h.eq_or_lt with rfl | h'
+  · simp
+  rw [← Icc_union_Ioo_eq_Ico le_rfl h', VectorMeasure.of_union (by simp) measurableSet_Icc
+    measurableSet_Ioo, hf.vectorMeasure_Icc le_rfl, hf.vectorMeasure_Ioo h']
+  abel
 
-@[simp]
-theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
-  rcases le_or_gt b a with (hab | hab)
-  · simp only [hab, measure_empty, Ico_eq_empty, not_lt]
-    symm
-    simp [ENNReal.ofReal_eq_zero, f.mono.leftLim hab]
-  · have A : Disjoint {a} (Ioo a b) := by simp
-    simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, f.mono.leftLim_le,
-      measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
+end BoundedVariationOn
