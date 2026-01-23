@@ -225,7 +225,7 @@ lemma bypass_eq_nil
 theorem even_length_cons_of_isPath
     (h_cycles : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length)
     {u v : V} (q : G.Walk v u) (hq : q.IsPath) (ha : G.Adj u v) :
-    Even (Walk.cons ha q).length := by
+    Even (SimpleGraph.Walk.cons ha q).length := by
   by_cases hq' : q.length = 1
   · simp [hq']
   apply h_cycles u (SimpleGraph.Walk.cons ha q)
@@ -239,7 +239,7 @@ theorem even_length_cons_of_isPath
     · rw [cons_isPath_iff] at hq
       exact hq.2 <| snd_mem_support_of_mem_edges _ ha
 
-/-- If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1. -/
+/- If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1. -/
 lemma IsPath.length_eq_one_of_mem_edges
 {u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
   by_contra h_non_simple_cycle
@@ -252,9 +252,13 @@ lemma IsPath.length_eq_one_of_mem_edges
       have := by exact SimpleGraph.Walk.fst_mem_support_of_mem_edges p h_3
       exact Classical.not_forall_not.mp fun a ↦ right this
   obtain ⟨q, hq⟩ := h_cycle
-  cases q <;> simp_all +decide
-  cases p <;> simp_all +decide
-  simp_all
+  cases q <;> simp_all +decide only [isCycle_def, IsTrail.nil, ne_eq, not_true_eq_false,
+    support_nil, List.tail_cons, List.nodup_nil, and_true, and_false]
+  cases p <;> simp_all +decide only [isTrail_def, edges_cons, List.nodup_cons, reduceCtorEq,
+    not_false_eq_true, support_cons, List.tail_cons, true_and, isPath_iff_eq_nil, edges_nil,
+    List.not_mem_nil]
+  simp_all only [cons_isPath_iff, List.mem_cons, Sym2.eq, Sym2.rel_iff',
+  Prod.mk.injEq, true_and, Prod.swap_prod_mk, length_cons, Nat.add_eq_right]
   obtain ⟨left, right⟩ := hq
   obtain ⟨left_1, right_1⟩ := hp
   obtain ⟨left, right_2⟩ := left
@@ -275,7 +279,7 @@ lemma even_length_cons_takeUntil_of_bypass [DecidableEq V]
   · exact h_cycles _ _ hc
   · -- If `c` is not a cycle, then `s(u, v) ∈ p.edges`.
     have h_edge : s(u, v) ∈ (q.takeUntil u hs).edges := by
-      contrapose! hc; simp_all +decide
+      contrapose! hc; simp_all +decide only [cons_isCycle_iff, not_false_eq_true, and_true]
       exact IsPath.takeUntil hq hs
     have h_length : (q.takeUntil u hs).length = 1 := by
       apply IsPath.length_eq_one_of_mem_edges
