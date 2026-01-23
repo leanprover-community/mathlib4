@@ -213,7 +213,6 @@ class IsOneRelator (G : Type*) [Group G] : Prop where
 instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
   obtain ⟨α, hα, rels, hrels, ⟨iso⟩⟩ := h
-  -- unfold FinitelyPresentedGroup at iso
   unfold PresentedGroup at iso
   use α, hα
   -- TODO probably a nicer way to do this.
