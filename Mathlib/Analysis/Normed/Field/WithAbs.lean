@@ -5,15 +5,12 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
-public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Analysis.Normed.Field.TransferInstance
-public import Mathlib.FieldTheory.SeparableDegree
 
 /-!
 # WithAbs for fields

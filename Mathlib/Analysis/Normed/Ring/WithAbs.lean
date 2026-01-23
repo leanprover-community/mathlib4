@@ -5,12 +5,9 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Algebra.Ring.TransferInstance
-public import Mathlib.Analysis.Normed.Ring.TransferInstance
 public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Analysis.Normed.Ring.TransferInstance
 
 /-!
 # `WithAbs` type synonym

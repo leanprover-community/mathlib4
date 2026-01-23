@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Normed.Field.WithAbs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Equivalence of real-valued absolute values
