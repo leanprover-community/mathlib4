@@ -93,7 +93,7 @@ def FreeGroup.freeGroupUnitMulEquivInt :
         simp [FreeGroup.freeGroupUnitEquivInt] }
 
 /-- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
-FreeGroup.map is also surjective.  -/
+FreeGroup.map is also surjective. -/
 theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
   Function.Surjective (FreeGroup.map f) := by
   intro x
@@ -452,7 +452,7 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
-/-- If you FreeGroup α by an empty set, you get the original group -/
+/-- If you FreeGroup α by an empty set, you get the original group. -/
 def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
   have hbot :
