@@ -33,6 +33,8 @@ soit d'abord sur les `j`.
 des intervalles semi-ouverts. Alors 3. est satisfait.
 -/
 
+@[expose] public section
+
 open Filter Set MeasureTheory MeasurableSpace
 open scoped symmDiff Topology NNReal ENNReal
 
@@ -372,7 +374,7 @@ open MeasureTheory
 namespace BoundedVariationOn
 
 variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCountableTopology α]
-  [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E}
+  [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E} {a b : α}
 
 @[simps] noncomputable def stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
@@ -454,6 +456,91 @@ lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
     apply le_bot_iff.1
     exact (h'm' _).trans (by simp [measureAux, h'α])
 
-irreducible_def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
+
+open scoped Classical in
+noncomputable irreducible_def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
   hf.exists_vectorMeasure_le_measureAux.choose +
-    (if h : ∃ x, IsBot x then dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
+  (if h : ∃ x, IsBot x then VectorMeasure.dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
+
+lemma vectorMeasure_Ioc (hf : BoundedVariationOn f univ) (h : a ≤ b) :
+    hf.vectorMeasure (Ioc a b) = f.rightLim b - f.rightLim a := by
+  classical
+  have A : hf.exists_vectorMeasure_le_measureAux.choose (Ioc a b) =
+      f.rightLim b - f.rightLim a :=
+    hf.exists_vectorMeasure_le_measureAux.choose_spec.1 a b h
+  have B : (if hx : ∃ (x : α), IsBot x then VectorMeasure.dirac hx.choose
+      (f.rightLim hx.choose - f hx.choose) else 0) (Ioc a b) = 0 := by
+    by_cases hx : ∃ (x : α), IsBot x
+    · simp only [hx, ↓reduceDIte]
+      rw [VectorMeasure.dirac_apply_of_notMem]
+      simp only [mem_Ioc, not_and_or, not_lt, not_le]
+      exact Or.inl (hx.choose_spec _)
+    · simp [hx]
+  simp [vectorMeasure, A, B]
+
+theorem vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
+    hf.vectorMeasure {a} = f.rightLim a - f.leftLim a := by
+  by_cases ha : IsBot a
+  · sorry
+  obtain ⟨b, hb⟩ : ∃ b, b < a := by simpa only [IsBot, not_forall, not_le] using ha
+  obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
+    ∃ u : ℕ → α, StrictMono u ∧ (∀ n : ℕ, u n ∈ Ioo b a) ∧ Tendsto u atTop (𝓝 a) :=
+    exists_seq_strictMono_tendsto' hb
+  replace u_lt_a n : u n < a := (u_lt_a n).2
+  have A : {a} = ⋂ n, Ioc (u n) a := by
+    refine Subset.antisymm (fun x hx => by simp [mem_singleton_iff.1 hx, u_lt_a]) fun x hx => ?_
+    replace hx : ∀ (i : ℕ), u i < x ∧ x ≤ a := by simpa using hx
+    have : a ≤ x := le_of_tendsto' u_lim fun n => (hx n).1.le
+    simp [le_antisymm this (hx 0).2]
+  have L1 : Tendsto (fun n => hf.vectorMeasure (Ioc (u n) a)) atTop (𝓝 (hf.vectorMeasure {a})) := by
+    rw [A]
+    refine tendsto_measure_iInter_atTop (fun n => nullMeasurableSet_Ioc)
+      (fun m n hmn => ?_) ?_
+    · exact Ioc_subset_Ioc_left (u_mono.monotone hmn)
+    · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩
+  have L2 :
+      Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (ofReal (f a - leftLim f a))) := by
+    simp only [measure_Ioc]
+    have : Tendsto (fun n => f (u n)) atTop (𝓝 (leftLim f a)) := by
+      apply (f.mono.tendsto_leftLim a).comp
+      exact
+        tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ u_lim
+          (Eventually.of_forall fun n => u_lt_a n)
+    exact ENNReal.continuous_ofReal.continuousAt.tendsto.comp (tendsto_const_nhds.sub this)
+  exact tendsto_nhds_unique L1 L2
+
+@[simp]
+theorem measure_Icc (a b : R) : f.measure (Icc a b) = ofReal (f b - leftLim f a) := by
+  rcases le_or_gt a b with (hab | hab)
+  · have A : Disjoint {a} (Ioc a b) := by simp
+    simp [← Icc_union_Ioc_eq_Icc le_rfl hab, -singleton_union, ← ENNReal.ofReal_add,
+      f.mono.leftLim_le, measure_union A measurableSet_Ioc, f.mono hab]
+  · simp only [hab, measure_empty, Icc_eq_empty, not_le]
+    symm
+    simp [ENNReal.ofReal_eq_zero, f.mono.le_leftLim hab]
+
+@[simp]
+theorem measure_Ioo {a b : R} : f.measure (Ioo a b) = ofReal (leftLim f b - f a) := by
+  rcases le_or_gt b a with (hab | hab)
+  · simp only [hab, measure_empty, Ioo_eq_empty, not_lt]
+    symm
+    simp [ENNReal.ofReal_eq_zero, f.mono.leftLim_le hab]
+  · have A : Disjoint (Ioo a b) {b} := by simp
+    have D : f b - f a = f b - leftLim f b + (leftLim f b - f a) := by abel
+    have := f.measure_Ioc a b
+    simp only [← Ioo_union_Icc_eq_Ioc hab le_rfl, measure_singleton,
+      measure_union A (measurableSet_singleton b), Icc_self] at this
+    rw [D, ENNReal.ofReal_add, add_comm] at this
+    · simpa only [ENNReal.add_right_inj ENNReal.ofReal_ne_top]
+    · simp only [f.mono.leftLim_le le_rfl, sub_nonneg]
+    · simp only [f.mono.le_leftLim hab, sub_nonneg]
+
+@[simp]
+theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - leftLim f a) := by
+  rcases le_or_gt b a with (hab | hab)
+  · simp only [hab, measure_empty, Ico_eq_empty, not_lt]
+    symm
+    simp [ENNReal.ofReal_eq_zero, f.mono.leftLim hab]
+  · have A : Disjoint {a} (Ioo a b) := by simp
+    simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, f.mono.leftLim_le,
+      measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
