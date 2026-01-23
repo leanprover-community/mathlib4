@@ -21,6 +21,11 @@ This file defines canonical products attached to a sequence `a : ℕ → ℂ` of
 and proves uniform convergence on compact sets assuming the standard summability hypothesis
 `Summable (fun n => ‖a n‖⁻¹ ^ (m+1))`.
 
+## Implementation notes
+
+The summability hypothesis implies `‖a n‖ → ∞`, so the product converges locally uniformly on `ℂ`.
+We phrase the main theorem as a `TendstoUniformlyOn` statement for the finite partial products.
+
 ## Main definitions
 
 - `Complex.canonicalProduct`: the infinite product `∏' n, E_m(z / a n)`
@@ -53,6 +58,9 @@ We keep this statement minimal: it is purely a convergence+analyticity lemma for
 product, parameterized by a sequence `a` and a genus `m`.
 -/
 
+/-- Under the standard summability hypothesis `Summable (fun n => ‖a n‖⁻¹ ^ (m + 1))` and
+`a n ≠ 0`, the finite partial products of `weierstrassFactor m (z / a n)` converge uniformly on
+compact sets to `canonicalProduct m a`. -/
 theorem canonicalProduct_converges_uniformOn_compact
     {m : ℕ} {a : ℕ → ℂ}
     (h_sum : Summable (fun n : ℕ => ‖a n‖⁻¹ ^ (m + 1)))
