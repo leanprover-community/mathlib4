@@ -561,7 +561,7 @@ alias finsum_pos' := finsum_pos
 alias one_lt_finprod' := one_lt_finprod
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod` for a variant where
-`β` is a `CommMonoidWithZero`. -/
+`M` is a `CommMonoidWithZero`. -/
 @[to_additive /-- Monotonicity of `finsum.` -/]
 lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Finite)
     (hg : g.mulSupport.Finite) (h : f ≤ g) :
@@ -573,7 +573,7 @@ lemma finprod_le_finprod' [PartialOrder M] [MulLeftMono M] (hf : f.mulSupport.Fi
   exact Finset.prod_le_prod' fun i _ ↦ h i
 
 /-- Monotonicity of `finprod`. See `finprod_le_finprod'` for a variant where
-`β` is an ordered `CommMonoid`. -/
+`M` is an ordered `CommMonoid`. -/
 lemma finprod_le_finprod {M : Type*} [CommMonoidWithZero M] [PartialOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {f g : α → M} (hf : f.mulSupport.Finite) (hf₀ : ∀ a, 0 ≤ f a)
     (hg : g.mulSupport.Finite) (h : f ≤ g) :
