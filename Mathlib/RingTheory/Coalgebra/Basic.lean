@@ -434,6 +434,70 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
 
 end Finsupp
 
+namespace Pi
+variable {M R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
+  [AddCommMonoid M] [Module R M] [Coalgebra R M]
+
+open TensorProduct LinearMap
+
+instance : CoalgebraStruct R (n → M) where
+  comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
+  counit := .lsum R _ R fun _ ↦ counit
+
+@[simp]
+theorem comul_single (i : n) (a : M) :
+    comul (R := R) (single i a : n → M) = map (.single R _ i) (.single R _ i) (comul a) :=
+  lsum_piSingle _ _ _ _ _ _
+
+@[simp]
+theorem counit_single (i : n) (a : M) : counit (single i a : n → M) = counit (R := R) a :=
+  lsum_piSingle _ _ _ _ _ _
+
+theorem comul_comp_single (i : n) :
+    comul (R := R) (A := n → M) ∘ₗ (.single R _ i) =
+      map (.single R _ i) (.single R _ i) ∘ₗ comul (R := R) (A := M) := by
+  ext; simp
+
+theorem comul_comp_apply (i : n) :
+    comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = TensorProduct.map (proj i) (proj i) ∘ₗ comul := by
+  ext1 j
+  conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← TensorProduct.map_comp]
+  obtain rfl | hij := eq_or_ne i j <;>
+    simp_all [comp_assoc, proj_comp_single_same, proj_comp_single_ne]
+
+@[simp] theorem counit_comp_lsingle (i : n) :
+    counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
+
+/-- The `R`-module whose elements are functions `n → M` for finite `n` has a coalgebra structure.
+The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and
+the counit `ε` by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending `i` to `a` and all
+other elements of `ι` to zero. -/
+instance : Coalgebra R (n → M) where
+  rTensor_counit_comp_comul := by
+    ext : 1
+    rw [comp_assoc, comul_comp_single, ← comp_assoc, rTensor_comp_map, counit_comp_lsingle,
+      ← lTensor_comp_rTensor, comp_assoc, rTensor_counit_comp_comul, lTensor_comp_mk]
+  lTensor_counit_comp_comul := by
+    ext : 1
+    rw [comp_assoc, comul_comp_single, ← comp_assoc, lTensor_comp_map, counit_comp_lsingle,
+      ← rTensor_comp_lTensor, comp_assoc, lTensor_counit_comp_comul, rTensor_comp_flip_mk]
+  coassoc := by
+    ext : 1
+    simp_rw [comp_assoc, comul_comp_single, ← comp_assoc, lTensor_comp_map, comul_comp_single,
+      comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_single, ← map_comp_rTensor,
+      ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
+        TensorProduct.map_map_comp_assoc_eq]
+
+instance instIsCocomm [IsCocomm R M] : IsCocomm R (n → M) where
+  comm_comp_comul := by
+    ext i : 1
+    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
+    simp only [comp_assoc, comul_comp_single]
+    simp only [← comp_assoc, ← map_comp_comm_eq]
+    simp [LinearMap.comp_assoc]
+
+end Pi
+
 namespace Equiv
 variable {R A B : Type*} [CommSemiring R]
 
