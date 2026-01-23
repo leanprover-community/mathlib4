@@ -127,8 +127,7 @@ private lemma neg_log_le_sqrt_two_div {x : ℝ} (hx : 0 < x) (hxle : x ≤ 1) :
     -Real.log x ≤ Real.sqrt (2 / x) := by
   have hx0 : 0 ≤ x := le_of_lt hx
   have ht : 0 ≤ -Real.log x := by
-    have : Real.log x ≤ 0 := Real.log_nonpos hx0 hxle
-    linarith
+    have : Real.log x ≤ 0 := Real.log_nonpos hx0 hxle; linarith
   have hquad : 1 + (-Real.log x) + (-Real.log x) ^ 2 / 2 ≤ Real.exp (-Real.log x) :=
     Real.quadratic_le_exp_of_nonneg ht
   have hsq_div : (-Real.log x) ^ 2 / 2 ≤ Real.exp (-Real.log x) := by
