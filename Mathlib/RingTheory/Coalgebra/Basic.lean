@@ -425,12 +425,7 @@ noncomputable instance instCoalgebra : Coalgebra R (ι →₀ A) where
         TensorProduct.map_map_comp_assoc_eq]
 
 instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
-  comm_comp_comul := by
-    ext i : 1
-    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
-    simp only [comp_assoc, comul_comp_lsingle]
-    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
-    simp [LinearMap.comp_assoc]
+  comm_comp_comul := by ext; simp [← TensorProduct.map_comm]
 
 end Finsupp
 
@@ -447,21 +442,21 @@ instance : CoalgebraStruct R (n → M) where
   counit := .lsum R _ R fun _ ↦ counit
 
 @[simp] theorem comul_single (i : n) (a : M) :
-    comul (R := R) (single i a : n → M) = map (.single R _ i) (.single R _ i) (comul a) :=
+    comul (single i a : n → M) = map (.single R _ i) (.single R _ i) (comul a) :=
   lsum_piSingle _ _ _ _ _ _
 
 @[simp] theorem counit_single (i : n) (a : M) : counit (single i a : n → M) = counit (R := R) a :=
   lsum_piSingle _ _ _ _ _ _
 
 theorem comul_comp_single (i : n) :
-    comul (R := R) (A := n → M) ∘ₗ .single R _ i =
-      map (.single R _ i) (.single R _ i) ∘ₗ comul (R := R) (A := M) := by
+    comul (A := n → M) ∘ₗ .single R _ i =
+      map (.single R _ i) (.single R _ i) ∘ₗ comul (A := M) := by
   ext; simp
 
 theorem comul_comp_proj (i : n) :
     comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = map (proj i) (proj i) ∘ₗ comul := by
   ext1 j
-  conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← TensorProduct.map_comp]
+  conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← map_comp]
   obtain rfl | hij := eq_or_ne i j <;>
     simp_all [comp_assoc, proj_comp_single_same, proj_comp_single_ne]
 
@@ -490,15 +485,9 @@ instance : Coalgebra R (n → M) where
     simp_rw [comp_assoc, comul_comp_single, ← comp_assoc, lTensor_comp_map, comul_comp_single,
       comp_assoc, ← comp_assoc comul, rTensor_comp_map, comul_comp_single, ← map_comp_rTensor,
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
-        TensorProduct.map_map_comp_assoc_eq]
+      map_map_comp_assoc_eq]
 
-instance [IsCocomm R M] : IsCocomm R (n → M) where
-  comm_comp_comul := by
-    ext i : 1
-    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
-    simp only [comp_assoc, comul_comp_single]
-    simp only [← comp_assoc, ← map_comp_comm_eq]
-    simp [LinearMap.comp_assoc]
+instance [IsCocomm R M] : IsCocomm R (n → M) where comm_comp_comul := by ext; simp [← map_comm]
 
 end Pi
 
