@@ -699,19 +699,23 @@ def itautoCore (g : MVarId)
 
 open Elab Tactic
 
-/-- A decision procedure for intuitionistic propositional logic. Unlike `finish` and `tauto!` this
-tactic never uses the law of excluded middle (without the `!` option), and the proof search is
-tailored for this use case. (`itauto!` will work as a classical SAT solver, but the algorithm is
-not very good in this situation.)
+/-- `itauto` solves the main goal when it is a tautology of intuitionistic propositional logic.
+Unlike `grind` and `tauto!` this tactic never uses the law of excluded middle (without the `!`
+option), and the proof search is tailored for this use case. `itauto` is complete for intuitionistic
+propositional logic: it will solve any goal that is provable in this logic.
 
+* `itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
+  `Decidable a` and `Decidable b`.
+* `itauto *` will case on all decidable propositions that it can find among the atomic propositions.
+* `itauto!` will work as a classical SAT solver, but the algorithm is not very good in this
+  situation.
+* `itauto! *` will case on all propositional atoms. *Warning:* This can blow up the proof search, so
+  it should be used sparingly.
+
+Example:
 ```lean
 example (p : Prop) : ¬ (p ↔ ¬ p) := by itauto
 ```
-
-`itauto [a, b]` will additionally attempt case analysis on `a` and `b` assuming that it can derive
-`Decidable a` and `Decidable b`. `itauto *` will case on all decidable propositions that it can
-find among the atomic propositions, and `itauto! *` will case on all propositional atoms.
-*Warning:* This can blow up the proof search, so it should be used sparingly.
 -/
 syntax (name := itauto) "itauto" "!"? (" *" <|> (" [" term,* "]"))? : tactic
 
@@ -722,7 +726,7 @@ elab_rules : tactic
     let hs ← hs.getElems.mapM (Term.elabTermAndSynthesize · none)
     liftMetaTactic (itautoCore · true cl.isSome hs *> pure [])
 
-@[inherit_doc itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
+@[tactic_alt itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
 
 macro_rules
   | `(tactic| itauto!) => `(tactic| itauto !)
