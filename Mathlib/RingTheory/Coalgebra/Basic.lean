@@ -440,8 +440,7 @@ instance [CoalgebraStruct R M] : CoalgebraStruct R (n → M) := instCoalgebraStr
   lsum_piSingle _ _ _ _ _ _
 
 theorem comul_comp_single (i : n) :
-    comul (A := Π i, A i) ∘ₗ .single R _ i =
-      map (.single R _ i) (.single R _ i) ∘ₗ comul (A := A i) := by
+    comul ∘ₗ .single R _ i = map (.single R A i) (.single R A i) ∘ₗ comul := by
   ext; simp
 
 theorem comul_comp_proj (i : n) :
@@ -449,8 +448,7 @@ theorem comul_comp_proj (i : n) :
   ext j; have := eq_or_ne i j
   aesop (add simp [map_map, proj_comp_single, diag])
 
-@[simp] theorem counit_comp_single (i : n) :
-    counit (R := R) (A := Π i, A i) ∘ₗ .single R _ i = counit := by ext; simp
+@[simp] theorem counit_comp_single (i : n) : counit ∘ₗ .single R A i = counit := by ext; simp
 
 end coalgebraStruct
 
