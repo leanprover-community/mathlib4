@@ -195,6 +195,12 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] [CompactSpace Y] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.snd _ _)
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] [CompactSpace X] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
+
 lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun ⟨R, f, hf⟩ ↦ ⟨hf.range_eq ▸ isCompact_range f.continuous⟩⟩

@@ -65,12 +65,12 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
 theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
-  intro b₁ b₂ h
-  simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
+  intro
+  grind
 
 theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
-  intro b₁ b₂ h
-  simpa only [and_true, eq_self_iff_true, mk_inj] using h
+  intro
+  grind
 
 lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
     (mk_right_injective _).eq_iff
@@ -177,12 +177,12 @@ instance {r : α → α → Prop} {s : β → β → Prop} [IsStrictOrder α r] 
     | (_, _), (_, _), .right _ _,     .left  _ _ hr₂ => (irrefl _ hr₂).elim
     | (_, _), (_, _), .right _ hs₁,   .right _ hs₂   => antisymm hs₁ hs₂ ▸ rfl⟩
 
-instance isTotal_left {r : α → α → Prop} {s : β → β → Prop} [IsTotal α r] :
-    IsTotal (α × β) (Prod.Lex r s) :=
-  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (IsTotal.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
+instance total_left {r : α → α → Prop} {s : β → β → Prop} [Std.Total r] :
+    Std.Total (Prod.Lex r s) :=
+  ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (Std.Total.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 
-instance isTotal_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [IsTotal β s] :
-    IsTotal (α × β) (Prod.Lex r s) :=
+instance total_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [Std.Total s] :
+    Std.Total (Prod.Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (.left _ _ hij)

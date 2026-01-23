@@ -189,3 +189,13 @@ instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
 
 attribute [match_pattern] Bot.bot Top.top
+
+recommended_spelling "compl" for "ᶜ" in [Compl.compl, «term_ᶜ»]
+recommended_spelling "himp" for "⇨" in [HImp.himp, «term_⇨_»]
+recommended_spelling "hnot" for "￢" in [HNot.hnot, «term￢_»]
+recommended_spelling "top" for "⊤" in [Top.top, «term⊤»]
+recommended_spelling "bot" for "⊥" in [Bot.bot, «term⊥»]
+
+-- Don't recommend in `Max.max` and `Min.min`!
+recommended_spelling "sup" for "⊔" in [«term_⊔_»]
+recommended_spelling "inf" for "⊓" in [«term_⊓_»]

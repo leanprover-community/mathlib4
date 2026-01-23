@@ -508,10 +508,15 @@ section
 
 variable (f : P₁ →ᵃ[k] P₂)
 
+/-- The affine version of `LinearMap.map_span`. -/
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
+
+-- this name was backwards
+@[deprecated (since := "2026-01-20")]
+alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -564,7 +569,7 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
+  simp [direction_eq_vectorSpan, AffineMap.map_vectorSpan]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)

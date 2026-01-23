@@ -97,6 +97,20 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
+/-- If `K` is a field, then so is `K` viewed as a valuation subring
+of itself. (That is, `⊤ : ValuationSubring K`.) -/
+instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
+
+@[simp, norm_cast]
+theorem top_coe_div (x y : (⊤ : ValuationSubring K)) :
+    ((x / y : (⊤ : ValuationSubring K)) : K) = (x : K) / (y : K) :=
+  rfl
+
+@[simp, norm_cast]
+theorem top_coe_inv (x : (⊤ : ValuationSubring K)) :
+    ((x⁻¹ : (⊤ : ValuationSubring K)) : K) = (x : K)⁻¹ :=
+  rfl
+
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
 
@@ -355,10 +369,10 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
-  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
+  exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where

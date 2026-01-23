@@ -336,11 +336,6 @@ end
 instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
   S.toSubmodule.instIsTorsionFree
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
-  ⟨fun {c} {x : S} h =>
-    have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
-
 protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y := rfl
 
 protected theorem coe_mul (x y : S) : (↑(x * y) : A) = ↑x * ↑y := rfl
@@ -880,11 +875,6 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
 instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
   .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
     (by simp [smul_def])
-
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
-  ⟨fun {c} x h =>
-    have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
-    this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
 
 end Actions
 

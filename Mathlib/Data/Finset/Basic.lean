@@ -333,6 +333,16 @@ theorem filter_cons {a : α} (s : Finset α) (ha : a ∉ s) :
     (s.cons a ha).filter p =
       if p a then (s.filter p).cons a ((mem_of_mem_filter _).mt ha) else s.filter p := by grind
 
+@[simp]
+theorem disjoint_disjUnion_left {s t u : Finset α} (h : Disjoint s t) :
+    Disjoint (s.disjUnion t h) u ↔ Disjoint s u ∧ Disjoint t u := by
+  simp only [disjoint_left, mem_disjUnion, or_imp, forall_and]
+
+@[simp]
+theorem disjoint_disjUnion_right {s t u : Finset α} (h : Disjoint t u) :
+    Disjoint s (t.disjUnion u h) ↔ Disjoint s t ∧ Disjoint s u := by
+  simp only [disjoint_right, mem_disjUnion, or_imp, forall_and]
+
 section
 variable [DecidableEq α]
 

@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -49,9 +50,42 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 protected def IsPrimary (S : Submodule R M) : Prop :=
   S ≠ ⊤ ∧ ∀ {r : R} {x : M}, r • x ∈ S → x ∈ S ∨ ∃ n : ℕ, (r ^ n • ⊤ : Submodule R M) ≤ S
 
-variable {S : Submodule R M}
+variable {S T : Submodule R M}
 
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
+
+lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
+    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+  h.right hrm
+
+protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
+    (h : (S.colon Set.univ).radical = (T.colon Set.univ).radical) :
+    (S ⊓ T).IsPrimary := by
+  obtain ⟨_, hS⟩ := hS
+  obtain ⟨_, hT⟩ := hT
+  refine ⟨by grind, fun ⟨hS', hT'⟩ ↦ ?_⟩
+  simp_rw [← mem_colon_iff_le, ← Ideal.mem_radical_iff, inf_colon, Ideal.radical_inf,
+    top_coe, h, inf_idem, mem_inf, and_or_right] at hS hT ⊢
+  exact ⟨hS hS', hT hT'⟩
+
+open Finset in
+lemma isPrimary_finsetInf {ι : Type*} {s : Finset ι} {f : ι → Submodule R M} {i : ι} (hi : i ∈ s)
+    (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
+    (hs' : ∀ ⦃y⦄, y ∈ s → ((f y).colon Set.univ).radical = ((f i).colon Set.univ).radical) :
+    (s.inf f).IsPrimary := by
+  classical
+  induction s using Finset.induction_on generalizing i with
+  | empty => simp at hi
+  | insert a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | ⟨y, hy⟩
+    · simp only [insert_empty_eq, mem_singleton] at hi
+      simpa [hi] using hs
+    simp only [inf_insert]
+    have H ⦃x⦄ (hx : x ∈ s) : ((f x).colon Set.univ).radical = ((f y).colon Set.univ).radical := by
+      rw [hs' (mem_insert_of_mem hx), hs' (mem_insert_of_mem hy)]
+    refine IsPrimary.inf (hs (by simp)) (IH hy (fun x hx ↦ hs (by simp [hx])) H) ?_
+    rw [colon_finsetInf, Ideal.radical_finset_inf hy H,
+      hs' (mem_insert_self _ _), hs' (mem_insert_of_mem hy)]
 
 end CommSemiring
 

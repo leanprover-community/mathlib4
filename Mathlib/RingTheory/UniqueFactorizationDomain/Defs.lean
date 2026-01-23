@@ -112,7 +112,7 @@ section Prio
 
 -- see Note [default priority]
 /--
-Unique factorization monoids are defined as `CancelCommMonoidWithZero`s with well-founded
+Unique factorization monoids are defined as cancellative `CommMonoidWithZero`s with well-founded
 strict divisibility relations, but this is equivalent to more familiar definitions:
 
 Each element (except zero) is uniquely represented as a multiset of irreducible factors.
@@ -127,20 +127,22 @@ of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`
 -/
-class UniqueFactorizationMonoid (α : Type*) [CancelCommMonoidWithZero α] : Prop
-    extends IsWellFounded α DvdNotUnit where
+class UniqueFactorizationMonoid (α : Type*) [CommMonoidWithZero α] : Prop
+    extends IsCancelMulZero α, IsWellFounded α DvdNotUnit where
   protected irreducible_iff_prime : ∀ {a : α}, Irreducible a ↔ Prime a
 
+attribute [instance 100] UniqueFactorizationMonoid.toIsCancelMulZero
+
 instance (priority := 100) ufm_of_decomposition_of_wfDvdMonoid
-    [CancelCommMonoidWithZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
-    UniqueFactorizationMonoid α :=
-  { ‹WfDvdMonoid α› with irreducible_iff_prime := irreducible_iff_prime }
+    [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α] [DecompositionMonoid α] :
+    UniqueFactorizationMonoid α where
+  irreducible_iff_prime := irreducible_iff_prime
 
 end Prio
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 theorem exists_prime_factors (a : α) :
     a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a := by
@@ -169,7 +171,7 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero α]
+variable [CommMonoidWithZero α]
 variable [UniqueFactorizationMonoid α]
 
 open Classical in

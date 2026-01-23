@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Jujian Zhang, Yunzhou Xie
 module
 
 public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.Module.Torsion.Field
 
 import Mathlib.Algebra.Module.Torsion.Field
 

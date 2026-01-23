@@ -228,6 +228,7 @@ theorem restrictScalars [Algebra.IsAlgebraic R S]
     fun h ↦ hRS <| .of_comp (IsScalarTower.algebraMap_eq R S A ▸ h)).1 _
   have := hRS.noZeroDivisors _ (map_zero _) (map_mul _)
   have := Algebra.nontrivial_of_isAlgebraic R S
+  have : IsDomain R := NoZeroDivisors.to_isDomain _
   classical
   have ⟨r, hr, int⟩ := Algebra.IsAlgebraic.exists_integral_multiples R (p.support.image (coeff p))
   let p := (r • p).toSubring (integralClosure R S).toSubring fun s hs ↦ by

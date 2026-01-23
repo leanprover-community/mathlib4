@@ -126,7 +126,7 @@ theorem tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt
     (squeeze_zero' (.of_forall fun _ ↦ dist_nonneg) (hd'.mono fun _ ↦ le_of_lt) u_lim)⟩
 
 /-- The tangent cone at a non-isolated point contains `0`. -/
-theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
+theorem zero_mem_tangentConeAt {s : Set E} {x : E} (hx : x ∈ closure s) :
     0 ∈ tangentConeAt 𝕜 s x := by
   /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
   of `1 / (d n) ^ (1/2)`, then `c n` tends to infinity, but `c n • d n` tends to `0`. By definition,
@@ -156,6 +156,9 @@ theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : x ∈ closure s) :
       _ = ‖r‖ * u n := by field
   refine squeeze_zero_norm Hle ?_
   simpa using tendsto_const_nhds.mul u_lim
+
+@[deprecated (since := "2026-01-21")]
+alias zero_mem_tangentCone := zero_mem_tangentConeAt
 
 /-- If `x` is not an accumulation point of `s`, then the tangent cone of `s` at `x`
 is a subset of `{0}`. -/

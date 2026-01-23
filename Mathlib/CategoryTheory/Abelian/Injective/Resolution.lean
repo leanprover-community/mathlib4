@@ -16,7 +16,7 @@ public import Mathlib.Tactic.AdaptationNote
 ## Main results
 When the underlying category is abelian:
 * `CategoryTheory.InjectiveResolution.desc`: Given `I : InjectiveResolution X` and
-  `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a chain map
+  `J : InjectiveResolution Y`, any morphism `X ⟶ Y` admits a descent to a cochain map
   `J.cocomplex ⟶ I.cocomplex`. It is a descent in the sense that `I.ι` intertwines the descent and
   the original morphism, see `CategoryTheory.InjectiveResolution.desc_commutes`.
 * `CategoryTheory.InjectiveResolution.descHomotopy`: Any two such descents are homotopic.
@@ -87,7 +87,7 @@ def descFSucc {Y Z : C} (I : InjectiveResolution Y) (J : InjectiveResolution Z) 
     (g' ≫ I.cocomplex.d (n + 1) (n + 2)) (by simp [reassoc_of% w]),
       (J.exact_succ n).comp_descToInjective _ _⟩
 
-/-- A morphism in `C` descends to a chain map between injective resolutions. -/
+/-- A morphism in `C` descends to a cochain map between injective resolutions. -/
 def desc {Y Z : C} (f : Z ⟶ Y) (I : InjectiveResolution Y) (J : InjectiveResolution Z) :
     J.cocomplex ⟶ I.cocomplex :=
   CochainComplex.mkHom _ _ (descFZero f _ _) (descFOne f _ _) (descFOne_zero_comm f I J).symm
@@ -214,7 +214,7 @@ variable [HasInjectiveResolutions C]
 
 /-- Taking injective resolutions is functorial,
 if considered with target the homotopy category
-(`ℕ`-indexed cochain complexes and chain maps up to homotopy).
+(`ℕ`-indexed cochain complexes and cochain maps up to homotopy).
 -/
 def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ) where
   obj X := (HomotopyCategory.quotient _ _).obj (injectiveResolution X).cocomplex

@@ -156,8 +156,8 @@ lemma linearIndependent :
     intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
     have zgx : g x ≠ 0 := (smul_ne_zero_iff.mp hx).1
     have zgy : g y ≠ 0 := (smul_ne_zero_iff.mp hy).1
-    have rx : IsRightRegular (S x).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
-    have ry : IsRightRegular (S y).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+    have rx : IsRightRegular (S x).leadingCoeff := IsRegular.of_ne_zero (by simp) |>.right
+    have ry : IsRightRegular (S y).leadingCoeff := IsRegular.of_ne_zero (by simp) |>.right
     simp [degree_smul_of_isRightRegular_leadingCoeff, rx, ry, zgx, zgy, xney]
   obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
   refine degree_ne_bot.mp ?_ eqzero |>.elim

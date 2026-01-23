@@ -58,15 +58,12 @@ Arguments:
   Warning: As a result, the original doc-string of `ref` will not be visible,
   and go-to-def on `ref` will not go to the definition of `ref`.
 -/
-def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
+def addRelatedDecl (src tgt : Name) (ref : Syntax)
     (attrs : TSyntax ``optAttrArg)
     (construct : Expr → List Name → MetaM (Expr × List Name))
     (docstringPrefix? : Option String := none)
     (hoverInfo : Bool := false) :
     MetaM Unit := do
-  let tgt := match src with
-    | Name.str n s => Name.mkStr n <| prefix_ ++ s ++ suffix
-    | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)

@@ -100,7 +100,7 @@ theorem IsStoppingTime.measurableSet_lt_of_pred [PredOrder ι] (hτ : IsStopping
     | coe t => exact mod_cast hi_min t
   have : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iic (pred i : ι) := by
     ext ω
-    simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_Iic]
+    push _ ∈ _
     cases τ ω with
     | top => simp
     | coe t =>
@@ -197,7 +197,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
     h_lub.exists_seq_monotone_tendsto (not_isMin_iff.mp hi_min)
   have h_Iio_eq_Union : Set.Iio (i : WithTop ι) = ⋃ j, {k : WithTop ι | k ≤ seq j} := by
     ext1 k
-    simp only [Set.mem_Iio, Set.mem_iUnion, Set.mem_setOf_eq]
+    push _ ∈ _
     refine ⟨fun hk_lt_i => ?_, fun h_exists_k_le_seq => ?_⟩
     · rw [tendsto_atTop'] at h_tendsto
       cases k with
@@ -211,7 +211,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
     · obtain ⟨j, hk_seq_j⟩ := h_exists_k_le_seq
       exact hk_seq_j.trans_lt (mod_cast h_bound j)
   have h_lt_eq_preimage : {ω | τ ω < i} = τ ⁻¹' Set.Iio i := by
-    ext1 ω; simp only [Set.mem_setOf_eq, Set.mem_preimage, Set.mem_Iio]
+    ext1 ω; push _ ∈ _; rfl
   rw [h_lt_eq_preimage, h_Iio_eq_Union]
   simp only [Set.preimage_iUnion, Set.preimage_setOf_eq]
   exact MeasurableSet.iUnion fun n => f.mono (h_bound n).le _ (hτ.measurableSet_le (seq n))
