@@ -1215,9 +1215,6 @@ lemma toEuclideanLin_eq_toLin_orthonormal [Fintype m] :
     toEuclideanLin = toLin (basisFun n 𝕜).toBasis (basisFun m 𝕜).toBasis :=
   rfl
 
-@[simp] theorem symm_toEuclideanLin_id : toEuclideanLin.symm LinearMap.id = (1 : Matrix n n 𝕜) := by
-  ext; simp [toEuclideanLin, one_apply]
-
 end Matrix
 
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (toLp 2 x) (toLp 2 y)
