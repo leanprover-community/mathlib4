@@ -11,11 +11,14 @@ public import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
-# Misc lemma about the tangent cone
+# Tangent cone points as limits of sequences
 
-This file contains two deprecated lemmas about `tangentConeAt`.
-One of them used to be useful before we generalized the definition to topological vector spaces.
-Another one brings too many dependencies over too little added value.
+This file contains a few ways to describe `tangentConeAt`
+as the set of limits of certain sequences.
+
+In many cases, one can generalize results about the tangent cone
+by using `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
+instead of these lemmas.
 -/
 
 public section
@@ -23,15 +26,35 @@ public section
 open Filter
 open scoped Topology
 
-section
+/-- In a vector space with first countable topology, a vector `y` belongs to `tangentConeAt 𝕜 s x`
+if and only if there exist sequences `c n` and `d n` such that
 
+- `d n` tends to zero as `n → ∞`;
+- `x + d n ∈ s` for sufficiently large `n`;
+- `c n • d n` tends to `y` as `n → ∞`.
+
+See `mem_tangentConeAt_of_seq` and `exists_fun_of_mem_tangentConeAt`
+for versions of two implications of this theorem that don't assume first countable topology. -/
+theorem mem_tangentConeAt_iff_exists_seq {R E : Type*} [AddCommGroup E] [SMul R E]
+    [TopologicalSpace E] [FirstCountableTopology E] {s : Set E} {x y : E} :
+    y ∈ tangentConeAt R s x ↔ ∃ (c : ℕ → R) (d : ℕ → E), Tendsto d atTop (𝓝 0) ∧
+      (∀ᶠ n in atTop, x + d n ∈ s) ∧ Tendsto (fun n ↦ c n • d n) atTop (𝓝 y) := by
+  constructor
+  · intro h
+    simp only [tangentConeAt, Set.mem_setOf, ← map₂_smul, ← map_prod_eq_map₂, ClusterPt,
+      ← neBot_inf_comap_iff_map'] at h
+    rcases @exists_seq_tendsto _ _ _ h with ⟨cd, hcd⟩
+    simp only [tendsto_inf, tendsto_comap_iff, tendsto_prod_iff', tendsto_nhdsWithin_iff] at hcd
+    exact ⟨Prod.fst ∘ cd, Prod.snd ∘ cd, hcd.2.2.1, hcd.2.2.2, hcd.1⟩
+  · rintro ⟨c, d, hd₀, hds, hcd⟩
+    exact mem_tangentConeAt_of_seq atTop c d hd₀ hds hcd
+
+section
 variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [ContinuousSMul 𝕜 E] {s : Set E} {x y : E} {r : 𝕜}
 
 /-- Auxiliary lemma ensuring that, under the assumptions from an old definition of the tangent cone,
 the sequence `d` tends to 0 at infinity. -/
-@[deprecated "This lemma was useful with the old definition of the tangent cone, not anymore"
-  (since := "2026-01-22")]
 theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d : α → E} {y : E}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) (hd : Tendsto (fun n => c n • d n) l (𝓝 y)) :
     Tendsto d l (𝓝 0) := by
@@ -41,7 +64,6 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
   simpa using Tendsto.congr' this <| (tendsto_inv₀_cobounded.comp hc).smul hd
 
 
-@[deprecated mem_tangentConeAt_of_add_smul_mem (since := "2026-01-22")]
 theorem mem_tangentConeAt_of_pow_smul (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
     (hs : ∀ᶠ n : ℕ in atTop, x + r ^ n • y ∈ s) :
     y ∈ tangentConeAt 𝕜 s x := by
@@ -51,13 +73,20 @@ theorem mem_tangentConeAt_of_pow_smul (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
 
 end
 
-set_option linter.deprecated false in
-/-- Before https://github.com/leanprover-community/mathlib4/pull/34127,
+/-- In a normed space over a nontrivially normed field,
+a point `y` belongs to the tangent cone of a set `s` at `x`
+iff there exiss a sequence of scalars `c n` and a sequence of points `d n` such that
+
+- `‖c n‖ → ∞` as `n → ∞`;
+- `x + d n ∈ s` for sufficiently large `n`;
+- `c n • d n` tendst to `y`.
+
+Before https://github.com/leanprover-community/mathlib4/pull/34127,
 the right-hand side of this equivalence was the definition of the tangent cone.
 
-This lemma is here to show that the new definition is equivalent to the old one,
-and will be removed after a deprecation period. -/
-@[deprecated mem_tangentConeAt_iff_exists_seq (since := "2026-01-22")]
+In most cases, `exists_fun_of_mem_tangentConeAt` and/or `mem_tangentConeAt_of_seq`
+can be used to generalize a proof using this lemma to topological vector spaces.
+-/
 theorem mem_tangentConeAt_iff_exists_seq_norm_tendsto_atTop {𝕜 E : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {s : Set E} {x y : E} :
