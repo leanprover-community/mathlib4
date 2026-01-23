@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.MeasureTheory.Function.Holder
 public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
 
@@ -340,22 +340,34 @@ continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
 
-instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := rfl
 
-instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+  lineDerivOp_left_add x y f := by
+    ext u
+    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
+
+instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
-instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
+
+instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_left_smul r x f := by
+    ext u
+    simp [lineDerivOp_left_smul, map_smul_of_tower f]
+
+instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
 
 theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
   PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
-
-@[simp]
-theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
-    ∂_{m} f g = f (- ∂_{m} g) := rfl
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
@@ -366,6 +378,43 @@ theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
   simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
 
 end lineDeriv
+
+/-! ### Laplacian-/
+
+section Laplacian
+
+open Laplacian LineDeriv
+open scoped SchwartzMap
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
+
+instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
+  laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
+
+@[simp]
+theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f = Δ f := by
+  simp [laplacianCLM, laplacian]
+
+theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'(E, F)) :
+    Δ f = ∑ i, ∂_{b i} (∂_{b i} f) := LineDeriv.laplacianCLM_eq_sum b f
+
+@[simp]
+theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
+  simp [laplacian_eq_sum (stdOrthonormalBasis ℝ E),
+    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E),
+    UniformConvergenceCLM.sum_apply, map_neg, neg_neg]
+
+variable [MeasurableSpace E] [BorelSpace E]
+
+/-- The distributional Laplacian and the classical Laplacian coincide on `𝓢(E, F)`. -/
+@[simp]
+theorem laplacian_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    Δ (f : 𝓢'(E, F)) = Δ f := by
+  ext u
+  simp [SchwartzMap.integral_smul_laplacian_right_eq_left]
+
+end Laplacian
 
 /-! ### Fourier transform -/
 
@@ -442,6 +491,9 @@ theorem fourier_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   ext g
   simpa using integral_fourier_smul_eq g f
 
+@[deprecated (since := "2026-01-14")]
+alias fourierTransform_toTemperedDistributionCLM_eq := fourier_toTemperedDistributionCLM_eq
+
 /-- The distributional inverse Fourier transform and the classical inverse Fourier transform
 coincide on `𝓢(E, F)`. -/
 theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
@@ -451,6 +503,9 @@ theorem fourierInv_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
   _ = 𝓕⁻ (𝓕 (toTemperedDistributionCLM E F volume (𝓕⁻ f))) := by
     rw [fourier_toTemperedDistributionCLM_eq]
   _ = _ := fourierInv_fourier_eq _
+
+@[deprecated (since := "2026-01-14")]
+alias fourierTransformInv_toTemperedDistributionCLM_eq := fourierInv_toTemperedDistributionCLM_eq
 
 end embedding
 
