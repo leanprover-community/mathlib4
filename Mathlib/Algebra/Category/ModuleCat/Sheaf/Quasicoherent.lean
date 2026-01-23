@@ -262,21 +262,6 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
   [∀ X, HasSheafify (J.over X) AddCommGrpCat]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
 
-/-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
-def pushforwardOver (x : C) :
-    R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
-  ⟨{app U := R.val.map Limits.prod.snd.op
-    naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
-
-/-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
-def overPushforwardOverAdj (x : C) :
-    pushforward.{u'} (𝟙 (R.over x)) ⊣ pushforward.{u'} (pushforwardOver x) := by
-  refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) _ ?_ ?_
-  · ext y : 2
-    simp [pushforwardOver]
-  · ext y : 2
-    simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
-
 instance {x : C} : PreservesColimits (pushforward.{u'} (𝟙 (R.over x))) :=
   (overPushforwardOverAdj x).leftAdjoint_preservesColimits
 

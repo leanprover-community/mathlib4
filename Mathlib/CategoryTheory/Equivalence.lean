@@ -361,16 +361,10 @@ def symm (e : C ≌ D) : D ≌ C :=
 lemma mkHom_id_inverse {e : C ≌ D} : mkHom (𝟙 e.inverse) = 𝟙 e.symm := rfl
 
 @[simp]
-lemma symm_counit
-    {C : Type u₁} [Category.{v₁, u₁} C]
-    {D : Type u₂} [Category.{v₂, u₂} D]
-    (e : C ≌ D) : e.symm.counit = e.unitInv := rfl
+lemma symm_counit (e : C ≌ D) : e.symm.counit = e.unitInv := rfl
 
 @[simp]
-lemma symm_unit
-    {C : Type u₁} [Category.{v₁, u₁} C]
-    {D : Type u₂} [Category.{v₂, u₂} D]
-    (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
+lemma symm_unit (e : C ≌ D) : e.symm.unit = e.counitInv := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 

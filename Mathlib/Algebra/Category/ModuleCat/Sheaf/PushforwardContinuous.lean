@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf
 public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Pushforward of sheaves of modules
@@ -250,6 +252,31 @@ lemma pushforwardPushforwardAdj_unit_app_val_app (M U x) :
 lemma pushforwardPushforwardAdj_counit_app_val_app (M U x) :
     ((pushforwardPushforwardAdj adj φ ψ H₁ H₂).counit.app M).val.app U x =
       M.val.map (adj.unit.app U.unop).op x := rfl
+
+noncomputable section
+
+open CategoryTheory Limits
+
+variable {C : Type u'} [SmallCategory C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+  {R : Sheaf J RingCat} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+/-- The canonical morphism from `R` to the pushforward of its restriction to `Over x`. -/
+def pushforwardOver (x : C) :
+    R ⟶ ((Over.star x).sheafPushforwardContinuous RingCat J (J.over x)).obj (R.over x) :=
+  ⟨{app U := R.val.map Limits.prod.snd.op
+    naturality U V f := by simp [← Functor.map_comp, ← op_comp]; rfl }⟩
+
+/-- The adjunction between restriction to `Over x` and pushforward along `Over.star x`. -/
+def overPushforwardOverAdj (x : C) :
+    pushforward.{u'} (𝟙 (R.over x)) ⊣ pushforward.{u'} (pushforwardOver x) := by
+  refine pushforwardPushforwardAdj (Over.forgetAdjStar x) (𝟙 (R.over x)) _ ?_ ?_
+  · ext y : 2
+    simp [pushforwardOver]
+  · ext y : 2
+    simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
+
+end
 
 end Adjunction
 
