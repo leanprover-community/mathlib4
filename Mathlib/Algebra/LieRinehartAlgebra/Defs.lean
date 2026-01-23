@@ -132,7 +132,7 @@ def anchor : L₁ →ₗ⁅AlgHom.id R A₁⁆ (Derivation R A₁ A₁) where
     intros _ _
     ext _
     simp [Derivation.commutator_apply]
-  map_smul_apply _ _ := by ext _ ; simp [LieRinehartRing.lie_smul_eq_mul]
+  map_smul_apply _ _ := by ext _; simp [LieRinehartRing.lie_smul_eq_mul]
   apply_lie _ _ := by simp
 
 @[simp]
