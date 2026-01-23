@@ -6,6 +6,7 @@ Authors: Dominic Steinitz
 module
 /-- A module doc-string -/
 
+public import Mathlib.Init
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
