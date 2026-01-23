@@ -16,6 +16,7 @@ In this file we define `Coalgebra`, and provide instances for:
 * Commutative semirings: `CommSemiring.toCoalgebra`
 * Binary products: `Prod.instCoalgebra`
 * Finitely supported functions: `DFinsupp.instCoalgebra`, `Finsupp.instCoalgebra`
+* Finite pi functions `n → R`: `Pi.instCoalgebraForall`
 
 ## References
 
@@ -430,7 +431,7 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
 end Finsupp
 
 namespace Pi
-variable {R M n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
+variable {R n M : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
 
 open TensorProduct LinearMap
 
@@ -455,10 +456,9 @@ theorem comul_comp_single (i : n) :
 
 theorem comul_comp_proj (i : n) :
     comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = map (proj i) (proj i) ∘ₗ comul := by
-  ext1 j
-  conv_rhs => rw [comp_assoc, comul_comp_single, ← comp_assoc, ← map_comp]
-  obtain rfl | hij := eq_or_ne i j <;>
-    simp_all [comp_assoc, proj_comp_single_same, proj_comp_single_ne]
+  ext j
+  simp only [comp_apply, coe_single, coe_proj, comul_single, map_map, proj_comp_single]
+  obtain rfl | hij := eq_or_ne i j <;> simp_all [diag]
 
 @[simp] theorem counit_comp_single (i : n) :
     counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
