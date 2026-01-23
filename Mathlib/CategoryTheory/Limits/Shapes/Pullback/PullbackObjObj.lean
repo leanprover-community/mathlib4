@@ -6,7 +6,6 @@ Authors: Joël Riou, Jack McKoen
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-public import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Leibniz Constructions
@@ -98,6 +97,11 @@ lemma inl_ι : sq.inl ≫ sq.ι = (F.obj Y₁).map f₂ := by simp [ι]
 @[reassoc (attr := simp)]
 lemma inr_ι : sq.inr ≫ sq.ι = (F.map f₁).app Y₂ := by simp [ι]
 
+@[ext]
+lemma hom_ext {X₃ : C₃} {f g : sq.pt ⟶ X₃} (hₗ : sq.inl ≫ f = sq.inl ≫ g)
+    (hᵣ : sq.inr ≫ f = sq.inr ≫ g) : f = g :=
+  sq.isPushout.hom_ext hₗ hᵣ
+
 /-- Given `sq : F.PushoutObjObj f₁ f₂`, flipping the pushout square gives
 `sq.flip : F.flip.PushoutObjObj f₂ f₁`. -/
 @[simps]
@@ -117,8 +121,8 @@ lemma ι_flip : sq.flip.ι = sq.ι := by
 lemma ofHasPushout_ι [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
     (ofHasPushout F f₁ f₂).ι =
       pushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp) := by
-  apply (ofHasPushout F f₁ f₂).isPushout.hom_ext
-  all_goals simp [PushoutObjObj.ι]
+  dsimp [PushoutObjObj.ι]
+  cat_disch
 
 noncomputable section Arrow
 
@@ -138,26 +142,18 @@ def mapArrowLeft (sq : f₁ ⟶ f₁') :
     (by grind [sq.w, sq₁₂'.isPushout.w])
   right := (F.map sq.right).app f₂.right
   w := by
-    apply sq₁₂.isPushout.hom_ext
+    apply PushoutObjObj.hom_ext
     all_goals simp [← NatTrans.comp_app, ← Functor.map_comp]
 
 @[simp]
 lemma mapArrowLeft_id :
-    mapArrowLeft sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by
-  apply Arrow.hom_ext
-  · apply sq₁₂.isPushout.hom_ext
-    all_goals simp
-  · simp
+    mapArrowLeft sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₂'' : F.PushoutObjObj f₁''.hom f₂.hom)
     (sq : f₁ ⟶ f₁') (sq' : f₁' ⟶ f₁'') :
     (mapArrowLeft sq₁₂ sq₁₂' sq) ≫ (mapArrowLeft sq₁₂' sq₁₂'' sq') =
-      mapArrowLeft sq₁₂ sq₁₂'' (sq ≫ sq') := by
-  apply Arrow.hom_ext
-  · apply sq₁₂.isPushout.hom_ext
-    all_goals simp
-  · simp
+      mapArrowLeft sq₁₂ sq₁₂'' (sq ≫ sq') := by cat_disch
 
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁'` and
   `f₂ : Arrow C₂`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
@@ -178,33 +174,25 @@ variable {f₁ : Arrow C₁} {f₂ f₂' : Arrow C₂}
 @[simps]
 def mapArrowRight (sq : f₂ ⟶ f₂') :
     Arrow.mk sq₁₂.ι ⟶ Arrow.mk sq₁₂'.ι where
-  left :=   sq₁₂.isPushout.desc
+  left := sq₁₂.isPushout.desc
     (((F.obj f₁.right).map sq.left) ≫ sq₁₂'.inl)
     (((F.obj f₁.left).map sq.right) ≫ sq₁₂'.inr)
     (by grind [sq.w, sq₁₂'.isPushout.w])
   right := (F.obj f₁.right).map sq.right
   w := by
-    apply sq₁₂.isPushout.hom_ext
+    apply PushoutObjObj.hom_ext
     · simp [← map_comp]
     · cat_disch
 
 @[simp]
 lemma mapArrowRight_id :
-    mapArrowRight sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by
-  apply Arrow.hom_ext
-  · apply sq₁₂.isPushout.hom_ext
-    all_goals simp
-  · simp
+    mapArrowRight sq₁₂ sq₁₂ (𝟙 _) = 𝟙 _ := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma mapArrowRight_comp {f₂'' : Arrow C₂} (sq₁₂'' : F.PushoutObjObj f₁.hom f₂''.hom)
     (sq : f₂ ⟶ f₂') (sq' : f₂' ⟶ f₂'') :
     (mapArrowRight sq₁₂ sq₁₂' sq) ≫ (mapArrowRight sq₁₂' sq₁₂'' sq') =
-      mapArrowRight sq₁₂ sq₁₂'' (sq ≫ sq') := by
-  apply Arrow.hom_ext
-  · apply sq₁₂.isPushout.hom_ext
-    all_goals simp
-  · simp
+      mapArrowRight sq₁₂ sq₁₂'' (sq ≫ sq') := by cat_disch
 
 /-- Given a `PushoutObjObj` of `f₁ : Arrow C₁` and `f₂ : Arrow C₂`, a `PushoutObjObj` of `f₁` and
   `f₂' : Arrow C₂`, and an isomorphism `f₂ ≅ f₂'`, this defines an isomorphism of the induced
@@ -287,12 +275,18 @@ lemma π_fst : sq.π ≫ sq.fst = (G.map f₁.op).app X₃ := by simp [π]
 @[reassoc (attr := simp)]
 lemma π_snd : sq.π ≫ sq.snd = (G.obj (op Y₁)).map f₃ := by simp [π]
 
+@[ext]
+lemma hom_ext {X₂ : C₂} {f g : X₂ ⟶ sq.pt} (h₁ : f ≫ sq.fst = g ≫ sq.fst)
+    (h₂ : f ≫ sq.snd = g ≫ sq.snd) : f = g :=
+  sq.isPullback.hom_ext h₁ h₂
+
 @[simp]
 lemma ofHasPullback_π
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     (ofHasPullback G f₁ f₃).π =
-    (IsPullback.of_hasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)).lift
-      ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) ((G.map f₁.op).naturality f₃).symm := rfl
+      pullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp) := by
+  dsimp [PullbackObjObj.π]
+  cat_disch
 
 noncomputable section Arrow
 
@@ -307,32 +301,24 @@ variable {f₁ f₁' : Arrow C₁} {f₃ : Arrow C₃}
 def mapArrowLeft (sq : f₁' ⟶ f₁) :
     Arrow.mk sq₁₃.π ⟶ Arrow.mk sq₁₃'.π where
   left := (G.map sq.right.op).app f₃.left
-  right :=   sq₁₃'.isPullback.lift
+  right := sq₁₃'.isPullback.lift
     (sq₁₃.fst ≫ (G.map sq.left.op).app f₃.left)
     (sq₁₃.snd ≫ (G.map sq.right.op).app f₃.right)
     (by simp only [id_obj, Category.assoc]; grind [sq.w, sq₁₃.isPullback.w])
   w := by
-    apply sq₁₃'.isPullback.hom_ext
+    apply PullbackObjObj.hom_ext
     · simp [← NatTrans.comp_app, ← map_comp, ← op_comp]
     · cat_disch
 
 @[simp]
 lemma mapArrowLeft_id :
-    mapArrowLeft sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by
-  apply Arrow.hom_ext
-  · simp
-  · apply sq₁₃.isPullback.hom_ext
-    all_goals simp
+    mapArrowLeft sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by cat_disch
 
 @[simp]
 lemma mapArrowLeft_comp {f₁'' : Arrow C₁} (sq₁₃'' : G.PullbackObjObj f₁''.hom f₃.hom)
     (sq' : f₁'' ⟶ f₁') (sq : f₁' ⟶ f₁) :
     (mapArrowLeft sq₁₃ sq₁₃' sq) ≫ (mapArrowLeft sq₁₃' sq₁₃'' sq') =
-      mapArrowLeft sq₁₃ sq₁₃'' (sq' ≫ sq) := by
-  apply Arrow.hom_ext
-  · simp
-  · apply sq₁₃''.isPullback.hom_ext
-    all_goals simp
+      mapArrowLeft sq₁₃ sq₁₃'' (sq' ≫ sq) := by cat_disch
 
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁'` and
   `f₃ : Arrow C₃`, and an isomorphism `f₁ ≅ f₁'`, this defines an isomorphism of the induced
@@ -359,26 +345,18 @@ def mapArrowRight (sq : f₃ ⟶ f₃') :
     (sq₁₃.snd ≫ (G.obj (.op f₁.right)).map sq.right)
     (by grind [sq.w, sq₁₃.isPullback.w])
   w := by
-    apply sq₁₃'.isPullback.hom_ext
+    apply PullbackObjObj.hom_ext
     all_goals simp [← Functor.map_comp]
 
 @[simp]
 lemma mapArrowRight_id :
-    mapArrowRight sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by
-  apply Arrow.hom_ext
-  · simp
-  · apply sq₁₃.isPullback.hom_ext
-    all_goals simp
+    mapArrowRight sq₁₃ sq₁₃ (𝟙 _) = 𝟙 _ := by cat_disch
 
 @[simp]
 lemma mapArrowRight_comp {f₃'' : Arrow C₃} (sq₁₃'' : G.PullbackObjObj f₁.hom f₃''.hom)
     (sq : f₃ ⟶ f₃') (sq' : f₃' ⟶ f₃'') :
     (mapArrowRight sq₁₃ sq₁₃' sq) ≫ (mapArrowRight sq₁₃' sq₁₃'' sq') =
-      mapArrowRight sq₁₃ sq₁₃'' (sq ≫ sq') := by
-  apply Arrow.hom_ext
-  · simp
-  · apply sq₁₃''.isPullback.hom_ext
-    all_goals simp
+      mapArrowRight sq₁₃ sq₁₃'' (sq ≫ sq') := by cat_disch
 
 /-- Given a `PullbackObjObj` of `f₁ : Arrow C₁` and `f₃ : Arrow C₃`, a `PullbackObjObj` of `f₁` and
   `f₃' : Arrow C₃`, and an isomorphism `f₃ ≅ f₃'`, this defines an isomorphism of the induced

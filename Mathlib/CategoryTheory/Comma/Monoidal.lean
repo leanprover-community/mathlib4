@@ -72,38 +72,49 @@ variable [HasPushouts C] [MonoidalCategory C]
 
 @[reassoc (attr := simp)]
 lemma Limits.pushout.whiskerLeft_inl_desc :
-    Q ◁ inl f g ≫ Q ◁ pushout.desc h k w = Q ◁ h := by
+    Q ◁ inl f g ≫ Q ◁ desc h k w = Q ◁ h := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
 lemma Limits.pushout.whiskerLeft_inr_desc :
-    Q ◁ inr f g ≫ Q ◁ pushout.desc h k w = Q ◁ k := by
+    Q ◁ inr f g ≫ Q ◁ desc h k w = Q ◁ k := by
   simp [← MonoidalCategory.whiskerLeft_comp]
 
 @[reassoc (attr := simp)]
 lemma Limits.pushout.inl_desc_whiskerRight :
-    inl f g ▷ Q ≫ pushout.desc h k w ▷ Q = h ▷ Q := by
+    inl f g ▷ Q ≫ desc h k w ▷ Q = h ▷ Q := by
   simp [← comp_whiskerRight]
 
 @[reassoc (attr := simp)]
 lemma Limits.pushout.inr_desc_whiskerRight :
-    inr f g ▷ Q ≫ pushout.desc h k w ▷ Q = k ▷ Q := by
+    inr f g ▷ Q ≫ desc h k w ▷ Q = k ▷ Q := by
   simp [← comp_whiskerRight]
 
-variable {A B X Y Z W : C} (f : A ⟶ B) (g : X ⟶ Y) (h : Z ⟶ W)
-
----change
 @[reassoc]
-lemma pushout_temp₁ {P : C} {h₁ : Y ⊗ Z ⟶ P} {h₂ : A ⊗ P ⟶ A ⊗ Y ⊗ W} :
-    f ▷ Y ▷ Z ≫ (α_ B Y Z).hom ≫ B ◁ h₁ ≫ pushout.inl (f ▷ P) h₂ =
-      (α_ A Y Z).hom ≫ A ◁ h₁ ≫ h₂ ≫ pushout.inr (f ▷ P) h₂ := by
-  rw [associator_naturality_left_assoc, ← whisker_exchange_assoc, pushout.condition]
+lemma Limits.pushout.whiskerLeft_condition :
+    Q ◁ f ≫ Q ◁ inl f g = Q ◁ g ≫ Q ◁ inr f g := by
+  simp [← MonoidalCategory.whiskerLeft_comp, pushout.condition]
 
----change
 @[reassoc]
-lemma pushout_temp₂ {P : C} {h₁ : P ⟶ B ⊗ Y} {h₂ : A ⊗ Y ⟶ P} :
-    A ◁ Y ◁ h ≫ (α_ A Y W).inv ≫ h₂ ▷ W ≫ pushout.inr (h₁ ▷ Z) (P ◁ h) =
-      (α_ A Y Z).inv ≫ (h₂ ≫ h₁) ▷ Z ≫ pushout.inl (h₁ ▷ Z) (P ◁ h) := by
+lemma Limits.pushout.condition_whiskerRight :
+    f ▷ Q ≫ inl f g ▷ Q = g ▷ Q ≫ inr f g ▷ Q := by
+  simp [← comp_whiskerRight, pushout.condition]
+
+variable {A B X Y Z W : C} {f : A ⟶ B} {g : X ⟶ Y}
+
+--change
+@[reassoc]
+lemma Limits.pushout.associator_naturality_left_condition {h : Z ⊗ W ⟶ X} :
+    f ▷ Z ▷ W ≫ (α_ B Z W).hom ≫ B ◁ h ≫ inl (f ▷ X) (A ◁ g) =
+      (α_ A Z W).hom ≫ A ◁ (h ≫ g) ≫ inr (f ▷ X) (A ◁ g) := by
+  rw [associator_naturality_left_assoc, ← whisker_exchange_assoc, pushout.condition,
+    ← MonoidalCategory.whiskerLeft_comp_assoc]
+
+--change
+@[reassoc]
+lemma Limits.pushout.associator_inv_naturality_right_condition {h : Z ⊗ W ⟶ A} :
+    Z ◁ W ◁ g ≫ (α_ Z W Y).inv ≫ h ▷ Y ≫ inr (f ▷ X) (A ◁ g) =
+      (α_ Z W X).inv ≫ (h ≫ f) ▷ X ≫ inl (f ▷ X) (A ◁ g) := by
   rw [associator_inv_naturality_right_assoc, whisker_exchange_assoc, ← pushout.condition,
     ← comp_whiskerRight_assoc]
 
@@ -157,16 +168,14 @@ noncomputable
 def PushoutProduct.whiskerRight_iso [PreservesColimitsOfSize (tensorRight W)] :
     Arrow.mk ((f □ g).hom ▷ W) ≅ (f □ (g ▷ W)) := by
   refine Arrow.isoMk (PushoutObjObj_whiskerRight_iso f g) (α_ B Y W) ?_
-  · apply ((tensorRight W).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-    all_goals simp [PushoutObjObj.ι]
+  · apply ((tensorRight W).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
 @[simps!]
 noncomputable
 def PushoutProduct.whiskerLeft_iso [PreservesColimitsOfSize (tensorLeft W)] :
     Arrow.mk (W ◁ (f □ g).hom) ≅ ((W ◁ f) □ g) := by
   refine Arrow.isoMk (tensorLeft_PushoutObjObj_iso _ _) (α_ W B Y).symm ?_
-  · apply ((tensorLeft W).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-    all_goals simp [PushoutObjObj.ι]
+  · apply ((tensorLeft W).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
 
 @[simp]
 noncomputable
@@ -179,13 +188,10 @@ def PushoutProduct.associator_hom_left_aux
   · exact (α_ B Y Z).hom ≫ (B ◁ pushout.inl _ _) ≫ pushout.inl _ _
   · refine (PushoutObjObj_whiskerRight_iso _ _).hom ≫
       pushout.desc ((B ◁ pushout.inr _ _) ≫ pushout.inl _ _) (pushout.inr _ _) ?_
-    · dsimp [PushoutObjObj.ι]
-      rw [← whisker_exchange_assoc, pushout.condition,
-        ← MonoidalCategory.whiskerLeft_comp_assoc, IsPushout.inr_desc]
+    · simp [pushout.associator_naturality_left_condition]
   · apply ((tensorRight Z).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-    · simp [PushoutObjObj.ι, (IsPushout.of_hasPushout ..).whiskerLeft_w_assoc,
-        ← whisker_exchange_assoc]
-    · simp [PushoutObjObj.ι, ← whisker_exchange_assoc, pushout_temp₁]
+    · simp [pushout.whiskerLeft_condition_assoc, ← whisker_exchange_assoc]
+    · simp [← whisker_exchange_assoc, pushout.associator_naturality_left_condition]
 
 @[simp]
 noncomputable
@@ -197,13 +203,11 @@ def PushoutProduct.associator_inv_left_aux
   refine pushout.desc ?_ ?_ ?_
   · refine (tensorLeft_PushoutObjObj_iso g h).hom ≫
       pushout.desc (pushout.inl _ _) ((pushout.inl _ _ ▷ W) ≫ pushout.inr _ _) ?_
-    · dsimp [PushoutObjObj.ι]
-      rw [whisker_exchange_assoc, ← pushout.condition,
-        ← MonoidalCategory.comp_whiskerRight_assoc, IsPushout.inl_desc]
+    · simp [pushout.associator_inv_naturality_right_condition]
   · exact (α_ _ _ _).inv ≫ (pushout.inr _ _) ▷ _ ≫ pushout.inr _ _
   · apply ((tensorLeft A).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-    · simp [PushoutObjObj.ι, whisker_exchange_assoc, pushout_temp₂]
-    · simp [PushoutObjObj.ι, whisker_exchange_assoc, ← comp_whiskerRight_assoc, pushout.condition]
+    · simp [whisker_exchange_assoc, pushout.associator_inv_naturality_right_condition]
+    · simp [whisker_exchange_assoc, pushout.condition_whiskerRight_assoc]
 
 @[simps]
 noncomputable
@@ -217,11 +221,11 @@ def PushoutProduct.associator_iso_left
   hom := associator_hom_left_aux f g h
   inv := associator_inv_left_aux f g h
   hom_inv_id := by
-    apply pushout.hom_ext
+    ext
     · simp
     · apply ((tensorRight W).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
   inv_hom_id := by
-    apply pushout.hom_ext
+    ext
     · apply ((tensorLeft B).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
     · simp
 
@@ -268,9 +272,8 @@ lemma temp₂ (X₁ X₂ X₃ Y₁ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (f₃ 
     f₁.right ▷ X₂.left ▷ X₃.right ≫
     (α_ Y₁.right X₂.left X₃.right).hom ≫
     Y₁.right ◁ X₂.left ◁ f₃.right := by
-
-  sorry
-  --cat_disch
+  simp only [associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    ← associator_inv_naturality_left_assoc, associator_naturality_right]
 
 @[reassoc]
 lemma temp₃ (X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
@@ -286,7 +289,9 @@ lemma temp₃ (X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (
     f₁.right ▷ pushout (Y₂.hom ▷ Y₃.left) (Y₂.left ◁ Y₃.hom) := by
   rw [← MonoidalCategory.whiskerLeft_comp_assoc]
   rw [whisker_exchange, whisker_exchange_assoc, ← whisker_exchange]
-  simp [temp₂_assoc]
+  simp only [associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    ← associator_inv_naturality_left_assoc, associator_naturality_right]
+  sorry
 
 lemma PushoutProduct.associator_naturality
     [∀ S : C, PreservesColimitsOfSize (tensorLeft S)]
@@ -300,7 +305,7 @@ lemma PushoutProduct.associator_naturality
     (pushoutProduct.map f₁).app (X₂ □ X₃) ≫
     (pushoutProduct.obj Y₁).map ((pushoutProduct.map f₂).app X₃ ≫
     (pushoutProduct.obj Y₂).map f₃) := by
-  apply Arrow.hom_ext
+  ext
   · apply pushout.hom_ext
     · simp [whisker_exchange_assoc]
     · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
@@ -384,13 +389,13 @@ lemma PushoutProduct.pentagon
         (pushoutProduct.obj W).map (associator X Y Z).hom =
     (associator (W □ X) Y Z).hom ≫
       (associator W X (Y □ Z)).hom := by
-  apply Arrow.hom_ext
+  ext
   · apply pushout.hom_ext
     · simp
     · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
       · simp
       · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        all_goals simp [associator_naturality_left_assoc]
+        <;> simp [associator_naturality_left_assoc]
   · exact MonoidalCategory.pentagon W.right X.right Y.right Z.right
 
 @[simps!]
@@ -473,10 +478,9 @@ def LeibnizAdjunction.unit (X : Arrow C) :
       · simp [curry_pre_app, pushout.condition, curry_natural_left]
       · simp [← curry_natural_right, curry_eq_iff, uncurry_natural_left] }
   naturality _ _ _ := by
-    apply Arrow.hom_ext
+    ext
     · simp [← curry_natural_right, eq_curry_iff, uncurry_natural_left]
-    · apply pullback.hom_ext
-      all_goals simp [← curry_natural_right, eq_curry_iff, uncurry_natural_left]
+    · apply pullback.hom_ext <;> simp [← curry_natural_right, eq_curry_iff, uncurry_natural_left]
 
 @[simps]
 noncomputable
@@ -494,7 +498,7 @@ def LeibnizAdjunction.counit (X : Arrow C) :
       · simp [uncurry_eq, ← whisker_exchange_assoc, ← id_tensor_pre_app_comp_ev,
         ← MonoidalCategory.whiskerLeft_comp_assoc, ← pullback.condition] }
   naturality _ _ _ := by
-    apply Arrow.hom_ext
+    ext
     · apply pushout.hom_ext
       · simp [uncurry_id_eq_ev]
       · simp [uncurry_eq, ← MonoidalCategory.whiskerLeft_comp_assoc]
@@ -508,15 +512,13 @@ def LeibnizAdjunction.adj (X : Arrow C) :
   unit := unit X
   counit := counit X
   left_triangle_components _ := by
-    apply Arrow.hom_ext
-    · apply pushout.hom_ext
-      all_goals simp [uncurry_eq, ← MonoidalCategory.whiskerLeft_comp_assoc]
+    ext
+    · apply pushout.hom_ext <;> simp [uncurry_eq, ← MonoidalCategory.whiskerLeft_comp_assoc]
     · simp [uncurry_eq, ← MonoidalCategory.whiskerLeft_comp_assoc]
   right_triangle_components _ := by
-    apply Arrow.hom_ext
+    ext
     · simp [← curry_natural_right]
-    · apply pullback.hom_ext
-      all_goals simp [← curry_natural_right]
+    · apply pullback.hom_ext <;> simp [← curry_natural_right]
 
 @[simps]
 noncomputable
@@ -527,8 +529,7 @@ instance leibnizAdjunction₂ :
   unit_whiskerRight_map _ := by
     ext
     · simp [← curry_natural_right, curry_pre_app]
-    · apply pullback.hom_ext
-      all_goals simp [← curry_natural_right, curry_pre_app]
+    · apply pullback.hom_ext <;> simp [← curry_natural_right, curry_pre_app]
 
 end MonoidalClosed
 
@@ -540,16 +541,15 @@ instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalC
     [∀ S : C, PreservesColimitsOfSize (tensorRight S)] : MonoidalCategory (Arrow C) where
   tensorObj X Y := (pushoutProduct.obj X).obj Y
   tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := by
-    apply Arrow.hom_ext
-    · apply pushout.hom_ext
-      all_goals simp [whisker_exchange_assoc]
+    ext
+    · apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
     · simp [whisker_exchange_assoc]
   whiskerLeft X _ _ f := (pushoutProduct.obj X).map f
   whiskerRight f X := (pushoutProduct.map f).app X
   tensorUnit := initial.to (𝟙_ C)
   associator := PushoutProduct.associator
   associator_naturality _ _ _ := by
-    apply Arrow.hom_ext
+    ext
     · apply pushout.hom_ext
       · simp [whisker_exchange_assoc]
       · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
@@ -559,26 +559,25 @@ instance [HasInitial C] [HasPushouts C] [CartesianMonoidalCategory C] [MonoidalC
   pentagon := PushoutProduct.pentagon
   leftUnitor := PushoutProduct.leftUnitor
   leftUnitor_naturality f := by
-    apply Arrow.hom_ext
+    ext
     · apply pushout.hom_ext
       · simp
       · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
     · exact leftUnitor_naturality f.right
   rightUnitor := PushoutProduct.rightUnitor
   rightUnitor_naturality f := by
-    apply Arrow.hom_ext
+    ext
     · apply pushout.hom_ext
       · apply (initialIsInitial.ofIso (zeroMul initialIsInitial).symm).hom_ext
       · simp
     · exact rightUnitor_naturality f.right
   triangle X Y := by
-    apply Arrow.hom_ext
+    ext
     · apply pushout.hom_ext
       · simp [← MonoidalCategory.whiskerLeft_comp_assoc]
       · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext
-        · apply (initialIsInitial.ofIso ((initialIsoIsInitial ?_) ≪≫
-            (mulZero ?_).symm)).hom_ext
-          all_goals exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
+        · apply (initialIsInitial.ofIso ((initialIsoIsInitial ?_) ≪≫ (mulZero ?_).symm)).hom_ext
+          <;> exact initialIsInitial.ofIso (zeroMul initialIsInitial).symm
         · simp [← comp_whiskerRight_assoc]
     · exact MonoidalCategory.triangle X.right Y.right
 
@@ -644,7 +643,7 @@ lemma PushoutProduct.hexagon_forward [HasInitial C] [HasPushouts C]
     (α_ X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (α_ Y Z X).hom =
       (braiding X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
       Y ◁ (braiding X Z).hom := by
-  apply Arrow.hom_ext
+  ext
   · apply pushout.hom_ext
     · simp
     · apply ((tensorRight _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
@@ -657,7 +656,7 @@ lemma PushoutProduct.hexagon_reverse [HasInitial C] [HasPushouts C]
     [∀ S : C, PreservesColimitsOfSize (tensorRight S)] (X Y Z : Arrow C) :
     (α_ X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (α_ Z X Y).inv =
       X ◁ (braiding Y Z).hom ≫ (α_ X Z Y).inv ≫ (braiding X Z).hom ▷ Y := by
-  apply Arrow.hom_ext
+  ext
   · apply pushout.hom_ext
     · apply ((tensorLeft _).map_isPushout (IsPushout.of_hasPushout _ _)).hom_ext <;> simp
     · simp
