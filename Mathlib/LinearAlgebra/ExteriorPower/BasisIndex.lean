@@ -5,7 +5,8 @@ Authors: Daniel Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Finset.Card
 
 /-!
 # Helper lemmas for working with the index type of basis elements over the exterior power.
