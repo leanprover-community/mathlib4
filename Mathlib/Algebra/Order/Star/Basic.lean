@@ -409,7 +409,7 @@ instance : IsOrderedModule R A where
     obtain ⟨r, hr, rfl⟩ := hrs
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
+variable [IsDomain R] [IsCancelAdd A] [Module.IsTorsionFree R A]
 
 instance : PosSMulStrictMono R A where
   smul_lt_smul_of_pos_left r hr a b hab := by

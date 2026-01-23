@@ -194,7 +194,7 @@ instance {T : Type u} [Unique T] : Unique (ShrinkHoms.{u} T) where
 
 instance {T : Type u} [Category.{v} T] [IsDiscrete T] : IsDiscrete (ShrinkHoms.{u} T) where
   subsingleton _ _ := { allEq _ _ := Shrink.ext (Subsingleton.elim _ _) }
-  eq_of_hom f := IsDiscrete.eq_of_hom  (C := T) ((equivShrink _).symm f)
+  eq_of_hom f := IsDiscrete.eq_of_hom (C := T) ((equivShrink _).symm f)
 
 end ShrinkHoms
 

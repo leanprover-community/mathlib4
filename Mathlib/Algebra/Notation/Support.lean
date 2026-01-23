@@ -112,6 +112,10 @@ lemma mulSupport_nonempty_iff : (mulSupport f).Nonempty ↔ f ≠ 1 := by
   rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
 
 @[to_additive]
+theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulSupport f = ∅ :=
+  mulSupport_eq_empty_iff.mpr <| Subsingleton.elim f 1
+
+@[to_additive]
 lemma range_subset_insert_image_mulSupport (f : ι → M) :
     range f ⊆ insert 1 (f '' mulSupport f) := by
   simpa only [range_subset_iff, mem_insert_iff, or_iff_not_imp_left] using

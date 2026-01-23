@@ -52,7 +52,7 @@ theorem isPrime_of_maximal_not {I : Ideal R} (hI : Maximal (¬P ·) I) : I.IsPri
     by_contra! ⟨a, b, hab, ha, hb⟩
     have h₁ : P (I ⊔ span {a}) := of_not_not <| hI.not_prop_of_gt (Submodule.lt_sup_iff_notMem.2 ha)
     have h₂ : P (I.colon (span {a})) := of_not_not <| hI.not_prop_of_gt <| lt_of_le_of_ne le_colon
-      (fun H ↦ hb <| H ▸ mem_colon_singleton.2 (mul_comm a b ▸ hab))
+      (fun H ↦ hb <| H ▸ mem_colon_span_singleton.2 (mul_comm a b ▸ hab))
     exact hI.prop (hP.oka h₁ h₂)
 
 /-- If a ring `R` verify:
