@@ -196,6 +196,40 @@ theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (
   rw [of_union h hA₁ hB₁] at hAB
   linarith
 
+lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
+    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s has ih =>
+    simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left, has, not_false_eq_true,
+      Finset.sum_insert]
+    rw [of_union, ih]
+    · exact hd.subset (by simp)
+    · grind
+    · simp only [disjoint_iUnion_right]
+      exact fun i hi ↦  hd (by simp) (by simp [hi]) (by grind)
+    · apply hm _ (by simp)
+    · apply Finset.measurableSet_biUnion _ (by grind)
+
+open Filter
+open scoped Topology
+
+theorem tendsto_vectorMeasure_iUnion_atTop_nat
+    {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
+    Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋃ n, s n))) := by
+  set t : ℕ → Set α := disjointed s
+  have ht n : MeasurableSet (t n) := .disjointed (fun n ↦ hs n) n
+  have : HasSum (fun n ↦ v (t n)) (v (⋃ n, s n)) := by
+    rw [← iUnion_disjointed]
+    apply m_iUnion _ ht (disjoint_disjointed _)
+  convert (HasSum.tendsto_sum_nat this).comp (tendsto_add_atTop_nat 1) with n
+  dsimp
+  rw [← of_biUnion_finset]
+  · rw [biUnion_range_succ_disjointed, Monotone.partialSups_eq hm]
+  · exact fun i hi j hj hij ↦ disjoint_disjointed _ hij
+  · exact fun b hb ↦ ht _
+
 end
 
 section SMul
