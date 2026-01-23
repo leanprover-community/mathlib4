@@ -18,11 +18,11 @@ public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 We show that the category of affine `X`-schemes is contravariantly equivalent to
 `X.PreservesLocalizationCat`, a model of the category of quasi-coherent `𝒪ₓ`-algebras.
 We use this to conclude that the category of affine `X`-schemes is cocomplete, and that
-the forgetful functor to `X`-schemes preserves (and reflects) them.
+the forgetful functor to `X`-schemes preserves (and reflects) colimits.
 
 ## Main definitions
 - `AlgebraicGeometry.Scheme.PreservesLocalizationCat`:
-  The category of presheaf `F` of commutative rings over the affine opens of `X` together
+  The category of presheaves `F` of commutative rings over the affine opens of `X` together
   with a structure morphism `α : 𝒪ₓ ⟶ F` satisfying `Γ(F, D(f)) = Γ(F, U)[1/α(f)]`
   for each `f : Γ(𝒪ₓ, U)`.
   This is essentially the category of quasi-coherent `𝒪ₓ`-algebras.
@@ -36,7 +36,6 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry.Scheme
 
-
 universe u
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -46,7 +45,7 @@ open AffineZariskiSite
 section PreservesLocalizationCat
 
 /--
-The category of presheaf `F` of commutative rings over the affine opens of `X` together
+The category of presheaves `F` of commutative rings over the affine opens of `X` together
 with a structure morphism `α : 𝒪ₓ ⟶ F` satisfying `Γ(F, D(f)) = Γ(F, U)[1/α(f)]`
 for each `f : Γ(𝒪ₓ, U)`.
 
@@ -136,8 +135,7 @@ instance {J : Type*} [Category J] : ObjectProperty.IsClosedUnderColimitsOfShape
       simp only [IsLocalization.Away.map, RingHom.comp_assoc,
         IsLocalization.map_comp, RingHomCompTriple.comp_eq]
       rw [← RingHom.comp_assoc, IsLocalization.Away.lift_comp, RingHom.algebraMap_toAlgebra]
-      simp only [← CommRingCat.hom_comp, (α.app i).right.naturality]
-      dsimp
+      simp [← CommRingCat.hom_comp, (α.app i).right.naturality]
     · ext1
       refine IsLocalization.ringHom_ext (R := F.right.obj (.op U)) (.powers (F.hom.app _ f)) ?_
       dsimp
@@ -189,8 +187,6 @@ noncomputable def preservesLocalizationCatToOver (X : Scheme.{u}) :
     simp only [ι_colimMap_assoc, colimit.ι_desc]
     dsimp
     rw [← Spec.map_comp_assoc, ← NatTrans.comp_app, Under.w α.unop.hom]
-  map_id := by intros; dsimp; ext; dsimp; ext; simp
-  map_comp := by intros; dsimp; ext; dsimp; ext; simp
 
 /-- (Implementation). The sections functor from affine `X`-schemes to quasi-coherent `𝒪ₓ`-algebras.
 Use `preservesLocalizationCatEquivOver` directly. -/
