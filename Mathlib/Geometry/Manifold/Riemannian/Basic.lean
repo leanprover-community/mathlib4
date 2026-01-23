@@ -39,7 +39,7 @@ variable
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
-To register a `C^n` manifold for a general `n`, one should replace `[IsManifold ∞ I M]` with
+To register a `C^n` manifold for a general `n`, one should replace `[IsManifold I ∞ M]` with
 `[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
 tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 as there are
 automatic instances for these cases). One can require whatever regularity one wants in the
@@ -102,7 +102,7 @@ product on each tangent space. -/
 noncomputable def riemannianMetricVectorSpace :
     ContMDiffRiemannianMetric 𝓘(ℝ, F) ω F (fun (x : F) ↦ TangentSpace 𝓘(ℝ, F) x) where
   inner x := (innerSL ℝ (E := F) : F →L[ℝ] F →L[ℝ] ℝ)
-  symm x v w := real_inner_comm  _ _
+  symm x v w := real_inner_comm _ _
   pos x v hv := real_inner_self_pos.2 hv
   isVonNBounded x := by
     change IsVonNBounded ℝ {v : F | ⟪v, v⟫ < 1}
@@ -110,7 +110,7 @@ noncomputable def riemannianMetricVectorSpace :
       ext v
       simp only [Metric.mem_ball, dist_zero_right, norm_eq_sqrt_re_inner (𝕜 := ℝ),
         RCLike.re_to_real, Set.mem_setOf_eq]
-      conv_lhs => rw [show (1 : ℝ) = √ 1 by simp]
+      conv_lhs => rw [show (1 : ℝ) = √1 by simp]
       rw [Real.sqrt_lt_sqrt_iff]
       exact real_inner_self_nonneg
     rw [← this]
