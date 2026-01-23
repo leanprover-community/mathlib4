@@ -15,7 +15,7 @@ We prove that in a dense order, there's always an element lying in between any t
 elements.
 -/
 
-variable [LinearOrder α] [DenselyOrdered α]
+variable {α : Type*} [LinearOrder α] [DenselyOrdered α]
 
 theorem Finset.exists_between {s t : Finset α}
     (hs : s.Nonempty) (ht : t.Nonempty) (H : ∀ x ∈ s, ∀ y ∈ t, x < y) :
