@@ -195,7 +195,7 @@ restricted to its support.
 
 namespace Height
 
-open Height.AdmissibleAbsValues Real
+open AdmissibleAbsValues Real
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*}
 
@@ -257,7 +257,7 @@ lemma _root_.Finsupp.logHeight_eq_log_mulHeight (x : α →₀ K) :
     logHeight x = log (mulHeight x) := rfl
 
 /-!
-### Properties of heights
+### First properties of heights
 -/
 
 private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : α) :
@@ -267,14 +267,14 @@ private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : 
 variable [Finite ι]
 
 private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0) :
-    (Function.mulSupport fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).Finite := by
+    (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).mulSupport.Finite := by
   have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| Function.ne_iff.mp hx
-  suffices (Function.mulSupport fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).Finite by
+  suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).mulSupport.Finite by
     convert this with v
-    have ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
+    obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
     have : Nonempty ι := .intro i
-    refine le_antisymm (ciSup_le fun j ↦ ?_) <|
-      ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le (Finite.bddAbove_range _) j le_rfl
+    refine le_antisymm ?_ (ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le (Finite.bddAbove_range _) j le_rfl)
+    refine ciSup_le fun j ↦ ?_
     rcases eq_or_ne (x j) 0 with h | h
     · rw [h, v.val.map_zero]
       exact Real.iSup_nonneg' ⟨⟨i, hi⟩, v.val.nonneg ..⟩
@@ -283,11 +283,9 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
     Function.mulSupport_iSup _
 
 private lemma mulSupport_max_nonarchAbsVal_finite (x : K) :
-    (Function.mulSupport fun v : nonarchAbsVal ↦ v.val x ⊔ 1).Finite := by
-  convert mulSupport_iSup_nonarchAbsVal_finite (x := ![x, 1]) <| by simp with v
-  rw [max_eq_iSup]
-  congr 1
-  ext1 i
+    (fun v : nonarchAbsVal ↦ max (v.val x) 1).mulSupport.Finite := by
+  simp_rw [max_eq_iSup]
+  convert mulSupport_iSup_nonarchAbsVal_finite (x := ![x, 1]) <| by simp with v i
   fin_cases i <;> simp
 
 /-- The multiplicative height of a tuple does not change under scaling. -/
@@ -371,9 +369,13 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
 
 end Mathlib.Meta.Positivity
 
+/-!
+### Further properties of heights
+-/
+
 namespace Height
 
-open Height.AdmissibleAbsValues Real
+open AdmissibleAbsValues Real
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} {α : Type*} [Finite ι]
 
