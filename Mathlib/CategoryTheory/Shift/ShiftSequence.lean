@@ -72,7 +72,7 @@ noncomputable def ShiftSequence.tautological : ShiftSequence F M where
     congr
     simpa only [← cancel_epi ((shiftFunctor C a).map ((shiftFunctorAdd C m n).hom.app X)),
       shiftFunctorAdd'_eq_shiftFunctorAdd, ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-      Functor.map_id, id_comp] using shiftFunctorAdd'_assoc_inv_app m n a (m+n) a' a'' rfl ha'
+      Functor.map_id, id_comp] using shiftFunctorAdd'_assoc_inv_app m n a (m + n) a' a'' rfl ha'
         (by rw [← ha'', ← ha', add_assoc]) X
 
 section
