@@ -9,7 +9,7 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.Order.Category.NonemptyFinLinOrd
 public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-! # Basic properties of the simplex category
 
@@ -162,7 +162,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
   SimplexCategory.mkHom {
     toFun := fun | 0 => i | 1 => j | 2 => k
     monotone' := fun
-      | 0, 0, _ | 1, 1, _ | 2, 2, _  => le_rfl
+      | 0, 0, _ | 1, 1, _ | 2, 2, _ => le_rfl
       | 0, 1, _ => h₁
       | 1, 2, _ => h₂
       | 0, 2, _ => Fin.le_trans h₁ h₂

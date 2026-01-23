@@ -117,7 +117,7 @@ theorem isArtinian_of_surjective_algebraMap {S : Type*} [CommSemiring S] [Algebr
   apply (OrderEmbedding.wellFoundedLT (β := Submodule R M))
   refine ⟨⟨?_, ?_⟩, ?_⟩
   · intro N
-    refine {toAddSubmonoid := N.toAddSubmonoid, smul_mem' := ?_}
+    refine { toAddSubmonoid := N.toAddSubmonoid, smul_mem' := ?_ }
     intro c x hx
     obtain ⟨r, rfl⟩ := H c
     suffices r • x ∈ N by simpa [Algebra.algebraMap_eq_smul_one, smul_assoc]
