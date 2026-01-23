@@ -11,7 +11,7 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # MulAction of quotient group on fixed points
 
-Given a `MulAction` of `G` on `A` and a normal subgroup `H` of `G`,
+Given a `MulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
 there is a `MulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
 
 -/
@@ -34,12 +34,10 @@ noncomputable instance [hH : H.Normal] :
     MulAction (G ⧸ H) (fixedPoints H A) where
   smul g a := g.out • a
   one_smul a := by
-    have := smul_fixedPoints_eq_of_quotient_eq
-      (1 : G ⧸ H).out (1 : G) (by simp) a
+    have := smul_fixedPoints_eq_of_quotient_eq (1 : G ⧸ H).out (1 : G) (by simp) a
     ext; simpa
   mul_smul x y a := by
-    have := smul_fixedPoints_eq_of_quotient_eq
-      (x * y).out (x.out * y.out) (by simp) a
+    have := smul_fixedPoints_eq_of_quotient_eq (x * y).out (x.out * y.out) (by simp) a
     ext; simpa [mul_smul]
 
 @[simp]
