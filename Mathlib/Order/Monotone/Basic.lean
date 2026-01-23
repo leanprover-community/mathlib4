@@ -464,30 +464,8 @@ downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
     ¬ Monotone f ∧ ¬ Antitone f ↔
       ∃ a b c, a ≤ b ∧ b ≤ c ∧ ((f a < f b ∧ f c < f b) ∨ (f b < f a ∧ f b < f c)) := by
-  simp_rw [Monotone, Antitone, not_forall, not_le]
-  refine Iff.symm ⟨?_, ?_⟩
-  · rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩]
-  rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
-  obtain hda | had := le_total d a
-  · obtain hfad | hfda := le_total (f a) (f d)
-    · exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩
-    · exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩
-  obtain hac | hca := le_total a c
-  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩
-    obtain hfca | hfac := lt_or_ge (f c) (f a)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
-  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩
-    obtain hfca | hfac := lt_or_ge (f c) (f a)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
+  simp only [Monotone, Antitone]
+  grind [not_le]
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
