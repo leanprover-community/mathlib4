@@ -445,46 +445,31 @@ lemma norm_image_sub_fderiv_le {F : Type*} [NormedAddCommGroup F] [NormedSpace �
     rwa [dist_comm, dist_eq_norm]
 
 /--
-The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by `integralCMLM g' u t₀`,
-where `g'` is the derivative of `g` in `E`.
+Helper lemma which reduces a bound on `integralCMLM`s as `ContinuousLinearMap`s to a bound on
+integrands as elements of `E`.
 -/
-lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
-    (hα : range α ⊆ u) :
-    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
-        (fderiv ℝ (integralCMLM g u t₀) α) =
-      integralCMLM
-        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
-        α := by
-  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
-      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
-  apply HasFDerivAt.fderiv
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
-  intro ε hε
-  have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
-  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα hpos
-  rw [Metric.eventually_nhds_iff]
-  refine ⟨δ, hδ, fun α' hα' ↦ ?_⟩
+lemma fderiv_integralCMLM_pre {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α α' : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hα' : range α' ⊆ u) {ε : ℝ} (hε : 0 < ε)
+    (h : ∀ t, ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
+        (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ (α' - α) t)‖ ≤
+      ε / (1 + |tmax - tmin|) * ‖α' - α‖) :
+    ‖integralCMLM g u t₀ α' - integralCMLM g u t₀ α -
+      ((continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))
+        (integralCMLM (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm
+          (fderiv ℝ g x)) u t₀ α)) (α' - α)‖ ≤ ε * ‖α' - α‖ := by
   apply ContinuousMultilinearMap.opNorm_le_bound (by positivity)
   intro dα
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
   have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
-  have hα'_range : range α' ⊆ u := by
-    intro x hx
-    obtain ⟨t, rfl⟩ := hx
-    refine (h (α t) (mem_range_self t) _ ?_).1
-    rw [dist_comm, dist_eq_norm]
-    apply (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt
-    rwa [← dist_eq_norm]
-  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα'_range dα t₀ t
+  have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
   rw [sub_apply, sub_apply, continuousMultilinearCurryLeftEquiv_apply,
     integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg.continuousOn,
     integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, ContinuousMap.sub_apply,
-    integralCM_apply_if_pos hα'_range, integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
+    integralCM_apply_if_pos hα', integralCM_apply_if_pos hα, integralCM_apply_if_pos hα,
     integralFun, integralFun, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
     ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
   set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
@@ -506,19 +491,51 @@ lemma fderiv_integralCMLM' {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} 
     apply mul_le_mul _
       (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ (dα _).norm_coe_le_norm  _))
       (by positivity) (by positivity)
-    let x := compProj t₀ α τ
-    let y := compProj t₀ α' τ
-    calc
-      _ = ‖g y - g x - (fderiv ℝ g x) (y - x)‖ := by
-        simp only [y, x, compProj, ContinuousMap.sub_apply]
-      _ ≤ ε / (1 + |tmax - tmin|) * ‖y - x‖ := by
-        apply norm_image_sub_fderiv_le hg hu _ fun z hz ↦ h x (mem_range_self _) z hz
-        simp only [y, x, compProj]
-        exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hα')
-      _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
-        gcongr
-        simp only [y, x, compProj]
-        exact ContinuousMap.norm_coe_le_norm (α' - α) _
+    exact h τ
+
+/--
+The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by `integralCMLM g' u t₀`,
+where `g'` is the derivative of `g` in `E`.
+-/
+lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) :
+    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
+        (fderiv ℝ (integralCMLM g u t₀) α) =
+      integralCMLM
+        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
+        α := by
+  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
+      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
+  apply HasFDerivAt.fderiv
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
+  intro ε hε
+  have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
+  obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα hpos
+  rw [Metric.eventually_nhds_iff]
+  refine ⟨δ, hδ, fun α' hdist ↦ ?_⟩
+  have hα' : range α' ⊆ u := by
+    intro x hx
+    obtain ⟨t, rfl⟩ := hx
+    refine (h (α t) (mem_range_self t) _ ?_).1
+    rw [dist_comm, dist_eq_norm]
+    apply (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt
+    rwa [← dist_eq_norm]
+  refine fderiv_integralCMLM_pre hg hu t₀ hα hα' hε (fun t ↦ ?_)
+  let x := compProj t₀ α t
+  let y := compProj t₀ α' t
+  calc
+    _ = ‖g y - g x - (fderiv ℝ g x) (y - x)‖ := by
+      simp only [y, x, compProj, ContinuousMap.sub_apply]
+    _ ≤ ε / (1 + |tmax - tmin|) * ‖y - x‖ := by
+      apply norm_image_sub_fderiv_le hg hu _ fun z hz ↦ h x (mem_range_self _) z hz
+      simp only [y, x, compProj]
+      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
+    _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
+      gcongr
+      simp only [y, x, compProj]
+      exact ContinuousMap.norm_coe_le_norm (α' - α) _
 
 end
 
