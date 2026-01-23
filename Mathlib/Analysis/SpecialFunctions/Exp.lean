@@ -432,6 +432,19 @@ lemma summable_pow_mul_exp_neg_nat_mul (k : ℕ) {r : ℝ} (hr : 0 < r) :
 
 end Real
 
+namespace Finset
+
+open scoped BigOperators
+
+lemma prod_le_exp_sum {ι : Type*} (s : Finset ι) (a b : ι → ℝ)
+    (ha : ∀ i ∈ s, 0 ≤ a i) (hab : ∀ i ∈ s, a i ≤ Real.exp (b i)) :
+    (∏ i ∈ s, a i) ≤ Real.exp (∑ i ∈ s, b i) := by
+  calc
+    (∏ i ∈ s, a i) ≤ ∏ i ∈ s, Real.exp (b i) := Finset.prod_le_prod ha hab
+    _ = Real.exp (∑ i ∈ s, b i) := by simpa using (Real.exp_sum (s := s) (f := b)).symm
+
+end Finset
+
 open Real in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (rexp ∘ f) (rexp a) :=
