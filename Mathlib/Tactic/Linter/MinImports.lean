@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import ImportGraph.Imports
-public meta import Mathlib.Tactic.MinImports
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 

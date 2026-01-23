@@ -1196,8 +1196,6 @@ theorem EventuallyLE.ge_iff_eq' [PartialOrder β] {l : Filter α} {f g : α → 
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
   ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
 
-@[deprecated (since := "2025-07-10")] alias EventuallyLE.le_iff_eq := EventuallyLE.ge_iff_eq'
-
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=
   h.mono fun _ hx => hx.ne

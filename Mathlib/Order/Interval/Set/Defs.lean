@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Defs
 public import Mathlib.Order.Defs.PartialOrder
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Intervals
@@ -31,53 +32,43 @@ namespace Set
 
 variable {α : Type*} [Preorder α] {a b x : α}
 
+/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
+@[to_dual /-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/]
+def Iio (b : α) := { x | x < b }
+
+@[to_dual (attr := simp, grind =, push)] theorem mem_Iio : x ∈ Iio b ↔ x < b := Iff.rfl
+@[to_dual] theorem Iio_def (a : α) : Iio a = { x | x < a } := rfl
+
+/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
+@[to_dual /-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/]
+def Iic (b : α) := { x | x ≤ b }
+
+@[to_dual (attr := simp, grind =, push)] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := Iff.rfl
+@[to_dual] theorem Iic_def (b : α) : Iic b = { x | x ≤ b } := rfl
+
 /-- `Ioo a b` is the left-open right-open interval $(a, b)$. -/
 def Ioo (a b : α) := { x | a < x ∧ x < b }
 
-@[simp, grind =] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := Iff.rfl
+@[simp, grind =, push] theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b := Iff.rfl
 theorem Ioo_def (a b : α) : Ioo a b = { x | a < x ∧ x < b } := rfl
 
 /-- `Ico a b` is the left-closed right-open interval $[a, b)$. -/
 def Ico (a b : α) := { x | a ≤ x ∧ x < b }
 
-@[simp, grind =] theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := Iff.rfl
+@[simp, grind =, push] theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b := Iff.rfl
 theorem Ico_def (a b : α) : Ico a b = { x | a ≤ x ∧ x < b } := rfl
-
-/-- `Iio b` is the left-infinite right-open interval $(-∞, b)$. -/
-def Iio (b : α) := { x | x < b }
-
-@[simp, grind =] theorem mem_Iio : x ∈ Iio b ↔ x < b := Iff.rfl
-theorem Iio_def (a : α) : Iio a = { x | x < a } := rfl
 
 /-- `Icc a b` is the left-closed right-closed interval $[a, b]$. -/
 def Icc (a b : α) := { x | a ≤ x ∧ x ≤ b }
 
-@[simp, grind =] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := Iff.rfl
+@[simp, grind =, push] theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b := Iff.rfl
 theorem Icc_def (a b : α) : Icc a b = { x | a ≤ x ∧ x ≤ b } := rfl
-
-/-- `Iic b` is the left-infinite right-closed interval $(-∞, b]$. -/
-def Iic (b : α) := { x | x ≤ b }
-
-@[simp, grind =] theorem mem_Iic : x ∈ Iic b ↔ x ≤ b := Iff.rfl
-theorem Iic_def (b : α) : Iic b = { x | x ≤ b } := rfl
 
 /-- `Ioc a b` is the left-open right-closed interval $(a, b]$. -/
 def Ioc (a b : α) := { x | a < x ∧ x ≤ b }
 
-@[simp, grind =] theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := Iff.rfl
+@[simp, grind =, push] theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b := Iff.rfl
 theorem Ioc_def (a b : α) : Ioc a b = { x | a < x ∧ x ≤ b } := rfl
-
-/-- `Ici a` is the left-closed right-infinite interval $[a, ∞)$. -/
-def Ici (a : α) := { x | a ≤ x }
-
-@[simp, grind =] theorem mem_Ici : x ∈ Ici a ↔ a ≤ x := Iff.rfl
-theorem Ici_def (a : α) : Ici a = { x | a ≤ x } := rfl
-
-/-- `Ioi a` is the left-open right-infinite interval $(a, ∞)$. -/
-def Ioi (a : α) := { x | a < x }
-
-@[simp, grind =] theorem mem_Ioi : x ∈ Ioi a ↔ a < x := Iff.rfl
-theorem Ioi_def (a : α) : Ioi a = { x | a < x } := rfl
 
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with

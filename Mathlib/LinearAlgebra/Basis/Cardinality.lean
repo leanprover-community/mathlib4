@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Pigeonhole
 # Results relating bases and cardinality.
 -/
 
-@[expose] public section
+public section
 
 section Finite
 

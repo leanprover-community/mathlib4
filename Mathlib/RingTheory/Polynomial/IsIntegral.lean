@@ -143,7 +143,8 @@ protected lemma IsIntegral.coeff
   have hm₂ : p.natDegree < m := by grind
   have h₀ : algebraMap R[X] S[X] X = X := by simp
   have : (((taylor (X ^ m)) q).map (algebraMap R[X] S[X])).IsRoot (p - X ^ m) := by
-    simpa [-algebraMap_def, q, h₀] using ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m):)
+    simpa [-algebraMap_def, q, h₀] using
+      ((q.map (algebraMap _ _)).taylor_eval (X ^ m) (p - X ^ m) :)
   have : X ^ m - p ∣ (eval (X ^ m) q).map (algebraMap _ _) := by
     change X ^ m - p ∣ Algebra.ofId R[X] S[X] _
     rw [← coe_aeval_eq_eval, ← aeval_algHom_apply, ← neg_dvd, neg_sub]
