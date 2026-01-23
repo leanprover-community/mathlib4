@@ -778,12 +778,14 @@ theorem inv_entourageProd (u : SetRel α α) (v : SetRel β β) :
     (entourageProd u v).inv = entourageProd u.inv v.inv :=
   rfl
 
+@[simp]
 theorem image_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
     (entourageProd u v).image (s ×ˢ t) = u.image s ×ˢ v.image t := by
   ext
   simp only [mem_entourageProd, SetRel.mem_image, Set.mem_prod, Prod.exists]
   grind
 
+@[simp]
 theorem preimage_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
     (entourageProd u v).preimage (s ×ˢ t) = u.preimage s ×ˢ v.preimage t :=
   image_entourageProd_prod u.inv v.inv s t
