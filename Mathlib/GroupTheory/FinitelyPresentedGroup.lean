@@ -197,7 +197,8 @@ theorem IsNormalClosureFG.invariant_surj_hom {G H : Type*} [Group G] [Group H]
 /-- A finitely presented group is defined as a presented group with generators of a finite type
 and finite relations. -/
 def FinitelyPresentedGroup {α : Type} [Finite α] (rels : Set (FreeGroup α))
-(_ : rels.Finite) := PresentedGroup (rels)
+(_ : rels.Finite)
+:= PresentedGroup (rels)
 
 namespace FinitelyPresentedGroup
 
@@ -451,7 +452,7 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
-/- If you FreeGroup α by an empty set, you get the original group -/
+/-- If you FreeGroup α by an empty set, you get the original group -/
 def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
   have hbot :
