@@ -145,16 +145,16 @@ theorem congr_trans {U : Type*} [Semiring U] (u : AbsoluteValue U S)
 theorem congr_symm (f : R ≃+* T) : (congr v w f).symm = congr w v f.symm := rfl
 
 @[simp]
-theorem equiv_congr_apply {x : WithAbs v} (f : R ≃+* T) :
-    equiv w (congr v w f x) = f (equiv v x) := rfl
+theorem ofAbs_congr_apply {x : WithAbs v} (f : R ≃+* T) :
+    (congr v w f x).ofAbs = f x.ofAbs := rfl
 
 @[simp]
-theorem congr_equiv_symm_apply {x : R} (f : R ≃+* T) :
-    congr v w f ((equiv v).symm x) = (equiv w).symm (f x) := rfl
+theorem congr_toAbs_apply {x : R} (f : R ≃+* T) :
+    congr v w f (toAbs v x) = toAbs w (f x) := rfl
 
 @[simp]
-theorem congr_symm_equiv_symm_apply {x : T} (f : R ≃+* T) :
-    (congr v w f).symm ((equiv w).symm x) = (equiv v).symm (f.symm x) := rfl
+theorem congr_symm_toAbs_apply {x : T} (f : R ≃+* T) :
+    (congr v w f).symm (toAbs w x) = toAbs v (f.symm x) := rfl
 
 /-- The canonical (semiring) equivalence between `WithAbs v` and `WithAbs w`, for any two
 absolute values `v` and `w` on `R`. -/
@@ -167,17 +167,18 @@ theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
     (congr v w (.refl R)).symm = (congr w v (RingEquiv.refl R).symm) :=
   congr_symm _ _ _
 
-@[simp, deprecated "Use `WithAbs.equiv_congr_symm_apply` instead." (since := "2026-01-23")]
+@[deprecated "Use `WithAbs.ofAbs_congr_apply` instead." (since := "2026-01-23")]
 theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
-    equiv v ((congr v w (.refl R)).symm x) = equiv w x := equiv_congr_apply _ _ _
+    equiv v ((congr v w (.refl R)).symm x) = equiv w x := ofAbs_congr_apply v w (.refl R)
 
-@[simp, deprecated "Use `WithAbs.congr_equiv_symm_apply` instead." (since := "2026-01-23")]
+@[deprecated "Use `WithAbs.congr_toAbs_apply` instead." (since := "2026-01-23")]
 theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    congr v w (.refl R) ((equiv v).symm x) = (equiv w).symm x := rfl
+    congr v w (.refl R) ((equiv v).symm x) = (equiv w).symm x := congr_toAbs_apply _ _ _
 
-@[simp, deprecated "Use `WithAbs.congr_symm_equiv_symm_apply` instead." (since := "2026-01-23")]
+@[deprecated "Use `WithAbs.congr_symm_toAbs_apply` instead." (since := "2026-01-23")]
 theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x := rfl
+    (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x :=
+  congr_symm_toAbs_apply _ _ _
 
 end semiring
 
