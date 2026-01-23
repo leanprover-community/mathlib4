@@ -16,7 +16,7 @@ In this file we define `Coalgebra`, and provide instances for:
 * Commutative semirings: `CommSemiring.toCoalgebra`
 * Binary products: `Prod.instCoalgebra`
 * Finitely supported functions: `DFinsupp.instCoalgebra`, `Finsupp.instCoalgebra`
-* Finite pi functions: `Pi.instCoalgebra`, `Pi.instCoalgebraForall`
+* Finite pi functions: `Pi.instCoalgebra`
 
 ## References
 
