@@ -71,7 +71,7 @@ def addGroupFilterBasis : AddGroupFilterBasis A where
     exact ⟨I, ⟨I, hI, rfl⟩, by simp⟩
 
 /-- The topology on `A` induced by `addGroupFilterBasis`. -/
-def addGroupTopology : TopologicalSpace A := (addGroupFilterBasis F).topology
+abbrev addGroupTopology : TopologicalSpace A := (addGroupFilterBasis F).topology
 
 /-- The topology `F.addGroupTopology` endows `A` with the structure of a topological additive
 group. -/
@@ -126,7 +126,7 @@ def ringFilterBasis : RingFilterBasis A where
       fun a ha ↦ Set.mem_preimage.mpr (Submodule.mem_colon_singleton.mp ha)⟩
 
 /-- Under `F.IsUniform`, the topology on `A` induced by `ringFilterBasis`. -/
-def ringTopology : TopologicalSpace A := (ringFilterBasis hUniform).topology
+abbrev ringTopology : TopologicalSpace A := (ringFilterBasis hUniform).topology
 
 /-- In `ringTopology`, `s` is a neighbourhood of `a` iff it contains a
 left-additive coset of some ideal `I ∈ F`. -/
