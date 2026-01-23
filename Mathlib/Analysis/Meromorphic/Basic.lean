@@ -330,6 +330,11 @@ protected theorem deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : Merom
     MeromorphicAt.meromorphicAt_congr this]
   fun_prop
 
+@[deprecated MeromorphicAt.deriv (since := "2025-12-21")]
+theorem fun_deriv [CompleteSpace E] {f : 𝕜 → E} {x : 𝕜} (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv f z) x :=
+  h.deriv
+
 /--
 Iterated derivatives of meromorphic functions are meromorphic.
 -/
@@ -339,6 +344,12 @@ Iterated derivatives of meromorphic functions are meromorphic.
   induction n with
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
+
+@[deprecated MeromorphicAt.iterated_deriv (since := "2025-12-21")]
+theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} {f : 𝕜 → E} {x : 𝕜}
+    (h : MeromorphicAt f x) :
+    MeromorphicAt (fun z ↦ _root_.deriv^[n] f z) x :=
+  h.iterated_deriv
 
 end MeromorphicAt
 
@@ -523,9 +534,19 @@ include hf in
 protected theorem deriv [CompleteSpace E] : MeromorphicOn (deriv f) U := fun z hz ↦ (hf z hz).deriv
 
 include hf in
+@[deprecated MeromorphicOn.deriv (since := "2025-12-21")]
+theorem fun_deriv [CompleteSpace E] : MeromorphicOn (fun z ↦ _root_.deriv f z) U := hf.deriv
+
+include hf in
 /-- Iterated derivatives of meromorphic functions are meromorphic. -/
 theorem iterated_deriv [CompleteSpace E] {n : ℕ} : MeromorphicOn (_root_.deriv^[n] f) U :=
   fun z hz ↦ (hf z hz).iterated_deriv
+
+include hf in
+@[deprecated MeromorphicOn.iterated_deriv (since := "2025-12-21")]
+theorem fun_iterated_deriv [CompleteSpace E] {n : ℕ} :
+    MeromorphicOn (fun z ↦ _root_.deriv^[n] f z) U :=
+  hf.iterated_deriv
 
 end arithmetic
 
@@ -550,7 +571,7 @@ The singular set of a meromorphic function is countable.
 theorem countable_compl_analyticAt_inter [SecondCountableTopology 𝕜] [CompleteSpace E]
     (h : MeromorphicOn f U) :
     ({z | AnalyticAt 𝕜 f z}ᶜ ∩ U).Countable := by
-  apply (HereditarilyLindelof_LindelofSets _).countable_of_isDiscrete
+  apply (HereditarilyLindelofSpace.isLindelof _).countable_of_isDiscrete
     (isDiscrete_of_codiscreteWithin _)
   simpa using eventually_codiscreteWithin_analyticAt f h
 
@@ -574,6 +595,9 @@ variable
 lemma meromorphicAt {x : 𝕜} (hf : Meromorphic f) : MeromorphicAt f x := hf x
 
 lemma meromorphicOn {s : Set 𝕜} (hf : Meromorphic f) : MeromorphicOn f s := fun x _ ↦ hf x
+
+@[fun_prop]
+lemma const (x : E) : Meromorphic fun _ : 𝕜 ↦ x := fun _ ↦ .const _ _
 
 @[to_fun (attr := fun_prop)]
 lemma neg (hf : Meromorphic f) : Meromorphic (-f) := fun x ↦ (hf x).neg
@@ -633,6 +657,8 @@ theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace
 
 @[deprecated (since := "2025-12-21")] alias MeromorphicOn.countable_compl_analyticAt :=
   countable_compl_analyticAt
+@[deprecated (since := "2025-12-21")] alias _root_.MeromorphicOn.countable_compl_analyticAt :=
+  countable_compl_analyticAt
 
 /--
 Meromorphic functions are measurable.
@@ -649,5 +675,6 @@ theorem measurable [MeasurableSpace 𝕜] [SecondCountableTopology 𝕜] [BorelS
     (by simp [-mem_compl_iff]) h₃.restrict.measurable (measurable_of_countable _)
 
 @[deprecated (since := "2025-12-21")] alias MeromorphicOn.measurable := measurable
+@[deprecated (since := "2025-12-21")] alias _root_.MeromorphicOn.measurable := measurable
 
 end Meromorphic

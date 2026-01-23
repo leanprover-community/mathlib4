@@ -51,11 +51,7 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
-  Int.exists_greatest_of_bdd
-    (let ⟨n, hn⟩ := exists_int_gt x
-    ⟨n, fun _ h' => Int.cast_le.1 <| le_trans h' <| le_of_lt hn⟩)
-    (let ⟨n, hn⟩ := exists_int_lt x
-    ⟨n, le_of_lt hn⟩)
+  ⟨⌊x⌋, Int.floor_le x, fun _ ↦ Int.le_floor.mpr⟩
 
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩

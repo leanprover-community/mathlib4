@@ -264,7 +264,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
     apply inter_mem_nhdsWithin k
     apply IsOpen.mem_nhds (by simpa using h'k.smul _)
-    simp only [mem_compl_iff]
+    push _ ∈ _
     contrapose! H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this
