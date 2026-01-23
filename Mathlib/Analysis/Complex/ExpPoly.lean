@@ -80,9 +80,8 @@ theorem zero_free_polynomial_growth_is_exp_poly {H : ℂ → ℂ} {n : ℕ}
       have hExp : HasDerivAt (fun w => Complex.exp (k w)) (Complex.exp (k z) * L z) z :=
         (HasDerivAt.cexp hk_has)
       have hDiv := (HasDerivAt.div hExp hH_has (h_nonzero z))
-      have :
-          deriv F z =
-            ((Complex.exp (k z) * L z) * H z - Complex.exp (k z) * deriv H z) / (H z) ^ 2 := by
+      have : deriv F z = ((Complex.exp (k z) * L z) * H z - Complex.exp
+          (k z) * deriv H z) / (H z) ^ 2 := by
         simpa [F] using hDiv.deriv
       rw [this]
       have hnum :
