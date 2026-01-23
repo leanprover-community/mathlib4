@@ -179,7 +179,7 @@ theorem rightLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
   leftLim_leftLim (α := αᵒᵈ) h
 
 theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) (h' : (𝓝[<] a).NeBot) :
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) [h' : (𝓝[<] a).NeBot] :
     f.rightLim.leftLim a = f.leftLim a := by
   obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
   apply leftLim_eq_of_tendsto (neBot_iff.mp h')
@@ -197,9 +197,9 @@ theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
   filter_upwards [Ioo_mem_nhdsGT_of_mem ⟨hc.1.le, hc.2⟩] with d hd using hu hd
 
 theorem rightLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
-    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) (h' : (𝓝[>] a).NeBot) :
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) [h' : (𝓝[>] a).NeBot] :
     f.leftLim.rightLim a = f.rightLim a :=
-  leftLim_rightLim (α := αᵒᵈ) h h'
+  leftLim_rightLim (α := αᵒᵈ) h (h' := h')
 
 end
 

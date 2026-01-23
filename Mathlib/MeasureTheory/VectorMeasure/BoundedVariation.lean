@@ -496,13 +496,18 @@ theorem vectorMeasure_singleton (hf : BoundedVariationOn f univ) :
     rw [A]
     apply VectorMeasure.tendsto_vectorMeasure_iInter_atTop_nat ?_ (fun n ↦ measurableSet_Ioc)
     exact fun m n hmn ↦ Ioc_subset_Ioc_left (u_mono.monotone hmn)
-  have L2 :
-      Tendsto (fun n ↦ hf.vectorMeasure (Ioc (u n) a)) atTop (𝓝 (f.rightLim a - f.leftLim a)) := by
+  have L2 : Tendsto (fun n ↦ hf.vectorMeasure (Ioc (u n) a)) atTop
+      (𝓝 (f.rightLim a - f.leftLim a)) := by
     simp_rw [hf.vectorMeasure_Ioc (u_lt_a _).le]
     apply tendsto_const_nhds.sub
     have : Tendsto u atTop (𝓝[<] a) := tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       u_lim (Eventually.of_forall u_lt_a)
     convert (hf.rightLim.tendsto_leftLim a).comp this using 2
+    symm
+    apply leftLim_rightLim
+
+
+
 
 
   exact tendsto_nhds_unique L1 L2
