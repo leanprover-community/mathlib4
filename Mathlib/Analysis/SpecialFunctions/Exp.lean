@@ -441,8 +441,7 @@ lemma prod_le_exp_sum {ι : Type*} (s : Finset ι) (a b : ι → ℝ)
     (∏ i ∈ s, a i) ≤ Real.exp (∑ i ∈ s, b i) := by
   calc
     (∏ i ∈ s, a i) ≤ ∏ i ∈ s, Real.exp (b i) := Finset.prod_le_prod ha hab
-    _ = Real.exp (∑ i ∈ s, b i) := by
-      simpa using (Real.exp_sum (s := s) (f := b)).symm
+    _ = Real.exp (∑ i ∈ s, b i) := by simpa using (Real.exp_sum (s := s) (f := b)).symm
 
 end Finset
 
