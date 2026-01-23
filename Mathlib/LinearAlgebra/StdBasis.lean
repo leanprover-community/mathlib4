@@ -135,6 +135,7 @@ theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :
 
 variable {η}
 
+/-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
 def spanSubset (s : Set η) : Submodule R (η → R) :=
   .span R (Pi.basisFun R η '' s)
 
