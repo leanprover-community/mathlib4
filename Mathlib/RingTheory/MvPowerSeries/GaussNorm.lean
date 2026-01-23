@@ -1,9 +1,8 @@
 /-
- Copyright (c) 2025 William Coram. All rights reserved.
- Released under Apache 2.0 license as described in the file LICENSE.
- Authors: William Coram
+Copyright (c) 2025 William Coram. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: William Coram
 -/
-
 module
 
 public import Mathlib.Analysis.Normed.Ring.Basic
@@ -36,7 +35,7 @@ the set of all values of `v (coeff t f) * ∏ i : t.support, c i` for all `t : �
 
 @[expose] public section
 
-open MvPowerSeries
+namespace MvPowerSeries
 
 variable {R F σ : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : σ → ℝ) (f : MvPowerSeries σ R)
 
@@ -124,3 +123,5 @@ theorem gaussNormC_nonarchimedean (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
   · simp only [le_sup_iff]
     left
     exact gaussNormC_nonneg v c f
+
+end MvPowerSeries
