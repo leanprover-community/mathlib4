@@ -222,7 +222,7 @@ def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u, u} R R] (i : ℕ) :
     localCohomology.ofSelfLERadical.{u} J i ≅ localCohomology.{u} J i :=
   (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J)
     (selfLERadicalDiagram.{u} J) i).symm ≪≫
-      HasColimit.isoOfNatIso.{0,0,u+1,u+1} (Iso.refl.{u+1,u+1} _)
+      HasColimit.isoOfNatIso.{0, 0, u + 1, u + 1} (Iso.refl.{u + 1, u + 1} _)
 
 /-- Casting from the full subcategory of ideals with radical containing `J` to the full
 subcategory of ideals with radical containing `K`. -/

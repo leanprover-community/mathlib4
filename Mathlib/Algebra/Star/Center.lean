@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Group.Center
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [Mul R] [StarMul R] {a : R} {s : Set R}
 

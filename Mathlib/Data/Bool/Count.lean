@@ -19,7 +19,7 @@ we prove that in a list with alternating `true`s and `false`s, the number of `tr
 the number of `false`s by at most one. We provide several versions of these statements.
 -/
 
-@[expose] public section
+public section
 
 
 namespace List

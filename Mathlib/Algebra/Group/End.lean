@@ -391,24 +391,32 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
       (f * g).subtypePerm fun _ => (hf _).trans <| hg _ :=
   rfl
 
+set_option backward.privateInPublic true in
 private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
   f⁻¹.surjective.forall.trans <| by simp [Iff.comm]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
     f⁻¹.subtypePerm hf = (f.subtypePerm <| inv_aux.2 hf : Perm { x // p x })⁻¹ :=
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- See `Equiv.Perm.subtypePerm_inv`. -/
 @[simp]
 theorem inv_subtypePerm (f : Perm α) (hf) :
     (f.subtypePerm hf : Perm { x // p x })⁻¹ = f⁻¹.subtypePerm (inv_aux.1 hf) :=
   rfl
 
+set_option backward.privateInPublic true in
 private theorem pow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℕ} (x), p ((f ^ n) x) ↔ p x
   | 0, _ => Iff.rfl
   | _ + 1, _ => (pow_aux hf (f _)).trans (hf _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
     (f.subtypePerm hf : Perm { x // p x }) ^ n = (f ^ n).subtypePerm (pow_aux hf) := by
@@ -416,12 +424,15 @@ theorem subtypePerm_pow (f : Perm α) (n : ℕ) (hf) :
   | zero => simp
   | succ n ih => simp_rw [pow_succ', ih, subtypePerm_mul]
 
+set_option backward.privateInPublic true in
 private theorem zpow_aux (hf : ∀ x, p (f x) ↔ p x) : ∀ {n : ℤ} (x), p ((f ^ n) x) ↔ p x
   | Int.ofNat _ => pow_aux hf
   | Int.negSucc n => by
     rw [zpow_negSucc]
     exact pow_aux (inv_aux.1 hf)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem subtypePerm_zpow (f : Perm α) (n : ℤ) (hf) :
     (f.subtypePerm hf ^ n : Perm { x // p x }) = (f ^ n).subtypePerm (zpow_aux hf) := by

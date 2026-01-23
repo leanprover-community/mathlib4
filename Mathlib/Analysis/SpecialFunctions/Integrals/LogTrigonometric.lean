@@ -14,7 +14,7 @@ This file computes special values of the integral of `log ∘ sin`. Given that t
 involves the dilogarithm, this can be seen as computing special values of `Li₂`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval Real
 

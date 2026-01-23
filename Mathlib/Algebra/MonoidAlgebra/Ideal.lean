@@ -13,7 +13,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Defs
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`
 -/
 
-@[expose] public section
+public section
 
 
 variable {k A G : Type*}

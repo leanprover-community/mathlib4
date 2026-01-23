@@ -121,8 +121,6 @@ theorem forall_mem_union {p : α → Prop} : (∀ a ∈ s ∪ t, p a) ↔ (∀ a
 
 theorem notMem_union : a ∉ s ∪ t ↔ a ∉ s ∧ a ∉ t := by rw [mem_union, not_or]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_union := notMem_union
-
 @[simp, norm_cast]
 theorem coe_union (s₁ s₂ : Finset α) : ↑(s₁ ∪ s₂) = (s₁ ∪ s₂ : Set α) :=
   Set.ext fun _ => mem_union
