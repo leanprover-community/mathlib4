@@ -303,17 +303,15 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
     rw [hx]
     exact isExtrOn_T_real hn hk
 
-theorem irrational_of_root_T_real {n : ℕ} {r : ℝ} (hr : r ∈ (T ℝ n).roots) (hr0 : r ≠ 0) :
-    Irrational r := by
-  have hr' : r ∈ (Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n)))
+theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
+    Irrational x := by
+  have hx' : x ∈ (Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n)))
       (Finset.range n)).val := by
-    simpa [Polynomial.Chebyshev.roots_T_real n] using hr
-  have : r ∈ Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n))) (Finset.range n) :=
-    (Multiset.mem_coe).1 hr'
+    simpa [roots_T_real n] using (mem_roots_iff_aeval_eq_zero (T_ne_zero ℝ n)).mpr hroot
+  have : x ∈ Finset.image (fun k : ℕ => cos ((2 * k + 1) * π / (2 * n))) (Finset.range n) :=
+    (Multiset.mem_coe).1 hx'
   rcases Finset.mem_image.1 this with ⟨k, hkRange, rfl⟩
-  norm_cast at ⊢ hr0
-  refine irrational_cos_chebyshev_angle (odd_two_mul_add_one k) (even_two_mul n) ?_ hr0
-  have : k < n := List.mem_range.mp hkRange
-  lia
+  norm_cast at ⊢ hroot hnz
+  exact irrational_cos_chebyshev_angle (odd_two_mul_add_one k) (even_two_mul n) (by grind) hnz
 
 end Polynomial.Chebyshev

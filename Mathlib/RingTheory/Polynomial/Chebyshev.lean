@@ -238,6 +238,10 @@ theorem leadingCoeff_T [IsDomain R] [NeZero (2 : R)] (n : ℤ) :
   | neg n ih => simp [ih]
 
 @[simp]
+theorem T_ne_zero [IsDomain R] [NeZero (2 : R)] (n : ℤ) : T R n ≠ 0 :=
+  leadingCoeff_ne_zero.mp (by simp [leadingCoeff_T, two_ne_zero])
+
+@[simp]
 theorem T_eval_neg (n : ℤ) (x : R) : (T R n).eval (-x) = n.negOnePow * (T R n).eval x := by
   induction n using Chebyshev.induct' with
   | zero => simp
