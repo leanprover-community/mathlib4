@@ -57,10 +57,9 @@ theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
   simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
     Finsupp.card_support_eq_one', pos_iff_ne_zero]
 
-theorem Nat.nontrivial_primeFactors_of_two_le_of_not_isPrimePow {n : ℕ} (hn : 2 ≤ n)
-    (ha : ¬ IsPrimePow n) : (Nat.primeFactors n).Nontrivial := by
-  rw [isPrimePow_iff_card_primeFactors_eq_one] at ha
-  rw [← Finset.one_lt_card_iff_nontrivial]
+theorem Nat.not_isPrimePow_iff_nontrivial_of_two_le {n : ℕ} (hn : 2 ≤ n) :
+    ¬ IsPrimePow n ↔ (Nat.primeFactors n).Nontrivial := by
+  rw [isPrimePow_iff_card_primeFactors_eq_one, ← Finset.one_lt_card_iff_nontrivial]
   grind [Finset.card_eq_zero, primeFactors_eq_empty]
 
 theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
