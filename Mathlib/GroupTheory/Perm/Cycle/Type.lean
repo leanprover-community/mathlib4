@@ -785,12 +785,6 @@ theorem cycleType_swap_mul_swap_of_nodup {x y z t : α} (h : [x, y, z, t].Nodup)
   · rw [swap_isSwap_iff]; grind
   · rw [swap_isSwap_iff]; grind
 
-theorem sign_swap_mul_swap_of_nodup {x y z t : α} (h : [x, y, z, t].Nodup) :
-    (swap x y * swap z t).sign = 1 := by
-  rw [sign_of_cycleType, cycleType_swap_mul_swap_of_nodup (by grind),
-    ← Units.val_inj]
-  norm_num
-
 end
 
 end Equiv.Perm
