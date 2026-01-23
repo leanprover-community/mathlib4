@@ -323,13 +323,13 @@ cache constant expressions, so that's why the `if`s in the implementation are in
 Note that this function is still called many times by `applyReplacementFun`
 and we're not remembering the cache between these calls. -/
 private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData) (e : Expr)
-    (dontTranslate : Array FVarId) : Option (Name ⊕ FVarId) :=
-  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) (Name ⊕ FVarId) := do
+    (dontTranslate : Array FVarId) : Option Expr :=
+  let rec visit (e : Expr) (inApp := false) : OptionT (StateM (PtrSet Expr)) Expr := do
     if e.isConst then
       let doTranslate :=
         (t.doTranslateAttr.find? env e.constName!).getD <|
           inApp || (findTranslation? env t e.constName).isSome
-      if doTranslate then failure else return .inl e.constName
+      if doTranslate then failure else return e
     if (← get).contains e then
       failure
     modify fun s => s.insert e
@@ -348,7 +348,11 @@ private unsafe def shouldTranslateUnsafe (env : Environment) (t : TranslateData)
     | .letE _ _ e body _ => visit e <|> visit body
     | .mdata _ b         => visit b
     | .proj _ _ b        => visit b
-    | .fvar fvarId       => if dontTranslate.contains fvarId then return .inr fvarId else failure
+    | .fvar fvarId       => if dontTranslate.contains fvarId then return e else failure
+    /- We do not translate the order on `Prop`.
+    TODO: We also don't want to translate the category on `Type u`. Unfortunately, replacing
+    `.sort 0` with `.sort _` here breaks some uses of `to_additive` on `MonCat`. -/
+    | .sort 0            => return e
     | _                  => failure
   Id.run <| (visit e).run' mkPtrSet
 
@@ -360,7 +364,7 @@ This means we will replace expression applied to e.g. `α` or `α × β`, but no
 e.g. `ℕ` or `ℝ × α`.
 We ignore all arguments specified by the `ignore` `NameMap`. -/
 def shouldTranslate (env : Environment) (t : TranslateData) (e : Expr)
-    (dontTranslate : Array FVarId := #[]) : Option (Name ⊕ FVarId) :=
+    (dontTranslate : Array FVarId := #[]) : Option Expr :=
   unsafe shouldTranslateUnsafe env t e dontTranslate
 
 /-- Swap the first two elements of a list -/
@@ -444,10 +448,9 @@ where
       let { reorder, relevantArg } := t.argInfoAttr.find? env n₀ |>.getD {}
       -- Use `relevantArg` to test if the head should be translated.
       if h : relevantArg < args.size then
-        if let some fx := shouldTranslate env t args[relevantArg] dontTranslate then
-          let fx := match fx with | .inl fx => m!"type {fx}" | .inr fx => m!"variable {mkFVar fx}"
+        if let some fixed := shouldTranslate env t args[relevantArg] dontTranslate then
           trace[translate_detail]
-            "The application of {n₀} contains the fixed {fx} so it is not changed."
+            "The application of {n₀} contains the fixed type {fixed} so it is not changed."
           return mkAppN f (← args.mapM visit)
       -- If the number of arguments is too small for `reorder`, we need to eta expand first
       unless reorder.isEmpty do

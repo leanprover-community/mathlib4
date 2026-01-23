@@ -33,6 +33,7 @@ attribute [to_dual DecidableLE' /-- `DecidableLE'` is equivalent to `DecidableLE
 It is used by `@[to_dual]` in order to deal with `DecidableLE`. -/] DecidableLE
 
 attribute [to_dual_do_translate] Empty PEmpty Unit PUnit
+attribute [to_dual_ignore_args 2] Subtype
 
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self] ge_iff_le gt_iff_lt

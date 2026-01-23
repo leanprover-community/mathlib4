@@ -379,9 +379,9 @@ def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
 run_meta do
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) == some (.inl `Test.MonoidEnd)
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') == some (.inl `Test.Unit')
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') == none
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd)).any (·.isConstOf `Test.MonoidEnd)
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit')).any (·.isConstOf `Test.Unit')
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'')).isNone
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
