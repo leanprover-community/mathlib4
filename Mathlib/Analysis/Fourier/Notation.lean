@@ -128,15 +128,15 @@ variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E 
 
 @[simp]
 theorem fourier_zero : 𝓕 (0 : E) = 0 :=
-    map_zero (AddMonoidHom.mk' 𝓕 fourier_add)
+  map_zero (AddMonoidHom.mk' 𝓕 fourier_add)
 
 @[simp]
 theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
-    map_neg (AddMonoidHom.mk' 𝓕 fourier_add) f
+  map_neg (AddMonoidHom.mk' 𝓕 fourier_add) f
 
 @[simp]
 theorem fourier_sum (f : ι → E) (s : Finset ι) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
-    map_sum (AddMonoidHom.mk' 𝓕 fourier_add) f s
+  map_sum (AddMonoidHom.mk' 𝓕 fourier_add) f s
 
 end fourier
 
@@ -146,15 +146,15 @@ variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInv
 
 @[simp]
 theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
-    map_zero (AddMonoidHom.mk' 𝓕⁻ fourierInv_add)
+  map_zero (AddMonoidHom.mk' 𝓕⁻ fourierInv_add)
 
 @[simp]
 theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
-    map_neg (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f
+  map_neg (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f
 
 @[simp]
 theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕⁻ (f i) :=
-    map_sum (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f s
+  map_sum (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f s
 
 end fourierInv
 
