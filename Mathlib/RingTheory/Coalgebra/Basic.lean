@@ -418,7 +418,7 @@ instance instIsCocomm [IsCocomm R A] : IsCocomm R (ι →₀ A) where
 end Finsupp
 
 namespace Pi
-variable {R n M : Type*} [CommSemiring R] [Fintype n] [DecidableEq n] [AddCommMonoid M] [Module R M]
+variable {R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
   {A : n → Type*} [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)]
 
 open TensorProduct LinearMap
@@ -429,8 +429,6 @@ variable [Π i, CoalgebraStruct R (A i)]
 instance instCoalgebraStruct : CoalgebraStruct R (Π i, A i) where
   comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
   counit := .lsum R _ R fun _ ↦ counit
-
-instance [CoalgebraStruct R M] : CoalgebraStruct R (n → M) := instCoalgebraStruct
 
 @[simp] theorem comul_single (i : n) (a : A i) :
     comul (single i a) = map (.single R _ i) (.single R _ i) (comul a) :=
@@ -452,7 +450,7 @@ theorem comul_comp_proj (i : n) :
 
 end coalgebraStruct
 
-variable [Coalgebra R M] [Π i, Coalgebra R (A i)]
+variable [Π i, Coalgebra R (A i)]
 
 /-- The `R`-module whose elements are functions `Π i, A i` for finite `n` has a coalgebra structure.
 The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and
@@ -476,9 +474,6 @@ instance instCoalgebra : Coalgebra R (Π i, A i) where
 
 instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π i, A i) where
   comm_comp_comul := by ext; simp [← map_comm]
-
-instance : Coalgebra R (n → M) := instCoalgebra
-instance [IsCocomm R M] : IsCocomm R (n → M) := instIsCocomm
 
 end Pi
 
