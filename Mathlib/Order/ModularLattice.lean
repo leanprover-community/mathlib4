@@ -69,7 +69,7 @@ class IsWeakUpperModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A weakly lower modular lattice is a lattice where `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers
 both `a` and `b`. -/
-@[to_dual]
+@[to_dual existing]
 class IsWeakLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` cover `a ⊓ b` if `a ⊔ b` covers both `a` and `b` -/
   inf_covBy_of_covBy_covBy_sup {a b : α} : a ⋖ a ⊔ b → b ⋖ a ⊔ b → a ⊓ b ⋖ a
@@ -82,7 +82,7 @@ class IsUpperModularLattice (α : Type*) [Lattice α] : Prop where
 
 /-- A lower modular lattice is a lattice where `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers
 either `a` or `b`. -/
-@[to_dual]
+@[to_dual existing]
 class IsLowerModularLattice (α : Type*) [Lattice α] : Prop where
 /-- `a` and `b` both cover `a ⊓ b` if `a ⊔ b` covers either `a` or `b` -/
   inf_covBy_of_covBy_sup {a b : α} : a ⋖ a ⊔ b → a ⊓ b ⋖ b
