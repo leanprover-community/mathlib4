@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.InvariantForm
---public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Data.Set.MulAntidiagonal
 
@@ -362,127 +362,10 @@ def residuePairingFinsupp [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R 
     rw [smul_finsum' _ (residuePairing_finite_support R A L Φ x _), finsum_congr]
     intro k
     simp [mul_smul_comm]
-/-
-/-- A cochain on finsupp -/
-def residuePairingCochain (Φ : LinearMap.BilinForm R L) :
-    letI := finsuppLieRing R L
-    letI := finsuppRestrictLieAlgebra R L
-    LieModule.Cohomology.twoCochain R (ℤ →₀ L) (TrivialLieModule R (LoopAlgebra R L) R) where
-  val := (residuePairingFinsupp R L Φ).compr₂
-    ((TrivialLieModule.equiv R (LoopAlgebra R L) R).symm.toLinearMap)
-  property := sorry
-
-def plusMinus [InvolutiveNeg A] : Setoid A where
-  r a b := a = b ∨ a = -b
-  iseqv := {
-    refl := by grind
-    symm := by grind [neg_eq_iff_eq_neg]
-    trans := by grind [neg_eq_iff_eq_neg]}
-
---#find_home! plusMinus --[Mathlib.Algebra.Group.Defs]
-
-lemma plusMinus_preimage [InvolutiveNeg A] (x : Quotient (plusMinus A)) {b : A}
-    (h : Quotient.mk (plusMinus A) b = x) :
-    (Quotient.mk (plusMinus A)) ⁻¹' {x} = {b, -b} := by
-  refine Set.Subset.antisymm ?_ ?_
-  · intro c hc
-    simp only [plusMinus, Set.mem_preimage, Set.mem_singleton_iff, ← h, Quotient.eq] at hc
-    simp [hc]
-  · intro c hc
-    simp_all [plusMinus, ← h, Quotient.eq]
-
-lemma plusMinus_finite_preimage [InvolutiveNeg A] (x : Quotient (plusMinus A)) :
-    ((Quotient.mk (plusMinus A)) ⁻¹' {x}).Finite := by
-  obtain ⟨b, hb⟩ := (Quotient.exists (s := plusMinus A) (p := fun b ↦ b = x)).mp exists_eq
-  refine Finite.Set.subset {b, -b} ?_
-  · intro c hc
-    simp only [plusMinus, Set.mem_preimage, Set.mem_singleton_iff, ← hb, Quotient.eq] at hc
-    simp [hc]
-
-lemma plusMinus_preimage_singleton [InvolutiveNeg A] (x : Quotient (plusMinus A)) {b : A}
-    (hx : Quotient.mk (plusMinus A) b = x) :
-    ((Quotient.mk (plusMinus A)) ⁻¹' {x}) = {b} ↔ b = -b := by
-  constructor
-  · intro h
-    have : Quotient.mk (plusMinus A) (-b) = x := by simp [← hx, Quotient.eq, plusMinus]
-    have : -b ∈ Quotient.mk (plusMinus A) ⁻¹' {x} := this
-    exact Eq.symm (by simpa [h] using this)
-  · intro h
-    rw [plusMinus_preimage A x hx, ← h, Set.pair_eq_singleton]
-
-/-- The residue pairing on a Loop algebra, with values in a trivial module. -/
-def minusFold [InvolutiveNeg A] : A → Quotient (plusMinus A) := Quotient.mk (plusMinus A)
-
-lemma Odd.support {α β : Type*} [AddCommGroup β] [InvolutiveNeg α] {f : α → β}
-    (hf : Function.Odd f) (x : α) :
-    x ∈ f.support ↔ -x ∈ f.support := by
-  simp only [Function.mem_support, ne_eq]
-  rw [not_iff_not, hf, neg_eq_zero]
---#find_home! Odd.support --here
-
-lemma neg_mem_of_toFinset {α : Type*} [InvolutiveNeg α] {s : Set α} (hs : s.Finite)
-    (hsn : ∀ x : α, x ∈ s ↔ -x ∈ s) (x : α) :
-    x ∈ hs.toFinset ↔ -x ∈ hs.toFinset := by
-  simp [hsn x]
---#find_home! neg_mem_of_toFinset -- Mathlib.Data.Set.Finite.Lemmas?
-
-@[simps]
-def InvolutiveNegSubtype {α β : Type*} [Zero β] [InvolutiveNeg α] {f : α → β}
-    (hf : (Function.support f).Finite)
-    (hfs : ∀ x : α, x ∈ Function.support f ↔ -x ∈ Function.support f) :
-    InvolutiveNeg hf.toFinset where
-  neg := fun a ↦ ⟨-(a.1), (neg_mem_of_toFinset hf hfs a.1).mp a.2⟩
-  neg_neg := by simp
-#find_home! InvolutiveNegSubtype --
-lemma Odd.finsum_zero {α β : Type*} [AddCommGroup β] [InvolutiveNeg α] [IsAddTorsionFree β]
-    {f : α → β} (hf : Function.Odd f) :
-    ∑ᶠ a, f a = 0 := by
-  by_cases h : (Function.support f).Finite
-  · rw [finsum_eq_sum f h, ← Finset.sum_coe_sort h.toFinset f]
-    let _ := InvolutiveNegSubtype h (fun a ↦ Odd.support hf a)
-    rw [Function.Odd.sum_eq_zero (fun x ↦ by simp only [← hf x]; congr 1)]
-  · exact finsum_of_infinite_support h
---#find_home! Odd.finsum_zero --here
--/
 
 /-- A 2-cochain on a loop algebra given by an invariant bilinear form. The alternating condition
 follows from the fact that Res f df = 0 -/
-def twoCochainOfBilinear [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
-    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
-    (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) :
-    LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
-  val := (((residuePairingFinsupp R A L Φ).compr₂
-    ((TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm.toLinearMap)).compl₂
-    (toFinsupp R A L).toLinearMap).comp (toFinsupp R A L).toLinearMap
-  property := by
-    simp only [LieModule.Cohomology.mem_twoCochain_iff]
-    intro f
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      LinearMap.compl₂_apply, LinearMap.compr₂_apply, residuePairingFinsupp_apply_apply,
-      EmbeddingLike.map_eq_zero_iff]
-    have zerosmul (r : R) : (0 : A) • r = (0 : R) := by
-      have : (0 : A) • r = (0 : A) • r + (0 : A) • r := by rw [← h, zero_add (0 : A)]
-      rwa [right_eq_add] at this
-    set φ := fun n ↦ n • (Φ (((toFinsupp R A L) f) (-n))) (((toFinsupp R A L) f) n) with hφ
-    have : Function.Odd φ := by
-      intro n
-      simp only [hφ, neg_neg, hΦ.eq (toFinsupp R A L f n) (toFinsupp R A L f (-n))]
-      rw [eq_neg_iff_add_eq_zero, ← h, neg_add_cancel, zerosmul]
-    simpa [neg_eq_self, finsum_neg_distrib, funext this] using finsum_comp_equiv (.neg A) (f := φ)
-
-@[simp]
-lemma twoCochainOfBilinear_apply_apply [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
-    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
-    (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) (x y : LoopAlgebra R A L) :
-    twoCochainOfBilinear R A L Φ hΦ h x y =
-      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
-        ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
-  rfl
-
-/-- A 2-cochain on a loop algebra given by an invariant bilinear form. The alternating condition
-follows from the fact that Res f df = 0 -/
-def twoCochainOfBilinear' [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ) :
     LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
       (TrivialLieModule R (LoopAlgebra R A L) R) where
@@ -502,28 +385,29 @@ def twoCochainOfBilinear' [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     simpa [neg_eq_self, finsum_neg_distrib, funext this] using finsum_comp_equiv (.neg A) (f := φ)
 
 @[simp]
-lemma twoCochainOfBilinear'_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
     (x y : LoopAlgebra R A L) :
-    twoCochainOfBilinear' R A L Φ hΦ x y =
+    twoCochainOfBilinear R A L Φ hΦ x y =
       (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
         ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
   rfl
 
 /-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
-def twoCocycle'_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+@[simps]
+def twoCocycle_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) :
     LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
       (TrivialLieModule R (LoopAlgebra R A L) R) where
-  val := twoCochainOfBilinear' R A L Φ hΦs
+  val := twoCochainOfBilinear R A L Φ hΦs
   property := by
     refine (LieModule.Cohomology.mem_twoCocycle_iff R (LoopAlgebra R A L)
-            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear' R A L Φ hΦs)).mpr ?_
+            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear R A L Φ hΦs)).mpr ?_
     ext a x b y c z
     simp only [LinearMap.coe_comp, Function.comp_apply, AddMonoidAlgebra.lsingle_apply,
       TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
-      TensorProduct.curry_apply, LieModule.Cohomology.d₂₃_apply, twoCochainOfBilinear'_apply_apply,
+      TensorProduct.curry_apply, LieModule.Cohomology.d₂₃_apply, twoCochainOfBilinear_apply_apply,
       toFinsupp_single_tmul, residuePairingFinsupp_apply_apply, trivial_lie_zero, sub_self,
       add_zero, ExtendScalars.bracket_tmul, AddMonoidAlgebra.single_mul_single, mul_one, zero_sub,
       LinearMap.zero_apply]
@@ -539,44 +423,28 @@ def twoCocycle'_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
         Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
-/-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
-def twoCocycle_of_Bilinear [AddCommGroup A] [IsAddTorsionFree R] [DistribSMul A R]
-    [SMulCommClass A R R] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
-    (hΦs : LinearMap.BilinForm.IsSymm Φ) (h : ∀ (a b : A) (r : R), (a + b) • r = a • r + b • r) :
-    LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
-  val := twoCochainOfBilinear R A L Φ hΦs h
-  property := by
-    refine (LieModule.Cohomology.mem_twoCocycle_iff R (LoopAlgebra R A L)
-            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear R A L Φ hΦs h)).mpr ?_
-    ext a x b y c z
-    simp only [LinearMap.coe_comp, Function.comp_apply, AddMonoidAlgebra.lsingle_apply,
-      TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
-      TensorProduct.curry_apply, LieModule.Cohomology.d₂₃_apply, twoCochainOfBilinear_apply_apply,
-      toFinsupp_single_tmul, residuePairingFinsupp_apply_apply, trivial_lie_zero, sub_self,
-      add_zero, ExtendScalars.bracket_tmul, AddMonoidAlgebra.single_mul_single, mul_one, zero_sub,
-      LinearMap.zero_apply]
-    rw [sub_eq_zero, neg_add_eq_iff_eq_add, ← LinearEquiv.map_add, EquivLike.apply_eq_iff_eq,
-      finsum_eq_single _ b (fun _ h ↦ by simp [h]), finsum_eq_single _ c (fun _ h ↦ by simp [h]),
-      finsum_eq_single _ a (fun _ h ↦ by simp [h])]
-    by_cases hz : a + b + c = 0
-    · have zerosmul (r : R) : (0 : A) • r = (0 : R) := by
-        have : (0 : A) • r = (0 : A) • r + (0 : A) • r := by rw [← h, zero_add (0 : A)]
-        rwa [right_eq_add] at this
-      have hneg (i : A) (r : R) : (-i) • r = -(i • r) := by
-        refine (neg_eq_of_add_eq_zero_right ?_).symm
-        rw [← h, add_neg_cancel, zerosmul]
-      rw [show a + b = -c by grind, show a + c = -b by grind, show b + c = -a by grind]
-      simp only [Finsupp.single_eq_same]
-      rw [hΦ, hΦs.eq z ⁅x, y⁆, hΦ y, ← lie_skew y x, hΦs.eq z, LinearMap.BilinForm.neg_left,
-        neg_neg, show b = -(a + c) by grind, hneg, smul_neg, neg_neg, h, add_comm]
-    · simp [Finsupp.single_eq_of_ne (a := a + c) (a' := -b) (by grind),
-        Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
-        Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
+local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+    LieRing (TrivialLieModule R L R) where
+  bracket _ _ := 0
+  add_lie _ _ _ := by simp
+  lie_add _ _ _ := by simp
+  lie_self _ := rfl
+  leibniz_lie _ _ _ := by simp
 
---⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
+local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+    IsLieAbelian (TrivialLieModule R L R) where
+  trivial _ _ := rfl
 
--- show that an invariant bilinear form on `L` produces a 2-cocycle for `LoopAlgebra R L`.
+local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+    LieAlgebra R (TrivialLieModule R L R) where
+  lie_smul _ _ _ := by simp
+
+def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
+    (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) :
+    LieAlgebra.Extension R (TrivialLieModule R (LoopAlgebra R A L) R) (LoopAlgebra R A L) :=
+  Extension.ofTwoCocycle (twoCocycle_of_Bilinear R A L Φ hΦ hΦs)
+
 -- define central extensions given by invariant bilinear forms
 -- extend central characters to reps of positive part
 -- induce positive part reps to centrally extended loop algebra

@@ -337,6 +337,12 @@ should allow me to commute in all domains with a fixed embedding of `ℤ × ℤ`
  * Scalar multiplication by Finsupps.
  * Translation from embedded positive `binomialPow` to `Finsupp`.
  * Comparison of commutator with usual composition
+
+(single g 1) - (single g' 1) • Y(A, z) Y(B,w) ≅ (single g' 1) - (single g 1) • Y(B,w) Y(A,z)
+"equality" of formal functions after variable switch (= isomorphism of exponent groups)
+
+isom of exponent groups induces corresponding equality of coeff functions.
+
 How do I express weak associativity in terms of power series? This seems to require a substitution.
 -/
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V] (A B : VertexOperator R V)
@@ -730,6 +736,81 @@ theorem resProd_nat_one_right_apply (n : ℕ) (A : VertexOperator R V) :
       finsum_eq_single _ (n - m).toNat fun _ _ ↦ (by rw [one_ncoeff_ne_neg_one (by omega)]; simp),
       Ring.choose_natCast n (n - m).toNat, Nat.choose_eq_zero_of_lt (by omega)]
     simp
+
+lemma resProdLeft_neg_nat_one_right_neg (n k : ℕ) (A : VertexOperator R V) :
+    ncoeff (resProdLeft (-n - 1) A 1) (-k - 1) = ncoeff ((hasseDeriv n) A) (-k - 1) := by
+  ext
+  simp only [resProdLeft_apply_ncoeff, Module.End.smul_def]
+  rw [finsum_eq_single _ k, show -(k : ℤ) - 1 + k = -1 by grind, one_ncoeff_neg_one,
+    hasseDeriv_ncoeff, ← smul_assoc]
+  · congr 1
+    · rw [show -(-(k : ℤ) - 1) - 1 + n = k + n by grind, ← Nat.cast_add, Ring.choose_natCast,
+        ← Nat.choose_symm_add, ← neg_add', Ring.choose_neg, Int.add_right_comm, Int.add_sub_cancel,
+        smul_smul, Int.units_mul_self, one_smul, add_comm, ← Ring.choose_natCast, Nat.cast_add]
+    · simp [neg_sub_comm, tsub_right_comm]
+  · intro m h
+    rw [one_ncoeff_ne_neg_one (by grind)]
+    simp
+
+lemma resProdLeft_neg_nat_one_right_nonneg (n k : ℕ) (A : VertexOperator R V) :
+    ncoeff (resProdLeft (-n - 1) A 1) k = 0 := by
+  ext
+  simp only [resProdLeft_apply_ncoeff, Module.End.smul_def, LinearMap.zero_apply]
+  rw [finsum_eq_zero_of_forall_eq_zero]
+  intro m
+  rw [one_ncoeff_ne_neg_one (by grind)]
+  simp
+
+lemma resProdRight_neg_nat_one_right_nonneg (n k : ℕ) (A : VertexOperator R V) :
+    ncoeff (resProdRight (-n - 1) A 1) k = -ncoeff ((hasseDeriv n) A) k := by
+  ext v
+  simp only [resProdRight_apply_ncoeff, Module.End.smul_def, hasseDeriv_ncoeff, LinearMap.neg_apply]
+  by_cases hnk : n ≤ k
+  · rw [finsum_eq_single _ (k - n), show (-↑n - 1 + ↑k - ↑(k - n)) = -1 by grind]
+    · simp only [Int.reduceNeg, one_ncoeff_neg_one, LinearMap.id_coe, id_eq]
+      rw [LinearMap.smul_apply, ← neg_zsmul, smul_smul, ← smul_assoc, Int.natCast_sub hnk]
+      congr 1
+      rw [← Int.negOnePow_add, ← neg_add', Ring.choose_neg, smul_smul,
+        show -(k : ℤ) - 1 + n = -(k - n + 1) by grind, Ring.choose_neg, ← Units.neg_smul]
+      congr 1
+      · rw [← Int.negOnePow_succ, ← Int.negOnePow_add, Int.negOnePow_eq_iff]
+        grind
+      · rw [add_sub_right_comm, Int.add_sub_cancel, Nat.cast_sub hnk,
+          ← add_sub_assoc (n : ℤ), add_sub_cancel_left, Ring.choose_natCast, Nat.choose_symm hnk,
+          Int.add_right_comm, sub_add_cancel, Int.add_sub_cancel, Ring.choose_natCast]
+    · intro m hm
+      rw [one_ncoeff_ne_neg_one (by grind)]
+      simp
+  · rw [finsum_eq_zero_of_forall_eq_zero,
+      Ring.choose_natCast_of_lt (k := n - k - 1) (by grind) (by grind)]
+    · simp
+    · intro m
+      rw [one_ncoeff_ne_neg_one (by grind)]
+      simp
+
+lemma resProdRight_neg_nat_one_right_neg (n k : ℕ) (A : VertexOperator R V) :
+    ncoeff (resProdRight (-n - 1) A 1) (-k - 1) = 0 := by
+  ext v
+  simp only [resProdRight_apply_ncoeff, Module.End.smul_def, LinearMap.zero_apply]
+  rw [finsum_eq_zero_of_forall_eq_zero]
+  · simp
+  · intro m
+    rw [one_ncoeff_ne_neg_one (by grind)]
+    simp
+
+lemma resProd_neg_nat_one_right (n : ℕ) (A : VertexOperator R V) :
+    resProd (-n - 1) A 1 = A.hasseDeriv n := by
+  simp only [resProd_apply_apply]
+  rw [HVertexOperator.coeff_inj_iff]
+  ext1 k
+  simp only [coeff_eq_ncoeff, map_sub, Pi.sub_apply]
+  by_cases hk : 0 ≤ k
+  · rw [← Int.toNat_of_nonneg hk, resProdRight_neg_nat_one_right_neg,
+      resProdLeft_neg_nat_one_right_neg, Int.ofNat_toNat, sub_zero]
+  · let l := (-k - 1).toNat
+    have : - k - 1 = l := by grind
+    rw [this, resProdRight_neg_nat_one_right_nonneg, resProdLeft_neg_nat_one_right_nonneg,
+      sub_neg_eq_add, zero_add]
 
 lemma resProd_hasseDeriv_left (m : ℕ) (k : ℤ) (A B : VertexOperator R V) :
     (A.hasseDeriv m).resProd k B = Int.negOnePow m • Ring.choose k m • A.resProd (k - m) B := by

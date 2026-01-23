@@ -485,6 +485,9 @@ theorem choose_add_smul_choose_add [NatPowAssoc R] (r : R) (n k : ℕ) :
     (Nat.choose (n + k) k) • choose (r + k) (n + k) = choose (r + k) k * choose r n := by
   rw [choose_add_smul_choose (r + k), add_sub_cancel_right]
 
+theorem choose_natCast_of_lt [NatPowAssoc R] {r : R} {n k : ℕ} (hr : r = k) (hk : k < n) :
+    Ring.choose r n = 0 := by
+  rw [hr, Ring.choose_natCast, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero]
 
 end
 
