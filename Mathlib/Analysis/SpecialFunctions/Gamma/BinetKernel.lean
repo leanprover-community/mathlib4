@@ -514,8 +514,7 @@ private lemma robbinsAux''_zero : robbinsAux'' 0 = 0 := by
   norm_num
 
 private lemma robbinsAux'''_zero : robbinsAux''' 0 = 0 := by
-  simp [robbinsAux''']
-  norm_num
+  simp [robbinsAux''']; norm_num
 
 private lemma hasDerivAt_robbinsAux (t : ℝ) : HasDerivAt robbinsAux (robbinsAux' t) t := by
   have hexp13 : HasDerivAt (fun x : ℝ => Real.exp (x * (13 / 12 : ℝ)))
