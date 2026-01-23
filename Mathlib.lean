@@ -3508,6 +3508,7 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.CastCard
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Finset.DenselyOrdered
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Empty
