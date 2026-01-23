@@ -220,9 +220,9 @@ theorem abundancyIndex_le_ofDvd (hn : n ≠ 0) (hd : m ∣ n) :
     (sum_le_sum_of_subset (by grind [mul_dvd_mul_iff_right hk0]))
 
 theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
-  have hm : m ≠ 0 := by grind [not_abundant_zero]
-  have hmn : m * n ≠ 0 := by simpa [hm]
-  grind [abundant_iff_two_lt_abundancyIndex, abundancyIndex_le_ofDvd hn hd]
+  have := abundancyIndex_le_ofDvd hd hn
+  have := ne_zero_of_dvd_ne_zero hn hd
+  grind [abundant_iff_two_lt_abundancyIndex]
 
 theorem Abundant.mul (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   have hn : n ≠ 0 := by grind [not_abundant_zero]
