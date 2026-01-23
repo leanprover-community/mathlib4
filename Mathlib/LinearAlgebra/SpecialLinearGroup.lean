@@ -179,13 +179,17 @@ def toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V where
   map_one' := coe_one
   map_mul' := coe_mul
 
+@[simp] theorem coe_toLinearEquiv :
+    (⇑toLinearEquiv : SpecialLinearGroup R V → V ≃ₗ[R] V) = Subtype.val :=
+  rfl
+
 @[simp] lemma toLinearEquiv_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv v = A v :=
   rfl
 
 @[simp]
 theorem toLinearEquiv_to_linearMap (A : SpecialLinearGroup R V) :
-    (SpecialLinearGroup.toLinearEquiv A) = (A : V →ₗ[R] V) :=
+    A.toLinearEquiv = (A : V →ₗ[R] V) :=
   rfl
 
 @[simp]
@@ -193,9 +197,13 @@ theorem toLinearEquiv_symm_apply (A : SpecialLinearGroup R V) (v : V) :
     A.toLinearEquiv.symm v = A⁻¹ v :=
   rfl
 
-@[simp]
 theorem toLinearEquiv_symm_to_linearMap (A : SpecialLinearGroup R V) :
     A.toLinearEquiv.symm = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
+  rfl
+
+@[simp]
+theorem coe_symm_to_linearMap (A : SpecialLinearGroup R V) :
+    ↑((A : V ≃ₗ[R] V).symm) = ((A⁻¹ : SpecialLinearGroup R V) : V →ₗ[R] V) :=
   rfl
 
 theorem toLinearEquiv_injective :
@@ -215,7 +223,7 @@ lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
 
 lemma toGeneralLinearGroup_injective :
     Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) := by
-  simp [toGeneralLinearGroup, toLinearEquiv_injective]
+  simp [toGeneralLinearGroup]
 
 lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
     u ∈ Set.range ⇑(toGeneralLinearGroup (R := R) (V := V)) ↔
@@ -226,6 +234,20 @@ lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} 
     exact v.prop
   · intro hu
     refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+
+/-- The natural action of `SpecialLinearGroup R V` on `V`. -/
+instance : DistribMulAction (SpecialLinearGroup R V) V :=
+  DistribMulAction.compHom  _ (SpecialLinearGroup.toLinearEquiv)
+
+theorem _root_.SpecialLinearGroup.smul_def (g : SpecialLinearGroup R V) (v : V) :
+    g • v = g.toLinearEquiv • v := rfl
+
+theorem _root_.SpecialLinearGroup.toLinearEquiv_eq_coe (g : SpecialLinearGroup R V) :
+    g.toLinearEquiv = (g : V ≃ₗ[R] V) := rfl
+
+instance : SMulCommClass (SpecialLinearGroup R V) R V where
+  smul_comm g a v := by
+    simp [SpecialLinearGroup.smul_def]
 
 section baseChange
 
@@ -555,7 +577,7 @@ theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
     set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
-    simp only [smul_def, Units.smul_def] at this
+    simp only [Subgroup.smul_def, Units.smul_def] at this
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
       Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,

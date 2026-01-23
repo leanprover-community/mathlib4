@@ -259,12 +259,17 @@ lemma commutator_centralizer_commutator_le_center :
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
   exact Set.centralizer_subset (Subgroup.commutator_mono le_top le_top)
 
-/-- If g is conjugate to g ^ 2, then g is a commutator -/
+/-- A quotient of two conjugate elements is a commutator. -/
+theorem IsConj.div_memCommutatorSet {x y : G} (h : IsConj x y) :
+    x * y⁻¹ ∈ commutatorSet G := by
+  obtain ⟨g, hg⟩ := isConj_iff.mp h.symm
+  rw [mem_commutatorSet_iff, ← hg]
+  exact exists_apply_eq_apply2
+
+/-- If `g` is conjugate to `g ^ 2`, then `g` is a commutator -/
 lemma mem_commutatorSet_of_isConj_sq {g : G} (hg : IsConj g (g ^ 2)) : g ∈ commutatorSet G := by
-  obtain ⟨h, hg⟩ := hg
-  use h, g
-  rw [commutatorElement_def, hg]
-  simp only [IsUnit.mul_inv_cancel_right, Units.isUnit, mul_inv_eq_iff_eq_mul, pow_two]
+  convert hg.symm.div_memCommutatorSet
+  simp [pow_two]
 
 lemma map_commutator_eq {H : Type*} [Group H] (f : G →* H) :
     (commutator G).map f = ⁅f.range, f.range⁆ := by
