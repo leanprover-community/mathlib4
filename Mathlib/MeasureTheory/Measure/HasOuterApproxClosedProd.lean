@@ -53,7 +53,7 @@ We specialize these results to the cases where one of the families contains only
 bounded continuous function, product measure
 -/
 
-@[expose] public section
+public section
 
 open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal

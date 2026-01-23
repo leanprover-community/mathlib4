@@ -15,7 +15,7 @@ This file contains the Lemmas of Gauss and Eisenstein on the Legendre symbol.
 The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Nat

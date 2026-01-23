@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Algebra.Ring.PUnit
-public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -664,7 +663,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
     { obj := fun R ↦ CommSemiRingCat.of R
       map := fun f ↦ CommSemiRingCat.ofHom f.hom }
 
-@[simps]
+@[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl

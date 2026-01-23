@@ -18,7 +18,7 @@ Current selection of inequalities is motivated by formalization of the rotation 
 a circle homeomorphism.
 -/
 
-@[expose] public section
+public section
 
 open Function
 

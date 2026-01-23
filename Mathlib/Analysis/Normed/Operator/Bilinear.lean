@@ -410,7 +410,10 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
-`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/
+`smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`.
+
+This is also known as a rank-one operator.
+See also `InnerProductSpace.rankOne` for the rank-one operator on Hilbert spaces. -/
 @[simps! apply_apply]
 def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂

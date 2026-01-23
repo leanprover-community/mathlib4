@@ -35,7 +35,7 @@ In this file we prove Fubini's theorem.
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -161,8 +161,6 @@ theorem integrable_measure_prodMk_left {s : Set (α × β)} (hs : MeasurableSet 
   simp [ofReal_toReal, hx]
 
 end Measure
-
-open Measure
 
 end MeasureTheory
 

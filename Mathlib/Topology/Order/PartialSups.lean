@@ -15,7 +15,7 @@ In this file we prove that `partialSups` of a sequence of continuous functions i
 as well as versions for `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, and `ContinuousOn`.
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology

@@ -29,7 +29,7 @@ stub and only provides rudimentary support.
 subsemigroup
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

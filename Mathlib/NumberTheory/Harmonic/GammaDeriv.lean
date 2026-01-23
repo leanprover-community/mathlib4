@@ -19,7 +19,7 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 -/
 
-@[expose] public section
+public section
 
 open Nat Set Filter Topology
 

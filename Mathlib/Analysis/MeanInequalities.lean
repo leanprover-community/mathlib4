@@ -106,7 +106,7 @@ less than or equal to the sum of the maximum values of the summands.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

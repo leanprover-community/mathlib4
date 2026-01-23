@@ -21,7 +21,7 @@ that logarithms of trigonometric functions are interval integrable. In the compl
 functions are circle integrable over every circle in the complex plane.
 -/
 
-@[expose] public section
+public section
 
 open Filter Interval MeasureTheory MeromorphicOn Metric Real
 

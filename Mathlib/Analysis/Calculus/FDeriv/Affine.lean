@@ -6,7 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 
 /-!
@@ -19,7 +20,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 continuous affine maps.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]

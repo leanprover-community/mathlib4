@@ -48,7 +48,7 @@ noncomputable def multilinearMapToDual :
       dsimp
       simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
         LinearMap.add_apply, MultilinearMap.map_update_add]
-    map_update_smul' := fun f i a φ ↦  by
+    map_update_smul' := fun f i a φ ↦ by
       ext v
       dsimp
       simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
