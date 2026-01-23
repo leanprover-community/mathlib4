@@ -301,9 +301,12 @@ end Prod
 namespace DFinsupp
 variable (R : Type u) (ι : Type v) (A : ι → Type w)
 variable [DecidableEq ι]
-variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)] [∀ i, Coalgebra R (A i)]
+variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
 
 open LinearMap
+
+section coalgebraStruct
+variable [∀ i, CoalgebraStruct R (A i)]
 
 instance instCoalgebraStruct : CoalgebraStruct R (Π₀ i, A i) where
   comul := DFinsupp.lsum R fun i =>
@@ -331,6 +334,10 @@ theorem comul_comp_lapply (i : ι) :
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A i →ₗ[R] _) = counit := by
   ext; simp
+
+end coalgebraStruct
+
+variable [∀ i, Coalgebra R (A i)]
 
 /-- The `R`-module whose elements are dependent functions `(i : ι) → A i` which are zero on all but
 finitely many elements of `ι` has a coalgebra structure.
@@ -361,9 +368,12 @@ end DFinsupp
 
 namespace Finsupp
 variable (R : Type u) (ι : Type v) (A : Type w)
-variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+variable [CommSemiring R] [AddCommMonoid A] [Module R A]
 
 open LinearMap
+
+section coalgebraStruct
+variable [CoalgebraStruct R A]
 
 noncomputable instance instCoalgebraStruct : CoalgebraStruct R (ι →₀ A) where
   comul := Finsupp.lsum R fun i =>
@@ -391,6 +401,10 @@ theorem comul_comp_lapply (i : ι) :
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
   ext; simp
+
+end coalgebraStruct
+
+variable [Coalgebra R A]
 
 /-- The `R`-module whose elements are functions `ι → A` which are zero on all but finitely many
 elements of `ι` has a coalgebra structure. The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂`
@@ -447,6 +461,61 @@ theorem comul_comp_proj (i : n) :
   aesop (add simp [map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_single (i : n) : counit ∘ₗ .single R A i = counit := by ext; simp
+
+theorem counit_comp_DFinsuppLinearEquivFunOnFintype :
+    counit (R := R) (A := Π i, A i) ∘ₗ DFinsupp.linearEquivFunOnFintype.toLinearMap = counit := by
+  apply LinearMap.ext fun x ↦ ?_
+  have (i : n) (x : A i) : Decidable (x ≠ 0) := Classical.propDecidable _
+  rw [← DFinsupp.sum_single (f := x)]
+  simp [DFinsupp.linearEquivFunOnFintype]
+
+@[simp] theorem counit_coe_DFinsupp (x : Π₀ i, A i) :
+    counit (R := R) ⇑x = counit x := congr($counit_comp_DFinsuppLinearEquivFunOnFintype x)
+
+variable {M : Type*} [AddCommMonoid M] [Module R M] [CoalgebraStruct R M]
+
+theorem counit_comp_finsuppLinearEquivFunOnFintype :
+    counit (R := R) (A := n → M) ∘ₗ
+      (Finsupp.linearEquivFunOnFinite R M n).toLinearMap = counit := by
+  apply LinearMap.ext fun x ↦ ?_
+  rw [← Finsupp.univ_sum_single x]
+  simp [-Finsupp.univ_sum_single]
+
+@[simp] theorem counit_coe_finsupp (x : n →₀ M) :
+    counit (R := R) ⇑x = counit x := congr($counit_comp_finsuppLinearEquivFunOnFintype x)
+
+open DFinsupp in
+theorem comul_comp_DFinsuppLinearEquivFunOnFintype :
+    comul (R := R) (A := Π i, A i) ∘ₗ linearEquivFunOnFintype.toLinearMap =
+      map linearEquivFunOnFintype.toLinearMap linearEquivFunOnFintype.toLinearMap ∘ₗ comul := by
+  apply LinearMap.ext fun x ↦ ?_
+  have (i : n) (x : A i) : Decidable (x ≠ 0) := Classical.propDecidable _
+  rw [← DFinsupp.sum_single (f := x)]
+  aesop (add simp [map_map, DFinsupp.single_eq_pi_single, linearEquivFunOnFintype])
+
+open DFinsupp in
+@[simp] theorem comul_coe_DFinsupp (x : Π₀ i, A i) :
+    comul (R := R) ⇑x =
+      map linearEquivFunOnFintype.toLinearMap linearEquivFunOnFintype.toLinearMap (comul x) :=
+  congr($comul_comp_DFinsuppLinearEquivFunOnFintype x)
+
+open Finsupp in
+theorem comul_comp_finsuppLinearEquivFunOnFintype :
+    comul (R := R) (A := n → M) ∘ₗ (linearEquivFunOnFinite R M n).toLinearMap =
+      map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap ∘ₗ
+        comul := by
+  apply LinearMap.ext fun x ↦ ?_
+  rw [← Finsupp.univ_sum_single x]
+  simp only [map_sum, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    Finsupp.linearEquivFunOnFinite_single, comul_single, Finsupp.comul_single, map_map]
+  apply Finset.sum_congr rfl fun _ _ ↦ ?_
+  congr <;> ext <;> simp [Finsupp.single_eq_pi_single]
+
+open Finsupp in
+@[simp] theorem comul_coe_finsupp (x : n →₀ M) :
+    comul (R := R) ⇑x =
+      map (linearEquivFunOnFinite R M n).toLinearMap (linearEquivFunOnFinite R M n).toLinearMap
+        (comul x) := congr($comul_comp_finsuppLinearEquivFunOnFintype x)
 
 end coalgebraStruct
 
