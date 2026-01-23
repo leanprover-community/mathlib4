@@ -173,13 +173,7 @@ run_meta do
   guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
   guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
 
-/- test the eta-expansion applied on `foo6`. -/
 run_cmd do
-  let c ← getConstInfo `Test.foo6
-  let e : Expr ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.value!
-  let t ← liftCoreM <| MetaM.run' <| expand ToAdditive.data c.type
-  let decl := c |>.updateName `Test.barr6 |>.updateType t |>.updateValue e |>.toDeclaration!
-  liftCoreM <| addAndCompile decl
   -- test that we cannot transport a declaration to itself
   successIfFail <| liftCoreM <| addTranslationAttr ToAdditive.data `bar11_works { ref := ← getRef }
 
@@ -286,6 +280,7 @@ end instances
 lemma npowRec_zero [One M] [Mul M] (x : M) : npowRec 0 x = 1 := by
   rw [npowRec]
 
+set_option linter.translateRedundant false in
 /- Test that we can rewrite with definitions without the `@[to_additive]` attribute. -/
 @[to_additive addoptiontest]
 lemma optiontest (x : Option α) : x.elim none some = x := by
@@ -384,9 +379,9 @@ def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
 run_meta do
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) == some (.inl `Test.MonoidEnd)
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') == some (.inl `Test.Unit')
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') == none
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd)).any (·.isConstOf `Test.MonoidEnd)
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit')).any (·.isConstOf `Test.Unit')
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'')).isNone
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -558,10 +553,25 @@ fun {α} [Add α] a => Add.add a
 #print myAdd
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive self`. -/
+/--
+warning: `to_additive self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_additive` to translate expressions involving `test1`,
+use `to_additive_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[simp, to_additive self]
 theorem test1 : 5 = 5 := rfl
 
 /-! Test that the `existingAttributeWarning` linter doesn't fire for `to_additive none`. -/
+/--
+warning: `to_additive` did not change the type of theorem `test1'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[simp, to_additive none]
 theorem test1' : 5 = 5 := rfl
 
@@ -586,6 +596,12 @@ def barMul {β : Type} [Mul β] (x y : β) : β := fooMul instAddNat x y
 
 /-! Test that additive docstrings work -/
 
+/--
+warning: `to_additive` did not change the type of theorem `mulTrivial`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_additive /-- (via `docComment` syntax) I am an additive docstring! -/]
 theorem mulTrivial : True := trivial
 
@@ -601,6 +617,10 @@ warning: String syntax for `to_additive` docstrings is deprecated: Use docstring
 
 Update deprecated syntax to:
   [apply] /-- (via `str` syntax) I am an additive docstring! -/
+---
+warning: `to_additive` did not change the type of theorem `mulTrivial'`. Please remove the attribute.
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
 -/
 #guard_msgs in
 @[to_additive "(via `str` syntax) I am an additive docstring!"]
@@ -822,3 +842,7 @@ Note: This linter can be disabled with `set_option linter.translateOverwrite fal
 -/
 #guard_msgs in
 attribute [to_additive someOtherTranslation] abstractMul
+
+-- Test that we don't blindly translate the prefix of a name.
+def Mul.test : Nat := 5
+@[to_additive] def Mul.test' := Mul.test

@@ -47,6 +47,14 @@ lemma Ideal.ResidueField.map_algebraMap (I : Ideal R) [I.IsPrime] (J : Ideal S) 
   simp [IsLocalRing.ResidueField.map_residue, Localization.localRingHom_to_map]
   rfl
 
+lemma RingHom.SurjectiveOnStalks.residueFieldMap_bijective
+    {f : R →+* S} (H : f.SurjectiveOnStalks)
+    (I : Ideal R) [I.IsPrime] (J : Ideal S) [J.IsPrime] (hf : I = J.comap f) :
+    Function.Bijective (Ideal.ResidueField.map I J f hf) := by
+  subst hf
+  exact ⟨RingHom.injective _, Ideal.Quotient.lift_surjective_of_surjective _ _
+    (Ideal.Quotient.mk_surjective.comp (H J ‹_›))⟩
+
 /-- If `I = f⁻¹(J)`, then there is a canonical embedding `κ(I) ↪ κ(J)`. -/
 noncomputable
 def Ideal.ResidueField.mapₐ (I : Ideal A) [I.IsPrime] (J : Ideal B) [J.IsPrime]
