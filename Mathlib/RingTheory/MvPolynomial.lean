@@ -19,7 +19,7 @@ dimension of the space of multivariate polynomials over a field is equal to the 
 finitely supported functions from the indexing set to `ℕ`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section

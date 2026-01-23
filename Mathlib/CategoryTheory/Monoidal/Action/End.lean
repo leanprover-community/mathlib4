@@ -66,8 +66,8 @@ composition monoidal structure. -/
 @[simps!]
 instance curriedActionMopMonoidal : (curriedActionMop C D).Monoidal where
   ε := .mop <| (actionUnitNatIso C D).inv
-  μ _ _ := .mop <| {app _ := αₗ _ _ _|>.inv}
-  δ _ _ := .mop <| {app _ := αₗ _ _ _|>.hom}
+  μ _ _ := .mop <| { app _ := αₗ _ _ _ |>.inv }
+  δ _ _ := .mop <| { app _ := αₗ _ _ _ |>.hom }
   η := .mop <| (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     apply (mopEquiv (D ⥤ D)).fullyFaithfulInverse.map_injective
@@ -98,8 +98,8 @@ def actionOfMonoidalFunctorToEndofunctorMop (F : C ⥤ (D ⥤ D)ᴹᵒᵖ) [F.Mo
   actionObj c d := (F.obj c).unmop.obj d
   actionHomLeft f d := (F.map f).unmop.app d
   actionHomRight c _ _ f := (F.obj c).unmop.map f
-  actionAssocIso c c' d := Functor.Monoidal.μIso F c c'|>.unmop.app d|>.symm
-  actionUnitIso d := Functor.Monoidal.εIso F|>.unmop.app d|>.symm
+  actionAssocIso c c' d := Functor.Monoidal.μIso F c c' |>.unmop.app d |>.symm
+  actionUnitIso d := Functor.Monoidal.εIso F |>.unmop.app d |>.symm
   actionAssocIso_hom_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
     have e := congrArg (fun t ↦ t.unmop.app c₃) <|
       Functor.OplaxMonoidal.δ_natural F f g
@@ -161,8 +161,8 @@ is monoidal, where `D ⥤ D` has the composition monoidal structure. -/
 instance curriedActionMonoidal [MonoidalRightAction C D] :
     (curriedAction C D).Monoidal where
   ε := (actionUnitNatIso C D).inv
-  μ _ _ := {app _ := αᵣ _ _ _|>.inv}
-  δ _ _ := {app _ := αᵣ _ _ _|>.hom}
+  μ _ _ := { app _ := αᵣ _ _ _ |>.inv }
+  δ _ _ := { app _ := αᵣ _ _ _ |>.hom }
   η := (actionUnitNatIso C D).hom
   associativity c₁ c₂ c₃ := by
     ext d
@@ -186,8 +186,8 @@ def actionOfMonoidalFunctorToEndofunctor (F : C ⥤ D ⥤ D) [F.Monoidal] :
   actionObj d c := (F.obj c).obj d
   actionHomLeft f c := (F.obj c).map f
   actionHomRight d _ _ f := (F.map f).app d
-  actionAssocIso d c c' := Functor.Monoidal.μIso F c c'|>.app d|>.symm
-  actionUnitIso d := Functor.Monoidal.εIso F|>.app d|>.symm
+  actionAssocIso d c c' := Functor.Monoidal.μIso F c c' |>.app d |>.symm
+  actionUnitIso d := Functor.Monoidal.εIso F |>.app d |>.symm
   actionAssocIso_hom_naturality {c₁ c₁' c₂ c₂' c₃ c₃'} f g h := by
     have e := congrArg (fun t ↦ t.app c₁) <|
       Functor.OplaxMonoidal.δ_natural F g h

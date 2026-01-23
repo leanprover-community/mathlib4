@@ -17,7 +17,7 @@ We show that if a function `f : E → β` is convex, then a local minimum is als
 a global minimum, and likewise for concave functions.
 -/
 
-@[expose] public section
+public section
 
 
 variable {E β : Type*} [AddCommGroup E] [TopologicalSpace E] [Module ℝ E] [IsTopologicalAddGroup E]

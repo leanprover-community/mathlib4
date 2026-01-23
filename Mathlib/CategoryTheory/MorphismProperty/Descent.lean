@@ -81,7 +81,7 @@ lemma DescendsAlong.mk' [P.RespectsIso]
 
 instance [Q.IsStableUnderBaseChange] [P.HasOfPrecompProperty Q] [P.RespectsRight Q] :
     P.DescendsAlong Q where
-  of_isPullback {A X Y Z fst snd f g} h hf  hfst := by
+  of_isPullback {A X Y Z fst snd f g} h hf hfst := by
     apply P.of_precomp (W' := Q) _ _ (Q.of_isPullback h hf)
     rw [← h.1.1]
     exact RespectsRight.postcomp _ hf _ hfst

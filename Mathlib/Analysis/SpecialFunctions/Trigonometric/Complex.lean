@@ -19,7 +19,7 @@ as they are most easily proved by appealing to the corresponding fact for comple
 functions, or require additional imports which are not available in that file.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
