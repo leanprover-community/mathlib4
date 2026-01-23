@@ -50,4 +50,11 @@ lemma IsSymmetric.re_trace_eq_sum_eigenvalues {T : E →ₗ[𝕜] E} (hT : T.IsS
   rw [hT.trace_eq_sum_eigenvalues]
   exact RCLike.ofReal_re_ax _
 
+open InnerProductSpace in
+lemma _root_.InnerProductSpace.trace_rankOne (x y : E) :
+    (rankOne 𝕜 x y).trace 𝕜 E = inner 𝕜 y x := by
+  rw [rankOne_def', ContinuousLinearMap.coe_comp, trace_comp_comm',
+    ← ContinuousLinearMap.coe_comp, ContinuousLinearMap.comp_toSpanSingleton]
+  simp [trace_eq_sum_inner _ (OrthonormalBasis.singleton Unit 𝕜)]
+
 end LinearMap

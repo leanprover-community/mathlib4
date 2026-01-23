@@ -80,7 +80,7 @@ assert_not_exists Cardinal
 
 noncomputable section
 
-open Function Set Submodule
+open Function Module Set Submodule
 
 universe u' u
 
@@ -858,7 +858,7 @@ lemma LinearIndependent.of_subsingleton' [Subsingleton ι] (i : ι)
 lemma LinearIndepOn.singleton' (hi : ∀ r : R, r • v i = 0 → r = 0) : LinearIndepOn R v {i} :=
   LinearIndependent.of_subsingleton' ⟨i, rfl⟩ hi
 
-variable [NoZeroSMulDivisors R M]
+variable [IsDomain R] [IsTorsionFree R M]
 
 lemma LinearIndependent.of_subsingleton [Subsingleton ι] (i : ι) (hi : v i ≠ 0) :
     LinearIndependent R v := .of_subsingleton' i (by simp [hi])

@@ -118,7 +118,7 @@ def lift : { u : A // u * u = a • 1 + b • u } ≃ (QuadraticAlgebra R a b �
               (z.im * w.re) • u + (z.im * w.im) • (u * u) := by
               simp only [mul_add, mul_one, add_mul, one_mul, ← add_assoc, smul_mul_smul]
               apply add_add_add_comm'
-          _ = (z.re * w.re) • (1 : A) + (z.re * w.im+ z.im * w.re) • u +
+          _ = (z.re * w.re) • (1 : A) + (z.re * w.im + z.im * w.re) • u +
                 (z.im * w.im) • (u * u) := by
               congr 1
               simp only [add_assoc]
