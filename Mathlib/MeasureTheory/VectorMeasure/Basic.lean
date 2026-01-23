@@ -154,6 +154,11 @@ theorem of_diff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
   rw [← of_add_of_diff hA hB h, add_sub_cancel_left]
 
+theorem of_compl {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+    {v : VectorMeasure α M} {A : Set α} (hA : MeasurableSet A) :
+    v Aᶜ = v univ - v A := by
+  simpa [compl_eq_univ_diff] using of_diff hA .univ (v := v) (subset_univ _)
+
 theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h' : v (B \ A) = 0) : v (A \ B) + v B = v A := by
   symm
@@ -229,6 +234,19 @@ theorem tendsto_vectorMeasure_iUnion_atTop_nat
   · rw [biUnion_range_succ_disjointed, Monotone.partialSups_eq hm]
   · exact fun i hi j hj hij ↦ disjoint_disjointed _ hij
   · exact fun b hb ↦ ht _
+
+theorem tendsto_vectorMeasure_iInter_atTop_nat
+    {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
+    {v : VectorMeasure α M} {s : ℕ → Set α} (hm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) :
+    Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋂ n, s n))) := by
+  have I n : v (s n) = v univ - v (s n)ᶜ := by simp [of_compl (hs n)]
+  have J : v (⋂ n, s n) = v univ - v (⋃ n, (s n)ᶜ) := by
+    rw [← of_compl (MeasurableSet.iUnion (fun n ↦ (hs n).compl))]
+    simp
+  simp_rw [I, J]
+  apply tendsto_const_nhds.sub
+  exact tendsto_vectorMeasure_iUnion_atTop_nat (fun i j hij ↦ by simpa using hm hij)
+    (fun i ↦ (hs i).compl)
 
 end
 
