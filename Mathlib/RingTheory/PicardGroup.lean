@@ -185,7 +185,7 @@ private theorem finite_projective : Module.Finite R M ∧ Projective R M := by
     rwa [e.symm_apply_eq, map_sum, ← Finset.sum_coe_sort, eq_comm] at hS
   have ⟨g, hg⟩ := projective_lifting_property f .id this
   classical
-  let aux := finsuppRight R M N S ≪≫ₗ Finsupp.mapRange.linearEquiv e
+  let aux := finsuppRight R _ M N S ≪≫ₗ Finsupp.mapRange.linearEquiv e
   let f' : (S →₀ R) →ₗ[R] M := TensorProduct.rid R M ∘ₗ f.lTensor M ∘ₗ aux.symm
   let g' : M →ₗ[R] S →₀ R := aux ∘ₗ g.lTensor M ∘ₗ (TensorProduct.rid R M).symm
   have : Function.Surjective f' := by simpa [f'] using LinearMap.lTensor_surjective _ this
