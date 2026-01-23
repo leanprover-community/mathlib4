@@ -27,7 +27,6 @@ to `R` is respectively fully faithful or an equivalence. We show that
 satisfies `F.IsPrestackFor R.arrows` for all covering sieves `R`.
 
 ## TODO (@joelriou, @chrisflav)
-* Define stacks.
 * Introduce multiple variants of `DescentData` (when `C` has pullbacks,
 when `F` also has a covariant functoriality, etc.).
 
@@ -502,6 +501,12 @@ lemma IsStackFor.isPrestackFor {R : Presieve S} (h : F.IsStackFor R) :
   nonempty_fullyFaithful := ⟨by
     rw [isStackFor_iff] at h
     exact .ofFullyFaithful _⟩
+
+variable {F} in
+lemma IsStackFor.essSurj {R : Presieve S} (h : F.IsStackFor R) :
+    (F.toDescentData (fun (f : R.category) ↦ f.obj.hom)).EssSurj := by
+  have := h.isEquivalence
+  infer_instance
 
 lemma isStackFor_iff_of_sieve_eq
     {R R' : Presieve S} (h : Sieve.generate R = Sieve.generate R') :
