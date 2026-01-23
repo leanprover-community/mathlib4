@@ -20,7 +20,7 @@ then we show that also `D` has a colimit under the following assumptions:
 
 - `P` is local on the source.
 - For `i ⟶ j`, the transition map `𝒰.X i ⟶ 𝒰.X j` satisfies `P`.
-- For every `i ⟶ j`, the base change functor `P.Over ⊤ (𝒰.X j) ⟶ P.Over ⊤ (𝒰.X i)` preserves
+- For `i ⟶ j`, the base change functor `P.Over ⊤ (𝒰.X j) ⥤ P.Over ⊤ (𝒰.X i)` preserves
   colimits of shape `J`.
 
 This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to the case where
