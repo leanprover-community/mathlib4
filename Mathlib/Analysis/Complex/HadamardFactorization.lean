@@ -2032,8 +2032,7 @@ theorem bddAbove_norm_divisorCanonicalProduct_div_pow_annulus
     have hz' : z ∈ Metric.closedBall z₀ r₂ ∧ z ∉ Metric.ball z₀ r₁ := by
       simpa [K, Metric.annulusIcc_eq] using hz
     exact hz'.2 hzBall
-  have hdiff :
-      DifferentiableOn ℂ
+  have hdiff : DifferentiableOn ℂ
         (fun z : ℂ => (divisorCanonicalProduct m f (Set.univ : Set ℂ) z) / (z - z₀) ^ k)
         ((Set.univ : Set ℂ) \ {z₀}) :=
     differentiableOn_divisorCanonicalProduct_div_pow_sub (m := m) (f := f) h_sum (z₀ := z₀) (k := k)
