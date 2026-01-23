@@ -58,7 +58,8 @@ where
 
 /-- `recover tacs` applies the tactic (sequence) `tacs` and then re-adds goals that were
 (incorrectly) marked as closed. This helps to debug issues where a tactic closes goals without
-solving them, resulting in the error "(kernel) declaration has metavariables". -/
+solving them (i.e. goals were removed from the MetaM state without the metavariable
+being assigned), resulting in the error "(kernel) declaration has metavariables". -/
 elab "recover " tacs:tacticSeq : tactic => do
   let originalGoals ← getGoals
   evalTactic tacs
