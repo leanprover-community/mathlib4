@@ -878,15 +878,43 @@ theorem MDifferentiableAt.const_smul (hf : MDifferentiableAt I 𝓘(𝕜, E') f 
 theorem MDifferentiable.const_smul (s : 𝕜) (hf : MDifferentiable I 𝓘(𝕜, E') f) :
     MDifferentiable I 𝓘(𝕜, E') (s • f) := fun x => (hf x).const_smul s
 
+-- this lemma produces an ungood goal state: left and right hand side naturally live in different tnagent spaces,
+-- is only correct semi-reducibly.
 theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : 𝕜) :
     (mfderiv I 𝓘(𝕜, E') (s • f) z : TangentSpace I z →L[𝕜] E') =
       (s • mfderiv I 𝓘(𝕜, E') f z : TangentSpace I z →L[𝕜] E') :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
+-- TODO: replace and inline this lemma! and rename to the name below
 
+-- systematische, aber nervige Lösung
+-- T_xM → T_yM given a proof x = y (namely, the identity map);
+-- make TangentSpace irreducible
+-- but: this happens everywhere, hm! Floris is not sure if we want this;
+-- has added many lemmas using this identification!
+-- most computational lemmas use such identification... will be cumbersome...
+
+-- this lemma has the same issue...
 lemma mfderiv_const_smul {x : M} (a : 𝕜) (v : TangentSpace I x) :
     mfderiv I 𝓘(𝕜, E') (a • f) x v = a • mfderiv I 𝓘(𝕜, E') f x v := by
   by_cases hs : MDifferentiableAt I 𝓘(𝕜, E') f x
-  · rw [const_smul_mfderiv hs]; rfl
+  · rw [const_smul_mfderiv hs]
+
+    --have := true
+    -- erw? does nothing now, oops!
+    -- message is strange LHS meantions a • f, is on previous line
+    -- missing withMainContext in erw?
+    --set_option pp.explicit true in
+    --refine (ContinuousLinearMap.smul_apply a (mfderiv I 𝓘(𝕜, E') f x) v).trans ?_
+    --with_reducible rfl
+    --#guard_msgs in
+    /-
+    Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (a • mfderiv I 𝓘(𝕜, E') f x) v
+in the target expression
+  (a • mfderiv I 𝓘(𝕜, E') f x) v = a • (mfderiv I 𝓘(𝕜, E') f x) v
+    -/
+    --rw [ContinuousLinearMap.smul_apply a (mfderiv I 𝓘(𝕜, E') f x) v]
+    --; rfl
   · by_cases ha : a = 0
     · have : a • f = 0 := by ext; simp [ha]
       have aux : (fun _ ↦ 0 : M → E') = 0 := by rfl
