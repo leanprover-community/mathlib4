@@ -185,6 +185,13 @@ theorem coe_det [DecidableEq M] :
   · congr -- use the correct `DecidableEq` instance
   rfl
 
+theorem _root_.Module.Free.of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) :
+    Module.Free R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Module.Basis s R M)
+  · rcases H with ⟨s, ⟨hs⟩⟩
+    exact Module.Free.of_basis hs
+  · classical simp [LinearMap.coe_det, H] at hf
+
 end
 
 -- Auxiliary lemma, the `simp` normal form goes in the other direction
