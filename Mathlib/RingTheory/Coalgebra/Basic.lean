@@ -503,7 +503,7 @@ theorem comul_comp_finsuppLcoeFun :
     comul (R := R) (A := n → M) ∘ₗ lcoeFun = map lcoeFun lcoeFun ∘ₗ comul := by
   apply LinearMap.ext fun x ↦ ?_
   rw [← Finsupp.univ_sum_single x]
-  simp [-univ_sum_single, lcoeFun_comp_lsingle, single_eq_pi_single, map_map]
+  simp [-univ_sum_single, single_eq_pi_single, map_map]
 
 open Finsupp in
 @[simp] theorem comul_coe_finsupp (x : n →₀ M) :
@@ -595,16 +595,6 @@ lemma coalgebraIsCocomm [AddCommMonoid B] [Module R B] [Coalgebra R B] [IsCocomm
   letI := e.addCommMonoid
   letI := e.module R
   letI := e.coalgebra R
-  { comm_comp_comul := by
-      -- TODO: Implement a version of `reassoc` for `LinearMap`.
-      -- This would be useful for `TensorProduct.map_map` to trigger.
-      have (f : A →ₗ[R] B ⊗[R] B) :
-        TensorProduct.map (e.linearEquiv R) (e.linearEquiv R) ∘ₗ
-          TensorProduct.map (e.linearEquiv R).symm.toLinearMap (e.linearEquiv R).symm.toLinearMap
-            ∘ₗ f = f := by
-        simp [← LinearMap.comp_assoc, ← TensorProduct.map_comp]
-      simp [tensorProductComm_def, coalgebra, coalgebraStruct, LinearEquiv.coe_trans,
-        LinearMap.comp_assoc, this]
-      simp [← LinearMap.comp_assoc] }
+  { comm_comp_comul := by ext; simp [comul, ← TensorProduct.map_comm] }
 
 end Equiv
