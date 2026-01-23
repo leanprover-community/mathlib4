@@ -212,7 +212,7 @@ protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p }
 protected lemma MeasurableSet.imp {p q : α → Prop}
     (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
     MeasurableSet {x | p x → q x} := by
-  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by ext; grind
+  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by grind
   rw [h_eq]
   exact hs.compl.union ht
 

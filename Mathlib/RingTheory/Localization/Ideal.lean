@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
@@ -98,6 +99,30 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
   simp [Set.disjoint_left]
 
 include M in
+protected theorem map_inf (I J : Ideal R) :
+    (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
+  refine le_antisymm (Ideal.map_inf_le (algebraMap R S)) fun x hx ↦ ?_
+  simp only [Ideal.mem_inf, IsLocalization.mem_map_algebraMap_iff M, Prod.exists] at hx ⊢
+  obtain ⟨⟨⟨i, hi⟩, mi, hi'⟩, ⟨j, hj⟩, mj, hj'⟩ := hx
+  simp only [← IsLocalization.eq_mk'_iff_mul_eq] at hi' hj'
+  obtain ⟨m, hm⟩ := IsLocalization.eq.mp (hi'.symm.trans hj')
+  rw [← mul_assoc, ← mul_assoc, mul_comm, ← mul_comm (j : R)] at hm
+  refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
+  rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
+
+/-- `IsLocalization.map_inf` as an `FrameHom`. -/
+def mapFrameHom : FrameHom (Ideal R) (Ideal S) where
+  toFun := Ideal.map (algebraMap R S)
+  map_inf' := IsLocalization.map_inf M S
+  map_top' := Ideal.map_top (algebraMap R S)
+  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
+
+@[simp]
+lemma mapFrameHom_apply (I : Ideal R) :
+    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
+  rfl
+
+include M in
 theorem map_comap (J : Ideal S) :
     Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
@@ -109,18 +134,28 @@ theorem map_comap (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
-theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
+theorem comap_map_of_isPrimary_disjoint
+    {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
-  refine le_antisymm ?_ Ideal.le_comap_map
-  refine (fun a ha => ?_)
-  obtain ⟨⟨b, s⟩, h⟩ := (mem_map_algebraMap_iff M S).1 (Ideal.mem_comap.1 ha)
+  have key : Disjoint (M : Set R) I.radical := by
+    contrapose! hM
+    rw [Set.not_disjoint_iff] at hM ⊢
+    obtain ⟨a, ha, k, hk⟩ := hM
+    exact ⟨a ^ k, pow_mem ha k, hk⟩
+  refine le_antisymm (fun a ha ↦ ?_) Ideal.le_comap_map
+  rw [Ideal.mem_comap, IsLocalization.mem_map_algebraMap_iff M S] at ha
+  obtain ⟨⟨b, s⟩, h⟩ := ha
   replace h : algebraMap R S (s * a) = algebraMap R S b := by
     simpa only [← map_mul, mul_comm] using h
-  obtain ⟨c, hc⟩ := (eq_iff_exists M S).1 h
-  have : ↑c * ↑s * a ∈ I := by
-    rw [mul_assoc, hc]
+  obtain ⟨c, hc⟩ := (IsLocalization.eq_iff_exists M S).1 h
+  have : a * (c * s : M) ∈ I := by
+    rw [mul_comm, Submonoid.coe_mul, mul_assoc, hc]
     exact I.mul_mem_left c b.2
-  exact (hI.mem_or_mem this).resolve_left fun hsc => hM.le_bot ⟨(c * s).2, hsc⟩
+  exact ((Ideal.isPrimary_iff.mp hI).2 this).resolve_right (Set.disjoint_left.mp key (c * s).2)
+
+theorem comap_map_of_isPrime_disjoint {I : Ideal R} (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
+    Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I :=
+  comap_map_of_isPrimary_disjoint M S hI.isPrimary hM
 
 /-- If `S` is the localization of `R` at a submonoid, the ordering of ideals of `S` is
 embedded in the ordering of ideals of `R`. -/
@@ -169,7 +204,7 @@ This lemma gives the particular case for an ideal and its map,
 see `le_rel_iso_of_prime` for the more general relation isomorphism, and the reverse implication -/
 theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoint (M : Set R) ↑I) :
     (Ideal.map (algebraMap R S) I).IsPrime := by
-  rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
+  rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
 
 theorem disjoint_comap_iff (J : Ideal S) :
@@ -188,7 +223,7 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
   left_inv J := Subtype.ext (map_comap M S J)
-  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.2.1 I.2.2)
   map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
@@ -286,11 +321,11 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
 
 variable (R) in
-lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
-    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
-    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
-    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
-    NoZeroSMulDivisors Rₚ Sₚ := by
+lemma _root_.Module.IsTorsionFree.of_isLocalization [IsDomain R] [IsDomain S] {Rₚ Sₚ : Type*}
+    [CommRing Rₚ] [IsDomain Rₚ] [CommRing Sₚ] [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ] [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰)
+    [IsLocalization M Rₚ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ]
+    [Module.IsTorsionFree R S] : Module.IsTorsionFree Rₚ Sₚ := by
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
@@ -300,7 +335,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     (algebraMap R S) (Submonoid.le_comap_map M) := by
     apply IsLocalization.ringHom_ext M
     simp only [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
-  rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+  rw [Module.isTorsionFree_iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
     RingHom.ker_eq_bot_iff_eq_zero]
   intro x hx
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq M x
