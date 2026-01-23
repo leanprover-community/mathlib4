@@ -12,15 +12,15 @@ public import Mathlib.Topology.Compactness.Lindelof
 # Enveloppes of Semicontinuous functions on Hereditarily Lindelöf spaces
 
 In this file, we show that, if `X` is a hereditarily Lindelöf space and `𝓕` is any family
-of lower semicontinuous functions on `X`, then there is a countable subfamily `𝓕'`
-with the same supremum / upper enveloppe. Most importantly, this applies whenever `X` has a
+of upper semicontinuous functions on `X`, then there is a countable subfamily `𝓕'`
+with the same infimum / lower enveloppe. Most importantly, this applies whenever `X` has a
 `SecondCountableTopology`.
 
 The codomain `E` of the functions is assumed to be linearly ordered, and to admit a countable
-order-dense subset. In particular we do not assume that arbitrary supremas exist in `E`, so our
+order-dense subset. In particular we do not assume that arbitrary infima exist in `E`, so our
 result is of the form "if `IsGLB 𝓕 s`, then there is a countable `𝓕' ⊆ 𝓕` such that `IsGLB 𝓕' s`".
 
-Of course we also provide the dual statements for upper semicontinuous functions.
+Of course we also provide the dual statements for lower semicontinuous functions.
 
 ## Implementation Notes
 
@@ -84,7 +84,7 @@ theorem exists_countable_upperSemicontinuous_isGLB {s : X → E} {𝓕 : Set (X 
   suffices e < e by simpa
   exact (he (mem_image_of_mem _ (mem_iUnion₂_of_mem d_mem f_mem))).trans_lt hf |>.trans hd.2
 
-/-- If a function `s : X → E` can be written as the supremum of a family `𝓕` of upper semicontinuous
+/-- If a function `s : X → E` can be written as the supremum of a family `𝓕` of lower semicontinuous
 functions then, assuming that `X` is hereditarily Lindelöf (for example, second countable),
 `s` can in fact be written as the supremum of some *countable* subfamily `𝓕'`.
 
