@@ -209,9 +209,7 @@ section OddCycleTheorem
 
 variable {V : Type*} (G : SimpleGraph V)
 
-lemma even_length_iff_same_color
-    {c : G.Coloring (Fin 2)}
-    {u v : V} (p : G.Walk u v) :
+lemma Coloring.even_length_iff_same_color (c : G.Coloring (Fin 2)) {u v : V} (p : G.Walk u v) :
     Even p.length ↔ c u = c v := by
   let c' : G.Coloring Bool := G.recolorOfEquiv (finTwoEquiv : Fin 2 ≃ Bool) c
   rw [Coloring.even_length_iff_congr c']
