@@ -231,7 +231,7 @@ lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective 
 variable {R S T} in
 lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
     EssFiniteType R S ↔ EssFiniteType R T where
-  mp  _ := .of_surjective f.toAlgHom f.surjective
+  mp _ := .of_surjective f.toAlgHom f.surjective
   mpr _ := .of_surjective f.symm.toAlgHom f.symm.surjective
 
 variable {R S} in
