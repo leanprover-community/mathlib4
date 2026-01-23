@@ -141,19 +141,19 @@ theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit
   rw [IsSuccLimit, not_and_or, not_not]
 
 @[simp]
-theorem _root_.OrderIso.isSuccPrelimit_apply [Preorder β] (e : α ≃o β) :
+theorem isSuccPrelimit_map_iff {E} [Preorder β] [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     IsSuccPrelimit (e a) ↔ IsSuccPrelimit a := by
-  rw [Order.IsSuccPrelimit, ← e.forall_congr_right, Order.IsSuccPrelimit]
+  rw [Order.IsSuccPrelimit, ← (EquivLike.toEquiv e).forall_congr_right, Order.IsSuccPrelimit]
   simp
 
-alias ⟨_, _root_.OrderIso.map_isSuccPrelimit⟩ := OrderIso.isSuccPrelimit_apply
+alias ⟨_, isSuccPrelimit_map⟩ := isSuccPrelimit_map_iff
 
 @[simp]
-theorem _root_.OrderIso.isSuccLimit_apply [Preorder β] (e : α ≃o β) :
+theorem isSuccLimit_map_iff {E} [Preorder β] [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     IsSuccLimit (e a) ↔ IsSuccLimit a := by
-  rw [IsSuccLimit, IsSuccLimit, e.isMin_apply, e.isSuccPrelimit_apply]
+  rw [IsSuccLimit, IsSuccLimit, isMin_map_iff, isSuccPrelimit_map_iff]
 
-alias ⟨_, _root_.OrderIso.map_isSuccLimit⟩ := OrderIso.isSuccLimit_apply
+alias ⟨_, isSuccLimit_map⟩ := isSuccLimit_map_iff
 
 variable [SuccOrder α]
 
