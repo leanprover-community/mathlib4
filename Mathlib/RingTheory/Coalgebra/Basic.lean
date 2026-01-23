@@ -436,9 +436,12 @@ end Finsupp
 
 namespace Pi
 variable {M R n : Type*} [CommSemiring R] [Fintype n] [DecidableEq n]
-  [AddCommMonoid M] [Module R M] [Coalgebra R M]
+  [AddCommMonoid M] [Module R M]
 
 open TensorProduct LinearMap
+
+section coalgebraStruct
+variable [CoalgebraStruct R M]
 
 instance : CoalgebraStruct R (n → M) where
   comul := .lsum R _ R fun i ↦ map (.single R _ i) (.single R _ i) ∘ₗ comul
@@ -468,6 +471,10 @@ theorem comul_comp_apply (i : n) :
 @[simp] theorem counit_comp_lsingle (i : n) :
     counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
 
+end coalgebraStruct
+
+variable [Coalgebra R M]
+
 /-- The `R`-module whose elements are functions `n → M` for finite `n` has a coalgebra structure.
 The coproduct `Δ` is given by `Δ(fᵢ a) = fᵢ a₁ ⊗ fᵢ a₂` where `Δ(a) = a₁ ⊗ a₂` and
 the counit `ε` by `ε(fᵢ a) = ε(a)`, where `fᵢ a` is the function sending `i` to `a` and all
@@ -488,7 +495,7 @@ instance : Coalgebra R (n → M) where
       ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc comul, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq]
 
-instance instIsCocomm [IsCocomm R M] : IsCocomm R (n → M) where
+instance [IsCocomm R M] : IsCocomm R (n → M) where
   comm_comp_comul := by
     ext i : 1
     -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
