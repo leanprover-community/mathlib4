@@ -48,9 +48,14 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is formally unramified. -/
 @[mk_iff]
 class FormallyUnramified (f : X ⟶ Y) : Prop where
-  formallyUnramified_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+  formallyUnramified_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
       (f.appLE U V e).hom.FormallyUnramified
+
+alias Scheme.Hom.formallyUnramified_appLE := FormallyUnramified.formallyUnramified_appLE
+
+@[deprecated (since := "2026-01-20")]
+alias FormallyUnramified.formallyUnramified_of_affine_subset := Scheme.Hom.formallyUnramified_appLE
 
 namespace FormallyUnramified
 
@@ -58,7 +63,7 @@ instance : HasRingHomProperty @FormallyUnramified RingHom.FormallyUnramified whe
   isLocal_ringHomProperty := RingHom.FormallyUnramified.propertyIsLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [formallyUnramified_iff, affineLocally_iff_affineOpens_le]
+    rw [formallyUnramified_iff, affineLocally_iff_forall_isAffineOpen]
 
 instance : MorphismProperty.IsStableUnderComposition @FormallyUnramified :=
   HasRingHomProperty.stableUnderComposition RingHom.FormallyUnramified.stableUnderComposition
