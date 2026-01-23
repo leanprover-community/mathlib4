@@ -940,8 +940,7 @@ lemma exists_r0_le_norm_divisorZeroIndex₀_val {f : ℂ → ℂ}
         cases h : analyticOrderAt f (0 : ℂ) with
         | top => exact Ne.elim hA0 h
         | coe n =>
-            have : (analyticOrderAt f (0 : ℂ)).map (↑) ≠ (⊤ : WithTop ℤ) := by
-              simp [h]
+            have : (analyticOrderAt f (0 : ℂ)).map (↑) ≠ (⊤ : WithTop ℤ) := by simp [h]
             exact this (by simpa [hm] using htop)
       have htend0 : Tendsto f (𝓝[≠] (0 : ℂ)) (𝓝 (0 : ℂ)) := by
         have hcont0 : ContinuousAt f (0 : ℂ) := (hf 0).continuousAt
