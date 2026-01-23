@@ -326,12 +326,8 @@ theorem comul_comp_lsingle (i : ι) :
 
 theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A i) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
-  ext j : 1
-  conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
-  obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
-  · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
-      zero_comp]
+  ext j; have := eq_or_ne i j
+  aesop (add simp [TensorProduct.map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A i →ₗ[R] _) = counit := by
   ext; simp
@@ -359,12 +355,7 @@ instance instCoalgebra : Coalgebra R (Π₀ i, A i) where
         TensorProduct.map_map_comp_assoc_eq]
 
 instance instIsCocomm [∀ i, IsCocomm R (A i)] : IsCocomm R (Π₀ i, A i) where
-  comm_comp_comul := by
-    ext i : 1
-    -- TODO: Add `reassoc` for `LinearMap`. Then we wouldn't need to reassociate back and forth.
-    simp only [comp_assoc, comul_comp_lsingle]
-    simp only [← comp_assoc, ← TensorProduct.map_comp_comm_eq]
-    simp [LinearMap.comp_assoc]
+  comm_comp_comul := by ext; simp [← TensorProduct.map_comm]
 
 end DFinsupp
 
@@ -395,12 +386,8 @@ theorem comul_comp_lsingle (i : ι) :
 
 theorem comul_comp_lapply (i : ι) :
     comul ∘ₗ (lapply i : _ →ₗ[R] A) = TensorProduct.map (lapply i) (lapply i) ∘ₗ comul := by
-  ext j : 1
-  conv_rhs => rw [comp_assoc, comul_comp_lsingle, ← comp_assoc, ← TensorProduct.map_comp]
-  obtain rfl | hij := eq_or_ne i j
-  · rw [comp_assoc, lapply_comp_lsingle_same, comp_id, TensorProduct.map_id, id_comp]
-  · rw [comp_assoc, lapply_comp_lsingle_of_ne _ _ hij, comp_zero, TensorProduct.map_zero_left,
-      zero_comp]
+  ext j; have := eq_or_ne i j
+  aesop (add simp [TensorProduct.map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_lsingle (i : ι) : counit ∘ₗ (lsingle i : A →ₗ[R] _) = counit := by
   ext; simp
@@ -456,9 +443,8 @@ theorem comul_comp_single (i : n) :
 
 theorem comul_comp_proj (i : n) :
     comul ∘ₗ (proj i : (n → M) →ₗ[R] M) = map (proj i) (proj i) ∘ₗ comul := by
-  ext j
-  simp only [comp_apply, coe_single, coe_proj, comul_single, map_map, proj_comp_single]
-  obtain rfl | hij := eq_or_ne i j <;> simp_all [diag]
+  ext j; have := eq_or_ne i j
+  aesop (add simp [map_map, proj_comp_single, diag])
 
 @[simp] theorem counit_comp_single (i : n) :
     counit (R := R) (A := n → M) ∘ₗ .single R _ i = counit := by ext; simp
