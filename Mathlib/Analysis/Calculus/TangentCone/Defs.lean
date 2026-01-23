@@ -61,6 +61,7 @@ theorem mem_tangentConeAt_of_frequently {α : Type*} (l : Filter α) (c : α →
   · exact hd₀.mono_left inf_le_left
   · simp [eventually_inf_principal]
 
+/-- A special case of `mem_tangentConeAt_of_frequently` which is convenient for XXX. -/
 theorem mem_tangentConeAt_of_seq {α : Type*} (l : Filter α) [l.NeBot] (c : α → R) (d : α → E)
     (hd₀ : Tendsto d l (𝓝 0)) (hds : ∀ᶠ n in l, x + d n ∈ s)
     (hcd : Tendsto (fun n ↦ c n • d n) l (𝓝 y)) : y ∈ tangentConeAt R s x :=
