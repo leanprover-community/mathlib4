@@ -405,7 +405,7 @@ where
     -- structure (such as, imposed deliberately through a type synonym), we do not want to infer
     -- the standard model with corners.
     -- Therefore, we only check definitional equality at reducible transparency.
-    let some (k, _E, _F) := ← isCLMReduciblyDefeqCoefficients e
+    let some (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
       | throwError "`{e}` is not a space of continuous linear maps"
     let eK : Term ← Term.exprToSyntax k
     let eT : Term ← Term.exprToSyntax e
@@ -465,7 +465,7 @@ where
       -- Note: this is somewhat brittle, and will need to be updated if other instance are made.
       -- A more robust solution would involve running typeclass inference,
       -- hence could potentially be slow.
-      let searchNormedAlgebra := ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
+      let searchNormedAlgebra ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
           trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
           match_expr type with
           | NormedAlgebra k R _ _ =>
@@ -564,7 +564,7 @@ where
             | Module.finrank R F _ _ _ =>
               -- We use reducible transparency to allow using a type synonym: this should not
               -- be unfolded.
-              if (← withReducible (pureIsDefEq R q(ℝ))) && (← withReducible (pureIsDefEq E F)) then
+              if ← withReducible (pureIsDefEq R q(ℝ) <&&> pureIsDefEq E F) then
                 trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E` via `{_inst}`"
                 -- Try to unify the rhs with an expression m + 1, for a natural number m.
                 -- If we find one, that's the dimension of our model with corners.
@@ -585,7 +585,7 @@ where
             | _ => return none
           | _ => return none
         | _ => return none
-      if let some E := (← searchIPSpace) then
+      if let some E ← searchIPSpace then
         -- We found a sphere in the inner product space `E`:
         -- search for a `Fact (finrank ℝ E) = m + 1`,
         -- then the sphere is `m`-dimensional, and `modelEuclideanSpace m` is our model.
