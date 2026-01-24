@@ -509,11 +509,11 @@ alias HasSubset.Subset.antisymm' := superset_antisymm
 
 theorem subset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ a ⊆ b ∧ b ⊆ a :=
-  ⟨fun h => ⟨h.subset', h.superset⟩, fun h => h.1.antisymm h.2⟩
+  ⟨fun h => ⟨h.subset, h.superset⟩, fun h => h.1.antisymm h.2⟩
 
 theorem superset_antisymm_iff [@Std.Refl α (· ⊆ ·)] [@Std.Antisymm α (· ⊆ ·)] :
     a = b ↔ b ⊆ a ∧ a ⊆ b :=
-  ⟨fun h => ⟨h.superset, h.subset'⟩, fun h => h.1.antisymm' h.2⟩
+  ⟨fun h => ⟨h.superset, h.subset⟩, fun h => h.1.antisymm' h.2⟩
 
 end Subset
 
