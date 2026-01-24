@@ -33,7 +33,7 @@ instance : MulAction (G ⧸ H) (fixedPoints H A) :=
 @[simp]
 lemma coe_quotient_smul_fixedPoints
     (g : G) (a : fixedPoints H A) :
-    (((g : G ⧸ H) • a) :) = g • (a : A) := rfl
+    (g : G ⧸ H) • a = g • a := rfl
 
 lemma quotient_smul_fixedPoints_def
     (g : G ⧸ H) (a : fixedPoints H A) :
