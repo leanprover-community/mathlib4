@@ -3,7 +3,9 @@ Copyright (c) 2026 Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
-import Mathlib.Analysis.Complex.ExponentialBounds
+module
+
+public import Mathlib.Analysis.Complex.ExponentialBounds
 
 /-!
 # Binet kernel estimates
@@ -30,6 +32,10 @@ Formally, the Laurent expansion
 suggests `K t → 0` and `Ktilde t → 1 / 12` as `t → 0⁺`.
 
 -/
+
+@[expose] public section
+
+noncomputable section
 
 open Real Set Filter
 open scoped Topology
@@ -69,7 +75,7 @@ We define `K : ℝ → ℝ` on all of `ℝ` by setting `K t = 0` for `t ≤ 0`, 
 `K(t) = 1/(exp t - 1) - 1/t + 1/2` for `t > 0`.
 This total definition is convenient for global boundedness/continuity statements; the analytic
 content is on `(0, ∞)`. -/
-noncomputable def K (t : ℝ) : ℝ :=
+def K (t : ℝ) : ℝ :=
   if t ≤ 0 then 0 else 1/(Real.exp t - 1) - 1/t + 1/2
 
 /-- The normalized Binet kernel.
@@ -77,7 +83,7 @@ noncomputable def K (t : ℝ) : ℝ :=
 We define `Ktilde : ℝ → ℝ` by setting `Ktilde t = 1/12` for `t ≤ 0`, and
 `Ktilde(t) = (1/(exp t - 1) - 1/t + 1/2) / t` for `t > 0`.
 The value `1/12` is the right-limit as `t → 0⁺`. -/
-noncomputable def Ktilde (t : ℝ) : ℝ :=
+def Ktilde (t : ℝ) : ℝ :=
   if t ≤ 0 then 1/12 else (1/(Real.exp t - 1) - 1/t + 1/2) / t
 
 /-- For t > 0, K has the explicit formula. -/
@@ -143,7 +149,7 @@ private lemma K_eq_alt' {t : ℝ} (ht : 0 < t) :
 /-! ### Sign analysis -/
 
 /-- The function f(t) = e^t(t-2) + t + 2 that appears in the numerator. -/
-private noncomputable def f (t : ℝ) : ℝ := Real.exp t * (t - 2) + t + 2
+private def f (t : ℝ) : ℝ := Real.exp t * (t - 2) + t + 2
 
 private lemma f_zero : f 0 = 0 := by simp [f]
 
@@ -247,19 +253,19 @@ theorem Ktilde_nonneg {t : ℝ} (ht : 0 ≤ t) : 0 ≤ Ktilde t := by
 
 /-- The auxiliary function g(t) = (t² - 6t + 12)e^t - (t² + 6t + 12).
 We show g(t) ≥ 0 for t ≥ 0, which implies the bound Ktilde t ≤ 1/12. -/
-private noncomputable def gAux (t : ℝ) : ℝ :=
+private def gAux (t : ℝ) : ℝ :=
   (t ^ 2 - 6 * t + 12) * Real.exp t - (t ^ 2 + 6 * t + 12)
 
 /-- First derivative: g'(t) = (t² - 4t + 6)e^t - (2t + 6) -/
-private noncomputable def gAux' (t : ℝ) : ℝ :=
+private def gAux' (t : ℝ) : ℝ :=
   (t ^ 2 - 4 * t + 6) * Real.exp t - (2 * t + 6)
 
 /-- Second derivative: g''(t) = (t² - 2t + 2)e^t - 2 -/
-private noncomputable def gAux'' (t : ℝ) : ℝ :=
+private def gAux'' (t : ℝ) : ℝ :=
   (t ^ 2 - 2 * t + 2) * Real.exp t - 2
 
 /-- Third derivative: g'''(t) = t²e^t -/
-private noncomputable def gAux''' (t : ℝ) : ℝ := t ^ 2 * Real.exp t
+private def gAux''' (t : ℝ) : ℝ := t ^ 2 * Real.exp t
 
 private lemma gAux_zero : gAux 0 = 0 := by simp [gAux]
 
