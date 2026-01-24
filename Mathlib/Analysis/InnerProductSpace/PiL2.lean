@@ -1083,8 +1083,7 @@ theorem DirectSum.IsInternal.subordinateOrthonormalBasis_subordinate (a : Fin n)
       ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a)
 
 theorem DirectSum.IsInternal.mem_range_subordinateOrthonormalBasisIndex
-    (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
-    {i : ι} (hi : V i ≠ ⊥) :
+    (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) {i : ι} (hi : V i ≠ ⊥) :
     ∃ a : Fin n, hV.subordinateOrthonormalBasisIndex hn a hV' = i := by
   have : 0 < finrank 𝕜 (V i) := by rwa [←Nat.ne_zero_iff_zero_lt, finrank_eq_zero.ne]
   use hV.sigmaOrthonormalBasisIndexEquiv hn hV' ⟨i, ⟨0, this⟩⟩
