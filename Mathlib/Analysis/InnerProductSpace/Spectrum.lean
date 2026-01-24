@@ -221,7 +221,7 @@ private theorem exists_unsortedEigenvalues_eq_helper' (hT : T.IsSymmetric)
 
 private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
   (hn : Module.finrank 𝕜 E = n)
-  {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ =
+  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ =
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val := by
   obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper' hT hn ⟨μ, hμ⟩
@@ -232,11 +232,20 @@ private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
 private theorem exists_unsortedEigenvalues_eq_of_real (hT : T.IsSymmetric)
   (hn : Module.finrank 𝕜 E = n)
   {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
-  sorry
+  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper hT hn hμ
+  use i
+  rw [unsortedEigenvalues]
+  rw [←hi]
+  simp
 
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
   {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
   -- Need to use fact that Hermitian operators have real eigenvalues
+  -- TODO: Use LinearMap.IsSymmetric.conj_eigenvalue_eq_self
+  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper hT hn hμ
+  use i
+  rw [unsortedEigenvalues]
+  rw [←hi]
   sorry
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
