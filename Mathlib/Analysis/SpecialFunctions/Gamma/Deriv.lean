@@ -102,7 +102,7 @@ theorem differentiableAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : Differen
 theorem differentiableAt_Gamma_one : DifferentiableAt ℂ Gamma 1 :=
   differentiableAt_Gamma 1 (by norm_cast; simp)
 
-theorem continuousAt_Gamma (s : ℂ) (hs : ∀ (m : ℕ), s ≠ -↑m) : ContinuousAt Gamma s :=
+theorem continuousAt_Gamma (s : ℂ) (hs : ∀ m : ℕ, s ≠ -m) : ContinuousAt Gamma s :=
   (differentiableAt_Gamma s hs).continuousAt
 
 theorem continuousAt_Gamma_one : ContinuousAt Gamma 1 :=
