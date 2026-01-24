@@ -112,8 +112,6 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing {α : Type*}
     _ < ε / 2 + ε / 2 := by gcongr
     _ = ε :=  ENNReal.add_halves ε
 
-#check  borel_eq_generateFrom_Ioc_le
-
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
     (hC : IsSetSemiring C)
@@ -125,13 +123,11 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring {α : Type*}
   · rcases h'C with ⟨D, D_count, DC, hD⟩
     exact ⟨D, D_count, DC.trans (self_subset_finiteUnions C), hD⟩
   · rw [h]
-    apply
-
-
-
-#exit
-
-MeasurableSpace.induction_on_inter
+    apply le_antisymm (generateFrom_mono (self_subset_finiteUnions C))
+    apply generateFrom_le (fun t ht ↦ ?_)
+    rcases ht with ⟨J, JC, hJ, rfl⟩
+    exact MeasurableSet.sUnion (Finset.countable_toSet J)
+      (fun s hs ↦ measurableSet_generateFrom (JC hs))
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
@@ -244,9 +240,8 @@ def VectorMeasure.of_additive_of_le_measure
     exact tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
       (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
 
-/-- Consider a finitely additive vector measure on a dense class of measurable sets which is a ring
-of sets. Assume that it is dominated by a finite positive measure. Then it extends to a countably
-additive vector measure. -/
+/-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
+positive measure. Then it extends to a countably additive vector measure. -/
 lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetRing C)
     (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
@@ -413,6 +408,9 @@ lemma VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense [IsFini
       exact hBound ⟨s, hs⟩
     · simp [m', hs]
 
+/-- Consider an additive content on a semi-ring of sets whose finite unions are dense. Assume that
+it is dominated by a finite positive measure. Then it extends to a countably additive
+vector measure. -/
 lemma VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense [IsFiniteMeasure μ]
     {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
     (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
@@ -437,8 +435,8 @@ lemma VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_dense [Is
   exact AddContent.extendUnion_eq_of_mem _ _ hs
 
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
-measure `μ`. Assume that `C` generates the sigma-algebra and covers the space. Then `m` extends
-to a countably additive vector measure, which is dominated by `μ`. -/
+measure `μ`. Assume that `C` generates the sigma-algebra and covers the space up to measure zero.
+Then `m` extends to a countably additive vector measure, which is dominated by `μ`. -/
 theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     [IsFiniteMeasure μ] {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
     (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
@@ -449,7 +447,7 @@ theorem VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generat
     rw [h'C]
     exact measurableSet_generateFrom hs
   · intro t ε ht εpos
-    exact exists_measure_symmDiff_lt_of_generateFrom hCs h''C h'C ht
+    exact exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hCs h''C h'C ht εpos
 
 end MeasureTheory
 
@@ -461,7 +459,7 @@ variable [LinearOrder α] [TopologicalSpace α] [OrderTopology α] [SecondCounta
   [CompactIccSpace α] [BorelSpace α] [DenselyOrdered α] {f : α → E} {a b : α}
 
 /-- The Stieltjes function associated to a bounded variation function. It is given by
-the variation between a base point and the current point of the function `f.rightLim`.
+the variation of the function `f.rightLim` from a fixed base point.
 Using right limits ensures the right continuity, which is used to construct Sieltjes measures. -/
 @[simps] noncomputable def stieltjesFunctionRightLim
     (hf : BoundedVariationOn f univ) (x₀ : α) : StieltjesFunction α where
@@ -489,6 +487,10 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
     (C := (eVariationOn f.rightLim univ).toReal) _ (fun x ↦ ?_)
   exact variationOnFromTo.abs_le_eVariationOn hf.rightLim
 
+/-- Given a bounded variation function `f`, we can construct a vector measure giving
+mass `f.rightLim v - f.rightLim a` to each open-closed interval `(a, b]`. This is *not* the
+measure associated to `f` in general, as we may need to adjust things at the bot element if
+there is one. -/
 lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
     ∃ m : VectorMeasure α E, (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧
       m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by
