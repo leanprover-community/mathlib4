@@ -185,11 +185,6 @@ end finite
 end IsCompleteBipartiteWith
 
 variable (G) in
-/-- A graph is complete bipartite if there exists a set `left` of vertices such that
-    `G.IsCompleteBipartiteWith left`. -/
-def IsCompleteBipartite := ∃ left, G.IsCompleteBipartiteWith left
-
-variable (G) in
 /--
 The vertices `v, w₁, w₂` form an `IsPathGraph3Compl` in `G` iff `w₁w₂` is the only edge present
 between these three vertices. It is a witness to the non-complete-multipartite-ness of `G` (see

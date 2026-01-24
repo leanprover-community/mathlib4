@@ -31,7 +31,7 @@ In a complete graph on `|V|` vertices, any edge labeling into complete bipartite
 at least `|V| - 1` distinct labels.
 -/
 theorem card_le_card_add_one_of_forall_IsCompleteBipartite
-  (completeBipartiteOf : ∀ a, IsCompleteBipartite <| 𝓁.labelGraph a) :
+  (completeBipartiteOf : ∀ a, ∃ left, 𝓁.labelGraph a |>.IsCompleteBipartiteWith left) :
     card V ≤ card α + 1 := by
   classical
   rcases subsingleton_or_nontrivial V
