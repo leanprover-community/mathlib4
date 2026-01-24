@@ -48,7 +48,8 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
 
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
-  have := le_refl I.radical; revert this
+  have := le_refl I.radical
+  revert this
   refine Submodule.fg_induction _ _ (fun J => J ≤ I.radical → ∃ n : ℕ, J ^ n ≤ I) ?_ ?_ _ h
   · intro x hx
     obtain ⟨n, hn⟩ := hx (subset_span (Set.mem_singleton x))
@@ -99,6 +100,7 @@ theorem FG.mul {I J : Ideal R} [I.IsTwoSided] (hI : I.FG) (hJ : J.FG) : (I * J).
 
 theorem FG.pow {I : Ideal R} [I.IsTwoSided] {n : ℕ} (hI : I.FG) : (I ^ n).FG :=
   n.rec (by rw [I.pow_zero, one_eq_top]; exact fg_top R) fun n ih ↦ by
-    rw [IsTwoSided.pow_succ]; exact hI.mul ih
+    rw [IsTwoSided.pow_succ]
+    exact hI.mul ih
 
 end Ideal

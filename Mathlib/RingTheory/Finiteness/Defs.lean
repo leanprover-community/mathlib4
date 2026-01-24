@@ -78,8 +78,8 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
     obtain ⟨n, f, h⟩ := fg_iff_exists_fin_generating_family.mp hN
     refine ⟨ULift (Fin n), inferInstance, f ∘ ULift.down, ?_⟩
     convert h
-    ext x
-    simp only [Set.mem_range, Function.comp_apply, ULift.exists]
+    ext
+    simp
   · rintro ⟨G, _, g, hg⟩
     have := Fintype.ofFinite (range g)
     exact ⟨(range g).toFinset, by simpa using hg⟩
