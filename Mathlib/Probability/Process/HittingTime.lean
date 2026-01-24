@@ -420,10 +420,10 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
-theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : StronglyAdapted f u)
-    (hs : MeasurableSet s) : IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
+theorem Adapted.hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+    [Countable ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι}
+    (hu : Adapted f u) (hs : MeasurableSet s) :
+    IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
   rcases le_or_gt n' i with hi | hi
   · have h_le : ∀ ω, hittingBtwn u s n n' ω ≤ i := fun x => (hittingBtwn_le x).trans hi
@@ -434,15 +434,14 @@ theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFo
       simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
     simp_rw [WithTop.coe_le_coe, h_set_eq_Union]
     exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime := hittingBtwn_isStoppingTime
+@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
+  Adapted.hittingBtwn_isStoppingTime
 
-/-- A discrete hitting time is a stopping time. -/
-theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n : ι}
-    (hu : StronglyAdapted f u) (hs : MeasurableSet s) :
+theorem Adapted.hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι]
+    [WellFoundedLT ι] [Countable ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -450,8 +449,8 @@ theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellF
     rw [Set.mem_setOf_eq, hittingAfter_le_iff]
     simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
   rw [h_set_eq_Union]
-  exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+  refine MeasurableSet.iUnion fun j =>
+      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -466,12 +465,11 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
-theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
+theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
-    [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
-    (hτ : IsStoppingTime f τ)
-    {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : StronglyAdapted f u) :
+    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
+    {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
   intro n
   have h₁ : {x | hittingBtwn u s (τ x).untopA N x ≤ n} =
@@ -502,7 +500,7 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
   simpa only [WithTop.coe_le_coe] using h
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
-  isStoppingTime_hittingBtwn_isStoppingTime
+  Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 
