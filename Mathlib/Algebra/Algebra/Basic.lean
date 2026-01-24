@@ -446,6 +446,9 @@ variable (R S A M : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Faithful
 lemma NoZeroDivisors.of_faithfulSMul [NoZeroDivisors A] : NoZeroDivisors R :=
   (FaithfulSMul.algebraMap_injective R A).noZeroDivisors _ (by simp) (by simp)
 
+lemma IsCancelMulZero.of_faithfulSMul [IsCancelMulZero A] : IsCancelMulZero R :=
+  (FaithfulSMul.algebraMap_injective R A).isCancelMulZero _ (by simp) (by simp)
+
 lemma IsDomain.of_faithfulSMul [IsDomain A] : IsDomain R :=
   (FaithfulSMul.algebraMap_injective R A).isDomain
 
