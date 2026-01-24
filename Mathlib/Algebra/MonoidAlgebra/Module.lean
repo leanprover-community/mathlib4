@@ -67,7 +67,8 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
     FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
 
-@[to_additive (dont_translate := R)]
+/-- The standard basis for a monoid algebra. -/
+@[to_additive (dont_translate := R) /-- The standard basis for an additive monoid algebra. -/]
 def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
   repr := LinearEquiv.refl k (R →₀ k)
 
