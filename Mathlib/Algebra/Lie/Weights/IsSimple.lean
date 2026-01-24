@@ -278,8 +278,8 @@ open LieSubmodule in
   simp
 
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_top_iff (q : Submodule K (Dual K H))
-    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i)) :
-    invtSubmoduleToLieIdeal q (by exact hq) = ⊤ ↔ q = ⊤ := by
+    (hq : ∀ i, q ∈ End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    invtSubmoduleToLieIdeal q hq = ⊤ ↔ q = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   have h : (⨆ α : {α : Weight K H L // ↑α ∈ q ∧ α.IsNonZero}, sl2SubmoduleOfRoot α.2.2) = ⊤ := by
     rw [← LieSubmodule.toSubmodule_inj] at h
