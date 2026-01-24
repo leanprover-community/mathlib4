@@ -165,7 +165,7 @@ instance : P.HasIdealSupport where
 @[simp] theorem support_eq_bot : P.support = ⊥ := by
   simpa [← Submodule.toAddSubgroup_inj] using supportAddSubgroup_eq_bot P
 
-instance : P.support.IsPrime := by simpa using Ideal.bot_prime
+instance : P.support.IsPrime := by simpa using Ideal.isPrime_bot
 
 end Field
 

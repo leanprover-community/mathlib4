@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.Data.Fintype.EquivFin
 
 /-!
-# Finite categories are equivalent to category in `Type 0`.
+# Finite categories are equivalent to categories in `Type 0`.
 -/
 
 @[expose] public section
@@ -37,7 +37,7 @@ instance {i j : ObjAsType α} : Fintype (i ⟶ j) :=
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (Fintype.equivFin α).symm).asEquivalence
 
-/-- A FinCategory `α` is equivalent to a fin_category with in `Type`. -/
+/-- A FinCategory `α` is equivalent to a FinCategory in `Type`. -/
 --@[nolint unused_arguments]
 abbrev AsType : Type :=
   Fin (Fintype.card α)
