@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 public import Mathlib.CategoryTheory.Localization.Triangulated
-public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Shift.Localization
@@ -307,38 +307,18 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.IsCompatibleWithTriangula
   exact ⟨φ.hom₃, P.trW.comp_mem _ _ (trW.mk P H.mem mem₄') (trW.mk' P H'.mem mem₅'),
     by simpa [φ] using φ.comm₂, by simpa [φ] using φ.comm₃⟩⟩
 
-lemma prop_prod_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
-    (X₁ X₂ : C) (hX₁ : P X₁) (hX₂ : P X₂) :
-    P (X₁ ⨯ X₂)  :=
-  P.ext_of_isTriangulatedClosed₂ _ (binaryProductTriangle_distinguished X₁ X₂) hX₁ hX₂
+instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
+    P.IsClosedUnderBinaryProducts where
+  limitsOfShape_le := by
+    rintro X ⟨p⟩
+    refine P.prop_of_iso ?_ (P.ext_of_isTriangulatedClosed₂ _
+      (binaryProductTriangle_distinguished _ _)
+      (p.prop_diag_obj (.mk .left)) (p.prop_diag_obj (.mk .right)))
+    exact IsLimit.conePointUniqueUpToIso (prodIsProd _ _)
+      ((IsLimit.postcomposeHomEquiv (diagramIsoPair p.diag) _).2 p.isLimit)
 
-lemma prop_pi_of_isTriangulated [P.IsTriangulated] [P.IsClosedUnderIsomorphisms]
-    {J : Type} [Finite J] (X : J → C) (hX : ∀ j, P (X j)) :
-    P (∏ᶜ X) := by
-  revert hX X
-  let Q (J : Type) : Prop := ∀ [hJ : Finite J] (X : J → C) (_ : ∀ j, P (X j)), P (∏ᶜ X)
-  suffices Q J by exact this
-  induction J using Finite.induction_empty_option with
-  | @of_equiv J₁ J₂ e hJ₁ =>
-    intro _ X hX
-    have : Finite J₁ := Finite.of_equiv _ e.symm
-    exact prop_of_iso _ (Pi.whiskerEquiv e (fun _ ↦ Iso.refl _))
-      (hJ₁ (fun j₁ ↦ X (e j₁)) (fun j₁ ↦ hX _))
-  | h_empty =>
-    intro _ X _
-    refine prop_of_iso _ (IsZero.isoZero ?_).symm P.prop_zero
-    rw [IsZero.iff_id_eq_zero]
-    ext ⟨⟩
-  | @h_option J _ hJ =>
-    intro _ X hX
-    let iso : ∏ᶜ X ≅ (∏ᶜ fun b ↦ X (some b)) ⨯ X none :=
-      { hom := prod.lift (Pi.lift (fun b ↦ Pi.π _ (some b))) (Pi.π _ none)
-        inv := Pi.lift (fun b ↦ match b with
-          | some j => prod.fst ≫ Pi.π _ j
-          | none => prod.snd) }
-    exact prop_of_iso _ iso.symm
-      (P.prop_prod_of_isTriangulated _ _
-        (hJ (fun j => X (some j)) (fun j => hX _)) (hX none))
+instance [P.IsTriangulated] [P.IsClosedUnderIsomorphisms] :
+    P.IsClosedUnderFiniteProducts := .mk'
 
 instance [P.IsTriangulated] : P.trW.IsStableUnderFiniteProducts := by
   rw [← trW_isoClosure]
@@ -347,7 +327,7 @@ instance [P.IsTriangulated] : P.trW.IsStableUnderFiniteProducts := by
     intro _ _ X₁ X₂ f hf
     exact trW.mk _ (productTriangle_distinguished _
       (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose))
-      (prop_pi_of_isTriangulated _ _
+      (P.isoClosure.prop_pi _
         (fun j => (hf j).choose_spec.choose_spec.choose_spec.choose_spec))⟩
 
 lemma closedUnderLimitsOfShape_discrete_of_isTriangulated
@@ -359,7 +339,7 @@ lemma closedUnderLimitsOfShape_discrete_of_isTriangulated
     have e : Discrete.functor G ≅ p.diag := Discrete.natIso (fun _ ↦ Iso.refl _)
     have := IsLimit.conePointUniqueUpToIso (limit.isLimit _)
       ((IsLimit.postcomposeInvEquiv e _).2 p.isLimit)
-    exact P.prop_of_iso this (P.prop_pi_of_isTriangulated G (fun j ↦ p.prop_diag_obj _))
+    exact P.prop_of_iso this (P.prop_pi G (fun j ↦ p.prop_diag_obj _))
 
 section
 
