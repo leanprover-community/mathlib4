@@ -932,74 +932,102 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 #guard_msgs in
 #check MDiff f
 
-/-- error: Could not find a model with corners for `M × M` -/
+/-- info: MDifferentiable (I.prod I) (I'.prod I') (Prod.map f g) : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map f g)
 
-/-- error: Could not find a model with corners for `M × M` -/
+/-- info: MDifferentiable (I.prod I) (I'.prod 𝓘(𝕜, 𝕜)) (Prod.map f h) : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map f h)
 
-/-- error: Could not find a model with corners for `M × M` -/
+/-- info: MDifferentiable (I.prod I) (I'.prod I) (Prod.map f ↑φ) : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map f φ)
 
-/-- error: Could not find a model with corners for `M' × M'` -/
+/-- info: MDifferentiable I (I'.prod I') fun x ↦ (f x, g x) : Prop -/
 #guard_msgs in
 #check MDiff (fun x ↦ (f x, g x))
 
-/-- error: Could not find a model with corners for `M × E` -/
+/-- info: MDifferentiable (I.prod 𝓘(𝕜, E)) I' k : Prop -/
 #guard_msgs in
 #check MDiff k
 
-/-- error: Could not find a model with corners for `E × E` -/
+/--
+error: `E × E` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' f')
 
-/-- error: Could not find a model with corners for `M × M` -/
+/-- info: MDifferentiable (I.prod I) (I.prod I) (Prod.map ↑φ ↑φ') : Prop -/
 #guard_msgs in
 #check MDiff (Prod.map φ φ')
 
--- Currently, higher-order products are not implemented.
--- XXX: double-check these could work, by trying out the equivalent
--- MDifferentiable/ContMDiff incantation
-/-- error: Could not find a model with corners for `M × M × M` -/
+/--
+info: MDifferentiable (I.prod (I.prod I)) (I'.prod (𝓘(𝕜, 𝕜).prod I')) (Prod.map f (Prod.map h g)) : Prop
+-/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map h g))
 
-/-- error: Could not find a model with corners for `(M × M) × M` -/
+/--
+info: MDifferentiable ((I.prod I).prod I) ((I'.prod I').prod 𝓘(𝕜, 𝕜)) (Prod.map (Prod.map f g) h) : Prop
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) h)
 
-/-- error: Could not find a model with corners for `(M × M) × M × M × E` -/
+/--
+info: MDifferentiable ((I.prod I).prod (I.prod (I.prod 𝓘(𝕜, E)))) ((I'.prod I').prod (𝓘(𝕜, 𝕜).prod I'))
+  (Prod.map (Prod.map f g) (Prod.map h k)) : Prop
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f g) (Prod.map h k))
 
-/-- error: Could not find a model with corners for `((M × M) × M) × M × E` -/
+/--
+info: MDifferentiable (((I.prod I).prod I).prod (I.prod 𝓘(𝕜, E))) (((I'.prod I').prod 𝓘(𝕜, 𝕜)).prod I')
+  (Prod.map (Prod.map (Prod.map f g) h) k) : Prop
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f g) h) k)
 
-/-- error: Could not find a model with corners for `M × M × M × M × E` -/
+/--
+info: MDifferentiable (I.prod (I.prod (I.prod (I.prod 𝓘(𝕜, E))))) (I'.prod (I'.prod (𝓘(𝕜, 𝕜).prod I')))
+  (Prod.map f (Prod.map g (Prod.map h k))) : Prop
+-/
 #guard_msgs in
 #check MDiff (Prod.map f (Prod.map g (Prod.map h k)))
 
-/-- error: Could not find a model with corners for `E × EM' × F` -/
+/--
+error: `EM' × F` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check CMDiff 2 (Prod.map f' (Prod.map g' h'))
 
-/-- error: Could not find a model with corners for `(E × EM') × F` -/
+/--
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check CMDiff 2 (Prod.map (Prod.map f' g') h')
 
-/-- error: Could not find a model with corners for `((E × EM') × F) × F` -/
+/--
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map (Prod.map f' g') h') k')
 
-/-- error: Could not find a model with corners for `(E × EM') × F × F` -/
+/--
+error: `E × EM'` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check MDiff (Prod.map (Prod.map f' g') (Prod.map h' k'))
 
-/-- error: Could not find a model with corners for `E × EM' × F × F` -/
+/--
+error: `F × F` is a product of normed spaces, so there are two potential models with corners
+For now, please specify the model by hand.
+-/
 #guard_msgs in
 #check MDiff (Prod.map f' (Prod.map g' (Prod.map h' k')))
 
@@ -1020,7 +1048,7 @@ error: Could not find a model with corners for `Unit`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: `Unit`
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
