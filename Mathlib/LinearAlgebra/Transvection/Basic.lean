@@ -350,6 +350,7 @@ theorem symm_mem_transvections_iff {e : V ≃ₗ[R] V} :
   rw [transvection.symm_eq]
   apply mem_transvections
 
+@[simp]
 theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
     e⁻¹ ∈ transvections R V ↔ e ∈ transvections R V :=
   symm_mem_transvections_iff
@@ -671,8 +672,6 @@ section Field
 
 variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
-variable {f : Dual K V} {v : V}
-
 /-- Determinant of transvections, over a field.
 
 See `LinearMap.Transvection.det` for the general result. -/
@@ -738,8 +737,7 @@ variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 /-- Determinant of a transvection, over a domain.
 
 See `LinearMap.transvection.det` for the general case. -/
-private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R]
-    (f : Dual R V) (v : V) :
+private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   let K := FractionRing R
   let : Field K := inferInstance
@@ -751,8 +749,7 @@ private theorem det_ofDomain [Free R V] [Module.Finite R V] [IsDomain R]
 
 open IsBaseChange
 
-@[simp] theorem det [Free R V] [Module.Finite R V]
-    (f : Dual R V) (v : V) :
+@[simp] theorem det [Free R V] [Module.Finite R V] (f : Dual R V) (v : V) :
     (transvection f v).det = 1 + f v := by
   rcases subsingleton_or_nontrivial R with hR | hR
   · subsingleton
@@ -793,8 +790,7 @@ open IsBaseChange
 
 It is not necessary to assume that the module is finite and free
 because `LinearMap.det` is identically 1 otherwise. -/
-@[simp] theorem _root_.LinearEquiv.det_eq_one
-    {f : Dual R V} {v : V} (hfv : f v = 0) :
+@[simp] theorem _root_.LinearEquiv.det_eq_one {f : Dual R V} {v : V} (hfv : f v = 0) :
     (LinearEquiv.transvection hfv).det = 1 := by
   rw [← Units.val_inj, LinearEquiv.coe_det,
     LinearEquiv.transvection.coe_toLinearMap hfv, Units.val_one]
