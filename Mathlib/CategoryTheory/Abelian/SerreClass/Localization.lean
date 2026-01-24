@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
 # Localization with respect to a Serre class
@@ -324,6 +325,115 @@ def toSerreClassLocalization : C ⥤ P.SerreClassLocalization where
   map f := .ofHom P f
   map_id _ := rfl
   map_comp := sorry
+
+/-! Alternative approach, in two steps:
+1) Localization w.r.t. `epimorphisms C ⊓ P.isoModSerre` using a left calculus of fractions
+2) Localize the resulting category using a right calculus of fractions
+-/
+
+namespace IsSerreClass
+
+namespace Localization
+
+instance : (P.isoModSerre ⊓ .epimorphisms _).HasLeftCalculusOfFractions where
+  exists_leftFraction X Y φ :=
+    ⟨{s := pushout.inl φ.f φ.s
+      f := pushout.inr φ.f φ.s,
+      hs := MorphismProperty.pushout_inl _ _ φ.hs}, pushout.condition⟩
+  ext _ _ _ f₁ f₂ s hs eq := by
+    have : Epi s := hs.2
+    exact ⟨_, 𝟙 _, MorphismProperty.id_mem _ _, by simpa [cancel_epi] using eq⟩
+
+variable {D : Type*} [Category* D]
+  (L : C ⥤ D)
+
+def LocEpi := (P.isoModSerre ⊓ .epimorphisms _).Localization
+  deriving Category
+
+def QEpi : C ⥤ LocEpi P := (P.isoModSerre ⊓ .epimorphisms _).Q
+
+variable {P} in
+lemma QEpi_obj_surjective : Function.Surjective (QEpi P).obj :=
+  (Localization.Construction.objEquiv _).surjective
+
+instance : (QEpi P).IsLocalization (P.isoModSerre ⊓ .epimorphisms _) :=
+  inferInstanceAs ((MorphismProperty.Q _).IsLocalization _)
+
+instance : (QEpi P).EssSurj :=
+  Localization.essSurj _ (P.isoModSerre ⊓ .epimorphisms _)
+
+def mapIsoModSerreInterEpi :
+    MorphismProperty (LocEpi P) :=
+  fun ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ f ↦ ∃ (Z : C) (g : X ⟶ Z) (s : Y ⟶ Z) (_ : P.isoModSerre g)
+    (_ : (P.isoModSerre ⊓ .epimorphisms _) s),
+        f ≫ (QEpi P).map s = (QEpi P).map g
+
+lemma mapIsoModSerreInterEpi_iff {X Y : C} (f : (QEpi P).obj X ⟶ (QEpi P).obj Y) :
+    mapIsoModSerreInterEpi P f ↔ ∃ (Z : C) (g : X ⟶ Z) (s : Y ⟶ Z) (_ : P.isoModSerre g)
+      (_ : (P.isoModSerre ⊓ .epimorphisms _) s), f ≫ (QEpi P).map s = (QEpi P).map g :=
+  Iff.rfl
+
+lemma mapIsoModSerreInterEpi.map {X Y : C} (f : X ⟶ Y) (hf : P.isoModSerre f) :
+    mapIsoModSerreInterEpi P ((QEpi P).map f) := by
+  rw [mapIsoModSerreInterEpi_iff]
+  exact ⟨_, f, 𝟙 _, hf, MorphismProperty.id_mem _ _, by simp⟩
+
+instance : (mapIsoModSerreInterEpi P).RespectsIso := by
+  sorry
+
+instance : (mapIsoModSerreInterEpi P).IsMultiplicative where
+  id_mem X := by
+    obtain ⟨X, rfl⟩ := QEpi_obj_surjective X
+    rw [← Functor.map_id]
+    exact mapIsoModSerreInterEpi.map _ _ (MorphismProperty.id_mem _ _)
+  comp_mem := sorry
+
+instance : (mapIsoModSerreInterEpi P).HasRightCalculusOfFractions where
+  exists_rightFraction := by
+    let L := QEpi P
+    suffices ∀ {X Y Z : C} (f : L.obj X ⟶ L.obj Z) (s : L.obj Y ⟶ L.obj Z)
+      (hs : mapIsoModSerreInterEpi P s),
+        ∃ (ψ : (mapIsoModSerreInterEpi P).RightFraction (L.obj X) (L.obj Y)),
+          ψ.s ≫ f = ψ.f ≫ s by
+      intro X Y φ
+      let eX := L.objObjPreimageIso X
+      let eY := L.objObjPreimageIso Y
+      let eY' := L.objObjPreimageIso φ.Y'
+      obtain ⟨ψ, fac⟩ := this (eX.hom ≫ φ.f ≫ eY'.inv) (eY.hom ≫ φ.s ≫ eY'.inv)
+        ((MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk eY eY')).2 φ.hs)
+      exact
+        ⟨{s := ψ.s ≫ eX.hom
+          f := ψ.f ≫ eY.hom
+          hs := (MorphismProperty.arrow_mk_iso_iff _
+            (by exact Arrow.isoMk (Iso.refl _) eX)).1 ψ.hs }, by simpa [← cancel_mono eY'.inv]⟩
+    intro X Y Z f s hs
+    obtain ⟨φf, rfl⟩ := Localization.exists_leftFraction L (P.isoModSerre ⊓ .epimorphisms _) f
+    obtain ⟨φs, rfl⟩ := Localization.exists_leftFraction L (P.isoModSerre ⊓ .epimorphisms _) s
+    let W := pushout φf.s φs.s
+    let f' : X ⟶ W := φf.f ≫ pushout.inl _ _
+    let s' : Y ⟶ W := φs.f ≫ pushout.inr _ _
+    refine ⟨{
+      X' := L.obj (pullback f' s')
+      s := L.map (pullback.fst _ _)
+      hs := by
+        refine mapIsoModSerreInterEpi.map P _
+          (MorphismProperty.pullback_fst _ _
+            (MorphismProperty.comp_mem _ _ _ ?_ (MorphismProperty.pushout_inr _ _ φf.hs.1)))
+        sorry
+      f := L.map (pullback.snd _ _) }, ?_⟩
+    have := Localization.inverts L (P.isoModSerre ⊓ .epimorphisms _) φf.s φf.hs
+    have := Localization.inverts L (P.isoModSerre ⊓ .epimorphisms _)
+      (pushout.inl φf.s φs.s) (MorphismProperty.pushout_inl _ _ φs.hs)
+    rw [← cancel_mono (L.map φf.s), assoc, MorphismProperty.LeftFraction.map_comp_map_s,
+      ← cancel_mono (L.map (pushout.inl φf.s φs.s)), assoc, assoc, assoc,
+      ← L.map_comp, ← L.map_comp, pullback.condition,
+      ← L.map_comp, pushout.condition, L.map_comp, L.map_comp, L.map_comp,
+      MorphismProperty.LeftFraction.map_comp_map_s_assoc]
+  ext := sorry
+
+end Localization
+
+end IsSerreClass
 
 end ObjectProperty
 
