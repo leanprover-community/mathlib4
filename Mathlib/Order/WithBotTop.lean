@@ -81,7 +81,7 @@ theorem coe_strictMono [Preorder ι] : StrictMono (WithBotTop.coe : ι → _) :=
 
 lemma coe_monotone [Preorder ι] :
     Monotone (WithBotTop.coe : ι → _) :=
-  fun _ _ _ ↦ by simpa only [coe_le_coe]
+  fun _ _ _ ↦ by simpa
 
 end WithBotTop
 
