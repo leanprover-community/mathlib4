@@ -21,11 +21,13 @@ variable {ι : Type*}
 
 variable (ι) in
 /-- The type obtained by adding both `⊥` and `⊤` to a type. -/
-@[to_dual]
+@[to_dual /-- The type obtained by adding both `⊤` and `⊥` to a type. -/]
 abbrev WithBotTop := WithBot (WithTop ι)
 
 /-- The canonical inclusion `ι → WithBotTop ι`. Registered as a coercion. -/
-@[to_dual (attr := coe)] def WithBotTop.coe : ι → WithBotTop ι :=
+@[to_dual (attr := coe)
+  /-- The canonical inclusion `ι → WithTopBot ι`. Registered as a coercion. -/]
+def WithBotTop.coe : ι → WithBotTop ι :=
   WithBot.some ∘ WithTop.some
 
 namespace WithBotTop
@@ -48,7 +50,8 @@ variable {motive : (WithBotTop ι) → Sort*}
   (bot : motive ⊥) (coe : ∀ a : ι, motive a) (top : motive ⊤)
 
 /-- A recursor for `WithBotTop` in terms of the coercion. -/
-@[to_dual (attr := elab_as_elim)]
+@[to_dual (attr := elab_as_elim)
+  /-- A recursor for `WithTopBot` in terms of the coercion. -/]
 protected def rec : ∀ a, motive a
   | ⊥ => bot
   | (a : ι) => coe a
