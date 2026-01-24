@@ -506,12 +506,12 @@ end MeasureTheory
 
 section MeasurableFunctions
 
-@[to_fun]
 theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ => id
 
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+attribute [local push ←] Function.comp_def
 @[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :

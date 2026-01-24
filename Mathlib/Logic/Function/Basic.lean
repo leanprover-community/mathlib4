@@ -26,8 +26,6 @@ universe u v w x
 
 namespace Function
 
-attribute [push ←] Function.comp_def
-
 section
 
 variable {α β γ : Sort*} {f : α → β}
