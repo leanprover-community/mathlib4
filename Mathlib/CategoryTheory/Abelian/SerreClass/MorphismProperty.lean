@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
@@ -168,6 +169,15 @@ lemma isoModSerre_isInvertedBy_iff (F : C ⥤ D)
     (((ShortComplex.mk _ _ (cokernel.condition f)).exact_of_g_is_cokernel
       (cokernelIsCokernel f)).map F).epi_f (((hF _ h₂).eq_of_tgt _ _))
   exact isIso_of_mono_of_epi (F.map f)
+
+instance : P.isoModSerre.IsStableUnderBaseChange := by
+  have : P.IsSerreClass := inferInstance
+  sorry
+
+instance : P.isoModSerre.IsStableUnderCobaseChange := by
+  have : P.IsSerreClass := inferInstance
+  sorry
+
 
 end ObjectProperty
 

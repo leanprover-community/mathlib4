@@ -124,15 +124,13 @@ lemma exists_min :
   let d : DefDomain X Y :=
     { src := pullback d₁.i d₂.i
       i := pullback.fst _ _ ≫ d₁.i
-      hi := by
-        refine MorphismProperty.comp_mem _ _ _ ?_ d₁.hi
-        sorry
+      hi := MorphismProperty.comp_mem _ _ _
+          (MorphismProperty.pullback_fst _ _ d₂.hi) d₁.hi
       tgt := pushout d₁.p d₂.p
       p := d₁.p ≫ pushout.inl _ _
-      hp := by
-        refine MorphismProperty.comp_mem _ _ _ d₁.hp ?_
-        sorry }
-  refine ⟨d, ⟨{ ι := pullback.fst _ _, π := pushout.inl _ _ }⟩, ⟨
+      hp := MorphismProperty.comp_mem _ _ _ d₁.hp
+          (MorphismProperty.pushout_inl _ _ d₂.hp) }
+  exact ⟨d, ⟨{ ι := pullback.fst _ _, π := pushout.inl _ _ }⟩, ⟨
     { ι := pullback.snd _ _,
       ι_i := pullback.condition.symm
       π := pushout.inr _ _
@@ -149,6 +147,17 @@ structure CompStruct (d₁₂ : DefDomain X Y) (d₂₃ : DefDomain Y Z) (d₁�
   fac : toObj ≫ fromObj = d₂₃.i ≫ d₁₂.p := by cat_disch
   epi_toObj : Epi toObj
   mono_toObj : Mono toObj
+
+namespace CompStruct
+
+variable {d₁₂ : DefDomain X Y} {d₂₃ : DefDomain Y Z} {d₁₃ : DefDomain X Z}
+  (h : CompStruct d₁₂ d₂₃ d₁₃)
+
+instance : Mono h.ι := mono_of_mono_fac h.ι_i
+
+instance : Epi h.π := epi_of_epi_fac h.p_π
+
+end CompStruct
 
 end DefDomain
 
@@ -246,7 +255,8 @@ structure CompStruct {d₁₃ : DefDomain X Z}
 namespace CompStruct
 
 lemma nonempty : ∃ (d₁₃ : DefDomain X Z)
-    (h : DefDomain.CompStruct d₁₂ d₂₃ d₁₃), Nonempty (CompStruct a b h) := sorry
+    (h : DefDomain.CompStruct d₁₂ d₂₃ d₁₃), Nonempty (CompStruct a b h) := by
+  sorry
 
 variable {a b}
 def comp {d₁₃ : DefDomain X Z}
