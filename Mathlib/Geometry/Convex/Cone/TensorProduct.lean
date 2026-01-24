@@ -144,7 +144,7 @@ variable {H' : Type*} [AddCommGroup H'] [Module R H']
 
 /-- `minTensorProduct` is functorial: the image of a minimal tensor product under
 `TensorProduct.map f g` is contained in the minimal tensor product of the images. -/
-theorem minTensorProduct_map (f : G →ₗ[R] G') (g : H →ₗ[R] H')
+theorem minTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
     (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     (minTensorProduct C₁ C₂).map (TensorProduct.map f g) ≤
       minTensorProduct (C₁.map f) (C₂.map g) :=
@@ -153,7 +153,7 @@ theorem minTensorProduct_map (f : G →ₗ[R] G') (g : H →ₗ[R] H')
 
 /-- `maxTensorProduct` is functorial: the image of a maximal tensor product under
 `TensorProduct.map f g` is contained in the maximal tensor product of the images. -/
-theorem maxTensorProduct_map (f : G →ₗ[R] G') (g : H →ₗ[R] H')
+theorem maxTensorProduct_map_le (f : G →ₗ[R] G') (g : H →ₗ[R] H')
     (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     (maxTensorProduct C₁ C₂).map (TensorProduct.map f g) ≤
       maxTensorProduct (C₁.map f) (C₂.map g) := by
