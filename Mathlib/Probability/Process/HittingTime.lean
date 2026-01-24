@@ -430,7 +430,7 @@ theorem Adapted.hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     simp [h_le]
   · have h_set_eq_Union : {ω | hittingBtwn u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
       ext; simp [hittingBtwn_le_iff_of_lt _ hi]
-    simpa [WithTop.coe_le_coe, h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+    simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 @[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
@@ -489,7 +489,7 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
   simp only [WithTop.coe_le_coe, h₁, h₂, Set.union_empty]
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
-  simpa using hittingBtwn_isStoppingTime hf hs n
+  simpa using hf.hittingBtwn_isStoppingTime hs n
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
   Adapted.isStoppingTime_hittingBtwn_isStoppingTime
