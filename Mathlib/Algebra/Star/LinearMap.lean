@@ -120,11 +120,6 @@ theorem _root_.TensorProduct.intrinsicStar_map (f : E →ₗ[R] F) (g : G →ₗ
     star (TensorProduct.map f g) = TensorProduct.map (star f) (star g) :=
   TensorProduct.ext' fun _ _ ↦ by simp
 
-theorem _root_.TensorProduct.star_map_apply_eq_map_intrinsicStar
-    (f : E →ₗ[R] F) (g : G →ₗ[R] H) (x) :
-    star (TensorProduct.map f g x) = TensorProduct.map (star f) (star g) (star x) := by
-  simp [← TensorProduct.intrinsicStar_map]
-
 theorem intrinsicStar_lTensor (f : F →ₗ[R] G) : star (lTensor E f) = lTensor E (star f) := by
   simp [lTensor, TensorProduct.intrinsicStar_map]
 
@@ -149,11 +144,6 @@ theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : E →ₗ[S] S
     star (f.smulRight x) = (star f).smulRight (star x) := by ext; simp
 
 end starAddMonoidSemiring
-
-@[simp] theorem intrinsicStar_single {n : Type*} [DecidableEq n] {A : n → Type*}
-    [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)] [Π i, StarAddMonoid (A i)]
-    [∀ i, StarModule R (A i)] (i : n) : star (single R A i) = single R A i := by
-  aesop (add simp [Pi.single, Function.update])
 
 end LinearMap
 
