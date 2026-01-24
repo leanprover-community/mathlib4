@@ -21,10 +21,8 @@ subcategory, we introduce a class of morphisms `P.trW : MorphismProperty C`
 consisting of the morphisms whose "cone" belongs to `P` (up to isomorphisms),
 and we show that it has both calculus of left and right fractions.
 
-## TODO
-
-* show that the fullsubcategory attached to `P` (such that `P.IsTriangulated`)
-  is a pretriangulated category.
+We also show that `P.FullSubcategory` is equipped with a pretriangulated structure,
+which is triangulated if `C` is.
 
 ## Implementation notes
 
