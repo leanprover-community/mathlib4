@@ -205,9 +205,14 @@ theorem abundant_945 : Abundant 945 := by
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by
   grind [Abundant, sum_divisors_eq_sum_properDivisors_add_self]
 
-theorem abundant_iff_two_lt_abundancyIndex (h : n ≠ 0) : Abundant n ↔ 2 < n.abundancyIndex := by
-  rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
-  norm_cast
+theorem abundant_iff_two_lt_abundancyIndex : Abundant n ↔ 2 < n.abundancyIndex := by
+  by_cases h : n = 0
+  · refine (iff_false_left ?_).mpr ?_
+    · simp [h, Abundant]
+    · suffices (0).abundancyIndex = 0 by grind
+      simp [abundancyIndex]
+  · rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
+    norm_cast
 
 theorem abundancyIndex_le_of_dvd (hn : n ≠ 0) (hd : m ∣ n) :
     m.abundancyIndex ≤ n.abundancyIndex := by
@@ -220,14 +225,14 @@ theorem abundancyIndex_le_of_dvd (hn : n ≠ 0) (hd : m ∣ n) :
     (sum_le_sum_of_subset (by grind [mul_dvd_mul_iff_right hk0]))
 
 theorem Abundant.of_dvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
-  have := abundancyIndex_le_ofDvd hn hd
+  have := abundancyIndex_le_of_dvd hn hd
   have := ne_zero_of_dvd_ne_zero hn hd
   grind [abundant_iff_two_lt_abundancyIndex]
 
 theorem Abundant.mul_left (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := by
   have hn : n ≠ 0 := by grind [not_abundant_zero]
   have hmn : m * n ≠ 0 := mul_ne_zero hm hn
-  exact Abundant.ofDvd h (Nat.dvd_mul_left n m) hmn
+  exact Abundant.of_dvd h (Nat.dvd_mul_left n m) hmn
 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
