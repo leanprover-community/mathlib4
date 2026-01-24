@@ -172,7 +172,7 @@ def fixingSubgroupInsertEquiv (a : α) (s : Set (ofStabilizer M a)) :
         simp only [← SetLike.coe_eq_coe]
         refine (mem_fixingSubgroup_iff M).mp m.prop _ (Set.mem_insert_of_mem a ?_)
         exact ⟨⟨x, (SubMulAction.mem_ofStabilizer_iff  M a).mp x.prop⟩, hx, rfl⟩⟩
-  map_mul' _ _ := by simp
+  map_mul' _ _ := by simp [← Subtype.coe_inj]
   invFun m := ⟨m, by simp [fixingSubgroup_of_insert]⟩
   left_inv _ := by simp
   right_inv _ := by simp
