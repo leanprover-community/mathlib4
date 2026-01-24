@@ -48,7 +48,7 @@ theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
   simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
 
 open EuclideanSpace in
-/-- The counit on `n → 𝕜` correspons to the Euclidean space adjoint of the algebra linear map. -/
+/-- The counit on `n → 𝕜` corresponds to the Euclidean space adjoint of the algebra linear map. -/
 theorem Pi.counit_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
     counit = ((equiv n 𝕜).symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 (n → 𝕜)).adjoint ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
