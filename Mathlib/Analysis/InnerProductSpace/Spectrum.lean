@@ -205,6 +205,33 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
+private theorem exists_unsortedEigenvalues_eq_helper' (hT : T.IsSymmetric)
+  (hn : Module.finrank 𝕜 E = n)
+  {μ : Module.End.Eigenvalues T} : ∃ i : Fin n, μ =
+    hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces' := by
+  use (hT.direct_sum_isInternal.sigmaOrthonormalBasisIndexEquiv hn hT.orthogonalFamily_eigenspaces')
+    ⟨μ, ⟨0, sorry⟩⟩
+  rw [DirectSum.IsInternal.subordinateOrthonormalBasisIndex_def]
+  simp
+
+private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
+  (hn : Module.finrank 𝕜 E = n)
+  {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ =
+    (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces').val := by
+  sorry
+
+private theorem exists_unsortedEigenvalues_eq_of_real (hT : T.IsSymmetric)
+  (hn : Module.finrank 𝕜 E = n)
+  {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
+  sorry
+
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
+  -- Need to use fact that Hermitian operators have real eigenvalues
+  sorry
+
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
   hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
