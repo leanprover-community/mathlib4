@@ -270,8 +270,8 @@ theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     mul_zero]
 
 section
-variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
-  (α : Type*) [NonAssocSemiring α]
+variable (α : Type*) [NonAssocSemiring α]
+  {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
 
 open Matrix
 
@@ -282,10 +282,10 @@ open Matrix
     diagonal d ⊙ G.adjMatrix α = 0 := by aesop (add simp diagonal)
 
 @[simp] theorem adjMatrix_hadamard_natCast (a : ℕ) :
-    G.adjMatrix α ⊙ a.cast = 0 := by aesop (add simp [natCast_apply])
+    G.adjMatrix α ⊙ a.cast = 0 := by aesop (add simp natCast_apply)
 
 @[simp] theorem natCast_hadamard_adjMatrix (a : ℕ) :
-    a.cast ⊙ G.adjMatrix α = 0 := by aesop (add simp [natCast_apply])
+    a.cast ⊙ G.adjMatrix α = 0 := by aesop (add simp natCast_apply)
 
 @[simp] theorem adjMatrix_hadamard_ofNat (a : ℕ) [a.AtLeastTwo] :
     G.adjMatrix α ⊙ OfNat.ofNat a = 0 := by ext; simp_all [ofNat_apply]
@@ -297,7 +297,7 @@ open Matrix
     G.adjMatrix α ⊙ 1 = 0 := by ext; simp_all [one_apply]
 
 @[simp] theorem one_hadamard_adjMatrix :
-    1 ⊙ G.adjMatrix α = 0 := by aesop (add simp [one_apply])
+    1 ⊙ G.adjMatrix α = 0 := by aesop (add simp one_apply)
 
 end
 
