@@ -40,9 +40,9 @@ theorem fg_span_singleton (x : M) : FG (R ∙ x) :=
   fg_span (finite_singleton x)
 
 theorem FG.sup {N₁ N₂ : Submodule R M} (hN₁ : N₁.FG) (hN₂ : N₂.FG) : (N₁ ⊔ N₂).FG :=
-  let ⟨t₁, ht₁⟩ := fg_def.1 hN₁
-  let ⟨t₂, ht₂⟩ := fg_def.1 hN₂
-  fg_def.2 ⟨t₁ ∪ t₂, ht₁.1.union ht₂.1, by rw [span_union, ht₁.2, ht₂.2]⟩
+  let ⟨t₁, ht₁, span_t₁⟩ := fg_def.mp hN₁
+  let ⟨t₂, ht₂, span_t₂⟩ := fg_def.mp hN₂
+  fg_def.mpr ⟨t₁ ∪ t₂, ht₁.union ht₂, by rw [span_union, span_t₁, span_t₂]⟩
 
 theorem fg_finset_sup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : ∀ i ∈ s, (N i).FG) :
     (s.sup N).FG :=
@@ -84,8 +84,8 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     simp_rw [span_iUnion, span_image _, hts, iSup_map_single]
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
-  let ⟨t, ht⟩ := fg_def.1 hs
-  fg_def.2 ⟨f '' t, ht.1.image _, by rw [span_image, ht.2]⟩
+  let ⟨t, ht, span_t⟩ := fg_def.mp hs
+  fg_def.mpr ⟨f '' t, ht.image _, by rw [span_image, span_t]⟩
 
 /-- Maps from a finite module have a finite range. -/
 @[simp] lemma fg_range [Module.Finite R M] (f : M →ₛₗ[σ] P) : f.range.FG := by
@@ -112,10 +112,9 @@ variable {P : Type*} [AddCommMonoid P] [Module R P]
 variable {f : M →ₗ[R] P}
 
 theorem fg_of_fg_map {R M P : Type*} [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup P]
-    [Module R P] (f : M →ₗ[R] P)
-    (hf : LinearMap.ker f = ⊥) {N : Submodule R M}
+    [Module R P] (f : M →ₗ[R] P) (hf : LinearMap.ker f = ⊥) {N : Submodule R M}
     (hfn : (N.map f).FG) : N.FG :=
-  fg_of_fg_map_injective f (LinearMap.ker_eq_bot.1 hf) hfn
+  fg_of_fg_map_injective f (LinearMap.ker_eq_bot.mp hf) hfn
 
 /-- The top submodule of another submodule `N` is FG iff `N` is `FG`.
 
@@ -166,9 +165,9 @@ theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →
   apply le_antisymm
   · rw [← hS, span_le]
     intro s hs
-    exact N.2 (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
+    exact N.monotone' (Finset.le_sup <| S.mem_attach ⟨s, hs⟩) (hf _)
   · rw [← H]
-    exact le_iSup _ _
+    exact le_iSup ..
 
 /-- Finitely generated submodules are precisely compact elements in the submodule lattice. -/
 theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
@@ -194,8 +193,8 @@ theorem fg_iff_compact (s : Submodule R M) : s.FG ↔ IsCompactElement s := by
         rw [sSup', Finset.sup_id_eq_sSup]
         exact sSup_le_sSup huspan
       obtain ⟨t, -, rfl⟩ := Finset.subset_set_image_iff.mp huspan
-      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw, ←
-        span_eq_iSup_of_singleton_spans, eq_comm] at ssup
+      rw [Finset.sup_image, Function.id_comp, Finset.sup_eq_iSup, supr_rw,
+        ← span_eq_iSup_of_singleton_spans, eq_comm] at ssup
       exact ⟨t, ssup⟩
 
 end Submodule
@@ -231,13 +230,13 @@ variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
     Module.Finite S P :=
   ⟨by
-    rw [← LinearMap.range_eq_top.2 hf, ← Submodule.map_top]
-    exact hM.1.map f⟩
+    rw [← LinearMap.range_eq_top.mpr hf, ← Submodule.map_top]
+    exact hM.fg_top.map f⟩
 
 theorem _root_.LinearMap.finite_iff_of_bijective (f : M →ₛₗ[σ] P) (hf : Function.Bijective f) :
     Module.Finite R M ↔ Module.Finite S P :=
   ⟨fun _ ↦ of_surjective f hf.surjective, fun _ ↦ ⟨fg_of_fg_map_injective f hf.injective <| by
-    rwa [Submodule.map_top, LinearMap.range_eq_top.2 hf.surjective, ← Module.finite_def]⟩⟩
+    rwa [Submodule.map_top, LinearMap.range_eq_top.mpr hf.surjective, ← Module.finite_def]⟩⟩
 
 end
 
@@ -283,7 +282,7 @@ theorem of_restrictScalars_finite (R A M : Type*) [Semiring R] [Semiring A] [Add
     Module.Finite A M := by
   rw [finite_def, fg_def] at hM ⊢
   obtain ⟨S, hSfin, hSgen⟩ := hM
-  refine ⟨S, hSfin, eq_top_iff.2 ?_⟩
+  refine ⟨S, hSfin, eq_top_iff.mpr ?_⟩
   have := span_le_restrictScalars R A S
   rwa [hSgen] at this
 
@@ -307,7 +306,7 @@ alias ⟨_, of_fg⟩ := iff_fg
 
 /-- A submodule that is finite as a module is finitely generated. -/
 theorem _root_.Submodule.FG.of_finite {N : Submodule R M} [Module.Finite R N] : N.FG :=
-  iff_fg.1 ‹_›
+  iff_fg.mp ‹_›
 
 variable (R M)
 
