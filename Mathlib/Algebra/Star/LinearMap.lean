@@ -149,6 +149,12 @@ theorem intrinsicStar_smulRight [Module S F] [StarModule S F] (f : E →ₗ[S] S
 
 end starAddMonoidSemiring
 
+@[simp] theorem intrinsicStar_single {n : Type*} [DecidableEq n] {A : n → Type*}
+    [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)] [Π i, StarAddMonoid (A i)]
+    [∀ i, StarModule R (A i)] (i : n) :
+    star (single R _ i : A i →ₗ[R] Π i, A i) = single R _ i := by
+  ext; aesop (add simp [Pi.single, Function.update])
+
 end LinearMap
 
 section matrix

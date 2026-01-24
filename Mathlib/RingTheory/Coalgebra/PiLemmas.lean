@@ -53,13 +53,26 @@ public section
 open TensorProduct LinearMap Coalgebra Matrix Pi
 open scoped ConvolutionProduct
 
+-- This ensures that we always take the convolution product in this file when we write `*`.
+attribute [-instance] Module.End.instOne Module.End.instMul Module.End.instSemiring
+  Module.End.instMonoid Module.End.instRing
+
 variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype n] [DecidableEq n]
   (G : SimpleGraph n) [DecidableRel G.Adj]
 
 open scoped IntrinsicStar in
-@[simp] theorem Pi.intrinsicStar_comul [StarRing R] :
-    star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul := by
-  ext; simp
+theorem Pi.intrinsicStar_comul [StarRing R] {A : Type*} [AddCommMonoid A] [Module R A]
+    [CoalgebraStruct R A] [StarAddMonoid A] [StarModule R A]
+    (h : star (comul (R := R) (A := A)) = TensorProduct.comm R A A ∘ₗ comul) :
+    star (comul (R := R) (A := n → A)) = TensorProduct.comm R (n → A) (n → A) ∘ₗ comul := by
+  ext i x
+  have := by simpa using congr($h x)
+  simp [star_map_apply, this, map_comm]
+
+open scoped IntrinsicStar in
+@[simp] theorem Pi.intrinsicStar_comul_commSemiring [StarRing R] :
+    star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
+  intrinsicStar_comul (by ext; simp)
 
 /-- The convolutive product corresponds to the Hadamard product. -/
 @[simp] theorem LinearMap.toMatrix'_convMul_eq_hadamard (f g : (n → R) →ₗ[R] m → R) :
@@ -88,7 +101,7 @@ variable (K) in
 
 /-- The matrix of the convolutive unit is all `1`s. -/
 @[simp] theorem LinearMap.toMatrix'_convOne :
-    (1 : (n → R) →ₗ[R] m → R).toMatrix' = fun _ _  ↦ 1 := by simp [counit, ← ext_iff]
+    (1 : (n → R) →ₗ[R] m → R).toMatrix' = .of fun _ _  ↦ 1 := by simp [counit, ← ext_iff]
 
 variable (n R') in
 /-- The matrix of `1 - id` is exactly the adjacency matrix of `SimpleGraph.completeGraph`. -/
