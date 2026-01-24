@@ -2265,6 +2265,7 @@ public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.Abelian.RightDerived
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Bousfield
+public import Mathlib.CategoryTheory.Abelian.SerreClass.Localization
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
