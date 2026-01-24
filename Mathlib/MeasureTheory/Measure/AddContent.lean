@@ -20,13 +20,16 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 
 ## Main definitions
 
-* `MeasureTheory.AddContent C`: additive contents over the set of sets `C`.
-* `MeasureTheory.AddContent.IsSigmaSubadditive`: an `AddContent` is σ-subadditive if
-  `m (⋃ i, f i) ≤ ∑' i, m (f i)` for any sequence of sets `f` in `C` such that `⋃ i, f i ∈ C`.
+* `MeasureTheory.AddContent G C`: additive contents over the set of sets `C` taking values in the
+  additive monoid `G`.
+* `MeasureTheory.AddContent.IsSigmaSubadditive`: an `AddContent` with values in `ℝ≥0∞` is
+  σ-subadditive if `m (⋃ i, f i) ≤ ∑' i, m (f i)` for any sequence of sets `f` in `C`
+  such that `⋃ i, f i ∈ C`.
 
 ## Main statements
 
-Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we have the properties
+Let `m` be an `AddContent C` with values in `ℝ≥0∞`. If `C` is a set semi-ring (`IsSetSemiring C`)
+we have the properties
 
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
   and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.
@@ -51,6 +54,8 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 * `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
+We define a specific example of `AddContent`, called `AddContent.onIoc`, on the semiring of sets
+made of open-closed intervals, mapping `(a, b]` to `f b - f a`.
 -/
 
 @[expose] public section
