@@ -158,8 +158,8 @@ lemma FG.of_restrictScalars (R) {A M} [Semiring R] [Semiring A] [AddCommMonoid M
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'
-  have : ∀ s : S, ∃ n, (s : M) ∈ N n :=
-    fun s ↦ (mem_iSup_of_chain N s).mp (by simpa [H, ← hS] using subset_span s.prop)
+  have (s : S) : ∃ n, (s : M) ∈ N n :=
+    (mem_iSup_of_chain N s).mp (by simpa [H, ← hS] using subset_span s.prop)
   choose f hf using this
   use S.attach.sup f
   apply le_antisymm
