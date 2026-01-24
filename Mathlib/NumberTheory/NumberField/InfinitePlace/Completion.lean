@@ -239,7 +239,7 @@ theorem isExtension_extensionEmbedding [ContinuousSMul v.Completion w.Completion
   induction x using induction_on
   · exact isClosed_eq (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion)
       continuous_extension
-  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+  · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply, ← h]
 
 theorem isExtension_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
     (h : IsExtension v.embedding (conjugate w.embedding)) :
@@ -249,7 +249,7 @@ theorem isExtension_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.
   · simpa using isClosed_eq (.comp (by fun_prop)
       (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion))
       continuous_extension
-  · simp [WithAbs.equiv_algebraMap_apply, ← h]
+  · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply, ← h]
 
 end Completion
 
@@ -260,8 +260,9 @@ open Completion
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
-  AddMonoidHomClass.isometry_of_norm _ fun _ ↦ WithAbs.equiv_algebraMap_apply v.1 w.1 _ ▸
-    comp_of_comap_eq (comap_eq w v) _
+  AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
+    simpa [WithAbs.norm_eq_abv] using
+      WithAbs.algebraMap_apply_ofAbs v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
 
