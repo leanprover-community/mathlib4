@@ -143,6 +143,12 @@ theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
       ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLE U V e).hom :=
   forall_congr' fun U ↦ sourceAffineLocally_morphismRestrict P f U U.2
 
+theorem affineLocally_iff_forall_isAffineOpen {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    affineLocally.{u} P f ↔
+      ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      P (f.appLE U V e).hom := by
+  simp [affineLocally_iff_affineOpens_le, Scheme.affineOpens]
+
 theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     (h₂ : RingHom.LocalizationAwayPreserves P) (h₃ : RingHom.OfLocalizationSpan P) :
     (sourceAffineLocally P).IsLocal := by

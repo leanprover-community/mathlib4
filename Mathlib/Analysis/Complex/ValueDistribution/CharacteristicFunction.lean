@@ -5,8 +5,8 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
-public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Basic
+public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 
 /-!
 # The Characteristic Function of Value Distribution Theory
@@ -64,6 +64,26 @@ to the difference between the proximity functions.
 lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorphic f) (a₀ : E) :
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
+
+/--
+The characteristic function is even.
+-/
+theorem characteristic_even {a : WithTop E} :
+    (characteristic f a).Even := proximity_even.add logCounting_even
+
+/--
+For `1 ≤ r`, the characteristic function is non-negative.
+-/
+theorem characteristic_nonneg {r : ℝ} {a : WithTop E} (hr : 1 ≤ r) :
+    0 ≤ characteristic f a r :=
+  add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
+
+/--
+The characteristic function is asymptotically non-negative.
+-/
+theorem characteristic_eventually_nonneg {f : ℂ → ℂ} {a : WithTop ℂ} :
+    0 ≤ᶠ[Filter.atTop] characteristic f a := by
+  filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 
 /-!
 ## Behaviour under Arithmetic Operations
