@@ -207,11 +207,15 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
 
 private theorem exists_unsortedEigenvalues_eq_helper' (hT : T.IsSymmetric)
   (hn : Module.finrank 𝕜 E = n)
-  {μ : Module.End.Eigenvalues T} : ∃ i : Fin n, μ =
+  (μ : Module.End.Eigenvalues T) : ∃ i : Fin n, μ =
     hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces' := by
+  -- TODO: Split this off into a lemma in Mathlib.Analysis.InnerProductSpace.PiL2
+  have : Module.End.eigenspace T μ ≠ ⊥ := Module.End.hasEigenvalue_iff.mp μ.2
+  have : Module.finrank 𝕜 (Module.End.eigenspace T μ) ≠ 0 := by
+    simp [Submodule.finrank_eq_zero, this]
   use (hT.direct_sum_isInternal.sigmaOrthonormalBasisIndexEquiv hn hT.orthogonalFamily_eigenspaces')
-    ⟨μ, ⟨0, sorry⟩⟩
+    ⟨μ, ⟨0, Nat.ne_zero_iff_zero_lt.mp this⟩⟩
   rw [DirectSum.IsInternal.subordinateOrthonormalBasisIndex_def]
   simp
 
@@ -220,7 +224,10 @@ private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
   {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ =
     (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val := by
-  sorry
+  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper' hT hn ⟨μ, hμ⟩
+  use i
+  rw [←hi]
+  rfl
 
 private theorem exists_unsortedEigenvalues_eq_of_real (hT : T.IsSymmetric)
   (hn : Module.finrank 𝕜 E = n)
