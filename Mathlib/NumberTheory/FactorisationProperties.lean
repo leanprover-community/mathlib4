@@ -219,7 +219,7 @@ theorem abundancyIndex_le_ofDvd (hn : n ≠ 0) (hd : m ∣ n) :
   exact (sum_image (f := fun i ↦ i) (mul_left_injective₀ hk0).injOn).symm.trans_le
     (sum_le_sum_of_subset (by grind [mul_dvd_mul_iff_right hk0]))
 
-theorem Abundant.ofDvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
+theorem Abundant.of_dvd (h : Abundant m) (hd : m ∣ n) (hn : n ≠ 0) : Abundant n := by
   have := abundancyIndex_le_ofDvd hn hd
   have := ne_zero_of_dvd_ne_zero hn hd
   grind [abundant_iff_two_lt_abundancyIndex]
