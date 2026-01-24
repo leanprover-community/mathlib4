@@ -87,7 +87,7 @@ lemma height_eq_height_add_one (p : Ideal R)
   have disj : Disjoint (p.primeCompl.map C : Set R[X]) P := by
     refine Set.disjoint_left.mpr fun a ⟨b, hb⟩ ha ↦ hb.1 ?_
     rwa [SetLike.mem_coe, LiesOver.over (P := P) (p := p), mem_comap, algebraMap_eq, hb.2]
-  have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] P ‹P.IsMaximal›.isPrime disj
+  have eq := comap_map_of_isPrime_disjoint _ Rₚ[X] ‹P.IsMaximal›.isPrime disj
   have : (comap (algebraMap R[X] Rₚ[X]) P').IsMaximal := eq.symm ▸ ‹P.IsMaximal›
   have : P'.IsMaximal := .of_isLocalization_of_disjoint (p.primeCompl.map C)
   have : P'.LiesOver p' := liesOver_of_isPrime_of_disjoint p.primeCompl _ _ disj
