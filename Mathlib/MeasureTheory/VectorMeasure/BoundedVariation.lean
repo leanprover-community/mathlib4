@@ -43,9 +43,7 @@ variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup
 
 namespace MeasureTheory
 
-#check tendsto_measure_iInter_atTop
-
-lemma exists_measure_symmDiff_lt_of_generateFrom' {α : Type*}
+lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
     (hC : IsSetRing C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
@@ -95,28 +93,40 @@ lemma exists_measure_symmDiff_lt_of_generateFrom' {α : Type*}
         (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
     obtain ⟨n, hn⟩ : ∃ n, μ (⋃ i ∈ Ici n, f i) < ε / 2 :=
       ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
-    refine ⟨⋃ i ∈ Finset.range n, t i, ?_, ?_⟩
-    apply hC.biUnion_mem (fun i hi ↦ ?_)
+    refine ⟨⋃ i ∈ Finset.range n, t i, hC.biUnion_mem _ (fun i hi ↦ tC _), ?_⟩
+    calc μ ((⋃ i ∈ Finset.range n, t i) ∆ (⋃ i, f i))
+    _ ≤ μ ((⋃ i ∈ Finset.range n, (t i) ∆ (f i)) ∪ ⋃ i ∈ Ici n, f i) := by
+      gcongr
+      intro x hx
+      simp only [Finset.mem_range, mem_symmDiff, mem_iUnion, exists_prop, not_exists, not_and,
+        mem_Ici, mem_union] at hx ⊢
+      grind
+    _ ≤ ∑ i ∈ Finset.range n, μ (t i ∆ f i) + μ (⋃ i ∈ Ici n, f i) := by
+      apply (measure_union_le _ _).trans
+      gcongr
+      apply measure_biUnion_finset_le
+    _ ≤ ∑ i ∈ Finset.range n, δ i + μ (⋃ i ∈ Ici n, f i) := by
+      gcongr with i; exact (ht i).le
+    _ ≤ ∑' i, δ i + μ (⋃ i ∈ Ici n, f i) := by
+      gcongr; exact ENNReal.sum_le_tsum (Finset.range n)
+    _ < ε / 2 + ε / 2 := by gcongr
+    _ = ε :=  ENNReal.add_halves ε
 
+#check  borel_eq_generateFrom_Ioc_le
 
-
-
-
-
-
-
-
-
-#exit
-
-Set.Countable.exists_eq_range
-
-lemma exists_measure_symmDiff_lt_of_generateFrom {α : Type*}
+lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
     (hC : IsSetSemiring C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
-    {s : Set α} {ε : ℝ≥0∞} (hs : MeasurableSet s) :
+    {s : Set α} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε) :
     ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := by
+  apply exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC.isSetRing_finiteUnions ?_
+    ?_ hs hε
+  · rcases h'C with ⟨D, D_count, DC, hD⟩
+    exact ⟨D, D_count, DC.trans (self_subset_finiteUnions C), hD⟩
+  · rw [h]
+    apply
+
 
 
 #exit
