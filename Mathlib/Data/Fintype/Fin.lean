@@ -43,7 +43,7 @@ theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by si
 
 theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by simp
 
-theorem card_filter_lt {m : ℕ} : #{i : Fin n | i < m} = min m n := by
+theorem card_filter_val_lt {m : ℕ} : #{i : Fin n | i.val < m} = min m n := by
   rw [← card_range (min m n)]
   apply card_nbij (↑) (by grind [Set.MapsTo]) (by grind [Set.InjOn])
   simp [Set.SurjOn, Set.subset_def, Fin.exists_iff]
