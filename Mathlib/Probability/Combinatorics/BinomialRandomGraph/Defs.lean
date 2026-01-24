@@ -97,6 +97,8 @@ variable (p) in
   rw [Nat.card_eq_fintype_card, ← Sym2.card_diagSet_compl, Fintype.card_eq_nat_card,
     ← Nat.card_coe_set_eq]
 
+-- This should be restated as an equality of distributions once
+-- https://github.com/leanprover-community/mathlib4/pull/28248 is in.
 proof_wanted binomialRandom_map_ncard_edgeSet_singleton [Finite V] (n : ℕ) :
     G(V, p).map (fun G ↦ G.edgeSet.ncard) {n} = ((Nat.card V).choose 2).choose n * toNNReal p ^ n *
       toNNReal (σ p) ^ ((Nat.card V).choose 2 - n)
