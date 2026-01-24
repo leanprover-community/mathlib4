@@ -366,8 +366,8 @@ theorem symm_mem_transvections_iff {e : V ≃ₗ[R] V} :
   apply mem_transvections
 
 theorem inv_mem_transvections_iff {e : V ≃ₗ[R] V} :
-    e.symm ∈ transvections R V ↔ e ∈ transvections R V := by
-  simp
+    e⁻¹ ∈ transvections R V ↔ e ∈ transvections R V :=
+  symm_mem_transvections_iff
 
 open Pointwise in
 theorem transvections_pow_mono :
@@ -766,7 +766,7 @@ theorem exists_basis_of_pairing_ne_zero
     rintro x -
     simp only [n, Submodule.mem_span_insert']
     use -f x / f v
-    simp only [hs, mem_ker, map_add, map_smul, smul_eq_mul]
+    simp only [hs, mem_ker, map_add, _root_.map_smul, smul_eq_mul]
     field
   set b := Module.Basis.mk H₁ (by simpa using H₂)
   set i : n := ⟨v, s.mem_insert v⟩
@@ -852,8 +852,9 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
       rw [this, Matrix.det_transvection_of_ne i j hi 1, hfv, add_zero]
     ext x y
     rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply, Matrix.transvection]
-    simp only [hj.2, Module.Basis.coord_apply, Module.Basis.repr_self, hj.1, map_add, map_smul,
-      Finsupp.smul_single, smul_eq_mul, mul_one, Finsupp.coe_add, Pi.add_apply, Matrix.add_apply]
+    simp only [hj.2, Module.Basis.coord_apply, Module.Basis.repr_self, hj.1,
+      map_add, _root_.map_smul, Finsupp.smul_single, smul_eq_mul, mul_one,
+      Finsupp.coe_add, Pi.add_apply, Matrix.add_apply]
     apply congr_arg₂
     · by_cases h : x = y
       · rw [h]; simp
@@ -878,7 +879,7 @@ theorem det_ofField [FiniteDimensional K V] (f : Module.Dual K V) (v : V) :
       · simp
     ext x y
     rw [LinearMap.toMatrix_apply, LinearMap.transvection.apply, Matrix.diagonal]
-    simp only [map_add, Module.Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
+    simp only [map_add, Module.Basis.repr_self, _root_.map_smul, Finsupp.coe_add, Finsupp.coe_smul,
       Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
     rw [hv, Function.update_apply, Module.Basis.repr_self, Pi.one_apply, hf]
     simp only [smul_apply, Module.Basis.coord_apply, Module.Basis.repr_self, smul_eq_mul,
