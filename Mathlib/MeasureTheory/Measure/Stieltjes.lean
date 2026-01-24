@@ -79,10 +79,8 @@ lemma isOpen_Iotop [TopologicalSpace R] [OrderTopology R] (a b : R) : IsOpen (Io
     simp [this, isOpen_Ioi]
   · simp [isOpen_Ioo]
 
-set_option backward.privateInPublic true in
-open scoped Classical in
 /-- `botSet` is the set of all bottom elements. -/
-def botSet : Set R := {x | IsBot x}
+public def botSet : Set R := {x | IsBot x}
 
 @[simp] lemma Ioc_diff_botSet (a b : R) : Ioc a b \ botSet = Ioc a b := by
   rw [sdiff_eq_left, disjoint_iff_forall_ne]
