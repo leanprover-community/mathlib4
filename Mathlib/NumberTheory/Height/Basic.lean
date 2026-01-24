@@ -480,40 +480,14 @@ end Height
 
 /-!
 ### Bounds for the height of sums of field elements
+
+We prove the general case (finite sums of arbitrary length) first and deduce the result
+for sums of two elements from it.
 -/
 
 namespace Height
 
-private lemma le_mul_max_max_left (a b : ℝ) : a ≤ (max a 1) * (max b 1) :=
-  calc
-    a = a * 1 := (mul_one a).symm
-    _  ≤ _ := by gcongr <;> grind
-
-private lemma le_mul_max_max_right (a b : ℝ) : b ≤ (max a 1) * (max b 1) := by
-  rw [mul_comm]
-  exact le_mul_max_max_left b a
-
-private lemma one_le_mul_max_max (a b : ℝ) : 1 ≤ (max a 1) * (max b 1) :=
-  calc
-    (1 : ℝ) = 1 * 1 := (mul_one 1).symm
-    _ ≤ _ := by gcongr <;> grind
-
 variable {K : Type*} [Field K]
-
--- The "local" version of the height bound for `x + y` for archimedean `v`.
-private lemma max_abv_add_one_le (v : AbsoluteValue K ℝ) (x y : K) :
-    max (v (x + y)) 1 ≤ 2 * (max (v x) 1 * max (v y) 1) := by
-  refine sup_le ((v.add_le x y).trans ?_) <| (show (1 : ℝ) ≤ 2 * 1 by norm_num).trans ?_
-  · rw [two_mul]
-    exact add_le_add (le_mul_max_max_left ..) (le_mul_max_max_right ..)
-  · exact mul_le_mul_of_nonneg_left (one_le_mul_max_max ..) zero_le_two
-
--- The "local" version of the height bound for `x + y` for nonarchimedean `v`.
-private lemma max_abv_add_one_le_of_nonarch {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
-    (x y : K) :
-    max (v (x + y)) 1 ≤ (max (v x) 1 * max (v y) 1) := by
-  refine sup_le ?_ <| one_le_mul_max_max ..
-  exact (hv x y).trans <| sup_le (le_mul_max_max_left ..) (le_mul_max_max_right ..)
 
 private lemma le_prod_max_one {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ s) (f : ι → ℝ) :
     f i ≤ ∏ i ∈ s, max (f i) 1 := by
@@ -550,37 +524,6 @@ private lemma max_abv_sum_one_le_of_nonarch {v : AbsoluteValue K ℝ} (hv : IsNo
 variable [AdmissibleAbsValues K]
 
 open AdmissibleAbsValues Real
-
-/-- The multiplicative height of `x + y` is at most `2 ^ totalWeight K`
-times the product of the multiplicative heights of `x` and `y`. -/
-lemma mulHeight₁_add_le (x y : K) :
-    mulHeight₁ (x + y) ≤ 2 ^ totalWeight K * mulHeight₁ x * mulHeight₁ y := by
-  simp only [mulHeight₁_eq, totalWeight]
-  calc
-    _ ≤ (archAbsVal.map fun v ↦ 2 * (max (v x) 1 * max (v y) 1)).prod * _ := by
-      refine mul_le_mul_of_nonneg_right ?_ <| finprod_nonneg fun _ ↦ by grind
-      exact Multiset.prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity)
-        fun _ _ ↦ max_abv_add_one_le ..
-    _ ≤ _ * ∏ᶠ v : nonarchAbsVal, max (v.val x) 1 * max (v.val y) 1 := by
-      refine mul_le_mul_of_nonneg_left ?_ <| Multiset.prod_nonneg fun _ h ↦ by
-        obtain ⟨v, -, rfl⟩ := Multiset.mem_map.mp h
-        positivity
-      have hf := ((mulSupport_max_nonarchAbsVal_finite x).union
-        (mulSupport_max_nonarchAbsVal_finite y)).subset <| Function.mulSupport_mul ..
-      exact finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _)
-        (by grind) hf fun v ↦ max_abv_add_one_le_of_nonarch (isNonarchimedean _ v.prop) ..
-    _ = _ := by
-      simp only [Multiset.prod_map_mul, Multiset.map_const', Multiset.prod_replicate,
-        mulSupport_max_nonarchAbsVal_finite, finprod_mul_distrib]
-      ring
-
-/-- The logarithmic height of `x + y` is at most `totalWeight K * log 2`
-plus the sum of the logarithmic heights of `x` and `y`. -/
-lemma logHeight₁_add_le (x y : K) :
-    logHeight₁ (x + y) ≤ totalWeight K * log 2 + logHeight₁ x + logHeight₁ y := by
-  simp only [logHeight₁_eq_log_mulHeight₁]
-  pull (disch := positivity) log
-  exact (log_le_log <| by positivity) <| mulHeight₁_add_le ..
 
 open Finset Multiset in
 /-- The multiplicative height of a nonempty finite sum of field elements is at most
@@ -623,5 +566,21 @@ lemma logHeight₁_sum_le {α : Type*} (s : Finset α) (x : α → K) :
   have : (s.card : ℝ) ^ totalWeight K ≠ 0 := by simp [hs.ne_empty]
   pull (disch := first | positivity | assumption) log
   exact (log_le_log <| by positivity) <| mulHeight₁_sum_le hs x
+
+/-- The multiplicative height of `x + y` is at most `2 ^ totalWeight K`
+times the product of the multiplicative heights of `x` and `y`. -/
+lemma mulHeight₁_add_le (x y : K) :
+    mulHeight₁ (x + y) ≤ 2 ^ totalWeight K * mulHeight₁ x * mulHeight₁ y := by
+  rw [show x + y = Finset.univ.sum ![x, y] by simp, mul_assoc]
+  grw [mulHeight₁_sum_le Finset.univ_nonempty ![x, y]]
+  simp
+
+/-- The logarithmic height of `x + y` is at most `totalWeight K * log 2`
+plus the sum of the logarithmic heights of `x` and `y`. -/
+lemma logHeight₁_add_le (x y : K) :
+    logHeight₁ (x + y) ≤ totalWeight K * log 2 + logHeight₁ x + logHeight₁ y := by
+  simp only [logHeight₁_eq_log_mulHeight₁]
+  pull (disch := positivity) log
+  exact (log_le_log <| by positivity) <| mulHeight₁_add_le ..
 
 end Height
