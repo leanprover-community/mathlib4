@@ -423,7 +423,8 @@ def twoCocycle_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
         Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
-local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+/-- We endow the trivial Lie module with a Lie ring structure with zero bracket. -/
+local instance {R : Type*} [CommRing R] :
     LieRing (TrivialLieModule R L R) where
   bracket _ _ := 0
   add_lie _ _ _ := by simp
@@ -431,14 +432,17 @@ local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
   lie_self _ := rfl
   leibniz_lie _ _ _ := by simp
 
-local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+/-- We endow the trivial Lie module with an abelian Lie ring structure. -/
+local instance {R : Type*} [CommRing R] :
     IsLieAbelian (TrivialLieModule R L R) where
   trivial _ _ := rfl
 
-local instance {R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] :
+/-- We endow the trivial Lie module with a trivial Lie algebra structure. -/
+local instance {R : Type*} [CommRing R] :
     LieAlgebra R (TrivialLieModule R L R) where
   lie_smul _ _ _ := by simp
 
+/-- The extension of a loop algebra by a trivial module. -/
 def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) :
