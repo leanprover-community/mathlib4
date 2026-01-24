@@ -246,7 +246,9 @@ private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.
   use i
   rw [unsortedEigenvalues]
   rw [←hi]
-  sorry
+  rw [RCLike.re_eq_add_conj]
+  rw [hT.conj_eigenvalue_eq_self hμ]
+  simp
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
