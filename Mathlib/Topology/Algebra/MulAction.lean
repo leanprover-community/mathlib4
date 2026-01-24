@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.AddTorsor.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Connected.Basic
@@ -229,6 +230,28 @@ lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabili
   IsOpen.preimage (f := fun g ↦ g • x) (by fun_prop) (isOpen_discrete {x})
 
 end Group
+
+section GroupWithZero
+
+variable {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+  [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
+
+theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G₀) • s = Set.univ := by
+  refine Set.eq_univ_of_forall fun x ↦ ?_
+  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) :=
+    zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
+  rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
+    with ⟨c, hc₀, hc⟩
+  refine ⟨c⁻¹, trivial, c • x, hc, ?_⟩
+  simp_all
+
+@[simp]
+theorem Filter.top_smul_nhds_zero : (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
+  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
+  rintro ⟨_, s⟩ ⟨-, hs⟩
+  exact Set.univ_smul_nhds_zero hs
+
+end GroupWithZero
 
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
