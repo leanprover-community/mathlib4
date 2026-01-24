@@ -42,20 +42,20 @@ open Set
 def FG (N : Submodule R M) : Prop :=
   ∃ S : Finset M, span R ↑S = N
 
-theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S = N :=
-  ⟨fun ⟨t, h⟩ => ⟨_, Finset.finite_toSet t, h⟩, by
-    rintro ⟨t', h, rfl⟩
-    rcases Finite.exists_finset_coe h with ⟨t, rfl⟩
-    exact ⟨t, rfl⟩⟩
+theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R S = N := by
+  refine ⟨fun ⟨t, h⟩ => ⟨_, t.finite_toSet, h⟩, ?_⟩
+  rintro ⟨t', h, rfl⟩
+  have := h.exists_finset_coe
+  tauto
 
 theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure]⟩,
+    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_nat_eq_addSubmonoidClosure] using hS⟩⟩
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
     P.FG ↔ P.toAddSubgroup.FG :=
-  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩, fun ⟨S, hS⟩ =>
-    ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
+  ⟨fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure]⟩,
+    fun ⟨S, hS⟩ => ⟨S, by simpa [← span_int_eq_addSubgroupClosure] using hS⟩⟩
 
 @[deprecated (since := "2025-08-20")] alias fg_iff_add_subgroup_fg := fg_iff_addSubgroup_fg
 
@@ -82,11 +82,10 @@ lemma fg_iff_exists_finite_generating_family {A : Type u} [Semiring A] {M : Type
     simp
   · rintro ⟨G, _, g, hg⟩
     have := Fintype.ofFinite (range g)
-    exact ⟨(range g).toFinset, by simpa using hg⟩
+    exact ⟨(range g).toFinset, by simpa⟩
 
 theorem fg_span_iff_fg_span_finset_subset (s : Set M) :
     (span R s).FG ↔ ∃ s' : Finset M, ↑s' ⊆ s ∧ span R s = span R s' := by
-  unfold FG
   constructor
   · intro ⟨s'', hs''⟩
     obtain ⟨s', hs's, hss'⟩ := subset_span_finite_of_subset_span <| hs'' ▸ subset_span
