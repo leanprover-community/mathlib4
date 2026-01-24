@@ -212,6 +212,10 @@ namespace Submodule
 
 open LocalizedModule IsLocalizedModule
 
+instance {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M]
+    {I : Submodule R M} (q : I.associatedPrimes) : q.1.IsPrime := by
+  exact q.2.1
+
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 theorem IsMinimalPrimaryDecomposition.foobar'
     {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
