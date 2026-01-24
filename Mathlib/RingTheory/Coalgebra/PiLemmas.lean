@@ -71,7 +71,7 @@ variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype 
 /-- A linear map is convolutively idempotent iff its matrix is all `1`s and `0`s. -/
 theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff {f : (n → K) →ₗ[K] m → K} :
     IsIdempotentElem f ↔ ∀ i j, f.toMatrix' i j = 0 ∨ f.toMatrix' i j = 1 := by
-  simp [IsIdempotentElem, hadamard_self_eq_self_iff, ← toMatrix'.injective.eq_iff]
+  simp [IsIdempotentElem, hadamard_self_eq_self_iff', ← toMatrix'.injective.eq_iff]
 
 /-- A matrix's linear map is convolutively idempotent iff it is all `1`s and `0`s. -/
 theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n K} :

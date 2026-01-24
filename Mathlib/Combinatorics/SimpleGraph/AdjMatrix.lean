@@ -92,7 +92,7 @@ end IsAdjMatrix
 
 theorem isAdjMatrix_iff_hadamard [DecidableEq V] [Field α] {A : Matrix V V α} :
     A.IsAdjMatrix ↔ (A ⊙ A = A ∧ A.IsSymm ∧ 1 ⊙ A = 0) := by
-  simp only [hadamard_self_eq_self_iff, one_hadamard_eq_zero_iff, funext_iff, diag]
+  simp only [hadamard_self_eq_self_iff', one_hadamard_eq_zero_iff, funext_iff, diag]
   exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
 
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
@@ -286,17 +286,17 @@ open Matrix
 @[simp] theorem diagonal_hadamard_adjMatrix (d : V → α) :
     diagonal d ⊙ G.adjMatrix α = 0 := by aesop (add simp diagonal)
 
-@[simp] theorem adjMatrix_hadamard_natCast (a : ℕ) :
+@[simp] theorem adjMatrix_hadamard_natCast [NatCast α] (a : ℕ) :
     G.adjMatrix α ⊙ a.cast = 0 := adjMatrix_hadamard_diagonal _ _ _
 
-@[simp] theorem natCast_hadamard_adjMatrix (a : ℕ) :
+@[simp] theorem natCast_hadamard_adjMatrix [NatCast α] (a : ℕ) :
     a.cast ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
 
-@[simp] theorem adjMatrix_hadamard_ofNat (a : ℕ) [a.AtLeastTwo] :
+@[simp] theorem adjMatrix_hadamard_ofNat [NatCast α] (a : ℕ) [a.AtLeastTwo] :
     G.adjMatrix α ⊙ ofNat(a) = 0 := adjMatrix_hadamard_diagonal _ _ _
 
-@[simp] theorem ofNat_hadamard_adjMatrix (a : ℕ) [a.AtLeastTwo] :
-    OfNat.ofNat a ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+@[simp] theorem ofNat_hadamard_adjMatrix [NatCast α] (a : ℕ) [a.AtLeastTwo] :
+    ofNat(a) ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
 
 @[simp] theorem adjMatrix_hadamard_one :
     G.adjMatrix α ⊙ 1 = 0 := adjMatrix_hadamard_diagonal _ _ _
