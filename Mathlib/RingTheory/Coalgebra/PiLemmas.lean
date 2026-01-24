@@ -80,21 +80,24 @@ theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n K}
     IsIdempotentElem A.toLin' ↔ ∀ i j, A i j = 0 ∨ A i j = 1 := by
   simp only [ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin']
 
+variable (K) in
 /-- A simple finite graph is idempotent with respect to the convolutive product. -/
 @[simp] theorem SimpleGraph.convolutionProduct_isIdempotentElem_toLin'_adjMatrix :
     IsIdempotentElem (G.adjMatrix K).toLin' := by
-  grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, SimpleGraph.adjMatrix_apply]
+  grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, adjMatrix_apply]
 
 /-- The matrix of the convolutive unit is all `1`s. -/
 @[simp] theorem LinearMap.toMatrix'_convOne :
     (1 : (n → R) →ₗ[R] m → R).toMatrix' = fun _ _  ↦ 1 := by simp [counit, ← ext_iff]
 
+variable (n R') in
 /-- The matrix of `1 - id` is exactly the adjacency matrix of `SimpleGraph.completeGraph`. -/
 @[simp] theorem SimpleGraph.toMatrix'_convOne_sub_id_eq_adjMatrix_completeGraph :
     toMatrix' (1 - .id) = (completeGraph n).adjMatrix R' := by aesop
 
-@[simp] theorem SimpleGraph.toLin'_adjMatrix_top :
-    ((⊤ : SimpleGraph n).adjMatrix R').toLin' = 1 - .id := by
+variable (n R') in
+@[simp] theorem SimpleGraph.toLin'_adjMatrix_completeGraph :
+    ((completeGraph n).adjMatrix R').toLin' = 1 - .id := by
   simp [← toMatrix'_convOne_sub_id_eq_adjMatrix_completeGraph, -toMatrix'_convOne]
 
 theorem LinearMap.id_convMul_eq_zero_iff_diag_toMatrix'_eq_zero
@@ -141,10 +144,12 @@ theorem Matrix.toLin'_convMul_id_eq_id_iff {A : Matrix n n R} :
     A.toLin' * .id = .id ↔ A.diag = 1 := by
   simp [convMul_id_eq_id_iff_diag_toMatrix'_eq_one]
 
+variable (R) in
 @[simp] theorem SimpleGraph.id_convMul_toLin'_adjMatrix_eq_zero :
     .id * (G.adjMatrix R).toLin' = 0 := by
   simp [id_convMul_toLin'_eq_zero_iff, funext_iff]
 
+variable (R) in
 @[simp] theorem SimpleGraph.toLin'_convMul_id_adjMatrix_eq_zero :
     (G.adjMatrix R).toLin' * .id = 0 := by
   simp [toLin'_convMul_id_eq_zero_iff, funext_iff]
@@ -163,6 +168,7 @@ theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoin
   obtain (h | h) := hf i j <;> simp_all
 
 open ConvolutionProduct in
+variable (R) in
 /-- A simple graph is intrinisically self-adjoint. -/
 @[simp] theorem SimpleGraph.intrinsicStar_isSelfAdjoint_toLin'_adjMatrix [StarRing R] :
     IsSelfAdjoint (G.adjMatrix R).toLin' := by ext; aesop
@@ -187,6 +193,7 @@ theorem Matrix.isAdjMatrix_iff_toLin' {A : Matrix n n K} [StarRing K] :
 end intrinsicStar
 
 omit [DecidableEq n] in
+variable (R) in
 /-- The number of edges of a classical adjacency matrix is equal to
 `⟪1, G.adjMatrix.toEuclideanLin 1⟫`. -/
 theorem SimpleGraph.card_dart_eq_dotProduct : Fintype.card G.Dart = adjMatrix R G *ᵥ 1 ⬝ᵥ 1 := by
