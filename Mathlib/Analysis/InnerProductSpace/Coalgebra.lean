@@ -38,15 +38,23 @@ open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 open EuclideanSpace in
 /-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
 multiplication map. -/
-theorem Pi.comul_eq_adjoint_mul' {n : Type*} [Fintype n] [DecidableEq n] :
+theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
     comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
       ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
         map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
   simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
-  rw [TensorProduct.ext_iff_inner_left]
-  simp [adjoint_inner_right, inner_eq_star_dotProduct]
+  simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
+
+open EuclideanSpace in
+/-- The counit on `n → 𝕜` correspons to the Euclidean space adjoint of the algebra linear map. -/
+theorem Pi.counit_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
+    counit = ((equiv n 𝕜).symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 (n → 𝕜)).adjoint ∘ₗ
+      (equiv n 𝕜).symm.toLinearMap := by
+  ext
+  simp [← toSpanSingleton_one_eq_algebraLinearMap, comp_toSpanSingleton,
+    adjoint_toSpanSingleton, inner_eq_star_dotProduct]
 
 namespace InnerProductSpace
 
