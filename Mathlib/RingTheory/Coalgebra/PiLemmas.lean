@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-!
