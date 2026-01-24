@@ -334,12 +334,6 @@ theorem MinimalFor.le (h : MinimalFor Q f i) (hj : Q j) : f i ≤ f j :=
 theorem MaximalFor.le (h : MaximalFor Q f i) (hj : Q j) : f j ≤ f i :=
   (le_total (f j) (f i)).elim id (h.2 hj)
 
-theorem minimal_iff_isLeast : Minimal P x ↔ IsLeast {x | P x} x :=
-  ⟨fun h ↦ ⟨h.1, fun _ hy ↦ h.le hy⟩, fun h ↦ ⟨h.1, fun _ hy _ ↦ h.2 hy⟩⟩
-
-theorem maximal_iff_isGreatest : Maximal P x ↔ IsGreatest {x | P x} x :=
-  minimal_iff_isLeast (α := αᵒᵈ)
-
 end LinearOrder
 
 section Subset
