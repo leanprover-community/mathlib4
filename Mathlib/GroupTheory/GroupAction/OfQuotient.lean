@@ -23,33 +23,22 @@ namespace MulAction
 
 variable {G : Type*} [Group G] {A : Type*} [MulAction G A]
 
-variable {H : Subgroup G}
+variable {H : Subgroup G} [H.Normal]
 
-lemma smul_fixedPoints_eq_of_quotient_eq
-    (g₁ g₂ : G) (hg : (g₁ : G ⧸ H) = g₂) (a : fixedPoints H A) :
-    g₁ • (a : A) = g₂ • a := by
-  rw [← eq_inv_smul_iff, ← mul_smul]
-  symm; exact a.prop ⟨g₁⁻¹ * g₂, QuotientGroup.eq.mp hg⟩
-
-instance [hH : H.Normal] :
-    MulAction (G ⧸ H) (fixedPoints H A) :=
+instance : MulAction (G ⧸ H) (fixedPoints H A) :=
   ofEndHom <|
     QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
-    (fun x hx => by sorry)--simpa [toEndHom, smul_fixedPoints_eq_of_quotient_eq x 1] using hx)
-  /- one_smul a := by
-    ext; rw [← one_smul G (a : A)]; rfl
-  mul_smul x y a := by
-    have := smul_fixedPoints_eq_of_quotient_eq (x * y).out (x.out * y.out) (by simp) a
-    ext; sorry; -/
+    (fun g hg ↦ by funext a; ext; simpa using a.prop ⟨g, hg⟩)
 
 @[simp]
-lemma coe_quotient_smul_fixedPoints [H.Normal]
+lemma coe_quotient_smul_fixedPoints
     (g : G) (a : fixedPoints H A) :
     (((g : G ⧸ H) • a) :) = g • (a : A) := rfl
 
-lemma quotient_smul_fixedPoints_def [H.Normal]
+lemma quotient_smul_fixedPoints_def
     (g : G ⧸ H) (a : fixedPoints H A) :
     g • a = g.out • a := by
-  ext; simpa using coe_quotient_smul_fixedPoints g.out a
+  conv_lhs => rw [← g.out_eq]
+  ext; simp [-Quotient.out_eq]
 
 end MulAction
