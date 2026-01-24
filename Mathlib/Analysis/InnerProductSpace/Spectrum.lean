@@ -205,10 +205,10 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
-private theorem mem_range_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
   {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
   let x : Eigenvalues T := ⟨μ, hμ⟩
-  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.mem_range_subordinateOrthonormalBasisIndex hn
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
     hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
   use i
   rw [unsortedEigenvalues, hi, show x.val = μ from rfl, ← RCLike.conj_eq_iff_re,
@@ -248,9 +248,9 @@ noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finr
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
-theorem mem_range_eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
     (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
-  obtain ⟨i, hi⟩ := hT.mem_range_unsortedEigenvalues hn hμ
+  obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
   use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
   simp [eigenvalues_def, hi]
 
