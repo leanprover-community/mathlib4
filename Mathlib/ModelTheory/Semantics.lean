@@ -978,9 +978,9 @@ theorem realize_transitive : M ⊨ r.transitive ↔ Transitive fun x y : M => Re
       forall_congr' fun _ => imp_congr realize_rel₂ (imp_congr realize_rel₂ realize_rel₂)
 
 @[simp]
-theorem realize_total : M ⊨ r.total ↔ Total fun x y : M => RelMap r ![x, y] :=
-  forall_congr' fun _ =>
-    forall_congr' fun _ => realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
+theorem realize_total : M ⊨ r.total ↔ Std.Total fun x y : M ↦ RelMap r ![x, y] := by
+  refine .trans ?_ ⟨Std.Total.mk, (·.total)⟩
+  exact forall₂_congr fun _ _ ↦ realize_sup.trans (or_congr realize_rel₂ realize_rel₂)
 
 end Relations
 
