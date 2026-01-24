@@ -43,12 +43,85 @@ variable {α : Type*} [hα : MeasurableSpace α] {E : Type*} [NormedAddCommGroup
 
 namespace MeasureTheory
 
+#check tendsto_measure_iInter_atTop
+
+lemma exists_measure_symmDiff_lt_of_generateFrom' {α : Type*}
+    [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
+    (hC : IsSetRing C)
+    (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
+    {s : Set α} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε) :
+    ∃ t ∈ C, μ (t ∆ s) < ε := by
+  apply MeasurableSpace.induction_on_inter (C := fun s hs ↦ ∀ (ε : ℝ≥0∞) (hε : 0 < ε),
+    ∃ t ∈ C, μ (t ∆ s) < ε) h hC.isSetSemiring.isPiSystem ?_ ?_ ?_ ?_ s hs ε hε
+  · intro ε εpos
+    exact ⟨∅, hC.empty_mem, by simp [εpos]⟩
+  · intro s hs ε εpos
+    exact ⟨s, hs, by simp [εpos]⟩
+  · intro s hs h's ε εpos
+    obtain ⟨t, tC, ht⟩ : ∃ t ∈ C, μ (t ∆ s) < ε / 2 := h's _ (ENNReal.half_pos εpos.ne')
+    obtain ⟨t', t'C, ht'⟩ : ∃ t' ∈ C, μ (t'ᶜ) < ε / 2 := by
+      obtain ⟨D, D_count, DC, hD, Dne⟩ :
+          ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0 ∧ D.Nonempty := by
+        rcases h'C with ⟨D, D_count, DC, hD⟩
+        refine ⟨D ∪ {∅}, D_count.union (by simp), ?_⟩
+        simp only [union_subset_iff, DC, singleton_subset_iff, true_and, and_true, hC.empty_mem]
+        simp only [union_singleton, sUnion_insert, empty_union, insert_nonempty, and_true, hD]
+      obtain ⟨f, hf⟩ : ∃ f : ℕ → Set α, D = Set.range f := Set.Countable.exists_eq_range D_count Dne
+      have fC n : Set.accumulate f n ∈ C := hC.accumulate_mem (fun n ↦ DC (by simp [hf])) n
+      have : Tendsto (fun n ↦ μ (Set.accumulate f n)ᶜ) atTop (𝓝 0) := by
+        have : ⋃₀ D = ⋃ n, Set.accumulate f n := by simp [hf, iUnion_accumulate]
+        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this]] at hD
+        rw [← hD]
+        apply tendsto_measure_iInter_atTop (fun i ↦ ?_)
+          (fun i j hij ↦ by simpa using monotone_accumulate hij) ⟨0, by simp⟩
+        apply MeasurableSet.nullMeasurableSet
+        rw [h]
+        exact (measurableSet_generateFrom (fC i)).compl
+      obtain ⟨n, hn⟩ : ∃ n, μ (accumulate f n)ᶜ < ε / 2 :=
+        ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
+      exact ⟨accumulate f n, fC n, hn⟩
+    refine ⟨t' \ t, hC.diff_mem t'C tC, ?_⟩
+    calc μ ((t' \ t) ∆ sᶜ)
+      _ ≤ μ (t ∆ s ∪ t'ᶜ) := by gcongr; grind
+      _ ≤ μ (t ∆ s) + μ (t'ᶜ) := measure_union_le _ _
+      _ < ε / 2 + ε / 2 := by gcongr
+      _ = ε := ENNReal.add_halves ε
+  · intro f f_disj f_meas hf ε εpos
+    rcases ENNReal.exists_pos_sum_of_countable' (ENNReal.half_pos εpos.ne').ne' ℕ with ⟨δ, δpos, hδ⟩
+    have A i : ∃ t ∈ C, μ (t ∆ (f i)) < δ i := hf i _ (δpos i)
+    choose! t tC ht using A
+    have : Tendsto (fun n ↦ μ (⋃ i ∈ Ici n, f i)) atTop (𝓝 0) :=
+      tendsto_measure_biUnion_Ici_zero_of_pairwise_disjoint
+        (fun i ↦ (f_meas i).nullMeasurableSet) f_disj
+    obtain ⟨n, hn⟩ : ∃ n, μ (⋃ i ∈ Ici n, f i) < ε / 2 :=
+      ((tendsto_order.1 this).2 _ (ENNReal.half_pos εpos.ne')).exists
+    refine ⟨⋃ i ∈ Finset.range n, t i, ?_, ?_⟩
+    apply hC.biUnion_mem (fun i hi ↦ ?_)
+
+
+
+
+
+
+
+
+
+
+#exit
+
+Set.Countable.exists_eq_range
+
 lemma exists_measure_symmDiff_lt_of_generateFrom {α : Type*}
     [mα : MeasurableSpace α] {μ : Measure α} [IsFiniteMeasure μ] {C : Set (Set α)}
     (hC : IsSetSemiring C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
     {s : Set α} {ε : ℝ≥0∞} (hs : MeasurableSet s) :
-    ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := sorry
+    ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := by
+
+
+#exit
+
+MeasurableSpace.induction_on_inter
 
 set_option linter.unusedVariables false in
 /-- The subtype of all measurable sets. We define it as `MeasuredSets μ` to be able to define
