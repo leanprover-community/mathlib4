@@ -5610,6 +5610,7 @@ public import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Order.Interval.Set.Limit
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.Interval.Set.Nat
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.OrdConnectedComponent
 public import Mathlib.Order.Interval.Set.OrdConnectedLinear
@@ -7388,6 +7389,7 @@ public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+public import Mathlib.Topology.Semicontinuity.Lindelof
 public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
