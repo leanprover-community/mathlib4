@@ -171,8 +171,8 @@ and its convolutive product with `id` is `0`. -/
 theorem Matrix.isAdjMatrix_iff_toLin' {A : Matrix n n K} [StarRing K] :
     A.IsAdjMatrix ↔ IsIdempotentElem A.toLin' ∧
       star A.toLin' = (star A).toLin' ∧ .id * A.toLin' = 0 := by
-  simp only [id_convMul_toLin'_eq_zero_iff, ← isSymm_iff_intrinsicStar_toLin',
-    ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin', funext_iff, diag]
-  exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
+  rw [isAdjMatrix_iff_hadamard, ← isSymm_iff_intrinsicStar_toLin',
+    ConvolutionProduct.isIdempotentElem_iff, id_convMul_toLin'_eq_zero_iff]
+  simp [hadamard_self_eq_self_iff, one_hadamard_eq_zero_iff]
 
 end
