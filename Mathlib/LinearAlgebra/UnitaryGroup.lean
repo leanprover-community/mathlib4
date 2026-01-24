@@ -103,7 +103,7 @@ theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m
   · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
       ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
       ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
-      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
+      Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq, and_comm]
 
 namespace UnitaryGroup
 

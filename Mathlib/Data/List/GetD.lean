@@ -8,8 +8,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.Option.Basic
-public import Aesop
-public import Mathlib.Logic.Basic
 
 /-! # getD and getI
 

@@ -501,7 +501,7 @@ theorem image_const_sub_uIcc : (fun x => a - x) '' [[b, c]] = [[a - b, a - c]] :
 
 @[simp]
 theorem image_sub_const_uIcc : (fun x => x - a) '' [[b, c]] = [[b - a, c - a]] := by
-  simp [sub_eq_add_neg, add_comm]
+  simp [sub_eq_add_neg]
 
 theorem image_neg_uIcc : Neg.neg '' [[a, b]] = [[-a, -b]] := by simp
 

@@ -1194,7 +1194,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{t.attrName}` can only be used as a global attribute"
-  withOptions (·.updateBool `trace.translate (cfg.trace || ·)) do
+  withOptions (fun o => if cfg.trace then o.set `trace.translate true else o) do
   let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then

@@ -9,7 +9,6 @@ public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
 public meta import Lean.Linter.Basic
 public meta import Lean.Elab.AssertExists
-public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter

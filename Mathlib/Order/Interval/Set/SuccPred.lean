@@ -67,7 +67,7 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
-  ext x; simp [or_and_left, eq_comm, ← le_iff_eq_or_succ_le]; aesop
+  ext x; simp [or_and_left, eq_comm (a := x), ← le_iff_eq_or_succ_le]; aesop
 
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :
     insert (succ b) (Icc a b) = Icc a (succ b) := by

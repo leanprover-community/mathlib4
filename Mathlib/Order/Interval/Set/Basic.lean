@@ -669,7 +669,7 @@ theorem Icc_diff_right : Icc a b \ {b} = Ico a b :=
 
 @[simp]
 theorem Ico_diff_left : Ico a b \ {a} = Ioo a b :=
-  ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, eq_comm]
+  ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, @eq_comm _ x]
 
 @[simp]
 theorem Ioc_diff_right : Ioc a b \ {b} = Ioo a b :=
