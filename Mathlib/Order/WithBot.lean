@@ -628,23 +628,23 @@ lemma forall_le_coe_iff_le [NoBotOrder α] : (∀ a : α, y ≤ a → x ≤ a) �
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ hmn.trans ham⟩
 
 @[to_dual (attr := simp) forall_lt_coe]
-theorem forall_coe_lt {P : WithBot α → Prop} :
-    (∀ x, (a : WithBot α) < x → P x) ↔ ∀ b, a < b → P b := by
+theorem forall_coe_lt {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) < x → p x) ↔ ∀ b, a < b → p b := by
   simp [WithBot.forall]
 
 @[to_dual (attr := simp) exists_lt_coe]
-theorem exists_coe_lt {P : WithBot α → Prop} :
-    (∃ x, (a : WithBot α) < x ∧ P x) ↔ ∃ b, a < b ∧ P b := by
+theorem exists_coe_lt {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) < x ∧ p x) ↔ ∃ b, a < b ∧ p b := by
   simp [WithBot.exists]
 
 @[to_dual (attr := simp) forall_le_coe]
-theorem forall_coe_le {P : WithBot α → Prop} :
-    (∀ x, (a : WithBot α) ≤ x → P x) ↔ ∀ b, a ≤ b → P b := by
+theorem forall_coe_le {p : WithBot α → Prop} :
+    (∀ x, (a : WithBot α) ≤ x → p x) ↔ ∀ b, a ≤ b → p b := by
   simp [WithBot.forall]
 
 @[to_dual (attr := simp) exists_le_coe]
-theorem exists_coe_le {P : WithBot α → Prop} :
-    (∃ x, (a : WithBot α) ≤ x ∧ P x) ↔ ∃ b, a ≤ b ∧ P b := by
+theorem exists_coe_le {p : WithBot α → Prop} :
+    (∃ x, (a : WithBot α) ≤ x ∧ p x) ↔ ∃ b, a ≤ b ∧ p b := by
   simp [WithBot.exists]
 
 end Preorder
