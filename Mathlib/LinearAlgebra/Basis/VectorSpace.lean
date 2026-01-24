@@ -9,6 +9,7 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Tactic.Field
 
 /-!
 # Bases in a vector space
@@ -331,3 +332,104 @@ theorem quotient_prod_linearEquiv (p : Submodule K V) : Nonempty (((V ⧸ p) × 
       (prodEquivOfIsCompl q p hq.symm)
 
 end DivisionRing
+
+section Field
+
+open Submodule LinearMap Module
+
+variable {K : Type*} {V : Type*} [Field K] [AddCommGroup V] [Module K V]
+
+variable {f : V →ₗ[K] K} {v : V}
+
+/-- In a vector space, given a nonzero linear form `f`,
+a nonzero vector `v` such that `f v ≠ 0`,
+there exists a basis `b` with an index `i`
+such that `v = b i` and `f = (f v) • b.coord i`. -/
+theorem exists_basis_of_pairing_ne_zero
+    (hfv : f v ≠ 0) :
+    ∃ (n : Set V) (b : Module.Basis n K V) (i : n),
+      v = b i ∧ f = (f v) • b.coord i := by
+  set b₁ := Basis.ofVectorSpace K (ker f)
+  set s : Set V := (ker f).subtype '' Set.range b₁
+  have hs : span K s = ker f := by
+    simp only [s, span_image]
+    simp
+  set n := insert v s
+  have H₁ : LinearIndepOn K _root_.id n := by
+    apply LinearIndepOn.id_insert
+    · apply LinearIndepOn.image
+      · exact b₁.linearIndependent.linearIndepOn_id
+      · simp
+    · simp [hs, hfv]
+  have H₂ : ⊤ ≤ span K n := by
+    rintro x -
+    simp only [n, mem_span_insert']
+    use -f x / f v
+    simp only [hs, mem_ker, map_add, map_smul, smul_eq_mul]
+    field
+  set b := Basis.mk H₁ (by simpa using H₂)
+  set i : n := ⟨v, s.mem_insert v⟩
+  have hi : b i = v := by simp [b, i]
+  refine ⟨n, b, i, by simp [b, i], ?_⟩
+  rw [← hi]
+  apply b.ext
+  intro j
+  by_cases h : i = j
+  · simp [h]
+  · suffices f (b j) = 0 by
+      simp [Finsupp.single_eq_of_ne h, this]
+    rw [← mem_ker, ← hs, Basis.coe_mk]
+    apply subset_span
+    apply Or.resolve_left (Set.mem_insert_iff.mpr j.prop)
+    simp [← hi, b, Subtype.coe_inj, Ne.symm h]
+
+/-- In a vector space, given a nonzero linear form `f`,
+a nonzero vector `v` such that `f v = 0`,
+there exists a basis `b` with two distinct indices `i`, `j`
+such that `v = b i` and `f = b.coord j`. -/
+theorem exists_basis_of_pairing_eq_zero
+    (hfv : f v = 0) (hf : f ≠ 0) (hv : v ≠ 0) :
+    ∃ (n : Set V) (b : Basis n K V) (i j : n),
+      i ≠ j ∧ v = b i ∧ f = b.coord j := by
+  lift v to ker f using hfv
+  have : LinearIndepOn K _root_.id {v} := by simpa using hv
+  set b₁ : Basis _ K (ker f) := .extend this
+  obtain ⟨w, hw⟩ : ∃ w, f w = 1 := by
+    simp only [ne_eq, DFunLike.ext_iff, not_forall] at hf
+    rcases hf with ⟨w, hw⟩
+    use (f w)⁻¹ • w
+    simp_all
+  set s : Set V := (ker f).subtype '' Set.range b₁
+  have hs : span K s = ker f := by
+    simp only [s, span_image]
+    simp
+  have hvs : ↑v ∈ s := by
+    refine ⟨v, ?_, by simp⟩
+    simp [b₁, this.subset_extend _ _]
+  set n := insert w s
+  have H₁ : LinearIndepOn K _root_.id n := by
+    apply LinearIndepOn.id_insert
+    · apply LinearIndepOn.image
+      · exact b₁.linearIndependent.linearIndepOn_id
+      · simp
+    · simp [hs, hw]
+  have H₂ : ⊤ ≤ span K n := by
+    rintro x -
+    simp only [n, mem_span_insert']
+    use -f x
+    simp [hs, hw]
+  set b := Basis.mk H₁ (by simpa using H₂)
+  refine ⟨n, b, ⟨v, by simp [n, hvs]⟩, ⟨w, by simp [n]⟩, ?_, by simp [b], ?_⟩
+  · apply_fun (f ∘ (↑))
+    simp [hw]
+  · apply b.ext
+    intro i
+    rw [Basis.coord_apply, Basis.repr_self]
+    simp only [b, Basis.mk_apply]
+    rcases i with ⟨x, rfl | ⟨x, hx, rfl⟩⟩
+    · simp [hw]
+    · suffices x ≠ w by simp [this]
+      apply_fun f
+      simp [hw]
+
+end Field
