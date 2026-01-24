@@ -62,6 +62,8 @@ slightly more general definition which coincides with the Laurent polynomial con
 abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
 open LaurentPolynomial in
+/-- An Lie algebra isomorphism between the Loop algebra (with `A = ℤ`) and the tensor product with
+Laurent polynomials. -/
 def loopAlgebraEquivLaurent :
     loopAlgebra R ℤ L ≃ₗ⁅R⁆ R[T;T⁻¹] ⊗[R] L :=
   LieEquiv.refl
