@@ -210,14 +210,9 @@ private theorem exists_unsortedEigenvalues_eq_helper' (hT : T.IsSymmetric)
   (μ : Module.End.Eigenvalues T) : ∃ i : Fin n, μ =
     hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces' := by
-  -- TODO: Split this off into a lemma in Mathlib.Analysis.InnerProductSpace.PiL2
   have : Module.End.eigenspace T μ ≠ ⊥ := Module.End.hasEigenvalue_iff.mp μ.2
-  have : Module.finrank 𝕜 (Module.End.eigenspace T μ) ≠ 0 := by
-    simp [Submodule.finrank_eq_zero, this]
-  use (hT.direct_sum_isInternal.sigmaOrthonormalBasisIndexEquiv hn hT.orthogonalFamily_eigenspaces')
-    ⟨μ, ⟨0, Nat.ne_zero_iff_zero_lt.mp this⟩⟩
-  rw [DirectSum.IsInternal.subordinateOrthonormalBasisIndex_def]
-  simp
+  exact hT.direct_sum_isInternal.mem_range_subordinateOrthonormalBasisIndex hn
+    hT.orthogonalFamily_eigenspaces' this
 
 private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
   (hn : Module.finrank 𝕜 E = n)
