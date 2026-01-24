@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Objects that are limits of objects satisfying a certain property
@@ -35,13 +37,15 @@ that is bounded by a certain regular cardinal (@joelriou)
 
 -/
 
+@[expose] public section
+
 universe w v'' v' u'' u' v u
 
 namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -96,6 +100,16 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
     P.LimitOfShape J' X where
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
+
+/-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
+of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
+@[simps]
+def toStructuredArrow
+    {X : C} (p : P.LimitOfShape J X) :
+    J ⥤ StructuredArrow X P.ι where
+  obj j := StructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.π.app j)
+  map f := StructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
+    (by simpa using (p.π.naturality f).symm)
 
 end LimitOfShape
 

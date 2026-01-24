@@ -130,7 +130,7 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => refine isClosed_le continuous_fst ?_
   case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
@@ -195,7 +195,7 @@ The domain of the inner integral is simpler in the short case, where the interse
 equal to `Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)` by `short_needle_inter_eq`.
 -/
 lemma buffon_integral :
-    𝔼[N l B] = (d * π) ⁻¹ *
+    𝔼[N l B] = (d * π)⁻¹ *
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
@@ -328,10 +328,11 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     simp_rw [min_eq_left ((div_le_iff₀ hl).mp ((Real.arcsin_le_iff_le_sin' hθ_mem).mp hθ₁))]
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
+set_option linter.style.whitespace false in
 include hd hBₘ hB hl in
 /-- Buffon's Needle, the long case (`d ≤ l`) -/
 theorem buffon_long (h : d ≤ l) :
-    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l^2 - d^2) + d * (d / l).arcsin) + 1 := by
+    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l ^ 2 - d ^ 2) + d * (d / l).arcsin) + 1 := by
   simp only [
     buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
     MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, Set.Icc_inter_Icc, Real.volume_Icc,

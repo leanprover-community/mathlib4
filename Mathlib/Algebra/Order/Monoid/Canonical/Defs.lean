@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.NeZero
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids
 -/
+
+@[expose] public section
 
 universe u
 
@@ -133,6 +137,10 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
+@[to_additive (attr := simp) not_lt_zero] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
+
+@[deprecated (since := "2025-12-03")] alias not_neg := not_lt_one
+
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
@@ -166,9 +174,6 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_l
 @[to_additive]
 lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_notMem_iff
-
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
-@[to_additive existing, deprecated (since := "2025-05-23")] alias one_not_mem_iff := one_notMem_iff
 
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
@@ -222,7 +227,7 @@ end Semigroup
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
     [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
 variable [Monoid α]

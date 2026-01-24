@@ -3,14 +3,16 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.Complement
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.ContinuousMap.CocompactMap
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.ContinuousMap.CocompactMap
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -25,6 +27,8 @@ We develop some properties of measures on (topological) groups
 
 We also give analogues of all these notions in the additive world.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -168,7 +172,7 @@ the action preserves multiplication. -/
 @[to_additive /-- The image of a left invariant measure under a left additive action is left
 invariant, assuming that the action preserves addition. -/]
 theorem isMulLeftInvariant_map_smul
-    {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    {α} [SMul α G] [SMulCommClass α G G] [MeasurableConstSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
   (forall_measure_preimage_mul_iff _).1 fun x _ hs =>
@@ -179,7 +183,7 @@ the action preserves multiplication. -/
 @[to_additive /-- The image of a right invariant measure under a left additive action is right
 invariant, assuming that the action preserves addition. -/]
 theorem isMulRightInvariant_map_smul
-    {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
+    {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableConstSMul α G]
     [IsMulRightInvariant μ] (a : α) :
     IsMulRightInvariant (map (a • · : G → G) μ) :=
   (forall_measure_preimage_mul_right_iff _).1 fun x _ hs =>
@@ -509,7 +513,7 @@ instance Measure.InnerRegular.inv [ContinuousInv G] [InnerRegular μ] : InnerReg
 
 /-- The image of an inner regular measure under map of a left action is again inner regular. -/
 @[to_additive
-/-- The image of a inner regular measure under map of a left additive action is again
+/-- The image of an inner regular measure under map of a left additive action is again
 inner regular -/]
 instance innerRegular_map_smul {α} [Monoid α] [MulAction α G] [ContinuousConstSMul α G]
     [InnerRegular μ] (a : α) : InnerRegular (Measure.map (a • · : G → G) μ) :=
@@ -839,8 +843,8 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
 @[to_additive
 /-- The image of a Haar measure under map of a left additive action is again a Haar measure -/]
 instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
-    [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
-    [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
+    [Group α] [MulAction α G] [SMulCommClass α G G] [ContinuousConstSMul α G] (a : α) :
+    IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
   lt_top_of_isCompact K hK := by
     let F := (Homeomorph.smul a (α := G)).toMeasurableEquiv
@@ -876,7 +880,7 @@ instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologic
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
   e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
-/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+/-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]

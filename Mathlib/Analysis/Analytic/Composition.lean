@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johan Commelin
 -/
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Analytic.CPolynomialDef
-import Mathlib.Combinatorics.Enumerative.Composition
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Analytic.CPolynomialDef
+public import Mathlib.Combinatorics.Enumerative.Composition
 
 /-!
 # Composition of analytic functions
@@ -64,6 +66,8 @@ double sums in a careful way. The change of variables is a canonical (combinator
 in more details below in the paragraph on associativity.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -107,9 +111,9 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   funext v i
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
-  obtain rfl : j = 0 := by cutsat
+  obtain rfl : j = 0 := by lia
   refine congr_arg v ?_
-  rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
+  rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
@@ -372,7 +376,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     intros
     rw [applyComposition_ones]
     refine congr_arg v ?_
-    rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
+    rw [Fin.ext_iff, Fin.val_castLE, Fin.val_mk]
   · change
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E x) b = 0
@@ -414,7 +418,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       have A : 1 < b.length := by
         have : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
         have : 0 < b.length := Composition.length_pos_of_pos b n_pos
-        omega
+        lia
       ext v
       rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
         ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]

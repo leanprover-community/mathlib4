@@ -3,8 +3,10 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Topology.Separation.Basic
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Pointwise convergence of indicator functions
@@ -28,6 +30,8 @@ The results stating these in the case when the indicators take values in a Fréc
 * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
 
 -/
+
+public section
 
 
 open Filter Topology

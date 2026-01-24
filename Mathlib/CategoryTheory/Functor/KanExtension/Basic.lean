@@ -3,14 +3,16 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Kan extensions
 
-The basic definitions for Kan extensions of functors is introduced in this file. Part of API
+The basic definitions for Kan extensions of functors are introduced in this file. Part of API
 is parallel to the definitions for bicategories (see `CategoryTheory.Bicategory.Kan.IsKan`).
 (The bicategory API cannot be used directly here because it would not allow the universe
 polymorphism which is necessary for some applications.)
@@ -30,13 +32,16 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits Functor
 
 namespace Functor
 
-variable {C C' H D D' : Type*} [Category C] [Category C'] [Category H] [Category D] [Category D']
+variable {C C' H D D' : Type*}
+  [Category* C] [Category* C'] [Category* H] [Category* D] [Category* D']
 
 /-- Given two functors `L : C ⥤ D` and `F : C ⥤ H`, this is the category of functors
 `F' : D ⥤ H` equipped with a natural transformation `L ⋙ F' ⟶ F`. -/
@@ -400,7 +405,7 @@ def LeftExtension.postcompose₂ : LeftExtension L F ⥤ LeftExtension L (F ⋙ 
   StructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    (𝟙 _) ({app _ := (associator _ _ _).hom})
+    (𝟙 _) ({ app _ := (associator _ _ _).hom })
 
 /-- Given a right extension `E` of `F : C ⥤ H` along `L : C ⥤ D` and a functor `G : H ⥤ D'`,
 `E.postcompose₂ G` is the extension of `F ⋙ G` along `L` obtained by whiskering by `G`
@@ -410,7 +415,7 @@ def RightExtension.postcompose₂ : RightExtension L F ⥤ RightExtension L (F �
   CostructuredArrow.map₂
     (F := (whiskeringRight _ _ _).obj G)
     (G := (whiskeringRight _ _ _).obj G)
-    ({app _ := associator _ _ _|>.inv}) (𝟙 _)
+    ({ app _ := associator _ _ _ |>.inv }) (𝟙 _)
 
 variable {L F} {F' : D ⥤ H}
 /-- An isomorphism to describe the action of `LeftExtension.postcompose₂` on terms of the form
@@ -713,7 +718,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
   let Ψ := leftExtensionEquivalenceOfIso₁ e F₀
   obtain ⟨⟨hα⟩⟩ := (inferInstance : F₁.IsLeftKanExtension α)
   refine ⟨fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩, fun ⟨⟨h⟩⟩ => ⟨⟨?_⟩⟩⟩
-  · apply IsInitial.isInitialIffObj Ψ.inverse _|>.invFun
+  · apply IsInitial.isInitialIffObj Ψ.inverse _ |>.invFun
     haveI := LeftExtension.isUniversalPrecomp₂ α hα h
     let i :
         (LeftExtension.precomp₂ L' α).obj (LeftExtension.mk F₂ β) ≅
@@ -723,7 +728,7 @@ theorem isLeftKanExtension_iff_postcompose [F₁.IsLeftKanExtension α]
         simp [Ψ, ← congr_app hγ x, ← Functor.map_comp]
     exact IsInitial.ofIso this i
   · apply LeftExtension.isUniversalOfPrecomp₂ α hα
-    apply IsInitial.isInitialIffObj Ψ.functor _|>.invFun
+    apply IsInitial.isInitialIffObj Ψ.functor _ |>.invFun
     let i :
         (LeftExtension.mk F₂ γ) ≅
         Ψ.functor.obj <| (LeftExtension.precomp₂ L' α).obj <|
@@ -849,7 +854,7 @@ instance isLeftKanExtensionAlongEquivalence (α : F₀ ≅ L.functor ⋙ F₁) :
     F₁.IsLeftKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
   apply LeftExtension.isUniversalPostcomp₁Equiv
-    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+    (G := L.functor) L.functor.leftUnitor F₀ _ |>.invFun
   refine IsInitial.ofUniqueHom
     (fun y ↦ StructuredArrow.homMk <| α.inv ≫ y.hom ≫ y.right.leftUnitor.hom) ?_
   intro y m
@@ -866,7 +871,7 @@ instance isRightKanExtensionAlongEquivalence (α : L.functor ⋙ F₁ ≅ F₀) 
     F₁.IsRightKanExtension α.hom := by
   refine ⟨⟨?_⟩⟩
   apply RightExtension.isUniversalPostcomp₁Equiv
-    (G := L.functor) L.functor.leftUnitor F₀ _|>.invFun
+    (G := L.functor) L.functor.leftUnitor F₀ _ |>.invFun
   refine IsTerminal.ofUniqueHom
     (fun y ↦ CostructuredArrow.homMk <| y.left.leftUnitor.inv ≫ y.hom ≫ α.inv) ?_
   intro y m

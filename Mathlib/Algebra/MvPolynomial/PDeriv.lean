@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Yury Kudryashov
 -/
-import Mathlib.Algebra.MvPolynomial.Derivation
-import Mathlib.Algebra.MvPolynomial.Variables
+module
+
+public import Mathlib.Algebra.MvPolynomial.Derivation
+public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Partial derivatives of polynomials
@@ -37,6 +39,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -100,9 +104,6 @@ theorem pderiv_eq_zero_of_notMem_vars {i : σ} {f : MvPolynomial σ R} (h : i �
     pderiv i f = 0 :=
   derivation_eq_zero_of_forall_mem_vars fun _ hj => pderiv_X_of_ne <| ne_of_mem_of_not_mem hj h
 
-@[deprecated (since := "2025-05-23")]
-alias pderiv_eq_zero_of_not_mem_vars := pderiv_eq_zero_of_notMem_vars
-
 theorem pderiv_monomial_single {i : σ} {n : ℕ} : pderiv i (monomial (single i n) a) =
     monomial (single i (n - 1)) (a * n) := by simp
 
@@ -147,6 +148,14 @@ lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   | mul_X p q h =>
     simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+lemma pderiv_sumToIter {σ ι} (p i) :
+    (sumToIter R σ ι p).pderiv i = sumToIter R σ ι (p.pderiv (.inl i)) := by
+  classical
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q _ _ => simp_all
+  | mul_X p n _ => cases n <;> simp_all [pderiv_X, Pi.single_apply, apply_ite]
 
 end PDeriv
 

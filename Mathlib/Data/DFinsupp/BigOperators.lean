@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Data.DFinsupp.Ext
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Data.DFinsupp.Ext
 
 /-!
 # Dependent functions with finite support
@@ -38,6 +40,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 `DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
+
+@[expose] public section
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
@@ -249,10 +253,10 @@ theorem sumZeroHom_single [∀ i, Zero (β i)] [AddCommMonoid γ] (φ : ∀ i, Z
 
 @[simp]
 theorem sumZeroHom_piSingle [∀ i, Zero (β i)] [AddCommMonoid γ] (i) (φ : ZeroHom (β i) γ) :
-    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl} := by
+    sumZeroHom (Pi.single i φ) = φ.comp { toFun := (· i), map_zero' := rfl } := by
   ext ⟨f, sf, hf⟩
-  change (∑ i ∈ _, _) = _
-  dsimp
+  simp only [sumZeroHom, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk', ZeroHom.coe_comp,
+    Function.comp_apply]
   rw [Finset.sum_eq_single i (fun j _ hji => ?_) (fun hi => ?_), Pi.single_eq_same]
   · simp [hji]
   · simp [(hf i).resolve_left (by simpa using hi)]
@@ -290,14 +294,14 @@ def sumAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i 
         exact Or.inl
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hf i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hf i).resolve_left H2, map_zero]
     · refine (Finset.sum_subset ?_ ?_).symm
       · intro i
         simp only [Multiset.mem_toFinset, Multiset.mem_add]
         exact Or.inr
       · intro i _ H2
         simp only [Multiset.mem_toFinset] at H2
-        rw [(hg i).resolve_left H2, AddMonoidHom.map_zero]
+        rw [(hg i).resolve_left H2, map_zero]
 
 @[simp]
 theorem sumAddHom_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (φ : ∀ i, β i →+ γ) (i)

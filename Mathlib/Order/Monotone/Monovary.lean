@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Lattice
 
 /-!
 # Monovariance of functions
@@ -23,6 +25,8 @@ This condition comes up in the rearrangement inequality. See `Algebra.Order.Rear
 * `MonovaryOn f g s`: `f` monovaries with `g` on `s`.
 * `AntivaryOn f g s`: `f` antivaries with `g` on `s`.
 -/
+
+@[expose] public section
 
 
 open Function Set

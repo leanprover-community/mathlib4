@@ -3,15 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Group.Opposite
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Algebra.Star.StarProjection
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 
@@ -38,6 +40,8 @@ It is important to note that while a `StarOrderedRing` is an `OrderedAddCommMono
   [*The positive cone in Banach algebras*][kelleyVaught1953]). Note that the current definition has
   the advantage of not requiring a topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped NNRat
@@ -111,7 +115,7 @@ instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
-    rw [hs.2, add_assoc]
+    rw [hs.2, add_right_comm]
     exact ⟨hs.1, rfl⟩
 
 -- see note [lower instance priority]
@@ -405,7 +409,7 @@ instance : IsOrderedModule R A where
     obtain ⟨r, hr, rfl⟩ := hrs
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
+variable [IsDomain R] [IsCancelAdd A] [Module.IsTorsionFree R A]
 
 instance : PosSMulStrictMono R A where
   smul_lt_smul_of_pos_left r hr a b hab := by

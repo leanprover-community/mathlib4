@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Homotopies
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
+public import Mathlib.Tactic.Ring
 
 /-!
 
@@ -23,6 +25,8 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Preadditive CategoryTheory.SimplicialObject Simplicial
@@ -31,7 +35,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 variable {X : SimplicialObject C}
 
 /-- A morphism `φ : Y ⟶ X _⦋n+1⦌` satisfies `HigherFacesVanish q φ`
@@ -52,7 +56,7 @@ theorem comp_δ_eq_zero {Y : C} {n : ℕ} {q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} 
   obtain ⟨i, rfl⟩ := Fin.eq_succ_of_ne_zero hj₁
   apply v i
   simp only [Fin.val_succ] at hj₂
-  cutsat
+  lia
 
 theorem of_succ {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish (q + 1) φ) :
     HigherFacesVanish q φ := fun j hj => v j (by simpa only [← add_assoc] using le_add_right hj)
@@ -62,8 +66,8 @@ theorem of_comp {Y Z : C} {q n : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
 
 theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ)
     (hnaq : n = a + q) :
-    φ ≫ (Hσ q).f (n + 1) = -φ ≫ X.δ ⟨a + 1, by cutsat⟩ ≫ X.σ ⟨a, by cutsat⟩ := by
-  have hnaq_shift (d : ℕ) : n + d = a + d + q := by omega
+    φ ≫ (Hσ q).f (n + 1) = -φ ≫ X.δ ⟨a + 1, by lia⟩ ≫ X.σ ⟨a, by lia⟩ := by
+  have hnaq_shift (d : ℕ) : n + d = a + d + q := by lia
   rw [Hσ, Homotopy.nullHomotopicMap'_f (c_mk (n + 2) (n + 1) rfl) (c_mk (n + 1) n rfl),
     hσ'_eq hnaq (c_mk (n + 1) n rfl), hσ'_eq (hnaq_shift 1) (c_mk (n + 2) (n + 1) rfl)]
   simp only [AlternatingFaceMapComplex.obj_d_eq, eqToHom_refl, comp_id, comp_sum, sum_comp,
@@ -73,11 +77,11 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   rw [← Fin.sum_congr' _ (hnaq_shift 2).symm, Fin.sum_trunc]
   swap
   · rintro ⟨k, hk⟩
-    suffices φ ≫ X.δ (⟨a + 2 + k, by cutsat⟩ : Fin (n + 2)) = 0 by
+    suffices φ ≫ X.δ (⟨a + 2 + k, by lia⟩ : Fin (n + 2)) = 0 by
       simp only [this, Fin.natAdd_mk, Fin.cast_mk, zero_comp, smul_zero]
-    convert v ⟨a + k + 1, by cutsat⟩ (by rw [Fin.val_mk]; cutsat)
+    convert v ⟨a + k + 1, by lia⟩ (by rw [Fin.val_mk]; lia)
     dsimp
-    cutsat
+    lia
   -- cleaning up the second sum
   rw [← Fin.sum_congr' _ (hnaq_shift 3).symm, @Fin.sum_trunc _ _ (a + 3)]
   swap
@@ -85,13 +89,13 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     rw [assoc, X.δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
     · intro h
       replace h : a + 3 + k = 1 := by simp [Fin.ext_iff] at h
-      cutsat
+      lia
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
-      cutsat
-    · simp only [Fin.lt_iff_val_lt_val]
+      lia
+    · simp only [Fin.lt_def]
       dsimp [Fin.natAdd, Fin.cast]
-      cutsat
+      lia
   simp only [assoc]
   conv_lhs =>
     congr
@@ -107,7 +111,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
   apply simplif
   · -- b = f
     rw [← pow_add, Odd.neg_one_pow, neg_smul, one_zsmul]
-    exact ⟨a, by cutsat⟩
+    exact ⟨a, by lia⟩
   · -- d + e = 0
     rw [X.δ_comp_σ_self' (Fin.castSucc_mk _ _ _).symm,
       X.δ_comp_σ_succ' (Fin.succ_mk _ _ _).symm]
@@ -118,11 +122,11 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     apply Finset.sum_eq_zero
     rintro ⟨i, hi⟩ _
     simp only
-    have hia : (⟨i, by cutsat⟩ : Fin (n + 2)) ≤
-        Fin.castSucc (⟨a, by cutsat⟩ : Fin (n + 1)) := by
+    have hia : (⟨i, by lia⟩ : Fin (n + 2)) ≤
+        Fin.castSucc (⟨a, by lia⟩ : Fin (n + 1)) := by
       rw [Fin.le_iff_val_le_val]
       dsimp
-      omega
+      lia
     generalize_proofs
     rw [← Fin.succ_mk (n + 1) a ‹_›, ← Fin.castSucc_mk (n + 2) i ‹_›,
       δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
@@ -135,19 +139,19 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
   rw [hσ'_eq_zero hqn (c_mk (n + 1) n rfl), comp_zero, zero_add]
   by_cases hqn' : n + 1 < q
   · rw [hσ'_eq_zero hqn' (c_mk (n + 2) (n + 1) rfl), zero_comp, comp_zero]
-  · simp only [hσ'_eq (show n + 1 = 0 + q by cutsat) (c_mk (n + 2) (n + 1) rfl), pow_zero,
+  · simp only [hσ'_eq (show n + 1 = 0 + q by lia) (c_mk (n + 2) (n + 1) rfl), pow_zero,
       Fin.mk_zero, one_zsmul, eqToHom_refl, comp_id, comp_sum,
       AlternatingFaceMapComplex.obj_d_eq]
     -- All terms of the sum but the first two are zeros
     rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fintype.sum_eq_zero, add_zero]
-    · simp only [Fin.val_zero, Fin.val_succ, Fin.coe_castSucc, zero_add, pow_zero, one_smul,
+    · simp only [Fin.val_zero, Fin.val_succ, Fin.val_castSucc, zero_add, pow_zero, one_smul,
         pow_one, neg_smul, comp_neg, ← Fin.castSucc_zero (n := n + 2), δ_comp_σ_self, δ_comp_σ_succ,
         add_neg_cancel]
     · intro j
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
       · simp [Fin.succ_ne_zero]
       · dsimp
-        cutsat
+        lia
       · simp only [Fin.succ_lt_succ_iff, j.succ_pos]
 
 theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFacesVanish q φ) :
@@ -157,10 +161,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   simp only [comp_add, add_comp, comp_id]
   -- when n < q, the result follows immediately from the assumption
   by_cases! hqn : n < q
-  · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by cutsat)]
+  · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by lia)]
   -- we now assume that n≥q, and write n=a+q
   obtain ⟨a, ha⟩ := Nat.le.dest hqn
-  rw [v.comp_Hσ_eq (show n = a + q by cutsat), neg_comp, add_neg_eq_zero, assoc, assoc]
+  rw [v.comp_Hσ_eq (show n = a + q by lia), neg_comp, add_neg_eq_zero, assoc, assoc]
   rcases n with - | m
   -- the boundary case n=0
   · simp only [Nat.eq_zero_of_add_eq_zero_left ha, Fin.eq_zero j, Fin.mk_zero,
@@ -172,11 +176,11 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   · simp only [hj₂, Fin.eta, δ_comp_σ_succ, comp_id]
     rfl
   -- now, we assume j ≠ a (i.e. a < j)
-  have haj : a < j := (Ne.le_iff_lt hj₂).mp (by cutsat)
-  have ham : a ≤ m := by omega
+  have haj : a < j := (Ne.le_iff_lt hj₂).mp (by lia)
+  have ham : a ≤ m := by lia
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
-  · rw [Fin.lt_iff_val_lt_val]
+  · rw [Fin.lt_def]
     simpa only [Fin.val_mk, Fin.val_succ, add_lt_add_iff_right] using haj
   obtain _ | ham'' := ham.lt_or_eq
   · -- case where `a<m`
@@ -184,8 +188,8 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
     swap
     · rw [Fin.le_iff_val_le_val]
       dsimp
-      cutsat
-    simp only [← assoc, v j (by cutsat), zero_comp]
+      lia
+    simp only [← assoc, v j (by lia), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]
     swap
@@ -193,8 +197,8 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
       cases j
       dsimp
       dsimp only [Nat.succ_eq_add_one] at *
-      cutsat
-    simp only [← assoc, v j (by cutsat), zero_comp]
+      lia
+    simp only [← assoc, v j (by lia), zero_comp]
 
 end HigherFacesVanish
 

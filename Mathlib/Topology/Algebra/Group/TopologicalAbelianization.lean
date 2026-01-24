@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.Tactic.Group
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # The topological abelianization of a group.
@@ -25,6 +27,8 @@ This file defines the topological abelianization of a topological group.
 group, topological abelianization
 
 -/
+
+@[expose] public section
 
 variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # First-Order Structures in Graph Theory
@@ -20,6 +22,8 @@ This file defines first-order languages, structures, and theories in graph theor
 - `FirstOrder.Language.simpleGraphOfStructure` gives the simple graph corresponding to a model
   of the theory of simple graphs.
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Game.Basic
-import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Basic
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Ordinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -19,11 +21,13 @@ game whose left set consists of all previous ordinals.
 
 The map to surreals is defined in `Ordinal.toSurreal`.
 
-# Main declarations
+## Main declarations
 
 - `Ordinal.toPGame`: The canonical map between ordinals and pre-games.
 - `Ordinal.toPGameEmbedding`: The order embedding version of the previous map.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -36,12 +40,12 @@ namespace Ordinal
 
 /-- Converts an ordinal into the corresponding pre-game. -/
 noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩
+  ⟨o.ToType, PEmpty, fun x => toPGame x, PEmpty.elim⟩
 termination_by o
-decreasing_by exact ((enumIsoToType o).symm x).prop
+decreasing_by exact x.toOrd.prop
 
 @[simp]
-theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by
+theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.ToType := by
   rw [toPGame, LeftMoves]
 
 @[simp]
@@ -57,7 +61,7 @@ instance isEmpty_toPGame_rightMoves (o : Ordinal) : IsEmpty o.toPGame.RightMoves
 /-- Converts an ordinal less than `o` into a move for the `PGame` corresponding to `o`, and vice
 versa. -/
 noncomputable def toLeftMovesToPGame {o : Ordinal} : Set.Iio o ≃ o.toPGame.LeftMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
+  ToType.mk.toEquiv.trans (Equiv.cast (toPGame_leftMoves o).symm)
 
 @[simp]
 theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
@@ -66,7 +70,7 @@ theorem toLeftMovesToPGame_symm_lt {o : Ordinal} (i : o.toPGame.LeftMoves) :
 
 @[nolint unusedHavesSuffices]
 theorem toPGame_moveLeft_hEq {o : Ordinal} :
-    o.toPGame.moveLeft ≍ fun x : o.toType => ((enumIsoToType o).symm x).val.toPGame := by
+    o.toPGame.moveLeft ≍ fun x : o.ToType => toPGame x := by
   rw [toPGame]
   rfl
 
@@ -120,7 +124,7 @@ theorem toPGame_lt {a b : Ordinal} (h : a < b) : a.toPGame < b.toPGame :=
   ⟨toPGame_le h.le, toPGame_lf h⟩
 
 theorem toPGame_nonneg (a : Ordinal) : 0 ≤ a.toPGame :=
-  zeroToPGameRelabelling.ge.trans <| toPGame_le <| Ordinal.zero_le a
+  zeroToPGameRelabelling.ge.trans <| toPGame_le <| zero_le a
 
 @[simp]
 theorem toPGame_lf_iff {a b : Ordinal} : a.toPGame ⧏ b.toPGame ↔ a < b :=
@@ -157,7 +161,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
 /-- Converts an ordinal into the corresponding game. -/
 noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
   toFun o := ⟦o.toPGame⟧
-  inj' a b := by simpa [AntisymmRel] using le_antisymm
+  inj' a b := by simpa [AntisymmRel, Quotient.eq] using le_antisymm
   map_rel_iff' := toPGame_le_iff
 
 @[simp]

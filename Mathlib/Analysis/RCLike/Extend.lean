@@ -3,9 +3,11 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Extending an `ℝ`-linear functional to a `𝕜`-linear functional
@@ -33,6 +35,8 @@ For convenience, the main definitions above operate in terms of `RestrictScalars
 Alternate forms which operate on `[IsScalarTower ℝ 𝕜 F]` instead are provided with a primed name.
 
 -/
+
+@[expose] public section
 
 
 open RCLike

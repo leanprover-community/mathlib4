@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Topology.Category.TopCat.OpenNhds
-import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
+module
+
+public import Mathlib.Topology.Category.TopCat.OpenNhds
+public import Mathlib.Topology.Sheaves.SheafCondition.UniqueGluing
 
 /-!
 # Stalks
@@ -37,6 +39,8 @@ See also the definition of "algebraic structures" in the stacks project:
 https://stacks.math.columbia.edu/tag/007L
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 
@@ -243,7 +247,6 @@ lemma pullback_obj_obj_ext {Z : C} {f : X ⟶ Y} {F : Y.Presheaf C} (U : (Opens 
         ((pullback C f).obj F).map (homOfLE hV).op ≫ φ =
       ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
         ((pullback C f).obj F).map (homOfLE hV).op ≫ ψ) : φ = ψ := by
-  obtain ⟨U⟩ := U
   apply ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F _).hom_ext
   rintro ⟨⟨V⟩, ⟨⟩, ⟨b⟩⟩
   simpa [pushforwardPullbackAdjunction, Functor.lanAdjunction_unit]
@@ -254,7 +257,7 @@ lemma pushforwardPullbackAdjunction_unit_pullback_map_germToPullbackStalk
     (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (hx : x ∈ U) (V : Opens Y)
     (hV : U ≤ (Opens.map f).obj V) :
     ((pushforwardPullbackAdjunction C f).unit.app F).app (op V) ≫
-      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx  =
+      ((pullback C f).obj F).map (homOfLE hV).op ≫ germToPullbackStalk C f F U x hx =
         F.germ _ (f x) (hV hx) := by
   simpa [pushforwardPullbackAdjunction] using
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit F (op U)).fac _
@@ -341,13 +344,13 @@ theorem germ_stalkSpecializes (F : X.Presheaf C)
   colimit.ι_desc _ _
 
 @[simp]
-theorem stalkSpecializes_refl {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_refl {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) (x : X) : F.stalkSpecializes (specializes_refl x) = 𝟙 _ := by
   ext
   simp
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
-theorem stalkSpecializes_comp {C : Type*} [Category C] [Limits.HasColimits C] {X : TopCat}
+theorem stalkSpecializes_comp {C : Type*} [Category* C] [Limits.HasColimits C] {X : TopCat}
     (F : X.Presheaf C) {x y z : X} (h : x ⤳ y) (h' : y ⤳ z) :
     F.stalkSpecializes h' ≫ F.stalkSpecializes h = F.stalkSpecializes (h.trans h') := by
   ext
@@ -369,7 +372,7 @@ theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y 
 
 /-- The stalks are isomorphic on inseparable points -/
 @[simps]
-def stalkCongr {X : TopCat} {C : Type*} [Category C] [HasColimits C] (F : X.Presheaf C) {x y : X}
+def stalkCongr {X : TopCat} {C : Type*} [Category* C] [HasColimits C] (F : X.Presheaf C) {x y : X}
     (e : Inseparable x y) : F.stalk x ≅ F.stalk y :=
   ⟨F.stalkSpecializes e.ge, F.stalkSpecializes e.le, by simp, by simp⟩
 

@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Computational realization of filters (experimental)
@@ -16,6 +18,8 @@ This file provides infrastructure to compute with filters.
   lattices, while `Filter` is filters of sets (so corresponding to `CFilter (Set α) σ`).
 * `Filter.Realizer`: Realization of a `Filter`. `CFilter` that generates the given filter.
 -/
+
+@[expose] public section
 
 
 open Set Filter

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element
@@ -27,6 +29,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 section CommSemiring
@@ -184,6 +188,30 @@ noncomputable def map (f : R →+* P) (r : R) [IsLocalization.Away r S]
       use n
       simp)
 
+lemma map_injective_iff {S : Type*} [CommRing S] [Algebra R S]
+    (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Injective (map S Q f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 := by
+  rw [injective_iff_map_eq_zero]
+  trans ∀ a n, f r ^ n * f a = 0 → ∃ m, r ^ m * a = 0
+  · simp [(IsLocalization.mk'_surjective (.powers r)).forall, Submonoid.mem_powers_iff,
+      IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff]
+  · refine ⟨fun H x hx ↦ H x 0 (by simpa), fun H a n ha ↦ ?_⟩
+    obtain ⟨m, hm⟩ := H (r ^ n * a) (by simpa)
+    exact ⟨m + n, by simp [pow_add, mul_assoc, *]⟩
+
+lemma map_surjective_iff (f : R →+* P) (r : R) [IsLocalization.Away r S]
+    [IsLocalization.Away (f r) Q] :
+    Function.Surjective (map S Q f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a := by
+  trans ∀ a n, ∃ b m k, f (r ^ (k + n) * b) = f r ^ (k + m) * a
+  · simp [Function.Surjective, (IsLocalization.mk'_surjective (.powers (f r))).forall, ← map_pow,
+      (IsLocalization.mk'_surjective (.powers r)).exists, Submonoid.mem_powers_iff, pow_add,
+      IsLocalization.Away.map, IsLocalization.map_mk', ← mul_assoc,
+      IsLocalization.mk'_eq_iff_eq, ← map_mul, IsLocalization.eq_iff_exists (.powers (f r))]
+  · refine ⟨fun H x ↦ ⟨_, _, (H x 0).choose_spec.choose_spec.choose_spec⟩, fun H a n ↦ ?_⟩
+    obtain ⟨b, m, e⟩ := H a
+    exact ⟨b, n + m, 0, by simp [e, pow_add]; ring_nf⟩
+
 section Algebra
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
@@ -198,7 +226,7 @@ instance (x : R) [IsLocalization.Away (algebraMap R A x) Aₚ] :
     IsLocalization (Algebra.algebraMapSubmonoid A (.powers x)) Aₚ := by
   simpa
 
-/-- Given a algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
+/-- Given an algebra map `f : A →ₐ[R] B` and an element `a : A`, we may construct a map
 `Aₐ →ₐ[R] Bₐ`. -/
 noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) Bₚ] : Aₚ →ₐ[R] Bₚ :=
   ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
@@ -315,6 +343,25 @@ theorem away_of_isUnit_of_bijective {R : Type*} (S : Type*) [CommSemiring R] [Co
       rintro rfl
       exact ⟨1, rfl⟩ }
 
+variable {R S}
+
+lemma Away.mul_of_isUnit (x y : R) [IsLocalization.Away x S] (h : IsUnit (algebraMap R S y)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S y) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul' S _ _ _
+
+lemma Away.mul_of_isUnit' (x y : R) [IsLocalization.Away y S] (h : IsUnit (algebraMap R S x)) :
+    IsLocalization.Away (x * y) S :=
+  have : Away (algebraMap R S x) S := away_of_isUnit_of_bijective _ h Function.bijective_id
+  .mul S _ _ _
+
+lemma Away.mul_of_associated (x z : R) (y : S) [IsLocalization.Away x S]
+    {T : Type*} [CommRing T] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    [IsLocalization.Away y T]
+    (h : Associated (algebraMap R S z) y) : IsLocalization.Away (x * z) T := by
+  have : Away (algebraMap R S z) T := by rwa [iff_of_associated h]
+  exact .mul' S _ _ _
+
 end AtUnits
 
 section Prod
@@ -358,6 +405,44 @@ instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
 
 end Prod
 
+section
+
+variable {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
+
+open Pointwise in
+/-- Suppose `I` is an ideal of `R`, then `R / I` is the localization away from `r : R`
+if `r - 1 ∈ I` and for some `n`, `r ^ n • I = ⊥`.
+For sake of usability, we state this for surjective ring maps instead of ideals.
+For a version with two ideals, see `Away.of_sub_one_mem_ker'`. -/
+lemma Away.of_surjective (h₁ : Function.Surjective (algebraMap S T))
+    {r : S} (hr : IsUnit (algebraMap S T r))
+    (n : ℕ) (hn : r ^ n • RingHom.ker (algebraMap S T) ≤ ⊥) :
+    IsLocalization.Away r T := by
+  refine .mk _ hr (fun t ↦ ?_) fun x y h ↦ ⟨n, ?_⟩
+  · obtain ⟨s, rfl⟩ := h₁ t
+    exact ⟨0, by simp⟩
+  · rw [← sub_eq_zero, ← mul_sub]
+    exact hn ⟨x - y, by simp [h]⟩
+
+open Pointwise in
+/-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
+if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
+For sake of usability, we state this for surjective ring maps instead of ideals. -/
+lemma Away.of_surjective_of_isScalarTower {R : Type*}
+    [CommRing R] [Algebra R S] [Algebra R T] [IsScalarTower R S T]
+    (h₁ : Function.Surjective (algebraMap S T))
+    (h₂ : Function.Surjective (algebraMap R S))
+    (r : R) (hr : IsUnit (algebraMap R T r))
+    {n : ℕ} (hn : r ^ n • RingHom.ker (algebraMap R T) ≤ RingHom.ker (algebraMap R S)) :
+    IsLocalization.Away (algebraMap R S r) T := by
+  refine Away.of_surjective h₁ ?_ n ?_
+  · rwa [← IsScalarTower.algebraMap_apply]
+  · rw [← (RingHom.ker (algebraMap S T)).map_comap_of_surjective _ h₂, ← map_pow,
+      ← Ideal.map_pointwise_smul, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]
+    rwa [RingHom.ker_eq_comap_bot (algebraMap R S), ← Ideal.map_le_iff_le_comap] at hn
+
+end
+
 end IsLocalization
 
 namespace Localization
@@ -383,6 +468,15 @@ lemma awayLift_mk {A : Type*} [CommSemiring A] (f : R →+* A) (r : R)
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
     Localization.Away r →+* Localization.Away (f r) :=
   IsLocalization.Away.map _ _ f r
+
+lemma awayMap_injective_iff {R : Type*} [CommRing R] {f : R →+* S} {r : R} :
+    Function.Injective (Localization.awayMap f r) ↔ ∀ a, f a = 0 → ∃ n, r ^ n * a = 0 :=
+  IsLocalization.Away.map_injective_iff _ _ _
+
+omit [Algebra R S] in
+lemma awayMap_surjective_iff {f : R →+* S} {r : R} :
+    Function.Surjective (Localization.awayMap f r) ↔ ∀ a, ∃ b m, f b = f r ^ m * a :=
+  IsLocalization.Away.map_surjective_iff _ _ _ _
 
 variable {A : Type*} [CommSemiring A] [Algebra R A]
 variable {B : Type*} [CommSemiring B] [Algebra R B]

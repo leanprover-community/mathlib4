@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 
 /-!
 # Differentiability of specific functions
@@ -17,6 +19,8 @@ In this file, we establish differentiability results for
 - arithmetic operations (such as addition and scalar multiplication).
 
 -/
+
+public section
 
 noncomputable section
 
@@ -506,6 +510,7 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
     MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
+set_option linter.flexible false in -- TODO: fix non-terminal simp_all followed by use
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
     (hf : HasMFDerivWithinAt I J f (Prod.fst '' s) p.1 df)
@@ -636,7 +641,7 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
-    · exact hf.comp _  (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
+    · exact hf.comp _ (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
@@ -664,7 +669,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {p : M ⊕ M'}
 
 /-- In extended charts at `p`, `Sum.swap` looks like the identity near `p`. -/
 lemma writtenInExtChartAt_sumSwap_eventuallyEq_id :
-    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <|chartAt H p p)] id := by
+    writtenInExtChartAt I I p Sum.swap =ᶠ[𝓝[range I] (I <| chartAt H p p)] id := by
   cases p with
     | inl x =>
       let t := I.symm ⁻¹' (chartAt H x).target ∩ range I
@@ -710,6 +715,74 @@ theorem mfderivWithin_sumSwap {s : Set (M ⊕ M')} (hs : UniqueMDiffWithinAt I s
 theorem mfderiv_sumSwap :
     mfderiv I I (@Sum.swap M M') p = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
   simpa [mfderivWithin_univ] using (mfderivWithin_sumSwap (uniqueMDiffWithinAt_univ I))
+
+variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
+
+lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
+    (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
+  have hmem : I.symm ⁻¹'
+      (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q q) := by
+    rw [← I.image_eq (chartAt H q).target]
+    exact (chartAt H q).extend_image_target_mem_nhds (mem_chart_source H q)
+  filter_upwards [hmem] with y hy
+  rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
+  simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inl,
+    Sum.inl_injective.extend_apply <| chartAt H q,
+    (chartAt H q).right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
+
+lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
+    (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q' q')] id := by
+  have hmem : I.symm ⁻¹'
+      (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q' q') := by
+    rw [← I.image_eq (chartAt H q').target]
+    exact (chartAt H q').extend_image_target_mem_nhds (mem_chart_source H q')
+  filter_upwards [hmem] with y hy
+  rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
+  simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inr,
+    Sum.inr_injective.extend_apply <| chartAt H q',
+    (chartAt H q').right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
+
+theorem hasMFDerivWithinAt_inl :
+    HasMFDerivWithinAt I I (@Sum.inl M M') s q (ContinuousLinearMap.id 𝕜 (TangentSpace I q)) := by
+  refine ⟨by fun_prop, ?_⟩
+  have : (writtenInExtChartAt I I q (@Sum.inl M M'))
+      =ᶠ[𝓝[(extChartAt I q).symm ⁻¹' s ∩ Set.range I] (extChartAt I q q)] id :=
+    writtenInExtChartAt_sumInl_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
+  exact (hasFDerivWithinAt_id (extChartAt I q q) _).congr_of_eventuallyEq this
+    (by simp [writtenInExtChartAt, extChartAt])
+
+theorem hasMFDerivAt_inl :
+    HasMFDerivAt I I (@Sum.inl M M') q (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inl (s := Set.univ)
+
+theorem hasMFDerivWithinAt_inr {t : Set M'} :
+    HasMFDerivWithinAt I I (@Sum.inr M M') t q' (ContinuousLinearMap.id 𝕜 (TangentSpace I q')) := by
+  refine ⟨by fun_prop, ?_⟩
+  have : (writtenInExtChartAt I I q' (@Sum.inr M M'))
+      =ᶠ[𝓝[(extChartAt I q').symm ⁻¹' t ∩ Set.range I] (extChartAt I q' q')] id :=
+    writtenInExtChartAt_sumInr_eventuallyEq_id.filter_mono (nhdsWithin_mono _ (fun _y hy ↦ hy.2))
+  exact (hasFDerivWithinAt_id (extChartAt I q' q') _).congr_of_eventuallyEq this
+    (by simp [writtenInExtChartAt, extChartAt])
+
+theorem hasMFDerivAt_inr :
+    HasMFDerivAt I I (@Sum.inr M M') q' (ContinuousLinearMap.id 𝕜 (TangentSpace I p)) := by
+  simpa [HasMFDerivAt, hasMFDerivWithinAt_univ] using hasMFDerivWithinAt_inr (t := Set.univ)
+
+theorem mfderivWithin_sumInl (hU : UniqueMDiffWithinAt I s q) :
+    mfderivWithin I I (@Sum.inl M M') s q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) :=
+  (hasMFDerivWithinAt_inl).mfderivWithin hU
+
+theorem mfderiv_sumInl :
+    mfderiv I I (@Sum.inl M M') q = ContinuousLinearMap.id 𝕜 (TangentSpace I p) := by
+  simpa [mfderivWithin_univ] using (mfderivWithin_sumInl (uniqueMDiffWithinAt_univ I))
+
+theorem mfderivWithin_sumInr {t : Set M'} (hU : UniqueMDiffWithinAt I t q') :
+    mfderivWithin I I (@Sum.inr M M') t q' = ContinuousLinearMap.id 𝕜 (TangentSpace I q') :=
+  (hasMFDerivWithinAt_inr).mfderivWithin hU
+
+theorem mfderiv_sumInr :
+    mfderiv I I (@Sum.inr M M') q' = ContinuousLinearMap.id 𝕜 (TangentSpace I q') := by
+  simpa [mfderivWithin_univ] using (mfderivWithin_sumInr (uniqueMDiffWithinAt_univ I))
 
 end disjointUnion
 
@@ -758,6 +831,41 @@ theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (by exact mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =
       (by exact mfderiv I 𝓘(𝕜, E') f z) + (by exact mfderiv I 𝓘(𝕜, E') g z) :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mfderiv
+
+section sum
+variable {ι : Type} {t : Finset ι} {f : ι → M → E'} {f' : ι → TangentSpace I z →L[𝕜] E'}
+
+lemma HasMFDerivWithinAt.sum (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, E') (f i) s z (f' i)) :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) s z (∑ i ∈ t, f' i) := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => simpa using hasMFDerivWithinAt_const ..
+  | insert i s hi IH => grind [HasMFDerivWithinAt.add]
+
+lemma HasMFDerivAt.sum (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, E') (f i) z (f' i)) :
+    HasMFDerivAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) z (∑ i ∈ t, f' i) := by
+  simp_all only [← hasMFDerivWithinAt_univ]
+  exact HasMFDerivWithinAt.sum hf
+
+lemma MDifferentiableWithinAt.sum
+    (hf : ∀ i ∈ t, MDifferentiableWithinAt I 𝓘(𝕜, E') (f i) s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) s z :=
+  (HasMFDerivWithinAt.sum fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
+
+lemma MDifferentiableAt.sum (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, E') (f i) z) :
+    MDifferentiableAt I 𝓘(𝕜, E') (∑ i ∈ t, f i) z := by
+  simp_all only [← mdifferentiableWithinAt_univ]
+  exact .sum hf
+
+lemma MDifferentiableOn.sum (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, E') (f i) s) :
+    MDifferentiableOn I 𝓘(𝕜, E') (∑ i ∈ t, f i) s :=
+  fun z hz ↦ .sum fun i hi ↦ hf i hi z hz
+
+lemma MDifferentiable.sum (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, E') (f i)) :
+    MDifferentiable I 𝓘(𝕜, E') (∑ i ∈ t, f i) :=
+  fun z ↦ .sum fun i hi ↦ hf i hi z
+
+end sum
 
 theorem HasMFDerivAt.const_smul (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') (s : 𝕜) :
     HasMFDerivAt I 𝓘(𝕜, E') (s • f) z (s • f') :=
@@ -866,6 +974,22 @@ theorem MDifferentiable.mul (hp : MDifferentiable I 𝓘(𝕜, F') p)
     (hq : MDifferentiable I 𝓘(𝕜, F') q) : MDifferentiable I 𝓘(𝕜, F') (p * q) := fun x =>
   (hp x).mul (hq x)
 
+theorem MDifferentiableWithinAt.pow (hp : MDifferentiableWithinAt I 𝓘(𝕜, F') p s z)
+    (n : ℕ) : MDifferentiableWithinAt I 𝓘(𝕜, F') (p ^ n) s z := by
+  induction n with
+  | zero => simpa [pow_zero] using mdifferentiableWithinAt_const
+  | succ n hn => simpa [pow_succ] using hn.mul hp
+
+theorem MDifferentiableAt.pow (hp : MDifferentiableAt I 𝓘(𝕜, F') p z) (n : ℕ) :
+    MDifferentiableAt I 𝓘(𝕜, F') (p ^ n) z :=
+  mdifferentiableWithinAt_univ.mp (hp.mdifferentiableWithinAt.pow n)
+
+theorem MDifferentiableOn.pow (hp : MDifferentiableOn I 𝓘(𝕜, F') p s) (n : ℕ) :
+    MDifferentiableOn I 𝓘(𝕜, F') (p ^ n) s := fun x hx => (hp x hx).pow n
+
+theorem MDifferentiable.pow (hp : MDifferentiable I 𝓘(𝕜, F') p) (n : ℕ) :
+    MDifferentiable I 𝓘(𝕜, F') (p ^ n) := fun x => (hp x).pow n
+
 end AlgebraOverRing
 
 section AlgebraOverCommRing
@@ -882,6 +1006,53 @@ theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
     (hq : HasMFDerivAt I 𝓘(𝕜, F') q z q') :
     HasMFDerivAt I 𝓘(𝕜, F') (p * q) z (p z • q' + q z • p' : E →L[𝕜] F') :=
   hasMFDerivWithinAt_univ.mp <| hp.hasMFDerivWithinAt.mul hq.hasMFDerivWithinAt
+
+section prod
+variable {ι : Type} {t : Finset ι} {f : ι → M → F'} {f' : ι → TangentSpace I z →L[𝕜] F'}
+
+lemma HasMFDerivWithinAt.prod [DecidableEq ι]
+    (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, F') (f i) s z (f' i)) :
+    HasMFDerivWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z
+      (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
+  classical
+  induction t using Finset.induction_on with
+  | empty => simpa using hasMFDerivWithinAt_const ..
+  | insert i t hi IH =>
+    rw [t.sum_insert hi, t.erase_insert hi, t.prod_insert hi, add_comm]
+    rw [t.forall_mem_insert] at hf
+    convert hf.1.mul (IH hf.2) using 2
+    · simp only [t.smul_sum, ← mul_smul]
+      refine t.sum_congr rfl (fun j hj ↦ ?_)
+      rw [t.erase_insert_of_ne (by grind), Finset.prod_insert (by grind)]
+    · simp
+
+lemma HasMFDerivAt.prod [DecidableEq ι]
+    (hf : ∀ i ∈ t, HasMFDerivAt I 𝓘(𝕜, F') (f i) z (f' i)) :
+    HasMFDerivAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z (∑ i ∈ t, (∏ j ∈ t.erase i, f j z) • (f' i)) := by
+  simp_all only [← hasMFDerivWithinAt_univ]
+  exact HasMFDerivWithinAt.prod hf
+
+lemma MDifferentiableWithinAt.prod
+    (hf : ∀ i ∈ t, MDifferentiableWithinAt I 𝓘(𝕜, F') (f i) s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z := by
+  -- `by classical exact` to avoid needing a `DecidableEq` argument
+  classical exact (HasMFDerivWithinAt.prod
+    fun i hi ↦ (hf i hi).hasMFDerivWithinAt).mdifferentiableWithinAt
+
+lemma MDifferentiableAt.prod (hf : ∀ i ∈ t, MDifferentiableAt I 𝓘(𝕜, F') (f i) z) :
+    MDifferentiableAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) z := by
+  simp_all only [← mdifferentiableWithinAt_univ]
+  exact MDifferentiableWithinAt.prod hf
+
+lemma MDifferentiableOn.prod (hf : ∀ i ∈ t, MDifferentiableOn I 𝓘(𝕜, F') (f i) s) :
+    MDifferentiableOn I 𝓘(𝕜, F') (∏ i ∈ t, f i) s :=
+  fun z hz ↦ .prod fun i hi ↦ hf i hi z hz
+
+lemma MDifferentiable.prod (hf : ∀ i ∈ t, MDifferentiable I 𝓘(𝕜, F') (f i)) :
+    MDifferentiable I 𝓘(𝕜, F') (∏ i ∈ t, f i) :=
+  fun z ↦ .prod fun i hi ↦ hf i hi z
+
+end prod
 
 end AlgebraOverCommRing
 

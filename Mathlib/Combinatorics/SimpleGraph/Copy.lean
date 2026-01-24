@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Mitchell Horner
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Containment of graphs
@@ -56,6 +58,8 @@ The following notation is declared in scope `SimpleGraph`:
 * Count induced copies of a graph inside another.
 * Make `copyCount`/`labelledCopyCount` computable (not necessarily efficiently).
 -/
+
+@[expose] public section
 
 open Finset Function
 open Fintype (card)
@@ -348,6 +352,9 @@ protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
 /-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
+/-- If `G` is isomorphic to `H`, then `G` is contained in `H`. -/
+protected lemma Iso.isContained (e : G ≃g H) : G ⊑ H := ⟨e.toCopy⟩
+
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
   ⟨{ toFun := (↑)
@@ -482,12 +489,15 @@ to get a graph `H'` that doesn't contain `G`.
 than `G`.
 -/
 
+set_option backward.privateInPublic true in
 private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
     Nonempty (H ≃g G'.coe) → G'.edgeSet.Nonempty := by
   obtain ⟨e, he⟩ := edgeSet_nonempty.2 hH
   rw [← Subgraph.image_coe_edgeSet_coe]
   exact fun ⟨f⟩ ↦ Set.Nonempty.image _ ⟨_, f.map_mem_edgeSet_iff.2 he⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
 number of copies of `H` edges less than `G`. See `free_killCopies` and
@@ -560,7 +570,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     #G.edgeFinset - G.copyCount H ≤ #(G.killCopies H).edgeFinset := by
   classical
   obtain rfl | hH := eq_or_ne H ⊥
-  · simp
+  · simp [← card_edgeSet]
   let f (G' : {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}) := (aux hH G'.2).some
   calc
     _ = #G.edgeFinset - card {G' : G.Subgraph // Nonempty (H ≃g G'.coe)} := ?_
@@ -568,9 +578,9 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #G.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
     _ ≤ #(G.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
     _ = #(G.killCopies H).edgeFinset := ?_
-  · simp only [Set.toFinset_card]
+  · simp only [edgeFinset, Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [killCopies_of_ne_bot, hH, Ne, not_false_iff,
+  simp only [edgeFinset, killCopies_of_ne_bot, hH, Ne, not_false_iff,
     Set.toFinset_card, edgeSet_deleteEdges]
   simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
     Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,

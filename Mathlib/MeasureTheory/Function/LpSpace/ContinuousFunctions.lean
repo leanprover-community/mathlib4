@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.Topology.ContinuousMap.Compact
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
+public import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # Continuous functions in Lp space
@@ -16,6 +18,8 @@ from the normed space of bounded continuous functions (`α →ᵇ E`) to `Lp E p
 as `BoundedContinuousFunction.toLp`.
 
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction MeasureTheory Filter
 open scoped ENNReal
@@ -38,6 +42,10 @@ theorem MeasureTheory.Lp.mem_boundedContinuousFunction_iff {f : Lp E p μ} :
   AddSubgroup.mem_addSubgroupOf
 
 namespace BoundedContinuousFunction
+
+/-- A bounded continuous function is in `L∞`. -/
+theorem memLp_top (f : α →ᵇ E) : MemLp f ⊤ μ :=
+  ⟨by fun_prop, eLpNormEssSup_lt_top_of_ae_bound <| univ_mem' (id norm_coe_le_norm f)⟩
 
 variable [IsFiniteMeasure μ]
 
@@ -99,7 +107,7 @@ theorem coeFn_toLp (f : α →ᵇ E) :
 variable {𝕜}
 
 theorem range_toLp :
-    (LinearMap.range (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ)).toAddSubgroup =
+    (toLp p μ 𝕜 : (α →ᵇ E) →L[𝕜] Lp E p μ).range.toAddSubgroup =
       MeasureTheory.Lp.boundedContinuousFunction E p μ :=
   range_toLpHom p μ
 
@@ -139,13 +147,13 @@ noncomputable def toLp : C(α, E) →L[𝕜] Lp E p μ :=
 variable {𝕜}
 
 theorem range_toLp :
-    (LinearMap.range (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ)).toAddSubgroup =
+    (toLp p μ 𝕜 : C(α, E) →L[𝕜] Lp E p μ).range.toAddSubgroup =
       MeasureTheory.Lp.boundedContinuousFunction E p μ := by
   refine SetLike.ext' ?_
   have := (linearIsometryBoundedOfCompact α E 𝕜).surjective
   convert Function.Surjective.range_comp this (BoundedContinuousFunction.toLp (E := E) p μ 𝕜)
   rw [← BoundedContinuousFunction.range_toLp p μ (𝕜 := 𝕜), Submodule.coe_toAddSubgroup,
-    LinearMap.coe_range]
+    LinearMap.coe_range, ContinuousLinearMap.coe_coe]
 
 variable {p}
 

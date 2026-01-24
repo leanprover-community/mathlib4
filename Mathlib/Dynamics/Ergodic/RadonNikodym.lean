@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.Topology.Order.CountableSeparating
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.Topology.Order.CountableSeparating
 
 /-!
 # Radon-Nikodym derivative of invariant measures
@@ -22,6 +24,8 @@ and the other is σ-finite.
 It isn't clear if the finiteness assumptions are optimal in this file.
 We should either weaken them, or describe an example showing that it's impossible.
 -/
+
+public section
 
 open MeasureTheory Measure Set
 

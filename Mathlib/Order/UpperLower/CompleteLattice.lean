@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`
@@ -18,6 +20,8 @@ pulled back across the canonical injection (`UpperSet.carrier`, `LowerSet.carrie
 Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
 makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 -/
+
+@[expose] public section
 
 open OrderDual Set
 
@@ -170,8 +174,6 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
 theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
 
-@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
-
 @[simp]
 theorem mem_bot : a ∈ (⊥ : UpperSet α) :=
   trivial
@@ -307,8 +309,6 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
 @[simp]
 theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
-
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup_iff : a ∈ s ⊔ t ↔ a ∈ s ∨ a ∈ t :=
@@ -486,9 +486,9 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.total_le : @Std.Total (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.total_le : @Std.Total (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 
 noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _

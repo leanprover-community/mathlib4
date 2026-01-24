@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # The property of being of cardinality less than a cardinal
@@ -13,6 +15,8 @@ Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
 
 -/
+
+@[expose] public section
 
 universe w v u u'
 

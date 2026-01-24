@@ -3,8 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+module
 
-import Mathlib.Probability.Kernel.Composition.Comp
+public import Mathlib.Probability.Kernel.Composition.Comp
 
 /-!
 # Risk of an estimator
@@ -30,6 +31,8 @@ to that integral as `risk` in lemma names.
 * `minimaxRisk ℓ P`: minimax risk, infimum over all estimators of the maximum over `θ` of the risk.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped ENNReal

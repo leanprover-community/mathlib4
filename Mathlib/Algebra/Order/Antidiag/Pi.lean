@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-import Mathlib.Data.Finset.Sym
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+public import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -39,6 +41,8 @@ identification. See `Finset.finAntidiag` for the details.
 `Finset.finsuppAntidiag` for the `Finset (ι →₀ μ)`-valued version of `Finset.piAntidiag`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {ι μ μ' : Type*}
@@ -54,6 +58,7 @@ In this section, we define the antidiagonals in `Fin d → μ` by recursion on `
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
 -/
 
+set_option backward.proofsInPublic true in
 /-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
 TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
@@ -223,7 +228,7 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
   simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
-  aesop
+  grind
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map

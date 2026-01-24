@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Slope
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions
@@ -30,6 +32,8 @@ theory.
 
 `Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
+
+public section
 
 open Real Set NNReal
 
@@ -219,7 +223,7 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
     _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
-    _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
+    _ = log (-(a • x + b • y)) := by congr 1; simp only [smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
 
 namespace Real

@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preserving (co)kernels
@@ -15,6 +17,8 @@ to concrete (co)forks.
 In particular, we show that `kernel_comparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,0`, as well as the dual result.
 -/
+
+@[expose] public section
 
 
 noncomputable section

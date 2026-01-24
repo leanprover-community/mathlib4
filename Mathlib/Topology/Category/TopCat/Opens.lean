@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.GaloisConnection
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Topology.Category.TopCat.EpiMono
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.CategoryTheory.Category.GaloisConnection
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Topology.Category.TopCat.EpiMono
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # The category of open sets in a topological space.
@@ -26,6 +28,8 @@ We don't attempt to set up the full theory here, but do provide the natural isom
 
 Beyond that, there's a collection of simp lemmas for working with these constructions.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory TopologicalSpace Opposite Topology
@@ -149,6 +153,10 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
+
+@[simp]
+theorem mem_map {f : X ⟶ Y} {U : Opens Y} {x : X} :
+    x ∈ (map f).obj U ↔ f.hom x ∈ U := .rfl
 
 @[simp]
 theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=

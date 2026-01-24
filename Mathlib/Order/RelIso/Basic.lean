@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -30,6 +31,8 @@ isomorphisms.
 * `↪r`: `RelEmbedding`
 * `≃r`: `RelIso`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -71,11 +74,15 @@ namespace RelHomClass
 
 variable {F : Type*} [FunLike F α β]
 
-protected theorem isIrrefl [RelHomClass F r s] (f : F) : ∀ [IsIrrefl β s], IsIrrefl α r
+protected theorem irrefl [RelHomClass F r s] (f : F) : ∀ [Std.Irrefl s], Std.Irrefl r
   | ⟨H⟩ => ⟨fun _ h => H _ (map_rel f h)⟩
 
-protected theorem isAsymm [RelHomClass F r s] (f : F) : ∀ [IsAsymm β s], IsAsymm α r
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelHomClass.irrefl
+
+protected theorem asymm [RelHomClass F r s] (f : F) : ∀ [Std.Asymm s], Std.Asymm r
   | ⟨H⟩ => ⟨fun _ _ h₁ h₂ => H _ _ (map_rel f h₁) (map_rel f h₂)⟩
+
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelHomClass.asymm
 
 protected theorem acc [RelHomClass F r s] (f : F) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -151,7 +158,7 @@ end RelHom
 
 /-- An increasing function is injective -/
 theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
-    [IsIrrefl β s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
+    [Std.Irrefl s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
   rcases trichotomous_of r x y with (h | h | h)
   · have := hf h
@@ -165,7 +172,7 @@ theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop
     exact irrefl_of s (f y) this
 
 /-- An increasing function is injective -/
-theorem RelHom.injective_of_increasing [IsTrichotomous α r] [IsIrrefl β s] (f : r →r s) :
+theorem RelHom.injective_of_increasing [IsTrichotomous α r] [Std.Irrefl s] (f : r →r s) :
     Injective f :=
   _root_.injective_of_increasing r s f f.map_rel
 
@@ -201,7 +208,6 @@ def toRelHom (f : r ↪r s) : r →r s where
 instance : Coe (r ↪r s) (r →r s) :=
   ⟨toRelHom⟩
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : FunLike (r ↪r s) α β where
   coe x := x.toFun
   coe_injective' f g h := by
@@ -209,7 +215,6 @@ instance : FunLike (r ↪r s) α β where
     rcases g with ⟨⟨⟩⟩
     congr
 
--- TODO: define and instantiate a `RelEmbeddingClass` when `EmbeddingLike` is defined
 instance : RelHomClass (r ↪r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -291,38 +296,50 @@ theorem eq_preimage (f : r ↪r s) : r = f ⁻¹'o s := by
   ext a b
   exact f.map_rel_iff.symm
 
-protected theorem isIrrefl (f : r ↪r s) [IsIrrefl β s] : IsIrrefl α r :=
+protected theorem irrefl (f : r ↪r s) [Std.Irrefl s] : Std.Irrefl r :=
   ⟨fun a => mt f.map_rel_iff.2 (irrefl (f a))⟩
 
-protected theorem isRefl (f : r ↪r s) [IsRefl β s] : IsRefl α r :=
+@[deprecated (since := "2026-01-07")] protected alias isIrrefl := RelEmbedding.irrefl
+
+protected theorem stdRefl (f : r ↪r s) [Std.Refl s] : Std.Refl r :=
   ⟨fun _ => f.map_rel_iff.1 <| refl _⟩
 
-protected theorem isSymm (f : r ↪r s) [IsSymm β s] : IsSymm α r :=
+@[deprecated (since := "2026-01-08")] protected alias isRefl := RelEmbedding.stdRefl
+
+protected theorem symm (f : r ↪r s) [Std.Symm s] : Std.Symm r :=
   ⟨fun _ _ => imp_imp_imp f.map_rel_iff.2 f.map_rel_iff.1 symm⟩
 
-protected theorem isAsymm (f : r ↪r s) [IsAsymm β s] : IsAsymm α r :=
+@[deprecated (since := "2026-01-06")] protected alias isSymm := RelEmbedding.symm
+
+protected theorem asymm (f : r ↪r s) [Std.Asymm s] : Std.Asymm r :=
   ⟨fun _ _ h₁ h₂ => asymm (f.map_rel_iff.2 h₁) (f.map_rel_iff.2 h₂)⟩
 
-protected theorem isAntisymm : ∀ (_ : r ↪r s) [IsAntisymm β s], IsAntisymm α r
+@[deprecated (since := "2026-01-07")] protected alias isAsymm := RelEmbedding.asymm
+
+protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ h₁ h₂ => f.inj' (H _ _ (o.2 h₁) (o.2 h₂))⟩
+
+@[deprecated (since := "2026-01-06")] protected alias isAntisymm := RelEmbedding.antisymm
 
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
-protected theorem isTotal : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
+protected theorem total : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
 
+@[deprecated (since := "2026-01-09")] protected alias isTotal := RelEmbedding.total
+
 protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
-  | f, _ => { f.isRefl, f.isTrans with }
+  | f, _ => { f.stdRefl, f.isTrans with }
 
 protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsPartialOrder α r
-  | f, _ => { f.isPreorder, f.isAntisymm with }
+  | f, _ => { f.isPreorder, f.antisymm with }
 
 protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
-  | f, _ => { f.isPartialOrder, f.isTotal with }
+  | f, _ => { f.isPartialOrder, f.total with }
 
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
-  | f, _ => { f.isIrrefl, f.isTrans with }
+  | f, _ => { f.irrefl, f.isTrans with }
 
 protected theorem isTrichotomous : ∀ (_ : r ↪r s) [IsTrichotomous β s], IsTrichotomous α r
   | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o (or_congr f.inj'.eq_iff o)).1 (H _ _)⟩
@@ -419,23 +436,23 @@ namespace RelEmbedding
 /-- To define a relation embedding from an antisymmetric relation `r` to a reflexive relation `s`
 it suffices to give a function together with a proof that it satisfies `s (f a) (f b) ↔ r a b`.
 -/
-def ofMapRelIff (f : α → β) [IsAntisymm α r] [IsRefl β s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
+def ofMapRelIff (f : α → β) [Std.Antisymm r] [Std.Refl s] (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     r ↪r s where
   toFun := f
   inj' _ _ h := antisymm ((hf _ _).1 (h ▸ refl _)) ((hf _ _).1 (h ▸ refl _))
   map_rel_iff' := hf _ _
 
 @[simp]
-theorem ofMapRelIff_coe (f : α → β) [IsAntisymm α r] [IsRefl β s]
+theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [Std.Refl s]
     (hf : ∀ a b, s (f a) (f b) ↔ r a b) :
     (ofMapRelIff f hf : r ↪r s) = f :=
   rfl
 
 /-- It suffices to prove `f` is monotone between strict relations
   to show it is a relation embedding. -/
-def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
+def ofMonotone [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
-  haveI := @IsAsymm.isIrrefl β s _
+  haveI := @Std.Asymm.irrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
   · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
     · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
@@ -446,7 +463,7 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
     · exact asymm (H _ _ h') h
 
 @[simp]
-theorem ofMonotone_coe [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H) :
+theorem ofMonotone_coe [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H) :
     (@ofMonotone _ _ r s _ _ f H : α → β) = f :=
   rfl
 
@@ -541,12 +558,10 @@ theorem toEquiv_injective : Injective (toEquiv : r ≃r s → α ≃ β)
 instance : CoeOut (r ≃r s) (r ↪r s) :=
   ⟨toRelEmbedding⟩
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : FunLike (r ≃r s) α β where
   coe x := x
   coe_injective' := Equiv.coe_fn_injective.comp toEquiv_injective
 
--- TODO: define and instantiate a `RelIsoClass` when `EquivLike` is defined
 instance : RelHomClass (r ≃r s) r s where
   map_rel f _ _ := Iff.mpr (map_rel_iff' f)
 
@@ -661,17 +676,14 @@ protected def cast {α β : Type u} {r : α → α → Prop} {s : β → β → 
     rw [eq_of_heq h₂]
     rfl⟩
 
-@[simp]
 protected theorem cast_symm {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} (h₁ : α = β)
     (h₂ : r ≍ s) : (RelIso.cast h₁ h₂).symm = RelIso.cast h₁.symm h₂.symm :=
   rfl
 
-@[simp]
 protected theorem cast_refl {α : Type u} {r : α → α → Prop} (h₁ : α = α := rfl)
     (h₂ : r ≍ r := HEq.rfl) : RelIso.cast h₁ h₂ = RelIso.refl r :=
   rfl
 
-@[simp]
 protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : β → β → Prop}
     {t : γ → γ → Prop} (h₁ : α = β) (h₁' : β = γ) (h₂ : r ≍ s) (h₂' : s ≍ t) :
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
@@ -792,13 +804,13 @@ def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] :
   ⟨Equiv.emptySum _ _, by simp⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
-def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
-    [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
+def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [Std.Irrefl r]
+    [Std.Irrefl s] [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
 /-- Two reflexive relations on a unique type are isomorphic. -/
-def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
+def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [Std.Refl r] [Std.Refl s]
     [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
 

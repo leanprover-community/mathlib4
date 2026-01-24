@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Semicontinuous
+module
+
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`
@@ -22,6 +24,8 @@ We prove basic properties of the topology on `EReal`.
 
 Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

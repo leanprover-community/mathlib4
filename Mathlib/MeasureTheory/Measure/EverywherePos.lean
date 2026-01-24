@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Tactic.Group
-import Mathlib.Topology.UrysohnsLemma
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -36,6 +38,8 @@ assuming additionally that `s` has finite measure.
   measures.
 -/
 
+@[expose] public section
+
 open scoped Topology ENNReal NNReal
 open Set Filter
 
@@ -60,7 +64,7 @@ lemma everywherePosSubset_subset (μ : Measure α) (s : Set α) : μ.everywhereP
 /-- The everywhere positive subset of a set is obtained by removing an open set. -/
 lemma exists_isOpen_everywherePosSubset_eq_diff (μ : Measure α) (s : Set α) :
     ∃ u, IsOpen u ∧ μ.everywherePosSubset s = s \ u := by
-  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, zero_lt_iff]⟩
+  refine ⟨{x | ∃ n ∈ 𝓝[s] x, μ n = 0}, ?_, by ext x; simp [everywherePosSubset, pos_iff_ne_zero]⟩
   rw [isOpen_iff_mem_nhds]
   intro x ⟨n, ns, hx⟩
   rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 ns with ⟨v, vx, hv⟩
@@ -240,19 +244,19 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   intro x hx
   choose v hv y hy hvy using mem_iInter.1 hx
   obtain ⟨z, zk, hz⟩ : ∃ z ∈ k, MapClusterPt z atTop y := hk.exists_mapClusterPt (by simp [hy])
-  have A n : μ (((x * z ⁻¹) • k) \ k) ≤ u n := by
+  have A n : μ (((x * z⁻¹) • k) \ k) ≤ u n := by
     apply le_of_lt (hW _ _ ?_)
     have : W n * {z} ∈ 𝓝 z := (IsOpen.mul_right (W_open n)).mem_nhds (by simp [mem_W])
     obtain ⟨i, hi, ni⟩ : ∃ i, y i ∈ W n * {z} ∧ n < i :=
       ((hz.frequently this).and_eventually (eventually_gt_atTop n)).exists
     refine ⟨x * (y i) ⁻¹, ?_, y i * z⁻¹, by simpa using hi, by group⟩
     have I : V i ⊆ W n := iInter₂_subset n (by simp [ni])
-    have J : x * (y i) ⁻¹ ∈ V i := by simpa [← hvy i] using hv i
+    have J : x * (y i)⁻¹ ∈ V i := by simpa [← hvy i] using hv i
     exact I J
-  have B : μ (((x * z ⁻¹) • k) \ k) = 0 :=
+  have B : μ (((x * z⁻¹) • k) \ k) = 0 :=
     le_antisymm (ge_of_tendsto u_lim (Eventually.of_forall A)) bot_le
   have C : μ (k \ (z * x⁻¹) • k) = 0 := by
-    have : μ ((z * x⁻¹) • (((x * z ⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
+    have : μ ((z * x⁻¹) • (((x * z⁻¹) • k) \ k)) = 0 := by rwa [measure_smul]
     rw [← this, smul_set_sdiff, smul_smul]
     group
     simp
@@ -260,7 +264,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   have : k ∩ ((z * x⁻¹) • k)ᶜ ∈ 𝓝[k] z := by
     apply inter_mem_nhdsWithin k
     apply IsOpen.mem_nhds (by simpa using h'k.smul _)
-    simp only [mem_compl_iff]
+    push _ ∈ _
     contrapose! H
     simpa [mem_smul_set_iff_inv_smul_mem] using H
   have : 0 < μ (k \ ((z * x⁻¹) • k)) := h z zk _ this

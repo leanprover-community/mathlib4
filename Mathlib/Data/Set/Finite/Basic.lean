@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Tactic.Nontriviality
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Finite sets
@@ -37,6 +39,8 @@ instances since they do not compute anything.
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -474,8 +478,7 @@ variable {s t u : Set α} {a : α}
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
   s.toFinite
 
-theorem finite_univ [Finite α] : (@univ α).Finite :=
-  Set.toFinite _
+@[simp] theorem finite_univ [Finite α] : (@univ α).Finite := Set.toFinite _
 
 theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α).finite_iff
 
@@ -514,18 +517,19 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
+@[simp] theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
 
+@[simp]
 lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
 
 lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
   mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
   mpr htu := (hst.union htu).subset (symmDiff_triangle ..)
 
-@[simp]
+@[simp, grind .]
 theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 
@@ -663,6 +667,9 @@ theorem finite_union {s t : Set α} : (s ∪ t).Finite ↔ s.Finite ∧ t.Finite
 
 theorem finite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) : (f '' s).Finite ↔ s.Finite :=
   ⟨fun h => h.of_finite_image hi, Finite.image _⟩
+
+lemma finite_range_iff {f : α → β} (hf : f.Injective) : (range f).Finite ↔ Finite α := by
+  simpa [finite_univ_iff] using finite_image_iff (s := univ) hf.injOn
 
 theorem univ_finite_iff_nonempty_fintype : (univ : Set α).Finite ↔ Nonempty (Fintype α) :=
   ⟨fun h => ⟨fintypeOfFiniteUniv h⟩, fun ⟨_i⟩ => finite_univ⟩
@@ -813,14 +820,8 @@ theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h
 
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finite := Infinite.exists_notMem_finite
-
 lemma Infinite.exists_notMem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_notMem_finite t.finite_toSet
-
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finset := Infinite.exists_notMem_finset
 
 section Infinite
 variable [Infinite α]
@@ -828,12 +829,7 @@ variable [Infinite α]
 lemma Finite.exists_notMem (hs : s.Finite) : ∃ a, a ∉ s := by
   by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
-@[deprecated (since := "2025-05-23")] alias Finite.exists_not_mem := Finite.exists_notMem
-
 lemma _root_.Finset.exists_notMem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Finset.exists_not_mem := _root_.Finset.exists_notMem
 
 end Infinite
 
@@ -865,9 +861,8 @@ theorem infinite_image_iff {s : Set α} {f : α → β} (hi : InjOn f s) :
     (f '' s).Infinite ↔ s.Infinite :=
   not_congr <| finite_image_iff hi
 
-theorem infinite_range_iff {f : α → β} (hi : Injective f) :
-    (range f).Infinite ↔ Infinite α := by
-  rw [← image_univ, infinite_image_iff hi.injOn, infinite_univ_iff]
+theorem infinite_range_iff {f : α → β} (hf : Injective f) : (range f).Infinite ↔ Infinite α := by
+  simpa using (finite_range_iff hf).not
 
 protected alias ⟨_, Infinite.image⟩ := infinite_image_iff
 

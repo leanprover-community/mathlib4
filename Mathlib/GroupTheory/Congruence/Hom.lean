@@ -3,8 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.GroupTheory.Congruence.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Congruence relations and homomorphisms
@@ -23,6 +25,8 @@ This file contains elementary definitions involving congruence relations and mor
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -95,6 +99,7 @@ theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Su
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
 
+set_option backward.proofsInPublic true in
 /-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
 bijection between the set of congruence relations containing `c` and the congruence relations
 on the quotient of `M` by `c`. -/
@@ -254,7 +259,7 @@ relation on `M` whose induced map from the quotient of `M` to `P` is injective. 
 is the unique additive congruence relation on `M` whose induced map from the quotient of `M`
 to `P` is injective. -/]
 theorem ker_eq_lift_of_injective (H : c ≤ ker f) (h : Injective (c.lift f H)) : ker f = c :=
-  toSetoid_inj <| Setoid.ker_eq_lift_of_injective f H h
+  toSetoid_injective <| Setoid.ker_eq_lift_of_injective f H h
 
 variable {c}
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, David Swinarski
 -/
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.LocalProperties.Submodule
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.LocalProperties.Submodule
 
 /-!
 
@@ -24,6 +26,8 @@ import Mathlib.RingTheory.LocalProperties.Submodule
 - Show that being projective is Zariski-local (very hard)
 
 -/
+
+public section
 
 universe uM
 
@@ -121,8 +125,6 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.fg_top
-  have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)

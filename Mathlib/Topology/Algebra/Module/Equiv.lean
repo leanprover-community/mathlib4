@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Continuous linear equivalences
@@ -12,6 +14,8 @@ import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -99,14 +103,11 @@ variable (R φ)
 of `φ` is linearly equivalent to the product over `I`. -/
 def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
     (hu : Set.univ ⊆ I ∪ J) :
-    (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) :
-    Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
+    (⨅ i ∈ J, (proj i : (∀ i, φ i) →L[R] φ i).ker : Submodule R (∀ i, φ i)) ≃L[R] ∀ i : I, φ i where
   toLinearEquiv := LinearMap.iInfKerProjEquiv R φ hd hu
   continuous_toFun :=
     continuous_pi fun i =>
-      Continuous.comp (continuous_apply (A := φ) i) <|
-        @continuous_subtype_val _ _ fun x =>
-          x ∈ (⨅ i ∈ J, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i))
+      Continuous.comp (continuous_apply (A := φ) i) <| continuous_subtype_val
   continuous_invFun :=
     Continuous.subtype_mk
       (continuous_pi fun i => by
@@ -297,18 +298,12 @@ protected def symm (e : M₁ ≃SL[σ₁₂] M₂) : M₂ ≃SL[σ₂₁] M₁ :
 theorem toLinearEquiv_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toLinearEquiv = e.toLinearEquiv.symm :=
   rfl
 
-@[deprecated (since := "2025-06-08")] alias symm_toLinearEquiv := toLinearEquiv_symm
-
 @[simp]
 theorem coe_symm_toLinearEquiv (e : M₁ ≃SL[σ₁₂] M₂) : ⇑e.toLinearEquiv.symm = e.symm :=
   rfl
 
 @[simp]
 theorem toHomeomorph_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.toHomeomorph = e.toHomeomorph.symm :=
-  rfl
-
-@[deprecated "use instead `toHomeomorph_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toHomeomorph (e : M₁ ≃SL[σ₁₂] M₂) : e.toHomeomorph.symm = e.symm.toHomeomorph :=
   rfl
 
 @[simp]
@@ -349,14 +344,10 @@ def prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁
     continuous_toFun := e.continuous_toFun.prodMap e'.continuous_toFun
     continuous_invFun := e.continuous_invFun.prodMap e'.continuous_invFun }
 
-@[deprecated (since := "2025-06-06")] alias prod := prodCongr
-
 @[simp, norm_cast]
 theorem prodCongr_apply [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) (x) : e.prodCongr e' x = (e x.1, e' x.2) :=
   rfl
-
-@[deprecated (since := "2025-06-06")] alias prod_apply := prodCongr_apply
 
 @[simp, norm_cast]
 theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
@@ -364,13 +355,9 @@ theorem coe_prodCongr [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (
     (e.prodCongr e' : M₁ × M₃ →L[R₁] M₂ × M₄) = (e : M₁ →L[R₁] M₂).prodMap (e' : M₃ →L[R₁] M₄) :=
   rfl
 
-@[deprecated (since := "2025-06-06")] alias coe_prod := coe_prodCongr
-
 theorem prodCongr_symm [Module R₁ M₂] [Module R₁ M₃] [Module R₁ M₄] (e : M₁ ≃L[R₁] M₂)
     (e' : M₃ ≃L[R₁] M₄) : (e.prodCongr e').symm = e.symm.prodCongr e'.symm :=
   rfl
-
-@[deprecated (since := "2025-06-06")] alias prod_symm := prodCongr_symm
 
 variable (R₁ M₁ M₂)
 
@@ -523,6 +510,12 @@ theorem apply_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) (c : M₂) : e (e.symm 
 theorem symm_apply_apply (e : M₁ ≃SL[σ₁₂] M₂) (b : M₁) : e.symm (e b) = b :=
   e.1.left_inv b
 
+@[simp] theorem symm_trans_self (e : M₁ ≃SL[σ₁₂] M₂) : e.symm.trans e = .refl R₂ M₂ :=
+  ext <| funext fun _ ↦ apply_symm_apply _ _
+
+@[simp] theorem self_trans_symm (e : M₁ ≃SL[σ₁₂] M₂) : e.trans e.symm = .refl R₁ M₁ :=
+  ext <| funext fun _ ↦ symm_apply_apply _ _
+
 @[simp]
 theorem symm_trans_apply (e₁ : M₂ ≃SL[σ₂₁] M₁) (e₂ : M₃ ≃SL[σ₃₂] M₂) (c : M₁) :
     (e₂.trans e₁).symm c = e₂.symm (e₁.symm c) :=
@@ -653,6 +646,11 @@ theorem symm_equivOfInverse' (f₁ : M₁ →SL[σ₁₂] M₂) (f₂ h₁ h₂)
     (equivOfInverse' f₁ f₂ h₁ h₂).symm = equivOfInverse' f₂ f₁ h₂ h₁ :=
   rfl
 
+theorem eq_comp_toContinuousLinearMap_symm (e₁₂ : M₁ ≃SL[σ₁₂] M₂) [RingHomCompTriple σ₂₁ σ₁₃ σ₂₃]
+    (f : M₂ →SL[σ₂₃] M₃) (g : M₁ →SL[σ₁₃] M₃) :
+    f = g.comp e₁₂.symm.toContinuousLinearMap ↔ f.comp e₁₂.toContinuousLinearMap = g := by
+  aesop
+
 variable (M₁)
 
 /-- The continuous linear equivalences from `M` to itself form a group under composition. -/
@@ -660,18 +658,10 @@ instance automorphismGroup : Group (M₁ ≃L[R₁] M₁) where
   mul f g := g.trans f
   one := ContinuousLinearEquiv.refl R₁ M₁
   inv f := f.symm
-  mul_assoc f g h := by
-    ext
-    rfl
-  mul_one f := by
-    ext
-    rfl
-  one_mul f := by
-    ext
-    rfl
-  inv_mul_cancel f := by
-    ext x
-    exact f.left_inv x
+  mul_assoc f g h := rfl
+  mul_one f := rfl
+  one_mul f := rfl
+  inv_mul_cancel f := ext <| funext fun _ ↦ f.left_inv _
 
 variable {M₁} {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₃₄ : R₃ →+* R₄} {σ₄₃ : R₄ →+* R₃}
   [RingHomInvPair σ₃₄ σ₄₃] [RingHomInvPair σ₄₃ σ₃₄] {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄}
@@ -784,7 +774,7 @@ section Aut
 /-!
 ### Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
 
-The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
+The next theorems cover the identification between `M ≃L[R] M` and the group of units of the ring
 `M →L[R] M`.
 -/
 
@@ -1001,8 +991,8 @@ variable [Module R M₂] [IsTopologicalAddGroup M]
 linear equivalence `e` between `M` and `M₂ × f₁.ker` such that `(e x).2 = x` for `x ∈ f₁.ker`,
 `(e x).1 = f₁ x`, and `(e (f₂ y)).2 = 0`. The map is given by `e x = (f₁ x, x - f₂ (f₁ x))`. -/
 def equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M) (h : Function.RightInverse f₂ f₁) :
-    M ≃L[R] M₂ × ker f₁ :=
-  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod (ker f₁).subtypeL)
+    M ≃L[R] M₂ × f₁.ker :=
+  equivOfInverse (f₁.prod (f₁.projKerOfRightInverse f₂ h)) (f₂.coprod f₁.ker.subtypeL)
     (fun x => by simp) fun ⟨x, y⟩ => by simp [h x]
 
 @[simp]
@@ -1018,7 +1008,7 @@ theorem snd_equivOfRightInverse (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
 
 @[simp]
 theorem equivOfRightInverse_symm_apply (f₁ : M →L[R] M₂) (f₂ : M₂ →L[R] M)
-    (h : Function.RightInverse f₂ f₁) (y : M₂ × ker f₁) :
+    (h : Function.RightInverse f₂ f₁) (y : M₂ × f₁.ker) :
     (equivOfRightInverse f₁ f₂ h).symm y = f₂ y.1 + y.2 :=
   rfl
 
@@ -1173,8 +1163,6 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M
   simp
   rfl
 
-@[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
-
 /-- The function `ContinuousLinearEquiv.inverse` can be written in terms of `Ring.inverse` for the
 ring of self-maps of the domain. -/
 theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
@@ -1194,18 +1182,68 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
     rw [hF]
     simp
 
-@[deprecated (since := "2025-04-22")] alias to_ring_inverse := inverse_eq_ringInverse
-
 theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
   ext
   simp [inverse_eq_ringInverse (ContinuousLinearEquiv.refl R M)]
 
-@[deprecated (since := "2025-04-22")]
-alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
-
 @[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
+
+namespace IsInvertible
+
+variable {f : M →L[R] M₂}
+
+@[simp]
+theorem self_comp_inverse (hf : f.IsInvertible) : f ∘L f.inverse = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem self_apply_inverse (hf : f.IsInvertible) (y : M₂) : f (f.inverse y) = y := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_comp_self (hf : f.IsInvertible) : f.inverse ∘L f = .id _ _ := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+theorem inverse_apply_self (hf : f.IsInvertible) (y : M) : f.inverse (f y) = y := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem bijective (hf : f.IsInvertible) : Function.Bijective f := by
+  rcases hf with ⟨e, rfl⟩
+  simp [ContinuousLinearEquiv.bijective]
+
+protected theorem injective (hf : f.IsInvertible) : Function.Injective f :=
+  hf.bijective.injective
+
+protected theorem surjective (hf : f.IsInvertible) : Function.Surjective f :=
+  hf.bijective.surjective
+
+protected theorem inverse (hf : f.IsInvertible) : f.inverse.IsInvertible := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+@[simp]
+protected theorem inverse_inverse (hf : f.IsInvertible) : f.inverse.inverse = f := by
+  rcases hf with ⟨e, rfl⟩
+  simp
+
+protected theorem of_isInvertible_inverse (hf : f.inverse.IsInvertible) : f.IsInvertible := by
+  by_contra H
+  obtain ⟨_, _⟩ : Subsingleton M₂ ∧ Subsingleton M := by simpa [inverse, H] using hf
+  simp_all [Subsingleton.elim f 0]
+
+@[simp]
+theorem _root_.ContinuousLinearMap.isInvertible_inverse_iff :
+    f.inverse.IsInvertible ↔ f.IsInvertible :=
+  ⟨.of_isInvertible_inverse, .inverse⟩
+
+end IsInvertible
 
 /-- Composition of a map on a product with the exchange of the product factors -/
 theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ →L[R] M) :
@@ -1213,6 +1251,98 @@ theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ �
   ext <;> simp
 
 end ContinuousLinearMap
+
+-- Restricting a continuous linear equivalence to a map between submodules.
+section map
+
+namespace ContinuousLinearEquiv
+
+variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [TopologicalSpace M]
+  [AddCommMonoid M₂] [TopologicalSpace M₂]
+  {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+  {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+
+/-- Continuous linear equivalence between two equal submodules:
+this is `LinearEquiv.ofEq` as a continuous linear equivalence -/
+def ofEq (p q : Submodule R M) (h : p = q) : p ≃L[R] q where
+  toLinearEquiv := LinearEquiv.ofEq _ _ h
+  continuous_toFun := by
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    exact (Homeomorph.ofEqSubtypes h').continuous
+  continuous_invFun := by
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    exact (Homeomorph.ofEqSubtypes h').symm.continuous
+
+/--
+A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from any submodule `p` of the domain onto the image of that submodule.
+
+This is the continuous linear version of `LinearEquiv.submoduleMap`.
+This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
+-/
+def submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
+    p ≃SL[σ₁₂] Submodule.map (e : M →ₛₗ[σ₁₂] M₂) p where
+  __ := LinearEquiv.submoduleMap e.toLinearEquiv p
+  continuous_toFun := map_continuous ((e.toContinuousLinearMap.comp p.subtypeL).codRestrict _ _)
+  continuous_invFun := (map_continuous e.symm).restrict fun x hx ↦
+    ((LinearEquiv.submoduleMap e.toLinearEquiv p).symm ⟨x, hx⟩).2
+
+@[simp]
+lemma submoduleMap_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (x : p) :
+    e.submoduleMap p x = e x := by
+  rfl
+
+@[simp]
+lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M)
+    (x : p.map (e : M →ₛₗ[σ₁₂] M₂)) :
+    (e.submoduleMap p).symm x = e.symm x := by
+  rfl
+
+/-- A continuous linear equivalence which maps a submodule of one module onto another,
+restricts to a continuous linear equivalence of the two submodules.
+This is `LinearEquiv.ofSubmodules` as a continuous linear equivalence. -/
+def ofSubmodules (e : M ≃SL[σ₁₂] M₂)
+    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
+  (e.submoduleMap p).trans (.ofEq _ _ h)
+
+@[simp]
+theorem ofSubmodules_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : p) :
+    e.ofSubmodules p q h x = e x :=
+  rfl
+
+@[simp]
+theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map (e : M →ₛₗ[σ₁₂] M₂) = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
+  rfl
+
+/-- A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from the preimage of any submodule to that submodule.
+This is `ContinuousLinearEquiv.ofSubmodule` but with `comap` on the left
+instead of `map` on the right. -/
+def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    U.comap (f : M →ₛₗ[σ₁₂] M₂) ≃SL[σ₁₂] U :=
+  f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.toLinearEquiv.symm) |>.symm
+
+theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    (f.ofSubmodule' U).toContinuousLinearMap =
+      (f.toContinuousLinearMap.comp ((U.comap f.toLinearMap).subtypeL)).codRestrict U
+        ((fun ⟨x, hx⟩ ↦ by simpa [Submodule.mem_comap])) := by
+  rfl
+
+@[simp]
+theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂)
+    (x : U.comap (f : M →ₛₗ[σ₁₂] M₂)) :
+    (f.ofSubmodule' U x : M₂) = f (x : M) :=
+  rfl
+
+@[simp]
+theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U) :
+    ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) := rfl
+
+end ContinuousLinearEquiv
+
+end map
 
 namespace Submodule
 
@@ -1231,7 +1361,7 @@ lemma ClosedComplemented.exists_submodule_equiv_prod [IsTopologicalAddGroup M]
     ∃ (q : Submodule R M) (e : M ≃L[R] (p × q)),
       (∀ x : p, e x = (x, 0)) ∧ (∀ y : q, e y = (0, y)) ∧ (∀ x, e.symm x = x.1 + x.2) :=
   let ⟨f, hf⟩ := hp
-  ⟨LinearMap.ker f, .equivOfRightInverse _ p.subtypeL hf,
+  ⟨f.ker, .equivOfRightInverse f p.subtypeL hf,
     fun _ ↦ by ext <;> simp [hf], fun _ ↦ by ext <;> simp, fun _ ↦ rfl⟩
 
 end Submodule

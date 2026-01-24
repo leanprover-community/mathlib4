@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Preorder.Finite
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Tactic.Positivity.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Preorder.Finite
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.Positivity.Finset
 
 /-!
 # Ruzsa's covering lemma
@@ -15,6 +17,8 @@ import Mathlib.Tactic.Positivity.Finset
 This file proves the Ruzsa covering lemma. This says that, for `A`, `B` finsets, we can cover `A`
 with at most `#(A + B) / #B` copies of `B - B`.
 -/
+
+public section
 
 open scoped Pointwise
 

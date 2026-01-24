@@ -3,11 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -58,8 +60,12 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
 
+@[expose] public section
+
 open WithZero
 
+-- TODO: fix non-terminal simp; acts on 8 goals, leaving one
+set_option linter.flexible false in
 /-- The p-adic valuation on rationals, sending `p` to `(exp (-1) : ℤᵐ⁰)` -/
 def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   toFun x := if x = 0 then 0 else exp (-padicValRat p x)
@@ -72,7 +78,7 @@ def Rat.padicValuation (p : ℕ) [Fact p.Prime] : Valuation ℚ ℤᵐ⁰ where
   map_add_le_max' := by
     intros
     split_ifs
-    any_goals simp_all [- exp_neg]
+    any_goals simp_all [-exp_neg]
     rw [← min_le_iff]
     exact padicValRat.min_le_padicValRat_add ‹_›
 
@@ -315,12 +321,13 @@ end Valuation
 
 end PadicSeq
 
+-- Porting note: Commented out `padic_index_simp` tactic
+
+/-
 section
 
 open PadicSeq
 
--- Porting note: Commented out `padic_index_simp` tactic
-/-
 private unsafe def index_simp_core (hh hf hg : expr)
     (at_ : Interactive.Loc := Interactive.Loc.ns [none]) : tactic Unit := do
   let [v1, v2, v3] ← [hh, hf, hg].mapM fun n => tactic.mk_app `` stationary_point [n] <|> return n
@@ -338,9 +345,9 @@ unsafe def tactic.interactive.padic_index_simp (l : interactive.parse interactiv
     (at_ : interactive.parse interactive.types.location) : tactic Unit := do
   let [h, f, g] ← l.mapM tactic.i_to_expr
   index_simp_core h f g at_
--/
 
 end
+-/
 
 namespace PadicSeq
 
@@ -712,9 +719,12 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
 
+set_option backward.privateInPublic true in
 private theorem div_nat_pos (n : ℕ) : 0 < 1 / (n + 1 : ℚ) :=
   div_pos zero_lt_one (mod_cast succ_pos _)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `limSeq f`, for `f` a Cauchy sequence of `p`-adic numbers, is a sequence of rationals with the
 same limit point as `f`. -/
 def limSeq : ℕ → ℚ :=
@@ -964,9 +974,9 @@ lemma norm_natCast_lt_one_iff {n : ℕ} :
 lemma norm_intCast_eq_one_iff {z : ℤ} :
     ‖(z : ℚ_[p])‖ = 1 ↔ IsCoprime z p := by
   rw [← not_iff_not]
-  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff, - norm_intCast_lt_one_iff,
+  simp [Nat.coprime_comm, ← norm_natCast_lt_one_iff, -norm_intCast_lt_one_iff,
     Int.isCoprime_iff_gcd_eq_one, Nat.coprime_iff_gcd_eq_one, Int.gcd,
-    ← hp.out.dvd_iff_not_coprime, norm_natAbs, - cast_natAbs, norm_int_le_one]
+    ← hp.out.dvd_iff_not_coprime, norm_natAbs, -cast_natAbs, norm_int_le_one]
 
 @[simp]
 lemma norm_natCast_eq_one_iff {n : ℕ} :

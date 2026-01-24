@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Interval.Set.Group
+module
+
+public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Rounding
@@ -20,6 +21,8 @@ to the nearest integer.
 
 rounding
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -37,9 +40,33 @@ section LinearOrderedRing
 
 variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
-/-- `round` rounds a number to the nearest integer. `round (1 / 2) = 1` -/
+/--
+`round x` rounds `x` to the nearest integer, breaking ties towards positive infinity.
+
+`round (0.5 : ℚ) = 1`.
+-/
 def round (x : α) : ℤ :=
   if 2 * fract x < 1 then ⌊x⌋ else ⌈x⌉
+
+/-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
+
+TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`. -/
+theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
+  rw [← floor_add_fract x, round, fract_intCast_add, fract_fract, floor_intCast_add, mul_add,
+    ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,
+    Int.mul_add_ediv_left _ _ two_ne_zero, Int.cast_ofNat]
+  split_ifs with h <;> congr 1
+  · rw [Int.floor_eq_zero_iff.mpr, Int.floor_eq_zero_iff.mpr]
+    · simp
+    · simp [h]
+    · suffices fract x < 1 by simpa
+      refine lt_of_le_of_lt ?_ h
+      apply le_mul_of_one_le_left <;> simp
+  · have H : ⌊2 * fract x⌋ = 1 := by simpa [floor_eq_iff, ← two_mul, fract_lt_one] using h
+    suffices 0 < fract x by simp [this, H, ceil_eq_iff, (fract_lt_one _).le]
+    contrapose! h
+    grw [h]
+    simp
 
 @[simp]
 theorem round_zero : round (0 : α) = 0 := by simp [round]
@@ -56,6 +83,17 @@ theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) 
 
 @[simp]
 theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
+
+/-- Away from the points with fractional part `1 / 2`, `round x = ⌈2 * x⌉ / 2`. -/
+theorem round_eq_half_ceil_two_mul {x : α} (hx : 2 * fract x ≠ 1) : round x = ⌈2 * x⌉ / 2 := by
+  rcases em (2 * x ∈ range Int.cast) with ⟨m, hm⟩ | hx'
+  · rw [← hm, ceil_intCast]
+    rcases m.even_or_odd with ⟨m, rfl⟩ | ⟨m, rfl⟩
+    · obtain rfl : m = x := mul_left_cancel₀ two_ne_zero <| by simp [← hm, ← two_mul]
+      rw [round_intCast, ← two_mul, Int.mul_ediv_cancel_left _ two_ne_zero]
+    · refine absurd ?_ hx
+      exact (mul_fract_eq_one_iff_exists_int one_lt_two).mpr ⟨m, mod_cast hm.symm⟩
+  · rw [round_eq_div, (ceil_eq_floor_add_one_iff_notMem _).mpr hx']
 
 @[simp]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
@@ -127,7 +165,7 @@ theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
     rw [add_sub_assoc, add_comm, neg_add, neg_sub, le_add_neg_iff_add_le, sub_add_cancel,
       le_sub_comm]
     norm_cast
-    exact floor_le_sub_one_iff.mpr hx
+    rwa [le_sub_one_iff, floor_lt]
 
 end LinearOrderedRing
 
@@ -136,38 +174,21 @@ section LinearOrderedField
 variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
-  simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  rcases lt_or_ge (fract x) (1 / 2) with hx | hx
-  · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_intCast_add]
-    rw [if_pos hx, left_eq_add, floor_eq_iff, cast_zero, zero_add]
-    constructor
-    · linarith [fract_nonneg x]
-    · linarith
-  · have : ⌊fract x + 1 / 2⌋ = 1 := by
-      rw [floor_eq_iff]
-      constructor
-      · norm_num
-        linarith
-      · norm_num
-        linarith [fract_lt_one x]
-    rw [if_neg (not_lt.mpr hx), ← fract_add_floor x, add_assoc, add_left_comm, floor_intCast_add,
-      ceil_add_intCast, add_comm _ ⌊x⌋, add_right_inj, ceil_eq_iff, this, cast_one, sub_self]
-    constructor
-    · linarith
-    · linarith [fract_lt_one x]
+  rw [← cast_mul_floor_div_cancel_of_pos two_pos, round_eq_div]
+  simp [mul_add]
+
+theorem round_eq_iff {x : α} {n : ℤ} : round x = n ↔ x ∈ Ico (n - 1 / 2 : α) (n + 1 / 2) := by
+  norm_num [round_eq, floor_eq_iff, ← lt_sub_iff_add_lt, add_sub_assoc]
 
 @[simp]
-theorem round_two_inv : round (2⁻¹ : α) = 1 := by
-  simp only [round_eq, ← one_div, add_halves, floor_one]
+theorem round_two_inv : round (2⁻¹ : α) = 1 := by norm_num [round_eq_iff]
 
 @[simp]
-theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by
-  simp only [round_eq, ← one_div, neg_add_cancel, floor_zero]
+theorem round_neg_two_inv : round (-2⁻¹ : α) = 0 := by norm_num [round_eq_iff]
 
 @[simp]
 theorem round_eq_zero_iff {x : α} : round x = 0 ↔ x ∈ Ico (-(1 / 2)) ((1 : α) / 2) := by
-  rw [round_eq, floor_eq_zero_iff, add_mem_Ico_iff_left]
-  norm_num
+  simp [round_eq_iff]
 
 theorem abs_sub_round (x : α) : |x - round x| ≤ 1 / 2 := by
   rw [round_eq, abs_sub_le_iff]

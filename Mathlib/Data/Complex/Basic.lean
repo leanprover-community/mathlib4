@@ -3,12 +3,14 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Torsion
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers
@@ -17,6 +19,8 @@ The complex numbers are modelled as ℝ^2 in the obvious way and it is shown tha
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
 `Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset Algebra
 
@@ -214,8 +218,8 @@ theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [of
 
 theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal]
 
-lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal]
-lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal]
+lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re * r := by simp [ofReal]
+lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im * r := by simp [ofReal]
 
 theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
@@ -287,7 +291,7 @@ namespace SMul
 -- instance made scoped to avoid situations like instance synthesis
 -- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
 /-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
-`Mathlib/Data/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
+`Mathlib/LinearAlgebra/Complex/Module.lean` to transfer instances from `ℝ` to `ℂ`, but is not
 needed outside, so we make it scoped. -/
 scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
   smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
@@ -622,7 +626,7 @@ theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
-  simp only [RingHom.map_neg, mul_neg, neg_re, normSq_neg]
+  simp only [map_neg, mul_neg, neg_re, normSq_neg]
   ring
 
 /-! ### Inversion -/

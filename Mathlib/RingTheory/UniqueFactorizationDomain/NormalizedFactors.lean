@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
 # Unique factorization and normalization
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 variable {α : Type*}
@@ -24,7 +28,7 @@ local infixl:50 " ~ᵤ " => Associated
 
 namespace UniqueFactorizationMonoid
 
-variable [CancelCommMonoidWithZero α] [NormalizationMonoid α]
+variable [CommMonoidWithZero α] [NormalizationMonoid α]
 variable [UniqueFactorizationMonoid α]
 
 /-- Noncomputably determines the multiset of prime factors. -/
@@ -34,7 +38,7 @@ noncomputable def normalizedFactors (a : α) : Multiset α :=
 /-- An arbitrary choice of factors of `x : M` is exactly the (unique) normalized set of factors,
 if `M` has a trivial group of units. -/
 @[simp]
-theorem factors_eq_normalizedFactors {M : Type*} [CancelCommMonoidWithZero M]
+theorem factors_eq_normalizedFactors {M : Type*} [CommMonoidWithZero M]
     [UniqueFactorizationMonoid M] [Subsingleton Mˣ] (x : M) : factors x = normalizedFactors x := by
   unfold normalizedFactors
   convert (Multiset.map_id (factors x)).symm
@@ -108,8 +112,7 @@ theorem exists_mem_normalizedFactors_of_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irr
           _ = p * b := hb
           _ ~ᵤ Multiset.prod (p ::ₘ normalizedFactors b) := by
             rw [Multiset.prod_cons]
-            exact (prod_normalizedFactors hb0).symm.mul_left _
-          )
+            exact (prod_normalizedFactors hb0).symm.mul_left _)
   Multiset.exists_mem_of_rel_of_mem this (by simp)
 
 theorem exists_mem_normalizedFactors {x : α} (hx : x ≠ 0) (h : ¬IsUnit x) :
@@ -216,9 +219,6 @@ theorem zero_notMem_normalizedFactors (x : α) : (0 : α) ∉ normalizedFactors 
 
 theorem ne_zero_of_mem_normalizedFactors {x a : α} (hx : x ∈ normalizedFactors a) : x ≠ 0 :=
   ne_of_mem_of_not_mem hx <| zero_notMem_normalizedFactors a
-
-@[deprecated (since := "2025-05-23")]
-alias zero_not_mem_normalizedFactors := zero_notMem_normalizedFactors
 
 theorem dvd_of_mem_normalizedFactors {a p : α} (H : p ∈ normalizedFactors a) : p ∣ a := by
   by_cases hcases : a = 0
@@ -339,7 +339,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
     · apply Multiset.prod_ne_zero
       exact fun h ↦ hs (Multiset.mem_cons_of_mem h)
 
-variable {β : Type*} [CancelCommMonoidWithZero β] [NormalizationMonoid β]
+variable {β : Type*} [CommMonoidWithZero β] [NormalizationMonoid β]
   [UniqueFactorizationMonoid β] {F : Type*} [EquivLike F α β] [MulEquivClass F α β] {f : F}
 
 /--
@@ -371,7 +371,7 @@ namespace UniqueFactorizationMonoid
 
 open Multiset Associates
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/

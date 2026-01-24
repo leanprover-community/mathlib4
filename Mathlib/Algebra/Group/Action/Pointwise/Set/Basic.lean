@@ -3,13 +3,15 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets
@@ -22,8 +24,10 @@ of `α`/`Set α` on `Set β`.
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the scope to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`.
+  instances reducible changes the behavior of `simp`).
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid
 
@@ -220,7 +224,7 @@ theorem smul_set_subset_iff_subset_inv_smul_set : a • A ⊆ B ↔ A ⊆ a⁻¹
 
 @[to_additive]
 theorem subset_smul_set_iff : A ⊆ a • B ↔ a⁻¹ • A ⊆ B := by
-  refine (image_subset_iff.trans ?_ ).symm; congr! 1;
+  refine (image_subset_iff.trans ?_).symm; congr! 1;
   exact ((MulAction.toPerm _).image_eq_preimage_symm _).symm
 
 @[to_additive]
@@ -246,6 +250,10 @@ theorem smul_set_univ : a • (univ : Set β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
 
 @[to_additive (attr := simp)]
+theorem smul_set_eq_univ : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_set_univ]
+
+@[to_additive (attr := simp)]
 theorem smul_univ {s : Set α} (hs : s.Nonempty) : s • (univ : Set β) = univ :=
   let ⟨a, ha⟩ := hs
   eq_univ_of_forall fun b ↦ ⟨a, ha, a⁻¹ • b, trivial, smul_inv_smul _ _⟩
@@ -255,9 +263,8 @@ theorem smul_set_compl : a • sᶜ = (a • s)ᶜ := by
   simp_rw [Set.compl_eq_univ_diff, smul_set_sdiff, smul_set_univ]
 
 @[to_additive]
-theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
-  rw [← nonempty_iff_ne_empty]
+theorem smul_inter_nonempty_iff {s t : Set α} {x : α} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
@@ -265,15 +272,24 @@ theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
   · rintro ⟨a, b, ⟨ha, hb⟩, rfl⟩
     exact ⟨a, mem_inter (mem_smul_set.mpr ⟨b, hb, by simp⟩) ha⟩
 
-@[to_additive]
-theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
-  simp_rw [smul_inter_ne_empty_iff, div_eq_mul_inv]
+@[to_additive (attr := deprecated smul_inter_nonempty_iff (since := "2025-12-10"))]
+theorem smul_inter_ne_empty_iff {s t : Set α} {x : α} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a * b⁻¹ = x := by
+  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff]
 
 @[to_additive]
-theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
-    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
-  rw [← nonempty_iff_ne_empty]
+theorem smul_inter_nonempty_iff' {s t : Set α} {x : α} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
+  simp_rw [smul_inter_nonempty_iff, div_eq_mul_inv]
+
+@[to_additive (attr := deprecated smul_inter_nonempty_iff' (since := "2025-12-10"))]
+theorem smul_inter_ne_empty_iff' {s t : Set α} {x : α} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ t ∧ b ∈ s) ∧ a / b = x := by
+  rw [← nonempty_iff_ne_empty, smul_inter_nonempty_iff']
+
+@[to_additive]
+theorem op_smul_inter_nonempty_iff {s t : Set α} {x : αᵐᵒᵖ} :
+    (x • s ∩ t).Nonempty ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
   constructor
   · rintro ⟨a, h, ha⟩
     obtain ⟨b, hb, rfl⟩ := mem_smul_set.mp h
@@ -281,6 +297,11 @@ theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
   · rintro ⟨a, b, ⟨ha, hb⟩, H⟩
     have : MulOpposite.op (a⁻¹ * b) = x := congr_arg MulOpposite.op H
     exact ⟨b, mem_inter (mem_smul_set.mpr ⟨a, ha, by simp [← this]⟩) hb⟩
+
+@[to_additive (attr := deprecated op_smul_inter_nonempty_iff (since := "2025-12-10"))]
+theorem op_smul_inter_ne_empty_iff {s t : Set α} {x : αᵐᵒᵖ} :
+    x • s ∩ t ≠ ∅ ↔ ∃ a b, (a ∈ s ∧ b ∈ t) ∧ a⁻¹ * b = MulOpposite.unop x := by
+  rw [← nonempty_iff_ne_empty, op_smul_inter_nonempty_iff]
 
 @[to_additive (attr := simp)]
 theorem iUnion_inv_smul : ⋃ g : α, g⁻¹ • s = ⋃ g : α, g • s :=
@@ -309,6 +330,13 @@ lemma disjoint_smul_set_left : Disjoint (a • s) t ↔ Disjoint s (a⁻¹ • t
 @[to_additive]
 lemma disjoint_smul_set_right : Disjoint s (a • t) ↔ Disjoint (a⁻¹ • s) t := by
   simpa using disjoint_smul_set (a := a) (s := a⁻¹ • s)
+
+@[to_additive] lemma pairwise_disjoint_smul_iff :
+    Pairwise (Disjoint on fun a : α ↦ a • s) ↔ ∀ a : α, (a • s ∩ s).Nonempty → a = 1 := by
+  simp_rw [Pairwise, disjoint_smul_set_right, ← mul_smul,
+    ← not_imp_not (b := _ ≠ _), not_ne_iff, not_disjoint_iff_nonempty_inter]
+  exact ⟨fun h a ↦ by simpa using @h a 1,
+    fun h i j ne ↦ by simpa [inv_mul_eq_one, eq_comm] using h _ ne⟩
 
 /-- Any intersection of translates of two sets `s` and `t` can be covered by a single translate of
 `(s⁻¹ * s) ∩ (t⁻¹ * t)`.

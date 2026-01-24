@@ -3,11 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The standard simplex
@@ -20,6 +21,8 @@ When `f : X → Y` is a map between finite types, we define the map
 `stdSimplex.map f : stdSimplex 𝕜 X → stdSimplex 𝕜 Y`.
 
 -/
+
+@[expose] public section
 
 open Set Convex Bornology
 
@@ -107,7 +110,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
   invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+  left_inv f := Subtype.ext <| funext <| Fin.forall_fin_two.2 <| by
     simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
 
 @[simp]
@@ -136,7 +139,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
   convert convexHull_basis_eq_stdSimplex R ι

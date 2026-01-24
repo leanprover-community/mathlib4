@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Sort
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Data.Fintype.Sort
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
@@ -19,6 +21,8 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
 
 -/
+
+@[expose] public section
 
 open Fin Function Finset Set
 
@@ -268,7 +272,7 @@ on `(fun _ : ι ⊕ ι' => M')` induces. -/
 def uncurrySum
     (g : MultilinearMap R (fun i : ι ↦ N (.inl i))
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
-    MultilinearMap R N M₂  where
+    MultilinearMap R N M₂ where
   toFun u := g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i'))
   map_update_add' := by
     letI := Classical.decEq ι
@@ -298,8 +302,6 @@ lemma uncurrySum_smul
       (MultilinearMap R (fun i : ι' ↦ N (.inr i)) M₂)) :
     uncurrySum (r • g) = r • uncurrySum g :=
   rfl
-
-@[deprecated (since := "2025-04-23")] alias uncurrySum_aux_apply := uncurrySum_apply
 
 @[simp]
 lemma uncurrySum_currySum (f : MultilinearMap R N M₂) :

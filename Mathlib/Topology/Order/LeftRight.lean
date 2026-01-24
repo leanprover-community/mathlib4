@@ -3,9 +3,11 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Order.Antichain
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Antichain
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # Left and right continuity
@@ -23,6 +25,8 @@ In this file we prove a few lemmas about left and right continuous functions:
 
 left continuous, right continuous
 -/
+
+@[expose] public section
 
 
 open Set Filter Topology

@@ -3,19 +3,21 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Subsemigroup.Membership
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.GroupWithZero.Center
-import Mathlib.Algebra.Ring.Center
-import Mathlib.Algebra.Ring.Centralizer
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Submonoid.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.GroupTheory.Submonoid.Center
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
-import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Group.Subsemigroup.Membership
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.GroupWithZero.Center
+public import Mathlib.Algebra.Ring.Center
+public import Mathlib.Algebra.Ring.Centralizer
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Submonoid.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.GroupTheory.Submonoid.Center
+public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
 /-!
 # Bundled non-unital subsemirings
@@ -23,6 +25,8 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 We define the `CompleteLattice` structure, and non-unital subsemiring
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -155,7 +159,7 @@ theorem mem_srange_self (f : F) (x : R) : f x ∈ srange f :=
 theorem map_srange (g : S →ₙ+* T) (f : R →ₙ+* S) : map g (srange f) = srange (g.comp f) := by
   simpa only [srange_eq_map] using (⊤ : NonUnitalSubsemiring R).map_map g f
 
-/-- The range of a morphism of non-unital semirings is finite if the domain is a finite. -/
+/-- The range of a morphism of non-unital semirings is finite if the domain is finite. -/
 instance finite_srange [Finite R] (f : F) : Finite (srange f : NonUnitalSubsemiring S) :=
   (Set.finite_range f).to_subtype
 
@@ -173,6 +177,7 @@ theorem coe_sInf (S : Set (NonUnitalSubsemiring R)) :
     ((sInf S : NonUnitalSubsemiring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (NonUnitalSubsemiring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -181,8 +186,9 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} :
     (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubsemiring R} {x : R} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by
   simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
@@ -340,8 +346,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 /-- A non-unital subsemiring `S` includes `closure s` if and only if it includes `s`. -/
 @[simp]
 theorem closure_le {s : Set R} {t : NonUnitalSubsemiring R} : closure s ≤ t ↔ s ⊆ t :=
@@ -365,7 +369,7 @@ lemma closure_le_centralizer_centralizer {R : Type*} [NonUnitalSemiring R] (s : 
 semiring. -/
 abbrev closureNonUnitalCommSemiringOfComm {R : Type*} [NonUnitalSemiring R] {s : Set R}
     (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) : NonUnitalCommSemiring (closure s) :=
-  { NonUnitalSubsemiringClass.toNonUnitalSemiring (closure s)  with
+  { NonUnitalSubsemiringClass.toNonUnitalSemiring (closure s) with
     mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
       have := closure_le_centralizer_centralizer s
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
@@ -740,7 +744,7 @@ theorem sofLeftInverse'_symm_apply {g : S → R} {f : F} (h : Function.LeftInver
   rfl
 
 /-- Given an equivalence `e : R ≃+* S` of non-unital semirings and a non-unital subsemiring
-`s` of `R`, `non_unital_subsemiring_map e s` is the induced equivalence between `s` and
+`s` of `R`, `nonUnitalSubsemiringMap e s` is the induced equivalence between `s` and
 `s.map e` -/
 @[simps!]
 def nonUnitalSubsemiringMap (e : R ≃+* S) (s : NonUnitalSubsemiring R) :

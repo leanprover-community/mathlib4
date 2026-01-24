@@ -3,10 +3,12 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Nat.Digits.Lemmas
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Digits.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients
@@ -25,6 +27,8 @@ bounds in binomial coefficients. These include:
 
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
+
+public section
 
 open Finset List Finsupp
 
@@ -55,7 +59,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -66,7 +70,7 @@ theorem factorization_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h0 : 2 ≤ p := hp.two_le
   have h1 : 1 ≤ p * n + 1 := Nat.le_add_left _ _
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
-  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
+  have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by lia
   have h4 m (hm : m ∈ Ico (p * n + 1) (p * (n + 1))) : m.factorization p = 0 := by
     apply factorization_eq_zero_of_not_dvd
     exact not_dvd_of_lt_of_lt_mul_succ (mem_Ico.mp hm).left (mem_Ico.mp hm).right
@@ -109,7 +113,7 @@ added in base `p`. The set is expressed by filtering `Ico 1 b` where `b` is any 
 than `log p (n + k)`. -/
 theorem factorization_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k) < b) :
     (choose (n + k) k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
-  have h₁ : (choose (n + k) k).factorization p +  (k ! * n !).factorization p
+  have h₁ : (choose (n + k) k).factorization p + (k ! * n !).factorization p
     = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} + (k ! * n !).factorization p := by
     have h2 := (add_tsub_cancel_right n k) ▸ choose_mul_factorial_mul_factorial (le_add_left k n)
     rw [← Pi.add_apply, ← coe_add, ← factorization_mul (ne_of_gt <| choose_pos (le_add_left k n))
@@ -126,7 +130,7 @@ are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
 is any bound greater than `log p n`. -/
 theorem factorization_choose {p n k b : ℕ} (hp : p.Prime) (hkn : k ≤ n) (hnb : log p n < b) :
     (choose n k).factorization p = #{i ∈ Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
-  rw [←factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
+  rw [← factorization_choose' hp ((Nat.sub_add_cancel hkn).symm ▸ hnb), Nat.sub_add_cancel hkn]
 
 /-- Modified version of `emultiplicity_le_emultiplicity_of_dvd_right`
 but for factorization. -/
@@ -145,7 +149,7 @@ theorem factorization_le_factorization_choose_add {p : ℕ} :
       (zero_ne_add_one k).symm]
     refine factorization_le_factorization_of_dvd_right ?_ (zero_ne_add_one n).symm
       (Nat.mul_ne_zero (ne_of_gt <| choose_pos hkn) (by positivity))
-    rw [← succ_mul_choose_eq]
+    rw [← add_one_mul_choose_eq]
     exact dvd_mul_right _ _
 
 variable {p n k : ℕ}
@@ -162,7 +166,7 @@ theorem factorization_choose_prime_pow_add_factorization (hp : p.Prime) (hkn : k
     have filter_le_Ico := (Ico 1 n.succ).card_filter_le
       fun x => p ^ x ≤ k % p ^ x + (p ^ n - k) % p ^ x ∨ p ^ x ∣ k
     rwa [card_Ico 1 n.succ] at filter_le_Ico
-  · nth_rewrite 1 [← factorization_pow_self (n:=n) hp]
+  · nth_rewrite 1 [← factorization_pow_self (n := n) hp]
     exact factorization_le_factorization_choose_add hkn hk0
 
 theorem factorization_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
@@ -213,8 +217,8 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
     exact
       lt_of_le_of_lt
         (add_le_add
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
-          (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk)) (k % p))
+          (add_le_add_left (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
   · replace hn : n < p ^ i := by
@@ -232,7 +236,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
   refine factorization_choose_of_lt_three_mul ?_ p_le_n (p_le_n.trans ?_) big
-  · cutsat
+  · lia
   · rw [two_mul, add_tsub_cancel_left]
 
 theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factorization p = 0 := by
@@ -277,6 +281,6 @@ at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
     (∏ p ∈ Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
-  cutsat
+  lia
 
 end Nat

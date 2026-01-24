@@ -3,11 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Associated
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.EuclideanDomain.Int
+module
+
+public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -20,6 +22,8 @@ We provide the universal property, that ring homomorphisms `ℤ√d →+* R` cor
 to choices of square roots of `d` in `R`.
 
 -/
+
+@[expose] public section
 
 
 /-- The ring of integers adjoined with a square root of `d`.
@@ -675,10 +679,8 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   rwa [neg_sub] at t
 
 instance preorder : Preorder (ℤ√d) where
-  le := (· ≤ ·)
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
-  lt := (· < ·)
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
@@ -686,21 +688,21 @@ theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
   obtain ⟨x, y, (h : a ≤ ⟨x, y⟩)⟩ : ∃ x y : ℕ, Nonneg (⟨x, y⟩ + -a) :=
     match -a with
     | ⟨Int.ofNat x, Int.ofNat y⟩ => ⟨0, 0, by trivial⟩
-    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [add_def, Int.negSucc_eq, add_assoc]; trivial⟩
-    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_eq, add_assoc]; trivial⟩
-    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_eq, add_assoc]; trivial⟩
+    | ⟨Int.ofNat x, -[y+1]⟩ => ⟨0, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], Int.ofNat y⟩ => ⟨x + 1, 0, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
+    | ⟨-[x+1], -[y+1]⟩ => ⟨x + 1, y + 1, by simp [Int.negSucc_eq, add_assoc, Nonneg, Nonnegg]⟩
   refine ⟨x + d * y, h.trans ?_⟩
   change Nonneg ⟨↑x + d * y - ↑x, 0 - ↑y⟩
   rcases y with - | y
-  · simp
+  · simp only [Nat.cast_zero, mul_zero, add_zero, sub_self]
     trivial
   have h : ∀ y, SqLe y d (d * y) 1 := fun y => by
     simpa [SqLe, mul_comm, mul_left_comm] using Nat.mul_le_mul_right (y * y) (Nat.le_mul_self d)
   rw [show (x : ℤ) + d * Nat.succ y - x = d * Nat.succ y by simp]
   exact h (y + 1)
 
-protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : c + a ≤ c + b :=
-  show Nonneg _ by rw [add_sub_add_left_eq_sub]; exact ab
+protected theorem add_le_add_left (a b : ℤ√d) (ab : a ≤ b) (c : ℤ√d) : a + c ≤ b + c :=
+  show Nonneg _ by rwa [add_sub_add_right_eq_sub]
 
 protected theorem le_of_add_le_add_left (a b c : ℤ√d) (h : c + a ≤ c + b) : a ≤ b := by
   simpa using Zsqrtd.add_le_add_left _ _ h (-c)
@@ -956,7 +958,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
       simp only [re_intCast, add_zero, lift_apply_apply, im_intCast, Int.cast_zero,
         zero_mul] at this
       rwa [← Int.cast_zero, h_inj.eq_iff, norm_eq_zero hd] at this
-    rw [norm_eq_mul_conj, RingHom.map_mul, ha, zero_mul]
+    rw [norm_eq_mul_conj, map_mul, ha, zero_mul]
 
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid
 of unitary elements. -/

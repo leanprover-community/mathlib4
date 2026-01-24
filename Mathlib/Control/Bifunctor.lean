@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Functor
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Control.Functor
+public import Mathlib.Tactic.Common
 
 /-!
 # Functors with two arguments
@@ -21,6 +23,8 @@ A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap whi
 * `Bifunctor`: A typeclass for the bare bimap of a bifunctor.
 * `LawfulBifunctor`: A typeclass asserting this bimap respects the bifunctor laws.
 -/
+
+@[expose] public section
 
 
 universe u₀ u₁ u₂ v₀ v₁ v₂

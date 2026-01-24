@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.ModelTheory.Basic
+module
+
+public import Mathlib.ModelTheory.Basic
 
 /-!
 # Language Maps
@@ -31,6 +33,8 @@ For the Flypitch project:
 
 -/
 
+@[expose] public section
+
 universe u v u' v' w w'
 
 namespace FirstOrder
@@ -47,7 +51,7 @@ structure LHom where
   onFunction : ∀ ⦃n⦄, L.Functions n → L'.Functions n := by
     exact fun {n} => isEmptyElim
   /-- The mapping of relations -/
-  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n :=by
+  onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n := by
     exact fun {n} => isEmptyElim
 
 @[inherit_doc FirstOrder.Language.LHom]
@@ -378,7 +382,7 @@ def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 
 @[inherit_doc FirstOrder.Language.withConstants]
-scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
+scoped[FirstOrder] notation:max L "[[" α "]]" => Language.withConstants L α
 
 @[simp]
 theorem card_withConstants :
@@ -424,12 +428,12 @@ variable {α} {β : Type*}
 
 @[simp]
 theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
+    {n} {f : L.Functions n} {x : Fin n → M} : @funMap L[[α]] M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
 theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
-    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
+    {n} {R : L.Relations n} {x : Fin n → M} : @RelMap L[[α]] M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
 
 /-- The language map extending the constant set. -/
@@ -475,7 +479,7 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
 
 @[simp]
 theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
-    @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
+    @funMap L[[α]] M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
 

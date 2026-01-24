@@ -3,8 +3,10 @@ Copyright (c) 2025 P. Michael Kielstra. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: P. Michael Kielstra
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Tactic.Field
 
 /-!
 # The trapezoidal rule
@@ -19,6 +21,8 @@ an error bound in terms of a bound on the second derivative of the integrand.
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/
+
+@[expose] public section
 
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 
@@ -44,8 +48,7 @@ theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N
   norm_cast
   rw [tsub_tsub, add_comm 1, Nat.cast_add, Nat.cast_sub (mem_range.mp hk), Nat.cast_sub N_nonzero]
   apply congr_arg
-  field_simp
-  ring
+  field
 
 /-- The absolute error of the trapezoidal rule does not change when the endpoints are swapped. -/
 theorem trapezoidal_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
@@ -76,7 +79,7 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
     (N_nonzero : 0 < N) : ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_integral f N a (a + N * h) := by
   simp_rw [trapezoidal_integral_one, add_sub_add_left_eq_sub, ← sub_mul, trapezoidal_integral,
-    add_sub_cancel_left, one_mul, ← mul_sum, ← mul_div, show N * (h / N) = h by field_simp]
+    add_sub_cancel_left, one_mul, ← mul_sum, ← mul_div, show N * (h / N) = h by field]
   rw [sum_add_distrib, ← Nat.sub_one_add_one_eq_of_pos N_nonzero, sum_range_succ', sum_range_succ,
     add_add_add_comm, ← sum_add_distrib, add_comm, Nat.sub_one_add_one_eq_of_pos N_nonzero]
   simp_rw [Nat.cast_sub N_nonzero, Nat.cast_add, Nat.cast_one, ← two_mul, ← mul_sum]
@@ -124,7 +127,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
   let dg (t : ℝ) := (1 / 2) * (f a + f t) + ((t - a) / 2) * (derivWithin f (Icc a b) t) - f t
   let ddg (t : ℝ) := ((t - a) / 2) * (iteratedDerivWithin 2 f (Icc a b) t)
   -- Compute g' by applying standard derivative identities.
-  have h_dg (y : ℝ) (hy: y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
+  have h_dg (y : ℝ) (hy : y ∈ Icc a b) : HasDerivWithinAt g (dg y) (Icc a b) y := by
     unfold g trapezoidal_error trapezoidal_integral
     simp only [Nat.cast_one, div_one, tsub_self, Finset.range_zero, sum_empty, add_zero]
     simp_rw [← mul_comm_div]
@@ -136,11 +139,11 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     · exact h_df.continuousOn.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc y
     · exact h_df.continuousOn.continuousWithinAt hy
   -- Compute g'', once again applying standard derivative identities.
-  have h_ddg (y : ℝ) (hx: y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
+  have h_ddg (y : ℝ) (hx : y ∈ Icc a b) : HasDerivWithinAt dg (ddg y) (Icc a b) y := by
     -- The eventual expression for g'' has several terms that cancel, which we have to undo here
     -- so that the various HasDerivWithinAt theorems will have everything they need.
     let dfaky := derivWithin f (Icc a b) y
-    rw [(by ring: ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
+    rw [(by ring : ddg y = (1 / 2) * dfaky + ((1 / 2) * dfaky + ddg y) - dfaky)]
     refine fun_sub (fun_add (const_mul _ (const_add _ (h_df y hx).hasDerivWithinAt))
       (fun_mul (div_const (sub_const _ (hasDerivWithinAt_id _ _)) _) ?_))
       (h_df y hx).hasDerivWithinAt
@@ -173,6 +176,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
   exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
 on. -/
@@ -259,7 +263,7 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
   have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
-  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 one_le_two
+  have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]
     exact ContDiffOn.differentiableOn_iteratedDerivWithin h_f_c2 (by norm_cast) ud

@@ -3,11 +3,13 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.CoverLifting
-import Mathlib.CategoryTheory.Sites.CoverPreserving
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.CoverLifting
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
 
 /-!
 # Dense subsites
@@ -38,11 +40,13 @@ that factors through images of the functor for each object in `D`.
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {L : GrothendieckTopology E}
 
@@ -107,12 +111,12 @@ namespace Functor
 namespace IsCoverDense
 
 variable {K}
-variable {A : Type*} [Category A] (G : C ⥤ D)
+variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 -- this is not marked with `@[ext]` because `H` cannot be inferred from the type
 theorem ext [G.IsCoverDense K] (ℱ : Sheaf K (Type _)) (X : D) {s t : ℱ.val.obj (op X)}
     (h : ∀ ⦃Y : C⦄ (f : G.obj Y ⟶ X), ℱ.val.map f.op s = ℱ.val.map f.op t) : s = t := by
-  apply ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ.cond
+  apply ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.cond
     (Sieve.coverByImage G X) (G.is_cover_of_isCoverDense K X)).isSeparatedFor.ext
   rintro Y _ ⟨Z, f₁, f₂, ⟨rfl⟩⟩
   simp [h f₂]
@@ -208,14 +212,14 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
 
 /-- (Implementation). The morphism `ℱ(X) ⟶ ℱ'(X)` given by gluing the `pushforwardFamily`. -/
 noncomputable def appHom (X : D) : ℱ.obj (op X) ⟶ ℱ'.val.obj (op X) := fun x =>
-  ((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ'.cond _
+  ((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.cond _
     (G.is_cover_of_isCoverDense _ X)).amalgamate (pushforwardFamily α x)
       (pushforwardFamily_compatible α x)
 
 @[simp]
 theorem appHom_restrict {X : D} {Y : C} (f : op X ⟶ op (G.obj Y)) (x) :
     ℱ'.val.map f (appHom α X x) = α.app (op Y) (ℱ.map f x) :=
-  (((isSheaf_iff_isSheaf_of_type _ _ ).1 ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
+  (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ'.cond _ (G.is_cover_of_isCoverDense _ X)).valid_glue
       (pushforwardFamily_compatible α x) f.unop
           (Presieve.in_coverByImage G f.unop)).trans (pushforwardFamily_apply _ _ _)
 
@@ -473,14 +477,14 @@ instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
 end IsCoverDense
 
 /-- If `G : C ⥤ D` is cover dense and full, then the
-map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf`. -/
+map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf. -/
 lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
-    [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category A]
+    [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category* A]
     (P Q : Dᵒᵖ ⥤ A) (hQ : Presheaf.IsSheaf K Q) :
     Function.Bijective (((whiskeringLeft Cᵒᵖ Dᵒᵖ A).obj G.op).map : (P ⟶ Q) → _) :=
   (IsCoverDense.restrictHomEquivHom (ℱ' := ⟨Q, hQ⟩)).symm.bijective
 
-variable {A : Type*} [Category A] (G : C ⥤ D)
+variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 /-- The functor `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`
 if `G` is cover-dense, locally fully-faithful,

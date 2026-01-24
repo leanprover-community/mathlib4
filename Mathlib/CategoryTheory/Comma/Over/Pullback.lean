@@ -3,13 +3,15 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Monad.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Monad.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Adjunctions related to the over category
@@ -30,6 +32,8 @@ In a category with binary products, for any object `X` the functor
 ## TODO
 Show `star X` itself has a right adjoint provided `C` is Cartesian closed and has pullbacks.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -150,6 +154,16 @@ instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
 instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
+/-- Lifting to over `Y` and pulling back along `X ⟶ Y` is the same as lifting to over `X`. -/
+@[simps!]
+noncomputable def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star Y ⋙ pullback f ≅ star X :=
+  NatIso.ofComponents
+    (fun Z ↦
+      Over.isoMk
+      (pullback.congrHom (by simp) rfl ≪≫ pullbackSymmetry _ _ ≪≫ pullbackProdFstIsoProd _ _)
+    (by simp))
+
 end HasBinaryProducts
 end Over
 
@@ -190,6 +204,7 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     }
   }
 
+set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
@@ -204,14 +219,14 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
-  (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
+  (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _))).symm
     (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
 def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [HasPushoutsAlong f] [HasPushoutsAlong g] :
     pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
-  (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
+  (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _)).symm
     (mapComp f g).symm
 
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :

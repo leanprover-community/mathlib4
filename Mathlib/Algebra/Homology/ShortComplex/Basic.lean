@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Short complexes
@@ -16,11 +18,13 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C D E : Type*} [Category C] [Category D] [Category E]
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   [HasZeroMorphisms C] [HasZeroMorphisms D] [HasZeroMorphisms E]
 
 variable (C) in
@@ -39,7 +43,7 @@ structure ShortComplex where
   /-- the second morphism of a `ShortComplex` -/
   g : X₂ ⟶ X₃
   /-- the composition of the two given morphisms is zero -/
-  zero : f ≫ g = 0
+  zero : f ≫ g = 0 := by cat_disch
 
 namespace ShortComplex
 
@@ -216,6 +220,12 @@ def isoMk (e₁ : S₁.X₁ ≅ S₂.X₁) (e₂ : S₁.X₂ ≅ S₂.X₂) (e�
 
 lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso f.τ₃] : IsIso f :=
   (isoMk (asIso f.τ₁) (asIso f.τ₂) (asIso f.τ₃)).isIso_hom
+
+lemma isIso_iff (f : S₁ ⟶ S₂) :
+    IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, ?_⟩
+  rintro ⟨_, _, _⟩
+  apply isIso_of_isIso
 
 /-- The first map of a short complex, as a functor. -/
 @[simps] def fFunctor : ShortComplex C ⥤ Arrow C where

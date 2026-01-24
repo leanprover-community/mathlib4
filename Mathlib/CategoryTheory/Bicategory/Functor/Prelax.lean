@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.EqToHom
 
 /-!
 
@@ -37,6 +38,8 @@ associated prefunctors between the hom types are all functors. In other words, i
 corresponding hom types.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -99,9 +102,9 @@ This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 -/
 structure PrelaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctorStruct B C where
-  /-- Prelax functors preserves identity 2-morphisms. -/
+  /-- Prelax functors preserve identity 2-morphisms. -/
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not cat_disch?
-  /-- Prelax functors preserves compositions of 2-morphisms. -/
+  /-- Prelax functors preserve compositions of 2-morphisms. -/
   map₂_comp : ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
       map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by cat_disch
 
@@ -158,7 +161,8 @@ section
 
 variable {a b : B}
 
-/-- A prelaxfunctor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms `F.map f ≅ F.map g`. -/
+/-- A prelax functor `F` sends 2-isomorphisms `η : f ≅ f` to 2-isomorphisms
+`F.map f ≅ F.map g`. -/
 @[simps!]
 abbrev map₂Iso {f g : a ⟶ b} (η : f ≅ g) : F.map f ≅ F.map g :=
   (F.mapFunctor a b).mapIso η

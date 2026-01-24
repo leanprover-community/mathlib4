@@ -3,7 +3,9 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Isomorphisms of topological algebras
@@ -28,6 +30,8 @@ are also topological spaces.
 
 * continuous, isomorphism, algebra
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -92,6 +96,8 @@ instance continuousAlgEquivClass : ContinuousAlgEquivClass (A ≃A[R] B) R A B w
   inv_continuous := continuous_invFun
 
 theorem coe_apply (e : A ≃A[R] B) (a : A) : (e : A →A[R] B) a = e a := rfl
+
+@[simp] theorem coe_mk (e : A ≃ₐ[R] B) (he he') : ⇑(mk e he he') = e := rfl
 
 @[simp]
 theorem coe_coe (e : A ≃A[R] B) : ⇑(e : A →A[R] B) = e := rfl
@@ -297,5 +303,28 @@ theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E�
   ContinuousAlgEquiv.isUniformEmbedding { e with
     continuous_toFun := h₁
     continuous_invFun := by dsimp; fun_prop }
+
+theorem surjective (e : A ≃A[R] B) : Function.Surjective e := e.toAlgEquiv.surjective
+
+/-- `Equiv.cast (congrArg _ h)` as a continuous algebra equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+def cast {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)] [(i : ι) → Algebra R (A i)]
+    [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j) :
+    A i ≃A[R] A j where
+  __ := AlgEquiv.cast h
+  continuous_toFun := by cases h; exact continuous_id
+  continuous_invFun := by cases h; exact continuous_id
+
+@[simp]
+theorem cast_apply {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)]
+    [(i : ι) → Algebra R (A i)] [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j) (x : A i) :
+    cast (R := R) h x = Equiv.cast (congrArg A h) x := rfl
+
+@[simp]
+theorem cast_symm_apply {ι : Type*} {A : ι → Type*} [(i : ι) → Semiring (A i)]
+    [(i : ι) → Algebra R (A i)] [(i : ι) → TopologicalSpace (A i)] {i j : ι} (h : i = j)
+    (x : A j) : (cast (R := R) h).symm x = Equiv.cast (congrArg A h.symm) x := rfl
 
 end ContinuousAlgEquiv

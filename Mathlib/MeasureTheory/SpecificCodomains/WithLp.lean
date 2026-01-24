@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.MeasureTheory.SpecificCodomains.Pi
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.MeasureTheory.SpecificCodomains.Pi
 
 /-!
 # Integrability in `WithLp`
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.SpecificCodomains.Pi
 We prove that `f : X → PiLp q E` is in `Lᵖ` if and only if for all `i`, `f · i` is in `Lᵖ`.
 We do the same for `f : X → WithLp q (E × F)`.
 -/
+
+public section
 
 open scoped ENNReal
 

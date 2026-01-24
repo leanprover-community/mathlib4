@@ -3,11 +3,13 @@ Copyright (c) 2022 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
 
 /-!
 # Incidence algebras
@@ -66,6 +68,8 @@ Here are some additions to this file that could be made in the future:
 * [Spiegel, O'Donnell, *Incidence Algebras*][spiegel_odonnel1997]
 * [Kung, Rota, Yan, *Combinatorics: The Rota Way, Chapter 3*][kung_rota_yan2009]
 -/
+
+@[expose] public section
 
 open Finset OrderDual
 
@@ -287,14 +291,14 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
   algebraMap :=
   { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
-      ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
+      ext; simp only [mul_boole, one_apply, smul_eq_mul, constSMul_apply, map_one]
     map_mul' c d := by
         ext a b
         obtain rfl | h := eq_or_ne a b
-        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, constSMul_apply, map_mul,
+        · simp only [one_apply, smul_eq_mul, mul_apply, constSMul_apply, map_mul,
             eq_comm, Icc_self]
           simp
-        · simp only [one_apply, mul_one, Algebra.id.smul_eq_mul, mul_apply, zero_mul,
+        · simp only [one_apply, mul_one, smul_eq_mul, mul_apply, zero_mul,
             constSMul_apply, ← ite_and, ite_mul, mul_ite, map_mul, mul_zero, if_neg h]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
@@ -345,6 +349,7 @@ lemma zeta_mul_zeta [NonAssocSemiring 𝕜] [Preorder α] [LocallyFiniteOrder α
 section Mu
 variable (𝕜) [AddCommGroup 𝕜] [One 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
 
+set_option backward.privateInPublic true in
 /-- The Möbius function of the incidence algebra as a bare function defined recursively. -/
 private def muFun (a : α) : α → 𝕜
   | b =>
@@ -360,6 +365,8 @@ termination_by b => (Icc a b).card
 private lemma muFun_apply (a b : α) :
     muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
   ⟨muFun 𝕜, fun a b ↦ not_imp_comm.1 fun h ↦ by
@@ -372,6 +379,8 @@ def mu : IncidenceAlgebra 𝕜 α :=
 
 variable {𝕜} {a b : α}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a b, mu 𝕜 a x := by
   rw [mu, coe_mk, muFun_apply, sum_attach]
 

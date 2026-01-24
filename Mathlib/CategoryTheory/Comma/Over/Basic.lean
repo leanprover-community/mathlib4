@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Over and under categories
@@ -19,6 +21,8 @@ Over (and under) categories are special cases of comma categories.
 
 Comma, Slice, Coslice, Over, Under
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -127,6 +131,15 @@ lemma forall_iff (P : Over X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : Y ⟶ X), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Over S) :
+    ∃ (Y : T) (f : Y ⟶ S), Over.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Over S} (f : X ⟶ Y) :
+    ∃ (g : X.left ⟶ Y.left) (hg : g ≫ Y.hom = X.hom), f = Over.homMk g :=
+  ⟨f.left, by simp⟩
+
 section
 
 variable (X)
@@ -210,8 +223,8 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 @[simps!]
-def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
---  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
@@ -238,21 +251,26 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 @[simps!]
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
+    map (f ≫ g) ≅ map f ⋙ map g :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
 @[simps!]
 def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
     map f ≅ map g :=
-  NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+@[simp]
+lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
+    mapCongr f f rfl = Iso.refl _ := rfl
 
 variable (T) in
 /-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
-  map := map
-  map_id := mapId_eq
-  map_comp := mapComp_eq
+  map f := (map f).toCatHom
+  map_id X := congr($(mapId_eq X).toCatHom)
+  map_comp f g := congr($(mapComp_eq f g).toCatHom)
 
 end coherences
 
@@ -326,6 +344,10 @@ def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 
+theorem iteratedSliceBackward_forget (f : Over X) :
+    iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
+  rfl
+
 /-- Given f : Y ⟶ X, we have an equivalence between (T/X)/f and T/Y -/
 @[simps]
 def iteratedSliceEquiv : Over f ≌ Over f.left where
@@ -342,6 +364,26 @@ theorem iteratedSliceBackward_forget_forget :
     iteratedSliceBackward f ⋙ forget f ⋙ forget X = forget f.left :=
   rfl
 
+variable {f}
+
+/-- The naturality of the iterated slice equivalence up to isomorphism. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardNaturalityIso {g : Over X} (p : f ⟶ g) :
+    iteratedSliceForward f ⋙ Over.map p.left ≅ Over.map p ⋙ iteratedSliceForward g :=
+  Iso.refl _
+
+/-- The natural isomorphism relating the functor `Over.map p` to the functor `Over.map p.left`,
+mediated by the underlying functor of the iterated slice equivalence.
+Note that `iteratedSliceForward` can in fact be considered as a natural transformation from the
+2-functor `Over (C := Over X) : Over X ⥤ Cat` to the composite 2-functor
+`forget X ⋙ Over : Over X ⥤ Cat`, and the naturality isormphism is then given by
+`iteratedSliceEquivOverMapIso`.
+-/
+@[simps! hom_app_left_left inv_app_left_left]
+def iteratedSliceEquivOverMapIso {f g : Over X} (p : f ⟶ g) :
+    f.iteratedSliceForward ⋙ Over.map p.left ⋙ g.iteratedSliceBackward ≅ Over.map p :=
+  NatIso.ofComponents (fun h => Over.isoMk (Over.isoMk (Iso.refl _)))
+
 end IteratedSlice
 
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
@@ -351,13 +393,13 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 
-lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
-def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -421,6 +463,13 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
   unitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.unitIso.app A.left))
   counitIso := NatIso.ofComponents (fun A ↦ Over.isoMk (F.counitIso.app A.left))
 
+/-- `post (Over.forget X) : Over f ⥤ Over (forget.obj f)` is naturally isomorphic to the
+functor `Over.iteratedSliceForward : Over f ⥤ Over f.left`. -/
+@[simps! hom_app inv_app]
+def iteratedSliceForwardIsoPost (f : Over X) :
+    post (Over.forget X) ≅ Over.iteratedSliceForward f :=
+  Iso.refl _
+
 open Limits
 
 variable {X} in
@@ -435,14 +484,14 @@ def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
 /-- The induced functor to `Over X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`.
 For the converse direction see `CategoryTheory.WithTerminal.commaFromOver`. -/
 @[simps]
-protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
+protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X) :
     J ⥤ Over X where
   obj j := mk (s.app j)
   map f := homMk (D.map f)
 
 /-- The induced cone on `Over X` on the lifted functor. -/
 @[simps]
-def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
+def liftCone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p) :
     Cone (Over.lift D s) where
   pt := mk p
@@ -450,7 +499,7 @@ def liftCone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.
 
 /-- The lifted cone on `Over X` is a limit cone if the original cone was limiting
 and `J` is nonempty. -/
-def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
+def isLimitLiftCone {J : Type*} [Category* J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : D ⟶ (Functor.const J).obj X)
     (c : Cone D) (p : c.pt ⟶ X) (hp : ∀ j, c.π.app j ≫ s.app j = p)
     (hc : IsLimit c) :
@@ -463,6 +512,17 @@ def isLimitLiftCone {J : Type*} [Category J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).left)
 
 end Over
+
+/--
+Restrict a cone to the diagram over `j`. This preserves being limiting if the forgetful functor
+`Over j ⥤ J` is initial (see `CategoryTheory.Limits.IsLimit.overPost`).
+-/
+@[simps]
+def Limits.Cone.overPost
+    {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C} (c : Cone D) (j : J) :
+    Cone (Over.post (X := j) D) where
+  pt := Over.mk (c.π.app j)
+  π.app k := Over.homMk (c.π.app k.left)
 
 namespace CostructuredArrow
 
@@ -579,6 +639,15 @@ lemma forall_iff (P : Under X → Prop) :
     (∀ Y, P Y) ↔ (∀ (Y) (f : X ⟶ Y), P (.mk f)) := by
   aesop
 
+lemma mk_surjective {S : T} (X : Under S) :
+    ∃ (Y : T) (f : S ⟶ Y), Under.mk f = X :=
+  ⟨_, X.hom, rfl⟩
+
+lemma homMk_surjective
+    {S : T} {X Y : Under S} (f : X ⟶ Y) :
+    ∃ (g : X.right ⟶ Y.right) (hg : X.hom ≫ g = Y.hom), Under.homMk g = f :=
+  ⟨f.right, by simp⟩
+
 section
 
 variable (X)
@@ -693,9 +762,9 @@ variable (T) in
 /-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
-  map f := map f.unop
-  map_id X := mapId_eq X.unop
-  map_comp f g := mapComp_eq (g.unop) (f.unop)
+  map f := (map f.unop).toCatHom
+  map_id X := congr($(mapId_eq X.unop).toCatHom)
+  map_comp f g := congr($(mapComp_eq (g.unop) (f.unop)).toCatHom)
 
 end coherences
 
@@ -757,13 +826,13 @@ def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
 
-lemma post_comp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+lemma post_comp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) = post (X := X) F ⋙ post G :=
   rfl
 
 /-- `post (F ⋙ G)` is isomorphic (actually equal) to `post F ⋙ post G`. -/
 @[simps!]
-def postComp {E : Type*} [Category E] (F : T ⥤ D) (G : D ⥤ E) :
+def postComp {E : Type*} [Category* E] (F : T ⥤ D) (G : D ⥤ E) :
     post (X := X) (F ⋙ G) ≅ post F ⋙ post G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
@@ -840,14 +909,14 @@ def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
 
 /-- The induced functor to `Under X` from a functor `J ⥤ C` and natural maps `sᵢ : X ⟶ Dᵢ`. -/
 @[simps]
-protected def lift {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
+protected def lift {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D) :
     J ⥤ Under X where
   obj j := .mk (s.app j)
   map f := Under.homMk (D.map f) (by simpa using (s.naturality f).symm)
 
 /-- The induced cocone on `Under X` from on the lifted functor. -/
 @[simps]
-def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
+def liftCocone {J : Type*} [Category* J] (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p) :
     Cocone (Under.lift D s) where
   pt := mk p
@@ -855,7 +924,7 @@ def liftCocone {J : Type*} [Category J] (D : J ⥤ T) {X : T} (s : (Functor.cons
 
 /-- The lifted cocone on `Under X` is a colimit cocone if the original cocone was colimiting
 and `J` is nonempty. -/
-def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
+def isColimitLiftCocone {J : Type*} [Category* J] [Nonempty J]
     (D : J ⥤ T) {X : T} (s : (Functor.const J).obj X ⟶ D)
     (c : Cocone D) (p : X ⟶ c.pt) (hp : ∀ j, s.app j ≫ c.ι.app j = p)
     (hc : IsColimit c) :
@@ -868,6 +937,17 @@ def isColimitLiftCocone {J : Type*} [Category J] [Nonempty J]
     exact hc.hom_ext fun j ↦ by simpa [hc.fac] using congr($(hm j).right)
 
 end Under
+
+/--
+Restrict a cocone to the diagram under `j`. This preserves being colimiting if the forgetful functor
+`Over j ⥤ J` is final (see `CategoryTheory.Limits.IsColimit.underPost`).
+-/
+@[simps]
+def Limits.Cocone.underPost {J C : Type*} [Category* J] [Category* C]
+    {D : J ⥤ C} (c : Cocone D) (j : J) :
+    Cocone (Under.post (X := j) D) where
+  pt := Under.mk (c.ι.app j)
+  ι.app k := Under.homMk (c.ι.app k.right)
 
 namespace StructuredArrow
 

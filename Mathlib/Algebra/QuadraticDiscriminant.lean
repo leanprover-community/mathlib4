@@ -3,10 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Linarith.Frontend
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -31,6 +33,8 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 
 polynomial, quadratic, discriminant, root
 -/
+
+@[expose] public section
 
 assert_not_exists Finite Finset
 
@@ -66,7 +70,7 @@ theorem quadratic_eq_zero_iff_discrim_eq_sq [NeZero (2 : R)] [NoZeroDivisors R]
   linear_combination -h
 
 /-- A quadratic has no root if its discriminant has no square root. -/
-theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s^2) (x : R) :
+theorem quadratic_ne_zero_of_discrim_ne_sq (h : ∀ s : R, discrim a b c ≠ s ^ 2) (x : R) :
     a * (x * x) + b * x + c ≠ 0 :=
   mt discrim_eq_sq_of_quadratic_eq_zero (h _)
 

@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 ## Smoothness of standard maps associated to the product of manifolds
@@ -17,6 +19,8 @@ This file contains results about smoothness of standard maps associated to produ
 `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
 -/
+
+public section
 
 open Set Function Filter ChartedSpace
 
@@ -381,6 +385,8 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
+-- The non-terminal simp has a large simp set
+set_option linter.flexible false in
 lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]

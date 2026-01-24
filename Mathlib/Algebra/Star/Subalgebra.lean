@@ -3,10 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 /-!
 # Star subalgebras
@@ -15,6 +17,8 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 
 The centralizer of a *-closed set is a *-subalgebra.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -305,7 +309,7 @@ theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ central
   Set.centralizer_subset (Set.union_subset_union h <| Set.preimage_mono h)
 
 theorem centralizer_toSubalgebra (s : Set A) :
-    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s):=
+    (centralizer R s).toSubalgebra = Subalgebra.centralizer R (s ∪ star s) :=
   rfl
 
 theorem coe_centralizer_centralizer (s : Set A) :
@@ -436,6 +440,7 @@ theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
 @[aesop 80% (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
+@[simp]
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
 
@@ -500,7 +505,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
     {a : A} (ha : a ∈ adjoin R s) : p a ha := by
   refine Algebra.adjoin_induction (fun x hx ↦ ?_) algebraMap add mul ha
-  simp only [Set.mem_union, Set.mem_star] at hx
+  push _ ∈ _ at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (Algebra.subset_adjoin (by simpa using Or.inl hx)) (mem _ hx)
@@ -680,6 +685,7 @@ theorem inf_toSubalgebra (S T : StarSubalgebra R A) :
 theorem coe_sInf (S : Set (StarSubalgebra R A)) : (↑(sInf S) : Set A) = ⋂ s ∈ S, ↑s :=
   sInf_image
 
+@[simp]
 theorem mem_sInf {S : Set (StarSubalgebra R A)} {x : A} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p := by
   simp only [← SetLike.mem_coe, coe_sInf, Set.mem_iInter₂]
 
@@ -692,8 +698,9 @@ theorem sInf_toSubalgebra (S : Set (StarSubalgebra R A)) :
 theorem coe_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} : (↑(⨅ i, S i) : Set A) = ⋂ i, S i := by
   simp [iInf]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → StarSubalgebra R A} {x : A} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 theorem map_iInf {ι : Sort*} [Nonempty ι] (f : A →⋆ₐ[R] B) (hf : Function.Injective f)
     (s : ι → StarSubalgebra R A) : map f (iInf s) = ⨅ (i : ι), map f (s i) := by
@@ -806,7 +813,7 @@ theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
 
 theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=

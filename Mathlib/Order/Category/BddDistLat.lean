@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Category.DistLat
+module
+
+public import Mathlib.Order.Category.BddLat
+public import Mathlib.Order.Category.DistLat
 
 /-!
 # The category of bounded distributive lattices
@@ -14,6 +16,8 @@ This defines `BddDistLat`, the category of bounded distributive lattices.
 Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab/show/DistLat) when
 being a lattice is understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -44,6 +48,7 @@ abbrev of (α : Type*) [DistribLattice α] [BoundedOrder α] : BddDistLat where
 theorem coe_of (α : Type*) [DistribLattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddDistLat R`. -/
 @[ext]
 structure Hom (X Y : BddDistLat.{u}) where
@@ -51,11 +56,15 @@ structure Hom (X Y : BddDistLat.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BddDistLat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddDistLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

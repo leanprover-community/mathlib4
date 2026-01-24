@@ -3,12 +3,14 @@ Copyright (c) 2025 Gaëtan Serré. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gaëtan Serré, Rémy Degenne
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
-import Mathlib.Topology.Algebra.Module.ModuleTopology
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
 
 /-!
 # Sigmoid function
@@ -27,8 +29,8 @@ that the composition of this embedding with the measurable embedding from a stan
 * `Real.sigmoid` : the sigmoid function from `ℝ` to `ℝ`.
 * `Real.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `Real.continuous_sigmoid` : the sigmoid function is continuous.
-* `Real.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `Real.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `Real.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `Real.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 * `Real.hasDerivAt_sigmoid` : the derivative of the sigmoid function.
 * `Real.analyticAt_sigmoid` : the sigmoid function is analytic at every point.
 
@@ -36,22 +38,24 @@ that the composition of this embedding with the measurable embedding from a stan
 * `unitInterval.sigmoid` : the sigmoid function from `ℝ` to `I`.
 * `unitInterval.sigmoid_strictMono` : the sigmoid function is strictly monotone.
 * `unitInterval.continuous_sigmoid` : the sigmoid function is continuous.
-* `unitInterval.sigmoid_tendsto_nhds_1_atTop` : the sigmoid function tends to `1` at `+∞`.
-* `unitInterval.sigmoid_tendsto_nhds_0_atBot` : the sigmoid function tends to `0` at `-∞`.
+* `unitInterval.tendsto_sigmoid_atTop` : the sigmoid function tends to `1` at `+∞`.
+* `unitInterval.tendsto_sigmoid_atBot` : the sigmoid function tends to `0` at `-∞`.
 
 ### Sigmoid as an `OrderEmbedding` from `ℝ` to `I`
 * `OrderEmbedding.sigmoid` : the sigmoid function as an `OrderEmbedding` from `ℝ` to `I`.
-* `OrderEmbedding.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
+* `Topology.isEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a topological
   embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
+* `measurableEmbedding_sigmoid` : the sigmoid function from `ℝ` to `I` is a
   measurable embedding.
-* `OrderEmbedding.measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
+* `measurableEmbedding_sigmoid_comp_embeddingReal` : the composition of the
   sigmoid function from `ℝ` to `I` with the measurable embedding from a standard Borel
   space `α` to `ℝ` is a measurable embedding from `α` to `I`.
 
 ## Tags
 sigmoid, embedding, measurable embedding, topological embedding
 -/
+
+@[expose] public section
 
 namespace Real
 
@@ -114,7 +118,7 @@ open Set in
 lemma range_sigmoid : range Real.sigmoid = Ioo 0 1 := by
   refine subset_antisymm ?_ fun x hx ↦ ?_
   · rintro - ⟨x, rfl⟩
-    simp only [mem_Ioo]
+    push _ ∈ _
     bound
   · replace hx : 0 < x⁻¹ - 1 := by rwa [sub_pos, one_lt_inv_iff₀]
     exact ⟨-(log (x⁻¹ - 1)), by simp [sigmoid_def, exp_log hx]⟩

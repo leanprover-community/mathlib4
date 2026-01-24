@@ -3,9 +3,11 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Int.Log
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Int.Log
 
 /-!
 # Real logarithm base `b`
@@ -21,6 +23,8 @@ We prove some basic properties of this function and its relation to `rpow`.
 
 logarithm, continuity
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -401,7 +405,7 @@ theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
     Int.log_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 @[norm_cast]
 theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
@@ -412,7 +416,7 @@ theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog 
   · simp
   rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
     Int.clog_natCast]
-  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by cutsat))
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by lia))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))

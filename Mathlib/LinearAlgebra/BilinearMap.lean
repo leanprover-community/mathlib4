@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Basics on bilinear maps
@@ -36,7 +38,9 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 bilinear
 -/
 
-open Function
+@[expose] public section
+
+open Function Module
 
 namespace LinearMap
 
@@ -157,7 +161,7 @@ def compl₂ (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛ�
   map_add' _ _ := by
     simp [map_add]
   map_smul' _ _ := by
-    simp [LinearMap.map_smulₛₗ, lcompₛₗ]
+    simp [map_smulₛₗ, lcompₛₗ]
 
 @[simp]
 theorem compl₂_apply (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) :
@@ -185,6 +189,10 @@ variable {S N}
 theorem lcomp_apply (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) (x : M) : lcomp S N f g x = g (f x) := rfl
 
 theorem lcomp_apply' (f : M →ₗ[R] M₂) (g : M₂ →ₗ[R] N) : lcomp S N f g = g ∘ₗ f := rfl
+
+lemma lcomp_injective_of_surjective (g : M →ₗ[R] M₂) (surj : Function.Surjective g) :
+    Function.Injective (LinearMap.lcomp S N g) :=
+  surj.injective_linearMapComp_right
 
 end lcomp
 
@@ -474,8 +482,11 @@ def lsmul : R →ₗ[R] M →ₗ[R] M :=
 
 variable {R}
 
-lemma lsmul_eq_DistribMulAction_toLinearMap (r : R) :
-    lsmul R M r = DistribMulAction.toLinearMap R M r := rfl
+lemma lsmul_eq_distribSMultoLinearMap (r : R) :
+    lsmul R M r = DistribSMul.toLinearMap R M r := rfl
+
+@[deprecated (since := "2026-01-07")]
+alias lsmul_eq_DistribMulAction_toLinearMap := lsmul_eq_distribSMultoLinearMap
 
 variable {M}
 
@@ -494,17 +505,17 @@ end CommSemiring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R]
+variable {R M : Type*} [CommRing R] [IsDomain R]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [Module R M]
 
-theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :
+theorem lsmul_injective [IsTorsionFree R M] {x : R} (hx : x ≠ 0) :
     Function.Injective (lsmul R M x) :=
   smul_right_injective _ hx
 
-theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
+theorem ker_lsmul [IsTorsionFree R M] {a : R} (ha : a ≠ 0) :
     LinearMap.ker (LinearMap.lsmul R M a) = ⊥ :=
   LinearMap.ker_eq_bot_of_injective (LinearMap.lsmul_injective ha)
 

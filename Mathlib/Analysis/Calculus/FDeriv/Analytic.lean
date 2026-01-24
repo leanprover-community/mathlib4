@@ -3,14 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.CPolynomial
-import Mathlib.Analysis.Analytic.Inverse
-import Mathlib.Analysis.Analytic.Within
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Analytic.CPolynomial
+public import Mathlib.Analysis.Analytic.Inverse
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Fréchet derivatives of analytic functions.
@@ -60,6 +62,8 @@ differentiability at points in a neighborhood of `s`. Therefore, the theorem tha
 `AnalyticOnNhd 𝕜 (fderiv 𝕜 f) s` from `AnalyticOnNhd 𝕜 f s` requires completeness of the space.
 
 -/
+
+public section
 
 open Filter Asymptotics Set
 
@@ -139,6 +143,10 @@ theorem AnalyticAt.hasStrictFDerivAt (h : AnalyticAt 𝕜 f x) :
   rcases h with ⟨p, hp⟩
   rw [hp.fderiv_eq]
   exact hp.hasStrictFDerivAt
+
+lemma AnalyticAt.hasStrictDerivAt {f : 𝕜 → F} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+    HasStrictDerivAt f (deriv f x) x := by
+  simpa [hasStrictDerivAt_iff_hasStrictFDerivAt, toSpanSingleton_deriv] using hf.hasStrictFDerivAt
 
 theorem HasFPowerSeriesWithinOnBall.differentiableOn [CompleteSpace F]
     (h : HasFPowerSeriesWithinOnBall f p s x r) :
@@ -262,7 +270,7 @@ protected theorem AnalyticOnNhd.iteratedFDeriv [CompleteSpace F] (h : AnalyticOn
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_analyticOnNhd h
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F).comp_analyticOnNhd h
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     -- Porting note: for reasons that I do not understand at all, `?g` cannot be inlined.
@@ -359,7 +367,7 @@ protected theorem AnalyticOn.iteratedFDerivWithin (h : AnalyticOn 𝕜 f s)
   induction n with
   | zero =>
     rw [iteratedFDerivWithin_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F)
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F)
       |>.comp_analyticOn h
   | succ n IH =>
     rw [iteratedFDerivWithin_succ_eq_comp_left]
@@ -446,12 +454,12 @@ theorem AnalyticOnNhd.iterated_deriv [CompleteSpace F] (h : AnalyticOnNhd 𝕜 f
   | zero => exact h
   | succ n IH => simpa only [Function.iterate_succ', Function.comp_apply] using IH.deriv
 
-protected theorem AnalyticAt.deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
+@[fun_prop] protected theorem AnalyticAt.deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) :
     AnalyticAt 𝕜 (deriv f) x := by
   obtain ⟨r, hr, h⟩ := h.exists_ball_analyticOnNhd
   exact h.deriv x (by simp [hr])
 
-theorem AnalyticAt.iterated_deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) (n : ℕ) :
+@[fun_prop] theorem AnalyticAt.iterated_deriv [CompleteSpace F] (h : AnalyticAt 𝕜 f x) (n : ℕ) :
     AnalyticAt 𝕜 (deriv^[n] f) x := by
   induction n with
   | zero => exact h
@@ -531,7 +539,7 @@ theorem CPolynomialOn.iteratedFDeriv (h : CPolynomialOn 𝕜 f s) (n : ℕ) :
   induction n with
   | zero =>
     rw [iteratedFDeriv_zero_eq_comp]
-    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E[×0]→L[𝕜] F).comp_cpolynomialOn h
+    exact ((continuousMultilinearCurryFin0 𝕜 E F).symm : F →L[𝕜] E [×0]→L[𝕜] F).comp_cpolynomialOn h
   | succ n IH =>
     rw [iteratedFDeriv_succ_eq_comp_left]
     convert ContinuousLinearMap.comp_cpolynomialOn ?g IH.fderiv
@@ -604,7 +612,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
     Function.update_apply, (Equiv.injective _).eq_iff, ite_apply]
   congr
-  grind [Function.update_self, Function.update_of_ne]
+  grind
 
 protected theorem hasStrictFDerivAt [DecidableEq ι] : HasStrictFDerivAt f (f.linearDeriv x) x := by
   rw [← changeOrigin_toFormalMultilinearSeries]
@@ -808,10 +816,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {f : E → F} {x : E} {r : ℝ�
 include h in
 theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
   ext
-  convert (h.hasSum <| EMetric.mem_ball_self h.r_pos).tsum_eq.symm
-  · rw [iteratedFDeriv_zero_apply, add_zero]
-  · rw [tsum_eq_single 0 fun n hn ↦ by haveI := NeZero.mk hn; exact (p n).map_zero]
-    exact congr(p 0 $(Subsingleton.elim _ _))
+  simpa using (coeff_zero h _).symm
 
 open ContinuousLinearMap
 

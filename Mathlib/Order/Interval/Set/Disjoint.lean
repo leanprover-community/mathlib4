@@ -3,19 +3,23 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `Order.Interval.Set.Basic`
-because this would create an `import` cycle. Namely, lemmas in this file can use definitions
-from `Data.Set.Lattice`, including `Disjoint`.
+This file contains lemmas about intervals that cannot be included into
+`Mathlib/Order/Interval/Set/Basic.lean` because this would create an `import` cycle. Namely, lemmas
+in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/
+
+public section
 
 
 universe u v w
@@ -99,11 +103,11 @@ theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ 
 
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Iic⟩
 
 @[simp]
 theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, left_mem_Ici⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Ici⟩
 
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
@@ -259,7 +263,7 @@ theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range
   simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
 theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
-  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  refine Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
   gcongr
   exact Iio_subset_Iic_self
 

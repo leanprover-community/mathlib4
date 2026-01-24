@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Interval properties in linear orders
@@ -11,6 +13,8 @@ import Mathlib.Order.Interval.Set.Basic
 Since every pair of elements are comparable in a linear order, intervals over them are
 better behaved. This file collects their properties under this assumption.
 -/
+
+public section
 
 assert_not_exists RelIso
 
@@ -23,22 +27,14 @@ variable {α : Type*} [LinearOrder α] {a a₁ a₂ b b₁ b₂ c d : α}
 theorem notMem_Ici : c ∉ Ici a ↔ c < a :=
   not_le
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ici := notMem_Ici
-
 theorem notMem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iic := notMem_Iic
 
 theorem notMem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi := notMem_Ioi
-
 theorem notMem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio := notMem_Iio
 
 @[simp]
 theorem compl_Iic : (Iic a)ᶜ = Ioi a :=

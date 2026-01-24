@@ -3,12 +3,14 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.Algebra.GroupWithZero.Torsion
-import Mathlib.NumberTheory.RamificationInertia.Galois
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.DedekindDomain.Instances
-import Mathlib.RingTheory.Ideal.Int
-import Mathlib.RingTheory.NormalClosure
+module
+
+public import Mathlib.Algebra.GroupWithZero.Torsion
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.Instances
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.NormalClosure
 
 /-!
 
@@ -31,6 +33,9 @@ spanned by the norms of elements in `I`.
 
 -/
 
+@[expose] public section
+
+open Module
 open scoped nonZeroDivisors
 
 section SpanNorm
@@ -41,7 +46,7 @@ open Submodule
 
 variable (R S : Type*) [CommRing R] [IsDomain R] {S : Type*} [CommRing S] [IsDomain S]
 variable [IsIntegrallyClosed R] [IsIntegrallyClosed S] [Algebra R S] [Module.Finite R S]
-variable [NoZeroSMulDivisors R S]
+variable [IsTorsionFree R S]
 
 attribute [local instance] FractionRing.liftAlgebra
 
@@ -102,7 +107,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
     {Rₘ : Type*} (Sₘ : Type*) [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
     [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
     [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-    [IsIntegrallyClosed Rₘ] [IsDomain Rₘ] [IsDomain Sₘ] [NoZeroSMulDivisors Rₘ Sₘ]
+    [IsIntegrallyClosed Rₘ] [IsDomain Rₘ] [IsDomain Sₘ] [IsTorsionFree Rₘ Sₘ]
     [Module.Finite Rₘ Sₘ] [IsIntegrallyClosed Sₘ] :
     spanNorm Rₘ (I.map (algebraMap S Sₘ)) = (spanNorm R I).map (algebraMap R Rₘ) := by
   let K := FractionRing R
@@ -211,7 +216,7 @@ theorem spanNorm_mul [IsDedekindDomain R] [IsDedekindDomain S] (I J : Ideal S) :
 section spanNorm_spanNorm
 
 variable (T : Type*) [CommRing T] [IsDomain T] [IsIntegrallyClosed T] [Algebra R T] [Algebra T S]
-  [Module.Finite R T] [Module.Finite T S] [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+  [Module.Finite R T] [Module.Finite T S] [IsTorsionFree R T] [IsTorsionFree T S]
   [IsScalarTower R T S]
 
 open _root_.Algebra
@@ -304,7 +309,7 @@ theorem relNorm_mono {I J : Ideal S} (h : I ≤ J) : relNorm R I ≤ relNorm R J
 variable {R}
 
 private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDomain T]
-    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T]
+    [IsIntegrallyClosed T] [Algebra R T] [Module.Finite R T] [IsTorsionFree R T]
     (σ : S ≃ₐ[R] T) (I : Ideal S) : relNorm R (I.map σ) ≤ relNorm R I :=
   span_mono fun _ ⟨x, hx₁, hx₂⟩ ↦ ⟨σ.toRingEquiv.symm x,
     by rwa [SetLike.mem_coe, Ideal.symm_apply_mem_of_equiv_iff],
@@ -312,7 +317,7 @@ private theorem relNorm_map_algEquiv_aux {T : Type*} [CommRing T] [IsDedekindDom
 
 @[simp]
 theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
-    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
+    [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
   convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
@@ -321,7 +326,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
 
 @[simp]
 theorem relNorm_comap_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
-    [Algebra R T] [Module.Finite R T] [NoZeroSMulDivisors R T] (σ : S ≃ₐ[R] T) (I : Ideal T) :
+    [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal T) :
     relNorm R (I.comap σ) = relNorm R I := map_symm σ.toRingEquiv ▸ relNorm_map_algEquiv σ.symm I
 
 variable (R)
@@ -336,7 +341,7 @@ theorem relNorm_le_comap (I : Ideal S) : relNorm R I ≤ comap (algebraMap R S) 
 
 theorem relNorm_relNorm (T : Type*) [CommRing T] [IsDedekindDomain T] [IsIntegrallyClosed T]
     [Algebra R T] [Algebra T S] [IsScalarTower R T S] [Module.Finite R T] [Module.Finite T S]
-    [NoZeroSMulDivisors R T] [NoZeroSMulDivisors T S]
+    [IsTorsionFree R T] [IsTorsionFree T S]
     (I : Ideal S) : relNorm R (relNorm T I) = relNorm R I :=
   spanNorm_spanNorm _ _ _
 
@@ -392,6 +397,9 @@ be Galois.
 -/
 theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     [IsGalois (FractionRing R) (FractionRing S)] : relNorm R P = p ^ p.inertiaDeg P := by
+  let G := Gal(FractionRing S/FractionRing R)
+  let := IsIntegralClosure.MulSemiringAction R (FractionRing R) (FractionRing S) S
+  have := IsGaloisGroup.of_isFractionRing G R S (FractionRing R) (FractionRing S)
   by_cases hp : p = ⊥
   · have h : p.inertiaDeg P ≠ 0 := Nat.ne_zero_iff_zero_lt.mpr <| inertiaDeg_pos p P
     have hP : P = ⊥ := by
@@ -407,18 +415,19 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
     rw [Set.mem_toFinset] at hQ
     have : Q.IsPrime := hQ.1
     have : Q.LiesOver p := hQ.2
-    rw [← ramificationIdxIn_eq_ramificationIdx p Q (FractionRing R) (FractionRing S)]
-    obtain ⟨σ, rfl⟩ := Ideal.exists_map_eq_of_isGalois p P Q (FractionRing R) (FractionRing S)
-    rw [relNorm_map_algEquiv, hs, ← pow_mul, mul_comm]
+    rw [← ramificationIdxIn_eq_ramificationIdx p Q G]
+    obtain ⟨σ, rfl⟩ := Ideal.exists_smul_eq_of_isGaloisGroup p P Q G
+    rw [relNorm_smul, hs, ← pow_mul, mul_comm]
   have h := (congr_arg (relNorm R ·) <|
     map_algebraMap_eq_finset_prod_pow hp).symm.trans <| relNorm_algebraMap S p
   simp +contextual only [map_prod, map_pow, h₀, Finset.prod_const, ← pow_mul] at h
-  rwa [← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S, mul_comm,
+  rwa [← IsGaloisGroup.card_eq_finrank G (FractionRing R) (FractionRing S),
+    ← Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G, mul_comm,
     ← Set.ncard_eq_toFinset_card',
     ((IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hp).pow_injective _).eq_iff,
     mul_right_inj' (primesOver_ncard_ne_zero p S),
-    mul_right_inj' (ramificationIdxIn_ne_zero (FractionRing R) (FractionRing S) hp),
-    inertiaDegIn_eq_inertiaDeg p P (FractionRing R) (FractionRing S)] at h
+    mul_right_inj' (ramificationIdxIn_ne_zero G hp),
+    inertiaDegIn_eq_inertiaDeg p P G] at h
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
@@ -429,7 +438,7 @@ theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal
     exists_maximal_ideal_liesOver_of_isIntegral P
   have : Q.LiesOver p := LiesOver.trans Q P p
   have h := relNorm_eq_pow_of_isPrime_isGalois Q p
-  have :  IsGalois (FractionRing S) (FractionRing T) :=
+  have : IsGalois (FractionRing S) (FractionRing T) :=
     IsGalois.tower_top_of_isGalois (FractionRing R) (FractionRing S) (FractionRing T)
   rwa [← relNorm_relNorm R S, relNorm_eq_pow_of_isPrime_isGalois Q P, map_pow,
     inertiaDeg_algebra_tower p P Q, pow_mul, pow_left_inj] at h

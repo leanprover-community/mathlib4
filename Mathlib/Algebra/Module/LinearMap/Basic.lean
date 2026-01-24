@@ -4,14 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Torsion.Pi
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Further results on (semi)linear maps
 -/
+
+@[expose] public section
 
 
 assert_not_exists Submonoid Finset TrivialStar
@@ -23,6 +27,23 @@ universe u u' v w x y z
 variable {R R' S M M' : Type*}
 
 namespace LinearMap
+
+section toFunAsLinearMap
+
+variable {R M N A : Type*} [Semiring R] [Semiring A]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N] [SMulCommClass R A N]
+
+variable (R M N A) in
+/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` has
+commuting `R`-module and `A`-module structures. -/
+def ltoFun : (M →ₗ[R] N) →ₗ[A] (M → N) where
+  toFun f := f.toFun
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp] lemma ltoFun_apply {f : M →ₗ[R] N} : ltoFun R M N A f = f := rfl
+
+end toFunAsLinearMap
 
 section SMul
 
@@ -82,16 +103,70 @@ section Module
 
 variable [Semiring S] [Module S M] [Module S M'] [SMulCommClass R' S M']
 
-instance [NoZeroSMulDivisors S M'] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M') :=
-  coe_injective.noZeroSMulDivisors _ rfl coe_smul
+instance [Module.IsTorsionFree S M'] : Module.IsTorsionFree S (M →ₛₗ[σ₁₂] M') :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
 
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   add_smul _ _ _ := ext fun _ ↦ by
     simp_rw [add_apply, DomMulAct.smul_linearMap_apply, ← map_add, ← add_smul]; rfl
-  zero_smul _ := ext fun _ ↦ by erw [DomMulAct.smul_linearMap_apply, zero_smul, map_zero]; rfl
+  zero_smul _ := ext fun _ ↦ by
+    simp [DomMulAct.smul_linearMap_apply, DomMulAct.mk, MulOpposite.opEquiv]
 
 end Module
 
 end Actions
+
+section mulLeftRight
+variable {R A : Type*} [Semiring R]
+
+section nonUnitalSemiring
+variable (R A) [NonUnitalSemiring A] [Module R A]
+
+@[simp]
+theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
+    mulLeft R (a * b) = (mulLeft R a).comp (mulLeft R b) := by
+  ext
+  simp only [mulLeft_apply, comp_apply, mul_assoc]
+
+@[simp]
+theorem mulRight_mul [IsScalarTower R A A] (a b : A) :
+    mulRight R (a * b) = (mulRight R b).comp (mulRight R a) := by
+  ext
+  simp only [mulRight_apply, comp_apply, mul_assoc]
+
+end nonUnitalSemiring
+
+section nonAssocSemiring
+variable [NonAssocSemiring A] [Module R A]
+
+@[simp] lemma mulLeft_inj [SMulCommClass R A A] {a b : A} :
+    mulLeft R a = mulLeft R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+@[simp] lemma mulRight_inj [IsScalarTower R A A] {a b : A} :
+    mulRight R a = mulRight R b ↔ a = b :=
+  ⟨fun h => by simpa using LinearMap.ext_iff.mp h 1, fun h => h ▸ rfl⟩
+
+section
+variable (R A)
+
+@[simp]
+theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id := ext one_mul
+
+@[simp]
+theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
+  mulLeft_zero_eq_zero R A ▸ mulLeft_inj
+
+@[simp]
+theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
+  ext mul_one
+
+@[simp]
+theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
+  mulRight_zero_eq_zero R A ▸ mulRight_inj
+
+end
+end nonAssocSemiring
+end mulLeftRight
 
 end LinearMap

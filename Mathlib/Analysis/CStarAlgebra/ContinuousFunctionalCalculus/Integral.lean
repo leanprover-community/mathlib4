@@ -3,12 +3,13 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Anatole Dedecker
 -/
+module
 
-import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Integrals and the continuous functional calculus
@@ -37,6 +38,8 @@ with the API developed in `Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
 + Lift this to the case where the CFC is over `ℝ≥0`
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
+
+public section
 
 open MeasureTheory Topology
 open scoped ContinuousMapZero

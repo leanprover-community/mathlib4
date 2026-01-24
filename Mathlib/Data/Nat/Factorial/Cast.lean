@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Factorial.Basic
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Cast of factorials
@@ -17,6 +19,8 @@ to subtraction on a general semiring. For example, we can't rely on existing cas
 `↑(a.descFactorial 2) = ↑a * (↑a - 1)`. We must use the fact that, whenever `↑(a - 1)` is not equal
 to `↑a - 1`, the other factor is `0` anyway.
 -/
+
+public section
 
 
 open Nat

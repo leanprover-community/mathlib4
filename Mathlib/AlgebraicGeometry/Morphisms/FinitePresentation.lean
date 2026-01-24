@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Properties
-import Mathlib.RingTheory.RingHom.FinitePresentation
-import Mathlib.RingTheory.Spectrum.Prime.Chevalley
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!
 
@@ -24,6 +26,8 @@ We show that these properties are local, and are stable under compositions.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -38,16 +42,22 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 /-- A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y`
 and `V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is of finite presentation. -/
 @[mk_iff]
-class LocallyOfFinitePresentation : Prop where
-  finitePresentation_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1),
+class LocallyOfFinitePresentation (f : X ⟶ Y) : Prop where
+  finitePresentation_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
       (f.appLE U V e).hom.FinitePresentation
+
+alias Scheme.Hom.finitePresentation_appLE := LocallyOfFinitePresentation.finitePresentation_appLE
+
+@[deprecated (since := "2026-01-20")]
+alias LocallyOfFinitePresentation.finitePresentation_of_affine_subset :=
+  Scheme.Hom.finitePresentation_appLE
 
 instance : HasRingHomProperty @LocallyOfFinitePresentation RingHom.FinitePresentation where
   isLocal_ringHomProperty := RingHom.finitePresentation_isLocal
   eq_affineLocally' := by
     ext X Y f
-    rw [locallyOfFinitePresentation_iff, affineLocally_iff_affineOpens_le]
+    rw [locallyOfFinitePresentation_iff, affineLocally_iff_forall_isAffineOpen]
 
 instance (priority := 900) locallyOfFinitePresentation_of_isOpenImmersion [IsOpenImmersion f] :
     LocallyOfFinitePresentation f :=

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Projective.Resolution
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 
 /-!
 # Left-derived functors
@@ -29,8 +31,8 @@ and show how to compute the components.
 ## Main results
 * `Functor.isZero_leftDerived_obj_projective_succ`: projective objects have no higher
   left derived functor.
-* `NatTrans.leftDerived`: the natural isomorphism between left derived functors
-  induced by natural transformation.
+* `NatTrans.leftDerived`: the natural transformation between left derived functors
+  induced by a natural transformation.
 * `Functor.fromLeftDerivedZero`: the natural transformation `F.leftDerived 0 ⟶ F`,
   which is an isomorphism when `F` is right exact (i.e. preserves finite colimits),
   see also `Functor.leftDerivedZeroIsoSelf`.
@@ -40,11 +42,13 @@ and show how to compute the components.
 * refactor `Functor.leftDerived` (and `Functor.rightDerived`) when the necessary
   material enters mathlib: derived categories, injective/projective derivability
   structures, existence of derived functors from derivability structures.
-  Eventually, we shall get a right derived functor
+  Eventually, we shall get a left derived functor
   `F.leftDerivedFunctorMinus : DerivedCategory.Minus C ⥤ DerivedCategory.Minus D`,
   and `F.leftDerived` shall be redefined using `F.leftDerivedFunctorMinus`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -52,7 +56,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D]
   [Abelian C] [HasProjectiveResolutions C] [Abelian D]
 
 /-- When `F : C ⥤ D` is an additive functor, this is
@@ -249,13 +253,13 @@ noncomputable def fromLeftDerivedZero' {X : C}
     rw [← F.map_comp, complex_d_comp_π_f_zero, F.map_zero])
 
 @[reassoc (attr := simp)]
-lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category C] [Abelian C] {X : C}
+lemma pOpcycles_comp_fromLeftDerivedZero' {C} [Category* C] [Abelian C] {X : C}
     (P : ProjectiveResolution X) (F : C ⥤ D) [F.Additive] :
     HomologicalComplex.pOpcycles _ _ ≫ P.fromLeftDerivedZero' F = F.map (P.π.f 0) := by
   simp [fromLeftDerivedZero']
 
 @[reassoc]
-lemma fromLeftDerivedZero'_naturality {C} [Category C] [Abelian C] {X Y : C} (f : X ⟶ Y)
+lemma fromLeftDerivedZero'_naturality {C} [Category* C] [Abelian C] {X Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
     (φ : P.complex ⟶ Q.complex) (comm : φ.f 0 ≫ Q.π.f 0 = P.π.f 0 ≫ f)
     (F : C ⥤ D) [F.Additive] :
@@ -347,7 +351,7 @@ lemma leftDerivedZeroIsoSelf_hom_inv_id :
 
 @[reassoc (attr := simp)]
 lemma leftDerivedZeroIsoSelf_inv_hom_id :
-    F.leftDerivedZeroIsoSelf.inv ≫ F.fromLeftDerivedZero =  𝟙 _ :=
+    F.leftDerivedZeroIsoSelf.inv ≫ F.fromLeftDerivedZero = 𝟙 _ :=
   F.leftDerivedZeroIsoSelf.inv_hom_id
 
 @[reassoc (attr := simp)]

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Data.Rel.Separated
-import Mathlib.Topology.EMetricSpace.Defs
+module
+
+public import Mathlib.Data.Rel.Separated
+public import Mathlib.Topology.EMetricSpace.Defs
 
 /-!
 # Metric separation
@@ -19,6 +21,8 @@ The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
+
+@[expose] public section
 
 open EMetric Set
 open scoped ENNReal
@@ -42,6 +46,7 @@ lemma isSeparated_iff_setRelIsSeparated :
     IsSeparated ε s ↔ SetRel.IsSeparated {(x, y) | edist x y ≤ ε} s := by
   simp [IsSeparated, SetRel.IsSeparated]
 
+@[grind .]
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
 
@@ -62,11 +67,12 @@ lemma isSeparated_insert_of_notMem (hx : x ∉ s) :
     IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
   pairwise_insert_of_symmetric_of_notMem (fun _ _ ↦ by simp [edist_comm]) hx
 
-@[deprecated (since := "2025-05-23")]
-alias isSeparated_insert_of_not_mem := isSeparated_insert_of_notMem
-
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := isSeparated_insert.2 ⟨hs, h⟩
+
+@[simp]
+lemma isSeparated_zero {X : Type*} [EMetricSpace X] (s : Set X) : IsSeparated 0 s := by
+  simp [IsSeparated, Set.Pairwise]
 
 /-!
 ### Metric separated pairs of sets

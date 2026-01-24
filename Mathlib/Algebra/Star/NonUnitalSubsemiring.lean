@@ -3,10 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Star.Center
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Star.Center
 
 /-!
 # Non-unital Star Subsemirings
@@ -18,6 +20,8 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
 
 -/
+
+@[expose] public section
 
 universe v w w'
 
@@ -113,7 +117,7 @@ section Center
 variable (R)
 
 /-- The center of a non-unital non-associative semiring `R` is the set of elements that
-commute and associate with everything in `R`, here realized as non-unital star
+commute and associate with everything in `R`, here realized as a non-unital star
 subsemiring. -/
 def center (R) [NonUnitalNonAssocSemiring R] [StarRing R] : NonUnitalStarSubsemiring R where
   toNonUnitalSubsemiring := NonUnitalSubsemiring.center R

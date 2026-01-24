@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -18,6 +20,8 @@ and show that they satisfy the same kind of laws (`Monoid` etc) as the original 
 Finally, we construct a section of the quotient map
 which is a continuous linear map `SeparationQuotient E →L[K] E`.
 -/
+
+@[expose] public section
 
 assert_not_exists LinearIndependent
 

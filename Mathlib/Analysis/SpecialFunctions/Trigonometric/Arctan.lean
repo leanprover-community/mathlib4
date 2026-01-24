@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # The `arctan` function.
@@ -17,6 +19,8 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 `π / 4 = arctan 1`), including John Machin's original one at
 `four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -130,14 +134,17 @@ theorem arctan_tan (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan (tan x)
 theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
   cos_pos_of_mem_Ioo <| arctan_mem_Ioo x
 
+theorem sin_sq_arctan (x : ℝ) : sin (arctan x) ^ 2 = x ^ 2 / (1 + x ^ 2) := by
+  rw [← tan_sq_div_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+
 theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+  rw [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
 
 theorem sin_arctan (x : ℝ) : sin (arctan x) = x / √(1 + x ^ 2) := by
-  rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / √(1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
   (arctan_mem_Ioo x).2
@@ -199,6 +206,20 @@ theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
 
 @[simp]
+theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
+  rw [← tan_pi_div_three, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
+theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
+  rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
 theorem arctan_eq_pi_div_four : arctan x = π / 4 ↔ x = 1 := arctan_injective.eq_iff' arctan_one
 
 @[simp]
@@ -253,12 +274,11 @@ theorem arctan_inv_of_neg (h : x < 0) : arctan x⁻¹ = -(π / 2) - arctan x := 
 section ArctanAdd
 
 lemma arctan_ne_mul_pi_div_two : ∀ (k : ℤ), arctan x ≠ (2 * k + 1) * π / 2 := by
-  by_contra!
-  obtain ⟨k, h⟩ := this
+  by_contra! ⟨k, h⟩
   obtain ⟨lb, ub⟩ := arctan_mem_Ioo x
   rw [h, neg_eq_neg_one_mul, mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at lb
   rw [h, ← one_mul (π / 2), mul_div_assoc, mul_lt_mul_iff_left₀ (by positivity)] at ub
-  norm_cast at lb ub; change -1 < _ at lb; cutsat
+  norm_cast at lb ub; change -1 < _ at lb; lia
 
 lemma arctan_add_arctan_lt_pi_div_two (h : x * y < 1) : arctan x + arctan y < π / 2 := by
   rcases le_or_gt y 0 with hy | hy
@@ -349,7 +369,7 @@ theorem sin_arctan_nonneg : 0 ≤ sin (arctan x) ↔ 0 ≤ x := by
 theorem sin_arctan_le_zero : sin (arctan x) ≤ 0 ↔ x ≤ 0 := by
   simpa using sin_arctan_strictMono.le_iff_le (b := 0)
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
 
@@ -386,7 +406,7 @@ open Lean Meta Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
@@ -400,7 +420,7 @@ def evalRealArctan : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -409,7 +429,7 @@ def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
     assumeInstancesCommute

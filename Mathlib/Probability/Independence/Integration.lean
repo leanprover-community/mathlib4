@@ -3,9 +3,11 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Probability.Independence.Integrable
-import Mathlib.Probability.Notation
+module
+
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.Probability.Independence.Integrable
+public import Mathlib.Probability.Notation
 
 /-!
 # Integration in Probability Theory
@@ -26,6 +28,8 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 ```
 
 -/
+
+public section
 
 
 open Set MeasureTheory
@@ -68,7 +72,7 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
     rw [lintegral_iSup h_measM_f h_mono_f, lintegral_iSup, ENNReal.iSup_mul]
     · simp_rw [← h_ind_f]
     · exact fun n => h_mul_indicator _ (h_measM_f n)
-    · exact fun m n h_le a => mul_le_mul_right' (h_mono_f h_le a) _
+    · exact fun m n h_le a => mul_le_mul_left (h_mono_f h_le a) _
 
 /--
 If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
@@ -99,7 +103,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_independent_measurableSpace
     rw [lintegral_iSup, lintegral_iSup h_measM_f' h_mono_f', ENNReal.mul_iSup]
     · simp_rw [← h_ind_f']
     · exact fun n => h_measM_f.mul (h_measM_f' n)
-    · exact fun n m (h_le : n ≤ m) a => mul_le_mul_left' (h_mono_f' h_le a) _
+    · exact fun n m (h_le : n ≤ m) a => mul_le_mul_right (h_mono_f' h_le a) _
 
 /-- If `f` and `g` are independent random variables with values in `ℝ≥0∞`,
 then `E[f * g] = E[f] * E[g]`. -/

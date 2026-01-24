@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Comap
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.Data.Set.Card
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -19,6 +21,8 @@ pullback), and on sets (inclusion, union, Union).
 We also study the relationship between the restriction of a measure to a subtype (given by the
 pullback under `Subtype.val`) and the restriction to a set as above.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
@@ -296,10 +300,16 @@ theorem restrict_map {f : α → β} (hf : Measurable f) {s : Set β} (hs : Meas
     (μ.map f).restrict s = (μ.restrict <| f ⁻¹' s).map f :=
   ext fun t ht => by simp [*, hf ht]
 
-theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s :=
-  ext fun t ht => by
-    rw [restrict_apply ht, restrict_apply ht, inter_comm, measure_toMeasurable_inter ht h,
-      inter_comm]
+theorem restrict_inter_toMeasurable (h : μ s ≠ ∞) (ht : MeasurableSet t) (hst : s ⊆ t) :
+    μ.restrict (t ∩ toMeasurable μ s) = μ.restrict s := by
+  ext u hu
+  rw [restrict_apply hu, restrict_apply hu, inter_comm t, inter_comm, inter_assoc,
+    measure_toMeasurable_inter (ht.inter hu) h]
+  congr 1
+  grind
+
+theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ s) = μ.restrict s := by
+  simpa using restrict_inter_toMeasurable h MeasurableSet.univ (subset_univ _)
 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
@@ -891,7 +901,20 @@ theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α)
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=
   e.measurableEmbedding.restrict_map _ _
 
+lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s : Set α) :
+    comap e μ s = μ (e.symm ⁻¹' s) := by
+  rw [e.measurableEmbedding.comap_apply, e.image_eq_preimage_symm]
+
 end MeasurableEmbedding
+
+lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
+    (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
+  ext s hs
+  rw [map_apply hf hs, hg.comap_apply, ← measure_diff_null hμg]
+  congr
+  simp
+  grind
 
 section Subtype
 
@@ -982,9 +1005,6 @@ theorem mem_map_indicator_ae_iff_of_zero_notMem [Zero β] {t : Set β} (ht : (0 
   change μ (((f ⁻¹' t)ᶜ ∪ sᶜ) ∩ ((fun _ => (0 : β)) ⁻¹' t \ s)ᶜ) = 0 ↔ μ ((f ⁻¹' t)ᶜ ∪ sᶜ) = 0
   simp only [ht, if_false, Set.compl_empty, Set.empty_diff, Set.inter_univ, Set.preimage_const]
 
-@[deprecated (since := "2025-05-24")]
-alias mem_map_indicator_ae_iff_of_zero_nmem := mem_map_indicator_ae_iff_of_zero_notMem
-
 theorem map_restrict_ae_le_map_indicator_ae [Zero β] (hs : MeasurableSet s) :
     Filter.map f (ae <| μ.restrict s) ≤ Filter.map (s.indicator f) (ae μ) := by
   intro t
@@ -1060,10 +1080,10 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
   have P_cover {i : ι} (hi : i ∈ F) : s i ⊆ ⋃ C ∈ G i, P C := by
     refine fun x hx ↦ Set.mem_biUnion (x := F.filter (x ∈ s ·)) ?_ ?_
     · exact ⟨Finset.mem_powerset.mpr (filter_subset _ F), mem_filter.mpr ⟨hi, hx⟩⟩
-    · simp_rw [P, mem_inter_iff, mem_iInter, mem_sdiff, mem_filter]; tauto
+    · simp_rw [P, mem_inter_iff, mem_iInter, Finset.mem_sdiff, mem_filter]; tauto
   have iUnion_P : ⋃ C ∈ Cs, P C ⊆ ⋃ i, s i := by
     intro x hx
-    simp_rw [Cs, toFinset_diff, mem_sdiff, mem_iUnion] at hx
+    simp_rw [Cs, toFinset_diff, Finset.mem_sdiff, mem_iUnion] at hx
     have ⟨C, ⟨_, C_nonempty⟩, hxC⟩ := hx
     have ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.mpr <| Finset.notMem_singleton.mp C_nonempty
     exact ⟨s i, ⟨i, rfl⟩, hxC.1 (s i) ⟨i, by simp [hi]⟩⟩

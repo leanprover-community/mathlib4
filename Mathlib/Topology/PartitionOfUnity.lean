@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.ShrinkingLemma
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous partition of unity
@@ -41,7 +43,7 @@ If `f` is a bump function covering indexed by a linearly ordered type, then
 `BumpCovering.toPartitionOfUnity`. Note that only finitely many terms `1 - f j x` are not equal
 to one, so this product is well-defined.
 
-Note that `g i x = ∏ᶠ j ≤ i, (1 - f j x) - ∏ᶠ j < i, (1 - f j x)`, so most terms in the sum
+Note that `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so most terms in the sum
 `∑ᶠ i, g i x` cancel, and we get `∑ᶠ i, g i x = 1 - ∏ᶠ i, (1 - f i x)`, and the latter product
 equals zero because one of `f i x` is equal to one.
 
@@ -72,6 +74,8 @@ We use `WellOrderingRel j i` instead of `j < i` in the definition of
 
 partition of unity, bump function, Urysohn's lemma, normal space, paracompact space
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -175,7 +179,7 @@ section finsupport
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
@@ -285,23 +289,16 @@ theorem exists_finset_nhds' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X
   have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd' := exists_finset_nhds'
-
 theorem exists_finset_nhds (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i ∈ I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
   rcases ρ.exists_finset_nhds' x₀ with ⟨I, H⟩
   use I
   rwa [nhdsWithin_univ, ← eventually_and] at H
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd := exists_finset_nhds
-
 theorem exists_finset_nhds_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
   f.locallyFinite.exists_finset_nhds_support_subset hso ho x
-
-@[deprecated (since := "2025-05-22")]
-alias exists_finset_nhd_support_subset := exists_finset_nhds_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum
@@ -477,7 +474,7 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
         (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
 
-/-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
+/-- Index of a bump function such that `f i =ᶠ[𝓝 x] 1`. -/
 def ind (x : X) (hx : x ∈ s) : ι :=
   (f.eventuallyEq_one' x hx).choose
 

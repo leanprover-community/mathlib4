@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Strictly convex sets
@@ -14,6 +16,8 @@ This file defines strictly convex sets.
 
 A set is strictly convex if the open segment between any two distinct points lies in its interior.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -258,13 +262,8 @@ end AddCommGroup
 end OrderedSemiring
 
 section CommSemiring
-
-variable [CommSemiring 𝕜] [PartialOrder 𝕜] [TopologicalSpace E]
-
-section AddCommGroup
-
-variable [AddCommGroup E] [Module 𝕜 E] [NoZeroSMulDivisors 𝕜 E] [ContinuousConstSMul 𝕜 E]
-  {s : Set E}
+variable [CommSemiring 𝕜] [IsDomain 𝕜] [PartialOrder 𝕜] [TopologicalSpace E] [AddCommGroup E]
+  [Module 𝕜 E] [Module.IsTorsionFree 𝕜 E] [ContinuousConstSMul 𝕜 E] {s : Set E}
 
 theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
     StrictConvex 𝕜 ((fun z => c • z) ⁻¹' s) := by
@@ -277,8 +276,6 @@ theorem StrictConvex.preimage_smul (hs : StrictConvex 𝕜 s) (c : 𝕜) :
     refine hs.linear_preimage (LinearMap.lsmul _ _ c) ?_ (smul_right_injective E hc)
     unfold LinearMap.lsmul LinearMap.mk₂ LinearMap.mk₂' LinearMap.mk₂'ₛₗ
     exact continuous_const_smul _
-
-end AddCommGroup
 
 end CommSemiring
 

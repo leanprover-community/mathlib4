@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The complex `log` function
 
 Basic properties, relationship with `exp`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -50,6 +54,15 @@ theorem range_exp : Set.range exp = {0}ᶜ :=
 theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp x) = x := by
   rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
+
+theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
+    log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
+  rw [log, norm_exp, Real.log_exp, arg_exp]
+
+theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
+    log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
+  rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
+  simp [mul_assoc]
 
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
@@ -248,3 +261,37 @@ theorem _root_.Continuous.clog {f : α → ℂ} (h₁ : Continuous f)
   continuous_iff_continuousAt.2 fun x => h₁.continuousAt.clog (h₂ x)
 
 end LogDeriv
+
+namespace Complex
+
+open Set
+open scoped Real
+
+/-- `Complex.exp` as an `OpenPartialHomeomorph` with `source = {z | -π < im z < π}` and
+`target = {z | 0 < re z} ∪ {z | im z ≠ 0}` (a.k.a. `slitPlane`).
+This definition is used to prove that `Complex.log`
+is complex differentiable at all points but the negative real semi-axis.
+-/
+noncomputable def expOpenPartialHomeomorph : OpenPartialHomeomorph ℂ ℂ where
+  toFun := exp
+  invFun := log
+  source := {z : ℂ | z.im ∈ Ioo (-π) π}
+  target := slitPlane
+  map_source' := by
+    rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
+    simp [exp_mem_slitPlane, h₂.ne,
+      (toIocMod_eq_self Real.two_pi_pos).mpr ⟨h₁, by simpa [two_mul] using h₂.le⟩]
+  map_target' z h := by
+    simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
+    exact h.imp_left le_of_lt
+  left_inv' _x hx := log_exp hx.1 (le_of_lt hx.2)
+  right_inv' _x hx := exp_log <| slitPlane_ne_zero hx
+  open_source := isOpen_Ioo.preimage continuous_im
+  open_target := isOpen_slitPlane
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := continuousOn_id.clog fun _ ↦ id
+
+@[deprecated (since := "2026-01-13")]
+alias expPartialHomeomorph := expOpenPartialHomeomorph
+
+end Complex

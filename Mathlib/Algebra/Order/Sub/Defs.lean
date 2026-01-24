@@ -3,9 +3,11 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Ordered Subtraction
@@ -14,7 +16,7 @@ This file proves lemmas relating (truncated) subtraction with an order. We provi
 `OrderedSub` stating that `a - b ≤ c ↔ a ≤ c + b`.
 
 The subtraction discussed here could both be normal subtraction in an additive group or truncated
-subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `PartENat`, `ENNReal`, ...)
+subtraction on a canonically ordered monoid (`ℕ`, `Multiset`, `ENNReal`, ...)
 
 ## Implementation details
 
@@ -39,6 +41,8 @@ lemmas about subtraction/division in `Ordered[Add]CommGroup` with these.
 TODO: generalize `Nat.le_of_le_of_sub_le_sub_right`, `Nat.sub_le_sub_right_iff`,
   `Nat.mul_self_sub_mul_self_eq`
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

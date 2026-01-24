@@ -3,9 +3,11 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Localization
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 /-!
 # `IsIntegrallyClosed` is a local property
@@ -17,6 +19,8 @@ In this file, we prove that `IsIntegrallyClosed` is a local property.
 * `IsIntegrallyClosed.of_localization_maximal` : An integral domain `R` is integral closed
   if `Rₘ` is integral closed for any maximal ideal `m` of `R`.
 -/
+
+public section
 
 open scoped nonZeroDivisors
 

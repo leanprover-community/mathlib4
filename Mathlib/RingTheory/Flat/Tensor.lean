@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Flat modules
@@ -23,6 +25,8 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
   A module `M` over a ring `R` is flat iff for all (finitely generated) ideals `I` of `R`, the
   tensor product of the inclusion `I → R` and the identity `M → M` is injective.
 -/
+
+public section
 
 universe u v
 

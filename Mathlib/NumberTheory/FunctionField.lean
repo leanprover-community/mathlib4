@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
-import Mathlib.FieldTheory.RatFunc.Degree
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.Topology.Algebra.Valued.ValuedField
+module
+
+public import Mathlib.FieldTheory.RatFunc.Degree
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Function fields
@@ -39,6 +41,8 @@ adding them back in lemmas when they are needed.
 function field, ring of integers
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -69,9 +73,9 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
   · let b := Module.finBasis (RatFunc Fq) F
-    exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
+    exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Fqt F
-    refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
+    refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField
@@ -214,6 +218,8 @@ theorem inftyValuation.X_inv : inftyValuation Fq (1 / RatFunc.X) = exp (-1) := b
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) = exp (p.natDegree : ℤ) := by
   rw [inftyValuationDef, if_neg (by simpa), RatFunc.intDegree_polynomial]
+
+instance : Valuation.IsNontrivial (inftyValuation Fq) := ⟨RatFunc.X, by simp⟩
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/
 def inftyValuedFqt : Valued (RatFunc Fq) ℤᵐ⁰ :=

@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+module
+
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Linear maps of modules with coefficients in a principal ideal domain
@@ -20,6 +22,8 @@ algebra import hierarchy have to depend on the theory of PIDs.
 * `LinearMap.trace_restrict_eq_of_forall_mem`
 
 -/
+
+public section
 
 namespace LinearMap
 

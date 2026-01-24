@@ -3,12 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 
@@ -38,6 +39,8 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
   are morphisms for the algebra structure by `MvPolynomial σ R`.
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -64,7 +67,7 @@ variable [AddCommMonoid N] [Module R N]
   linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  TensorProduct.finsuppLeft' _ _ _ _ _
+  TensorProduct.finsuppLeft _ _ _ _ _
 
 lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
     rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
@@ -265,7 +268,7 @@ variable (S σ ι) in
 def tensorEquivSum :
     MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
   ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
-    ((sumAlgEquiv _ _ _).symm.trans  (renameEquiv _ (.sumComm ι σ)))
+    ((sumAlgEquiv _ _ _).symm.trans (renameEquiv _ (.sumComm ι σ)))
 
 variable {R}
 

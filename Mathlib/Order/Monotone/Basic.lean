@@ -3,14 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Compare
-import Mathlib.Order.Max
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Compare
+public import Mathlib.Order.Max
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Choose
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Monotonicity
@@ -47,6 +50,8 @@ and `IsSuccArchimedean α`.
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
+
+public section
 
 open Function OrderDual
 
@@ -238,6 +243,7 @@ theorem StrictMono.isMax_of_apply (hf : StrictMono f) (ha : IsMax (f a)) : IsMax
     let ⟨_, hb⟩ := not_isMax_iff.1 h
     (hf hb).not_isMax ha
 
+@[to_dual existing]
 theorem StrictMono.isMin_of_apply (hf : StrictMono f) (ha : IsMin (f a)) : IsMin a :=
   of_not_not fun h ↦
     let ⟨_, hb⟩ := not_isMin_iff.1 h
@@ -258,7 +264,7 @@ lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : 
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
   | succ m ih =>
-    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le_iff]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -458,30 +464,8 @@ downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
     ¬ Monotone f ∧ ¬ Antitone f ↔
       ∃ a b c, a ≤ b ∧ b ≤ c ∧ ((f a < f b ∧ f c < f b) ∨ (f b < f a ∧ f b < f c)) := by
-  simp_rw [Monotone, Antitone, not_forall, not_le]
-  refine Iff.symm ⟨?_, ?_⟩
-  · rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩
-    exacts [⟨⟨_, _, hbc, hfcb⟩, _, _, hab, hfab⟩, ⟨⟨_, _, hab, hfba⟩, _, _, hbc, hfbc⟩]
-  rintro ⟨⟨a, b, hab, hfba⟩, c, d, hcd, hfcd⟩
-  obtain hda | had := le_total d a
-  · obtain hfad | hfda := le_total (f a) (f d)
-    · exact ⟨c, d, b, hcd, hda.trans hab, Or.inl ⟨hfcd, hfba.trans_le hfad⟩⟩
-    · exact ⟨c, a, b, hcd.trans hda, hab, Or.inl ⟨hfcd.trans_le hfda, hfba⟩⟩
-  obtain hac | hca := le_total a c
-  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfcd.trans <| hfdb.trans_lt hfba, hfcd⟩⟩
-    obtain hfca | hfac := lt_or_ge (f c) (f a)
-    · exact ⟨a, c, d, hac, hcd, Or.inr ⟨hfca, hfcd⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
-  · obtain hfdb | hfbd := le_or_gt (f d) (f b)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfcd.trans <| hfdb.trans_lt hfba, hfba⟩⟩
-    obtain hfca | hfac := lt_or_ge (f c) (f a)
-    · exact ⟨c, a, b, hca, hab, Or.inl ⟨hfca, hfba⟩⟩
-    obtain hbd | hdb := le_total b d
-    · exact ⟨a, b, d, hab, hbd, Or.inr ⟨hfba, hfbd⟩⟩
-    · exact ⟨a, d, b, had, hdb, Or.inl ⟨hfac.trans_lt hfcd, hfbd⟩⟩
+  simp only [Monotone, Antitone]
+  grind [not_le]
 
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
@@ -528,7 +512,7 @@ theorem Nat.rel_of_forall_rel_succ_of_le_of_lt (r : β → β → Prop) [IsTrans
   | refl => exact h _ hab
   | step b_lt_k r_b_k => exact _root_.trans r_b_k (h _ (hab.trans_lt b_lt_k).le)
 
-theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r]
+theorem Nat.rel_of_forall_rel_succ_of_le_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r]
     {f : ℕ → β} {a : ℕ} (h : ∀ n, a ≤ n → r (f n) (f (n + 1)))
     ⦃b c : ℕ⦄ (hab : a ≤ b) (hbc : b ≤ c) : r (f b) (f c) :=
   hbc.eq_or_lt.elim (fun h ↦ h ▸ refl _) (Nat.rel_of_forall_rel_succ_of_le_of_lt r h hab)
@@ -537,7 +521,7 @@ theorem Nat.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a < b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_lt r (fun n _ ↦ h n) le_rfl hab
 
-theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℕ → β}
+theorem Nat.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℕ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℕ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   Nat.rel_of_forall_rel_succ_of_le_of_le r (fun n _ ↦ h n) le_rfl hab
 
@@ -643,7 +627,7 @@ theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r]
   | zero => rw [Int.ofNat_one]; apply h
   | succ n ihn => rw [Int.natCast_succ, ← Int.add_assoc]; exact _root_.trans ihn (h _)
 
-theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [IsRefl β r] [IsTrans β r] {f : ℤ → β}
+theorem Int.rel_of_forall_rel_succ_of_le (r : β → β → Prop) [Std.Refl r] [IsTrans β r] {f : ℤ → β}
     (h : ∀ n, r (f n) (f (n + 1))) ⦃a b : ℤ⦄ (hab : a ≤ b) : r (f a) (f b) :=
   hab.eq_or_lt.elim (fun h ↦ h ▸ refl _) fun h' ↦ Int.rel_of_forall_rel_succ_of_lt r h h'
 
@@ -742,6 +726,6 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
     by_cases! h : ∀ n, f n ≤ c
     · exact ih h
     · obtain ⟨N, hN⟩ := h
-      replace hN : f N = c + 1 := by specialize hc N; omega
+      replace hN : f N = c + 1 := by specialize hc N; lia
       use c + 1, N; intro n hn
-      specialize mono_f hn; specialize hc n; cutsat
+      specialize mono_f hn; specialize hc n; lia

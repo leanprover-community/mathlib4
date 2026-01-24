@@ -3,7 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
@@ -22,6 +24,8 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 - `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
+
+public section
 
 
 open Finset
@@ -59,6 +63,20 @@ theorem natDegree_sum_le (f : ι → S[X]) :
 lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
     natDegree (∑ i ∈ s, f i) ≤ n :=
   le_trans (natDegree_sum_le s f) <| (Finset.fold_max_le n).mpr <| by simpa
+
+/-- The leading coefficient of a sum of polynomials with the same degree is
+the sum of the leading coefficients, provided that this sum is nonzero.
+-/
+theorem leadingCoeff_sum_of_degree_eq {f : ι → S[X]} {s : Finset ι} {d}
+    (hd : ∀ k ∈ s, (f k).degree = d) (hf : ∑ k ∈ s, (f k).leadingCoeff ≠ 0) :
+    (∑ k ∈ s, f k).leadingCoeff = ∑ k ∈ s, (f k).leadingCoeff := by
+  obtain _ | d := d
+  · simp_all [WithBot.none_eq_bot]
+  · replace hd k (hk : k ∈ s) : (f k).natDegree = d := natDegree_eq_of_degree_eq_some <| hd k hk
+    suffices (∑ k ∈ s, f k).natDegree = d by simp_all [leadingCoeff]
+    apply natDegree_eq_of_le_of_coeff_ne_zero
+    · aesop (add safe natDegree_sum_le_of_forall_le)
+    · simp_all [leadingCoeff]
 
 theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
     (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :

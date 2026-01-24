@@ -3,9 +3,11 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
-import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Data.Rat.Floor
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # Termination of Continued Fraction Computations (`GenContFract.of`)
@@ -26,6 +28,8 @@ rational number, that is `↑v = q` for some `q : ℚ`.
 
 rational, continued fraction, termination
 -/
+
+public section
 
 
 namespace GenContFract
@@ -295,7 +299,7 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left
     have : 0 ≤ ifp.fr.num := Rat.num_nonneg.mpr this
-    cutsat
+    lia
 
 end IntFractPair
 

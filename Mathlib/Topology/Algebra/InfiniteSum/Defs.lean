@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
 # Infinite sum and product in a topological monoid
@@ -15,7 +17,7 @@ This file defines infinite products and sums for (possibly infinite) indexed fam
 in a commutative topological monoid (resp. add monoid).
 
 To handle convergence questions we use the formalism of *summation filters* (defined in the
-file `Mathlib.Topology.Algebra.InfiniteSum.SummationFilter`). These are filters on the finite
+file `Mathlib/Topology/Algebra/InfiniteSum/SummationFilter.lean`). These are filters on the finite
 subsets of a given type, and we define a function to be *summable* for a summation filter `L` if
 its partial sums over finite subsets tend to a limit along `L` (and similarly for products).
 
@@ -47,6 +49,8 @@ rather than in `ℝ`.
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
 
 -/
+
+@[expose] public section
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
 six key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,
@@ -83,7 +87,7 @@ These are defined in an identical way to infinite sums (`HasSum`). For example, 
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
 not converge as some authors would. -/
 @[to_additive /-- `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β`
-converges to `a` along the SummationFilter `L``.
+converges to `a` along the SummationFilter `L`.
 
 By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards
 the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is
@@ -116,7 +120,7 @@ lemma Multipliable.mono_filter {f : β → α} {L₁ L₂ : SummationFilter β}
   match hf with | ⟨a, ha⟩ => ⟨a, ha.mono_left h⟩
 
 open scoped Classical in
-/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise. ]
+/-- `∏' i, f i` is the unconditional product of `f`, if it exists, or 1 otherwise.
 
 More generally, if `L` is a `SummationFilter`, `∏'[L] i, f i` is the product of `f` with respect to
 `L` if it exists, and `1` otherwise.
@@ -251,7 +255,7 @@ theorem hasProd_fintype_support [Fintype β] (f : β → α) (L : SummationFilte
   filter_upwards [h1, h2] with s hs hs'
   congr 1
   simp only [Set.mem_iInter, Set.mem_setOf_eq, Set.mem_compl_iff] at hs hs'
-  grind [Set.mem_toFinset]
+  grind
 
 @[to_additive]
 theorem hasProd_fintype [Fintype β] (f : β → α) (L := unconditional β) [L.LeAtTop] :
@@ -283,9 +287,7 @@ theorem hasProd_prod_support_of_ne_finset_one (hf : ∀ b ∈ L.support, b ∉ s
     (L.filter.biInter_mem (Set.toFinite _)).mpr (fun b hb ↦ hb.2)
   filter_upwards [h1, L.eventually_le_support] with t ht ht'
   simp only [Set.mem_iInter] at ht
-  apply Finset.prod_congr_of_eq_on_inter <;>
-  · simp only [Set.mem_toFinset]
-    grind
+  apply Finset.prod_congr_of_eq_on_inter <;> grind
 
 /-- If a function `f` is `1` outside of a finite set `s`, then it `HasProd` `∏ b ∈ s, f b`. -/
 @[to_additive /-- If a function `f` vanishes outside of a finite set `s`, then it `HasSum`

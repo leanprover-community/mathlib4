@@ -3,8 +3,10 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.CocompactMap
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
 # Continuous functions vanishing at infinity
@@ -20,6 +22,8 @@ compact space, this type has nice properties.
   type classes (e.g., `IsTopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -100,7 +104,7 @@ theorem ext {f g : C₀(α, β)} (h : ∀ x, f x = g x) : f = g :=
 lemma coe_mk {f : α → β} (hf : Continuous f) (hf' : Tendsto f (cocompact α) (𝓝 0)) :
     { toFun := f,
       continuous_toFun := hf,
-      zero_at_infty' := hf' : ZeroAtInftyContinuousMap α β} = f :=
+      zero_at_infty' := hf' : ZeroAtInftyContinuousMap α β } = f :=
   rfl
 
 /-- Copy of a `ZeroAtInftyContinuousMap` with a new `toFun` equal to the old one. Useful

@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms
@@ -17,6 +19,8 @@ It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -47,6 +51,10 @@ theorem quasiCompact_iff_isSpectralMap : QuasiCompact f ↔ IsSpectralMap f :=
 
 theorem Scheme.Hom.isSpectralMap [QuasiCompact f] : IsSpectralMap f := by
   rwa [← quasiCompact_iff_isSpectralMap]
+
+lemma Scheme.Hom.isCompact_preimage [QuasiCompact f] {U : Opens Y}
+    (hU : IsCompact (U : Set Y)) : IsCompact (f ⁻¹ᵁ U : Set X) :=
+  f.isSpectralMap.2 U.2 hU
 
 @[deprecated (since := "2025-10-07")]
 alias quasiCompact_iff_spectral := quasiCompact_iff_isSpectralMap
@@ -186,6 +194,12 @@ instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] : QuasiCompact (pullback.s
 
 instance (f : X ⟶ Y) (V : Y.Opens) [QuasiCompact f] : QuasiCompact (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact f] [CompactSpace Y] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.snd _ _)
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [QuasiCompact g] [CompactSpace X] : CompactSpace ↑(pullback f g) :=
+  QuasiCompact.compactSpace_of_compactSpace (pullback.fst _ _)
 
 lemma compactSpace_iff_exists :
     CompactSpace X ↔ ∃ R, ∃ f : Spec R ⟶ X, Function.Surjective f := by

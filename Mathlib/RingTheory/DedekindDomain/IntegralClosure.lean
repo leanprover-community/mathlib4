@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.LinearAlgebra.BilinearForm.DualLattice
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Integral closure of Dedekind domains
@@ -32,6 +34,8 @@ to add a `(h : ¬IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped nonZeroDivisors Polynomial
@@ -59,8 +63,8 @@ theorem IsIntegralClosure.isLocalization [IsDomain A] [Algebra.IsAlgebraic K L] 
     IsLocalization (Algebra.algebraMapSubmonoid C A⁰) L := by
   haveI : IsDomain C :=
     (IsIntegralClosure.equiv A C L (integralClosure A L)).toMulEquiv.isDomain (integralClosure A L)
-  haveI : NoZeroSMulDivisors A L := NoZeroSMulDivisors.trans_faithfulSMul A K L
-  haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
+  haveI : IsTorsionFree A L := .trans_faithfulSMul A K L
+  haveI : IsTorsionFree A C := IsIntegralClosure.isTorsionFree A L
   refine ⟨?_, fun z => ?_, fun {x y} h => ⟨1, ?_⟩⟩
   · rintro ⟨_, x, hx, rfl⟩
     rw [isUnit_iff_ne_zero, map_ne_zero_iff _ (IsIntegralClosure.algebraMap_injective C A L),
@@ -120,7 +124,6 @@ then `L` has a basis over `A` consisting of integral elements. -/
 theorem FiniteDimensional.exists_is_basis_integral :
     ∃ (s : Finset L) (b : Basis s K L), ∀ x, IsIntegral A (b x) := by
   letI := Classical.decEq L
-  letI : IsNoetherian K L := IsNoetherian.iff_fg.2 inferInstance
   let s' := IsNoetherian.finsetBasisIndex K L
   let bs' := IsNoetherian.finsetBasis K L
   obtain ⟨y, hy, his'⟩ := exists_integral_multiples A K (Finset.univ.image bs')
@@ -177,16 +180,16 @@ theorem IsIntegralClosure.finite [IsIntegrallyClosed A] [IsNoetherianRing A] :
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the integral closure `C` of `A` in `L` is
 a free `A`-module. -/
-theorem IsIntegralClosure.module_free [NoZeroSMulDivisors A L] [IsPrincipalIdealRing A] :
+theorem IsIntegralClosure.module_free [IsTorsionFree A L] [IsPrincipalIdealRing A] :
     Module.Free A C :=
-  haveI : NoZeroSMulDivisors A C := IsIntegralClosure.noZeroSMulDivisors A L
+  haveI : IsTorsionFree A C := IsIntegralClosure.isTorsionFree A L
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L _
   inferInstance
 
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is a principal ring
 and `L` has no zero smul divisors by `A`, the `A`-rank of the integral closure `C` of `A` in `L`
 is equal to the `K`-rank of `L`. -/
-theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [NoZeroSMulDivisors A L] :
+theorem IsIntegralClosure.rank [IsPrincipalIdealRing A] [IsTorsionFree A L] :
     Module.finrank A C = Module.finrank K L := by
   haveI : Module.Free A C := IsIntegralClosure.module_free A K L C
   haveI : IsNoetherian A C := IsIntegralClosure.isNoetherian A K L C

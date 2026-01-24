@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
-import Mathlib.GroupTheory.Sylow
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+public import Mathlib.GroupTheory.Sylow
 
 /-! # The Klein Four subgroup of an alternating group on 4 letters
 
@@ -49,6 +50,8 @@ Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
 
 -/
+
+@[expose] public section
 
 namespace alternatingGroup
 
@@ -119,7 +122,7 @@ theorem coe_two_sylow_of_card_eq_four
     simp
   · -- card (kleinFour α) ≤ card S
     simp_rw [← Nat.card_eq_fintype_card]
-    refine (card_two_sylow_of_card_eq_four hα4 S).symm.trans_ge ?_
+    refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
     rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]

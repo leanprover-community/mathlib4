@@ -3,8 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Seminorm
-import Mathlib.Analysis.Calculus.TangentCone.Defs
+module
+
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 /-!
 # Tangent cone in a proper space
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Calculus.TangentCone.Defs
 In this file we prove that the tangent cone of a set in a proper normed space
 at an accumulation point of this set is nontrivial.
 -/
+
+public section
 
 open Filter Set Metric NormedField
 open scoped Topology
@@ -40,7 +44,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   have W n := rescale_to_shell hr zero_lt_one (x := d n) (by simpa using (M n).2)
   choose c c_ne c_le le_c hc using W
   have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹ ) atTop atTop by simpa
+    suffices Tendsto (fun n ↦ ‖c n‖⁻¹⁻¹) atTop atTop by simpa
     apply tendsto_inv_nhdsGT_zero.comp
     simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, eventually_atTop, ge_iff_le]
     have B (n : ℕ) : ‖c n‖⁻¹ ≤ 1⁻¹ * ‖r‖ * u n := by
@@ -58,7 +62,7 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
     simp only [mem_diff, Metric.mem_closedBall, dist_zero_right, (c_le n).le,
       Metric.mem_ball, not_lt, true_and, le_c n]
   refine ⟨l, ?_, ?_⟩; swap
-  · simp only [mem_compl_iff, mem_singleton_iff]
+  · push _ ∈ _
     contrapose! l_mem
     simp only [one_div, l_mem, mem_diff, Metric.mem_closedBall, dist_self, zero_le_one,
       Metric.mem_ball, inv_pos, norm_pos_iff, ne_eq, not_not, true_and]
@@ -67,6 +71,3 @@ theorem tangentConeAt_nonempty_of_properSpace [ProperSpace E]
   refine ⟨c ∘ φ, d ∘ φ, .of_forall fun n ↦ ?_, ?_, hφ⟩
   · simpa [d] using hvs (φ n)
   · exact c_lim.comp φ_strict.tendsto_atTop
-
-@[deprecated (since := "2025-04-27")]
-alias tangentCone_nonempty_of_properSpace := tangentConeAt_nonempty_of_properSpace
