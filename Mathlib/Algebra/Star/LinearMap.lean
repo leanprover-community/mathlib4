@@ -172,6 +172,22 @@ def convIntrinsicStarRing [Coalgebra R C]
   __ := intrinsicStarAddMonoid
   star_mul := intrinsicStar_convMul h
 
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+theorem _root_.Pi.intrinsicStar_comul {A : n → Type*} [Π i, AddCommMonoid (A i)]
+    [Π i, Module R (A i)] [Π i, CoalgebraStruct R (A i)] [Π i, StarAddMonoid (A i)]
+    [∀ i, StarModule R (A i)]
+    (h : ∀ i, star (comul (R := R) (A := A i)) = TensorProduct.comm R (A i) (A i) ∘ₗ comul) :
+    star (comul (R := R) (A := Π i, A i)) =
+      TensorProduct.comm R (Π i, A i) (Π i, A i) ∘ₗ comul := by
+  ext i x
+  have := by simpa using congr($(h i) x)
+  simp [star_map_apply_eq_map_intrinsicStar, this, map_comm]
+
+@[simp] theorem _root_.Pi.intrinsicStar_comul_commSemiring :
+    star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
+  Pi.intrinsicStar_comul fun _ ↦ by ext; simp
+
 end convRing
 
 end LinearMap
