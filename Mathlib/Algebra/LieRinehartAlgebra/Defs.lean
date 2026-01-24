@@ -106,7 +106,7 @@ def toLinearMap' (f : L₁ →ₗ⁅σ₁₂⁆ L₂) : L₁ →ₛₗ[σ₁₂.
 @[simp] lemma toLinearMap'_apply (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (x : L₁) : f.toLinearMap' x = f x := rfl
 
 /-- The composition of Lie-Rinehart algebra morphisms is again a morphism. -/
-protected def comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (g : L₂ →ₗ⁅σ₂₃⁆ L₃) : L₁ →ₗ⁅(AlgHom.comp σ₂₃ σ₁₂)⁆ L₃ where
+protected def comp (f : L₁ →ₗ⁅σ₁₂⁆ L₂) (g : L₂ →ₗ⁅σ₂₃⁆ L₃) : L₁ →ₗ⁅σ₂₃.comp σ₁₂⁆ L₃ where
   toLieHom := g.toLieHom.comp f.toLieHom
   map_smul_apply' _ _ := by simp [Hom.map_smul_apply]
   apply_lie' _ _ := by simp [f.apply_lie, g.apply_lie]
