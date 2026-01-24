@@ -41,11 +41,11 @@ namespace Hom
 structure DefDomain where
   src : C
   i : src ⟶ X.obj
-  [mono_i : Mono i]
+  mono_i : Mono i := by infer_instance
   hi : P.isoModSerre i
   tgt : C
   p : Y.obj ⟶ tgt
-  [epi_p : Epi p]
+  epi_p : Epi p := by infer_instance
   hp : P.isoModSerre p
 
 namespace DefDomain
@@ -145,8 +145,8 @@ structure CompStruct (d₁₂ : DefDomain X Y) (d₂₃ : DefDomain Y Z) (d₁�
   toObj : d₂₃.src ⟶ obj
   fromObj : obj ⟶ d₁₂.tgt
   fac : toObj ≫ fromObj = d₂₃.i ≫ d₁₂.p := by cat_disch
-  epi_toObj : Epi toObj
-  mono_toObj : Mono toObj
+  epi_toObj : Epi toObj := by infer_instance
+  mono_toObj : Mono toObj := by infer_instance
 
 namespace CompStruct
 
