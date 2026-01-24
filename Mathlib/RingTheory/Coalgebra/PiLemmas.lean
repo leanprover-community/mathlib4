@@ -62,18 +62,20 @@ variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype 
   (G : SimpleGraph n) [DecidableRel G.Adj]
 
 open scoped IntrinsicStar in
-theorem Pi.intrinsicStar_comul [StarRing R] {A : Type*} [AddCommMonoid A] [Module R A]
-    [CoalgebraStruct R A] [StarAddMonoid A] [StarModule R A]
-    (h : star (comul (R := R) (A := A)) = TensorProduct.comm R A A ∘ₗ comul) :
-    star (comul (R := R) (A := n → A)) = TensorProduct.comm R (n → A) (n → A) ∘ₗ comul := by
+theorem Pi.intrinsicStar_comul [StarRing R] {A : n → Type*} [Π i, AddCommMonoid (A i)]
+    [Π i, Module R (A i)] [Π i, CoalgebraStruct R (A i)] [Π i, StarAddMonoid (A i)]
+    [∀ i, StarModule R (A i)]
+    (h : ∀ i, star (comul (R := R) (A := A i)) = TensorProduct.comm R (A i) (A i) ∘ₗ comul) :
+    star (comul (R := R) (A := Π i, A i)) =
+      TensorProduct.comm R (Π i, A i) (Π i, A i) ∘ₗ comul := by
   ext i x
-  have := by simpa using congr($h x)
+  have := by simpa using congr($(h i) x)
   simp [star_map_apply, this, map_comm]
 
 open scoped IntrinsicStar in
 @[simp] theorem Pi.intrinsicStar_comul_commSemiring [StarRing R] :
     star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
-  intrinsicStar_comul (by ext; simp)
+  intrinsicStar_comul (fun _ ↦ by ext; simp)
 
 /-- The convolutive product corresponds to the Hadamard product. -/
 @[simp] theorem LinearMap.toMatrix'_convMul_eq_hadamard (f g : (n → R) →ₗ[R] m → R) :
