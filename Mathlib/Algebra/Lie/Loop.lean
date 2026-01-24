@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -22,15 +24,15 @@ extension (with an outer derivation attached) admits an infinite root system wit
 These extended Lie algebras are called untwisted affine Kac-Moody Lie algebras.
 
 We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolynomial` for
-flexibility. The classical loop algebra is then written `LoopAlgebra R ℤ L`.
+flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
-* `LieAlgebra.LoopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
-* `LieAlgebra.LoopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
+* `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
+* `LieAlgebra.loopAlgebra.toFinsupp`: A linear equivalence from the loop algebra to the space of
   finitely supported functions.
-* `LieAlgebra.LoopAlgebra.twoCochainOfBilinear`: The 2-cochain for a loop algebra with trivial
+* `LieAlgebra.loopAlgebra.twoCochainOfBilinear`: The 2-cochain for a loop algebra with trivial
   coefficients attached to a symmetric bilinear form on the base Lie algebra.
-* `LieAlgebra.LoopAlgebra.twoCocycleOfBilinear`: The 2-cocycle for a loop algebra with trivial
+* `LieAlgebra.loopAlgebra.twoCocycleOfBilinear`: The 2-cocycle for a loop algebra with trivial
   coefficients attached to a symmetric invariant bilinear form on the base Lie algebra.
 
 ## TODO
@@ -54,37 +56,29 @@ namespace LieAlgebra
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
-/-- A basis of single elements. -/
-def basisMonomial : Module.Basis A R (AddMonoidAlgebra R A) where
-  repr := LinearEquiv.refl R (A →₀ R)
---#find_home! basisMonomial --Algebra.Lie.OfAssociative. Move to Algebra.Polynomial.Laurent?
+/-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z⁻¹]`. We make a
+slightly more general definition which coincides with the Laurent polynomial construction when
+`A = ℤ` -/
+abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
-@[simp]
-lemma basisMonomial_apply (a : A) :
-    basisMonomial R A a = AddMonoidAlgebra.single a 1 :=
-  rfl
+open LaurentPolynomial in
+def loopAlgebraEquivLaurent :
+    loopAlgebra R ℤ L ≃ₗ⁅R⁆ R[T;T⁻¹] ⊗[R] L :=
+  LieEquiv.refl
 
-/-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`. -/
-abbrev LoopAlgebra := AddMonoidAlgebra R A ⊗[R] L
-
-namespace LoopAlgebra
-
-instance instLieRing [AddCommMonoid A] : LieRing (LoopAlgebra R A L) :=
-  ExtendScalars.instLieRing R (AddMonoidAlgebra R A) L
-
-instance instLieAlgebra [AddCommMonoid A] :
-    LieAlgebra (AddMonoidAlgebra R A) (LoopAlgebra R A L) :=
-  ExtendScalars.instLieAlgebra R (AddMonoidAlgebra R A) L
+namespace loopAlgebra
 
 open Classical in
 /-- A linear isomorphism to finitely supported functions. -/
-def toFinsupp : LoopAlgebra R A L ≃ₗ[R] A →₀ L :=
-  TensorProduct.equivFinsuppOfBasisLeft (basisMonomial R A)
+def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
+  TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis A R)
 
 @[simp]
 lemma toFinsupp_symm_single (c : A) (z : L) :
     (toFinsupp R A L).symm (Finsupp.single c z) = AddMonoidAlgebra.single c 1 ⊗ₜ[R] z := by
-  simp [toFinsupp]
+  simp only [toFinsupp, TensorProduct.equivFinsuppOfBasisLeft_symm_apply, TensorProduct.tmul_zero,
+    Finsupp.sum_single_index, ← AddMonoidAlgebra.basis_apply]
+  rfl
 
 @[simp]
 lemma toFinsupp_single_tmul (c : A) (z : L) :
@@ -139,10 +133,10 @@ def residuePairingFinsupp [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R 
 condition amounts to the fact that Res f df = 0. -/
 def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ) :
-    LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
+    LieModule.Cohomology.twoCochain R (loopAlgebra R A L)
+      (TrivialLieModule R (loopAlgebra R A L) R) where
   val := (((residuePairingFinsupp R A L Φ).compr₂
-    ((TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm.toLinearMap)).compl₂
+    ((TrivialLieModule.equiv R (loopAlgebra R A L) R).symm.toLinearMap)).compl₂
     (toFinsupp R A L).toLinearMap).comp (toFinsupp R A L).toLinearMap
   property := by
     refine LieModule.Cohomology.mem_twoCochain_iff.mpr ?_
@@ -155,9 +149,9 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
 @[simp]
 lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
-    (x y : LoopAlgebra R A L) :
+    (x y : loopAlgebra R A L) :
     twoCochainOfBilinear R A L Φ hΦ x y =
-      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
+      (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
         ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
   rfl
 
@@ -166,8 +160,8 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
 def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) :
-    LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
+    LieModule.Cohomology.twoCocycle R (loopAlgebra R A L)
+      (TrivialLieModule R (loopAlgebra R A L) R) where
   val := twoCochainOfBilinear R A L Φ hΦs
   property := by
     apply (LieModule.Cohomology.mem_twoCocycle_iff ..).mpr
@@ -190,6 +184,6 @@ def twoCocycleOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         Finsupp.single_eq_of_ne (a := a + b) (a' := -c) (by grind),
         Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
-end LoopAlgebra
+end loopAlgebra
 
 end LieAlgebra
