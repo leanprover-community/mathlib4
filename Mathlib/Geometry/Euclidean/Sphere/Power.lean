@@ -172,10 +172,8 @@ theorem cospherical_of_mul_dist_eq_mul_dist_of_angle_eq_pi {p₁ p₂ p₃ p₄ 
   have hp₁p₂' : ∠ p₁' p' p₂' = π := by simpa [AffineIsometry.angle_map s_isom]
   have hp₃p₄' : ∠ p₃' p' p₄' = π := by simpa [AffineIsometry.angle_map s_isom]
   suffices h_cospherical' : Cospherical {p₁', p₂', p₄', p₃'} by
-    have h_cosp_top := h_cospherical'.restrict le_top
-    convert (⊤ : AffineSubspace ℝ P).subtypeₐᵢ.isometry.cospherical h_cosp_top
-    simp [Set.image_insert_eq, Set.image_singleton]
-    grind
+    have h_cosp := Cospherical.subtype_val h_cospherical'
+    grind [Set.image_insert_eq, Set.image_singleton]
   have h_indep_p₁p₂p₃ : AffineIndependent ℝ ![p₁, p₂, p₃] :=
     affineIndependent_iff_not_collinear_set.mpr h_notcol_p₁p₂p₃
   have h_ncol_p₁p₂p₃' : ¬ Collinear ℝ {p₁', p₂', p₃'} := by

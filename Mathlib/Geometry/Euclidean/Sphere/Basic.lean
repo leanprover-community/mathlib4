@@ -191,13 +191,19 @@ section NormedSpace
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
 
-/-- If a set of points is cospherical, then its restriction to any affine subspace containing it is
-cospherical. -/
-theorem Cospherical.restrict {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
+/-- If a set of points is cospherical, then its image under the inclusion of any affine subspace
+containing it is cospherical. -/
+theorem Cospherical.inclusion {S₁ S₂ : AffineSubspace ℝ P} [Nonempty S₁] {ps : Set S₁}
     (hps : Cospherical ps) (hS : S₁ ≤ S₂) :
     Cospherical (AffineSubspace.inclusion hS '' ps) := by
-    refine Isometry.cospherical ?_ hps
-    exact S₁.subtypeₐᵢ.isometry
+  refine Isometry.cospherical ?_ hps
+  exact S₁.subtypeₐᵢ.isometry
+
+/-- If a set of points in an affine subspace is cospherical, then its image under the coercion
+to the ambient space is cospherical. -/
+theorem Cospherical.subtype_val {S : AffineSubspace ℝ P} [Nonempty S] {ps : Set S}
+    (hps : Cospherical ps) : Cospherical (Subtype.val '' ps) :=
+  Isometry.cospherical S.subtypeₐᵢ.isometry hps
 
 lemma Sphere.nonempty_iff [Nontrivial V] {s : Sphere P} : (s : Set P).Nonempty ↔ 0 ≤ s.radius := by
   refine ⟨fun ⟨p, hp⟩ ↦ radius_nonneg_of_mem hp, fun h ↦ ?_⟩
