@@ -7,11 +7,8 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
-public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 public import Mathlib.LinearAlgebra.Dual.BaseChange
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-public import Mathlib.Tactic.Positivity
 
 /-!
 # Transvections in a module
@@ -335,7 +332,6 @@ theorem mem_dilatransvections_iff_finrank
     toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 
 end LinearEquiv
->>>>>>> ACL/SL-dilatransvections:Mathlib/LinearAlgebra/Transvection.lean
 
 section baseChange
 
