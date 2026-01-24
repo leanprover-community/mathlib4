@@ -32,8 +32,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
   bot := 0
   bot_le := zero_le
-  zero_le_one := zero_le_one
-  mul_le_mul_left _ _ h c := Nat.mul_le_mul_right c h
+  zero_le := zero_le
 
 /-! ### Miscellaneous lemmas -/
 

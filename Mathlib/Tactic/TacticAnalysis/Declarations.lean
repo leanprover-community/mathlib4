@@ -6,10 +6,10 @@ Authors: Anne Baanen, Edward van de Meent
 module
 
 public meta import Mathlib.Tactic.TacticAnalysis
-public meta import Mathlib.Tactic.ExtractGoal
-public meta import Mathlib.Tactic.MinImports
-public meta import Mathlib.Util.ParseCommand
 public meta import Lean.Elab.Command
+public import Mathlib.Tactic.ExtractGoal
+public import Mathlib.Tactic.TacticAnalysis
+public import Mathlib.Util.ParseCommand
 
 /-!
 # Tactic linters
