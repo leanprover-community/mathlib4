@@ -143,20 +143,19 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 section RestrictScalars
 
 variable {R A M : Type*} [Semiring A] [AddCommMonoid M] [Module A M]
+variable {S : Submodule A M}
 
-theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A]
-    [Module R M] [IsScalarTower R A M] (N : Submodule A M)
-    (hfin : N.FG) (h : Function.Surjective (algebraMap R A)) :
-    (restrictScalars R N).FG := by
-  obtain ⟨X, rfl⟩ := hfin
-  use X
-  exact (restrictScalars_span R A h (X : Set M)).symm
+theorem FG.restrictScalars_of_surjective [CommSemiring R] [Algebra R A] [Module R M]
+    [IsScalarTower R A M] (hS : S.FG) (h : Function.Surjective (algebraMap R A)) :
+    (restrictScalars R S).FG := by
+  obtain ⟨s, rfl⟩ := hS
+  exact ⟨s, .symm <| restrictScalars_span R A h _⟩
 
-@[deprecated FG.restrictScalars_of_surjective (since := "2026-01-24")]
+@[deprecated (since := "2026-01-24")]
 alias fg_restrictScalars := FG.restrictScalars_of_surjective
 
 theorem FG.of_restrictScalars (R) [Semiring R] [Module R M] [SMul R A] [IsScalarTower R A M]
-    (S : Submodule A M) (hS : (S.restrictScalars R).FG) : S.FG := by
+    (hS : (S.restrictScalars R).FG) : S.FG := by
   obtain ⟨s, e⟩ := hS
   refine ⟨s, restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
   · change span A s ≤ S
@@ -410,24 +409,24 @@ instance finite_finset_sup {ι : Type*} (s : Finset ι) (S : ι → Submodule R 
 
 section RestrictScalars
 
-variable (R : Type*) [Semiring R]
+variable {R : Type*} [Semiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M]
 variable {A : Type*} [Semiring A] [Module R A] [Module A M] [IsScalarTower R A M]
+variable {S : Submodule A M}
 
-theorem FG.restrictScalars [Module.Finite R A] {S : Submodule A M} (hS : S.FG) :
-    (S.restrictScalars R).FG := by
+theorem FG.restrictScalars [Module.Finite R A] (hS : S.FG) : (S.restrictScalars R).FG := by
   rw [← Module.Finite.iff_fg] at *
   exact Module.Finite.trans A S
 
 @[simp]
-theorem FG.restrictScalars_iff [Module.Finite R A] {S : Submodule A M} :
-    (S.restrictScalars R).FG ↔ S.FG := ⟨of_restrictScalars R S, restrictScalars R⟩
+theorem FG.restrictScalars_iff [Module.Finite R A] : (S.restrictScalars R).FG ↔ S.FG :=
+  ⟨of_restrictScalars R, restrictScalars⟩
 
 /-- If a ring `R` is finite over a subring `S` then the `R`-span of an FG `S`-submodule is FG. -/
-theorem FG.span_submodule {S : Submodule R M} (hfg : S.FG) :
-    (span A S : Submodule A M).FG := by
-  obtain ⟨t, ht⟩ := hfg
-  use t; rw [← ht, Submodule.span_span_of_tower]
+theorem FG.span_submodule (hS : S.FG) : (span A S : Submodule A M).FG := by
+  obtain ⟨t, ht⟩ := hS
+  use t
+  rw [← ht, Submodule.span_span_of_tower]
 
 end RestrictScalars
 
