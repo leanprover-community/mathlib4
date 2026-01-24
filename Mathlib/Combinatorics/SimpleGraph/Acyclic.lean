@@ -377,7 +377,8 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
     (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic ↔
       G.IsAcyclic ∧ (G.Reachable u v → u = v ∨ G.Adj u v) := by
   by_cases huv : u = v
-  · grind [sup_eq_left, fromEdgeSet_le, Sym2.mem_diagSet_iff_eq]
+  · have : s(u, u).IsDiag := rfl
+    grind [sup_eq_left, fromEdgeSet_le, Sym2.mem_diagSet]
   by_cases hadj : G.Adj u v
   · grind [sup_eq_left, fromEdgeSet_le, mem_edgeSet]
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable <| by grind⟩
@@ -413,9 +414,8 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (
   have ⟨H, hFH, hHG, hH⟩ := exists_gt_of_not_maximal ⟨hle, hF⟩ this
   have ⟨e, heH, heF⟩ := Set.exists_of_ssubset <| edgeSet_strict_mono hFH
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
-    apply isAcyclic_iff_forall_edge_isBridge.mp
-    · exact hH.anti <| sup_le_iff.mpr ⟨hFH.le, H.fromEdgeSet_le.mpr <| by grind⟩
-    · simpa using .inr <| by simpa using H.edgeSet_subset_setOf_not_isDiag heH
+    refine isAcyclic_iff_forall_edge_isBridge.mp ?_ <| by simp [H.not_isDiag_of_mem_edgeSet heH]
+    exact hH.anti <| sup_le_iff.mpr ⟨hFH.le, H.fromEdgeSet_le.mpr <| by grind⟩
   have : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by simpa using heF
   cases e
   rw [isBridge_iff, this, h] at h_bridge
@@ -457,13 +457,14 @@ lemma isTree_iff_connected_and_card [Finite V] :
     G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
   have := Fintype.ofFinite V
   classical
-  refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  refine ⟨fun h ↦ ⟨h.isConnected, by simpa [edgeFinset] using h.card_edgeFinset⟩,
+    fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_gt ?_
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
-  exact Finset.card_lt_card <| by simpa [deleteEdges]
+  exact Finset.card_lt_card <| by simpa [deleteEdges, edgeFinset]
 
 /-- The minimum degree of all vertices in a nontrivial tree is one. -/
 lemma IsTree.minDegree_eq_one_of_nontrivial (h : G.IsTree) [Fintype V] [Nontrivial V]

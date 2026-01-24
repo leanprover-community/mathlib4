@@ -6,8 +6,8 @@ Authors: Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Category.Cat
-public meta import Mathlib.CategoryTheory.Category.Cat
 public meta import Mathlib.Util.AddRelatedDecl
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # The `to_app` attribute
@@ -142,7 +142,7 @@ initialize registerBuiltinAttribute {
   | `(attr| to_app $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"
-    addRelatedDecl src "" "_app" ref optAttr fun value levels => do
+    addRelatedDecl src (src.appendAfter "_app") ref optAttr fun value levels => do
       let levelMVars ← levels.mapM fun _ => mkFreshLevelMVar
       let value := value.instantiateLevelParams levels levelMVars
       let newValue ← toAppExpr (← toNatTransExpr (← toCatExpr value))

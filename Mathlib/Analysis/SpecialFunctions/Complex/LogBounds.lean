@@ -179,6 +179,7 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open scoped Topology in
 lemma log_sub_logTaylor_isBigO (n : ℕ) :
     (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by

@@ -631,16 +631,15 @@ section Continuous
 
 /-! ### Deducing continuity from differentiability -/
 
-
 theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilter f f' x L) :
     Tendsto f L (𝓝 (f x)) := by
-  have : Tendsto (fun x' => f x' - f x) L (𝓝 0) := by
-    refine h.isBigO_sub.trans_tendsto (Tendsto.mono_left ?_ hL)
-    rw [← sub_self x]
-    exact tendsto_id.sub tendsto_const_nhds
-  have := this.add (tendsto_const_nhds (x := f x))
-  rw [zero_add (f x)] at this
-  exact this.congr (by simp only [sub_add_cancel, forall_const])
+  suffices Tendsto (fun x' => f x' - f x) L (𝓝 0) by
+    simpa using this.add_const (f x)
+  have h_sub : Tendsto (fun z ↦ z - x) L (𝓝 0) := tendsto_sub_nhds_zero_iff.mpr hL
+  have h_rem : Filter.Tendsto (fun z ↦ f z - f x - f' (z - x)) L (𝓝 0) := by
+    rw [← isLittleOTVS_one (𝕜 := 𝕜)] at h_sub ⊢
+    exact h.1.trans h_sub
+  simpa using h_rem.add ((f'.continuous.tendsto 0).comp h_sub)
 
 theorem HasFDerivWithinAt.continuousWithinAt (h : HasFDerivWithinAt f f' s x) :
     ContinuousWithinAt f s x :=

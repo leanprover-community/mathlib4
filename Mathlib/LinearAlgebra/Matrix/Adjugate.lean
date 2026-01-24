@@ -6,6 +6,7 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 public import Mathlib.LinearAlgebra.Matrix.Polynomial
 
@@ -17,7 +18,7 @@ It is calculated with Cramer's rule, which we introduce first.
 The vectors returned by Cramer's rule are given by the linear map `cramer`,
 which sends a matrix `A` and vector `b` to the vector consisting of the
 determinant of replacing the `i`th column of `A` with `b` at index `i`
-(written as `(A.update_column i b).det`).
+(written as `(A.updateCol i b).det`).
 Using Cramer's rule, we can compute for each matrix `A` the matrix `adjugate A`.
 The entries of the adjugate are the minors of `A`.
 Instead of defining a minor by deleting row `i` and column `j` of `A`, we
@@ -221,6 +222,9 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
     apply Pi.single_eq_of_ne
     intro h'
     exact h ((symm_apply_eq σ).mp h')
+
+theorem IsSymm.adjugate {A : Matrix n n α} (hA : A.IsSymm) : A.adjugate.IsSymm := by
+  rw [IsSymm, Matrix.adjugate_transpose, hA.eq]
 
 @[simp]
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :

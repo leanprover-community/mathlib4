@@ -180,6 +180,10 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [IsImmersion f] :
     IsImmersion (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
+instance (priority := 900) (f : X ⟶ Y) [IsImmersion f] : LocallyOfFiniteType f := by
+  rw [← f.liftCoborder_ι]
+  infer_instance
+
 open Limits Scheme.Pullback in
 /-- The diagonal morphism is always an immersion. -/
 @[stacks 01KJ]
