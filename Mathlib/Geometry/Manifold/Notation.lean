@@ -281,6 +281,15 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
+/-- Captures information when a model with corners is the trivial model on a normed space
+(or on an inner product space, which is also a normed space):
+contains the expressions describing the normed space and its base field.
+
+Searching for a model with corners will return an `Option NormedSpaceInfo`, which is `some` iff
+a trivial model on a normed space was found.
+-/
+abbrev NormedSpaceInfo := Expr × Expr
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -316,10 +325,10 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option <| Expr × Option (Expr × Expr) := do
+    TermElabM <| Option <| Expr × Option NormedSpaceInfo := do
   if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return some (m, none)
   if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return some (m, none)
-  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"NormedSpace"   fromNormedSpace then
+  if let some (m, eK) ← tryStrategy' NormedSpaceInfo m!"NormedSpace"   fromNormedSpace then
     return some (m, some eK)
   if let some m ← tryStrategy m!"Manifold"            fromManifold       then return some (m, none)
   if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM            then return some (m, none)
@@ -330,7 +339,7 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
   if let some m ← tryStrategy m!"Complex unit circle" fromCircle         then return some (m, none)
   if let some m ← tryStrategy m!"Sphere"              fromSphere         then return some (m, none)
   if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return some (m, none)
-  if let some (m, eK) ← tryStrategy' (Expr × Expr) m!"InnerProductSpace"  fromInnerProductSpace then
+  if let some (m, eK) ← tryStrategy' NormedSpaceInfo "InnerProductSpace" fromInnerProductSpace then
     return some (m, some eK)
   return none
 where
@@ -383,7 +392,7 @@ where
       Term.elabTerm resTerm none
     | _ => throwError "`{e}` is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
-  fromNormedSpace : TermElabM (Expr × (Expr × Expr)) := do
+  fromNormedSpace : TermElabM (Expr × NormedSpaceInfo) := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -394,7 +403,7 @@ where
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
     return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst], (K, e))
   /-- Attempt to find the trivial model on an inner product space. -/
-  fromInnerProductSpace : TermElabM (Expr × (Expr × Expr)) := do
+  fromInnerProductSpace : TermElabM (Expr × NormedSpaceInfo) := do
     let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
       -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
       match (← instantiateMVars type).cleanupAnnotations with
@@ -670,7 +679,7 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
   return u
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-     TermElabM <| Option <| Expr × Option (Expr × Expr) := do
+     TermElabM <| Option <| Expr × Option NormedSpaceInfo := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
     -- Otherwise, we recurse into the expression,
