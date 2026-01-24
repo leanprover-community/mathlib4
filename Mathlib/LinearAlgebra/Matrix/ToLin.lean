@@ -616,8 +616,7 @@ theorem LinearMap.toMatrix_toLin (M : Matrix m n R) :
 
 theorem LinearMap.toMatrix_apply (f : M₁ →ₗ[R] M₂) (i : m) (j : n) :
     LinearMap.toMatrix v₁ v₂ f i j = v₂.repr (f (v₁ j)) i := by
-  rw [LinearMap.toMatrix, LinearEquiv.trans_apply, LinearMap.toMatrix'_apply,
-    LinearEquiv.arrowCongr_apply, Basis.equivFun_symm_single, Basis.equivFun_apply]
+  simp [toMatrix]
 
 theorem LinearMap.toMatrix_transpose_apply (f : M₁ →ₗ[R] M₂) (j : n) :
     (LinearMap.toMatrix v₁ v₂ f)ᵀ j = v₂.repr (f (v₁ j)) :=
