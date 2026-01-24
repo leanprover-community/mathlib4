@@ -29,6 +29,7 @@ If you wish to recursively replace things in the implementation of `f?`, you can
 
 The function is also memoised, which means that if the
 same expression (by reference) is encountered the cached replacement is used. -/
+@[deprecated "deprecated without replacement" (since := "2026-01-24")]
 def replaceRec (f? : (Expr → Expr) → Expr → Option Expr) : Expr → Expr :=
   memoFix fun r e ↦
     match f? r e with
