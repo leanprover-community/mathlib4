@@ -70,12 +70,12 @@ theorem Pi.intrinsicStar_comul [StarRing R] {A : n → Type*} [Π i, AddCommMono
       TensorProduct.comm R (Π i, A i) (Π i, A i) ∘ₗ comul := by
   ext i x
   have := by simpa using congr($(h i) x)
-  simp [star_map_apply, this, map_comm]
+  simp [star_map_apply_eq_map_intrinsicStar, this, map_comm]
 
 open scoped IntrinsicStar in
 @[simp] theorem Pi.intrinsicStar_comul_commSemiring [StarRing R] :
     star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
-  intrinsicStar_comul (fun _ ↦ by ext; simp)
+  intrinsicStar_comul fun _ ↦ by ext; simp
 
 /-- The convolutive product corresponds to the Hadamard product. -/
 @[simp] theorem LinearMap.toMatrix'_convMul_eq_hadamard (f g : (n → R) →ₗ[R] m → R) :
