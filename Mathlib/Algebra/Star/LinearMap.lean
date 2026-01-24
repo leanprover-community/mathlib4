@@ -170,7 +170,9 @@ theorem intrinsicStar_convMul [CoalgebraStruct R C]
 to ⋆-algebras, given that `star comul = comm ∘ₗ comul`.
 
 In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
-coalgebra, we get this hypothesis. -/
+coalgebra, we get this hypothesis.
+
+See note [reducible non-instances]. -/
 def convIntrinsicStarRing [Coalgebra R C]
     (h : star comul = (TensorProduct.comm R C C).toLinearMap ∘ₗ comul) :
     StarRing (C →ₗ[R] A) where
@@ -197,11 +199,11 @@ theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
     star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
   Pi.intrinsicStar_comul fun _ ↦ by ext; simp
 
-/-- The intrinsic star convolutive ring on linear maps from `n → R` to `m → R`. -/
+/-- The intrinsic star convolutive ring on linear maps from `n → R` to `m → R`.
+
+See note [reducible non-instances]. -/
 def _root_.Pi.instIntrinsicStarRingCommSemiring {m : Type*} :
     StarRing ((n → R) →ₗ[R] m → R) := convIntrinsicStarRing (by simp)
-
-scoped[IntrinsicStar] attribute [instance] Pi.instIntrinsicStarRingCommSemiring
 
 end convRing
 
