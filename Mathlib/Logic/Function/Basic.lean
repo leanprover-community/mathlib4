@@ -502,9 +502,6 @@ theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
     update f a' b a = if a = a' then b else f a := by
   rcases Decidable.eq_or_ne a a' with rfl | hne <;> simp [*]
 
-theorem update_eq_ite {β : Sort*} (f : α → β) (a' : α) (v : β) :
-    update f a' v = fun w ↦ if w = a' then v else f w := funext <| update_apply _ _ _
-
 @[nontriviality]
 theorem update_eq_const_of_subsingleton [Subsingleton α] (a : α) (v : α') (f : α → α') :
     update f a v = const α v :=
