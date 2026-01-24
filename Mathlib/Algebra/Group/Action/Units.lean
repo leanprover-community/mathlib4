@@ -84,7 +84,7 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
 Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
 @[simp]
 lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
-    u₁ • u₂ = u₁ * u₂ := rfl -- apparently I fixed an instance diamond??
+    u₁ • u₂ = u₁ * u₂ := rfl
 
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]
