@@ -6,9 +6,9 @@ Authors: Colin Jones
 module
 
 public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Finset.NatDivisors
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Tactic.FinCases
