@@ -711,9 +711,15 @@ lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
     lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap = lift f.flip :=
   ext rfl
 
+variable {R M N}
+
 @[simp] theorem comm_trans_comm :
     TensorProduct.comm R M N ≪≫ₗ TensorProduct.comm R N M = .refl R _ := by
   rw [← symm_comm, LinearEquiv.symm_trans_self]
+
+@[simp] theorem comm_comm (x) :
+    TensorProduct.comm R M N (TensorProduct.comm R N M x) = x :=
+  congr($comm_trans_comm x)
 
 end
 
