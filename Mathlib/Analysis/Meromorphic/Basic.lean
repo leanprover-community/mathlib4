@@ -196,7 +196,7 @@ lemma congr {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hfg : f =ᶠ[𝓝[≠] 
     MeromorphicAt g x := by
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
-  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
+  have : AnalyticAt 𝕜 (fun z ↦ z - x) x := by fun_prop
   refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
@@ -397,7 +397,7 @@ lemma MeromorphicAt.comp_analyticAt {f : 𝕜' → F} {g : 𝕜 → 𝕜'}
     obtain ⟨h, han, hne, heq⟩ := (hg.fun_sub analyticAt_const).analyticOrderAt_eq_natCast.mp hn.symm
     set j := fun z ↦ (z - g x) ^ r • f z
     have : AnalyticAt 𝕜 (fun i ↦ (h i)⁻¹ ^ r • j (g i)) x :=
-      ((han.fun_inv hne).fun_pow r).fun_smul (hr.restrictScalars.comp' hg)
+      ((han.inv hne).pow r).smul (hr.restrictScalars.comp hg)
     refine ⟨n * r, this.congr ?_⟩
     filter_upwards [heq, han.continuousAt.tendsto.eventually_ne hne] with z hz hzne
     simp only [j, inv_pow, Function.comp_apply, inv_smul_eq_iff₀ (pow_ne_zero r hzne)]
