@@ -23,7 +23,7 @@ We provide API for restricting perfect pairings to submodules and for restrictin
 
 -/
 
-@[expose] public section
+public section
 
 open Function Module Set
 open Submodule (span subset_span)
@@ -79,8 +79,8 @@ end Restrict
 section RestrictScalars
 
 variable {S M' N' : Type*}
-  [CommRing S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M] [IsScalarTower S R N]
-  [NoZeroSMulDivisors S R] [Nontrivial R]
+  [CommRing S] [IsDomain S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M]
+  [IsScalarTower S R N] [IsTorsionFree S R] [Nontrivial R]
   [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 

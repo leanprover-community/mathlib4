@@ -451,7 +451,7 @@ for example.
 -/
 noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
   .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
-    (MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X) (FreeMonoid.lift (ι R)))
+    (MonoidAlgebra.lift R (FreeAlgebra R X) (FreeMonoid X) (FreeMonoid.lift (ι R)))
     (by ext; simp) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/

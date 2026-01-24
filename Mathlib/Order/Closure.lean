@@ -281,6 +281,7 @@ end CompleteLattice
 
 end ClosureOperator
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
 `e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
 @[simps apply symm_apply]

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
 public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Integral representations of `rpow`
@@ -89,7 +89,7 @@ lemma rpowIntegrand₀₁_eq_pow_div (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0
       _ = t ^ p / t * x / (t + x) := by simp [field]
       _ = t ^ (p - 1) * x / (t + x) := by congr; exact (Real.rpow_sub_one ht' p).symm
   case pos =>
-    simp only [mem_Ioo] at hp
+    push _ ∈ _ at hp
     have hp₂ : p - 1 ≠ 0 := by linarith
     simp [rpowIntegrand₀₁, ht', hp.1.ne', hp₂]
 
@@ -115,14 +115,14 @@ lemma rpowIntegrand₀₁_apply_mul (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 
     simp [hx_zero, Real.zero_rpow (by linarith : p - 1 ≠ 0)]
 
 lemma rpowIntegrand₀₁_apply_mul' (hp : p ∈ Ioo 0 1) (ht : 0 ≤ t) (hx : 0 ≤ x) :
-    rpowIntegrand₀₁ p (x * t) x * x  = (rpowIntegrand₀₁ p t 1) * x ^ p := by
+    rpowIntegrand₀₁ p (x * t) x * x = (rpowIntegrand₀₁ p t 1) * x ^ p := by
   simp only [rpowIntegrand₀₁_apply_mul hp ht hx, mul_assoc]
   congr
   simpa using Eq.symm <| Real.rpow_add' hx (by aesop : (p - 1) + 1 ≠ 0)
 
 lemma rpowIntegrand₀₁_apply_mul_eqOn_Ici (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     (Ici 0).EqOn (fun t => rpowIntegrand₀₁ p (x * t) x * x)
-      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p)  :=
+      (fun t => (rpowIntegrand₀₁ p t 1) * x ^ p) :=
   fun _ ht => rpowIntegrand₀₁_apply_mul' hp ht hx
 
 lemma continuousOn_rpowIntegrand₀₁ (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
@@ -289,16 +289,16 @@ lemma le_integral_rpowIntegrand₀₁_one (hp : p ∈ Ioo 0 1) :
     -1 / (2 * (p - 1)) ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   _ = (1 / 2) * -((1 : ℝ) ^ (p - 1)) / (p - 1) := by rw [← div_div]; simp [neg_div]
   _ = ∫ t in Ioi 1, (1 / 2) * t ^ (p - 2) := by
-        simp only [mem_Ioo] at hp
+        push _ ∈ _ at hp
         rw [integral_const_mul, integral_Ioi_rpow_of_lt (by linarith) zero_lt_one]
         ring_nf   -- ring alone succeeds but gives a warning
   _ ≤ ∫ t in Ioi 1, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_on ?_ ?_ measurableSet_Ioi ?_
         · refine Integrable.const_mul ?_ _
-          simp only [mem_Ioo] at hp
+          push _ ∈ _ at hp
           exact integrableOn_Ioi_rpow_of_lt (by linarith) zero_lt_one
         · exact integrableOn_rpowIntegrand₀₁_Ioi_one hp zero_le_one
-        · exact fun t ht =>  rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
+        · exact fun t ht => rpowIntegrand₀₁_one_ge_rpow_sub_two hp (le_of_lt ht)
   _ ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := by
         refine setIntegral_mono_set (integrableOn_rpowIntegrand₀₁_Ioi hp zero_le_one) ?_ ?_
         · refine ae_restrict_of_forall_mem measurableSet_Ioi fun t ht => ?_
@@ -309,16 +309,16 @@ lemma integral_rpowIntegrand₀₁_one_pos (hp : p ∈ Ioo 0 1) :
     0 < ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := calc
   0 < -1 / (2 * (p - 1)) := by
       rw [neg_div, neg_pos, one_div_neg]
-      simp only [mem_Ioo] at hp
+      push _ ∈ _ at hp
       linarith
   _ ≤ ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 := le_integral_rpowIntegrand₀₁_one hp
 
 /-- The integral representation of the function `x ↦ x^p` (where `p ∈ (0, 1)`) . -/
 lemma rpow_eq_const_mul_integral (hp : p ∈ Ioo 0 1) (hx : 0 ≤ x) :
     x ^ p = (∫ t in Ioi 0, rpowIntegrand₀₁ p t 1)⁻¹ * ∫ t in Ioi 0, rpowIntegrand₀₁ p t x := by
-  rcases eq_or_lt_of_le' hx with hx_zero|_
+  rcases eq_or_lt_of_le' hx with hx_zero | _
   case inl =>
-    simp only [mem_Ioo] at hp
+    push _ ∈ _ at hp
     simp [hx_zero, Real.zero_rpow (by linarith)]
   case inr =>
     have : ∫ t in Ioi 0, rpowIntegrand₀₁ p t 1 ≠ 0 :=
@@ -357,7 +357,7 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A] [S
 lemma cfcₙ_rpowIntegrand₀₁_eq_cfcₙ_rpowIntegrand₀₁_one {p t : ℝ} (hp : p ∈ Ioo 0 1) (ht : 0 < t)
     (a : A) (ha : 0 ≤ a) :
     cfcₙ (rpowIntegrand₀₁ p t) a = t ^ (p - 1) • cfcₙ (rpowIntegrand₀₁ p 1) (t⁻¹ • a) := by
-  have hspec : quasispectrum ℝ a ⊆ Ici 0 := by intro; grind
+  have hspec : quasispectrum ℝ a ⊆ Ici 0 := by grind
   have h_mapsTo : MapsTo (t⁻¹ • · : ℝ → ℝ) (Ici 0) (Ici 0) := by
     intro x hx
     simp only [mem_Ici, smul_eq_mul] at hx ⊢

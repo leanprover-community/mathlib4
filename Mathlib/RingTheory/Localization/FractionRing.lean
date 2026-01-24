@@ -604,18 +604,18 @@ variable [Field K] [Algebra R K] [FaithfulSMul R K]
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))
 
 attribute [local instance] liftAlgebra
 
 instance isScalarTower_liftAlgebra : IsScalarTower R (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   .of_algebraMap_eq fun x ↦
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
 
 lemma algebraMap_liftAlgebra :
-    have := (FaithfulSMul.algebraMap_injective R K).isDomain
+    have := IsDomain.of_faithfulSMul R K
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
 

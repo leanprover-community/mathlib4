@@ -20,7 +20,7 @@ This file contains results about smoothness of standard maps associated to produ
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function Filter ChartedSpace
 

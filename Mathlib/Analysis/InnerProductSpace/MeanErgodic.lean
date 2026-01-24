@@ -21,7 +21,7 @@ converge to the orthogonal projection of `x` to the subspace of fixed points of 
 see `ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset Function Bornology
 open scoped Topology

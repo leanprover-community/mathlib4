@@ -17,7 +17,7 @@ and additive, then `Ind C` has a separator.
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

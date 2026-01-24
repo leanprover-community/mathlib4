@@ -6,6 +6,7 @@ Authors: Stuart Presnell
 module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
+public import Batteries.Data.List
 
 /-!
 # Big operators on a list in ordered rings
@@ -13,7 +14,7 @@ public import Mathlib.Algebra.Order.Ring.Canonical
 This file contains the results concerning the interaction of list big operators with ordered rings.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 
