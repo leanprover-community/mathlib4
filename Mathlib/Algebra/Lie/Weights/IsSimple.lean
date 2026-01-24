@@ -318,8 +318,8 @@ open LieSubmodule in
   exact hy_ne_zero h_y_center
 
 @[simp] lemma invtSubmoduleToLieIdeal_apply_eq_bot_iff (q : Submodule K (Module.Dual K H))
-    (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i)) :
-    invtSubmoduleToLieIdeal q (by exact hq) = ⊥ ↔ q = ⊥ := by
+    (hq : ∀ i, q ∈ Module.End.invtSubmodule ((rootSystem H).reflection i).toLinearMap) :
+    invtSubmoduleToLieIdeal q hq = ⊥ ↔ q = ⊥ := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_contra hq_nonzero
     have hq_invt : q ∈ (rootSystem H).invtRootSubmodule := by
