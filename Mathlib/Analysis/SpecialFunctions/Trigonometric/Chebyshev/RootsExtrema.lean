@@ -21,10 +21,15 @@ import Mathlib.NumberTheory.Niven
 
 ## Main statements
 
-* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
-* Zeroes of T and U: `roots_T_real`, `roots_U_real`
-* Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
-* Irrationality of zeroes of T other than zero: `irrational_of_isRoot_T_real`
+* `T_n(x) ∈ [-1, 1]` iff `x ∈ [-1, 1]`: abs_eval_T_real_le_one_iff
+* Zeroes of `T` and `U`: roots_T_real, roots_U_real
+* Local extrema of `T`: isLocalExtr_T_real_iff, isExtrOn_T_real_iff
+* Irrationality of zeroes of `T` other than zero: irrational_of_isRoot_T_real
+* `|T_n^{(k)} (x)| ≤ T_n^{(k)} (1)` for `x ∈ [-1, 1]`: abs_iterate_derivative_T_real_le
+
+## TODO
+
+Show that the bound on `T_n^{(k)} (x)` is achieved only at `x = ±1`
 -/
 
 public section
@@ -317,5 +322,28 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
   have hn : 2 * k + 1 = n := Nat.eq_of_dvd_of_lt_two_mul (by simp) (Nat.gcd_eq_left_iff_dvd.mp <|
     Nat.eq_of_dvd_of_div_eq_one (Nat.gcd_dvd_left ..) (by grind [Rat.den_pos])) (by grind)
   rw_mod_cast [← hk₂, hn]; convert cos_pi_div_two using 2; push_cast; field_simp
+
+theorem abs_iterate_derivative_T_real_le (n k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
+    |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
+  have := T_iterate_derivative_mem_span_T (R := ℝ) n k
+  rw [setOf_T_eq_map] at this
+  obtain ⟨f, hf⟩ := Submodule.mem_span_finset'.mp this
+  let g (m : ℕ) := if hm : m ∈ Finset.Icc 0 (n - k) then f ⟨(T ℝ m), by simp [hm]⟩ else 0
+  have : ∑ m ∈ Finset.Icc 0 (n - k), g m • (T ℝ m) = ∑ a, f a • a.val := by
+    rw [Finset.univ_eq_attach]
+    apply Finset.sum_bij
+    case i => use fun m hm => ⟨T ℝ m, by simp [hm]⟩
+    case hi => simp
+    case i_inj => intro _ _ _ _ hm; convert congrArg (Polynomial.degree ·.1) hm; simp [degree_T]
+    case i_surj => aesop
+    grind
+  replace hf (y : ℝ) :
+    ∑ m ∈ Finset.Icc 0 (n - k), g m * (T ℝ m).eval y = (derivative^[k] (T ℝ n)).eval y := by
+    rw [← hf, ← this, eval_finset_sum]; congr; simp
+  rw [← hf x, ← hf 1]
+  grw [Finset.abs_sum_le_sum_abs]
+  refine Finset.sum_le_sum (fun i _ => ?_)
+  grw [abs_mul, abs_eval_T_real_le_one i hx]
+  simp
 
 end Polynomial.Chebyshev
