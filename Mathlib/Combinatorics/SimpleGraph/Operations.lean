@@ -86,15 +86,15 @@ instance : DecidableRel (G.replaceVertex s t).Adj := by unfold replaceVertex; in
 
 theorem edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t)) := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_not_adj hn)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_not_adj hn
 
 theorem edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) : (G.replaceVertex s t).edgeFinset =
     (G.edgeFinset \ G.incidenceFinset t ∪ (G.neighborFinset s).image (s(·, t))) \ {s(t, t)} := by
-  simp only [incidenceFinset, neighborFinset, ← Set.toFinset_diff, ← Set.toFinset_image,
-    ← Set.toFinset_union, ← Set.toFinset_singleton]
-  exact Set.toFinset_congr (G.edgeSet_replaceVertex_of_adj ha)
+  apply Finset.coe_injective
+  push_cast
+  exact G.edgeSet_replaceVertex_of_adj ha
 
 lemma disjoint_sdiff_neighborFinset_image :
     Disjoint (G.edgeFinset \ G.incidenceFinset t) ((G.neighborFinset s).image (s(·, t))) := by
