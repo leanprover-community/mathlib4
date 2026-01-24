@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 module
 
+public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Geometry.Euclidean.Altitude
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Sphere.Tangent
@@ -709,6 +710,70 @@ lemma excenter_singleton_injective [Nat.AtLeastTwo n] :
     replace hij := hij k
     simp_all
 
+variable {s} in
+lemma ExcenterExists.sSameSide_excenter_point_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.excenter signs) (s.points i) ↔
+      0 < s.excenterWeights signs i := by
+  rw [excenter_eq_affineCombination,
+    s.sSameSide_affineSpan_faceOpposite_point_right_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sSameSide_point_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i) (s.excenter signs) ↔
+      0 < s.excenterWeights signs i := by
+  rw [excenter_eq_affineCombination,
+    s.sSameSide_affineSpan_faceOpposite_point_left_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sOppSide_excenter_point_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.excenter signs) (s.points i) ↔
+      s.excenterWeights signs i < 0 := by
+  rw [excenter_eq_affineCombination,
+    s.sOppSide_affineSpan_faceOpposite_point_right_iff h.sum_excenterWeights_eq_one]
+
+variable {s} in
+lemma ExcenterExists.sOppSide_point_excenter_iff {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {i : Fin (n + 1)} :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.points i) (s.excenter signs) ↔
+      s.excenterWeights signs i < 0 := by
+  rw [excenter_eq_affineCombination,
+    s.sOppSide_affineSpan_faceOpposite_point_left_iff h.sum_excenterWeights_eq_one]
+
+lemma sSameSide_incenter_point (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide s.incenter (s.points i) :=
+  s.excenterExists_empty.sSameSide_excenter_point_iff.2 (s.excenterWeights_empty_pos i)
+
+lemma sSameSide_point_incenter (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i) s.incenter :=
+  s.excenterExists_empty.sSameSide_point_excenter_iff.2 (s.excenterWeights_empty_pos i)
+
+lemma sOppSide_excenter_singleton_point [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.excenter {i})
+      (s.points i) := by
+  rw [(s.excenterExists_singleton i).sOppSide_excenter_point_iff, ← sign_eq_neg_one_iff,
+    s.sign_excenterWeights_singleton_neg i]
+
+lemma sOppSide_point_excenter_singleton [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SOppSide (s.points i)
+      (s.excenter {i}) := by
+  rw [(s.excenterExists_singleton i).sOppSide_point_excenter_iff, ← sign_eq_neg_one_iff,
+    s.sign_excenterWeights_singleton_neg i]
+
+lemma sSameSide_excenter_singleton_point [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.excenter {j})
+      (s.points i) := by
+  rw [(s.excenterExists_singleton j).sSameSide_excenter_point_iff, ← sign_eq_one_iff,
+    s.sign_excenterWeights_singleton_pos h.symm]
+
+lemma sSameSide_point_excenter_singleton [Nat.AtLeastTwo n] {i j : Fin (n + 1)} (h : i ≠ j) :
+    (affineSpan ℝ (Set.range (s.faceOpposite i).points)).SSameSide (s.points i)
+      (s.excenter {j}) := by
+  rw [(s.excenterExists_singleton j).sSameSide_point_excenter_iff, ← sign_eq_one_iff,
+    s.sign_excenterWeights_singleton_pos h.symm]
+
 /-- A touchpoint is where an exsphere of a simplex is tangent to one of the faces. -/
 def touchpoint (signs : Finset (Fin (n + 1))) (i : Fin (n + 1)) : P :=
   (s.faceOpposite i).orthogonalProjectionSpan (s.excenter signs)
@@ -1219,6 +1284,48 @@ lemma excenter_eq_incenter_or_excenter_singleton_of_ne (signs : Finset (Fin 3)) 
     rw [h]
     have : i = i₁ ∨ i = i₂ ∨ i = i₃ := by clear h; decide +revert
     grind
+
+lemma sSameSide_affineSpan_pair_incenter_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide t.incenter (t.points i₁) := by
+  convert t.sSameSide_incenter_point i₁
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_point_incenter {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
+    (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) t.incenter := by
+  convert t.sSameSide_point_incenter i₁
+  simp
+  grind
+
+lemma sOppSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SOppSide (t.excenter {i₁}) (t.points i₁) := by
+  convert t.sOppSide_excenter_singleton_point i₁
+  simp
+  grind
+
+lemma sOppSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SOppSide (t.points i₁) (t.excenter {i₁}) := by
+  convert t.sOppSide_point_excenter_singleton i₁
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_excenter_singleton_point {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.excenter {i₂}) (t.points i₁) := by
+  convert t.sSameSide_excenter_singleton_point h₁₂
+  simp
+  grind
+
+lemma sSameSide_affineSpan_pair_point_excenter_singleton {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
+    (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
+    line[ℝ, t.points i₂, t.points i₃].SSameSide (t.points i₁) (t.excenter {i₂}) := by
+  convert t.sSameSide_point_excenter_singleton h₁₂
+  simp
+  grind
 
 lemma affineSpan_pair_eq_orthRadius [Fact (Module.finrank ℝ V = 2)] (signs : Finset (Fin 3))
     {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
