@@ -26,7 +26,40 @@ If in downstream projects you want to assume this as an axiom, you can write
 * `ContinuumHypothesis.iff_exists_sierpinski_pathological_partition`: Sierpiński's 1919 theorem.
 -/
 
-open scoped Cardinal
+open Cardinal
+
+/--
+If `α = ℝ`, then this shows an implication by Sierpiński (1919) about the continuum hypothesis.
+-/
+theorem Cardinal.exists_sierpinski_pathological_pred_of_card_eq_aleph_one
+    {α : Type*} (hα : #α = ℵ₁) :
+    ∃ f : α → α → Prop, (∀ x, {y | ¬ f x y}.Countable) ∧ ∀ y, {x | f x y}.Countable := by
+  open Set in
+  rcases Cardinal.ord_eq α with ⟨r, hr, H⟩
+  refine ⟨r, fun x => ?_, fun y => ?_⟩
+  · have : {y | ¬r x y} = {y | r y x} ∪ {x} := by
+      ext y
+      simp only [mem_setOf_eq, mem_insert_iff, union_singleton]
+      rcases trichotomous_of r x y with (h | rfl | h)
+      · simp only [h, not_or, false_iff, not_true]
+        constructor
+        · rintro rfl; exact irrefl_of r y h
+        · exact asymm h
+      · simp only [true_or, iff_true]; exact irrefl x
+      · simp only [h, iff_true, or_true]; exact asymm h
+    rw [this]
+    apply Countable.union _ (countable_singleton _)
+    rw [Cardinal.countable_iff_lt_aleph_one, ← hα]
+    exact Cardinal.card_typein_lt r x H
+  · rw [Cardinal.countable_iff_lt_aleph_one, ← hα]
+    exact Cardinal.card_typein_lt r y H
+
+theorem Cardinal.exists_sierpinski_pathological_partition_of_card_eq_aleph_one
+    {α : Type*} (hα : #α = ℵ₁) :
+    ∃ S T : Set (α × α), IsCompl S T ∧
+      (∀ x, {y | (x, y) ∈ S}.Countable) ∧ ∀ y, {x| (x, y) ∈ T}.Countable := by
+  let ⟨f, hS, hT⟩ := exists_sierpinski_pathological_pred_of_card_eq_aleph_one hα
+  refine ⟨{p | ¬f p.1 p.2}, {p | f p.1 p.2}, isCompl_compl.symm, hS, hT⟩
 
 /-- The statement that the continuum hypothesis holds.
 
@@ -65,29 +98,6 @@ alias ⟨_, of_aleph0_covby_continuum⟩ := iff_aleph0_covby_continuum
 
 end basic_constructors
 
-open Set in
-theorem exists_sierpinski_pathological_pred [ContinuumHypothesis] :
-    ∃ f : ℝ → ℝ → Prop, (∀ x, {y | ¬ f x y}.Countable) ∧ ∀ y, {x : ℝ | f x y}.Countable := by
-  have Hcont : #ℝ = ℵ₁ := by rw [← continuum_eq_aleph_one, Cardinal.mk_real]
-  rcases Cardinal.ord_eq ℝ with ⟨r, hr, H⟩
-  refine ⟨r, fun x => ?_, fun y => ?_⟩
-  · have : {y | ¬r x y} = {y | r y x} ∪ {x} := by
-      ext y
-      simp only [mem_setOf_eq, mem_insert_iff, union_singleton]
-      rcases trichotomous_of r x y with (h | rfl | h)
-      · simp only [h, not_or, false_iff, not_true]
-        constructor
-        · rintro rfl; exact irrefl_of r y h
-        · exact asymm h
-      · simp only [true_or, iff_true]; exact irrefl x
-      · simp only [h, iff_true, or_true]; exact asymm h
-    rw [this]
-    apply Countable.union _ (countable_singleton _)
-    rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r x H
-  · rw [Cardinal.countable_iff_lt_aleph_one, ← Hcont]
-    exact Cardinal.card_typein_lt r y H
-
 /--
 Alternate statement of `iff_exists_sierpinski_pathological_partition` using a predicate to assign
 points to sets.
@@ -95,7 +105,9 @@ points to sets.
 theorem iff_exists_sierpinski_pathological_pred :
     ContinuumHypothesis ↔
       ∃ f : ℝ → ℝ → Prop, (∀ x, {y | ¬ f x y}.Countable) ∧ ∀ y, {x : ℝ | f x y}.Countable := by
-  refine ⟨(·.exists_sierpinski_pathological_pred), fun ⟨f, hnf, hf⟩ => ?_⟩
+  refine ⟨fun _ => Cardinal.exists_sierpinski_pathological_pred_of_card_eq_aleph_one ?_,
+      fun ⟨f, hnf, hf⟩ => ?_⟩
+  · simp only [Cardinal.mk_real, continuum_eq_aleph_one]
   suffices #ℝ ≤ ℵ₁ by
     rw [iff_continuum_eq_aleph_one]
     apply le_antisymm (Cardinal.mk_real.symm.trans_le this)
@@ -120,13 +132,6 @@ theorem iff_exists_sierpinski_pathological_pred :
   rw [← Cardinal.le_aleph0_iff_set_countable, hS_card] at h_S_count
   exact h_S_count.not_gt Cardinal.aleph0_lt_aleph_one
 
-/-- Forward direction of `iff_exists_sierpinski_pathological_partition`. -/
-theorem exists_sierpinski_pathological_partition [ContinuumHypothesis] :
-    ∃ S T : Set (ℝ × ℝ), IsCompl S T ∧
-      (∀ x, {y | (x, y) ∈ S}.Countable) ∧ ∀ y, {x : ℝ | (x, y) ∈ T}.Countable := by
-  let ⟨f, hS, hT⟩ := exists_sierpinski_pathological_pred
-  refine ⟨{p | ¬f p.1 p.2}, {p | f p.1 p.2}, isCompl_compl.symm, hS, hT⟩
-
 /--
 The continuum hypothesis is equivalent to the statement that
 the plane $\mathbb{R}^2$ can be partitioned into two sets,
@@ -139,7 +144,8 @@ theorem iff_exists_sierpinski_pathological_partition :
     ContinuumHypothesis ↔
       ∃ S T : Set (ℝ × ℝ), IsCompl S T ∧
         (∀ x, {y | (x, y) ∈ S}.Countable) ∧ ∀ y, {x : ℝ | (x, y) ∈ T}.Countable := by
-  refine ⟨(·.exists_sierpinski_pathological_partition), ?_⟩
+  refine ⟨fun _ => exists_sierpinski_pathological_partition_of_card_eq_aleph_one ?_, ?_⟩
+  · simp only [Cardinal.mk_real, continuum_eq_aleph_one]
   rw [iff_exists_sierpinski_pathological_pred]
   rintro ⟨S, T, hST, hS, hT⟩
   obtain rfl := hST.eq_compl
