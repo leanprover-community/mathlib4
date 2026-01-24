@@ -135,8 +135,7 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] {u v : V} {p : G.Walk u v} (ht : p.IsEulerian)
-    {s} (h : s = (Finset.univ : Finset V).filter fun v => Odd (G.degree v)) :
-    s.card = 0 ∨ s.card = 2 := by
+    {s} (h : s = ({ v | Odd (G.degree v) } : Finset V)) : s.card = 0 ∨ s.card = 2 := by
   subst s
   simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]
   simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
@@ -149,10 +148,10 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] {u v : V} {p : G.Walk u v}
       ext x
       simp [hn, imp_iff_not_or]
 
-theorem IsEulerian.card_odd_degree [Fintype V] {u v : V} {p : G.Walk u v} (ht : p.IsEulerian) :
-    Fintype.card { v : V | Odd (G.degree v) } = 0 ∨
-      Fintype.card { v : V | Odd (G.degree v) } = 2 := by
-  rw [← Set.toFinset_card]
+theorem IsEulerian.card_odd_degree [Finite V] {u v : V} {p : G.Walk u v} (ht : p.IsEulerian) :
+    { v : V | Odd (G.degree v) }.ncard = 0 ∨ { v : V | Odd (G.degree v) }.ncard = 2 := by
+  have := Fintype.ofFinite V
+  rw [Set.ncard_eq_toFinset_card']
   apply IsEulerian.card_filter_odd_degree ht
   simp
 
