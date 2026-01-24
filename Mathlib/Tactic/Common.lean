@@ -21,6 +21,9 @@ public import Batteries.Tactic.HelpCmd
 public import Batteries.Tactic.Alias
 public import Batteries.Tactic.GeneralizeProofs
 
+-- Import Batteries code actions
+public import Batteries.CodeAction
+
 -- Import syntax for leansearch
 public import LeanSearchClient
 
