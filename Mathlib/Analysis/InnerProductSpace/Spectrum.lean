@@ -240,15 +240,13 @@ private theorem exists_unsortedEigenvalues_eq_of_real (hT : T.IsSymmetric)
 
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
   {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
-  -- Need to use fact that Hermitian operators have real eigenvalues
-  -- TODO: Use LinearMap.IsSymmetric.conj_eigenvalue_eq_self
   obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper hT hn hμ
   use i
   rw [unsortedEigenvalues]
   rw [←hi]
-  rw [RCLike.re_eq_add_conj]
-  rw [hT.conj_eigenvalue_eq_self hμ]
-  simp
+  symm
+  rw [←RCLike.conj_eq_iff_re]
+  exact hT.conj_eigenvalue_eq_self hμ
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
