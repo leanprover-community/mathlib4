@@ -41,12 +41,13 @@ theorem Small.mk' {α : Type v} {S : Type w} (e : α ≃ S) : Small.{w} α :=
 
 /-- An arbitrarily chosen model in `Type w` for a `w`-small type.
 -/
-@[pp_with_univ]
+@[pp_with_univ, no_expose]
 def Shrink (α : Type v) [Small.{w} α] : Type w :=
   Classical.choose (@Small.equiv_small α _)
 
 /-- The noncomputable equivalence between a `w`-small type and a model.
 -/
+@[no_expose]
 noncomputable def equivShrink (α : Type v) [Small.{w} α] : α ≃ Shrink α :=
   Nonempty.some (Classical.choose_spec (@Small.equiv_small α _))
 
