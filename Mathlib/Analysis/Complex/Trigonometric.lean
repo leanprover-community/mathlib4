@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -556,7 +557,7 @@ theorem cos_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖cos x - (1 - x ^ 2 / 2)‖
     _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
         ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
-    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
 
 theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
   calc
@@ -572,7 +573,7 @@ theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖
     _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
         ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
       grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
-    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
 
 end Complex
 
