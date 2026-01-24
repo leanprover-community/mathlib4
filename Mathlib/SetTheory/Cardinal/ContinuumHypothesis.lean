@@ -3,8 +3,10 @@ Copyright (c) 2026 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.Analysis.Real.Cardinality
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
 # The `ContinuumHypothesis` typeclass
@@ -12,7 +14,7 @@ import Mathlib.Analysis.Real.Cardinality
 We make this a typeclass rather than an axiom so that it is immediately obvious when a theorem
 assumes this hypothesis.
 
-In mathlib, we show consequences of the continuum hpyothesis with `[ContinuumHypothesis]` in
+In mathlib, we show consequences of the continuum hypothesis with `[ContinuumHypothesis]` in
 assumptions.
 If in downstream projects you want to assume this as an axiom, you can write
 ```
@@ -34,6 +36,7 @@ to other universes with subsequent theorems.
 See `ContinuumHypothesis.iff_aleph0_covby_continuum` and
 `ContinuumHypothesis.iff_continuum_eq_aleph_one` for typical characterizations.
 -/
+@[mk_iff ContinuumHypothesis.iff_continuum_eq_aleph_one']
 class ContinuumHypothesis where
   /-- See `ContinuumHypothesis.of_continuum_eq_aleph_one'` for the universe-generic version. -/
   of_continuum_eq_aleph_one' ::
@@ -41,10 +44,6 @@ class ContinuumHypothesis where
     continuum_eq_aleph_one' : (𝔠 : Cardinal.{0}) = ℵ₁
 
 namespace ContinuumHypothesis
-
-/-- See `ContinuumHypothesis.iff_continuum_eq_aleph_one` for the universe-generic version. -/
-theorem iff_continuum_eq_aleph_one' : ContinuumHypothesis ↔ (𝔠 : Cardinal.{0}) = ℵ₁ :=
-  ⟨(·.continuum_eq_aleph_one'), .of_continuum_eq_aleph_one'⟩
 
 section basic_constructors
 
