@@ -26,7 +26,6 @@ in the definition of `Is(Finitely)Presented`.
 ## Main definitions
 * `IsPresented`: defines when a group has an isomorphism to a presented group.
 * `IsNormalClosureFG`: defines when a subgroup is finitely generated in the normal closure.
-* `FinitelyPresentedGroup`: defines a finitely presented group.
 * `IsFinitelyPresented`: defines when a group has an isomorphism to a finitely presented group.
 * `IsOneRelator`: defines when a group is isomorphic to a one-relator group.
 
@@ -35,7 +34,6 @@ in the definition of `Is(Finitely)Presented`.
   under surjective homomorphism.
 * `isFP_isFG`: a finitely presented group is finitely generated.
 * `isFP_isPresented`: a finitely presented group is a presented group.
-* `IsFinitelyPresented.FPgroup`: a finitely presented group is finitely presented.
 * `IsFinitelyPresented.iff_hom_surj_finite`: a finitely presented group is finitely presented if
   and only if it admits a surjective homomorphism from `FreeGroup α` where `α: Type` and
   `(_: Finite α)` such that the kernel is finitely generated in the normal closure.
