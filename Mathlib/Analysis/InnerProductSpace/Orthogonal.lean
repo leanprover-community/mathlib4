@@ -132,7 +132,7 @@ lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
   refine (map_orthogonal K f.toLinearIsometry).trans ?_
   have : f.toLinearIsometry.range = ⊤ := f.range
   rw [this, inf_top_eq]
-  rfl
+  rfl -- TODO f.toLinearIsometry.toLinearMap = ↑f.toLinearEquiv
 
 variable (𝕜 E)
 
