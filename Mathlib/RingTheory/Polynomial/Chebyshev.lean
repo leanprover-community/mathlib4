@@ -808,6 +808,14 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
     linear_combination (norm := (push_cast; ring_nf))
       -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 
+theorem T_derivative_mem_span_T (n : ℕ) :
+    derivative (T R n) ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - 1)} := by
+  by_cases! hn : n = 0
+  · simp [hn]
+  rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
+  refine Submodule.smul_of_tower_mem _ n ?_
+  convert U_mem_span_T R (n - 1) using 2; grind
+
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
