@@ -3,49 +3,38 @@ Copyright (c) 2026 Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
-
 import Mathlib.Analysis.Complex.ExponentialBounds
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Tactic.NormNum.NatFactorial
-
 
 /-!
-# The Binet Kernel Function
+# Binet kernel estimates
 
-This file analyzes the kernel function `K(t) = 1/(exp t - 1) - 1/t + 1/2` that appears in Binet's
-integral representation of `log Γ`.
+This file studies the kernel
+`K(t) = 1 / (exp t - 1) - 1 / t + 1 / 2`
+that appears in Binet's integral representation of `log Γ`, together with the normalized kernel
+`Ktilde t = K t / t`.
 
 ## Main results
 
-* `BinetKernel.tendsto_Ktilde_zero`: `Ktilde t → 1/12` as `t → 0⁺`
-* `BinetKernel.K_nonneg`: `0 ≤ K t` for `t > 0`
-* `BinetKernel.Ktilde_le`: `Ktilde t ≤ 1/12` for `t ≥ 0`
-* `BinetKernel.integrable_Ktilde_exp_complex`: integrability of `t ↦ Ktilde t * exp(-t*z)` on
-  `(0, ∞)` for `0 < z.re`
-* `BinetKernel.Ktilde_ge_one_div_twelve_mul_exp_neg_div_twelve`:
-  Robbins-type lower bound `(1/12) * exp(-t/12) ≤ Ktilde t` for `t > 0`
+- `Binet.continuousOn_Ktilde_Ioi`: continuity of `Ktilde` on `(0, ∞)`.
+- `Binet.K_nonneg`: `0 ≤ K t` for `t > 0`.
+- `Binet.Ktilde_nonneg`: `0 ≤ Ktilde t` for `t ≥ 0`.
+- `Binet.Ktilde_le`: `Ktilde t ≤ 1 / 12` for `t ≥ 0`.
+- `Binet.Ktilde_lt`: `Ktilde t < 1 / 12` for `t > 0`.
 
 ## Mathematical background
 
-The function 1/(e^t - 1) has the Laurent expansion at t = 0:
-  1/(e^t - 1) = 1/t - 1/2 + t/12 - t³/720 + ...
-
-Therefore (formally, via Taylor expansions):
-  K(t) = 1/(e^t - 1) - 1/t + 1/2
-       = (1/t - 1/2 + t/12 - t³/720 + ...) - 1/t + 1/2
-       = t/12 - t³/720 + O(t⁵)
-
-This shows K(t) → 0 as t → 0⁺. The normalized Binet kernel is:
-  K̃(t) = K(t) / t = (1/(e^t - 1) - 1/t + 1/2) / t for t > 0
-
-which satisfies K̃(t) → 1/12 as t → 0⁺.
+Formally, the Laurent expansion
+\[
+\frac{1}{e^t - 1} = \frac{1}{t} - \frac{1}{2} + \frac{t}{12} - \frac{t^3}{720} + \cdots
+\]
+suggests `K t → 0` and `Ktilde t → 1 / 12` as `t → 0⁺`.
 
 -/
 
-open Real Set Filter MeasureTheory Topology
+open Real Set Filter
 open scoped Topology
 
-namespace BinetKernel
+namespace Binet
 
 /-! ### General monotonicity and positivity lemmas -/
 
@@ -54,7 +43,8 @@ private lemma monotoneOn_of_deriv_nonneg_Ici {f : ℝ → ℝ}
     (hf : DifferentiableOn ℝ f (Set.Ici 0))
     (hderiv : ∀ x ∈ Set.Ici 0, 0 ≤ deriv f x) :
     MonotoneOn f (Set.Ici 0) := by
-  apply monotoneOn_of_deriv_nonneg (convex_Ici 0) hf.continuousOn (hf.mono interior_subset)
+  apply monotoneOn_of_deriv_nonneg (convex_Ici 0)
+    hf.continuousOn (hf.mono interior_subset)
   intro x hx
   rw [interior_Ici] at hx
   exact hderiv x (Set.mem_Ici.mpr (le_of_lt hx))
@@ -71,7 +61,7 @@ private lemma nonneg_of_deriv_nonneg_Ici {f : ℝ → ℝ}
   have hle := hmono h0' hx' hx
   simpa [h0] using hle
 
-/-! ## Basic definitions and elementary properties -/
+/-! ### Basic definitions and elementary properties -/
 
 /-- The (unnormalized) Binet kernel.
 
@@ -102,7 +92,7 @@ lemma Ktilde_pos {t : ℝ} (ht : 0 < t) :
 /-- K̃(0) = 1/12 by definition (the limit value). -/
 lemma Ktilde_zero : Ktilde 0 = 1/12 := by simp [Ktilde]
 
-/-! ## Section 2: The key identity for the kernel -/
+/-! ### The key identity for the kernel -/
 
 /-- For t > 0, e^t > 1, so e^t - 1 > 0. -/
 private lemma exp_sub_one_pos {t : ℝ} (ht : 0 < t) : 0 < Real.exp t - 1 := by
@@ -150,7 +140,7 @@ private lemma K_eq_alt' {t : ℝ} (ht : 0 < t) :
   field_simp
   ring
 
-/-! ## Sign analysis -/
+/-! ### Sign analysis -/
 
 /-- The function f(t) = e^t(t-2) + t + 2 that appears in the numerator. -/
 private noncomputable def f (t : ℝ) : ℝ := Real.exp t * (t - 2) + t + 2
@@ -251,22 +241,25 @@ theorem Ktilde_nonneg {t : ℝ} (ht : 0 ≤ t) : 0 ≤ Ktilde t := by
     rw [K_pos hpos] at hK
     exact div_nonneg hK (le_of_lt hpos)
 
-/-! ## Upper bound -/
+/-! ### Upper bound -/
 
 /-! ### Auxiliary function g for the Ktilde bound -/
 
 /-- The auxiliary function g(t) = (t² - 6t + 12)e^t - (t² + 6t + 12).
 We show g(t) ≥ 0 for t ≥ 0, which implies the bound Ktilde t ≤ 1/12. -/
-private noncomputable def gAux (t : ℝ) : ℝ := (t^2 - 6*t + 12) * Real.exp t - (t^2 + 6*t + 12)
+private noncomputable def gAux (t : ℝ) : ℝ :=
+  (t ^ 2 - 6 * t + 12) * Real.exp t - (t ^ 2 + 6 * t + 12)
 
 /-- First derivative: g'(t) = (t² - 4t + 6)e^t - (2t + 6) -/
-private noncomputable def gAux' (t : ℝ) : ℝ := (t^2 - 4*t + 6) * Real.exp t - (2*t + 6)
+private noncomputable def gAux' (t : ℝ) : ℝ :=
+  (t ^ 2 - 4 * t + 6) * Real.exp t - (2 * t + 6)
 
 /-- Second derivative: g''(t) = (t² - 2t + 2)e^t - 2 -/
-private noncomputable def gAux'' (t : ℝ) : ℝ := (t^2 - 2*t + 2) * Real.exp t - 2
+private noncomputable def gAux'' (t : ℝ) : ℝ :=
+  (t ^ 2 - 2 * t + 2) * Real.exp t - 2
 
 /-- Third derivative: g'''(t) = t²e^t -/
-private noncomputable def gAux''' (t : ℝ) : ℝ := t^2 * Real.exp t
+private noncomputable def gAux''' (t : ℝ) : ℝ := t ^ 2 * Real.exp t
 
 private lemma gAux_zero : gAux 0 = 0 := by simp [gAux]
 
@@ -418,10 +411,7 @@ private lemma gAux_pos {t : ℝ} (ht : 0 < t) : 0 < gAux t := by
   have := h_mono h0 ht' ht
   simpa [gAux_zero] using this
 
-/-- The Taylor expansion shows K(t) = t/12 - t³/720 + O(t⁵), so K(t)/t → 1/12 as t → 0⁺.
-Since K(t) < t/12 for t > 0 (the higher order terms are negative), we have K(t)/t < 1/12.
-
-The proof uses the algebraic identity K(t) = f(t)/(2t(e^t-1)) and bounds on f. -/
+/-- Upper bound for `Ktilde` on `[0, ∞)`. -/
 theorem Ktilde_le {t : ℝ} (ht : 0 ≤ t) : Ktilde t ≤ 1/12 := by
   rcases eq_or_lt_of_le ht with rfl | hpos
   · rw [Ktilde_zero]
@@ -443,6 +433,7 @@ theorem Ktilde_le {t : ℝ} (ht : 0 ≤ t) : Ktilde t ≤ 1/12 := by
           unfold f
           linarith [hgoal, Real.exp_pos t, sq_nonneg t]
 
+/-- Strict upper bound for `Ktilde` on `(0, ∞)`. -/
 theorem Ktilde_lt {t : ℝ} (ht : 0 < t) : Ktilde t < 1 / 12 := by
   have hexp : 0 < Real.exp t - 1 := exp_sub_one_pos ht
   calc
@@ -465,3 +456,5 @@ theorem Ktilde_lt {t : ℝ} (ht : 0 < t) : Ktilde t < 1 / 12 := by
           unfold gAux at hpos
           unfold f
           linarith [hpos, Real.exp_pos t, sq_nonneg t]
+
+end Binet
