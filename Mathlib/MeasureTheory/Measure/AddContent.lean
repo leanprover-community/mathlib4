@@ -410,7 +410,7 @@ variable [LinearOrder α] {G : Type*} [AddCommGroup G]
 
 open scoped Classical in
 /-- The function associating to an interval `Ioc u v` the difference `f v - f u`.
-USe instead `AddContent.ofIoc` which upgrades this function to an additive content. -/
+Use instead `AddContent.ofIoc` which upgrades this function to an additive content. -/
 noncomputable def AddContent.onIocAux (f : α → G) (s : Set α) : G :=
   if h : ∃ (p : α × α), p.1 ≤ p.2 ∧ s = Set.Ioc p.1 p.2
     then f h.choose.2 - f h.choose.1 else 0

@@ -49,9 +49,9 @@ vector measure, signed measure, complex measure
 
 noncomputable section
 
-open NNReal ENNReal
+open NNReal ENNReal Filter
 
-open scoped Function -- required for scoped `on` notation
+open scoped Topology Function -- required for scoped `on` notation
 namespace MeasureTheory
 
 variable {α β : Type*} {m : MeasurableSpace α}
@@ -217,9 +217,6 @@ lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : P
     · apply hm _ (by simp)
     · apply Finset.measurableSet_biUnion _ (by grind)
 
-open Filter
-open scoped Topology
-
 theorem tendsto_vectorMeasure_iUnion_atTop_nat
     {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
     Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋃ n, s n))) := by
@@ -383,6 +380,8 @@ variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [MeasurableSpace β]
   {x : β} {v : M} {s : Set β}
 
 open scoped Classical in
+/-- The Dirac vector measure with mass `v` at a point `x`. It gives mass `v` to measurable sets
+containing `x`, and `0` otherwise. -/
 def dirac (x : β) (v : M) : VectorMeasure β M where
   measureOf' s := if MeasurableSet s ∧ x ∈ s then v else 0
   empty' := by simp
