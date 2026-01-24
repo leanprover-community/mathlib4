@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Chebyshev polynomials
@@ -443,6 +444,17 @@ theorem twice_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := 
 
 theorem U_eq_twice_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
   linear_combination (norm := ring_nf) - (twice_T_eq_U_sub_U R n)
+
+theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 n} := by
+  induction n using Nat.twoStepInduction
+  case zero => simp
+  case one =>
+    rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
+    exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
+  case more n h₀ _ =>
+    push_cast; rw [U_eq_twice_T_add_U, ← smul_eq_mul]; norm_cast
+    refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
+    · exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
