@@ -205,6 +205,21 @@ scoped elab:max "T% " t:term:arg : term => do
 
 namespace Elab
 
+/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
+a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
+codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
+the codomain of the continuous linear maps (otherwise none). -/
+def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
+  match_expr e with
+    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
+      if ← withReducible <| isDefEq k S then
+        -- TODO: check if σ is actually the identity!
+        return some (k, E, F)
+      else
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+    | _ => return none
+
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr × α` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
@@ -266,22 +281,6 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
-/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
-a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
-codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
-the codomain of the continuous linear maps (otherwise none). -/
-def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
-  match_expr e with
-    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        return some (k, E, F)
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    | _ => return none
-
-set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
