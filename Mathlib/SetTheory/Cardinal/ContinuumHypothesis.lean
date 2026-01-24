@@ -26,6 +26,8 @@ If in downstream projects you want to assume this as an axiom, you can write
 * `ContinuumHypothesis.iff_exists_sierpinski_pathological_partition`: Sierpiński's 1919 theorem.
 -/
 
+@[expose] public section
+
 open Cardinal
 
 /--

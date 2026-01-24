@@ -459,7 +459,8 @@ We need the continuum hypothesis to construct it.
 
 theorem sierpinski_pathological_family [ContinuumHypothesis] :
     ∃ f : ℝ → Set ℝ, (∀ x, (univ \ f x).Countable) ∧ ∀ y, {x : ℝ | y ∈ f x}.Countable := by
-  simpa [← Set.compl_eq_univ_diff] using ContinuumHypothesis.exists_sierpinski_pathological_pred
+  have := ContinuumHypothesis.iff_exists_sierpinski_pathological_pred.mp ‹_›
+  simpa [← Set.compl_eq_univ_diff]
 
 /-- A family of sets in `ℝ` which only miss countably many points, but such that any point is
 contained in only countably many of them. -/
