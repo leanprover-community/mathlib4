@@ -429,11 +429,8 @@ theorem Adapted.hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
   · have h_le : ∀ ω, hittingBtwn u s n n' ω ≤ i := fun x => (hittingBtwn_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hittingBtwn u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-      ext x
-      rw [Set.mem_setOf_eq, hittingBtwn_le_iff_of_lt _ hi]
-      simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-    simp_rw [WithTop.coe_le_coe, h_set_eq_Union]
-    exact MeasurableSet.iUnion fun j =>
+      ext; simp [hittingBtwn_le_iff_of_lt _ hi]
+    simpa [WithTop.coe_le_coe, h_set_eq_Union] using MeasurableSet.iUnion fun j =>
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 @[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
@@ -445,12 +442,9 @@ theorem Adapted.hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-    ext x
-    rw [Set.mem_setOf_eq, hittingAfter_le_iff]
-    simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-  rw [h_set_eq_Union]
-  refine MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
+    ext; simp [hittingAfter_le_iff]
+  simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+    MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -492,12 +486,10 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
     lift τ x to ι using h_top with t
     rw [hτ] at hτbdd
     exact mod_cast hτbdd
-  simp only [WithTop.coe_le_coe]
-  rw [h₁, h₂, Set.union_empty]
+  simp only [WithTop.coe_le_coe, h₁, h₂, Set.union_empty]
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
-  have h := hittingBtwn_isStoppingTime (n := i) (n' := N) hf hs n
-  simpa only [WithTop.coe_le_coe] using h
+  simpa using hittingBtwn_isStoppingTime hf hs n
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
   Adapted.isStoppingTime_hittingBtwn_isStoppingTime
