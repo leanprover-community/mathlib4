@@ -205,36 +205,11 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 
-private theorem exists_unsortedEigenvalues_eq_helper' (hT : T.IsSymmetric)
-  (hn : Module.finrank 𝕜 E = n)
-  (μ : Module.End.Eigenvalues T) : ∃ i : Fin n, μ =
-    hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
-    hT.orthogonalFamily_eigenspaces' :=
-  hT.direct_sum_isInternal.mem_range_subordinateOrthonormalBasisIndex hn
-    hT.orthogonalFamily_eigenspaces' (Module.End.hasEigenvalue_iff.mp μ.2)
-
-private theorem exists_unsortedEigenvalues_eq_helper (hT : T.IsSymmetric)
-  (hn : Module.finrank 𝕜 E = n)
-  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ =
-    (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
-    hT.orthogonalFamily_eigenspaces').val := by
-  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper' hT hn ⟨μ, hμ⟩
-  use i
-  rw [←hi]
-  rfl
-
-private theorem exists_unsortedEigenvalues_eq_of_real (hT : T.IsSymmetric)
-  (hn : Module.finrank 𝕜 E = n)
-  {μ : ℝ} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
-  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper hT hn hμ
-  use i
-  rw [unsortedEigenvalues]
-  rw [←hi]
-  simp
-
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
   {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
-  obtain ⟨i, hi⟩ := exists_unsortedEigenvalues_eq_helper' hT hn ⟨μ, hμ⟩
+  let x : Eigenvalues T := ⟨μ, hμ⟩
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.mem_range_subordinateOrthonormalBasisIndex hn
+    hT.orthogonalFamily_eigenspaces' (Module.End.hasEigenvalue_iff.mp x.2)
   use i
   rw [unsortedEigenvalues, ←hi]
   symm
