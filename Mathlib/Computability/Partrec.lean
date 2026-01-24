@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Mathlib.Computability.Primrec
+public import Mathlib.Computability.Primrec.List
 public import Mathlib.Data.Nat.PSub
 public import Mathlib.Data.PFun
 

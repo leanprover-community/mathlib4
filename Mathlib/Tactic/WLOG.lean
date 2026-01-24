@@ -5,10 +5,10 @@ Authors: Johannes Hölzl, Mario Carneiro, Johan Commelin, Reid Barton, Thomas Mu
 -/
 module
 
-public meta import Mathlib.Tactic.Core
 public meta import Lean.Meta.Tactic.Cases
-public meta import Mathlib.Tactic.Push
 import all Lean.MetavarContext
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Push
 
 /-!
 

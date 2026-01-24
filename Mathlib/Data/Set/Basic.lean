@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.Tauto
-public import Mathlib.Util.Delaborators
 
 /-!
 # Basic properties of sets
@@ -221,8 +219,8 @@ theorem setOf_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { a
 /-! ### Subset and strict subset relations -/
 
 
-instance : IsRefl (Set α) (· ⊆ ·) :=
-  show IsRefl (Set α) (· ≤ ·) by infer_instance
+instance : @Std.Refl (Set α) (· ⊆ ·) :=
+  show Std.Refl (· ≤ ·) by infer_instance
 
 instance : IsTrans (Set α) (· ⊆ ·) :=
   show IsTrans (Set α) (· ≤ ·) by infer_instance

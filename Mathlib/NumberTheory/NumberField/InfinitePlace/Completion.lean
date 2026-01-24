@@ -86,14 +86,15 @@ lemma norm_coe (x : WithAbs v.1) :
     ‖(x : v.Completion)‖ = v (WithAbs.equiv v.1 x) :=
   UniformSpace.Completion.norm_coe x
 
+@[deprecated UniformSpace.Completion.algebra (since := "2026-01-21")]
 instance : Algebra K v.Completion :=
-  inferInstanceAs <| Algebra (WithAbs v.1) v.1.Completion
+  inferInstance
 
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/
 lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
     Rat.cast (WithAbs.equiv _ x) = (x : v.Completion) :=
   (eq_ratCast (UniformSpace.Completion.coeRingHom.comp
-    (WithAbs.equiv v.1).symm.toRingHom) x).symm
+    (WithAbs.equiv v.1).symm.toRingHom) _).symm
 
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
@@ -160,10 +161,11 @@ alias isClosed_image_extensionEmbedding_of_isReal := isClosed_image_extensionEmb
 theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
     (extensionEmbedding v).fieldRange ≠ Complex.ofRealHom.fieldRange := by
   contrapose! hv
-  refine not_isComplex_iff_isReal.2 <| isReal_iff.2 <| RingHom.ext fun x ↦ ?_
+  simp only [not_isComplex_iff_isReal, isReal_iff]
+  ext x
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
-  simp only [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
-  simp [← hr]
+  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
+  simp [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.conj_ofReal]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
 theorem surjective_extensionEmbedding_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :

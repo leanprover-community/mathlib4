@@ -53,9 +53,12 @@ variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtrat
 noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ) : Ω → ℕ∞ :=
   hittingAfter f (Set.Ici r) 0
 
-theorem Adapted.isStoppingTime_leastGE (r : ℝ) (hf : Adapted ℱ f) :
+theorem StronglyAdapted.isStoppingTime_leastGE (r : ℝ) (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
   hittingAfter_isStoppingTime hf measurableSet_Ici
+
+@[deprecated (since := "2025-12-19")]
+alias Adapted.isStoppingTime_leastGE := StronglyAdapted.isStoppingTime_leastGE
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
@@ -64,7 +67,7 @@ noncomputable def stoppedAbove (f : ℕ → Ω → ℝ) (r : ℝ) : ℕ → Ω �
 
 protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
     Submartingale (stoppedAbove f r) ℱ μ :=
-  hf.stoppedProcess (hf.adapted.isStoppingTime_leastGE r)
+  hf.stoppedProcess (hf.stronglyAdapted.isStoppingTime_leastGE r)
 
 @[deprecated (since := "2025-10-25")] alias Submartingale.stoppedValue_leastGE :=
   Submartingale.stoppedAbove
@@ -151,7 +154,7 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
     ∀ᵐ ω ∂μ, BddAbove (Set.range fun n => f n ω) ↔ ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
   set g : ℕ → Ω → ℝ := fun n ω => f n ω - f 0 ω
   have hg : Submartingale g ℱ μ :=
-    hf.sub_martingale (martingale_const_fun _ _ (hf.adapted 0) (hf.integrable 0))
+    hf.sub_martingale (martingale_const_fun _ _ (hf.stronglyAdapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
     ext ω
     simp only [g, sub_self, Pi.zero_apply]
@@ -181,7 +184,7 @@ $\sum_n \mathbb{P}[s_n \mid \mathcal{F}_n] = \infty$.
 The proof strategy follows by constructing a martingale satisfying the one-sided martingale bound.
 In particular, we define
 $$
-  f_n := \sum_{k < n} \mathbf{1}_{s_{n + 1}} - \mathbb{P}[s_{n + 1} \mid \mathcal{F}_n].
+  f_n := \sum_{k < n} \big(\mathbf{1}_{s_{k + 1}} - \mathbb{P}[s_{k + 1} \mid \mathcal{F}_k]\big).
 $$
 Then, as a martingale is both a sub- and a super-martingale, the set for which it is unbounded from
 above must agree with the set for which it is unbounded from below almost everywhere. Thus, it
@@ -243,9 +246,13 @@ variable {s : ℕ → Set Ω}
 
 theorem process_zero : process s 0 = 0 := by rw [process, Finset.range_zero, Finset.sum_empty]
 
-theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (process s) := fun _ =>
-  Finset.stronglyMeasurable_sum _ fun _ hk =>
+theorem stronglyAdapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) :
+    StronglyAdapted ℱ (process s) :=
+  fun _ => Finset.stronglyMeasurable_sum _ fun _ hk =>
     stronglyMeasurable_one.indicator <| ℱ.mono (Finset.mem_range.1 hk) _ <| hs _
+
+@[deprecated (since := "2025-12-19")]
+alias adapted_process := stronglyAdapted_process
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
@@ -278,11 +285,11 @@ end BorelCantelli
 
 open BorelCantelli
 
-/-- An a.e. monotone adapted process `f` with uniformly bounded differences converges to `+∞` if
-and only if its predictable part also converges to `+∞`. -/
+/-- An a.e. monotone strongly adapted process `f` with uniformly bounded differences converges to
+`+∞` if and only if its predictable part also converges to `+∞`. -/
 theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
-    (hfmono : ∀ᵐ ω ∂μ, ∀ n, f n ω ≤ f (n + 1) ω) (hf : Adapted ℱ f) (hint : ∀ n, Integrable (f n) μ)
-    (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
+    (hfmono : ∀ᵐ ω ∂μ, ∀ n, f n ω ≤ f (n + 1) ω) (hf : StronglyAdapted ℱ f)
+    (hint : ∀ n, Integrable (f n) μ) (hbdd : ∀ᵐ ω ∂μ, ∀ n, |f (n + 1) ω - f n ω| ≤ R) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop atTop ↔
       Tendsto (fun n => predictablePart f ℱ μ n ω) atTop atTop := by
   have h₁ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atTop
@@ -316,8 +323,9 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_) (adapted_process hs)
-    (integrable_process μ hs) (Eventually.of_forall <| process_difference_le s)
+  have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_)
+    (stronglyAdapted_process hs) (integrable_process μ hs)
+    (Eventually.of_forall <| process_difference_le s)
   swap
   · rw [process, process, ← sub_nonneg, Finset.sum_apply, Finset.sum_apply,
       Finset.sum_range_succ_sub_sum]

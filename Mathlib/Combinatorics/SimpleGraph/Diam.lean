@@ -243,7 +243,6 @@ lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
-  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 
