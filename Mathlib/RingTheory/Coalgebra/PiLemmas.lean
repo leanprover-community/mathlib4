@@ -188,11 +188,4 @@ theorem Matrix.isAdjMatrix_iff_toLin' {A : Matrix n n K} [StarRing K] :
     ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin', funext_iff, diag]
   exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
 
-omit [DecidableEq n] in
-variable (R) in
-/-- The number of edges of a classical adjacency matrix is equal to
-`⟪1, G.adjMatrix.toEuclideanLin 1⟫`. -/
-theorem SimpleGraph.card_dart_eq_dotProduct : Fintype.card G.Dart = adjMatrix R G *ᵥ 1 ⬝ᵥ 1 := by
-  simp [G.dart_card_eq_sum_degrees, dotProduct_one]
-
 end

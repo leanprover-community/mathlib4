@@ -9,6 +9,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
 
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+
 /-!
 # Adjacency Matrices
 
@@ -224,6 +226,11 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
     (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
+
+variable (R) in
+theorem coe_card_dart_eq_dotProduct [NonAssocSemiring α] :
+    Fintype.card G.Dart = adjMatrix α G *ᵥ 1 ⬝ᵥ 1 := by
+  simp [G.dart_card_eq_sum_degrees, dotProduct_one]
 
 variable {G}
 
