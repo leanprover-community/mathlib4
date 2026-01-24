@@ -17,8 +17,6 @@ from `0` (e.g. normed fields).
 
 public section
 
-noncomputable section
-
 open Filter Finset
 
 open scoped BigOperators Topology
