@@ -207,9 +207,7 @@ theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors,
 
 theorem abundant_iff_two_lt_abundancyIndex : Abundant n ↔ 2 < n.abundancyIndex := by
   by_cases h : n = 0
-  · refine iff_of_false ?_ ?_
-    · simp [h, Abundant]
-    · simp [h, abundancyIndex]
+  · simp [h, Abundant, abundancyIndex]
   · rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
     norm_cast
 
