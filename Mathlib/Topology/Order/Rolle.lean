@@ -99,19 +99,19 @@ theorem exists_isLocalExtr_uIoo (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b)
 and tends to the same value at its endpoints,
 then it has an extremum on this unordered open interval. -/
 lemma exists_isExtrOn_uIoo_of_tendsto (hab : a ≠ b) (hfc : ContinuousOn f (uIoo a b))
-    (ha : Tendsto f (𝓝[≠] a) (𝓝 l)) (hb : Tendsto f (𝓝[≠] b) (𝓝 l)) :
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 l)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 l)) :
     ∃ c ∈ uIoo a b, IsExtrOn f (uIoo a b) c := by
   have h : EqOn (extendFrom (uIoo a b) f) f (uIoo a b) := extendFrom_extends hfc
   obtain ⟨c, hc, hfc⟩ : ∃ c ∈ uIoo a b, IsExtrOn (extendFrom (uIoo a b) f) (uIcc a b) c :=
     exists_uIoo_extr_on_uIcc hab (continuousOn_uIcc_extendFrom_uIoo hab hfc ha hb)
       ((eq_lim_at_left_extendFrom_uIoo hab ha).trans (eq_lim_at_right_extendFrom_uIoo hab hb).symm)
-  exact ⟨c, hc, (hfc.on_subset (uIoo_subset_uIcc _ _)).congr h (h hc)⟩
+  exact ⟨c, hc, (hfc.on_subset uIoo_subset_uIcc_self).congr h (h hc)⟩
 
 /-- If a function `f` is continuous on an unordered open interval
 and tends to the same value at its endpoints,
 then it has a local extremum on this unordered open interval. -/
 lemma exists_isLocalExtr_uIoo_of_tendsto (hab : a ≠ b) (hfc : ContinuousOn f (uIoo a b))
-    (ha : Tendsto f (𝓝[≠] a) (𝓝 l)) (hb : Tendsto f (𝓝[≠] b) (𝓝 l)) :
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 l)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 l)) :
     ∃ c ∈ uIoo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_isExtrOn_uIoo_of_tendsto hab hfc ha hb
   ⟨c, cmem, hc.isLocalExtr <| Ioo_mem_nhds cmem.1 cmem.2⟩
