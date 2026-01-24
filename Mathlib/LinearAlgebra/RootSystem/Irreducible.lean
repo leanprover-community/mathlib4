@@ -87,7 +87,6 @@ lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
   have h' : P.reflection i x ∈ (q : Submodule K M) := P.mem_invtRootSubmodule_iff.mp q.property i hx
   contradiction
 
-open Module in
 lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
     {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
     q = ⊤ ↔ ∀ i, P.root i ∈ (q : Submodule K M) := by
