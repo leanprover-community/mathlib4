@@ -181,7 +181,7 @@ error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: `↑(Metric.sphere 0 1)`
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Metric.sphere 0 1)`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Metric.sphere 0 1)` is not a `Bundle.TotalSpace`.
