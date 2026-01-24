@@ -102,8 +102,8 @@ instance : Category (DefDomain X Y) where
   id := Hom.id
   comp := Hom.comp
 
-instance : Subsingleton (d₁ ⟶ d₂) :=
-  inferInstanceAs (Subsingleton (Hom d₁ d₂))
+instance : Quiver.IsThin (DefDomain X Y) :=
+  fun d₁ d₂ ↦ inferInstanceAs (Subsingleton (Hom d₁ d₂))
 
 end Hom
 
