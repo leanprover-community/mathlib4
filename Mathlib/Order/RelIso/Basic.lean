@@ -157,7 +157,7 @@ def preimage (f : α → β) (s : β → β → Prop) : f ⁻¹'o s →r s :=
 end RelHom
 
 /-- An increasing function is injective -/
-theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [IsTrichotomous α r]
+theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop) [Std.Trichotomous r]
     [Std.Irrefl s] (f : α → β) (hf : ∀ {x y}, r x y → s (f x) (f y)) : Injective f := by
   intro x y hxy
   rcases trichotomous_of r x y with (h | h | h)
@@ -172,7 +172,7 @@ theorem injective_of_increasing (r : α → α → Prop) (s : β → β → Prop
     exact irrefl_of s (f y) this
 
 /-- An increasing function is injective -/
-theorem RelHom.injective_of_increasing [IsTrichotomous α r] [Std.Irrefl s] (f : r →r s) :
+theorem RelHom.injective_of_increasing [Std.Trichotomous r] [Std.Irrefl s] (f : r →r s) :
     Injective f :=
   _root_.injective_of_increasing r s f f.map_rel
 
@@ -341,12 +341,14 @@ protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLin
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
   | f, _ => { f.irrefl, f.isTrans with }
 
-protected theorem isTrichotomous : ∀ (_ : r ↪r s) [IsTrichotomous β s], IsTrichotomous α r
-  | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o (or_congr f.inj'.eq_iff o)).1 (H _ _)⟩
+protected theorem trichotomous : ∀ (_ : r ↪r s) [Std.Trichotomous s], Std.Trichotomous r
+  | ⟨f, o⟩, ⟨H⟩ => ⟨fun _ _ hab hba ↦ f.injective <| H _ _ (o.not.mpr hab) (o.not.mpr hba)⟩
+
+@[deprecated (since := "2026-01-24")] protected alias isTrichotomous := RelEmbedding.trichotomous
 
 protected theorem isStrictTotalOrder : ∀ (_ : r ↪r s) [IsStrictTotalOrder β s],
     IsStrictTotalOrder α r
-  | f, _ => { f.isTrichotomous, f.isStrictOrder with }
+  | f, _ => { f.trichotomous, f.isStrictOrder with }
 
 protected theorem acc (f : r ↪r s) (a : α) : Acc s (f a) → Acc r a := by
   generalize h : f a = b
@@ -450,20 +452,18 @@ theorem ofMapRelIff_coe (f : α → β) [Std.Antisymm r] [Std.Refl s]
 
 /-- It suffices to prove `f` is monotone between strict relations
   to show it is a relation embedding. -/
-def ofMonotone [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
+def ofMonotone [Std.Trichotomous r] [Std.Asymm s] (f : α → β) (H : ∀ a b, r a b → s (f a) (f b)) :
     r ↪r s := by
   haveI := @Std.Asymm.irrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
-  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
+  · apply Std.Trichotomous.trichotomous (r := r) a b
     · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
     · exact fun h => irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
-  · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
-    · subst e
-      exact irrefl _ h
-    · exact asymm (H _ _ h') h
+  · refine Not.imp_symm (Std.Trichotomous.trichotomous a b · fun h' ↦ asymm (H _ _ h') h) ?_
+    exact (irrefl _ <| · ▸ h)
 
 @[simp]
-theorem ofMonotone_coe [IsTrichotomous α r] [Std.Asymm s] (f : α → β) (H) :
+theorem ofMonotone_coe [Std.Trichotomous r] [Std.Asymm s] (f : α → β) (H) :
     (@ofMonotone _ _ r s _ _ f H : α → β) = f :=
   rfl
 
