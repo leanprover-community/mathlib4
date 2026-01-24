@@ -39,6 +39,6 @@ lemma quotient_smul_fixedPoints_def
     (g : G ⧸ H) (a : fixedPoints H A) :
     g • a = g.out • a := by
   conv_lhs => rw [← g.out_eq]
-  ext; simp [-Quotient.out_eq]
+  rfl
 
 end MulAction
