@@ -285,6 +285,14 @@ protected lemma IsOfFinOrder.powers_eq_image_range_orderOf [DecidableEq G] (hx :
   Set.ext fun _ ↦ hx.mem_powers_iff_mem_range_orderOf
 
 @[to_additive]
+theorem pow_eq_pow_of_modEq {a b : ℕ} (h : a ≡ b [MOD n]) (hx : x ^ n = 1) : x ^ a = x ^ b := by
+  obtain hle | hle := le_total a b
+  all_goals
+    obtain ⟨c, rfl⟩ := le_iff_exists_add.mp hle
+    obtain ⟨c, rfl⟩ : n ∣ c := by simpa using h
+    simp [pow_add, pow_mul, hx]
+
+@[to_additive]
 theorem pow_eq_one_iff_modEq : x ^ n = 1 ↔ n ≡ 0 [MOD orderOf x] := by
   rw [modEq_zero_iff_dvd, orderOf_dvd_iff_pow_eq_one]
 
@@ -302,7 +310,7 @@ theorem exists_pow_eq_self_of_coprime (h : n.Coprime (orderOf x)) : ∃ m : ℕ,
     exact ⟨1, by rw [h, pow_one, pow_one]⟩
   by_cases h1 : orderOf x = 1
   · exact ⟨0, by rw [orderOf_eq_one_iff.mp h1, one_pow, one_pow]⟩
-  obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by omega)
+  obtain ⟨m, -, h⟩ := exists_mul_mod_eq_one_of_coprime h (by lia)
   exact ⟨m, by rw [← pow_mul, ← pow_mod_orderOf, h, pow_one]⟩
 
 /-- If `x^n = 1`, but `x^(n/p) ≠ 1` for all prime factors `p` of `n`,
@@ -905,6 +913,18 @@ lemma Subgroup.zpowers_eq_zpowers_iff {x y : G} (hx : ¬IsOfFinOrder x) :
   nth_rewrite 2 [← zpow_one x] at hl
   have h1 := (injective_zpow_iff_not_isOfFinOrder.mpr hx) hl
   rcases (Int.mul_eq_one_iff_eq_one_or_neg_one).mp h1 with (h | h) <;> simp [h.1]
+
+@[to_additive]
+theorem mem_zpowers_zpow_iff {g : G} {k : ℤ} :
+    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
+  simp_rw [← Nat.dvd_one, Int.gcd_dvd_iff, Nat.cast_one, ← Int.sub_eq_iff_eq_add', ← dvd_def,
+    ← Int.modEq_iff_dvd, ← zpow_eq_zpow_iff_modEq, zpow_one, zpow_mul, ← mem_zpowers_iff]
+
+@[to_additive]
+theorem mem_zpowers_pow_iff {g : G} {k : ℕ} :
+    g ∈ Subgroup.zpowers (g ^ k) ↔ k.gcd (orderOf g) = 1 := by
+  rw [← zpow_natCast g k, mem_zpowers_zpow_iff, Int.gcd_natCast_natCast]
+
 section Finite
 variable [Finite G]
 
@@ -1003,9 +1023,13 @@ lemma Submonoid.orderOf_le_card {G : Type*} [Group G] (s : Submonoid G) (hs : (s
 theorem pow_card_eq_one' {G : Type*} [Group G] {x : G} : x ^ Nat.card G = 1 :=
   orderOf_dvd_iff_pow_eq_one.mp <| orderOf_dvd_natCard _
 
+/- TODO: Generalise to `Finite` + `CancelMonoid`. -/
 @[to_additive (attr := simp) card_nsmul_eq_zero]
 theorem pow_card_eq_one : x ^ Fintype.card G = 1 := by
   rw [← Nat.card_eq_fintype_card, pow_card_eq_one']
+
+@[deprecated "Use simp" (since := "2025-12-05")]
+theorem pow_gcd_card_eq_one_iff : x ^ n.gcd (Fintype.card G) = 1 ↔ x ^ n = 1 := by simp
 
 @[to_additive]
 theorem Subgroup.pow_index_mem {G : Type*} [Group G] (H : Subgroup G) [Normal H] (g : G) :
@@ -1068,13 +1092,6 @@ theorem image_range_orderOf [DecidableEq G] :
   letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
   ext x
   rw [Set.mem_toFinset, SetLike.mem_coe, mem_zpowers_iff_mem_range_orderOf]
-
-/- TODO: Generalise to `Finite` + `CancelMonoid`. -/
-@[to_additive gcd_nsmul_card_eq_zero_iff]
-theorem pow_gcd_card_eq_one_iff : x ^ n = 1 ↔ x ^ Nat.gcd n (Fintype.card G) = 1 :=
-  ⟨fun h => pow_gcd_eq_one _ h <| pow_card_eq_one, fun h => by
-    let ⟨m, hm⟩ := Nat.gcd_dvd_left n (Fintype.card G)
-    rw [hm, pow_mul, h, one_pow]⟩
 
 lemma smul_eq_of_le_smul
     {G : Type*} [Group G] [Finite G] {α : Type*} [PartialOrder α] {g : G} {a : α}
@@ -1191,11 +1208,11 @@ theorem orderOf_snd_dvd_orderOf : orderOf x.2 ∣ orderOf x :=
   minimalPeriod_snd_dvd
 
 @[to_additive]
-theorem IsOfFinOrder.fst {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
+theorem IsOfFinOrder.fst (hx : IsOfFinOrder x) : IsOfFinOrder x.1 :=
   hx.mono orderOf_fst_dvd_orderOf
 
 @[to_additive]
-theorem IsOfFinOrder.snd {x : α × β} (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
+theorem IsOfFinOrder.snd (hx : IsOfFinOrder x) : IsOfFinOrder x.2 :=
   hx.mono orderOf_snd_dvd_orderOf
 
 @[to_additive IsOfFinAddOrder.prod_mk]
@@ -1208,7 +1225,30 @@ lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
 
 end Prod
 
--- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {x : ∀ i, α i}
+
+@[to_additive]
+lemma Pi.orderOf_eq_sInf (x : ∀ i, α i) : orderOf x = sInf { n > 0 | ∀ i, orderOf (x i) ∣ n } :=
+  minimalPeriod_piMap
+
+@[to_additive]
+protected lemma Pi.orderOf [Fintype ι] (x : ∀ i, α i) :
+    orderOf x = Finset.univ.lcm (fun i => orderOf (x i)) :=
+  minimalPeriod_piMap_fintype
+
+@[to_additive]
+theorem orderOf_apply_dvd_orderOf : ∀ i, orderOf (x i) ∣ orderOf x :=
+  minimalPeriod_single_dvd_minimalPeriod_piMap
+
+@[to_additive]
+protected theorem IsOfFinOrder.pi [Finite ι] : (∀ i, IsOfFinOrder (x i)) → IsOfFinOrder x := by
+  have := Fintype.ofFinite ι
+  simp only [← orderOf_ne_zero_iff, Pi.orderOf]
+  simp [Finset.lcm_eq_zero_iff]
+
+end Pi
 
 @[simp]
 lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by

@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 namespace Idempotents
 
-variable {C : Type*} [Category C] [IsIdempotentComplete C]
+variable {C : Type*} [Category* C] [IsIdempotentComplete C]
 
 instance : IsIdempotentComplete (SimplicialObject C) :=
   Idempotents.functor_category_isIdempotentComplete _ _

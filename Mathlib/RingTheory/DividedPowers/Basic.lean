@@ -73,7 +73,7 @@ section DividedPowersDefinition
 
 variable {A : Type*} [CommSemiring A] (I : Ideal A)
 
-/-- The divided power structure on an ideal I of a commutative ring A -/
+/-- The divided power structure on an ideal `I` of a commutative ring `A`. -/
 structure DividedPowers where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A

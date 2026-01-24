@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Init
 /-!
-## Definitions on Arrays
+# Definitions on Arrays
 
 This file contains various definitions on `Array`. It does not contain
-proofs about these definitions, those are contained in other files in `Mathlib/Data/Array.lean`.
+proofs about these definitions.
 -/
 
 @[expose] public section

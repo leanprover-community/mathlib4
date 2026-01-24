@@ -57,7 +57,7 @@ def detRowAlternating : (n → R) [⋀^n]→ₗ[R] R :=
   MultilinearMap.alternatization ((MultilinearMap.mkPiAlgebra R n R).compLinearMap LinearMap.proj)
 
 /-- The determinant of a matrix given by the Leibniz formula. -/
-abbrev det (M : Matrix n n R) : R :=
+def det (M : Matrix n n R) : R :=
   detRowAlternating M
 
 theorem det_apply (M : Matrix n n R) : M.det = ∑ σ : Perm n, Equiv.Perm.sign σ • ∏ i, M (σ i) i :=
@@ -212,7 +212,7 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
 /-- Permuting the columns changes the sign of the determinant. -/
 theorem det_permute (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix σ id).det = Perm.sign σ * M.det :=
-  ((detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_perm M σ).trans (by simp [Units.smul_def])
+  ((detRowAlternating : (n → R) [⋀^n]→ₗ[R] R).map_perm M σ).trans (by simp [Units.smul_def, det])
 
 /-- Permuting the rows changes the sign of the determinant. -/
 theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
@@ -572,7 +572,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   have M_k : M (Fin.castSucc k) = M' (Fin.castSucc k) := (updateRow_ne k_ne_succ).symm
   rw [hM, M_k, det_updateRow_add_smul_self M' k_ne_succ.symm, ih (Function.update c k 0)]
   · intro i hi
-    rw [Fin.lt_def, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff] at hi
+    rw [Fin.lt_def, Fin.val_castSucc, Fin.val_succ, Nat.lt_succ_iff] at hi
     rw [Function.update_apply]
     split_ifs with hik
     · rfl
@@ -587,7 +587,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   · simp [hc i (Fin.succ_lt_succ_iff.mpr hik2)]
   rw [updateRow_ne]
   apply ne_of_lt
-  rwa [Fin.lt_def, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff, ← not_lt]
+  rwa [Fin.lt_def, Fin.val_castSucc, Fin.val_succ, Nat.lt_succ_iff, ← not_lt]
 
 /-- If you add multiples of previous rows to the next row, the determinant doesn't change. -/
 theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 1)) (Fin (n + 1)) R}

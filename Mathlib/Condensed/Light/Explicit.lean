@@ -16,10 +16,10 @@ We give explicit description of light condensed sets:
 * `LightCondensed.ofSheafLightProfinite`: A finite-product-preserving presheaf on `LightProfinite`,
   satisfying `EqualizerCondition`.
 
-The property `EqualizerCondition` is defined in `Mathlib/CategoryTheory/Sites/RegularExtensive.lean`
-and it says that for any effective epi `X ⟶ B` (in this case that is equivalent to being a
-continuous surjection), the presheaf `F` exhibits `F(B)` as the equalizer of the two maps
-`F(X) ⇉ F(X ×_B X)`
+The property `EqualizerCondition` is defined in
+`Mathlib/CategoryTheory/Sites/Coherent/RegularSheaves.lean` and it says that for any effective epi
+`X ⟶ B` (in this case that is equivalent to being a continuous surjection), the presheaf `F`
+exhibits `F(B)` as the equalizer of the two maps `F(X) ⇉ F(X ×_B X)`.
 
 We also give variants for light condensed objects in concrete categories whose forgetful functor
 reflects finite limits (resp. products), where it is enough to check the sheaf condition after
@@ -32,7 +32,7 @@ universe v u w
 
 open CategoryTheory Limits Opposite Functor Presheaf regularTopology
 
-variable {A : Type*} [Category A]
+variable {A : Type*} [Category* A]
 
 namespace LightCondensed
 
