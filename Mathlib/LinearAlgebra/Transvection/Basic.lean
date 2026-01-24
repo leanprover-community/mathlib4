@@ -859,7 +859,7 @@ open IsBaseChange
 
 It is not necessary to assume that the module is finite and free
 because `LinearMap.det` is identically 1 otherwise. -/
-@[simp] theorem _root_.LinearEquiv.det_eq_one {f : Dual R V} {v : V} (hfv : f v = 0) :
+@[simp] theorem _root_.LinearEquiv.transvection.det_eq_one {f : Dual R V} {v : V} (hfv : f v = 0) :
     (LinearEquiv.transvection hfv).det = 1 := by
   rw [← Units.val_inj, LinearEquiv.coe_det,
     LinearEquiv.transvection.coe_toLinearMap hfv, Units.val_one]
