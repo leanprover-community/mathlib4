@@ -71,9 +71,7 @@ variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype 
 /-- A linear map is convolutively idempotent iff its matrix is all `1`s and `0`s. -/
 theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff {f : (n → K) →ₗ[K] m → K} :
     IsIdempotentElem f ↔ ∀ i j, f.toMatrix' i j = 0 ∨ f.toMatrix' i j = 1 := by
-  rw [IsIdempotentElem, ← toMatrix'.injective.eq_iff, toMatrix'_convMul_eq_hadamard]
-  simp only [← ext_iff, hadamard_apply, ← sub_eq_zero (b := toMatrix' _ _ _),
-    ← mul_sub_one, mul_eq_zero, sub_eq_zero]
+  simp [IsIdempotentElem, hadamard_self_eq_self_iff, ← toMatrix'.injective.eq_iff]
 
 /-- A matrix's linear map is convolutively idempotent iff it is all `1`s and `0`s. -/
 theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n K} :
@@ -102,27 +100,19 @@ variable (n R') in
 
 theorem LinearMap.id_convMul_eq_zero_iff_diag_toMatrix'_eq_zero
     {f : (n → R) →ₗ[R] n → R} : .id * f = 0 ↔ f.toMatrix'.diag = 0 := by
-  rw [← toMatrix'.injective.eq_iff, toMatrix'_convMul_eq_hadamard]
-  simp [one_hadamard, ← ext_iff, diagonal_apply, funext_iff]
+  simp [← one_hadamard_eq_zero_iff, ← toMatrix'.injective.eq_iff]
 
 theorem LinearMap.convMul_id_eq_zero_iff_diag_toMatrix'_eq_zero
     {f : (n → R) →ₗ[R] n → R} : f * .id = 0 ↔ f.toMatrix'.diag = 0 := by
-  rw [← toMatrix'.injective.eq_iff, toMatrix'_convMul_eq_hadamard]
-  simp [hadamard_one, ← ext_iff, diagonal_apply, funext_iff]
+  simp [← hadamard_one_eq_zero_iff, ← toMatrix'.injective.eq_iff]
 
 theorem LinearMap.id_convMul_eq_id_iff_diag_toMatrix'_eq_one
     {f : (n → R) →ₗ[R] n → R} : .id * f = .id ↔ f.toMatrix'.diag = 1 := by
-  rw [← toMatrix'.injective.eq_iff, toMatrix'_convMul_eq_hadamard]
-  simp only [toMatrix'_id, one_hadamard, toMatrix'_apply, ← ext_iff, diagonal_apply,
-    Matrix.one_apply, funext_iff, diag_apply, Pi.one_apply]
-  exact ⟨fun h i ↦ by simpa using h i i, by grind⟩
+  simp [← one_hadamard_eq_one_iff, ← toMatrix'.injective.eq_iff]
 
 theorem LinearMap.convMul_id_eq_id_iff_diag_toMatrix'_eq_one
     {f : (n → R) →ₗ[R] n → R} : f * .id = .id ↔ f.toMatrix'.diag = 1 := by
-  rw [← toMatrix'.injective.eq_iff, toMatrix'_convMul_eq_hadamard]
-  simp only [toMatrix'_id, hadamard_one, toMatrix'_apply, ← ext_iff, diagonal_apply,
-    Matrix.one_apply, funext_iff, diag_apply, Pi.one_apply]
-  exact ⟨fun h i ↦ by simpa using h i i, by grind⟩
+  simp [← hadamard_one_eq_one_iff, ← toMatrix'.injective.eq_iff]
 
 /-- `id * A.toLin' = 0` iff the diagonal of the matrix is all `0`s,
 where `*` is the convolutive product. -/
