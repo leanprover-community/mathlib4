@@ -497,7 +497,7 @@ alias Eq.trans_subset := subset_of_eq_of_subset
 
 alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
 
-alias Eq.subset' := subset_of_eq --TODO: Fix it and kill `Eq.subset`
+alias Eq.subset := subset_of_eq
 
 alias Eq.superset := superset_of_eq
 

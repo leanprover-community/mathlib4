@@ -173,10 +173,6 @@ end SetCoe
 theorem Subtype.mem {α : Type*} {s : Set α} (p : s) : (p : α) ∈ s :=
   p.prop
 
-/-- Duplicate of `Eq.subset'`, which currently has elaboration problems. -/
-theorem Eq.subset {α} {s t : Set α} : s = t → s ⊆ t :=
-  fun h₁ _ h₂ => by rw [← h₁]; exact h₂
-
 namespace Set
 
 variable {α : Type u} {β : Type v} {a b : α} {s s₁ s₂ t t₁ t₂ u : Set α}
