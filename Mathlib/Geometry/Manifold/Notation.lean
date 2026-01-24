@@ -42,10 +42,13 @@ In each of these cases, the models with corners are inferred from the domain and
 The search for models with corners uses the local context and is (almost) only based on expression
 structure, hence hopefully fast enough to always run.
 
-This has no dedicated support for product manifolds (or product vector spaces) yet;
-adding this is left for future changes. (It would need to make a choice between e.g. the
+Infering models with corners supports all current `ModelWithCorners` instances in mathlib.
+This will need to be updated as new instances are added.
+
+For products of manifolds, we explicitly track if the resulting space is a product of normed spaces:
+that case is ambiguous, and the elaborators would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
-`F`). In these settings, the elaborators should be avoided (for now).
+`F`). If we encounter such an ambiguity, we warna about and do not infer a model with corners.
 
 ## `T%`
 
@@ -70,19 +73,18 @@ variable {s : E → E'} in
 
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
-**Warning.** These elaborators are a proof of concept; the implementation should be considered a
-prototype. Don't rewrite all of mathlib to use it just yet. Notable limitations include
-the following.
-
 ## TODO
-- extend the elaborators to guess models with corners on product manifolds
-  (this has to make a guess, hence cannot always be correct: but it could make the guess that
-  is correct 90% of the time).
-  For products of vector spaces `E × F`, this could print a warning about making a choice between
-  the model in `E × F` and the product of the models on `E` and `F`.
-- better error messages (as needed), with tests
-- further testing and fixing of edge cases (with tests)
-- add delaborators for these elaborators
+
+* try an opinionated strategy on products of normed spaces:
+  is one guess correct more often than others?
+* alternatively, can the elaborator generate two `Try this` suggestions, corresponding to the
+  possible options?
+* add delaborators for these elaborators
+* add elaborators for more notation
+* make the model finding extensible, by converting it to an environment extension
+
+If you would like to work on any of these, please coordinate with Michael Rothgang (@grunweg)
+to avoid duplicating or conflicting work.
 
 -/
 
