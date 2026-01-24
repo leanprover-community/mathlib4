@@ -816,6 +816,28 @@ theorem T_derivative_mem_span_T (n : ℕ) :
   refine Submodule.smul_of_tower_mem _ n ?_
   convert U_mem_span_T R (n - 1) using 2; grind
 
+theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
+    derivative^[k] (T R n) ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - k)} := by
+  induction k
+  case zero =>
+    rw [Function.iterate_zero_apply]
+    exact Submodule.mem_span_of_mem ⟨n, by simp⟩
+  case succ k ih =>
+    rw [Function.iterate_succ_apply']
+    let derivative' : R[X] →ₗ[ℕ] R[X] :=
+    { toFun := derivative, map_add' := derivative.map_add'
+      map_smul' m P := by induction m <;> simp }
+    suffices Submodule.span ℕ {derivative (T R m) | m ∈ Finset.Icc 0 (n - k)} ≤
+      Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - (k + 1))} by
+      apply this
+      convert Submodule.apply_mem_span_image_of_mem_span derivative' ih using 2
+      simp [Set.image, derivative']
+    refine Submodule.span_le.mpr (fun x hx => ?_)
+    rw [Set.mem_setOf_eq] at hx
+    obtain ⟨m, hm, rfl⟩ := hx
+    refine (Submodule.span_mono ?_) (T_derivative_mem_span_T (R := R) m)
+    grw [show m - 1 ≤ n - (k + 1) by grw [(Finset.mem_Icc.mp hm).2]; lia]
+
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by
   have H₁ := one_sub_X_sq_mul_U_eq_pol_in_T R n
