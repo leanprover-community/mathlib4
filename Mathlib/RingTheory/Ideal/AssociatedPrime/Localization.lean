@@ -49,7 +49,7 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
   · use f x
     ext t
     rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
-    simp only [← hrs, Ideal.mem_radical_iff, mem_colon_singleton, ← IsLocalizedModule.mk'_one S f,
+    simp_rw [← hrs, Ideal.mem_radical_iff, mem_colon_singleton, ← IsLocalizedModule.mk'_one S f,
       ← IsLocalization.mk'_pow, IsLocalizedModule.mk'_smul_mk', mul_one, mem_bot,
       IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨n, t, ht⟩ ↦ ?_⟩
@@ -58,30 +58,23 @@ lemma mem_associatedPrimes_of_comap_mem_associatedPrimes_of_isLocalizedModule
         rw [← IsLocalization.mk'_one (M := S) R', ← sub_eq_zero, ← IsLocalization.mk'_mul,
           ← IsLocalization.mk'_sub]
         simp
-      have key := this ▸ Ideal.IsTwoSided.mul_mem_of_left _ h
-      rw [← Ideal.mem_comap, hx] at key
+      have key := Ideal.IsTwoSided.mul_mem_of_left (IsLocalization.mk' R' s.1 (1 : S)) h
+      simp_rw [← this, ← Ideal.mem_comap, hx, Ideal.mem_radical_iff, mem_colon_singleton] at key
       obtain ⟨n, hn⟩ := key
-      use n
-      rw [mem_colon_singleton, mem_bot] at hn
-      use 1
-      rw [hn, one_smul]
-    · have h1 : t • r ^ n • x = t.1 • r ^ n • x := rfl
-      have : IsLocalization.mk' R' r s =
+      refine ⟨n, 1, by rwa [one_smul]⟩
+    · have : IsLocalization.mk' R' r s =
         IsLocalization.mk' (M := S) R' (t.1 * r) 1 * IsLocalization.mk' R' 1 (t * s) := by
         rw [← IsLocalization.mk'_mul, mul_one, one_mul, ← sub_eq_zero, ← IsLocalization.mk'_sub,
           Submonoid.coe_mul]
         simp [← mul_assoc, mul_comm r t.1, IsLocalization.mk'_zero]
-      rw [this]
+      rw [this, IsLocalization.mk'_one]
       refine Ideal.IsTwoSided.mul_mem_of_left _ ?_
-      rw [IsLocalization.mk'_one, ← Ideal.mem_comap, hx]
-      by_cases hn : n = 0
-      · refine Ideal.IsTwoSided.mul_mem_of_left _ ?_
-        use 1
-        simpa [hn] using ht
+      rw [← Ideal.mem_comap, hx]
+      rcases eq_zero_or_pos n with rfl | hn
+      · exact Ideal.IsTwoSided.mul_mem_of_left _ ⟨1, by simpa using ht⟩
       · use n
-        rw [mem_colon_singleton, mem_bot]
-        rw [mul_pow, mul_smul]
-        rw [← pow_sub_one_mul hn, mul_smul, ← h1, ht, smul_zero]
+        rw [mem_colon_singleton, mul_pow, mul_smul, ← mem_colon_singleton]
+        exact Ideal.pow_mem_of_mem _ (by simpa using ht) n hn
 
 @[deprecated (since := "2025-08-15")]
 alias mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule :=
