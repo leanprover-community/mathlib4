@@ -290,6 +290,14 @@ a trivial model on a normed space was found.
 -/
 abbrev NormedSpaceInfo := Expr × Expr
 
+/-- Information about a model with corners found through search:
+this is a pair `(e, α`) of an expression `e` describing model with corners found, and
+the information `α` whether this model is the trivial model with corners on a normed space.
+(Knowing this is important for forming products of models.)
+`α` is `none` if not, and contains more information if yes.
+-/
+abbrev FindModelResult := Expr × Option NormedSpaceInfo
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -309,7 +317,9 @@ Further cases can be added as necessary.
 This method intentionally handles **neither** sums (disjoint unions) nor products of spaces,
 nor an open subset of an existing manifold. These are handled in `findModel`.
 
-Return an expression describing the found model with corners.
+Return an expression describing the found model with corners, together with information about
+whether the model is the trivial model with corners on a normed space. (This is important for
+forming products of models.)
 
 `baseInfo` is only used for the first case, a model with corners on the total space of the vector
 bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
@@ -325,7 +335,7 @@ This implementation is not maximally robust yet.
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
 def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-    TermElabM <| Option <| Expr × Option NormedSpaceInfo := do
+    TermElabM (Option FindModelResult) := do
   if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return some (m, none)
   if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return some (m, none)
   if let some (m, eK) ← tryStrategy' NormedSpaceInfo m!"NormedSpace"   fromNormedSpace then
@@ -678,8 +688,7 @@ partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : Te
     | throwError "Could not find a model with corners for `{e}`"
   return u
 where
-  go (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
-     TermElabM <| Option <| Expr × Option NormedSpaceInfo := do
+  go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
     -- Otherwise, we recurse into the expression,
