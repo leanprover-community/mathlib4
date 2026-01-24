@@ -51,9 +51,10 @@ finite pi coalgebra, non-commutative graph, quantum graph, quantum adjacency mat
 public section
 
 open TensorProduct LinearMap Coalgebra Matrix Pi
-open scoped ConvolutionProduct
+open scoped ConvolutionProduct IntrinsicStar
 
--- This ensures that we always take the convolution product in this file when we write `*`.
+-- This ensures that we always take the convolution product in this file when we write `*` and
+-- the convolution unit when we write `1`.
 attribute [-instance] Module.End.instOne Module.End.instMul Module.End.instSemiring
   Module.End.instMonoid Module.End.instRing in
 section
@@ -61,7 +62,6 @@ section
 variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype n] [DecidableEq n]
   (G : SimpleGraph n) [DecidableRel G.Adj]
 
-open scoped IntrinsicStar in
 theorem Pi.intrinsicStar_comul [StarRing R] {A : n → Type*} [Π i, AddCommMonoid (A i)]
     [Π i, Module R (A i)] [Π i, CoalgebraStruct R (A i)] [Π i, StarAddMonoid (A i)]
     [∀ i, StarModule R (A i)]
@@ -72,7 +72,6 @@ theorem Pi.intrinsicStar_comul [StarRing R] {A : n → Type*} [Π i, AddCommMono
   have := by simpa using congr($(h i) x)
   simp [star_map_apply_eq_map_intrinsicStar, this, map_comm]
 
-open scoped IntrinsicStar in
 @[simp] theorem Pi.intrinsicStar_comul_commSemiring [StarRing R] :
     star (comul (R := R) (A := n → R)) = TensorProduct.comm R (n → R) (n → R) ∘ₗ comul :=
   intrinsicStar_comul fun _ ↦ by ext; simp
@@ -170,9 +169,6 @@ variable (R) in
     (G.adjMatrix R).toLin' * .id = 0 := by
   simp [toLin'_convMul_id_eq_zero_iff, funext_iff]
 
-section intrinsicStar
-open scoped IntrinsicStar
-
 /-- All linear maps on euclidean spaces are intrinsically self-adjoint if they are
 convolutively idempotent. -/
 theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoint [StarRing K]
@@ -205,8 +201,6 @@ theorem Matrix.isAdjMatrix_iff_toLin' {A : Matrix n n K} [StarRing K] :
   simp only [id_convMul_toLin'_eq_zero_iff, ← isSymm_iff_intrinsicStar_toLin',
     ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin', funext_iff, diag]
   exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
-
-end intrinsicStar
 
 omit [DecidableEq n] in
 variable (R) in
