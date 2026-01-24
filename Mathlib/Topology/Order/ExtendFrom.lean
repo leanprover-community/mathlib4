@@ -35,17 +35,16 @@ theorem continuousOn_Icc_extendFrom_Ioo
     · exact ⟨f x, hf x h⟩
 
 theorem continuousOn_uIcc_extendFrom_uIoo
-    (hab : a ≠ b) (hf : ContinuousOn f (uIoo a b)) (ha : Tendsto f (𝓝[≠] a) (𝓝 la))
-    (hb : Tendsto f (𝓝[≠] b) (𝓝 lb)) : ContinuousOn (extendFrom (uIoo a b) f) (uIcc a b) := by
-  obtain ⟨la, hla⟩ : ∃ la, Tendsto f (𝓝[>] min a b) (𝓝 la) :=
-    min_rec' (fun i ↦ ∃ la, Tendsto f (𝓝[>] i) (𝓝 la))
-      ⟨_, ha.mono_left (nhdsGT_le_nhdsNE _)⟩
-      ⟨_, hb.mono_left (nhdsGT_le_nhdsNE _)⟩
-  obtain ⟨lb, hlb⟩ : ∃ lb, Tendsto f (𝓝[<] max a b) (𝓝 lb) :=
-    max_rec' (fun i ↦ ∃ lb, Tendsto f (𝓝[<] i) (𝓝 lb))
-      ⟨_, ha.mono_left (nhdsLT_le_nhdsNE _)⟩
-      ⟨_, hb.mono_left (nhdsLT_le_nhdsNE _)⟩
-  exact continuousOn_Icc_extendFrom_Ioo (by simp [hab]) hf hla hlb
+    (hab : a ≠ b) (hf : ContinuousOn f (uIoo a b))
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 la)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 lb)) :
+    ContinuousOn (extendFrom (uIoo a b) f) (uIcc a b) := by
+  obtain hab' | hba' := hab.lt_or_gt
+  · simp only [hab', uIoo_of_lt, nhdsWithin_Ioo_eq_nhdsGT, nhdsWithin_Ioo_eq_nhdsLT,
+      uIcc_of_lt] at ha hb hf ⊢
+    exact continuousOn_Icc_extendFrom_Ioo hab hf ha hb
+  · simp only [hba', uIoo_of_gt, nhdsWithin_Ioo_eq_nhdsGT, nhdsWithin_Ioo_eq_nhdsLT,
+      uIcc_of_gt] at ha hb hf ⊢
+    exact continuousOn_Icc_extendFrom_Ioo hab.symm hf hb ha
 
 theorem continuousOn_Ico_extendFrom_Ioo
     (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la)) :

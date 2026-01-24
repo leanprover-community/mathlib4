@@ -142,9 +142,6 @@ lemma nhdsWithin_uIoo_left_le_nhdsNE {a b : α} : 𝓝[uIoo a b] a ≤ 𝓝[≠]
 lemma nhdsWithin_uIoo_right_le_nhdsNE {a b : α} : 𝓝[uIoo a b] b ≤ 𝓝[≠] b :=
   nhdsWithin_mono _ (by simp)
 
-@[deprecated (since := "2025-06-15")]
-alias nhdsWithin_right_sup_nhds_singleton := nhdsGT_sup_nhdsWithin_singleton
-
 theorem continuousAt_iff_continuous_left_right {a : α} {f : α → β} :
     ContinuousAt f a ↔ ContinuousWithinAt f (Iic a) a ∧ ContinuousWithinAt f (Ici a) a := by
   simp only [ContinuousWithinAt, ContinuousAt, ← tendsto_sup, nhdsLE_sup_nhdsGE]
