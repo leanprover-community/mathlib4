@@ -3542,6 +3542,7 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.CastCard
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Finset.DenselyOrdered
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Empty
@@ -7387,6 +7388,7 @@ public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+public import Mathlib.Topology.Semicontinuity.Lindelof
 public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete
