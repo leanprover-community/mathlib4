@@ -377,8 +377,7 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
     (G ⊔ fromEdgeSet {s(u, v)}).IsAcyclic ↔
       G.IsAcyclic ∧ (G.Reachable u v → u = v ∨ G.Adj u v) := by
   by_cases huv : u = v
-  · have : s(u, u).IsDiag := rfl
-    grind [sup_eq_left, fromEdgeSet_le, Sym2.mem_diagSet]
+  · grind [sup_eq_left, fromEdgeSet_le, Sym2.mem_diagSet, Sym2.mk_isDiag_iff]
   by_cases hadj : G.Adj u v
   · grind [sup_eq_left, fromEdgeSet_le, mem_edgeSet]
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable <| by grind⟩
