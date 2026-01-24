@@ -68,7 +68,6 @@ variable [AddCommMonoid P] [Module R P]
 /-- Forget that a function is finitely supported.
 
 This is the linear version of `Finsupp.toFun`. -/
-@[simps]
 def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   toFun := (⇑)
   map_add' x y := by
@@ -77,6 +76,12 @@ def lcoeFun : (α →₀ M) →ₗ[R] α → M where
   map_smul' x y := by
     ext
     simp
+
+@[simp] theorem lcoeFun_apply (f : α →₀ M) : lcoeFun (R := R) f = ⇑f := rfl
+
+@[simp] theorem lcoeFun_comp_lsingle [DecidableEq α] (x : α) :
+    lcoeFun ∘ₗ lsingle x = .single R (fun _ ↦ M) x := by
+  ext; simp [single_eq_pi_single]
 
 end Finsupp
 
