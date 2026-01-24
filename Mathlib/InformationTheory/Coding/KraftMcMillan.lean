@@ -93,40 +93,22 @@ private lemma sum_pow_len_filter_le_one_of_card_le [Fintype α] [Nonempty α]
 /-- The `r`-th power of the Kraft sum equals the sum over all `r`-tuples of codewords.
 
 This expansion is the key algebraic identity in the Kraft-McMillan proof. -/
-private lemma kraft_sum_pow_eq_sum_concatFn {S : Finset (List α)} {D : ℝ} {r : ℕ} :
+private lemma kraft_sum_pow_eq_sum_concatFn
+    {S : Finset (List α)} {D : ℝ} {r : ℕ} :
     (∑ c ∈ S, (1 / D) ^ c.length) ^ r =
-    ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
-  -- Distribute the product of identical sums and reindex into functions `Fin r → S`.
-  have h_expand :
-      (∏ _i : Fin r, (∑ w ∈ S, (1 / D) ^ w.length)) =
-      ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
-    -- distribute product over sums (over `Finset.univ`)
-    rw [Finset.prod_sum, Finset.sum_bij]
-    · intros a ha i
-      exact ⟨a i (Finset.mem_univ i), (Finset.mem_pi.mp ha i (Finset.mem_univ i))⟩
-    · simp
-    · simp [funext_iff]
-    · intro b hb
-      exact ⟨(fun i _ => (b i).val), (Finset.mem_pi.mpr (by simp)), rfl⟩
-    · simp
-  have hprod (w : Fin r → S):
-      (∏ i : Fin r, (1 / D) ^ (w i).val.length) =
-      (1 / D) ^ (∑ i : Fin r, (w i).val.length) := by
-    simpa using
-      (Finset.prod_pow_eq_pow_sum
-        (s := (Finset.univ : Finset (Fin r)))
-        (f := fun i : Fin r => (w i).val.length)
-        (a := 1 / D))
-  have h_term (w : Fin r → S) :
-      (∏ i : Fin r, (1 / D) ^ (w i).val.length) =
-      (1 / D) ^ (concatFn w).length := by
-    simpa [concatFn.length w] using (hprod w)
+      ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
   calc
-    (∑ w ∈ S, (1 / D) ^ w.length) ^ r
-        = ∏ _i : Fin r, (∑ w ∈ S, (1 / D) ^ w.length) := by simp
-    _ = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := h_expand
-    _ = ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
-        grind
+    (∑ c ∈ S, (1 / D) ^ c.length) ^ r
+        = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
+            simpa [(Finset.sum_coe_sort S _).symm] using
+              (Fintype.sum_pow (f := fun c : S => (1 / D) ^ c.val.length) r)
+    _   = ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
+            apply Fintype.sum_congr
+            intro w
+            simpa [concatFn.length] using (Finset.prod_pow_eq_pow_sum
+                  (s := (Finset.univ : Finset (Fin r)))
+                  (f := fun i : Fin r => (w i).val.length)
+                  (a := 1 / D))
 
 /-- The number of strings of length `s` in any set is at most `D^s`
 (the total number of such strings). -/
