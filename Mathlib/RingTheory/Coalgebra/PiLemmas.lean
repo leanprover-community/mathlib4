@@ -146,13 +146,11 @@ theorem Matrix.toLin'_convMul_id_eq_id_iff {A : Matrix n n R} :
 
 variable (R) in
 @[simp] theorem SimpleGraph.id_convMul_toLin'_adjMatrix_eq_zero :
-    .id * (G.adjMatrix R).toLin' = 0 := by
-  simp [id_convMul_toLin'_eq_zero_iff, funext_iff]
+    .id * (G.adjMatrix R).toLin' = 0 := by simp [← toMatrix'.injective.eq_iff]
 
 variable (R) in
 @[simp] theorem SimpleGraph.toLin'_convMul_id_adjMatrix_eq_zero :
-    (G.adjMatrix R).toLin' * .id = 0 := by
-  simp [toLin'_convMul_id_eq_zero_iff, funext_iff]
+    (G.adjMatrix R).toLin' * .id = 0 := by simp [← toMatrix'.injective.eq_iff]
 
 /-- All linear maps on euclidean spaces are intrinsically self-adjoint if they are
 convolutively idempotent. -/

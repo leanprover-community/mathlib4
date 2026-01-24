@@ -8,6 +8,7 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
 
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
@@ -267,6 +268,38 @@ theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     x ⬝ᵥ G.adjMatrix α *ᵥ y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
     mul_zero]
+
+section
+variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+  (α : Type*) [NonAssocSemiring α]
+
+open Matrix
+
+@[simp] theorem adjMatrix_hadamard_diagonal (d : V → α) :
+    G.adjMatrix α ⊙ diagonal d = 0 := by ext; simp_all [diagonal]
+
+@[simp] theorem diagonal_hadamard_adjMatrix (d : V → α) :
+    diagonal d ⊙ G.adjMatrix α = 0 := by aesop (add simp diagonal)
+
+@[simp] theorem adjMatrix_hadamard_natCast (a : ℕ) :
+    G.adjMatrix α ⊙ a.cast = 0 := by aesop (add simp [natCast_apply])
+
+@[simp] theorem natCast_hadamard_adjMatrix (a : ℕ) :
+    a.cast ⊙ G.adjMatrix α = 0 := by aesop (add simp [natCast_apply])
+
+@[simp] theorem adjMatrix_hadamard_ofNat (a : ℕ) [a.AtLeastTwo] :
+    G.adjMatrix α ⊙ OfNat.ofNat a = 0 := by ext; simp_all [ofNat_apply]
+
+@[simp] theorem ofNat_hadamard_adjMatrix (a : ℕ) [a.AtLeastTwo] :
+    OfNat.ofNat a ⊙ G.adjMatrix α = 0 := by aesop (add simp ofNat_apply)
+
+@[simp] theorem adjMatrix_hadamard_one :
+    G.adjMatrix α ⊙ 1 = 0 := by ext; simp_all [one_apply]
+
+@[simp] theorem one_hadamard_adjMatrix :
+    1 ⊙ G.adjMatrix α = 0 := by aesop (add simp [one_apply])
+
+end
 
 end SimpleGraph
 
