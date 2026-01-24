@@ -51,9 +51,7 @@ private lemma monotoneOn_of_deriv_nonneg_Ici {f : ℝ → ℝ}
     MonotoneOn f (Set.Ici 0) := by
   apply monotoneOn_of_deriv_nonneg (convex_Ici 0)
     hf.continuousOn (hf.mono interior_subset)
-  intro x hx
-  rw [interior_Ici] at hx
-  exact hderiv x (Set.mem_Ici.mpr (le_of_lt hx))
+  grind [interior_Ici, le_of_lt]
 
 /-- If `deriv f ≥ 0` on `[0, ∞)` and `f 0 = 0`, then `f x ≥ 0` for `x ≥ 0`. -/
 private lemma nonneg_of_deriv_nonneg_Ici {f : ℝ → ℝ}
