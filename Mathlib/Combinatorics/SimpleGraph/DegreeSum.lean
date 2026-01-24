@@ -157,8 +157,9 @@ theorem odd_card_odd_degree_vertices_ne [Fintype V] [DecidableEq V] (v : V) (h :
     lia
   · rwa [mem_filter_univ]
 
-theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] (v : V) (h : Odd (G.degree v)) :
+theorem exists_ne_odd_degree_of_exists_odd_degree [Finite V] (v : V) (h : Odd (G.degree v)) :
     ∃ w : V, w ≠ v ∧ Odd (G.degree w) := by
+  have := Fintype.ofFinite V
   haveI := Classical.decEq V
   rcases G.odd_card_odd_degree_vertices_ne v h with ⟨k, hg⟩
   have hg' : 0 < #{w | w ≠ v ∧ Odd (G.degree w)} := by
