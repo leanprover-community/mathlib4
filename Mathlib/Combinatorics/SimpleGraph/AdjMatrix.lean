@@ -282,22 +282,22 @@ open Matrix
     diagonal d ⊙ G.adjMatrix α = 0 := by aesop (add simp diagonal)
 
 @[simp] theorem adjMatrix_hadamard_natCast (a : ℕ) :
-    G.adjMatrix α ⊙ a.cast = 0 := by aesop (add simp natCast_apply)
+    G.adjMatrix α ⊙ a.cast = 0 := adjMatrix_hadamard_diagonal _ _ _
 
 @[simp] theorem natCast_hadamard_adjMatrix (a : ℕ) :
-    a.cast ⊙ G.adjMatrix α = 0 := by aesop (add simp natCast_apply)
+    a.cast ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
 
 @[simp] theorem adjMatrix_hadamard_ofNat (a : ℕ) [a.AtLeastTwo] :
-    G.adjMatrix α ⊙ OfNat.ofNat a = 0 := by ext; simp_all [ofNat_apply]
+    G.adjMatrix α ⊙ ofNat(a) = 0 := adjMatrix_hadamard_diagonal _ _ _
 
 @[simp] theorem ofNat_hadamard_adjMatrix (a : ℕ) [a.AtLeastTwo] :
-    OfNat.ofNat a ⊙ G.adjMatrix α = 0 := by aesop (add simp ofNat_apply)
+    OfNat.ofNat a ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
 
 @[simp] theorem adjMatrix_hadamard_one :
-    G.adjMatrix α ⊙ 1 = 0 := by ext; simp_all [one_apply]
+    G.adjMatrix α ⊙ 1 = 0 := adjMatrix_hadamard_diagonal _ _ _
 
 @[simp] theorem one_hadamard_adjMatrix :
-    1 ⊙ G.adjMatrix α = 0 := by aesop (add simp one_apply)
+    1 ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
 
 end
 
