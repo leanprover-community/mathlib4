@@ -150,6 +150,13 @@ theorem iSup_ne_top {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] 
   have ⟨x, hx⟩ := Set.range_nonempty f |>.csSup_mem <| Set.finite_range f
   exact (hx ▸ h x :)
 
+theorem iInf_ne_bot {ι α : Type*} {f : ι → α} [Finite ι] [Nontrivial α] [CompleteLinearOrder α]
+    (h : ∀ x, f x ≠ ⊥) : iInf f ≠ ⊥ := by
+  cases isEmpty_or_nonempty ι
+  · simp [iInf_of_empty]
+  have ⟨x, hx⟩ := Set.range_nonempty f |>.csInf_mem <| Set.finite_range f
+  exact (hx ▸ h x :)
+
 section ListMultiset
 
 lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
