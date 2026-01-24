@@ -5,6 +5,7 @@ Authors: Bryan Wang
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
@@ -30,20 +31,25 @@ lemma smul_fixedPoints_eq_of_quotient_eq
   rw [← eq_inv_smul_iff, ← mul_smul]
   symm; exact a.prop ⟨g₁⁻¹ * g₂, QuotientGroup.eq.mp hg⟩
 
-noncomputable instance [hH : H.Normal] :
-    MulAction (G ⧸ H) (fixedPoints H A) where
-  smul g a := g.out • a
-  one_smul a := by
-    have := smul_fixedPoints_eq_of_quotient_eq (1 : G ⧸ H).out (1 : G) (by simp) a
-    ext; simpa
+instance [hH : H.Normal] :
+    MulAction (G ⧸ H) (fixedPoints H A) :=
+  ofEndHom <|
+    QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
+    (fun x hx => by sorry)--simpa [toEndHom, smul_fixedPoints_eq_of_quotient_eq x 1] using hx)
+  /- one_smul a := by
+    ext; rw [← one_smul G (a : A)]; rfl
   mul_smul x y a := by
     have := smul_fixedPoints_eq_of_quotient_eq (x * y).out (x.out * y.out) (by simp) a
-    ext; simpa [mul_smul]
+    ext; sorry; -/
 
 @[simp]
 lemma coe_quotient_smul_fixedPoints [H.Normal]
     (g : G) (a : fixedPoints H A) :
-    (((g : G ⧸ H) • a) :) = g • (a : A) :=
-  smul_fixedPoints_eq_of_quotient_eq (g : G ⧸ H).out g (by simp) a
+    (((g : G ⧸ H) • a) :) = g • (a : A) := rfl
+
+lemma quotient_smul_fixedPoints_def [H.Normal]
+    (g : G ⧸ H) (a : fixedPoints H A) :
+    g • a = g.out • a := by
+  ext; simpa using coe_quotient_smul_fixedPoints g.out a
 
 end MulAction
