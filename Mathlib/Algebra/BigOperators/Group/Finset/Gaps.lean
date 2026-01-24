@@ -57,7 +57,7 @@ theorem Finset.prod_intervalGapsWithin_mul_prod_eq_div :
       ← prod_mul_distrib,
       prod_congr rfl (fun _ _ ↦ div_mul_div_cancel _ _ _),
       prod_range_div (fun i ↦ g (F.intervalGapsWithin h a b i).1)]
-  simp [p, -natCast_eq_last]
+  simp [p]
 
 @[to_additive]
 theorem Finset.prod_intervalGapsWithin_eq_div_div_prod :
