@@ -39,11 +39,11 @@ variable {P} (X Y Z T : P.SerreClassLocalization)
 namespace Hom
 
 structure DefDomain where
-  src : C
+  {src : C}
   i : src ⟶ X.obj
   mono_i : Mono i := by infer_instance
   hi : P.isoModSerre i
-  tgt : C
+  {tgt : C}
   p : Y.obj ⟶ tgt
   epi_p : Epi p := by infer_instance
   hp : P.isoModSerre p
@@ -54,10 +54,8 @@ attribute [instance] mono_i epi_p
 
 @[simps]
 def top : DefDomain X Y where
-  src := X.obj
   i := 𝟙 X.obj
   hi := MorphismProperty.id_mem _ _
-  tgt := Y.obj
   p := 𝟙 Y.obj
   hp := MorphismProperty.id_mem _ _
 
@@ -156,6 +154,14 @@ variable {d₁₂ : DefDomain X Y} {d₂₃ : DefDomain Y Z} {d₁₃ : DefDomai
 instance : Mono h.ι := mono_of_mono_fac h.ι_i
 
 instance : Epi h.π := epi_of_epi_fac h.p_π
+
+-- is this useful without additional conditions?
+lemma nonempty (d₁₂ : DefDomain X Y) (d₂₃ : DefDomain Y Z) :
+    ∃ (d₁₃ : DefDomain X Z), Nonempty (CompStruct d₁₂ d₂₃ d₁₃) :=
+  ⟨{i := d₁₂.i
+    hi := d₁₂.hi
+    p := d₂₃.p
+    hp := d₂₃.hp }, sorry⟩
 
 end CompStruct
 

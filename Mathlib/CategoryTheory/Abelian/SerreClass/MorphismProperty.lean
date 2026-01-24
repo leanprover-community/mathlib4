@@ -39,6 +39,18 @@ open Category Limits ZeroObject MorphismProperty
 variable {C : Type u} [Category.{v} C] [Abelian C]
   {D : Type u'} [Category.{v'} D] [Abelian D]
 
+instance {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y')
+    (g : X ⟶ X') (g' : Y ⟶ Y') (h : f ≫ g' = g ≫ f')
+    [IsIso g] [Mono g'] :
+    IsIso (kernel.map f f' g g' h) := by
+  sorry
+
+instance {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y')
+    (g : X ⟶ X') (g' : Y ⟶ Y') (h : f ≫ g' = g ≫ f')
+    [Epi g] [IsIso g'] :
+    IsIso (cokernel.map f f' g g' h) := by
+  sorry
+
 namespace ObjectProperty
 
 variable (P : ObjectProperty C)
@@ -170,9 +182,41 @@ lemma isoModSerre_isInvertedBy_iff (F : C ⥤ D)
       (cokernelIsCokernel f)).map F).epi_f (((hF _ h₂).eq_of_tgt _ _))
   exact isIso_of_mono_of_epi (F.map f)
 
+variable {P} in
+nonrec lemma isoModSerre.factorThruImage {X Y : C} {f : X ⟶ Y}
+    (hf : P.isoModSerre f) :
+    P.isoModSerre (factorThruImage f) := by
+  rw [isoModSerre_iff_of_epi, monoModSerre_iff]
+  exact P.prop_of_iso (asIso (kernel.map (factorThruImage f) f (𝟙 X)
+    (image.ι f) (by simp))).symm hf.1
+
+variable {P} in
+lemma isoModSerre.image_ι {X Y : C} {f : X ⟶ Y}
+    (hf : P.isoModSerre f) :
+    P.isoModSerre (image.ι f) := by
+  rw [isoModSerre_iff_of_mono, epiModSerre_iff]
+  exact P.prop_of_iso
+    (asIso (cokernel.map f (image.ι f) (Limits.factorThruImage f) (𝟙 Y) (by simp))) hf.2
+
 instance : P.isoModSerre.IsStableUnderBaseChange := by
-  have : P.IsSerreClass := inferInstance
-  sorry
+  suffices ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (h : Mono f ∨ Epi f) (hf : P.isoModSerre f)
+    ⦃X' Y' : C⦄ ⦃f' : X' ⟶ Y'⦄ ⦃g' : X' ⟶ X⦄ ⦃g : Y' ⟶ Y⦄
+    (sq : IsPullback g' f' f g), P.isoModSerre f' from
+      ⟨fun {_ _ _ _ g f g' f'} sq hf ↦ by
+        let f'' : _ ⟶ pullback (image.ι f) g :=
+          pullback.lift (g' ≫ factorThruImage f) f' (by simp [sq.w])
+        have sq' : IsPullback g' f'' (factorThruImage f)
+            (pullback.fst _ _) :=
+          IsPullback.of_bot (by simpa [f'']) (by cat_disch)
+            (IsPullback.of_hasPullback (image.ι f) g)
+        rw [show f' = f'' ≫ pullback.snd (image.ι f) g by cat_disch]
+        refine P.isoModSerre.comp_mem _ _
+          (this _ (Or.inr inferInstance) hf.factorThruImage sq')
+          (this _ (Or.inl inferInstance) hf.image_ι
+            (IsPullback.of_hasPullback (image.ι f) g))⟩
+  rintro X Y f (_ | _) hf X' Y' f' g' g sq
+  · sorry
+  · sorry
 
 instance : P.isoModSerre.IsStableUnderCobaseChange := by
   have : P.IsSerreClass := inferInstance
