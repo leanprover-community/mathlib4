@@ -151,8 +151,7 @@ end starAddMonoidSemiring
 
 @[simp] theorem intrinsicStar_single {n : Type*} [DecidableEq n] {A : n → Type*}
     [Π i, AddCommMonoid (A i)] [Π i, Module R (A i)] [Π i, StarAddMonoid (A i)]
-    [∀ i, StarModule R (A i)] (i : n) :
-    star (single R _ i : A i →ₗ[R] Π i, A i) = single R _ i := by
+    [∀ i, StarModule R (A i)] (i : n) : star (single R A i) = single R A i := by
   aesop (add simp [Pi.single, Function.update])
 
 end LinearMap
