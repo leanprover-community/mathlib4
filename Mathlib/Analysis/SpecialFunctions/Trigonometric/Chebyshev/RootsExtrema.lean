@@ -328,13 +328,11 @@ theorem abs_iterate_derivative_T_real_le (n k : ℕ) {x : ℝ} (hx : |x| ≤ 1) 
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
   rw [setOf_T_eq_map] at this
   obtain ⟨f, hf⟩ := Submodule.mem_span_finset'.mp this
-  let g (m : ℕ) := if hm : m ∈ Finset.Icc 0 (n - k) then f ⟨(T ℝ m), by simp [hm]⟩ else 0
+  let g (m : ℕ) := if hm : m ∈ Finset.Icc 0 (n - k) then f ⟨(T ℝ m), by simp [Tnat, hm]⟩ else 0
   have : ∑ m ∈ Finset.Icc 0 (n - k), g m • (T ℝ m) = ∑ a, f a • a.val := by
     rw [Finset.univ_eq_attach]
-    apply Finset.sum_bij
-    case i => use fun m hm => ⟨T ℝ m, by simp [hm]⟩
-    case hi => simp
-    case i_inj => intro _ _ _ _ hm; convert congrArg (Polynomial.degree ·.1) hm; simp [degree_T]
+    apply Finset.sum_bij (fun m hm => ⟨T ℝ m, by simp [Tnat, hm]⟩) (by simp)
+    case i_inj => intros; grind
     case i_surj => aesop
     grind
   replace hf (y : ℝ) :

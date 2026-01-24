@@ -507,9 +507,15 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ {T R m | m ∈ Fin
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     · exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
+/-- `T` defines an injection from `ℕ` to `R[X]` given by `T R n` -/
+noncomputable def Tnat [IsDomain R] [NeZero (2 : R)] : ℕ ↪ R[X] :=
+{
+  toFun m := T R m
+  inj' m₁ m₂ hm := by convert congrArg Polynomial.degree hm; simp [degree_T]
+}
+
 theorem setOf_T_eq_map [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-    {T R m | m ∈ Finset.Icc 0 n} = (Finset.Icc 0 n).map ⟨fun (m : ℕ) => T R m,
-      by intro m₁ m₂ hm; convert congrArg Polynomial.degree hm; simp [degree_T]⟩ := by grind
+    {T R m | m ∈ Finset.Icc 0 n} = (Finset.Icc 0 n).map (Tnat (R := R)) := by grind
 
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
