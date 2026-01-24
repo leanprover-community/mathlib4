@@ -588,7 +588,7 @@ theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
   simp [← _root_.Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
 
 variable (s) in
-theorem ncard_eq_card [Fintype s] : s.ncard = Fintype.card s :=
+theorem ncard_eq_fintypeCard [Fintype s] : s.ncard = Fintype.card s :=
   s.ncard_eq_toFinset_card'.trans s.toFinset_card
 
 lemma cast_ncard {s : Set α} (hs : s.Finite) :

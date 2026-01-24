@@ -201,7 +201,7 @@ theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v :=
 
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
-  Set.ncard_eq_card _ |>.symm
+  Set.ncard_eq_fintypeCard _ |>.symm
 
 omit [Fintype <| G.neighborSet v] in
 theorem degree_pos_iff_exists_adj [Finite <| G.neighborSet v] : 0 < G.degree v ↔ ∃ w, G.Adj v w :=
