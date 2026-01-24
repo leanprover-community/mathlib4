@@ -27,7 +27,7 @@ namespace CategoryTheory
 
 open Category Pretriangulated.Opposite Pretriangulated
 
-variable {C : Type*} [Category C] [HasShift C ℤ] {X Y Z : C}
+variable {C : Type*} [Category* C] [HasShift C ℤ] {X Y Z : C}
 
 namespace ShiftedHom
 
@@ -139,7 +139,6 @@ lemma opEquiv_symm_add {n : ℤ} (x y : ShiftedHom (Opposite.op Y) (Opposite.op 
     (opEquiv n).symm (x + y) = (opEquiv n).symm x + (opEquiv n).symm y := by
   dsimp [opEquiv_symm_apply]
   rw [← Preadditive.comp_add, ← Functor.map_add]
-  rfl
 
 @[simp]
 lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite.op X)⟦n⟧))
@@ -147,9 +146,7 @@ lemma opEquiv'_symm_add {n a : ℤ} (x y : (Opposite.op (Y⟦a⟧) ⟶ (Opposite
     (opEquiv' n a a' h).symm (x + y) =
       (opEquiv' n a a' h).symm x + (opEquiv' n a a' h).symm y := by
   dsimp [opEquiv']
-  erw [opEquiv_symm_add, Iso.homToEquiv_apply, Iso.homToEquiv_apply, Iso.homToEquiv_apply]
-  rw [Preadditive.add_comp]
-  rfl
+  rw [opEquiv_symm_add, Preadditive.add_comp]
 
 end Preadditive
 

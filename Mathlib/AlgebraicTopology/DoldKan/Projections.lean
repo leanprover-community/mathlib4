@@ -43,7 +43,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X : SimplicialObject C}
 
 /-- This is the inductive definition of the projections `P q : K[X] ⟶ K[X]`,
 with `P 0 := 𝟙 _` and `P (q+1) := P q ≫ (𝟙 _ + Hσ q)`. -/
@@ -52,7 +52,7 @@ noncomputable def P : ℕ → (K[X] ⟶ K[X])
   | q + 1 => P q ≫ (𝟙 _ + Hσ q)
 
 lemma P_zero : (P 0 : K[X] ⟶ K[X]) = 𝟙 _ := rfl
-lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
+lemma P_succ (q : ℕ) : (P (q + 1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) := rfl
 
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
@@ -182,7 +182,7 @@ theorem Q_f_naturality (q n : ℕ) {X Y : SimplicialObject C} (f : X ⟶ Y) :
 def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := Q q
 
-theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_P {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   induction q with
@@ -193,7 +193,7 @@ theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive
     simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, Functor.map_add, Functor.map_comp, hq, map_Hσ]
 
-theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_Q {D : Type*} [Category* D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((Q q : K[X] ⟶ _).f n) = (Q q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
   rw [← add_right_inj (G.map ((P q : K[X] ⟶ _).f n)), ← G.map_add, map_P G X q n, P_add_Q_f,

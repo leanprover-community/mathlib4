@@ -12,9 +12,9 @@ public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 Define the interior and boundary of a manifold.
 
 ## Main definitions
-- **IsInteriorPoint x**: `p ∈ M` is an interior point if, for `φ` being the preferred chart at `x`,
+- **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
-- **IsBoundaryPoint x**: `p ∈ M` is a boundary point if, `(extChartAt I x) x ∈ frontier (range I)`.
+- **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
 - **interior I M** is the **interior** of `M`, the set of its interior points.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
@@ -127,12 +127,12 @@ lemma isInteriorPoint_iff_not_isBoundaryPoint (x : M) :
   exact h
 
 /-- The boundary is the complement of the interior. -/
-lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
+lemma compl_interior : (I.interior M)ᶜ = I.boundary M := by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
   exact disjoint_iff_inter_eq_empty.mp I.disjoint_interior_boundary
 
 /-- The interior is the complement of the boundary. -/
-lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
+lemma compl_boundary : (I.boundary M)ᶜ = I.interior M := by
   rw [← compl_interior, compl_compl]
 
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
@@ -300,14 +300,14 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 open Topology
 
 lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
-    I.IsInteriorPoint (.inl x: M ⊕ M') := by
+    I.IsInteriorPoint (.inl x : M ⊕ M') := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
-    I.IsBoundaryPoint (.inl x: M ⊕ M') := by
+    I.IsBoundaryPoint (.inl x : M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]

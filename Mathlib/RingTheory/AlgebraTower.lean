@@ -16,7 +16,7 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 `Algebra R S`, `Algebra R A` and `IsScalarTower R S A`, the later asserting the
 compatibility condition `(r • s) • a = r • (s • a)`.
 
-In `FieldTheory/Tower.lean` we use this to prove the tower law for finite extensions,
+In `Mathlib/FieldTheory/Tower.lean` we use this to prove the tower law for finite extensions,
 that if `R` and `S` are both fields, then `[A:R] = [A:S] [S:A]`.
 
 In this file we prepare the main lemma:
@@ -65,9 +65,12 @@ variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
-@[simps! repr_apply_toFun]
+@[simps! repr_apply_apply]
 noncomputable def algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
+
+@[deprecated (since := "2025-12-15")]
+alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
 
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
@@ -113,7 +116,7 @@ theorem isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScal
 theorem isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R} {ι ι' : Type*} [DecidableEq ι'] (b : Basis ι R S) (c : Basis ι' S A)
+variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
@@ -123,7 +126,7 @@ def smulTower : Basis (ι × ι') R A :=
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
-        ((finsuppProdLEquiv R).symm ≪≫ₗ
+        ((curryLinearEquiv R).symm ≪≫ₗ
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
@@ -168,11 +171,11 @@ end Semiring
 section Ring
 
 variable {R S}
-variable [CommRing R] [Ring S] [Algebra R S]
+variable [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [Algebra R S]
 
-theorem Module.Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
-    (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
-  have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
+theorem Module.Basis.algebraMap_injective {ι : Type*} (b : Basis ι R S) :
+    Function.Injective (algebraMap R S) :=
+  have : IsTorsionFree R S := b.isTorsionFree
   FaithfulSMul.algebraMap_injective R S
 
 end Ring

@@ -14,7 +14,7 @@ We develop properties of integrals with a group as domain.
 This file contains properties about Lebesgue integration.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists NormedSpace
 

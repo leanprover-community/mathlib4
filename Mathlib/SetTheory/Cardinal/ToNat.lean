@@ -60,12 +60,9 @@ theorem toNat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toNat c = 0
 theorem cast_toNat_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : ↑(toNat c) = (0 : Cardinal) := by
   rw [toNat_apply_of_aleph0_le h, Nat.cast_zero]
 
-theorem cast_toNat_eq_iff_lt_aleph0 {c : Cardinal} : (toNat c) = c ↔ c < ℵ₀ := by
-  constructor
-  · intro h; by_contra h'; rw [not_lt] at h'
-    rw [toNat_apply_of_aleph0_le h'] at h; rw [← h] at h'
-    absurd h'; rw [not_le]; exact nat_lt_aleph0 0
-  · exact fun h ↦ (Cardinal.cast_toNat_of_lt_aleph0 h)
+theorem cast_toNat_eq_iff_lt_aleph0 {c : Cardinal} : toNat c = c ↔ c < ℵ₀ where
+  mp h := by rw [← h]; simp
+  mpr := cast_toNat_of_lt_aleph0
 
 theorem toNat_strictMonoOn : StrictMonoOn toNat (Iio ℵ₀) := by
   simp only [← range_natCast, StrictMonoOn, forall_mem_range, toNat_natCast, Nat.cast_lt]
@@ -143,7 +140,7 @@ theorem toNat_lift (c : Cardinal.{v}) : toNat (lift.{u, v} c) = toNat c := by
 
 theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
   -- Porting note: Inserted universe hint below
-  rw [← toNat_lift, (lift_mk_eq.{_,_,v}).mpr ⟨e⟩, toNat_lift]
+  rw [← toNat_lift, (lift_mk_eq.{_, _, v}).mpr ⟨e⟩, toNat_lift]
 
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
 

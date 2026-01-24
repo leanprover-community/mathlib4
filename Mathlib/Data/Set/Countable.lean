@@ -272,6 +272,13 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
 theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
   simpa using countable_setOf_finite_subset countable_univ
 
+/-- If the codomain of a map is countable and the fibres are countable, the domain
+is countable. -/
+theorem Countable.of_preimage_singleton {f : α → β} [Countable β]
+    (h : ∀ (b : β), (f ⁻¹' {b}).Countable) : Countable α := by
+  simp_rw [← Set.countable_univ_iff, ← Set.preimage_univ (f := f), ← Set.iUnion_of_singleton,
+    Set.preimage_iUnion, Set.countable_iUnion h]
+
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   have := fun a ↦ (hs a).to_subtype; .of_equiv _ (Equiv.Set.univPi s).symm

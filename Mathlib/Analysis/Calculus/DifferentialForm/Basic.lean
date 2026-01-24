@@ -211,7 +211,7 @@ theorem extDerivWithin_extDerivWithin_apply (hω : ContDiffWithinAt 𝕜 r ω s 
         fderivWithin 𝕜 (fderivWithin 𝕜 ω s) s x) := by
     congr 1
     have : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 ω s) s x := by
-      refine (hω.fderivWithin_right hs ?_ h'x).differentiableWithinAt le_rfl
+      refine (hω.fderivWithin_right hs ?_ h'x).differentiableWithinAt one_ne_zero
       exact le_minSmoothness.trans hr
     exact alternatizeUncurryFinCLM _ _ _ |>.hasFDerivAt.comp_hasFDerivWithinAt x
       this.hasFDerivWithinAt |>.fderivWithin (hs.uniqueDiffWithinAt h'x)
@@ -244,9 +244,9 @@ theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E �
     extDerivWithin (fun x ↦ (ω (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x)) s x =
       (extDerivWithin ω t (f x)).compContinuousLinearMap (fderivWithin 𝕜 f s x) := by
   have hdf : DifferentiableWithinAt 𝕜 f s x :=
-    hf.differentiableWithinAt <| one_le_two.trans <| le_minSmoothness.trans hr
+    hf.differentiableWithinAt <| (two_pos.trans_le <| le_minSmoothness.trans hr).ne'
   have hd2f : DifferentiableWithinAt 𝕜 (fderivWithin 𝕜 f s) s x :=
-    (hf.fderivWithin_right hs (le_minSmoothness.trans hr) hxs).differentiableWithinAt le_rfl
+    (hf.fderivWithin_right hs (le_minSmoothness.trans hr) hxs).differentiableWithinAt one_ne_zero
   rw [extDerivWithin,
     fderivWithin_continuousAlternatingMapCompContinuousLinearMap (by exact hω.comp x hdf hst) hd2f
       (hs x hxs),

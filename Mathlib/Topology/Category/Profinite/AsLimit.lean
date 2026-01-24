@@ -46,10 +46,10 @@ variable (X : Profinite.{u})
 /-- The functor `DiscreteQuotient X ⥤ Fintype` whose limit is isomorphic to `X`. -/
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S := @FintypeCat.of S (Fintype.ofFinite S)
-  map f := DiscreteQuotient.ofLE f.le
-  -- Porting note: `map_comp` used to be proved by default by `cat_disch`.
-  -- once `cat_disch` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by funext; cat_disch
+  map f := FintypeCat.homMk (DiscreteQuotient.ofLE f.le)
+  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
+  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
+  map_comp _ _ := by ext ⟨x⟩; rfl
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
@@ -77,8 +77,7 @@ instance isIso_asLimitCone_lift : IsIso ((limitConeIsLimit.{u, u} X.diagram).lif
         apply funext
         rintro S
         -- Porting note: end replacement block
-        apply hb
-    )
+        apply hb)
 
 /-- The isomorphism between `X` and the explicit limit of `X.diagram`,
 induced by lifting `X.asLimitCone`.

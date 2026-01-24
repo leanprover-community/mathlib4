@@ -140,9 +140,6 @@ theorem induce_deleteIncidenceSet_of_notMem (G : SimpleGraph V) {s : Set V} {x :
   simp_rw [comap_adj, Function.Embedding.coe_subtype, deleteIncidenceSet_adj, and_iff_left_iff_imp]
   exact fun _ ↦ ⟨v₁.prop.ne_of_notMem h, v₂.prop.ne_of_notMem h⟩
 
-@[deprecated (since := "2025-05-23")]
-alias induce_deleteIncidenceSet_of_not_mem := induce_deleteIncidenceSet_of_notMem
-
 variable [Fintype V] [DecidableEq V]
 
 instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
@@ -154,7 +151,7 @@ subgraph of the vertices `{x}ᶜ`. -/
 theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     #(G.induce {x}ᶜ).edgeFinset = #(G.deleteIncidenceSet x).edgeFinset := by
   have h_notMem : x ∉ ({x}ᶜ : Set V) := Set.notMem_compl_iff.mpr (Set.mem_singleton x)
-  simp_rw [Set.toFinset_card,
+  simp_rw [edgeFinset, Set.toFinset_card,
     ← G.induce_deleteIncidenceSet_of_notMem h_notMem, ← Set.toFinset_card]
   apply card_edgeFinset_induce_of_support_subset
   trans G.support \ {x}
@@ -166,7 +163,8 @@ theorem card_edgeFinset_induce_compl_singleton (G : SimpleGraph V) [DecidableRel
 set difference the finite incidence set of the vertex `x`. -/
 theorem edgeFinset_deleteIncidenceSet_eq_sdiff (G : SimpleGraph V) [DecidableRel G.Adj] (x : V) :
     (G.deleteIncidenceSet x).edgeFinset = G.edgeFinset \ G.incidenceFinset x := by
-  rw [incidenceFinset, ← Set.toFinset_diff, Set.toFinset_inj]
+  apply Finset.coe_injective
+  push_cast
   exact G.edgeSet_deleteIncidenceSet x
 
 /-- Deleting the incident set of the vertex `x` deletes exactly `G.degree x` edges from the edge

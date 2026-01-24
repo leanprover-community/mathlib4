@@ -26,7 +26,7 @@ open CategoryTheory Category Limits ComplexShape ZeroObject
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open HomologicalComplex
 

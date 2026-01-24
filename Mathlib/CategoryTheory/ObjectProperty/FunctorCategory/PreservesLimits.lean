@@ -25,7 +25,7 @@ namespace CategoryTheory
 open Limits
 
 variable {J J' C D : Type*} (K K' : Type*)
-  [Category K] [Category K'] [Category J] [Category J'] [Category C] [Category D]
+  [Category* K] [Category* K'] [Category* J] [Category* J'] [Category* C] [Category* D]
 
 namespace ObjectProperty
 
