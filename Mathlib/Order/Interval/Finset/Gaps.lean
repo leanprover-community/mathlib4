@@ -63,11 +63,11 @@ noncomputable def intervalGapsWithin (i : Fin (k + 1)) : α × α := (fst, snd) 
     F.orderEmbOfFin (α := α ×ₗ α) h (i.pred hi) |>.2
   /-- The second coordinate of `F.intervalGapsWithin h a b i` is `b` if `i = k`,
   `x i` otherwise. -/
-  snd := if hi : i = Fin.last k then b else
+  snd := if hi : i = last k then b else
     F.orderEmbOfFin (α := α ×ₗ α) h (i.castPred hi) |>.1
 
 @[simp]
-theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin h a b (0 : ℕ)).1 = a := by
+theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin h a b 0).1 = a := by
   simp [intervalGapsWithin, intervalGapsWithin.fst]
 
 theorem intervalGapsWithin_succ_fst_of_lt (hj : j < k) :
@@ -81,12 +81,12 @@ theorem intervalGapsWithin_fst_of_lt_lt (hj₁ : 0 < j) (hj₂ : j - 1 < k) :
   omega
 
 @[simp]
-theorem intervalGapsWithin_last_snd : (F.intervalGapsWithin h a b k).2 = b := by
+theorem intervalGapsWithin_last_snd : (F.intervalGapsWithin h a b (last k)).2 = b := by
   simp [intervalGapsWithin, intervalGapsWithin.snd]
 
 theorem intervalGapsWithin_snd_of_lt (hj : j < k) :
     (F.intervalGapsWithin h a b j).2 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j, hj⟩).1 := by
-  have : (j : Fin (k + 1)) ≠ Fin.last k := by grind [val_cast_of_lt]
+  have : (j : Fin (k + 1)) ≠ last k := by grind [val_cast_of_lt]
   simp only [intervalGapsWithin, intervalGapsWithin.snd, this, ↓reduceDIte]
   congr
   ext
@@ -135,7 +135,7 @@ theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a 
   wlog hj : j < k + 1 generalizing j
   · convert this (j : Fin (k + 1)) (by grind) using 3; grind [cast_val_eq_self]
   by_cases hj : j = k
-  · simp [hj, -natCast_eq_last]
+  · simp [hj]
   · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j) (by grind))
     simp only [Nat.succ_eq_add_one] at this
     grind
@@ -147,16 +147,17 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   wlog hj : j < k + 1 generalizing j
   · convert this (j : Fin (k + 1)) (by grind) using 3 <;> grind [cast_val_eq_self]
   by_cases hj₁ : j = 0
-  · simp only [hj₁, intervalGapsWithin_zero_fst]
+  · simp only [hj₁]
     by_cases hk : 0 = k
-    · simp [hk, hab, -natCast_eq_last]
+    · simp only [natCast_zero_eq_zero, intervalGapsWithin_zero_fst]
+      simp [show 0 = last k by grind, hab]
     · exact hFab (F.intervalGapsWithin_mapsTo h a b (x := 0) (by grind)) |>.left
   have hk : k - 1 + 1 = k := by omega
   by_cases hj₂ : j = k
-  · simp only [hj₂, intervalGapsWithin_last_snd]
+  · simp only [hj₂, natCast_eq_last, intervalGapsWithin_last_snd, ge_iff_le]
     convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right
       using 1
-    simp [hj₂, hk, -natCast_eq_last]
+    simp [hj₂, hk]
   rw [intervalGapsWithin_fst_of_lt_lt (hj₁ := by omega) (hj₂ := by omega),
       intervalGapsWithin_snd_of_lt (hj := by omega)]
   have hj₃ : (⟨j - 1, by omega⟩ : Fin k) ≠ ⟨j, by omega⟩ := by grind
@@ -167,7 +168,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   simp only [Set.not_disjoint_iff, Set.mem_Icc]
   use (G ⟨j, by omega⟩).1
   have hG : (G ⟨j - 1, by omega⟩).1 ≤ (G ⟨j, by omega⟩).1 :=
-    Prod.Lex.le_iff'.mp (G.monotone (by simp [Fin.le_iff_val_le_val])) |>.left
+    Prod.Lex.le_iff'.mp (G.monotone (by simp [le_iff_val_le_val])) |>.left
   have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
   simp [hFabi, this.le, hG]
 
