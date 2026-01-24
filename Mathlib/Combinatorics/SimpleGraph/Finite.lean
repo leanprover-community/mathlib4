@@ -318,7 +318,7 @@ omit [Fintype <| G.neighborSet v] in
 lemma degree_le_of_le {H : SimpleGraph V} [Finite <| H.neighborSet v] (hle : G ≤ H) :
     G.degree v ≤ H.degree v := by
   have := Fintype.ofFinite <| H.neighborSet v
-  have := (Set.toFinite _ |>.subset <| neighborSet_subset hle v).fintype
+  have := (Set.toFinite _ |>.subset <| neighborSet_mono hle v).fintype
   simp_rw [← card_neighborSet_eq_degree]
   exact Set.card_le_card fun v hv => hle hv
 

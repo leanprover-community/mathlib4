@@ -320,7 +320,8 @@ theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective 
   repeat rw [Subtype.mk_eq_mk]
   apply Sym2.map.injective hinj
 
-theorem _root_.SimpleGraph.neighborSet_subset (hle : G₁ ≤ G₂) (v : V) :
+@[gcongr]
+theorem _root_.SimpleGraph.neighborSet_mono (hle : G₁ ≤ G₂) (v : V) :
     G₁.neighborSet v ⊆ G₂.neighborSet v :=
   fun _ h ↦ Hom.ofLE hle |>.apply_mem_neighborSet h
 
