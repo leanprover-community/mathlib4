@@ -206,13 +206,12 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
     hT.orthogonalFamily_eigenspaces').val
 
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
-  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, μ = hT.unsortedEigenvalues hn i := by
+  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
   let x : Eigenvalues T := ⟨μ, hμ⟩
   obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.mem_range_subordinateOrthonormalBasisIndex hn
     hT.orthogonalFamily_eigenspaces' (Module.End.hasEigenvalue_iff.mp x.2)
   use i
-  rw [unsortedEigenvalues, ←hi]
-  symm
+  rw [unsortedEigenvalues, hi]
   change RCLike.re μ = μ
   rw [←RCLike.conj_eq_iff_re, hT.conj_eigenvalue_eq_self hμ]
 
