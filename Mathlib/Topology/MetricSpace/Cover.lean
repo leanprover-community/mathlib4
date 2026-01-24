@@ -72,6 +72,9 @@ lemma isCover_iff_subset_iUnion_closedEBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
 
+alias isCover_iff_subset_iUnion_emetricClosedBall :=
+  isCover_iff_subset_iUnion_closedEBall
+
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/

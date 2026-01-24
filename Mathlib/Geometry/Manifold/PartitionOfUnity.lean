@@ -703,6 +703,10 @@ theorem Metric.exists_contMDiffMap_forall_closedEBall_subset
       Metric.exists_forall_closedEBall_subset_aux₂
       (Metric.exists_forall_closedEBall_subset_aux₁ hK hU hKU hfin)
 
+@[deprecated (since := "2026-01-24")]
+alias Emetric.exists_contMDiffMap_forall_closedBall_subset :=
+  Metric.exists_contMDiffMap_forall_closedEBall_subset
+
 @[deprecated (since := "2025-12-17")]
 alias Emetric.exists_smooth_forall_closedBall_subset :=
   Metric.exists_contMDiffMap_forall_closedEBall_subset
