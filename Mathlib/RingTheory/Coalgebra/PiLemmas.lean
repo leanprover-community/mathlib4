@@ -58,7 +58,7 @@ attribute [-instance] Module.End.instOne Module.End.instMul Module.End.instSemir
   Module.End.instMonoid Module.End.instRing in
 section
 
-variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype n] [DecidableEq n]
+variable {R R' m n : Type*} [CommSemiring R] [CommRing R'] [Fintype n] [DecidableEq n]
   (G : SimpleGraph n) [DecidableRel G.Adj]
 
 /-- The convolutive product corresponds to the Hadamard product. -/
@@ -69,19 +69,22 @@ variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype 
     (A ⊙ B).toLin' = A.toLin' * B.toLin' := by simp [← toMatrix'.injective.eq_iff]
 
 /-- A linear map is convolutively idempotent iff its matrix is all `1`s and `0`s. -/
-theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff {f : (n → K) →ₗ[K] m → K} :
+theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff
+    [IsLeftCancelMulZero R] {f : (n → R) →ₗ[R] m → R} :
     IsIdempotentElem f ↔ ∀ i j, f.toMatrix' i j = 0 ∨ f.toMatrix' i j = 1 := by
-  simp [IsIdempotentElem, hadamard_self_eq_self_iff', ← toMatrix'.injective.eq_iff]
+  simp_rw [IsIdempotentElem, ← toMatrix'.injective.eq_iff]
+  simp [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one]
 
 /-- A matrix's linear map is convolutively idempotent iff it is all `1`s and `0`s. -/
-theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n K} :
+theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff
+    [IsLeftCancelMulZero R] {A : Matrix m n R} :
     IsIdempotentElem A.toLin' ↔ ∀ i j, A i j = 0 ∨ A i j = 1 := by
   simp only [ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin']
 
 variable (K) in
 /-- A simple finite graph is idempotent with respect to the convolutive product. -/
-@[simp] theorem SimpleGraph.convolutionProduct_isIdempotentElem_toLin'_adjMatrix :
-    IsIdempotentElem (G.adjMatrix K).toLin' := by
+@[simp] theorem SimpleGraph.convolutionProduct_isIdempotentElem_toLin'_adjMatrix
+    [IsLeftCancelMulZero R] : IsIdempotentElem (G.adjMatrix R).toLin' := by
   grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, adjMatrix_apply]
 
 /-- The matrix of the convolutive unit is all `1`s. -/
@@ -144,8 +147,9 @@ variable (R) in
 
 /-- All linear maps on euclidean spaces are intrinsically self-adjoint if they are
 convolutively idempotent. -/
-theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoint [StarRing K]
-    {f : (n → K) →ₗ[K] m → K} (hf : IsIdempotentElem f) : IsSelfAdjoint f := by
+theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoint
+    [IsLeftCancelMulZero R] [StarRing R]
+    {f : (n → R) →ₗ[R] m → R} (hf : IsIdempotentElem f) : IsSelfAdjoint f := by
   classical
   rw [ConvolutionProduct.isIdempotentElem_iff] at hf
   rw [IsSelfAdjoint, ← toMatrix'.injective.eq_iff]
@@ -168,7 +172,7 @@ theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n R} [StarRing R] :
 /-- A matrix `A` is an adjacency matrix iff its linear map is convolutively
 idempotent, its intrinsic star is equal to the conjugate transpose,
 and its convolutive product with `id` is `0`. -/
-theorem Matrix.isAdjMatrix_iff_toLin' {A : Matrix n n K} [StarRing K] :
+theorem Matrix.isAdjMatrix_iff_toLin' [IsLeftCancelMulZero R] {A : Matrix n n R} [StarRing R] :
     A.IsAdjMatrix ↔ IsIdempotentElem A.toLin' ∧
       star A.toLin' = (star A).toLin' ∧ .id * A.toLin' = 0 := by
   rw [isAdjMatrix_iff_hadamard, ← isSymm_iff_intrinsicStar_toLin',

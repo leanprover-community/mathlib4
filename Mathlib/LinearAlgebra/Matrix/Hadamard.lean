@@ -130,11 +130,6 @@ end One
 theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
     A ⊙ A = A ↔ ∀ i j, IsIdempotentElem (A i j) := ext_iff.symm
 
-theorem hadamard_self_eq_self_iff' {K : Type*} [Ring K] [NoZeroDivisors K]
-    {A : Matrix m n K} : A ⊙ A = A ↔ ∀ i j, A i j = 0 ∨ A i j = 1 := by
-  simp only [← ext_iff, hadamard_apply, ← sub_eq_zero (b := A _ _),
-    ← mul_sub_one, mul_eq_zero, sub_eq_zero]
-
 section single
 
 variable [DecidableEq m] [DecidableEq n] [MulZeroClass α]
