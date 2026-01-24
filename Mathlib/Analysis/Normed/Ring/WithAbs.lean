@@ -255,8 +255,8 @@ instance instAlgebra_right (v : AbsoluteValue T S) : Algebra R (WithAbs v) := (e
 theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
     algebraMap R (WithAbs v) x = (equiv v).symm (algebraMap R T x) := rfl
 
-theorem equiv_algebraMap_apply (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
-    equiv w (algebraMap (WithAbs v) (WithAbs w) x) = algebraMap R T (equiv v x) := rfl
+theorem algebraMap_apply_ofAbs (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
+    (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
 to `R'`. -/
