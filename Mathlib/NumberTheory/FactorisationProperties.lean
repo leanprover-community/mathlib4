@@ -209,7 +209,7 @@ theorem abundant_iff_two_lt_abundancyIndex : Abundant n ↔ 2 < n.abundancyIndex
   by_cases h : n = 0
   · refine (iff_false_left ?_).mpr ?_
     · simp [h, Abundant]
-    · suffices (0).abundancyIndex = 0 by grind
+    · suffices abundancyIndex 0 = 0 by grind
       simp [abundancyIndex]
   · rw [abundant_iff_sum_divisors, abundancyIndex, lt_div_iff₀ (by positivity)]
     norm_cast
