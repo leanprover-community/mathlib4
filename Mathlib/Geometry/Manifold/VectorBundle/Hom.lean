@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.Notation
 
 /-! # Homs of `C^n` vector bundles over the same base space
 

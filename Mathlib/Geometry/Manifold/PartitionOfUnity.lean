@@ -655,7 +655,7 @@ for all `x`.
 This is a special case of `exists_contMDiffSection_forall_mem_convex_of_local` where `V` is the
 trivial bundle. See also `exists_contMDiffMap_mem_convex_of_local_const`. -/
 theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
+    (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, CMDiff[U] n g ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   let ⟨s, hs⟩ := exists_contMDiffSection_forall_mem_convex_of_local I (fun _ ↦ F) t ht
     (fun x₀ ↦ let ⟨U, hU, g, hgs, hgt⟩ := Hloc x₀
@@ -794,8 +794,7 @@ exists a smooth function with support equal to `s`, taking values in `[0,1]`, an
 exactly on `t`. -/
 theorem exists_contMDiff_support_eq_eq_one_iff
     {s t : Set M} (hs : IsOpen s) (ht : IsClosed t) (h : t ⊆ s) :
-    ∃ f : M → ℝ, CMDiff n f ∧ range f ⊆ Icc 0 1 ∧ support f = s
-      ∧ (∀ x, x ∈ t ↔ f x = 1) := by
+    ∃ f : M → ℝ, CMDiff n f ∧ range f ⊆ Icc 0 1 ∧ support f = s ∧ (∀ x, x ∈ t ↔ f x = 1) := by
   /- Take `f` with support equal to `s`, and `g` with support equal to `tᶜ`. Then `f / (f + g)`
   satisfies the conclusion of the theorem. -/
   rcases hs.exists_contMDiff_support_eq I with ⟨f, f_supp, f_diff, f_pos⟩
@@ -835,7 +834,7 @@ exactly on `t`. See also `exists_contMDiffMap_zero_one_of_isClosed` for a
 slightly weaker version. -/
 theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
     (hs : IsClosed s) (ht : IsClosed t) (hd : Disjoint s t) :
-    ∃ f : M → ℝ, ContMDiff I 𝓘(ℝ) n f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
+    ∃ f : M → ℝ, CMDiff n f ∧ range f ⊆ Icc 0 1 ∧ (∀ x, x ∈ s ↔ f x = 0)
       ∧ (∀ x, x ∈ t ↔ f x = 1) := by
   rcases exists_contMDiff_support_eq_eq_one_iff I hs.isOpen_compl ht hd.subset_compl_left with
     ⟨f, f_diff, f_range, fs, ft⟩

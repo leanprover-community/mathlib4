@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -232,23 +233,22 @@ section extChartAt
 variable [IsManifold I 1 M] {s : Set M} {x y : M} {z : E}
 
 theorem hasMFDerivAt_extChartAt (h : y ∈ (chartAt H x).source) :
-    HasMFDerivAt I 𝓘(𝕜, E) (extChartAt I x) y (mfderiv% (chartAt H x) y :) :=
+    HasMFDerivAt% (extChartAt I x) y (mfderiv% (chartAt H x) y :) :=
   I.hasMFDerivAt.comp y ((mdifferentiable_chart x).mdifferentiableAt h).hasMFDerivAt
 
 theorem hasMFDerivWithinAt_extChartAt (h : y ∈ (chartAt H x).source) :
-    HasMFDerivWithinAt I 𝓘(𝕜, E) (extChartAt I x) s y (mfderiv% (chartAt H x) y :) :=
+    HasMFDerivAt[s] (extChartAt I x) y (mfderiv% (chartAt H x) y :) :=
   (hasMFDerivAt_extChartAt h).hasMFDerivWithinAt
 
 theorem mdifferentiableAt_extChartAt (h : y ∈ (chartAt H x).source) :
-    MDifferentiableAt I 𝓘(𝕜, E) (extChartAt I x) y :=
+    MDiffAt (extChartAt I x) y :=
   (hasMFDerivAt_extChartAt h).mdifferentiableAt
 
-theorem mdifferentiableOn_extChartAt :
-    MDifferentiableOn I 𝓘(𝕜, E) (extChartAt I x) (chartAt H x).source := fun _y hy =>
-  (hasMFDerivWithinAt_extChartAt hy).mdifferentiableWithinAt
+theorem mdifferentiableOn_extChartAt : MDiff[(chartAt H x).source] (extChartAt I x) :=
+  fun _y hy ↦ (hasMFDerivWithinAt_extChartAt hy).mdifferentiableWithinAt
 
 theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).target) :
-    MDifferentiableWithinAt 𝓘(𝕜, E) I (extChartAt I x).symm (range I) z := by
+    MDiffAt[range I] (extChartAt I x).symm z := by
   have Z := I.mdifferentiableWithinAt_symm (extChartAt_target_subset_range x h)
   apply MDifferentiableAt.comp_mdifferentiableWithinAt (I' := I) _ _ Z
   apply mdifferentiableAt_atlas_symm (ChartedSpace.chart_mem_atlas x)
@@ -258,7 +258,7 @@ theorem mdifferentiableWithinAt_extChartAt_symm (h : z ∈ (extChartAt I x).targ
   exact h.2
 
 theorem mdifferentiableOn_extChartAt_symm :
-    MDifferentiableOn 𝓘(𝕜, E) I (extChartAt I x).symm (extChartAt I x).target := by
+    MDiff[(extChartAt I x).target] (extChartAt I x).symm := by
   intro y hy
   exact (mdifferentiableWithinAt_extChartAt_symm hy).mono (extChartAt_target_subset_range x)
 

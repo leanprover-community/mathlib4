@@ -438,8 +438,8 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]
 /-- If a `C^m` function `f : M → E`, where `M` is some manifold, takes values in the
 sphere, then it restricts to a `C^m` function from `M` to the sphere. -/
 theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f : M → E}
-    (hf : ContMDiff I 𝓘(ℝ, E) m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
-    ContMDiff I (𝓡 n) m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
+    (hf : CMDiff m f) (hf' : ∀ x, f x ∈ sphere (0 : E) 1) :
+    CMDiff m (Set.codRestrict _ _ hf' : M → sphere (0 : E) 1) := by
   rw [contMDiff_iff_target]
   refine ⟨continuous_induced_rng.2 hf.continuous, ?_⟩
   intro v
@@ -449,7 +449,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
         n (ne_zero_of_mem_unit_sphere (-v))).repr
   have h : ContDiffOn ℝ ω _ Set.univ := U.contDiff.contDiffOn
   have H₁ := (h.comp_inter contDiffOn_stereoToFun).contMDiffOn
-  have H₂ : ContMDiffOn _ _ _ _ Set.univ := hf.contMDiffOn
+  have H₂ : CMDiff[Set.univ] m f := hf.contMDiffOn
   convert (H₁.of_le le_top).comp' H₂ using 1
   ext x
   have hfxv : f x = -↑v ↔ ⟪f x, -↑v⟫_ℝ = 1 := by
@@ -460,7 +460,7 @@ theorem ContMDiff.codRestrict_sphere {n : ℕ} [Fact (finrank ℝ E = n + 1)] {f
 
 /-- The antipodal map is analytic. -/
 theorem contMDiff_neg_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E = n + 1)] :
-    ContMDiff (𝓡 n) (𝓡 n) m fun x : sphere (0 : E) 1 => -x := by
+    CMDiff m fun x : sphere (0 : E) 1 => -x := by
   -- this doesn't elaborate well in term mode
   apply ContMDiff.codRestrict_sphere
   apply contDiff_neg.contMDiff.comp _
@@ -560,6 +560,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     have h₂ : ContMDiff (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) 𝓘(ℝ, ℂ) ω fun z : ℂ × ℂ => z.fst * z.snd := by
       rw [contMDiff_iff]
       exact ⟨continuous_mul, fun x y => contDiff_mul.contDiffOn⟩
+    -- TODO bug: filling in ω yields an error; expected type has metavariables...
     suffices h₁ : ContMDiff _ _ _ (Prod.map c c) from
       h₂.comp h₁
     apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
@@ -569,7 +570,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     exact Complex.conjCLE.contDiff.contMDiff.comp contMDiff_coe_sphere
 
 /-- The map `fun t ↦ exp (t * I)` from `ℝ` to the unit circle in `ℂ` is analytic. -/
-theorem contMDiff_circleExp {m : WithTop ℕ∞} : ContMDiff 𝓘(ℝ, ℝ) (𝓡 1) m Circle.exp :=
+theorem contMDiff_circleExp {m : WithTop ℕ∞} : CMDiff m Circle.exp :=
   (contDiff_exp.comp (contDiff_id.smul contDiff_const)).contMDiff.codRestrict_sphere _
 
 end Circle

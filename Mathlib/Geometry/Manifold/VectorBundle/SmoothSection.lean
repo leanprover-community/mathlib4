@@ -199,7 +199,6 @@ lemma ContMDiffWithinAt.sum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
     CMDiffAt[u] n (T% (fun x ↦ ∑' i, (t i x))) x₀ := by
-  dsimp
   obtain ⟨u', hu', hfin⟩ := ht x₀
   -- All sections `t i` but a finite set `s` vanish near `x₀`: choose a neighbourhood `u` of `x₀`
   -- and a finite set `s` of sections which don't vanish.
@@ -253,7 +252,6 @@ lemma ContMDiffWithinAt.finsum_section_of_locallyFinite
     (ht : LocallyFinite fun i ↦ {x : M | t i x ≠ 0})
     (ht' : ∀ i, CMDiffAt[u] n (T% (t i ·)) x₀) :
     CMDiffAt[u] n (T% (fun x ↦ ∑ᶠ i, t i x)) x₀ := by
-  dsimp
   apply (ContMDiffWithinAt.sum_section_of_locallyFinite ht ht').congr' (t := Set.univ)
       (fun y hy ↦ ?_) (by grind) trivial
   rw [← tsum_eq_finsum (L := SummationFilter.unconditional ι)]

@@ -112,8 +112,8 @@ lemma mdifferentiable_inv_denom (g : GL (Fin 2) ℝ) : MDiff (fun τ : ℍ ↦ (
 lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) : MDiff (fun τ : ℍ ↦ g • τ) :=
   (contMDiff_smul hg).mdifferentiable one_ne_zero
 
-lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
-    {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) : f = 0 := by
+lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDiff f) {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) :
+    f = 0 := by
   rw [UpperHalfPlane.mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
@@ -127,13 +127,12 @@ lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) �
     filter_upwards [hτ] with a ha
     simpa using ha
 
-lemma mul_eq_zero_iff {f g : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
-    (hg : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) g) : f * g = 0 ↔ f = 0 ∨ g = 0 :=
+lemma mul_eq_zero_iff {f g : ℍ → ℂ} (hf : MDiff f) (hg : MDiff g) : f * g = 0 ↔ f = 0 ∨ g = 0 :=
   ⟨fun hfg ↦ (frequently_or_distrib.mp <| .of_forall <| by simpa using congrFun hfg).imp
     (eq_zero_of_frequently (τ := I) hf) (eq_zero_of_frequently hg), by grind⟩
 
 lemma prod_eq_zero_iff {ι : Type*} {f : ι → ℍ → ℂ} {s : Finset ι}
-    (hf : ∀ i ∈ s, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f i)) :
+    (hf : ∀ i ∈ s, MDiff (f i)) :
     ∏ i ∈ s, f i = 0 ↔ ∃ i ∈ s, f i = 0 := by
   refine ⟨fun h0 ↦ ?_, fun ⟨i, hi, hi'⟩ ↦ Finset.prod_eq_zero hi hi'⟩
   have : ∃ᶠ τ in 𝓝[≠] I, ∏ i ∈ s, f i τ = 0 := .of_forall <| by simpa using congrFun h0

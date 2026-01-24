@@ -306,8 +306,7 @@ lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : MDiffAt[t] (T% V) y₀) (hf : CMDiffAt[s] n f x₀)
     (hf' : (mfderiv[s] f x₀).IsInvertible)
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) (h : y₀ = f x₀) :
-    MDiffAt[s ∩ f⁻¹' t]
-      (T% (mpullbackWithin I I' f V s y)) x₀ := by
+    MDiffAt[s ∩ f⁻¹' t] (T% (mpullbackWithin I I' f V s)) x₀ := by
   subst h
   exact hV.mpullbackWithin_vectorField_inter hf hf' hx₀ hs hmn
 
