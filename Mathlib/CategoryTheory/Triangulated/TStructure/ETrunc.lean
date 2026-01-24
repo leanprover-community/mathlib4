@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
-public import Mathlib.Data.EInt.Basic
+public import Mathlib.Order.WithBotTop
 
 /-!
 # Truncations for a t-structure

@@ -7,8 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
-public import Mathlib.Data.EInt.Basic
-public import Batteries.Tactic.Lint
+public import Mathlib.Order.WithBotTop
 
 /-!
 # Shapes of spectral sequences obtained from a spectral object
