@@ -6887,6 +6887,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 public import Mathlib.Topology.Algebra.InfiniteSum.Field
 public import Mathlib.Topology.Algebra.InfiniteSum.Group
 public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.GroupWithZero
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
