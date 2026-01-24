@@ -114,7 +114,7 @@ theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
-/-- If $0 → M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
+/-- If $M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
 
 This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`. -/
 @[stacks 0519 "(1)"]
@@ -128,10 +128,8 @@ lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
   · simp [LinearMap.exact_iff.1 h_exact]
 
 theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
-    [Module.Finite R (M ⧸ N)] : Module.Finite R M := by
-  refine .of_exact (f := N.subtype) (g := N.mkQ) ?_ (Quotient.mk_surjective _)
-  rw [LinearMap.exact_iff]
-  simp
+    [Module.Finite R (M ⧸ N)] : Module.Finite R M :=
+  .of_exact (LinearMap.exact_subtype_mkQ N) (Quotient.mk_surjective _)
 
 end Submodule
 
