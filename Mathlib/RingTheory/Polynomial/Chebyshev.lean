@@ -438,6 +438,12 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
     show n + 2 + 1 - 2 = n + 1 by ring] at h
   linear_combination (norm := ring_nf) h
 
+theorem twice_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
+  linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
+
+theorem U_eq_twice_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
+  linear_combination (norm := ring_nf) - (twice_T_eq_U_sub_U R n)
+
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
 noncomputable def C : ℤ → R[X]
