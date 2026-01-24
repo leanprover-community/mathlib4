@@ -1004,11 +1004,15 @@ instance : Common.RingCompute (BaseType sAlg) sA where
     let ⟨s, vs⟩ := zb
     let ⟨t, vt, pt⟩ ← Common.evalMul q($sR) vr vs
     return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
-  evalCast v R' sR' _ r' _ := do
+  evalCast u' R' sR' _ r' _ := do
     let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
+    have : u' =QL u := ⟨⟩
     -- TODO: use existing cache here.
     let cR ← mkCache q($sR)
-    let ⟨_r'', vr, pr⟩ ← Common.eval (bt := Ring.baseType q($sR)) q($sR) cR.toCache q($r)
+    -- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v, introducing
+    -- kernel errors during runtime.
+    let ⟨_r'', vr, pr⟩ ←
+      Common.eval (bt := Ring.baseType q($sR)) sR cR.toCache q($r)
     return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
   evalNeg a rR za := do
     let ⟨r, vr⟩ := za
@@ -1227,8 +1231,9 @@ where
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
         -- let g ← mkFreshExprMVar (q($a = $b))
         throwError "algebra failed, algebra expressions not equal\n{g.mvarId!}"
-      let pb : Q($e₂ = $a) := pb
-      return q(by simp_all)
+      have : $a =Q $b := ⟨⟩
+      -- let pb : Q($e₂ = $a) := pb
+      return q($pb ▸ $pa)
 
 /-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
 goal as linear combinations of A-atoms over some semiring R, and close the goal if the two

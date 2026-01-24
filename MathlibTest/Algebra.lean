@@ -12,6 +12,11 @@ example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] 
     a • y = a • y := by
   algebra with R
 
+-- Test universe polymorphism.
+example {R : Type} {A : Type 1} {a : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x : A) :
+    a • x = a • x := by
+  algebra with R
+
 example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) :
     (a + b) • (x + y) = b • x + a • (x + y) + b • y := by
   algebra
