@@ -3,12 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
-public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # t-structures on triangulated categories
