@@ -94,17 +94,17 @@ lemma Module.IsTorsionFree.trans [Module S R] [IsTorsionFree S R] [IsScalarTower
 variable [IsDomain R]
 
 lemma IsSMulRegular.of_ne_zero (hr : r ≠ 0) : IsSMulRegular M r :=
-  (isRegular_of_ne_zero hr).isSMulRegular
+  (IsRegular.of_ne_zero hr).isSMulRegular
 
 variable (M) in
 lemma smul_right_injective (hr : r ≠ 0) : ((r • ·) : M → M).Injective :=
-  (isRegular_of_ne_zero hr).smul_right_injective _
+  (IsRegular.of_ne_zero hr).smul_right_injective _
 
 @[simp] lemma smul_right_inj (hr : r ≠ 0) : r • m₁ = r • m₂ ↔ m₁ = m₂ :=
-  (isRegular_of_ne_zero hr).smul_right_inj
+  (IsRegular.of_ne_zero hr).smul_right_inj
 
 lemma smul_eq_zero_iff_right (hr : r ≠ 0) : r • m = 0 ↔ m = 0 :=
-  (isRegular_of_ne_zero hr).smul_eq_zero_iff_right
+  (IsRegular.of_ne_zero hr).smul_eq_zero_iff_right
 
 lemma smul_ne_zero_iff_right (hr : r ≠ 0) : r • m ≠ 0 ↔ m ≠ 0 := (smul_eq_zero_iff_right hr).ne
 
