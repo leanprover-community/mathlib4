@@ -303,13 +303,13 @@ lemma ωScottContinuous.fun_comp (hg : ωScottContinuous g) (hf : ωScottContinu
     ωScottContinuous (fun x ↦ g (f x)) :=
   comp hg hf
 
-@[simp, fun_prop]
+@[simp]
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
   ScottContinuousOn.const x
 
 @[simp, fun_prop]
 lemma ωScottContinuous.fun_const {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
-  const
+  ScottContinuousOn.const x
 
 end Continuity
 

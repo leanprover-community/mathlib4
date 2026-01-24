@@ -72,7 +72,7 @@ protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
 
-@[simp, fun_prop]
+@[simp]
 lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α x) := by
   rintro s _ ⟨a⟩ _ _ _
   simp only [
@@ -186,7 +186,7 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 @[simp, fun_prop, to_fun]
 lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
-@[simp, fun_prop]
+@[simp]
 lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := by
   simp only [← scottContinuousOn_univ, ScottContinuousOn.const]
 
