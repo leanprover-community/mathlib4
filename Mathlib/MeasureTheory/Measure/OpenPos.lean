@@ -238,6 +238,12 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
 
 end Metric
 
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_ball_pos := Metric.measure_eball_pos
+
+@[deprecated (since := "2026-01-24")]
+alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
+
 section MeasureZero
 /-! ## Meagre sets and measure zero
 In general, neither of meagre and measure zero implies the other.

@@ -119,6 +119,33 @@ theorem exists_continuous_ennreal_forall_closedEBall_subset (hK : ∀ i, IsClose
 
 end Metric
 
+namespace EMetric
+open Metric
+
+@[deprecated (since := "2026-01-24")]
+alias eventually_nhds_zero_forall_closedBall_subset :=
+  eventually_nhds_zero_forall_closedEBall_subset
+
+@[deprecated (since := "2026-01-24")]
+alias exists_forall_closedBall_subset_aux₁ := exists_forall_closedEBall_subset_aux₁
+
+@[deprecated (since := "2026-01-24")]
+alias exists_forall_closedBall_subset_aux₂ := exists_forall_closedEBall_subset_aux₂
+
+@[deprecated (since := "2026-01-24")]
+alias exists_continuous_real_forall_closedBall_subset :=
+  exists_continuous_real_forall_closedEBall_subset
+
+@[deprecated (since := "2026-01-24")]
+alias exists_continuous_nnreal_forall_closedBall_subset :=
+  exists_continuous_nnreal_forall_closedEBall_subset
+
+@[deprecated (since := "2026-01-24")]
+alias exists_continuous_eNNReal_forall_closedBall_subset :=
+  exists_continuous_ennreal_forall_closedEBall_subset
+
+end EMetric
+
 namespace Metric
 
 variable [MetricSpace X] {K : ι → Set X} {U : ι → Set X}
