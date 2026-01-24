@@ -1010,7 +1010,7 @@ variable {f : Unit → Unit}
 /--
 error: Could not find a model with corners for `Unit`
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
+trace: [Elab.DiffGeo.MDiff] Finding a model for: `Unit`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `Unit` is not a `Bundle.TotalSpace`.
