@@ -275,7 +275,7 @@ theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     mul_zero]
 
 section
-variable (α : Type*) [NonAssocSemiring α]
+variable (α : Type*) [MulZeroOneClass α]
   {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
 
 open Matrix
