@@ -461,7 +461,7 @@ variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
 theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
-    [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
+    [Module.IsTorsionFree R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor

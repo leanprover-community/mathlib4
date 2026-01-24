@@ -365,8 +365,6 @@ def restrictScalarsLI : E [⋀^ι]→L[𝕜] F →ₗᵢ[𝕜'] E [⋀^ι]→L[�
   map_smul' _ _ := rfl
   norm_map' _ := rfl
 
-variable {𝕜'}
-
 end restrictScalars
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, precise version.

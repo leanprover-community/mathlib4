@@ -106,7 +106,7 @@ lemma orthRadius_map {s : Sphere P} (p : P) {f : P ≃ᵃⁱ[ℝ] P} (h : f s.ce
     (s.orthRadius p).map f.toAffineMap = s.orthRadius (f p) := by
   rw [orthRadius, map_mk', orthRadius]
   convert rfl using 2
-  convert (Submodule.map_orthogonal (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
+  convert (Submodule.map_orthogonal_equiv (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
   simp [Submodule.map_span, Set.image_singleton, h]
 
 lemma direction_orthRadius_le_iff {s : Sphere P} {p q : P} :

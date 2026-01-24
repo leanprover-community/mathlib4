@@ -12,7 +12,7 @@ class SemilatticeSup (α : Type) extends PartialOrder α, Max α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 
 attribute [to_dual] SemilatticeInf
-attribute [to_dual (reorder := 3 4 5)] SemilatticeSup.sup_le
+attribute [to_dual existing] SemilatticeSup.sup_le
 
 @[to_dual]
 lemma SemilatticeInf.le_inf' {α : Type} [SemilatticeInf α] (a b c : α) : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
@@ -80,6 +80,13 @@ theorem le_imp_le'' : a ≤ b → a ≤ b := id
 
 -- We can even overwrite it with the empty `reorder`:
 /--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `le_imp_le'''`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+---
 error: `to_dual` validation failed: expected
   ∀ {α : Type} [inst : PartialOrder α] (a b : α), b ≤ a → b ≤ a
 but 'le_imp_le'''' has type
@@ -96,18 +103,16 @@ theorem refl₁ (a b c d e : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 @[to_dual existing refl₁]
 theorem refl₂ (b c a e d : Nat) : a + b + c + d + e = a + b + c + d + e := rfl
 
-/-
-TODO: If we tag something with `@[to_dual self]` and if there is no reorder, then this is useless.
-So, we should have a linter warning about this.
-The only exception is if we want to influence the translation heuristic.
-For example we tag `PUnit` with `@[to_dual self]`.
-Maybe we should have a new command `@[to_dual_translate]`, analogous to `@[to_dual_dont_translate]`,
-instead of using `@[to_dual self]` for those cases.
--/
-@[to_dual self]
-theorem not_lt_self : ¬ a < a := lt_irrefl a
-
 -- Test that we do not translate numerals like we do in `@[to_additive]`
+/--
+warning: `to_dual self` is redundant when none of the arguments are reordered.
+Please remove the attribute, or provide an explicit `(reorder := ...)` argument.
+If you need to give a hint to `to_dual` to translate expressions involving `one_le_one`,
+use `to_dual_do_translate` instead
+
+Note: This linter can be disabled with `set_option linter.translateRedundant false`
+-/
+#guard_msgs in
 @[to_dual self]
 theorem one_le_one [One α] : (1 : α) ≤ 1 := le_rfl
 
@@ -137,3 +142,17 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 run_meta
   Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
   Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+
+-- Test that we do not translate the order on `Prop`
+instance Prop.le : LE Prop :=
+  ⟨(· → ·)⟩
+
+@[to_dual le_of_imp']
+theorem Prop.le_of_imp (_h : a ≤ b) {p q : Prop} : (p → q) → p ≤ q := id
+
+-- Dualize `a ≤ b` but not `p ≤ q`
+/--
+info: «Prop».le_of_imp' {α : Type} [PartialOrder α] (a b : α) (_h : b ≤ a) {p q : Prop} : (p → q) → p ≤ q
+-/
+#guard_msgs in
+#check Prop.le_of_imp'

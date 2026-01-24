@@ -115,7 +115,7 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
-    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl) :
+    (compl : α → α) (eq_compl : compl = (by infer_instance : Compl α).compl) :
     HeytingAlgebra α where
   toGeneralizedHeytingAlgebra := GeneralizedHeytingAlgebra.copy
     (@HeytingAlgebra.toGeneralizedHeytingAlgebra α c) le eq_le top eq_top sup eq_sup inf eq_inf himp
@@ -155,7 +155,7 @@ def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
-    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl) :
+    (compl : α → α) (eq_compl : compl = (by infer_instance : Compl α).compl) :
     BiheytingAlgebra α where
   toHeytingAlgebra := HeytingAlgebra.copy (@BiheytingAlgebra.toHeytingAlgebra α c) le eq_le top
     eq_top bot eq_bot sup eq_sup inf eq_inf himp eq_himp compl eq_compl
@@ -193,7 +193,7 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
-    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl)
+    (compl : α → α) (eq_compl : compl = (by infer_instance : Compl α).compl)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) : Frame α where
   toCompleteLattice := CompleteLattice.copy (@Frame.toCompleteLattice α c)
@@ -228,7 +228,7 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
     (sdiff : α → α → α) (eq_sdiff : sdiff = (by infer_instance : SDiff α).sdiff)
     (hnot : α → α) (eq_hnot : hnot = (by infer_instance : HNot α).hnot)
     (himp : α → α → α) (eq_himp : himp = (by infer_instance : HImp α).himp)
-    (compl : α → α) (eq_compl : compl = (by infer_instance : HasCompl α).compl)
+    (compl : α → α) (eq_compl : compl = (by infer_instance : Compl α).compl)
     (sSup : Set α → α) (eq_sSup : sSup = (by infer_instance : SupSet α).sSup)
     (sInf : Set α → α) (eq_sInf : sInf = (by infer_instance : InfSet α).sInf) :
     CompleteDistribLattice α where

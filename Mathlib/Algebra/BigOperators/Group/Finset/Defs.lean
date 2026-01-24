@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Data.Fintype.Sets
 public import Mathlib.Data.Multiset.Bind
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators
@@ -78,7 +79,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note2 «operator precedence of big operators» /--
+library_note «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
