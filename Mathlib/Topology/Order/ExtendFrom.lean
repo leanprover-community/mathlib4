@@ -86,11 +86,11 @@ theorem eq_lim_at_right_extendFrom_Ioo (hab : a < b)
   · simpa [hab]
 
 theorem eq_lim_at_left_extendFrom_uIoo (hab : a ≠ b)
-    (ha : Tendsto f (𝓝[≠] a) (𝓝 la)) : extendFrom (uIoo a b) f a = la :=
-  extendFrom_eq (by simp [hab]) (ha.mono_left nhdsWithin_uIoo_left_le_nhdsNE)
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 la)) : extendFrom (uIoo a b) f a = la :=
+  extendFrom_eq (by simp [hab]) ha
 
 theorem eq_lim_at_right_extendFrom_uIoo (hab : a ≠ b)
-    (hb : Tendsto f (𝓝[≠] b) (𝓝 lb)) : extendFrom (uIoo a b) f b = lb :=
-  extendFrom_eq (by simp [hab]) (hb.mono_left nhdsWithin_uIoo_right_le_nhdsNE)
+    (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 lb)) : extendFrom (uIoo a b) f b = lb :=
+  extendFrom_eq (by simp [hab]) hb
 
 end T2Space
