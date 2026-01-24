@@ -55,7 +55,8 @@ open scoped ConvolutionProduct
 
 -- This ensures that we always take the convolution product in this file when we write `*`.
 attribute [-instance] Module.End.instOne Module.End.instMul Module.End.instSemiring
-  Module.End.instMonoid Module.End.instRing
+  Module.End.instMonoid Module.End.instRing in
+section
 
 variable {R R' K m n : Type*} [CommSemiring R] [CommRing R'] [Field K] [Fintype n] [DecidableEq n]
   (G : SimpleGraph n) [DecidableRel G.Adj]
@@ -211,3 +212,5 @@ variable (R) in
 `⟪1, G.adjMatrix.toEuclideanLin 1⟫`. -/
 theorem SimpleGraph.card_dart_eq_dotProduct : Fintype.card G.Dart = adjMatrix R G *ᵥ 1 ⬝ᵥ 1 := by
   simp [G.dart_card_eq_sum_degrees, dotProduct_one]
+
+end
