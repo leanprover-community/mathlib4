@@ -36,7 +36,7 @@ For Gaussian distributions in `ℝ`, see the file
 
 @[expose] public section
 
-open MeasureTheory Complex NormedSpace
+open MeasureTheory Complex
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory

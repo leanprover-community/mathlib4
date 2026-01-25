@@ -133,7 +133,7 @@ namespace ULiftYoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftYoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftYoneda.{w} (C := C)).FullyFaithful :=
   Yoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
@@ -186,8 +186,7 @@ def ext (X Y : C) (p : ∀ {Z : C}, (X ⟶ Z) → (Y ⟶ Z))
   fullyFaithful.preimageIso
     (NatIso.ofComponents (fun Z =>
       { hom := q
-        inv := p })
-    ) |>.unop
+        inv := p })) |>.unop
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
@@ -214,7 +213,7 @@ namespace ULiftCoyoneda
 
 variable (C)
 
-/-- When `C` is category such that `Category.{v₁} C`, then
+/-- When `C` is a category such that `Category.{v₁} C`, then
 the functor `uliftCoyoneda.{w} : C ⥤ Cᵒᵖ ⥤ Type max w v₁` is fully faithful. -/
 def fullyFaithful : (uliftCoyoneda.{w} (C := C)).FullyFaithful :=
   Coyoneda.fullyFaithful.comp (fullyFaithfulULiftFunctor.whiskeringRight _)
