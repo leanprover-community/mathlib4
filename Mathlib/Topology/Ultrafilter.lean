@@ -54,3 +54,11 @@ theorem continuousAt_iff_ultrafilter :
 theorem continuous_iff_ultrafilter :
     Continuous f ↔ ∀ (x) (g : Ultrafilter X), ↑g ≤ 𝓝 x → Tendsto f g (𝓝 (f x)) := by
   simp only [continuous_iff_continuousAt, continuousAt_iff_ultrafilter]
+
+theorem IsClosed.mem_of_mapClusterPt
+    {l : X} {s : Set X} {f : α → X} {b : Filter α} (hs : IsClosed s)
+    (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s := by
+  obtain ⟨U, U_le, hU⟩ : ∃ (U : Ultrafilter α), ↑U ≤ b ∧ Tendsto f (↑U) (𝓝 l) :=
+    mapClusterPt_iff_ultrafilter.1 hf
+  apply hs.mem_of_tendsto hU
+  exact Eventually.filter_mono U_le h
