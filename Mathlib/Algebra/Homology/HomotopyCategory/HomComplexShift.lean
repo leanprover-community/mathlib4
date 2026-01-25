@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Tactic.Linarith
 
 /-! Shifting cochains
 
@@ -554,6 +555,27 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
 def equivHomShift :
     (K ⟶ L⟦n⟧) ≃+ Cocycle K L n :=
   (equivHom _ _).trans (rightShiftAddEquiv _ _ _ (zero_add n)).symm
+
+lemma equivHomShift_comp {K' : CochainComplex C ℤ}
+    (g : K' ⟶ K) (f : K ⟶ L⟦n⟧) :
+    equivHomShift (g ≫ f) = Cocycle.precomp (equivHomShift f) g := by
+  ext p q hpq
+  simp [equivHomShift_apply, Cochain.rightUnshift_v _ _ _ _ _ _ _ (add_zero p)]
+
+lemma equivHomShift_symm_precomp
+    (z : Cocycle K L n) {K' : CochainComplex C ℤ} (g : K' ⟶ K) :
+    equivHomShift.symm (z.precomp g) = g ≫ equivHomShift.symm z :=
+  equivHomShift.injective (by simp [equivHomShift_comp])
+
+lemma equivHomShift_comp_shift (f : K ⟶ L⟦n⟧) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
+    equivHomShift (f ≫ g⟦n⟧') = Cocycle.postcomp (equivHomShift f) g := by
+  ext p q rfl
+  simp [equivHomShift_apply, Cochain.rightUnshift_v _ _ _ _ _ _ _ (add_zero p)]
+
+lemma equivHomShift_symm_postcomp
+    (z : Cocycle K L n) {L' : CochainComplex C ℤ} (g : L ⟶ L') :
+    equivHomShift.symm (z.postcomp g) = equivHomShift.symm z ≫ g⟦n⟧' :=
+  equivHomShift.injective (by simp [equivHomShift_comp_shift])
 
 /-- The additive equivalence `Cocycle K L n ≃+ Cocycle K⟦a⟧ L n'` when `n + a = n'`. -/
 @[simps]

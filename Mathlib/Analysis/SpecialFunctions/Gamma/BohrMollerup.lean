@@ -117,7 +117,7 @@ theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   have : b = 1 - a := by linarith
   subst this
   simp_rw [Function.comp_apply, smul_eq_mul]
-  simp only [mem_Ioi] at hx hy
+  push _ ∈ _ at hx hy
   rw [← log_rpow, ← log_rpow, ← log_mul]
   · gcongr
     exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
@@ -330,8 +330,8 @@ theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
-  -- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean`, but we give a self-contained proof using
-  -- log-convexity to avoid unnecessary imports.
+  -- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`, but we give a
+  -- self-contained proof using log-convexity to avoid unnecessary imports.
   have A : (0 : ℝ) < 3 / 2 := by simp
   have :=
     BohrMollerup.f_add_nat_le convexOn_log_Gamma (fun {y} hy => ?_) two_ne_zero one_half_pos
@@ -418,16 +418,16 @@ theorem log_doublingGamma_eq :
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
   refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
   · convert
-      convexOn_log_Gamma.comp_affineMap (DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
+      convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
     · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
     · ext1 x
-      simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribMulAction.toLinearMap_apply]
+      simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribSMul.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)
     convert
       convexOn_log_Gamma.comp_affineMap
-        ((DistribMulAction.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
+        ((DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap +
           AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1
     · change Ioi (-1 : ℝ) = ((fun x : ℝ => x + 1 / 2) ∘ fun x : ℝ => (1 / 2 : ℝ) * x) ⁻¹' Ioi 0
       rw [preimage_comp, preimage_add_const_Ioi, zero_sub,
