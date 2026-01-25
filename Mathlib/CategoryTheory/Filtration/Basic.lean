@@ -6,11 +6,7 @@ Authors: Matteo Cipollina, Jonathan Washburn
 
 module
 
-public import Mathlib.CategoryTheory.Subobject.MonoOver
 public import Mathlib.CategoryTheory.Subobject.Lattice
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-public import Mathlib.Data.Int.Basic
 
 /-!
 ## Filtrations
