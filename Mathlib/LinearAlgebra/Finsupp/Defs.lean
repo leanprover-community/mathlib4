@@ -78,6 +78,11 @@ theorem linearEquivFunOnFinite_symm_single [DecidableEq α] (x : α) (m : M) :
 theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFinite R M α).symm f = f :=
   (linearEquivFunOnFinite R M α).symm_apply_apply f
 
+@[simp]
+theorem linearEquivFunOnFinite_symm_apply (f : α → M) (x) :
+    (linearEquivFunOnFinite R M α).symm f x = f x :=
+  rfl
+
 end LinearEquivFunOnFinite
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
