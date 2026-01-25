@@ -258,26 +258,49 @@ lemma epi_iff {X Y : D} (f : X ⟶ Y) :
     exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
       (by simpa using inferInstanceAs (Epi (L.map f')))
 
-
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
   have := preservesMonomorphisms L P
-  refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
-    ((KernelFork.isLimitMapConeEquiv _ L).2
-      (Fork.IsLimit.ofExistsUnique
-        (fun s ↦ existsUnique_of_exists_of_unique ?_
-          (fun _ _ h₁ h₂ ↦ by simpa [cancel_mono] using h₁.trans h₂.symm))))
-  have := KernelFork.condition s
-  sorry
+  have := Localization.essSurj L P.isoModSerre
+  suffices ∀ (W : D) (z : W ⟶ L.obj X) (hz : z ≫ L.map f = 0),
+      ∃ (l : W ⟶ L.obj (kernel f)), l ≫ L.map (kernel.ι f) = z from
+    preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
+      ((KernelFork.isLimitMapConeEquiv _ L).2
+        (Fork.IsLimit.ofExistsUnique
+          (fun s ↦ existsUnique_of_exists_of_unique
+            (this _ _ (KernelFork.condition s))
+            (fun _ _ h₁ h₂ ↦ by simpa [cancel_mono] using h₁.trans h₂.symm))))
+  intro W w hw
+  wlog hw' : ∃ (Z : C) (hZ : W = L.obj Z) (z : Z ⟶ X), w = eqToHom hZ ≫ L.map z
+      generalizing W
+  · obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
+      ((L.objObjPreimageIso W).hom ≫ w)
+    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
+    rw [← cancel_epi (L.map φ.s),
+      MorphismProperty.RightFraction.map_s_comp_map] at hφ
+    obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
+      rw [← hφ, assoc, assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
+    exact ⟨(L.objObjPreimageIso W).inv ≫ inv (L.map φ.s) ≫ l, by simp [hl, ← hφ]⟩
+  obtain ⟨Z, rfl, z, rfl⟩ := hw'
+  simp only [eqToHom_refl, id_comp, ← L.map_comp] at hw
+  rw [map_eq_zero_iff L P, ← exists_isoModSerre_comp_eq_zero_iff P] at hw
+  obtain ⟨Z', t, ht, fac⟩ := hw
+  have := Localization.inverts L P.isoModSerre t ht
+  rw [← assoc] at fac
+  refine ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), ?_⟩
+  simp only [assoc, eqToHom_refl, id_comp, IsIso.inv_comp_eq, ← L.map_comp, kernel.lift_ι]
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
-  refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
-    ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
-      (Cofork.IsColimit.ofExistsUnique
-        (fun s ↦ existsUnique_of_exists_of_unique ?_
-          (fun _ _ h₁ h₂ ↦ by simpa [cancel_epi] using h₁.trans h₂.symm))))
+  suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
+      ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
+    preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
+      ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
+        (Cofork.IsColimit.ofExistsUnique
+          (fun s ↦ existsUnique_of_exists_of_unique
+            (this _ _ (CokernelCofork.condition s))
+            (fun _ _ h₁ h₂ ↦ by simpa [cancel_epi] using h₁.trans h₂.symm))))
   sorry
 
 lemma hasKernels : HasKernels D where
