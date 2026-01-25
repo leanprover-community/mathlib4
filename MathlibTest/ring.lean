@@ -52,6 +52,8 @@ example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+example (x y : ℕ) : x • y = y • x := by ring
+example (x y : ℤ) : x • y = y • x := by ring
 
 section Rat
 

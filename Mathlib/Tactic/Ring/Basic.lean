@@ -354,6 +354,34 @@ def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α))
 
 end
 
+
+mutual
+
+/-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExBase.cast
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExBase sα a → Σ a, ExBase sβ a
+  | .atom i => ⟨a, .atom i⟩
+  | .sum a => let ⟨_, vb⟩ := ExSum.cast a; ⟨_, .sum vb⟩
+
+/-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExProd.cast
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExProd sα a → Σ a, ExProd sβ a
+  | .const ⟨i, h⟩ => ⟨a, .const ⟨i, h⟩⟩
+  | .mul a₁ a₂ a₃ => ⟨_, .mul (ExBase.cast a₁).2 a₂ (ExProd.cast a₃).2⟩
+
+/-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
+def ExSum.cast
+    {v : Lean.Level} {β : Q(Type v)} {sβ : Q(CommSemiring $β)} {a : Q($α)} :
+    ExSum sα a → Σ a, ExSum sβ a
+  | .zero => ⟨_, .zero⟩
+  | .add a₁ a₂ => ⟨_, .add (ExProd.cast a₁).2 (ExSum.cast a₂).2⟩
+
+end
+
+lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
+
 theorem Nat.smul_eq_mul {n : ℕ} {r : R} (hr : n = r) {a : R} : n • a = r * a := by
   subst_vars
   simp only [nsmul_eq_mul]
@@ -389,10 +417,17 @@ def ringCompute :
     let ⟨c, pc⟩ := res.toRawEq
     return ⟨q($c), ⟨qc, hc⟩, pc⟩
   evalCast v β sβ smul x rx := do
-    let ⟨_, vx, px⟩ ← rx.get
+    let ⟨x', vx, px⟩ ← rx.get
+    if (← isDefEq sα sβ) then
+      have : u =QL v := ⟨⟩
+      have : $α =Q $β := ⟨⟩
+      have : $sα =Q $sβ := ⟨⟩
+      let ⟨b, vb⟩ := (ExSum.cast (u := v) (v := u) (sα := sβ) (sβ := sα) vx)
+      have : $b =Q $x' := ⟨⟩
+      assumeInstancesCommute
+      return ⟨_, vb, q(fun a => $px ▸ smul_eq_mul $x' a)⟩
     match v, β, sβ with
     | 0, ~q(ℕ), ~q(inferInstance) =>
-      -- let _ := vx.cast
       let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα sβ vx
       assumeInstancesCommute
       return ⟨y, vy, q(fun a => $px ▸ Nat.smul_eq_mul $py)⟩

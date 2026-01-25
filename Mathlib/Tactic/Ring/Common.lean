@@ -113,6 +113,7 @@ structure _root_.Mathlib.Tactic.Ring.baseType {u : Lean.Level} {α : Q(Type u)} 
   value : ℚ
   hyp : Option Expr
   -- isNat? : Option (Σ n : Q(ℕ), Q(IsNat $e $n))
+deriving Inhabited
 
 def btℕ (e : Q(ℕ)) : Type := Ring.baseType sℕ q($e)
 
