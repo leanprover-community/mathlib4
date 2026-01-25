@@ -150,9 +150,6 @@ theorem starProjection_tendsto_closure_iSup {ι : Type*} [Preorder ι]
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
   exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
 
-@[deprecated (since := "2025-07-07")] alias orthogonalProjection_tendsto_closure_iSup :=
-  starProjection_tendsto_closure_iSup
-
 /-- Given a monotone family `U` of complete submodules of `E` with dense span supremum,
 and a fixed `x : E`, the orthogonal projection of `x` on `U i` tends to `x` along `at_top`. -/
 theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
@@ -165,9 +162,6 @@ theorem starProjection_tendsto_self {ι : Type*} [Preorder ι]
   convert starProjection_tendsto_closure_iSup U hU x
   rw [eq_comm, starProjection_eq_self_iff, top_unique hU']
   trivial
-
-@[deprecated (since := "2025-07-07")] alias
-  orthogonalProjection_tendsto_self := starProjection_tendsto_self
 
 /-- The orthogonal complement satisfies `Kᗮᗮᗮ = Kᗮ`. -/
 theorem triorthogonal_eq_orthogonal : Kᗮᗮᗮ = Kᗮ :=
@@ -190,8 +184,6 @@ theorem orthogonalProjection_apply_eq_linearProjOfIsCompl [K.HasOrthogonalProjec
   rw [map_add, orthogonalProjection_mem_subspace_eq_self,
     orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (Submodule.coe_mem _), add_zero]
 
-@[deprecated (since := "2025-07-11")] alias orthogonalProjection_eq_linear_proj :=
-  orthogonalProjection_apply_eq_linearProjOfIsCompl
 @[deprecated (since := "2025-12-26")] alias orthogonalProjection_eq_linearProjOfIsCompl :=
   orthogonalProjection_apply_eq_linearProjOfIsCompl
 
@@ -200,8 +192,6 @@ theorem toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl [K.HasOrthogonal
       K.linearProjOfIsCompl _ Submodule.isCompl_orthogonal_of_hasOrthogonalProjection :=
   LinearMap.ext orthogonalProjection_apply_eq_linearProjOfIsCompl
 
-@[deprecated (since := "2025-07-11")] alias orthogonalProjection_coe_linearMap_eq_linearProj :=
-  toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl
 @[deprecated (since := "2025-12-26")] alias orthogonalProjection_coe_eq_linearProjOfIsCompl :=
   toLinearMap_orthogonalProjection_eq_linearProjOfIsCompl
 

@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # Distributions

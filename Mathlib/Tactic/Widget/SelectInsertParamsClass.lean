@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 public meta import Lean.Widget.InteractiveGoal
 public meta import Lean.Elab.Deriving.Basic
+public import Lean.Widget.InteractiveGoal
 
 /-! # SelectInsertParamsClass
 

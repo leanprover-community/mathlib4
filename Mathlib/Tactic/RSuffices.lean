@@ -6,6 +6,7 @@ Authors: Moritz Doll
 module
 
 public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # `rsuffices` tactic

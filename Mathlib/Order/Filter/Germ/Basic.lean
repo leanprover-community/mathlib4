@@ -478,7 +478,7 @@ theorem const_div [Div M] (a b : M) : (↑(a / b) : Germ l M) = ↑a / ↑b :=
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] : InvolutiveInv (Germ l G) :=
-  { inv_inv := Quotient.ind' fun _ => congrArg ofFun<| inv_inv _ }
+  { inv_inv := Quotient.ind' fun _ => congrArg ofFun <| inv_inv _ }
 
 instance instHasDistribNeg [Mul G] [HasDistribNeg G] : HasDistribNeg (Germ l G) :=
   { neg_mul := Quotient.ind₂' fun _ _ => congrArg ofFun <| neg_mul ..

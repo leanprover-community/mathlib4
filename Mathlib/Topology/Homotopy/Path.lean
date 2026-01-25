@@ -137,6 +137,13 @@ def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ :
     Homotopy q₀ q₁ :=
   ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+@[simp]
+def pathCast {x x' y y' : X} {p q : Path x y} (F : p.Homotopy q) (hx : x' = x) (hy : y' = y) :
+    (p.cast hx hy).Homotopy (q.cast hx hy) :=
+  F
+
 end
 
 section
@@ -268,6 +275,12 @@ theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p�
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.map2 Homotopy.hcomp hq
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = x₀) (htarget : x₃ = x₁) :
+    (p.cast hsource htarget).Homotopic (q.cast hsource htarget) :=
+  hpq
+
 /--
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
@@ -346,8 +359,7 @@ theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
 /-- Cast a path homotopy class using equalities of endpoints. -/
 def cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y) :
     Homotopic.Quotient x' y' :=
-  _root_.Quotient.map (fun p => p.cast hx hy)
-    (fun _ _ h => Nonempty.map (fun F => F.cast (by simp) (by simp)) h) γ
+  _root_.Quotient.map (fun p => p.cast hx hy) (fun _ _ h => h) γ
 
 @[simp, grind =]
 theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :
