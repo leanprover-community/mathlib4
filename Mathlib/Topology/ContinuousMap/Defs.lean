@@ -9,6 +9,7 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Lift
 public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Continuous bundled maps

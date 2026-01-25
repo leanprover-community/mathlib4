@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BENCH="scripts/bench"
+
+echo "Running benchmark: build"
+"$BENCH/build/run"
+
+echo "Running benchmark: lint"
+"$BENCH/lint/run"
+
+echo "Running benchmark: open-mathlib"
+"$BENCH/open-mathlib/run"
+
+echo "Running benchmark: size"
+"$BENCH/size/run"
