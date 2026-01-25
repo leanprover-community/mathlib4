@@ -54,7 +54,7 @@ def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R := Function.extend (
 
 @[simp]
 theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
-    (renameFun f p).coeff (embDomain f x)  = p.coeff x :=
+    (renameFun f p).coeff (embDomain f x) = p.coeff x :=
   ((embDomain_injective f).factorsThrough _).extend_apply _ _
 
 theorem coeff_renameFun_eq_zero_of_notMem_range_embDomain (p : MvPowerSeries σ R) {x : τ →₀ ℕ}
