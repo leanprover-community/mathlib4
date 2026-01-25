@@ -68,6 +68,7 @@ public import Mathlib.Tactic.GuardHypNums
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.InferParam
+public import Mathlib.Tactic.InfoviewSearch.LibraryRewrite
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lift
@@ -114,7 +115,6 @@ public meta import Mathlib.Tactic.Variable
 public meta import Mathlib.Tactic.Widget.Calc
 public meta import Mathlib.Tactic.Widget.CongrM
 public meta import Mathlib.Tactic.Widget.Conv
-public meta import Mathlib.Tactic.Widget.LibraryRewrite
 public meta import Mathlib.Tactic.WLOG
 public meta import Mathlib.Util.AssertExists
 public meta import Mathlib.Util.CountHeartbeats
