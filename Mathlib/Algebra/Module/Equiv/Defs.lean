@@ -366,11 +366,11 @@ theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
 
 @[simp]
 lemma comp_symm_assoc (f : M₃ →ₛₗ[σ₃₂] M₂) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
-  e₁₂.toLinearMap ∘ₛₗ e₁₂.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
+    e₁₂.toLinearMap ∘ₛₗ e₁₂.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
 
 @[simp]
 lemma symm_comp_assoc (f : M₃ →ₛₗ[σ₃₁] M₁) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
-  e₁₂.symm.toLinearMap ∘ₛₗ e₁₂.toLinearMap ∘ₛₗ f = f := by ext; simp
+    e₁₂.symm.toLinearMap ∘ₛₗ e₁₂.toLinearMap ∘ₛₗ f = f := by ext; simp
 
 @[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
