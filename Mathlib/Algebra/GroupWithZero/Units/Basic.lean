@@ -81,53 +81,55 @@ Note that while this is in the `Ring` namespace for brevity, it requires the wea
 `MonoidWithZero M₀` instead of `Ring M₀`. -/
 noncomputable def inverse : M₀ → M₀ := fun x => if h : IsUnit x then ((h.unit⁻¹ : M₀ˣ) : M₀) else 0
 
+@[inherit_doc] postfix:max "⁻¹ʳ" => inverse
+
 /-- By definition, if `x` is invertible then `inverse x = x⁻¹`. -/
-theorem inverse_unit (u : M₀ˣ) : inverse (u : M₀) = (u⁻¹ : M₀ˣ) := by
+theorem inverse_unit (u : M₀ˣ) : (u : M₀)⁻¹ʳ = (u⁻¹ : M₀ˣ) := by
   rw [inverse, dif_pos u.isUnit, IsUnit.unit_of_val_units]
 
-theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : inverse x = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
+theorem inverse_of_isUnit {x : M₀} (h : IsUnit x) : x⁻¹ʳ = ((h.unit⁻¹ : M₀ˣ) : M₀) := dif_pos h
 
 /-- By definition, if `x` is not invertible then `inverse x = 0`. -/
 @[simp]
-theorem inverse_non_unit (x : M₀) (h : ¬IsUnit x) : inverse x = 0 :=
+theorem inverse_non_unit (x : M₀) (h : ¬IsUnit x) : x⁻¹ʳ = 0 :=
   dif_neg h
 
-theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * inverse x = 1 := by
+theorem mul_inverse_cancel (x : M₀) (h : IsUnit x) : x * x⁻¹ʳ = 1 := by
   rcases h with ⟨u, rfl⟩
   rw [inverse_unit, Units.mul_inv]
 
-theorem inverse_mul_cancel (x : M₀) (h : IsUnit x) : inverse x * x = 1 := by
+theorem inverse_mul_cancel (x : M₀) (h : IsUnit x) : x⁻¹ʳ * x = 1 := by
   rcases h with ⟨u, rfl⟩
   rw [inverse_unit, Units.inv_mul]
 
-theorem mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * inverse x = y := by
+theorem mul_inverse_cancel_right (x y : M₀) (h : IsUnit x) : y * x * x⁻¹ʳ = y := by
   rw [mul_assoc, mul_inverse_cancel x h, mul_one]
 
-theorem inverse_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * inverse x * x = y := by
+theorem inverse_mul_cancel_right (x y : M₀) (h : IsUnit x) : y * x⁻¹ʳ * x = y := by
   rw [mul_assoc, inverse_mul_cancel x h, mul_one]
 
-theorem mul_inverse_cancel_left (x y : M₀) (h : IsUnit x) : x * (inverse x * y) = y := by
+theorem mul_inverse_cancel_left (x y : M₀) (h : IsUnit x) : x * (x⁻¹ʳ * y) = y := by
   rw [← mul_assoc, mul_inverse_cancel x h, one_mul]
 
-theorem inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : inverse x * (x * y) = y := by
+theorem inverse_mul_cancel_left (x y : M₀) (h : IsUnit x) : x⁻¹ʳ * (x * y) = y := by
   rw [← mul_assoc, inverse_mul_cancel x h, one_mul]
 
-theorem inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : inverse x * y = z ↔ y = x * z :=
+theorem inverse_mul_eq_iff_eq_mul (x y z : M₀) (h : IsUnit x) : x⁻¹ʳ * y = z ↔ y = x * z :=
   ⟨fun h1 => by rw [← h1, mul_inverse_cancel_left _ _ h],
   fun h1 => by rw [h1, inverse_mul_cancel_left _ _ h]⟩
 
-theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * inverse z ↔ x * z = y :=
+theorem eq_mul_inverse_iff_mul_eq (x y z : M₀) (h : IsUnit z) : x = y * z⁻¹ʳ ↔ x * z = y :=
   ⟨fun h1 => by rw [h1, inverse_mul_cancel_right _ _ h],
   fun h1 => by rw [← h1, mul_inverse_cancel_right _ _ h]⟩
 
 variable (M₀)
 
-@[simp]
-theorem inverse_one : inverse (1 : M₀) = 1 :=
+@[simp, grind =]
+theorem inverse_one : (1 : M₀)⁻¹ʳ = 1 :=
   inverse_unit 1
 
-@[simp]
-theorem inverse_zero : inverse (0 : M₀) = 0 := by
+@[simp, grind =]
+theorem inverse_zero : (0 : M₀)⁻¹ʳ = 0 := by
   nontriviality
   exact inverse_non_unit _ not_isUnit_zero
 
@@ -135,11 +137,11 @@ variable {M₀}
 
 end Ring
 
-theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit (Ring.inverse a)
+theorem IsUnit.ringInverse {a : M₀} : IsUnit a → IsUnit a⁻¹ʳ
   | ⟨u, hu⟩ => hu ▸ ⟨u⁻¹, (Ring.inverse_unit u).symm⟩
 
-@[simp]
-theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
+@[simp, grind =]
+theorem isUnit_ringInverse {a : M₀} : IsUnit a⁻¹ʳ ↔ IsUnit a :=
   ⟨fun h => by
     cases subsingleton_or_nontrivial M₀
     · convert h
@@ -147,6 +149,42 @@ theorem isUnit_ringInverse {a : M₀} : IsUnit (Ring.inverse a) ↔ IsUnit a :=
       rw [Ring.inverse_non_unit _ h]
       exact not_isUnit_zero,
     IsUnit.ringInverse⟩
+
+theorem Ring.isUnit_iff_inverse_ne_zero [Nontrivial M₀] {x : M₀} : IsUnit x ↔ x⁻¹ʳ ≠ 0 :=
+ ⟨(IsUnit.ringInverse · |>.ne_zero), by simpa using mt <| Ring.inverse_non_unit (x := x)⟩
+
+grind_pattern Ring.isUnit_iff_inverse_ne_zero => IsUnit x, x⁻¹ʳ
+
+theorem Ring.not_isUnit_iff_inverse_eq_zero [Nontrivial M₀] {x : M₀} : ¬ IsUnit x ↔ x⁻¹ʳ = 0 := by
+  grind
+
+theorem Ring.isUnit_iff_mul_inverse_cancel {x : M₀} : IsUnit x ↔ x * x⁻¹ʳ = 1 := by
+  nontriviality M₀
+  refine ⟨mul_inverse_cancel _, ?_⟩
+  contrapose
+  simp +contextual [not_isUnit_iff_inverse_eq_zero]
+
+grind_pattern Ring.isUnit_iff_mul_inverse_cancel => IsUnit x, x⁻¹ʳ
+
+theorem Ring.isUnit_iff_inverse_mul_cancel (x : M₀) : IsUnit x ↔ x⁻¹ʳ * x = 1 := by
+  nontriviality M₀
+  refine ⟨Ring.inverse_mul_cancel x, ?_⟩
+  contrapose
+  simp +contextual [not_isUnit_iff_inverse_eq_zero]
+
+grind_pattern Ring.isUnit_iff_inverse_mul_cancel => IsUnit x, x⁻¹ʳ
+
+@[grind =]
+theorem Ring.inverse_inverse {a : M₀} (h : IsUnit a) : a⁻¹ʳ⁻¹ʳ = a := by
+  obtain ⟨u, rfl⟩ := h
+  rw [inverse_unit, inverse_unit, inv_inv]
+
+@[simp, grind =]
+theorem Ring.inverse_inverse_inverse {a : M₀} : a⁻¹ʳ⁻¹ʳ⁻¹ʳ = a⁻¹ʳ := by
+  nontriviality M₀
+  by_cases h : IsUnit a
+  · rw [Ring.inverse_inverse h]
+  · simp [Ring.not_isUnit_iff_inverse_eq_zero.mp h]
 
 namespace Units
 
@@ -371,7 +409,8 @@ lemma zpow_ne_zero_iff {n : ℤ} (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (zp
 lemma zpow_neg_mul_zpow_self (n : ℤ) (ha : a ≠ 0) : a ^ (-n) * a ^ n = 1 := by
   rw [zpow_neg]; exact inv_mul_cancel₀ (zpow_ne_zero n ha)
 
-theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
+@[grind =]
+theorem Ring.inverse_eq_inv (a : G₀) : a⁻¹ʳ = a⁻¹ := by
   obtain rfl | ha := eq_or_ne a 0
   · simp
   · exact Ring.inverse_unit (Units.mk0 a ha)
