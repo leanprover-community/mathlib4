@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Data.Fintype.Order
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Basic theory of heights

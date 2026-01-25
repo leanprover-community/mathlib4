@@ -6,7 +6,7 @@ Authors: Stepan Nesterov
 module
 
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Basic facts about algebra representations

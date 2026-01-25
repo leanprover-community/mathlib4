@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
-import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 # Alternating Maps

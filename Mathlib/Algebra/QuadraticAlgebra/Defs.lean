@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
-import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 

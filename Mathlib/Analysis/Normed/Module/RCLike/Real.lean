@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Basic facts about real (semi)normed spaces

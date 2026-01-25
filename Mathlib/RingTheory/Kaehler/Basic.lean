@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.EssentialFiniteness
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # The module of Kähler differentials

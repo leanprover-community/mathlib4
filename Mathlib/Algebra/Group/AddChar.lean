@@ -10,7 +10,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Characters from additive to multiplicative monoids
