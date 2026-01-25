@@ -184,7 +184,7 @@ theorem Step.diamond :
 
 @[to_additive]
 theorem Step.to_red : Step L₁ L₂ → Red L₁ L₂ :=
-  ReflTransGen.single
+  ReflTransGen.single L₁ L₂
 
 /-- **Church-Rosser theorem** for word reduction: If `w1 w2 w3` are words such that `w1` reduces
 to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
@@ -201,7 +201,7 @@ theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
-  ReflTransGen.lift (List.cons p) Step.cons
+  ReflTransGen.lift (List.cons p) (fun _ _ => Step.cons) L₁ L₂
 
 @[to_additive]
 theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
@@ -231,7 +231,7 @@ theorem append_append_left_iff : ∀ L, Red (L ++ L₁) (L ++ L₂) ↔ Red L₁
 
 @[to_additive]
 theorem append_append (h₁ : Red L₁ L₃) (h₂ : Red L₂ L₄) : Red (L₁ ++ L₂) (L₃ ++ L₄) :=
-  (h₁.lift (fun L => L ++ L₂) Step.append_right).trans ((append_append_left_iff _).2 h₂)
+  (h₁.lift (fun L => L ++ L₂) fun _ _ => Step.append_right).trans ((append_append_left_iff _).2 h₂)
 
 @[to_additive]
 theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄ ∧ Red L₃ L₁ ∧ Red L₄ L₂ :=
@@ -273,7 +273,7 @@ theorem cons_nil_iff_singleton {x b} : Red ((x, b) :: L) [] ↔ Red L [(x, not b
   Iff.intro
     (fun h => by
       have h₁ : Red ((x, not b) :: (x, b) :: L) [(x, not b)] := cons_cons h
-      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single Step.cons_not_rev
+      have h₂ : Red ((x, not b) :: (x, b) :: L) L := ReflTransGen.single _ _ Step.cons_not_rev
       let ⟨L', h₁, h₂⟩ := church_rosser h₁ h₂
       rw [singleton_iff] at h₁
       subst L'
@@ -324,7 +324,7 @@ protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
     _ (fun a b => b <+ a) _
     (fun l => List.Sublist.refl l)
     (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
-    Red.Step.sublist _ _
+    (fun _ _ => Red.Step.sublist) _ _
 
 @[to_additive]
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
@@ -363,18 +363,20 @@ theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
   equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single _ _ hcd⟩
 
 @[to_additive]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
-  join_of_single reflexive_reflTransGen h.to_red
+  join_of_single reflexive_reflTransGen L₁ L₂ h.to_red
 
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
   Iff.intro
-    (fun h ↦ equivalence_join_red.eqvGen_iff.mp <| h.mono join_red_of_step)
-    (join_of_equivalence (Relation.EqvGen.is_equivalence _) <|
-      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) @(EqvGen.rel))
+    (fun h =>
+      have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
+      equivalence_join_red.eqvGen_iff.1 this)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _)
+      (reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel) _ _)
 
 /-! ### Reduced words -/
 
@@ -585,7 +587,7 @@ theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂)
 
 @[to_additive]
 theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (invRev L₁) (invRev L₂) :=
-  ReflTransGen.lift FreeGroup.invRev Red.Step.invRev h
+  Relation.ReflTransGen.lift FreeGroup.invRev (fun _a _b => Red.Step.invRev) _ _ h
 
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
@@ -644,7 +646,7 @@ lemma ext_hom {M : Type*} [Monoid M] (f g : FreeGroup α →* M) (h : ∀ a, f (
 @[to_additive]
 theorem Red.exact : mk L₁ = mk L₂ ↔ Join Red L₁ L₂ :=
   calc
-    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := Iff.intro Quot.eqvGen_exact Quot.eqvGen_sound
+    mk L₁ = mk L₂ ↔ EqvGen Red.Step L₁ L₂ := ⟨Quot.eqvGen_exact _ _, Quot.eqvGen_sound _ _⟩
     _ ↔ Join Red L₁ L₂ := eqvGen_step_iff_join_red
 
 /-- The canonical map from the type to the free group is an injection. -/

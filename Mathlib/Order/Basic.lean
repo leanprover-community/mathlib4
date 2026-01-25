@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Subtype
 public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Defs.Prop
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.GRewrite
 public import Mathlib.Tactic.Spread
@@ -618,10 +619,6 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 
 /-! ### Order instances on the function space -/
 
-
-instance Pi.hasLe [∀ i, LE (π i)] :
-    LE (∀ i, π i) where le x y := ∀ i, x i ≤ y i
-
 theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
     x ≤ y ↔ ∀ i, x i ≤ y i :=
   Iff.rfl
@@ -1183,10 +1180,6 @@ instance : DenselyOrdered PUnit :=
 end PUnit
 
 section «Prop»
-
-/-- Propositions form a complete Boolean algebra, where the `≤` relation is given by implication. -/
-instance Prop.le : LE Prop :=
-  ⟨(· → ·)⟩
 
 @[simp]
 theorem le_Prop_eq : ((· ≤ ·) : Prop → Prop → Prop) = (· → ·) :=
