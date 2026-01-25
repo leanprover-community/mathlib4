@@ -226,7 +226,7 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
-class RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+structure RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) where
   evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y →
     MetaM ((Result baseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
@@ -269,7 +269,7 @@ instance : Inhabited (Σ e, (ExBase bt sα) e) := ⟨default, .atom 0⟩
 instance : Inhabited (Σ e, (ExSum bt sα) e) := ⟨_, .zero⟩
 instance : Inhabited (Σ e, (ExProd bt sα) e) := ⟨default, .const default⟩
 
-variable [RingCompute bt sα]
+variable (rc : RingCompute bt sα) (rcℕ : RingCompute btℕ sℕ)
 
 mutual
 
@@ -306,19 +306,19 @@ end
 
 mutual
 
-variable [RingCompute btℕ sℕ]
+variable (rcℕ : RingCompute btℕ sℕ)
 
-partial def ExBase.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExBase bt sα e → String := fun
+partial def ExBase.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExBase bt sα e → String := fun
   | .atom id => s!"id: {id}"
-  | .sum v => s!"{v.toString}"
+  | .sum v => s!"{v.toString rc}"
 
-partial def ExProd.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExProd bt sα e → String := fun
-  | .const value => s!"({RingCompute.toString (sα := sα) value})"
-  | .mul vx ve vt => s!"({vx.toString})^({ve.toExProd.2.toString}) * {vt.toString}"
+partial def ExProd.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExProd bt sα e → String := fun
+  | .const value => s!"({rc.toString (sα := sα) value})"
+  | .mul vx ve vt => s!"({vx.toString rc})^({ve.toExProd.2.toString rcℕ}) * {vt.toString rc}"
 
-partial def ExSum.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} [RingCompute bt sα] (e : Q($α)) : ExSum bt sα e → String := fun
+partial def ExSum.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExSum bt sα e → String := fun
   | .zero => s!"0"
-  | .add va vb => s!"{va.toString} + {vb.toString}"
+  | .add va vb => s!"{va.toString rc} + {vb.toString rc}"
 
 end
 
@@ -331,7 +331,7 @@ def ExBase.toProd
     {a : Q($α)} {b : Q(ℕ)}
     (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
-      let ⟨_, one, pf⟩ := RingCompute.one sα (baseType := bt)
+      let ⟨_, one, pf⟩ := rc.one
       ⟨_, .mul va vb (.const  (one)),
         (q($pf ▸ Eq.refl ($a ^ $b * (nat_lit 1).rawCast))) ⟩
 
@@ -344,66 +344,67 @@ def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
 
 mutual
 
-variable [RingCompute (Ring.baseType sα) sα] [RingCompute btℕ sℕ]
+variable (rcℕ : RingCompute btℕ sℕ)
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
 def ExBase.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Bool
   | .atom i, .atom j => i == j
-  | .sum a, .sum b => a.eq b
+  | .sum a, .sum b => a.eq rc b
   | _, _ => false
 
 @[inherit_doc ExBase.eq]
 def ExProd.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Bool
-  | .const i, .const j => RingCompute.eq sα i j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq b₁ && a₂.toExProd.2.eq b₂.toExProd.2 && a₃.eq b₃
+  | .const i, .const j => rc.eq i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => a₁.eq rc b₁ && a₂.toExProd.2.eq rcℕ b₂.toExProd.2 && a₃.eq rc b₃
   | _, _ => false
 
 @[inherit_doc ExBase.eq]
 def ExSum.eq
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα]
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Bool
   | .zero, .zero => true
-  | .add a₁ a₂, .add b₁ b₂ => a₁.eq b₁ && a₂.eq b₂
+  | .add a₁ a₂, .add b₁ b₂ => a₁.eq rc b₁ && a₂.eq rc b₂
   | _, _ => false
 end
 
 mutual
-variable [RingCompute (Ring.baseType sα) sα] [RingCompute btℕ sℕ]
+
+variable (rcℕ : RingCompute btℕ sℕ)
 
 /--
 A total order on normalized expressions.
 This is not an `Ord` instance because it is heterogeneous.
 -/
 def ExBase.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Ordering
   | .atom i, .atom j => compare i j
-  | .sum a, .sum b => a.cmp b
+  | .sum a, .sum b => a.cmp rc b
   | .atom .., .sum .. => .lt
   | .sum .., .atom .. => .gt
 
 @[inherit_doc ExBase.cmp]
 def ExProd.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Ordering
-  | .const i, .const j => RingCompute.compare sα i j
-  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp b₁).then (a₂.toExProd.2.cmp b₂.toExProd.2) |>.then (a₃.cmp b₃)
+  | .const i, .const j => rc.compare i j
+  | .mul a₁ a₂ a₃, .mul b₁ b₂ b₃ => (a₁.cmp rc b₁).then (a₂.toExProd.2.cmp rcℕ b₂.toExProd.2) |>.then (a₃.cmp rc b₃)
   | .const _, .mul .. => .lt
   | .mul .., .const _ => .gt
 
 @[inherit_doc ExBase.cmp]
 def ExSum.cmp
-    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} [RingCompute bt sα] {a b : Q($α)} :
+    {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Ordering
   | .zero, .zero => .eq
-  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp b₁).then (a₂.cmp b₂)
+  | .add a₁ a₂, .add b₁ b₂ => (a₁.cmp rc b₁).then (a₂.cmp rc b₂)
   | .zero, .add .. => .lt
   | .add .., .zero => .gt
 end
@@ -458,19 +459,19 @@ If the monomials are not compatible, returns `none`.
 For example, `xy + 2xy = 3xy` is a `.nonzero` overlap, while `xy + xz` returns `none`
 and `xy + -xy = 0` is a `.zero` overlap.
 -/
-def evalAddOverlap [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
+def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
     OptionT MetaM (Overlap bt sα q($a + $b)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za, .const zb => do
-    let ⟨⟨_, zc, pf⟩, isZero⟩ ← RingCompute.evalAdd (u := u) (sα := sα) _ _ za zb
+    let ⟨⟨_, zc, pf⟩, isZero⟩ ← rc.evalAdd (u := u) (sα := sα) _ _ za zb
     match isZero with
     | .some pf => pure <| .zero q($pf)
     | .none =>
       assumeInstancesCommute
       pure <| .nonzero ⟨_, .const zc, q($pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .mul (x := b₁) (e := b₂) vb₁ vb₂ vb₃ => do
-    guard (va₁.eq vb₁ && va₂.toExProd.2.eq vb₂.toExProd.2)
+    guard (va₁.eq rcℕ rc vb₁ && va₂.toExProd.2.eq rcℕ rcℕ vb₂.toExProd.2)
     have : $a₁ =Q $b₁ := ⟨⟩; have : $a₂ =Q $b₂ := ⟨⟩
     match ← evalAddOverlap va₃ vb₃ with
     | .zero p => pure <| .zero q(add_overlap_pf_zero $a₁ $a₂ $p)
@@ -503,7 +504,7 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalAdd [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+partial def evalAdd {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
     MetaM <| Result (ExSum bt sα) q($a + $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
@@ -511,7 +512,7 @@ partial def evalAdd [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExSum bt sα a
   | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
   | .add (a := a₁) (b := _a₂) va₁ va₂, .add (a := b₁) (b := _b₂) vb₁ vb₂ =>
     have va := .add va₁ va₂; have vb := .add vb₁ vb₂ -- FIXME: why does `va@(...)` fail?
-    match ← (evalAddOverlap sα va₁ vb₁).run with
+    match ← (evalAddOverlap sα rc rcℕ va₁ vb₁).run with
     | some (.nonzero ⟨_, vc₁, pc₁⟩) =>
       let ⟨_, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨_, .add vc₁ vc₂, q(add_pf_add_overlap $pc₁ $pc₂)⟩
@@ -519,7 +520,7 @@ partial def evalAdd [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExSum bt sα a
       let ⟨c₂, vc₂, pc₂⟩ ← evalAdd va₂ vb₂
       return ⟨c₂, vc₂, q(add_pf_add_overlap_zero $pc₁ $pc₂)⟩
     | none =>
-      if let .lt := va₁.cmp vb₁ then
+      if let .lt := va₁.cmp rcℕ rc vb₁ then
         let ⟨_c, vc, pc⟩ ← evalAdd va₂ vb
         return ⟨_, .add va₁ vc, q(add_pf_add_lt $a₁ $pc)⟩
       else
@@ -554,12 +555,12 @@ theorem mul_pp_pf_overlap {ea eb e : ℕ} (x : R) (_ : ea + eb = e) (_ : a₂ * 
 * `(a₁ * a₂) * (b₁ * b₂) = a₁ * (a₂ * (b₁ * b₂))` (if `a₁.lt b₁`)
 * `(a₁ * a₂) * (b₁ * b₂) = b₁ * ((a₁ * a₂) * b₂)` (if not `a₁.lt b₁`)
 -/
-partial def evalMulProd [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
+partial def evalMulProd {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) :
     MetaM <| Result (ExProd bt sα) q($a * $b) := do
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za, .const zb =>
-    let ⟨_, zc, pf⟩ ← RingCompute.evalMul sα _ _ za zb
+    let ⟨_, zc, pf⟩ ← rc.evalMul _ _ za zb
     assumeInstancesCommute
     return ⟨_, .const zc, q($pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) =>
@@ -572,16 +573,16 @@ partial def evalMulProd [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExProd bt 
     have va := .mul vxa vea va₂; have vb := .mul vxb veb vb₂ -- FIXME: why does `va@(...)` fail?
     let ⟨ea', vea'⟩ := vea.toExProd
     let ⟨eb', veb'⟩ := veb.toExProd
-    if vxa.eq vxb then
+    if vxa.eq rcℕ rc vxb then
       have : $xa =Q $xb := ⟨⟩
-      if let some (.nonzero ⟨ec', vec', pec'⟩) ← (evalAddOverlap sℕ vea' veb').run then
+      if let some (.nonzero ⟨ec', vec', pec'⟩) ← (evalAddOverlap sℕ rcℕ rcℕ vea' veb').run then
         let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb₂
         let ⟨ec, vec⟩ := vec'.toExProdNat
         have : $ea =Q $ea' := ⟨⟩
         have : $eb =Q $eb' := ⟨⟩
         have : $ec =Q $ec' := ⟨⟩
         return ⟨_, .mul vxa vec vc, q(mul_pp_pf_overlap $xa $pec' $pc)⟩
-    if let .lt := (vxa.cmp vxb).then (vea'.cmp veb') then
+    if let .lt := (vxa.cmp rcℕ rc vxb).then (vea'.cmp rcℕ rcℕ veb') then
       let ⟨_, vc, pc⟩ ← evalMulProd va₂ vb
       return ⟨_, .mul vxa vea vc, q(mul_pf_left $xa $ea $pc)⟩
     else
@@ -599,14 +600,14 @@ theorem mul_add {d : R} (_ : (a : R) * b₁ = c₁) (_ : a * b₂ = c₂) (_ : c
 * `a * 0 = 0`
 * `a * (b₁ + b₂) = (a * b₁) + (a * b₂)`
 -/
-def evalMul₁ [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExProd bt sα a) (vb : ExSum bt sα b) :
+def evalMul₁ {a b : Q($α)} (va : ExProd bt sα a) (vb : ExSum bt sα b) :
     MetaM <| Result (ExSum bt sα) q($a * $b) := do
   match vb with
   | .zero => return ⟨_, .zero, q(mul_zero $a)⟩
   | .add vb₁ vb₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalMulProd sα va vb₁
+    let ⟨_, vc₁, pc₁⟩ ← evalMulProd sα rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalMul₁ va vb₂
-    let ⟨_, vd, pd⟩ ← evalAdd sα vc₁.toSum vc₂
+    let ⟨_, vd, pd⟩ ← evalAdd sα rc rcℕ vc₁.toSum vc₂
     return ⟨_, vd, q(mul_add $pc₁ $pc₂ $pd)⟩
 
 theorem zero_mul (b : R) : 0 * b = 0 := by simp
@@ -619,14 +620,14 @@ theorem add_mul {d : R} (_ : (a₁ : R) * b = c₁) (_ : a₂ * b = c₂) (_ : c
 * `0 * b = 0`
 * `(a₁ + a₂) * b = (a₁ * b) + (a₂ * b)`
 -/
-def evalMul [RingCompute btℕ sℕ] {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
+def evalMul {a b : Q($α)} (va : ExSum bt sα a) (vb : ExSum bt sα b) :
     MetaM <| Result (ExSum bt sα) q($a * $b) := do
   match va with
   | .zero => return ⟨_, .zero, q(zero_mul $b)⟩
   | .add va₁ va₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalMul₁ sα va₁ vb
+    let ⟨_, vc₁, pc₁⟩ ← evalMul₁ sα rc rcℕ va₁ vb
     let ⟨_, vc₂, pc₂⟩ ← evalMul va₂ vb
-    let ⟨_, vd, pd⟩ ← evalAdd sα vc₁ vc₂
+    let ⟨_, vd, pd⟩ ← evalAdd sα rc rcℕ vc₁ vc₂
     return ⟨_, vd, q(add_mul $pc₁ $pc₂ $pd)⟩
 
 /-! ### Negation -/
@@ -647,7 +648,7 @@ def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd bt sα a) :
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const za =>
-    let ⟨b, zb, pb⟩ ← RingCompute.evalNeg sα _ q($rα) za
+    let ⟨b, zb, pb⟩ ← rc.evalNeg _ q($rα) za
     return ⟨b, .const zb,  q($pb)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ ← evalNegProd rα va₃
@@ -671,7 +672,7 @@ def evalNeg {a : Q($α)} (rα : Q(CommRing $α)) (va : ExSum bt sα a) :
   match va with
   | .zero => return ⟨_, .zero, q(neg_zero (R := $α))⟩
   | .add va₁ va₂ =>
-    let ⟨_, vb₁, pb₁⟩ ← evalNegProd sα rα va₁
+    let ⟨_, vb₁, pb₁⟩ ← evalNegProd sα rc rα va₁
     let ⟨_, vb₂, pb₂⟩ ← evalNeg rα va₂
     return ⟨_, .add vb₁ vb₂, q(neg_add $pb₁ $pb₂)⟩
 
@@ -684,11 +685,11 @@ theorem sub_pf {R} [CommRing R] {a b c d : R}
 
 * `a - b = a + -b`
 -/
-def evalSub [RingCompute btℕ sℕ] {a b : Q($α)}
+def evalSub {a b : Q($α)}
     (rα : Q(CommRing $α)) (va : ExSum bt sα a) (vb : ExSum bt sα b) :
     MetaM <| Result (ExSum bt sα) q($a - $b) := do
-  let ⟨_c, vc, pc⟩ ← evalNeg sα rα vb
-  let ⟨d, vd, pd⟩ ← evalAdd sα va vc
+  let ⟨_c, vc, pc⟩ ← evalNeg sα rc rα vb
+  let ⟨d, vd, pd⟩ ← evalAdd sα rc rcℕ va vc
   assumeInstancesCommute
   return ⟨d, vd, q(sub_pf $pc $pd)⟩
 
@@ -705,7 +706,7 @@ the input types are different.)
 -/
 def evalPowProdAtom {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b) :=
-    let ⟨_, vc, pc⟩ := (ExBase.sum va.toSum).toProd _ vb
+    let ⟨_, vc, pc⟩ := (ExBase.sum va.toSum).toProd _ rc vb
   ⟨_, vc, q($pc ▸ pow_prod_atom $a $b)⟩
 
 theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
@@ -718,7 +719,7 @@ exponent expression.
 -/
 def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExSum bt sα) q($a ^ $b) :=
-  let ⟨_, vc, pc⟩ := (va.toProd _ vb)
+  let ⟨_, vc, pc⟩ := (va.toProd _ rc vb)
   ⟨_, vc.toSum, q($pc ▸ pow_atom $a $b)⟩
 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
@@ -796,7 +797,7 @@ into a sum of monomials.
 * `x ^ (2*n) = x ^ n * x ^ n`
 * `x ^ (2*n+1) = x ^ n * x ^ n * x`
 -/
-partial def evalPowNat [RingCompute btℕ sℕ] {a : Q($α)} (va : ExSum bt sα a) (n : Q(ℕ)) :
+partial def evalPowNat {a : Q($α)} (va : ExSum bt sα a) (n : Q(ℕ)) :
     MetaM <| Result (ExSum bt sα) q($a ^ $n) := do
   let nn := n.natLit!
   if nn = 1 then
@@ -808,13 +809,13 @@ partial def evalPowNat [RingCompute btℕ sℕ] {a : Q($α)} (va : ExSum bt sα 
     if nn &&& 1 = 0 then
       have : $n =Q 2 * $m := ⟨⟩
       let ⟨_, vb, pb⟩ ← evalPowNat va m
-      let ⟨_, vc, pc⟩ ← evalMul sα vb vb
+      let ⟨_, vc, pc⟩ ← evalMul sα rc rcℕ vb vb
       return ⟨_, vc, q(pow_bit0 $pb $pc)⟩
     else
       have : $n =Q 2 * $m + 1 := ⟨⟩
       let ⟨_, vb, pb⟩ ← evalPowNat va m
-      let ⟨_, vc, pc⟩ ← evalMul sα vb vb
-      let ⟨_, vd, pd⟩ ← evalMul sα vc va
+      let ⟨_, vc, pc⟩ ← evalMul sα rc rcℕ vb vb
+      let ⟨_, vd, pd⟩ ← evalMul sα rc rcℕ vc va
       return ⟨_, vd, q(pow_bit1 $pb $pc $pd)⟩
 
 theorem one_pow {a : R} (b : ℕ) (ha : IsNat a 1) : a ^ b = a := by
@@ -837,13 +838,13 @@ private local instance {m m'} [Monad m] [Monad m'] [MonadLiftT m m'] :
 
 In all other cases we use `evalPowProdAtom`.
 -/
-def evalPowProd [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
+def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
     MetaM <| Result (ExProd bt sα) q($a ^ $b) := do
   Lean.Core.checkSystem decl_name%.toString
   let res : OptionT MetaM (Result (ExProd bt sα) q($a ^ $b)) := do
     match va with
     | va@(.const za) =>
-      match RingCompute.isOne sα za with
+      match rc.isOne za with
         --  want to continue onto other branch...
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
@@ -852,7 +853,7 @@ def evalPowProd [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExProd 
         | .const _ =>
           -- TODO: Decide if this is the best way to extract the exponent as a Nat.
           have lit : Q(ℕ) := b.appArg!
-          let ⟨c, zc, pc⟩ ← RingCompute.evalPow sα _ za lit
+          let ⟨c, zc, pc⟩ ← rc.evalPow _ za lit
           have : $b =Q $lit := ⟨⟩
           assumeInstancesCommute
           return ⟨c, .const zc, q($pc)⟩
@@ -860,7 +861,7 @@ def evalPowProd [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExProd 
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
       let ⟨b', vb'⟩ := vb.toExProd
-      let ⟨c₁, vc₁, pc₁⟩ ← evalMulProd (bt := btℕ) sℕ vea₁' vb'
+      let ⟨c₁, vc₁, pc₁⟩ ← evalMulProd sℕ rcℕ rcℕ vea₁' vb'
       let ⟨c₁', vc₁'⟩ := vc₁.toExProdNat
       let ⟨_, vc₂, pc₂⟩ ← evalPowProd va₂ vb
       have : $c₁ =Q $c₁' := ⟨⟩
@@ -870,7 +871,7 @@ def evalPowProd [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExProd 
     -- match va, vb with
     -- | .mul vxa₁ vea₁ va₂, vb =>
     -- | _, _ => OptionT.fail
-  return (← res.run).getD (evalPowProdAtom sα va vb)
+  return (← res.run).getD (evalPowProdAtom sα rc va vb)
 
 /--
 The result of `extractCoeff` is a numeral and a proof that the original expression
@@ -898,13 +899,13 @@ theorem coeff_mul {a₃ c₂ k : ℕ}
 * `c = 1 * c` (if `c` is a constant)
 * `a * b = (a * b') * k` if `b = b' * k`
 -/
-def extractCoeff [RingCompute btℕ sℕ] {a : Q(ℕ)} (va : ExProdNat a) : ExtractCoeff a :=
+def extractCoeff {a : Q(ℕ)} (va : ExProdNat a) : ExtractCoeff a :=
   match va with
   | .const _ => Id.run do
     have k : Q(ℕ) := a.appArg!
     have : $a =Q Nat.rawCast $k := ⟨⟩
     assumeInstancesCommute
-    let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+    let ⟨_, one, pf⟩ := rcℕ.one
     return ⟨k, _, .const (one), q($pf ▸ coeff_one $k)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
@@ -934,28 +935,28 @@ theorem pow_nat {b c k : ℕ} {d e : R} (_ : b = c * k) (_ : a ^ c = d) (_ : d ^
 
 Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
-partial def evalPow₁ [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExProdNat b) :
+partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExProdNat b) :
     MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
   let NotPowOne : MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
     match va with
     | .zero => match vb.evalPos with
       | some p => return ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
-      | none => return evalPowAtom sα (.sum .zero) vb
+      | none => return evalPowAtom sα rc (.sum .zero) vb
     | ExSum.add va .zero => -- TODO: using `.add` here takes a while to compile?
-      let ⟨_, vc, pc⟩ ← evalPowProd sα va vb
+      let ⟨_, vc, pc⟩ ← evalPowProd sα rc rcℕ va vb
       return ⟨_, vc.toSum, q(single_pow $pc)⟩
     | va =>
       -- FIXME: condition used to be k.coeff > 1. Should go back to something like this.
-      let ⟨k, _, vc, pc⟩ := extractCoeff vb
+      let ⟨k, _, vc, pc⟩ := extractCoeff rcℕ vb
       if k.natLit! > 1 then
         let ⟨_, vd, pd⟩ ← evalPow₁ va vc
-        let ⟨_, ve, pe⟩ ← evalPowNat sα vd k
+        let ⟨_, ve, pe⟩ ← evalPowNat sα rc rcℕ vd k
         return ⟨_, ve, q(pow_nat $pc $pd $pe)⟩
       else
-        return evalPowAtom sα (.sum va) vb
+        return evalPowAtom sα rc (.sum va) vb
   match vb with
   | .const zb =>
-    match (RingCompute.isOne sℕ (u := 0) zb) with
+    match rcℕ.isOne zb with
     | .some pf =>
       assumeInstancesCommute
       return ⟨_, va, q(pow_one_cast_of_isNat $a _ $pf)⟩
@@ -974,11 +975,11 @@ theorem pow_add {b₁ b₂ : ℕ} {d : R}
 * `a ^ 0 = 1`
 * `a ^ (b₁ + b₂) = a ^ b₁ * a ^ b₂`
 -/
-def evalPow [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
+def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
     MetaM <| Result (ExSum bt sα) q($a ^ $b) := do
   match vb with
   | .zero =>
-    let ⟨_, one, pf⟩ := RingCompute.one sα
+    let ⟨_, one, pf⟩ := rc.one
     let test : ExSum bt sα _ := (ExProd.const (one)).toSum
     assumeInstancesCommute
     return ⟨_,
@@ -986,9 +987,9 @@ def evalPow [RingCompute btℕ sℕ] {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt s�
       ,
       q($pf ▸ pow_zero $a)⟩ --TODO: Why doesn't assumeInstancesCommute work here?
   | .add vb₁ vb₂ =>
-    let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sα va vb₁
+    let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sα rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
-    let ⟨_, vd, pd⟩ ← evalMul sα vc₁ vc₂
+    let ⟨_, vd, pd⟩ ← evalMul sα rc rcℕ vc₁ vc₂
     return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
@@ -1037,13 +1038,13 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 
 * `a = a ^ 1 * 1 + 0`
 -/
-def evalAtom [RingCompute btℕ sℕ] (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := do
+def evalAtom (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
   let (i, ⟨a', _⟩) ← addAtomQ e'
-  let ⟨_, one, pf_one⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
+  let ⟨_, one, pf_one⟩ := rcℕ.one
   let one := ExProdNat.const (one)
-  let ⟨_, vb, pb⟩ : Result (ExProd bt sα) _ := (ExBase.atom i (e := a')).toProd sα one
+  let ⟨_, vb, pb⟩ : Result (ExProd bt sα) _ := (ExBase.atom i (e := a')).toProd sα rc one
   let vc := vb.toSum
   pure ⟨_, vc, match r.proof? with
   | none =>
@@ -1079,24 +1080,24 @@ def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase bt sα) q($a⁻¹)) := do
 * `c⁻¹ = (c⁻¹)` if `c` is a constant
 * `(a ^ b * c)⁻¹ = a⁻¹ ^ b * c⁻¹`
 -/
-def ExProd.evalInv [RingCompute btℕ sℕ] {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt sα a) :
+def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt sα a) :
     AtomM (Result (ExProd bt sα) q($a⁻¹)) := do
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const c =>
-    match ← RingCompute.evalInv (sα := sα) czα q($dsα) c with
+    match ← rc.evalInv czα q($dsα) c with
     | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>
         let ⟨_, vc, pc⟩ ← evalInvAtom sα dsα a
-        let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
-        let ⟨_, vc', pc'⟩ := vc.toProd _ (ExProdNat.const (one))
+        let ⟨_, one, pf⟩ := rcℕ.one
+        let ⟨_, vc', pc'⟩ := vc.toProd _ rc (ExProdNat.const (one))
         -- TODO : instance issues
         pure ⟨_, vc', q($pc' ▸ toProd_pf $pc $pf)⟩
   | .mul (x := a₁) (e := _a₂) _va₁ va₂ va₃ => do
     let ⟨_b₁, vb₁, pb₁⟩ ← evalInvAtom sα dsα a₁
     let ⟨_b₃, vb₃, pb₃⟩ ← va₃.evalInv czα
-    let ⟨_b₁', vb₁', pb₁'⟩ := (vb₁.toProd _ va₂)
-    let ⟨c, vc, pc⟩ ← evalMulProd sα vb₃ vb₁'
+    let ⟨_b₁', vb₁', pb₁'⟩ := (vb₁.toProd _ rc va₂)
+    let ⟨c, vc, pc⟩ ← evalMulProd sα rc rcℕ vb₃ vb₁'
     assumeInstancesCommute
     pure ⟨c, vc, q(inv_mul $pb₁ $pb₃ ($pb₁' ▸ $pc))⟩
 
@@ -1105,17 +1106,17 @@ def ExProd.evalInv [RingCompute btℕ sℕ] {a : Q($α)} (czα : Option Q(CharZe
 * `0⁻¹ = 0`
 * `a⁻¹ = (a⁻¹)` if `a` is a nontrivial sum
 -/
-def ExSum.evalInv [RingCompute btℕ sℕ] {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum bt sα a) :
+def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum bt sα a) :
     AtomM (Result (ExSum bt sα) q($a⁻¹)) :=
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
-    let ⟨_, vb, pb⟩ ← va.evalInv sα dsα czα
+    let ⟨_, vb, pb⟩ ← va.evalInv sα rc rcℕ dsα czα
     pure ⟨_, vb.toSum, (q(inv_single $pb) : Expr)⟩
   | va => do
     let ⟨_, vb, pb⟩ ← evalInvAtom sα dsα a
-    let ⟨_, one, pf⟩ := RingCompute.one sℕ (u := 0) (baseType := btℕ)
-    let ⟨_', vb', pb'⟩ := vb.toProd _ (ExProdNat.const (one))
+    let ⟨_, one, pf⟩ := rcℕ.one
+    let ⟨_', vb', pb'⟩ := vb.toProd _ rc (ExProdNat.const (one))
     assumeInstancesCommute
     -- FIXME: Instance issue
     pure ⟨_, vb'.toSum, q($pb' ▸ atom_pf' $pb $pf)⟩
@@ -1130,10 +1131,10 @@ theorem div_pf {R} [Semifield R] {a b c d : R}
 
 * `a / b = a * b⁻¹`
 -/
-def evalDiv [RingCompute btℕ sℕ] {a b : Q($α)} (rα : Q(Semifield $α)) (czα : Option Q(CharZero $α))
+def evalDiv {a b : Q($α)} (rα : Q(Semifield $α)) (czα : Option Q(CharZero $α))
     (va : ExSum bt sα a) (vb : ExSum bt sα b) : AtomM (Result (ExSum bt sα) q($a / $b)) := do
-  let ⟨_c, vc, pc⟩ ← vb.evalInv sα rα czα
-  let ⟨d, vd, pd⟩ ← evalMul sα va vc
+  let ⟨_c, vc, pc⟩ ← vb.evalInv sα rc rcℕ rα czα
+  let ⟨d, vd, pd⟩ ← evalMul sα rc rcℕ va vc
   assumeInstancesCommute
   pure ⟨d, vd, q(div_pf $pc $pd)⟩
 
@@ -1196,7 +1197,7 @@ Returns:
 def isAtomOrDerivable
     (c : Cache sα) (e : Q($α)) : AtomM (Option (Option (Result (ExSum bt sα) e))) := do
   let els := try
-      pure <| some <| some (← RingCompute.derive sα e)
+      pure <| some <| some (← rc.derive e)
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα, c.dsα with
@@ -1210,31 +1211,33 @@ def isAtomOrDerivable
   | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
   | _, _, _ => els
 
+end
+variable (rcRing : ∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiring $α)), RingCompute (Ring.baseType sα) sα)
+    (rcℕ : RingCompute btℕ sℕ) in
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
 This is the main driver of `ring`, which calls out to `evalAdd`, `evalMul` etc.
 -/
-partial def eval [∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiring $α)), RingCompute (Ring.baseType sα) sα]
-    [RingCompute btℕ sℕ] {u : Lean.Level}
-    {α : Q(Type u)} {bt : Q($α) → Type} (sα : Q(CommSemiring $α)) [RingCompute bt sα]
+partial def eval  {u : Lean.Level}
+    {α : Q(Type u)} {bt : Q($α) → Type} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     (c : Cache sα) (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := Lean.withIncRecDepth do
   let els := do
-    try RingCompute.derive sα e
-    catch _ => evalAtom sα e
+    try rc.derive e
+    catch _ => evalAtom sα rc rcℕ e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα, c.dsα with
   | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
     | ~q($a + $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalAdd sα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalAdd sα rc rcℕ va vb
       pure ⟨c, vc, q(add_congr $pa $pb $p)⟩
     | _ => els
   | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
     | ~q($a * $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalMul sα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalMul sα rc rcℕ va vb
       pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
   | ``HSMul.hSMul, _, _ | ``SMul.smul, _, _ => match e with
@@ -1247,54 +1250,54 @@ partial def eval [∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiri
       have : $a =Q $a' := ⟨⟩
       try
         let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
-        -- TODO: special case Nat and Int for the cache?
+        -- TODO: special case Nat and Int for the cache?; also move into `let vs := ...`
         let cR ← mkCache sR
         /- TODO: The tactic may reject the base ring (e.g. `ring` only supports ℕ and ℤ).
           In this case we don't need to do these evals at all.
           Maybe make them thunks for lazy evaluation? -/
         -- let vs : Thunk (Ex)
         let vs : Thunk (AtomM <| Result (ExSum (Ring.baseType sR) sR) q($r)) :=
-          .mk fun () => eval (bt := Ring.baseType sR) sR cR r
+          .mk fun () => eval (rcRing _ R sR) cR r
           -- return ⟨_, vs, q(sorry)⟩
-        let ⟨_, vb, pb⟩ ← eval (bt := bt) sα c a
-        let ⟨_, vt, pt⟩ ← RingCompute.evalCast (baseType := bt) sα _ _ q($sR) q(inferInstance) _ vs
-        let ⟨_, vc, pc⟩ ← evalMul sα vt vb
+        let ⟨_, vb, pb⟩ ← eval rc c a
+        let ⟨_, vt, pt⟩ ← rc.evalCast _ _ q($sR) q(inferInstance) _ vs
+        let ⟨_, vc, pc⟩ ← evalMul sα rc rcℕ vt vb
         return ⟨_, vc, q(hsmul_congr rfl $pb $pt $pc)⟩
       catch _ => els
     | _ => els
   | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
     | ~q($a ^ $b) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, pb⟩ ← eval (bt := btℕ) sℕ .nat b
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, pb⟩ ← eval rcℕ .nat b
       let ⟨b', vb'⟩ := vb.toExSumNat
       have : $b =Q $b' := ⟨⟩
-      let ⟨c, vc, p⟩ ← evalPow sα va vb'
+      let ⟨c, vc, p⟩ ← evalPow sα rc rcℕ va vb'
       pure ⟨c, vc, q(pow_congr $pa $pb $p)⟩
     | _ => els
   | ``Neg.neg, some rα, _ => match e with
     | ~q(-$a) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, p⟩ ← evalNeg sα rα va
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, p⟩ ← evalNeg sα rc rα va
       pure ⟨b, vb, q(neg_congr $pa $p)⟩
     | _ => els
   | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
     | ~q($a - $b) => do
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalSub sα rα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalSub sα rc rcℕ rα va vb
       pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
   | ``Inv.inv, _, some dsα => match e with
     | ~q($a⁻¹) =>
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨b, vb, p⟩ ← va.evalInv sα dsα c.czα
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨b, vb, p⟩ ← va.evalInv sα rc rcℕ dsα c.czα
       pure ⟨b, vb, q(inv_congr $pa $p)⟩
     | _ => els
   | ``HDiv.hDiv, _, some dsα | ``Div.div, _, some dsα => match e with
     | ~q($a / $b) => do
-      let ⟨_, va, pa⟩ ← eval sα c a
-      let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ ← evalDiv sα dsα c.czα va vb
+      let ⟨_, va, pa⟩ ← eval rc c a
+      let ⟨_, vb, pb⟩ ← eval rc c b
+      let ⟨c, vc, p⟩ ← evalDiv sα rc rcℕ dsα c.czα va vb
       pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
   | _, _, _ => els
@@ -1302,7 +1305,7 @@ partial def eval [∀ (u : Lean.Level) (α : Q(Type u)), ∀ (sα : Q(CommSemiri
 
 
 -- TODO: Find the start of this section.
-end
+
 
 end Ring.Common
 end Mathlib.Tactic

@@ -121,8 +121,6 @@ def ExProd := Common.ExProd (Ring.baseType sα) sα
 @[reducible]
 def ExSum := Common.ExSum (Ring.baseType sα) sα
 
-
-
 section
 variable {R : Type*} [CommSemiring R] {a : R}
 
@@ -275,7 +273,6 @@ partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ a) : AtomM (Result (E
 
 end
 
-
 /-! ### Scalar multiplication by `ℤ` -/
 
 theorem natCast_int {R} [CommRing R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
@@ -356,34 +353,6 @@ def ExSum.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α))
     pure ⟨_, .add vb₁ vb₂, (q(intCast_add $pb₁ $pb₂))⟩
 
 end
-
--- variable [∀ e, Inhabited (bt e)]
-
--- mutual
-
--- /-- Converts `ExBase sα` to `ExBase sβ`, assuming `sα` and `sβ` are defeq. -/
--- unsafe def ExBase.cast {sβ : Q(CommSemiring $α)} {a : Q($α)} :
---     ExBase bt sα a → Σ a, ExBase bt sβ a
---   | .atom i => ⟨a, .atom i⟩
---   | .sum a =>
---       let ⟨_, vb⟩ := a.cast (sβ := sβ);
---       ⟨_, .sum vb⟩
-
--- /-- Converts `ExProd sα` to `ExProd sβ`, assuming `sα` and `sβ` are defeq. -/
--- unsafe def ExProd.cast
---     {sβ : Q(CommSemiring $α)} {a : Q($α)} :
---     ExProd bt sα a → Σ a, ExProd bt sβ a
---   | .const i => ⟨_, .const i⟩
---   | .mul a₁ a₂ a₃ => ⟨_, .mul a₁.cast.2 a₂ a₃.cast.2⟩
-
--- /-- Converts `ExSum sα` to `ExSum sβ`, assuming `sα` and `sβ` are defeq. -/
--- unsafe def ExSum.cast
---     {sβ : Q(CommSemiring $α)} {a : Q($α)} :
---     ExSum bt sα a → Σ a, ExSum bt sβ a
---   | .zero => ⟨_, .zero⟩
---   | .add a₁ a₂ => ⟨_, .add a₁.cast.2 a₂.cast.2⟩
-
--- end
 
 theorem Nat.smul_eq_mul {n : ℕ} {r : R} (hr : n = r) {a : R} : n • a = r * a := by
   subst_vars
@@ -481,9 +450,7 @@ def ringCompute :
     ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
   toString := fun zx => s!"{zx.value}"
 
-
-instance : Common.RingCompute (baseType sα) sα := ringCompute sα
-instance : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute Common.sℕ
+def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute Common.sℕ
 
 universe u
 
@@ -554,9 +521,9 @@ where
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     let c ← Common.mkCache sα
     profileitM Exception "ring" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Common.eval (bt := Ring.baseType sα) sα c e₁
-      let ⟨b, vb, pb⟩ ← Common.eval (bt := Ring.baseType sα) sα c e₂
-      unless va.eq vb do
+      let ⟨a, va, pa⟩ ← Common.eval (fun _ _ ↦ ringCompute) rcℕ (ringCompute sα) c e₁
+      let ⟨b, vb, pb⟩ ← Common.eval (fun _ _ ↦ ringCompute) rcℕ (ringCompute sα) c e₂
+      unless va.eq rcℕ (ringCompute sα) vb do
         let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
         throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
       have : $a =Q $b := ⟨⟩

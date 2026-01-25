@@ -983,15 +983,11 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
 #check Mathlib.Tactic.Ring.ringCompute
 
 
-
-
-instance : Common.RingCompute (baseType q($sR)) sR := ringCompute sR
-
-instance : Common.RingCompute (BaseType sAlg) sA where
+def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) : Common.RingCompute (BaseType sAlg) sA where
   evalAdd a b za zb := do
     let ⟨r, vr⟩ := za
     let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalAdd q($sR) vr vs
+    let ⟨t, vt, pt⟩ ← Common.evalAdd q($sR) (Ring.ringCompute sR) rcℕ vr vs
     match vt with
     | .zero =>
       -- TODO: Why doesn't the match substitute t?
@@ -1002,57 +998,49 @@ instance : Common.RingCompute (BaseType sAlg) sA where
   evalMul a b za zb := do
     let ⟨r, vr⟩ := za
     let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalMul q($sR) vr vs
+    let ⟨t, vt, pt⟩ ← Common.evalMul q($sR) (Ring.ringCompute sR) rcℕ vr vs
     return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
   evalCast u' R' sR' _ r' _ := do
     let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
     have : u' =QL u := ⟨⟩
-    -- TODO: use existing cache here.
-    let cR ← mkCache q($sR)
     -- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v, introducing
     -- kernel errors during runtime.
     let ⟨_r'', vr, pr⟩ ←
-      Common.eval (bt := Ring.baseType q($sR)) sR cR.toCache q($r)
+      Common.eval (fun _ _ => Ring.ringCompute) rcℕ (Ring.ringCompute sR) cR.toCache q($r)
     return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
   evalNeg a rR za := do
     let ⟨r, vr⟩ := za
-    -- TODO: use existing cache
-    let cR ← mkCache q($sR)
     match cR.rα with
     | some rR =>
-      let ⟨t, vt, pt⟩ ← Common.evalNeg q($sR) q($rR) vr
+      let ⟨t, vt, pt⟩ ← Common.evalNeg q($sR) (Ring.ringCompute sR) q($rR) vr
       return ⟨_, .mk _ vt, q(sorry)⟩
     | none => failure
   -- TODO: Regression: we can only handle literal exponents in the coefficient ring.
   evalPow a za lit := do
     let ⟨r, vr⟩ := za
-    let ⟨s, vs, ps⟩ ← Common.evalPowNat sR vr lit
+    let ⟨s, vs, ps⟩ ← Common.evalPowNat sR (Ring.ringCompute sR) rcℕ vr lit
     return ⟨_, ⟨_, vs⟩, q(sorry)⟩
   evalInv czR fR za := do
     let ⟨r, vr⟩ := za
-    let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR fR czR vr
+    let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR (Ring.ringCompute sR) rcℕ fR czR vr
     return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
   derive x := do
     Lean.logInfo m!"Algebra: Deriving {x}"
-    -- TODO: use existing cache
-    let cR ← mkCache sR
-    let cA ← mkCache sA
     let res ← derive x
     Lean.logInfo m!"Algebra: successfully derived {x}"
     return ← evalCast sAlg cR cA res
-  eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq vy
-  compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp vy
-  -- TODO: implement or redesign evalPow
+  eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
+  compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
   isOne := fun ⟨x, vx⟩ ↦
     match vx with
     | .add (.const c) .zero =>
-      match Common.RingCompute.isOne sR c with
+      match (Ring.ringCompute sR).isOne c with
       | some pf => some q(sorry)
       | none => none
     | .zero => none
     | _ => none
   one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
-  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString}"
+  toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString rcℕ (Ring.ringCompute sR)}"
 
 
 end BaseType
@@ -1221,11 +1209,11 @@ where
       {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A))
       (cR : Cache q($sR)) (cA : Cache q($sA)) (e₁ e₂ : Q($A)) : AtomM Q($e₁ = $e₂) := do
     profileitM Exception "algebra" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₁
-      let ⟨b, vb, pb⟩ ← Common.eval (bt := BaseType sAlg) sA cA.toCache e₂
-      logInfo s!"LHS = {Common.ExSum.toString _ va}"
-      logInfo s!"RHS = {vb.toString}"
-      unless va.eq vb do
+      let ⟨a, va, pa⟩ ← Common.eval (fun _ _ => Ring.ringCompute) rcℕ (ringCompute sAlg cR cA) cA.toCache e₁
+      let ⟨b, vb, pb⟩ ← Common.eval (fun _ _ => Ring.ringCompute) rcℕ (ringCompute sAlg cR cA) cA.toCache e₂
+      -- logInfo s!"LHS = {Common.ExSum.toString _ va}"
+      -- logInfo s!"RHS = {vb.toString}"
+      unless va.eq rcℕ (ringCompute sAlg cR cA) vb do
         -- let _ := va.eq vb
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))
         -- let g ← mkFreshExprMVar (q($a = $b))
