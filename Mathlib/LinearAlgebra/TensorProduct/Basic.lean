@@ -713,8 +713,8 @@ lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
   ext rfl
 
 @[simp] lemma comm_trans_comm :
-    TensorProduct.comm R N M ≪≫ₗ TensorProduct.comm R M N = .refl _ _ := by
-  rw [← comm_symm, LinearEquiv.symm_trans_self]
+    TensorProduct.comm R N M ≪≫ₗ TensorProduct.comm R M N = .refl _ _ :=
+  comm_symm R M N ▸ LinearEquiv.symm_trans_self _
 
 lemma comm_comp_comm :
     (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap = .id := by
