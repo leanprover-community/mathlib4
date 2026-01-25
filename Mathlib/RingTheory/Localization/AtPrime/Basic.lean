@@ -36,6 +36,7 @@ commutative ring, field of fractions
 
 @[expose] public section
 
+open Module
 
 variable {R : Type*} [CommSemiring R] (S : Type*) [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
@@ -90,6 +91,14 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
         P.mul_mem_left _ <| P.mul_mem_right _ <|
             P.add_mem (P.mul_mem_right _ <| this hx) <| P.mul_mem_right _ <| this hy)
 
+variable {A : Type*} [CommRing A] [IsDomain A]
+
+/-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
+-/
+instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
+    IsDomain (Localization.AtPrime P) :=
+  isDomain_localization P.primeCompl_le_nonZeroDivisors
+
 end IsLocalization
 
 namespace Localization
@@ -98,17 +107,17 @@ namespace Localization
 instance AtPrime.isLocalRing : IsLocalRing (Localization P.primeCompl) :=
   IsLocalization.AtPrime.isLocalRing (Localization P.primeCompl) P
 
-instance {R S : Type*} [CommRing R] [NoZeroDivisors R] {P : Ideal R} [CommRing S] [Algebra R S]
-    [NoZeroSMulDivisors R S] [IsDomain S] [P.IsPrime] :
-    NoZeroSMulDivisors (Localization.AtPrime P)
-    (Localization (Algebra.algebraMapSubmonoid S P.primeCompl)) :=
-  NoZeroSMulDivisors_of_isLocalization R S _ _ P.primeCompl_le_nonZeroDivisors
+instance {R S : Type*} [CommRing R] [IsDomain R] {P : Ideal R} [CommRing S] [Algebra R S]
+    [IsTorsionFree R S] [IsDomain S] [P.IsPrime] :
+    IsTorsionFree (Localization.AtPrime P) <|
+      Localization <| Algebra.algebraMapSubmonoid S P.primeCompl :=
+  .of_isLocalization R S P.primeCompl_le_nonZeroDivisors
 
 theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZeroDivisors R]
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
-  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+  exact fun ⟨_, h⟩ ↦ .of_ne_zero <| by aesop
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
@@ -120,12 +129,6 @@ end AtPrime
 namespace IsLocalization
 
 variable {A : Type*} [CommRing A] [IsDomain A]
-
-/-- The localization of an integral domain at the complement of a prime ideal is an integral domain.
--/
-instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
-    IsDomain (Localization.AtPrime P) :=
-  isDomain_localization P.primeCompl_le_nonZeroDivisors
 
 /-- This is an `IsLocalization.AtPrime` version for `IsLocalization.isDomain_of_local_atPrime`. -/
 theorem isDomain_of_atPrime (S : Type*) [CommSemiring S] [Algebra A S]
@@ -167,7 +170,7 @@ theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
-theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+instance liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).LiesOver I :=
   (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
 
@@ -233,10 +236,12 @@ noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : 
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
 
+@[simp]
 theorem localRingHom_to_map (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     (x : R) : localRingHom I J f hIJ (algebraMap _ _ x) = algebraMap _ _ (f x) :=
   map_eq _ _
 
+@[simp]
 theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
@@ -334,7 +339,7 @@ lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : 
     (p.map (algebraMap R S)).under R = p := by
   have disj : Disjoint (q.primeCompl : Set R) p := by
     simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
-  exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
+  exact IsLocalization.comap_map_of_isPrime_disjoint _ _ (by simpa) disj
 
 lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     {R : Type*} [CommSemiring R] (p : Ideal R) (hp : p ∈ minimalPrimes R)
@@ -345,6 +350,32 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
     (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
+
+open Ideal in
+/-- If `R'` (resp. `S'`) is the localization of `R` (resp. `S`) and
+`P` lies over `p` then the image of `P` in `S'` lies over the image of `p` in `R'`. -/
+lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
+    (M : Submonoid R) (T : Submonoid S)
+    [CommSemiring R'] [CommSemiring S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
+    [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
+    [IsLocalization M R'] [IsLocalization T S']
+    (p : Ideal R) {P : Ideal S} [P.IsPrime] [P.LiesOver p]
+    (disj : Disjoint (T : Set S) (P : Set S)) :
+    (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
+  suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
+      Ideal.map (algebraMap R R') p from ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+  rw [under_under, ← under_under (B := S), under_def, under_def,
+    IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› disj,
+    LiesOver.over (P := P) (p := p)]
+
+lemma Ideal.IsMaximal.of_isLocalization_of_disjoint [IsLocalization M S] {J : Ideal S}
+    [(Ideal.comap (algebraMap R S) J).IsMaximal] : J.IsMaximal := by
+  obtain ⟨m, maxm, hm⟩ := exists_le_maximal J <| by
+    rintro rfl
+    exact Ideal.IsMaximal.ne_top ‹_› (by simp)
+  apply comap_mono (f := algebraMap R S) at hm
+  rwa [← IsLocalization.map_comap M S J, IsMaximal.eq_of_le ‹_› (IsPrime.under R m).ne_top hm,
+    Ideal.under_def, IsLocalization.map_comap M S m]
 
 end
 
@@ -407,6 +438,24 @@ def equivQuotMaximalIdeal : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ := by
       mul_inv_cancel₀, mul_one, sub_self]
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
     exact s.prop
+
+@[simp]
+theorem equivQuotMaximalIdeal_apply_mk (x : R) :
+    equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk _ x) =
+      (Ideal.Quotient.mk _ (algebraMap R Rₚ x)) := rfl
+
+@[simp]
+theorem equivQuotMaximalIdeal_symm_apply_mk (x : R) (s : p.primeCompl) :
+    (equivQuotMaximalIdeal p Rₚ).symm (Ideal.Quotient.mk _ (IsLocalization.mk' Rₚ x s)) =
+        (Ideal.Quotient.mk p x) * (Ideal.Quotient.mk p s)⁻¹ := by
+  have h₁ : Ideal.Quotient.mk p ↑s ≠ 0 := by
+    simpa [ne_eq, Ideal.Quotient.eq_zero_iff_mem] using Ideal.mem_primeCompl_iff.mp s.prop
+  have h₂ : equivQuotMaximalIdeal p Rₚ (Ideal.Quotient.mk p ↑s) ≠ 0 := by
+    rwa [RingEquiv.map_ne_zero_iff]
+  rw [RingEquiv.symm_apply_eq, ← mul_left_inj' h₂, map_mul, mul_assoc, ← map_mul,
+    inv_mul_cancel₀ h₁, map_one, mul_one, equivQuotMaximalIdeal_apply_mk, ← map_mul,
+    mk'_spec, Ideal.Quotient.mk_algebraMap, equivQuotMaximalIdeal_apply_mk,
+    Ideal.Quotient.mk_algebraMap]
 
 @[deprecated (since := "2025-11-13")] alias _root_.equivQuotMaximalIdealOfIsLocalization :=
   equivQuotMaximalIdeal

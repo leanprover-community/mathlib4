@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
 
-# Ulift Functor of ModuleCat
+# Ulift functor for ModuleCat
 
 In this file, we define the obvious functor `ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R` and prove
 it is exact, fully faithful and preverves projective and injective objects.
@@ -61,7 +61,7 @@ instance : (uliftFunctor.{v', v} R).Faithful := (fullyFaithfulUliftFunctor R).fa
 instance : (uliftFunctor R).Additive where
 
 instance : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R) :=
-  let :  Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
+  let : Limits.PreservesLimitsOfSize.{v, v} (uliftFunctor.{v', v} R ⋙ forget _) := by
     change Limits.PreservesLimitsOfSize.{v, v} (forget _ ⋙ CategoryTheory.uliftFunctor.{v'})
     infer_instance
   Limits.preservesLimits_of_reflects_of_preserves (uliftFunctor.{v', v} R) (forget _)
@@ -72,8 +72,7 @@ instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) :=
 lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) :
     (S.map (uliftFunctor R)).Exact := by
   rw [CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact]
-  simp only [uliftFunctor, ShortComplex.map_X₁, ShortComplex.map_X₂, ShortComplex.map_X₃,
-    ShortComplex.map_f, hom_ofHom, LinearMap.coe_comp, LinearEquiv.coe_coe, ShortComplex.map_g]
+  dsimp [uliftFunctor]
   intro x
   simp only [Function.comp_apply, Set.mem_range, LinearEquiv.symm_apply_eq, map_zero]
   rw [(CategoryTheory.ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mp h]
@@ -96,12 +95,6 @@ instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects wher
 
 end Ring
 
-section CommRing
-
-variable [CommRing R]
-
-instance : (uliftFunctor.{v', v} R).Linear R where
-
-end CommRing
+instance [CommRing R] : (uliftFunctor.{v', v} R).Linear R where
 
 end ModuleCat
