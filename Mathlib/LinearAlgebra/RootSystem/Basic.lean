@@ -97,7 +97,7 @@ unique.
 
 Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
 @[ext]
-protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
+protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root)
@@ -111,7 +111,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, comp_apply]
@@ -122,7 +122,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisors R M]
+private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -152,7 +152,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.flip.toPerfPair.injective this
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
@@ -163,7 +163,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
 
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M]
+def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -186,7 +186,7 @@ variable [P.IsRootSystem]
 
 /-- In characteristic zero if there is no torsion, a finite root system is determined entirely by
 its roots. -/
-protected lemma IsRootSystem.ext [CharZero R] [NoZeroSMulDivisors R M]
+protected lemma IsRootSystem.ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {P₁ P₂ : RootPairing ι R M N} [P₁.IsRootSystem] [P₂.IsRootSystem]
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root) :
@@ -210,8 +210,8 @@ protected lemma IsRootSystem.ext [CharZero R] [NoZeroSMulDivisors R M]
 
 @[deprecated (since := "2025-12-14")] alias _root_.RootSystem.ext := IsRootSystem.ext
 
-private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulDivisors R M]
-    (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
+private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsDomain R]
+    [IsTorsionFree R M] (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
     (hp : ∀ i, p (root i) (coroot i) = 2)
