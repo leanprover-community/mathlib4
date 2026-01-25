@@ -13,19 +13,38 @@ public import Mathlib.RingTheory.Coalgebra.SimpAttr
 
 `coassoc_simps` is a simp set useful to prove tautologies on coalgebras.
 
-Note: It is not confluent with `(ε ⊗ₘ id) ∘ₗ δ = λ⁻¹`.
-It is often useful to `trans` (or `calc`) with a term containing `(ε ⊗ₘ _) ∘ₗ δ` or `(_ ⊗ₘ ε) ∘ₗ δ`,
-and use one of `map_counit_comp_comul_left` `map_counit_comp_comul_right`
-`map_counit_comp_comul_left_assoc` `map_counit_comp_comul_right_assoc` to continue.
+The general algorithm it follows is to push the associators `TensorProduct.assoc` and
+commutators `TensorProduct.comm` inwards (to the right) until they cancel against
+co-multiplications.
 
+The simp set makes the following choice of normal form
+* It regards `TensorProduct.map`, `TensorProduct.assoc`, `TensorProduct.comm` as the primitive
+  constructions and rewrites everything else such as `lTensor`, `leftComm` using them.
+* It rewrites both sides into a right associated composition of linear maps.
+  In particular `LinearMap.comp_assoc` and `LinearEquiv.coe_trans` are tagged.
+* It rewrites `(f₂ ⊗ g₂) ∘ (f₁ ⊗ g₁)` into `(f₂ ∘ f₁) ⊗ (g₂ ∘ g₁)`.
+
+## Notes
+
+- It is not confluent with `(ε ⊗ₘ id) ∘ₗ δ = λ⁻¹`.
+  It is often useful to `trans` (or `calc`) with a term containing
+  `(ε ⊗ₘ _) ∘ₗ δ` or `(_ ⊗ₘ ε) ∘ₗ δ`,
+  and use one of `map_counit_comp_comul_left` `map_counit_comp_comul_right`
+  `map_counit_comp_comul_left_assoc` `map_counit_comp_comul_right_assoc` to continue.
+
+- Some lemmas (e.g. `lid_comp_map : λ ∘ₗ (f ⊗ₘ g) = g ∘ₗ λ ∘ₗ (f ⊗ₘ id)`) loops when tagged as simp,
+  so we wrap it inside a rudimentary simproc that only fires when `g ≠ id`.
 -/
+
+@[expose] public section
 
 open TensorProduct
 
 open LinearMap (id)
+open Coalgebra
 
 open Qq
-namespace Coalgebra
+namespace CoassocSimps
 
 variable {R A M N P M' N' P' Q Q' : Type*} [CommSemiring R] [AddCommMonoid A] [Module R A]
     [Coalgebra R A]
@@ -57,95 +76,25 @@ attribute [coassoc_simps] LinearMap.comp_id LinearMap.id_comp TensorProduct.map_
   IsCocomm.comm_comp_comul TensorProduct.AlgebraTensorModule.map_eq
   TensorProduct.AlgebraTensorModule.assoc_eq TensorProduct.AlgebraTensorModule.rightComm_eq
   TensorProduct.tensorTensorTensorComm TensorProduct.AlgebraTensorModule.tensorTensorTensorComm
+  TensorProduct.AlgebraTensorModule.congr_eq LinearEquiv.comp_symm_assoc
+  LinearEquiv.symm_comp_assoc TensorProduct.rightComm_def TensorProduct.leftComm_def
+  TensorProduct.comm_symm TensorProduct.comm_comp_comm TensorProduct.comm_comp_comm_assoc
 
 attribute [coassoc_simps← ] TensorProduct.map_comp TensorProduct.map_map_comp_assoc_eq
   TensorProduct.map_map_comp_assoc_symm_eq
 
--- move me
 @[coassoc_simps]
-lemma TensorProduct.AlgebraTensorModule.congr_eq {R M N P Q : Type*}
-    [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
-    [AddCommMonoid Q] [Module R Q] (f : M ≃ₗ[R] P) (g : N ≃ₗ[R] Q) :
-    AlgebraTensorModule.congr f g = congr f g := rfl
-
--- move me
-@[coassoc_simps]
-lemma TensorProduct.map_comp_assoc {R₀ R R₂ R₃ : Type*} [CommSemiring R₀] [CommSemiring R]
-    [CommSemiring R₂] [CommSemiring R₃] {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-    {M₀ M N M₂ M₃ N₂ N₃ : Type*} [AddCommMonoid M₀] [Module R₀ M₀]
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid M₃]
-    [AddCommMonoid N₃] [Module R M] [Module R N] [Module R₂ M₂] [Module R₂ N₂] [Module R₃ M₃]
-    [Module R₃ N₃] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-    (f₂ : M₂ →ₛₗ[σ₂₃] M₃) (g₂ : N₂ →ₛₗ[σ₂₃] N₃) (f₁ : M →ₛₗ[σ₁₂] M₂) (g₁ : N →ₛₗ[σ₁₂] N₂)
-    {σ₃ : R₀ →+* R₃} {σ₂ : R₀ →+* R₂} {σ₁ : R₀ →+* R}
-    [RingHomCompTriple σ₂ σ₂₃ σ₃] [RingHomCompTriple σ₁ σ₁₂ σ₂] [RingHomCompTriple σ₁ σ₁₃ σ₃]
-    (f : M₀ →ₛₗ[σ₁] M ⊗[R] N) :
-    map f₂ g₂ ∘ₛₗ map f₁ g₁ ∘ₛₗ f = map (f₂ ∘ₛₗ f₁) (g₂ ∘ₛₗ g₁) ∘ₛₗ f := by
+lemma TensorProduct.map_comp_assoc
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) (f' : M' →ₗ[R] N') (g' : N' →ₗ[R] P') (φ : M₁ →ₗ[R] M ⊗[R] M') :
+    map g g' ∘ₗ map f f' ∘ₗ φ = map (g ∘ₗ f) (g' ∘ₗ f') ∘ₛₗ φ := by
   rw [← LinearMap.comp_assoc, TensorProduct.map_comp]
 
--- move me
-@[coassoc_simps]
-lemma LinearEquiv.comp_symm_assoc {R S T M M₂ M' : Type*} [Semiring R] [Semiring S]
-    [AddCommMonoid M] [Semiring T] [AddCommMonoid M₂] [AddCommMonoid M']
-    {module_M : Module R M} {module_S_M₂ : Module S M₂} {_ : Module T M'} {σ : R →+* S}
-    {σ' : S →+* R} {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ} (e : M ≃ₛₗ[σ] M₂)
-    {σ'' : T →+* S} {σ''' : T →+* R} [RingHomCompTriple σ'' σ' σ''']
-    [RingHomCompTriple σ''' σ σ'']
-    (f : M' →ₛₗ[σ''] M₂) :
-  e.toLinearMap ∘ₛₗ e.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
-
--- move me
-@[coassoc_simps]
-lemma LinearEquiv.symm_comp_assoc {R S T M M₂ M' : Type*} [Semiring R] [Semiring S]
-    [AddCommMonoid M] [Semiring T] [AddCommMonoid M₂] [AddCommMonoid M']
-    {module_M : Module R M} {module_S_M₂ : Module S M₂} {_ : Module T M'} {σ : R →+* S}
-    {σ' : S →+* R} {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ} (e : M ≃ₛₗ[σ] M₂)
-    {σ'' : T →+* S} {σ''' : T →+* R} [RingHomCompTriple σ'' σ' σ''']
-    [RingHomCompTriple σ''' σ σ'']
-    (f : M' →ₛₗ[σ'''] M) :
-  e.symm.toLinearMap ∘ₛₗ e.toLinearMap ∘ₛₗ f = f := by ext; simp
-
-open scoped LinearMap
-
--- move me
-@[coassoc_simps]
-lemma TensorProduct.rightComm_def : rightComm R M N P =
-    TensorProduct.assoc R _ _ _ ≪≫ₗ congr (.refl _ _) (TensorProduct.comm _ _ _) ≪≫ₗ
-      (TensorProduct.assoc R _ _ _).symm := by
-  apply LinearEquiv.toLinearMap_injective; ext; rfl
-
--- move me
-@[coassoc_simps]
-lemma TensorProduct.leftComm_def : leftComm R M N P =
-    (TensorProduct.assoc R _ _ _).symm ≪≫ₗ congr (TensorProduct.comm _ _ _) (.refl _ _) ≪≫ₗ
-      (TensorProduct.assoc R _ _ _) := by
-  apply LinearEquiv.toLinearMap_injective; ext; rfl
-
--- move me, tag simp
-@[coassoc_simps]
-lemma TensorProduct.comm_symm : (TensorProduct.comm R M N).symm = TensorProduct.comm R N M := rfl
-
--- move me, tag simp
-@[coassoc_simps]
-lemma TensorProduct.comm_comp_comm :
-    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap = .id :=
-  (TensorProduct.comm R M N).symm_comp
-
--- move me, tag simp
-@[coassoc_simps]
-lemma TensorProduct.comm_comp_comm_assoc (f : P →ₗ[R] M ⊗[R] N) :
-    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ f = f := by
-  rw [← LinearMap.comp_assoc, comm_comp_comm, LinearMap.id_comp]
-
--- move me
 @[coassoc_simps← ]
 lemma TensorProduct.map_map_comp_assoc_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] M₂ ⊗[R] M₃) :
     f₁ ⊗ₘ (f₂ ⊗ₘ f₃) ∘ₗ α ∘ₗ f = α ∘ₗ ((f₁ ⊗ₘ f₂) ⊗ₘ f₃) ∘ₗ f := by
   rw [← LinearMap.comp_assoc, ← LinearMap.comp_assoc, TensorProduct.map_map_comp_assoc_eq]
 
--- move me
 @[coassoc_simps← ]
 lemma TensorProduct.map_map_comp_assoc_symm_eq_assoc
     (f₁ : M₁ →ₗ[R] N₁) (f₂ : M₂ →ₗ[R] N₂) (f₃ : M₃ →ₗ[R] N₃) (f : M →ₗ[R] M₁ ⊗[R] (M₂ ⊗[R] M₃)) :
@@ -168,12 +117,14 @@ lemma assoc_comp_map_map_comp_assoc
       (f₁ ⊗ₘ (f₂ ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) ∘ₗ f := by
   simp only [← LinearMap.comp_assoc, assoc_comp_map_map_comp]
 
--- loops. TODO: replace with simproc
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f₃ ≠ id`.
 lemma assoc_comp_map (f₃ : M₃ →ₗ[R] N₃) (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) :
     α ∘ₗ (f₁₂ ⊗ₘ f₃) = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) := by
   rw [← LinearMap.comp_assoc, map_map_comp_assoc_eq]
   simp only [coassoc_simps]
 
+/-- Simproc version of `assoc_comp_map` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_simproc
     ((TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
   match_expr t with
@@ -216,7 +167,6 @@ simproc_decl assoc_comp_map_simproc
                   (TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ ($f₁₂ ⊗ₘ id))
                 (some q(assoc_comp_map ..)))
           | _ => return Lean.Meta.Simp.StepQ.continue
-          -- return Lean.Meta.Simp.StepQ.continue
         | _ => return Lean.Meta.Simp.StepQ.continue
       | _ => return Lean.Meta.Simp.StepQ.continue
     | _ => return Lean.Meta.Simp.StepQ.continue
@@ -224,12 +174,15 @@ simproc_decl assoc_comp_map_simproc
 
 attribute [coassoc_simps] assoc_comp_map_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f₃ ≠ id`.
 lemma assoc_comp_map_assoc (f₃ : M₃ →ₗ[R] N₃)
     (f₁₂ : M →ₗ[R] M₁ ⊗[R] M₂) (f : P →ₗ[R] M ⊗[R] M₃) :
     α ∘ₗ (f₁₂ ⊗ₘ f₃) ∘ₗ f = (id ⊗ₘ (id ⊗ₘ f₃)) ∘ₗ α ∘ₗ (f₁₂ ⊗ₘ id) ∘ₗ f := by
   rw [← LinearMap.comp_assoc, assoc_comp_map]
   simp only [coassoc_simps]
 
+/-- Simproc version of `assoc_comp_map_assoc` that only fires when `f₃ ≠ id`. -/
 simproc_decl assoc_comp_map_assoc_simproc
     ((TensorProduct.assoc _ _ _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
   match_expr e with
@@ -287,12 +240,15 @@ simproc_decl assoc_comp_map_assoc_simproc
 
 attribute [coassoc_simps] assoc_comp_map_assoc_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f₁ ≠ id`.
 lemma asssoc_symm_comp_map
     (f₁ : M₁ →ₗ[R] N₁) (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ f₂₃) = ((f₁ ⊗ₘ .id) ⊗ₘ .id) ∘ₗ α⁻¹ ∘ₗ (.id ⊗ₘ f₂₃) := by
   rw [← LinearMap.comp_assoc, map_map_comp_assoc_symm_eq]
   simp only [coassoc_simps]
 
+/-- Simproc version of `asssoc_symm_comp_map` that only fires when `f₁ ≠ id`. -/
 simproc_decl asssoc_symm_comp_map_simproc
     ((TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
   match_expr t with
@@ -342,12 +298,15 @@ simproc_decl asssoc_symm_comp_map_simproc
 
 attribute [coassoc_simps] asssoc_symm_comp_map_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f₁ ≠ id`.
 lemma asssoc_symm_comp_map_assoc (f₁ : M₁ →ₗ[R] N₁)
     (f₂₃ : M →ₗ[R] M₂ ⊗[R] M₃) (f : P →ₗ[R] M₁ ⊗[R] M) :
     α⁻¹ ∘ₗ (f₁ ⊗ₘ f₂₃) ∘ₗ f = ((f₁ ⊗ₘ .id) ⊗ₘ .id) ∘ₗ α⁻¹ ∘ₗ (.id ⊗ₘ f₂₃) ∘ₗ f := by
   rw [← LinearMap.comp_assoc, asssoc_symm_comp_map]
   simp only [coassoc_simps]
 
+/-- Simproc version of `asssoc_symm_comp_map_assoc` that only fires when `f₁ ≠ id`. -/
 simproc_decl asssoc_symm_comp_map_assoc_simproc
     ((TensorProduct.assoc _ _ _ _).symm.toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
   match_expr e with
@@ -477,10 +436,13 @@ lemma assoc_comp_map_rid_symm_assoc (f : N →ₗ[R] N') (g : P →ₗ[R] M ⊗[
     α ∘ₗ ρ⁻¹ ⊗ₘ f ∘ₗ g = id ⊗ₘ ((id ⊗ₘ f) ∘ₗ λ⁻¹) ∘ₗ g := by
   simp_rw [← LinearMap.comp_assoc, ← assoc_comp_map_rid_symm]
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `g ≠ id`.
 lemma lid_comp_map (f : M →ₗ[R] R) (g : N →ₗ[R] M') :
     λ ∘ₗ (f ⊗ₘ g) = g ∘ₗ λ ∘ₗ (f ⊗ₘ id) := by
   ext; simp
 
+/-- Simproc version of `lid_comp_map` that only fires when `g ≠ id`. -/
 simproc_decl lid_comp_map_simproc
     ((TensorProduct.lid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
   match_expr t with
@@ -516,10 +478,13 @@ simproc_decl lid_comp_map_simproc
 
 attribute [coassoc_simps] lid_comp_map_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `g ≠ id`.
 lemma lid_comp_map_assoc (f : M →ₗ[R] R) (g : N →ₗ[R] M') (h : P →ₗ[R] M ⊗[R] N) :
     λ ∘ₗ (f ⊗ₘ g) ∘ₗ h = g ∘ₗ λ ∘ₗ (f ⊗ₘ id) ∘ₗ h := by
   simp only [← LinearMap.comp_assoc, lid_comp_map _ g]
 
+/-- Simproc version of `lid_comp_map_assoc` that only fires when `g ≠ id`. -/
 simproc_decl lid_comp_map_assoc_simproc
     ((TensorProduct.lid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
   match_expr e with
@@ -563,11 +528,13 @@ simproc_decl lid_comp_map_assoc_simproc
 
 attribute [coassoc_simps] lid_comp_map_assoc_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f ≠ id`.
 lemma rid_comp_map (f : M →ₗ[R] M') (g : N →ₗ[R] R) :
-    (TensorProduct.rid R M').toLinearMap ∘ₗ (f ⊗ₘ g) =
-      f ∘ₗ (TensorProduct.rid R _).toLinearMap ∘ₗ (.id ⊗ₘ g) := by
+    ρ ∘ₗ (f ⊗ₘ g) = f ∘ₗ ρ ∘ₗ (.id ⊗ₘ g) := by
   ext; simp
 
+/-- Simproc version of `rid_comp_map` that only fires when `g ≠ id`. -/
 simproc_decl rid_comp_map_simproc
     ((TensorProduct.rid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _)) := .ofQ fun _ t e ↦ do
   match_expr t with
@@ -603,10 +570,13 @@ simproc_decl rid_comp_map_simproc
 
 attribute [coassoc_simps] rid_comp_map_simproc
 
+-- This loops when tagged as a simp lemma,
+-- so we turn it into a simproc that only fires when `f ≠ id`.
 lemma rid_comp_map_assoc (f : M →ₗ[R] M') (g : N →ₗ[R] R) (h : P →ₗ[R] M ⊗[R] N) :
     ρ ∘ₗ (f ⊗ₘ g) ∘ₗ h = f ∘ₗ ρ ∘ₗ (.id ⊗ₘ g) ∘ₗ h := by
   simp only [← LinearMap.comp_assoc, rid_comp_map f]
 
+/-- Simproc version of `rid_comp_map_assoc` that only fires when `f ≠ id`. -/
 simproc_decl rid_comp_map_assoc_simproc
     ((TensorProduct.rid _ _).toLinearMap ∘ₗ (_ ⊗ₘ _) ∘ₗ _) := .ofQ fun _ _ e ↦ do
   match_expr e with
@@ -750,4 +720,4 @@ lemma assoc_comp_map_comm_comp_comul_comp_comul_assoc
   congr 1
   simp only [LinearMap.comp_assoc, assoc_comp_map_comm_comp_comul_comp_comul]
 
-end Coalgebra
+end CoassocSimps
