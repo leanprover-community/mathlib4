@@ -279,6 +279,9 @@ theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A �
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
   rfl
 
+instance {φ₁ : B →ₐ[R] C} {φ₂ : A →ₐ[R] B} :
+    RingHomCompTriple φ₂.toRingHom φ₁.toRingHom (φ₁.comp φ₂).toRingHom := ⟨rfl⟩
+
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
   toFun := φ
