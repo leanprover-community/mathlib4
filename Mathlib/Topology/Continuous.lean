@@ -99,8 +99,8 @@ theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous 
 
 theorem preimage_interior_subset_interior_preimage_iff_continuous :
     (∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s)) ↔ Continuous f := by
-  refine ⟨fun h ↦ ⟨fun U hU ↦ ?_⟩, fun h s ↦ preimage_interior_subset_interior_preimage h⟩
-  exact subset_interior_iff_isOpen.mp <| by grw [← h, hU.interior_eq]
+  refine ⟨fun h ↦ ⟨fun s hs ↦ ?_⟩, fun h s ↦ preimage_interior_subset_interior_preimage h⟩
+  exact subset_interior_iff_isOpen.mp <| by grw [← h, hs.interior_eq]
 
 @[continuity]
 theorem continuous_id : Continuous (id : X → X) :=
