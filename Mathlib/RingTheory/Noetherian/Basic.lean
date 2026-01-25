@@ -357,3 +357,18 @@ instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i
   · exact fun e h ↦ isNoetherianRing_of_ringEquiv _ (.piCongrLeft _ e)
   · infer_instance
   · exact fun ih ↦ isNoetherianRing_of_ringEquiv _ (.symm .piOptionEquivProd)
+
+namespace Submodule
+
+variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+
+/-- A submodule contained in an noetherian submodule is FG. -/
+theorem FG.of_le_of_isNoetherian {S T : Submodule R M} [IsNoetherian R T] (hST : S ≤ T) : S.FG :=
+  isNoetherian_submodule.mp inferInstance _ hST
+
+/-- A submodule contained in an FG submodule is FG over noetherian rings. -/
+lemma FG.of_le [IsNoetherianRing R] {S T : Submodule R M} (hT : T.FG) (hST : S ≤ T) : S.FG := by
+  rw [← Module.Finite.iff_fg] at hT
+  exact FG.of_le_of_isNoetherian hST
+
+end Submodule
