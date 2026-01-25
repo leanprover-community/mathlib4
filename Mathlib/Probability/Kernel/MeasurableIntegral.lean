@@ -21,7 +21,7 @@ The Bochner integral of a strongly measurable function against a kernel is stron
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory ProbabilityTheory Function Set Filter

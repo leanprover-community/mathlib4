@@ -30,7 +30,7 @@ Use the ergodic theorem to deduce the refinement of the Poincaré recurrence the
 Bergelson.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function MeasureTheory Set
 open scoped ENNReal
