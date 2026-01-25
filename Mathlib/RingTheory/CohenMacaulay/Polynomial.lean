@@ -189,7 +189,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
-    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ _ ‹_› disj).symm
+    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
   let _ := (isCohenMacaulayRing_def R).mp ‹_› q (comap_isPrime C p)
   have : comap C pS = maximalIdeal (Localization.AtPrime q) := by
     rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
@@ -198,7 +198,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
     rw [← Polynomial.algebraMap_eq (R := Localization.AtPrime q),
       ← IsScalarTower.algebraMap_eq R (Localization.AtPrime q) (Localization.AtPrime q)[X],
       IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime q)[X], ← comap_comap,
-      IsLocalization.comap_map_of_isPrime_disjoint pc _ _ ‹_› disj,
+      IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj,
       IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime q) q]
     rfl
   let _ := localization_at_comap_maximal_isCM_isCM (Localization.AtPrime q) pS this
