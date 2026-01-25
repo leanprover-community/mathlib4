@@ -7,6 +7,7 @@ on:
     paths:
       - scripts/autolabel.lean
       - .github/workflows/add_label_from_diff.yaml
+  workflow_dispatch:
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
