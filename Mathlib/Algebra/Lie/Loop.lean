@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Lie.Cochain
 public import Mathlib.Algebra.Lie.InvariantForm
-public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
@@ -78,9 +77,7 @@ def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
 @[simp]
 lemma toFinsupp_symm_single (c : A) (z : L) :
     (toFinsupp R A L).symm (Finsupp.single c z) = AddMonoidAlgebra.single c 1 ⊗ₜ[R] z := by
-  simp only [toFinsupp, TensorProduct.equivFinsuppOfBasisLeft_symm_apply, TensorProduct.tmul_zero,
-    Finsupp.sum_single_index, ← AddMonoidAlgebra.basis_apply]
-  rfl
+  simp [toFinsupp]
 
 @[simp]
 lemma toFinsupp_single_tmul (c : A) (z : L) :
