@@ -61,7 +61,6 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
   · simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
     infer_instance
   simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
-  set x₀ := h.some
   apply StieltjesFunction.isFiniteMeasure_of_forall_abs_le
     (C := (eVariationOn f.rightLim univ).toReal) _ (fun x ↦ ?_)
   exact variationOnFromTo.abs_le_eVariationOn hf.rightLim
