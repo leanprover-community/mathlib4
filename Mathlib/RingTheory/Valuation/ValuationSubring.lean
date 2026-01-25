@@ -92,6 +92,7 @@ instance : Top (ValuationSubring K) :=
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
 
+@[simp]
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 
@@ -175,6 +176,7 @@ theorem mem_of_valuation_le_one (x : K) (h : A.valuation x ≤ 1) : x ∈ A :=
   let ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
   ha ▸ a.2
 
+@[simp]
 theorem valuation_le_one_iff (x : K) : A.valuation x ≤ 1 ↔ x ∈ A :=
   ⟨mem_of_valuation_le_one _ _, fun ha => A.valuation_le_one ⟨x, ha⟩⟩
 
@@ -186,6 +188,7 @@ theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a :
 
 theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
+@[simp]
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
 
@@ -200,6 +203,9 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
     refine .of_mul_eq_one ⟨a⁻¹, ha'⟩ ?_
     ext
     simp [field]
+
+theorem eq_top_iff : A = ⊤ ↔ ¬ A.valuation.IsNontrivial := by
+  simp [Valuation.IsNontrivial_iff_exists_one_lt, SetLike.ext_iff]
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -416,8 +422,17 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   intro x
   rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
+@[simp]
+theorem isNontrivial_valuation_valuationSubring_iff :
+    v.valuationSubring.valuation.IsNontrivial ↔ v.IsNontrivial :=
+  (isEquiv_valuation_valuationSubring v).isNontrivial_iff.symm
+
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
+
+@[simp]
+theorem valuationSubring_eq_top_iff : v.valuationSubring = ⊤ ↔ ¬ v.IsNontrivial := by
+  simp [ValuationSubring.eq_top_iff]
 
 end Valuation
 
