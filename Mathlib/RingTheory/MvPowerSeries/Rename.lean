@@ -20,21 +20,6 @@ This file is patterned after `MvPolynomials/Rename.lean`
 * `MvPowerSeries.rename`
 * `MvPowerSeries.renameEquiv`
 
-## Notation
-
-+ `σ τ α : Type*` (indexing the variables)
-
-+ `R S : Type*` `[CommSemiring R]` `[CommSemiring S]` (the coefficients)
-
-+ `x : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
-This will give rise to a monomial in `MvPowerSeries σ R`
-
-+ `r : R` elements of the coefficient ring
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p q : MvPowerSeries σ R`
-
 -/
 
 @[expose] public section
