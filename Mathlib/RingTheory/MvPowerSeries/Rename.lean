@@ -34,7 +34,6 @@ variable (f : σ ↪ τ)
 namespace MvPowerSeries
 
 /-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
-@[no_expose]
 private def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
   Function.extend (embDomain f) p 0
 
@@ -154,7 +153,6 @@ theorem rename_injective : Function.Injective (rename (R := R) f) := by
   simpa using MvPowerSeries.ext_iff.mp h (embDomain f x)
 
 /-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
-@[no_expose]
 private def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
   fun x ↦ coeff (embDomain f x) p
 
