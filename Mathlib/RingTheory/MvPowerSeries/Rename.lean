@@ -33,11 +33,9 @@ variable (f : σ ↪ τ)
 
 namespace MvPowerSeries
 
-/-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
 private def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
   Function.extend (embDomain f) p 0
 
-@[simp]
 private theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
     (renameFun f p).coeff (embDomain f x) = p.coeff x :=
   ((embDomain_injective f).factorsThrough _).extend_apply _ _
@@ -52,7 +50,7 @@ private theorem renameFun_monomial (x) (r : R) :
   classical
   ext y; by_cases h : y ∈ Set.range (embDomain f)
   · rcases h with ⟨a, rfl⟩
-    simp [coeff_monomial]
+    simp [coeff_monomial, coeff_embDomain_renameFun]
   · rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h, coeff_monomial,
       if_neg (by grind)]
 
@@ -63,7 +61,7 @@ private theorem renameFun_mul (p q : MvPowerSeries σ R) :
   · rcases h with ⟨y, rfl⟩
     simp [coeff_mul, ← antidiagonal_image_prodMap_embDomain, sum_image
       (Function.Injective.injOn (Prod.map_injective.mpr ⟨embDomain_injective f,
-        embDomain_injective f⟩))]
+        embDomain_injective f⟩)), coeff_embDomain_renameFun]
   rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h, eq_comm, coeff_mul]
   refine sum_eq_zero fun i i_in ↦ ?_
   rw [mem_antidiagonal] at i_in
@@ -152,14 +150,12 @@ theorem rename_injective : Function.Injective (rename (R := R) f) := by
   intro _ _ h; ext x
   simpa using MvPowerSeries.ext_iff.mp h (embDomain f x)
 
-/-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
 private def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
   fun x ↦ coeff (embDomain f x) p
 
 private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
   coeff x (killComplFun f p) = coeff (embDomain f x) p := rfl
 
-@[simp]
 private theorem killComplFun_monomial_embDomain (x) (r : R) :
     killComplFun f (monomial (embDomain f x) r) = monomial x r := by
   classical
