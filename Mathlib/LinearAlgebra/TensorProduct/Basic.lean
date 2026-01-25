@@ -702,6 +702,8 @@ theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n 
   rfl
 
 @[simp]
+lemma comm_symm : (TensorProduct.comm R M N).symm = TensorProduct.comm R N M := rfl
+
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
 
@@ -709,6 +711,20 @@ theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗�
 lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
     lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap = lift f.flip :=
   ext rfl
+
+attribute [local ext high] ext in
+@[simp] lemma comm_trans_comm :
+    TensorProduct.comm R N M ≪≫ₗ TensorProduct.comm R M N = .refl _ _ := by
+  apply LinearEquiv.toLinearMap_injective; ext; rfl
+
+lemma comm_comp_comm :
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap = .id := by
+  simp
+
+@[simp]
+lemma comm_comp_comm_assoc (f : P →ₗ[R] M ⊗[R] N) :
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ f = f := by
+  rw [← LinearMap.comp_assoc, comm_comp_comm, LinearMap.id_comp]
 
 end
 
