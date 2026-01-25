@@ -178,7 +178,7 @@ we don't know how to colour `x ~ y` in the case `f x = f y`.
 abbrev pullback (C : TopEdgeLabeling V K) (f : V' ↪ V) : TopEdgeLabeling V' K :=
   EdgeLabeling.pullback C ⟨f, by simp⟩
 
-@[simp]
+@[grind =, simp]
 theorem labelGraph_adj {C : TopEdgeLabeling V K} {k : K} (x y : V) :
     (C.labelGraph k).Adj x y ↔ ∃ H : x ≠ y, C.get x y H = k := by
   simp [EdgeLabeling.labelGraph_adj, EdgeLabeling.get_eq]
@@ -192,22 +192,22 @@ edges are labeled `1` and non-edges are labeled `0`.
 def toTopEdgeLabeling (G : SimpleGraph V) [DecidableRel G.Adj] : TopEdgeLabeling V (Fin 2) :=
   EdgeLabeling.mk (fun x y _ => if G.Adj x y then 1 else 0) (by simp [G.adj_comm])
 
-@[simp]
+@[grind =, simp]
 theorem toTopEdgeLabeling_get {G : SimpleGraph V} [DecidableRel G.Adj] {x y : V} (H : x ≠ y) :
     G.toTopEdgeLabeling.get x y H = if G.Adj x y then 1 else 0 :=
   rfl
 
-@[simp]
+@[grind =, simp]
 theorem toTopEdgeLabeling_labelGraph (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.toTopEdgeLabeling.labelGraph 1 = G := by ext x y; simpa [imp_false] using G.ne_of_adj
 
-@[simp]
+@[grind =, simp]
 theorem toTopEdgeLabeling_labelGraph_compl (G : SimpleGraph V) [DecidableRel G.Adj] :
     G.toTopEdgeLabeling.labelGraph 0 = Gᶜ := by ext x y; simp [imp_false]
 
 theorem TopEdgeLabeling.labelGraph_toTopEdgeLabeling [DecidableEq V]
     (C : TopEdgeLabeling V (Fin 2)) : (C.labelGraph 1).toTopEdgeLabeling = C := by
   refine EdgeLabeling.ext_get ?_
-  grind [toTopEdgeLabeling_get, TopEdgeLabeling.labelGraph_adj, Adj.ne]
+  grind [Adj.ne]
 
 end SimpleGraph
