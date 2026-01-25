@@ -355,28 +355,32 @@ jobs:
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
-            # Get the last message in the 'Mathlib bump branch reminders' topic
+            # Get recent messages in the 'Mathlib bump branch reminders' topic
+            # We fetch multiple messages to find the last bot message, ignoring human replies.
             request = {
               'anchor': 'newest',
-              'num_before': 1,
+              'num_before': 20,
               'num_after': 0,
               'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
               'apply_markdown': False    # Otherwise the content test below fails.
             }
             response = client.get_messages(request)
             messages = response['messages']
+            # Find the last message from the bot (ignoring human messages in between)
+            bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
+            last_bot_message = next((m for m in messages if m['sender_email'] == bot_email), None)
             bump_branch_suffix = bump_branch.replace('bump/', '')
             failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
             payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Check if we already posted a message for this nightly date and bump branch.
-            # We extract these fields from the last message rather than comparing substrings,
+            # We extract these fields from the last bot message rather than comparing substrings,
             # since the message also contains a run ID that differs between workflow runs.
             should_post = True
-            if messages:
-                last_content = messages[0]['content']
-                # Extract nightly date and bump branch from last message
+            if last_bot_message:
+                last_content = last_bot_message['content']
+                # Extract nightly date and bump branch from last bot message
                 date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2})', last_content)
                 branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
                 if date_match and branch_match:
@@ -386,9 +390,9 @@ jobs:
                         should_post = False
                         print(f'Already posted for nightly {current_version} and {bump_branch}')
             if should_post:
-                if messages:
-                    print("###### Last message:")
-                    print(messages[0]['content'])
+                if last_bot_message:
+                    print("###### Last bot message:")
+                    print(last_bot_message['content'])
                     print("###### Current message:")
                     print(payload)
                 # Post the reminder message
