@@ -1043,19 +1043,15 @@ open Filter in
 theorem _root_.Filter.Tendsto.re (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ re (f x)) l (𝓝 (re a)) := (continuous_re.tendsto _).comp hf
 
-@[continuity, fun_prop]
 theorem _root_.Continuous.re [TopologicalSpace α] (hf : Continuous f) :
     Continuous (fun x ↦ re (f x)) := continuous_re.comp hf
 
-@[fun_prop]
 theorem _root_.ContinuousWithinAt.re [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ re (f x)) s x := Filter.Tendsto.re hf
 
-@[fun_prop]
 theorem _root_.ContinuousAt.re [TopologicalSpace α] (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ re (f x)) x := Filter.Tendsto.re hf
 
-@[fun_prop]
 theorem _root_.ContinuousOn.re [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ re (f x)) s := fun x hx ↦ (hf x hx).re
 
@@ -1104,19 +1100,15 @@ open Filter in
 theorem _root_.Filter.Tendsto.im (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ im (f x)) l (𝓝 (im a)) := (continuous_im.tendsto _).comp hf
 
-@[continuity, fun_prop]
 theorem _root_.Continuous.im [TopologicalSpace α] (hf : Continuous f) :
     Continuous (fun x ↦ im (f x)) := continuous_im.comp hf
 
-@[fun_prop]
 theorem _root_.ContinuousWithinAt.im [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ im (f x)) s x := Filter.Tendsto.im hf
 
-@[fun_prop]
 theorem _root_.ContinuousAt.im [TopologicalSpace α] (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ im (f x)) x := Filter.Tendsto.im hf
 
-@[fun_prop]
 theorem _root_.ContinuousOn.im [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ im (f x)) s := fun x hx ↦ (hf x hx).im
 
@@ -1178,19 +1170,15 @@ open Filter in
 theorem _root_.Filter.Tendsto.conj (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ conj (f x)) l (𝓝 (conj a)) := (continuous_conj.tendsto _).comp hf
 
-@[continuity, fun_prop]
 theorem _root_.Continuous.conj [TopologicalSpace α] (hf : Continuous f) :
     Continuous (fun x ↦ conj (f x)) := continuous_conj.comp hf
 
-@[fun_prop]
 theorem _root_.ContinuousWithinAt.conj [TopologicalSpace α] (hf : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun x ↦ conj (f x)) s x := Filter.Tendsto.conj hf
 
-@[fun_prop]
 theorem _root_.ContinuousAt.conj [TopologicalSpace α] (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ conj (f x)) x := Filter.Tendsto.conj hf
 
-@[fun_prop]
 theorem _root_.ContinuousOn.conj [TopologicalSpace α] (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ conj (f x)) s := fun x hx ↦ (hf x hx).conj
 
@@ -1246,20 +1234,16 @@ open Filter in
 theorem _root_.Filter.Tendsto.ofReal' {a : ℝ} {f : α → ℝ} (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ ((f x) : K)) l (𝓝 ((a : K))) := (continuous_ofReal.tendsto _).comp hf
 
-@[continuity, fun_prop]
 theorem _root_.Continuous.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : Continuous f) :
     Continuous (fun x ↦ (f x : K)) := continuous_ofReal.comp hf
 
-@[fun_prop]
 theorem _root_.ContinuousWithinAt.ofReal [TopologicalSpace α]
     {f : α → ℝ} (hf : ContinuousWithinAt f s x) :
   ContinuousWithinAt (fun x ↦ (f x : K)) s x := Filter.Tendsto.ofReal' hf
 
-@[fun_prop]
 theorem _root_.ContinuousAt.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousAt f x) :
     ContinuousAt (fun x ↦ (f x : K)) x := Filter.Tendsto.ofReal' hf
 
-@[fun_prop]
 theorem _root_.ContinuousOn.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousOn f s) :
     ContinuousOn (fun x ↦ (f x : K)) s := fun x hx ↦ (hf x hx).ofReal
 
