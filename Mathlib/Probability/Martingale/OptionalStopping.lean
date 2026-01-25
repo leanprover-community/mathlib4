@@ -134,7 +134,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   have h := setIntegral_ge_of_const_le_real (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
-        (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
+        (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
         (mod_cast hittingBtwn_le)))
   rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
   · exact h
@@ -197,7 +197,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
         refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le ω)
-        exact hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici
+        exact hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici
       · exact nullMeasurableSet_lt (Finset.measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
       rw [Set.mem_setOf_eq] at hω
@@ -226,17 +226,17 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact measurableSet_lt (Finset.measurable_range_sup'' fun n _ =>
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
-          (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
+          (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
           (fun ω ↦ mod_cast hittingBtwn_le ω))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
-          (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
+          (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
           (fun ω ↦ mod_cast hittingBtwn_le ω))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
       rw [← stoppedValue_const f n]
       refine hsub.expected_stoppedValue_mono
-        (hittingBtwn_isStoppingTime hsub.stronglyAdapted measurableSet_Ici)
+        (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ => mod_cast le_rfl)
       simp [hittingBtwn_le]
 
