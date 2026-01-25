@@ -57,15 +57,9 @@ theorem stronglyAdapted_predictablePart :
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_succ_iff.mp hin))
 
-@[deprecated (since := "2025-12-19")]
-alias adapted_predictablePart := stronglyAdapted_predictablePart
-
 theorem stronglyAdapted_predictablePart' : StronglyAdapted ℱ fun n => predictablePart f ℱ μ n :=
   fun _ => Finset.stronglyMeasurable_sum _ fun _ hin =>
     stronglyMeasurable_condExp.mono (ℱ.mono (Finset.mem_range_le hin))
-
-@[deprecated (since := "2025-12-19")]
-alias adapted_predictablePart' := stronglyAdapted_predictablePart'
 
 /-- Any `ℕ`-indexed stochastic process can be written as the sum of a martingale and a predictable
 process. This is the martingale. See `predictablePart` for the predictable process. -/
@@ -84,9 +78,6 @@ theorem martingalePart_eq_sum : martingalePart f ℱ μ = fun n =>
 
 theorem stronglyAdapted_martingalePart (hf : StronglyAdapted ℱ f) :
   StronglyAdapted ℱ (martingalePart f ℱ μ) := hf.sub stronglyAdapted_predictablePart'
-
-@[deprecated (since := "2025-12-19")]
-alias adapted_martingalePart := stronglyAdapted_martingalePart
 
 theorem integrable_martingalePart (hf_int : ∀ n, Integrable (f n) μ) (n : ℕ) :
     Integrable (martingalePart f ℱ μ n) μ := by
