@@ -229,12 +229,11 @@ variable (R)
 
 /-- `rename` is an equivalence when the underlying map is an equivalence. -/
 @[simps apply]
-def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R := {
-  rename e with
+def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+  __ := rename e
   invFun := rename e.symm
   left_inv _ := by simp
   right_inv _ := by simp
-}
 
 @[simp]
 theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
