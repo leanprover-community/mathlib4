@@ -73,7 +73,7 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
   rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h', mul_zero]
 
 /-- Rename all the variables in a multivariable power series by an embedding, as an `AlgHom`. -/
-def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
+def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
   map_mul' := renameFun_mul f
@@ -82,7 +82,6 @@ def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R := {
     simp only [renameFun]
     nth_rw 1 [← add_zero (0 : (τ →₀ ℕ) → R), Function.extend_add]
   commutes' := renameFun_monomial f 0
-}
 
 theorem rename_apply {p : MvPowerSeries σ R} : rename f p = renameFun f p := rfl
 
