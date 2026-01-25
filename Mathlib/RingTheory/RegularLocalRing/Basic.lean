@@ -7,8 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.KrullDimension.Field
-public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
@@ -139,8 +139,7 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
           have : z ∈ maximalIdeal R := by simp [← ((local_hom_TFAE _).out 0 4).mp lochom, hz]
           use (maximalIdeal R).toCotangent ⟨z, this⟩
           simp [f, ← hy, hz]
-      let e : Q ≃+ (CotangentSpace (R ⧸ Ideal.span (S : Set R))) :=
-        AddEquiv.ofBijective f' bij
+      let e : Q ≃+ (CotangentSpace (R ⧸ Ideal.span (S : Set R))) := AddEquiv.ofBijective f' bij
       have rk := rank_eq_of_equiv_equiv
         (ResidueField.map (Ideal.Quotient.mk (Ideal.span (S : Set R))))
         e (ResidueField.map_bijective_of_surjective _ Ideal.Quotient.mk_surjective) (fun r m ↦ by
