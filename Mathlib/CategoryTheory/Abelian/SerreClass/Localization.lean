@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-public import Mathlib.CategoryTheory.Localization.Composition
 
 /-!
 # Localization with respect to a Serre class
@@ -242,9 +241,7 @@ lemma isNormalMonoCategory : IsNormalMonoCategory D where
     exact {
       Z := L.obj hf'.Z
       g := L.map hf'.g
-      w := by
-        rw [← L.map_comp]
-        simp [hf'.w]
+      w := by rw [← L.map_comp]; simp [hf'.w]
       isLimit :=
         have := preservesKernel L P hf'.g
         (KernelFork.isLimitMapConeEquiv _ L).1
@@ -259,9 +256,7 @@ lemma isNormalEpiCategory : IsNormalEpiCategory D where
     exact {
       W := L.obj hf'.W
       g := L.map hf'.g
-      w := by
-        rw [← L.map_comp]
-        simp [hf'.w]
+      w := by rw [← L.map_comp]; simp [hf'.w]
       isColimit :=
         have := preservesCokernel L P hf'.g
         (CokernelCofork.isColimitMapCoconeEquiv _ L).1
@@ -276,7 +271,18 @@ def abelian : Abelian D := by
   constructor
 
 lemma preservesFiniteLimits : PreservesFiniteLimits L := by
-  sorry
+  letI := abelian L P
+  have := (Functor.preservesFiniteLimits_tfae L).out 3 2
+  rw [this]
+  intro _ _ f
+  exact preservesKernel L P f
+
+lemma preservesFiniteColimits : PreservesFiniteColimits L := by
+  letI := abelian L P
+  have := (Functor.preservesFiniteColimits_tfae L).out 3 2
+  rw [this]
+  intro _ _ f
+  exact preservesCokernel L P f
 
 end SerreClassLocalization
 
