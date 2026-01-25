@@ -311,7 +311,6 @@ theorem mapAccumr₂_eq_map₂_of_unused_state (f : α → β → σ → σ × �
     (mapAccumr₂ f xs ys s).snd = (map₂ (fun x y => (f x y s).snd) xs ys) :=
   mapAccumr₂_eq_map₂ (fun _ => true) rfl (fun _ _ _ _ => rfl) (fun a b s s' _ _ => by rw [h, h])
 
-
 /-- If `f` takes a pair of states, but always returns the same value for both elements of the
 pair, then we can simplify to just a single element of state.
 -/

@@ -5,7 +5,8 @@ Authors: Kim Morrison, Kyle Miller
 -/
 module
 
-public meta import Mathlib.Tactic.CongrExclamation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.CongrExclamation
 
 /-!
 # The `convert` tactic.
