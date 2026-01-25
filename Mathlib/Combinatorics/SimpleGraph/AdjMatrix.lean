@@ -309,6 +309,10 @@ open Matrix
 
 end
 
+theorem completeGraph_eq_of_one_sub_one (α V) [AddGroup α] [One α] [DecidableEq V] :
+    (completeGraph V).adjMatrix α = (of fun _ _ ↦ (1 : α)) - (1 : Matrix V V α) := by
+  ext; simp [one_apply, sub_ite]
+
 end SimpleGraph
 
 namespace Matrix.IsAdjMatrix

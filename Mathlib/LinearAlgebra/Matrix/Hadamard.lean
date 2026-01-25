@@ -125,6 +125,9 @@ theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1
   simp_rw [hadamard_one, ← diagonal_one, diagonal_eq_diagonal_iff]
   simp [funext_iff, diag_apply]
 
+@[simp] theorem hadamard_of_one {m n} (A : Matrix m n α) : A ⊙ (.of fun _ _ ↦ 1) = A := by ext; simp
+@[simp] theorem of_one_hadamard {m n} (A : Matrix m n α) : (.of fun _ _ ↦ 1) ⊙ A = A := by ext; simp
+
 end One
 
 theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
