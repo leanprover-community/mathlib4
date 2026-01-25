@@ -701,7 +701,8 @@ protected def comm : M ⊗[R] N ≃ₗ[R] N ⊗[R] M :=
 theorem comm_tmul (m : M) (n : N) : (TensorProduct.comm R M N) (m ⊗ₜ n) = n ⊗ₜ m :=
   rfl
 
-@[simp] theorem symm_comm : (TensorProduct.comm R M N).symm = TensorProduct.comm R N M := rfl
+@[simp]
+lemma comm_symm : (TensorProduct.comm R M N).symm = TensorProduct.comm R N M := rfl
 
 theorem comm_symm_tmul (m : M) (n : N) : (TensorProduct.comm R M N).symm (n ⊗ₜ m) = m ⊗ₜ n :=
   rfl
@@ -711,15 +712,22 @@ lemma lift_comp_comm_eq (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) :
     lift f ∘ₛₗ (TensorProduct.comm R N M).toLinearMap = lift f.flip :=
   ext rfl
 
-variable {R M N}
+@[simp] lemma comm_trans_comm :
+    TensorProduct.comm R N M ≪≫ₗ TensorProduct.comm R M N = .refl _ _ := by
+  rw [← comm_symm, LinearEquiv.symm_trans_self]
 
-@[simp] theorem comm_trans_comm :
-    TensorProduct.comm R M N ≪≫ₗ TensorProduct.comm R N M = .refl R _ := by
-  rw [← symm_comm, LinearEquiv.symm_trans_self]
+lemma comm_comp_comm :
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap = .id := by
+  simp
+
+@[simp]
+lemma comm_comp_comm_assoc (f : P →ₗ[R] M ⊗[R] N) :
+    (TensorProduct.comm R N M).toLinearMap ∘ₗ (TensorProduct.comm R M N).toLinearMap ∘ₗ f = f := by
+  rw [← LinearMap.comp_assoc, comm_comp_comm, LinearMap.id_comp]
 
 @[simp] theorem comm_comm (x) :
     TensorProduct.comm R M N (TensorProduct.comm R N M x) = x :=
-  congr($comm_trans_comm x)
+  congr($comm_trans_comm _ _ _ x)
 
 end
 
