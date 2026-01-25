@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits in the category of elements
@@ -104,6 +105,16 @@ noncomputable instance : CreatesLimitsOfShape I (π A) where
 
 instance : HasLimitsOfShape I A.Elements :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (π A)
+
+section Initial
+
+instance {F : Cᵒᵖ ⥤ Type*} [F.IsRepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfRepresentableBy F.representableBy).hasInitial
+
+instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfCorepresentableBy F.corepresentableBy).hasInitial
+
+end Initial
 
 end CategoryOfElements
 
