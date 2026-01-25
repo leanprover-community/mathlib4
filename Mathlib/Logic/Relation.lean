@@ -78,11 +78,17 @@ then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses
 theorem reflexive_ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   Std.Refl.reflexive.ne_imp_iff
 
-theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
-  grind [Reflexive, Subrelation]
+theorem reflexive_iff_eq_le : Reflexive r ↔ Eq ≤ r := by
+  unfold Pi.hasLe Prop.le
+  grind [Reflexive]
 
-theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
-  grind [Irreflexive, Subrelation]
+@[deprecated (since := "2026-01-25")] alias reflexive_iff_subrelation_eq := reflexive_iff_eq_le
+
+theorem irreflexive_iff_le_ne : Irreflexive r ↔ r ≤ Ne := by
+  unfold Pi.hasLe Prop.le
+  grind [Irreflexive]
+
+@[deprecated (since := "2026-01-25")] alias irreflexive_iff_subrelation_ne := irreflexive_iff_le_ne
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
