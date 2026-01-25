@@ -44,35 +44,33 @@ theorem mapsTo_tangentConeAt_pi [DecidableEq ι] {i : ι} (hi : ∀ j ≠ i, x j
       refine squeeze_zero_norm (fun n => (hcd' n j hj).le) ?_
       exact tendsto_pow_atTop_nhds_zero_of_lt_one one_half_pos.le one_half_lt_one
 
-variable (ι E)
-variable [Finite ι]
-
-theorem UniqueDiffWithinAt.univ_pi (s : ∀ i, Set (E i)) (x : ∀ i, E i)
+theorem UniqueDiffWithinAt.univ_pi {s : ∀ i, Set (E i)} {x : ∀ i, E i}
     (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
   simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h ⊢
-  refine ⟨(dense_pi univ fun i _ => (h i).1).mono ?_, fun i _ => (h i).2⟩
-  norm_cast
-  simp only [← Submodule.iSup_map_single, iSup_le_iff, LinearMap.map_span, Submodule.span_le,
-    ← mapsTo_iff_image_subset]
-  exact fun i => (mapsTo_tangentConeAt_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
+  refine ⟨.of_closure <| (dense_pi univ fun i _ ↦ (h i).1).closure.mono ?_, fun i _ => (h i).2⟩
+  simp only [closure_pi_set, ← Submodule.closure_coe_iSup_map_single, Submodule.map_span]
+  gcongr
+  refine iSup_le fun i ↦ ?_
+  gcongr
+  exact mapsTo_tangentConeAt_pi (fun j _ ↦ (h j).2) |>.image_subset
 
-theorem UniqueDiffWithinAt.pi (s : ∀ i, Set (E i)) (x : ∀ i, E i)
-    (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
+/-- The product of a family of sets of unique differentiability is a set of unique
+differentiability. -/
+theorem UniqueDiffOn.univ_pi {s : ∀ i, Set (E i)} (h : ∀ i, UniqueDiffOn 𝕜 (s i)) :
+    UniqueDiffOn 𝕜 (Set.pi univ s) :=
+  fun _x hx ↦ .univ_pi fun i ↦ h i _ <| hx i (mem_univ i)
+
+variable {I : Set ι}
+
+theorem UniqueDiffWithinAt.pi (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
   classical
   rw [← Set.univ_pi_piecewise_univ]
-  refine UniqueDiffWithinAt.univ_pi ι E _ _ fun i => ?_
+  refine UniqueDiffWithinAt.univ_pi fun i => ?_
   by_cases hi : i ∈ I <;> simp [*, uniqueDiffWithinAt_univ]
 
-/-- The finite product of a family of sets of unique differentiability is a set of unique
+/-- The product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
-theorem UniqueDiffOn.pi (s : ∀ i, Set (E i)) (I : Set ι)
-    (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
-  fun x hx => UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
-
-/-- The finite product of a family of sets of unique differentiability is a set of unique
-differentiability. -/
-theorem UniqueDiffOn.univ_pi (s : ∀ i, Set (E i)) (h : ∀ i, UniqueDiffOn 𝕜 (s i)) :
-    UniqueDiffOn 𝕜 (Set.pi univ s) :=
-  UniqueDiffOn.pi _ _ _ _ fun i _ => h i
+theorem UniqueDiffOn.pi (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
+  fun x hx => UniqueDiffWithinAt.pi fun i hi => h i hi (x i) (hx i hi)

@@ -366,7 +366,7 @@ variable (S T : Set A) {M N P Q : Submodule R A} {m n : A}
 
 theorem one_eq_range : (1 : Submodule R A) = LinearMap.range (Algebra.linearMap R A) := by
   rw [one_eq_span, LinearMap.span_singleton_eq_range,
-    LinearMap.toSpanSingleton_eq_algebra_linearMap]
+    LinearMap.toSpanSingleton_one_eq_algebraLinearMap]
 
 theorem algebraMap_mem (r : R) : algebraMap R A r ∈ (1 : Submodule R A) := by
   simp [one_eq_range]
@@ -734,6 +734,8 @@ theorem mker_spanSingleton :
 
 /-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Aˣ`.
 See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+/- Note: `assert_not_exists Submodule.hasQuotient` in `Mathlib.RingTheory.Ideal.Operations`
+forbids importing `Function.MulExact` into this file. -/
 theorem ker_unitsMap_spanSingleton :
     (Units.map (Submodule.spanSingleton R).toMonoidHom).ker =
     (Units.map (algebraMap R A).toMonoidHom).range := by
