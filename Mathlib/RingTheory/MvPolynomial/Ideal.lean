@@ -10,7 +10,7 @@ public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.CanonicallyOrdered
 import Mathlib.RingTheory.Ideal.Operations
 
 /-!
