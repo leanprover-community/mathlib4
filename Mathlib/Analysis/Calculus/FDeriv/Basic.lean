@@ -303,10 +303,6 @@ protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f
     DifferentiableAt 𝕜 f x :=
   hf.hasFDerivAt.differentiableAt
 
-theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) : f₀' = f₁' := by
-  rw [← hasFDerivWithinAt_univ] at h₀ h₁
-  exact uniqueDiffWithinAt_univ.eq h₀ h₁
-
 /-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
