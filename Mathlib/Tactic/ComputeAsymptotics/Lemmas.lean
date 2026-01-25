@@ -10,7 +10,22 @@ public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 
 /-!
-# TODO
+# Conversion lemmas
+
+This file contains lemmas we use to reduce various asymptotic goals to the case `Tendsto f atTop l`.
+
+## Main theorems
+
+This file contains the following lemmas:
+* `tendsto_bot_of_tendsto_top` for `Tendsto f atBot l`
+* `tendsto_nhdsGT_of_tendsto_top` for `Tendsto f (𝓝[>] c) l`
+* `tendsto_nhdsLT_of_tendsto_top` for `Tendsto f (𝓝[<] c) l`
+* `tendsto_nhds_punctured_of_tendsto_top` for `Tendsto f (𝓝[≠] c) l`
+* `isBigO_of_div_tendsto_top` and `isBigO_of_div_tendsto_bot` for `f =O[l] g`
+
+We also use lemmas from other files:
+* `isLittleO_of_div_tendsto_bot` and `isLittleO_of_div_tendsto_top` for `f =o[l] g`
+* `isEquivalent_of_tendsto_one` for `f ∼ g`
 -/
 
 @[expose] public section
@@ -123,12 +138,12 @@ theorem tendsto_nhds_punctured_of_tendsto_top_nhds_of_eq
   apply tendsto_nhds_punctured_of_tendsto_top _ _ h_neg
   convert h_pos
 
-theorem isBigO_of_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
+theorem isBigO_of_div_tendsto_top {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atTop) :
     f =O[l] g :=
   Asymptotics.IsLittleO.isBigO (isLittleO_of_div_tendsto_top h)
 
-theorem isBigO_of_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
+theorem isBigO_of_div_tendsto_bot {f g : ℝ → ℝ} {l : Filter ℝ}
     (h : Tendsto (fun x ↦ g x / f x) l atBot) :
     f =O[l] g :=
   Asymptotics.IsLittleO.isBigO (isLittleO_of_div_tendsto_bot h)
