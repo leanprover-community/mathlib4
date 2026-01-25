@@ -27,7 +27,8 @@ namespace Fin
 
 variable {α β : Type*} {n : ℕ}
 
-theorem map_valEmbedding_univ : (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
+@[simp] theorem map_valEmbedding_univ :
+    (Finset.univ : Finset (Fin n)).map Fin.valEmbedding = Iio n := by
   ext
   simp [orderIsoSubtype.symm.surjective.exists, OrderIso.symm]
 
@@ -42,6 +43,9 @@ theorem Iio_last_eq_map : Iio (Fin.last n) = Finset.univ.map Fin.castSuccEmb :=
 theorem Ioi_succ (i : Fin n) : Ioi i.succ = (Ioi i).map (Fin.succEmb _) := by simp
 
 theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEmb := by simp
+
+theorem card_filter_val_lt {m : ℕ} : #{i : Fin n | i < m} = min n m := by
+  simp [← card_map valEmbedding, ← filter_filter, exists_iff, map_filter']
 
 theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
     #{x | p x} = if p 0 then #{x | p (.succ x)} + 1 else #{x | p (.succ x)} := by

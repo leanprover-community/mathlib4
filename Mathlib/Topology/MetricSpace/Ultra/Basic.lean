@@ -121,7 +121,7 @@ lemma isClosed_ball (x : X) (r : ℝ) : IsClosed (ball x r) := by
     simp [ball_eq_empty.mpr hr]
   | inr h =>
     rw [← isOpen_compl_iff, isOpen_iff]
-    simp only [Set.mem_compl_iff, gt_iff_lt]
+    push _ ∈ _
     intro y hy
     cases ball_eq_or_disjoint x y r with
     | inl hd =>

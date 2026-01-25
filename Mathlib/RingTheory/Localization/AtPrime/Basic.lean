@@ -117,7 +117,7 @@ theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZ
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
-  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+  exact fun ⟨_, h⟩ ↦ .of_ne_zero <| by aesop
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
@@ -170,7 +170,7 @@ theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
-theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+instance liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).LiesOver I :=
   (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
 
@@ -236,10 +236,12 @@ noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : 
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
 
+@[simp]
 theorem localRingHom_to_map (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     (x : R) : localRingHom I J f hIJ (algebraMap _ _ x) = algebraMap _ _ (f x) :=
   map_eq _ _
 
+@[simp]
 theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
@@ -361,7 +363,7 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
     (disj : Disjoint (T : Set S) (P : Set S)) :
     (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
   suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
-      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+      Ideal.map (algebraMap R R') p from ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
   rw [under_under, ← under_under (B := S), under_def, under_def,
     IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]

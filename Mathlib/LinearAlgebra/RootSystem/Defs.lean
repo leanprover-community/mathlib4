@@ -122,10 +122,6 @@ class IsRootSystem : Prop where
 attribute [simp] IsRootSystem.span_root_eq_top
 attribute [simp] IsRootSystem.span_coroot_eq_top
 
-@[deprecated "Now a syntactic equality" (since := "2025-07-05"), nolint synTaut]
-lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
-    P.toLinearMap x y = P.toLinearMap x y := rfl
-
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 @[simps!, simps toLinearMap]
 protected def flip : RootPairing ι R N M where
@@ -383,7 +379,7 @@ lemma pairing_reflectionPerm (i j k : ι) :
 lemma toPerfPair_conj_reflection :
     P.toPerfPair.conj (P.reflection i) = (P.coreflection i).toLinearMap.dualMap := by
   ext f n
-  simp [LinearEquiv.conj_apply, reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
+  simp [reflection_apply, coreflection_apply, mul_comm (f <| P.coroot i)]
 
 @[simp]
 lemma toPerfPair_flip_conj_coreflection :
