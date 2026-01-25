@@ -41,9 +41,6 @@ where f is friendly.
   are friendly.
 * `gcorec`: a generalization of `Seq.corec` that allows a corecursive call to be guarded by
   a friendly function.
-* `FriendlyOperation.coind`: a coinductive principle for proving that a given operation is friendly.
-* `FriendlyOperationClass.eq_of_bisim`: a generalization of `Seq.eq_of_bisim` that allows
-  a "coinductive call" to be guarded by a friendly function.
 
 ## Implementation details
 
