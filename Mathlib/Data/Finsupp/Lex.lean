@@ -71,7 +71,7 @@ theorem lex_lt_of_lt [PartialOrder N] (r) [IsStrictOrder α r] {x y : α →₀ 
     Pi.Lex r (· < ·) x y :=
   DFinsupp.lex_lt_of_lt r (id hlt : x.toDFinsupp < y.toDFinsupp)
 
-theorem lex_iff_of_unique [Unique α] [LT N] {r} [IsIrrefl α r] {x y : α →₀ N} :
+theorem lex_iff_of_unique [Unique α] [LT N] {r} [Std.Irrefl r] {x y : α →₀ N} :
     Finsupp.Lex r (· < ·) x y ↔ x default < y default :=
   Pi.lex_iff_of_unique
 
