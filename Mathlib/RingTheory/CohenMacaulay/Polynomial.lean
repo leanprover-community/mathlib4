@@ -73,9 +73,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       simpa only [span_le] using mem'
     have eq : p = q := le_antisymm (by simpa [← ker, ← Ideal.map_eq_bot_iff_le_ker]) qle
     have ht1 : p.height ≤ (maximalIdeal R).height := by
-      rw [eq]
-      --exact le_of_eq (Polynomial.height_map_C (maximalIdeal R))
-      sorry
+      rw [eq, Polynomial.height_map_C (maximalIdeal R)]
     apply le_trans ht1 (le_sSup _)
     use (rs.map (algebraMap R (Localization.AtPrime p))), reg
     simpa [cm] using mem'
@@ -123,10 +121,8 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
       simpa only [span_le] using mem''
     have ht2 : p.height ≤ (maximalIdeal R).height + 1 := by
       rw [← WithBot.coe_le_coe, WithBot.coe_add, maximalIdeal_height_eq_ringKrullDim,
-        height_eq_primeHeight, WithBot.coe_one]
-      --rw [← ringKrullDim_of_isNoetherianRing]
-      --exact primeHeight_le_ringKrullDim
-      sorry
+        height_eq_primeHeight, WithBot.coe_one, ← ringKrullDim_of_isNoetherianRing]
+      exact primeHeight_le_ringKrullDim
     apply le_trans ht2 (le_sSup _)
     use ((rs.map (algebraMap R R[X])) ++ [f]).map (algebraMap R[X] (Localization.AtPrime p)), reg
     simpa [cm] using mem''
