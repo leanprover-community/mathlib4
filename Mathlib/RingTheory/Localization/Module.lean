@@ -332,4 +332,38 @@ lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] 
   ext
   simp
 
+variable {S} in
+lemma LocalizedModule.coe_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] (l : M →ₗ[R] N) :
+    ⇑(map S l) = (IsLocalizedModule.iso S g₂).symm ∘
+      IsLocalizedModule.map S g₁ g₂ l ∘ IsLocalizedModule.iso S g₁ := by
+  rw [← LinearMap.coe_restrictScalars R, restrictScalars_map_eq _ g₁ g₂ l]
+  simp
+
 end LocalizedModule
+
+namespace IsLocalizedModule
+
+variable {R M N M' N' : Type*} [CommSemiring R] {S : Submonoid R}
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+  [AddCommMonoid M'] [Module R M'] [AddCommMonoid N'] [Module R N']
+  (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+  [IsLocalizedModule S g₁] [IsLocalizedModule S g₂] {l : M →ₗ[R] N}
+
+lemma map_injective_iff_localizedModuleMap_injective :
+    Function.Injective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Injective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_surjective_iff_localizedModuleMap_surjective :
+    Function.Surjective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Surjective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+lemma map_bijective_iff_localizedModuleMap_bijective :
+    Function.Bijective (IsLocalizedModule.map S g₁ g₂ l) ↔
+      Function.Bijective (LocalizedModule.map S l) := by
+  simp [LocalizedModule.coe_map_eq g₁ g₂]
+
+end IsLocalizedModule

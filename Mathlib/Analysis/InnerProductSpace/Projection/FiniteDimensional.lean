@@ -92,7 +92,6 @@ theorem finrank_add_inf_finrank_orthogonal {K₁ K₂ : Submodule 𝕜 E}
     [FiniteDimensional 𝕜 K₂] (h : K₁ ≤ K₂) :
     finrank 𝕜 K₁ + finrank 𝕜 (K₁ᗮ ⊓ K₂ : Submodule 𝕜 E) = finrank 𝕜 K₂ := by
   haveI : FiniteDimensional 𝕜 K₁ := Submodule.finiteDimensional_of_le h
-  haveI := FiniteDimensional.proper_rclike 𝕜 K₁
   have hd := Submodule.finrank_sup_add_finrank_inf_eq K₁ (K₁ᗮ ⊓ K₂)
   rw [← inf_assoc, (Submodule.orthogonal_disjoint K₁).eq_bot, bot_inf_eq, finrank_bot,
     Submodule.sup_orthogonal_inf_of_hasOrthogonalProjection h] at hd
@@ -397,7 +396,6 @@ variable [FiniteDimensional 𝕜 E]
 is a basis. -/
 theorem maximal_orthonormal_iff_basis_of_finiteDimensional (hv : Orthonormal 𝕜 ((↑) : v → E)) :
     (∀ u ⊇ v, Orthonormal 𝕜 ((↑) : u → E) → u = v) ↔ ∃ b : Basis v 𝕜 E, ⇑b = ((↑) : v → E) := by
-  haveI := FiniteDimensional.proper_rclike 𝕜 (span 𝕜 v)
   rw [maximal_orthonormal_iff_orthogonalComplement_eq_bot hv]
   rw [Submodule.orthogonal_eq_bot_iff]
   have hv_coe : range ((↑) : v → E) = v := by simp

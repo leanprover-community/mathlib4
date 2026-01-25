@@ -13,6 +13,7 @@ public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.Topology.ContinuousMap.Lattice
 public import Mathlib.Topology.ContinuousMap.Weierstrass
+public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem
@@ -479,7 +480,7 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
   rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
   induction hf using Algebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
+    push _ ∈ _ at hf
     rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
     obtain (rfl | rfl) := hf
     all_goals simpa only [toContinuousMapOnAlgHom_apply, toContinuousMapOn_X_eq_restrict_id]
@@ -656,8 +657,8 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Fact (0 ∈ s)]
   refine closure (fun f hf => ?_) f
   induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    push _ ∈ _ at hf
+    rw [star_eq_iff_star_eq] at hf
     obtain (rfl | rfl) := hf
     all_goals assumption
   | zero => exact zero
