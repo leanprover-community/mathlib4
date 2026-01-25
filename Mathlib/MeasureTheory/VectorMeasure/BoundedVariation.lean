@@ -213,4 +213,39 @@ theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
     measurableSet_Ioo, hf.vectorMeasure_Icc le_rfl, hf.vectorMeasure_Ioo h']
   abel
 
+theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
+    hf.vectorMeasure (Ici a) = limUnder atTop f - f.leftLim a := by
+  have : Nonempty α := ⟨a⟩
+  have hlim : Tendsto f atTop (𝓝 (limUnder atTop f)) :=
+    tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atTop)
+  cases topOrderOrNoTopOrder α
+  · have : Ici a = Icc a ⊤ := by simp
+    rw [atTop_eq_pure_of_isTop isTop_top] at hlim ⊢
+    rw [this, hf.vectorMeasure_Icc le_top, tendsto_nhds_unique hlim (tendsto_pure_nhds f ⊤),
+      rightLim_eq_of_isTop isTop_top]
+  have : NoMaxOrder α := NoTopOrder.to_noMaxOrder α
+  obtain ⟨u, u_mono, hu⟩ : ∃ u, Monotone u ∧ Tendsto u atTop atTop :=
+    Filter.exists_seq_monotone_tendsto_atTop_atTop α
+  have : Ici a = ⋃ n, Icc a (u n) := by
+    apply le_antisymm ?_ (by simp [Icc_subset_Ici_self])
+    intro x (hx : a ≤ x)
+    simpa [hx] using (hu.eventually (Ici_mem_atTop x)).exists
+  rw [this]
+
+
+
+  refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
+  simp_rw [measure_Ico]
+  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
+  apply tendsto_order.2 ⟨fun m hm ↦ ?_, fun M hM ↦ ?_⟩
+  · obtain ⟨a, ha⟩ : ∃ a, ∀ (b : R), a ≤ b → m < f b := by simpa using (tendsto_order.1 hf).1 m hm
+    obtain ⟨a', ha'⟩ : ∃ a', a < a' := exists_gt a
+    simp only [eventually_atTop]
+    refine ⟨a', fun b hb ↦ ?_⟩
+    apply (ha _ le_rfl).trans_le
+    exact f.mono.le_leftLim (ha'.trans_le hb)
+  · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
+    exact (f.mono.leftLim_le le_rfl).trans_lt ha
+
+
 end BoundedVariationOn

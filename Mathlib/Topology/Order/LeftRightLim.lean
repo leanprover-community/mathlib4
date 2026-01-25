@@ -201,6 +201,26 @@ theorem rightLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     f.leftLim.rightLim a = f.rightLim a :=
   leftLim_rightLim (α := αᵒᵈ) h (h' := h')
 
+
+theorem lim_atTop [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoTopOrder α]
+    {f g : α → β} {b : β} (h : Tendsto f atTop (𝓝 b))
+    (h' : ∀ᶠ x in atTop, MapClusterPt (g x) (𝓝 x) f) :
+    Tendsto g atTop (𝓝 b) := by
+  rcases isEmpty_or_nonempty α with hα | hα
+  · simp [filter_eq_bot_of_isEmpty atTop]
+  apply (closed_nhds_basis b).tendsto_right_iff.2
+  rintro s ⟨s_mem, s_closed⟩
+  have T := h'.and (h s_mem)
+  obtain ⟨u, hu⟩ :  ∃ a, ∀ (b : α), a ≤ b → MapClusterPt (g b) (𝓝 b) f := by
+    simpa [eventually_atTop] using h'
+  filter_upwards [Ioi_mem_atTop u, h s_mem] with a (ha : u < a) h'a
+  have W := hu a ha.le
+  have W := mapClusterPt_iff_frequently.1 (hu a ha.le)
+
+
+
+#exit
+
 end
 
 open Function
