@@ -385,7 +385,7 @@ equipping a module with the trivial representation. -/
 noncomputable def coinvariantsAdjunction : coinvariantsFunctor k G ⊣ trivialFunctor k G where
   unit := { app X := {
     hom := (coinvariantsMk k G).app X
-    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] }}
+    comm _ := by ext; simp [ModuleCat.endRingEquiv, trivialFunctor] } }
   counit := { app X := desc (B := trivial k G X) (𝟙 _) }
 
 @[simp]
@@ -468,8 +468,7 @@ lemma coinvariantsTensorFreeToFinsupp_mk_tmul_single (x : A) (i : α) (g : G) (r
     DFunLike.coe (F := (A.ρ.tprod (Representation.free k G α)).Coinvariants →ₗ[k] α →₀ A.V)
       (coinvariantsTensorFreeToFinsupp A α) (Coinvariants.mk _ (x ⊗ₜ single i (single g r))) =
       single i (r • A.ρ g⁻¹ x) := by
-  simp [tensorObj_carrier, coinvariantsTensorFreeToFinsupp,
-    Coinvariants.map, finsuppTensorRight, TensorProduct.finsuppRight]
+  simp [tensorObj_carrier, coinvariantsTensorFreeToFinsupp, Coinvariants.map]
 
 variable (A α)
 
