@@ -328,11 +328,11 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
 
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 
-theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]
+@[simp] theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]
 
 @[simp] theorem top_div_coe : ∞ / p = ∞ := top_div_of_ne_top coe_ne_top
 
-theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.ne
+@[simp] theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.ne
 
 @[simp] protected theorem zero_div : 0 / a = 0 := zero_mul a⁻¹
 
@@ -345,7 +345,7 @@ protected lemma div_div_cancel' (h₀ : a = 0 → b = 0) (h₁ : a = ∞ → b =
   obtain rfl | ha := eq_or_ne a 0
   · simp [h₀]
   obtain rfl | ha' := eq_or_ne a ∞
-  · simp [h₁, top_div_of_lt_top]
+  · simp [h₁]
   rw [ENNReal.div_eq_inv_mul, ENNReal.inv_div (Or.inr ha') (Or.inr ha),
     ENNReal.div_mul_cancel ha ha']
 
