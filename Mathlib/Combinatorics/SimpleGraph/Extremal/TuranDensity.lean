@@ -118,9 +118,8 @@ theorem isEquivalent_extremalNumber (h : turanDensity H ≠ 0) :
 /-- Simple graphs on `n` vertices having at least `(turanDensity H + o(1)) * n ^ 2` edges contain
 `H`, for sufficiently large `n`. -/
 theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ} (hε_pos : 0 < ε) :
-    ∀ᶠ n in atTop, ∀ {V : Type*} [Fintype V], card V = n →
-      ∀ {G : SimpleGraph V} [DecidableRel G.Adj],
-        #G.edgeFinset ≥ (turanDensity H + ε) * n.choose 2 → H ⊑ G := by
+    ∀ᶠ n in atTop, ∀ {G : SimpleGraph (Fin n)} [DecidableRel G.Adj],
+      #G.edgeFinset ≥ (turanDensity H + ε) * n.choose 2 → H ⊑ G := by
   have hπ := (turanDensity_eq_csInf H).ge
   rw [eventually_atTop]
   contrapose! hπ with h
@@ -129,13 +128,13 @@ theorem eventually_isContained_of_card_edgeFinset (H : SimpleGraph W) {ε : ℝ}
   · rw [← Set.image, Set.image_nonempty]
     exact Set.nonempty_Ici
   · rw [← hx]
-    have ⟨n, hn, V, _, hc, G, _, hcard_edges, h_free⟩ := h m
+    have ⟨n, hn, G, _, hcard_edges, h_free⟩ := h m
     replace h_free : H.Free G := not_nonempty_iff.mpr h_free
     trans (extremalNumber n H / n.choose 2)
     · rw [le_div_iff₀ <| mod_cast Nat.choose_pos (hm.trans hn)]
       conv =>
         enter [2, 1, 1]
-        rw [← hc]
+        rw [← Fintype.card_fin n]
       exact hcard_edges.trans (mod_cast card_edgeFinset_le_extremalNumber h_free)
     · exact antitoneOn_extremalNumber_div_choose_two H hm (hm.trans hn) hn
 
