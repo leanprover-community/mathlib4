@@ -82,7 +82,7 @@ private lemma transitive {r : α → α → Prop}
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Alternative conditions for a lattice congruence. -/
-def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
+def mk' [Lattice α] (r : α → α → Prop) [h₁ : Std.Refl r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α where
