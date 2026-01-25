@@ -73,10 +73,9 @@ lemma IsRegularRing.of_isDedekindDomain [IsDomain R] [IsDedekindDomain R] : IsRe
       exact le_of_le_of_eq (Submodule.spanFinrank_span_le_ncard_of_finite
         (Set.finite_singleton _)) (Set.ncard_singleton _)
 
-theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] (n : ℕ) :
-    globalDimension.{v} (MvPolynomial (Fin n) k) = n := by
+theorem Hilberts_Syzygy (k : Type u) [Field k] [Small.{v, u} k] {ι : Type*} [Finite ι] :
+    globalDimension.{v} (MvPolynomial ι k) = Nat.card ι := by
   let _ : IsRegularRing k := IsRegularRing.of_isField k (Field.toIsField k)
-  let _ : IsRegularRing (MvPolynomial (Fin n) k) := MvPolynomial.isRegularRing_of_isRegularRing k n
-  rw [IsRegularRing.globalDimension_eq_ringKrullDim]
-
-  sorry
+  let _ : IsRegularRing (MvPolynomial ι k) := MvPolynomial.isRegularRing_of_isRegularRing k
+  simp [IsRegularRing.globalDimension_eq_ringKrullDim,
+    MvPolynomial.ringKrullDim_of_isNoetherianRing]
