@@ -902,9 +902,6 @@ theorem negAt_apply_isReal_and_notMem (x : mixedSpace K) {w : {w // IsReal w}} (
   simp_rw [negAt, prodCongr_apply, piCongrRight_apply, if_neg hw,
     ContinuousLinearEquiv.refl_apply]
 
-@[deprecated (since := "2025-05-23")]
-alias negAt_apply_isReal_and_not_mem := negAt_apply_isReal_and_notMem
-
 @[simp]
 theorem negAt_apply_isComplex (x : mixedSpace K) (w : {w // IsComplex w}) :
     (negAt s x).2 w = x.2 w := rfl
@@ -995,9 +992,6 @@ theorem pos_of_notMem_negAt_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {
   rw [negAt_apply_isReal_and_notMem _ hw]
   exact hy.2 w
 
-@[deprecated (since := "2025-05-23")]
-alias pos_of_not_mem_negAt_plusPart := pos_of_notMem_negAt_plusPart
-
 open scoped Function in -- required for scoped `on` notation
 /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
 theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
@@ -1064,7 +1058,7 @@ theorem measurableSet_plusPart (hm : MeasurableSet A) :
   convert_to MeasurableSet (A ∩ (⋂ w, {x | 0 < x.1 w}))
   · ext; simp
   · refine hm.inter (MeasurableSet.iInter fun _ ↦ ?_)
-    exact measurableSet_lt measurable_const ((measurable_pi_apply _).comp' measurable_fst)
+    exact measurableSet_lt measurable_const (by fun_prop)
 
 variable (s) in
 theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :

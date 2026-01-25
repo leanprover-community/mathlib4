@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
-Some of the theorems proved about Cartesian closed categories
+Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
 
@@ -216,6 +216,12 @@ theorem uncurry_ihom_map (g : Y ⟶ Y') :
 def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
+
+/-- The internal hom object from the unit to any object is isomorphic to that object.
+The typeclass argument is explicit: any instance can be used. -/
+def unitIsoSelf [Closed (𝟙_ C)] : ((𝟙_ C) ⟶[C] X) ≅ X :=
+  (unitNatIso.app X).symm
+
 section Pre
 
 variable {A B}
@@ -432,13 +438,13 @@ def curry' {X Y : C} [Closed X] (f : X ⟶ Y) : 𝟙_ C ⟶ (ihom X).obj Y :=
 def uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) : X ⟶ Y :=
   (ρ_ _).inv ≫ uncurry g
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma curry'_uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) :
     curry' (uncurry' g) = g := by
   simp [curry', uncurry']
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma uncurry'_curry' {X Y : C} [Closed X] (f : X ⟶ Y) :
     uncurry' (curry' f) = f := by

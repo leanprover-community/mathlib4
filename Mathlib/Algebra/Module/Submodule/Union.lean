@@ -6,9 +6,10 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Data.Set.Card
 public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Tactic.Module
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
@@ -23,7 +24,7 @@ a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

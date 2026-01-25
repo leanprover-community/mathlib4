@@ -610,10 +610,6 @@ theorem weightedHomogeneousComponent_eq_zero_of_notMem [DecidableEq M]
   simp only [Finset.mem_image, mem_support_iff, ne_eq, not_exists, not_and] at hi
   exact fun m hm ↦ hi m (mem_support_iff.mp hm)
 
-@[deprecated (since := "2025-05-23")]
-alias weightedHomogeneousComponent_eq_zero_of_not_mem :=
-  weightedHomogeneousComponent_eq_zero_of_notMem
-
 variable (R)
 
 /-- The `decompose'` argument of `weightedDecomposition`. -/
@@ -655,6 +651,7 @@ def weightedDecomposition [DecidableEq M] :
     exact weightedHomogeneousComponent_directSum R w x m
 
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where

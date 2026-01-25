@@ -98,9 +98,6 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
   contrapose! h
   exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
 
-@[deprecated (since := "2025-05-23")]
-alias mem_support_not_mem_vars_zero := mem_support_notMem_vars_zero
-
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx

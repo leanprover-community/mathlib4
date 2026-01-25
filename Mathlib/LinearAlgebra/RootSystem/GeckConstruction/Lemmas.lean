@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
 
-@[expose] public section
+public section
 
 open Set
 open FaithfulSMul (algebraMap_injective)
@@ -129,7 +129,7 @@ include hi hj hij h₁ h₂ h₃
 
 lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   rw [← P.not_isG2_iff_isNotG2]
   intro contra
   obtain ⟨n, h₃⟩ := h₃
@@ -138,20 +138,20 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     exact Submodule.subset_span (mem_range_self k)
   let s : Set ℤ := {-3, -1, 0, 1, 3}
   let A : ℤ := P.pairingIn ℤ j i
-  have hki  : P.root k ≠  P.root i := fun contra ↦ by
+  have hki : P.root k ≠ P.root i := fun contra ↦ by
     replace h₁ : 2 • P.root i = P.root l := by rwa [contra, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁.symm⟩
   have hki' : P.root k ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root l = 0 := by rwa [contra, neg_add_cancel, eq_comm] at h₁
     exact P.ne_zero _ h₁
-  have hli  : P.root l ≠  P.root i := fun contra ↦ by
+  have hli : P.root l ≠ P.root i := fun contra ↦ by
     replace h₁ : P.root k = 0 := by rwa [contra, add_eq_right] at h₁
     exact P.ne_zero _ h₁
   have hli' : P.root l ≠ -P.root i := fun contra ↦ by
     replace h₁ : P.root k = 2 • P.root l := by
       rwa [← neg_eq_iff_eq_neg.mpr contra, ← sub_eq_add_neg, sub_eq_iff_eq_add, ← two_nsmul] at h₁
     exact P.nsmul_notMem_range_root ⟨_, h₁⟩
-  have hmi  : P.root m ≠  P.root i := fun contra ↦ by
+  have hmi : P.root m ≠ P.root i := fun contra ↦ by
     replace h₂ : P.root k = P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 2 • P.root i := by rw [h₃, h₂]; abel
     exact P.nsmul_notMem_range_root ⟨_, h₃⟩
@@ -159,7 +159,7 @@ lemma chainBotCoeff_mul_chainTopCoeff.isNotG2 : P.IsNotG2 := by
     replace h₂ : P.root k = -P.root i + P.root j := by rwa [contra, sub_eq_iff_eq_add] at h₂
     replace h₃ : P.root n = 0 := by rw [h₃, h₂]; abel
     exact P.ne_zero _ h₃
-  have hni  : P.root n ≠  P.root i := fun contra ↦ by
+  have hni : P.root n ≠ P.root i := fun contra ↦ by
     replace h₃ : P.root k = P.root j := by
       rwa [contra, add_comm, add_sub_assoc, left_eq_add, sub_eq_zero] at h₃
     replace h₂ : P.root m = 0 := by rw [← h₂, h₃, sub_self]
@@ -211,7 +211,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   /- Setup some typeclasses and name the 6th root `n`. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
   letI := P.indexNeg
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   obtain ⟨n, hn⟩ := h₃
   /- Establish basic relationships about roots and their sums / differences. -/
   have hnk_ne : n ≠ k := by rintro rfl; simp [sub_eq_zero, hij, add_sub_assoc] at hn
@@ -273,7 +273,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
   letI := P.indexNeg
   /- Setup some typeclasses. -/
   have := chainBotCoeff_mul_chainTopCoeff.isNotG2 hi hj hij h₁ h₂ h₃
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   /- Establish basic relationships about roots and their sums / differences. -/
   have hkj_ne : k ≠ j ∧ P.root k ≠ -P.root j := (IsReduced.linearIndependent_iff _).mp <|
     P.linearIndependent_of_sub_mem_range_root <| h₂ ▸ mem_range_self m

@@ -399,12 +399,12 @@ variable {𝕜}
 @[fun_prop]
 theorem measurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] (f : 𝕜 → F) : Measurable (deriv f) := by
-  simpa only [fderiv_deriv] using measurable_fderiv_apply_const 𝕜 f 1
+  simpa only [fderiv_apply_one_eq_deriv] using measurable_fderiv_apply_const 𝕜 f 1
 
 theorem stronglyMeasurable_deriv [MeasurableSpace 𝕜] [OpensMeasurableSpace 𝕜]
     [h : SecondCountableTopologyEither 𝕜 F] (f : 𝕜 → F) : StronglyMeasurable (deriv f) := by
   borelize F
-  rcases h.out with h𝕜|hF
+  rcases h.out with h𝕜 | hF
   · exact stronglyMeasurable_iff_measurable_separable.2
       ⟨measurable_deriv f, isSeparable_range_deriv _⟩
   · exact (measurable_deriv f).stronglyMeasurable
@@ -671,7 +671,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
       _ ≤ 16 * ‖y - x‖ * (ε / 16) := by gcongr
       _ = ε * ‖y - x‖ := by ring
   -- Conclusion of the proof
-  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.left_mem_Ici)] at f'K
+  rw [← this.derivWithin (uniqueDiffOn_Ici x x Set.self_mem_Ici)] at f'K
   exact ⟨this.differentiableWithinAt, f'K⟩
 
 theorem differentiable_set_eq_D (hK : IsComplete K) :
@@ -921,14 +921,14 @@ theorem measurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 
     [OpensMeasurableSpace 𝕜] [MeasurableSpace F]
     [BorelSpace F] {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     Measurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
-  simpa only [fderiv_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
+  simpa only [fderiv_apply_one_eq_deriv] using measurable_fderiv_apply_const_with_param 𝕜 hf 1
 
 theorem stronglyMeasurable_deriv_with_param [LocallyCompactSpace 𝕜] [MeasurableSpace 𝕜]
     [OpensMeasurableSpace 𝕜] [h : SecondCountableTopologyEither α F]
     {f : α → 𝕜 → F} (hf : Continuous f.uncurry) :
     StronglyMeasurable (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2) := by
   borelize F
-  rcases h.out with hα|hF
+  rcases h.out with hα | hF
   · have : ProperSpace 𝕜 := .of_locallyCompactSpace 𝕜
     apply stronglyMeasurable_iff_measurable_separable.2 ⟨measurable_deriv_with_param hf, ?_⟩
     have : range (fun (p : α × 𝕜) ↦ deriv (f p.1) p.2)

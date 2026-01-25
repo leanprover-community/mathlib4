@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 
 /-!
@@ -390,17 +391,16 @@ with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
-  haveI : FiniteDimensional 𝕜 F :=
-    Module.finite_def.2
-      ((Submodule.fg_top _).2 (Submodule.fg_def.2 ⟨s, Finset.finite_toSet _, rfl⟩))
+  have hF : F.FG := ⟨s, rfl⟩
+  haveI : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
     have : (⊤ : Submodule 𝕜 E) = F := by
       ext x
       simp [h]
-    have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    rw [← this] at hF
+    exact .of_fg_top hF
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by
@@ -415,7 +415,7 @@ bounded by `R` and at distance at least `1`. For a version not assuming `c` and 
 theorem exists_seq_norm_le_one_le_norm_sub' {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) :
     ∃ f : ℕ → E, (∀ n, ‖f n‖ ≤ R) ∧ Pairwise fun m n => 1 ≤ ‖f m - f n‖ := by
-  have : IsSymm E fun x y : E => 1 ≤ ‖x - y‖ := by
+  have : Std.Symm fun x y : E => 1 ≤ ‖x - y‖ := by
     constructor
     intro x y hxy
     rw [← norm_neg]
@@ -505,10 +505,10 @@ lemma ProperSpace.of_locallyCompactSpace (𝕜 : Type*) [NontriviallyNormedField
     ProperSpace E := by
   rcases exists_isCompact_closedBall (0 : E) with ⟨r, rpos, hr⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖^n * r)) := fun n ↦ by
+  have hC : ∀ n, IsCompact (closedBall (0 : E) (‖c‖ ^ n * r)) := fun n ↦ by
     have : c ^ n ≠ 0 := pow_ne_zero _ <| fun h ↦ by simp [h, zero_le_one.not_gt] at hc
     simpa [_root_.smul_closedBall' this] using hr.smul (c ^ n)
-  have hTop : Tendsto (fun n ↦ ‖c‖^n * r) atTop atTop :=
+  have hTop : Tendsto (fun n ↦ ‖c‖ ^ n * r) atTop atTop :=
     Tendsto.atTop_mul_const rpos (tendsto_pow_atTop_atTop_of_one_lt hc)
   exact .of_seq_closedBall hTop (Eventually.of_forall hC)
 
@@ -663,7 +663,7 @@ alias ⟨_, Summable.norm⟩ := summable_norm_iff
 theorem summable_of_sum_range_norm_le {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [FiniteDimensional ℝ E] {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
     Summable f :=
-  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _)  h
+  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _) h
 
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}

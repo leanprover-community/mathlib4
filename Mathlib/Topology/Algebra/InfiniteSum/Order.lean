@@ -17,7 +17,7 @@ public import Mathlib.Topology.Order.MonotoneConvergence
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
 
-@[expose] public section
+public section
 
 open Finset Filter Function
 

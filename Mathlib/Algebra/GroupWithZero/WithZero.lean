@@ -91,6 +91,7 @@ instance instMulZeroOneClass [MulOneClass α] : MulZeroOneClass (WithZero α) wh
   one_mul := Option.map₂_left_identity one_mul
   mul_one := Option.map₂_right_identity mul_one
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Coercion as a monoid hom. -/
 @[simps apply]
 def coeMonoidHom : α →* WithZero α where
