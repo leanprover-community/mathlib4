@@ -26,23 +26,6 @@ open scoped MatrixGroups ComplexConjugate
 
 namespace UpperHalfPlane
 
-/-- The coercion first into an element of  `GL(2, ℝ)⁺`, then  `GL(2, ℝ)` and finally a 2 × 2
-matrix.
-
-This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Matrix (Fin 2) (Fin 2) _)
-
-instance instCoeFun : CoeFun GL(2, ℝ)⁺ fun _ => Fin 2 → Fin 2 → ℝ where coe A := ↑ₘA
-
-/-- The coercion into an element of  `GL(2, R)` and finally a 2 × 2 matrix over `R`. This is
-similar to `↑ₘ`, but without positivity requirements, and allows the user to specify the ring `R`,
-which can be useful to help Lean elaborate correctly.
-
-This notation is scoped in namespace `UpperHalfPlane`. -/
-scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Matrix (Fin 2) (Fin 2) R)
-
 /-- Numerator of the formula for a fractional linear transformation -/
 def num (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ := g 0 0 * z + g 0 1
 
@@ -316,6 +299,27 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
   grind
 
 end SLAction
+
+section J
+
+/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
+`τ ↦ -conj τ`. -/
+def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
+
+lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
+  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
+
+@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
+
+@[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
+
+@[simp] lemma det_J : J.det = -1 := by ext; simp [J]
+
+@[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
+
+@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
+
+end J
 
 end UpperHalfPlane
 

@@ -1723,6 +1723,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Measure
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
