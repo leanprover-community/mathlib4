@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Bingyu Xia. All rights reserved.
+Copyright (c) 2026 Bingyu Xia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bingyu Xia, Andrew Yang
 -/
@@ -20,7 +20,7 @@ open Pointwise
 
 namespace Set
 
-variable {α β F : Type*} [Monoid α] [Monoid β] [FunLike F α β]
+variable {α β : Type*} [Monoid α] [Monoid β]
 variable [Preorder β] [CanonicallyOrderedMul β] [MulRightMono β]
 
 @[to_additive, simp]
@@ -36,5 +36,9 @@ theorem Ici_pow_eq_of_canonicallyOrdered {a : β} :
     ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
   | 1, _ => by simp
   | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq_of_canonicallyOrdered]
+
+omit [MulRightMono β] in
+@[to_additive, simp]
+lemma Ici_one_eq_univ_of_canonicallyOrdered : Set.Ici (1 : β) = Set.univ := by aesop
 
 end Set
