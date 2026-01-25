@@ -162,10 +162,11 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
   exact IsRegularLocalRing.of_ringEquiv (IsLocalization.algEquiv p.primeCompl
     (Localization.AtPrime pS) (Localization.AtPrime p)).toRingEquiv
 
-lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] (n : ℕ) :
-    IsRegularRing (MvPolynomial (Fin n) R) := by
-  induction n
-  · exact isRegularRing_of_ringEquiv (isEmptyRingEquiv R (Fin 0)).symm
-  · rename_i n ih
-    let _ := Polynomial.isRegularRing_of_isRegularRing (MvPolynomial (Fin n) R)
-    exact isRegularRing_of_ringEquiv (MvPolynomial.finSuccEquiv R n).toRingEquiv.symm
+lemma MvPolynomial.isRegularRing_of_isRegularRing [IsRegularRing R] {ι : Type*} [Finite ι] :
+    IsRegularRing (MvPolynomial ι R) := by
+  induction ι using Finite.induction_empty_option with
+  | of_equiv e H => exact isRegularRing_of_ringEquiv (renameEquiv _ e).toRingEquiv
+  | h_empty => exact isRegularRing_of_ringEquiv (isEmptyRingEquiv R _).symm
+  | h_option IH =>
+    let _ := Polynomial.isRegularRing_of_isRegularRing
+    exact isRegularRing_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv.symm
