@@ -760,7 +760,6 @@ lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α
 /-- If a function has bounded variation, then the variation on closed semi-infinite
 intervals tends to `0` at `+∞`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero
-    [TopologicalSpace α] [OrderTopology α]
     {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Ici y)) (𝓟 s ⊓ atTop) (𝓝 0) := by
   /- The variation is monotone, therefore it converges. If the limit were positive, say `ε`,
@@ -808,7 +807,6 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero
 /-- If a function has bounded variation, then the variation on semi-infinite closed
 intervals tends to `0` at `-∞`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Iic_zero
-    [TopologicalSpace α] [OrderTopology α]
     {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     Tendsto (fun y ↦ eVariationOn f (s ∩ Iic y)) (𝓟 s ⊓ atBot) (𝓝 0) := by
   have : (fun y ↦ eVariationOn f (s ∩ Iic y)) =
@@ -820,7 +818,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Iic_zero
 
 /-- A bounded variation function has a limit at `+∞`. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace E] [hE : Nonempty E]
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     ∃ l, Tendsto f (𝓟 s ⊓ atTop) (𝓝 l) := by
   rcases Filter.eq_or_neBot (𝓟 s ⊓ atTop) with h | h
   · simp only [h, tendsto_bot, exists_const_iff, and_true]
@@ -839,7 +837,7 @@ theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace E] [hE : N
 
 /-- A bounded variation function has a limit at `-∞`. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_atBot [CompleteSpace E] [hE : Nonempty E]
-    [TopologicalSpace α] [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     ∃ l, Tendsto f (𝓟 s ⊓ atBot) (𝓝 l) :=
   hf.ofDual.exists_tendsto_atTop
 
