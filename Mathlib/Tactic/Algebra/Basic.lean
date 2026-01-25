@@ -1154,7 +1154,6 @@ def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
     MetaM (Σ u : Lean.Level, Q(Type u)) := do
   let ⟨u1, R1⟩ := r1
   let ⟨u2, R2⟩ := r2
-  -- If they're definitionally equal, return the first one
   if ← withReducible <| isDefEq R1 R2 then
     return r1
   -- Try to show R2 is an R1-algebra (meaning R1 is smaller, so return R2)
