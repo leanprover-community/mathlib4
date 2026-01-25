@@ -563,7 +563,7 @@ lemma logHeight₁_sum_le {α : Type*} (s : Finset α) (x : α → K) :
   simp only [logHeight₁_eq_log_mulHeight₁]
   have : ∀ a ∈ s, mulHeight₁ (x a) ≠ 0 := fun _ _ ↦ by positivity
   have : (s.card : ℝ) ^ totalWeight K ≠ 0 := by simp [hs.ne_empty]
-  pull (disch := first | positivity | assumption) log
+  pull (disch := first | assumption | positivity) log
   exact (log_le_log <| by positivity) <| mulHeight₁_sum_le hs x
 
 /-- The multiplicative height of `x + y` is at most `2 ^ totalWeight K`
