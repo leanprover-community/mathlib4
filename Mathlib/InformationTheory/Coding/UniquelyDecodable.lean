@@ -46,7 +46,7 @@ violating unique decodability. -/
 lemma UniquelyDecodable.epsilon_not_mem
     (h : UniquelyDecodable S) :
     [] ∉ S := by
-  simpa using @h [[]] [[], []]
+  simpa using h [[]] [[], []]
 
 lemma UniquelyDecodable.flatten_injective (h : UniquelyDecodable S) :
     Function.Injective (fun (L : {L : List (List α) // ∀ x ∈ L, x ∈ S}) => L.val.flatten) := by

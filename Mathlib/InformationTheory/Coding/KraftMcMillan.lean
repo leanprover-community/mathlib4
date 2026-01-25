@@ -50,7 +50,7 @@ variable {S : Finset (List α)} {r : ℕ}
 private def concatFn (w : Fin r → S) : List α :=
   (List.ofFn (fun i => (w i).val)).flatten
 
-private lemma concatFn.length {w : Fin r → S} :
+private lemma concatFn_length {w : Fin r → S} :
     (concatFn w).length = ∑ i : Fin r, (w i).val.length := by
   simp [List.sum_ofFn, concatFn]
 
@@ -59,7 +59,7 @@ end concatFn
 /-- For uniquely decodable codes, the concatenation map is injective.
 
 This is the key property: distinct tuples of codewords produce distinct concatenations. -/
-private lemma uniquely_decodable_concatFn_injective {S : Finset (List α)}
+private lemma concatFn_injective_of_uniquelyDecodable {S : Finset (List α)}
     (h : UniquelyDecodable (S : Set (List α))) (r : ℕ) :
     Function.Injective (concatFn (S := S) (r := r)) := by
   intro w₁ w₂ hflat
@@ -67,46 +67,6 @@ private lemma uniquely_decodable_concatFn_injective {S : Finset (List α)}
     List.ofFn_injective (h _ _ (by simp) (by simp) (by simpa using hflat))
   funext i
   exact Subtype.ext (by simpa using congrArg (fun f => f i) this)
-
-private lemma sum_pow_len_filter_le_one_of_card_le [Fintype α] [Nonempty α]
-    {T : Finset (List α)} {s : ℕ}
-    (h_card : (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s) :
-    (∑ x ∈ T.filter (fun x => x.length = s),
-    (1 / (Fintype.card α : ℕ) : ℝ) ^ x.length) ≤ 1 := by
-  let D : ℕ := Fintype.card α
-  calc
-    (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ x.length)
-        = (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ s) :=
-            Finset.sum_congr rfl (fun x hx => by
-              simp [(Finset.mem_filter.mp hx).right])
-    _   = (T.filter (fun x => x.length = s)).card * (1 / (D : ℝ)) ^ s := by
-            simp only [Finset.sum_const, nsmul_eq_mul]
-    _ ≤ (D ^ s) * (1 / D) ^ s := by
-            gcongr
-            exact_mod_cast h_card
-    _ = 1 := by
-            have : (D : ℝ) ≠ 0 := by exact_mod_cast Nat.ne_of_gt (Fintype.card_pos : 0 < D)
-            simp [this]
-
-/-- The `r`-th power of the Kraft sum equals the sum over all `r`-tuples of codewords.
-
-This expansion is the key algebraic identity in the Kraft-McMillan proof. -/
-private lemma kraft_sum_pow_eq_sum_concatFn
-    {S : Finset (List α)} {D : ℝ} {r : ℕ} :
-    (∑ c ∈ S, (1 / D) ^ c.length) ^ r =
-      ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
-  calc
-    (∑ c ∈ S, (1 / D) ^ c.length) ^ r
-        = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
-            simpa [(Finset.sum_coe_sort S _).symm] using
-              (Fintype.sum_pow (f := fun c : S => (1 / D) ^ c.val.length) r)
-    _   = ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
-            apply Fintype.sum_congr
-            intro w
-            simpa [concatFn.length] using (Finset.prod_pow_eq_pow_sum
-                  (s := (Finset.univ : Finset (Fin r)))
-                  (f := fun i => (w i).val.length)
-                  (a := 1 / D))
 
 /-- The number of strings of length `s` in any set is at most `D^s`
 (the total number of such strings). -/
@@ -131,6 +91,45 @@ private lemma card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : 
     (T.filter (fun x => x.length = s)).card
         ≤ all_words.card := Finset.card_le_card hsub
     _ = Fintype.card α ^ s := hcard_all
+
+private lemma sum_pow_len_filter_le_one_of_card_le [Fintype α] [Nonempty α]
+    {T : Finset (List α)} {s : ℕ} :
+    (∑ x ∈ T.filter (fun x => x.length = s),
+    (1 / Fintype.card α : ℝ) ^ x.length) ≤ 1 := by
+  let D : ℕ := Fintype.card α
+  calc
+    (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ x.length)
+        = (∑ x ∈ T.filter (fun x => x.length = s), (1 / (D : ℝ)) ^ s) :=
+            Finset.sum_congr rfl (fun x hx => by
+              simp [(Finset.mem_filter.mp hx).right])
+    _   = (T.filter (fun x => x.length = s)).card * (1 / (D : ℝ)) ^ s := by
+            simp only [Finset.sum_const, nsmul_eq_mul]
+    _ ≤ (D ^ s) * (1 / D) ^ s := by
+            gcongr
+            exact_mod_cast card_filter_length_eq_le
+    _ = 1 := by
+            have : (D : ℝ) ≠ 0 := by exact_mod_cast Nat.ne_of_gt (Fintype.card_pos : 0 < D)
+            simp [this]
+
+/-- The `r`-th power of the Kraft sum equals the sum over all `r`-tuples of codewords.
+
+This expansion is the key algebraic identity in the Kraft-McMillan proof. -/
+private lemma kraft_sum_pow_eq_sum_concatFn
+    {S : Finset (List α)} {D : ℝ} {r : ℕ} :
+    (∑ c ∈ S, (1 / D) ^ c.length) ^ r =
+      ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
+  calc
+    (∑ c ∈ S, (1 / D) ^ c.length) ^ r
+        = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
+            simpa [(Finset.sum_coe_sort S _).symm] using
+              (Fintype.sum_pow (f := fun c : S => (1 / D) ^ c.val.length) r)
+    _   = ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
+            apply Fintype.sum_congr
+            intro w
+            simpa [concatFn_length] using (Finset.prod_pow_eq_pow_sum
+                  (s := (Finset.univ : Finset (Fin r)))
+                  (f := fun i => (w i).val.length)
+                  (a := 1 / D))
 
 /-- Auxiliary bound for Kraft–McMillan.
 
@@ -157,7 +156,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
       ∑ w : Fin r → S, (1 / D) ^ (concatFn w).length := by
     simpa [T] using Finset.sum_image
         (f := fun x => (1 / D) ^ x.length)
-        (fun _ _ _ _ hEq => uniquely_decodable_concatFn_injective h r hEq)
+        (fun _ _ _ _ hEq => concatFn_injective_of_uniquelyDecodable h r hEq)
   have hlen_maps :
       ∀ x ∈ T, x.length ∈ Finset.Icc r (r * maxLen) := by
     intro x hx
@@ -175,13 +174,13 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
         simpa using (Nat.succ_le_iff.mpr this)
       have : (∑ _ : Fin r, (1 : ℕ)) ≤ ∑ i, (w i).val.length :=
         Finset.sum_le_sum (fun i _ => hpos i)
-      -- `∑ _ : Fin r, 1 = r` and RHS is `concatFn.length`
-      simpa [concatFn.length] using this
+      -- `∑ _ : Fin r, 1 = r` and RHS is `concatFn_length`
+      simpa [concatFn_length] using this
     · -- upper bound: (concatFn w).length ≤ r * maxLen
       have : (∑ i, (w i).val.length) ≤ ∑ _ : Fin r, maxLen :=
         Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)
       -- `∑ _ : Fin r, maxLen = r * maxLen`
-      simpa [concatFn.length] using (this.trans_eq (by simp))
+      simpa [concatFn_length] using (this.trans_eq (by simp))
   have hsplit :
     ∑ s ∈ Finset.Icc r (r * maxLen),
         ∑ x ∈ T with x.length = s, (1 / D) ^ x.length
@@ -196,7 +195,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   -- i.e. `r*maxLen - r + 1`, and this is `≤ r*maxLen` since `1 ≤ r`.
   rw [kraft_sum_pow_eq_sum_concatFn, <-hsum_image, <-hsplit]
   apply le_trans (Finset.sum_le_sum
-      (fun s _ => sum_pow_len_filter_le_one_of_card_le card_filter_length_eq_le))
+      (fun s _ => sum_pow_len_filter_le_one_of_card_le))
   rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
   · positivity
   · rw [Nat.cast_sub] <;> push_cast <;> nlinarith only
