@@ -13,16 +13,12 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.Data.Int.Basic
 
 /-!
-## Filtrations via `MonoOver`
+## Filtrations
 
-We define a filtration on an object `X : C`, indexed by a category `ι`, as a functor
-`ι ⥤ MonoOver X` (a coherent family of monomorphisms into `X`).
+A filtration on `X` indexed by `ι` is a functor `ι ⥤ MonoOver X`.
 
-This uniform definition covers both increasing and decreasing conventions by a suitable
-choice of index category (e.g. `ℤ` vs `ℤᵒᵖ`).
-
-We also define the category `FilteredObject C ι`, strict morphisms (levelwise pullback
-squares), and basic constructions for decreasing `ℤ`-filtrations (`ι = ℤᵒᵖ`).
+We also define the category of filtered objects and, for decreasing `ℤ`-filtrations (`ℤᵒᵖ`),
+basic operations (boundedness, shift, graded pieces).
 -/
 
 @[expose] public section
@@ -36,13 +32,7 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A filtration on an object `X` indexed by a category `ι`.
-
-This is a functor `ι ⥤ MonoOver X`, i.e. a coherent diagram of monomorphisms into `X`.
-
-For decreasing `ℤ`-filtrations in the sense of Deligne, use index `ι = ℤᵒᵖ`.
-For increasing `ℤ`-filtrations, use `ι = ℤ`.
--/
+/-- A filtration on `X` indexed by `ι`, as a functor `ι ⥤ MonoOver X`. -/
 @[ext]
 structure Filtration (X : C) (ι : Type*) [Category ι] where
   /-- The underlying functor `ι ⥤ MonoOver X`. -/
@@ -52,25 +42,23 @@ namespace Filtration
 
 variable {X : C} {ι : Type*} [Category ι]
 
-/-- The underlying diagram in `C`: forget the `MonoOver` structure. -/
+/-- The underlying diagram in `C` obtained by forgetting `MonoOver`. -/
 abbrev diagram (F : Filtration X ι) : ι ⥤ C :=
   F.toMonoOver ⋙ MonoOver.forget _ ⋙ Over.forget _
 
-/-- Object part of `diagram`. -/
 @[simp]
 lemma diagram_obj (F : Filtration X ι) (i : ι) :
     F.diagram.obj i = (F.toMonoOver.obj i).obj.left := rfl
 
-/-- Morphism part of `diagram`. -/
 @[simp]
 lemma diagram_map (F : Filtration X ι) {i j : ι} (f : i ⟶ j) :
     F.diagram.map f = (F.toMonoOver.map f).hom.left := rfl
 
-/-- The underlying object (domain) at index `i`. -/
+/-- The object at index `i` (domain of the mono into `X`). -/
 abbrev obj (F : Filtration X ι) (i : ι) : C :=
   (F.toMonoOver.obj i).obj.left
 
-/-- The monomorphism (injection) into `X` at index `i`. -/
+/-- The structure map (a monomorphism) `F.obj i ⟶ X`. -/
 abbrev inj (F : Filtration X ι) (i : ι) : F.obj i ⟶ X :=
   (F.toMonoOver.obj i).obj.hom
 
@@ -78,7 +66,7 @@ abbrev inj (F : Filtration X ι) (i : ι) : F.obj i ⟶ X :=
 lemma inj_eq (F : Filtration X ι) (i : ι) :
     F.inj i = (F.toMonoOver.obj i).obj.hom := rfl
 
-/-- The associated `Subobject X` corresponding to the `i`-th filtration step. -/
+/-- The `i`-th filtration step as a subobject of `X`. -/
 noncomputable def subobject (F : Filtration X ι) (i : ι) : Subobject X :=
   Subobject.mk (F.inj i)
 
@@ -87,7 +75,7 @@ lemma subobject_arrow_eq (F : Filtration X ι) (i : ι) :
     (Subobject.mk (F.toMonoOver.obj i).obj.hom).arrow = (F.subobject i).arrow := by
   rfl
 
-/-- A morphism in the index category yields an inclusion of the corresponding subobjects. -/
+/-- A morphism in the index category induces an inclusion of steps. -/
 lemma subobject_le_of_hom (F : Filtration X ι) {i j : ι} (f : i ⟶ j) :
     F.subobject i ≤ F.subobject j := by
   classical
@@ -96,7 +84,7 @@ lemma subobject_le_of_hom (F : Filtration X ι) {i j : ι} (f : i ⟶ j) :
 
 end Filtration
 
-/-- A filtered object: an object `X` equipped with a filtration indexed by `ι`. -/
+/-- A filtered object: an object equipped with a filtration. -/
 @[ext]
 structure FilteredObject (C : Type u) [Category.{v} C] (ι : Type*) [Category ι] where
   /-- The underlying object. -/
@@ -111,19 +99,12 @@ instance (ι : Type*) [Category ι] : CoeOut (FilteredObject C ι) C where
 
 variable {ι : Type*} [Category ι]
 
-/-- The underlying filtration diagram in `C`. -/
+/-- The filtration diagram in `C`. -/
 abbrev filtrationDiagram (F : FilteredObject C ι) : ι ⥤ C :=
   F.filtration.diagram
 
-/-- Morphisms of filtered objects.
-
-A morphism consists of a morphism on the underlying objects together with a natural
-transformation between the underlying diagrams of filtration steps, commuting with the
-structure maps into the underlying objects.
-
-This is the functorial (and coherence-friendly) alternative to encoding compatibility via
-subobject inequalities.
--/
+/-- Morphisms of filtered objects: a morphism on objects and a compatible natural transformation
+between the filtration diagrams. -/
 @[ext]
 structure Hom (F G : FilteredObject C ι) where
   /-- The underlying morphism on objects. -/
@@ -157,12 +138,7 @@ instance : Category (FilteredObject C ι) where
 @[simp] lemma natTrans_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
     (f ≫ g).natTrans = f.natTrans ≫ g.natTrans := rfl
 
-/-- A filtered morphism is **strict** if each square defining the filtration compatibility is a
-pullback.
-
-This is a key notion in Deligne's theory: strictness is what makes induced filtrations behave
-well with kernels/cokernels and graded pieces.
--/
+/-- Strictness of a filtered morphism: each compatibility square is a pullback. -/
 class IsStrictHom {F G : FilteredObject C ι} (f : F ⟶ G) : Prop where
   isPullback (i : ι) :
     IsPullback (f.natTrans.app i) (F.filtration.inj i) (G.filtration.inj i) f.hom
@@ -191,11 +167,7 @@ section Images
 
 variable [HasImages C]
 
-/-- The image of a subobject under a morphism.
-
-For `S : Subobject A` and `f : A ⟶ B`, this is the subobject of `B` given by the image of
-`S.arrow ≫ f`.
--/
+/-- The image of a subobject under a morphism. -/
 noncomputable def imageSubobject {A B : C} (f : A ⟶ B) (S : Subobject A) : Subobject B :=
   Subobject.mk (image.ι (S.arrow ≫ f))
 
@@ -247,11 +219,7 @@ variable {ι : Type*} [Category ι]
 variable (F G : FilteredObject C ι)
 
 /-!
-### Repackaging `FilteredObject.Hom` as “existence of levelwise factorisations”
-
-The following lemma is the precise “⇔” connection: a morphism of filtered objects with a given
-underlying map is equivalent to the existence of a natural transformation of filtration diagrams
-whose components provide the levelwise factorisations.
+### Compatibility as existence of a natural transformation
 -/
 
 /-- Existence of a filtered morphism with underlying map `f`. -/
@@ -282,18 +250,10 @@ variable {ι : Type*} [Category ι]
 variable {F G : FilteredObject C ι}
 
 /-!
-### Deligne-style filtration preservation
-
-Deligne often phrases compatibility of a morphism with filtrations in terms of images of the
-filtration steps. In our functorial setup this is implied by the existence of the levelwise maps
-(`natTrans`) in `FilteredObject.Hom`.
+### Deligne-style filtration preservation (via images)
 -/
 
-/-- Deligne-style filtration preservation for a morphism `f : F.X ⟶ G.X`.
-
-For each index `i`, the image of the `i`-th filtration subobject of `F.X` under `f`
-is contained in the `i`-th filtration subobject of `G.X`.
--/
+/-- Deligne-style filtration preservation for a morphism `f : F.X ⟶ G.X`. -/
 def PreservesFiltration (f : F.X ⟶ G.X) : Prop :=
   ∀ i : ι,
     imageSubobject (C := C) f (F.filtration.subobject i) ≤ G.filtration.subobject i
@@ -324,17 +284,7 @@ end FilteredObject
 /-
 ## `ℤ`-indexed specializations
 
-For Hodge theory (Deligne), we primarily use decreasing `ℤ`-filtrations.
-These are encoded as `Filtration X ℤᵒᵖ`.
-
-The material below provides the basic operations that are specific to the `ℤ` index:
-
-* finiteness/boundedness;
-* shift;
-* the (single) graded piece `Gr`.
-
-Further constructions (induced filtrations on graded pieces, Zassenhaus quotients, ...) are
-developed elsewhere.
+We work with decreasing `ℤ`-filtrations encoded as `Filtration X ℤᵒᵖ`.
 -/
 
 namespace Filtration
@@ -359,10 +309,7 @@ section Finite
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
-/-- Finiteness/boundedness of a decreasing `ℤ`-filtration (Deligne 1.1.4).
-
-We say `F` is finite if it is eventually `⊤` in high degrees and eventually `⊥` in low degrees.
--/
+/-- Finiteness/boundedness of a decreasing `ℤ`-filtration (Deligne 1.1.4). -/
 def IsFinite (F : DecFiltration (C := C) X) : Prop :=
   ∃ a b : ℤ,
     (∀ n : ℤ, n ≤ a → F.step n = ⊤) ∧ (∀ n : ℤ, b ≤ n → F.step n = ⊥)
@@ -371,14 +318,7 @@ end Finite
 
 section OfSubobject
 
-/-- Build a decreasing `ℤ`-filtration from an antitone function `ℤ → Subobject X`.
-
-This is the compatibility bridge with the traditional presentation of filtrations as
-subobject-valued functions. The resulting filtration is a functor `ℤᵒᵖ ⥤ MonoOver X`.
-
-This constructor is designed for situations where induced filtrations and filtrations on
-graded pieces are most naturally expressed at the level of subobjects.
--/
+/-- Build a decreasing `ℤ`-filtration from an antitone function `ℤ → Subobject X`. -/
 noncomputable def ofAntitone (F : ℤ → Subobject X) (hF : Antitone F) :
     DecFiltration (C := C) X :=
 by
@@ -408,10 +348,7 @@ by
 
 end OfSubobject
 
-/-- The translation functor `ℤᵒᵖ ⥤ ℤᵒᵖ` sending `n` to `n + k`.
-
-This is used to define shifts of `ℤ`-filtrations.
--/
+/-- The translation functor `ℤᵒᵖ ⥤ ℤᵒᵖ` sending `n` to `n + k`. -/
 noncomputable def shiftFunctor (k : ℤ) : (ℤᵒᵖ) ⥤ (ℤᵒᵖ) where
   obj n := Opposite.op (k + Opposite.unop n)
   map {i j} f := by
@@ -429,10 +366,7 @@ noncomputable def shiftFunctor (k : ℤ) : (ℤᵒᵖ) ⥤ (ℤᵒᵖ) where
 @[simp] lemma shiftFunctor_obj (k : ℤ) (n : ℤᵒᵖ) :
     (shiftFunctor k).obj n = Opposite.op (k + Opposite.unop n) := rfl
 
-/-- Shift a decreasing `ℤ`-filtration: `(F.shift k)^n = F^{n+k}`.
-
-This matches Deligne's shift convention (1.1.2).
--/
+/-- Shift a decreasing `ℤ`-filtration: `(F.shift k).step n = F.step (n + k)`. -/
 noncomputable def shift (F : DecFiltration (C := C) X) (k : ℤ) : DecFiltration (C := C) X where
   toMonoOver := shiftFunctor k ⋙ F.toMonoOver
 
@@ -451,8 +385,7 @@ lemma step_antitone (F : DecFiltration (C := C) X) : Antitone F.step := by
   intro n m h
   exact step_le_step_of_le (C := C) (X := X) F h
 
-/-- The canonical inclusion map `F^{n+1} ⟶ F^n` between successive steps of a decreasing
-`ℤ`-filtration. -/
+/-- The canonical inclusion map `F^{n+1} ⟶ F^n` between successive steps. -/
 noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
     (F.obj (Opposite.op (n + 1))) ⟶ (F.obj (Opposite.op n)) := by
   classical
@@ -477,13 +410,7 @@ section Graded
 
 variable [HasZeroMorphisms C] [HasCokernels C]
 
-/-- The associated graded piece `Gr^n(X) = F^n / F^{n+1}` for a decreasing `ℤ`-filtration.
-
-We define this as the cokernel of the canonical inclusion map `F^{n+1} ⟶ F^n`,
-which is induced by the unique morphism `op (n+1) ⟶ op n` in `ℤᵒᵖ`.
-
-This matches Deligne (1.1.7).
--/
+/-- The graded piece `Gr^n(X) := F^n / F^{n+1}` (Deligne 1.1.7), defined as a cokernel. -/
 noncomputable def gr (F : DecFiltration (C := C) X) (n : ℤ) : C :=
   cokernel (succHom (C := C) (X := X) F n)
 

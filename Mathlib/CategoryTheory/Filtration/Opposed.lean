@@ -10,31 +10,14 @@ module
 public import Mathlib.CategoryTheory.Filtration.Basic
 public import Mathlib.CategoryTheory.Abelian.Basic
 
-@[expose] public section
-
 /-!
 ## Opposed filtrations (Deligne, *Théorie de Hodge II*, §1.2.1–§1.2.3)
 
-This file is compatible with the filtration design via `ι ⥤ MonoOver X`:
-
-* a decreasing `ℤ`-filtration on `X` is a functor `ℤᵒᵖ ⥤ MonoOver X`.
-
-In Deligne §1.2, the key categorical invariant of two filtrations is the bigraded object
-
-`Gr_F^p Gr_G^q(X)`
-
-whose vanishing off the diagonal `p+q=n` defines the `n`-opposed condition (1.2.3).
-
-At this stage we define the **symmetric Zassenhaus quotient**
-
-`(F^p ∩ G^q) / ( (F^{p+1} ∩ G^q) + (F^p ∩ G^{q+1}) )`
-
-as an object of `C`, and use it to define `IsNOpposed`.
-
-The Zassenhaus isomorphisms identifying this with iterated graded objects, and the
-splitting lemma (Deligne 1.2.5), are developed elsewhere.
-
+For decreasing `ℤ`-filtrations `F` and `G` on `X` in an abelian category, we define the
+Zassenhaus bigraded piece and the predicate `IsNOpposed` (Deligne 1.2.3).
 -/
+
+@[expose] public section
 
 open CategoryTheory
 open CategoryTheory.Limits
@@ -55,16 +38,7 @@ section
 
 variable [Abelian C]
 
-/-- The Zassenhaus (symmetric) bigraded piece attached to two decreasing `ℤ`-filtrations
-`F` and `G`.
-
-It is defined as the cokernel of the inclusion
-
-`(F^{p+1} ∩ G^q) + (F^p ∩ G^{q+1}) ⟶ (F^p ∩ G^q)`.
-
-This is canonically isomorphic to both `Gr_F^p (Gr_G^q X)` and `Gr_G^q (Gr_F^p X)`
-(the Zassenhaus / butterfly lemma), which is established elsewhere.
--/
+/-- The Zassenhaus (symmetric) bigraded piece (Deligne 1.2), defined as a cokernel. -/
 noncomputable def gr₂ (F G : Filtration.DecFiltration (C := C) X) (p q : ℤ) : C := by
   classical
   let Xpq : Subobject X := F.step p ⊓ G.step q
@@ -87,10 +61,7 @@ noncomputable def gr₂ (F G : Filtration.DecFiltration (C := C) X) (p q : ℤ) 
       exact inf_le_inf le_rfl hG
   exact cokernel ((Ypq).ofLE Xpq hY)
 
-/-- Deligne's `n`-opposed condition (1.2.3), expressed using `gr₂`.
-
-Two filtrations are `n`-opposed if `gr₂ F G p q` vanishes whenever `p + q ≠ n`.
--/
+/-- Deligne's `n`-opposed condition (Deligne 1.2.3), expressed using `gr₂`. -/
 def IsNOpposed (F G : Filtration.DecFiltration (C := C) X) (n : ℤ) : Prop :=
   ∀ p q : ℤ, p + q ≠ n → IsZero (gr₂ (C := C) (X := X) F G p q)
 
