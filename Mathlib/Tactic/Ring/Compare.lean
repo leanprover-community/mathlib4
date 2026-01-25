@@ -134,25 +134,25 @@ def evalLE {v : Level} {α : Q(Type v)}
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
   /- For numerals `ca` and `cb`, `ca + x ≤ cb + x` if `ca ≤ cb` -/
   | .add (b := a') (.const (e := xa) ⟨ca, hypa⟩) va', .add (.const (e := xb) ⟨cb, hypb⟩) vb' => do
-    unless va'.eq vb' do return .error notComparable
+    unless va'.eq rcℕ (ringCompute ics) vb' do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rxb | return .error tooSmall
     pure <| .ok (q(add_le_add_left (a := $a') $pf):)
   /- For a numeral `ca ≤ 0`, `ca + x ≤ x` -/
   | .add (.const (e := xa) ⟨ca, hypa⟩) va', _ => do
-    unless va'.eq vb do return .error notComparable
+    unless va'.eq rcℕ (ringCompute ics) vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rxa rz | return .error tooSmall
     pure <| .ok (q(add_le_of_nonpos_left (a := $b) $pf):)
   /- For a numeral `0 ≤ cb`, `x ≤ cb + x` -/
   | _, .add (.const (e := xb) ⟨cb, hypb⟩) vb' => do
-    unless va.eq vb' do return .error notComparable
+    unless va.eq rcℕ (ringCompute ics) vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
     pure <| .ok (q(le_add_of_nonneg_left (a := $a) $pf):)
   | _, _ =>
-    unless va.eq vb do return .error notComparable
+    unless va.eq rcℕ (ringCompute ics) vb do return .error notComparable
     pure <| .ok (q(le_refl $a):)
 --[CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
@@ -172,21 +172,21 @@ def evalLT {v : Level} {α : Q(Type v)}
   | .zero, .zero => return .error tooSmall
   /- For numerals `ca` and `cb`, `ca + x < cb + x` if `ca < cb` -/
   | .add (b := a') (.const (e := xa) ⟨ca, hypa⟩) va', .add (.const (e := xb) ⟨cb, hypb⟩) vb' => do
-    unless va'.eq vb' do return .error notComparable
+    unless va'.eq rcℕ (ringCompute ics) vb' do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rxb | return .error tooSmall
     pure <| .ok (q(add_lt_add_left $pf $a'):)
   /- For a numeral `ca < 0`, `ca + x < x` -/
   | .add (.const (e := xa) ⟨ca, hypa⟩) va', _ => do
-    unless va'.eq vb do return .error notComparable
+    unless va'.eq rcℕ (ringCompute ics) vb do return .error notComparable
     let rxa := NormNum.Result.ofRawRat ca xa hypa
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rxa rz | return .error tooSmall
     have pf : Q($xa < 0) := pf
     pure <| .ok (q(add_lt_of_neg_left $b $pf):)
   /- For a numeral `0 < cb`, `x < cb + x` -/
   | _, .add (.const (e := xb) ⟨cb, hypb⟩) vb' => do
-    unless va.eq vb' do return .error notComparable
+    unless va.eq rcℕ (ringCompute ics) vb' do return .error notComparable
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLT.core lα rz rxb | return .error tooSmall
     pure <| .ok (q(lt_add_of_pos_left $a $pf):)
@@ -216,7 +216,9 @@ def proveLE (g : MVarId) : MetaM Unit := do
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let c ← Common.mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← Common.eval q($ics) c e₁, ← Common.eval q($ics) c e₂)
+    ← AtomM.run .instances do
+      pure (← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₁,
+            ← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₂)
   match ← evalLE ics ipo sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
@@ -242,7 +244,9 @@ def proveLT (g : MVarId) : MetaM Unit := do
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
   let c ← Common.mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
-    ← AtomM.run .instances do pure (← Common.eval q($ics) c e₁, ← Common.eval q($ics) c e₂)
+    ← AtomM.run .instances do
+      pure (← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₁,
+            ← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₂)
   match ← evalLT ics ipo sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
