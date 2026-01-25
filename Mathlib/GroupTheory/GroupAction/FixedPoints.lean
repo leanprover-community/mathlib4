@@ -176,16 +176,7 @@ then no point or subset of `s` can be moved outside of `s` by the group action o
 @[to_additive /-- If `(fixedBy α g)ᶜ ⊆ s`, then `g` cannot move a point of `s` outside of `s`. -/]
 theorem set_mem_fixedBy_of_movedBy_subset {s : Set α} {g : G} (s_subset : (fixedBy α g)ᶜ ⊆ s) :
     s ∈ fixedBy (Set α) g := by
-  rw [← fixedBy_inv]
-  ext a
-  rw [Set.mem_inv_smul_set_iff]
-  by_cases a ∈ fixedBy α g
-  case pos a_fixed =>
-    rw [a_fixed]
-  case neg a_moved =>
-    constructor <;> (intro; apply s_subset)
-    · exact a_moved
-    · rwa [Set.mem_compl_iff, smul_mem_fixedBy_iff_mem_fixedBy]
+  grind [Set.mem_smul_set_iff_inv_smul_mem, smul_eq_iff_eq_inv_smul]
 
 end Pointwise
 
