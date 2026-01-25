@@ -420,9 +420,9 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
-theorem Adapted.hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι}
-    (hu : Adapted f u) (hs : MeasurableSet s) :
+theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+    [Countable ι] {mβ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
+    {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
   rcases le_or_gt n' i with hi | hi
@@ -434,10 +434,10 @@ theorem Adapted.hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
       MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
 @[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
-  Adapted.hittingBtwn_isStoppingTime
+  Adapted.isStoppingTime_hittingBtwn
 
-theorem Adapted.hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι]
-    [WellFoundedLT ι] [Countable ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
+    [WellFoundedLT ι] [Countable ι] {mβ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
@@ -489,7 +489,7 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
   simp only [WithTop.coe_le_coe, h₁, h₂, Set.union_empty]
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
-  simpa using hf.hittingBtwn_isStoppingTime hs n
+  simpa using hf.isStoppingTime_hittingBtwn hs n
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
   Adapted.isStoppingTime_hittingBtwn_isStoppingTime
