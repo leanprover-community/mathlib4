@@ -233,8 +233,8 @@ theorem comap_iInf (K : ι → Ideal S) : (iInf K).comap f = ⨅ i, (K i).comap 
   (gc_map_comap f : GaloisConnection (map f) (comap f)).u_iInf
 
 theorem comap_finsetInf {ι : Type*} (s : Finset ι) (K : ι → Ideal S) :
-    (s.inf K).comap f = s.inf fun i ↦ (K i).comap f :=
-  by simp [Finset.inf_eq_iInf, comap_iInf]
+    (s.inf K).comap f = s.inf fun i ↦ (K i).comap f := by
+  simp [Finset.inf_eq_iInf, comap_iInf]
 
 theorem map_sSup (s : Set (Ideal R)) : (sSup s).map f = ⨆ I ∈ s, (I : Ideal R).map f :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_sSup
