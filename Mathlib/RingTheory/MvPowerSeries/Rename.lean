@@ -23,8 +23,6 @@ This file is patterned after `MvPolynomials/Rename.lean`
 -/
 
 @[expose] public section
-
-
 noncomputable section
 
 open Finset Finsupp
