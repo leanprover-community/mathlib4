@@ -19,8 +19,9 @@ public import Mathlib.RingTheory.Norm.Transitivity
 # Manifold structure on the upper half plane.
 
 In this file we define the complex manifold structure on the upper half-plane, and show it is
-invariant under Moebius transformations. We also calculate the derivative; and show that its
-Jacobian is
+invariant under Moebius transformations. We also calculate the derivative, and give an explicit
+formula for its Jacobian determinant over `ℝ` (used in proving that the action preserves
+a suitable measure).
 -/
 
 @[expose] public section
