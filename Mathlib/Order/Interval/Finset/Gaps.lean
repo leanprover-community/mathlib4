@@ -29,13 +29,14 @@ they are actually satisfied. If they are actually satisfied, then we show that
 * `Finset.intervalGapsWithin_mapsTo`, `Finset.intervalGapsWithin_injective`,
 `Finset.intervalGapsWithin_surjOn`:
 `(fun j ↦ ((F.intervalGapsWithin h a b j.castSucc).2, (F.intervalGapsWithin h a b j.succ).1))` is
-a bijection between `Fin k` and `F`.
+a bijection between `Set.Iio k` and `F`.
 * `Finset.intervalGapsWithin_le_fst`, `Finset.intervalGapsWithin_snd_le`,
 `Finset.intervalGapsWithin_fst_le_snd`:
-`[(F.intervalGapsWithin h a b i).1, (F.intervalGapsWithin h a b i).2]` is indeed a subinterval of
-`[a, b]`.
+`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2]` is indeed a subinterval of
+`[a, b]` when `j < k`.
 * `Finset.intervalGapsWithin_pairwiseDisjoint_Ioc`: the half-closed intervals
-`[(F.intervalGapsWithin h a b i).1, (F.intervalGapsWithin h a b i).2)` are pairwise disjoint.
+`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2)` are pairwise disjoint
+for `j < k + 1`.
 -/
 
 @[expose] public section
