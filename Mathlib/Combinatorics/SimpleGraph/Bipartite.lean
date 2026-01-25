@@ -449,13 +449,13 @@ section
 
 variable {V W₁ W₂ : Type*} (G : SimpleGraph V) {s t : Set V}
 
-theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
+private theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
 
-theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
+private theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
   refine Set.ext fun x ↦ ⟨fun h ↦ ?_, by grind [mem_edgeSet]⟩
   exact ⟨x.out.1, x.out.2, by simp [G.mem_edgeSet.mp <| Sym2.eq_out x ▸ h]⟩
 
-theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
+private theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
     Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [edgeSet_eq, completeBipartiteGraph_adj, Sum.exists, Sum.isRight_inl,
@@ -465,14 +465,15 @@ theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edge
   · obtain ⟨_, _, _⟩ := h
     simp
 
-theorem completeBipartiteGraph_edgeSet_encard : (completeBipartiteGraph W₁ W₂).edgeSet.encard =
+private theorem completeBipartiteGraph_edgeSet_encard :
+    (completeBipartiteGraph W₁ W₂).edgeSet.encard =
     ENat.card W₁ * ENat.card W₂ := by
   let g (x : W₁ × W₂) : Sym2 (W₁ ⊕ W₂) := s(.inl x.1, .inr x.2)
   have : Function.Injective g := fun _ _ _ ↦ by grind
   have := this.encard_image Set.univ
   simpa [completeBipartiteGraph_edgeSet, this]
 
-theorem myembedding (hG : G.IsBipartiteWith s t) :
+private theorem nonempty_embedding (hG : G.IsBipartiteWith s t) :
     Nonempty (G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet) := by
   refine ⟨⟨fun ⟨x, hx⟩ ↦ ?_, fun _ _ _ ↦ ?_⟩⟩
   · by_cases! h : x.out.1 ∈ s
@@ -488,7 +489,8 @@ forming it may also be infinite: in that case as well, the upper bound is the pr
 the cardinalities of these two sets. The statement uses `Set.encard`. -/
 theorem IsBipartiteWith.encard_edgeSet_le {s t : Set V} (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
-  grw [Classical.choice (myembedding G hG) |>.encard_le, completeBipartiteGraph_edgeSet_encard]
+  grw [Classical.choice (nonempty_embedding G hG) |>.encard_le,
+    completeBipartiteGraph_edgeSet_encard]
   simp
 
 /-- An upper bound on the cardinality of the edge set of a bipartite graph when the cardinality
