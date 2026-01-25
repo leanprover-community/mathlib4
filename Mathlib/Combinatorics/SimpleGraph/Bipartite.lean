@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Horner, Vlad Tsyrklevich, Ilmārs Cīrulis
+Authors: Mitchell Horner
 -/
 module
 
@@ -449,23 +449,23 @@ section
 
 variable {V W₁ W₂ : Type*} (G : SimpleGraph V) {s t : Set V}
 
-private theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
+theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
 
-private theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
+theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
   refine Set.ext fun x ↦ ⟨fun h ↦ ?_, by grind [mem_edgeSet]⟩
   exact ⟨x.out.1, x.out.2, by simp [G.mem_edgeSet.mp <| Sym2.eq_out x ▸ h]⟩
 
-private theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
+theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
     Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simp only [edgeSet_eq, completeBipartiteGraph_adj, Sum.exists, Sum.isRight_inl,
       Bool.false_eq_true, and_false, Sum.isLeft_inl, and_true, false_or, exists_and_right,
       Sum.isRight_inr, Sum.isLeft_inr, or_false, Set.mem_setOf_eq] at h
-    rcases h with ⟨_, _, _⟩ | ⟨_, _, _⟩ <;> simp_all
+    rcases h with ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩ <;> simp
   · obtain ⟨_, _, _⟩ := h
     simp
 
-private theorem completeBipartiteGraph_edgeSet_encard :
+theorem completeBipartiteGraph_edgeSet_encard :
     (completeBipartiteGraph W₁ W₂).edgeSet.encard =
     ENat.card W₁ * ENat.card W₂ := by
   let g (x : W₁ × W₂) : Sym2 (W₁ ⊕ W₂) := s(.inl x.1, .inr x.2)
@@ -473,7 +473,8 @@ private theorem completeBipartiteGraph_edgeSet_encard :
   have := this.encard_image Set.univ
   simpa [completeBipartiteGraph_edgeSet, this]
 
-private theorem nonempty_embedding (hG : G.IsBipartiteWith s t) :
+theorem IsBipartiteWith.nonempty_embedding_completeBipartiteGraph_edgeSet
+    (hG : G.IsBipartiteWith s t) :
     Nonempty (G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet) := by
   refine ⟨⟨fun ⟨x, hx⟩ ↦ ?_, fun _ _ _ ↦ ?_⟩⟩
   · by_cases! h : x.out.1 ∈ s
@@ -487,9 +488,9 @@ private theorem nonempty_embedding (hG : G.IsBipartiteWith s t) :
 /-- An upper bound on the cardinality of the edge set of a bipartite graph when the vertex sets
 forming it may also be infinite: in that case as well, the upper bound is the product of
 the cardinalities of these two sets. The statement uses `Set.encard`. -/
-theorem IsBipartiteWith.encard_edgeSet_le {s t : Set V} (hG : G.IsBipartiteWith s t) :
+theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
-  grw [Classical.choice (nonempty_embedding G hG) |>.encard_le,
+  grw [Classical.choice hG.nonempty_embedding_completeBipartiteGraph_edgeSet |>.encard_le,
     completeBipartiteGraph_edgeSet_encard]
   simp
 
@@ -499,32 +500,22 @@ is less or equal to the square of the cardinality of the vertex set.
 The statement uses `Set.encard` and `ENat.card`. -/
 theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
     4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
-  rw [isBipartite_iff_exists_isBipartiteWith] at h
-  obtain ⟨s, t, h⟩ := h
-  have hG := IsBipartiteWith.encard_edgeSet_le G h
+  obtain ⟨s, t, h⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
+  have hG := h.encard_edgeSet_le
   have h₀ : s.encard + t.encard ≤ ENat.card V := by
     rw [← Set.encard_union_eq h.disjoint]
     exact Set.encard_le_card
-  by_cases hv : Finite V
-  · have hs : s.Finite := Set.toFinite s
-    have ht : t.Finite := Set.toFinite t
-    rw [ENat.card_eq_coe_natCard V] at h₀ ⊢
-    have hs' : s.encard = ↑(s.ncard) := (Set.Finite.cast_ncard_eq hs).symm
-    have ht' : t.encard = ↑(t.ncard) := (Set.Finite.cast_ncard_eq ht).symm
-    rw [hs', ht'] at hG h₀
-    have h₁ : G.edgeSet.encard = ↑(G.edgeSet.ncard) := by
-      rw [Set.Finite.cast_ncard_eq]
-      exact Set.toFinite G.edgeSet
-    norm_cast at h₀
-    have h₂ : (s.ncard + t.ncard) ^ 2 ≤ Nat.card V ^ 2 :=
-      Nat.pow_le_pow_left h₀ 2
-    rw [h₁] at hG ⊢; norm_cast at *
-    have h₃ : 4 * s.ncard * t.ncard ≤ (s.ncard + t.ncard) ^ 2 :=
-      four_mul_le_pow_two_add s.ncard t.ncard
-    have h₄ : 4 * G.edgeSet.ncard ≤ 4 * s.ncard * t.ncard := by
-      rw [mul_assoc]; exact Nat.mul_le_mul_left 4 hG
-    exact Nat.le_trans (Nat.le_trans h₄ h₃) h₂
-  · simp at hv; simp
+  by_cases! hv : Infinite V
+  · simp_all
+  rw [ENat.card_eq_coe_natCard V] at h₀ ⊢
+  rw [← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at hG h₀
+  rw [← G.edgeSet.toFinite.cast_ncard_eq] at hG ⊢
+  norm_cast at *
+  have h₂ : (s.ncard + t.ncard) ^ 2 ≤ Nat.card V ^ 2 :=
+    Nat.pow_le_pow_left h₀ 2
+  have h₃ : 4 * s.ncard * t.ncard ≤ (s.ncard + t.ncard) ^ 2 :=
+    four_mul_le_pow_two_add s.ncard t.ncard
+  lia
 
 end
 
