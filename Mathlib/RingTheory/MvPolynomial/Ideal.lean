@@ -88,19 +88,7 @@ theorem pow_idealOfVars (n : ℕ) :
   · simp [hn, show Set.Ici 0 = Set.univ by ext; simp, Ideal.one_eq_top]
   rw [Submodule.restrictScalars_pow hn]
   refine (restrictSupport_nsmul ..).symm.trans (congr_arg (restrictSupport R) ?_)
-  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' (Nat.one_le_cast_iff_ne_zero.mpr hn)
-  clear hn; induction n with
-  | zero => simp
-  | succ n ih =>
-    rw [succ_nsmul, ih]
-    refine Set.Subset.antisymm (Set.Subset.trans (Set.preimage_add_preimage_subset _)
-      (Set.preimage_mono (Set.Ici_add_Ici_subset ..))) ?_
-    simp only [Set.subset_def, Set.mem_preimage, Set.mem_Ici, Set.mem_add]
-    intro x x_deg
-    obtain ⟨i, i_in⟩ := support_nonempty_iff (f := x).mpr (by grind only [= map_zero])
-    obtain ⟨z, hz⟩ := exists_add_of_le (show single i 1 ≤ x by simp_all; lia)
-    rw [add_comm, hz, map_add, degree_single, Nat.add_le_add_iff_left] at x_deg
-    exact ⟨z, x_deg, ⟨single i 1, by simp, by rw [hz, add_comm]⟩⟩
+  simp [← degree_preimage_nsmul, hn]
 
 /-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
