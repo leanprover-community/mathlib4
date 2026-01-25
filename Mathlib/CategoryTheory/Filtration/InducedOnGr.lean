@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Matteo Cipollina,Jonathan Washburn. All rights reserved.
+Copyright (c) 2026 Jonathan Washburn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Jonathan Washburn
 -/
@@ -9,23 +9,21 @@ module
 public import Mathlib.CategoryTheory.Filtration.Opposed
 
 /-!
-## Induced filtrations on graded pieces (Deligne, *Théorie de Hodge II*, §1.2.1).
+## Induced filtrations on graded pieces
 
-This PR introduces the *iterated graded* objects attached to a pair of decreasing filtrations.
+Let `F` and `G` be decreasing `ℤ`-filtrations on an object `X` in an abelian category `C`.
+For each `q : ℤ`, Deligne defines a decreasing filtration on the graded piece
+`Gr_G^q(X) := G^q(X) / G^{q+1}(X)` by taking, for each `p`, the image of
+`F^p(X) ∩ G^q(X)` in this quotient.
 
-Given decreasing filtrations `F, G` on an object `A` in an abelian category, for each `q : ℤ` we
-construct a decreasing filtration on the graded piece `Gr_G^q(A)` induced by `F` (Deligne 1.2.1).
-
-From this we define the iterated graded object
-  `Gr_F^p(Gr_G^q(A))`.
-
-This file is deliberately scoped: it provides the definitions and the basic structural lemmas
-needed for the Zassenhaus isomorphisms and splitting lemma that follow in later PRs.
+We formalize this as a decreasing `ℤ`-filtration on `G.gr q`, built from its subobject-valued
+steps using `Filtration.DecFiltration.ofAntitone`.
 -/
 
 @[expose] public section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory
+open CategoryTheory.Limits
 
 namespace CategoryTheory
 
@@ -33,44 +31,62 @@ universe v u
 
 variable {C : Type u} [Category.{v} C]
 
+namespace Filtration
+
 namespace DecFiltration
 
-variable {A : C}
+variable {X : C}
 
-section Abelian
+section
 
 variable [Abelian C]
 
-/-- The filtration on `Gr_G^q(A)` induced by a filtration `F` on `A`.
+/-- The `p`-th step of the filtration induced by `F` on `Gr_G^q(X)`.
 
-Here we take the induced filtration of `F` on the subobject `G^q(A)`, and then push it
-forward to the quotient `G^q(A)/G^{q+1}(A)` along `grπ G q`.
-
-This aims to model Deligne's `F`-filtration on `Gr_G^q(A)` in §1.2.1.
+It is the image of the subobject `F^p ∩ G^q` (viewed inside `G^q`) under the quotient map
+`G^q ⟶ Gr_G^q`.
 -/
-noncomputable def inducedOnGr (F G : DecFiltration A) (q : ℤ) : DecFiltration (G.gr q) where
-  F p := FilteredObject.imageSubobject (grπ G q) ((F.induced (G q)) p)
-  antitone' := by
-    intro m n hmn
-    -- The induced filtration on `G q` is decreasing, and images are monotone in the subobject.
-    have hle : (F.induced (G q)) n ≤ (F.induced (G q)) m := (F.induced (G q)).antitone hmn
-    exact (FilteredObject.imageSubobject_mono (grπ G q)) hle
+noncomputable def inducedOnGrStep
+    (F G : Filtration.DecFiltration (C := C) X) (q p : ℤ) : Subobject (G.gr q) :=
+  FilteredObject.imageSubobject (C := C) (G.grπ q)
+    ((Subobject.pullback (G.inj (Opposite.op q))).obj (F.step p))
 
-@[simp] lemma inducedOnGr_apply (F G : DecFiltration A) (q p : ℤ) :
-    (inducedOnGr (A := A) F G q) p
-      = FilteredObject.imageSubobject (grπ (A := A) G q) ((F.induced (G q)) p) :=
-  rfl
+/-- The filtration induced by `F` on the graded piece `Gr_G^q(X)` (Deligne §1.2.1).
 
-/-- The *iterated graded* piece `Gr_F^p(Gr_G^q(A))`. -/
-noncomputable def grGr (F G : DecFiltration A) (p q : ℤ) : C :=
-  (inducedOnGr (A := A) F G q).gr p
+This is a decreasing `ℤ`-filtration on `G.gr q`.
+-/
+noncomputable def inducedOnGr
+    (F G : Filtration.DecFiltration (C := C) X) (q : ℤ) :
+    Filtration.DecFiltration (C := C) (G.gr q) :=
+by
+  classical
+  -- We build the filtration from its (antitone) `Subobject`-valued steps.
+  refine Filtration.DecFiltration.ofAntitone (C := C) (X := G.gr q)
+    (fun p => inducedOnGrStep (C := C) (X := X) F G q p) ?_
+  intro p p' hp
+  have hIdx : (Opposite.op p' : ℤᵒᵖ) ⟶ (Opposite.op p : ℤᵒᵖ) := by
+    exact (homOfLE (show p ≤ p' from hp)).op
+  have hF : F.step p' ≤ F.step p := by
+    simpa [Filtration.DecFiltration.step] using (F.subobject_le_of_hom hIdx)
+  have hPull :
+      (Subobject.pullback (G.inj (Opposite.op q))).obj (F.step p') ≤
+        (Subobject.pullback (G.inj (Opposite.op q))).obj (F.step p) :=
+    (Subobject.pullback (G.inj (Opposite.op q))).monotone hF
+  exact FilteredObject.imageSubobject_mono (C := C) (G.grπ q) hPull
 
-/-- Notation-friendly lemma unfolding `grGr`. -/
-@[simp] lemma grGr_def (F G : DecFiltration A) (p q : ℤ) :
-    grGr (A := A) F G p q = (inducedOnGr (A := A) F G q).gr p := rfl
+/-- Unfolding lemma for `inducedOnGr`: its `p`-th step is `inducedOnGrStep`. -/
+@[simp]
+lemma inducedOnGr_step
+    (F G : Filtration.DecFiltration (C := C) X) (q p : ℤ) :
+    (inducedOnGr (C := C) (X := X) F G q).step p = inducedOnGrStep (C := C) (X := X) F G q p := by
+  simp [inducedOnGr, inducedOnGrStep, Filtration.DecFiltration.step, Filtration.subobject,
+    Filtration.inj, Filtration.DecFiltration.ofAntitone, FilteredObject.imageSubobject,
+    Subobject.mk_arrow]
 
-end Abelian
+end
 
 end DecFiltration
+
+end Filtration
 
 end CategoryTheory
