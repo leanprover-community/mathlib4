@@ -499,6 +499,8 @@ alias HasSubset.subset.trans_eq := subset_of_subset_of_eq
 
 alias Eq.subset := subset_of_eq
 
+@[deprecated (since := "2026-01-24")] alias Eq.subset' := Eq.subset
+
 alias Eq.superset := superset_of_eq
 
 alias HasSubset.Subset.trans := subset_trans
