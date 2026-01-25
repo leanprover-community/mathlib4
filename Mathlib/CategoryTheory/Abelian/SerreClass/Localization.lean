@@ -62,30 +62,48 @@ namespace ObjectProperty
 
 variable (L : C ⥤ D) (P : ObjectProperty C) [P.IsSerreClass]
 
+lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
+    (∃ (X' : C) (s : X' ⟶ X) (_ : P.epiModSerre s), s ≫ f = 0) ↔
+        P (Abelian.image f) := by
+  refine ⟨?_, fun hf ↦ ?_⟩
+  · rintro ⟨X', s, hs, eq⟩
+    have := P.epiModSerre.comp_mem s (Abelian.factorThruImage f) hs
+      (epiModSerre_of_epi _ _)
+    rwa [show s ≫ Abelian.factorThruImage f = 0 by cat_disch,
+      epiModSerre_zero_iff] at this
+  · exact ⟨_, kernel.ι f, P.prop_of_iso (Abelian.coimageIsoImage f).symm hf, by simp⟩
+
 lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.isoModSerre s), s ≫ f = 0) ↔
         P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
-  · rintro ⟨X', s, hs, eq⟩
-    have := P.epiModSerre.comp_mem s (Abelian.factorThruImage f) hs.2
-      (epiModSerre_of_epi _ _)
-    rwa [show s ≫ Abelian.factorThruImage f = 0 by cat_disch,
-      epiModSerre_zero_iff] at this
+  · rintro ⟨Y', s, hs, eq⟩
+    rw [← exists_epiModSerre_comp_eq_zero_iff P]
+    exact ⟨Y', s, hs.2, eq⟩
   · refine ⟨_, kernel.ι f, ?_, by simp⟩
-    rw [isoModSerre_iff_of_mono]
-    exact P.prop_of_iso (Abelian.coimageIsoImage f).symm hf
+    simpa only [isoModSerre_iff_of_mono] using
+      P.prop_of_iso (Abelian.coimageIsoImage f).symm hf
+
+lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
+    (∃ (Y' : C) (s : Y ⟶ Y') (_ : P.monoModSerre s), f ≫ s = 0) ↔
+        P (Abelian.image f) := by
+  refine ⟨?_, fun hf ↦ ?_⟩
+  · rintro ⟨Y', s, hs, eq⟩
+    apply P.prop_of_iso (Abelian.coimageIsoImage f)
+    have := P.monoModSerre.comp_mem (Abelian.factorThruCoimage f) s
+      (monoModSerre_of_mono _ _) hs
+    rwa [show Abelian.factorThruCoimage f ≫ s = 0 by cat_disch,
+      monoModSerre_zero_iff] at this
+  · exact ⟨_, cokernel.π f, hf, by simp⟩
 
 lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (Y' : C) (s : Y ⟶ Y') (_ : P.isoModSerre s), f ≫ s = 0) ↔
         P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
-    apply P.prop_of_iso (Abelian.coimageIsoImage f)
-    have := P.monoModSerre.comp_mem (Abelian.factorThruCoimage f) s
-      (monoModSerre_of_mono _ _) hs.1
-    rwa [show Abelian.factorThruCoimage f ≫ s = 0 by cat_disch,
-      monoModSerre_zero_iff] at this
-  · exact ⟨_, cokernel.π f, by simpa [isoModSerre_iff_of_epi], by simp⟩
+    rw [← exists_comp_monoModSerre_eq_zero_iff P]
+    exact ⟨Y', s, hs.1, eq⟩
+  · refine ⟨_, cokernel.π f, by rwa [isoModSerre_iff_of_epi], by simp⟩
 
 variable {P} in
 lemma monoModSerre.isoModSerre_factorThruImage
@@ -147,9 +165,43 @@ lemma isZero_obj_iff (X : C) :
 lemma hasZeroObject : HasZeroObject D :=
   ⟨L.obj 0, by simpa [isZero_obj_iff L P] using P.prop_zero⟩
 
+lemma map_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
+    L.map f = 0 ↔ P (Abelian.image f) := by
+  rw [← L.map_zero, MorphismProperty.map_eq_iff_precomp L P.isoModSerre]
+  simp [← exists_isoModSerre_comp_eq_zero_iff P]
+
+lemma map_comp_eq_zero_iff_of_epi_mono {X Z Y : C} (f : X ⟶ Z) (g : Z ⟶ Y)
+    [Epi f] [Mono g] :
+    L.map f ≫ L.map g = 0 ↔ P Z := by
+  rw [← L.map_comp, map_eq_zero_iff L P]
+  have := strongEpi_of_epi f
+  exact P.prop_iff_of_iso (Abelian.imageIsoImage _ ≪≫ (image.isoStrongEpiMono f g rfl).symm)
+
 lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
     Mono (L.map f) ↔ P.monoModSerre f := by
-  sorry
+  have := Localization.essSurj L P.isoModSerre
+  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
+  · have hf : L.map (kernel.ι f) = 0 := by
+      rw [← cancel_mono (L.map f), zero_comp, ← L.map_comp,
+        kernel.condition, L.map_zero]
+    simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (𝟙 _) (kernel.ι f)
+  · suffices ∀ ⦃Z : C⦄ (z : Z ⟶ X) (hz : L.map z ≫ L.map f = 0), L.map z = 0 by
+      rw [Preadditive.mono_iff_cancel_zero]
+      intro W z hz
+      obtain ⟨φ, hφ⟩ := Localization.exists_rightFraction L P.isoModSerre
+        ((L.objObjPreimageIso W).hom ≫ z)
+      have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
+      rw [← cancel_epi (L.objObjPreimageIso W).hom, comp_zero, hφ,
+        ← cancel_epi (L.map φ.s), comp_zero,
+        MorphismProperty.RightFraction.map_s_comp_map]
+      apply this φ.f
+      rw [← show L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f by cat_disch,
+        assoc, assoc, hz, comp_zero, comp_zero]
+    intro Z z hz
+    rw [← L.map_comp] at hz
+    rw [map_eq_zero_iff L P, ← exists_comp_monoModSerre_eq_zero_iff P] at hz ⊢
+    obtain ⟨W, s, hs, eq⟩ := hz
+    exact ⟨W, f ≫ s, MorphismProperty.comp_mem _ _ _ hf hs, by simpa using eq⟩
 
 lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
     Epi (L.map f) ↔ P.epiModSerre f := by
@@ -215,6 +267,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
       (Fork.IsLimit.ofExistsUnique
         (fun s ↦ existsUnique_of_exists_of_unique ?_
           (fun _ _ h₁ h₂ ↦ by simpa [cancel_mono] using h₁.trans h₂.symm))))
+  have := KernelFork.condition s
   sorry
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
