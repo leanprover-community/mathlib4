@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Data.Int.Init
 public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.SimpRw
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -63,8 +64,7 @@ is equal to a multiplication on the left by `x * y`.
 @[to_additive (attr := simp) /-- Composing two additions on the left by `y` then `x`
 is equal to an addition on the left by `x + y`. -/]
 theorem comp_mul_left (x y : α) : (x * ·) ∘ (y * ·) = (x * y * ·) := by
-  ext z
-  simp [mul_assoc]
+  grind
 
 /-- Composing two multiplications on the right by `y` and `x`
 is equal to a multiplication on the right by `y * x`.
@@ -72,8 +72,7 @@ is equal to a multiplication on the right by `y * x`.
 @[to_additive (attr := simp) /-- Composing two additions on the right by `y` and `x`
 is equal to an addition on the right by `y + x`. -/]
 theorem comp_mul_right (x y : α) : (· * x) ∘ (· * y) = (· * (y * x)) := by
-  ext z
-  simp [mul_assoc]
+  grind
 
 end Semigroup
 
@@ -116,15 +115,15 @@ variable [CommSemigroup G]
 
 @[to_additive]
 theorem mul_left_comm (a b c : G) : a * (b * c) = b * (a * c) := by
-  rw [← mul_assoc, mul_comm a, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
-  rw [mul_assoc, mul_comm b, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
-  simp only [mul_left_comm, mul_assoc]
+  grind
 
 @[to_additive]
 theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
@@ -132,11 +131,11 @@ theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
-  simp only [mul_left_comm, mul_comm]
+  grind
 
 @[to_additive]
 theorem mul_rotate' (a b c : G) : a * (b * c) = b * (c * a) := by
-  simp only [mul_left_comm, mul_comm]
+  grind
 
 end CommSemigroup
 
@@ -177,7 +176,7 @@ lemma pow_eq_pow_mod (m : ℕ) (ha : a ^ n = 1) : a ^ m = a ^ (m % n) := by
   | n + 1, h =>
     calc
       a ^ n.succ * b ^ n.succ = a ^ n * a * (b * b ^ n) := by rw [pow_succ, pow_succ']
-      _ = a ^ n * (a * b) * b ^ n := by simp only [mul_assoc]
+      _ = a ^ n * (a * b) * b ^ n := by grind
       _ = 1 := by simp [h, pow_mul_pow_eq_one]
 
 @[to_additive (attr := simp)]
@@ -204,7 +203,7 @@ lemma mul_left_iterate_apply_one (a : M) : (a * ·)^[n] 1 = a ^ n := by simp
 @[to_additive]
 lemma mul_right_iterate_apply_one (a : M) : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma pow_iterate (k : ℕ) : ∀ n : ℕ, (fun x : M ↦ x ^ k)^[n] = (· ^ k ^ n)
   | 0 => by ext; simp
   | n + 1 => by ext; simp [pow_iterate, Nat.pow_succ', pow_mul]
@@ -845,7 +844,7 @@ theorem zpow_eq_zpow_emod {x : G} (m : ℤ) {n : ℤ} (h : x ^ n = 1) :
 theorem zpow_eq_zpow_emod' {x : G} (m : ℤ) {n : ℕ} (h : x ^ n = 1) :
     x ^ m = x ^ (m % (n : ℤ)) := zpow_eq_zpow_emod m (by simpa)
 
-@[to_additive (attr := simp)]
+@[to_additive, simp]
 lemma zpow_iterate (k : ℤ) : ∀ n : ℕ, (fun x : G ↦ x ^ k)^[n] = (· ^ k ^ n)
   | 0 => by ext; simp [Int.pow_zero]
   | n + 1 => by ext; simp [zpow_iterate, Int.pow_succ', zpow_mul]
@@ -992,10 +991,10 @@ end CommGroup
 
 section multiplicative
 
-variable [Monoid β] (p r : α → α → Prop) [IsTotal α r] (f : α → α → β)
+variable [Monoid β] (p r : α → α → Prop) [Std.Total r] (f : α → α → β)
 
-@[to_additive additive_of_symmetric_of_isTotal]
-lemma multiplicative_of_symmetric_of_isTotal
+@[to_additive additive_of_symmetric_of_total]
+lemma multiplicative_of_symmetric_of_total
     (hsymm : Symmetric p) (hf_swap : ∀ {a b}, p a b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a b → p b c → p a c → f a c = f a b * f b c)
     {a b c : α} (pab : p a b) (pbc : p b c) (pac : p a c) : f a c = f a b * f b c := by
@@ -1011,21 +1010,31 @@ lemma multiplicative_of_symmetric_of_isTotal
   · exact hmul' rbc pab pbc pac
   · rw [hmul' rcb pac (hsymm pbc) pab, mul_assoc, hf_swap (hsymm pbc), mul_one]
 
+@[deprecated (since := "2026-01-09")]
+alias additive_of_symmetric_of_isTotal := additive_of_symmetric_of_total
+@[to_additive existing additive_of_symmetric_of_isTotal, deprecated (since := "2026-01-09")]
+alias multiplicative_of_symmetric_of_isTotal := multiplicative_of_symmetric_of_total
+
 /-- If a binary function from a type equipped with a total relation `r` to a monoid is
   anti-symmetric (i.e. satisfies `f a b * f b a = 1`), in order to show it is multiplicative
   (i.e. satisfies `f a c = f a b * f b c`), we may assume `r a b` and `r b c` are satisfied.
   We allow restricting to a subset specified by a predicate `p`. -/
-@[to_additive additive_of_isTotal /-- If a binary function from a type equipped with a total
+@[to_additive additive_of_total /-- If a binary function from a type equipped with a total
   relation `r` to an additive monoid is anti-symmetric (i.e. satisfies `f a b + f b a = 0`), in
   order to show it is additive (i.e. satisfies `f a c = f a b + f b c`), we may assume `r a b` and
   `r b c` are satisfied. We allow restricting to a subset specified by a predicate `p`. -/]
-theorem multiplicative_of_isTotal (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
+theorem multiplicative_of_total (p : α → Prop) (hswap : ∀ {a b}, p a → p b → f a b * f b a = 1)
     (hmul : ∀ {a b c}, r a b → r b c → p a → p b → p c → f a c = f a b * f b c) {a b c : α}
     (pa : p a) (pb : p b) (pc : p c) : f a c = f a b * f b c := by
-  apply multiplicative_of_symmetric_of_isTotal (fun a b => p a ∧ p b) r f fun _ _ => And.symm
+  apply multiplicative_of_symmetric_of_total (fun a b => p a ∧ p b) r f fun _ _ => And.symm
   · simp_rw [and_imp]; exact @hswap
   · exact fun rab rbc pab _pbc pac => hmul rab rbc pab.1 pab.2 pac.2
   exacts [⟨pa, pb⟩, ⟨pb, pc⟩, ⟨pa, pc⟩]
+
+@[deprecated (since := "2026-01-09")]
+alias additive_of_isTotal := additive_of_total
+@[to_additive existing additive_of_isTotal, deprecated (since := "2026-01-09")]
+alias multiplicative_of_isTotal := multiplicative_of_total
 
 end multiplicative
 

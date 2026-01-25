@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Aesop
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Data.SetLike.Basic
@@ -118,8 +117,8 @@ theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
 instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ s) :=
   Multiset.decidableMem _ _
 
-@[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by aesop
-@[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by aesop
+@[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
+@[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
 
 /-! ### set coercion -/
 
@@ -205,17 +204,17 @@ instance partialOrder : PartialOrder (Finset α) := inferInstance
 
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
-instance : IsRefl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsRefl (Finset α) (· ≤ ·)
+instance : @Std.Refl (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Refl (· ≤ ·)
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
 
-instance : IsAntisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsAntisymm (Finset α) (· ≤ ·)
+instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
+  inferInstanceAs <| Std.Antisymm (· ≤ ·)
 
-instance : IsIrrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsIrrefl (Finset α) (· < ·)
+instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
+  inferInstanceAs <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
   inferInstanceAs <| IsTrans (Finset α) (· < ·)
