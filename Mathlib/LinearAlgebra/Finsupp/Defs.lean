@@ -79,8 +79,7 @@ theorem linearEquivFunOnFinite_symm_coe (f : α →₀ M) : (linearEquivFunOnFin
   (linearEquivFunOnFinite R M α).symm_apply_apply f
 
 @[simp]
-theorem linearEquivFunOnFinite_symm_apply (f : α → M) (x) :
-    (linearEquivFunOnFinite R M α).symm f x = f x :=
+theorem linearEquivFunOnFinite_symm_apply (f : α → M) : (linearEquivFunOnFinite R M α).symm f = f :=
   rfl
 
 end LinearEquivFunOnFinite
