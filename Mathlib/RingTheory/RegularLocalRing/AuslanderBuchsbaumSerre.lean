@@ -52,13 +52,14 @@ local instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Mod
   exact Module.Finite.of_surjective f (Submodule.mkQ_surjective _)
 
 open Pointwise in
-lemma ker_mapRange_eq_smul_top (I : Type*) [Fintype I] (x : R) :
+lemma ker_mapRange_eq_smul_top (I : Type*) [Finite I] (x : R) :
     LinearMap.ker (Finsupp.mapRange.linearMap (Submodule.mkQ (Ideal.span {x}))) =
     x • (⊤ : Submodule R (I →₀ R)) := by
   ext y
   simp only [Finsupp.ker_mapRange, Submodule.ker_mkQ, Finsupp.mem_submodule_iff]
   refine ⟨fun h ↦ ?_, fun h i ↦ ?_⟩
-  · simp only [Ideal.mem_span_singleton', mul_comm] at h
+  · let _ : Fintype I := Fintype.ofFinite I
+    simp only [Ideal.mem_span_singleton', mul_comm] at h
     rw [← Finsupp.univ_sum_single y]
     refine Submodule.sum_mem _ (fun i _ ↦ ?_)
     rcases h i with ⟨z, hz⟩
@@ -233,7 +234,6 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
       let _ : Module.Finite R S.X₂ := by
         simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-      let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
       let free : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       have reg2'' : IsSMulRegular (Fin m →₀ Shrink.{v, u} R) x := by
@@ -321,15 +321,10 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
     mono_f := (ModuleCat.mono_iff_injective _).mpr inj
     epi_g := (ModuleCat.epi_iff_surjective _).mpr surj }
   rcases h with ⟨n, hn⟩
-  let _ : Module.Free R (ModuleCat.of R (Shrink.{v, u} R)) :=
-    Module.Free.of_equiv (Shrink.linearEquiv.{v} R R).symm
   have projdim := (S_exact.hasProjectiveDimensionLT_X₃_iff n
     (ModuleCat.projective_of_categoryTheory_projective S.X₂)).mpr hn
   have : Module.annihilator R (Shrink.{v} (R ⧸ maximalIdeal R)) = maximalIdeal R := by
     rw [(Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R)).annihilator_eq, Ideal.annihilator_quotient]
-  let _ : Module.Finite R (Shrink.{v} (R ⧸ maximalIdeal R)) :=
-    Module.Finite.equiv (Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R)).symm
-  let _ : Module.Finite R (Shrink.{v, u} R) := Module.Finite.equiv (Shrink.linearEquiv.{v} R R).symm
   simp only [← this, (Shrink.linearEquiv.{v} R R).symm.isSMulRegular_congr]
   rw [← IsSMulRegular.subsingleton_linearMap_iff]
   by_contra h
@@ -592,10 +587,7 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
         Submodule.coe_subtype, Function.comp_apply, i3, Submodule.liftQ_apply, LinearMap.coe_comp,
         LinearEquiv.coe_coe, Function.comp_apply, r', e2,
         LinearMap.quotientInfEquivSupQuotient_apply_mk]
-      simp only [LinearEquiv.trans_symm, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-        Submodule.quotEquivOfEq_mk, LinearMap.quotKerEquivOfSurjective_apply_mk, e1,
-        LinearMap.coe_comp, LinearEquiv.coe_coe, Submodule.coe_subtype,
-        Function.comp_apply, Submodule.coe_inclusion, e1', LinearEquiv.apply_symm_apply]
+      simp [e1, e1']
     let _ : IsScalarTower R (R ⧸ Ideal.span {x}) (Shrink.{v} (maximalIdeal R')) :=
       (equivShrink (maximalIdeal R')).symm.isScalarTower R _
     let r := (LinearMap.extendScalarsOfSurjective (Ideal.Quotient.mk_surjective
@@ -661,8 +653,6 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     (by simpa only [List.coe_toFinset] using span)
   rw [Set.ncard_coe_finset rs.toFinset]
   apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
-  let _ : Module.Finite R (ModuleCat.of R (Shrink.{v, u} R)) :=
-    Module.Finite.equiv (Shrink.linearEquiv.{v} R R).symm
   apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R (Shrink.{v, u} R)))
   have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
   rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
