@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 public import Mathlib.CategoryTheory.Pi.Basic
-public import Mathlib.Data.ULift
 
 /-!
 # Discrete categories

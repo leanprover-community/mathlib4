@@ -91,7 +91,7 @@ lemma D2_mul (A B : SL(2, ℤ)) : D2 (A * B) = (D2 A) ∣[(2 : ℤ)] B + D2 B :=
   field_simp [denom_ne_zero A (toGL (φ B) • z)]
   ring
 
-lemma D2_inv (A) : (D2 A)∣[(2 : ℤ)] A⁻¹ = -D2 A⁻¹ := by
+lemma D2_inv (A) : (D2 A) ∣[(2 : ℤ)] A⁻¹ = -D2 A⁻¹ := by
   simpa [eq_neg_iff_add_eq_zero] using (D2_mul A A⁻¹).symm
 
 lemma D2_T : D2 ModularGroup.T = 0 := by
