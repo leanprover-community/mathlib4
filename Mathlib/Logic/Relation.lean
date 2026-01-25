@@ -52,7 +52,7 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ ε ζ : Type*}
+variable {α β γ δ ε ζ : Sort*}
 
 section NeImp
 
