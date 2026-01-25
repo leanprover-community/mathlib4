@@ -613,7 +613,7 @@ private def parseSuggestionToTactic (s : Lean.Meta.Tactic.TryThis.Suggestion) :
       `(tactic| ($tacSeq:tacticSeq))
     | .error err => throwError "Failed to parse suggestion: {str}\n{err}"
 
-/-- Verify that Try-This suggestions from a tactic actually work.
+/-- Verify that TryThis suggestions from a tactic actually work.
 
 Runs the given tactic at each proof step, captures any "Try this:" suggestions,
 then re-runs the suggested tactic to verify it succeeds.
@@ -624,8 +624,7 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
   run seq := do
     let opts ← getOptions
     let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
-    for h : idx in [:seq.size] do
-      let i := seq[idx]
+    for i in seq do
       if let [goal] := i.tacI.goalsBefore then
         let goalDecl := i.tacI.mctxBefore.decls.find! goal
         let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
@@ -658,22 +657,19 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
               logWarningAt i.tacI.stx m!"`{label}` produced unparseable suggestion: {e.toMessageData}"
               continue
 
-            -- Skip empty interactive mode suggestions (just `grind =>` with no body)
+            -- Skip empty interactive mode suggestions (just `grind => {}` with no body)
             -- These are intermediate suggestions that aren't meant to be used standalone
-            let isEmptyGrindInteractive := do
-              guard (suggestedTac.raw.getKind == ``Lean.Parser.Tactic.grind)
-              let seqArg ← suggestedTac.raw[4]?
-              -- Has `=>` marker in syntax - check if body is empty
-              if seqArg.getNumArgs == 0 then
-                return true
-              if seqArg.getNumArgs >= 2 then
-                if let some grindSeq := seqArg[1]? then
-                  if let some inner := grindSeq[0]? then
-                    if inner.getArgs.isEmpty then
-                      return true
-              return false
-            if isEmptyGrindInteractive == some true then
-              continue
+            if suggestedTac.raw.getKind == ``Lean.Parser.Tactic.grind then
+              if let some seqArg := suggestedTac.raw[4]? then
+                -- Has `=>` marker in syntax (numArgs >= 2) - check if body is empty
+                if seqArg.getNumArgs >= 2 then
+                  if let some grindSeq := seqArg[1]? then
+                    -- grindSeq[0] is grindSeqBracketed: { content }
+                    -- content is at [1], check if it has no children
+                    if let some bracketed := grindSeq[0]? then
+                      if let some content := bracketed[1]? then
+                        if content.getNumArgs == 0 then
+                          continue
 
             -- Get suggestion as string for analysis
             let suggPP ← try
@@ -690,14 +686,6 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
 
             -- Skip suggestions containing `approx` - these are incomplete approximations
             if suggStr.contains "approx" then
-              continue
-
-            -- Skip trivial/empty grind => suggestions
-            let hasContent := suggStr.contains "instantiate" || suggStr.contains "cases" ||
-                              suggStr.contains "done" || suggStr.contains "sorry" ||
-                              suggStr.contains "only [" || suggStr.contains "approx"
-            let isInteractive := suggStr.contains "=>"
-            if isInteractive && !hasContent then
               continue
 
             -- Verify suggestion works (suppress any messages from verification)
