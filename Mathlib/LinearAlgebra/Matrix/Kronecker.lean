@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Kronecker product of matrices
