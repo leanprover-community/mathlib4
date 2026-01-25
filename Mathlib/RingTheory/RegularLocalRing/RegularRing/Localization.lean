@@ -30,7 +30,7 @@ lemma isRegularRing_of_globalDimension_lt_top [IsNoetherianRing R] [Small.{v} R]
     rw [globalDimension_eq_iSup_loclization_prime R]
     apply le_iSup (fun (q : PrimeSpectrum R) ↦ globalDimension.{v} (Localization.AtPrime q.1))
       ⟨p, hp⟩
-  let _ : Small.{v, u} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
+  let _ : Small.{v} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
   exact IsRegularLocalRing.of_globalDimension_lt_top.{u, v} (lt_of_le_of_lt this h)
 
 lemma isRegularRing_of_isRegularLocalRing [IsRegularLocalRing R] : IsRegularRing R := by
@@ -49,14 +49,14 @@ lemma isRegularRing_of_localization_maximal_isRegularLocalRing
   have disj := (Set.disjoint_compl_left_iff_subset.mpr le)
   have : (p.map (algebraMap R Rₘ)).IsPrime := by
     simpa [IsLocalization.isPrime_iff_isPrime_disjoint m.primeCompl Rₘ, hp,
-      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ p hp disj] using disj
+      IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj] using disj
   have le' : m.primeCompl ≤ p.primeCompl := by simpa [Ideal.primeCompl] using le
   let : Algebra Rₘ Rₚ := IsLocalization.localizationAlgebraOfSubmonoidLe Rₘ Rₚ _ _ le'
   have := IsLocalization.localization_isScalarTower_of_submonoid_le Rₘ Rₚ _ _ le'
   have : IsLocalization.AtPrime (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)) p := by
     convert IsLocalization.isLocalization_atPrime_localization_atPrime m.primeCompl
       (p.map (algebraMap R Rₘ))
-    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ p hp disj]
+    rw [IsLocalization.comap_map_of_isPrime_disjoint m.primeCompl Rₘ hp disj]
   let e' := (IsLocalization.algEquiv p.primeCompl Rₚ
       (Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p)))
   let e : Rₚ ≃ₐ[Rₘ] Localization.AtPrime (Ideal.map (algebraMap R Rₘ) p) :=
