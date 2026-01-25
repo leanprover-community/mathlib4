@@ -234,7 +234,8 @@ def updateRel (r e : Expr) (isLhs : Bool) : Expr :=
   | .app (.app rel lhs) rhs => if isLhs then mkApp2 rel e rhs else mkApp2 rel lhs e
   | _ => r
 
-/-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and conclusion `target`. -/
+/-- Try to construct the `GCongrLemma` for a lemma with hypotheses `hyps` and
+conclusion `target`. -/
 def makeGCongrLemma (hyps : Array Expr) (target : Expr) (declName : Name) (prio : Nat) :
     MetaM GCongrLemma := do
   let fail {α} (m : MessageData) : MetaM α := throwError "\
@@ -323,7 +324,6 @@ initialize registerBuiltinAttribute {
     let prio ← getAttrParamOptPrio stx[1]
     let cinfo ← getConstInfo declName
     let type := cinfo.type
-    let arity := type.getForallArity
     forallTelescope type fun xs type => do
     -- Special case the unfolding of `Monotone`-like conclusions.
     if type.getAppFn.constName? matches
@@ -367,25 +367,30 @@ initialize registerBuiltinAttribute {
         -- Try to interpret the lemma as an implicational `gcongr` lemma,
         -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
         -- We want to support such lemmas even if the hypotheses are given in a different order.
-        -- So, we try this for each hypotheses that has the same head constant as the conclusion.
+        -- So, we try this for each hypothesis that has the same head constant as the conclusion.
         let .const c _ := type.getAppFn | failure
-        -- let mut i :=
-        for h : i in (Array.range xs.size).reverse do
-          let x := xs[i]'(by grind)
-          let hyp ← inferType x
-          unless hyp.getAppFn.isConstOf c do continue
-          let type ← mkForallFVars #[x] type
-          let xs' :=  xs.eraseIdx i (by grind)
-          let gcongrLemma ← makeGCongrLemma xs' type declName prio
-          if i == xs.size - 1 then
-            gcongrExt.add gcongrLemma kind
-          else
-            let auxType ← mkForallFVars xs' type
-            let auxValue ← mkLambdaFVars (xs'.push x) <|
-              mkAppN (.const declName (cinfo.levelParams.map .param)) xs
-            let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
-            gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
-          break
+        let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
+          match i with
+          | 0 => failure
+          | i + 1 => do
+            if (← inferType xs[i]).getAppFn.isConstOf c then
+              return ⟨i, by grind⟩
+            else
+              findIdx i (by grind)
+        let i ← findIdx xs.size xs.size.le_refl
+        let type ← mkForallFVars #[xs[i]] type
+        let xs' :=  xs.eraseIdx i i.isLt
+        let gcongrLemma ← makeGCongrLemma xs' type declName prio
+        if i == xs.size - 1 then
+          -- The argument order is already correct.
+          gcongrExt.add gcongrLemma kind
+        else
+          -- We need to make an auxiliary theorem with the correct argument order.
+          let auxType ← mkForallFVars xs' type
+          let auxValue ← mkLambdaFVars (xs'.push xs[i]) <|
+            mkAppN (.const declName (cinfo.levelParams.map .param)) xs
+          let auxDeclName ← mkAuxLemma cinfo.levelParams auxType auxValue (kind? := `_gcongr)
+          gcongrExt.add { gcongrLemma with declName := auxDeclName } kind
     catch _ =>
       -- If none of the methods work, we throw the error thrown by the "normal" attempt.
       throw e
