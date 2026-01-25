@@ -60,15 +60,28 @@ section EMetric
 open EMetric
 
 @[to_additive (attr := simp)]
-theorem infEdist_inv_inv (x : E) (s : Set E) : infEdist x⁻¹ s⁻¹ = infEdist x s := by
-  rw [← image_inv_eq_inv, infEdist_image isometry_inv]
+theorem infEDist_inv_inv (x : E) (s : Set E) : infEDist x⁻¹ s⁻¹ = infEDist x s := by
+  rw [← image_inv_eq_inv, infEDist_image isometry_inv]
+
+@[deprecated (since := "2026-01-08")]
+alias infEdist_neg_neg := infEDist_neg_neg
+
+@[to_additive existing, deprecated (since := "2026-01-08")]
+alias infEdist_inv_inv := infEDist_inv_inv
+
 
 @[to_additive]
-theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹ := by
-  rw [← infEdist_inv_inv, inv_inv]
+theorem infEDist_inv (x : E) (s : Set E) : infEDist x⁻¹ s = infEDist x s⁻¹ := by
+  rw [← infEDist_inv_inv, inv_inv]
+
+@[deprecated (since := "2026-01-08")]
+alias infEdist_neg := infEDist_neg
+
+@[to_additive existing, deprecated (since := "2026-01-08")]
+alias infEdist_inv := infEDist_inv
 
 @[to_additive]
-theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + EMetric.diam y :=
+theorem ediam_mul_le (x y : Set E) : ediam (x * y) ≤ ediam x + ediam y :=
   (LipschitzOnWith.ediam_image2_le (· * ·) _ _
         (fun _ _ => (isometry_mul_right _).lipschitz.lipschitzOnWith) fun _ _ =>
         (isometry_mul_left _).lipschitz.lipschitzOnWith).trans_eq <|
@@ -80,12 +93,12 @@ variable (δ s x y)
 
 @[to_additive (attr := simp)]
 theorem inv_thickening : (thickening δ s)⁻¹ = thickening δ s⁻¹ := by
-  simp_rw [thickening, ← infEdist_inv]
+  simp_rw [thickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
 theorem inv_cthickening : (cthickening δ s)⁻¹ = cthickening δ s⁻¹ := by
-  simp_rw [cthickening, ← infEdist_inv]
+  simp_rw [cthickening, ← infEDist_inv]
   rfl
 
 @[to_additive (attr := simp)]
