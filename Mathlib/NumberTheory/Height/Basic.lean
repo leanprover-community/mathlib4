@@ -540,11 +540,10 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
       refine mul_le_mul_of_nonneg_left ?_ <| prod_nonneg fun _ h ↦ by
         obtain ⟨v, -, rfl⟩ := mem_map.mp h
         positivity
-      refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun v ↦ by grind) ?_ ?_
-      · refine Set.Finite.subset ?_ <|
+      refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
+      · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
           s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
-        exact s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _
-      · exact Pi.le_def.mpr fun v ↦ max_abv_sum_one_le_of_nonarch (isNonarchimedean _ v.prop) hs x
+      · exact fun v ↦ max_abv_sum_one_le_of_nonarch (isNonarchimedean _ v.prop) hs x
     _ = _ := by
       rw [finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
         prod_map_mul, prod_map_prod, map_const', prod_replicate, prod_mul_distrib]
