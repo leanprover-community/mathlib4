@@ -195,4 +195,3 @@ post_update pkg do
 
 lean_lib Pick where
   roots := #[`Basic, `Area]
-
