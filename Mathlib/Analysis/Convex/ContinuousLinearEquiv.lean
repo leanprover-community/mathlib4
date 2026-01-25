@@ -15,7 +15,7 @@ In this file we prove that the (pre)image of a strict convex set
 under a continuous linear equivalence is a strict convex set.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*}
   [Field 𝕜] [PartialOrder 𝕜]

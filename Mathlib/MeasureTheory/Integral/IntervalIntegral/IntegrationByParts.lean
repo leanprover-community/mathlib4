@@ -25,7 +25,7 @@ can be found in `Mathlib/MeasureTheory/Function/JacobianOneDim.lean`
 integration by parts, change of variables in integrals
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Set
 

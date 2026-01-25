@@ -8,10 +8,11 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Fintype.Defs
 public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sign type
@@ -76,12 +77,8 @@ protected inductive LE : SignType → SignType → Prop
 instance : LE SignType :=
   ⟨SignType.LE⟩
 
-instance LE.decidableRel : DecidableRel SignType.LE := fun a b => by
+instance : DecidableLE SignType := fun a b => by
   cases a <;> cases b <;> first | exact isTrue (by constructor) | exact isFalse (by rintro ⟨_⟩)
-
-private lemma mul_comm : ∀ (a b : SignType), a * b = b * a := by rintro ⟨⟩ ⟨⟩ <;> rfl
-private lemma mul_assoc : ∀ (a b c : SignType), (a * b) * c = a * (b * c) := by
-  rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
 
 /- We can define a `Field` instance on `SignType`, but it's not mathematically sensible,
 so we only define the `CommGroupWithZero`. -/
@@ -92,23 +89,17 @@ instance : CommGroupWithZero SignType where
   mul_one a := by cases a <;> rfl
   one_mul a := by cases a <;> rfl
   mul_inv_cancel a ha := by cases a <;> trivial
-  mul_comm := mul_comm
-  mul_assoc := mul_assoc
+  mul_comm := by decide
+  mul_assoc := by decide
   exists_pair_ne := ⟨0, 1, by rintro ⟨_⟩⟩
   inv_zero := rfl
 
-private lemma le_antisymm (a b : SignType) (_ : a ≤ b) (_ : b ≤ a) : a = b := by
-  cases a <;> cases b <;> trivial
-
-private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_ : b ≤ c) : a ≤ c := by
-  cases a <;> cases b <;> cases c <;> tauto
-
 instance : LinearOrder SignType where
   le_refl a := by cases a <;> constructor
-  le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
-  le_antisymm := le_antisymm
-  le_trans := le_trans
-  toDecidableLE := LE.decidableRel
+  le_total := by decide
+  le_antisymm := by decide
+  le_trans := by decide
+  toDecidableLE := instDecidableLE
 
 instance : BoundedOrder SignType where
   top := 1
@@ -201,6 +192,12 @@ theorem neg_eq_zero_iff {a : SignType} : -a = 0 ↔ a = 0 := by decide +revert
 @[simp]
 theorem neg_one_lt_one : (-1 : SignType) < 1 :=
   bot_lt_top
+
+@[simp]
+protected theorem neg_le_neg_iff {a b : SignType} : -a ≤ -b ↔ b ≤ a := by decide +revert
+
+@[simp]
+protected theorem neg_lt_neg_iff {a b : SignType} : -a < -b ↔ b < a := by decide +revert
 
 end CaseBashing
 

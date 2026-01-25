@@ -51,7 +51,7 @@ instance category : LargeCategory.{max v u} Quiv.{v, u} where
 @[simps]
 def forget : Cat.{v, u} ⥤ Quiv.{v, u} where
   obj C := Quiv.of C
-  map F := F.toPrefunctor
+  map F := F.toFunctor.toPrefunctor
 
 /-- The identity in the category of quivers equals the identity prefunctor. -/
 theorem id_eq_id (X : Quiv) : 𝟙 X = 𝟭q X := rfl
@@ -116,8 +116,8 @@ theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
 def free : Quiv.{v, u} ⥤ Cat.{max u v, u} where
   obj V := Cat.of (Paths V)
   map F := Functor.toCatHom (freeMap (Prefunctor.ofQuivHom F))
-  map_id _ := freeMap_id _
-  map_comp _ _ := freeMap_comp _ _
+  map_id _ := congr($(freeMap_id _).toCatHom)
+  map_comp _ _ := congr($(freeMap_comp _ _).toCatHom)
 
 end Cat
 
@@ -238,8 +238,8 @@ def adj : Cat.free ⊣ Quiv.forget :=
   Adjunction.mkOfUnitCounit {
     unit := { app _ := Paths.of _}
     counit := {
-      app C := pathComposition C
-      naturality _ _ F := pathComposition_naturality F
+      app C := (pathComposition C).toCatHom
+      naturality _ _ F := congr($(pathComposition_naturality F.toFunctor).toCatHom)
     }
     left_triangle := by
       ext V
@@ -266,7 +266,8 @@ def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v + 1} V] [Category.{v₁} 
 
 @[simp]
 lemma adj_homEquiv {V C : Type u} [Quiver.{max u v + 1} V] [Category.{max u v} C] :
-    adj.homEquiv (Quiv.of V) (Cat.of C) = pathsEquiv (V := V) (C := C) := rfl
+    adj.homEquiv (Quiv.of V) (Cat.of C) =
+      (Cat.Hom.equivFunctor (.of (Paths V)) (.of C)).trans (pathsEquiv (V := V) (C := C)) := rfl
 
 end Quiv
 

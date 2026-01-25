@@ -33,7 +33,7 @@ variable (α) in
 /-- The filter defined by all sets that have a complement with at most cardinality `c`. For a union
 of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular cardinal. -/
 def cocardinal (hreg : c.IsRegular) : Filter α := by
-  apply ofCardinalUnion {s | Cardinal.mk s < c} (lt_of_lt_of_le (nat_lt_aleph0 2) hreg.aleph0_le)
+  apply ofCardinalUnion {s | Cardinal.mk s < c} (natCast_lt_aleph0.trans_le hreg.aleph0_le)
   · refine fun s hS hSc ↦ lt_of_le_of_lt (mk_sUnion_le _) <| mul_lt_of_lt hreg.aleph0_le hS ?_
     exact iSup_lt_of_isRegular hreg hS fun i ↦ hSc i i.property
   · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (mk_le_mk_of_subset ht) hSc
@@ -91,15 +91,9 @@ theorem eventually_cocardinal_notMem_of_card_lt {s : Set α} (hs : #s < c) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
   compl_mem_cocardinal_of_card_lt hs
 
-@[deprecated (since := "2025-05-24")]
-alias eventually_cocardinal_nmem_of_card_lt := eventually_cocardinal_notMem_of_card_lt
-
 theorem _root_.Finset.eventually_cocardinal_notMem (s : Finset α) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
   eventually_cocardinal_notMem_of_card_lt <| (finset_card_lt_aleph0 s).trans_le (hreg.aleph0_le)
-
-@[deprecated (since := "2025-05-24")]
-alias _root_.Finset.eventually_cocardinal_nmem := _root_.Finset.eventually_cocardinal_notMem
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
   simpa [Set.finite_singleton x] using hreg.nat_lt 1

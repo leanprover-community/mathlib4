@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexInduction
-public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 
 /-!
 # K-injective cochain complexes
@@ -16,13 +17,7 @@ We define the notion of K-injective cochain complex in an abelian category,
 and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
-* Show that a cochain complex is K-injective iff its image in the homotopy
-category belongs to the right orthogonal of the triangulated subcategory
-of acyclic complexes
-* Deduce that we can compute morphisms to a K-injective complex in the
-derived category as homotopy classes of morphisms
 * Provide an API for computing `Ext`-groups using an injective resolution
-* Dualize everything
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
@@ -35,7 +30,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex Preadditive
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 -- TODO (@joelriou): show that this definition is equivalent to the
 -- original definition by Spaltenstein saying that whenever `K`
@@ -48,6 +43,60 @@ class IsKInjective (L : CochainComplex C ℤ) : Prop where
   nonempty_homotopy_zero {K : CochainComplex C ℤ} (f : K ⟶ L) :
     K.Acyclic → Nonempty (Homotopy f 0)
 
+/-- A choice of homotopy to zero for a morphism from an acyclic
+cochain complex to a K-injective cochain complex. -/
+noncomputable irreducible_def IsKInjective.homotopyZero {K L : CochainComplex C ℤ} (f : K ⟶ L)
+    (hK : K.Acyclic) [L.IsKInjective] :
+    Homotopy f 0 :=
+  (IsKInjective.nonempty_homotopy_zero f hK).some
+
+lemma _root_.HomotopyEquiv.isKInjective {L₁ L₂ : CochainComplex C ℤ}
+    (e : HomotopyEquiv L₁ L₂)
+    [L₁.IsKInjective] : L₂.IsKInjective where
+  nonempty_homotopy_zero {K} f hK :=
+    ⟨Homotopy.trans (Homotopy.trans (.ofEq (by simp))
+      ((e.homotopyInvHomId.symm.compLeft f).trans (.ofEq (by simp))))
+        (((IsKInjective.homotopyZero (f ≫ e.inv) hK).compRight e.hom).trans (.ofEq (by simp)))⟩
+
+lemma isKInjective_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂)
+    [L₁.IsKInjective] :
+    L₂.IsKInjective :=
+  (HomotopyEquiv.ofIso e).isKInjective
+
+lemma isKInjective_iff_of_iso {L₁ L₂ : CochainComplex C ℤ} (e : L₁ ≅ L₂) :
+    L₁.IsKInjective ↔ L₂.IsKInjective :=
+  ⟨fun _ ↦ isKInjective_of_iso e, fun _ ↦ isKInjective_of_iso e.symm⟩
+
+lemma isKInjective_iff_rightOrthogonal (L : CochainComplex C ℤ) :
+    L.IsKInjective ↔
+      (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+        ((HomotopyCategory.quotient _ _).obj L) := by
+  refine ⟨fun _ K f hK ↦ ?_,
+      fun hL ↦ ⟨fun {K} f hK ↦ ⟨HomotopyCategory.homotopyOfEq _ _ ?_⟩⟩⟩
+  · obtain ⟨K, rfl⟩ := HomotopyCategory.quotient_obj_surjective K
+    obtain ⟨f, rfl⟩ := (HomotopyCategory.quotient _ _).map_surjective f
+    rw [HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
+    rw [HomotopyCategory.eq_of_homotopy f 0 (IsKInjective.homotopyZero f hK), Functor.map_zero]
+  · rw [← HomotopyCategory.quotient_obj_mem_subcategoryAcyclic_iff_acyclic] at hK
+    rw [hL ((HomotopyCategory.quotient _ _).map f) hK, Functor.map_zero]
+
+lemma IsKInjective.rightOrthogonal (L : CochainComplex C ℤ) [L.IsKInjective] :
+    (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+        ((HomotopyCategory.quotient _ _).obj L) := by
+  rwa [← isKInjective_iff_rightOrthogonal]
+
+instance (L : CochainComplex C ℤ) [hL : L.IsKInjective] (n : ℤ) :
+    (L⟦n⟧).IsKInjective := by
+  rw [isKInjective_iff_rightOrthogonal] at hL ⊢
+  exact ObjectProperty.prop_of_iso _
+    (((HomotopyCategory.quotient C (.up ℤ)).commShiftIso n).symm.app L)
+    ((HomotopyCategory.subcategoryAcyclic C).rightOrthogonal.le_shift n _ hL)
+
+lemma isKInjective_shift_iff (L : CochainComplex C ℤ) (n : ℤ) :
+    (L⟦n⟧).IsKInjective ↔ L.IsKInjective :=
+  ⟨fun _ ↦ isKInjective_of_iso (show L⟦n⟧⟦-n⟧ ≅ L from (shiftEquiv _ n).unitIso.symm.app L),
+    fun _ ↦ inferInstance⟩
+
 lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
     (f : K ⟶ L) (α : Cochain K L (-1)) (n m : ℤ) (hnm : n + 1 = m)
     (hK : K.ExactAt m) [Injective (L.X m)]
@@ -55,29 +104,29 @@ lemma isKInjective_of_injective_aux {K L : CochainComplex C ℤ}
     ∃ (h : K.X (n + 2) ⟶ L.X (n + 1)),
       (δ (-1) 0 (α + Cochain.single h (-1))).EqUpTo (Cochain.ofHom f) m := by
   subst hnm
-  let u := f.f (n + 1) - α.v (n + 1) n (by cutsat) ≫ L.d n (n + 1) -
-    K.d (n + 1) (n + 2) ≫ α.v (n + 2) (n + 1) (by cutsat)
-  have hu : K.d n (n+1) ≫ u = 0 := by
+  let u := f.f (n + 1) - α.v (n + 1) n (by lia) ≫ L.d n (n + 1) -
+    K.d (n + 1) (n + 2) ≫ α.v (n + 2) (n + 1) (by lia)
+  have hu : K.d n (n + 1) ≫ u = 0 := by
     have eq := hα n n (add_zero n) (by rfl)
     simp only [δ_v (-1) 0 (neg_add_cancel 1) α n n (add_zero _) (n - 1) (n + 1)
-      (by cutsat) (by cutsat), Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
+      (by lia) (by lia), Int.negOnePow_zero, one_smul, Cochain.ofHom_v] at eq
     simp only [u, comp_sub, HomologicalComplex.d_comp_d_assoc, zero_comp,
       ← f.comm, ← eq, add_comp, Category.assoc, L.d_comp_d, comp_zero, zero_add, sub_self]
-  rw [K.exactAt_iff' n (n + 1) (n + 2) (by simp) (by simp; cutsat)] at hK
+  rw [K.exactAt_iff' n (n + 1) (n + 2) (by simp) (by simp; lia)] at hK
   obtain ⟨β, hβ⟩ : ∃ (β : K.X (n + 2) ⟶ L.X (n + 1)), K.d (n + 1) (n + 2) ≫ β = u :=
     ⟨hK.descToInjective _ hu, hK.comp_descToInjective _ _⟩
   refine ⟨β, ?_⟩
   intro p q hpq hp
-  obtain rfl : p = q := by cutsat
+  obtain rfl : p = q := by lia
   obtain hp | rfl := hp.lt_or_eq
-  · rw [δ_add, Cochain.add_v, hα p p (by cutsat) (by cutsat), add_eq_left,
+  · rw [δ_add, Cochain.add_v, hα p p (by lia) (by lia), add_eq_left,
       δ_v (-1) 0 (neg_add_cancel 1) _ p p hpq (p - 1) (p + 1) rfl rfl,
-      Cochain.single_v_eq_zero _ _ _ _ _ (by cutsat),
-      Cochain.single_v_eq_zero _ _ _ _ _ (by cutsat)]
+      Cochain.single_v_eq_zero _ _ _ _ _ (by lia),
+      Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
     simp
-  · rw [δ_v (-1) 0 (neg_add_cancel 1) _ (n + 1) (n + 1) (by cutsat) n (n + 2)
-      (by cutsat) (by cutsat), Cochain.add_v,
-      Cochain.single_v_eq_zero _ _ _ _ _ (by cutsat)]
+  · rw [δ_v (-1) 0 (neg_add_cancel 1) _ (n + 1) (n + 1) (by lia) n (n + 2)
+      (by lia) (by lia), Cochain.add_v,
+      Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
     simp [hβ, u]
 
 open Cochain.InductionUp in
@@ -96,21 +145,21 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
     let X (n : ℕ) : Set (Cochain K L (-1)) :=
       setOf (fun α => (δ (-1) 0 α).EqUpTo (Cochain.ofHom f) (n + d - 1))
     let x₀ : X 0 := ⟨0, fun p q hpq hp ↦
-      IsZero.eq_of_tgt (L.isZero_of_isStrictlyGE d _ (by cutsat)) _ _⟩
+      IsZero.eq_of_tgt (L.isZero_of_isStrictlyGE d _ (by lia)) _ _⟩
     let φ (n : ℕ) (α : X n) : X (n + 1) :=
       ⟨_, (isKInjective_of_injective_aux f α.1 (n + d - 1) ((n + 1 : ℕ) + d - 1)
-        (by cutsat) (hK _) α.2).choose_spec⟩
+        (by lia) (hK _) α.2).choose_spec⟩
     have hφ (k : ℕ) (x : X k) : (φ k x).1.EqUpTo x.1 (d + k) := fun p q hpq hp => by
       dsimp [φ]
-      rw [add_eq_left, Cochain.single_v_eq_zero _ _ _ _ _ (by cutsat)]
+      rw [add_eq_left, Cochain.single_v_eq_zero _ _ _ _ _ (by lia)]
     refine ⟨(Cochain.equivHomotopy f 0).symm ⟨limitSequence φ hφ x₀, ?_⟩⟩
     rw [Cochain.ofHom_zero, add_zero]
     ext n
     let k₀ := (n - d + 1).toNat
-    rw [← (sequence φ x₀ k₀).2 n n (add_zero n) (by cutsat),
-      δ_v (-1) 0 (neg_add_cancel 1) _ n n (by cutsat) (n - 1) (n + 1) rfl (by cutsat),
-      δ_v (-1) 0 (neg_add_cancel 1) _ n n (by cutsat) (n - 1) (n + 1) rfl (by cutsat),
-      limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by cutsat) (by cutsat),
-      limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by cutsat) (by cutsat)]
+    rw [← (sequence φ x₀ k₀).2 n n (add_zero n) (by lia),
+      δ_v (-1) 0 (neg_add_cancel 1) _ n n (by lia) (n - 1) (n + 1) rfl (by lia),
+      δ_v (-1) 0 (neg_add_cancel 1) _ n n (by lia) (n - 1) (n + 1) rfl (by lia),
+      limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
+      limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
 end CochainComplex

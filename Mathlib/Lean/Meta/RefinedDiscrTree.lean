@@ -62,7 +62,7 @@ and includes many more features.
 ## Lazy computation
 
 To encode an `Expr` as a sequence of `Key`s, we start with a `LazyEntry` and
-we have a incremental evaluation function of type
+we have an incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 

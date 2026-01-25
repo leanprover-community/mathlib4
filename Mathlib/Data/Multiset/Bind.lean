@@ -189,7 +189,7 @@ theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
 
 theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
     bind (filter p m) f = bind m (fun a => if p a then f a else 0) := by
-  simp [filter_eq_bind, Multiset.bind_assoc]
+  simp only [filter_eq_bind, bind_assoc]
   apply Multiset.bind_congr; intro a ham
   split_ifs <;> simp
 

@@ -55,8 +55,8 @@ def braidingInvCorepresenting : G ⊠ F ⟶ tensor C ⋙ F ⊛ G where
 
 /-- The braiding isomorphism for Day convolution. -/
 def braiding : F ⊛ G ≅ G ⊛ F where
-  hom := corepresentableBy F G|>.homEquiv.symm <| braidingHomCorepresenting F G
-  inv := corepresentableBy G F|>.homEquiv.symm <| braidingInvCorepresenting F G
+  hom := corepresentableBy F G |>.homEquiv.symm <| braidingHomCorepresenting F G
+  inv := corepresentableBy G F |>.homEquiv.symm <| braidingInvCorepresenting F G
   hom_inv_id := by
     apply Functor.hom_ext_of_isLeftKanExtension (F ⊛ G) (unit F G)
     ext
@@ -175,7 +175,10 @@ lemma hexagon_reverse (H : C ⥤ V)
     NatTrans.id_app, id_tensorHom]
   simp only [← comp_whiskerRight_assoc, ← whiskerLeft_comp_assoc,
     unit_app_braiding_hom_app]
-  simp [← Functor.map_comp]
+  simp only [comp_whiskerRight, ← Functor.map_comp, Category.assoc, Functor.comp_obj, tensor_obj,
+    whiskerLeft_comp, whiskerLeft_comp_unit_app_assoc, NatTrans.naturality_assoc,
+    NatTrans.naturality, associator_inv_unit_unit_assoc, externalProductBifunctor_obj_obj,
+    unit_app_map_app_assoc, NatTrans.id_app, tensorHom_id]
   congr 2
   rw [← BraidedCategory.hexagon_forward, ← comp_whiskerRight_assoc]
   haveI := unit_app_braiding_hom_app F H x z =≫ (H ⊛ F).map (β_ z x).inv

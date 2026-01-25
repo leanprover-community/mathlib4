@@ -290,7 +290,7 @@ end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   dsimp [Function.Surjective]
-  by_contra! r; rcases r with ⟨b, hb⟩
+  by_contra! ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
       (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
@@ -311,7 +311,6 @@ variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
     refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
-    intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
   rwa [GrpCat.epi_iff_surjective] at i1
 

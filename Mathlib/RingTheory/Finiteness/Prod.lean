@@ -16,7 +16,6 @@ public import Mathlib.RingTheory.Finiteness.Defs
 @[expose] public section
 
 open Function (Surjective)
-open Finsupp
 
 namespace Submodule
 

@@ -78,6 +78,7 @@ theorem neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq (f : E [⋀^Fin n]→L[
     (-1) ^ (i : ℕ) • f (i.removeNth v) + (-1) ^ (j : ℕ) • f (j.removeNth v) = 0 :=
   f.toAlternatingMap.neg_one_pow_smul_map_removeNth_add_eq_zero_of_eq hvij hij
 
+set_option backward.privateInPublic true in
 private def alternatizeUncurryFinCLM.aux :
     (E →L[𝕜] E [⋀^Fin n]→L[𝕜] F) →ₗ[𝕜] E [⋀^Fin (n + 1)]→ₗ[𝕜] F :=
   AlternatingMap.alternatizeUncurryFinLM ∘ₗ (toAlternatingMapLinear (R := 𝕜)).compRight (S := 𝕜) ∘ₗ
@@ -88,6 +89,8 @@ private lemma alternatizeUncurryFinCLM.aux_apply (f : E →L[𝕜] E [⋀^Fin n]
     aux f v = ∑ i : Fin (n + 1), (-1) ^ (i : ℕ) • f (v i) (i.removeNth v) := by
   simp [aux, AlternatingMap.alternatizeUncurryFin_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 variable (𝕜 E F) in
 /-- `AlternaringMap.alternatizeUncurryFin` as a continuous linear map. -/
 @[irreducible]
@@ -176,7 +179,7 @@ f(v_j, v_i; v_0, \dots, \hat{v_i}, \dots, \hat{v_j}, \dots, v_{n+1})
 $$
 
 over all `(i j : Fin (n + 2))`, `i < j`, taken with appropriate signs.
-Here $$\hat{v_i}$$ and $$\hat{v_j}$$ mean that these vectors are removed from the tuple.
+Here $\hat{v_i}$ and $\hat{v_j}$ mean that these vectors are removed from the tuple.
 
 We use pairs of `i j : Fin (n + 1)`, `i ≤ j`,
 to encode pairs `(i.castSucc : Fin (n + 2), j.succ : Fin (n + 2))`,

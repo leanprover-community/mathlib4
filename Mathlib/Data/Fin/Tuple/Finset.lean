@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Pi
 # Fin-indexed tuples of finsets
 -/
 
-@[expose] public section
+public section
 
 open Fin Fintype
 
