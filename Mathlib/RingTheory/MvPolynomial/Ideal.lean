@@ -85,7 +85,7 @@ theorem pow_idealOfVars (n : ℕ) :
   rw [idealOfVars_eq_restrictSupportIdeal]
   apply Submodule.restrictScalars_injective R
   by_cases hn : n = 0
-  · simp [hn, show Set.Ici 0 = Set.univ by ext; simp, Ideal.one_eq_top]
+  · simp [hn]
   rw [Submodule.restrictScalars_pow hn]
   refine (restrictSupport_nsmul ..).symm.trans (congr_arg (restrictSupport R) ?_)
   simp [← degree_preimage_nsmul, hn]
