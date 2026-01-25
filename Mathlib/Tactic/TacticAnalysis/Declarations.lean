@@ -608,11 +608,10 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
           let (goalsAfter, trees) ← try
             i.runTacticCodeCapturingInfoTree goal tac
           catch _e =>
-            -- Restore messages before continuing
-            modify fun s => { s with messages := savedMessages }
             continue  -- Tactic failed, nothing to verify
-          -- Restore messages (discard info messages from grind?)
-          modify fun s => { s with messages := savedMessages }
+          finally
+            -- Restore messages (discard info messages from grind?)
+            modify fun s => { s with messages := savedMessages }
 
           -- Only verify if tactic succeeded (closed goal)
           if !goalsAfter.isEmpty then continue
