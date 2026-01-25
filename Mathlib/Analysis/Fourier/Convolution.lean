@@ -6,29 +6,33 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Convolution
-public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Data.Nat.Factorial.DoubleFactorial
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 
 /-! # The Fourier transform of the convolution
 
 In this file we calculate the Fourier transform of a convolution.
+
+## Main definitions
+* `SchwartzMap.convolution`: The convolution on Schwartz functions is defined via the Fourier
+  transform.
 
 ## Main statements
 * `Real.fourier_bilin_convolution_eq`: The Fourier transform of a convolution is the bilinear map
   applied to the Fourier transform of the functions.
 * `Real.fourier_smul_convolution_eq`: Variant for scalar multiplication.
 * `Real.fourier_mul_convolution_eq`: Variant for multiplication.
+* `SchwartzMap.fourier_convolution`: The Fourier transform of the Schwartz convolution is given by
+  the pairing of the Fourier transformed Schwartz functions.
+* `SchwartzMap.convolution_apply`: The Schwartz function convolution coincides with the convolution
+  for functions.
 
 -/
 
 @[expose] public section
 
-namespace Real
-
 variable {𝕜 R E F F₁ F₂ F₃ : Type*}
+
+namespace Real
 
 open MeasureTheory Convolution
 
@@ -149,3 +153,70 @@ theorem fourier_mul_convolution_eq {f₁ : E → R} {f₂ : E → R}
   fourier_bilin_convolution_eq (mul ℂ R) hf₁ hf₂ hf₁' hf₂' ξ
 
 end Real
+
+namespace SchwartzMap
+
+variable [RCLike 𝕜]
+  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E]
+  [BorelSpace E]
+  [NormedAddCommGroup F₁] [NormedSpace ℂ F₁] [NormedSpace 𝕜 F₁] [SMulCommClass ℂ 𝕜 F₁]
+  [NormedAddCommGroup F₂] [NormedSpace ℂ F₂] [NormedSpace 𝕜 F₂] [SMulCommClass ℂ 𝕜 F₂]
+  [NormedAddCommGroup F₃] [NormedSpace ℂ F₃] [NormedSpace 𝕜 F₃] [SMulCommClass ℂ 𝕜 F₃]
+
+open FourierTransform Convolution
+
+/-- The bilinear convolution of Schwartz functions.
+
+The continuity in the left argument is provided in `SchwartzMap.convolution_continuous_left`. -/
+noncomputable
+def convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) : 𝓢(E, F₁) →ₗ[𝕜] 𝓢(E, F₂) →L[𝕜] 𝓢(E, F₃) where
+  toFun f := fourierInvCLM 𝕜 𝓢(E, F₃) ∘L pairing B (𝓕 f) ∘L fourierCLM 𝕜 𝓢(E, F₂)
+  map_add' := by simp [FourierTransform.fourier_add]
+  map_smul' := by simp [FourierTransform.fourier_smul]
+
+@[simp]
+theorem convolution_flip (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
+    convolution B.flip g f = convolution B f g := rfl
+
+/-- The convolution is continuous in the left argument.
+
+Note that since `𝓢(E, F)` is not a normed space, uncurried and curried continuity do not
+coincide. -/
+@[fun_prop]
+theorem convolution_continuous_left (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (g : 𝓢(E, F₂)) :
+    Continuous (convolution B · g) := (convolution B.flip g).continuous
+
+variable [CompleteSpace F₃]
+
+theorem fourier_convolution (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) :
+    𝓕 (convolution B f g) = pairing B (𝓕 f) (𝓕 g) := by simp [convolution]
+
+variable [CompleteSpace F₁] [CompleteSpace F₂]
+
+open MeasureTheory
+
+theorem fourier_convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) (x : E) :
+    𝓕 (convolution B f g) x = 𝓕 (f ⋆[B] g) x := by
+  simp [fourier_convolution, fourier_coe,
+    Real.fourier_bilin_convolution_eq B f.integrable g.integrable f.continuous g.continuous]
+
+/-- The convolution on Schwartz functions is equal to the convolution on functions. -/
+theorem convolution_apply (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) (f : 𝓢(E, F₁)) (g : 𝓢(E, F₂)) (x : E) :
+    convolution B f g x = (f ⋆[B] g) x := calc
+  _ = 𝓕⁻ (𝓕 (convolution B f g)) x := by simp
+  _ = 𝓕⁻ (fun y ↦ 𝓕 (f ⋆[B] g) y) x := by
+    rw [fourierInv_coe]
+    apply MeasureTheory.integral_congr_ae
+    filter_upwards with x
+    rw [fourier_convolution_apply]
+  _ = _ := by
+    rw [Continuous.fourierInv_fourier_eq]
+    · refine BddAbove.continuous_convolution_right_of_integrable B ?_ f.integrable g.continuous
+      exact ⟨SchwartzMap.seminorm ℝ 0 0 g, fun x ⟨y, hy⟩ ↦ hy ▸ norm_le_seminorm ℝ g y⟩
+    · exact f.integrable.integrable_convolution B g.integrable
+    · have : Integrable (fun ξ ↦ B (𝓕 f ξ) (𝓕 g ξ)) volume := (pairing B (𝓕 f) (𝓕 g)).integrable
+      convert this
+      rw [← fourier_convolution_apply B f g, fourier_convolution, pairing_apply_apply]
+
+
+end SchwartzMap

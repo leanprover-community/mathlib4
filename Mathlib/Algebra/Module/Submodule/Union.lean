@@ -7,11 +7,11 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.LinearAlgebra.Dual.Defs
-
-import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Tactic.NormNum.Inv
 public import Mathlib.Tactic.NormNum.Pow
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Unions of `Submodule`s
