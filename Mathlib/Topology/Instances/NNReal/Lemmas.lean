@@ -63,6 +63,14 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
+@[simp]
+theorem map_coe_nhdsGT (x : ℝ≥0) : (𝓝[>] x).map toReal = 𝓝[>] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ioi]
+
+@[simp]
+theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x := by
+  rw [isEmbedding_coe.map_nhdsWithin_eq, image_coe_Ici]
+
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=

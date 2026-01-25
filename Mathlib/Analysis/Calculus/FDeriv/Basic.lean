@@ -112,64 +112,53 @@ open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 noncomputable section
 
 section
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
-
 section DerivativeUniqueness
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+  [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F]
+  [TopologicalSpace F] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 
-/- In this section, we discuss the uniqueness of the derivative.
+variable {f : E → F}
+variable {f' f₁' : E →L[𝕜] F}
+variable {x : E}
+variable {s : Set E}
+
+/-!
+### Uniqueness of the derivative
+
+In this section, we discuss the uniqueness of the derivative.
 We prove that the definitions `UniqueDiffWithinAt` and `UniqueDiffOn` indeed imply the
 uniqueness of the derivative. -/
+
 /-- If a function f has a derivative f' at x, a rescaled version of f around x converges to f',
-i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `c n` tends to infinity
+i.e., `n (f (x + (1/n) v) - f x)` converges to `f' v`. More generally, if `d n` tends to zero
 and `c n * d n` tends to `v`, then `c n * (f (x + d n) - f x)` tends to `f' v`. This lemma expresses
 this fact, for functions having a derivative within a set. Its specific formulation is useful for
 tangent cone related discussions. -/
-theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} (l : Filter α)
-    {c : α → 𝕜} {d : α → E} {v : E} (dtop : ∀ᶠ n in l, x + d n ∈ s)
-    (clim : Tendsto (fun n => ‖c n‖) l atTop) (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
+theorem HasFDerivWithinAt.lim (h : HasFDerivWithinAt f f' s x) {α : Type*} {l : Filter α}
+    {c : α → 𝕜} {d : α → E} {v : E} (dlim : Tendsto d l (𝓝 0)) (dtop : ∀ᶠ n in l, x + d n ∈ s)
+    (cdlim : Tendsto (fun n => c n • d n) l (𝓝 v)) :
     Tendsto (fun n => c n • (f (x + d n) - f x)) l (𝓝 (f' v)) := by
   have tendsto_arg : Tendsto (fun n => x + d n) l (𝓝[s] x) := by
-    conv in 𝓝[s] x => rw [← add_zero x]
-    rw [nhdsWithin, tendsto_inf]
-    constructor
-    · apply tendsto_const_nhds.add (tangentConeAt.lim_zero l clim cdlim)
-    · rwa [tendsto_principal]
-  have : (fun y => f y - f x - f' (y - x)) =o[𝓝[s] x] fun y => y - x := h.isLittleO
-  have : (fun n => f (x + d n) - f x - f' (x + d n - x)) =o[l] fun n => x + d n - x :=
-    this.comp_tendsto tendsto_arg
-  have : (fun n => f (x + d n) - f x - f' (d n)) =o[l] d := by simpa only [add_sub_cancel_left]
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun n => c n • d n :=
-    (isBigO_refl c l).smul_isLittleO this
-  have : (fun n => c n • (f (x + d n) - f x - f' (d n))) =o[l] fun _ => (1 : ℝ) :=
-    this.trans_isBigO (cdlim.isBigO_one ℝ)
-  have L1 : Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n))) l (𝓝 0) :=
-    (isLittleO_one_iff ℝ).1 this
-  have L2 : Tendsto (fun n => f' (c n • d n)) l (𝓝 (f' v)) :=
-    Tendsto.comp f'.cont.continuousAt cdlim
-  have L3 :
-    Tendsto (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) l (𝓝 (0 + f' v)) :=
-    L1.add L2
-  have :
-    (fun n => c n • (f (x + d n) - f x - f' (d n)) + f' (c n • d n)) = fun n =>
-      c n • (f (x + d n) - f x) := by
-    ext n
-    simp [smul_sub]
-  rwa [this, zero_add] at L3
+    rw [tendsto_nhdsWithin_iff]
+    exact ⟨by simpa using tendsto_const_nhds.add dlim, dtop⟩
+  have := calc
+    (fun n ↦ c n • (f (x + d n) - f x) - f' (c n • d n)) =o[𝕜; l] fun n ↦ c n • d n := by
+      simpa [smul_sub] using h.isLittleOTVS.comp_tendsto tendsto_arg |>.smul_left c
+    _ =O[𝕜; l] (1 : α → 𝕜) := cdlim.isBigOTVS_one _
+  rw [isLittleOTVS_one] at this
+  simpa using this.add <| ((map_continuous f').tendsto v).comp cdlim
+
+variable [T2Space F]
 
 /-- If `f'` and `f₁'` are two derivatives of `f` within `s` at `x`, then they are equal on the
 tangent cone to `s` at `x` -/
 theorem HasFDerivWithinAt.unique_on (hf : HasFDerivWithinAt f f' s x)
-    (hg : HasFDerivWithinAt f f₁' s x) : EqOn f' f₁' (tangentConeAt 𝕜 s x) :=
-  fun _ ⟨_, _, dtop, clim, cdlim⟩ =>
-  tendsto_nhds_unique (hf.lim atTop dtop clim cdlim) (hg.lim atTop dtop clim cdlim)
+    (hg : HasFDerivWithinAt f f₁' s x) : EqOn f' f₁' (tangentConeAt 𝕜 s x) := by
+  intro y hy
+  rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hds, hcd⟩
+  exact tendsto_nhds_unique (hf.lim hd₀ hds hcd) (hg.lim hd₀ hds hcd)
 
 /-- `UniqueDiffWithinAt` achieves its goal: it implies the uniqueness of the derivative. -/
 theorem UniqueDiffWithinAt.eq (H : UniqueDiffWithinAt 𝕜 s x) (hf : HasFDerivWithinAt f f' s x)
@@ -180,7 +169,21 @@ theorem UniqueDiffOn.eq (H : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : HasFDerivW
     (h₁ : HasFDerivWithinAt f f₁' s x) : f' = f₁' :=
   (H x hx).eq h h₁
 
+theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f' x) (h₁ : HasFDerivAt f f₁' x) : f' = f₁' := by
+  rw [HasFDerivAt, ← nhdsWithin_univ] at *
+  exact uniqueDiffWithinAt_univ.eq h₀ h₁
+
 end DerivativeUniqueness
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
 
 section FDerivProperties
 
@@ -354,16 +357,12 @@ theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x)
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
     (hc : Tendsto (fun n => ‖c n‖) l atTop) :
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
-  refine (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc ?_
-  intro U hU
-  refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
-  convert mem_of_mem_nhds hU
-  dsimp only
-  rw [← mul_smul, mul_inv_cancel₀ hy, one_smul]
-
-theorem HasFDerivAt.unique (h₀ : HasFDerivAt f f₀' x) (h₁ : HasFDerivAt f f₁' x) : f₀' = f₁' := by
-  rw [← hasFDerivWithinAt_univ] at h₀ h₁
-  exact uniqueDiffWithinAt_univ.eq h₀ h₁
+  refine (hasFDerivWithinAt_univ.2 hf).lim ?_ (.of_forall fun _ ↦ mem_univ _) ?_
+  · rw [tendsto_norm_atTop_iff_cobounded] at hc
+    simpa using (tendsto_inv₀_cobounded.comp hc).smul (tendsto_const_nhds (x := v))
+  · refine tendsto_nhds_of_eventually_eq ?_
+    refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
+    simp [hy]
 
 theorem hasFDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasFDerivWithinAt f f' (s ∩ t) x ↔ HasFDerivWithinAt f f' s x := by
