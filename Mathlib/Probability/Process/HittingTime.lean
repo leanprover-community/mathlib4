@@ -421,7 +421,7 @@ end Inequalities
 
 /-- A discrete hitting time is a stopping time. -/
 theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] {mβ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
+    [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
     {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
@@ -437,7 +437,7 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
   Adapted.isStoppingTime_hittingBtwn
 
 theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
-    [WellFoundedLT ι] [Countable ι] {mβ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
+    [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
     {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
