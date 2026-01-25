@@ -102,10 +102,9 @@ theorem moduleDepth_ge_depth_sub_dim [IsNoetherianRing R] [IsLocalRing R] (M N :
           have : (Module.supportDim R (QuotSMulTop x L)) + 1 ≤ Module.supportDim R L := by
             simp only [Module.supportDim_eq_ringKrullDim_quotient_annihilator]
             rw [LinearEquiv.annihilator_eq e, Ideal.annihilator_quotient]
-            have ple : p.asIdeal ≤ Module.annihilator R (QuotSMulTop x L) := by
-              rw [Submodule.annihilator_quotient, ← Ideal.annihilator_quotient (I := p.asIdeal),
-                ← LinearEquiv.annihilator_eq e, ← Submodule.annihilator_top, ← Submodule.colon_bot]
-              exact Submodule.colon_mono bot_le (le_refl ⊤)
+            have ple : p.1 ≤ Module.annihilator R (QuotSMulTop x L) := by
+              rw [← p.1.annihilator_quotient, ← LinearEquiv.annihilator_eq e]
+              exact (Submodule.mkQ _).annihilator_le_of_surjective (Submodule.mkQ_surjective _)
             let f := Quotient.factor ple
             have mem_ann : x ∈ Module.annihilator R (QuotSMulTop x L) := by
               apply Module.mem_annihilator.mpr (fun l ↦ ?_)
