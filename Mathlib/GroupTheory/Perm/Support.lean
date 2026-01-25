@@ -78,7 +78,7 @@ theorem disjoint_one_right (f : Perm α) : Disjoint f 1 := fun _ => Or.inr rfl
 theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ disjoint_one_left 1⟩
   ext x
@@ -136,13 +136,7 @@ theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disj
 
 theorem nodup_of_pairwise_disjoint {l : List (Perm α)} (h1 : (1 : Perm α) ∉ l)
     (h2 : l.Pairwise Disjoint) : l.Nodup := by
-  refine List.Pairwise.imp_of_mem ?_ h2
-  intro τ σ h_mem _ h_disjoint _
-  subst τ
-  suffices (σ : Perm α) = 1 by
-    rw [this] at h_mem
-    exact h1 h_mem
-  exact ext fun a => or_self_iff.mp (h_disjoint a)
+  grind [List.nodup_iff_sublist]
 
 theorem pow_apply_eq_self_of_apply_eq_self {x : α} (hfx : f x = x) : ∀ n : ℕ, (f ^ n) x = x
   | 0 => rfl
