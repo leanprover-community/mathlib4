@@ -142,12 +142,14 @@ lemma preservesEpimorphisms : L.PreservesEpimorphisms where
 
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
+  have := preservesMonomorphisms L P
   refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
     ((KernelFork.isLimitMapConeEquiv _ L).2 ?_)
   sorry
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
+  have := preservesEpimorphisms L P
   refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
     ((CokernelCofork.isColimitMapCoconeEquiv _ L).2 ?_)
   sorry
@@ -189,9 +191,11 @@ lemma hasCoequalizers : HasCoequalizers D :=
   hasCoequalizers_of_hasColimit_parallelPair _
 
 lemma hasBinaryProducts : HasBinaryProducts D := by
-  have := L
-  have := P
-  sorry
+  have := Localization.essSurj L P.isoModSerre
+  have (X Y : D) : HasBinaryProduct X Y :=
+    hasLimit_of_iso (show Limits.pair _ _ ≅ _ from
+      mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
+  exact hasBinaryProducts_of_hasLimit_pair D
 
 lemma hasBinaryBiproducts : HasBinaryBiproducts D :=
   have := hasBinaryProducts L P
