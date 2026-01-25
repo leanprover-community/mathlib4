@@ -87,6 +87,23 @@ lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
       monoModSerre_zero_iff] at this
   · exact ⟨_, cokernel.π f, by simpa [isoModSerre_iff_of_epi], by simp⟩
 
+variable {P} in
+lemma monoModSerre.isoModSerre_factorThruImage
+    {X Y : C} {f : X ⟶ Y} (hf : P.monoModSerre f) :
+    P.isoModSerre (Abelian.factorThruImage f) := by
+  rw [isoModSerre_iff_of_epi]
+  exact P.prop_of_iso
+    (asIso (kernel.map _ f (𝟙 _) (Abelian.image.ι f) (by simp))).symm hf
+
+variable {P} in
+lemma epiModSerre.isoModSerre_image_ι
+    {X Y : C} {f : X ⟶ Y} (hf : P.epiModSerre f) :
+    P.isoModSerre (Abelian.image.ι f) := by
+  rw [isoModSerre_iff_of_mono]
+  dsimp [epiModSerre] at hf ⊢
+  exact P.prop_of_iso
+    (asIso (cokernel.map f _ (Abelian.factorThruImage f) (𝟙 Y) (by simp))) hf
+
 namespace SerreClassLocalization
 
 instance : P.isoModSerre.HasLeftCalculusOfFractions where
@@ -120,7 +137,12 @@ include L P
 
 lemma isZero_obj_iff (X : C) :
     IsZero (L.obj X) ↔ P X := by
-  sorry
+  simp only [IsZero.iff_id_eq_zero, ← L.map_id, ← L.map_zero,
+    MorphismProperty.map_eq_iff_precomp L P.isoModSerre,
+    comp_id, comp_zero, exists_prop, exists_eq_right]
+  refine ⟨?_, fun _ ↦ ⟨X, by simpa⟩⟩
+  rintro ⟨Y, h⟩
+  simpa using h.2
 
 lemma hasZeroObject : HasZeroObject D :=
   ⟨L.obj 0, by simpa [isZero_obj_iff L P] using P.prop_zero⟩
@@ -139,18 +161,70 @@ lemma preservesMonomorphisms : L.PreservesMonomorphisms where
 lemma preservesEpimorphisms : L.PreservesEpimorphisms where
   preserves f _ := by simpa only [epi_map_iff _ P] using P.epiModSerre_of_epi f
 
+lemma mono_iff {X Y : D} (f : X ⟶ Y) :
+    Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
+      Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
+  have := preservesMonomorphisms L P
+  have := Localization.essSurj_mapArrow L P.isoModSerre
+  refine ⟨fun _ ↦ ?_, ?_⟩
+  · suffices ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : Mono (L.map f)),
+      ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
+          Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
+        let e := L.mapArrow.objObjPreimageIso (Arrow.mk f)
+        obtain ⟨X', Y', f', _, ⟨e'⟩⟩ := this _
+          (((MorphismProperty.monomorphisms D).arrow_iso_iff e).2 (.infer_property f))
+        exact ⟨_, _, f', inferInstance, ⟨e' ≪≫ e⟩⟩
+    intro X Y f hf
+    rw [mono_map_iff L P] at hf
+    refine ⟨_, _, Abelian.image.ι f, inferInstance, ⟨Iso.symm ?_⟩⟩
+    have := Localization.inverts L P.isoModSerre _ hf.isoModSerre_factorThruImage
+    exact Arrow.isoMk (asIso (L.map (Abelian.factorThruImage f))) (Iso.refl _)
+      (by simp [← L.map_comp])
+  · rintro ⟨X', Y', f', _, ⟨e⟩⟩
+    exact ((MorphismProperty.monomorphisms D).arrow_mk_iso_iff e).1
+      (by simpa using inferInstanceAs (Mono (L.map f')))
+
+lemma epi_iff {X Y : D} (f : X ⟶ Y) :
+    Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
+      Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk f) := by
+  have := preservesEpimorphisms L P
+  have := Localization.essSurj_mapArrow L P.isoModSerre
+  refine ⟨fun _ ↦ ?_, ?_⟩
+  · suffices ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : Epi (L.map f)),
+      ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
+          Nonempty (Arrow.mk (L.map f') ≅ Arrow.mk (L.map f)) by
+        let e := L.mapArrow.objObjPreimageIso (Arrow.mk f)
+        obtain ⟨X', Y', f', _, ⟨e'⟩⟩ := this _
+          (((MorphismProperty.epimorphisms D).arrow_iso_iff e).2 (.infer_property f))
+        exact ⟨_, _, f', inferInstance, ⟨e' ≪≫ e⟩⟩
+    intro X Y f hf
+    rw [epi_map_iff L P] at hf
+    refine ⟨_, _, Abelian.factorThruImage f, inferInstance, ⟨?_⟩⟩
+    have := Localization.inverts L P.isoModSerre _ hf.isoModSerre_image_ι
+    refine Arrow.isoMk (Iso.refl _) (asIso (L.map (Abelian.image.ι f))) (by simp [← L.map_comp])
+  · rintro ⟨X', Y', f', _, ⟨e⟩⟩
+    exact ((MorphismProperty.epimorphisms D).arrow_mk_iso_iff e).1
+      (by simpa using inferInstanceAs (Epi (L.map f')))
+
+
 lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     PreservesLimit (parallelPair f 0) L := by
   have := preservesMonomorphisms L P
   refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f)
-    ((KernelFork.isLimitMapConeEquiv _ L).2 ?_)
+    ((KernelFork.isLimitMapConeEquiv _ L).2
+      (Fork.IsLimit.ofExistsUnique
+        (fun s ↦ existsUnique_of_exists_of_unique ?_
+          (fun _ _ h₁ h₂ ↦ by simpa [cancel_mono] using h₁.trans h₂.symm))))
   sorry
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
   refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
-    ((CokernelCofork.isColimitMapCoconeEquiv _ L).2 ?_)
+    ((CokernelCofork.isColimitMapCoconeEquiv _ L).2
+      (Cofork.IsColimit.ofExistsUnique
+        (fun s ↦ existsUnique_of_exists_of_unique ?_
+          (fun _ _ h₁ h₂ ↦ by simpa [cancel_epi] using h₁.trans h₂.symm))))
   sorry
 
 lemma hasKernels : HasKernels D where
@@ -196,41 +270,10 @@ lemma hasBinaryProducts : HasBinaryProducts D := by
       mapPairIso (L.objObjPreimageIso X) (L.objObjPreimageIso Y))
   exact hasBinaryProducts_of_hasLimit_pair D
 
-lemma hasBinaryBiproducts : HasBinaryBiproducts D :=
-  have := hasBinaryProducts L P
-  .of_hasBinaryProducts
-
-lemma hasBinaryCoproducts : HasBinaryCoproducts D :=
-  have := hasBinaryBiproducts L P
-  hasBinaryCoproducts_of_hasBinaryBiproducts
-
 lemma hasFiniteProducts : HasFiniteProducts D :=
   have := hasZeroObject L P
   have := hasBinaryProducts L P
   hasFiniteProducts_of_has_binary_and_terminal
-
-lemma hasFiniteLimits : HasFiniteLimits D :=
-  have := hasEqualizers L P
-  have := hasFiniteProducts L P
-  hasFiniteLimits_of_hasEqualizers_and_finite_products
-
-lemma hasFiniteCoproducts : HasFiniteCoproducts D :=
-  have := hasZeroObject L P
-  have := hasBinaryCoproducts L P
-  hasFiniteCoproducts_of_has_binary_and_initial
-
-lemma hasFiniteColimits : HasFiniteColimits D :=
-  have := hasCoequalizers L P
-  have := hasFiniteCoproducts L P
-  hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts
-
-lemma mono_iff {X Y : D} (f : X ⟶ Y) :
-    Mono f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Mono f'),
-      Nonempty (L.mapArrow.obj (Arrow.mk f') ≅ Arrow.mk f) := sorry
-
-lemma epi_iff {X Y : D} (f : X ⟶ Y) :
-    Epi f ↔ ∃ (X' Y' : C) (f' : X' ⟶ Y') (_ : Epi f'),
-      Nonempty (L.mapArrow.obj (Arrow.mk f') ≅ Arrow.mk f) := sorry
 
 lemma isNormalMonoCategory : IsNormalMonoCategory D where
   normalMonoOfMono f hf := by

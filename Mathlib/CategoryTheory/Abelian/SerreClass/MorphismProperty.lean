@@ -56,6 +56,27 @@ lemma Abelian.isIso_cokernel_map_of_isPushout [HasCokernel t] [HasCokernel b]
 
 end
 
+section -- to be moved
+
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
+  {X₁ X₂ X₃ X₄ : C} (t : X₁ ⟶ X₂) (b : X₃ ⟶ X₄) (l : X₁ ⟶ X₃) (r : X₂ ⟶ X₄)
+  (fac : t ≫ r = l ≫ b)
+
+instance isIso_kernel_map_of_isIso_of_mono [HasKernel t] [HasKernel b]
+    [IsIso l] [Mono r] :
+    IsIso (kernel.map _ _ _ _ fac) :=
+  ⟨kernel.lift _ (kernel.ι b ≫ inv l) (by simp [← cancel_mono r, fac]),
+    by cat_disch, by cat_disch⟩
+
+instance isIso_cokernel_map_of_isIso_of_epi [HasCokernel t] [HasCokernel b]
+    [Epi l] [IsIso r] :
+    IsIso (cokernel.map _ _ _ _ fac) :=
+  ⟨cokernel.desc _ (inv r ≫ cokernel.π t) (by simp [← cancel_epi l, ← reassoc_of% fac]),
+    by cat_disch, by cat_disch⟩
+
+end
+
+
 variable {C : Type u} [Category.{v} C] [Abelian C]
   {D : Type u'} [Category.{v'} D] [Abelian D]
 
@@ -176,6 +197,11 @@ lemma isoModSerre_of_mono {X Y : C} (f : X ⟶ Y) [Mono f] (hf : P.epiModSerre f
 lemma isoModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (hf : P.monoModSerre f) :
     P.isoModSerre f := by
   rwa [isoModSerre_iff_of_epi]
+
+@[simp]
+lemma isoModSerre_zero_iff (X Y : C) :
+    P.isoModSerre (0 : X ⟶ Y) ↔ P X ∧ P Y := by
+  simp [isoModSerre_iff]
 
 lemma isomorphisms_le_isoModSerre : isomorphisms C ≤ P.isoModSerre :=
   fun _ _ f (_ : IsIso f) ↦ ⟨P.monoModSerre_of_mono f, P.epiModSerre_of_epi f⟩
