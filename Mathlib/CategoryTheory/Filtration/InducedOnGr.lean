@@ -45,8 +45,7 @@ noncomputable def inducedOnGrStep
 /-- The filtration induced by `F` on the graded piece `Gr_G^q(X)` (Deligne 1.2.1). -/
 noncomputable def inducedOnGr
     (F G : Filtration.DecFiltration (C := C) X) (q : ℤ) :
-    Filtration.DecFiltration (C := C) (G.gr q) :=
-by
+    Filtration.DecFiltration (C := C) (G.gr q) := by
   classical
   refine Filtration.DecFiltration.ofAntitone (C := C) (X := G.gr q)
     (fun p => inducedOnGrStep (C := C) (X := X) F G q p) ?_

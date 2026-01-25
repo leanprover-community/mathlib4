@@ -45,15 +45,13 @@ noncomputable def gr₂ (F G : Filtration.DecFiltration (C := C) X) (p q : ℤ) 
   let Ypq : Subobject X := (F.step (p + 1) ⊓ G.step q) ⊔ (F.step p ⊓ G.step (q + 1))
   have hY : Ypq ≤ Xpq := by
     refine sup_le ?_ ?_
-    · -- `F^{p+1} ∩ G^q ≤ F^p ∩ G^q`.
-      have hp : (Opposite.op (p + 1) : ℤᵒᵖ) ⟶ (Opposite.op p : ℤᵒᵖ) := by
+    · have hp : (Opposite.op (p + 1) : ℤᵒᵖ) ⟶ (Opposite.op p : ℤᵒᵖ) := by
         exact (homOfLE (show p ≤ p + 1 from
           le_add_of_nonneg_right (show (0 : ℤ) ≤ 1 by decide))).op
       have hF : F.step (p + 1) ≤ F.step p := by
         simpa [Filtration.DecFiltration.step] using (F.subobject_le_of_hom hp)
       exact inf_le_inf hF le_rfl
-    · -- `F^p ∩ G^{q+1} ≤ F^p ∩ G^q`.
-      have hq : (Opposite.op (q + 1) : ℤᵒᵖ) ⟶ (Opposite.op q : ℤᵒᵖ) := by
+    · have hq : (Opposite.op (q + 1) : ℤᵒᵖ) ⟶ (Opposite.op q : ℤᵒᵖ) := by
         exact (homOfLE (show q ≤ q + 1 from
           le_add_of_nonneg_right (show (0 : ℤ) ≤ 1 by decide))).op
       have hG : G.step (q + 1) ≤ G.step q := by

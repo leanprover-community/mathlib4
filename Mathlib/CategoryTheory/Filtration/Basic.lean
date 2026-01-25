@@ -128,14 +128,18 @@ instance : Category (FilteredObject C ι) where
     { hom := f.hom ≫ g.hom
       natTrans := f.natTrans ≫ g.natTrans }
 
-@[simp] lemma hom_id (F : FilteredObject C ι) : (𝟙 F : F ⟶ F).hom = 𝟙 _ := rfl
+@[simp]
+lemma hom_id (F : FilteredObject C ι) : (𝟙 F : F ⟶ F).hom = 𝟙 _ := rfl
 
-@[simp] lemma hom_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
+@[simp]
+lemma hom_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
-@[simp] lemma natTrans_id (F : FilteredObject C ι) : (𝟙 F : F ⟶ F).natTrans = 𝟙 _ := rfl
+@[simp]
+lemma natTrans_id (F : FilteredObject C ι) : (𝟙 F : F ⟶ F).natTrans = 𝟙 _ := rfl
 
-@[simp] lemma natTrans_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
+@[simp]
+lemma natTrans_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
     (f ≫ g).natTrans = f.natTrans ≫ g.natTrans := rfl
 
 /-- Strictness of a filtered morphism: each compatibility square is a pullback. -/
@@ -153,7 +157,8 @@ instance {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H)
       (IsStrictHom.isPullback (f := g) i)
 
 /-- The forgetful functor `FilteredObject C ι ⥤ C`. -/
-@[simps] def forget : FilteredObject C ι ⥤ C where
+@[simps]
+def forget : FilteredObject C ι ⥤ C where
   obj A := A.X
   map f := f.hom
   map_id := by intro A; rfl
@@ -302,7 +307,8 @@ variable {X : C}
 noncomputable abbrev step (F : DecFiltration (C := C) X) (n : ℤ) : Subobject X :=
   F.subobject (Opposite.op n)
 
-@[simp] lemma step_def (F : DecFiltration (C := C) X) (n : ℤ) :
+@[simp]
+lemma step_def (F : DecFiltration (C := C) X) (n : ℤ) :
     F.step n = F.subobject (Opposite.op n) := rfl
 
 section Finite
@@ -340,10 +346,10 @@ by
         intro i j k f g
         apply Subsingleton.elim }
 
-@[simp] lemma ofAntitone_step (F : ℤ → Subobject X) (hF : Antitone F) (n : ℤ) :
+@[simp]
+lemma ofAntitone_step (F : ℤ → Subobject X) (hF : Antitone F) (n : ℤ) :
     (ofAntitone (C := C) (X := X) F hF).step n = F n := by
   classical
-  -- Reduce to `Subobject.mk_arrow`.
   simp [ofAntitone, DecFiltration.step, Filtration.subobject, Filtration.inj, Subobject.mk_arrow]
 
 end OfSubobject
@@ -363,14 +369,16 @@ noncomputable def shiftFunctor (k : ℤ) : (ℤᵒᵖ) ⥤ (ℤᵒᵖ) where
     apply Subsingleton.elim
 
 /-- `shiftFunctor` on objects. -/
-@[simp] lemma shiftFunctor_obj (k : ℤ) (n : ℤᵒᵖ) :
+@[simp]
+lemma shiftFunctor_obj (k : ℤ) (n : ℤᵒᵖ) :
     (shiftFunctor k).obj n = Opposite.op (k + Opposite.unop n) := rfl
 
 /-- Shift a decreasing `ℤ`-filtration: `(F.shift k).step n = F.step (n + k)`. -/
 noncomputable def shift (F : DecFiltration (C := C) X) (k : ℤ) : DecFiltration (C := C) X where
   toMonoOver := shiftFunctor k ⋙ F.toMonoOver
 
-@[simp] lemma shift_step (F : DecFiltration (C := C) X) (k n : ℤ) :
+@[simp]
+lemma shift_step (F : DecFiltration (C := C) X) (k n : ℤ) :
     (F.shift k).step n = F.step (n + k) := by
   -- By definition, shifting uses `k + n`; rewrite using commutativity of `ℤ`.
   simpa [add_comm] using (show (F.shift k).step n = F.step (k + n) from rfl)
@@ -395,7 +403,8 @@ noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
         ((homOfLE (show n ≤ n + 1 from
             le_add_of_nonneg_right (show (0 : ℤ) ≤ 1 by decide))).op)).hom.left
 
-@[simp, reassoc] lemma succHom_comp_inj (F : DecFiltration (C := C) X) (n : ℤ) :
+@[simp, reassoc]
+lemma succHom_comp_inj (F : DecFiltration (C := C) X) (n : ℤ) :
     succHom (C := C) (X := X) F n ≫ F.inj (Opposite.op n) =
       F.inj (Opposite.op (n + 1)) := by
   classical
@@ -419,7 +428,8 @@ noncomputable def grπ (F : DecFiltration (C := C) X) (n : ℤ) :
     (F.obj (Opposite.op n)) ⟶ F.gr n :=
   cokernel.π (succHom (C := C) (X := X) F n)
 
-@[simp, reassoc] lemma succHom_grπ (F : DecFiltration (C := C) X) (n : ℤ) :
+@[simp, reassoc]
+lemma succHom_grπ (F : DecFiltration (C := C) X) (n : ℤ) :
     succHom (C := C) (X := X) F n ≫ F.grπ n = 0 := by
   simp [DecFiltration.grπ]
 
