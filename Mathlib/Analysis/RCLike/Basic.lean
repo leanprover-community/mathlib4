@@ -1243,7 +1243,7 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 
 open Filter in
-theorem _root_.Filter.Tendsto.ofReal {a : ℝ} {f : α → ℝ} (hf : Tendsto f l (𝓝 a)) :
+theorem _root_.Filter.Tendsto.ofReal' {a : ℝ} {f : α → ℝ} (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x ↦ ((f x) : K)) l (𝓝 ((a : K))) := (continuous_ofReal.tendsto _).comp hf
 
 @[continuity, fun_prop]
@@ -1253,11 +1253,11 @@ theorem _root_.Continuous.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : Co
 @[fun_prop]
 theorem _root_.ContinuousWithinAt.ofReal [TopologicalSpace α]
     {f : α → ℝ} (hf : ContinuousWithinAt f s x) :
-  ContinuousWithinAt (fun x ↦ (f x : K)) s x := Filter.Tendsto.ofReal hf
+  ContinuousWithinAt (fun x ↦ (f x : K)) s x := Filter.Tendsto.ofReal' hf
 
 @[fun_prop]
 theorem _root_.ContinuousAt.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousAt f x) :
-    ContinuousAt (fun x ↦ (f x : K)) x := Filter.Tendsto.ofReal hf
+    ContinuousAt (fun x ↦ (f x : K)) x := Filter.Tendsto.ofReal' hf
 
 @[fun_prop]
 theorem _root_.ContinuousOn.ofReal [TopologicalSpace α] {f : α → ℝ} (hf : ContinuousOn f s) :
