@@ -238,7 +238,7 @@ def _root_.Lean.MVarId.cc (m : MVarId) (cfg : CCConfig := {}) : MetaM Unit := do
         let pr ← s.eqvProof t tr
         mkAppM ``of_eq_true #[pr] >>= m.assign
       else
-        let dbg ← getBoolOption `trace.Meta.Tactic.cc.failure false
+        let dbg ← Lean.isTracingEnabledFor `Meta.Tactic.cc.failure
         if dbg then
           throwError m!"cc tactic failed, equivalence classes: {s}"
         else
