@@ -97,6 +97,11 @@ theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous 
     f ⁻¹' interior t ⊆ interior (f ⁻¹' t) :=
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 
+theorem preimage_interior_subset_interior_preimage_iff_continuous :
+    (∀ s, f ⁻¹' (interior s) ⊆ interior (f ⁻¹' s)) ↔ Continuous f := by
+  refine ⟨fun h ↦ ⟨fun U hU ↦ ?_⟩, fun h s ↦ preimage_interior_subset_interior_preimage h⟩
+  exact subset_interior_iff_isOpen.mp <| by grw [← h, hU.interior_eq]
+
 @[continuity]
 theorem continuous_id : Continuous (id : X → X) :=
   continuous_def.2 fun _ => id
