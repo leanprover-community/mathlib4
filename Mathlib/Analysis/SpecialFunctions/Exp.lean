@@ -210,6 +210,19 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
   have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩
   exact tendsto_atTop_mono' atTop B A
 
+/-- The function `y ↦ y * exp (-y)` is bounded above by `exp (-1)`. -/
+theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
+  have h_le : y ≤ exp (y - 1) := by
+    simpa [sub_eq_add_neg, add_assoc, add_left_comm, add_comm] using (add_one_le_exp (y - 1))
+  have h_mul : y * exp (-y) ≤ exp (y - 1) * exp (-y) := by
+    apply mul_le_mul_of_nonneg_right h_le
+    exact le_of_lt (exp_pos (-y))
+  calc
+    y * exp (-y) ≤ exp (y - 1) * exp (-y) := h_mul
+    _ = exp ((y - 1) + (-y)) := by
+      simpa using (exp_add (y - 1) (-y)).symm
+    _ = exp (-1) := by ring_nf
+
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
