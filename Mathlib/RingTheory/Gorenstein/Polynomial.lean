@@ -158,7 +158,7 @@ lemma Polynomial.localization_at_comap_maximal_isGorenstein_of_isGorenstein [IsN
       apply (mul_eq_zero_iff_left ?_).mp ha
       simp only [ne_eq, Ideal.Quotient.eq_zero_iff_mem]
       rw [IsScalarTower.algebraMap_eq R R[X], ← Ideal.map_map, algebraMap_eq, ← Ideal.mem_comap,
-        IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl RXp _ isp disj, ← Ker]
+        IsLocalization.comap_map_of_isPrime_disjoint p.primeCompl RXp isp disj, ← Ker]
       simp only [RingHom.mem_ker, coe_mapRingHom, hy]
       by_contra zeq0
       absurd eq0
@@ -232,7 +232,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsGorensteinRing R] :
   have : IsLocalization.AtPrime (Localization.AtPrime pS) p := by
     convert IsLocalization.isLocalization_isLocalization_atPrime_isLocalization pc
       (Localization.AtPrime pS) pS
-    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ _ ‹_› disj).symm
+    exact (IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj).symm
   let _ := (isGorensteinRing_def R).mp ‹_› q (comap_isPrime C p)
   have : comap C pS = maximalIdeal (Localization.AtPrime q) := by
     rw [← IsLocalization.map_comap q.primeCompl _ (comap C pS),
@@ -241,7 +241,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsGorensteinRing R] :
     rw [← Polynomial.algebraMap_eq (R := Localization.AtPrime q),
       ← IsScalarTower.algebraMap_eq R (Localization.AtPrime q) (Localization.AtPrime q)[X],
       IsScalarTower.algebraMap_eq R R[X] (Localization.AtPrime q)[X], ← comap_comap,
-      IsLocalization.comap_map_of_isPrime_disjoint pc _ _ ‹_› disj,
+      IsLocalization.comap_map_of_isPrime_disjoint pc _ ‹_› disj,
       IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime q) q]
     rfl
   let _ := localization_at_comap_maximal_isGorenstein_of_isGorenstein
