@@ -144,6 +144,16 @@ lemma epiModSerre_of_epi {X Y : C} (f : X ⟶ Y) [Epi f] :
     P.epiModSerre f :=
   P.epimorphisms_le_epiModSerre f (epimorphisms.infer_property f)
 
+@[simp]
+lemma epiModSerre_zero_iff (X Y : C) :
+    P.epiModSerre (0 : X ⟶ Y) ↔ P Y :=
+  P.prop_iff_of_iso cokernelZeroIsoTarget
+
+@[simp]
+lemma monoModSerre_zero_iff (X Y : C) :
+    P.monoModSerre (0 : X ⟶ Y) ↔ P X :=
+  P.prop_iff_of_iso kernelZeroIsoSource
+
 lemma isoModSerre_iff {X Y : C} (f : X ⟶ Y) :
     P.isoModSerre f ↔ P.monoModSerre f ∧ P.epiModSerre f := Iff.rfl
 
