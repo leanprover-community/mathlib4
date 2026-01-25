@@ -45,29 +45,6 @@ theorem Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R �
     {ι : Type*} (s : Finset ι) (g : ι → Ideal S) : (s.inf g).comap f = s.inf (comap f ∘ g) := by
   exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
 
-@[simp]
-theorem Submodule.coe_eq_univ {R M : Type*}
-    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} :
-    (I : Set M) = Set.univ ↔ I = ⊤ := by
-  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
-
-theorem Submodule.IsPrimary.isPrime_radical_colon {R M : Type*}
-    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} (hI : I.IsPrimary) :
-    (I.colon Set.univ).radical.IsPrime := by
-  refine isPrime_iff.mpr <| hI.imp (by simp) fun h x y ⟨n, hn⟩ ↦ ?_
-  simp_rw [← mem_colon_iff_le, ← mem_radical_iff] at h
-  refine or_iff_not_imp_left.mpr fun hx ↦ ⟨n, ?_⟩
-  simp only [mul_pow, mem_colon, Set.mem_univ, true_imp_iff, mul_smul] at hn ⊢
-  exact fun p ↦ (h (hn p)).resolve_right (mt mem_radical_of_pow_mem hx)
-
-theorem _root_.Submodule.IsPrimary.radical_ann_of_notMem {R M : Type*}
-    [CommSemiring R] [AddCommMonoid M] [Module R M] {I : Submodule R M} {m : M}
-    (hI : I.IsPrimary) (hm : m ∉ I) :
-    (I.colon {m}).radical = (I.colon Set.univ).radical :=
-  le_antisymm (radical_le_radical_iff.mpr fun _ hy ↦
-    (hI.2 (Submodule.mem_colon_singleton.mp hy)).resolve_left hm)
-    (radical_mono (Submodule.colon_mono le_rfl (Set.subset_univ {m})))
-
 end for_mathlib
 
 section IsLasker
@@ -174,7 +151,7 @@ lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
       (q.colon {x}).radical = if x ∈ q then ⊤ else (q.colon Set.univ).radical := by
     split_ifs with hx
     · rwa [radical_eq_top, colon_eq_top_iff_subset, Set.singleton_subset_iff]
-    · exact (ht.primary hq).radical_ann_of_notMem hx
+    · exact (ht.primary hq).radical_colon_singleton_of_notMem hx
   replace h x :
       radical (I.colon {x}) = (t.filter (x ∉ ·)).inf (fun q ↦ (q.colon Set.univ).radical) := by
     rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply]
