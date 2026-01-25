@@ -841,6 +841,16 @@ theorem _root_.BoundedVariationOn.exists_tendsto_atBot [CompleteSpace E] [hE : N
     ∃ l, Tendsto f (𝓟 s ⊓ atBot) (𝓝 l) :=
   hf.ofDual.exists_tendsto_atTop
 
+theorem _root_.BoundedVariationOn.tendsto_atTop_limUnder [CompleteSpace E] [hE : Nonempty E]
+    {f : α → E} (hf : BoundedVariationOn f univ) :
+    Tendsto f atTop (𝓝 (limUnder atTop f)) :=
+  tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atTop)
+
+theorem _root_.BoundedVariationOn.tendsto_atBot_limUnder [CompleteSpace E] [hE : Nonempty E]
+    {f : α → E} (hf : BoundedVariationOn f univ) :
+    Tendsto f atBot (𝓝 (limUnder atBot f)) :=
+  tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atBot)
+
 section Monotone
 
 variable {β : Type*} [LinearOrder β]

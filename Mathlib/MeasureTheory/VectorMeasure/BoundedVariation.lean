@@ -13,7 +13,7 @@ public import Mathlib.Topology.EMetricSpace.BoundedVariation
 # Vector valued Stieltjes measure associated to a bounded variation function
 
 Let `α` be a dense linear order with compact segments (e.g. `ℝ` or `ℝ≥0`), and `f : α → E` a
-bounded variation function to a normed group.
+bounded variation function to a complete additive normed group.
 We associate to `f` a vector measure, called `BoundedVariationOn.vectorMeasure`. It gives
 mass `f.rightLim b - f.leftLim a` to the interval `[a, b]` (with similar formulas for
 other types of intervals).
@@ -216,36 +216,87 @@ theorem vectorMeasure_Ico (hf : BoundedVariationOn f univ) (h : a ≤ b) :
 theorem vectorMeasure_Ici (hf : BoundedVariationOn f univ) (a : α) :
     hf.vectorMeasure (Ici a) = limUnder atTop f - f.leftLim a := by
   have : Nonempty α := ⟨a⟩
-  have hlim : Tendsto f atTop (𝓝 (limUnder atTop f)) :=
-    tendsto_nhds_limUnder (by simpa using hf.exists_tendsto_atTop)
+  have hlim : Tendsto f atTop (𝓝 (limUnder atTop f)) := hf.tendsto_atTop_limUnder
   cases topOrderOrNoTopOrder α
   · have : Ici a = Icc a ⊤ := by simp
     rw [atTop_eq_pure_of_isTop isTop_top] at hlim ⊢
     rw [this, hf.vectorMeasure_Icc le_top, tendsto_nhds_unique hlim (tendsto_pure_nhds f ⊤),
       rightLim_eq_of_isTop isTop_top]
-  have : NoMaxOrder α := NoTopOrder.to_noMaxOrder α
   obtain ⟨u, u_mono, hu⟩ : ∃ u, Monotone u ∧ Tendsto u atTop atTop :=
     Filter.exists_seq_monotone_tendsto_atTop_atTop α
-  have : Ici a = ⋃ n, Icc a (u n) := by
-    apply le_antisymm ?_ (by simp [Icc_subset_Ici_self])
-    intro x (hx : a ≤ x)
-    simpa [hx] using (hu.eventually (Ici_mem_atTop x)).exists
-  rw [this]
+  have A : Tendsto (fun n ↦ hf.vectorMeasure (Icc a (u n))) atTop
+      (𝓝 (hf.vectorMeasure (Ici a))) := by
+    have : Ici a = ⋃ n, Icc a (u n) := by
+      apply le_antisymm ?_ (by simp [Icc_subset_Ici_self])
+      intro x (hx : a ≤ x)
+      simpa [hx] using (hu.eventually (Ici_mem_atTop x)).exists
+    rw [this]
+    exact hf.vectorMeasure.tendsto_vectorMeasure_iUnion_atTop_nat (s := fun n ↦ Icc a (u n))
+      (fun i j hij x hx ↦ by grind [Monotone]) (fun i ↦ measurableSet_Icc)
+  have B : Tendsto (fun n ↦ hf.vectorMeasure (Icc a (u n))) atTop
+      (𝓝 (limUnder atTop f - f.leftLim a)) := by
+    have : (fun n ↦ f.rightLim (u n) - f.leftLim a) =ᶠ[atTop]
+        (fun n ↦ hf.vectorMeasure (Icc a (u n))) := by
+      have : ∀ᶠ n in atTop, a ≤ u n := by
+        simp only [tendsto_atTop, eventually_atTop] at hu
+        simp [hu]
+      filter_upwards [this] with n hn using by rw [hf.vectorMeasure_Icc hn]
+    apply Tendsto.congr' this
+    apply Tendsto.sub ?_ tendsto_const_nhds
+    exact (tendsto_rightLim_atTop_of_tendsto hlim).comp hu
+  exact tendsto_nhds_unique A B
 
+theorem vectorMeasure_Ioi (hf : BoundedVariationOn f univ) (a : α) :
+    hf.vectorMeasure (Ioi a) = limUnder atTop f - f.rightLim a := by
+  have := hf.vectorMeasure_Ici a
+  rw [← Icc_union_Ioi_eq_Ici le_rfl, VectorMeasure.of_union (by simp) measurableSet_Icc
+    measurableSet_Ioi, hf.vectorMeasure_Icc le_rfl] at this
+  grind
 
+theorem vectorMeasure_Iic (hf : BoundedVariationOn f univ) (a : α) :
+    hf.vectorMeasure (Iic a) = f.rightLim a - limUnder atBot f := by
+  have : Nonempty α := ⟨a⟩
+  have hlim : Tendsto f atBot (𝓝 (limUnder atBot f)) :=  hf.tendsto_atBot_limUnder
+  cases botOrderOrNoBotOrder α
+  · have : Iic a = Icc ⊥ a := by simp
+    rw [atBot_eq_pure_of_isBot isBot_bot] at hlim ⊢
+    rw [this, hf.vectorMeasure_Icc bot_le, tendsto_nhds_unique hlim (tendsto_pure_nhds f ⊥),
+      leftLim_eq_of_isBot isBot_bot]
+  obtain ⟨u, u_mono, hu⟩ : ∃ u, Antitone u ∧ Tendsto u atTop atBot :=
+    Filter.exists_seq_antitone_tendsto_atTop_atBot α
+  have A : Tendsto (fun n ↦ hf.vectorMeasure (Icc (u n) a)) atTop
+      (𝓝 (hf.vectorMeasure (Iic a))) := by
+    have : Iic a = ⋃ n, Icc (u n) a := by
+      apply le_antisymm ?_ (by simp [Icc_subset_Iic_self])
+      intro x (hx : x ≤ a)
+      simpa [hx] using (hu.eventually (Iic_mem_atBot x)).exists
+    rw [this]
+    exact hf.vectorMeasure.tendsto_vectorMeasure_iUnion_atTop_nat (s := fun n ↦ Icc (u n) a)
+      (fun i j hij x hx ↦ by grind [Antitone]) (fun i ↦ measurableSet_Icc)
+  have B : Tendsto (fun n ↦ hf.vectorMeasure (Icc (u n) a)) atTop
+      (𝓝 (f.rightLim a - limUnder atBot f)) := by
+    have : (fun n ↦ f.rightLim a - f.leftLim (u n)) =ᶠ[atTop]
+        (fun n ↦ hf.vectorMeasure (Icc (u n) a)) := by
+      have : ∀ᶠ n in atTop, u n ≤ a := by
+        simp only [tendsto_atBot, eventually_atTop] at hu
+        simp [hu]
+      filter_upwards [this] with n hn using by rw [hf.vectorMeasure_Icc hn]
+    apply Tendsto.congr' this
+    apply Tendsto.sub tendsto_const_nhds
+    exact (tendsto_leftLim_atBot_of_tendsto hf.tendsto_atBot_limUnder).comp hu
+  exact tendsto_nhds_unique A B
 
-  refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
-  simp_rw [measure_Ico]
-  refine ENNReal.tendsto_ofReal (Tendsto.sub_const ?_ _)
-  apply tendsto_order.2 ⟨fun m hm ↦ ?_, fun M hM ↦ ?_⟩
-  · obtain ⟨a, ha⟩ : ∃ a, ∀ (b : R), a ≤ b → m < f b := by simpa using (tendsto_order.1 hf).1 m hm
-    obtain ⟨a', ha'⟩ : ∃ a', a < a' := exists_gt a
-    simp only [eventually_atTop]
-    refine ⟨a', fun b hb ↦ ?_⟩
-    apply (ha _ le_rfl).trans_le
-    exact f.mono.le_leftLim (ha'.trans_le hb)
-  · filter_upwards [(tendsto_order.1 hf).2 M hM] with a ha
-    exact (f.mono.leftLim_le le_rfl).trans_lt ha
+theorem vectorMeasure_Iio (hf : BoundedVariationOn f univ) (a : α) :
+    hf.vectorMeasure (Iio a) = f.leftLim a - limUnder atBot f := by
+  have := hf.vectorMeasure_Iic a
+  rw [← Iio_union_Icc_eq_Iic le_rfl, VectorMeasure.of_union (by simp) measurableSet_Iio
+    measurableSet_Icc, hf.vectorMeasure_Icc le_rfl] at this
+  grind
 
+theorem vectorMeasure_univ (hf : BoundedVariationOn f univ) [hα : Nonempty α] :
+    hf.vectorMeasure univ = limUnder atTop f - limUnder atBot f := by
+  rw [← Iio_union_Ici (a := hα.some), VectorMeasure.of_union (by simp) measurableSet_Iio
+    measurableSet_Ici, hf.vectorMeasure_Iio, hf.vectorMeasure_Ici]
+  abel
 
 end BoundedVariationOn
