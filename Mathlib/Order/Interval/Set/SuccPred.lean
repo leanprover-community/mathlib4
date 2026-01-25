@@ -67,6 +67,8 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
 /-! ##### Inserting into intervals -/
 
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
+  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
+  `eq_comm (a := x)` requires explicit argument due to simp perm lemma handling change -/
   ext x; simp [or_and_left, eq_comm (a := x), ← le_iff_eq_or_succ_le]; aesop
 
 lemma insert_Icc_right_eq_Icc_succ (h : a ≤ succ b) :

@@ -106,6 +106,8 @@ private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (h
     (ha : a ∉ s) (hd : ∀ w ∈ insert a s, w ≠ c → G.Adj w b) :
     G.IsNClique r (insert a (insert b (erase s c))) := by
   rw [insert_comm, ← erase_insert_of_ne (fun h : a = c ↦ ha (h ▸ hc) |>.elim)]
+  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
+  `adj_comm G _ b` requires explicit argument due to simp perm lemma handling change -/
   simp_rw [adj_comm G _ b, ← notMem_singleton] at hd
   exact hs.insert_erase (fun _ h ↦ hd _ (mem_sdiff.1 h).1 (mem_sdiff.1 h).2) (mem_insert_of_mem hc)
 

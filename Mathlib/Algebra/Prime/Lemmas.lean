@@ -125,6 +125,8 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
     simpa [mul_comm, pow_add, hx, hy, mul_assoc, mul_left_comm] using hz
   have hp0 : p ^ (k + l) ≠ 0 := pow_ne_zero _ hp.ne_zero
   have hpd : p ∣ x * y := ⟨z, by rwa [mul_right_inj' hp0] at h⟩
+  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
+  `mul_comm, mul_left_comm` removed from simp arguments due to simp perm lemma handling change -/
   (hp.dvd_or_dvd hpd).elim
     (fun ⟨d, hd⟩ => Or.inl ⟨d, by simp [*, pow_succ, mul_assoc]⟩)
     fun ⟨d, hd⟩ => Or.inr ⟨d, by simp [*, pow_succ, mul_assoc]⟩

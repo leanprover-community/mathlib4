@@ -669,6 +669,8 @@ theorem Icc_diff_right : Icc a b \ {b} = Ico a b :=
 
 @[simp]
 theorem Ico_diff_left : Ico a b \ {a} = Ioo a b :=
+  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
+  `@eq_comm _ x` requires explicit argument due to simp perm lemma handling change -/
   ext fun x => by simp [and_right_comm, ← lt_iff_le_and_ne, @eq_comm _ x]
 
 @[simp]
