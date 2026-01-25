@@ -293,22 +293,17 @@ lemma ωScottContinuous_iff_map_ωSup_of_orderHom {f : α →o β} :
 alias ⟨ωScottContinuous.map_ωSup_of_orderHom, ωScottContinuous.of_map_ωSup_of_orderHom⟩ :=
   ωScottContinuous_iff_map_ωSup_of_orderHom
 
+attribute [local push ←] Function.comp_def
+attribute [local push] Function.const_def
+
+@[fun_prop, to_fun]
 lemma ωScottContinuous.comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
     ωScottContinuous (g.comp f) :=
   ωScottContinuous.of_monotone_map_ωSup
     ⟨hg.monotone.comp hf.monotone, by simp [hf.map_ωSup, hg.map_ωSup, map_comp]⟩
 
-@[fun_prop]
-lemma ωScottContinuous.fun_comp (hg : ωScottContinuous g) (hf : ωScottContinuous f) :
-    ωScottContinuous (fun x ↦ g (f x)) :=
-  comp hg hf
-
-@[simp]
+@[fun_prop, to_fun (attr := simp)]
 lemma ωScottContinuous.const {x : β} : ωScottContinuous (Function.const α x) :=
-  ScottContinuousOn.const x
-
-@[simp, fun_prop]
-lemma ωScottContinuous.fun_const {x : β} : ωScottContinuous (fun _ : α ↦ x) :=
   ScottContinuousOn.const x
 
 end Continuity

@@ -42,6 +42,9 @@ section ScottContinuous
 variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
   {f : α → β}
 
+attribute [local push ←] Function.comp_def
+attribute [local push] Function.const_def
+
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
 preserves `IsLUB` on elements of `D`.
 
@@ -72,7 +75,7 @@ protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
 
-@[simp]
+@[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α x) := by
   rintro s _ ⟨a⟩ _ _ _
   simp only [
@@ -81,10 +84,7 @@ lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α 
     implies_true, lowerBounds, true_and]
   grind
 
-@[simp, fun_prop]
-lemma ScottContinuousOn.fun_const (x : β) : ScottContinuousOn D (fun _ : α ↦ x) :=
-  ScottContinuousOn.const x
-
+@[fun_prop, to_fun]
 theorem ScottContinuousOn.comp
     {g : β → γ} {D'}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
@@ -104,6 +104,7 @@ theorem ScottContinuousOn.comp
   rw [Set.image_comp]
   refine hg hd₁' hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
 
+@[fun_prop, to_fun]
 theorem ScottContinuousOn.image_comp
     {g : β → γ}
     (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
@@ -111,25 +112,6 @@ theorem ScottContinuousOn.image_comp
     (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) :=
   ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
-
-@[fun_prop]
-theorem ScottContinuousOn.fun_comp
-    {g : β → γ} {D'}
-    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (hD' : ∀ d ∈ D, f '' d ∈ D')
-    (hg : ScottContinuousOn D' g)
-    (hf : ScottContinuousOn D f) :
-    ScottContinuousOn D (fun x ↦ g (f x)) :=
-  ScottContinuousOn.comp hD hD' hg hf
-
-@[fun_prop]
-theorem ScottContinuousOn.image_fun_comp
-    {g : β → γ}
-    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (hg : ScottContinuousOn ((f '' ·) '' D) g)
-    (hf : ScottContinuousOn D f) :
-    ScottContinuousOn D (fun x ↦ g (f x)) :=
-  ScottContinuousOn.image_comp hD hg hf
 
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
@@ -183,17 +165,14 @@ lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
   h.scottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
 
-@[simp, fun_prop, to_fun]
+@[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
 
-@[simp]
+@[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := by
   simp only [← scottContinuousOn_univ, ScottContinuousOn.const]
 
-@[simp, fun_prop]
-lemma ScottContinuous.fun_const (x : β) : ScottContinuous (fun _ : α ↦ x) := by
-  simp only [← scottContinuousOn_univ, ScottContinuousOn.fun_const]
-
+@[fun_prop, to_fun]
 lemma ScottContinuous.comp {g : β → γ}
     (hf : ScottContinuous f) (hg : ScottContinuous g) :
     ScottContinuous (g ∘ f) := by
@@ -205,12 +184,6 @@ lemma ScottContinuous.comp {g : β → γ}
     grind
   rw [Set.image_comp]
   exact hg hd₁' hd₂' (hf hd₁ hd₂ ha)
-
-@[fun_prop]
-lemma ScottContinuous.fun_comp {g : β → γ}
-    (hf : ScottContinuous f) (hg : ScottContinuous g) :
-    ScottContinuous (fun x ↦ g (f x)) :=
-  ScottContinuous.comp hf hg
 
 @[fun_prop]
 lemma ScottContinuous.prodMk {g : α → γ}
