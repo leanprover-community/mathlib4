@@ -51,8 +51,7 @@ by
         f i ⟨x, hxi⟩ = f j ⟨x, hxj⟩ := by
     intro i j x hxi hxj
     rcases dir i j with ⟨k, hik, hjk⟩
-    rw [hf i k hik, hf j k hjk]
-    rfl
+    simp [hf i k hik, hf j k hjk]
   let liftSup : ((iSup K : Subalgebra R A)) →ₐ[R] B :=
     { toFun :=
         Set.iUnionLift (fun i => ↑(K i)) (fun i x => f i x) compat
