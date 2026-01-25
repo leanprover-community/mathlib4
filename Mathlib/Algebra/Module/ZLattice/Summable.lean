@@ -209,7 +209,6 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     simp only [Submodule.norm_coe]
     convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
-    rfl
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [mul_assoc]
