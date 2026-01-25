@@ -559,6 +559,29 @@ end Field
 
 end IsNontrivial
 
+section IsTrivialOn
+
+variable [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
+  base ring `A` are mapped to `1`.
+
+  This is true, for example, when `A` is a finite field.
+  See `Valuation.FiniteField.instIsTrivialOn`. -/
+class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+  (v : Valuation B Γ₀) where eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
+
+attribute [grind =>] Valuation.IsTrivialOn.eq_one
+
+variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
+  [v.IsTrivialOn A]
+
+@[simp]
+theorem IsTrivialOn.valuation_algebraMap_le_one (a : A) : v (algebraMap A B a) ≤ 1 := by
+  by_cases a = 0 <;> grind [zero_le']
+
+end IsTrivialOn
+
 namespace IsEquiv
 
 variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
