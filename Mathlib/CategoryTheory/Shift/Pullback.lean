@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 /-!
 # The pullback of a shift by a monoid morphism
 
-Given a shift by a monoid `B` on a category `C` and a monoid morphism  `φ : A →+ B`,
+Given a shift by a monoid `B` on a category `C` and a monoid morphism `φ : A →+ B`,
 we define a shift by `A` on a category `PullbackShift C φ` which is a type synonym for `C`.
 
 If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, we define
@@ -27,8 +27,8 @@ on `F` and `G`), we define a pulled back `CommShift` structure by `A` on
 
 Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
 `PullbackShift.adjunction adj φ : PullbackShift.functor F φ ⊣ PullbackShift.functor G φ`
-and we show that, if `adj` compatible with `CommShift` structures
-on `F` and `G`, then `PullbackShift.adjunction adj φ` iis also compatible with the pulled back
+and we show that, if `adj` is compatible with `CommShift` structures
+on `F` and `G`, then `PullbackShift.adjunction adj φ` is also compatible with the pulled back
 `CommShift` structures.
 -/
 
@@ -166,7 +166,7 @@ commutes with their pullbacks by an additive map `φ`.
 -/
 instance commShiftPullback : (PullbackShift.functor φ F).CommShift A where
   commShiftIso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
-    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
+    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _ (pullbackShiftIso D φ a (φ a) rfl).symm
   commShiftIso_zero := by
     ext
     dsimp
@@ -218,7 +218,7 @@ instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
       isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
       assoc]
     rw [← τ.naturality_assoc]
-    simp  [← NatTrans.shift_app_comm_assoc]
+    simp [← NatTrans.shift_app_comm_assoc]
 
 variable (C) in
 /-- The natural isomorphism between the identity of `PullbackShift C φ` and the
