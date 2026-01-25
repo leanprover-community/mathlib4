@@ -82,7 +82,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     let _ : IsLocalRing (R ⧸ Ideal.span (S : Set R)) :=
       IsLocalRing.of_surjective _ Ideal.Quotient.mk_surjective
     rw [isRegularLocalRing_def]
-    have le := ringKrullDim_le_ringKrullDim_add_card sub
+    have le := ringKrullDim_le_ringKrullDim_quotient_add_card S
+      (by simpa [IsLocalRing.ringJacobson_eq_maximalIdeal] using sub)
     have ge : (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card ≤
       ringKrullDim R := by
       simp only [← Nat.cast_add, ← (iff_finrank_cotangentSpace R).mp ‹_›, Nat.cast_le,
