@@ -362,17 +362,8 @@ universe w v u
 
 variable (R : Type u) [CommRing R]
 
-variable (M : Type v) [AddCommGroup M] [Module R M] (N : Type v) [AddCommGroup N] [Module R N]
-
-instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
-  Module.Free.of_equiv (Shrink.linearEquiv R M).symm
-
-instance Module.finite_shrink [Module.Finite R M] [Small.{w} M] : Module.Finite R (Shrink.{w} M) :=
-  Module.Finite.equiv (Shrink.linearEquiv R M).symm
-
 theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M]
-    [Module.Finite R M] :
-    ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
+    [Module.Finite R M] : ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
       (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by
   rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
   let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
