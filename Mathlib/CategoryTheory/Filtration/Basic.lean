@@ -12,17 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.Data.Int.Basic
 
-@[expose] public section
-
-open CategoryTheory
-open CategoryTheory.Limits
-
-namespace CategoryTheory
-
-universe v u
-
-variable {C : Type u} [Category.{v} C]
-
 /-!
 ## Filtrations via `MonoOver`
 
@@ -36,6 +25,17 @@ We also define the category `FilteredObject C ι`, strict morphisms (levelwise p
 squares), and basic constructions for decreasing `ℤ`-filtrations (`ι = ℤᵒᵖ`).
 -/
 
+@[expose] public section
+
+open CategoryTheory
+open CategoryTheory.Limits
+
+namespace CategoryTheory
+
+universe v u
+
+variable {C : Type u} [Category.{v} C]
+
 /-- A filtration on an object `X` indexed by a category `ι`.
 
 This is a functor `ι ⥤ MonoOver X`, i.e. a coherent diagram of monomorphisms into `X`.
@@ -45,6 +45,7 @@ For increasing `ℤ`-filtrations, use `ι = ℤ`.
 -/
 @[ext]
 structure Filtration (X : C) (ι : Type*) [Category ι] where
+  /-- The underlying functor `ι ⥤ MonoOver X`. -/
   toMonoOver : ι ⥤ MonoOver X
 
 namespace Filtration
@@ -83,8 +84,8 @@ noncomputable def subobject (F : Filtration X ι) (i : ι) : Subobject X :=
 
 @[simp, reassoc]
 lemma subobject_arrow_eq (F : Filtration X ι) (i : ι) :
-    (Subobject.underlyingIso (F.inj i)).hom ≫ F.inj i = (F.subobject i).arrow := by
-  simp [Filtration.subobject]
+    (Subobject.mk (F.toMonoOver.obj i).obj.hom).arrow = (F.subobject i).arrow := by
+  rfl
 
 /-- A morphism in the index category yields an inclusion of the corresponding subobjects. -/
 lemma subobject_le_of_hom (F : Filtration X ι) {i j : ι} (f : i ⟶ j) :
