@@ -6,7 +6,6 @@ Authors: Andrew Yang, Yaël Dillies
 module
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 public import Mathlib.RingTheory.Coalgebra.Basic
-public import Mathlib.RingTheory.Coalgebra.SimpAttr
 
 /-!
 # Tactic to reassociate comultiplication in a coalgebra
