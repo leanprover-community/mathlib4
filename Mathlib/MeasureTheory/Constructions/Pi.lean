@@ -237,13 +237,13 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
   haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
-  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
+  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).getD default i),
     fun n => ?_, fun n => ?_, ?_⟩ <;>
   -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
   -- correctly sees this definition is computable, the Lean VM fails to see the binding is
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
   -- is insert `noncomputable` for you when necessary.
-  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).iget
+  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).getD default
   · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
   · calc
       Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
@@ -253,7 +253,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
       _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
-  · simp_rw [(surjective_decode_iget (ι → ℕ)).iUnion_comp fun x =>
+  · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
 

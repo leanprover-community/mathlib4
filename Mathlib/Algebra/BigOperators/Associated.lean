@@ -68,7 +68,8 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
     grind [Associated.mul_mul]
 
-theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M₀} (hp : Prime p)
+theorem exists_associated_mem_of_dvd_prod [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
+    {p : M₀} (hp : Prime p)
     {s : Multiset M₀} : (∀ r ∈ s, Prime r) → p ∣ s.prod → ∃ q ∈ s, p ~ᵤ q :=
   Multiset.induction_on s (by simp [mt isUnit_iff_dvd_one.2 hp.not_unit]) fun a s ih hs hps => by
     rw [Multiset.prod_cons] at hps
@@ -81,14 +82,14 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M
 open Submonoid in
 /-- Let x, y ∈ M₀. If x * y can be written as a product of units and prime elements, then x can be
 written as a product of units and prime elements. -/
-theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
+theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
     (x y : M₀) (hxy : x * y ∈ closure { r : M₀ | IsUnit r ∨ Prime r}) :
     x ∈ closure { r : M₀ | IsUnit r ∨ Prime r} := by
   obtain ⟨m, hm, hprod⟩ := exists_multiset_of_mem_closure hxy
   induction m using Multiset.induction generalizing x y with
   | empty =>
     apply subset_closure
-    simp only [Set.mem_setOf]
+    push _ ∈ _
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
@@ -117,7 +118,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
       rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
       exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
 
-theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero M₀]
+theorem Multiset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
     [∀ a : M₀, DecidablePred (Associated a)] {s : Multiset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction s using Multiset.induction_on generalizing n with
@@ -138,8 +139,8 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero M₀]
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero M₀] [Subsingleton M₀ˣ] {s : Finset M₀}
-    (n : M₀) (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : ∏ p ∈ s, p ∣ n := by
+theorem Finset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀] [Subsingleton M₀ˣ]
+    {s : Finset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : ∏ p ∈ s, p ∣ n := by
   classical
     exact
       Multiset.prod_primes_dvd n (by simpa only [Multiset.map_id', Finset.mem_def] using h)
@@ -182,7 +183,7 @@ end CommMonoid
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M₀]
+variable [CommMonoidWithZero M₀]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates M₀)} {p : Associates M₀}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
@@ -201,8 +202,8 @@ end Associates
 
 namespace Multiset
 
-theorem prod_ne_zero_of_prime [CancelCommMonoidWithZero M₀] [Nontrivial M₀] (s : Multiset M₀)
-    (h : ∀ x ∈ s, Prime x) : s.prod ≠ 0 :=
+theorem prod_ne_zero_of_prime [CommMonoidWithZero M₀] [NoZeroDivisors M₀] [Nontrivial M₀]
+    (s : Multiset M₀) (h : ∀ x ∈ s, Prime x) : s.prod ≠ 0 :=
   Multiset.prod_ne_zero fun h0 => Prime.ne_zero (h 0 h0) rfl
 
 end Multiset
