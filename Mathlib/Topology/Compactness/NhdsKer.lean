@@ -27,9 +27,4 @@ theorem IsCompact.nhdsKer_iff : IsCompact (nhdsKer s) ↔ IsCompact s := by
   simp only [(isOpen_iUnion hUo).nhdsKer_subset,
     (isOpen_iUnion fun i ↦ isOpen_iUnion fun _ ↦ hUo i).nhdsKer_subset]
 
-@[deprecated (since := "2025-07-09")] alias IsCompact.exterior_iff := IsCompact.nhdsKer_iff
-
 protected alias ⟨IsCompact.of_nhdsKer, IsCompact.nhdsKer⟩ := IsCompact.nhdsKer_iff
-
-@[deprecated (since := "2025-07-09")] alias IsCompact.of_exterior := IsCompact.of_nhdsKer
-@[deprecated (since := "2025-07-09")] alias IsCompact.exterior := IsCompact.nhdsKer

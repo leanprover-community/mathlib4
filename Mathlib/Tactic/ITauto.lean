@@ -5,11 +5,12 @@ Authors: Mario Carneiro
 -/
 module
 
-public meta import Batteries.Tactic.Exact
-public meta import Batteries.Tactic.Init
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
 public meta import Mathlib.Util.AtomM
 public meta import Qq
+public import Batteries.Tactic.Exact
+public import Batteries.Tactic.Init
+public import Mathlib.Util.AtomM
 
 /-!
 
@@ -721,7 +722,7 @@ elab_rules : tactic
     let hs ← hs.getElems.mapM (Term.elabTermAndSynthesize · none)
     liftMetaTactic (itautoCore · true cl.isSome hs *> pure [])
 
-@[inherit_doc itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
+@[tactic_alt itauto] syntax (name := itauto!) "itauto!" (" *" <|> (" [" term,* "]"))? : tactic
 
 macro_rules
   | `(tactic| itauto!) => `(tactic| itauto !)
