@@ -63,7 +63,7 @@ theorem imo2005_q4 {k : ℕ} (hk : 0 < k) : (∀ n : ℕ, 1 ≤ n → IsCoprime 
   replace h : ∀ n, 1 ≤ n → ¬(p : ℤ) ∣ a n := fun n hn ↦ by
     have : IsCoprime (a n) p :=
       .of_isCoprime_of_dvd_right (h n hn) (Int.natCast_dvd_natCast.mpr k.minFac_dvd)
-    rwa [isCoprime_comm,(Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at this
+    rwa [isCoprime_comm, (Nat.prime_iff_prime_int.mp hp).coprime_iff_not_dvd] at this
   -- For `p = 2` and `p = 3`, take `n = 1` and `n = 2`, respectively
   by_cases hp2 : p = 2
   · rw [hp2] at h

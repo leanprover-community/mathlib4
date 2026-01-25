@@ -104,9 +104,9 @@ noncomputable def constr {S : Type z} [Semiring S] [Module S N] [SMulCommClass R
     (ChooseBasisIndex R M → N) ≃ₗ[S] M →ₗ[R] N :=
   Basis.constr (chooseBasis R M) S
 
-instance (priority := 100) noZeroSMulDivisors [NoZeroDivisors R] : NoZeroSMulDivisors R M :=
+instance (priority := 100) instIsTorsionFree : IsTorsionFree R M :=
   let ⟨⟨_, b⟩⟩ := exists_basis (R := R) (M := M)
-  b.noZeroSMulDivisors
+  b.isTorsionFree
 
 instance [Nontrivial M] : Nonempty (Module.Free.ChooseBasisIndex R M) :=
   (Module.Free.chooseBasis R M).index_nonempty
