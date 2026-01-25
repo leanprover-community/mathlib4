@@ -23,6 +23,7 @@ This file is patterned after `MvPolynomials/Rename.lean`
 -/
 
 @[expose] public section
+
 noncomputable section
 
 open Finset Finsupp
@@ -32,20 +33,22 @@ variable (f : σ ↪ τ)
 
 namespace MvPowerSeries
 
-/-- Rename all the variables in a multivariable power series by an embedding, as a function. -/
-def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R := Function.extend (embDomain f) p 0
+/-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
+@[no_expose]
+private def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
+  Function.extend (embDomain f) p 0
 
 @[simp]
-theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
+private theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
     (renameFun f p).coeff (embDomain f x) = p.coeff x :=
   ((embDomain_injective f).factorsThrough _).extend_apply _ _
 
-theorem coeff_renameFun_eq_zero_of_notMem_range_embDomain (p : MvPowerSeries σ R) {x : τ →₀ ℕ}
-    (h : x ∉ Set.range (embDomain f)) : (renameFun f p).coeff x = 0 := by
+private theorem coeff_renameFun_eq_zero_of_notMem_range_embDomain (p : MvPowerSeries σ R)
+    {x : τ →₀ ℕ} (h : x ∉ Set.range (embDomain f)) : (renameFun f p).coeff x = 0 := by
   rw [renameFun, coeff, LinearMap.proj, LinearMap.coe_mk, AddHom.coe_mk, Function.eval,
     Function.extend, dite_cond_eq_false (by grind), Pi.zero_apply]
 
-theorem renameFun_monomial (x) (r : R) :
+private theorem renameFun_monomial (x) (r : R) :
     renameFun f (monomial x r) = monomial (embDomain f x) r := by
   classical
   ext y; by_cases h : y ∈ Set.range (embDomain f)
@@ -54,7 +57,7 @@ theorem renameFun_monomial (x) (r : R) :
   · rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h, coeff_monomial,
       if_neg (by grind)]
 
-theorem renameFun_mul (p q : MvPowerSeries σ R) :
+private theorem renameFun_mul (p q : MvPowerSeries σ R) :
     renameFun f (p * q) = renameFun f p * renameFun f q := by
   classical
   ext x; by_cases h : x ∈ Set.range (embDomain f)
@@ -72,7 +75,7 @@ theorem renameFun_mul (p q : MvPowerSeries σ R) :
   · rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h', zero_mul]
   rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h', mul_zero]
 
-/-- Rename all the variables in a multivariable power series by an embedding, as an `AlgHom`. -/
+/-- Rename all the variables in a multivariable power series by an embedding. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
@@ -83,22 +86,32 @@ def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
     nth_rw 1 [← add_zero (0 : (τ →₀ ℕ) → R), Function.extend_add]
   commutes' := renameFun_monomial f 0
 
-theorem rename_apply {p : MvPowerSeries σ R} : rename f p = renameFun f p := rfl
+@[simp]
+theorem coeff_embDomain_rename (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
+    (rename f p).coeff (embDomain f x) = p.coeff x :=
+  coeff_embDomain_renameFun f p x
+
+theorem coeff_rename_eq_zero_of_notMem_range_embDomain (p : MvPowerSeries σ R) {x : τ →₀ ℕ}
+    (h : x ∉ Set.range (embDomain f)) : (rename f p).coeff x = 0 :=
+  coeff_renameFun_eq_zero_of_notMem_range_embDomain f p h
+
+theorem rename_monomial (x) (r : R) : rename f (monomial x r) =
+    monomial (embDomain f x) r := renameFun_monomial ..
 
 @[simp]
-theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := renameFun_monomial f 0 r
+theorem rename_C (r : R) : rename f (C r : MvPowerSeries σ R) = C r := rename_monomial f 0 r
 
 @[simp]
 theorem rename_X (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) := by
-  simpa using renameFun_monomial f (single i 1) 1
+  simpa using rename_monomial f (single i 1) 1
 
 theorem map_rename (F : R →+* S) (p : MvPowerSeries σ R) :
     map F (rename f p) = rename f (map F p) := by
   ext x
   by_cases h : x ∈ Set.range (embDomain f)
   · rcases h with ⟨_, rfl⟩
-    simp [rename_apply]
-  simp [rename_apply, coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h]
+    simp
+  simp [coeff_rename_eq_zero_of_notMem_range_embDomain _ _ h]
 
 @[simp]
 theorem rename_rename (g : τ ↪ α) (p : MvPowerSeries σ R) :
@@ -106,16 +119,16 @@ theorem rename_rename (g : τ ↪ α) (p : MvPowerSeries σ R) :
   ext x
   by_cases h : x ∈ Set.range (embDomain g)
   · rcases h with ⟨y, rfl⟩
-    simp only [rename_apply, coeff_embDomain_renameFun]
+    rw [coeff_embDomain_rename]
     by_cases h' : y ∈ Set.range (embDomain f)
     · rcases h' with ⟨_, rfl⟩
       simp [← embDomain_comp]
-    rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h',
-      coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _
+    rw [coeff_rename_eq_zero_of_notMem_range_embDomain _ _ h',
+      coeff_rename_eq_zero_of_notMem_range_embDomain _ _
         (show embDomain g y ∉ Set.range (embDomain (f.trans g)) by
           rintro ⟨_, _⟩; grind [embDomain_comp, embDomain_inj])]
-  rw [rename_apply, coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h,
-    rename_apply, coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _
+  rw [coeff_rename_eq_zero_of_notMem_range_embDomain _ _ h,
+    coeff_rename_eq_zero_of_notMem_range_embDomain _ _
       (show x ∉ Set.range (embDomain (f.trans g)) by
         rintro ⟨_, _⟩; grind [embDomain_comp, embDomain_inj])]
 
@@ -125,46 +138,42 @@ lemma rename_comp_rename (g : τ ↪ α) :
 
 @[simp]
 theorem rename_id : rename (Function.Embedding.refl _) = AlgHom.id R (MvPowerSeries σ R) :=
-  AlgHom.ext fun p ↦ by simp [rename_apply, renameFun]
+  AlgHom.ext fun p ↦ by simp [rename, renameFun]
 
 lemma rename_id_apply (p : MvPowerSeries σ R) :
     rename (Function.Embedding.refl _) p = p := by simp
 
-theorem rename_monomial (d : σ →₀ ℕ) (r : R) :
-    rename f (monomial d r) = monomial (d.mapDomain f) r := by
-  simpa [embDomain_eq_mapDomain] using renameFun_monomial f d r
-
 @[simp]
 theorem constantCoeff_rename (p : MvPowerSeries σ R) :
     constantCoeff (rename f p) = constantCoeff p := by
-  rw [← coeff_zero_eq_constantCoeff_apply, ← coeff_zero_eq_constantCoeff_apply, rename_apply,
-    show (0 : τ →₀ ℕ) = embDomain f 0 by simp, coeff_embDomain_renameFun]
+  rw [← coeff_zero_eq_constantCoeff_apply, ← coeff_zero_eq_constantCoeff_apply,
+    show (0 : τ →₀ ℕ) = embDomain f 0 by simp, coeff_embDomain_rename]
 
 theorem rename_injective : Function.Injective (rename (R := R) f) := by
   intro _ _ h; ext x
-  simp only [rename_apply, MvPowerSeries.ext_iff] at h
-  simpa using h (embDomain f x)
+  simpa using MvPowerSeries.ext_iff.mp h (embDomain f x)
 
-/-- Given an embedding `f : σ ↪ τ`, `MvPowerSeries.killComplFun f` is the function from
-  `R[[τ]]` to `R[[σ]]` that is left inverse to `rename f : R[[σ]] → R[[τ]]` and sends the
-  variables in the complement of the range of `f` to `0`. -/
-def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R := fun x ↦ coeff (embDomain f x) p
+/-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
+@[no_expose]
+private def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
+  fun x ↦ coeff (embDomain f x) p
 
-theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
+private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
   coeff x (killComplFun f p) = coeff (embDomain f x) p := rfl
 
-@[simp] theorem killComplFun_monomial_embDomain (x) (r : R) :
+@[simp]
+private theorem killComplFun_monomial_embDomain (x) (r : R) :
     killComplFun f (monomial (embDomain f x) r) = monomial x r := by
   classical
   ext; simp [coeff_killComplFun, coeff_monomial, embDomain_inj]
 
-theorem killComplFun_monomial_eq_zero_of_notMem_range_embDomain {x} (r : R)
+private theorem killComplFun_monomial_eq_zero_of_notMem_range_embDomain {x} (r : R)
     (h : x ∉ Set.range (embDomain f)) : killComplFun f (monomial x r) = 0 := by
   classical
   ext; simp only [coeff_killComplFun, coeff_monomial, coeff_zero, ite_eq_right_iff]
   grind
 
-theorem killComplFun_mul (p q : MvPowerSeries τ R) :
+private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     killComplFun f (p * q) = killComplFun f p * killComplFun f q := by
   classical
   ext
@@ -172,43 +181,53 @@ theorem killComplFun_mul (p q : MvPowerSeries τ R) :
     ((Function.Injective.injOn (Prod.map_injective.mpr ⟨embDomain_injective f,
       embDomain_injective f⟩)))]
 
-/-- The `AlgHom` version of `killComplFun`. -/
-def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R := {
+/-- Given an embedding `f : σ ↪ τ`, `MvPowerSeries.killComplFun f` is the function from
+`R[[τ]]` to `R[[σ]]` that is left inverse to `rename f : R[[σ]] → R[[τ]]` and sends the
+variables in the complement of the range of `f` to `0`. -/
+def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial_embDomain f 0 1
   map_mul' := killComplFun_mul f
   map_zero' := by ext; simp [coeff_killComplFun]
   map_add' _ _ := by ext; simp [coeff_killComplFun]
   commutes' := by simpa using killComplFun_monomial_embDomain f 0
-}
 
-lemma killCompl_apply (p : MvPowerSeries τ R) :
-    killCompl f p = killComplFun f p := rfl
+@[simp]
+lemma coeff_killCompl (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
+    coeff x (killCompl f p) = coeff (embDomain f x) p := rfl
+
+@[simp]
+lemma killCompl_monomial_embDomain (x) (r : R) :
+    killCompl f (monomial (embDomain f x) r) = monomial x r :=
+  killComplFun_monomial_embDomain f x r
+
+lemma killCompl_monomial_eq_zero_of_notMem_range_embDomain {x} (r : R)
+    (h : x ∉ Set.range (embDomain f)) : killCompl f (monomial x r) = 0 :=
+  killComplFun_monomial_eq_zero_of_notMem_range_embDomain f r h
 
 lemma killCompl_C (r : R) : killCompl f (C r) = C r := by
-  simpa using killComplFun_monomial_embDomain f 0 r
+  simpa using killCompl_monomial_embDomain f 0 r
 
 theorem killCompl_X (i : σ) : killCompl (R := R) f (X (f i)) = X i := by
   classical
   ext
-  simp [killCompl_apply, coeff_killComplFun, coeff_X, ← embDomain_single]
+  simp [coeff_X, ← embDomain_single]
 
 theorem killCompl_X_eq_zero_of_notMem_range {t} (h : t ∉ Set.range f) :
     killCompl (R := R) f (X t) = 0 := by
   replace h : single t 1 ∉ Set.range (embDomain f) := by
     rwa [mem_range_embDomain_iff, support_single_ne_zero _ (by simp), coe_singleton,
       Set.singleton_subset_iff]
-  simpa using killComplFun_monomial_eq_zero_of_notMem_range_embDomain f (1 : R) h
+  simpa using killCompl_monomial_eq_zero_of_notMem_range_embDomain f (1 : R) h
 
 theorem killCompl_comp_rename : (killCompl f).comp (rename f) = AlgHom.id R _ := by
-  ext; simp [rename_apply, killCompl_apply, coeff_killComplFun]
+  ext; simp [coeff_killCompl]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl f (rename f p) = p :=
   AlgHom.congr_fun (killCompl_comp_rename f) p
 
-variable (R)
-
+variable (R) in
 /-- `rename` is an equivalence when the underlying map is an equivalence. -/
 @[simps apply]
 def renameEquiv (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
