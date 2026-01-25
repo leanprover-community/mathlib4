@@ -50,6 +50,11 @@ Throughout we work over a `LinearOrderedRing R`. Some results require stronger a
 like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix powers and thus require
 `[DecidableEq n]` to reason about finite sums.
 
+## TODO
+
+Refactor to use digraphs instead of quivers. A prerequisite for this refactor
+is paths in digraphs.
+
 ## References
 
 * [E. Seneta, *Non-negative Matrices and Markov Chains*][seneta2006]
