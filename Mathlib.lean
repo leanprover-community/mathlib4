@@ -1670,6 +1670,7 @@ public import Mathlib.Analysis.Calculus.TangentCone.Pi
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
 public import Mathlib.Analysis.Calculus.TangentCone.Real
+public import Mathlib.Analysis.Calculus.TangentCone.Seq
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Analysis.Calculus.VectorField
@@ -5610,6 +5611,7 @@ public import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Order.Interval.Set.Limit
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.Interval.Set.Nat
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.OrdConnectedComponent
 public import Mathlib.Order.Interval.Set.OrdConnectedLinear
@@ -6447,6 +6449,7 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.RingTheory.Valuation.Extension
+public import Mathlib.RingTheory.Valuation.FiniteField
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.IntegrallyClosed

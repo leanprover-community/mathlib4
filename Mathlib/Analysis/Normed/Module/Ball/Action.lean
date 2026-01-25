@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.UnitBall
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Multiplicative actions of/on balls and spheres
