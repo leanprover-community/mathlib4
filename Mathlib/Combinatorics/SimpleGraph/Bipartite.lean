@@ -447,7 +447,7 @@ end Between
 
 section
 
-variable {V W₁ W₂ : Type*} (G : SimpleGraph V) {s t : Set V}
+variable {W₁ W₂ : Type*}
 
 theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
 
@@ -484,6 +484,10 @@ theorem IsBipartiteWith.nonempty_embedding_completeBipartiteGraph_edgeSet
       · grind [hG.mem_of_adj <| G.mem_edgeSet.mpr <| Sym2.eq_out x ▸ hx]
       · grind [hG.disjoint, hG.mem_of_adj, edgeSet_eq, Sym2.eq_out]
   · grind [Sym2.eq_out]
+
+end
+
+section
 
 /-- An upper bound on the cardinality of the edge set of a bipartite graph when the vertex sets
 forming it may also be infinite: in that case as well, the upper bound is the product of
