@@ -596,20 +596,6 @@ protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x)
     ContinuousAt f x :=
   hf.hasFDerivAt.continuousAt
 
-theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
-    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
-  ((f'.isBigO_comp_rev _ _).trans
-      (hf.isLittleO.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
-    (fun _ => rfl) fun _ => sub_add_cancel _ _
-
-theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
-    (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
-  have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2 ⟨C, Eventually.of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
-  (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
-    sub_add_cancel _ _
-
 end Continuous
 
 section id
@@ -769,6 +755,20 @@ theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀]
     (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by
   rw [← nhdsWithin_univ] at h
   exact (h.hasFDerivWithinAt (mem_univ _) hn).hasFDerivAt_of_univ
+
+theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
+    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
+    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
+  ((f'.isBigO_comp_rev _ _).trans
+      (hf.isLittleO.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
+    (fun _ => rfl) fun _ => sub_add_cancel _ _
+
+theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
+    (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
+  have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
+    isBigO_iff.2 ⟨C, Eventually.of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
+  (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
+    sub_add_cancel _ _
 
 section MeanValue
 
