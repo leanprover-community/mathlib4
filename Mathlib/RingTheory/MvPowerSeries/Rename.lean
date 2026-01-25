@@ -33,7 +33,8 @@ variable (f : σ ↪ τ)
 
 namespace MvPowerSeries
 
-private def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
+/-- Implementation detail for `rename`. Use `MvPowerSeries.rename` instead. -/
+def renameFun (p : MvPowerSeries σ R) : MvPowerSeries τ R :=
   Function.extend (embDomain f) p 0
 
 private theorem coeff_embDomain_renameFun (p : MvPowerSeries σ R) (x : σ →₀ ℕ) :
@@ -73,6 +74,7 @@ private theorem renameFun_mul (p q : MvPowerSeries σ R) :
   rw [coeff_renameFun_eq_zero_of_notMem_range_embDomain _ _ h', mul_zero]
 
 /-- Rename all the variables in a multivariable power series by an embedding. -/
+@[no_expose]
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R where
   toFun := renameFun f
   map_one' := renameFun_monomial f 0 1
@@ -150,11 +152,12 @@ theorem rename_injective : Function.Injective (rename (R := R) f) := by
   intro _ _ h; ext x
   simpa using MvPowerSeries.ext_iff.mp h (embDomain f x)
 
-private def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
+/-- Implementation detail for `killCompl`. Use `MvPowerSeries.killCompl` instead. -/
+def killComplFun (p : MvPowerSeries τ R) : MvPowerSeries σ R :=
   fun x ↦ coeff (embDomain f x) p
 
 private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
-  coeff x (killComplFun f p) = coeff (embDomain f x) p := rfl
+  coeff x (killComplFun f p) = coeff (embDomain f x) p := by rfl
 
 private theorem killComplFun_monomial_embDomain (x) (r : R) :
     killComplFun f (monomial (embDomain f x) r) = monomial x r := by
@@ -178,6 +181,7 @@ private theorem killComplFun_mul (p q : MvPowerSeries τ R) :
 /-- Given an embedding `f : σ ↪ τ`, `MvPowerSeries.killComplFun f` is the function from
 `R[[τ]]` to `R[[σ]]` that is left inverse to `rename f : R[[σ]] → R[[τ]]` and sends the
 variables in the complement of the range of `f` to `0`. -/
+@[no_expose]
 def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
   toFun := killComplFun f
   map_one' := by simpa using killComplFun_monomial_embDomain f 0 1
@@ -188,7 +192,7 @@ def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R where
 
 @[simp]
 lemma coeff_killCompl (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
-    coeff x (killCompl f p) = coeff (embDomain f x) p := rfl
+    coeff x (killCompl f p) = coeff (embDomain f x) p := by rfl
 
 @[simp]
 lemma killCompl_monomial_embDomain (x) (r : R) :
@@ -235,8 +239,7 @@ theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
   AlgEquiv.ext (by simp)
 
 @[simp]
-theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv R f.symm :=
-  rfl
+theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv R f.symm := by rfl
 
 @[simp]
 theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ α) :
