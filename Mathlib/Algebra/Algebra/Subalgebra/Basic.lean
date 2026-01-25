@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
+public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
@@ -19,6 +20,8 @@ The `Algebra.adjoin` operation and complete lattice structure can be found in
 -/
 
 @[expose] public section
+
+open Module
 
 universe u u' v w w'
 
@@ -330,10 +333,8 @@ theorem mk_algebraMap {S : Subalgebra R A} (r : R) (hr : algebraMap R A r ∈ S)
 
 end
 
-instance noZeroSMulDivisors_bot [NoZeroSMulDivisors R A] : NoZeroSMulDivisors R S :=
-  ⟨fun {c} {x : S} h =>
-    have : c = 0 ∨ (x : A) = 0 := eq_zero_or_eq_zero_of_smul_eq_zero (congr_arg Subtype.val h)
-    this.imp_right (@Subtype.ext_iff _ _ x 0).mpr⟩
+instance instIsTorsionFree [IsTorsionFree R A] : IsTorsionFree R S :=
+  S.toSubmodule.instIsTorsionFree
 
 protected theorem coe_add (x y : S) : (↑(x + y) : A) = ↑x + ↑y := rfl
 
@@ -463,7 +464,7 @@ instance (priority := 75) toAlgebra : Algebra R s where
     map_one' := Subtype.ext <| by simp
     map_mul' _ _ := Subtype.ext <| by simp
     map_zero' := Subtype.ext <| by simp
-    map_add' _ _ := Subtype.ext <| by simp}
+    map_add' _ _ := Subtype.ext <| by simp }
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -794,14 +795,19 @@ instance smulCommClass_right [SMul α β] [SMul A β] [SMulCommClass α A β] (S
   S.toSubsemiring.smulCommClass_right
 
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
-instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β]
-    (S : Subalgebra R A) : IsScalarTower S α β :=
+instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower A α β] :
+    IsScalarTower S α β :=
   inferInstanceAs (IsScalarTower S.toSubsemiring α β)
 
-instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
-    [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
-    IsScalarTower R S' T :=
-  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
+instance (priority := low) isScalarTower_mid [SMul α R] [SMul α A]
+    [IsScalarTower α R A] [SMul A β] [SMul α β] [IsScalarTower α A β] :
+    IsScalarTower α S β :=
+  ⟨fun a b c ↦ smul_assoc a b.1 c⟩
+
+instance (priority := low) isScalarTower_right [SMul α R] [SMul α A] [IsScalarTower α R A]
+    [SMul β R] [SMul β A] [IsScalarTower β R A] [SMul α β] [IsScalarTower α β A] :
+    IsScalarTower α β S :=
+  ⟨fun a b c ↦ Subtype.ext (smul_assoc a b c.1)⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
@@ -866,10 +872,9 @@ lemma setRange_algebraMap {R A : Type*} [CommSemiring R] [CommSemiring A] [Algeb
     (S : Subalgebra R A) : Set.range (algebraMap S A) = (S : Set A) :=
   SetLike.ext'_iff.mp S.rangeS_algebraMap
 
-instance noZeroSMulDivisors_top [NoZeroDivisors A] (S : Subalgebra R A) : NoZeroSMulDivisors S A :=
-  ⟨fun {c} x h =>
-    have : (c : A) = 0 ∨ x = 0 := eq_zero_or_eq_zero_of_mul_eq_zero h
-    this.imp_left (@Subtype.ext_iff _ _ c 0).mpr⟩
+instance instIsTorsionFree' [IsDomain A] (S : Subalgebra R A) : IsTorsionFree S A :=
+  .comap Subtype.val (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero)
+    (by simp [smul_def])
 
 end Actions
 

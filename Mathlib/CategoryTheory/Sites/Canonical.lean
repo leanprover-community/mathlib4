@@ -229,8 +229,6 @@ theorem isSheaf_of_isRepresentable {J : GrothendieckTopology C} [Subcanonical J]
     (P : Cᵒᵖ ⥤ Type v) [P.IsRepresentable] : Presieve.IsSheaf J P :=
   Presieve.isSheaf_of_le _ J.le_canonical (Sheaf.isSheaf_of_isRepresentable P)
 
-variable {J : GrothendieckTopology C}
-
 end Subcanonical
 
 variable (J : GrothendieckTopology C)
@@ -293,10 +291,10 @@ def fullyFaithfulUliftYoneda : (GrothendieckTopology.uliftYoneda.{w} J).FullyFai
   J.yonedaFullyFaithful.comp (fullyFaithfulSheafCompose J fullyFaithfulULiftFunctor)
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Full :=
-    (J.fullyFaithfulUliftYoneda).full
+  (J.fullyFaithfulUliftYoneda).full
 
 instance : (GrothendieckTopology.uliftYoneda.{w} J).Faithful :=
-    (J.fullyFaithfulUliftYoneda).faithful
+  (J.fullyFaithfulUliftYoneda).faithful
 
 end GrothendieckTopology
 

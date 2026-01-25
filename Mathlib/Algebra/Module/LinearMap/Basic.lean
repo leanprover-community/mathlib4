@@ -8,8 +8,7 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -104,8 +103,8 @@ section Module
 
 variable [Semiring S] [Module S M] [Module S M'] [SMulCommClass R' S M']
 
-instance [NoZeroSMulDivisors S M'] : NoZeroSMulDivisors S (M →ₛₗ[σ₁₂] M') :=
-  coe_injective.noZeroSMulDivisors _ rfl coe_smul
+instance [Module.IsTorsionFree S M'] : Module.IsTorsionFree S (M →ₛₗ[σ₁₂] M') :=
+  coe_injective.moduleIsTorsionFree _ coe_smul
 
 instance [SMulCommClass R S M] : Module Sᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   add_smul _ _ _ := ext fun _ ↦ by
@@ -152,8 +151,7 @@ section
 variable (R A)
 
 @[simp]
-theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id :=
-  ext fun _ => one_mul _
+theorem mulLeft_one [SMulCommClass R A A] : mulLeft R (1 : A) = LinearMap.id := ext one_mul
 
 @[simp]
 theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ a = 0 :=
@@ -161,7 +159,7 @@ theorem mulLeft_eq_zero_iff [SMulCommClass R A A] (a : A) : mulLeft R a = 0 ↔ 
 
 @[simp]
 theorem mulRight_one [IsScalarTower R A A] : mulRight R (1 : A) = LinearMap.id :=
-  ext fun _ => mul_one _
+  ext mul_one
 
 @[simp]
 theorem mulRight_eq_zero_iff [IsScalarTower R A A] (a : A) : mulRight R a = 0 ↔ a = 0 :=
