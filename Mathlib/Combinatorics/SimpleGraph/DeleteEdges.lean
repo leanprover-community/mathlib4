@@ -118,7 +118,7 @@ lemma deleteIncidenceSet_le (G : SimpleGraph V) (x : V) : G.deleteIncidenceSet x
 lemma edgeSet_fromEdgeSet_incidenceSet (G : SimpleGraph V) (x : V) :
     (fromEdgeSet (G.incidenceSet x)).edgeSet = G.incidenceSet x := by
   rw [edgeSet_fromEdgeSet, sdiff_eq_left, ← Set.subset_compl_iff_disjoint_right]
-  exact (incidenceSet_subset G x).trans G.edgeSet_subset_setOf_not_isDiag
+  exact (incidenceSet_subset G x).trans G.edgeSet_subset_compl_diagSet
 
 /-- The edge set of `G.deleteIncidenceSet x` is the edge set of `G` set difference the incidence
 set of the vertex `x`. -/
