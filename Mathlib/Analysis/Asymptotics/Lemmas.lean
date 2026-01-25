@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Group.Bounded
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.Analysis.Normed.MulAction
@@ -424,6 +425,30 @@ theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
 theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atBot_atTop
 
+/-! ### Relation between `f = o(g)` and `g / f → ∞` -/
+
+section div_tendsto_infty
+
+variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
+  {l : Filter α} {f g : α → 𝕜}
+
+theorem isLittleO_of_div_tendsto_top (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
+  apply Asymptotics.isLittleO_of_tendsto'
+  · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
+    intro x h h0
+    simp only [h0, zero_div] at h
+    grind
+  · convert Tendsto.comp tendsto_inv_atTop_zero h
+    simp
+
+theorem isLittleO_of_div_tendsto_bot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
+  refine IsLittleO.of_neg_left (isLittleO_of_div_tendsto_top ?_)
+  rw [← tendsto_neg_atBot_iff]
+  convert h using 2
+  simp [div_neg_eq_neg_div]
+
+end div_tendsto_infty
+
 /-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`. -/
 
 section ExistsMulEq
@@ -512,6 +537,17 @@ theorem IsLittleO.tendsto_zero_of_tendsto {u : α → E'} {v : α → 𝕜} {l :
   suffices h : u =o[l] fun _x => (1 : 𝕜) by
     rwa [isLittleO_one_iff] at h
   exact huv.trans_isBigO (hv.isBigO_one 𝕜)
+
+theorem isBigO_of_div_tendsto_nhds_of_ne_zero {α : Type*} {l : Filter α} {f g : α → 𝕜}
+    {c : 𝕜} (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
+    f =O[l] g := by
+  apply Asymptotics.isBigO_of_div_tendsto_nhds (c := c⁻¹)
+  · apply (h.eventually_ne hc).mono
+    intro x hx hg
+    simp [hg] at hx
+  · rw [← tendsto_inv_iff₀]
+    · convert h using 1 <;> simp
+    · simpa
 
 theorem isLittleO_pow_pow {m n : ℕ} (h : m < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x ^ m := by
   rcases lt_iff_exists_add.1 h with ⟨p, hp0 : 0 < p, rfl⟩
