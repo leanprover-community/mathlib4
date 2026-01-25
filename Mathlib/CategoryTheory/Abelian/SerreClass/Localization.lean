@@ -195,8 +195,8 @@ lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
         ← cancel_epi (L.map φ.s), comp_zero,
         MorphismProperty.RightFraction.map_s_comp_map]
       apply this φ.f
-      rw [← show L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f by cat_disch,
-        assoc, assoc, hz, comp_zero, comp_zero]
+      have : L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f := by cat_disch
+      rw [← this, assoc, assoc, hz, comp_zero, comp_zero]
     intro Z z hz
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_comp_monoModSerre_eq_zero_iff P] at hz ⊢
@@ -205,7 +205,30 @@ lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
     Epi (L.map f) ↔ P.epiModSerre f := by
-  sorry
+  have := Localization.essSurj L P.isoModSerre
+  refine ⟨fun _ ↦ ?_, fun hf ↦ ?_⟩
+  · have hf : L.map (cokernel.π f) = 0 := by
+      rw [← cancel_epi (L.map f), comp_zero, ← L.map_comp,
+        cokernel.condition, L.map_zero]
+    simpa [hf] using map_comp_eq_zero_iff_of_epi_mono L P (cokernel.π f) (𝟙 _)
+  · suffices ∀ ⦃Z : C⦄ (z : Y ⟶ Z) (hz : L.map f ≫ L.map z = 0), L.map z = 0 by
+      rw [Preadditive.epi_iff_cancel_zero]
+      intro W z hz
+      obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
+        (z ≫ (L.objObjPreimageIso W).inv)
+      have hs := Localization.inverts L P.isoModSerre φ.s φ.hs
+      rw [← cancel_mono (L.objObjPreimageIso W).inv, zero_comp, hφ,
+        ← cancel_mono (L.map φ.s), zero_comp,
+        MorphismProperty.LeftFraction.map_comp_map_s]
+      apply this φ.f
+      have : L.map φ.f = z ≫ (L.objObjPreimageIso W).inv ≫ L.map φ.s := by
+        simp [reassoc_of% hφ]
+      rw [this, reassoc_of% hz, zero_comp]
+    intro Z z hz
+    rw [← L.map_comp] at hz
+    rw [map_eq_zero_iff L P, ← exists_epiModSerre_comp_eq_zero_iff P] at hz ⊢
+    obtain ⟨W, s, hs, eq⟩ := hz
+    refine ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
 
 lemma preservesMonomorphisms : L.PreservesMonomorphisms where
   preserves f _ := by simpa only [mono_map_iff _ P] using P.monoModSerre_of_mono f
@@ -293,6 +316,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
   have := preservesEpimorphisms L P
+  have := Localization.essSurj L P.isoModSerre
   suffices ∀ (W : D) (z : L.obj Y ⟶ W) (hz : L.map f ≫ z = 0),
       ∃ (l : L.obj (cokernel f) ⟶ W), L.map (cokernel.π  f) ≫ l = z from
     preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f)
@@ -301,7 +325,23 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
           (fun s ↦ existsUnique_of_exists_of_unique
             (this _ _ (CokernelCofork.condition s))
             (fun _ _ h₁ h₂ ↦ by simpa [cancel_epi] using h₁.trans h₂.symm))))
-  sorry
+  intro W w hw
+  wlog hw' : ∃ (Z : C) (hZ : L.obj Z = W) (z : Y ⟶ Z), w = L.map z ≫ eqToHom hZ
+      generalizing W
+  · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
+      (w ≫ (L.objObjPreimageIso W).inv)
+    have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
+    rw [← cancel_mono (L.map φ.s), assoc,
+      MorphismProperty.LeftFraction.map_comp_map_s] at hφ
+    obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
+    exact ⟨l ≫ inv (L.map φ.s) ≫ (L.objObjPreimageIso W).hom, by simp [reassoc_of% hl, ← hφ]⟩
+  obtain ⟨Z, rfl, z, rfl⟩ := hw'
+  simp only [eqToHom_refl, comp_id, ← L.map_comp] at hw
+  rw [map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
+  obtain ⟨Z', t, ht, fac⟩ := hw
+  rw [assoc] at fac
+  have := Localization.inverts L P.isoModSerre t ht
+  exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
 lemma hasKernels : HasKernels D where
   has_limit f := by
