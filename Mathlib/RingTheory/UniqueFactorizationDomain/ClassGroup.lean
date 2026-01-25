@@ -79,8 +79,10 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
   exact mul_mem_mul hb (hTK hc)
 
 /-- In a normalized GCD domain, an integral ideal that is invertible as a fractional ideal
-is principal. -/
-theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
+is principal.
+
+Public API note: see the note for `isPrincipal_fractionalIdeal_of_isUnit` -/
+private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (I : FractionalIdeal R⁰ (FractionRing R))⁻¹
@@ -103,8 +105,12 @@ theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
   · simp [hIK, ha0]
   · simpa [hIK] using (inferInstance : (Ideal.span {a}).IsPrincipal)
 
-/-- In a normalized GCD domain, every invertible fractional ideal is principal. -/
-theorem isPrincipal_fractionalIdeal_of_isUnit
+/-- In a normalized GCD domain, every invertible fractional ideal is principal.
+
+Public API note: for any ring with `[Subsingleton (ClassGroup R)]`, let `I` be a unit fractional
+ideal. Then `ClassGroup.mk I = 1` by subsingleton, and
+`ClassGroup.mk_eq_one_iff` yields `(I : Submodule R (FractionRing R)).IsPrincipal`. -/
+private theorem isPrincipal_fractionalIdeal_of_isUnit
     (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     (I : Submodule R (FractionRing R)).IsPrincipal := by
   let J : Ideal R := (I : FractionalIdeal R⁰ (FractionRing R)).num
