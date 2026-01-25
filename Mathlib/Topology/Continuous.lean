@@ -217,6 +217,14 @@ theorem closure_subset_preimage_closure_image (h : Continuous f) :
     closure s ⊆ f ⁻¹' closure (f '' s) :=
   (mapsTo_image _ _).closure h
 
+theorem image_closure_subset_closure_image_iff_continuous :
+    (∀ s, f '' closure s ⊆ closure (f '' s)) ↔ Continuous f := by
+  refine .trans ⟨fun h F hF ↦ ?_, fun h s ↦ ?_⟩ continuous_iff_isClosed.symm
+  · refine isClosed_of_closure_subset <| image_subset_iff.mp <| subset_trans (h _) ?_
+    exact subset_trans (closure_mono <| image_preimage_subset f F) hF.closure_subset
+  · refine image_subset_iff.mpr <| closure_minimal ?_ (h _ isClosed_closure)
+    exact subset_trans (subset_preimage_image f s) (preimage_mono subset_closure)
+
 theorem map_mem_closure {t : Set Y} (hf : Continuous f)
     (hx : x ∈ closure s) (ht : MapsTo f s t) : f x ∈ closure t :=
   ht.closure hf hx
