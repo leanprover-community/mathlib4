@@ -68,24 +68,20 @@ variable {R R' m n : Type*} [CommSemiring R] [CommRing R'] [Fintype n] [Decidabl
 @[simp] theorem Matrix.toLin'_hadamard_eq_convMul (A B : Matrix m n R) :
     (A ⊙ B).toLin' = A.toLin' * B.toLin' := by simp [← toMatrix'.injective.eq_iff]
 
-/-- A linear map is convolutively idempotent iff its matrix is all `1`s and `0`s. -/
-theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff
-    [IsLeftCancelMulZero R] {f : (n → R) →ₗ[R] m → R} :
-    IsIdempotentElem f ↔ ∀ i j, f.toMatrix' i j = 0 ∨ f.toMatrix' i j = 1 := by
-  simp_rw [IsIdempotentElem, ← toMatrix'.injective.eq_iff]
-  simp [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one]
+theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff {f : (n → R) →ₗ[R] m → R} :
+    IsIdempotentElem f ↔ ∀ i j, IsIdempotentElem (f.toMatrix' i j) := by
+  simp [IsIdempotentElem, ← toMatrix'.injective.eq_iff, hadamard_self_eq_self_iff]
 
-/-- A matrix's linear map is convolutively idempotent iff it is all `1`s and `0`s. -/
-theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff
-    [IsLeftCancelMulZero R] {A : Matrix m n R} :
-    IsIdempotentElem A.toLin' ↔ ∀ i j, A i j = 0 ∨ A i j = 1 := by
+theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n R} :
+    IsIdempotentElem A.toLin' ↔ ∀ i j, IsIdempotentElem (A i j) := by
   simp only [ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin']
 
 variable (K) in
 /-- A simple finite graph is idempotent with respect to the convolutive product. -/
 @[simp] theorem SimpleGraph.convolutionProduct_isIdempotentElem_toLin'_adjMatrix
     [IsLeftCancelMulZero R] : IsIdempotentElem (G.adjMatrix R).toLin' := by
-  grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, adjMatrix_apply]
+  grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, adjMatrix_apply,
+    IsIdempotentElem.iff_eq_zero_or_one]
 
 /-- The matrix of the convolutive unit is all `1`s. -/
 @[simp] theorem LinearMap.toMatrix'_convOne :
@@ -101,42 +97,6 @@ variable (n R') in
     ((completeGraph n).adjMatrix R').toLin' = 1 - .id := by
   simp [← toMatrix'_convOne_sub_id_eq_adjMatrix_completeGraph, -toMatrix'_convOne]
 
-theorem LinearMap.id_convMul_eq_zero_iff_diag_toMatrix'_eq_zero
-    {f : (n → R) →ₗ[R] n → R} : .id * f = 0 ↔ f.toMatrix'.diag = 0 := by
-  simp [← one_hadamard_eq_zero_iff, ← toMatrix'.injective.eq_iff]
-
-theorem LinearMap.convMul_id_eq_zero_iff_diag_toMatrix'_eq_zero
-    {f : (n → R) →ₗ[R] n → R} : f * .id = 0 ↔ f.toMatrix'.diag = 0 := by
-  simp [← hadamard_one_eq_zero_iff, ← toMatrix'.injective.eq_iff]
-
-theorem LinearMap.id_convMul_eq_id_iff_diag_toMatrix'_eq_one
-    {f : (n → R) →ₗ[R] n → R} : .id * f = .id ↔ f.toMatrix'.diag = 1 := by
-  simp [← one_hadamard_eq_one_iff, ← toMatrix'.injective.eq_iff]
-
-theorem LinearMap.convMul_id_eq_id_iff_diag_toMatrix'_eq_one
-    {f : (n → R) →ₗ[R] n → R} : f * .id = .id ↔ f.toMatrix'.diag = 1 := by
-  simp [← hadamard_one_eq_one_iff, ← toMatrix'.injective.eq_iff]
-
-/-- `id * A.toLin' = 0` iff the diagonal of the matrix is all `0`s,
-where `*` is the convolutive product. -/
-theorem Matrix.id_convMul_toLin'_eq_zero_iff {A : Matrix n n R} :
-    .id * A.toLin' = 0 ↔ A.diag = 0 := by
-  simp [id_convMul_eq_zero_iff_diag_toMatrix'_eq_zero]
-
-theorem Matrix.toLin'_convMul_id_eq_zero_iff {A : Matrix n n R} :
-    A.toLin' * .id = 0 ↔ A.diag = 0 := by
-  simp [convMul_id_eq_zero_iff_diag_toMatrix'_eq_zero]
-
-/-- `id * A.toLin' = id` iff the diagonal of `A` is all `1`s,
-where `*` is the convolutive product. -/
-theorem Matrix.id_convMul_toLin'_eq_id_iff {A : Matrix n n R} :
-    .id * A.toLin' = .id ↔ A.diag = 1 := by
-  simp [id_convMul_eq_id_iff_diag_toMatrix'_eq_one]
-
-theorem Matrix.toLin'_convMul_id_eq_id_iff {A : Matrix n n R} :
-    A.toLin' * .id = .id ↔ A.diag = 1 := by
-  simp [convMul_id_eq_id_iff_diag_toMatrix'_eq_one]
-
 variable (R) in
 @[simp] theorem SimpleGraph.id_convMul_toLin'_adjMatrix_eq_zero :
     .id * (G.adjMatrix R).toLin' = 0 := by simp [← toMatrix'.injective.eq_iff]
@@ -151,7 +111,7 @@ theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoin
     [IsLeftCancelMulZero R] [StarRing R]
     {f : (n → R) →ₗ[R] m → R} (hf : IsIdempotentElem f) : IsSelfAdjoint f := by
   classical
-  rw [ConvolutionProduct.isIdempotentElem_iff] at hf
+  simp_rw [ConvolutionProduct.isIdempotentElem_iff, IsIdempotentElem.iff_eq_zero_or_one] at hf
   rw [IsSelfAdjoint, ← toMatrix'.injective.eq_iff]
   ext i j
   obtain (h | h) := hf i j <;> simp_all
@@ -162,13 +122,6 @@ variable (R) in
 @[simp] theorem SimpleGraph.intrinsicStar_isSelfAdjoint_toLin'_adjMatrix [StarRing R] :
     IsSelfAdjoint (G.adjMatrix R).toLin' := by ext; aesop
 
-/-- A matrix is symmetric if the intrinsic star of its linear map is equal to the
-conjugate transpose. -/
-theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n R} [StarRing R] :
-    A.IsSymm ↔ star A.toLin' = (star A).toLin' := by
-  rw [intrinsicStar_toLin', toLin'.injective.eq_iff, ← transpose_conjTranspose,
-    star_eq_conjTranspose, conjTranspose_inj, IsSymm]
-
 /-- A matrix `A` is an adjacency matrix iff its linear map is convolutively
 idempotent, its intrinsic star is equal to the conjugate transpose,
 and its convolutive product with `id` is `0`. -/
@@ -176,7 +129,7 @@ theorem Matrix.isAdjMatrix_iff_toLin' [IsLeftCancelMulZero R] {A : Matrix n n R}
     A.IsAdjMatrix ↔ IsIdempotentElem A.toLin' ∧
       star A.toLin' = (star A).toLin' ∧ .id * A.toLin' = 0 := by
   rw [isAdjMatrix_iff_hadamard, ← isSymm_iff_intrinsicStar_toLin',
-    ConvolutionProduct.isIdempotentElem_iff, id_convMul_toLin'_eq_zero_iff]
+    ConvolutionProduct.isIdempotentElem_iff, ← toMatrix'.injective.eq_iff]
   simp [hadamard_self_eq_self_iff, one_hadamard_eq_zero_iff]
 
 end
