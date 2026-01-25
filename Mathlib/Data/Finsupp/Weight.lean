@@ -267,7 +267,7 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R]
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
 
-open Pointwise in
+open scoped Pointwise in
 lemma smul_range_single_one (σ : Type*) (n : ℕ) :
     n • Set.range (single · 1) = degree (σ := σ) ⁻¹' {n} := by
   induction n with
@@ -278,5 +278,31 @@ lemma smul_range_single_one (σ : Type*) (n : ℕ) :
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
     have := le_iff_exists_add'.mp (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
     aesop
+
+open scoped Pointwise in
+lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
+    ∃ g ≤ f, g.degree = n := by
+  induction n with
+  | zero => simp [degree_eq_zero_iff]
+  | succ n IH =>
+    obtain ⟨g, hgf, rfl⟩ := IH (by lia)
+    obtain ⟨f, rfl⟩ := le_iff_exists_add.mp hgf
+    obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
+    exact ⟨g + .single i 1, add_le_add_right (by simp; grind) _, by simp⟩
+
+open scoped Pointwise in
+lemma degree_preimage_add {σ : Type*} (s t : Set ℕ) :
+    degree (σ := σ) ⁻¹' (s + t) = degree (σ := σ) ⁻¹' s + degree (σ := σ) ⁻¹' t := by
+  refine (Set.preimage_add_preimage_subset ..).antisymm' ?_
+  rintro f ⟨m, hm, n, hn, e : m + n = _⟩
+  obtain ⟨g, hgf, rfl⟩ := exists_le_degree_eq f m (by grind)
+  obtain ⟨f, rfl⟩ := le_iff_exists_add.mp hgf
+  exact Set.add_mem_add hm (by simp_all)
+
+open scoped Pointwise in
+lemma degree_preimage_nsmul {σ : Type*} (s : Set ℕ) (n : ℕ) (hn : n ≠ 0) :
+    degree (σ := σ) ⁻¹' (n • s) = n • degree (σ := σ) ⁻¹' s := by
+  obtain (_ | n) := n; · contradiction
+  induction n <;> simp_all [succ_nsmul, degree_preimage_add]
 
 end Finsupp
