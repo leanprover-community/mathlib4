@@ -67,8 +67,7 @@ def IsNOpposed (F G : Filtration.DecFiltration (C := C) X) (n : ℤ) : Prop :=
 
 /-- Deligne's `n`-opposed condition for **finite** filtrations.
 
-This keeps `IsNOpposed` as the bare vanishing predicate, and bundles Deligne's finiteness
-hypotheses (Deligne 1.2.3) into a single definition.
+This bundles Deligne's finiteness hypotheses (Deligne 1.2.3).
 -/
 def IsNOpposedFinite (F G : Filtration.DecFiltration (C := C) X) (n : ℤ) : Prop :=
   Filtration.DecFiltration.IsFinite (C := C) (X := X) F ∧
