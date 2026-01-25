@@ -570,19 +570,6 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}
 
-/-- Parse a string as a tactic sequence. Adapted from `Mathlib.Tactic.Says`. -/
-private def parseAsTacticSeq (env : Environment) (input : String) :
-    Except String (TSyntax ``Lean.Parser.Tactic.tacticSeq) :=
-  let p := Parser.andthenFn Parser.whitespace Parser.Tactic.tacticSeq.fn
-  let ictx := Parser.mkInputContext input "<suggestion>"
-  let s := p.run ictx { env, options := {} } (Parser.getTokenTable env) (Parser.mkParserState input)
-  if s.hasError then
-    Except.error (s.toErrorMsg ictx)
-  else if s.pos.atEnd input then
-    Except.ok ⟨s.stxStack.back⟩
-  else
-    Except.error ((s.mkError "end of input").toErrorMsg ictx)
-
 /-- Extract TryThis suggestions from InfoTrees without requiring context.
 This is a simpler version of `collectTryThisSuggestions` that works with context-free trees. -/
 private partial def extractSuggestionsFromTrees (trees : PersistentArray Elab.InfoTree) :
@@ -608,7 +595,7 @@ private def parseSuggestionToTactic (s : Lean.Meta.Tactic.TryThis.Suggestion) :
     -- Return the suggestion as-is
     return ⟨stx.raw⟩
   | .string str =>
-    match parseAsTacticSeq (← getEnv) str with
+    match Mathlib.GuardExceptions.parseAsTacticSeq (← getEnv) str with
     | .ok tacSeq =>
       `(tactic| ($tacSeq:tacticSeq))
     | .error err => throwError "Failed to parse suggestion: {str}\n{err}"
