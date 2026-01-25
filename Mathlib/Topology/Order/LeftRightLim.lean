@@ -201,25 +201,54 @@ theorem rightLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     f.leftLim.rightLim a = f.rightLim a :=
   leftLim_rightLim (α := αᵒᵈ) h (h' := h')
 
-
-theorem lim_atTop [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoTopOrder α]
-    {f g : α → β} {b : β} (h : Tendsto f atTop (𝓝 b))
-    (h' : ∀ᶠ x in atTop, MapClusterPt (g x) (𝓝 x) f) :
+theorem tendsto_atTop_of_mapClusterPt
+    [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoTopOrder α] {f g : α → β} {b : β}
+    (h : Tendsto f atTop (𝓝 b)) (h' : ∀ᶠ x in atTop, MapClusterPt (g x) (𝓝 x) f) :
     Tendsto g atTop (𝓝 b) := by
   rcases isEmpty_or_nonempty α with hα | hα
   · simp [filter_eq_bot_of_isEmpty atTop]
   apply (closed_nhds_basis b).tendsto_right_iff.2
   rintro s ⟨s_mem, s_closed⟩
-  have T := h'.and (h s_mem)
-  obtain ⟨u, hu⟩ :  ∃ a, ∀ (b : α), a ≤ b → MapClusterPt (g b) (𝓝 b) f := by
-    simpa [eventually_atTop] using h'
-  filter_upwards [Ioi_mem_atTop u, h s_mem] with a (ha : u < a) h'a
-  have W := hu a ha.le
-  have W := mapClusterPt_iff_frequently.1 (hu a ha.le)
+  obtain ⟨u, hu⟩ : ∃ a, ∀ (b : α), a ≤ b → MapClusterPt (g b) (𝓝 b) f ∧ f b ∈ s := by
+    simpa [eventually_atTop] using h'.and (h s_mem)
+  filter_upwards [Ioi_mem_atTop u] with a (ha : u < a)
+  apply s_closed.mem_of_mapClusterPt (hu a ha.le).1
+  filter_upwards [Ici_mem_nhds ha] with y hy using (hu y hy).2
 
+theorem tendsto_atBot_of_mapClusterPt
+    [TopologicalSpace α] [OrderTopology α] [T3Space β] [NoBotOrder α] {f g : α → β} {b : β}
+    (h : Tendsto f atBot (𝓝 b)) (h' : ∀ᶠ x in atBot, MapClusterPt (g x) (𝓝 x) f) :
+    Tendsto g atBot (𝓝 b) :=
+  tendsto_atTop_of_mapClusterPt (α := αᵒᵈ) h h'
 
+theorem tendsto_leftLim_atTop_of_tendsto
+    [TopologicalSpace α] [OrderTopology α] [NoTopOrder α] [T3Space β]
+    {f : α → β} {b : β} (h : Tendsto f atTop (𝓝 b)) :
+    Tendsto f.leftLim atTop (𝓝 b) := by
+  apply tendsto_atTop_of_mapClusterPt h (Eventually.of_forall (fun x ↦ ?_))
+  exact MapClusterPt.mono (mapClusterPt_leftLim _ _) nhdsWithin_le_nhds
 
-#exit
+theorem tendsto_rightLim_atTop_of_tendsto [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {b : β} (h : Tendsto f atTop (𝓝 b)) :
+    Tendsto f.rightLim atTop (𝓝 b) := by
+  cases topOrderOrNoTopOrder α
+  · simp only [OrderTop.atTop_eq α] at h ⊢
+    have : f.rightLim ⊤ = f ⊤ := rightLim_eq_of_isTop isTop_top
+    rw [tendsto_nhds_unique h (tendsto_pure_nhds f ⊤), ← this]
+    apply tendsto_pure_nhds
+  · apply tendsto_atTop_of_mapClusterPt h (Eventually.of_forall (fun x ↦ ?_))
+    exact MapClusterPt.mono (mapClusterPt_rightLim _ _) nhdsWithin_le_nhds
+
+theorem tendsto_rightLim_atBot_of_tendsto
+    [TopologicalSpace α] [OrderTopology α] [NoBotOrder α] [T3Space β]
+    {f : α → β} {b : β} (h : Tendsto f atBot (𝓝 b)) :
+    Tendsto f.rightLim atBot (𝓝 b) :=
+  tendsto_leftLim_atTop_of_tendsto (α := αᵒᵈ) h
+
+theorem tendsto_leftLim_atBot_of_tendsto [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {b : β} (h : Tendsto f atBot (𝓝 b)) :
+    Tendsto f.leftLim atBot (𝓝 b) :=
+  tendsto_rightLim_atTop_of_tendsto (α := αᵒᵈ) h
 
 end
 
