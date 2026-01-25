@@ -9,10 +9,10 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
+import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Basic theory of heights

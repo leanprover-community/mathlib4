@@ -15,7 +15,6 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Set.Finite.Lattice
 
 import Mathlib.Algebra.Module.End
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
 /-!
