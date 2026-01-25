@@ -78,6 +78,11 @@ theorem psi_nonneg (x : ℝ) : 0 ≤ ψ x :=
 theorem theta_nonneg (x : ℝ) : 0 ≤ θ x :=
   sum_nonneg fun n hn ↦ log_nonneg (by aesop)
 
+theorem theta_pos {x : ℝ} (hy : 2 ≤ x) : 0 < θ x := by
+  refine sum_pos (fun n hn ↦ log_pos ?_) ⟨2, ?_⟩
+  · simp only [mem_filter] at hn; exact_mod_cast hn.2.one_lt
+  · simpa using ⟨(le_floor_iff (by grind : 0 ≤ x)).2 hy, Nat.prime_two⟩
+
 theorem psi_eq_sum_Icc (x : ℝ) :
     ψ x = ∑ n ∈ Icc 0 ⌊x⌋₊, Λ n := by
   rw [psi, ← add_sum_Ioc_eq_sum_Icc] <;> simp
@@ -365,9 +370,9 @@ private theorem integral_one_div_log_sq_le_explicit {x : ℝ} (hx : 4 ≤ x) :
 -- Somewhat arbitrary bound which we use to estimate the second term.
 private theorem sqrt_isLittleO :
     Real.sqrt =o[atTop] (fun x ↦ x / log x ^ 2) := by
-  apply isLittleO_mul_iff_isLittleO_div _|>.mp
+  apply isLittleO_mul_iff_isLittleO_div _ |>.mp
   · conv => arg 2; ext; rw [mul_comm]
-    apply isLittleO_mul_iff_isLittleO_div _|>.mpr
+    apply isLittleO_mul_iff_isLittleO_div _ |>.mpr
     · simp_rw [div_sqrt, sqrt_eq_rpow, ← rpow_two]
       apply isLittleO_log_rpow_rpow_atTop _ (by norm_num)
     filter_upwards [eventually_gt_atTop 0] with x hx using sqrt_ne_zero'.mpr hx
@@ -376,7 +381,7 @@ private theorem sqrt_isLittleO :
 
 theorem integral_one_div_log_sq_isBigO :
     (fun x ↦ ∫ t in 2..x, 1 / log t ^ 2) =O[atTop] (fun x ↦ x / log x ^ 2) := by
-  trans (fun x ↦  4 * x / log x ^ 2 + √x / log 2 ^ 2)
+  trans (fun x ↦ 4 * x / log x ^ 2 + √x / log 2 ^ 2)
   · apply IsBigO.of_bound'
     filter_upwards [eventually_ge_atTop 4] with x hx
     apply le_trans <| intervalIntegral.abs_integral_le_integral_abs (by linarith)
