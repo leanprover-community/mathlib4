@@ -7,10 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # Module structure on monoid algebras
@@ -65,6 +64,20 @@ instance instIsTorsionFree [Semiring R] [Semiring k] [Module R k] [Module.IsTors
 instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonempty G] :
     FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
+
+/-- A basis of a monoid algebra by singles. -/
+@[to_additive /-- A basis of an additive monoid algebra by singles. -/]
+def basis (k R) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) :=
+  Module.Basis.ofRepr ((LinearEquiv.refl k (R →₀ k)))
+
+@[simp]
+lemma basis_apply (k) [Semiring k] (r : R) : basis k R r = MonoidAlgebra.single r (1 : k) := by
+  rfl
+
+@[simp]
+lemma _root_.AddMonoidAlgebra.basis_apply (k) [Semiring k] (r : R) :
+    AddMonoidAlgebra.basis k R r = AddMonoidAlgebra.single r (1 : k) := by
+  rfl
 
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 

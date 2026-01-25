@@ -28,11 +28,11 @@ representation of `L[z] ⊕ C` along the homomorphism `z ↦ 0` together with a 
 inducing to the central extension of the loop algebra.
 
 We implement the basic theory using `AddMonoidAlgebra` instead of `LaurentPolynomial` for
-flexibility. The classical loop algebra is then written `LoopAlgebra R ℤ L`.
+flexibility. The classical loop algebra is then written `loopAlgebra R ℤ L`.
 
 ## Main definitions
-* `LieAlgebra.LoopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
-* `LieAlgebra.LoopAlgebra.twoCochain_of_Bilinear`: The 2-cochain for a loop algebra with trivial
+* `LieAlgebra.loopAlgebra`: The tensor product of a Lie algebra with an `AddMonoidAlgebra`.
+* `LieAlgebra.loopAlgebra.twoCochain_of_Bilinear`: The 2-cochain for a loop algebra with trivial
   coefficients attached to a symmetric bilinear form on the base Lie algebra.
 ## TODO
 * Evaluation representations
@@ -58,23 +58,12 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
  -- [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 /-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`. -/
-abbrev LoopAlgebra := AddMonoidAlgebra R A ⊗[R] L
+abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
-namespace LoopAlgebra
-
-instance instLoopLieRing [AddCommMonoid A] : LieRing (LoopAlgebra R A L) :=
-  ExtendScalars.instLieRing R (AddMonoidAlgebra R A) L
-
-instance instLoopLaurentLieAlgebra [AddCommMonoid A] :
-    LieAlgebra (AddMonoidAlgebra R A) (LoopAlgebra R A L) :=
-  ExtendScalars.instLieAlgebra R (AddMonoidAlgebra R A) L
-
-instance instLieModule [AddCommMonoid A] :
-    LieModule (AddMonoidAlgebra R A) (LoopAlgebra R A L) (LoopAlgebra R A L) :=
-  lieAlgebraSelfModule (L := LoopAlgebra R A L)
+namespace loopAlgebra
 
 /-- The linear map taking `x` to `T ^ n ⊗ x`. -/
-def monomial {A} (a : A) : L →ₗ[R] LoopAlgebra R A L :=
+def monomial {A} (a : A) : L →ₗ[R] loopAlgebra R A L :=
   TensorProduct.mk R (AddMonoidAlgebra R A) L (AddMonoidAlgebra.single a (1 : R))
 
 @[simp]
@@ -85,25 +74,16 @@ lemma addEquiv_monomial (a : A) (x : L) :
 lemma monomial_smul (r : R) (a : A) (x : L) : monomial R L a (r • x) = r • (monomial R L a x) :=
   LinearMap.map_smul (monomial R L a) r x
 
-/-- A basis of Laurent polynomials. -/
-@[simps]
-def basisMonomials : Module.Basis A R (AddMonoidAlgebra R A) :=
-  Module.Basis.ofRepr ((LinearEquiv.refl R (A →₀ R)))
---#find_home! basisMonomials --here. Move to Algebra.Polynomial.Laurent?
-
-lemma basisMonomials_eq (a : A) : basisMonomials R A a = AddMonoidAlgebra.single a (1 : R) := by
-  rfl
-
 open Classical in
 /-- A linear isomorphism to finitely supported functions. -/
-def toFinsupp : LoopAlgebra R A L ≃ₗ[R] A →₀ L :=
-  TensorProduct.equivFinsuppOfBasisLeft (basisMonomials R A)
+def toFinsupp : loopAlgebra R A L ≃ₗ[R] A →₀ L :=
+  TensorProduct.equivFinsuppOfBasisLeft (AddMonoidAlgebra.basis R A)
 
 @[simp]
 lemma toFinsupp_symm_single (a : A) :
     (toFinsupp R A L).symm ∘ (Finsupp.single a) = monomial R L a := by
   ext x
-  simp [toFinsupp, basisMonomials_eq]
+  simp [toFinsupp]
 
 @[simp]
 lemma toFinsupp_comp_monomial (a : A) : toFinsupp R A L ∘ (monomial R L a) = Finsupp.single a := by
@@ -271,7 +251,7 @@ lemma finsuppLieRing_bracket_apply [AddCommMonoid A] (x y : A →₀ L) :
     ⁅x, y⁆ = toFinsupp R A L ⁅(toFinsupp R A L).symm x, (toFinsupp R A L).symm y⁆ :=
   rfl
 
-lemma bracketHom [AddCommMonoid A] (x y : LoopAlgebra R A L) :
+lemma bracketHom [AddCommMonoid A] (x y : loopAlgebra R A L) :
     letI := finsuppLieRing R A L
     ⁅toFinsupp R A L x, toFinsupp R A L y⁆ = toFinsupp R A L ⁅x, y⁆ := by
   simp
@@ -308,7 +288,7 @@ def finsuppRestrictLieAlgebra [AddCommMonoid A] :
 /-!
 /-- The evaluation representation, given by composing a representation with the evaluation map
 `L[z,z^{-1}] → L` attached to a unit in `R`. -/
---define eval (x : Units R) : (LoopAlgebra R L) →ₗ⁅R⁆ L where
+--define eval (x : Units R) : (loopAlgebra R L) →ₗ⁅R⁆ L where
   toFun l := sorry
   map_add' := sorry
   map_smul' := sorry
@@ -367,10 +347,10 @@ def residuePairingFinsupp [AddCommGroup A] [DistribSMul A R] [SMulCommClass A R 
 follows from the fact that Res f df = 0 -/
 def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ) :
-    LieModule.Cohomology.twoCochain R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
+    LieModule.Cohomology.twoCochain R (loopAlgebra R A L)
+      (TrivialLieModule R (loopAlgebra R A L) R) where
   val := (((residuePairingFinsupp R A L Φ).compr₂
-    ((TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm.toLinearMap)).compl₂
+    ((TrivialLieModule.equiv R (loopAlgebra R A L) R).symm.toLinearMap)).compl₂
     (toFinsupp R A L).toLinearMap).comp (toFinsupp R A L).toLinearMap
   property := by
     simp only [LieModule.Cohomology.mem_twoCochain_iff]
@@ -387,9 +367,9 @@ def twoCochainOfBilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
 @[simp]
 lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.IsSymm Φ)
-    (x y : LoopAlgebra R A L) :
+    (x y : loopAlgebra R A L) :
     twoCochainOfBilinear R A L Φ hΦ x y =
-      (TrivialLieModule.equiv R (LoopAlgebra R A L) R).symm
+      (TrivialLieModule.equiv R (loopAlgebra R A L) R).symm
         ((residuePairingFinsupp R A L Φ) (toFinsupp R A L x) (toFinsupp R A L y)) :=
   rfl
 
@@ -398,12 +378,12 @@ lemma twoCochainOfBilinear_apply_apply [CommRing A] [IsAddTorsionFree R] [Algebr
 def twoCocycle_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) :
-    LieModule.Cohomology.twoCocycle R (LoopAlgebra R A L)
-      (TrivialLieModule R (LoopAlgebra R A L) R) where
+    LieModule.Cohomology.twoCocycle R (loopAlgebra R A L)
+      (TrivialLieModule R (loopAlgebra R A L) R) where
   val := twoCochainOfBilinear R A L Φ hΦs
   property := by
-    refine (LieModule.Cohomology.mem_twoCocycle_iff R (LoopAlgebra R A L)
-            (TrivialLieModule R (LoopAlgebra R A L) R) (twoCochainOfBilinear R A L Φ hΦs)).mpr ?_
+    refine (LieModule.Cohomology.mem_twoCocycle_iff R (loopAlgebra R A L)
+            (TrivialLieModule R (loopAlgebra R A L) R) (twoCochainOfBilinear R A L Φ hΦs)).mpr ?_
     ext a x b y c z
     simp only [LinearMap.coe_comp, Function.comp_apply, AddMonoidAlgebra.lsingle_apply,
       TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
@@ -446,7 +426,7 @@ local instance {R : Type*} [CommRing R] :
 def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
     (hΦs : LinearMap.BilinForm.IsSymm Φ) :
-    LieAlgebra.Extension R (TrivialLieModule R (LoopAlgebra R A L) R) (LoopAlgebra R A L) :=
+    LieAlgebra.Extension R (TrivialLieModule R (loopAlgebra R A L) R) (loopAlgebra R A L) :=
   Extension.ofTwoCocycle (twoCocycle_of_Bilinear R A L Φ hΦ hΦs)
 
 -- define central extensions given by invariant bilinear forms
@@ -457,6 +437,6 @@ def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
 
 end CentralExt
 
-end LoopAlgebra
+end loopAlgebra
 
 end LieAlgebra
