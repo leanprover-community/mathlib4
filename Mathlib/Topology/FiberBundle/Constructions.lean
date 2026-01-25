@@ -306,7 +306,7 @@ variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass
 noncomputable def Bundle.Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
   toFun z := (z.proj, (e (Pullback.lift f z)).2)
-  invFun y := @TotalSpace.mk _ F (f *ᵖ E) y.1 (e.symm (f y.1) y.2)
+  invFun y := TotalSpace.mk' F y.1 (e.symm (f y.1) y.2)
   source := Pullback.lift f ⁻¹' e.source
   baseSet := f ⁻¹' e.baseSet
   target := (f ⁻¹' e.baseSet) ×ˢ univ
