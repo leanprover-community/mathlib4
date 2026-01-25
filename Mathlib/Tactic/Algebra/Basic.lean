@@ -1025,9 +1025,7 @@ def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) : Common.RingCom
     let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv sR (Ring.ringCompute sR) rcℕ fR czR vr
     return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
   derive x := do
-    Lean.logInfo m!"Algebra: Deriving {x}"
     let res ← derive x
-    Lean.logInfo m!"Algebra: successfully derived {x}"
     return ← evalCast sAlg cR cA res
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
@@ -1211,8 +1209,6 @@ where
     profileitM Exception "algebra" (← getOptions) do
       let ⟨a, va, pa⟩ ← Common.eval (fun _ _ => Ring.ringCompute) rcℕ (ringCompute sAlg cR cA) cA.toCache e₁
       let ⟨b, vb, pb⟩ ← Common.eval (fun _ _ => Ring.ringCompute) rcℕ (ringCompute sAlg cR cA) cA.toCache e₂
-      -- logInfo s!"LHS = {Common.ExSum.toString _ va}"
-      -- logInfo s!"RHS = {vb.toString}"
       unless va.eq rcℕ (ringCompute sAlg cR cA) vb do
         -- let _ := va.eq vb
         let g ← mkFreshExprMVar (← (← Ring.ringCleanupRef.get) q($a = $b))

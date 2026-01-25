@@ -431,9 +431,7 @@ def ringCompute :
       return some ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
     | none => return none
   derive x := do
-    Lean.logInfo m!"Ring: Deriving {x}"
     let res ← NormNum.derive x
-    Lean.logInfo m!"Ring: successfully derived {x}"
     let ⟨_, va, pa⟩ ← evalCast sα res
     return ⟨_, va, q($pa)⟩
   eq zx zy := zx.value == zy.value
