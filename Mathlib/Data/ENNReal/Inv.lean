@@ -330,7 +330,7 @@ theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_in
 
 @[simp] theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]
 
-@[simp] theorem top_div_coe : ∞ / p = ∞ := top_div_of_ne_top coe_ne_top
+theorem top_div_coe : ∞ / p = ∞ := top_div_of_ne_top coe_ne_top
 
 @[simp] theorem top_div_of_lt_top (h : a < ∞) : ∞ / a = ∞ := top_div_of_ne_top h.ne
 
