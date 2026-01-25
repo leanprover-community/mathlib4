@@ -4230,6 +4230,7 @@ public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Inversion.Calculus
 public import Mathlib.Geometry.Euclidean.Inversion.ImageHyperplane
 public import Mathlib.Geometry.Euclidean.MongePoint
+public import Mathlib.Geometry.Euclidean.NinePointCircle
 public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.SignedDist
