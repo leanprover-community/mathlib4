@@ -212,6 +212,8 @@ lemma agm_zero_left : agm 0 y = 0 := by
 lemma agm_zero_right : agm x 0 = 0 := by
   rw [agm_comm, agm_zero_left]
 
+lemma agm_pos (hx : 0 < x) (hy : 0 < y) : 0 < agm x y := (lt_min hx hy).trans_le min_le_agm
+
 lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
     agm x y = agm (agmSequences x y n).1 (agmSequences x y n).2 := by
   refine tendsto_nhds_unique ?_ tendsto_agmSequences_snd_agm
