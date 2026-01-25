@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.Analysis.RCLike.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-!
@@ -188,8 +189,8 @@ theorem toLinearMap₂'_zero_iff [DecidableEq n]
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
-    (CFC.sqrt A).det = √(RCLike.re A.det) := by
-  rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.isHermitian.cfc_eq]
+    (CFC.sqrt A).det = RCLike.sqrt A.det := by
+  rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
   simp only [IsHermitian.cfc, Real.coe_sqrt, Real.coe_toNNReal', det_map, det_diagonal,
     Function.comp_apply, hA.isHermitian.det_eq_prod_eigenvalues, ← RCLike.ofReal_prod,
     RCLike.ofReal_re, Real.sqrt_prod _ fun _ _ ↦ hA.eigenvalues_nonneg _]

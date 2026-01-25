@@ -11,7 +11,6 @@ public import Mathlib.Data.Fintype.Lattice
 public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Ideal.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 public import Mathlib.Tactic.Order
 
@@ -827,6 +826,7 @@ theorem IsRadical.radical_le_iff (hJ : J.IsRadical) : I.radical ≤ J ↔ I ≤ 
 theorem radical_le_radical_iff : radical I ≤ radical J ↔ I ≤ radical J :=
   (radical_isRadical J).radical_le_iff
 
+@[simp]
 theorem radical_eq_top : radical I = ⊤ ↔ I = ⊤ :=
   ⟨fun h =>
     (eq_top_iff_one _).2 <|
@@ -1014,6 +1014,10 @@ theorem IsPrime.prod_mem_iff_exists_mem {I : Ideal R} (hI : I.IsPrime) (s : Fins
 theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp : IsPrime P) :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
+
+theorem eq_inf_of_isPrime_inf {s : Finset ι} {f : ι → Ideal R} (hp : IsPrime (s.inf f)) :
+    ∃ i ∈ s, f i = s.inf f :=
+  (hp.inf_le'.mp le_rfl).imp (fun _ ⟨h1, h2⟩ ↦ ⟨h1, le_antisymm h2 (Finset.inf_le h1)⟩)
 
 theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
     (hx : x ∈ I) : y ∉ I := fun hy ↦
