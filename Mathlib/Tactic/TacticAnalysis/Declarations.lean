@@ -570,23 +570,6 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}
 
-/-- Extract TryThis suggestions from InfoTrees without requiring context.
-This is a simpler version of `collectTryThisSuggestions` that works with context-free trees. -/
-private partial def extractSuggestionsFromTrees (trees : PersistentArray Elab.InfoTree) :
-    List Lean.Meta.Tactic.TryThis.Suggestion :=
-  let rec go : Elab.InfoTree → List Lean.Meta.Tactic.TryThis.Suggestion
-  | .context _ t => go t
-  | .node i children =>
-    let fromThis := match i with
-      | .ofCustomInfo ci =>
-        match ci.value.get? Lean.Meta.Tactic.TryThis.TryThisInfo with
-        | some tti => [tti.suggestion]
-        | none => []
-      | _ => []
-    fromThis ++ children.toList.flatMap go
-  | .hole _ => []
-  trees.toList.flatMap go
-
 /-- Convert a TryThis suggestion to tactic syntax for verification. -/
 private def parseSuggestionToTactic (s : Lean.Meta.Tactic.TryThis.Suggestion) :
     CommandElabM (TSyntax `tactic) := do
@@ -634,8 +617,8 @@ def Mathlib.TacticAnalysis.verifyTryThisSuggestions
           -- Only verify if tactic succeeded (closed goal)
           if !goalsAfter.isEmpty then continue
 
-          -- Extract suggestions from InfoTree (manually traverse to avoid context requirements)
-          let suggestions := extractSuggestionsFromTrees trees
+          -- Extract suggestions from InfoTree
+          let suggestions := Elab.collectTryThisSuggestions trees
           for s in suggestions do
             -- Parse suggestion to syntax
             let suggestedTac ← try
