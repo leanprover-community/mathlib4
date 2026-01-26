@@ -811,7 +811,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
     have G (n : ℕ) := hs.coarserPartition (g n) (sg n)
     refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise (G n)
       (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
-    · measurability
+    · exact .biUnion (to_countable _) fun _ _ ↦ hm _
     simp only [SimpleFunc.indexedPartitionPiecewise, SimpleFunc.coe_mk,
         IndexedPartition.piecewise_apply]
       have : ∀ᶠ n in atTop, e ((G n).index x) = hs.index x := by
