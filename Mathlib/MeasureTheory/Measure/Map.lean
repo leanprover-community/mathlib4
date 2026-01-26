@@ -131,15 +131,15 @@ protected theorem map_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ�
   rcases eq_or_ne c 0 with (rfl | hc); · simp
   by_cases hf : AEMeasurable f μ
   · have hfc : AEMeasurable f (c • μ) :=
-      ⟨hf.mk f, hf.measurable_mk, (ae_smul_measure_iff hc).2 hf.ae_eq_mk⟩
+      ⟨hf.mk f, hf.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 hf.ae_eq_mk⟩
     simp only [← mapₗ_mk_apply_of_aemeasurable hf, ← mapₗ_mk_apply_of_aemeasurable hfc, map_smulₛₗ,
       RingHom.id_apply]
     congr 1
     apply mapₗ_congr hfc.measurable_mk hf.measurable_mk
-    exact EventuallyEq.trans ((ae_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
+    exact .trans ((ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk.symm) hf.ae_eq_mk
   · have hfc : ¬AEMeasurable f (c • μ) := by
       intro hfc
-      exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
+      exact hf ⟨hfc.mk f, hfc.measurable_mk, (ae_ennreal_smul_measure_iff hc).1 hfc.ae_eq_mk⟩
     simp [map_of_not_aemeasurable hf, map_of_not_aemeasurable hfc]
 
 variable {f : α → β}

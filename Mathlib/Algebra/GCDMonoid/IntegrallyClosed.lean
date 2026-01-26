@@ -20,7 +20,7 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 open scoped Polynomial
 
-variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLocalization M A]
     (z : A) : ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
