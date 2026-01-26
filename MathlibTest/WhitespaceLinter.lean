@@ -1094,7 +1094,7 @@ structure D where
 
 -- This also applies to consecutive declarations.
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: remove space in the source
 
@@ -1112,7 +1112,7 @@ instance   {R} : Add R := sorry
 -- TODO: right now, defining a second private `Add` instance causes an error
 -- Once the fix for lean4#11385 lands in mathlib; revert this to an `Add` instance
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: remove space in the source
 

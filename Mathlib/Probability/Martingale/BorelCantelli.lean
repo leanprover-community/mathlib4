@@ -55,7 +55,7 @@ noncomputable def leastGE (f : ℕ → Ω → ℝ) (r : ℝ) : Ω → ℕ∞ :=
 
 theorem StronglyAdapted.isStoppingTime_leastGE (r : ℝ) (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (leastGE f r) :=
-  hittingAfter_isStoppingTime hf measurableSet_Ici
+  hf.adapted.isStoppingTime_hittingAfter measurableSet_Ici
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
