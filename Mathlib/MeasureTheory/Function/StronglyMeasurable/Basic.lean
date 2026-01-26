@@ -823,7 +823,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
         have : ∃ m < b, hs.index x = e m := ⟨y, ⟨this, hy.symm⟩⟩
         simpa [g, hs.mem_iff_index_eq, this] using e.injective (hy.trans this.choose_spec.2).symm
       have : ∀ᶠ n in atTop, (hf (hs.index x)).approx n x = (hf (e ((G n).index x))).approx n x := by
-        filter_upwards [this] with n hn; congr; exact hn.symm
+        filter_upwards [this] with n hn using by rw [hn]
       exact (Filter.tendsto_congr' this).mp (by simp [StronglyMeasurable.tendsto_approx])
 
 @[fun_prop]
