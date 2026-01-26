@@ -401,7 +401,7 @@ theorem projectiveSeminorm_dual_characterization (x : ⨂[𝕜] i, E i) : IsGrea
   simpa
 
 open NormedSpace in
-/-- If `x` imbeds isometrically into the bidual, to projective seminorm is equal
+/-- If `x` imbeds isometrically into the bidual, the projective seminorm is equal
 to the operator norm `‖toDualContinuousMultilinearMapL 𝕜 x‖`. -/
 theorem projectiveSeminorm_of_bidual_iso (x : ⨂[𝕜] i, E i)
     (h_iso : ‖inclusionInDoubleDual 𝕜 _ x‖ = ‖x‖) :
