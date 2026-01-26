@@ -164,7 +164,7 @@ theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
   by_cases hm : mΩ ≤ mΩ₀
   · by_cases hσ : SigmaFinite (P.trim hm)
     · refine eq_condLExp_ae _ _ _ (measurable_condLExp _ _ _) (fun s hs ↦ ?_)
-      repeat rw [setLIntegral_condLExp _ _ _ hs]
+     rw [setLIntegral_condLExp _ _ _ hs]
       apply setLIntegral_congr_fun_ae (hm s hs)
       filter_upwards [hXY] using (fun _ h _ ↦ h)
     simp [condLExp_of_not_sigmaFinite hm hσ]
