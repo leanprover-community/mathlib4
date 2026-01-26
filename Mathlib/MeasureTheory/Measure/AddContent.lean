@@ -289,24 +289,15 @@ lemma AddContent.onIocAux_apply {f : α → G} {u v : α} (h : u ≤ v) :
   set v' := h'.choose.2
   have hu'v' : u' ≤ v' ∧ Ioc u v = Ioc u' v' := h'.choose_spec
   rcases h.eq_or_lt with rfl | huv
-  · simp only [lt_self_iff_false, not_false_eq_true, Set.Ioc_eq_empty] at hu'v'
-    have : ¬ u' < v' := Set.Ioc_eq_empty_iff.1 hu'v'.2.symm
-    have : u' = v' := by order
-    simp [this]
-  have : ¬(Set.Ioc u v = ∅) := by simp [Set.Ioc_eq_empty_iff, huv]
-  rw [hu'v'.2, Set.Ioc_eq_empty_iff, not_not] at this
-  have I1 : v ≤ v' ∧ u' ≤ u := (Ioc_subset_Ioc_iff huv).1 hu'v'.2.subset
-  have I2 : v' ≤ v ∧ u ≤ u' := (Ioc_subset_Ioc_iff this).1 hu'v'.2.symm.subset
+  · grind [Set.Ioc_eq_empty_iff]
+  rw [Set.Ioc_eq_Ioc_iff huv] at hu'v'
   grind
 
 lemma AddContent.onIocAux_empty (f : α → G) :
     AddContent.onIocAux f ∅ = 0 := by
-  rcases isEmpty_or_nonempty α with hα | hα
-  · simp [onIocAux]
-  inhabit α
-  have : Ioc (default : α) default = ∅ := by simp
-  rw [← this, AddContent.onIocAux_apply le_rfl]
-  simp
+  classical
+  rw [onIocAux, dite_eq_right_iff]
+  grind [Set.Ioc_eq_empty_iff]
 
 /-- The additive content on the set of open-closed intervals, associating to an interval `Ioc u v`
 the difference `f v - f u`. -/
@@ -328,39 +319,25 @@ noncomputable def AddContent.onIoc (f : α → G) :
     induction hn : Finset.card I generalizing I with
     | zero =>
       have : I = ∅ := by grind
-      simp [this, AddContent.onIocAux_empty f]
+      simp [this, onIocAux_empty f]
     | succ n ih =>
       rcases h''I with ⟨u, v, huv, h'uv⟩
       -- If the interval `(u, v]` is empty, i.e., `u = v`, then the result is easy.
       rcases huv.eq_or_lt with rfl | huv
-      · rw [h'uv]
-        simp only [lt_self_iff_false, not_false_eq_true, Set.Ioc_eq_empty, sUnion_eq_empty,
-          SetLike.mem_coe] at h'uv
-        have : onIocAux f (Set.Ioc u u) =  ∑ u ∈ I, 0 := by simp [onIocAux_empty f]
-        rw [this]
-        apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-        simp [h'uv i hi, onIocAux_empty]
+      · have : onIocAux f (Set.Ioc u u) = ∑ u ∈ I, 0 := by simp [onIocAux_empty f]
+        rw [h'uv, this]
+        apply Finset.sum_congr rfl fun i hi ↦ ?_
+        have : i = ∅ := by grind [sUnion_eq_empty]
+        grind [onIocAux_empty]
       -- otherwise, `v` is in `(u, v]`, therefore it belongs to some interval `(u', v']`
       -- featuring in the union.
       have : v ∈ ⋃₀ ↑I := by simp [h'uv, huv]
       obtain ⟨t, tI, ht⟩ : ∃ t ∈ I, v ∈ t := by simpa using this
       rcases hI tI with ⟨u', v', hu'v', rfl⟩
-      -- we have `v' = v` since `(u', v']` is part of the union, and therefore
+      -- we have `u ≤ u'` and `v' = v` since `(u', v']` is part of the union, and therefore
       -- contained in `(u, v]`.
-      have : v = v' := by
-        apply le_antisymm ht.2
-        suffices v' ∈ Ioc u v from this.2
-        rw [← h'uv]
-        simp only [mem_sUnion, SetLike.mem_coe]
-        exact ⟨_, tI, ht.1.trans_le ht.2, le_rfl⟩
-      subst this
-      -- also `u ≤ u'` for the same reason.
-      have uu' : u ≤ u' := by
-        by_contra! hu'u
-        have : u ∈ Set.Ioc u v := by
-          simp only [← h'uv, mem_sUnion, SetLike.mem_coe]
-          exact ⟨_, tI, hu'u, huv.le⟩
-        simp at this
+      have ⟨_, uu'⟩ : v' ≤ v ∧ u ≤ u' := (Ioc_subset_Ioc_iff (by grind)).1 (by grind)
+      obtain rfl : v = v' := by grind
       rw [h'uv, onIocAux_apply huv.le]
       -- let us remove the right-most interval `(u', v]` from the union, and let `I'` be the
       -- remaining set of intervals.
@@ -368,24 +345,17 @@ noncomputable def AddContent.onIoc (f : α → G) :
       have I'I : I' ⊆ I := erase_subset (Set.Ioc u' v) I
       have I_eq_insert : I = insert (Set.Ioc u' v) I' := by simp [I', tI]
       -- the intervals in `I'` cover exactly `(u, u']`.
-      have UI' : ⋃₀ ↑I' = Set.Ioc u u' := by
+      have UI' : ⋃₀ ↑I' = Ioc u u' := by
+        have : (Ioc u' v ∪ ⋃₀ ↑I') \ Ioc u' v = ⋃₀ ↑I' := by
+          refine Disjoint.sup_sdiff_cancel_left ?_
+          simp only [coe_erase, disjoint_sUnion_right, mem_diff, mem_singleton_iff, and_imp, I']
+          intro u hu hu'
+          exact (h'I hu tI hu').symm
         simp only [I_eq_insert, coe_insert, sUnion_insert] at h'uv
-        have : (Set.Ioc u' v ∪ ⋃₀ ↑I') \ Ioc u' v = ⋃₀ ↑I' := by
-          refine union_diff_cancel_left ?_
-          rintro x ⟨hx, h'x⟩
-          obtain ⟨s, sI', hxs⟩ : ∃ s ∈ I', x ∈ s := by simpa using h'x
-          simp only [mem_erase, ne_eq, I'] at sI'
-          have := h'I sI'.2 tI sI'.1
-          grind
-        rw [h'uv] at this
-        rw [← this]
         grind
       -- by the inductive assumption, the sum over `I'` is exactly `f u' - f u`.
-      have IH : onIocAux f (⋃₀ ↑I') = ∑ u ∈ I', onIocAux f u := by
-        apply ih _ (Subset.trans I'I hI) (h'I.subset I'I)
-        · exact ⟨u, u', uu', UI'⟩
-        · have := card_erase_add_one tI
-          grind
+      have IH : onIocAux f (⋃₀ ↑I') = ∑ u ∈ I', onIocAux f u :=
+        ih _ (Subset.trans I'I hI) (h'I.subset I'I) (by grind) (by grind)
       -- the conclusion follows.
       rw [I_eq_insert, sum_insert, ← IH, UI', onIocAux_apply hu'v', onIocAux_apply uu']
       · simp
