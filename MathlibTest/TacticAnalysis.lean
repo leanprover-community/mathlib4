@@ -71,6 +71,29 @@ example : Fact (x = z) where
     rw [xy]
     rw [yz]
 
+-- Tactics inside `have ... := by ...` should be analyzed.
+-- Previously these were missed because `have ... := by ...` is parsed as one node.
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  have _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
+-- Same for `let ... := by ...`
+/--
+warning: Try this: rw [xy, yz]
+-/
+#guard_msgs in
+example : x = z := by
+  let _h : x = z := by
+    rw [xy]
+    rw [yz]
+  exact _h
+
 universe u
 
 def a : PUnit.{u} := ⟨⟩
@@ -209,6 +232,15 @@ example : ∀ a b : Unit, a = b := by
   intro a b
   rfl
 
+-- Intros separated by an intervening tactic should NOT be merged.
+-- Regression test for a bug where tactics were incorrectly grouped across intervening tactics.
+#guard_msgs in
+example : True → ∀ n > 0, True := by
+  intro h
+  have := 0
+  intro n hn
+  trivial
+
 end introMerge
 
 section tryAtEachStep
@@ -266,10 +298,9 @@ example : P 37 := by
   trivial
 
 set_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions true in
--- FIXME: why is the dagger here?
 /--
 info: Try this:
-  [apply] simp_all +suggestions✝ only [p]
+  [apply] simp_all only [p]
 ---
 info: `trivial` can be replaced with `simp_all? +suggestions✝`
 -/
