@@ -14,7 +14,7 @@ This file strengthens some of the subset results from `Interval.lean`
 to equalities in canonically ordered cases.
 -/
 
-@[expose] public section
+public section
 
 open Pointwise
 
