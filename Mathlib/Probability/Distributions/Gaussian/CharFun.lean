@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
+
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
