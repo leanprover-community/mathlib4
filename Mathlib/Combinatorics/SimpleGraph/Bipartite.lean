@@ -451,21 +451,14 @@ variable {W₁ W₂ : Type*}
 
 theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
     Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
-  refine Set.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [edgeSet_eq, completeBipartiteGraph_adj, Sum.exists, Sum.isRight_inl,
-      Bool.false_eq_true, and_false, Sum.isLeft_inl, and_true, false_or, exists_and_right,
-      Sum.isRight_inr, Sum.isLeft_inr, or_false, Set.mem_setOf_eq] at h
-    rcases h with ⟨_, _, rfl⟩ | ⟨_, _, rfl⟩ <;> simp
-  · obtain ⟨_, _, _⟩ := h
-    simp
+  refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
+  · cases u <;> cases v <;> simp_all
+  · grind [completeBipartiteGraph_adj, mem_edgeSet]
 
 theorem completeBipartiteGraph_edgeSet_encard :
-    (completeBipartiteGraph W₁ W₂).edgeSet.encard =
-    ENat.card W₁ * ENat.card W₂ := by
-  let g (x : W₁ × W₂) : Sym2 (W₁ ⊕ W₂) := s(.inl x.1, .inr x.2)
-  have : Function.Injective g := fun _ _ _ ↦ by grind
-  have := this.encard_image Set.univ
-  simpa [completeBipartiteGraph_edgeSet, this]
+    (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
+  rw [completeBipartiteGraph_edgeSet, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
+  exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
 
 theorem IsBipartiteWith.nonempty_embedding_completeBipartiteGraph_edgeSet
     (hG : G.IsBipartiteWith s t) :
@@ -488,9 +481,8 @@ forming it may also be infinite: in that case as well, the upper bound is the pr
 the cardinalities of these two sets. The statement uses `Set.encard`. -/
 theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
     G.edgeSet.encard ≤ s.encard * t.encard := by
-  grw [Classical.choice hG.nonempty_embedding_completeBipartiteGraph_edgeSet |>.encard_le,
-    completeBipartiteGraph_edgeSet_encard]
-  simp
+  grw [hG.nonempty_embedding_completeBipartiteGraph_edgeSet.some.encard_le]
+  simp [completeBipartiteGraph_edgeSet_encard]
 
 /-- An upper bound on the cardinality of the edge set of a bipartite graph when the cardinality
 of the entire vertex set of the graph is known. That is, the cardinality of the edge set times `4`
@@ -498,22 +490,13 @@ is less or equal to the square of the cardinality of the vertex set.
 The statement uses `Set.encard` and `ENat.card`. -/
 theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
     4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
-  obtain ⟨s, t, h⟩ := isBipartite_iff_exists_isBipartiteWith.mp h
-  have hG := h.encard_edgeSet_le
-  have h₀ : s.encard + t.encard ≤ ENat.card V := by
-    rw [← Set.encard_union_eq h.disjoint]
-    exact Set.encard_le_card
-  by_cases! hv : Infinite V
-  · simp_all
-  rw [ENat.card_eq_coe_natCard V] at h₀ ⊢
-  rw [← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at hG h₀
-  rw [← G.edgeSet.toFinite.cast_ncard_eq] at hG ⊢
-  norm_cast at *
-  have h₂ : (s.ncard + t.ncard) ^ 2 ≤ Nat.card V ^ 2 :=
-    Nat.pow_le_pow_left h₀ 2
-  have h₃ : 4 * s.ncard * t.ncard ≤ (s.ncard + t.ncard) ^ 2 :=
-    four_mul_le_pow_two_add s.ncard t.ncard
-  lia
+  refine finite_or_infinite V |>.elim (fun hv ↦ ?_) (fun _ ↦ by simp)
+  have ⟨s, t, h⟩ := h.exists_isBipartiteWith
+  grw [h.encard_edgeSet_le]
+  have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
+  rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
+  norm_cast at this ⊢
+  grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
 
 end
 
