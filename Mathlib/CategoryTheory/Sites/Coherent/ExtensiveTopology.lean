@@ -58,8 +58,8 @@ lemma extensiveTopology.mem_sieves_iff_contains_colimit_cofan {X : C} (S : Sieve
     apply (extensiveCoverage C).mem_toGrothendieck_sieves_of_superset (R := Presieve.ofArrows Y π)
     · exact fun _ _ hh ↦ by cases hh; exact h' _
     · refine ⟨α, inferInstance, Y, π, rfl, ?_⟩
-      rw [show IsIso (Sigma.desc π) ↔ _ from
-        Limits.Cofan.isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
+      rw [← show _ ↔ IsIso (Sigma.desc π)  from
+        Limits.Cofan.nonempty_isColimit_iff_isIso_sigmaDesc (c := Cofan.mk X π)]
       exact h
 
 end CategoryTheory
