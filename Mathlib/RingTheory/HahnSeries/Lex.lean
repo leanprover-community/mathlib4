@@ -359,20 +359,11 @@ section OrderedRing
 variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
   [IsOrderedCancelAddMonoid Γ]
 
-instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where
-  zero_le_one := by simp [← leadingCoeff_nonneg_iff]
-  mul_le_mul_of_nonneg_left a ha b c hbc := by
-    rw [← sub_nonneg] at hbc ⊢
-    rw [← mul_sub, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
-    apply mul_nonneg
-    · simpa
-    · rwa [leadingCoeff_nonneg_iff]
-  mul_le_mul_of_nonneg_right a ha b c hbc := by
-    rw [← sub_nonneg] at hbc ⊢
-    rw [← sub_mul, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
-    apply mul_nonneg
-    · rwa [leadingCoeff_nonneg_iff]
-    · simpa
+instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) := by
+  apply IsOrderedRing.of_mul_nonneg_linearOrder
+  intro a b ha hb
+  rw [← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
+  exact mul_nonneg (leadingCoeff_nonneg_iff.mpr ha) (leadingCoeff_nonneg_iff.mpr hb)
 
 instance [IsDomain R] [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
 
