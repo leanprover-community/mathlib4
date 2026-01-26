@@ -819,8 +819,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
         refine eventually_atTop.mpr ⟨y + 1, fun b hb => ?_⟩
         have : y = (⟨y, by linarith⟩ : Fin (b + 1)).1 := by simp
         rw [← hy, EmbeddingLike.apply_eq_iff_eq, this, ← Fin.ext_iff, ← (G b).mem_iff_index_eq]
-        have : y < b := by linarith
-        have : ∃ m < b, hs.index x = e m := ⟨y, ⟨this, hy.symm⟩⟩
+        have : ∃ m < b, hs.index x = e m := ⟨y, ⟨by lia, hy.symm⟩⟩
         simpa [g, hs.mem_iff_index_eq, this] using e.injective (hy.trans this.choose_spec.2).symm
       have : ∀ᶠ n in atTop, (hf (hs.index x)).approx n x = (hf (e ((G n).index x))).approx n x := by
         filter_upwards [this] with n hn using by rw [hn]
