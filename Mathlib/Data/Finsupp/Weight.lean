@@ -279,7 +279,6 @@ lemma smul_range_single_one (σ : Type*) (n : ℕ) :
     have := le_iff_exists_add'.mp (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
     aesop
 
-open scoped Pointwise in
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by
   induction n with
