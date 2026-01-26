@@ -210,8 +210,8 @@ theorem mono_iff_injective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective f := by
   constructor
   · intro hf x₁ x₂ h
-    let g₁ : X ⟶ X := ofHom _ ⟨fun _ => x₁, continuous_const⟩
-    let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, continuous_const⟩
+    let g₁ : X ⟶ X := ofHom _ ⟨fun _ => x₁, Continuous.const⟩
+    let g₂ : X ⟶ X := ofHom _ ⟨fun _ => x₂, Continuous.const⟩
     have : g₁ ≫ f = g₂ ≫ f := by ext; exact h
     exact CategoryTheory.congr_fun ((cancel_mono _).mp this) x₁
   · rw [← CategoryTheory.mono_iff_injective]

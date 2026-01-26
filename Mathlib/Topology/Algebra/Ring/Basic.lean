@@ -65,7 +65,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (Continuous.const.mul continuous_id : Continuous fun x : R => -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -271,11 +271,11 @@ instance : IsTopologicalRing (ULift R) where
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : R) : Continuous (AddMonoidHom.mulLeft x) :=
-  continuous_const.mul continuous_id
+  Continuous.const.mul continuous_id
 
 /-- In a topological semiring, the right-multiplication `AddMonoidHom` is continuous. -/
 theorem mulRight_continuous (x : R) : Continuous (AddMonoidHom.mulRight x) :=
-  continuous_id.mul continuous_const
+  continuous_id.mul .const
 
 end
 

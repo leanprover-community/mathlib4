@@ -705,7 +705,7 @@ theorem _root_.IsClosed.notMem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempty
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
-  · simp only [infDist_empty, continuousAt_const]
+  · simp only [infDist_empty, ContinuousAt.const]
   · refine (continuous_infDist_pt s).continuousAt.inv₀ ?_
     rwa [Ne, ← mem_closure_iff_infDist_zero hs]
 

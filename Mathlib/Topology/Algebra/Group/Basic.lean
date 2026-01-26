@@ -368,7 +368,7 @@ section Conj
 
 instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
     [ContinuousMul M] : ContinuousConstSMul (ConjAct Mˣ) M :=
-  ⟨fun _ => (continuous_const.mul continuous_id).mul continuous_const⟩
+  ⟨fun _ => (Continuous.const.mul continuous_id).mul .const⟩
 
 variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
 

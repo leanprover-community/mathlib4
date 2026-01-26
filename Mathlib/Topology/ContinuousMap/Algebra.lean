@@ -235,7 +235,7 @@ section Subtype
 def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β]
     [MulOneClass β] [ContinuousMul β] : Submonoid (α → β) where
   carrier := { f : α → β | Continuous f }
-  one_mem' := @continuous_const _ _ _ _ 1
+  one_mem' := Continuous.const (y := 1)
   mul_mem' fc gc := fc.mul gc
 
 /-- The subgroup of continuous maps `α → β`. -/
@@ -646,7 +646,7 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 def continuousSubalgebra : Subalgebra R (α → A) :=
   { continuousSubsemiring α A with
     carrier := { f : α → A | Continuous f }
-    algebraMap_mem' := fun r => (continuous_const : Continuous fun _ : α => algebraMap R A r) }
+    algebraMap_mem' := fun r => (.const : Continuous fun _ : α => algebraMap R A r) }
 
 end Subtype
 
@@ -658,7 +658,7 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 
 /-- Continuous constant functions as a `RingHom`. -/
 def ContinuousMap.C : R →+* C(α, A) where
-  toFun := fun c : R => ⟨fun _ : α => (algebraMap R A) c, continuous_const⟩
+  toFun := fun c : R => ⟨fun _ : α => (algebraMap R A) c, .const⟩
   map_one' := by ext _; exact (algebraMap R A).map_one
   map_mul' c₁ c₂ := by ext _; exact (algebraMap R A).map_mul _ _
   map_zero' := by ext _; exact (algebraMap R A).map_zero

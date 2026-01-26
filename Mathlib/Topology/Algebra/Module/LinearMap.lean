@@ -685,7 +685,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] [Module R M₁] [Module R M₂]
 See also `ContinuousLinearMap.smulRightₗ` and `ContinuousLinearMap.smulRightL`. -/
 @[simps coe]
 def smulRight (c : M₁ →L[R] S) (f : M₂) : M₁ →L[R] M₂ :=
-  { c.toLinearMap.smulRight f with cont := c.2.smul continuous_const }
+  { c.toLinearMap.smulRight f with cont := c.2.smul .const }
 
 @[simp]
 theorem smulRight_apply {c : M₁ →L[R] S} {f : M₂} {x : M₁} :
@@ -718,7 +718,7 @@ variable [ContinuousSMul R₁ M₁]
 linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁ where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
-  cont := continuous_id.smul continuous_const
+  cont := continuous_id.smul .const
 
 @[simp]
 theorem toSpanSingleton_apply (x : M₁) (r : R₁) : toSpanSingleton R₁ x r = r • x :=

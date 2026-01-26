@@ -173,7 +173,7 @@ theorem IsPreconnected.intermediate_value_Iii {s : Set X} (hs : IsPreconnected s
 
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
 theorem intermediate_value_univ [PreconnectedSpace X] (a b : X) {f : X → α} (hf : Continuous f) :
-    Icc (f a) (f b) ⊆ range f := fun _ hx => intermediate_value_univ₂ hf continuous_const hx.1 hx.2
+    Icc (f a) (f b) ⊆ range f := fun _ hx => intermediate_value_univ₂ hf .const hx.1 hx.2
 
 /-- **Intermediate Value Theorem** for continuous functions on connected spaces. -/
 theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : X → α}

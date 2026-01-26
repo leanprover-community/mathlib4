@@ -292,7 +292,7 @@ end Colimits
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ TopCat.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨ofHom ⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext⟩
+    ⟨⟨ofHom ⟨fun _ => PUnit.unit, .const⟩⟩, fun f => by ext⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The terminal object of `Top` is `PUnit`. -/

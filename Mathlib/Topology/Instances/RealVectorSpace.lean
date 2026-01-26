@@ -56,4 +56,4 @@ topological `ℝ`-algebra `A` (e.g. `A = ℂ`) and any topological group that is
 `ℝ`-module and a topological `A`-module, these structures agree. -/
 instance (priority := 900) Real.isScalarTower [T2Space E] {A : Type*} [TopologicalSpace A] [Ring A]
     [Algebra ℝ A] [Module A E] [ContinuousSMul ℝ A] [ContinuousSMul A E] : IsScalarTower ℝ A E :=
-  ⟨fun r x y => map_real_smul ((smulAddHom A E).flip y) (continuous_id.smul continuous_const) r x⟩
+  ⟨fun r x y => map_real_smul ((smulAddHom A E).flip y) (continuous_id.smul Continuous.const) r x⟩

@@ -33,7 +33,7 @@ variable {ι α M N X : Type*} [TopologicalSpace X]
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_one [TopologicalSpace M] [One M] : Continuous (1 : X → M) :=
-  @continuous_const _ _ _ _ 1
+  @Continuous.const _ _ _ _ 1
 
 section ContinuousMul
 
@@ -252,7 +252,7 @@ variable (M₁ M₂ : Type*) [TopologicalSpace M₂] [T2Space M₂]
 
 @[to_additive]
 theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M₂ | f 1 = 1 } :=
-  isClosed_eq (continuous_apply 1) continuous_const
+  isClosed_eq (continuous_apply 1) .const
 
 @[to_additive]
 theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
@@ -679,7 +679,7 @@ theorem continuousOn_list_prod {f : ι → X → M} (l : List ι) {t : Set X}
 
 @[to_additive (attr := continuity)]
 theorem continuous_pow : ∀ n : ℕ, Continuous fun a : M => a ^ n
-  | 0 => by simpa using continuous_const
+  | 0 => by simpa using Continuous.const
   | k + 1 => by
     simp only [pow_succ']
     exact continuous_id.mul (continuous_pow _)

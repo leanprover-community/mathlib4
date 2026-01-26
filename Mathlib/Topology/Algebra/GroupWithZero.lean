@@ -72,7 +72,7 @@ theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
 
 @[continuity, fun_prop]
 theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
-  simpa only [div_eq_mul_inv] using hf.mul continuous_const
+  simpa only [div_eq_mul_inv] using hf.mul .const
 
 end DivConst
 
