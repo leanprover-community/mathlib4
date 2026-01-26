@@ -20,5 +20,11 @@ lemma MeromorphicNFOn.Gamma : MeromorphicNFOn Gamma univ :=
   meromorphicNFOn_inv.mp <| AnalyticOnNhd.meromorphicNFOn <|
     analyticOnNhd_univ_iff_differentiable.mpr differentiable_one_div_Gamma
 
+-- TODO: restate `MeromorphicNFOn.Gamma` when `MeromorphicNF` is defined
+assert_not_exists MeromorphicNF
+
 lemma Meromorphic.Gamma : Meromorphic Gamma :=
   meromorphicOn_univ.mp MeromorphicNFOn.Gamma.meromorphicOn
+
+lemma MeromorphicOn.Gamma {s} : MeromorphicOn Gamma s :=
+  Meromorphic.Gamma.meromorphicOn
