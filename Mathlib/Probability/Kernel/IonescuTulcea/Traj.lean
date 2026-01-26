@@ -228,7 +228,7 @@ lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i)
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    AddContent (measurableCylinders X) :=
+    AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_partialTraj κ x₀)
 
 variable {κ}
