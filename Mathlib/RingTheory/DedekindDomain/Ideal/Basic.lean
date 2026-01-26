@@ -464,7 +464,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
             mt this.isPrime.mem_or_mem (not_or_intro x_notMem y_notMem)⟩⟩, Prime.irreducible⟩ }
 
 noncomputable instance Ideal.strongNormalizationMonoid : StrongNormalizationMonoid (Ideal A) :=
-  .ofUniqueUnits
+  inferInstance
 
 @[deprecated (since := "2026-01-13")]
 alias Ideal.normalizationMonoid := Ideal.strongNormalizationMonoid
