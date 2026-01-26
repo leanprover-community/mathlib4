@@ -291,8 +291,6 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     `Batteries.Util.LibraryNote.commandLibrary_note___, -- of `library_note "Title"/-- Text -/`.
     `Mathlib.Notation3.notation3, -- of `notation3`.
     `Lean.Parser.Command.grindPattern, -- `grind_pattern A => x, y` prints no space after `,`,
-    -- Unification hints currently pretty-print without a space after the ⊢ (lean4#11780)
-    ``Lean.«command__Unif_hint____Where_|_-⊢_»,
     -- `inductive`s with docstrings for their constructors have undesirable printing
     ``Parser.Command.inductive,
     -- `name_poly_vars` asks for a space after the last variable name; fixing this is not obvious.
