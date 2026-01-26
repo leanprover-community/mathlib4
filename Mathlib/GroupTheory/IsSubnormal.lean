@@ -185,6 +185,7 @@ alias ⟨exists_chain, _⟩ := IsSubnormal_iff
 If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`, then
 `H` is a subnormal subgroup of `G`.
 -/
+protected
 lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnormal K) :
     IsSubnormal H := by
   rw [IsSubnormal_iff'] at Hsn Ksn ⊢
