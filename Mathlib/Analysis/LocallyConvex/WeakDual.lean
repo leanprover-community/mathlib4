@@ -153,7 +153,7 @@ theorem mem_span_iff_continuous {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[
 theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜] 𝕜) :
     φ ∈ Submodule.span 𝕜 (Set.range f) ↔
     ∃ s : Finset ι, ∃ c : ℝ≥0, φ.toSeminorm ≤
-      c • (s.sup fun i ↦  (f i).toSeminorm) := by
+      c • (s.sup fun i ↦ (f i).toSeminorm) := by
   letI t𝕜 : TopologicalSpace 𝕜 := inferInstance
   let t := ⨅ i, induced (f i) t𝕜
   have : IsTopologicalAddGroup E := topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _

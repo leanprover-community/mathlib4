@@ -53,7 +53,7 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -63,7 +63,7 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
@@ -90,7 +90,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--
@@ -146,6 +146,11 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   | ⟨_⟩, S, hS =>
     (S.map F).exact_and_mono_f_iff_f_is_kernel |>.2 ⟨KernelFork.mapIsLimit _ hS.fIsKernel F⟩
   tfae_finish
+
+lemma preservesFiniteLimits_iff_forall_exact_map_and_mono :
+    PreservesFiniteLimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f) :=
+  (Functor.preservesFiniteLimits_tfae F).out 3 0
 
 /--
 If a functor `F : C ⥤ D` preserves exact sequences on the right-hand side (i.e.
@@ -238,6 +243,11 @@ lemma exact_tfae : List.TFAE
   tfae_have 4 → 2
   | ⟨h1, h2⟩, _, h => h.map F
   tfae_finish
+
+lemma preservesFiniteColimits_iff_forall_exact_map_and_epi :
+    PreservesFiniteColimits F ↔
+      ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g) :=
+  (Functor.preservesFiniteColimits_tfae F).out 3 0
 
 end
 

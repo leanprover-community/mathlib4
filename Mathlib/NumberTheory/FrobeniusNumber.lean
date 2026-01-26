@@ -215,7 +215,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+      (by lia))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by lia))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
         (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by

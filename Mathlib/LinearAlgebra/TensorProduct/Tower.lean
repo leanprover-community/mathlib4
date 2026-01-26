@@ -690,7 +690,7 @@ theorem _root_.LinearEquiv.baseChange_one :
   simp [← LinearEquiv.coe_toLinearMap]
 
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
-    (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans  (f.baseChange R A N P) := by
+    (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans (f.baseChange R A N P) := by
   ext x
   simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
     LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
@@ -728,7 +728,7 @@ lemma _root_.LinearEquiv.baseChange_zpow (f : M ≃ₗ[R] M) (n : ℤ) :
 
 variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
-    (φ.toLinearMap.rTensor N) (f.baseChange A t)  =
+    (φ.toLinearMap.rTensor N) (f.baseChange A t) =
       (f.baseChange B) (φ.toLinearMap.rTensor M t) := by
   simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply]
 

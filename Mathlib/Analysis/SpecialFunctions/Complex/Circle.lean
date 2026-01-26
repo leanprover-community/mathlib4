@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Maps on the unit circle
@@ -85,7 +86,7 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
     ← Complex.ofReal_inj]
 
 lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
-  simp [AddCommGroup.ModEq, ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
+  simp [AddCommGroup.modEq_iff_zsmul', ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
 
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
@@ -193,7 +194,13 @@ end AddCircle
 
 open AddCircle
 
--- todo: upgrade this to `IsCoveringMap Circle.exp`.
-lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
-  have : Fact (0 < 2 * π) := ⟨by positivity⟩
-  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+theorem Circle.isAddQuotientCoveringMap_exp :
+    IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * Real.pi)) := by
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  on_goal 2 => simp
+  ext; simp [homeomorphCircle_apply, toCircle]
+
+theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
+
+lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
+  Circle.isCoveringMap_exp.isLocalHomeomorph
