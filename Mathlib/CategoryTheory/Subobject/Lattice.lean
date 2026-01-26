@@ -357,26 +357,15 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
 theorem inf_isPullback {A : C} (f g : Subobject A) :
-  IsPullback
-    (Subobject.ofLE _ _ (Subobject.inf_le_left f g))
-    (Subobject.ofLE _ _ (Subobject.inf_le_right f g))
-    f.arrow g.arrow := by
-  induction f, g using Subobject.ind₂ with
-  | h f g =>
-    /-
-    we are using the following defeq implicitly:
-    `have : (Subobject.inf.obj (Subobject.mk f)).obj (Subobject.mk g) =
-      Subobject.mk (pullback.snd g f ≫ f) := by rfl`
-    -/
-    refine ((IsPullback.of_hasPullback g f).of_iso
-      ((underlyingIso (pullback.snd g f ≫ f)).symm) -- ≪≫ eqToIso this
-      (underlyingIso _).symm (underlyingIso _).symm (Iso.refl _) ?_ ?_ (by simp) (by simp)).flip
-    · simp only [Iso.symm_hom, Iso.comp_inv_eq, ← cancel_mono g, pullback.condition]
-      simp [Iso.eq_inv_comp]
-      rfl
-    · simp only [Iso.symm_hom, Iso.comp_inv_eq, ← cancel_mono f]
-      simp [Iso.eq_inv_comp]
-      rfl
+    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
+    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
+  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
+  · cat_disch
+  · ext
+    simp [s.condition]
+  · ext
+    simp [← h]
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf := fun m n => (inf.obj m).obj n
