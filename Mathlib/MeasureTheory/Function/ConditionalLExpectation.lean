@@ -242,6 +242,7 @@ theorem condLExp_add_left (X Y : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X
 
 theorem condLExp_add_right (X Y : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ₀] Y P) :
     P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
-  rw [add_comm, add_comm P⁻[X|mΩ]]; exact condLExp_add_left Y X hY
+  rw [add_comm, add_comm P⁻[X|mΩ]]
+  exact condLExp_add_left Y X hY
 
 end MeasureTheory
