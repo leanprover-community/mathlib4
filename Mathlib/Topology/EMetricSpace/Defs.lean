@@ -200,23 +200,6 @@ abbrev pseudoEMetricSpaceOfEDist'
   toUniformSpace := uniformSpaceOfEDist edist edist_self edist_comm edist_triangle
   uniformity_edist := by rfl
 
-theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist'
-    {α : Type u} (edist : α → α → ℝ≥0∞) (edist_self : ∀ x : α, edist x x = 0)
-    (edist_comm : ∀ x y : α, edist x y = edist y x)
-    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z) :
-    ((pseudoEMetricSpaceOfEDist'
-    edist edist_self edist_comm edist_triangle).toUniformSpace).toTopologicalSpace =
-    ((uniformSpaceOfEDist
-    edist edist_self edist_comm edist_triangle)).toTopologicalSpace := by rfl
-
-theorem toPseudoEMetricSpaceToUniformSpace_uniformSpaceOfEDist_congr'
-    {α : Type u} (s : Set α) (edist : α → α → ℝ≥0∞)
-    (edist_self : ∀ x : α, edist x x = 0) (edist_comm : ∀ x y : α, edist x y = edist y x)
-    (edist_triangle : ∀ x y z : α, edist x z ≤ edist x y + edist y z):
-    IsOpen[((pseudoEMetricSpaceOfEDist'
-    edist edist_self edist_comm edist_triangle).toUniformSpace).toTopologicalSpace] s
-    ↔ IsOpen[((uniformSpaceOfEDist
-    edist edist_self edist_comm edist_triangle)).toTopologicalSpace] s := by rfl
 
 theorem EMetric.Uniformity_eq {α : Type u} [EDist α] (edist_self : ∀ x : α, edist x x = 0)
     (edist_comm : ∀ x y : α, edist x y = edist y x)
