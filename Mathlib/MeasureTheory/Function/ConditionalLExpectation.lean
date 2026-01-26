@@ -9,7 +9,7 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.Topology.Separation.CompletelyRegular
 public import Mathlib.Probability.Notation
 
-/-! # Conditional Lebesgue Expectation
+/-! # Conditional Lebesgue expectation
 
 We define the conditional expectation of a `ℝ≥0∞`-valued function using the Lebesgue integral.
 Given a measure `P : Measure[mΩ₀] Ω` and a sub-σ-algebra `mΩ` of `mΩ₀` (meaning `hm : mΩ ≤ mΩ₀`)
