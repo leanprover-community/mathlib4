@@ -179,7 +179,7 @@ section mapCLM
 /-- Any continuous linear map `A : F →L[ℝ] G` induces a continuous linear map
 `𝓓'(Ω, F) →L[ℝ] 𝓓'(Ω, G)`. On locally integrable functions, this corresponds to applying `A`
 pointwise. -/
-def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
+noncomputable def mapCLM (A : F →L[ℝ] F') : 𝓓'^{n}(Ω, F) →L[ℝ] 𝓓'^{n}(Ω, F') :=
   A.postcomp_uniformConvergenceCLM _
 
 @[simp]

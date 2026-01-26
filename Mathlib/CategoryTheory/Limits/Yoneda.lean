@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.Util.AssertExists
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.

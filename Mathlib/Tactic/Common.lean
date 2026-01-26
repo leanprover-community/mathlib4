@@ -116,7 +116,6 @@ public import Mathlib.Tactic.Widget.CongrM
 public import Mathlib.Tactic.Widget.Conv
 public import Mathlib.Tactic.Widget.LibraryRewrite
 public import Mathlib.Tactic.WLOG
-public import Mathlib.Util.AssertExists
 public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports

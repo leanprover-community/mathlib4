@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Monotone.Basic
-public import Mathlib.Util.AssertExists
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Galois connections, insertions and coinsertions

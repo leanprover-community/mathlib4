@@ -9,7 +9,6 @@ public import Batteries.Tactic.Init
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Mathlib.Util.AssertExists
 
 /-! # Lemmas about inequalities with `1`. -/
 
