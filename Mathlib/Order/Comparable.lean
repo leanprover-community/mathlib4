@@ -5,25 +5,28 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.Logic.Relation
 public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Comparability and incomparability relations
 
-Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define the
-incomparability relations and inherit comparability from `Relation.SymmGen`.
+Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define both the
+comparability and incomparability relations.
 
-In a linear order, `Relation.SymmGen (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is
-always false.
+In a linear order, `CompRel (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
+false.
 
 ## Implementation notes
 
 Although comparability and incomparability are negations of each other, both relations are
 convenient in different contexts, and as such, it's useful to keep them distinct. To move from one
-to the other, use `not_symmGen_iff` and `not_incompRel_iff`.
+to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 
 ## Main declarations
 
+* `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
+  either direction by `r`.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
@@ -34,11 +37,148 @@ These definitions should be linked to `IsChain` and `IsAntichain`.
 
 @[expose] public section
 
-open Function
+open Function Relation
 
 variable {α : Type*} {a b c d : α}
 
 /-! ### Comparability -/
+
+section Relation
+
+variable {r : α → α → Prop}
+
+/-- The comparability relation `CompRel r a b` means that either `r a b` or `r b a`. -/
+@[deprecated SymmGen (since := "2026-01-25")]
+def CompRel (r : α → α → Prop) (a b : α) : Prop :=
+  r a b ∨ r b a
+
+set_option linter.deprecated false
+
+@[deprecated SymmGen.of_rel (since := "2026-01-25")]
+theorem CompRel.of_rel (h : r a b) : CompRel r a b :=
+  SymmGen.of_rel h
+
+@[deprecated SymmGen.of_rel_symm (since := "2026-01-25")]
+theorem CompRel.of_rel_symm (h : r b a) : CompRel r a b :=
+  SymmGen.of_rel_symm h
+
+@[deprecated symmGen_swap (since := "2026-01-25")]
+theorem compRel_swap (r : α → α → Prop) : CompRel (swap r) = CompRel r :=
+  symmGen_swap r
+
+@[deprecated symmGen_swap_apply (since := "2026-01-25")]
+theorem compRel_swap_apply (r : α → α → Prop) : CompRel (swap r) a b ↔ CompRel r a b :=
+  symmGen_swap_apply r
+
+@[simp, refl, deprecated SymmGen.refl (since := "2026-01-25")]
+theorem CompRel.refl (r : α → α → Prop) [Std.Refl r] (a : α) : CompRel r a a :=
+  SymmGen.refl r a
+
+@[deprecated SymmGen.rfl (since := "2026-01-25")]
+theorem CompRel.rfl [Std.Refl r] : CompRel r a a := SymmGen.rfl
+
+@[deprecated SymmGen.instRefl (since := "2026-01-25")]
+instance [Std.Refl r] : Std.Refl (CompRel r) :=
+  SymmGen.instRefl
+
+@[symm, deprecated SymmGen.symm (since := "2026-01-25")]
+theorem CompRel.symm : CompRel r a b → CompRel r b a :=
+  SymmGen.symm
+
+@[deprecated SymmGen.instSymm (since := "2026-01-25")]
+instance : Std.Symm (CompRel r) :=
+  SymmGen.instSymm
+
+@[deprecated symmGen_comm (since := "2026-01-25")]
+theorem compRel_comm {a b : α} : CompRel r a b ↔ CompRel r b a :=
+  symmGen_comm
+
+@[deprecated SymmGen.decidableRel (since := "2026-01-25")]
+instance CompRel.decidableRel [DecidableRel r] : DecidableRel (CompRel r) :=
+  SymmGen.decidableRel
+
+@[deprecated AntisymmRel.symmGen (since := "2026-01-25")]
+theorem AntisymmRel.compRel (h : AntisymmRel r a b) : CompRel r a b :=
+  AntisymmRel.symmGen h
+
+@[simp, deprecated symmGen_of_total (since := "2026-01-25")]
+theorem compRel_of_total [Std.Total r] (a b : α) : CompRel r a b :=
+  symmGen_of_total a b
+
+@[deprecated (since := "2026-01-13")] alias IsTotal.compRel := compRel_of_total
+
+end Relation
+
+section LE
+
+set_option linter.deprecated false
+
+variable [LE α]
+
+@[deprecated SymmGen.of_le (since := "2026-01-25")]
+theorem CompRel.of_le (h : a ≤ b) : CompRel (· ≤ ·) a b := SymmGen.of_le h
+
+@[deprecated SymmGen.of_ge (since := "2026-01-25")]
+theorem CompRel.of_ge (h : b ≤ a) : CompRel (· ≤ ·) a b := SymmGen.of_ge h
+
+alias LE.le.compRel := CompRel.of_le
+alias LE.le.compRel_symm := CompRel.of_ge
+
+end LE
+
+section Preorder
+
+set_option linter.deprecated false
+
+variable [Preorder α]
+
+@[deprecated SymmGen.of_lt (since := "2026-01-25")]
+theorem CompRel.of_lt (h : a < b) : CompRel (· ≤ ·) a b := SymmGen.of_lt h
+
+@[deprecated SymmGen.of_gt (since := "2026-01-25")]
+theorem CompRel.of_gt (h : b < a) : CompRel (· ≤ ·) a b := SymmGen.of_gt h
+
+alias LT.lt.compRel := CompRel.of_lt
+alias LT.lt.compRel_symm := CompRel.of_gt
+
+@[trans, deprecated SymmGen.of_symmGen_of_antisymmRel (since := "2026-01-25")]
+theorem CompRel.of_compRel_of_antisymmRel
+    (h₁ : CompRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c :=
+  SymmGen.of_symmGen_of_antisymmRel h₁ h₂
+
+alias CompRel.trans_antisymmRel := CompRel.of_compRel_of_antisymmRel
+
+@[deprecated instTransSymmGenLeAntisymmRel (since := "2026-01-25")]
+instance : @Trans α α α (CompRel (· ≤ ·)) (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) :=
+  instTransSymmGenLeAntisymmRel
+
+@[trans, deprecated SymmGen.of_antisymmRel_of_symmGen (since := "2026-01-25")]
+theorem CompRel.of_antisymmRel_of_compRel
+    (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : CompRel (· ≤ ·) b c) : CompRel (· ≤ ·) a c :=
+  SymmGen.of_antisymmRel_of_symmGen h₁ h₂
+
+alias AntisymmRel.trans_compRel := CompRel.of_antisymmRel_of_compRel
+
+@[deprecated instTransAntisymmRelLeSymmGen (since := "2026-01-25")]
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (CompRel (· ≤ ·)) (CompRel (· ≤ ·)) :=
+  instTransAntisymmRelLeSymmGen
+
+@[deprecated AntisymmRel.symmGen_congr (since := "2026-01-25")]
+theorem AntisymmRel.compRel_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b d :=
+  AntisymmRel.symmGen_congr h₁ h₂
+
+@[deprecated AntisymmRel.symmGen_congr_left (since := "2026-01-25")]
+theorem AntisymmRel.compRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
+    CompRel (· ≤ ·) a c ↔ CompRel (· ≤ ·) b c :=
+  AntisymmRel.symmGen_congr_left h
+
+@[deprecated AntisymmRel.symmGen_congr_right (since := "2026-01-25")]
+theorem AntisymmRel.compRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
+    CompRel (· ≤ ·) a b ↔ CompRel (· ≤ ·) a c :=
+  AntisymmRel.symmGen_congr_right h
+
+end Preorder
 
 /-- A partial order where any two elements are comparable is a linear order. -/
 def Relation.linearOrderOfSymmGen [PartialOrder α]
@@ -49,80 +189,13 @@ def Relation.linearOrderOfSymmGen [PartialOrder α]
   toDecidableEq := decEq
   toDecidableLT := decLT
 
-@[deprecated (since := "2026-01-25")] alias CompRel := Relation.SymmGen
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_rel := Relation.SymmGen.of_rel
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_rel_symm := Relation.SymmGen.of_rel_symm
-
-@[deprecated (since := "2026-01-25")] alias compRel_swap := Relation.symmGen_swap
-
-@[deprecated (since := "2026-01-25")] alias compRel_swap_apply := Relation.symmGen_swap_apply
-
-@[deprecated (since := "2026-01-25")] alias CompRel.refl := Relation.SymmGen.refl
-
-@[deprecated (since := "2026-01-25")] alias CompRel.rfl := Relation.SymmGen.rfl
-
-@[deprecated (since := "2026-01-25")] alias instReflCompRel := Relation.SymmGen.instRefl
-
-@[deprecated (since := "2026-01-25")] alias CompRel.symm := Relation.SymmGen.symm
-
-@[deprecated (since := "2026-01-25")] alias instSymmCompRel := Relation.SymmGen.instSymm
-
-@[deprecated (since := "2026-01-25")] alias compRel_comm := Relation.symmGen_comm
-
-@[deprecated (since := "2026-01-25")] alias CompRel.decidableRel := Relation.SymmGen.decidableRel
-
-@[deprecated (since := "2026-01-25")] alias AntisymmRel.compRel := AntisymmRel.symmGen
-
-@[deprecated (since := "2026-01-25")] alias compRel_of_total := Relation.symmGen_of_total
-
-@[deprecated (since := "2026-01-13")] alias IsTotal.compRel := compRel_of_total
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_le := Relation.SymmGen.of_le
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_ge := Relation.SymmGen.of_ge
-
-@[deprecated (since := "2026-01-25")] alias LE.le.compRel := CompRel.of_le
-
-@[deprecated (since := "2026-01-25")] alias LE.le.compRel_symm := CompRel.of_ge
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_lt := Relation.SymmGen.of_lt
-
-@[deprecated (since := "2026-01-25")] alias CompRel.of_gt := Relation.SymmGen.of_gt
-
-@[deprecated (since := "2026-01-25")] alias LT.lt.compRel := CompRel.of_lt
-
-@[deprecated (since := "2026-01-25")] alias LT.lt.compRel_symm := CompRel.of_gt
-
-@[deprecated (since := "2026-01-25")]
-alias CompRel.of_compRel_of_antisymmRel := Relation.SymmGen.of_symmGen_of_antisymmRel
-
-@[deprecated (since := "2026-01-25")]
-alias CompRel.trans_antisymmRel := CompRel.of_compRel_of_antisymmRel
-
-@[deprecated (since := "2026-01-25")]
-alias instTransCompRelLeAntisymmRel := instTransSymmGenLeAntisymmRel
-
-@[deprecated (since := "2026-01-25")]
-alias CompRel.of_antisymmRel_of_compRel := Relation.SymmGen.of_antisymmRel_of_symmGen
-
-@[deprecated (since := "2026-01-25")]
-alias AntisymmRel.trans_compRel := CompRel.of_antisymmRel_of_compRel
-
-@[deprecated (since := "2026-01-25")]
-alias instTransAntisymmRelLeCompRel := instTransAntisymmRelLeSymmGen
-
-@[deprecated (since := "2026-01-25")]
-alias AntisymmRel.compRel_congr := AntisymmRel.symmGen_congr
-
-@[deprecated (since := "2026-01-25")]
-alias AntisymmRel.compRel_congr_left := AntisymmRel.symmGen_congr_left
-
-@[deprecated (since := "2026-01-25")]
-alias AntisymmRel.compRel_congr_right := AntisymmRel.symmGen_congr_right
-
-@[deprecated (since := "2026-01-25")] alias linearOrderOfComprel := Relation.linearOrderOfSymmGen
+set_option linter.deprecated false in
+/-- A partial order where any two elements are comparable is a linear order. -/
+@[deprecated linearOrderOfSymmGen (since := "2026-01-25")]
+def linearOrderOfComprel [PartialOrder α]
+    [decLE : DecidableLE α] [decLT : DecidableLT α] [decEq : DecidableEq α]
+    (h : ∀ a b : α, CompRel (· ≤ ·) a b) : LinearOrder α :=
+  linearOrderOfSymmGen h
 
 /-! ### Incomparability relation -/
 
@@ -188,15 +261,22 @@ theorem AntisymmRel.not_incompRel (h : AntisymmRel r a b) : ¬ IncompRel r a b :
 theorem not_symmGen_iff : ¬ Relation.SymmGen r a b ↔ IncompRel r a b := by
   simp [Relation.SymmGen, IncompRel]
 
-@[deprecated (since := "2026-01-25")] alias not_compRel_iff := not_symmGen_iff
+set_option linter.deprecated false in
+theorem not_compRel_iff : ¬ CompRel r a b ↔ IncompRel r a b :=
+  not_symmGen_iff
 
-theorem not_incompRel_iff : ¬ IncompRel r a b ↔ Relation.SymmGen r a b := by
+theorem not_incompRel_iff_symmGen : ¬ IncompRel r a b ↔ Relation.SymmGen r a b := by
   rw [← not_symmGen_iff, not_not]
+
+set_option linter.deprecated false in
+@[deprecated not_incompRel_iff_symmGen (since := "2026-01-25")]
+theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b :=
+  not_incompRel_iff_symmGen
 
 @[simp]
 theorem not_incompRel_of_total [Std.Total r] (a b : α) : ¬ IncompRel r a b := by
-  rw [not_incompRel_iff]
-  exact Relation.symmGen_of_total a b
+  rw [not_incompRel_iff_symmGen]
+  exact symmGen_of_total a b
 
 @[deprecated (since := "2026-01-13")] alias IsTotal.not_incompRel := not_incompRel_of_total
 
