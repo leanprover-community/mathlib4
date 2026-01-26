@@ -812,7 +812,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
     refine ⟨fun n => SimpleFunc.indexedPartitionPiecewise (G n)
       (fun i => ?_) (fun i => (hf (e i)).approx n), fun x => ?_⟩
     · measurability
-    · simp only [SimpleFunc.indexedPartitionPiecewise, SimpleFunc.coe_mk,
+    simp only [SimpleFunc.indexedPartitionPiecewise, SimpleFunc.coe_mk,
         IndexedPartition.piecewise_apply]
       have : ∀ᶠ n in atTop, e ((G n).index x) = hs.index x := by
         obtain ⟨y, hy⟩ := he.2 (hs.index x)
