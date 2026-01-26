@@ -5,8 +5,7 @@ Authors: Shing Tak Lam
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Grpd
-public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Data.Set.Subsingleton
@@ -349,6 +348,12 @@ abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
 fundamental groupoid of that space. -/
 abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
+
+/-- Two paths are equal in the fundamental groupoid if and only if they are homotopic. -/
+theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x₁) :
+    fromPath (Path.Homotopic.Quotient.mk f) = fromPath (Path.Homotopic.Quotient.mk g) ↔
+      f.Homotopic g :=
+  ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
 
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
     eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl

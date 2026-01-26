@@ -29,6 +29,8 @@ open Function
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   ⟨refl_of r⟩
 
+@[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
+
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   ⟨irrefl_of r⟩
 
@@ -41,7 +43,9 @@ theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisy
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 
-theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
+@[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
+
+theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
   ⟨fun a b => (total_of r a b).symm⟩
 
 theorem IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap r) :=
@@ -277,7 +281,8 @@ variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
 @[to_dual /-- Inducts on a well-founded `>` relation. -/]
-theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+theorem induction {motive : α → Prop} (a : α)
+    (ind : ∀ x, (∀ y, y < x → motive y) → motive x) : motive a :=
   IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
@@ -360,17 +365,21 @@ theorem Subrelation.isWellFounded (r : α → α → Prop) [IsWellFounded α r] 
     (h : Subrelation s r) : IsWellFounded α s :=
   ⟨h.wf IsWellFounded.wf⟩
 
-/-- See `Prod.wellFoundedLT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedLT' [PartialOrder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
-    WellFoundedLT (α × β) :=
-  Subrelation.isWellFounded (Prod.Lex (· < ·) (· < ·))
-    fun {x y} h ↦ (Prod.lt_iff.mp h).elim (fun h ↦ .left _ _ h.1)
-    fun h ↦ h.1.lt_or_eq.elim (.left _ _) <| by cases x; cases y; rintro rfl; exact .right _ h.2
+@[to_dual]
+instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [WellFoundedLT β] :
+    WellFoundedLT (α × β) where
+  wf := by
+    suffices h : ∀ a, ∀ a' ≤ a, ∀ b, Acc (· < ·) (a', b) from ⟨fun x => h x.1 x.1 le_rfl x.2⟩
+    intro a a' ha b
+    induction a using WellFoundedLT.induction generalizing a' b with | ind a iha
+    induction b using WellFoundedLT.induction generalizing a' with | ind b ihb
+    refine Acc.intro (a', b) fun x hx => ?_
+    obtain ⟨ha', hb⟩ | ⟨ha', hb⟩ := Prod.lt_iff.1 hx
+    · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
+    · exact ihb x.2 hb x.1 (ha'.trans ha)
 
-/-- See `Prod.wellFoundedGT` for a version that only requires `Preorder α`. -/
-theorem Prod.wellFoundedGT' [PartialOrder α] [WellFoundedGT α] [Preorder β] [WellFoundedGT β] :
-    WellFoundedGT (α × β) :=
-  @Prod.wellFoundedLT' αᵒᵈ βᵒᵈ _ _ _ _
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedLT' := Prod.wellFoundedLT
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedGT' := Prod.wellFoundedGT
 
 namespace Set
 
@@ -422,7 +431,7 @@ instance instIsStrictWeakOrder [IsStrictWeakOrder α r] {f : β → α} :
 
 instance instIsEquiv [IsEquiv α r] {f : β → α} : IsEquiv β (f ⁻¹'o r) where
 
-instance instIsTotal [IsTotal α r] {f : β → α} : IsTotal β (f ⁻¹'o r) :=
+instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
@@ -680,8 +689,8 @@ instance instAntisymmLe [PartialOrder α] : @Std.Antisymm α (· ≤ ·) :=
 @[to_dual instIsPartialOrderGe]
 instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-@[to_dual isTotal']
-instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
+@[to_dual total']
+instance LE.total [LinearOrder α] : @Std.Total α (· ≤ ·) :=
   ⟨le_total⟩
 
 @[to_dual instIsLinearOrderGe]
@@ -693,7 +702,7 @@ instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
 
 @[to_dual instIsTrichotomousGe]
 instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
-  IsTotal.isTrichotomous _
+  Std.Total.isTrichotomous _
 
 @[to_dual instIsStrictTotalOrderGt]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
@@ -706,9 +715,9 @@ theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
 theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
   transitive_of_trans _
 
-@[to_dual isTotal_ge]
-instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
-  @IsTotal.swap α _ h
+@[to_dual total_ge]
+instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
+  @Std.Total.swap α _ h
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
