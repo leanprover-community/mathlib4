@@ -193,7 +193,7 @@ theorem condLExp_bot_ae_eq (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
     P⁻[X|⊥] =ᵐ[P] fun _ => (P .univ)⁻¹ • ∫⁻ ω, X ω ∂P := by
   rcases eq_zero_or_neZero P with rfl | hP
   · rw [ae_zero]; exact Filter.eventually_bot
-  exact Filter.Eventually.of_forall <| congr_fun (condLExp_bot' P X)
+  exact ae_of_all P <| congr_fun (condLExp_bot' P X)
 
 theorem condLExp_bot (P : Measure[mΩ₀] Ω) [IsProbabilityMeasure P] (X : Ω → ℝ≥0∞) :
     P⁻[X|⊥] = fun _ => ∫⁻ ω, X ω ∂P :=
