@@ -140,9 +140,9 @@ echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 # Check if the local branch exists
-if git show-ref --verify --quiet refs/heads/bump/$BUMPVERSION; then
+if git show-ref --verify --quiet "refs/heads/bump/$BUMPVERSION"; then
   # Local branch exists, check what it's tracking
-  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name bump/$BUMPVERSION@{u} 2>/dev/null || echo "")
+  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name "bump/$BUMPVERSION@{u}" 2>/dev/null || echo "")
   if [ -z "$tracking_branch" ] || [ "$tracking_branch" != "$NIGHTLY_REMOTE/bump/$BUMPVERSION" ]; then
     echo "Error: Local branch 'bump/$BUMPVERSION' exists but is not properly tracking '$NIGHTLY_REMOTE/bump/$BUMPVERSION'"
     if [ -z "$tracking_branch" ]; then
@@ -195,7 +195,7 @@ while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --qui
   echo ""
   echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
-  read -rp "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 done
 
 echo "All conflicts resolved and committed."
@@ -253,7 +253,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo ""
   echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Run 'git add' on the resolved files, but do not commit"
-  read -rp "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 fi
 
 echo
@@ -322,7 +322,7 @@ if git diff --name-only "bump/$BUMPVERSION" "bump/nightly-$NIGHTLYDATE" | grep -
         exit 1
       else
         echo "Please send the message manually."
-        read -rp "Press enter to continue"
+        read -r -p "Press enter to continue"
       fi
     fi
   else
@@ -374,12 +374,12 @@ fi
 while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the new PR bump/nightly-$NIGHTLYDATE into 'nightly-testing'"
+  echo "We are merging the new PR \"bump/nightly-$NIGHTLYDATE\" into 'nightly-testing'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
   echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
-  read -rp "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 done
 
 echo "All conflicts resolved and committed."
