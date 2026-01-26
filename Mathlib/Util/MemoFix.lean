@@ -13,6 +13,8 @@ public import Mathlib.Init
 
 -/
 
+deprecated_module (since := "2026-01-26")
+
 variable {α β : Type}
 
 @[noinline, deprecated "deprecated without replacement" (since := "2026-01-24")]
@@ -36,5 +38,6 @@ Hashing makes use of a pointer hash.
 This is useful for implementing tree traversal functions where
 subtrees may be referenced in multiple places.
 -/
-@[implemented_by memoFixImpl, deprecated "deprecated without replacement" (since := "2026-01-24")]
+@[implemented_by memoFixImpl,
+deprecated "use `MonadCacheT`  and `checkCache`" (since := "2026-01-24")]
 public opaque memoFix [Nonempty β] (f : (α → β) → (α → β)) : α → β
