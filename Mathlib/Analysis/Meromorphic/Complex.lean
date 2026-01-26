@@ -22,3 +22,6 @@ lemma MeromorphicNFOn.Gamma : MeromorphicNFOn Gamma univ :=
 
 lemma MeromorphicOn.Gamma : MeromorphicOn Gamma univ :=
   MeromorphicNFOn.Gamma.meromorphicOn
+
+lemma Meromorphic.Gamma : Meromorphic Gamma :=
+  meromorphicOn_univ.mp MeromorphicOn.Gamma
