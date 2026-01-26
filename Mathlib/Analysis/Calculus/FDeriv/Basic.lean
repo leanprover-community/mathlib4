@@ -576,8 +576,7 @@ section Continuous
 /-! ### Deducing continuity from differentiability -/
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E] [ContinuousAdd F] [ContinuousSMul 𝕜 F]
 
-theorem HasFDerivAtFilter.tendsto_nhds
-    (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilter f f' x L) :
+theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilter f f' x L) :
     Tendsto f L (𝓝 (f x)) := by
   suffices Tendsto (fun x' => f x' - f x) L (𝓝 0) by
     simpa using this.add_const (f x)
