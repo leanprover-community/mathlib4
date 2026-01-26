@@ -201,22 +201,14 @@ theorem IsEquivalent.exists_eq_mul (huv : u ~[l] v) :
     ∃ (φ : α → β) (_ : Tendsto φ l (𝓝 1)), u =ᶠ[l] φ * v :=
   isEquivalent_iff_exists_eq_mul.mp huv
 
-private theorem isEquivalent_of_tendsto_one_aux (hz : ∀ᶠ x in l, v x = 0 → u x = 0)
-    (huv : Tendsto (u / v) l (𝓝 1)) : u ~[l] v := by
-  rw [isEquivalent_iff_exists_eq_mul]
-  exact ⟨u / v, huv, hz.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
-
 theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
     u ~[l] v := by
-  apply Asymptotics.isEquivalent_of_tendsto_one_aux _ huv
+  suffices ∀ᶠ x in l, v x = 0 → u x = 0 by
+    rw [isEquivalent_iff_exists_eq_mul]
+    exact ⟨u / v, huv, this.mono fun x hz' ↦ (div_mul_cancel_of_imp hz').symm⟩
   by_contra! h
   replace h : ∃ᶠ t in l, (u / v) t = 0 := h.mono fun x ⟨hv, hu⟩ ↦ by simp [hv]
-  have := tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
-  simp at this
-
-theorem isEquivalent_of_tendsto_one' (huv : Tendsto (u / v) l (𝓝 1)) :
-    u ~[l] v :=
-  isEquivalent_of_tendsto_one huv
+  simpa using tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
 
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
