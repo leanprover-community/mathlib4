@@ -18,14 +18,7 @@ In this file, a filtration on `X` indexed by a category `ι` is defined as a fun
 `ι ⥤ MonoOver X`.
 
 We also define the category of filtered objects, strict morphisms (pullback squares at each level),
-and graded pieces (as cokernels) packaged as a functor out of `ComposableArrows ι 1`.
-
-## Main definitions
-
-- `CategoryTheory.Filtration`: a filtration on `X` indexed by `ι`.
-- `CategoryTheory.FilteredObject`: an object of `C` equipped with a filtration.
-- `CategoryTheory.FilteredObject.IsStrictHom`: strictness of a morphism of filtered objects.
-- `CategoryTheory.Filtration.grFunctor`: graded pieces as a functor `ComposableArrows ι 1 ⥤ C`.
+and graded pieces (as cokernels) bundled as a functor out of `ComposableArrows ι 1`.
 
 ## Implementation notes
 
@@ -36,10 +29,6 @@ This also makes it easy to compare with other constructions indexed by morphisms
 ## References
 
 * [P. Deligne, *Théorie de Hodge : II*][deligne_hodge2]
-
-## Tags
-
-filtration, filtered object, graded piece, cokernel, strict morphism
 -/
 
 @[expose] public section
