@@ -11,6 +11,7 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Cardinals that are suitable for the small object argument

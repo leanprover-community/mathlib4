@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.Algebra.Module.SnakeLemma
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Base change along flat modules preserves equalizers
