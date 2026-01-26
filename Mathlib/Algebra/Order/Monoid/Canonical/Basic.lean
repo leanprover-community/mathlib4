@@ -35,12 +35,12 @@ theorem range_add_eq_image_Ici : range (fun x ↦ f (x + k)) = f '' Ici k :=
 end Set
 
 section LinearOrder
-variable {α : Type*} [LinearOrder α] {P : α → Prop}
+variable {α : Type*} [LinearOrder α] {P : α → Prop} {a b c : α}
 
 section Add
 variable [Add α] [CanonicallyOrderedAdd α]
 
-theorem lt_add_iff_lt_left_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] {a b c : α} :
+theorem lt_add_iff_lt_left_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     a < b + c ↔ a < b ∨ ∃ d < c, a = b + d := by
   obtain h | h := lt_or_ge a b
   · have : a < b + c := h.trans_le (le_self_add ..)
@@ -48,17 +48,17 @@ theorem lt_add_iff_lt_left_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd �
   · obtain ⟨a, rfl⟩ := exists_add_of_le h
     simp
 
-theorem forall_lt_add_iff_lt_left [AddLeftReflectLT α] [IsLeftCancelAdd α] {b c : α} :
+theorem forall_lt_add_iff_lt_left [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     (∀ a < b + c, P a) ↔ (∀ a < b, P a) ∧ (∀ d < c, P (b + d)) := by
   simp_rw [lt_add_iff_lt_left_or_exists_lt]
   aesop
 
-theorem exists_lt_add_iff_lt_left [AddLeftReflectLT α] [IsLeftCancelAdd α] {b c : α} :
+theorem exists_lt_add_iff_lt_left [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     (∃ a < b + c, P a) ↔ (∃ a < b, P a) ∨ (∃ d < c, P (b + d)) := by
   simp_rw [lt_add_iff_lt_left_or_exists_lt]
   aesop
 
-theorem le_add_iff_lt_left_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] {a b c : α} :
+theorem le_add_iff_lt_left_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] :
     a ≤ b + c ↔ a < b ∨ ∃ d ≤ c, a = b + d := by
   obtain h | h := lt_or_ge a b
   · have : a ≤ b + c := h.le.trans (le_self_add ..)
@@ -66,12 +66,12 @@ theorem le_add_iff_lt_left_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] {a
   · obtain ⟨a, rfl⟩ := exists_add_of_le h
     simp
 
-theorem forall_le_add_iff_le_left [AddLeftMono α] [IsLeftCancelAdd α] {b c : α} :
+theorem forall_le_add_iff_le_left [AddLeftMono α] [IsLeftCancelAdd α] :
     (∀ a ≤ b + c, P a) ↔ (∀ a < b, P a) ∧ (∀ d ≤ c, P (b + d)) := by
   simp_rw [le_add_iff_lt_left_or_exists_le]
   aesop
 
-theorem exists_le_add_iff_le_left [AddLeftMono α] [IsLeftCancelAdd α] {b c : α} {P : α → Prop} :
+theorem exists_le_add_iff_le_left [AddLeftMono α] [IsLeftCancelAdd α] :
     (∃ a ≤ b + c, P a) ↔ (∃ a < b, P a) ∨ (∃ d ≤ c, P (b + d)) := by
   simp_rw [le_add_iff_lt_left_or_exists_le]
   aesop
@@ -81,32 +81,32 @@ end Add
 section AddCommMagma
 variable [AddCommMagma α] [CanonicallyOrderedAdd α]
 
-theorem lt_add_iff_lt_right_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] {a b c : α} :
+theorem lt_add_iff_lt_right_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     a < b + c ↔ a < c ∨ ∃ d < b, a = d + c := by
   rw [add_comm, lt_add_iff_lt_left_or_exists_lt]
   simp_rw [add_comm]
 
-theorem forall_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] {b c : α} :
+theorem forall_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     (∀ a < b + c, P a) ↔ (∀ a < c, P a) ∧ (∀ d < b, P (d + c)) := by
   simp_rw [lt_add_iff_lt_right_or_exists_lt]
   aesop
 
-theorem exists_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] {b c : α} :
+theorem exists_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] :
     (∃ a < b + c, P a) ↔ (∃ a < c, P a) ∨ (∃ d < b, P (d + c)) := by
   simp_rw [lt_add_iff_lt_right_or_exists_lt]
   aesop
 
-theorem le_add_iff_lt_right_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] {a b c : α} :
+theorem le_add_iff_lt_right_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] :
     a ≤ b + c ↔ a < c ∨ ∃ d ≤ b, a = d + c := by
   rw [add_comm, le_add_iff_lt_left_or_exists_le]
   simp_rw [add_comm]
 
-theorem forall_le_add_iff_le_right [AddLeftMono α] [IsLeftCancelAdd α] {b c : α} :
+theorem forall_le_add_iff_le_right [AddLeftMono α] [IsLeftCancelAdd α] :
     (∀ a ≤ b + c, P a) ↔ (∀ a < c, P a) ∧ (∀ d ≤ b, P (d + c)) := by
   simp_rw [le_add_iff_lt_right_or_exists_le]
   aesop
 
-theorem exists_le_add_iff_le_right [AddLeftMono α] [IsLeftCancelAdd α] {b c : α} {P : α → Prop} :
+theorem exists_le_add_iff_le_right [AddLeftMono α] [IsLeftCancelAdd α] :
     (∃ a ≤ b + c, P a) ↔ (∃ a < c, P a) ∨ (∃ d ≤ b, P (d + c)) := by
   simp_rw [le_add_iff_lt_right_or_exists_le]
   aesop
