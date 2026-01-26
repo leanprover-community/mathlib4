@@ -379,7 +379,7 @@ end OfSetIntegral
 
 section OfSucc
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [OrderClosedTopology E] [IsOrderedModule ℝ E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [ClosedIciTopology E] [IsOrderedModule ℝ E]
 
 theorem submartingale_nat [IsFiniteMeasure μ] {f : ℕ → Ω → E} (hadp : StronglyAdapted 𝒢 f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i, f i ≤ᵐ[μ] μ[f (i + 1)|𝒢 i]) :
