@@ -3,15 +3,17 @@ Copyright (c) 2023 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Ring.Finset
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Fin.Tuple.Finset
-import Mathlib.Tactic.Positivity.Finset
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Algebra.Order.Ring.Finset
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Fin.Tuple.Finset
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.GCongr
 
 /-!
 # The Schwartz-Zippel lemma
@@ -49,6 +51,8 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 * [schwartz_1980]
 * [zippel_1979]
 -/
+
+public section
 
 open Fin Finset Fintype
 
@@ -100,7 +104,7 @@ lemma schwartz_zippel_sup_sum :
         calc
           #{x ∈ S ^^ (n + 1) | eval x p = 0 ∧ eval (tail x) pₖ = 0} / ∏ i, (#(S i) : ℚ≥0)
             ≤ #{x ∈ S ^^ (n + 1) | eval (tail x) pₖ = 0} / ∏ i, (#(S i) : ℚ≥0) := by
-            gcongr; exact fun x hx ↦ hx.2
+            gcongr with x; exact And.right
           _ = #(S 0) * #{xₜ ∈ tail S ^^ n | eval xₜ pₖ = 0}
               / (#(S 0) * (∏ i, #(S (.succ i)) : ℚ≥0)) := by
             rw [card_consEquiv_filter_piFinset S fun x ↦ eval x pₖ = 0, prod_univ_succ, tail_def]
@@ -127,7 +131,7 @@ lemma schwartz_zippel_sup_sum :
                 {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) := by
             rw [← filter_filter, filter_piFinset_eq_map_consEquiv S (fun r ↦ eval r pₖ ≠ 0),
               filter_map, card_map, product_eq_biUnion_right, filter_biUnion]
-            simp [Function.comp_def, filter_image, filter_filter]
+            simp [Function.comp_def, filter_image]
             rfl
           _ ≤ ∑ xₜ ∈ tail S ^^ n with eval xₜ pₖ ≠ 0,
                 #(image (fun x₀ ↦ (x₀, xₜ)) {x₀ ∈ S 0 | eval (cons x₀ xₜ) p = 0}) :=
@@ -154,7 +158,7 @@ lemma schwartz_zippel_sup_sum :
           _ ≤ p.degreeOf 0 := by
             have :
               (ofLex (AddMonoidAlgebra.supDegree toLex p'.leadingCoeff)).cons k ∈ p.support := by
-              rwa [← support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
+              rwa [← mem_support_coeff_finSuccEquiv, mem_support_iff, ← hp', hk,
                 ← Polynomial.leadingCoeff, ← hpₖ, ← leadingCoeff_toLex,
                 AddMonoidAlgebra.leadingCoeff_ne_zero toLex.injective]
             simpa using monomial_le_degreeOf 0 this
@@ -165,7 +169,7 @@ lemma schwartz_zippel_sup_sum :
       rw [Fin.sum_univ_succ, add_comm]
       dsimp
       gcongr
-      simp [k, natDegree_finSuccEquiv, p']
+      simp [natDegree_finSuccEquiv, p']
 
 /-- The **Schwartz-Zippel lemma**
 

@@ -57,7 +57,7 @@ example [AddCommGroup α] (a b c : α) :
 private def MyTrue := True
 
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress on goal
 -/
 #guard_msgs in
 example : MyTrue := by
@@ -86,18 +86,20 @@ example [AddCommGroup α] (x y z : α) : y = x + z - (x - y + z) := by
 example [AddCommGroup α] (a b s : α) : -b + (s - a) = s - b - a := by abel_nf
 
 -- inspired by automated testing
+/-- error: abel_nf made no progress on goal -/
+#guard_msgs in
 example : True := by
   have := 0
   abel_nf
 
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress on goal
 -/
 #guard_msgs in
 example : False := by abel_nf
 
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress at w
 -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : False := by
@@ -108,8 +110,25 @@ example [AddCommGroup α] (x y z : α) (h : False) (w : x - x = y + z) : False :
   guard_hyp w : 0 = y + z
   assumption
 
+-- regression test for the issue fixed in PR #29778
+example [AddCommGroup α] {a b : α} {P : α → Prop} (h : P a) : P (a - b + b) := by
+  abel_nf
+  guard_target = P a
+  exact h
+
+/-
+Test that when `abel_nf` is run at multiple locations, it uses the same atom ordering in each
+location.
+-/
+example [AddCommGroup α] {a b c : α} (h1 : a + b + c = 0) (h2 : b + a + c = 0) : c + a + b = 0 := by
+  abel_nf at *
+  guard_hyp h1 : c + (a + b) = 0
+  guard_hyp h2 : c + (a + b) = 0
+  guard_target = c + (a + b) = 0
+  exact h1
+
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress anywhere
 -/
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (_w : x = y + z) : False := by
@@ -122,17 +141,15 @@ example [AddCommGroup α] (x y z : α) (_w : x = y + z) : x - x = 0 := by
   abel_nf at *
 
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress at w
 -/
--- Ideally this would specify that it made no progress at `w`.
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x = y + z) : x - x = 0 := by
   abel_nf at w ⊢
 
 /--
-error: abel_nf made no progress
+error: abel_nf made no progress on goal
 -/
--- Ideally this would specify that it made no progress at `⊢`.
 #guard_msgs in
 example [AddCommGroup α] (x y z : α) (w : x - x = y + z) : x = 0 := by
   abel_nf at w ⊢
@@ -153,7 +170,7 @@ We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId 
 about differing instance paths.
 -/
 /--
-info: α : Type _
+trace: α : Type _
 a b : α
 x : ℤ
 R : ℤ → ℤ → Prop
@@ -161,7 +178,7 @@ hR : Reflexive R
 h : R (2 • myId x) (2 • myId x)
 ⊢ True
 -/
-#guard_msgs (info) in
+#guard_msgs (trace) in
 set_option pp.mvars false in
 example (x : ℤ) (R : ℤ → ℤ → Prop) (hR : Reflexive R) : True := by
   have h : R (myId x + x) (x + myId x) := hR ..

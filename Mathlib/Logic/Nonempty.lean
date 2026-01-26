@@ -3,8 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
+module
 
+public import Mathlib.Tactic.TypeStar
 /-!
 # Nonempty types
 
@@ -16,6 +17,8 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
 * `Classical.arbitrary`: Extracts a witness of nonemptiness using choice. Takes `Nonempty α` as an
   instance.
 -/
+
+@[expose] public section
 
 section
 variable {α β : Sort*}
@@ -119,7 +122,7 @@ section
 variable {α β : Type*} {γ : α → Type*}
 
 @[simp]
-theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
+theorem nonempty_sigma : Nonempty (Σ a : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 
 @[simp]

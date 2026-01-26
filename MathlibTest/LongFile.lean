@@ -19,6 +19,8 @@ section longFile
 warning: The default value of the `longFile` linter is 1500.
 The current value of 1500 does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1500`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 -- Do not allow setting a `longFile` linter option if the file does not exceed the `defValue`
@@ -28,8 +30,10 @@ set_option linter.style.longFile 1500
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 50.
-This file is 38 lines long which does not exceed the allowed bound.
+This file is 42 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 60`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 -- Do not allow unnecessarily increasing the `longFile` linter option
@@ -40,10 +44,12 @@ set_option linter.style.longFile 60 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 52 lines long, but the limit is 20.
+warning: This file is 58 lines long, but the limit is 20.
 
 You can extend the allowed length of the file using `set_option linter.style.longFile 200`.
 You can completely disable this linter by setting the length limit to `0`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 -- We test that the `longFile` linter warns when a file exceeds the allowed value.
@@ -68,8 +74,10 @@ set_option linter.style.longFile 100 in
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 78 lines long. The current limit is 101, but it is expected to be 200:
+warning: This file is 86 lines long. The current limit is 101, but it is expected to be 200:
 `set_option linter.style.longFile 200`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 -- Check that a value different from `candidate` or `candidate - 100` value is not allowed
@@ -87,8 +95,10 @@ set_option linter.style.longFileDefValue 1000
 /--
 warning: using 'exit' to interrupt Lean
 ---
-warning: This file is 94 lines long. The current limit is 500, but it is expected to be 1000:
+warning: This file is 104 lines long. The current limit is 500, but it is expected to be 1000:
 `set_option linter.style.longFile 1000`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 #exit
@@ -105,6 +115,8 @@ set_option linter.style.longFileDefValue 2000
 warning: The default value of the `longFile` linter is 2000.
 The current value of 1999 does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 1999`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 -- Do not allow setting a `longFile` linter option if the file does not exceed the `defValue`
@@ -118,8 +130,10 @@ set_option linter.style.longFileDefValue 400
 warning: using 'exit' to interrupt Lean
 ---
 warning: The default value of the `longFile` linter is 400.
-This file is 126 lines long which does not exceed the allowed bound.
+This file is 140 lines long which does not exceed the allowed bound.
 Please, remove the `set_option linter.style.longFile 5000`.
+
+Note: This linter can be disabled with `set_option linter.style.longFile 0`
 -/
 #guard_msgs in
 set_option linter.style.longFile 5000 in

@@ -1,20 +1,26 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Topology.EMetricSpace.Defs
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Extended metric spaces
 
 Further results about extended metric spaces.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -36,7 +42,7 @@ theorem edist_le_Ico_sum_edist (f : ℕ → α) {m n} (h : m ≤ n) :
       edist (f m) (f (n + 1)) ≤ edist (f m) (f n) + edist (f n) (f (n + 1)) := edist_triangle _ _ _
       _ ≤ (∑ i ∈ Finset.Ico m n, _) + _ := add_le_add ihn le_rfl
       _ = ∑ i ∈ Finset.Ico m (n + 1), _ := by
-      { rw [Nat.Ico_succ_right_eq_insert_Ico hle, Finset.sum_insert, add_comm]; simp }
+        rw [← Finset.insert_Ico_right_eq_Ico_add_one hle, Finset.sum_insert, add_comm]; simp
 
 /-- The triangle (polygon) inequality for sequences of points; `Finset.range` version. -/
 theorem edist_le_range_sum_edist (f : ℕ → α) (n : ℕ) :
@@ -129,7 +135,7 @@ theorem tendstoLocallyUniformly_iff {ι : Type*} [TopologicalSpace β] {F : ι �
     TendstoLocallyUniformly F f p ↔
       ∀ ε > 0, ∀ x : β, ∃ t ∈ 𝓝 x, ∀ᶠ n in p, ∀ y ∈ t, edist (f y) (F n y) < ε := by
   simp only [← tendstoLocallyUniformlyOn_univ, tendstoLocallyUniformlyOn_iff, mem_univ,
-    forall_const, exists_prop, nhdsWithin_univ]
+    forall_const, nhdsWithin_univ]
 
 /-- Expressing uniform convergence using `edist`. -/
 theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α} {p : Filter ι} :
@@ -145,7 +151,7 @@ namespace EMetric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
-  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+  simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_gt_iff_le]
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
@@ -182,6 +188,18 @@ theorem totallyBounded_iff' {s : Set α} :
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 section Compact
+
+/-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
+set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
+theorem subset_countable_closure_of_almost_dense_set (s : Set α)
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
+    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  apply UniformSpace.subset_countable_closure_of_almost_dense_set
+  intro U hU
+  obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
+  obtain ⟨t, tC, ht⟩ := hs ε hε
+  refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
+  rwa [mem_closedBall, edist_comm] at hy
 
 -- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
@@ -281,38 +299,6 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       toUniformSpace := inferInstance,
       uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
-
-namespace TopologicalSpace
-
-section Compact
-
-open Topology
-
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
-subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
-of separability does not need in general to be contained in `s`. -/
-theorem IsSeparable.exists_countable_dense_subset
-    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
-    rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
-    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
-    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  exact subset_countable_closure_of_almost_dense_set _ this
-
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
-  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
-  lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
-
-end Compact
-
-end TopologicalSpace
 
 section LebesgueNumberLemma
 

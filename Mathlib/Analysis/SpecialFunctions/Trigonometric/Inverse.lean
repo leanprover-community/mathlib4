@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -14,6 +16,8 @@ See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan fu
 
 Basic inequalities on trigonometric functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -132,8 +136,8 @@ theorem arcsin_le_iff_le_sin' {x y : ℝ} (hy : y ∈ Ico (-(π / 2)) (π / 2)) 
     arcsin x ≤ y ↔ x ≤ sin y := by
   rcases le_total x (-1) with hx₁ | hx₁
   · simp [arcsin_of_le_neg_one hx₁, hy.1, hx₁.trans (neg_one_le_sin _)]
-  rcases lt_or_le 1 x with hx₂ | hx₂
-  · simp [arcsin_of_one_le hx₂.le, hy.2.not_le, (sin_le_one y).trans_lt hx₂]
+  rcases lt_or_ge 1 x with hx₂ | hx₂
+  · simp [arcsin_of_one_le hx₂.le, hy.2.not_ge, (sin_le_one y).trans_lt hx₂]
   exact arcsin_le_iff_le_sin ⟨hx₁, hx₂⟩ (mem_Icc_of_Ico hy)
 
 theorem le_arcsin_iff_sin_le {x y : ℝ} (hx : x ∈ Icc (-(π / 2)) (π / 2)) (hy : y ∈ Icc (-1 : ℝ) 1) :
@@ -212,7 +216,7 @@ theorem pi_div_two_eq_arcsin {x} : π / 2 = arcsin x ↔ 1 ≤ x :=
 
 @[simp]
 theorem pi_div_two_le_arcsin {x} : π / 2 ≤ arcsin x ↔ 1 ≤ x :=
-  (arcsin_le_pi_div_two x).le_iff_eq.trans pi_div_two_eq_arcsin
+  (arcsin_le_pi_div_two x).ge_iff_eq'.trans pi_div_two_eq_arcsin
 
 @[simp]
 theorem arcsin_eq_neg_pi_div_two {x : ℝ} : arcsin x = -(π / 2) ↔ x ≤ -1 :=
@@ -224,7 +228,7 @@ theorem neg_pi_div_two_eq_arcsin {x} : -(π / 2) = arcsin x ↔ x ≤ -1 :=
 
 @[simp]
 theorem arcsin_le_neg_pi_div_two {x} : arcsin x ≤ -(π / 2) ↔ x ≤ -1 :=
-  (neg_pi_div_two_le_arcsin x).le_iff_eq.trans arcsin_eq_neg_pi_div_two
+  (neg_pi_div_two_le_arcsin x).ge_iff_eq'.trans arcsin_eq_neg_pi_div_two
 
 @[simp]
 theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
@@ -235,9 +239,9 @@ theorem pi_div_four_le_arcsin {x} : π / 4 ≤ arcsin x ↔ √2 / 2 ≤ x := by
 theorem mapsTo_sin_Ioo : MapsTo sin (Ioo (-(π / 2)) (π / 2)) (Ioo (-1) 1) := fun x h => by
   rwa [mem_Ioo, ← arcsin_lt_pi_div_two, ← neg_pi_div_two_lt_arcsin, arcsin_sin h.1.le h.2.le]
 
-/-- `Real.sin` as a `PartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
+/-- `Real.sin` as an `OpenPartialHomeomorph` between `(-π / 2, π / 2)` and `(-1, 1)`. -/
 @[simp]
-def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+def sinPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun := sin
   invFun := arcsin
   source := Ioo (-(π / 2)) (π / 2)
@@ -305,6 +309,8 @@ theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 theorem cos_arccos {x : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) : cos (arccos x) = x := by
   rw [arccos, cos_pi_div_two_sub, sin_arcsin hx₁ hx₂]
 
+-- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
+set_option linter.flexible false in
 theorem arccos_cos {x : ℝ} (hx₁ : 0 ≤ x) (hx₂ : x ≤ π) : arccos (cos x) = x := by
   rw [arccos, ← sin_pi_div_two_sub, arcsin_sin] <;> simp [sub_eq_add_neg] <;> linarith
 
@@ -395,7 +401,7 @@ theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arcsin {x : ℝ} (h : 0 ≤ x) : arccos x = arcsin (√(1 - x ^ 2)) :=
   (arcsin_eq_of_sin_eq (sin_arccos _)
-      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by norm_num))).trans (arccos_nonneg _),
+      ⟨(Left.neg_nonpos_iff.2 (div_nonneg pi_pos.le (by simp))).trans (arccos_nonneg _),
         arccos_le_pi_div_two.2 h⟩).symm
 
 -- The junk values for `arcsin` and `sqrt` make this true even for `1 < x`.
@@ -437,7 +443,7 @@ theorem arccos_nhdsLE (h : Tendsto f l (𝓝[≤] x)) : Tendsto (arccos <| f ·)
 theorem arccos_nhdsGE (h : Tendsto f l (𝓝[≥] x)) :
     Tendsto (arccos <| f ·) l (𝓝[≤] (arccos x)) := by
   refine ((continuous_arccos.tendsto _).inf <| MapsTo.tendsto fun y hy ↦ ?_).comp h
-  simp only [mem_Ici, mem_Iic] at hy ⊢
+  push _ ∈ _ at hy ⊢
   exact antitone_arccos hy
 
 end Filter.Tendsto

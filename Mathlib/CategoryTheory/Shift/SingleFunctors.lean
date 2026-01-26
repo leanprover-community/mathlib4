@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Functors from a category to a category with a shift
@@ -25,9 +27,11 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
 
-open CategoryTheory Category ZeroObject Limits
+@[expose] public section
 
-variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
+open CategoryTheory Category ZeroObject Limits Functor
+
+variable (C D E E' : Type*) [Category* C] [Category* D] [Category* E] [Category* E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
 
 namespace CategoryTheory
@@ -85,8 +89,8 @@ lemma shiftIso_add'_hom_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
 lemma shiftIso_add'_inv_app (n m mn : A) (hnm : m + n = mn) (a a' a'' : A)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
-        (F.shiftIso n a a' ha').inv.app X ≫
-        ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
+      (F.shiftIso n a a' ha').inv.app X ≫
+      ((F.shiftIso m a' a'' ha'').inv.app X)⟦n⟧' ≫
       (shiftFunctorAdd' D m n mn hnm).inv.app ((F.functor a'').obj X) := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
@@ -108,7 +112,7 @@ structure Hom where
   /-- a family of natural transformations `F.functor a ⟶ G.functor a` -/
   hom (a : A) : F.functor a ⟶ G.functor a
   comm (n a a' : A) (ha' : n + a = a') : (F.shiftIso n a a' ha').hom ≫ hom a =
-    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by aesop_cat
+    whiskerRight (hom a') (shiftFunctor D n) ≫ (G.shiftIso n a a' ha').hom := by cat_disch
 
 namespace Hom
 
@@ -207,7 +211,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
     ext X
     dsimp
     simp only [Functor.commShiftIso_zero, Functor.CommShift.isoZero_inv_app,
-      SingleFunctors.shiftIso_zero_hom_app,id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
+      SingleFunctors.shiftIso_zero_hom_app, id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
       Functor.map_id, Functor.id_obj, comp_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
@@ -221,6 +225,7 @@ variable (C A)
 
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
+@[simps]
 def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postcomp G
@@ -248,7 +253,6 @@ def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShi
     F.postcomp G ≅ F.postcomp G' :=
   isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
     ext X
-    dsimp
     simp [NatTrans.shift_app e.hom n])
 
 end SingleFunctors

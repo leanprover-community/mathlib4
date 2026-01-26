@@ -3,9 +3,12 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Data.Sym.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -15,6 +18,8 @@ with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset`
 promoted to an order isomorphism).
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -59,7 +64,7 @@ theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
 
 @[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
-  simp [toMultiset_apply, map_finsuppSum, Function.id_def]
+  simp [toMultiset_apply, Function.id_def]
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by

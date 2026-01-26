@@ -3,8 +3,8 @@ Copyright (c) 2024 Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Seewoo Lee
 -/
-import Mathlib.Data.Real.Irrational
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.NumberTheory.Real.Irrational
 
 /-
 # Irrational power of irrational numbers are not necessarily irrational.
@@ -27,7 +27,7 @@ Note that the positivity assumption on `a` is imposed because of the definition 
 negative bases. See `Real.rpow_def_of_neg` for more details.
 -/
 theorem not_irrational_rpow :
-   ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b) := by
+    ¬ ∀ a b : ℝ, Irrational a → Irrational b → 0 < a → Irrational (a ^ b) := by
   push_neg
   by_cases hc : Irrational (√2 ^ √2)
   · use (√2 ^ √2), √2, hc, irrational_sqrt_two, by positivity

@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -25,6 +27,8 @@ The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
   residue fields.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -61,7 +65,7 @@ def Γevaluation (x : X) : X.presheaf.obj (op ⊤) ⟶ X.residueField x :=
   X.evaluation ⟨x, show x ∈ ⊤ from trivial⟩
 
 @[simp]
-lemma evaluation_eq_zero_iff_not_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
+lemma evaluation_eq_zero_iff_notMem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
     X.evaluation x f = 0 ↔ x.val ∉ X.toRingedSpace.basicOpen f := by
   rw [X.toRingedSpace.mem_basicOpen f x.1 x.2, ← not_iff_not, not_not]
   exact (IsLocalRing.residue_ne_zero_iff_isUnit _)
@@ -72,14 +76,14 @@ lemma evaluation_ne_zero_iff_mem_basicOpen (x : U) (f : X.presheaf.obj (op U)) :
 
 lemma basicOpen_eq_bot_iff_forall_evaluation_eq_zero (f : X.presheaf.obj (op U)) :
     X.toRingedSpace.basicOpen f = ⊥ ↔ ∀ (x : U), X.evaluation x f = 0 := by
-  simp only [evaluation_eq_zero_iff_not_mem_basicOpen, Subtype.forall]
+  simp only [evaluation_eq_zero_iff_notMem_basicOpen, Subtype.forall]
   exact ⟨fun h ↦ h ▸ fun a _ hc ↦ hc,
     fun h ↦ eq_bot_iff.mpr <| fun a ha ↦ h a (X.toRingedSpace.basicOpen_le f ha) ha⟩
 
 @[simp]
-lemma Γevaluation_eq_zero_iff_not_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
+lemma Γevaluation_eq_zero_iff_notMem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f = 0 ↔ x ∉ X.toRingedSpace.basicOpen f :=
-  evaluation_eq_zero_iff_not_mem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
+  evaluation_eq_zero_iff_notMem_basicOpen X ⟨x, show x ∈ ⊤ by trivial⟩ f
 
 lemma Γevaluation_ne_zero_iff_mem_basicOpen (x : X) (f : X.presheaf.obj (op ⊤)) :
     X.Γevaluation x f ≠ 0 ↔ x ∈ X.toRingedSpace.basicOpen f :=
@@ -103,16 +107,14 @@ lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
 lemma residueFieldMap_id (x : X) :
     residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) := by
   ext : 1
-  simp only [id_toShHom', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap_id]
+  simp only [residueFieldMap, stalkMap_id]
   apply IsLocalRing.ResidueField.map_id
 
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.base x) ≫ residueFieldMap f x := by
   ext : 1
-  simp only [comp_toShHom, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap,
-    CommRingCat.hom_comp, TopCat.comp_app]
-  simp_rw [stalkMap_comp]
+  simp only [residueFieldMap, CommRingCat.hom_comp, stalkMap_comp]
   apply IsLocalRing.ResidueField.map_comp (Hom.stalkMap g (f.base x)).hom (Hom.stalkMap f x).hom
 
 @[reassoc]

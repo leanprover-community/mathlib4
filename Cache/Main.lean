@@ -7,7 +7,7 @@ Authors: Arthur Paulino, Jon Eugster
 import Cache.Requests
 
 def help : String := "Mathlib4 caching CLI
-Usage: cache [COMMAND]
+Usage: cache [OPTIONS] [COMMAND]
 
 Commands:
   # No privilege required
@@ -20,15 +20,17 @@ Commands:
   unpack!       Decompress linked already downloaded files (no skipping)
   clean         Delete non-linked files
   clean!        Delete everything on the local cache
-  lookup [ARGS] Show information about cache files for the given lean files
+  lookup [ARGS] Show information about cache files for the given Lean files
 
   # Privilege required
-  put          Run 'mk' then upload linked files missing on the server
-  put!         Run 'mk' then upload all linked files
+  put          Run 'pack' then upload linked files missing on the server
+  put!         Run 'pack' then upload all linked files
   put-unpacked 'put' only files not already 'pack'ed; intended for CI use
   commit       Write a commit on the server
   commit!      Overwrite a commit on the server
-  collect      TODO
+
+Options:
+  --repo=OWNER/REPO  Override the repository to fetch/push cache from
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -46,27 +48,43 @@ Valid arguments are:
 * Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
 * With bash's automatic glob expansion one can also write things like
   'Mathlib/**/Order/*.lean'.
+
+# Environment variables
+
+* MATHLIB_CACHE_DIR       Local cache directory (default: ~/.cache/mathlib)
+* MATHLIB_CACHE_USE_CLOUDFLARE  Set to '1' to use Cloudflare instead of Azure
+* MATHLIB_CACHE_GET_URL   Override the download URL
+* MATHLIB_CACHE_PUT_URL   Override the upload URL
+
+See Cache/README.md for more details.
 "
 
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
-/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
+/-- Commands which (potentially) call `leantar` for compressing or decompressing files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "put", "put!", "put-unpacked", "pack", "pack!", "unpack", "lookup"]
+
+/-- Parses an optional `--repo` option. -/
+def parseRepo (args : List String) : IO (Option String × List String) := do
+  if let arg :: args := args then
+    if arg.startsWith "--" then
+      if let some repo := arg.dropPrefix? "--repo=" then
+        return (some repo.toString, args)
+      else
+        throw <| IO.userError s!"unknown option: {arg}"
+  return (none, args)
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
-  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
-    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
-    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
-    Process.exit 1
   if args.isEmpty then
     println help
     Process.exit 0
   CacheM.run do
 
+  let (repo?, args) ← parseRepo args
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do
     -- No arguments means to start from `Mathlib.lean`
@@ -82,11 +100,12 @@ def main (args : List String) : IO Unit := do
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
-    getFiles hashMap force force goodCurl decompress
+    getFiles repo? hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
-    putFiles (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    let repo := repo?.getD MATHLIBREPO
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
   match args with
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)

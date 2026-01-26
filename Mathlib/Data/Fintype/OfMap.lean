@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Finset.Image
+module
+
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Finset.Image
 
 /-!
 # Constructors for `Fintype`
@@ -18,6 +20,8 @@ given maps from/to finite types.
   a type is finite if there is a bi/in/surjection from/to a finite type.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 open Function
@@ -28,7 +32,7 @@ universe u v
 
 variable {α β γ : Type*}
 
-open Finset Function
+open Finset
 
 namespace Fintype
 

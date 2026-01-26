@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Single
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 /-!
 # The homology of single complexes
 
@@ -12,6 +14,8 @@ The main definition in this file is `HomologicalComplex.homologyFunctorSingleIso
 which is a natural isomorphism `single C c j ⋙ homologyFunctor C c j ≅ 𝟭 C`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -87,7 +91,7 @@ lemma singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom :
   simp [singleObjCyclesSelfIso, singleObjOpcyclesSelfIso]
 
 @[reassoc (attr := simp)]
-lemma singleObjCyclesSelfIso_inv_homologyπ  :
+lemma singleObjCyclesSelfIso_inv_homologyπ :
     (singleObjCyclesSelfIso _ _ _).inv ≫ ((single C c j).obj A).homologyπ j =
       (singleObjHomologySelfIso _ _ _).inv := by
   simp [singleObjCyclesSelfIso, singleObjHomologySelfIso]
@@ -113,6 +117,15 @@ lemma singleObjHomologySelfIso_hom_singleObjOpcyclesSelfIso_hom :
       ((single C c j).obj A).homologyι j := by
   rw [← cancel_epi (singleObjHomologySelfIso _ _ _).inv,
     Iso.inv_hom_id_assoc, singleObjHomologySelfIso_inv_homologyι]
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_singleObjOpcyclesSelfIso_inv :
+    ((single C c j).obj A).pOpcycles j ≫ (singleObjOpcyclesSelfIso _ _ _).inv =
+      (singleObjXSelf c j A).hom := by
+  have := ((single C c j).obj A).isIso_iCycles j _ rfl (by simp)
+  rw [← cancel_epi (((single C c j).obj A).iCycles j),
+    ← HomologicalComplex.homology_π_ι_assoc, homologyι_singleObjOpcyclesSelfIso_inv,
+    homologyπ_singleObjHomologySelfIso_hom, singleObjCyclesSelfIso_hom]
 
 variable {A}
 variable {B : C} (f : A ⟶ B)
@@ -151,7 +164,7 @@ lemma singleObjHomologySelfIso_inv_naturality :
 
 @[reassoc (attr := simp)]
 lemma singleObjOpcyclesSelfIso_hom_naturality :
-    (singleObjOpcyclesSelfIso c j A).hom ≫ opcyclesMap ((single C c j).map f) j  =
+    (singleObjOpcyclesSelfIso c j A).hom ≫ opcyclesMap ((single C c j).map f) j =
       f ≫ (singleObjOpcyclesSelfIso c j B).hom := by
   rw [← cancel_epi (singleObjCyclesSelfIso c j A).hom,
     singleObjCyclesSelfIso_hom_singleObjOpcyclesSelfIso_hom_assoc, p_opcyclesMap,

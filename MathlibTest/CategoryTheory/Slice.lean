@@ -5,6 +5,7 @@ open CategoryTheory
 variable (C : Type) [Category C] (X Y Z W U : C)
 variable (f₁ f₂ : X ⟶ Y) (g g₁ g₂ : Y ⟶ Z) (h : Z ⟶ W) (l : W ⟶ U)
 
+set_option linter.unusedTactic false in
 example (hyp : f₁ ≫ g₁ = f₂ ≫ g₂) : f₁ ≫ g₁ ≫ h ≫ l = (f₂ ≫ g₂) ≫ (h ≫ l) := by
   conv =>
     rhs

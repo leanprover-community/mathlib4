@@ -3,13 +3,17 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.Ring.Commute
+module
+
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.Ring.Commute
 
 /-!
 # Cast of natural numbers: lemmas about `Commute`
 
 -/
+
+public section
 
 variable {α : Type*}
 
@@ -50,10 +54,9 @@ lemma natCast_mul_right (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (n * x) 
 lemma natCast_mul_left (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy (n * a) x y :=
   SemiconjBy.mul_left (Nat.cast_commute _ _) h
 
-@[simp]
 lemma natCast_mul_natCast_mul (h : SemiconjBy a x y) (m n : ℕ) :
-    SemiconjBy (m * a) (n * x) (n * y) :=
-  (h.natCast_mul_left m).natCast_mul_right n
+    SemiconjBy (m * a) (n * x) (n * y) := by
+  simp [h]
 
 end SemiconjBy
 
@@ -66,8 +69,8 @@ variable [Semiring α] {a b : α}
 @[simp] lemma natCast_mul_left (h : Commute a b) (n : ℕ) : Commute (n * a) b :=
   SemiconjBy.natCast_mul_left h n
 
-@[simp] lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) :=
-  SemiconjBy.natCast_mul_natCast_mul h m n
+lemma natCast_mul_natCast_mul (h : Commute a b) (m n : ℕ) : Commute (m * a) (n * b) := by
+  simp [h]
 
 variable (a) (m n : ℕ)
 

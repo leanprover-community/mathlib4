@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 /-! # Epi-mono factorization in the simplex category presented by generators and relations
 
 This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
@@ -15,6 +17,8 @@ moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
 
+@[expose] public section
+
 namespace SimplexCategoryGenRel
 open CategoryTheory
 
@@ -24,13 +28,13 @@ section EpiMono
 def splitMonoδ {n : ℕ} (i : Fin (n + 2)) : SplitMono (δ i) where
   retraction := by
     induction i using Fin.lastCases with
-    | last => exact σ n
+    | last => exact σ (Fin.last n)
     | cast i => exact σ i
   id := by
     cases i using Fin.lastCases
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_last]
+    · simp only [Fin.lastCases_last]
       exact δ_comp_σ_succ
-    · simp only [Fin.natCast_eq_last, Fin.lastCases_castSucc]
+    · simp only [Fin.lastCases_castSucc]
       exact δ_comp_σ_self
 
 instance {n : ℕ} {i : Fin (n + 2)} : IsSplitMono (δ i) := .mk' <| splitMonoδ i
@@ -143,7 +147,7 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
   induction n generalizing x with
   | zero => cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | id  => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
+    | id => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of j f hf hg =>
       obtain ⟨k⟩ := hg
       obtain ⟨rfl, rfl⟩ | hf' := eq_or_len_le_of_P_δ hf
@@ -197,8 +201,8 @@ theorem exists_P_σ_P_δ_factorization {x y : SimplexCategoryGenRel} (f : x ⟶ 
 
 instance : MorphismProperty.HasFactorization P_σ P_δ where
   nonempty_mapFactorizationData f := by
-    obtain ⟨z, e , m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
-    exact ⟨⟨z, e , m, fac.symm, he, hm⟩⟩
+    obtain ⟨z, e, m, he, hm, fac⟩ := exists_P_σ_P_δ_factorization f
+    exact ⟨⟨z, e, m, fac.symm, he, hm⟩⟩
 
 end ExistenceOfFactorizations
 

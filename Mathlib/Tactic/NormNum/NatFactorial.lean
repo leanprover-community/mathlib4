@@ -3,8 +3,10 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for factorials
 
@@ -15,9 +17,11 @@ conquer strategy that improves performance and avoids exceeding the recursion de
 
 -/
 
+public meta section
+
 namespace Mathlib.Meta.NormNum
 
-open Nat Qq Lean Elab.Tactic Qq Meta
+open Nat Qq Lean Elab.Tactic Meta
 
 lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
     (h₂ : (n + l).ascFactorial m = b) : n.ascFactorial (l + m) = a * b := by
@@ -63,7 +67,7 @@ lemma isNat_factorial {n x : ℕ} (h₁ : IsNat n x) (a : ℕ) (h₂ : (1).ascFa
 def evalNatFactorial : NormNumExt where eval {u α} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.factorial $x := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨_, val, ascPrf⟩ := proveAscFactorial 1 ex.natLit! q(nat_lit 1) ex
   return .isNat sℕ q($val) q(isNat_factorial $p $val $ascPrf)
@@ -78,7 +82,7 @@ lemma isNat_ascFactorial {n x l y : ℕ} (h₁ : IsNat n x) (h₂ : IsNat l y) (
 def evalNatAscFactorial : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; have : $e =Q Nat.ascFactorial $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex₁, p₁⟩ ← deriveNat x sℕ
   let ⟨ex₂, p₂⟩ ← deriveNat y sℕ
   let ⟨_, val, ascPrf⟩ := proveAscFactorial ex₁.natLit! ex₂.natLit! ex₁ ex₂
@@ -87,8 +91,7 @@ def evalNatAscFactorial : NormNumExt where eval {u α} e := do
 lemma isNat_descFactorial {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
     (h₃ : x = z + y) (a : ℕ) (p : (z + 1).ascFactorial y = a) : IsNat (n.descFactorial l) a := by
   constructor
-  simp [h₁.out, h₂.out, ← p, h₃]
-  apply Nat.add_descFactorial_eq_ascFactorial
+  simpa [h₁.out, h₂.out, ← p, h₃] using Nat.add_descFactorial_eq_ascFactorial _ _
 
 lemma isNat_descFactorial_zero {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
     (h₃ : y = z + x + 1) : IsNat (n.descFactorial l) 0 := by
@@ -117,7 +120,7 @@ def evalNatDescFactorial : NormNumExt where eval {u α} e := do
   have : u =QL 0 := ⟨⟩
   have : $α =Q ℕ := ⟨⟩
   have : $e =Q Nat.descFactorial $x' $y' := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨x, p₁⟩ ← deriveNat x' sℕ
   let ⟨y, p₂⟩ ← deriveNat y' sℕ
   if x.natLit! ≥ y.natLit! then

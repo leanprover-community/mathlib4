@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -26,13 +28,15 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 finset, gcd
 -/
 
+@[expose] public section
+
 variable {ι α β γ : Type*}
 
 namespace Finset
 
 open Multiset
 
-variable [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
@@ -50,7 +54,7 @@ theorem lcm_def : s.lcm f = (s.1.map f).lcm :=
 
 @[simp]
 theorem lcm_empty : (∅ : Finset β).lcm f = 1 :=
-  fold_empty
+  rfl
 
 @[simp]
 theorem lcm_dvd_iff {a : α} : s.lcm f ∣ a ↔ ∀ b ∈ s, f b ∣ a := by
@@ -101,9 +105,12 @@ theorem lcm_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem lcm_eq_lcm_image [DecidableEq α] : s.lcm f = (s.image f).lcm id :=
   Eq.symm <| lcm_image _
 
-theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ 0 ∈ f '' s := by
-  simp only [Multiset.mem_map, lcm_def, Multiset.lcm_eq_zero_iff, Set.mem_image, mem_coe, ←
-    Finset.mem_def]
+@[simp]
+theorem lcm_eq_zero_iff [Nontrivial α] : s.lcm f = 0 ↔ ∃ x ∈ s, f x = 0 := by
+  simp only [lcm_def, Multiset.lcm_eq_zero_iff, Multiset.mem_map, mem_val]
+
+theorem lcm_ne_zero_iff [Nontrivial α] : s.lcm f ≠ 0 ↔ ∀ x ∈ s, f x ≠ 0 := by
+  simp [lcm_eq_zero_iff]
 
 end lcm
 
@@ -123,7 +130,7 @@ theorem gcd_def : s.gcd f = (s.1.map f).gcd :=
 
 @[simp]
 theorem gcd_empty : (∅ : Finset β).gcd f = 0 :=
-  fold_empty
+  rfl
 
 theorem dvd_gcd_iff {a : α} : a ∣ s.gcd f ↔ ∀ b ∈ s, a ∣ f b := by
   apply Iff.trans Multiset.dvd_gcd
@@ -173,24 +180,27 @@ theorem gcd_image [DecidableEq β] {g : γ → β} (s : Finset γ) :
 theorem gcd_eq_gcd_image [DecidableEq α] : s.gcd f = (s.image f).gcd id :=
   Eq.symm <| gcd_image _
 
-theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
+theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x ∈ s, f x = 0 := by
   rw [gcd_def, Multiset.gcd_eq_zero_iff]
   constructor <;> intro h
   · intro b bs
     apply h (f b)
-    simp only [Multiset.mem_map, mem_def.1 bs]
+    simp only [Multiset.mem_map]
     use b
-    simp only [mem_def.1 bs, eq_self_iff_true, and_self]
+    simp only [mem_def.1 bs, and_self]
   · intro a as
     rw [Multiset.mem_map] at as
     rcases as with ⟨b, ⟨bs, rfl⟩⟩
     apply h b (mem_def.1 bs)
 
+theorem gcd_ne_zero_iff : s.gcd f ≠ 0 ↔ ∃ x ∈ s, f x ≠ 0 := by
+  simp [gcd_eq_zero_iff]
+
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
-    · rw [filter_union_filter_neg_eq]
+    · rw [filter_union_filter_not_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f
@@ -219,7 +229,7 @@ nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * no
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
     (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
-  ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
+  ((mul_right_eq_self₀ (a := s.gcd f)).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
     contrapose! hs
     exact gcd_eq_zero_iff.1 hs
@@ -227,11 +237,10 @@ theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
 theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
-    by_cases h : ∀ x ∈ s, f x = (0 : α)
+    by_cases! h : ∀ x ∈ s, f x = (0 : α)
     · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
-      push_neg at h
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]
@@ -258,7 +267,7 @@ namespace Finset
 
 section IsDomain
 
-variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
+variable [CommRing α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :

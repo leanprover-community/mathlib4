@@ -3,8 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Push
 
 /-!
 # Action of regular elements on a module
@@ -24,6 +28,8 @@ This property is the direct generalization to modules of the property `IsLeftReg
 `Algebra/Regular`.  Lemma `isLeftRegular_iff` shows that indeed the two notions
 coincide.
 -/
+
+@[expose] public section
 
 
 variable {R S : Type*} (M : Type*) {a b : R} {s : S}
@@ -49,9 +55,23 @@ theorem isRightRegular_iff [Mul R] {a : R} :
     IsRightRegular a ↔ IsSMulRegular R (MulOpposite.op a) :=
   Iff.rfl
 
+variable {M}
+
+lemma isSMulRegular_map [SMul R M] [SMul S M] (f : R → S) (smul : ∀ m : M, f a • m = a • m) :
+    IsSMulRegular M (f a) ↔ IsSMulRegular M a := by simp [IsSMulRegular, smul]
+
+protected alias ⟨IsSMulRegular.of_map, IsSMulRegular.map⟩ := isSMulRegular_map
+
 namespace IsSMulRegular
 
-variable {M}
+@[simp] theorem natAbs_iff [SubtractionMonoid M] {n : ℤ} :
+    IsSMulRegular M n.natAbs ↔ IsSMulRegular M n := by
+  simp_rw [IsSMulRegular, Function.Injective]
+  conv_rhs => rw [← n.sign_mul_natAbs]
+  obtain h | h | h := n.sign_trichotomy
+  · simp [h]
+  · simp [Int.sign_eq_zero_iff_zero.mp h]
+  · simp [h, neg_zsmul]
 
 section SMul
 
@@ -105,11 +125,6 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩
     exact ⟨ha.mul hb, hb.mul ha⟩
-
-lemma of_injective {N F} [SMul R N] [FunLike F M N] [MulActionHomClass F R M N]
-    (f : F) {r : R} (h1 : Function.Injective f) (h2 : IsSMulRegular N r) :
-    IsSMulRegular M r := fun x y h3 => h1 <| h2 <|
-  (map_smulₛₗ f r x).symm.trans ((congrArg f h3).trans (map_smulₛₗ f r y))
 
 end SMul
 
@@ -215,7 +230,7 @@ end Group
 
 section Units
 
-variable [Monoid R] [MulAction R M]
+variable (M) [Monoid R] [MulAction R M]
 
 /-- Any element in `Rˣ` is `M`-regular. -/
 theorem Units.isSMulRegular (a : Rˣ) : IsSMulRegular M (a : R) :=
@@ -230,17 +245,30 @@ end Units
 
 section SMulZeroClass
 
-variable {M}
-
-protected
-lemma IsSMulRegular.eq_zero_of_smul_eq_zero [Zero M] [SMulZeroClass R M]
+protected lemma IsSMulRegular.right_eq_zero_of_smul [Zero M] [SMulZeroClass R M]
     {r : R} {x : M} (h1 : IsSMulRegular M r) (h2 : r • x = 0) : x = 0 :=
   h1 (h2.trans (smul_zero r).symm)
 
 end SMulZeroClass
 
+lemma isSMulRegular_iff_right_eq_zero_of_smul [AddGroup M] [DistribSMul R M] {r : R} :
+    IsSMulRegular M r ↔ ∀ m : M, r • m = 0 → m = 0 where
+  mp h _ := h.right_eq_zero_of_smul
+  mpr h m₁ m₂ eq := sub_eq_zero.mp <| h _ <| by simp_rw [smul_sub, eq, sub_self]
+
+alias ⟨_, IsSMulRegular.of_right_eq_zero_of_smul⟩ := isSMulRegular_iff_right_eq_zero_of_smul
+
+@[deprecated (since := "2025-08-04")]
+alias IsSMulRegular.eq_zero_of_smul_eq_zero := IsSMulRegular.right_eq_zero_of_smul
+
+@[deprecated (since := "2025-08-04")]
+alias isSMulRegular_iff_smul_eq_zero_imp_eq_zero := isSMulRegular_iff_right_eq_zero_of_smul
+
+@[deprecated (since := "2025-08-04")]
+alias isSMulRegular_of_smul_eq_zero_imp_eq_zero := IsSMulRegular.of_right_eq_zero_of_smul
+
 lemma Equiv.isSMulRegular_congr {R S M M'} [SMul R M] [SMul S M'] {e : M ≃ M'}
     {r : R} {s : S} (h : ∀ x, e (r • x) = s • e x) :
     IsSMulRegular M r ↔ IsSMulRegular M' s :=
-  (e.comp_injective _).symm.trans  <|
+  (e.comp_injective _).symm.trans <|
     (iff_of_eq <| congrArg _ <| funext h).trans <| e.injective_comp _

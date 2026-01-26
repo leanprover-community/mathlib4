@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+module
+
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space
@@ -22,8 +24,12 @@ In later files once the additive group structure is set up, we provide
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
+@[expose] public section
+
 
 universe u v w x y
+
+open scoped Uniformity
 
 noncomputable section
 
@@ -52,14 +58,14 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
 
-/-- A `DistribMulAction` that is continuous on a uniform group is uniformly continuous.
+/-- A `DistribSMul` that is continuous on a uniform group is uniformly continuous.
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
-theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddGroup M]
-    [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
+theorem uniformContinuousConstSMul_of_continuousConstSMul [AddGroup M]
+    [DistribSMul R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
-    uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom M r)
+    uniformContinuous_of_continuousAt_zero (DistribSMul.toAddMonoidHom M r)
       (Continuous.continuousAt (continuous_const_smul r))⟩
 
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
@@ -98,8 +104,8 @@ lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuous
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
-@[to_additive "If an additive action is central, then its right action is uniform
-continuous when its left action is."]
+@[to_additive /-- If an additive action is central, then its right action is uniform
+continuous when its left action is. -/]
 instance (priority := 100) UniformContinuousConstSMul.op [SMul Mᵐᵒᵖ X] [IsCentralScalar M X]
     [UniformContinuousConstSMul M X] : UniformContinuousConstSMul Mᵐᵒᵖ X :=
   ⟨MulOpposite.rec' fun c ↦ by simpa only [op_smul_eq_smul] using uniformContinuous_const_smul c⟩
@@ -149,6 +155,31 @@ theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace 
   uniformContinuous_id.div_const' _
 
 end Ring
+
+section Unit
+
+open scoped Pointwise
+
+variable {M X}
+
+@[to_additive]
+theorem IsUnit.smul_uniformity [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : IsUnit c) : c • 𝓤 X = 𝓤 X :=
+  let ⟨d, hcd⟩ := hc.exists_right_inv
+  have cU : c • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul c
+  have dU : d • 𝓤 X ≤ 𝓤 X := uniformContinuous_const_smul d
+  le_antisymm cU <| by simpa [smul_smul, hcd] using Filter.smul_filter_le_smul_filter (a := c) dU
+
+@[to_additive (attr := simp)]
+theorem smul_uniformity [Group M] [MulAction M X] [UniformContinuousConstSMul M X] (c : M) :
+    c • 𝓤 X = 𝓤 X :=
+  Group.isUnit _ |>.smul_uniformity
+
+theorem smul_uniformity₀ [GroupWithZero M] [MulAction M X] [UniformContinuousConstSMul M X] {c : M}
+    (hc : c ≠ 0) : c • 𝓤 X = 𝓤 X :=
+  hc.isUnit.smul_uniformity
+
+end Unit
 
 namespace UniformSpace
 
@@ -205,7 +236,6 @@ end SMul
 @[to_additive]
 noncomputable instance [Monoid M] [MulAction M X] [UniformContinuousConstSMul M X] :
     MulAction M (Completion X) where
-  smul := (· • ·)
   one_smul := ext' (continuous_const_smul _) continuous_id fun a => by rw [← coe_smul, one_smul]
   mul_smul x y :=
     ext' (continuous_const_smul _) ((continuous_const_smul _).const_smul _) fun a => by

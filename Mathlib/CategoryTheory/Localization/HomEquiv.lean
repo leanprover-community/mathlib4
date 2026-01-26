@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
-import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Bijections between morphisms in two localized categories
@@ -22,13 +23,15 @@ to the identity localizer morphism.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category
 
-variable {C C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C]
-  [Category C₁] [Category C₂] [Category C₃]
-  [Category D₁] [Category D₂] [Category D₃]
+variable {C C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category* C]
+  [Category* C₁] [Category* C₂] [Category* C₃]
+  [Category* D₁] [Category* D₂] [Category* D₃]
 
 namespace LocalizerMorphism
 
@@ -52,12 +55,11 @@ noncomputable def homMap (f : L₁.obj X ⟶ L₁.obj Y) :
 lemma homMap_map (f : X ⟶ Y) :
     Φ.homMap L₁ L₂ (L₁.map f) = L₂.map (Φ.functor.map f) := by
   dsimp [homMap]
-  erw [← NatTrans.naturality_assoc]
   simp
 
 variable (X) in
 @[simp]
-lemma homMap_id  :
+lemma homMap_id :
     Φ.homMap L₁ L₂ (𝟙 (L₁.obj X)) = 𝟙 (L₂.obj (Φ.functor.obj X)) := by
   simpa using Φ.homMap_map L₁ L₂ (𝟙 X)
 
@@ -74,13 +76,9 @@ lemma homMap_apply (G : D₁ ⥤ D₂) (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) 
   change e'.hom.app X ≫ G'.map f ≫ e'.inv.app Y = _
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   let α : G' ≅ G := Localization.liftNatIso L₁ W₁ (L₁ ⋙ G') (Φ.functor ⋙ L₂) _ _ e'.symm
-  have : e = e' ≪≫ isoWhiskerLeft _ α := by
-    ext X
-    dsimp [α]
-    rw [Localization.liftNatTrans_app]
-    erw [id_comp]
-    rw [Iso.hom_inv_id_app_assoc]
-    rfl
+  have : e = e' ≪≫ Functor.isoWhiskerLeft _ α := by
+    ext
+    simp [α, this]
   simp [this]
 
 @[simp]
@@ -97,8 +95,8 @@ lemma homMap_homMap (f : L₁.obj X ⟶ L₁.obj Y) :
   let e' : Ψ.functor ⋙ L₃ ≅ L₂ ⋙ G' := CatCommSq.iso _ _ _ _
   rw [Φ.homMap_apply L₁ L₂ G e, Ψ.homMap_apply L₂ L₃ G' e',
     (Φ.comp Ψ).homMap_apply L₁ L₃ (G ⋙ G')
-      (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ e' ≪≫
-      (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight e _ ≪≫
+      (Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ e' ≪≫
+      (Functor.associator _ _ _).symm ≪≫ Functor.isoWhiskerRight e _ ≪≫
       Functor.associator _ _ _)]
   dsimp
   simp only [Functor.map_comp, assoc, comp_id, id_comp]

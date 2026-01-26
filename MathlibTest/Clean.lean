@@ -42,13 +42,13 @@ example : True := by
   guard_hyp x' :ₛ id Nat := (1 : Nat)
 
   let y := show Nat from 1
-  guard_hyp y :ₛ Nat := let_fun this := 1; this
+  guard_hyp y :ₛ Nat := have this := 1; this
   let y' := clean% show Nat from 1
   guard_hyp y' :ₛ Nat := 1
 
-  -- Not a tautological let_fun:
-  let z := clean% let_fun x := 1; x + x
-  guard_hyp z :ₛ Nat := let_fun x := 1; x + x
+  -- Not a tautological have:
+  let z := clean% have x := 1; x + x
+  guard_hyp z :ₛ Nat := have x := 1; x + x
 
   trivial
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.
@@ -40,6 +42,8 @@ small colimits.
 
 -/
 
+@[expose] public section
+
 
 universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -59,7 +63,7 @@ namespace CategoryTheory
 
 section IsCocontinuous
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E] (G : C ⥤ D)
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
@@ -92,14 +96,14 @@ to sheaves when `G : C ⥤ D` is a cocontinuous functor.
 
 We do not follow the proofs in SGA 4 III 2.2 or <https://stacks.math.columbia.edu/tag/00XK>.
 Instead, we verify as directly as possible that if `F : Cᵒᵖ ⥤ A` is a sheaf,
-then `G.op.ran.obj F` is a sheaf. in order to do this, we use the "multifork"
+then `G.op.ran.obj F` is a sheaf. In order to do this, we use the "multifork"
 characterization of sheaves which involves limits in the category `A`.
 As `G.op.ran.obj F` is the chosen right Kan extension of `F` along `G.op : Cᵒᵖ ⥤ Dᵒᵖ`,
 we actually verify that any pointwise right Kan extension of `F` along `G.op` is a sheaf.
 
 -/
 
-variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
 
@@ -145,7 +149,7 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
             r.g₂ := h
             r.w := by simpa using w.symm
             .. }
-        simpa [r] using s.condition r )
+        simpa [r] using s.condition r)
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :
@@ -217,7 +221,7 @@ that `C` and `D` have pullbacks."]
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
   rw [Presheaf.isSheaf_iff_multifork]
-  intros X S
+  intro X S
   exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
 
@@ -284,7 +288,7 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
-      (by aesop_cat)
+      (by cat_disch)
 
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :

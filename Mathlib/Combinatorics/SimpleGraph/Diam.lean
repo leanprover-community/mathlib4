@@ -3,7 +3,9 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Diameter of a simple graph
@@ -25,6 +27,8 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -67,7 +71,6 @@ lemma eccent_ne_zero [Nontrivial α] (u : α) : G.eccent u ≠ 0 := by
 lemma eccent_eq_zero_iff (u : α) : G.eccent u = 0 ↔ Subsingleton α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ eccent_eq_zero_of_subsingleton u⟩
   contrapose! h
-  rw [not_subsingleton_iff_nontrivial] at h
   exact eccent_ne_zero u
 
 lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
@@ -75,7 +78,7 @@ lemma eccent_pos_iff (u : α) : 0 < G.eccent u ↔ Nontrivial α := by
 
 @[simp]
 lemma eccent_bot [Nontrivial α] (u : α) : (⊥ : SimpleGraph α).eccent u = ⊤ :=
-  eccent_eq_top_of_not_connected bot_not_connected u
+  eccent_eq_top_of_not_connected not_connected_bot u
 
 @[simp]
 lemma eccent_top [Nontrivial α] (u : α) : (⊤ : SimpleGraph α).eccent u = 1 := by
@@ -93,6 +96,27 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
   apply le_antisymm ((h u).symm ▸ edist_le_eccent)
   rw [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff.ne]
   exact huv.ne
+
+lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
+  iSup_le_iff
+
+lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  constructor
+  · intro h v huv
+    have hd : G.edist u v ≤ 1 := LE.le.trans edist_le_eccent h
+    have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
+    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+  · intro hall
+    rw [eccent_le_iff]
+    intro v
+    rw [edist_le_one_iff_adj_or_eq]
+    exact or_iff_not_imp_right.mpr (hall v)
+
+lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
+    G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  rw [← LE.le.ge_iff_eq' h]
+  exact eccent_le_one_iff u
 
 end eccent
 
@@ -132,18 +156,16 @@ lemma ediam_eq_zero_of_subsingleton [Subsingleton α] : G.ediam = 0 := by
 
 lemma nontrivial_of_ediam_ne_zero (h : G.ediam ≠ 0) : Nontrivial α := by
   contrapose! h
-  rw [not_nontrivial_iff_subsingleton] at h
   exact ediam_eq_zero_of_subsingleton
 
 lemma ediam_ne_zero [Nontrivial α] : G.ediam ≠ 0 := by
   obtain ⟨u, v, huv⟩ := exists_pair_ne ‹_›
   contrapose! huv
-  simp only [ediam, eccent, nonpos_iff_eq_zero, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
+  simp only [ediam, eccent, ENat.iSup_eq_zero, edist_eq_zero_iff] at huv
   exact huv u v
 
 lemma subsingleton_of_ediam_eq_zero (h : G.ediam = 0) : Subsingleton α := by
   contrapose! h
-  apply not_subsingleton_iff_nontrivial.mp at h
   exact ediam_ne_zero
 
 lemma ediam_ne_zero_iff_nontrivial :
@@ -209,7 +231,7 @@ lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
 
 @[simp]
 lemma ediam_bot [Nontrivial α] : (⊥ : SimpleGraph α).ediam = ⊤ :=
-  ediam_eq_top_of_not_connected bot_not_connected
+  ediam_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma ediam_top [Nontrivial α] : (⊤ : SimpleGraph α).ediam = 1 := by
@@ -242,7 +264,6 @@ lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
-  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 
@@ -299,7 +320,7 @@ lemma diam_eq_zero_iff_ediam_eq_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = �
 
 /-- A finite and nontrivial graph is connected if and only if its diameter is not zero.
 See also `connected_iff_ediam_ne_top` for the extended diameter version. -/
-lemma connected_iff_diam_ne_zero [Fintype α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
+lemma connected_iff_diam_ne_zero [Finite α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
   rw [connected_iff_ediam_ne_top, not_iff_not, diam_eq_zero_iff_ediam_eq_top]
 
 end diam
@@ -316,7 +337,7 @@ lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius  :=
+lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
 lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :
@@ -346,9 +367,9 @@ lemma radius_ne_zero_of_nontrivial [Nontrivial α] : G.radius ≠ 0 := by
 lemma radius_eq_zero_iff : G.radius = 0 ↔ Nonempty α ∧ Subsingleton α := by
   refine ⟨fun h ↦ ⟨?_, ?_⟩, fun ⟨_, _⟩ ↦ ?_⟩
   · contrapose! h
-    simp [radius, not_nonempty_iff.mp h]
+    simp [radius]
   · contrapose! h
-    simp [not_subsingleton_iff_nontrivial.mp h, radius_ne_zero_of_nontrivial]
+    simp [radius_ne_zero_of_nontrivial]
   · rw [radius, ENat.iInf_eq_zero]
     use Classical.ofNonempty
     simpa [eccent] using Subsingleton.elim _
@@ -383,7 +404,7 @@ lemma radius_eq_ediam_iff [Nonempty α] :
 
 @[simp]
 lemma radius_bot [Nontrivial α] : (⊥ : SimpleGraph α).radius = ⊤ :=
-  radius_eq_top_of_not_connected bot_not_connected
+  radius_eq_top_of_not_connected not_connected_bot
 
 @[simp]
 lemma radius_top [Nontrivial α] : (⊤ : SimpleGraph α).radius = 1 := by
@@ -400,8 +421,7 @@ def center (G : SimpleGraph α) : Set α :=
 lemma center_nonempty [Nonempty α] : G.center.Nonempty :=
   exists_eccent_eq_radius
 
-lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius :=
-  Set.mem_def
+lemma mem_center_iff (u : α) : u ∈ G.center ↔ G.eccent u = G.radius := .rfl
 
 lemma center_eq_univ_iff_radius_eq_ediam [Nonempty α] :
     G.center = Set.univ ↔ G.radius = G.ediam := by

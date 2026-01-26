@@ -3,15 +3,17 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Multiplicative characters of finite rings and fields
 
-Let `R` and `R'` be a commutative rings.
+Let `R` and `R'` be commutative rings.
 A *multiplicative character* of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.
@@ -34,6 +36,8 @@ character vanishes; see `MulChar.IsNontrivial.sum_eq_zero`.
 
 multiplicative character
 -/
+
+@[expose] public section
 
 
 /-!
@@ -111,11 +115,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
@@ -154,7 +154,7 @@ theorem coe_toUnitHom (χ : MulChar R R') (a : Rˣ) : ↑(χ.toUnitHom a) = χ a
 noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
   toFun := by classical exact fun x => if hx : IsUnit x then f hx.unit else 0
   map_one' := by
-    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.eq_iff.mp rfl
+    have h1 : (isUnit_one.unit : Rˣ) = 1 := Units.ext rfl
     simp only [h1, dif_pos, Units.val_eq_one, map_one, isUnit_one]
   map_mul' := by
     classical
@@ -163,7 +163,7 @@ noncomputable def ofUnitHom (f : Rˣ →* R'ˣ) : MulChar R R' where
       · simp only [hx, IsUnit.mul_iff, true_and, dif_pos]
         by_cases hy : IsUnit y
         · simp only [hy, dif_pos]
-          have hm : (IsUnit.mul_iff.mpr ⟨hx, hy⟩).unit = hx.unit * hy.unit := Units.eq_iff.mp rfl
+          have hm : (hx.mul hy).unit = hx.unit * hy.unit := Units.ext rfl
           rw [hm, map_mul]
           norm_cast
         · simp only [hy, not_false_iff, dif_neg, mul_zero]
@@ -320,21 +320,18 @@ theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   rw [one_apply_coe]
 
 /-- The commutative group structure on `MulChar R R'`. -/
-noncomputable instance commGroup : CommGroup (MulChar R R') :=
-  { one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    inv_mul_cancel := inv_mul
-    mul_assoc := by
-      intro χ₁ χ₂ χ₃
-      ext a
-      simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
-    mul_comm := by
-      intro χ₁ χ₂
-      ext a
-      simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
-    one_mul := MulChar.one_mul
-    mul_one := MulChar.mul_one }
+noncomputable instance commGroup : CommGroup (MulChar R R') where
+  inv_mul_cancel := inv_mul
+  mul_assoc := by
+    intro χ₁ χ₂ χ₃
+    ext a
+    simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
+  mul_comm := by
+    intro χ₁ χ₂
+    ext a
+    simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
+  one_mul := MulChar.one_mul
+  mul_one := MulChar.mul_one
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
@@ -350,7 +347,7 @@ theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ 
 
 lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
     equivToUnitHom (χ₁ * χ₂) a = equivToUnitHom χ₁ a * equivToUnitHom χ₂ a := by
-  apply_fun ((↑) : R'ˣ → R') using Units.ext
+  apply_fun ((↑) : R'ˣ → R') using Units.val_injective
   push_cast
   simp_rw [coe_equivToUnitHom, coeToFun_mul, Pi.mul_apply]
 
@@ -444,7 +441,7 @@ lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
 
 lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f = 1 ↔ χ = 1 := by
-  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by ext; simp)]
+  conv_lhs => rw [← (show (1 : MulChar R R').ringHomComp f = 1 by simp)]
   exact (injective_ringHomComp hf).eq_iff
 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
@@ -464,10 +461,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · -- Porting note: was `by norm_cast`
-    have : (-1 : R') = (-1 : R'ˣ) := by rw [Units.val_neg, Units.val_one]
-    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
-    rfl
+  · -- Porting note (#11573): was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by norm_cast; simp
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ), inv_neg, inv_one]
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by
@@ -500,7 +496,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H
@@ -560,15 +556,14 @@ theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => ?_
     _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
-    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
+    _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.val_injective⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
   · split_ifs with h
     · exact one_apply_coe h.unit
     · exact map_nonunit _ h
   · congr
     ext a
-    simp only [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_map,
-      Function.Embedding.coeFn_mk, exists_true_left, IsUnit]
+    simp [IsUnit]
 
 end sum
 

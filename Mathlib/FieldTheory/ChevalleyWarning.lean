@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # The Chevalley–Warning theorem
@@ -32,6 +34,8 @@ and `q` is notation for the cardinality of `K`.
 - `σ` is the indexing type for the variables of a multivariate polynomial ring over `K`
 
 -/
+
+public section
 
 
 universe u v
@@ -91,7 +95,7 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
     _ = (∏ j, x₀ j ^ d j) * a ^ d i := mul_comm _ _
   -- the remaining step of the calculation above
   rintro ⟨j, hj⟩
-  show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
+  change (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
   rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
@@ -133,9 +137,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     rw [Fintype.card_of_subtype S hS, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one, ←
       Fintype.sum_extend_by_zero S, sum_congr rfl fun x _ => hF x]
   -- With these preparations under our belt, we will approach the main goal.
-  show p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
+  change p ∣ Fintype.card { x // ∀ i : ι, i ∈ s → eval x (f i) = 0 }
   rw [← CharP.cast_eq_zero_iff K, ← key]
-  show (∑ x, eval x F) = 0
+  change (∑ x, eval x F) = 0
   -- We are now ready to apply the main machine, proven before.
   apply F.sum_eval_eq_zero
   -- It remains to verify the crucial assumption of this machine
@@ -145,9 +149,9 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
     _ ≤ ∑ i ∈ s, (q - 1) * (f i).totalDegree := sum_le_sum fun i _ => ?_
     -- see ↓
     _ = (q - 1) * ∑ i ∈ s, (f i).totalDegree := (mul_sum ..).symm
-    _ < (q - 1) * Fintype.card σ := by rwa [mul_lt_mul_left hq]
+    _ < (q - 1) * Fintype.card σ := by gcongr
   -- Now we prove the remaining step from the preceding calculation
-  show (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree
+  change (1 - f i ^ (q - 1)).totalDegree ≤ (q - 1) * (f i).totalDegree
   calc
     (1 - f i ^ (q - 1)).totalDegree ≤
         max (1 : MvPolynomial σ K).totalDegree (f i ^ (q - 1)).totalDegree := totalDegree_sub _ _

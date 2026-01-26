@@ -3,17 +3,21 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Comma.Over.Pullback
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Under `CommRingCat`
 
 In this file we provide basic API for `Under R` when `R : CommRingCat`. `Under R` is
 (equivalent to) the category of commutative `R`-algebras. For not necessarily commutative
-algebras, use `AlgebraCat R` instead.
+algebras, use `AlgCat R` instead.
 -/
+
+@[expose] public section
 
 noncomputable section
 

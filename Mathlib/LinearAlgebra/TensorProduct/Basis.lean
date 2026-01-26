@@ -3,10 +3,12 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases and dimensionality of tensor products of modules
@@ -15,10 +17,12 @@ This file defines various bases on the tensor product of modules,
 and shows that the tensor product of free modules is again free.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Module Set Submodule
 
 open scoped TensorProduct
 
@@ -28,8 +32,10 @@ variable {R : Type*} {S : Type*} {M : Type*} {N : Type*} {ι : Type*} {κ : Type
   [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M] [Module S M]
   [IsScalarTower R S M] [AddCommMonoid N] [Module R N]
 
+namespace Module.Basis
+
 /-- If `b : ι → M` and `c : κ → N` are bases then so is `fun i ↦ b i.1 ⊗ₜ c i.2 : ι × κ → M ⊗ N`. -/
-def Basis.tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
+def tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
     Basis (ι × κ) S (M ⊗[R] N) :=
   Finsupp.basisSingleOne.map
     ((TensorProduct.AlgebraTensorModule.congr b.repr c.repr).trans <|
@@ -37,36 +43,38 @@ def Basis.tensorProduct (b : Basis ι S M) (c : Basis κ R N) :
           Finsupp.lcongr (Equiv.refl _) (TensorProduct.AlgebraTensorModule.rid R S S)).symm
 
 @[simp]
-theorem Basis.tensorProduct_apply (b : Basis ι S M) (c : Basis κ R N) (i : ι) (j : κ) :
-    Basis.tensorProduct b c (i, j) = b i ⊗ₜ c j := by
-  simp [Basis.tensorProduct]
+theorem tensorProduct_apply (b : Basis ι S M) (c : Basis κ R N) (i : ι) (j : κ) :
+    tensorProduct b c (i, j) = b i ⊗ₜ c j := by
+  simp [tensorProduct]
 
-theorem Basis.tensorProduct_apply' (b : Basis ι S M) (c : Basis κ R N) (i : ι × κ) :
-    Basis.tensorProduct b c i = b i.1 ⊗ₜ c i.2 := by
-  simp [Basis.tensorProduct]
+theorem tensorProduct_apply' (b : Basis ι S M) (c : Basis κ R N) (i : ι × κ) :
+    tensorProduct b c i = b i.1 ⊗ₜ c i.2 := by
+  simp [tensorProduct]
 
 @[simp]
-theorem Basis.tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m : M) (n : N)
+theorem tensorProduct_repr_tmul_apply (b : Basis ι S M) (c : Basis κ R N) (m : M) (n : N)
     (i : ι) (j : κ) :
-    (Basis.tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
-  simp [Basis.tensorProduct, mul_comm]
+    (tensorProduct b c).repr (m ⊗ₜ n) (i, j) = c.repr n j • b.repr m i := by
+  simp [tensorProduct]
 
 variable (S : Type*) [Semiring S] [Algebra R S]
 
 /-- The lift of an `R`-basis of `M` to an `S`-basis of the base change `S ⊗[R] M`. -/
 noncomputable
-def Basis.baseChange (b : Basis ι R M) : Basis ι S (S ⊗[R] M) :=
-  ((Basis.singleton Unit S).tensorProduct b).reindex (Equiv.punitProd ι)
+def baseChange (b : Basis ι R M) : Basis ι S (S ⊗[R] M) :=
+  (tensorProduct (.singleton Unit S) b).reindex (Equiv.punitProd ι)
 
 @[simp]
-lemma Basis.baseChange_repr_tmul (b : Basis ι R M) (x y i) :
+lemma baseChange_repr_tmul (b : Basis ι R M) (x y i) :
     (b.baseChange S).repr (x ⊗ₜ y) i = b.repr y i • x := by
-  simp [Basis.baseChange, Basis.tensorProduct]
+  simp [baseChange, tensorProduct]
 
 @[simp]
-lemma Basis.baseChange_apply (b : Basis ι R M) (i) :
+lemma baseChange_apply (b : Basis ι R M) (i) :
     b.baseChange S i = 1 ⊗ₜ b i := by
-  simp [Basis.baseChange, Basis.tensorProduct]
+  simp [baseChange, tensorProduct]
+
+end Module.Basis
 
 section
 
@@ -78,7 +86,7 @@ If `{𝒞ᵢ}` is a basis for the module `N`, then every elements of `x ∈ M �
 as `∑ᵢ mᵢ ⊗ 𝒞ᵢ` for some `mᵢ ∈ M`.
 -/
 def TensorProduct.equivFinsuppOfBasisRight : M ⊗[R] N ≃ₗ[R] κ →₀ M :=
-  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R M κ
+  LinearEquiv.lTensor M 𝒞.repr ≪≫ₗ TensorProduct.finsuppScalarRight R R M κ
 
 @[simp]
 lemma TensorProduct.equivFinsuppOfBasisRight_apply_tmul (m : M) (n : N) :
@@ -126,13 +134,25 @@ def TensorProduct.equivFinsuppOfBasisLeft : M ⊗[R] N ≃ₗ[R] ι →₀ N :=
 lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul (m : M) (n : N) :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ) (m ⊗ₜ n) =
     (ℬ.repr m).mapRange (· • n) (zero_smul _ _) := by
-  ext; simp [equivFinsuppOfBasisLeft]
+  simp [equivFinsuppOfBasisLeft]
 
 lemma TensorProduct.equivFinsuppOfBasisLeft_apply_tmul_apply
     (m : M) (n : N) (i : ι) :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ) (m ⊗ₜ n) i =
     ℬ.repr m i • n := by
   simp only [equivFinsuppOfBasisLeft_apply_tmul, Finsupp.mapRange_apply]
+
+/-- Given a basis `𝒞` of `N`, `x ∈ M ⊗ N` can be written as `∑ᵢ mᵢ ⊗ 𝒞 i`. The coefficient `mᵢ`
+equals the `i`-th coordinate functional applied to the right tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisRight_apply (x : M ⊗[R] N) (i : κ) :
+    equivFinsuppOfBasisRight 𝒞 x i = TensorProduct.rid R M ((𝒞.coord i).lTensor _ x) := by
+  induction x <;> simp_all
+
+/-- Given a basis `ℬ` of `M`, `x ∈ M ⊗ N` can be written as `∑ᵢ ℬ i ⊗ nᵢ`. The coefficient `nᵢ`
+equals the `i`-th coordinate functional applied to the left tensor factor. -/
+lemma TensorProduct.equivFinsuppOfBasisLeft_apply (x : M ⊗[R] N) (i : ι) :
+    equivFinsuppOfBasisLeft ℬ x i = TensorProduct.lid R N ((ℬ.coord i).rTensor _ x) := by
+  induction x <;> simp_all
 
 lemma TensorProduct.equivFinsuppOfBasisLeft_symm :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.toLinearMap =
@@ -174,7 +194,7 @@ lemma TensorProduct.sum_tmul_basis_left_eq_zero
 
 end
 
-variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
   [Module S M] [IsScalarTower R S M] [Module.Free S M]
   [AddCommMonoid N] [Module R N] [Module.Free R N]
 instance Module.Free.tensor : Module.Free S (M ⊗[R] N) :=

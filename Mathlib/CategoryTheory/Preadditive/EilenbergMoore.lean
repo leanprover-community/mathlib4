@@ -3,9 +3,11 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Monad.Algebra
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Preadditive structure on algebras over a monad
@@ -14,6 +16,8 @@ If `C` is a preadditive category and `T` is an additive monad on `C` then `Algeb
 preadditive. Dually, if `U` is an additive comonad on `C` then `Coalgebra U` is preadditive as well.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -83,7 +87,7 @@ instance Monad.algebraPreadditive : Preadditive (Monad.Algebra T) where
       zsmul_neg' := by
         intros
         ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         ext
@@ -163,7 +167,7 @@ instance Comonad.coalgebraPreadditive : Preadditive (Comonad.Coalgebra U) where
       zsmul_neg' := by
         intros
         ext
-        simp only [negSucc_zsmul, neg_inj, ← Nat.cast_smul_eq_nsmul ℤ]
+        simp only [negSucc_zsmul, ← Nat.cast_smul_eq_nsmul ℤ]
       neg_add_cancel := by
         intros
         ext

@@ -3,20 +3,23 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Square
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Square
 
 /-!
 # Commutative squares that are pushout or pullback squares
 
 In this file, we translate the `IsPushout` and `IsPullback`
 API for the objects of the category `Square C` of commutative
-squares in a category `C`. We also obtain lemmas which states
+squares in a category `C`. We also obtain lemmas which state
 in this language that a pullback of a monomorphism is
 a monomorphism (and similarly for pushouts of epimorphisms).
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -63,13 +66,13 @@ lemma IsPushout.mk (h : IsColimit sq.pushoutCocone) : sq.IsPushout :=
 variable {sq}
 
 /-- If a commutative square `sq` is a pullback square,
-then `sq.pullbackCone` is limit. -/
+then `sq.pullbackCone` is a limit. -/
 noncomputable def IsPullback.isLimit (h : sq.IsPullback) :
     IsLimit sq.pullbackCone :=
   CategoryTheory.IsPullback.isLimit h
 
 /-- If a commutative square `sq` is a pushout square,
-then `sq.pushoutCocone` is colimit. -/
+then `sq.pushoutCocone` is a colimit. -/
 noncomputable def IsPushout.isColimit (h : sq.IsPushout) :
     IsColimit sq.pushoutCocone :=
   CategoryTheory.IsPushout.isColimit h

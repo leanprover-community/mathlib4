@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
@@ -20,6 +22,8 @@ since the types aren't definitionally equal.
 topological space, group action, domain action
 -/
 
+@[expose] public section
+
 open Filter TopologicalSpace Topology
 
 namespace DomMulAct
@@ -27,8 +31,8 @@ namespace DomMulAct
 variable {M : Type*} [TopologicalSpace M]
 
 /-- Put the same topological space structure on `Mᵈᵐᵃ` as on the original space. -/
-@[to_additive "Put the same topological space structure on `Mᵈᵃᵃ` as on the original space."]
-instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm  ‹_›
+@[to_additive /-- Put the same topological space structure on `Mᵈᵃᵃ` as on the original space. -/]
+instance instTopologicalSpace : TopologicalSpace Mᵈᵐᵃ := .induced mk.symm ‹_›
 
 @[to_additive (attr := continuity, fun_prop)]
 theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuous_id
@@ -37,9 +41,11 @@ theorem continuous_mk : Continuous (@mk M) := continuous_induced_rng.2 continuou
 theorem continuous_mk_symm : Continuous (@mk M).symm := continuous_induced_dom
 
 /-- `DomMulAct.mk` as a homeomorphism. -/
-@[to_additive (attr := simps toEquiv) "`DomAddAct.mk` as a homeomorphism."]
+@[to_additive (attr := simps toEquiv) /-- `DomAddAct.mk` as a homeomorphism. -/]
 def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
   toEquiv := mk
+  continuous_toFun := by dsimp; fun_prop
+  continuous_invFun := by dsimp; fun_prop
 
 @[to_additive (attr := simp)] theorem coe_mkHomeomorph : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ) = mk := rfl
 
@@ -53,22 +59,9 @@ theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = m
   mkHomeomorph.isClosedEmbedding
 @[to_additive] theorem isQuotientMap_mk : IsQuotientMap (@mk M) := mkHomeomorph.isQuotientMap
 
-@[deprecated (since := "2024-10-28")] alias inducing_mk := isInducing_mk
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_mk := isEmbedding_mk
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_mk := isQuotientMap_mk
-
 @[to_additive] theorem isInducing_mk_symm : IsInducing (@mk M).symm := mkHomeomorph.symm.isInducing
 @[to_additive] theorem isEmbedding_mk_symm : IsEmbedding (@mk M).symm :=
   mkHomeomorph.symm.isEmbedding
-
-@[deprecated (since := "2024-10-28")] alias inducing_mk_symm := isInducing_mk_symm
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_mk_symm := isEmbedding_mk_symm
 
 @[to_additive]
 theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.symm.isOpenEmbedding
@@ -79,9 +72,6 @@ theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
 
 @[to_additive]
 theorem isQuotientMap_mk_symm : IsQuotientMap (@mk M).symm := mkHomeomorph.symm.isQuotientMap
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_mk_symm := isQuotientMap_mk_symm
 
 @[to_additive] instance instT0Space [T0Space M] : T0Space Mᵈᵐᵃ := mkHomeomorph.t0Space
 @[to_additive] instance instT1Space [T1Space M] : T1Space Mᵈᵐᵃ := mkHomeomorph.t1Space

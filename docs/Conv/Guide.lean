@@ -157,7 +157,7 @@ in Lean 4 core.
 * `change t` changes the expression to `t` if the expression and `t` are definitionally equal.
 
 * `equals t => tacticSeq` changes the current expression, say `e`, to `t`, and asks you to prove
-   the equality `e = t`. (Batteries)
+  the equality `e = t`. (Batteries)
 
 * `rw [thms...]` rewrites the expression using the given theorems. The syntax is similar to `rw`.
 
@@ -217,7 +217,7 @@ in Lean 4 core.
 * `guard_expr` and `guard_target` for asserting that certain expressions are equal to others.
   (Batteries)
 
-* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteriess)
+* `unreachable!`, which is the same as the `unreachable!` tactic. (Batteries)
 
 * `run_tac doSeq` evaluates a monadic value and runs it as a tactic using `tactic'`. (Mathlib)
 

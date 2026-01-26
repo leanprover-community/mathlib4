@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-! # Limits in categories of presheaves of modules
 
@@ -14,6 +16,8 @@ In this file, it is shown that under suitable assumptions,
 limits exist in the category `PresheafOfModules R`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u u'
 
@@ -63,7 +67,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
-  map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := limMap (Functor.whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp
@@ -71,7 +75,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
     apply limit.hom_ext
     intro j
     dsimp
-    simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
+    simp only [limMap_π, Functor.comp_obj, evaluation_obj, Functor.whiskerLeft_app,
       restriction_app, assoc]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
@@ -84,7 +88,7 @@ noncomputable def limitPresheafOfModules : PresheafOfModules R where
       comp_id]
     apply limit.hom_ext
     intro j
-    simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, restriction_app,
+    simp only [Functor.comp_obj, evaluation_obj, limMap_π, Functor.whiskerLeft_app, restriction_app,
       map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
     -- Here we should rewrite using `Functor.assoc` but that gives a "motive is type-incorrect"
     erw [preservesLimitIso_hom_π]
@@ -130,7 +134,7 @@ noncomputable instance toPresheaf_preservesLimit :
     PreservesLimit F (toPresheaf R) :=
   preservesLimit_of_preserves_limit_cone (isLimitLimitCone F)
     (Limits.evaluationJointlyReflectsLimits _
-      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrpCat)
         (isLimitLimitCone F)))
 
 end Limits
@@ -142,14 +146,13 @@ section Small
 variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
-
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
-    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfShape J (evaluation.{v} R X) where
+instance (X : Cᵒᵖ) : PreservesLimitsOfSize.{v, v} (evaluation.{v} R X) where
 
-noncomputable instance toPresheaf_preservesLimitsOfShape :
-    PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfShape J (toPresheaf.{v} R) where
+instance : PreservesLimitsOfSize.{v, v} (toPresheaf.{v} R) where
 
 end Small
 

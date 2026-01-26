@@ -3,19 +3,23 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompactlyGenerated
+module
+
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompactlyGenerated
 /-!
 
 # The adjunction between condensed sets and topological spaces
 
-This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1}` which is
-left adjoint to `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`. We prove that the counit
+This file defines the functor `condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1}` which is
+left adjoint to `topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`. We prove that the counit
 is bijective (but not in general an isomorphism) and conclude that the right adjoint is faithful.
 
 The counit is an isomorphism for compactly generated spaces, and we conclude that the functor
 `topCatToCondensedSet` is fully faithful when restricted to compactly generated spaces.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -23,11 +27,14 @@ open Condensed CondensedSet CategoryTheory CompHaus
 
 variable (X : CondensedSet.{u})
 
+set_option backward.privateInPublic true in
 /-- Auxiliary definition to define the topology on `X(*)` for a condensed set `X`. -/
 private def CondensedSet.coinducingCoprod :
     (Σ (i : (S : CompHaus.{u}) × X.val.obj ⟨S⟩), i.fst) → X.val.obj ⟨of PUnit⟩ :=
-  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u+1}).const s).op i
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Let `X` be a condensed set. We define a topology on `X(*)` as the quotient topology of
 all the maps from compact Hausdorff `S` spaces to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `CondensedSet.coinducingCoprod` above. -/
@@ -35,10 +42,12 @@ local instance : TopologicalSpace (X.val.obj ⟨CompHaus.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `CondensedSet ⥤ TopCat` -/
-abbrev CondensedSet.toTopCat : TopCat.{u+1} := TopCat.of (X.val.obj ⟨of PUnit⟩)
+abbrev CondensedSet.toTopCat : TopCat.{u + 1} := TopCat.of (X.val.obj ⟨of PUnit⟩)
 
 namespace CondensedSet
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma continuous_coinducingCoprod {S : CompHaus.{u}} (x : X.val.obj ⟨S⟩) :
     Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
   suffices ∀ (i : (T : CompHaus.{u}) × X.val.obj ⟨T⟩),
@@ -59,22 +68,23 @@ def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
       apply continuous_sigma
       intro ⟨S, x⟩
       simp only [Function.comp_apply, coinducingCoprod]
-      rw [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u+1}).const a).op x)) = _
-        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u+1}).const a).op x]
+      rw [show (fun (a : S) ↦
+          f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u + 1}).const a).op x)) = _
+        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u + 1}).const a).op x]
       exact continuous_coinducingCoprod Y _ }
 
 end CondensedSet
 
 /-- The functor `CondensedSet ⥤ TopCat` -/
 @[simps]
-def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u+1} where
+def condensedSetToTopCat : CondensedSet.{u} ⥤ TopCat.{u + 1} where
   obj X := X.toTopCat
   map f := toTopCatMap f
 
 namespace CondensedSet
 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
-def topCatAdjunctionCounit (X : TopCat.{u+1}) : X.toCondensedSet.toTopCat ⟶ X :=
+noncomputable def topCatAdjunctionCounit (X : TopCat.{u + 1}) : X.toCondensedSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
@@ -92,22 +102,21 @@ def topCatAdjunctionCounit (X : TopCat.{u+1}) : X.toCondensedSet.toTopCat ⟶ X 
 /-- The counit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is compactly generated).
 -/
-def topCatAdjunctionCounitEquiv (X : TopCat.{u+1}) : X.toCondensedSet.toTopCat ≃ X where
+noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u + 1}) :
+    X.toCondensedSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
-lemma topCatAdjunctionCounit_bijective (X : TopCat.{u+1}) :
+lemma topCatAdjunctionCounit_bijective (X : TopCat.{u + 1}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
   (topCatAdjunctionCounitEquiv X).bijective
 
 /-- The unit of the adjunction `condensedSetToTopCat ⊣ topCatToCondensedSet` -/
 @[simps val_app val_app_apply]
-def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
+noncomputable def topCatAdjunctionUnit (X : CondensedSet.{u}) : X ⟶ X.toTopCat.toCondensedSet where
   val := {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
+      toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : CompHaus.{u}) × X.val.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
@@ -137,25 +146,26 @@ instance : topCatToCondensedSet.Faithful := topCatAdjunction.faithful_R_of_epi_c
 
 open CompactlyGenerated
 
-instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u+1} X.toTopCat := by
+instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u + 1} X.toTopCat := by
   apply uCompactlyGeneratedSpace_of_continuous_maps
   intro Y _ f h
   rw [continuous_coinduced_dom, continuous_sigma_iff]
   exact fun ⟨S, s⟩ ↦ h S ⟨_, continuous_coinducingCoprod X _⟩
 
-instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u+1} (condensedSetToTopCat.obj X) :=
-  inferInstanceAs (UCompactlyGeneratedSpace.{u, u+1} X.toTopCat)
+instance (X : CondensedSet.{u}) :
+    UCompactlyGeneratedSpace.{u, u + 1} (condensedSetToTopCat.obj X) :=
+  inferInstanceAs (UCompactlyGeneratedSpace.{u, u + 1} X.toTopCat)
 
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
-def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u+1} where
+def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
   obj X := CompactlyGenerated.of (condensedSetToTopCat.obj X)
-  map f := toTopCatMap f
+  map f := InducedCategory.homMk (toTopCatMap f)
 
 /--
 The functor from topological spaces to condensed sets restricted to compactly generated spaces.
 -/
 noncomputable def compactlyGeneratedToCondensedSet :
-    CompactlyGenerated.{u, u+1} ⥤ CondensedSet.{u} :=
+    CompactlyGenerated.{u, u + 1} ⥤ CondensedSet.{u} :=
   compactlyGeneratedToTop ⋙ topCatToCondensedSet
 
 
@@ -173,10 +183,10 @@ noncomputable def compactlyGeneratedAdjunction :
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is a homeomorphism.
 -/
-def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u+1}) [UCompactlyGeneratedSpace.{u} X] :
+noncomputable def compactlyGeneratedAdjunctionCounitHomeo
+    (X : TopCat.{u + 1}) [UCompactlyGeneratedSpace.{u} X] :
     X.toCondensedSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply continuous_from_uCompactlyGeneratedSpace
     exact fun _ _ ↦ continuous_coinducingCoprod X.toCondensedSet _
@@ -185,7 +195,7 @@ def compactlyGeneratedAdjunctionCounitHomeo (X : TopCat.{u+1}) [UCompactlyGenera
 The counit of the adjunction `condensedSetToCompactlyGenerated ⊣ compactlyGeneratedToCondensedSet`
 is an isomorphism.
 -/
-noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.{u, u+1}) :
+noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.{u, u + 1}) :
     condensedSetToCompactlyGenerated.obj (compactlyGeneratedToCondensedSet.obj X) ≅ X :=
   isoOfHomeo (compactlyGeneratedAdjunctionCounitHomeo X.toTop)
 

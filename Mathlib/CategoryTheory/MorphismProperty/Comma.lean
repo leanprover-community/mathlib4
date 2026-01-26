@@ -3,14 +3,17 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Subcategories of comma categories defined by morphism properties
 
 Given functors `L : A ⥤ T` and `R : B ⥤ T` and morphism properties `P`, `Q` and `W`
-on `T`, A` and `B` respectively, we define the subcategory `P.Comma L R Q W` of
+on `T`, `A` and `B` respectively, we define the subcategory `P.Comma L R Q W` of
 `Comma L R` where
 
 - objects are objects of `Comma L R` with the structural morphism satisfying `P`, and
@@ -32,13 +35,15 @@ over a base `X`. Here `Q = ⊤`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.MorphismProperty
 
 open Limits
 
 section Comma
 
-variable {A : Type*} [Category A] {B : Type*} [Category B] {T : Type*} [Category T]
+variable {A : Type*} [Category* A] {B : Type*} [Category* B] {T : Type*} [Category* T]
   (L : A ⥤ T) (R : B ⥤ T)
 
 lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
@@ -49,6 +54,75 @@ lemma costructuredArrow_iso_iff (P : MorphismProperty T) [P.RespectsIso]
 lemma over_iso_iff (P : MorphismProperty T) [P.RespectsIso] {X : T} {f g : Over X} (e : f ≅ g) :
     P f.hom ↔ P g.hom :=
   P.comma_iso_iff e
+
+section
+
+variable {W : MorphismProperty T} {X : T}
+
+/-- The object property on `Comma L R` induced by a morphism property. -/
+def commaObj (W : MorphismProperty T) : ObjectProperty (Comma L R) :=
+  fun f ↦ W f.hom
+
+@[simp] lemma commaObj_iff (Y : Comma L R) : W.commaObj L R Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.commaObj L R).IsClosedUnderIsomorphisms where
+  of_iso {X Y} e h := by
+    rwa [commaObj_iff, ← W.cancel_left_of_respectsIso (L.map e.hom.left), e.hom.w,
+      W.cancel_right_of_respectsIso]
+
+/-- The object property on `CostructuredArrow L X` induced by a morphism property. -/
+def costructuredArrowObj (W : MorphismProperty T) : ObjectProperty (CostructuredArrow L X) :=
+  fun f ↦ W f.hom
+
+@[simp] lemma costructuredArrowObj_iff (Y : CostructuredArrow L X) :
+    W.costructuredArrowObj L Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.costructuredArrowObj L (X := X)).IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+/-- The object property on `StructuredArrow X R` induced by a morphism property. -/
+def structuredArrowObj (W : MorphismProperty T) : ObjectProperty (StructuredArrow X R) :=
+  fun f ↦ W f.hom
+
+@[simp] lemma structuredArrowObj_iff (Y : StructuredArrow X R) :
+    W.structuredArrowObj R Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.structuredArrowObj L (X := X)).IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+/-- The morphism property on `Over X` induced by a morphism property on `C`. -/
+def over (W : MorphismProperty T) {X : T} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
+
+lemma over_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.over = W.inverseImage (Over.forget X) := rfl
+
+@[simp] lemma over_iff {Y Z : Over X} (f : Y ⟶ Z) : W.over f ↔ W f.left := .rfl
+
+/-- The morphism property on `Under X` induced by a morphism property on `C`. -/
+def under (W : MorphismProperty T) {X : T} : MorphismProperty (Under X) := fun _ _ f ↦ W f.right
+
+lemma under_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.under = W.inverseImage (Under.forget X) := rfl
+
+@[simp] lemma under_iff {Y Z : Under X} (f : Y ⟶ Z) : W.under f ↔ W f.right := .rfl
+
+/-- The object property on `Over X` induced by a morphism property. -/
+def overObj (W : MorphismProperty T) {X : T} : ObjectProperty (Over X) := fun f ↦ W f.hom
+
+@[simp] lemma overObj_iff (Y : Over X) : W.overObj Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.overObj (X := X)).IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+/-- The object property on `Under X` induced by a morphism property. -/
+def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun f ↦ W f.hom
+
+@[simp] lemma underObj_iff (Y : Under X) : W.underObj Y ↔ W Y.hom := .rfl
+
+instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
+  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+
+end
 
 variable (P : MorphismProperty T) (Q : MorphismProperty A) (W : MorphismProperty B)
 
@@ -75,9 +149,8 @@ abbrev Hom.hom {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : X.toComma ⟶ Y.toC
   f.toCommaMorphism
 
 @[simp, nolint simpVarHead]
-lemma Hom.hom_mk {X Y : P.Comma L R Q W}
-    (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
-  Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
+lemma Hom.hom_mk {X Y : P.Comma L R Q W} (f : CommaMorphism X.toComma Y.toComma) (hf) (hg) :
+    Comma.Hom.hom ⟨f, hf, hg⟩ = f := rfl
 
 lemma Hom.hom_left {X Y : P.Comma L R Q W} (f : Comma.Hom X Y) : f.hom.left = f.left := rfl
 
@@ -167,7 +240,7 @@ def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
 components and naturality in the forward direction. -/
 @[simps!]
 def isoMk [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (l : X.left ≅ Y.left)
-    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by aesop_cat) :
+    (r : X.right ≅ Y.right) (h : L.map l.hom ≫ Y.hom = X.hom ≫ R.map r.hom := by cat_disch) :
     X ≅ Y :=
   isoFromComma (CategoryTheory.Comma.isoMk l r h)
 
@@ -230,6 +303,31 @@ lemma eqToHom_right {X Y : P.Comma L R Q W} (h : X = Y) :
 
 end
 
+section
+
+variable {P P' : MorphismProperty T} {Q Q' : MorphismProperty A} {W W' : MorphismProperty B}
+  (hP : P ≤ P') (hQ : Q ≤ Q') (hW : W ≤ W')
+
+variable [Q.IsMultiplicative] [Q'.IsMultiplicative] [W.IsMultiplicative] [W'.IsMultiplicative]
+
+/-- Weaken the conditions on all components. -/
+def changeProp : P.Comma L R Q W ⥤ P'.Comma L R Q' W' where
+  obj X := ⟨X.toComma, hP _ X.2⟩
+  map f := ⟨f.toCommaMorphism, hQ _ f.2, hW _ f.3⟩
+
+/-- Weakening the condition on the structure morphisms is fully faithful. -/
+def fullyFaithfulChangeProp :
+    (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).FullyFaithful where
+  preimage f := ⟨f.toCommaMorphism, f.2, f.3⟩
+
+instance : (changeProp L R hP hQ hW).Faithful where
+  map_injective {X Y} f g h := by ext : 1; exact congr($(h).hom)
+
+instance : (changeProp (Q := Q) (W := W) L R hP le_rfl le_rfl).Full :=
+  (fullyFaithfulChangeProp ..).full
+
+end
+
 section Functoriality
 
 variable {L R P Q W}
@@ -238,7 +336,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 /-- Lift a functor `F : C ⥤ Comma L R` to the subcategory `P.Comma L R Q W` under
 suitable assumptions on `F`. -/
 @[simps obj_toComma map_hom]
-def lift {C : Type*} [Category C] (F : C ⥤ Comma L R)
+def lift {C : Type*} [Category* C] (F : C ⥤ Comma L R)
     (hP : ∀ X, P (F.obj X).hom)
     (hQ : ∀ {X Y} (f : X ⟶ Y), Q (F.map f).left)
     (hW : ∀ {X Y} (f : X ⟶ Y), W (F.map f).right) :
@@ -275,7 +373,7 @@ end Comma
 
 section Over
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Over X` defined by `P` where morphisms satisfy `Q`. -/
@@ -288,6 +386,10 @@ protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
 
 instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
+    (MorphismProperty.Over.forget P Q X ⋙ CategoryTheory.Over.forget X).map f = f.left := rfl
 
 variable {P Q X}
 
@@ -310,7 +412,7 @@ protected def Over.mk {A : T} (f : A ⟶ X) (hf : P f) : P.Over Q X where
 /-- Make a morphism in `P.Over Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
-    (w : f ≫ B.hom = A.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : f ≫ B.hom = A.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Over.homMk f w
   prop_hom_left := hf
   prop_hom_right := trivial
@@ -318,7 +420,7 @@ protected def Over.homMk {A B : P.Over Q X} (f : A.left ⟶ B.left)
 /-- Make an isomorphism in `P.Over Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_left inv_left]
 protected def Over.isoMk [Q.RespectsIso] {A B : P.Over Q X} (f : A.left ≅ B.left)
-    (w : f.hom ≫ B.hom = A.hom := by aesop_cat) : A ≅ B :=
+    (w : f.hom ≫ B.hom = A.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk f (Discrete.eqToIso' rfl)
 
 @[ext]
@@ -336,7 +438,7 @@ end Over
 
 section Under
 
-variable {T : Type*} [Category T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
+variable {T : Type*} [Category* T] (P Q : MorphismProperty T) (X : T) [Q.IsMultiplicative]
 
 /-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
 subcategory of `Under X` defined by `P` where morphisms satisfy `Q`. -/
@@ -349,6 +451,10 @@ protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
 
 instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
 instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+
+/-- Occasionally useful for rewriting in the backwards direction. -/
+lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :
+    (MorphismProperty.Under.forget P Q X ⋙ CategoryTheory.Under.forget X).map f = f.right := rfl
 
 variable {P Q X}
 
@@ -371,7 +477,7 @@ protected def Under.mk {A : T} (f : X ⟶ A) (hf : P f) : P.Under Q X where
 /-- Make a morphism in `P.Under Q X` from a morphism in `T` with compatibilities. -/
 @[simps hom]
 protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
-    (w : A.hom ≫ f = B.hom := by aesop_cat) (hf : Q f := by trivial) : A ⟶ B where
+    (w : A.hom ≫ f = B.hom := by cat_disch) (hf : Q f := by trivial) : A ⟶ B where
   __ := CategoryTheory.Under.homMk f w
   prop_hom_left := trivial
   prop_hom_right := hf
@@ -379,7 +485,7 @@ protected def Under.homMk {A B : P.Under Q X} (f : A.right ⟶ B.right)
 /-- Make an isomorphism in `P.Under Q X` from an isomorphism in `T` with compatibilities. -/
 @[simps! hom_right inv_right]
 protected def Under.isoMk [Q.RespectsIso] {A B : P.Under Q X} (f : A.right ≅ B.right)
-    (w : A.hom ≫ f.hom = B.hom := by aesop_cat) : A ≅ B :=
+    (w : A.hom ≫ f.hom = B.hom := by cat_disch) : A ≅ B :=
   Comma.isoMk (Discrete.eqToIso' rfl) f
 
 @[ext]
@@ -394,5 +500,84 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
   simp
 
 end Under
+
+variable {C D : Type*} [Category C] [Category D]
+variable (P : MorphismProperty D) (Q : MorphismProperty C) [Q.IsMultiplicative] (F : C ⥤ D) (X : D)
+
+/-- Given a morphism property `P` on a category `C` and an object `X : C`, this is the
+subcategory of `CostructuredArrow F X` defined by `P` where morphisms satisfy `Q`. -/
+protected abbrev CostructuredArrow (P : MorphismProperty D) (Q : MorphismProperty C)
+    (F : C ⥤ D) (X : D) :=
+  P.Comma F (Functor.fromPUnit.{0} X) Q ⊤
+
+section CostructuredArrow
+
+variable {P F X} in
+/-- Construct an object of `P.CostructuredArrow Q F X` from a morphism `F.obj A ⟶ X`. -/
+@[simps left hom]
+protected def CostructuredArrow.mk {A : C} (f : F.obj A ⟶ X) (hf : P f) :
+    P.CostructuredArrow Q F X where
+  left := A
+  right := ⟨⟨⟩⟩
+  hom := f
+  prop := hf
+
+variable {P Q F X} in
+/-- Construct a morphism in `P.CostructuredArrow Q F X` by giving a morphism on the underlying
+objects of `C`. -/
+@[simps left]
+def CostructuredArrow.homMk {A B : P.CostructuredArrow Q F X} (f : A.left ⟶ B.left) (hf : Q f)
+    (w : F.map f ≫ B.hom = A.hom := by cat_disch) :
+    A ⟶ B where
+  left := f
+  right := eqToHom (Subsingleton.elim _ _)
+  prop_hom_left := hf
+  prop_hom_right := trivial
+
+variable {P Q F X} in
+@[ext]
+lemma CostructuredArrow.Hom.ext {A B : P.CostructuredArrow Q F X} {f g : A ⟶ B}
+    (h : f.left = g.left) : f = g := by
+  ext <;> simp [h]
+
+/-- The forgetful functor from the subcategory `P.CostructuredArrow Q F X`. -/
+protected abbrev CostructuredArrow.forget :
+    P.CostructuredArrow Q F X ⥤ CostructuredArrow F X :=
+  Comma.forget _ _ _ _ _
+
+/-- Reinterpreting an `F`-costructured arrow `F.obj A ⟶ X` as an arrow over `X`. -/
+@[simps]
+protected def CostructuredArrow.toOver : P.CostructuredArrow ⊤ F X ⥤ P.Over ⊤ X where
+  obj A := Over.mk _ A.hom A.prop
+  map f := Over.homMk (F.map f.left) _
+
+instance [F.Faithful] : (CostructuredArrow.toOver P F X).Faithful := by
+  constructor
+  intro A B f g hfg
+  ext
+  exact F.map_injective congr($(hfg).left)
+
+instance [F.Full] : (CostructuredArrow.toOver P F X).Full := by
+  constructor
+  intro A B f
+  refine ⟨CostructuredArrow.homMk (F.preimage f.left) trivial ?_, ?_⟩
+  · simpa using f.w
+  · ext; simp
+
+end CostructuredArrow
+
+instance HasFactorization.over
+    {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
+    [W₁.HasFactorization W₂] (S : C) :
+    (W₁.over (X := S)).HasFactorization W₂.over where
+  nonempty_mapFactorizationData {X Y} f := by
+    let hf := W₁.factorizationData W₂ f.left
+    exact ⟨{
+      Z := .mk (hf.p ≫ Y.hom)
+      i := CategoryTheory.Over.homMk hf.i
+      p := CategoryTheory.Over.homMk hf.p
+      hi := hf.hi
+      hp := hf.hp
+    }⟩
 
 end CategoryTheory.MorphismProperty

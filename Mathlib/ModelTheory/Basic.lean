@@ -3,8 +3,9 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Basics on First-Order Structures
@@ -39,6 +40,8 @@ For the Flypitch project:
   the continuum hypothesis*][flypitch_itp]
 -/
 
+@[expose] public section
+
 universe u v u' v' w w'
 
 open Cardinal
@@ -53,9 +56,9 @@ namespace FirstOrder
   type of relations of every natural-number arity. -/
 @[nolint checkUnivs]
 structure Language where
-  /-- For every arity, a `Type*` of functions of that arity -/
+  /-- For every arity, a `Type u` of functions of that arity -/
   Functions : ℕ → Type u
-  /-- For every arity, a `Type*` of relations of that arity -/
+  /-- For every arity, a `Type v` of relations of that arity -/
   Relations : ℕ → Type v
 
 namespace Language
@@ -69,8 +72,7 @@ abbrev IsRelational : Prop := ∀ n, IsEmpty (L.Functions n)
 abbrev IsAlgebraic : Prop := ∀ n, IsEmpty (L.Relations n)
 
 /-- The empty language has no symbols. -/
-protected def empty : Language :=
-  ⟨fun _ => Empty, fun _ => Empty⟩
+protected def empty : Language := ⟨fun _ => Empty, fun _ => Empty⟩
   deriving IsAlgebraic, IsRelational
 
 instance : Inhabited Language :=
@@ -110,13 +112,11 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
 theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
   sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
-@[deprecated (since := "2025-02-05")] alias empty_card := card_empty
-
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
   simp only [Language.Symbols, isEmpty_sum, isEmpty_sigma]
   exact ⟨fun _ => inferInstance, fun _ => inferInstance⟩
 
-instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σl, L.Functions l) :=
+instance Countable.countable_functions [h : Countable L.Symbols] : Countable (Σ l, L.Functions l) :=
   @Function.Injective.countable _ _ h _ Sum.inl_injective
 
 @[simp]
@@ -477,7 +477,7 @@ theorem comp_assoc (f : M ↪[L] N) (g : N ↪[L] P) (h : P ↪[L] Q) :
   rfl
 
 theorem comp_injective (h : N ↪[L] P) :
-    Function.Injective (h.comp : (M ↪[L] N) →  (M ↪[L] P)) := by
+    Function.Injective (h.comp : (M ↪[L] N) → (M ↪[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
@@ -486,7 +486,7 @@ theorem comp_inj (h : N ↪[L] P) (f g : M ↪[L] N) : h.comp f = h.comp g ↔ f
   ⟨fun eq ↦ h.comp_injective eq, congr_arg h.comp⟩
 
 theorem toHom_comp_injective (h : N ↪[L] P) :
-    Function.Injective (h.toHom.comp : (M →[L] N) →  (M →[L] P)) := by
+    Function.Injective (h.toHom.comp : (M →[L] N) → (M →[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (DFunLike.congr_fun hfg x)
 
@@ -667,7 +667,7 @@ theorem comp_assoc (f : M ≃[L] N) (g : N ≃[L] P) (h : P ≃[L] Q) :
   rfl
 
 theorem injective_comp (h : N ≃[L] P) :
-    Function.Injective (h.comp : (M ≃[L] N) →  (M ≃[L] P)) := by
+    Function.Injective (h.comp : (M ≃[L] N) → (M ≃[L] P)) := by
   intro f g hfg
   ext x; exact h.injective (congr_fun (congr_arg DFunLike.coe hfg) x)
 
@@ -761,11 +761,6 @@ theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
 
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inl := funMap_sumInl
-@[deprecated (since := "2025-02-21")] alias funMap_sum_inr := funMap_sumInr
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inl := relMap_sumInl
-@[deprecated (since := "2025-02-21")] alias relMap_sum_inr := relMap_sumInr
-
 
 end SumStructure
 
@@ -811,8 +806,6 @@ end FirstOrder
 namespace Equiv
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
-
-open FirstOrder
 
 variable {L : Language} {M : Type*} {N : Type*} [L.Structure M]
 

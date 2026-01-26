@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 /-!
 # Bilinear form
@@ -13,16 +15,16 @@ This file defines the conversion between bilinear forms and matrices.
 
 ## Main definitions
 
- * `Matrix.toBilin` given a basis define a bilinear form
- * `Matrix.toBilin'` define the bilinear form on `n → R`
- * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
- * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
+* `Matrix.toBilin` given a basis define a bilinear form
+* `Matrix.toBilin'` define the bilinear form on `n → R`
+* `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
+* `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
-## Notations
+## Notation
 
 In this file we use the following type variables:
- - `M₁` is a module over the commutative semiring `R₁`,
- - `M₂` is a module over the commutative ring `R₂`.
+- `M₁` is a module over the commutative semiring `R₁`,
+- `M₂` is a module over the commutative ring `R₂`.
 
 ## Tags
 
@@ -30,7 +32,10 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 
 -/
 
+@[expose] public section
+
 open LinearMap (BilinForm)
+open Module
 
 variable {R₁ : Type*} {M₁ : Type*} [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁]
 variable {R₂ : Type*} {M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
@@ -56,8 +61,10 @@ theorem Matrix.toBilin'Aux_single [Fintype n] [DecidableEq n] (M : Matrix n n R�
 /-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
 This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
-def BilinForm.toMatrixAux (b : n → M₁) : BilinForm R₁ M₁ →ₗ[R₁] Matrix n n R₁ :=
+def LinearMap.BilinForm.toMatrixAux (b : n → M₁) : BilinForm R₁ M₁ →ₗ[R₁] Matrix n n R₁ :=
   LinearMap.toMatrix₂Aux R₁ b b
+
+@[deprecated (since := "2026-01-16")] alias BilinForm.toMatrixAux := LinearMap.BilinForm.toMatrixAux
 
 @[simp]
 theorem LinearMap.BilinForm.toMatrixAux_apply (B : BilinForm R₁ M₁) (b : n → M₁) (i j : n) :
@@ -66,9 +73,12 @@ theorem LinearMap.BilinForm.toMatrixAux_apply (B : BilinForm R₁ M₁) (b : n �
 
 variable [Fintype n] [Fintype o]
 
-theorem toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁ (n → R₁)) :
+theorem LinearMap.toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁ (n → R₁)) :
     Matrix.toBilin'Aux (BilinForm.toMatrixAux (fun j => Pi.single j 1) B₂) = B₂ := by
   rw [BilinForm.toMatrixAux, Matrix.toBilin'Aux, toLinearMap₂'Aux_toMatrix₂Aux]
+
+@[deprecated (since := "2026-01-16")] alias toBilin'Aux_toMatrixAux :=
+  LinearMap.toBilin'Aux_toMatrixAux
 
 section ToMatrix'
 
@@ -95,10 +105,10 @@ theorem Matrix.toBilin'Aux_eq (M : Matrix n n R₁) : Matrix.toBilin'Aux M = Mat
 theorem Matrix.toBilin'_apply (M : Matrix n n R₁) (x y : n → R₁) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, x i * M i j * y j :=
   (Matrix.toLinearMap₂'_apply _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 theorem Matrix.toBilin'_apply' (M : Matrix n n R₁) (v w : n → R₁) :
-    Matrix.toBilin' M v w = dotProduct v (M *ᵥ w) := Matrix.toLinearMap₂'_apply' _ _ _
+    Matrix.toBilin' M v w = v ⬝ᵥ M *ᵥ w := Matrix.toLinearMap₂'_apply' _ _ _
 
 @[simp]
 theorem Matrix.toBilin'_single (M : Matrix n n R₁) (i j : n) :
@@ -179,98 +189,152 @@ variable [DecidableEq n] (b : Basis n R₁ M₁)
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
-noncomputable def BilinForm.toMatrix : BilinForm R₁ M₁ ≃ₗ[R₁] Matrix n n R₁ :=
+noncomputable def LinearMap.BilinForm.toMatrix : BilinForm R₁ M₁ ≃ₗ[R₁] Matrix n n R₁ :=
   LinearMap.toMatrix₂ b b
+
+@[deprecated (since := "2026-01-16")] alias BilinForm.toMatrix := LinearMap.BilinForm.toMatrix
 
 /-- `BilinForm.toMatrix b` is the equivalence between `R`-bilinear forms on `M` and
 `n`-by-`n` matrices with entries in `R`, if `b` is an `R`-basis for `M`. -/
 noncomputable def Matrix.toBilin : Matrix n n R₁ ≃ₗ[R₁] BilinForm R₁ M₁ :=
-  (BilinForm.toMatrix b).symm
+  (LinearMap.BilinForm.toMatrix b).symm
 
 @[simp]
-theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
+theorem LinearMap.BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂_apply _ _ B _ _
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_apply := LinearMap.BilinForm.toMatrix_apply
+
+theorem LinearMap.BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n → R₁) :
+    x ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) :=
+  dotProduct_toMatrix₂_mulVec b b B x y
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.dotProduct_toMatrix_mulVec := LinearMap.BilinForm.dotProduct_toMatrix_mulVec
+
+lemma LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : M₁) :
+    B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) :=
+  apply_eq_dotProduct_toMatrix₂_mulVec b b B x y
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.apply_eq_dotProduct_toMatrix_mulVec :=
+  LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
-    (by simp only [smul_eq_mul, mul_assoc, mul_comm, mul_left_comm])
+    (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
-theorem BilinearForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
+theorem LinearMap.BilinForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
     BilinForm.toMatrixAux (R₁ := R₁) b B = BilinForm.toMatrix b B :=
   LinearMap.toMatrix₂Aux_eq _ _ B
 
-@[simp]
-theorem BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b :=
-  rfl
+@[deprecated (since := "2026-01-16")]
+alias BilinearForm.toMatrixAux_eq := LinearMap.BilinForm.toMatrixAux_eq
 
 @[simp]
-theorem Matrix.toBilin_symm : (Matrix.toBilin b).symm = BilinForm.toMatrix b :=
-  (BilinForm.toMatrix b).symm_symm
+theorem LinearMap.BilinForm.toMatrix_symm : (BilinForm.toMatrix b).symm = Matrix.toBilin b :=
+  rfl
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_symm := LinearMap.BilinForm.toMatrix_symm
+
+@[simp]
+theorem Matrix.toBilin_symm : (Matrix.toBilin b).symm = LinearMap.BilinForm.toMatrix b :=
+  (LinearMap.BilinForm.toMatrix b).symm_symm
 
 theorem Matrix.toBilin_basisFun : Matrix.toBilin (Pi.basisFun R₁ n) = Matrix.toBilin' := by
   ext M
   simp only [coe_comp, coe_single, Function.comp_apply, toBilin_apply, Pi.basisFun_repr,
     toBilin'_apply]
 
-theorem BilinForm.toMatrix_basisFun :
+theorem LinearMap.BilinForm.toMatrix_basisFun :
     BilinForm.toMatrix (Pi.basisFun R₁ n) = BilinForm.toMatrix' := by
   rw [BilinForm.toMatrix, BilinForm.toMatrix', LinearMap.toMatrix₂_basisFun]
 
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_basisFun := LinearMap.BilinForm.toMatrix_basisFun
+
 @[simp]
 theorem Matrix.toBilin_toMatrix (B : BilinForm R₁ M₁) :
-    Matrix.toBilin b (BilinForm.toMatrix b B) = B :=
+    Matrix.toBilin b (B.toMatrix b) = B :=
   (Matrix.toBilin b).apply_symm_apply B
 
 @[simp]
-theorem BilinForm.toMatrix_toBilin (M : Matrix n n R₁) :
+theorem LinearMap.BilinForm.toMatrix_toBilin (M : Matrix n n R₁) :
     BilinForm.toMatrix b (Matrix.toBilin b M) = M :=
   (BilinForm.toMatrix b).apply_symm_apply M
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_toBilin := LinearMap.BilinForm.toMatrix_toBilin
 
 variable {M₂' : Type*} [AddCommMonoid M₂'] [Module R₁ M₂']
 variable (c : Basis o R₁ M₂')
 variable [DecidableEq o]
 
 -- Cannot be a `simp` lemma because `b` must be inferred.
-theorem BilinForm.toMatrix_comp (B : BilinForm R₁ M₁) (l r : M₂' →ₗ[R₁] M₁) :
+theorem LinearMap.BilinForm.toMatrix_comp (B : BilinForm R₁ M₁) (l r : M₂' →ₗ[R₁] M₁) :
     BilinForm.toMatrix c (B.comp l r) =
       (LinearMap.toMatrix c b l)ᵀ * BilinForm.toMatrix b B * LinearMap.toMatrix c b r :=
   LinearMap.toMatrix₂_compl₁₂ _ _ _ _ B _ _
 
-theorem BilinForm.toMatrix_compLeft (B : BilinForm R₁ M₁) (f : M₁ →ₗ[R₁] M₁) :
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_comp := LinearMap.BilinForm.toMatrix_comp
+
+theorem LinearMap.BilinForm.toMatrix_compLeft (B : BilinForm R₁ M₁) (f : M₁ →ₗ[R₁] M₁) :
     BilinForm.toMatrix b (B.compLeft f) = (LinearMap.toMatrix b b f)ᵀ * BilinForm.toMatrix b B :=
   LinearMap.toMatrix₂_comp _ _ _ B _
 
-theorem BilinForm.toMatrix_compRight (B : BilinForm R₁ M₁) (f : M₁ →ₗ[R₁] M₁) :
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_compLeft := LinearMap.BilinForm.toMatrix_compLeft
+
+theorem LinearMap.BilinForm.toMatrix_compRight (B : BilinForm R₁ M₁) (f : M₁ →ₗ[R₁] M₁) :
     BilinForm.toMatrix b (B.compRight f) = BilinForm.toMatrix b B * LinearMap.toMatrix b b f :=
   LinearMap.toMatrix₂_compl₂ _ _ _ B _
 
-@[simp]
-theorem BilinForm.toMatrix_mul_basis_toMatrix (c : Basis o R₁ M₁) (B : BilinForm R₁ M₁) :
-    (b.toMatrix c)ᵀ * BilinForm.toMatrix b B * b.toMatrix c = BilinForm.toMatrix c B :=
-  LinearMap.toMatrix₂_mul_basis_toMatrix _ _ _  _ B
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_compRight := LinearMap.BilinForm.toMatrix_compRight
 
-theorem BilinForm.mul_toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix o n R₁) (N : Matrix n o R₁) :
+@[simp]
+theorem LinearMap.BilinForm.toMatrix_mul_basis_toMatrix (c : Basis o R₁ M₁) (B : BilinForm R₁ M₁) :
+    (b.toMatrix c)ᵀ * BilinForm.toMatrix b B * b.toMatrix c = BilinForm.toMatrix c B :=
+  LinearMap.toMatrix₂_mul_basis_toMatrix _ _ _ _ B
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_mul_basis_toMatrix := LinearMap.BilinForm.toMatrix_mul_basis_toMatrix
+
+theorem LinearMap.BilinForm.mul_toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix o n R₁)
+    (N : Matrix n o R₁) :
     M * BilinForm.toMatrix b B * N =
       BilinForm.toMatrix c (B.comp (Matrix.toLin c b Mᵀ) (Matrix.toLin c b N)) :=
   LinearMap.mul_toMatrix₂_mul _ _ _ _ B _ _
 
-theorem BilinForm.mul_toMatrix (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.mul_toMatrix_mul := LinearMap.BilinForm.mul_toMatrix_mul
+
+theorem LinearMap.BilinForm.mul_toMatrix (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
     M * BilinForm.toMatrix b B = BilinForm.toMatrix b (B.compLeft (Matrix.toLin b b Mᵀ)) :=
   LinearMap.mul_toMatrix₂ _ _ _ B _
 
-theorem BilinForm.toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.mul_toMatrix := LinearMap.BilinForm.mul_toMatrix
+
+theorem LinearMap.BilinForm.toMatrix_mul (B : BilinForm R₁ M₁) (M : Matrix n n R₁) :
     BilinForm.toMatrix b B * M = BilinForm.toMatrix b (B.compRight (Matrix.toLin b b M)) :=
-  LinearMap.toMatrix₂_mul _ _ _  B _
+  LinearMap.toMatrix₂_mul _ _ _ B _
+
+@[deprecated (since := "2026-01-16")]
+alias BilinForm.toMatrix_mul := LinearMap.BilinForm.toMatrix_mul
 
 theorem Matrix.toBilin_comp (M : Matrix n n R₁) (P Q : Matrix n o R₁) :
     (Matrix.toBilin b M).comp (toLin c b P) (toLin c b Q) = Matrix.toBilin c (Pᵀ * M * Q) := by
   ext x y
-  rw [Matrix.toBilin, BilinForm.toMatrix, Matrix.toBilin, BilinForm.toMatrix, toMatrix₂_symm,
-    toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
+  rw [Matrix.toBilin, LinearMap.BilinForm.toMatrix, Matrix.toBilin, LinearMap.BilinForm.toMatrix,
+    toMatrix₂_symm, toMatrix₂_symm, ← Matrix.toLinearMap₂_compl₁₂ b b c c]
   simp
 
 end ToMatrix
@@ -338,8 +402,9 @@ theorem _root_.Matrix.Nondegenerate.toBilin' {M : Matrix ι ι R₂} (h : M.Nond
 
 @[simp]
 theorem _root_.Matrix.nondegenerate_toBilin'_iff {M : Matrix ι ι R₂} :
-    M.toBilin'.Nondegenerate ↔ M.Nondegenerate :=
-  ⟨fun h v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w, Matrix.Nondegenerate.toBilin'⟩
+    M.toBilin'.Nondegenerate ↔ M.Nondegenerate := by
+  refine ⟨fun h ↦ Matrix.nondegenerate_def.mpr ?_, Matrix.Nondegenerate.toBilin'⟩
+  exact fun v hv => h v fun w => (M.toBilin'_apply' _ _).trans <| hv w
 
 theorem _root_.Matrix.Nondegenerate.toBilin {M : Matrix ι ι R₂} (h : M.Nondegenerate)
     (b : Basis ι R₂ M₂) : (Matrix.toBilin b M).Nondegenerate :=

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
@@ -20,6 +22,8 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 So we must be very selective regarding `HasExt` instances.
 
 -/
+
+public section
 
 universe w v u
 
@@ -62,12 +66,12 @@ namespace DerivedCategory
 
 variable [HasDerivedCategory.{w} C]
 
-lemma from_singleFunctor_obj_projective_eq_zero {P : C} [Projective P]
+lemma from_singleFunctor_obj_eq_zero_of_projective {P : C} [Projective P]
     {L : CochainComplex C ℤ} {i : ℤ}
     (φ : Q.obj ((CochainComplex.singleFunctor C i).obj P) ⟶ Q.obj L)
     (n : ℤ) (hn : n < i) [L.IsStrictlyLE n] :
     φ = 0 := by
-  obtain ⟨K, _, π, h, g, rfl⟩:= right_fac_of_isStrictlyLE φ i
+  obtain ⟨K, _, π, h, g, rfl⟩ := right_fac_of_isStrictlyLE φ i
   have hπ : IsSplitEpi π := by
     rw [isIso_Q_map_iff_quasiIso] at h
     exact CochainComplex.isSplitEpi_to_singleFunctor_obj_of_projective π
@@ -94,10 +98,10 @@ lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
   letI := HasDerivedCategory.standard C
   apply homEquiv.injective
-  simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (- (n + 1)) 0
-    (by omega)).hom.app _), zero_hom, Limits.zero_comp]
-  apply from_singleFunctor_obj_projective_eq_zero
-    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := - (n + 1)) _ (by omega)
+  simp only [← cancel_mono (((singleFunctors C).shiftIso (n + 1) (-(n + 1)) 0
+    (by lia)).hom.app _), zero_hom, Limits.zero_comp]
+  apply from_singleFunctor_obj_eq_zero_of_projective
+    (L := (CochainComplex.singleFunctor C (-(n + 1))).obj Y) (n := -(n + 1)) _ (by lia)
 
 end Abelian.Ext
 
@@ -105,23 +109,29 @@ variable (C)
 
 open Abelian
 
-lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] :
-  HasExt.{w} C := by
-    letI := HasDerivedCategory.standard C
-    have := hasExt_of_hasDerivedCategory C
-    rw [hasExt_iff_small_ext.{w}]
-    intro X Y n
-    induction n generalizing X Y with
-    | zero =>
-      rw [small_congr Ext.homEquiv₀]
-      infer_instance
-    | succ n hn =>
-      let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
-      have hS : S.ShortExact :=
-        { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
-      have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
-        Ext.contravariant_sequence_exact₃ hS Y x₃
-          (Ext.eq_zero_of_projective _) (by omega)
-      exact small_of_surjective.{w} this
+/-- If `C` is a locally `w`-small abelian category with enough projectives,
+then `HasExt.{w} C` holds. We do not make this an instance though:
+for a given category `C`, there may be different reasonable choices for
+the universe `w`, and if we have two `HasExt.{w₁} C` and `HasExt.{w₂} C`
+instances, we would have to specify the universe explicitly almost
+everywhere, which would be an inconvenience. Then, we must be
+very selective regarding `HasExt` instances. -/
+lemma hasExt_of_enoughProjectives [LocallySmall.{w} C] [EnoughProjectives C] : HasExt.{w} C := by
+  letI := HasDerivedCategory.standard C
+  have := hasExt_of_hasDerivedCategory C
+  rw [hasExt_iff_small_ext.{w}]
+  intro X Y n
+  induction n generalizing X Y with
+  | zero =>
+    rw [small_congr Ext.homEquiv₀]
+    infer_instance
+  | succ n hn =>
+    let S := ShortComplex.mk _ _ (kernel.condition (Projective.π X))
+    have hS : S.ShortExact :=
+      { exact := ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel S.g) }
+    have : Function.Surjective (Ext.precomp hS.extClass Y (add_comm 1 n)) := fun x₃ ↦
+      Ext.contravariant_sequence_exact₃ hS Y x₃
+        (Ext.eq_zero_of_projective _) (by lia)
+    exact small_of_surjective.{w} this
 
 end CategoryTheory
