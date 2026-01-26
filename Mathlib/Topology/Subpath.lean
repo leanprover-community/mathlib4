@@ -12,10 +12,10 @@ public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
 # Subpaths and concatenation of paths
 
 This file defines `Path.subpath` as a restriction of a path to a subinterval, reparameterized to
-have domain `[0, 1]` and possibly with a reverse of direction. It then defines `Path.concatenate` as
+have domain `[0, 1]` and possibly with a reverse of direction. It then defines `Path.concat` as
 a way to concatenate finite sequences of paths with compatible endpoints.
 
-The main result `Path.Homotopy.concatenateSubpath` shows that subpaths concatenate nicely.
+The main result `Path.Homotopy.concatSubpath` shows that subpaths concatenate nicely.
 In particular: following the subpaths of `γ` from `t i` to `t (i + 1)` for `0 ≤ i < n` is
 homotopic to the subpath of `γ` from `t 0` to `t n`.
 
@@ -146,57 +146,57 @@ end Homotopy
 variable {n : ℕ}
 
 /-- Concatenation of a sequence of paths with compatible endpoints. -/
-def concatenate (p : Fin (n + 1) → X) (F : (k : Fin n) → Path (p k.castSucc) (p k.succ)) :
+def concat (p : Fin (n + 1) → X) (F : (k : Fin n) → Path (p k.castSucc) (p k.succ)) :
     Path (p 0) (p (last n)) :=
   dfoldl n (fun i => Path (p 0) (p i)) (fun i ih => ih.trans (F i)) (refl (p 0))
 
 /-- Concatenating zero paths yields the constant path (the identity of `Path.trans`). -/
-@[simp] lemma concatenate_zero (p : Fin 1 → X) (F) :
-    concatenate p F = refl (p 0) := by
-  rw [concatenate, dfoldl_zero]
+@[simp] lemma concat_zero (p : Fin 1 → X) (F) :
+    concat p F = refl (p 0) := by
+  rw [concat, dfoldl_zero]
 
 /-- Concatenating `n + 1` paths corresponds to concatenating `n` paths and then the last path. -/
-lemma concatenate_succ (p : Fin (n + 2) → X) (F) :
-    concatenate p F = (concatenate (p ∘ castSucc) (fun k ↦ (F k.castSucc))).trans (F (last n)) := by
-  rw [concatenate, dfoldl_succ_last]
+lemma concat_succ (p : Fin (n + 2) → X) (F) :
+    concat p F = (concat (p ∘ castSucc) (fun k ↦ (F k.castSucc))).trans (F (last n)) := by
+  rw [concat, dfoldl_succ_last]
   rfl
 
 /-- Concatenating the constant path at `x` with itself just yields the constant path at `x`. -/
 @[simp]
-theorem concatenate_refl (n : ℕ) (x : X) :
-    concatenate (fun (_ : Fin (n + 1)) ↦ x) (fun _ ↦ Path.refl x) = Path.refl x := by
+theorem concat_refl (n : ℕ) (x : X) :
+    concat (fun (_ : Fin (n + 1)) ↦ x) (fun _ ↦ Path.refl x) = Path.refl x := by
   induction n with
-  | zero => rw [concatenate_zero]
+  | zero => rw [concat_zero]
   | succ _ _ =>
-    rw [concatenate_succ]
+    rw [concat_succ]
     convert refl_trans_refl
 
 namespace Homotopy
 
 /-- Given two sequences of paths `F` and `G`, and a sequence `H` of homotopies between them,
-there is a natural homotopy between `concatenate _ F` and `concatenate _ G`. -/
-protected def concatenate (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
-    (H : (k : Fin n) → (F k).Homotopy (G k)) : Homotopy (concatenate p F) (concatenate p G) := by
+there is a natural homotopy between `concat _ F` and `concat _ G`. -/
+protected def concat (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
+    (H : (k : Fin n) → (F k).Homotopy (G k)) : Homotopy (concat p F) (concat p G) := by
   induction n with
   | zero =>
-    rw [concatenate_zero, concatenate_zero]
+    rw [concat_zero, concat_zero]
     exact refl (Path.refl _)
   | succ n ih =>
-    rw [concatenate_succ, concatenate_succ]
+    rw [concat_succ, concat_succ]
     exact hcomp (ih _ _ _ (fun k ↦ H k.castSucc)) (H (last n))
 
 /-- Given a path `γ` and a sequence `t` of `n + 1` points in `[0, 1]`, there is a natural homotopy
 between the concatenation of paths `γ.subpath (t k) (t (k + 1))`, and `γ.subpath (t 0) (t n)`. -/
-def concatenateSubpath (γ : Path a b) (t : Fin (n + 1) → I) :
+def concatSubpath (γ : Path a b) (t : Fin (n + 1) → I) :
     Homotopy
-      (concatenate (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
+      (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) := by
   induction n with
   | zero =>
-    simp only [concatenate_zero, reduceLast, subpath_self]
+    simp only [concat_zero, reduceLast, subpath_self]
     exact refl _
   | succ n ih =>
-    rw [concatenate_succ]
+    rw [concat_succ]
     exact trans ((ih (t ∘ castSucc)).hcomp (refl _)) (subpathTransSubpath γ _ _ _)
 
 end Homotopy
@@ -204,28 +204,28 @@ end Homotopy
 namespace Homotopic
 
 /-- Concatenating one path `F 0` is homotopic to that path. -/
-theorem concatenate_one (p : Fin 2 → X) (F) :
-    Homotopic (concatenate p F) (F 0) := by
-  simpa [concatenate_succ] using ⟨Homotopy.reflTrans _⟩
+theorem concat_one (p : Fin 2 → X) (F) :
+    Homotopic (concat p F) (F 0) := by
+  simpa [concat_succ] using ⟨Homotopy.reflTrans _⟩
 
 /-- Concatenating two paths `F 0` and `F 1` is homotopic to `Path.trans (F 0) (F 1)`. -/
-theorem concatenate_two (p : Fin 3 → X) (F) :
-    Homotopic (concatenate p F) ((F 0).trans (F 1)) := by
-  simpa [concatenate_succ] using hcomp ⟨Homotopy.reflTrans _⟩ (refl _)
+theorem concat_two (p : Fin 3 → X) (F) :
+    Homotopic (concat p F) ((F 0).trans (F 1)) := by
+  simpa [concat_succ] using hcomp ⟨Homotopy.reflTrans _⟩ (refl _)
 
 
-/-- Alternative to `Path.Homotopy.concatenateHcomp` in terms of `Path.Homotopic`. -/
-theorem concatenate_hcomp (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
-    (h : (k : Fin n) → (F k).Homotopic (G k)) : Homotopic (concatenate p F) (concatenate p G) :=
-  ⟨Homotopy.concatenate p F G (fun k ↦ (h k).some)⟩
+/-- Alternative to `Path.Homotopy.concatHcomp` in terms of `Path.Homotopic`. -/
+theorem concat_hcomp (p : Fin (n + 1) → X) (F G : (k : Fin n) → Path (p k.castSucc) (p k.succ))
+    (h : (k : Fin n) → (F k).Homotopic (G k)) : Homotopic (concat p F) (concat p G) :=
+  ⟨Homotopy.concat p F G (fun k ↦ (h k).some)⟩
 
-/-- Alternative to `Path.Homotopy.concatenateSubpath` in terms of `Path.Homotopic`. -/
+/-- Alternative to `Path.Homotopy.concatSubpath` in terms of `Path.Homotopic`. -/
 @[simp]
-theorem concatenate_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
+theorem concat_subpath (γ : Path a b) (t : Fin (n + 1) → I) :
     Homotopic
-      (concatenate (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
+      (concat (γ ∘ t) (fun k ↦ γ.subpath (t k.castSucc) (t k.succ)))
       (γ.subpath (t 0) (t (last n))) :=
-  ⟨Homotopy.concatenateSubpath γ t⟩
+  ⟨Homotopy.concatSubpath γ t⟩
 
 end Path.Homotopic
 
