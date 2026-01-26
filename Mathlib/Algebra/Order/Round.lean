@@ -6,9 +6,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Rounding

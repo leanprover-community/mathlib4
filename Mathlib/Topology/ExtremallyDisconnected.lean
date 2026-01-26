@@ -1,4 +1,12 @@
-import Mathlib.Data.Set.Disjoint
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Compactification.StoneCech
 
 /-!
 # Extremally disconnected spaces

@@ -1,6 +1,14 @@
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Algebra.Group.TypeTags.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
+-/
+module
+
+public import Mathlib.Data.Rel
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces

@@ -1,4 +1,15 @@
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Subfields

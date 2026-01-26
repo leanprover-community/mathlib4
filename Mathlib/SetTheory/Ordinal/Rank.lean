@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Rank in a well-founded relation

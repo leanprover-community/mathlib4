@@ -1,7 +1,14 @@
-import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.RingTheory.Algebraic.Defs
+/-
+Copyright (c) 2021 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.FieldTheory.RatFunc.Defs
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # The field structure of rational functions

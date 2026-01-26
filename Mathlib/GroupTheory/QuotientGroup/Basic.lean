@@ -1,7 +1,17 @@
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.GroupTheory.Subgroup.Center
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
+/-
+Copyright (c) 2018 Kevin Buzzard, Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard, Patrick Massot
+-/
+-- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups

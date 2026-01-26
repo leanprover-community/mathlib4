@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+/-
+Copyright (c) 2022 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational

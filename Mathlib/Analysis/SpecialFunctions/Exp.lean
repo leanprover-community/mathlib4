@@ -1,6 +1,14 @@
-import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Complex.Exponential
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
+-/
+module
+
+public import Mathlib.Analysis.Complex.Asymptotics
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
 # Complex and real exponential

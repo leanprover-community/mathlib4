@@ -1,4 +1,17 @@
-import Mathlib.Algebra.Algebra.Tower
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization

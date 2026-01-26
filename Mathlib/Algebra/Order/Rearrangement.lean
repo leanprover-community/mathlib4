@@ -1,4 +1,17 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2022 Mantas Bakšys. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mantas Bakšys
+-/
+module
+
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Order.Monotone.Monovary
 
 /-!
 # Rearrangement inequality

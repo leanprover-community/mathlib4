@@ -1,5 +1,14 @@
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Field.Subfield.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning, Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.Algebra.Polynomial.Taylor
 
 /-!
 # Split polynomials

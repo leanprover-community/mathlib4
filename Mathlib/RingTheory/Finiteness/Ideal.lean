@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.Finiteness.Defs
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.RingTheory.Finiteness.Finsupp
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Finitely generated ideals

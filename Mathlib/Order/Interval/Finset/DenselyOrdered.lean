@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Linear locally finite orders are densely ordered iff they are trivial

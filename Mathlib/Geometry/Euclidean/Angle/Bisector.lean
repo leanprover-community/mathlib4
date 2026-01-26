@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2025 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers
+-/
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Angle bisectors.

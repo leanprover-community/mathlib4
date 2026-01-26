@@ -1,5 +1,15 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Topology.Algebra.Module.StrongTopology
+/-
+Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne, Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Measure.WithDensity
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Strongly measurable and finitely strongly measurable functions

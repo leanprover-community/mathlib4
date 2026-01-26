@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+/-
+Copyright (c) 2024 Yongle Hu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yongle Hu
+-/
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Localization
 
 /-!
 # `IsIntegrallyClosed` is a local property

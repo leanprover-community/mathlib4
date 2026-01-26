@@ -1,4 +1,14 @@
-import Mathlib.Analysis.LocallyConvex.Bounded
+/-
+Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Complex.Basic
 
 /-!
 # Inner product spaces

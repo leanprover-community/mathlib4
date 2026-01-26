@@ -1,4 +1,15 @@
-import Mathlib.Data.Finite.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
+-/
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Finite.Vector
 
 /-!
 # Finiteness of sets of lists

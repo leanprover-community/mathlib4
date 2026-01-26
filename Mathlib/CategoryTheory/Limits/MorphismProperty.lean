@@ -1,6 +1,12 @@
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
 /-!
 # (Co)limits in subcategories of comma categories defined by morphism properties

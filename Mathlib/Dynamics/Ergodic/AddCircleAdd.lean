@@ -1,4 +1,13 @@
-import Mathlib.Dynamics.Ergodic.Ergodic
+/-
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.OfMinimal
+public import Mathlib.Topology.Instances.AddCircle.DenseSubgroup
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Ergodicity of an irrational rotation

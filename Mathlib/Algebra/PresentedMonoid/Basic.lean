@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Group.Submonoid.Basic
+/-
+Copyright (c) 2024 Hannah Fechtner. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Hannah Fechtner
+-/
+module
+
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Defining a monoid given by generators and relations

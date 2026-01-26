@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
+-/
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.GroupTheory.Coset.Basic
 
 /-! Results about the cardinality of a quotient module. -/
 

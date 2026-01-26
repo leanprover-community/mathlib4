@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+/-
+Copyright (c) 2025 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.Topology.Order.CountableSeparating
 
 /-!
 # Radon-Nikodym derivative of invariant measures

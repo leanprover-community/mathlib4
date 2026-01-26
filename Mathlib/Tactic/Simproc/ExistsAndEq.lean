@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
+module
+
+public import Mathlib.Init
+public meta import Qq
+public import Qq
+public import Qq.MatchImpl
+public import Qq.Typ
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`

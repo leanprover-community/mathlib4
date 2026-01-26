@@ -1,4 +1,14 @@
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
+/-
+Copyright (c) 2022 Tian Chen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tian Chen, Mantas Bakšys
+-/
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory

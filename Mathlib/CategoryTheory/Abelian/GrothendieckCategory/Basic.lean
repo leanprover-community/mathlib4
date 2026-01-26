@@ -1,4 +1,15 @@
-import Mathlib.CategoryTheory.Generator.Basic
+/-
+Copyright (c) 2024 Paul Reichert. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Paul Reichert
+-/
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.CategoryTheory.Abelian.Transfer
+public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 

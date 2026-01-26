@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
+module
+
+public import Mathlib.Data.Int.Init
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.OfNat
 
 /-!
 # Basic operations on the integers

@@ -6,7 +6,6 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Dual
-import Mathlib.Combinatorics.Matroid.IndepAxioms
 
 /-!
 # Matroid Restriction

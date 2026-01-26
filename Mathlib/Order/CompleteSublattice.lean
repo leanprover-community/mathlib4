@@ -1,4 +1,13 @@
-import Mathlib.Order.Hom.Set
+/-
+Copyright (c) 2024 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Data.Set.Functor
+public import Mathlib.Order.Sublattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Complete Sublattices

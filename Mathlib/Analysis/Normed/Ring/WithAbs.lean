@@ -1,4 +1,12 @@
-import Mathlib.RingTheory.SimpleRing.Basic
+/-
+Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Salvatore Mercuri
+-/
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # WithAbs

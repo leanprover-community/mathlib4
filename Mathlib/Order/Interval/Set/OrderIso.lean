@@ -1,5 +1,12 @@
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
+-/
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Lemmas about images of intervals under order isomorphisms.

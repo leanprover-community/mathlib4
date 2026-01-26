@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Limits.Final
+/-
+Copyright (c) 2023 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.Logic.Small.Set
+public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Finally small categories

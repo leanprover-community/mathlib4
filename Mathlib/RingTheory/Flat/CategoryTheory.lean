@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+module
+
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 
 /-!
 # Tensoring with a flat module is an exact functor

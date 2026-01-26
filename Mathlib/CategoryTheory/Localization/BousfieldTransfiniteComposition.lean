@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
 # ObjectProperty.isLocal is stable under transfinite compositions

@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+/-
+Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
+-/
+module
+
+public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
+public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1

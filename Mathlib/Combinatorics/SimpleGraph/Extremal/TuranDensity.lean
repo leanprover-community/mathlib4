@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Mitchell Horner. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mitchell Horner
+-/
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+public import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Turán density

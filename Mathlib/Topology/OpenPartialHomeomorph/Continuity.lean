@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Basic
-import Mathlib.Topology.OpenPartialHomeomorph.Defs
 /-!
 # Partial homeomorphisms and continuity
 

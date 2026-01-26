@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2024 Charlie Conneen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Charlie Conneen, Pablo Donato, Klaus Gy
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
 

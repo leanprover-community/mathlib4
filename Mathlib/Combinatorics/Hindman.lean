@@ -1,5 +1,14 @@
-import Mathlib.Data.Stream.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2021 David Wärn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Wärn
+-/
+module
+
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Algebra.Semigroup
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Hindman's theorem on finite sums

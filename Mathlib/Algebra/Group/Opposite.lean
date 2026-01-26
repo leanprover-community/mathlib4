@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Group.Basic
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Tactic.Conv
 
 /-!
 # Group structures on the multiplicative and additive opposites

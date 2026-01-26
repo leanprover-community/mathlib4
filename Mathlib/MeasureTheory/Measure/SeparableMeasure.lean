@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+/-
+Copyright (c) 2024 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion
+-/
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure

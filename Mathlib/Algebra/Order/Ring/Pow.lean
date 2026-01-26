@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Order.Ring.Defs
+/-
+Copyright (c) 2019 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.Abel
 
 /-! # Bernoulli's inequality
 

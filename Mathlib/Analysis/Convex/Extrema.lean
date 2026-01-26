@@ -1,6 +1,14 @@
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Minima and maxima of convex functions

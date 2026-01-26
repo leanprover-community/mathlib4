@@ -1,6 +1,13 @@
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+/-
+Copyright (c) 2025 María Inés de Frutos-Fernández . All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández
+-/
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Bounds.Image
 
 /-!
 # Lemmas about `BddAbove`

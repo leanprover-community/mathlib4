@@ -6,7 +6,6 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 /-!
 # Matching with a RefinedDiscrTree

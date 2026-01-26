@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Patrick Stevens. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Stevens, Thomas Browning
+-/
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Nat.GCD.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Central binomial coefficients

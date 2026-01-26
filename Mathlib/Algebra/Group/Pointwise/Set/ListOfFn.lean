@@ -1,4 +1,13 @@
-import Batteries.Data.List.Basic
+/-
+Copyright (c) 2022 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations with lists of sets

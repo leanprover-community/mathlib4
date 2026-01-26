@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Michael Rothgang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Rothgang
+-/
+
+module
+
+import Mathlib.Init
+import Std.Internal.Parsec.String
 
 /-!
 # Checker for well-formed title and labels

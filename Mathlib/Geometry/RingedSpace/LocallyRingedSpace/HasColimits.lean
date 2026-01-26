@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2021 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Geometry.RingedSpace.OpenImmersion
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # Colimits of LocallyRingedSpace

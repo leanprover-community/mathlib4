@@ -1,5 +1,15 @@
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.GroupTheory.Commutator.Basic
+/-
+Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jordan Brown, Thomas Browning, Patrick Lutz
+-/
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups

@@ -1,7 +1,13 @@
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.PiTensorProduct
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.RingTheory.Finiteness.Defs
+/-
+Copyright (c) 2025 Daniel Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Morrison, Sophie Morel
+-/
+module
+
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 
 /-!
 # Tensor products of dual spaces

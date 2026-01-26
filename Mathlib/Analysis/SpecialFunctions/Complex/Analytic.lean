@@ -1,6 +1,14 @@
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+/-
+Copyright (c) 2024 Geoffrey Irving. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Geoffrey Irving
+-/
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 
 /-!
 # Various complex special functions are analytic

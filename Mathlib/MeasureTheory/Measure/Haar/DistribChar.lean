@@ -6,7 +6,6 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
-import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # The distributive character of Haar measures

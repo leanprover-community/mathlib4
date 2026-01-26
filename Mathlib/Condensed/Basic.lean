@@ -1,5 +1,12 @@
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.Topology.Category.CompHaus.Basic
+/-
+Copyright (c) 2023 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 

@@ -1,5 +1,14 @@
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.InnerProductSpace.Basic
+/-
+Copyright (c) 2022 Vincent Beffara. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vincent Beffara
+-/
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions

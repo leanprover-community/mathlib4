@@ -1,4 +1,13 @@
-import Mathlib.Topology.Algebra.Module.ModuleTopology
+/-
+Copyright (c) 2023 Ziyu Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Gradient

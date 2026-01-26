@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+/-
+Copyright (c) 2025 Jingting Wang, Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jingting Wang, Junyan Xu, Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # The fiber of a ring homomorphism at a prime ideal

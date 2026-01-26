@@ -1,4 +1,12 @@
-import Mathlib.Topology.MetricSpace.ProperSpace
+/-
+Copyright (c) 2018 Jan-David Salchow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Sequential compacts in metric spaces

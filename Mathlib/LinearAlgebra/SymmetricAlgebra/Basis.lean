@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.MvPolynomial.Basic
+/-
+Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
+-/
+module
+
+public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
+public import Mathlib.LinearAlgebra.Dimension.Basic
+public import Mathlib.RingTheory.MvPolynomial
 
 /-!
 # A basis for `SymmetricAlgebra R M`

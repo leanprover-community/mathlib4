@@ -1,8 +1,16 @@
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2020 Patrick Stevens. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Stevens, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Primorial

@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2023 Matthew Robert Ballard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kyle Miller
+-/
+module
+
+public import Mathlib.Init
+public import Mathlib.Lean.Elab.Term
 
 /-!
 # Support for `Sort*` and `Type*`.

@@ -1,5 +1,14 @@
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+/-
+Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fabrizio Barroero
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Data.List.ToFinsupp
+public import Mathlib.LinearAlgebra.Pi
 /-!
 # `Polynomial.ofFn` and `Polynomial.toFn`
 

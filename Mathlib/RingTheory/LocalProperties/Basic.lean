@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
+/-
+Copyright (c) 2021 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Local properties of commutative rings

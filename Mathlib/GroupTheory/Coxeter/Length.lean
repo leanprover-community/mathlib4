@@ -1,4 +1,14 @@
-import Mathlib.Data.ZMod.Defs
+/-
+Copyright (c) 2024 Mitchell Lee. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mitchell Lee
+-/
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Coxeter.Basic
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Zify
 
 /-!
 # The length function, reduced words, and descents

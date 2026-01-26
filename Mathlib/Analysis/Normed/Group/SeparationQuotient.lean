@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Normed.Group.Uniform
+/-
+Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yoh Tanimoto
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
 /-!
 # Lifts of maps to separation quotients of seminormed groups

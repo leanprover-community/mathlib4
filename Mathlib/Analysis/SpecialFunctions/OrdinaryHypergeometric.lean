@@ -1,4 +1,12 @@
-import Mathlib.RingTheory.Polynomial.Pochhammer
+/-
+Copyright (c) 2024 Edward Watine. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edward Watine
+-/
+module
+
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra

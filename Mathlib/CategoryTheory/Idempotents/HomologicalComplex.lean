@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Homology.HomologicalComplex
+/-
+Copyright (c) 2022 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and homological complexes

@@ -1,3 +1,18 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Chris Hughes, Anne Baanen
+-/
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
 /-!
 # Determinant of a matrix

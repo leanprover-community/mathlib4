@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Normed.Operator.Bilinear
+/-
+Copyright (c) 2019 Jan-David Salchow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Results about operator norms in normed algebras

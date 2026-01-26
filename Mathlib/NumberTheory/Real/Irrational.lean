@@ -1,5 +1,16 @@
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.Algebraic.Defs
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.Rat.Sqrt
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Irrational real numbers

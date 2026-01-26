@@ -1,4 +1,12 @@
-import Mathlib.Topology.Compactness.CompactlyCoherentSpace
+/-
+Copyright (c) 2024 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson, Etienne Marion
+-/
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # Compactly generated topological spaces

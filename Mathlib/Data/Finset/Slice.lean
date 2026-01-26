@@ -1,5 +1,14 @@
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
+-/
+module
+
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `r`-sets and slice

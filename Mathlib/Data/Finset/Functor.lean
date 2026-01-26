@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Kim Morrison
+-/
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Multiset.Functor
 
 /-!
 # Functoriality of `Finset`

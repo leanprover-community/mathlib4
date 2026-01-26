@@ -1,4 +1,14 @@
-import Mathlib.Algebra.MvPolynomial.CommRing
+/-
+Copyright (c) 2025 Bolton Bailey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir, Bolton Bailey
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.Algebra.MvPolynomial.Division
 
 /-!
 # Multivariate polynomials over integral domains

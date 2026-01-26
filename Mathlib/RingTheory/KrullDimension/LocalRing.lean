@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jingting Wang
+-/
+module
+
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # The Krull dimension of a local ring

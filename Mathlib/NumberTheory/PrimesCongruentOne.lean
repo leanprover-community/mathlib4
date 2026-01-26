@@ -6,10 +6,6 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Primes congruent to one

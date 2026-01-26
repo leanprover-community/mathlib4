@@ -1,4 +1,17 @@
-import Mathlib.Data.Int.Cast.Defs
+/-
+Copyright (c) 2022 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll, Mario Carneiro, Robert Y. Lewis
+-/
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Mathlib.Tactic.Attr.Register
+public meta import Aesop
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Basic
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # `zify` tactic

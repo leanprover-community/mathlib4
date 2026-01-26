@@ -1,5 +1,12 @@
-import Mathlib.Order.Atoms
-import Mathlib.Order.Filter.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters

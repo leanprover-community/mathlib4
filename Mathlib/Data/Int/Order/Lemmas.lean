@@ -6,9 +6,6 @@ Authors: Jeremy Avigad
 module
 
 public import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.Sqrt
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Further lemmas about the integers

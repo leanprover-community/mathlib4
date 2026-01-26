@@ -1,6 +1,14 @@
-import Mathlib.Order.WithBot
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
+-/
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # The covering relation

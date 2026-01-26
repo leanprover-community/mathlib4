@@ -1,4 +1,15 @@
-import Mathlib.Topology.Constructions
+/-
+Copyright (c) 2021 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.UpperLower.Closure
+public import Mathlib.Order.UpperLower.Fibration
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Inseparable points in a topological space

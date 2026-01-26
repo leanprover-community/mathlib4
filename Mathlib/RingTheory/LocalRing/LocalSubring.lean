@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
+-/
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 # Local subrings of fields

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Final functors between intervals

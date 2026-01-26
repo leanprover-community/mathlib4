@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.Data.Countable.Defs
 
 /-!
 # Arithmetic on families of ordinals

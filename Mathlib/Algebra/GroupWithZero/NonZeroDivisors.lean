@@ -1,5 +1,15 @@
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Devon Tuma, Oliver Nash
+-/
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Regular.SMul
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Non-zero divisors and smul-divisors

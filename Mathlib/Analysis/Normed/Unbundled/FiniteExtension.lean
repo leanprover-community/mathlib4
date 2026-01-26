@@ -1,4 +1,15 @@
-import Mathlib.Algebra.EuclideanDomain.Field
+/-
+Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández
+-/
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!

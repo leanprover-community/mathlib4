@@ -1,4 +1,17 @@
-import Mathlib.GroupTheory.GroupAction.Ring
+/-
+Copyright (c) 2021 Filippo A. E. Nuccio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Filippo A. E. Nuccio, Eric Wieser
+-/
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Kronecker product of matrices

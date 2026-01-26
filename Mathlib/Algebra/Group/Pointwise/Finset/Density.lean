@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+/-
+Copyright (c) 2020 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn, Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Data.Finset.Density
 
 /-!
 # Theorems about the density of pointwise operations on finsets.

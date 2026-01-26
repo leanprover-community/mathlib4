@@ -6,8 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Principal Ideals

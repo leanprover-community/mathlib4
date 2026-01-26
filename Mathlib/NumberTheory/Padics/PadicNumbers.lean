@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Order.Monoid.TypeTags
+/-
+Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis
+-/
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers

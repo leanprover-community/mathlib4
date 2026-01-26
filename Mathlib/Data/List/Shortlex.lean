@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Hannah Fechtner. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Hannah Fechtner
+-/
+module
+
+public import Mathlib.Data.List.Lex
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Shortlex ordering of lists.

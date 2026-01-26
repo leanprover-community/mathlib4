@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Kexing Ying, Eric Wieser
+-/
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Quadratic maps

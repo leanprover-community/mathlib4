@@ -6,8 +6,6 @@ Authors: Floris van Doorn, Patrick Massot
 module
 
 public import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Neighborhoods of a set

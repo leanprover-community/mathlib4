@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2023 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck, Ruben Van de Velde
+-/
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # One-dimensional iterated derivatives

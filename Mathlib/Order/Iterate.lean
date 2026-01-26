@@ -1,5 +1,12 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Monotone.Defs
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates

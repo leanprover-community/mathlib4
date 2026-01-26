@@ -1,6 +1,15 @@
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+/-
+Copyright (c) 2021 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Riccardo Brasca, Xavier Roblot
+-/
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Class numbers of number fields

@@ -1,5 +1,14 @@
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Topology.Category.TopCat.Basic
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Richard Hill, Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category `TopModuleCat R` of topological modules

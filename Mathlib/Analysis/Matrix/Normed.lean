@@ -6,8 +6,6 @@ Authors: Heather Macbeth, Eric Wieser
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Matrices as a normed space

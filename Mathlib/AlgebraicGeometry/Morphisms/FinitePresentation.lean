@@ -1,4 +1,15 @@
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!
 

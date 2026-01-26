@@ -1,4 +1,13 @@
-import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
+/-
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck, David Loeffler, Andrew Yang
+-/
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.UniformConvergence
+public import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly

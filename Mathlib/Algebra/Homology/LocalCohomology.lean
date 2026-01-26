@@ -1,4 +1,18 @@
-import Mathlib.RingTheory.Ideal.Operations
+/-
+Copyright (c) 2023 Emily Witt. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Local cohomology.

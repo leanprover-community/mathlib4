@@ -1,4 +1,13 @@
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Cardinality of sets under pointwise group with zero operations

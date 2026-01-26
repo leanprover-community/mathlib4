@@ -1,5 +1,12 @@
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+/-
+Copyright (c) 2021 Manuel Candales. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Manuel Candales, Benjamin Davidson
+-/
+module
+
+public import Mathlib.Geometry.Euclidean.Sphere.Power
+public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Ptolemy's theorem

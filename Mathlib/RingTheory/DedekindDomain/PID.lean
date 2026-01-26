@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
+/-
+Copyright (c) 2023 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Kenny Lau
+-/
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Criteria under which a Dedekind domain is a PID

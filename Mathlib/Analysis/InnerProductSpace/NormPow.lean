@@ -1,7 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Topology.Algebra.Module.ModuleTopology
+/-
+Copyright (c) 2024 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Properties about the powers of the norm

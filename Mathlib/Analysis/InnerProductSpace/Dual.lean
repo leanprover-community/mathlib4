@@ -1,5 +1,13 @@
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.LinearAlgebra.Dimension.LinearMap
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.Normed.Group.NullSubmodule
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem

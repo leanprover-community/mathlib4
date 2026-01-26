@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+/-
+Copyright (c) 2019 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca, Paul Lezeau, Junyan Xu
+-/
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 # Minimal polynomials over a GCD monoid

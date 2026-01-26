@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nicolò Cavalleri, Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.Derivation.ToSquareZero
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # The module of Kähler differentials

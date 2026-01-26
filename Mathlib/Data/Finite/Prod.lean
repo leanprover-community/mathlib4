@@ -1,4 +1,16 @@
-import Mathlib.Data.Finset.Prod
+/-
+Copyright (c) 2022 Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kyle Miller
+-/
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products

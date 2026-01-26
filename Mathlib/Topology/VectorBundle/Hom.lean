@@ -6,7 +6,6 @@ Authors: Heather Macbeth, Floris van Doorn
 module
 
 public import Mathlib.Topology.VectorBundle.Basic
-import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # The vector bundle of continuous (semi)linear maps

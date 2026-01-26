@@ -1,4 +1,13 @@
-import Mathlib.Data.Finite.Prod
+/-
+Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson
+-/
+module
+
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series

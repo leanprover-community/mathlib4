@@ -1,4 +1,16 @@
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+/-
+Copyright (c) 2021 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
+-/
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Finite
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Finset
+public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 /-!
 # The standard simplex

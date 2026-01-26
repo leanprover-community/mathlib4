@@ -1,5 +1,12 @@
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Calculus.TangentCone.Defs
+/-
+Copyright (c) 2025 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`

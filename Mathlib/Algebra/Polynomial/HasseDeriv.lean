@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Data.Nat.Choose.Vandermonde
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Hasse derivative of polynomials

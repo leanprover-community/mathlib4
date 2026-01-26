@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lu-Ming Zhang
+-/
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.Tactic.Abel
 
 /-!
 # Circulant matrices

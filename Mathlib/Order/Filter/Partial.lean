@@ -1,4 +1,12 @@
-import Mathlib.Order.Filter.Defs
+/-
+Copyright (c) 2019 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Data.PFun
 
 /-!
 # `Tendsto` for relations and partial functions

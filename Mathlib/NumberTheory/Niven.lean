@@ -1,5 +1,17 @@
-import Mathlib.Data.Rat.Floor
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+/-
+Copyright (c) 2025 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg, Snir Broshi
+-/
+module
+
+public import Mathlib.Analysis.Complex.IsIntegral
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.RingTheory.Polynomial.RationalRoot
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-! # Niven's Theorem
 

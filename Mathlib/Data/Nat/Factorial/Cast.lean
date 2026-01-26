@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Ring.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Cast of factorials

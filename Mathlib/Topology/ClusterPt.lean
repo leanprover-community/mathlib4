@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Topology.Neighborhoods
-import Mathlib.Topology.Defs.Filter
-import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Lemmas on cluster and accumulation points

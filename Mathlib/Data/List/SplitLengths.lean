@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2024 Daniel Weber. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Weber
+-/
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Order.MinMax
 
 /-!
 # Splitting a list to chunks of specified lengths

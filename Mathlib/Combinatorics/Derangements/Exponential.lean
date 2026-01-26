@@ -1,4 +1,14 @@
-import Mathlib.Analysis.Complex.Exponential
+/-
+Copyright (c) 2021 Henry Swanson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Henry Swanson, Patrick Massot
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Derangement exponential series

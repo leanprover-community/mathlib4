@@ -1,4 +1,16 @@
-import Mathlib.Analysis.Normed.Field.Lemmas
+/-
+Copyright (c) 2025 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!
 # Cusps

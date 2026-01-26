@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2018 Simon Hudon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Johannes Hölzl, Simon Hudon, Kenny Lau
+-/
+module
+
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Control.Traversable.Instances
 
 /-!
 # Functoriality of `Multiset`.

@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2021 Alena Gusakov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alena Gusakov, Jeremy Tan
+-/
+module
+
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 
 /-!
 # Strongly regular graphs

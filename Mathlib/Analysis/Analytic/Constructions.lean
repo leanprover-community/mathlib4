@@ -1,4 +1,15 @@
-import Mathlib.Analysis.Analytic.Basic
+/-
+Copyright (c) 2023 Geoffrey Irving. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
+-/
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Various ways to combine analytic functions

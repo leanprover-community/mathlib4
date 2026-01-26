@@ -1,4 +1,19 @@
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Action.Monoidal
+public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.

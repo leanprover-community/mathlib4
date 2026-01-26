@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Limits of `P(x) / e ^ x` for a polynomial `P`

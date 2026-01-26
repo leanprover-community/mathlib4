@@ -1,4 +1,12 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2022 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.GroupTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Interactions between `∑, ∏` and `RingCon`

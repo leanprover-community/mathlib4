@@ -1,4 +1,14 @@
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.MetricSpace.Gluing
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # The Gromov-Hausdorff distance is realized

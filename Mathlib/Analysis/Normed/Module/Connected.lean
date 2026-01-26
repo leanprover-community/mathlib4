@@ -1,6 +1,15 @@
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
 # Connectedness of subsets of vector spaces

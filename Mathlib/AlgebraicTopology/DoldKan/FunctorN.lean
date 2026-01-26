@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
-import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
 

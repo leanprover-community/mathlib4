@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Tactic.NormNum.Core
+/-
+Copyright (c) 2025 Harmonic. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public meta import Batteries.Data.Nat.Basic
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # `norm_num` extension for `IsSquare`

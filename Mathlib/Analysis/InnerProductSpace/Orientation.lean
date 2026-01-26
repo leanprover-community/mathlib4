@@ -1,4 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.PiL2
+/-
+Copyright (c) 2022 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
+public import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # Orientations of real inner product spaces.

@@ -6,9 +6,6 @@ Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Convolution

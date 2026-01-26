@@ -1,7 +1,14 @@
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+/-
+Copyright (c) 2024 Mitchell Lee. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mitchell Lee
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups

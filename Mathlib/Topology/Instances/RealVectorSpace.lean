@@ -1,4 +1,13 @@
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Instances.Rat
+public import Mathlib.Algebra.Module.Rat
 
 /-!
 # Continuous additive maps are `ℝ`-linear

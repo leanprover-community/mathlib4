@@ -1,4 +1,12 @@
-import Mathlib.Data.ZMod.ValMinAbs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 /-!
 # Lemmas of Gauss and Eisenstein

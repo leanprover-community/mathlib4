@@ -1,4 +1,14 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
 # Cauchy sequences and big operators

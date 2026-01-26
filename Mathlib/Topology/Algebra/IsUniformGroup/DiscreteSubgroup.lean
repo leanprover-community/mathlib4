@@ -1,4 +1,14 @@
-import Mathlib.Topology.Separation.Hausdorff
+/-
+Copyright (c) 2025 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 
 /-!
 # Discrete subgroups of topological groups

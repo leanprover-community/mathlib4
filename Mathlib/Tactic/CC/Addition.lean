@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2016 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Miyahara Kō
+-/
+module
+
+public import Mathlib.Lean.Meta.CongrTheorems
+public import Mathlib.Tactic.CC.Lemmas
+public import Mathlib.Tactic.CC.MkProof
 
 /-!
 # Process when a new equation is added to a congruence closure

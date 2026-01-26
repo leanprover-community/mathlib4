@@ -1,5 +1,12 @@
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.LinearAlgebra.RootSystem.Reduced
+/-
+Copyright (c) 2025 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
 # Chains of roots

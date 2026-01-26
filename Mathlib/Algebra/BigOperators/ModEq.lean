@@ -1,5 +1,12 @@
-import Mathlib.Data.Int.ModEq
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Congruence modulo natural and integer numbers for big operators

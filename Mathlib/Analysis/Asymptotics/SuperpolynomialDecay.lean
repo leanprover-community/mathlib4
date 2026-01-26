@@ -1,5 +1,12 @@
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
+/-
+Copyright (c) 2021 Devon Tuma. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Devon Tuma
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Super-Polynomial Function Decay

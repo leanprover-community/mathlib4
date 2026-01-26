@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2022 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.NumberTheory.BernoulliPolynomials
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Critical values of the Riemann zeta function

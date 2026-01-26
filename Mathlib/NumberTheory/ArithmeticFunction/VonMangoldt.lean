@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
 /-!
 # The von Mangoldt Function

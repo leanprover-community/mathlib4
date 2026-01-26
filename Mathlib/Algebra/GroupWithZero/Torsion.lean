@@ -1,5 +1,12 @@
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+/-
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Xavier Roblot
+-/
+module
+
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Torsion-free monoids with zero

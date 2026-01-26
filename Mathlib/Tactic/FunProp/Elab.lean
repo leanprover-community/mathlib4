@@ -6,7 +6,6 @@ Authors: Tomáš Skřivan
 module
 
 public import Mathlib.Tactic.FunProp.Core
-import Mathlib.Tactic.FunProp.Types
 
 /-!
 ## `funProp` tactic syntax

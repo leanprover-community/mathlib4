@@ -1,8 +1,12 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Units.Defs
+/-
+Copyright (c) 2018 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Chris Hughes, Michael Howes
+-/
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Conjugacy of group elements

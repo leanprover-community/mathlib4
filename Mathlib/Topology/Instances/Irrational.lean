@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Topology.Separation.GDelta
+public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Topology of irrational numbers

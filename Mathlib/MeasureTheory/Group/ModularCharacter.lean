@@ -1,4 +1,16 @@
-import Mathlib.MeasureTheory.Measure.Haar.Basic
+/-
+Copyright (c) 2025 Noam Atar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Noam Atar
+-/
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Modular character of a locally compact group

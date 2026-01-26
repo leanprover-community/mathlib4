@@ -1,4 +1,12 @@
-import Mathlib.Algebra.GroupWithZero.Hom
+/-
+Copyright (c) 2025 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Instances for the range submonoid of a monoid with zero hom

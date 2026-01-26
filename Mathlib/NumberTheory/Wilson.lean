@@ -6,7 +6,6 @@ Authors: John Nicol
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Wilson's theorem.

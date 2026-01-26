@@ -1,4 +1,12 @@
-import Mathlib.Data.Multiset.UnionInter
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Multiset.Dedup
+public import Mathlib.Data.List.Infix
 
 /-!
 # Preparations for defining operations on `Finset`.

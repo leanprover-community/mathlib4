@@ -1,5 +1,13 @@
-import Mathlib.Topology.EMetricSpace.BoundedVariation
-import Mathlib.Analysis.Calculus.FDeriv.Defs
+/-
+Copyright (c) 2025 Yizheng Zhu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yizheng Zhu
+-/
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.Order.SuccPred.IntervalSucc
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Absolutely Continuous Functions

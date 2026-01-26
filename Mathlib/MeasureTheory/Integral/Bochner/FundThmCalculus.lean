@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Fundamental theorem of calculus for set integrals

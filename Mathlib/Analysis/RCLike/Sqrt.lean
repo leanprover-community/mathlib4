@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2026 Monica Omar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Monica Omar
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Square root on `RCLike`

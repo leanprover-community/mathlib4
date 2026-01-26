@@ -1,5 +1,15 @@
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Analysis.LocallyConvex.Bounded
+/-
+Copyright (c) 2022 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Topology.Algebra.Algebra.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.SeparationQuotient.Section
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Strong topologies on the space of continuous linear maps

@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Calculus of fractions

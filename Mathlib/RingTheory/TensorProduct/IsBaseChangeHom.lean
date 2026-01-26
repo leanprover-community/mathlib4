@@ -1,4 +1,16 @@
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+/-
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.LinearAlgebra.Determinant
 
 /-! # Base change properties for modules of linear maps
 

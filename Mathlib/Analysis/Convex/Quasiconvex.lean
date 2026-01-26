@@ -1,6 +1,12 @@
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Antoine Chambert-Loir, Anatole Dedecker
+-/
+module
+
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Quasiconvex and quasiconcave functions

@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+/-
+Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Bhavik Mehta
+-/
+module
+
+public import Mathlib.Combinatorics.Additive.ETransform
+public import Mathlib.GroupTheory.Order.Min
 
 /-!
 # The Cauchy-Davenport theorem

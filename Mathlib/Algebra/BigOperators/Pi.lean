@@ -1,6 +1,17 @@
-import Mathlib.Order.SetNotation
-import Mathlib.Data.Finset.Card
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2018 Simon Hudon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Simon Hudon, Patrick Massot
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Big operators for Pi Types

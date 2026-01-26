@@ -1,6 +1,12 @@
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+/-
+Copyright (c) 2020 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning, Junyan Xu
+-/
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings

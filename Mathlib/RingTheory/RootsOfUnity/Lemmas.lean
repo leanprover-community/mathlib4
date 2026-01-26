@@ -6,7 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.FieldTheory.KummerExtension
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # More results on primitive roots of unity

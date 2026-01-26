@@ -1,4 +1,14 @@
-import Mathlib.Analysis.RCLike.Basic
+/-
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Differentiability of sum of functions

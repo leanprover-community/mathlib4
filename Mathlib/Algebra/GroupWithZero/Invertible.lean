@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Group.Invertible.Defs
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Theorems about invertible elements in a `GroupWithZero`

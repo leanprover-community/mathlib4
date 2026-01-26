@@ -6,7 +6,6 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Finiteness of `IsScalarTower`

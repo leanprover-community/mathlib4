@@ -1,5 +1,12 @@
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Dimension.Basic
+/-
+Copyright (c) 2020 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.LinearAlgebra.Dimension.Constructions
 
 /-!
 # Linear recurrence

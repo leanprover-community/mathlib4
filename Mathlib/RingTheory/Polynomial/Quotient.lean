@@ -1,5 +1,18 @@
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.Polynomial.AlgebraMap
+/-
+Copyright (c) 2019 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
+-/
+module
+
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Ideal
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Quotients of polynomial rings

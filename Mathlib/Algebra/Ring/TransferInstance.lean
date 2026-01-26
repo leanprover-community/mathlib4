@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Ring.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s

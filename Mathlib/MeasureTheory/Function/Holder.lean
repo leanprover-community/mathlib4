@@ -6,8 +6,6 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 

@@ -1,5 +1,13 @@
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Dynamics.Ergodic.Action.Basic
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.Regular
+public import Mathlib.MeasureTheory.Measure.ContinuousPreimage
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Ergodicity from minimality

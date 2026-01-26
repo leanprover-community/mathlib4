@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+/-
+Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Julian Kuelshammer
+-/
+module
+
+public import Mathlib.Algebra.PEmptyInstances
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`

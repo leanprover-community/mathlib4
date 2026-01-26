@@ -6,7 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms

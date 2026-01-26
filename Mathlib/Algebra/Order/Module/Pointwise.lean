@@ -1,6 +1,14 @@
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Algebra.Order.Module.Defs
+/-
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Order.Bounds.OrderIso
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Bounds on scalar multiplication of set

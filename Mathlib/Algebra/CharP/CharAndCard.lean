@@ -1,5 +1,14 @@
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Data.Fintype.Card
+/-
+Copyright (c) 2022 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Characteristic and cardinality

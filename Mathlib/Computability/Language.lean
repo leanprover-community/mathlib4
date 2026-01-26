@@ -1,5 +1,16 @@
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Algebra.Order.Sub.Defs
+/-
+Copyright (c) 2020 Fox Thomson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fox Thomson, Martin Dvorak, Rudy Peterson
+-/
+module
+
+public import Mathlib.Algebra.Order.Kleene
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Languages

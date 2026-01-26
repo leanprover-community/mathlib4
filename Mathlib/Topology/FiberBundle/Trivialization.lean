@@ -1,4 +1,15 @@
-import Mathlib.Topology.Homeomorph.Lemmas
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Data.Bundle
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Trivializations

@@ -1,4 +1,15 @@
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # The category of abelian groups has finite biproducts

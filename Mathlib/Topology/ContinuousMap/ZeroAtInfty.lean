@@ -1,5 +1,12 @@
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+/-
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
 # Continuous functions vanishing at infinity

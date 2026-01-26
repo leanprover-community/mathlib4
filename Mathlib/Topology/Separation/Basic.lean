@@ -1,4 +1,17 @@
-import Mathlib.Topology.Compactness.Compact
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Separation.SeparatedNhds
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Bases
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Separation properties of topological spaces

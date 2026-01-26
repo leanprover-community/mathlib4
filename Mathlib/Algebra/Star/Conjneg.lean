@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Conjugation-negation operator

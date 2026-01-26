@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang, Fangming Li, Alessandro D'Angelo
+-/
+module
+
+public import Mathlib.Order.KrullDimension
+public import Mathlib.Topology.Irreducible
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # The Krull dimension of a topological space

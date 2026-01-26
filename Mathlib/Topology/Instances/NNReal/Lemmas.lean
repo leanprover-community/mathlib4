@@ -1,4 +1,15 @@
-import Mathlib.Topology.UniformSpace.Real
+/-
+Copyright (c) 2018 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Topology on `ℝ≥0`

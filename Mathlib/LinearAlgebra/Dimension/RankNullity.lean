@@ -1,5 +1,14 @@
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Dimension.Finrank
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 

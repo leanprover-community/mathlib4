@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Benjamin Davidson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Benjamin Davidson
+-/
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
 
 /-!
 # Periodic functions

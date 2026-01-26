@@ -1,4 +1,13 @@
-import Mathlib.Algebra.EuclideanDomain.Field
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Spec
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.CategoryTheory.Elementwise
 
 /-!
 # The category of schemes

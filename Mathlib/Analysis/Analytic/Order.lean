@@ -1,5 +1,14 @@
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+/-
+Copyright (c) 2022 Vincent Beffara. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vincent Beffara, Stefan Kebekus
+-/
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Analytic
 
 /-!
 # Vanishing Order of Analytic Functions

@@ -1,4 +1,15 @@
-import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
+/-
+Copyright (c) 2020 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Every NonPreadditiveAbelian category is preadditive

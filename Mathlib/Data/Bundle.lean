@@ -6,8 +6,6 @@ Authors: Nicolò Cavalleri
 module
 
 public import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Bundle

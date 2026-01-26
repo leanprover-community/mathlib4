@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2023 Parth Shastri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
+-/
+module  -- shake: keep-downstream (`[csimp]` is not currently tracked)
+
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Compiler.CSimpAttr
+public meta import Lean.Util.FoldConsts
+public meta import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.

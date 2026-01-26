@@ -1,5 +1,16 @@
-import Mathlib.Data.List.Sort
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Interval
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`

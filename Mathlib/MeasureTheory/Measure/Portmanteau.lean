@@ -1,4 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
+/-
+Copyright (c) 2021 Kalle Kytölä. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kalle Kytölä
+-/
+module
+
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures

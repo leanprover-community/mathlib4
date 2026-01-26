@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.List.Forall2
-import Mathlib.Logic.Relator
-import Batteries.Data.List.Basic
 /-!
 # List sections
 

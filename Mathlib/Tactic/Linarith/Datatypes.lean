@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis
+-/
+module
+
+public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # Datatypes for `linarith`

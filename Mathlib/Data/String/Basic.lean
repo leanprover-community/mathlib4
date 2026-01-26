@@ -1,4 +1,15 @@
-import Batteries.Data.String.Legacy
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Batteries.Data.String.Lemmas
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.Char
+public import Mathlib.Algebra.Order.Group.Nat
+import all Init.Data.String.Iterator  -- for unfolding `Iterator.curr`
 
 /-!
 # Strings

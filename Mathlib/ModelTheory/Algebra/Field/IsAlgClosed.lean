@@ -1,4 +1,15 @@
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+/-
+Copyright (c) 2023 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsAlgClosed.Classification
+public import Mathlib.ModelTheory.Algebra.Field.CharP
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 

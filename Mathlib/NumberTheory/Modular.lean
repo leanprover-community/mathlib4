@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
+-/
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane

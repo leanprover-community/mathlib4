@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.GroupWithZero.Defs
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jens Wagemaker
+-/
+module
+
+public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
 # Prime elements

@@ -1,4 +1,14 @@
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+/-
+Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.FractionalIdeal.Inverse
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Dedekind domains and invertible ideals

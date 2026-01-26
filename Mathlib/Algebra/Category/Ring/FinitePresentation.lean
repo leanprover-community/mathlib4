@@ -1,4 +1,16 @@
-import Mathlib.Algebra.Category.Ring.Basic
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Christian Merten
+-/
+module
+
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Over
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
+public import Mathlib.CategoryTheory.Presentable.Finite
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.RingTheory.FinitePresentation
 
 /-!
 

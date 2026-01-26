@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Disjointed
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Big operators indexed by intervals

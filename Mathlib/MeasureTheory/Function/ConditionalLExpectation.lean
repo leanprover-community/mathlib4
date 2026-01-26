@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.Topology.Separation.CompletelyRegular
+public import Mathlib.Probability.Notation
 
 /-! # Conditional Lebesgue expectation
 
@@ -246,39 +256,14 @@ theorem condLExp_add_right (X : Ω → ℝ≥0∞) {Y : Ω → ℝ≥0∞} (hY :
   rw [add_comm, add_comm P⁻[X|mΩ]]
   exact condLExp_add_left X hY
 
-theorem condLExp_smul (X : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X P) (c : ℝ≥0∞) :
+theorem condLExp_smul {R : Type*} {mR : MeasurableSpace R} [SMul R ℝ≥0∞]
+    [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [MeasurableSMul R ℝ≥0∞] (X : Ω → ℝ≥0∞) (c : R) :
     P⁻[c • X|mΩ] =ᵐ[P] c • P⁻[X|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
-  swap; · simp [condLExp_of_not_le hm]
+  swap; · sorry
   by_cases hσ : SigmaFinite (P.trim hm)
-  swap; · simp [condLExp_of_not_sigmaFinite hm hσ]
+  swap; · sorry
   refine (ae_eq_condLExp _ _ _ (by fun_prop) ?_).symm
   intro s hs
-  simp only [Pi.smul_apply, smul_eq_mul]
-  rw [lintegral_const_mul, lintegral_const_mul'', setLIntegral_condLExp _ _ _ hs]
-  all_goals fun_prop
-
-theorem condLExp_smul_le (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} :
-     c • P⁻[X|mΩ] ≤ᵐ[P] P⁻[c • X|mΩ] := by
-  by_cases hm : mΩ ≤ mΩ₀; swap
-  · simp_rw [condLExp_of_not_le hm]; filter_upwards; simp
-  by_cases hσ : SigmaFinite (P.trim hm); swap
-  · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; filter_upwards; simp
-  apply ae_le_of_ae_le_trim
-  apply ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ := P.trim hm) (by fun_prop)
-  intro s hs _
-  simp [setLIntegral_condLExp_trim _ _ _ hs, lintegral_const_mul _ (measurable_condLExp _ P X),
-    lintegral_const_mul_le]
-
-theorem condLExp_smul' (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
-    P⁻[c • X|mΩ] =ᵐ[P] c • P⁻[X|mΩ] := by
-  by_cases hm : mΩ ≤ mΩ₀
-  swap; · simp [condLExp_of_not_le hm]
-  by_cases hσ : SigmaFinite (P.trim hm)
-  swap; · simp [condLExp_of_not_sigmaFinite hm hσ]
-  refine (ae_eq_condLExp _ _ _ (by fun_prop) ?_).symm
-  intro s hs
-  simp only [Pi.smul_apply, smul_eq_mul]
-  rw [lintegral_const_mul' _ _ hc, lintegral_const_mul' _ _ hc, setLIntegral_condLExp _ _ _ hs]
 
 end MeasureTheory

@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Wen Yang
+-/
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Transvection
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Special Linear group $SL(n, R)$

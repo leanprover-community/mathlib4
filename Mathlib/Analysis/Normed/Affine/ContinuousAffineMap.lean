@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Operator.Basic
+/-
+Copyright (c) 2021 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Norm on the continuous affine maps between normed vector spaces.

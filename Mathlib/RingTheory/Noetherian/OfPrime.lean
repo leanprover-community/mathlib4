@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Anthony Fernandes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anthony Fernandes, Marc Robin
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.Oka
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Noetherian rings and prime ideals

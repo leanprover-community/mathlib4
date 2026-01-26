@@ -1,7 +1,13 @@
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Fintype.Card
+/-
+Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
+-/
+module
+
+public import Mathlib.Combinatorics.Hall.Finite
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Data.Rel
 
 /-!
 # Hall's Marriage Theorem

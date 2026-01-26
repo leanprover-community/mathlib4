@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+/-
+Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Preserving images

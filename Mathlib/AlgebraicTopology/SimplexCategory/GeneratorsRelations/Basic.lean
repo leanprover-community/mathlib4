@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+/-
+Copyright (c) 2025 Robin Carlier. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robin Carlier
+-/
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating

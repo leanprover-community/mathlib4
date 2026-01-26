@@ -1,6 +1,15 @@
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+/-
+Copyright (c) 2022 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Injective objects in abelian categories

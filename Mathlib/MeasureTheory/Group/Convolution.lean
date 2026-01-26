@@ -1,4 +1,12 @@
-import Mathlib.Topology.Algebra.Module.LinearMap
+/-
+Copyright (c) 2023 Josha Dekker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Josha Dekker
+-/
+module
+
+public import Mathlib.MeasureTheory.Group.Defs
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # The multiplicative and additive convolution of measures

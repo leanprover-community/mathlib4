@@ -6,7 +6,6 @@ Authors: Yury Kudryashov, Yaël Dillies, Louis (Yiyang) Liu
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integral average of a function

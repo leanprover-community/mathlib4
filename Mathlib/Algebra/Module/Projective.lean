@@ -1,7 +1,13 @@
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+/-
+Copyright (c) 2021 Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard, Antoine Labelle
+-/
+module
+
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.Logic.UnivLE
 
 /-!
 

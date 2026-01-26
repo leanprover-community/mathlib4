@@ -1,4 +1,14 @@
-import Mathlib.Topology.Connected.TotallyDisconnected
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Clopen subsets in Cartesian products

@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2021 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
+-/
+module
+
+public import Mathlib.Data.Finset.Grade
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Shadows

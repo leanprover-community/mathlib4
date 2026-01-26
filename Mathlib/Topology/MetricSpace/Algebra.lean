@@ -1,5 +1,15 @@
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Basic
+/-
+Copyright (c) 2021 Heather Macbeth. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Heather Macbeth
+-/
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Compatibility of algebraic operations with metric space structures

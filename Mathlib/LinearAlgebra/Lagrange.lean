@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Wrenna Robson
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lagrange interpolation

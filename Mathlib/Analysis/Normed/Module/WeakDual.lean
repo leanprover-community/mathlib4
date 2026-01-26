@@ -1,5 +1,14 @@
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.Normed.Operator.Basic
+/-
+Copyright (c) 2021 Kalle Kytölä. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kalle Kytölä, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Operator.Completeness
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Weak dual of normed space

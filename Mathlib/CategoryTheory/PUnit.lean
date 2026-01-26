@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2018 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Bhavik Mehta
+-/
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.Data.ULift
 
 /-!
 # The category `Discrete PUnit`

@@ -1,4 +1,17 @@
-import Mathlib.Data.Finite.Defs
+/-
+Copyright (c) 2025 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Indecomposable elements of monoids

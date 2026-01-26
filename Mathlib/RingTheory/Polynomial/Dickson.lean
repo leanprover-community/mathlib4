@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Julian Kuelshammer
+-/
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Dickson polynomials

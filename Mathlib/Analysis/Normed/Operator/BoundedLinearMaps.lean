@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Asymptotics.Defs
+/-
+Copyright (c) 2018 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Johannes Hölzl
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Bounded linear maps

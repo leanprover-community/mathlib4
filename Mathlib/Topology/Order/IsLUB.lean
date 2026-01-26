@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Order.LeftRightNhds
-import Mathlib.Topology.Order.Basic
 
 /-!
 # Properties of LUB and GLB in an order topology

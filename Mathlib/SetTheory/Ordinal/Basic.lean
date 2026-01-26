@@ -1,5 +1,15 @@
-import Mathlib.Logic.Small.Defs
-import Mathlib.SetTheory.Cardinal.Order
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Floris van Doorn
+-/
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.IsNormal
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals

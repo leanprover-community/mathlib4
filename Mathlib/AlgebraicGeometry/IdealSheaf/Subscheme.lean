@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
+public import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Subscheme associated to an ideal sheaf

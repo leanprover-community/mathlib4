@@ -1,7 +1,21 @@
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.Notation.FiniteSupport
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Set.Finite.Lattice
+
+import Mathlib.Algebra.Module.End
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Finite products and sums over types and sets

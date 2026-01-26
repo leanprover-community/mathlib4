@@ -1,4 +1,15 @@
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+/-
+Copyright (c) 2022 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Multiplicative characters of finite rings and fields

@@ -1,4 +1,16 @@
-import Mathlib.Topology.Constructions
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Data.Set.Accumulate
+public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Topology.Ultrafilter
+public import Mathlib.Topology.Defs.Ultrafilter
 
 /-!
 # Compact sets and compact spaces

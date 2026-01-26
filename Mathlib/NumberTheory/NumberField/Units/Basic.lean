@@ -1,4 +1,14 @@
-import Mathlib.NumberTheory.NumberField.Norm
+/-
+Copyright (c) 2023 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field

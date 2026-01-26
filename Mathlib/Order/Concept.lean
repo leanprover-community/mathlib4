@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Formal concept analysis

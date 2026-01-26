@@ -1,4 +1,14 @@
-import Mathlib.Data.Fintype.EquivFin
+/-
+Copyright (c) 2020 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta, Adam Topaz
+-/
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.

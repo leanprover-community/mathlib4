@@ -6,8 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Polynomial.Factorization
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem

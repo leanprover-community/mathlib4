@@ -1,5 +1,17 @@
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Order.Group.Synonym
+/-
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Monotonicity of scalar multiplication by positive elements

@@ -1,4 +1,13 @@
-import Mathlib.LinearAlgebra.DFinsupp
+/-
+Copyright (c) 2023 Ali Ramsey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ali Ramsey, Eric Wieser
+-/
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras

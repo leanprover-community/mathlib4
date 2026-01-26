@@ -1,5 +1,14 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Int.Defs
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Bounds.Defs
 
 /-! # Least upper bound and greatest lower bound properties for integers
 

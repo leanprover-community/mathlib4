@@ -1,6 +1,12 @@
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.MeasureTheory.Integral.CircleAverage
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+/-
+Copyright (c) 2025 Stefan Kebekus. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stefan Kebekus
+-/
+module
+
+public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.Complex.MeanValue
 
 /-!
 # The Mean Value Property of Harmonic Functions on the Complex Plane

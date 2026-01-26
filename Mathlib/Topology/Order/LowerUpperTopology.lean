@@ -1,4 +1,13 @@
-import Mathlib.Order.UpperLower.Closure
+/-
+Copyright (c) 2023 Christopher Hoskin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christopher Hoskin
+-/
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Lower and Upper topology

@@ -1,5 +1,14 @@
-import Mathlib.Topology.UniformSpace.Real
-import Mathlib.Algebra.Group.Subgroup.Ker
+/-
+Copyright (c) 2018 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Uniformity
+public import Mathlib.Topology.Sequences
 
 /-!
 # Continuity of the norm on (semi)groups

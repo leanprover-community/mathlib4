@@ -1,5 +1,13 @@
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jeremy Avigad
+-/
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Results relating filters to finiteness

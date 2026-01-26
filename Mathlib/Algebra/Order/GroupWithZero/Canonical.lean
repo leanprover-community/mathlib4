@@ -1,7 +1,22 @@
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Monoid.Units
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Johan Commelin, Patrick Massot
+-/
+module
+
+public import Mathlib.Algebra.Group.WithOne.Map
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Algebra.Order.Monoid.TypeTags
+public import Mathlib.Data.Set.Function
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined

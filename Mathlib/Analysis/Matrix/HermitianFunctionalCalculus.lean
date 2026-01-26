@@ -1,5 +1,13 @@
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
+/-
+Copyright (c) 2024 Jon Bannon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jon Bannon, Jireh Loreaux
+-/
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices

@@ -1,5 +1,12 @@
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Semicontinuity.Defs
+/-
+Copyright (c) 2026 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Topology.Compactness.Lindelof
 
 /-!
 # Enveloppes of Semicontinuous functions on Hereditarily Lindelöf spaces

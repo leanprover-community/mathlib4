@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Gabriel Ebner
+-/
+module
+
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Cast of integers (additional theorems)

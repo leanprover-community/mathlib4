@@ -1,4 +1,14 @@
-import Mathlib.Order.Filter.Basic
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
+-/
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Basic results on filter bases

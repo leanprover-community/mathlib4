@@ -1,6 +1,14 @@
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2021 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 

@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Rat
+/-
+Copyright (c) 2022 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.Group.UniqueProds.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # A `ℚ`-vector space has `TwoUniqueSums`.

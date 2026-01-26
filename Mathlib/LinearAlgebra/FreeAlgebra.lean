@@ -1,4 +1,17 @@
-import Mathlib.LinearAlgebra.Dimension.Basic
+/-
+Copyright (c) 2021 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.LinearAlgebra.Basis.Cardinality
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`

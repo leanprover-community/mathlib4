@@ -1,4 +1,17 @@
-import Mathlib.Data.NNReal.Defs
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.CharP.Pi
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # Ring Perfection and Tilt

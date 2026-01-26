@@ -6,7 +6,6 @@ Authors: Dagur Asgeirsson, Leonardo de Moura
 module
 
 public import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Data.Set.Operations
 
 /-!
 # Indicator function valued in bool

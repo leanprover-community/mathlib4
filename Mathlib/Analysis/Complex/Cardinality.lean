@@ -1,4 +1,12 @@
-import Mathlib.SetTheory.Cardinal.Continuum
+/-
+Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Violeta Hernández Palacios
+-/
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Data.Complex.Basic
 
 /-!
 # The cardinality of the complex numbers

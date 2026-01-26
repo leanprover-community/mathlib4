@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Algebra.Operations
+/-
+Copyright (c) 2021 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+import Mathlib.Topology.Algebra.UniformRing  -- shake: keep (used in `example` only)
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 
 /-!

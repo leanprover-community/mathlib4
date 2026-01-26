@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # Fernique's theorem for rotation-invariant measures

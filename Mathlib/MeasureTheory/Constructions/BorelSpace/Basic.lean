@@ -1,5 +1,14 @@
-import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Yury Kudryashov
+-/
+module
+
+public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # Borel (measurable) space

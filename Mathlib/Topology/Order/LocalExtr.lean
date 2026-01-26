@@ -1,4 +1,12 @@
-import Mathlib.Topology.Defs.Filter
+/-
+Copyright (c) 2019 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.Filter.Extr
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Local extrema of functions on topological spaces

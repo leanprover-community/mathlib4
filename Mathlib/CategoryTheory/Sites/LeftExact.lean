@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.Sites.Sheafification
+/-
+Copyright (c) 2021 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+module
+
+public import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Adhesive
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Left exactness of sheafification

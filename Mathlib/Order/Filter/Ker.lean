@@ -6,8 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Filter.Map
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.Filter.Defs
 
 /-!
 # Kernel of a filter

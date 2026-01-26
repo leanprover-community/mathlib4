@@ -1,3 +1,20 @@
+/-
+Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Pierre-Alexandre Bazin
+-/
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Coprime.Ideal
+public import Mathlib.RingTheory.Finiteness.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Torsion submodules

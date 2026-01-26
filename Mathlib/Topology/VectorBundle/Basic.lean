@@ -1,4 +1,12 @@
-import Mathlib.Topology.Algebra.Module.StrongTopology
+/-
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Patrick Massot, Floris van Doorn
+-/
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Vector bundles

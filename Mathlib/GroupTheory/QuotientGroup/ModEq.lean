@@ -1,4 +1,14 @@
-import Mathlib.GroupTheory.Coset.Defs
+/-
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+
+module
+
+public import Mathlib.Algebra.Group.ModEq
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Congruence modulo multiples and congruence modulo `AddSubgroup.zmultiples _`

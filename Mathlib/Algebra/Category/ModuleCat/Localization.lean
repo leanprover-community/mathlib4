@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+/-
+Copyright (c) 2025 Nailin Guan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Algebra.Module.LocalizedModule.Exact
+public import Mathlib.RingTheory.Localization.Module
 
 /-!
 

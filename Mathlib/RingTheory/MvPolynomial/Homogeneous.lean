@@ -1,5 +1,16 @@
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.Order
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Homogeneous polynomials

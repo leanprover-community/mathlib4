@@ -1,7 +1,17 @@
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number

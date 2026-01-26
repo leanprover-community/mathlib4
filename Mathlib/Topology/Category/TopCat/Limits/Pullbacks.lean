@@ -6,8 +6,6 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Products
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # Pullbacks and pushouts in the category of topological spaces

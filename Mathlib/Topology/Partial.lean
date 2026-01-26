@@ -1,4 +1,12 @@
-import Mathlib.Topology.Defs.Filter
+/-
+Copyright (c) 2018 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad
+-/
+module
+
+public import Mathlib.Order.Filter.Partial
+public import Mathlib.Topology.Neighborhoods
 
 /-!
 # Partial functions and topological spaces

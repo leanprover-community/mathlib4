@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 /-!
 # Tangent cone in a proper space

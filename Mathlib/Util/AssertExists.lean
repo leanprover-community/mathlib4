@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Kim Morrison
+-/
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Mathlib.Util.AssertExistsExt
 
 /-!
 # User commands to assert the (non-)existence of declarations or instances.

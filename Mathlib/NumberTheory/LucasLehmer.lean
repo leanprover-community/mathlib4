@@ -1,4 +1,12 @@
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Alastair Irving, Kim Morrison, Ainsley Pahljina
+-/
+module
+
+public import Mathlib.NumberTheory.Fermat
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # The Lucas-Lehmer test for Mersenne primes

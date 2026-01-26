@@ -1,4 +1,14 @@
-import Mathlib.Data.List.Sort
+/-
+Copyright (c) 2022 Jake Levinson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jake Levinson
+-/
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams

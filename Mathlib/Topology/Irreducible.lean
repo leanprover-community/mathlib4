@@ -1,4 +1,15 @@
-import Mathlib.Topology.Constructions
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.Zorn
+public import Mathlib.Topology.ContinuousOn
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Irreducibility in topological spaces

@@ -1,4 +1,18 @@
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers

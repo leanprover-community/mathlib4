@@ -6,8 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Asymptotic bounds for Jacobi theta functions

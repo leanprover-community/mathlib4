@@ -1,3 +1,18 @@
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.Order.Hom.TypeTags
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.ZMod.Aut
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Tactic.Group
 
 /-!
 # Cyclic groups

@@ -6,7 +6,6 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Group and ring filter bases

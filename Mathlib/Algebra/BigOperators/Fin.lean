@@ -1,10 +1,15 @@
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Big operators and `Fin`

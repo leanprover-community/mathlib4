@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Typeclasses for measurability of operations

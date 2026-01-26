@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2025 Snir Broshi. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Snir Broshi
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.Real.GoldenRatio
 
 /-!
 # The ratio of consecutive Fibonacci numbers

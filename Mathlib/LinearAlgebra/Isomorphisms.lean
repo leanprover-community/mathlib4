@@ -1,4 +1,12 @@
-import Mathlib.SetTheory.Cardinal.Finite
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
+-/
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Isomorphism theorems for modules.

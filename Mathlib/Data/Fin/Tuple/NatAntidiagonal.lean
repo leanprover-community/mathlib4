@@ -1,7 +1,14 @@
-import Mathlib.Order.PiLex
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2022 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Order.Fin.Tuple
 
 /-!
 # Collections of tuples of naturals with the same sum

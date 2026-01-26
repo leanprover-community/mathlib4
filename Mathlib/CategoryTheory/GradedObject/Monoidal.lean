@@ -1,4 +1,12 @@
-import Mathlib.Data.Finite.Defs
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou, Kim Morrison
+-/
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Unitor
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The monoidal category structures on graded objects

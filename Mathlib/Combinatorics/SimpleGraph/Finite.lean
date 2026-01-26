@@ -1,4 +1,13 @@
-import Mathlib.Data.Finset.Sym
+/-
+Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
+-/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Sym.Card
 
 /-!
 # Definitions for finite and locally finite graphs

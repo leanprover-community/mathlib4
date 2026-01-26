@@ -1,9 +1,16 @@
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Noetherian.Defs
+/-
+Copyright (c) 2019 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.

@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2020 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta, Kim Morrison
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Skeleton
+public import Mathlib.CategoryTheory.Subobject.MonoOver
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Subobjects

@@ -1,6 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Topology.Algebra.Module.ModuleTopology
+/-
+Copyright (c) 2024 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 /-!
 # Derivative of the absolute value

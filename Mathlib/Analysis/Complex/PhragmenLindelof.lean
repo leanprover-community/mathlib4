@@ -1,6 +1,12 @@
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 /-!
 # Phragmen-Lindelöf principle

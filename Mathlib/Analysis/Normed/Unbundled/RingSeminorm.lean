@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández, Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Seminorms and norms on rings

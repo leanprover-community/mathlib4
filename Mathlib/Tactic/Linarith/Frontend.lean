@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis
+-/
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public import Mathlib.Tactic.Linarith.Preprocessing
+public import Mathlib.Tactic.Linarith.Verification
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals

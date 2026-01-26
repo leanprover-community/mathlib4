@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.Zify
+public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
 # Lemmas about `Nat.nthRoot`

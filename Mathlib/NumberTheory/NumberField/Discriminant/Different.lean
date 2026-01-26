@@ -1,7 +1,13 @@
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.RingTheory.DedekindDomain.Different
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
+public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 /-!
 

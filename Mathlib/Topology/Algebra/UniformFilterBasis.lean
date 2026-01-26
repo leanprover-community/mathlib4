@@ -1,4 +1,12 @@
-import Mathlib.Topology.UniformSpace.Cauchy
+/-
+Copyright (c) 2021 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot
+-/
+module
+
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra

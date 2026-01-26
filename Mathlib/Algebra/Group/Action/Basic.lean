@@ -1,8 +1,14 @@
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Action.Faithful
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Group.Units.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # More lemmas about group actions

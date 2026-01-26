@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Algebra.Ring.Int.Defs
+/-
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Ring.Int.Parity
 
 /-!
 # Results about powers in fields or division rings.

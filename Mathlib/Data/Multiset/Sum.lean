@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Disjoint sum of multisets

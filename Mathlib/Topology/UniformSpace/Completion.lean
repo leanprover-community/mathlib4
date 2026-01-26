@@ -6,7 +6,6 @@ Authors: Patrick Massot, Johannes Hölzl
 module
 
 public import Mathlib.Topology.UniformSpace.AbstractCompletion
-import Mathlib.Data.Set.Order
 
 /-!
 # Hausdorff completions of uniform spaces

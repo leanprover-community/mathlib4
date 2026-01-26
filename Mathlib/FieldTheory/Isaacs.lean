@@ -1,4 +1,13 @@
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+/-
+Copyright (c) 2024 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.CosetCover
 
 /-!
 # Algebraic extensions are determined by their sets of minimal polynomials up to isomorphism

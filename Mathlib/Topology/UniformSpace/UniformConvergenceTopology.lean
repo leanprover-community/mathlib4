@@ -1,4 +1,15 @@
-import Mathlib.Topology.UniformSpace.UniformConvergence
+/-
+Copyright (c) 2022 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.Topology.Coherent
+public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.UniformSpace.UniformApproximation
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Topology and uniform structure of uniform convergence

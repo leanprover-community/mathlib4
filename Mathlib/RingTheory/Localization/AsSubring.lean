@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+/-
+Copyright (c) 2022 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz, Junyan Xu
+-/
+module
+
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 

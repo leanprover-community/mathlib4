@@ -1,6 +1,13 @@
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Topology.Algebra.InfiniteSum.Order
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Infinite sum in the reals

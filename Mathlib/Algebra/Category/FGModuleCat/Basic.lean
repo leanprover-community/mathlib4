@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2021 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.Subcategory
+public import Mathlib.LinearAlgebra.Coevaluation
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The category of finitely generated modules over a ring

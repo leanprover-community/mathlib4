@@ -6,8 +6,6 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas relating different ways to compose measures and kernels

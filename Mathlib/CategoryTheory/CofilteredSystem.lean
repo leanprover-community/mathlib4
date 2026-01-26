@@ -6,8 +6,6 @@ Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 module
 
 public import Mathlib.Topology.Category.TopCat.Limits.Konig
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Cofiltered systems

@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Enumerating sets of ordinals by ordinals

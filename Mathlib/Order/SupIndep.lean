@@ -1,4 +1,16 @@
-import Mathlib.Data.Finset.Prod
+/-
+Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
+-/
+module
+
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.ModularLattice
 
 /-!
 # Supremum independence

@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+
+import Mathlib.Analysis.SpecialFunctions.Log.InvLog
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Akra-Bazzi theorem: the sum transform

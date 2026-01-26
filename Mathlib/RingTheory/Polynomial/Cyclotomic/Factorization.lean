@@ -1,5 +1,14 @@
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+/-
+Copyright (c) 2025 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.Algebra.CharP.CharAndCard
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields

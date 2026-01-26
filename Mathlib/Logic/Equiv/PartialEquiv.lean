@@ -1,4 +1,14 @@
-import Mathlib.Data.Set.Function
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Partial equivalences

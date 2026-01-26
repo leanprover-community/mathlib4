@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+/-
+Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck, David Loeffler
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
 /-!
 # Uniform convergence of Eisenstein series

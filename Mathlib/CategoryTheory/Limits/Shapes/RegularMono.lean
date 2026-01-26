@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Bhavik Mehta
+-/
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.

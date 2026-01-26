@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+/-
+Copyright (c) 2022 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Finitely strongly measurable functions in `Lp`

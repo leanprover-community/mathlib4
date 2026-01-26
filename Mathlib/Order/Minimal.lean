@@ -1,6 +1,13 @@
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.BooleanAlgebra.Basic
-import Mathlib.Order.Bounds.Defs
+/-
+Copyright (c) 2022 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Peter Nelson
+-/
+module
+
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
 
 /-!
 # Minimality and Maximality

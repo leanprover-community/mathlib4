@@ -1,5 +1,15 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+/-
+Copyright (c) 2019 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Junyan Xu, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # The fundamental theorem of algebra

@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
+/-
+Copyright (c) 2022 Rémy Degenne, Kexing Ying. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne, Kexing Ying
+-/
+module
+
+public import Mathlib.MeasureTheory.Function.Egorov
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 
 /-!
 # Convergence in measure

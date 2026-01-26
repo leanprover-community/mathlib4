@@ -6,7 +6,6 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integral of `log ∘ sin`

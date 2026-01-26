@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
+public import Mathlib.Algebra.CharP.CharAndCard
 
 /-!
 # Gauss sums

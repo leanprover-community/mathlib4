@@ -1,4 +1,13 @@
-import Lean.Elab.Tactic.Basic
+/-
+Copyright (c) 2024 Yuma Mizuno. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuma Mizuno
+-/
+module
+
+public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # `monoidal` tactic

@@ -6,7 +6,6 @@ Authors: Arthur Paulino, Mario Carneiro
 module
 
 public import Mathlib.Tactic.Have
-import Lean.Elab.Tactic.Basic
 
 /-!
 # Extending `replace`

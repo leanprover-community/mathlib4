@@ -1,6 +1,15 @@
-import Mathlib.Topology.OpenPartialHomeomorph.Defs
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+/-
+Copyright (c) 2019 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 /-!
 # Further basic lemmas about asymptotics

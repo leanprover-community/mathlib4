@@ -1,5 +1,15 @@
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Generator.Basic
+/-
+Copyright (c) 2022 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.CategoryTheory.Abelian.Subobject
+public import Mathlib.CategoryTheory.Limits.EssentiallySmall
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator

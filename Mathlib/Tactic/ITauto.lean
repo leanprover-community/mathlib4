@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
+public meta import Mathlib.Util.AtomM
+public meta import Qq
+public import Batteries.Tactic.Exact
+public import Batteries.Tactic.Init
+public import Mathlib.Util.AtomM
 
 /-!
 

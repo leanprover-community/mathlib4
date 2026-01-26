@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fabrizio Barroero, Laura Capuano, Amos Turchet
+-/
+module
+
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Data.Pi.Interval
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Siegel's Lemma

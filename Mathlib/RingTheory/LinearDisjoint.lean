@@ -1,4 +1,22 @@
-import Mathlib.RingTheory.Algebraic.Defs
+/-
+Copyright (c) 2024 Jz Pan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jz Pan
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
+public import Mathlib.Algebra.Algebra.Subalgebra.Rank
+public import Mathlib.Algebra.Polynomial.Basis
+public import Mathlib.LinearAlgebra.LinearDisjoint
+public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
+public import Mathlib.RingTheory.Adjoin.Dimension
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.TensorProduct.Nontrivial
+public import Mathlib.RingTheory.Trace.Defs
 
 /-!
 

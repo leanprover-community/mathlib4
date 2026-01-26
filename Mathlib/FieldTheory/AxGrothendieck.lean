@@ -1,6 +1,15 @@
-import Mathlib.ModelTheory.Definability
-import Mathlib.RingTheory.Nullstellensatz
-import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+/-
+Copyright (c) 2023 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+public import Mathlib.ModelTheory.Algebra.Ring.Definability
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck

@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
+/-
+Copyright (c) 2014 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
+-/
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Lemmas about divisibility in rings

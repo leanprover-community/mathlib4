@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Defs
+/-
+Copyright (c) 2024 Daniel Weber. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Weber
+-/
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Cauchy's bound on polynomial roots.

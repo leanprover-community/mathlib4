@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Jingting Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jingting Wang
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.Height
+public import Mathlib.RingTheory.KrullDimension.Zero
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # The Krull dimension of a principal ideal domain

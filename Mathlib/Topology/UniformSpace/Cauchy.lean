@@ -1,4 +1,14 @@
-import Mathlib.Order.Filter.Ultrafilter.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Bases
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.

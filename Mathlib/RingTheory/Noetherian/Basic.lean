@@ -1,5 +1,17 @@
-import Mathlib.Order.PartialSups
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+/-
+Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Kevin Buzzard
+-/
+module
+
+public import Mathlib.Algebra.Order.SuccPred.PartialSups
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Finiteness.Finsupp
+public import Mathlib.RingTheory.Ideal.Prod
 
 /-!
 # Noetherian rings and modules

@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+/-
+Copyright (c) 2017 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro
+-/
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces

@@ -1,3 +1,18 @@
+/-
+Copyright (c) 2020 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Closure
+public import Mathlib.GroupTheory.Perm.Cycle.Factors
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types

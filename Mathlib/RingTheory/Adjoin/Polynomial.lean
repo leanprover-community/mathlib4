@@ -6,7 +6,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Polynomials and adjoining roots

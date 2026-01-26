@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Order.Monoid.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Order.Interval.Finset.Basic
+public import Mathlib.Order.Interval.Multiset
 
 /-!
 # Algebraic properties of multiset intervals

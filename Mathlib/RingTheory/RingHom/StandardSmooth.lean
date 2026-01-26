@@ -1,4 +1,14 @@
-import Mathlib.RingTheory.Smooth.StandardSmooth
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.RingHom.Etale
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Standard smooth ring homomorphisms

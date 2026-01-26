@@ -1,6 +1,16 @@
-import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
+/-
+Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
+public import Mathlib.CategoryTheory.Monoidal.Braided.Reflection
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.CategoryTheory.Sites.Monoidal
+public import Mathlib.Condensed.Light.CartesianClosed
+public import Mathlib.Condensed.Light.Module
 
 /-!
 

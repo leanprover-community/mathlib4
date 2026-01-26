@@ -1,8 +1,12 @@
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+/-
+Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 # Dedekind rings and domains

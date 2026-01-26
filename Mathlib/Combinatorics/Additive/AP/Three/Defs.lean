@@ -1,4 +1,15 @@
-import Mathlib.Data.Finset.Powerset
+/-
+Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Bhavik Mehta
+-/
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Order.Interval.Finset.Basic
+public import Mathlib.Combinatorics.Additive.FreimanHom
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers

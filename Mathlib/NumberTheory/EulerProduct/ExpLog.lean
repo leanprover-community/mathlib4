@@ -1,4 +1,14 @@
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+/-
+Copyright (c) 2024 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.NumberTheory.EulerProduct.Basic
 
 /-!
 # Logarithms of Euler Products

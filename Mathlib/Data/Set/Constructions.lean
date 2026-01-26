@@ -1,5 +1,12 @@
-import Mathlib.Order.SetNotation
-import Mathlib.Data.Finset.Empty
+/-
+Copyright (c) 2020 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Constructions involving sets of sets.

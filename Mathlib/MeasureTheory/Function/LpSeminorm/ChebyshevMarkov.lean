@@ -6,7 +6,6 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
 /-!
 # Chebyshev-Markov inequality in terms of Lp seminorms

@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Data.Finsupp.Option
+public import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 # `Finsupp.linearCombination`

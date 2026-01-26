@@ -1,4 +1,15 @@
-import Mathlib.LinearAlgebra.Dimension.Constructions
+/-
+Copyright (c) 2019 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.RingTheory.Finiteness.Lattice
 
 /-!
 # Finite-dimensional vector spaces

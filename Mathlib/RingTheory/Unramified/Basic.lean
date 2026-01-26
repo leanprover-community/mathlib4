@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Ring.Shrink
-import Mathlib.RingTheory.Localization.Away.Basic
+/-
+Copyright (c) 2022 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.Algebra.Algebra.Shrink
 
 /-!
 

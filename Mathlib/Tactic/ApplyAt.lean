@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2023 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz
+-/
+module
+
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Lean.Meta.Basic
+public import Mathlib.Init
 
 /-!
 # Apply at

@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Group.Continuity
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # Completion of a normed group

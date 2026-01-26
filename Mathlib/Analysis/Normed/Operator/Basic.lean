@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2019 Jan-David Salchow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Operator norm on the space of continuous linear maps

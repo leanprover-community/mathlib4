@@ -1,7 +1,14 @@
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+/-
+Copyright (c) 2023 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Translation operator

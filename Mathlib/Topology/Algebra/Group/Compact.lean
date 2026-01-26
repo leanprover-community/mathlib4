@@ -1,4 +1,12 @@
-import Mathlib.Topology.Algebra.Group.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
+-/
+module
+
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Additional results on topological groups

@@ -1,5 +1,14 @@
-import Mathlib.FieldTheory.Normal.Defs
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+/-
+Copyright (c) 2023 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 

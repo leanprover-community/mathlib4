@@ -1,5 +1,12 @@
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Analysis.Normed.Ring.Basic
+/-
+Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yoh Tanimoto
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # The null subgroup in a seminormed commutative group

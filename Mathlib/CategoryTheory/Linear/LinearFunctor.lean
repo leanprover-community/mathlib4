@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Ring.Rat
+/-
+Copyright (c) 2021 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Module.LinearMap.Rat
 
 /-!
 # Linear Functors

@@ -1,4 +1,17 @@
-import Mathlib.Algebra.Group.Action.Defs
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Ken Lee, Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Coprime elements of a ring or monoid

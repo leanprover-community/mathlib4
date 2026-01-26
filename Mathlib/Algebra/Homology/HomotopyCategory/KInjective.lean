@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexInduction
+public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 
 /-!
 # K-injective cochain complexes

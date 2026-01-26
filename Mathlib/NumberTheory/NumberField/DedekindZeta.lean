@@ -1,6 +1,13 @@
-import Mathlib.NumberTheory.LSeries.Basic
-import Mathlib.NumberTheory.NumberField.ClassNumber
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+/-
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.NumberField.Ideal.Asymptotics
 
 /-!
 # The Dedekind zeta function of a number field

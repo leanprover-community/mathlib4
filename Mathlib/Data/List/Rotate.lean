@@ -1,6 +1,13 @@
-import Mathlib.Order.Basic
-import Batteries.Data.List.Basic
-import Mathlib.Data.Nat.Basic
+/-
+Copyright (c) 2019 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Yakov Pechersky
+-/
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Quot
 
 /-!
 # List rotation

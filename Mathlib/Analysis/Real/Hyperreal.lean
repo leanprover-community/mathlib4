@@ -1,4 +1,13 @@
-import Mathlib.Order.Filter.Ultrafilter.Basic
+/-
+Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Abhimanyu Pallavi Sudhir
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.StandardPart
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Filter.FilterProduct
 
 /-!
 # Construction of the hyperreal numbers as an ultraproduct of real sequences.

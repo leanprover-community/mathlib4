@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2020 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn
+-/
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.PartialSups
 
 /-!
 # Accumulate

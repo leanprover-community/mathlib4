@@ -1,4 +1,16 @@
-import Mathlib.Topology.Instances.Matrix
+/-
+Copyright (c) 2022 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.LinearAlgebra.Matrix.ZPow
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Lemmas about the matrix exponential

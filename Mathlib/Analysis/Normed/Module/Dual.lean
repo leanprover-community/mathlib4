@@ -1,5 +1,16 @@
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Operator.Bilinear
+/-
+Copyright (c) 2020 Heather Macbeth. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # The strong dual of a normed space

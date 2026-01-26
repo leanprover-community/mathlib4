@@ -1,4 +1,13 @@
-import Mathlib.Data.Finite.Defs
+/-
+Copyright (c) 2025 Ansar Azhdarov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ansar Azhdarov
+-/
+module
+
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Zorn
 
 /-!
 # Teichmuller-Tukey

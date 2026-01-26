@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Order.Ring.Defs
+/-
+Copyright (c) 2021 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Order instances on subalgebras

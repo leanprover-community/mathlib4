@@ -1,6 +1,16 @@
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+/-
+Copyright (c) 2022 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic

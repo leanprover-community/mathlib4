@@ -1,6 +1,13 @@
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
+/-
+Copyright (c) 2019 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Michael Stoll
+-/
+module
+
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares

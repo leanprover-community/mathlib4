@@ -1,4 +1,13 @@
-import Mathlib.Data.Fintype.Card
+/-
+Copyright (c) 2021 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen
+-/
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Combinatorics.Pigeonhole
+public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values

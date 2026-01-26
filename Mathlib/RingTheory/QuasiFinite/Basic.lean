@@ -1,6 +1,19 @@
-import Mathlib.RingTheory.EssentialFiniteness
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Finiteness.NilpotentKer
+public import Mathlib.RingTheory.Jacobson.Artinian
+public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
+public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
+public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Quasi-finite algebras

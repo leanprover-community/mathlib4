@@ -1,4 +1,16 @@
-import Mathlib.Analysis.Analytic.Basic
+/-
+Copyright (c) 2021 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Eric Wieser, Yuyang Zhao
+-/
+module
+
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Exponential in a Banach algebra

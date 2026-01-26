@@ -6,8 +6,6 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.RingTheory.WittVector.FrobeniusFractionField
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.WittVector.Domain
 
 /-!
 

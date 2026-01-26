@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2021 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.Algebra.Lie.Quotient
+public import Mathlib.Algebra.Lie.Normalizer
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent Lie algebras

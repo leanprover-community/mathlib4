@@ -1,5 +1,16 @@
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+/-
+Copyright (c) 2022 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Alex J. Best
+-/
+module
+
+public import Mathlib.Algebra.GroupWithZero.Torsion
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.Instances
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.NormalClosure
 
 /-!
 

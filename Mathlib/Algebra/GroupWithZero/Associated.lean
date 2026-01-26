@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.Group.Hom.Defs
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jens Wagemaker
+-/
+module
+
+public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.

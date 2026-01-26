@@ -1,4 +1,13 @@
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+/-
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
+public import Mathlib.Topology.Instances.Irrational
 
 /-!
 # Liouville numbers with a given exponent

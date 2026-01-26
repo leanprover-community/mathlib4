@@ -1,6 +1,12 @@
-import Batteries.Data.List.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+/-
+Copyright (c) 2021 Stuart Presnell. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stuart Presnell
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Batteries.Data.List
 
 /-!
 # Big operators on a list in ordered rings

@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.Set.Lattice
-import Mathlib.Order.RelClasses
-import Mathlib.Order.SetNotation
 
 /-!
 # Pre-sets

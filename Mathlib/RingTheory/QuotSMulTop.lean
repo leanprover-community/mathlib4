@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Exact
+/-
+Copyright (c) 2024 Brendan Murphy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Brendan Murphy
+-/
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # Reducing a module modulo an element of the ring

@@ -6,7 +6,6 @@ Authors: Kevin H. Wilson
 module
 
 public import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.Defs
 
 /-!
 # Curried Filters

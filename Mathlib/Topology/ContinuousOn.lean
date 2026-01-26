@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.NhdsWithin
-import Mathlib.Topology.Constructions
 
 /-!
 # Neighborhoods and continuity relative to a subset

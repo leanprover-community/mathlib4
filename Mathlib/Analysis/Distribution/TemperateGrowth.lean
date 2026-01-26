@@ -1,6 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+/-
+Copyright (c) 2025 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Bounds
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Tactic.MoveAdd
 
 /-! # Functions and measures of temperate growth -/
 

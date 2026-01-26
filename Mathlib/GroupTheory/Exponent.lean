@@ -1,4 +1,16 @@
-import Mathlib.Data.Nat.Factorization.Defs
+/-
+Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Julian Kuelshammer
+-/
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Tactic.Peel
 
 /-!
 # Exponent of a group

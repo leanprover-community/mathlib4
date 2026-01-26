@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.Etale.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Judith Ludwig, Christian Merten
+-/
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Core
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
 # Smooth algebras have Noetherian models

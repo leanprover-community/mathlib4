@@ -1,5 +1,15 @@
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Field.Defs
+/-
+Copyright (c) 2022 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero

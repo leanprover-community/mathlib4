@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 module
 
 public import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 ### Lattice of group topologies

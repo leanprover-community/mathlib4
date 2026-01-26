@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Salvatore Mercuri
+-/
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # WithAbs for fields

@@ -1,4 +1,13 @@
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+/-
+Copyright (c) 2022 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Order.GameAdd
 
 /-!
 # Termination of a hydra game

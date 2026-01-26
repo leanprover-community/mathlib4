@@ -1,4 +1,13 @@
-import Mathlib.Data.Finset.Option
+/-
+Copyright (c) 2018 Sean Leather. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sean Leather, Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.List.AList
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Part
 
 /-!
 # Finite maps over `Multiset`

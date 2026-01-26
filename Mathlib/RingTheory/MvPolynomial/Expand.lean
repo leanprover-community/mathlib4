@@ -1,4 +1,13 @@
-import Mathlib.Algebra.CharP.Lemmas
+/-
+Copyright (c) 2025 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wenrong Zou
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.RingTheory.MvPolynomial.Basic
+public import Mathlib.Algebra.CharP.Frobenius
 
 /-!
 # Results on `MvPolynomial.expand`

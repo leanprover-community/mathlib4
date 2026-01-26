@@ -1,4 +1,13 @@
-import Mathlib.Topology.Defs.Filter
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.NhdsKer
 
 /-!
 # Compactness of the neighborhoods kernel of a set

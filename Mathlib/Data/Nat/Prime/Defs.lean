@@ -1,4 +1,15 @@
-import Batteries.Data.Nat.Basic
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
 
 /-!
 # Prime numbers

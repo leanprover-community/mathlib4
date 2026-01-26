@@ -1,4 +1,13 @@
-import Mathlib.Topology.Algebra.Ring.Basic
+/-
+Copyright (c) 2025 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Topology.Covering.Quotient
+public import Mathlib.Topology.Instances.AddCircle.Defs
 
 /-!
 # Covering maps involving `AddCircle`

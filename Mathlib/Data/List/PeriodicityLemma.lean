@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Štěpán Holub. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Štěpán Holub
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-! # Periods of words (Lists)
 

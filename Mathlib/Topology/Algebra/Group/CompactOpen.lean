@@ -1,6 +1,15 @@
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+/-
+Copyright (c) 2022 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning, Nailin Guan
+-/
+module
+
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.Algebra.Group.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
 # The compact-open topology on continuous monoid morphisms.

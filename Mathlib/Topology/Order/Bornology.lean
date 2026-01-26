@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
 
 /-!
 # Bornology of order-bounded sets

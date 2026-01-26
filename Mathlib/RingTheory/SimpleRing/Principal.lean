@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.Ideal.Span
-import Mathlib.RingTheory.SimpleRing.Defs
+/-
+Copyright (c) 2025 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.SimpleRing.Field
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
 # A commutative simple ring is a principal ideal domain

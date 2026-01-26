@@ -1,4 +1,15 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`

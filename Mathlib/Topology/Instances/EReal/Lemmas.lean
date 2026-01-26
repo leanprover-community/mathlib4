@@ -1,8 +1,12 @@
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Data.EReal.Operations
-import Mathlib.Topology.Order.Real
-import Mathlib.Topology.Semicontinuity.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Data.EReal.Inv
+public import Mathlib.Topology.Semicontinuity.Basic
 
 /-!
 # Topological structure on `EReal`

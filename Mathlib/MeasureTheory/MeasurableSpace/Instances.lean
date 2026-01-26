@@ -1,4 +1,14 @@
-import Mathlib.Data.ENat.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.GroupTheory.GroupAction.IterateAct
+public import Mathlib.Data.Rat.Init
+public import Mathlib.Data.ZMod.Defs
 
 /-!
 # Measurable-space typeclass instances

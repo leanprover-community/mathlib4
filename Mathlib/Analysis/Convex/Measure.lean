@@ -1,7 +1,13 @@
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Convex sets are null-measurable

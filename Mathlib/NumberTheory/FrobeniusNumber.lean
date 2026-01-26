@@ -6,7 +6,6 @@ Authors: Alex Zhao, Daniel Buth, Sebastian Meier, Junyan Xu
 module
 
 public import Mathlib.RingTheory.Ideal.NatInt
-import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Frobenius Number

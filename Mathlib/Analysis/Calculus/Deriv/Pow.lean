@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Derivative of `(f x) ^ n`, `n : ℕ`

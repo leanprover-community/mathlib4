@@ -1,4 +1,15 @@
-import Mathlib.LinearAlgebra.Matrix.PosDef
+/-
+Copyright (c) 2025 Monica Omar. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Monica Omar
+-/
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
+public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.Analysis.RCLike.Sqrt
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
 
 /-!
 # The partial order on matrices

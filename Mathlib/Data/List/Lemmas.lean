@@ -1,5 +1,12 @@
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Set.Operations
+/-
+Copyright (c) 2021 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 

@@ -6,8 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 module
 
 public import Mathlib.Topology.ClusterPt
-import Mathlib.Order.Filter.Basic
-import Mathlib.Topology.Defs.Filter
 
 /-!
 # Continuity in topological spaces

@@ -1,4 +1,14 @@
-import Mathlib.Analysis.Analytic.Basic
+/-
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Analysis.Analytic.Within
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 
 /-!
 # Faa di Bruno formula

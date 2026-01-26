@@ -1,4 +1,14 @@
-import Mathlib.LinearAlgebra.Span.Defs
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.LinearAlgebra.Span.Basic
+
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Towers of algebras

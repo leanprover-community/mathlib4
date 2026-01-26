@@ -1,4 +1,12 @@
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+/-
+Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Additive Haar measure constructed from a basis

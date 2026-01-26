@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Affine.Isometry
+/-
+Copyright (c) 2020 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers, Manuel Candales
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Orthogonal projection in affine spaces

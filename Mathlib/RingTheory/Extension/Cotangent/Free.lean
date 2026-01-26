@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Computation of Jacobian of presentations from basis of Cotangent

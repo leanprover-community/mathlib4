@@ -1,5 +1,13 @@
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.BooleanAlgebra.Set
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise

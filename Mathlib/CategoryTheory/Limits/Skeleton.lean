@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Limits.HasLimits
+/-
+Copyright (c) 2025 Fernando Chu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fernando Chu
+-/
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # (Co)limits of the skeleton of a category

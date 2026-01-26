@@ -1,6 +1,13 @@
-import Mathlib.Algebra.Group.Conj
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.SetTheory.Cardinal.Finite
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Group.ConjFinite
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Properties of group actions involving quotient groups

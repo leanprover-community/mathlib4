@@ -1,4 +1,13 @@
-import Mathlib.Topology.Algebra.Monoid.Defs
+/-
+Copyright (c) 2024 Nailin Guan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nailin Guan
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Index
+public import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # Closed subgroups of a topological group

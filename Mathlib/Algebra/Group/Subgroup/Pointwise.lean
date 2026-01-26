@@ -1,5 +1,16 @@
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Submonoid.Membership
+/-
+Copyright (c) 2021 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 

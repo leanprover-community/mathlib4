@@ -1,4 +1,14 @@
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.Topology.Sets.CompactOpenCovered
 
 /-!
 # Quasi-compact covers

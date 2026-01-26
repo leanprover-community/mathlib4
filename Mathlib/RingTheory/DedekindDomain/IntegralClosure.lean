@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.DualLattice
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Integral closure of Dedekind domains

@@ -1,7 +1,14 @@
-import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Digits.Defs
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Order.Interval.Finset.Nat
+/-
+Copyright (c) 2022 Bolton Bailey. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Digits.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients

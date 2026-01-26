@@ -6,9 +6,6 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.DedekindDomain.Basic
 
 /-!
 # Normal closure of an extension of domains

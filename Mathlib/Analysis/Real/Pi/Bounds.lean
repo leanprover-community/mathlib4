@@ -6,7 +6,6 @@ Authors: Floris van Doorn, Mario Carneiro
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # Pi

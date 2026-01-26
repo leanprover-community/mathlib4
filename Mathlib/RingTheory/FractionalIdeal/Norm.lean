@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.FractionalIdeal.Operations
+/-
+Copyright (c) 2024 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 

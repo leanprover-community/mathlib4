@@ -1,6 +1,13 @@
-import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Int
+public import Mathlib.RingTheory.Localization.Algebra
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 

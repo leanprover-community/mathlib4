@@ -1,5 +1,16 @@
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Lattice.Fold
+/-
+Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # `Finset.sup` in a group

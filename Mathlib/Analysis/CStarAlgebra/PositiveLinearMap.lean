@@ -1,4 +1,14 @@
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+/-
+Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Positive linear maps in C⋆-algebras
 

@@ -1,6 +1,13 @@
-import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Yongle Hu
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Ideals over/under ideals in integral extensions

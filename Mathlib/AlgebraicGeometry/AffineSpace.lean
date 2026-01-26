@@ -1,4 +1,15 @@
-import Mathlib.AlgebraicGeometry.Morphisms.Integral
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.AlgebraicGeometry.Morphisms.Finite
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Affine space

@@ -7,7 +7,6 @@ Kim Morrison
 module
 
 public import Mathlib.Data.List.Basic
-import Batteries.Data.List.Basic
 
 /-!
 # Lattice structure of lists

@@ -6,9 +6,6 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # Lagrange's four square theorem

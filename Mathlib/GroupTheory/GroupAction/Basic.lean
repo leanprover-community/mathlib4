@@ -1,5 +1,19 @@
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Action.Units
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions

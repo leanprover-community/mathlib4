@@ -1,5 +1,14 @@
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
+/-
+Copyright (c) 2023 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Geometry.Euclidean.Inversion.Basic
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Derivative of the inversion

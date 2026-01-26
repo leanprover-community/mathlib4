@@ -1,4 +1,12 @@
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
+/-
+Copyright (c) 2025 Janos Wolosz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Janos Wolosz
+-/
+module
+
+public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Simple Lie algebras

@@ -6,7 +6,6 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Data.List.Chain
-import Batteries.Data.List.Basic
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.

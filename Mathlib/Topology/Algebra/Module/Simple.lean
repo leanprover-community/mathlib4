@@ -1,5 +1,12 @@
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Monoid.Defs
+/-
+Copyright (c) 2022 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # The kernel of a linear function is closed or dense

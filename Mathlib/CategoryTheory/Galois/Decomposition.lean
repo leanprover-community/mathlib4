@@ -1,5 +1,13 @@
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+/-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.CategoryTheory.Galois.GaloisObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
+public import Mathlib.Data.Finite.Sum
 
 /-!
 # Decomposition of objects into connected components and applications

@@ -1,6 +1,14 @@
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.Order.Compact
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander Bentkamp, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets

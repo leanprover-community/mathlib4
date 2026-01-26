@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca, Eric Rodriguez
+-/
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields

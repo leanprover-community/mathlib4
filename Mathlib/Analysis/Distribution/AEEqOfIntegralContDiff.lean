@@ -1,7 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+/-
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Functions which vanish as distributions vanish as functions

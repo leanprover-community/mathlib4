@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.Localization.Bifunctor
+/-
+Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Monoidal.Multifunctor
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+public import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 

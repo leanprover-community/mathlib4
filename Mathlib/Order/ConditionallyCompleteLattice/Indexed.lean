@@ -6,7 +6,6 @@ Authors: Sébastian Gouëzel
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Indexed sup / inf in conditionally complete lattices

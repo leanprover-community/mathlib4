@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+/-
+Copyright (c) 2022 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.MapDomain
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Tactic.NoncommRing
 
 /-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 

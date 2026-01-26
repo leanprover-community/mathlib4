@@ -6,7 +6,6 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Indexed product of uniform spaces

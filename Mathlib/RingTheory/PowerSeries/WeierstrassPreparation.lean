@@ -1,5 +1,15 @@
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+/-
+Copyright (c) 2025 Jz Pan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jz Pan
+-/
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
+public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
 
 /-!
 

@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2020 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Simon Hudon, Patrick Massot, Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Spread
 
 /-!
 # Instances and theorems on pi types

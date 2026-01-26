@@ -1,5 +1,14 @@
-import Mathlib.Order.WithBot
-import Mathlib.Logic.Embedding.Basic
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types

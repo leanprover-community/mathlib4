@@ -1,6 +1,13 @@
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Analysis.Normed.Operator.Basic
+/-
+Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
 

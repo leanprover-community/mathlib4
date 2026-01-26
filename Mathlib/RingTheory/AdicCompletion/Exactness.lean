@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Judith Ludwig, Christian Merten
+-/
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.Filtration
 
 /-!
 # Exactness of adic completion

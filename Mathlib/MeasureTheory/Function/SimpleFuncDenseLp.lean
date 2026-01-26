@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Function.SimpleFuncDense
+/-
+Copyright (c) 2022 Zhouhang Zhou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
+-/
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!
 # Density of simple functions

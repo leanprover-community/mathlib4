@@ -1,6 +1,12 @@
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+/-
+Copyright (c) 2023 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # Homology and exactness of short complexes of modules

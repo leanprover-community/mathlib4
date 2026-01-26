@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.Invariant.Defs
+/-
+Copyright (c) 2025 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.FieldTheory.Galois.Infinite
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Predicate for Galois Groups

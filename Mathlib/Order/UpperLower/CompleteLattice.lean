@@ -1,4 +1,13 @@
-import Mathlib.Data.Set.BooleanAlgebra
+/-
+Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Sara Rousta
+-/
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`

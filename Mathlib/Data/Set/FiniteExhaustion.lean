@@ -1,4 +1,12 @@
-import Mathlib.Data.Set.Lattice.Image
+/-
+Copyright (c) 2025 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
+module
+
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Finite Exhaustions

@@ -1,5 +1,12 @@
-import Mathlib.Order.Filter.Basic
-import Mathlib.Topology.Defs.Filter
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Separated neighbourhoods

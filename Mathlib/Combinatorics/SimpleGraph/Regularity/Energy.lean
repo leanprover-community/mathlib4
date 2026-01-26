@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Bhavik Mehta
+-/
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Density
+public import Mathlib.Data.Rat.BigOperators
 
 /-!
 # Energy of a partition

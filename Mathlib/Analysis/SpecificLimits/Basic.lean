@@ -1,5 +1,18 @@
-import Mathlib.Data.EReal.Inv
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
+-/
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Iterate
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # A collection of specific limit computations

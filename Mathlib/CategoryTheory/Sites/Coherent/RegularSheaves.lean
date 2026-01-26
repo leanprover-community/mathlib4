@@ -1,5 +1,16 @@
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Types.Equalizers
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
+-/
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+public import Mathlib.CategoryTheory.Limits.Final.ParallelPair
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the regular topology

@@ -6,8 +6,6 @@ Authors: Ben Eltschig
 module
 
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Defs.Sequences
 
 /-!
 # Delta-generated topological spaces

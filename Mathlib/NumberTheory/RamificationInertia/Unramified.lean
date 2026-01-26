@@ -1,4 +1,14 @@
-import Mathlib.RingTheory.Unramified.Locus
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.Unramified.LocalRing
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 

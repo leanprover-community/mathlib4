@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2021 Yourong Zang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yourong Zang
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Conformal Linear Maps

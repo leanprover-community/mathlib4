@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Robert Y. Lewis
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Lemmas about the interaction of power operations with order

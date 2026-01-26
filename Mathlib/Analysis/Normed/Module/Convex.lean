@@ -1,7 +1,16 @@
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.MetricSpace.Thickening
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander Bentkamp, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Metric properties of convex sets in normed spaces

@@ -1,7 +1,14 @@
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Algebra.Polynomial.Eval.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
+-/
+module
+
+public import Mathlib.Algebra.Field.NegOnePow
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Analysis.SpecialFunctions.Exp
 
 /-!
 # Trigonometric functions

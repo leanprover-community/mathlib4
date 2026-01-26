@@ -1,4 +1,13 @@
-import Mathlib.Topology.MetricSpace.Isometry
+/-
+Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
+-/
+module
+
+public import Mathlib.Topology.Algebra.Indicator
+public import Mathlib.Topology.Bornology.BoundedOperation
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Bounded continuous functions

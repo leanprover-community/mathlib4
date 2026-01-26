@@ -1,5 +1,12 @@
-import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.Etale.Basic
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Unramified.Field
 
 /-!
 # Étale algebras over fields

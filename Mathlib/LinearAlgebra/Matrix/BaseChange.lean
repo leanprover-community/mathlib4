@@ -1,5 +1,12 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Data.Matrix.Mul
+/-
+Copyright (c) 2024 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.Algebra.Field.Subfield.Defs
 
 /-!
 # Matrices and base change

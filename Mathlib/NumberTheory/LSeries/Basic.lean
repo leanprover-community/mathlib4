@@ -1,4 +1,13 @@
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+/-
+Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson, Michael Stoll
+-/
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # L-series

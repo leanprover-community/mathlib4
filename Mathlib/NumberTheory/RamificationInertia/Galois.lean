@@ -1,4 +1,12 @@
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+/-
+Copyright (c) 2024 Yongle Hu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yongle Hu, Jiedong Jiang
+-/
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains

@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+/-
+Copyright (c) 2025 Julian Berman. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 

@@ -1,5 +1,13 @@
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+/-
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir, Johan Commelin, Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
+import Mathlib.Algebra.MvPolynomial.Nilpotent
 
 /-!
 # Irreducibility of linear and quadratic polynomials

@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2025 Aaron Liu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Liu
+-/
+module
+
+public import Mathlib.Topology.Separation.CompletelyRegular
+
+import Mathlib.Topology.UniformSpace.OfCompactT2
 
 /-!
 # Uniformizable Spaces

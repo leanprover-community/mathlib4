@@ -1,5 +1,15 @@
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.SetTheory.Cardinal.Finite
+/-
+Copyright (c) 2020 Kexing Ying. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kexing Ying
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Submonoid.Finite
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups

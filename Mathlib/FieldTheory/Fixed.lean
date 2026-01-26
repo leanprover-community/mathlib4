@@ -1,4 +1,18 @@
-import Mathlib.RingTheory.Algebraic.Integral
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.GroupRingAction
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.Algebra.Ring.Action.Invariant
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Fixed field under a group action.

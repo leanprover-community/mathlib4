@@ -1,4 +1,17 @@
-import Mathlib.CategoryTheory.Limits.Fubini
+/-
+Copyright (c) 2024 Robin Carlier. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robin Carlier
+-/
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
+public import Mathlib.CategoryTheory.Monoidal.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
+public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.IsConnected
 /-!
 # Sifted categories
 

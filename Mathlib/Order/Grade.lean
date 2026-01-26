@@ -1,5 +1,12 @@
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Algebra.Order.Group.Unbundled.Int
+/-
+Copyright (c) 2022 Yaël Dillies, Violeta Hernández Palacios. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Vladimir Ivanov
+-/
+module
+
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Graded orders

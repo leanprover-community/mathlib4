@@ -1,5 +1,14 @@
-import Mathlib.RingTheory.LocalRing.Defs
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
+/-
+Copyright (c) 2025 Michal Staromiejski. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michal Staromiejski
+-/
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 

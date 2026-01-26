@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients

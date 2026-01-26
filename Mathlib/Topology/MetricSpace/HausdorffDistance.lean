@@ -1,6 +1,13 @@
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Topology.Order.Real
-import Mathlib.Topology.UniformSpace.Real
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.IsometricSMul
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Hausdorff distance

@@ -6,7 +6,6 @@ Authors: Johan Commelin, Yaël Dillies
 module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Tooling to make copies of lattice structures

@@ -1,4 +1,14 @@
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+/-
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # Smooth bump functions on a smooth manifold

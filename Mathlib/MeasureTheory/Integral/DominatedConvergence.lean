@@ -1,4 +1,13 @@
-import Mathlib.Topology.ContinuousMap.Compact
+/-
+Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot
+-/
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # The dominated convergence theorem

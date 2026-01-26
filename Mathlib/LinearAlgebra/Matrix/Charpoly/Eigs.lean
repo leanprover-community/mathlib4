@@ -1,4 +1,13 @@
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+/-
+Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mohanad Ahmed
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.

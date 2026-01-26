@@ -1,4 +1,15 @@
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
+/-
+Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
+-/
+module
+
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 

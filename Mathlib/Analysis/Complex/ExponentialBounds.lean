@@ -1,4 +1,12 @@
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+/-
+Copyright (c) 2020 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Joseph Myers
+-/
+module
+
+public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!
 # Bounds on specific values of the exponential

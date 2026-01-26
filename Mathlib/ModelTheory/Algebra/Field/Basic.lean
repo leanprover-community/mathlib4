@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2023 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Algebra.Ring.Basic
+public import Mathlib.Algebra.Field.MinimalAxioms
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # The First-Order Theory of Fields

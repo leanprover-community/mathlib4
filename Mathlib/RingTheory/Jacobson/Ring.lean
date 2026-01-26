@@ -1,6 +1,14 @@
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+/-
+Copyright (c) 2020 Devon Tuma. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Devon Tuma
+-/
+module
+
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Jacobson.Polynomial
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings

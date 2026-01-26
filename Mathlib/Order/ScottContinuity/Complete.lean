@@ -6,8 +6,6 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.ScottContinuity.Prod
-import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Order.ScottContinuity
 
 /-!
 

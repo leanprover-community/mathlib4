@@ -1,4 +1,14 @@
-import Mathlib.Data.Fintype.Card
+/-
+Copyright (c) 2021 Eric Rodriguez. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Rodriguez
+-/
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # Number of embeddings

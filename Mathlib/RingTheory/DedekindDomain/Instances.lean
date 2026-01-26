@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.DedekindDomain.Basic
+/-
+Copyright (c) 2025 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
+module
+
+public import Mathlib.RingTheory.DedekindDomain.PID
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 # Instances for Dedekind domains

@@ -1,8 +1,16 @@
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Order.Group.Multiset
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.Multiset.Bind
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Big operators

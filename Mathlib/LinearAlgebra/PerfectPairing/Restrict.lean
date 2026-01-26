@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.LocalRing.Basic
+/-
+Copyright (c) 2025 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Matrix.Basis
+public import Mathlib.LinearAlgebra.Matrix.BaseChange
 
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.

@@ -1,4 +1,12 @@
-import Mathlib.NumberTheory.ModularForms.Basic
+/-
+Copyright (c) 2025 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # The Petersson scalar product

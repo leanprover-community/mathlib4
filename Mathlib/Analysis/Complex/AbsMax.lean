@@ -1,7 +1,16 @@
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Extr
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Order.ExtrClosure
 
 /-!
 # Maximum modulus principle

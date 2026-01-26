@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser, Kyle Miller
+-/
+module
+
+public meta import Lean.Elab.SyntheticMVars
+public import Mathlib.Init
+public meta import Std.Do
 /-!
 # The `fast_instance%` term elaborator
 -/

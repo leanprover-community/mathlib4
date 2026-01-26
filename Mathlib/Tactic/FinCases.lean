@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2022 Hanting Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Hanting Zhang
+-/
+module
+
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Lean.Expr.Basic
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Data.Fintype.Defs
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `fin_cases` tactic.

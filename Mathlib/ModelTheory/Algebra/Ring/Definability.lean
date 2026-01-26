@@ -1,4 +1,14 @@
-import Mathlib.ModelTheory.Algebra.Ring.Basic
+/-
+Copyright (c) 2023 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.ModelTheory.Definability
+public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
+public import Mathlib.RingTheory.Nullstellensatz
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 /-!
 

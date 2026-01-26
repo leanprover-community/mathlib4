@@ -1,5 +1,13 @@
-import Batteries.Data.List.Lemmas
-import Mathlib.Logic.Equiv.Defs
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
+-/
+module
+
+public import Mathlib.Data.List.OfFn
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`

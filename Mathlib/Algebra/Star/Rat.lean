@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Field.Rat
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # *-ring structure on ℚ and ℚ≥0.

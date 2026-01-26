@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2018 Mitchell Rowett. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mitchell Rowett, Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Coset.Defs
 
 /-!
 # Cosets

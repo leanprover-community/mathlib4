@@ -1,4 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.Defs
+/-
+Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Existence of minimizers (Hilbert projection theorem)

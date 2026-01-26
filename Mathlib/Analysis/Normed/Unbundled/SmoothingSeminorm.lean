@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: María Inés de Frutos-Fernández
+-/
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Bounds
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Topology.MetricSpace.Sequences
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm

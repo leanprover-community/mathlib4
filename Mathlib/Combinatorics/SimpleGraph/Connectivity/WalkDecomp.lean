@@ -1,4 +1,12 @@
-import Mathlib.Data.List.Rotate
+/-
+Copyright (c) 2022 Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kyle Miller, Pim Otte
+-/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 # Decomposing walks

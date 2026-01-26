@@ -1,6 +1,13 @@
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Data.Nat.Prime.Defs
+/-
+Copyright (c) 2020 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 If `A` is a domain, and a finite-dimensional algebra over a field `F`, with prime dimension,

@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 module
 
 public import Mathlib.Data.Set.Function
-import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Piecewise functions

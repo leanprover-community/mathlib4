@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials

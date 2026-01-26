@@ -1,4 +1,18 @@
-import Mathlib.Order.OmegaCompletePartialOrder
+/-
+Copyright (c) 2024 Jana Göken. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle Dubois,
+Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
+Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.Analysis.Real.OfDigits
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set

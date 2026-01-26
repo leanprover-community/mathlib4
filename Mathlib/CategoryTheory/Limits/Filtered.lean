@@ -1,4 +1,13 @@
-import Mathlib.CategoryTheory.Limits.Types.Limits
+/-
+Copyright (c) 2022 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!
 # Filtered categories and limits

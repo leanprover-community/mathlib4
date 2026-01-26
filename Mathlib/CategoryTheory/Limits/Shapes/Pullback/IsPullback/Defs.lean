@@ -6,7 +6,6 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 
 /-!

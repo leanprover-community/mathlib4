@@ -1,4 +1,13 @@
-import Mathlib.CategoryTheory.Filtered.Basic
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Colimits in ModuleCat

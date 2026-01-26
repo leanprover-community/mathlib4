@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2025 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Torsion group of `ZMod p` for prime `p`

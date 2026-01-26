@@ -1,4 +1,15 @@
-import Mathlib.Data.Nat.Prime.Defs
+/-
+Copyright (c) 2022 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Nat
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers

@@ -1,4 +1,12 @@
-import Mathlib.SetTheory.Cardinal.Order
+/-
+Copyright (c) 2025 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of monoid algebras

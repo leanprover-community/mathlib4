@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 module
 
 public import Mathlib.Topology.Order.IsLUB
-import Mathlib.Topology.Order.Basic
 
 /-!
 # Order topology on a densely ordered set

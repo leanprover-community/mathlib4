@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.Algebra.Module.Torsion.Field
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 # Extension of Valuations

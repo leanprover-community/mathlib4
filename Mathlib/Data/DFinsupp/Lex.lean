@@ -1,5 +1,14 @@
-import Mathlib.Order.PiLex
-import Mathlib.Data.Finset.Max
+/-
+Copyright (c) 2022 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa, Junyan Xu
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Data.DFinsupp.NeLocus
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Lexicographic order on finitely supported dependent functions

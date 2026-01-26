@@ -1,5 +1,15 @@
-import Mathlib.FieldTheory.Separable
-import Mathlib.Algebra.Field.ZMod
+/-
+Copyright (c) 2020 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca, Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Minimal polynomial of roots of unity

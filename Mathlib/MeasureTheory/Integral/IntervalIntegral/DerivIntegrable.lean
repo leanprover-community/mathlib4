@@ -1,5 +1,14 @@
+/-
+Copyright (c) 2025 Yizheng Zhu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yizheng Zhu
+-/
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`

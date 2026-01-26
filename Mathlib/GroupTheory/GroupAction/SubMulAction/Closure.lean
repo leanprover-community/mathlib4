@@ -1,5 +1,13 @@
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Defs
+/-
+Copyright (c) 2025 Dexin Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dexin Zhang
+-/
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
 /-!
 # Closure and finiteness of `SubMulAction` and `SubAddAction`

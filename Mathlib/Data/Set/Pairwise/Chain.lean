@@ -1,4 +1,12 @@
-import Mathlib.Order.SetNotation
+/-
+Copyright (c) 2025 Jasper Mulder-Sohn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Edward van de Meent, Jasper Mulder-Sohn
+-/
+module
+
+public import Mathlib.Data.Set.Pairwise.Lattice
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Pairwise results for chains

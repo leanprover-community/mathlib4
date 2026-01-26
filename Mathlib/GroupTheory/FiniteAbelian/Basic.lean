@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Module.Torsion.Basic
+/-
+Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Pierre-Alexandre Bazin
+-/
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups

@@ -1,5 +1,16 @@
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Group.ModEq
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 # Congruences modulo a natural number

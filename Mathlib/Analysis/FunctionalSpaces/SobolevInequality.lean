@@ -1,4 +1,15 @@
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+/-
+Copyright (c) 2024 Floris van Doorn. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Floris van Doorn, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pi
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Analysis.InnerProductSpace.NormPow
+public import Mathlib.Data.Finset.Interval
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality

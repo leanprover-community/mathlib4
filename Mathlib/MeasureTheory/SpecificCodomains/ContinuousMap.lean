@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
+/-
+Copyright (c) 2025 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Specific results about `ContinuousMap`-valued integration

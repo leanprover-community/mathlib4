@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Yuval Filmus. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yuval Filmus
+-/
+module
+
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
+public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: some extremal properties

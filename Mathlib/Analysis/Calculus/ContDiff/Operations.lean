@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Floris van Doorn
+-/
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
+public import Mathlib.Topology.OpenPartialHomeomorph.IsImage
 
 /-!
 # Higher differentiability of usual operations

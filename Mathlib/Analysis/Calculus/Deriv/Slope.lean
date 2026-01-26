@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Calculus.Deriv.Basic
+/-
+Copyright (c) 2019 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+public import Mathlib.Topology.Algebra.Module.PerfectSpace
 
 /-!
 # Derivative as the limit of the slope

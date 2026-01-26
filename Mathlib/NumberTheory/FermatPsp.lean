@@ -1,7 +1,14 @@
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Order.Filter.AtTopBot.Defs
+/-
+Copyright (c) 2022 Niels Voss. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Niels Voss
+-/
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat Pseudoprimes

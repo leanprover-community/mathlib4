@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2019 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
+Jireh Loreaux
+-/
+module
+
+public meta import Lean.Elab.Tactic.Location
+public import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Util.AtLocation
 
 /-!
 # The `push`, `push_neg` and `pull` tactics

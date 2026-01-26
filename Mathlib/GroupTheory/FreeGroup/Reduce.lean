@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Data.Finset.Dedup
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.List.Sublists
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # The maximal reduction of a word in a free group

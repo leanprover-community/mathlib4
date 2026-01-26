@@ -1,4 +1,14 @@
-import Mathlib.RingTheory.WittVector.Teichmuller
+/-
+Copyright (c) 2025 Jiedong Jiang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiedong Jiang
+-/
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.AdicCompletion.RingHom
+public import Mathlib.RingTheory.Perfectoid.Untilt
+public import Mathlib.RingTheory.WittVector.TeichmullerSeries
 
 /-!
 # Fontaine's θ map

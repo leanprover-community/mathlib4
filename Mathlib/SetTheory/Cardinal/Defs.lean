@@ -1,5 +1,13 @@
-import Mathlib.Tactic.Lift
-import Mathlib.Logic.Equiv.Sum
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
+-/
+module
+
+public import Mathlib.Data.ULift
+public import Mathlib.Util.Delaborators
+public import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers

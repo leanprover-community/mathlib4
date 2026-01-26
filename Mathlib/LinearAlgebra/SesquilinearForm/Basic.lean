@@ -1,8 +1,15 @@
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+/-
+Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andreas Swerdlow
+-/
+module
+
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+
+import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Sesquilinear maps

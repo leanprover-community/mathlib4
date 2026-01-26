@@ -1,6 +1,16 @@
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+/-
+Copyright (c) 2021 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Constructions of (co)limits in `CommRingCat`

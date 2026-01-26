@@ -1,7 +1,15 @@
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+/-
+Copyright (c) 2025 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+public import Mathlib.CategoryTheory.Abelian.Projective.Basic
+public import Mathlib.CategoryTheory.Generator.Preadditive
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`

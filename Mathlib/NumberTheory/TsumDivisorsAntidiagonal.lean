@@ -1,6 +1,12 @@
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
+/-
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 
 /-!

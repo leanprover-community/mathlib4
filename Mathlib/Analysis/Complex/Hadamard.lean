@@ -1,6 +1,12 @@
-import Mathlib.Analysis.Calculus.DiffContOnCl
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+/-
+Copyright (c) 2023 Xavier Généreux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Généreux
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
 # Hadamard three-lines Theorem

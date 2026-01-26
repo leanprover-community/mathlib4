@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Topology.Algebra.Field
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Valued.LocallyCompact
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 

@@ -1,4 +1,15 @@
-import Mathlib.Data.Nat.Basic
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Lex
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain

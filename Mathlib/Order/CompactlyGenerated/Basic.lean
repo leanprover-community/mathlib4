@@ -1,3 +1,20 @@
+/-
+Copyright (c) 2021 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.SupClosed
+public import Mathlib.Order.SupIndep
+public import Mathlib.Order.Zorn
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Order.Interval.Set.OrderIso
+public import Mathlib.Data.Finite.Set
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Compactness properties for complete lattices

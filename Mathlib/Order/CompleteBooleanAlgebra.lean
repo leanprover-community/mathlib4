@@ -1,4 +1,15 @@
-import Mathlib.Order.CompleteLattice.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Yaël Dillies
+-/
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Order.CompleteLattice.Lemmas
+public import Mathlib.Order.Directed
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras

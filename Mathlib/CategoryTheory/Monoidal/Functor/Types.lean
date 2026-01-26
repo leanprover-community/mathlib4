@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Vilim Lendvaj. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vilim Lendvaj
+-/
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Convert from `Applicative` to `CategoryTheory.Functor.LaxMonoidal`

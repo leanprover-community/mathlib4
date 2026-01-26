@@ -1,4 +1,13 @@
-import Mathlib.Algebra.EuclideanDomain.Field
+/-
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
+-/
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # The finite-dimensional space of matrices

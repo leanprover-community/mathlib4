@@ -1,4 +1,13 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+/-
+Copyright (c) 2022 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Joël Riou, Calle Sönne
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Bi-Cartesian squares

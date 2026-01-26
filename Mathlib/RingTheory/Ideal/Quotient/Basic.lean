@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
+-/
+module
+
+public import Mathlib.GroupTheory.QuotientGroup.Finite
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients

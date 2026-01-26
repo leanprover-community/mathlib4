@@ -1,7 +1,14 @@
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Analysis.Normed.Ring.Basic
+/-
+Copyright (c) 2019 Jan-David Salchow. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 

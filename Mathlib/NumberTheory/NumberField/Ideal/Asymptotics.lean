@@ -1,4 +1,12 @@
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+/-
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
+public import Mathlib.NumberTheory.NumberField.ClassNumber
 
 /-!
 # Asymptotics on integral ideals of a number field

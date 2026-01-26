@@ -1,5 +1,15 @@
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its

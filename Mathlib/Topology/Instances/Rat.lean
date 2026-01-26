@@ -1,7 +1,16 @@
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.UniformSpace.Real
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Ring.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Nat
 
 /-!
 # Topology on the rational numbers

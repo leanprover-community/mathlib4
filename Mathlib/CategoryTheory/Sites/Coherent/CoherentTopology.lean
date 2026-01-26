@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
+/-
+Copyright (c) 2023 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz, Nikolas Kuhn
+-/
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+public import Mathlib.Data.Finite.Sigma
 
 /-!
 # Description of the covering sieves of the coherent topology

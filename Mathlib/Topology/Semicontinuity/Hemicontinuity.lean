@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2025 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+module
+
+public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Topology.NhdsWithin
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Defs.Sequences
+import Mathlib.Topology.Sequences
 import Mathlib.Topology.ContinuousOn
 
 /-! # Hemicontinuity

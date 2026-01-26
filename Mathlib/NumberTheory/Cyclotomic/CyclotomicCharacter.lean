@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Ring.Action.End
+/-
+Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
+public import Mathlib.FieldTheory.KrullTopology
 
 /-!
 

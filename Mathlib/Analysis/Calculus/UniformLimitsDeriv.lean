@@ -1,5 +1,13 @@
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Calculus.Deriv.Basic
+/-
+Copyright (c) 2022 Kevin H. Wilson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin H. Wilson
+-/
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Order.Filter.Curry
 
 /-!
 # Swapping limits and derivatives via uniform convergence

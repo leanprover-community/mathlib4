@@ -1,6 +1,16 @@
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Floor.Defs
-import Mathlib.Order.Interval.Set.UnorderedInterval
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Algebra.Order.Monoid.Units
+public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Data.Int.LeastGreatest
+public import Mathlib.Data.Rat.Floor
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups and fields.

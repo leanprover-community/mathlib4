@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Data.Bool.Set
+public import Mathlib.Data.Nat.Set
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Theory of complete lattices

@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # The completion of a metric space

@@ -1,5 +1,16 @@
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Order.Filter.AtTopBot.Defs
+/-
+Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Kappelmann
+-/
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
+public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
+public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring
 
 /-!
 # Correctness of Terminating Continued Fraction Computations (`GenContFract.of`)

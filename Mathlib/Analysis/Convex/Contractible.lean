@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Convex.Basic
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Topology.Homotopy.Contractible
 
 /-!
 # A convex set is contractible

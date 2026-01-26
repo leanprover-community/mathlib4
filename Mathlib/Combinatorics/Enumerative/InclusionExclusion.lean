@@ -1,7 +1,13 @@
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
 
 /-!
 # Inclusion-exclusion principle

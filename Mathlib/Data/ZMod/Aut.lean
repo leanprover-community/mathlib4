@@ -1,4 +1,12 @@
-import Mathlib.Data.ZMod.Defs
+/-
+Copyright (c) 2024 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Ring.AddAut
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Automorphism Group of `ZMod`.

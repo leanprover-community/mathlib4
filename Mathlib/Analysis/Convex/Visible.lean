@@ -1,8 +1,17 @@
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2024 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Points in sight

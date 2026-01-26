@@ -1,5 +1,13 @@
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+/-
+Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Floris van Doorn
+-/
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives

@@ -1,4 +1,12 @@
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
+-/
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.Tactic.Ring
 
 /-!
 # Set of factors

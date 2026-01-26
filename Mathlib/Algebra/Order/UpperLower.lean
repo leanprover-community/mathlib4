@@ -1,4 +1,16 @@
-import Mathlib.Algebra.Order.Monoid.Defs
+/-
+Copyright (c) 2022 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Algebraic operations on upper/lower sets

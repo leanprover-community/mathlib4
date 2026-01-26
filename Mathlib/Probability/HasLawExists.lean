@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2025 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
+module
+
+public import Mathlib.Probability.HasLaw
+public import Mathlib.Probability.Independence.InfinitePi
 
 /-!
 # Existence of Random Variables

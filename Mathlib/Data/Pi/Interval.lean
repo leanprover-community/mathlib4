@@ -1,6 +1,12 @@
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Intervals in a pi type

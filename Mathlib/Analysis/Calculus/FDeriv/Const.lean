@@ -6,8 +6,6 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Congr
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Fréchet derivative of constant functions

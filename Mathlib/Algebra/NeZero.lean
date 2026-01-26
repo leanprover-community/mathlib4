@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2021 Eric Rodriguez. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Rodriguez
+-/
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass

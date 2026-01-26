@@ -1,4 +1,15 @@
-import Mathlib.Order.Interval.Finset.Defs
+/-
+Copyright (c) 2021 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of integers

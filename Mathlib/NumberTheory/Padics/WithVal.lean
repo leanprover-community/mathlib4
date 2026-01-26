@@ -1,4 +1,15 @@
-import Mathlib.Topology.Metrizable.Uniformity
+/-
+Copyright (c) 2025 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`

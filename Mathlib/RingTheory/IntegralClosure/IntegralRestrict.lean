@@ -1,6 +1,15 @@
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Trace.Defs
+/-
+Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Restriction of various maps between fields to integrally closed subrings.

@@ -7,8 +7,6 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 module
 
 public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
-import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Module.Equiv.Opposite
 
 /-!
 # Continuous linear equivalences

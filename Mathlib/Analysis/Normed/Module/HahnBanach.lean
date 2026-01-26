@@ -1,7 +1,13 @@
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Analysis.Normed.Module.Span
-import Mathlib.Analysis.Normed.Operator.Basic
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Normed.Module.RCLike.Extend
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Extension Hahn-Banach theorem

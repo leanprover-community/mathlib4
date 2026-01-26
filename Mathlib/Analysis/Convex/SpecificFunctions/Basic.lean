@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Convex.Function
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
+-/
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions

@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Operations
 
 /-!
 ### Recursion on the natural numbers and `Set.range`

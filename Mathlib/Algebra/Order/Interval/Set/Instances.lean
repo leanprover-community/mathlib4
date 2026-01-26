@@ -1,4 +1,15 @@
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2022 Stuart Presnell. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stuart Presnell, Eric Wieser, Yaël Dillies, Patrick Massot, Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals

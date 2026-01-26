@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2022 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.TakeWhile
 
 /-!
 

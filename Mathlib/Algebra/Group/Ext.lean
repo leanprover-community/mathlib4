@@ -6,7 +6,6 @@ Authors: Bryan Gin-ge Chen, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Defs
 
 /-!
 # Extensionality lemmas for monoid and group structures

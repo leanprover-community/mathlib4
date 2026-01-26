@@ -1,4 +1,13 @@
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+/-
+Copyright (c) 2024 Vasily Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasily Nesterov
+-/
+module
+
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
 /-!
 # The oracle based on Simplex Algorithm

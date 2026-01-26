@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.FieldTheory.Galois.Infinite
-import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 

@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Fourier.FourierTransform
+/-
+Copyright (c) 2024 Lawrence Wu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Lawrence Wu
+-/
+module
+
+public import Mathlib.Analysis.Fourier.Inversion
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Mellin inversion formula

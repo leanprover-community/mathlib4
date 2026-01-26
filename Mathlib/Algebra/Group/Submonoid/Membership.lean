@@ -1,4 +1,20 @@
-import Mathlib.Data.Fintype.Card
+/-
+Copyright (c) 2018 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
+Amelia Livingston, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria

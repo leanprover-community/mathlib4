@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Sigma.Basic
+public import Batteries.Tactic.Lint.TypeClass
 
 /-!
 # A computable model of ZFA without infinity

@@ -1,5 +1,16 @@
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Monotone.Defs
+/-
+Copyright (c) 2020 Simon Hudon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Simon Hudon, Yaël Dillies, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Natural number logarithms

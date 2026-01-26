@@ -1,5 +1,13 @@
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
+-/
+module
+
+public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 
 /-!
 # The Height of an Ideal

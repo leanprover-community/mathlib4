@@ -1,4 +1,17 @@
-import Mathlib.Algebra.Polynomial.Div
+/-
+Copyright (c) 2024 Fangming Li. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Fangming Li, Jujian Zhang
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Hilbert polynomials

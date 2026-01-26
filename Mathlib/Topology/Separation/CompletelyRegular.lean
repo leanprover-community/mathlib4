@@ -1,4 +1,15 @@
-import Mathlib.SetTheory.Cardinal.Continuum
+/-
+Copyright (c) 2023 Matias Heikkilä. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Matias Heikkilä
+-/
+module
+
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Completely regular topological spaces.

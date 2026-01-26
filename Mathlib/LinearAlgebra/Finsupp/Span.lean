@@ -1,6 +1,12 @@
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Algebra.Module.Submodule.Range
+/-
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Finitely supported functions and spans

@@ -1,5 +1,14 @@
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Finset.Lattice.Fold
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset

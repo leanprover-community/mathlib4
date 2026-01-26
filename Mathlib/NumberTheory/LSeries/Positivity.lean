@@ -1,6 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+/-
+Copyright (c) 2024 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Birkbeck, David Loeffler, Michael Stoll
+-/
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.Positivity
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Deriv
 
 /-!
 # Positivity of values of L-series

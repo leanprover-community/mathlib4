@@ -1,6 +1,14 @@
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
+public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomologySequenceLemmas
+public import Mathlib.Algebra.Homology.Refinements
 
 /-!
 # The mapping cone of a monomorphism, up to a quasi-isomorphism

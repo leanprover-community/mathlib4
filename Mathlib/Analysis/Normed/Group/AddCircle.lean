@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Order.Round
+/-
+Copyright (c) 2022 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Topology.Instances.AddCircle.Real  -- shake: keep (used in type annotation)
 
 /-!
 # The additive circle as a normed group

@@ -1,4 +1,14 @@
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds

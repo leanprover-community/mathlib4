@@ -6,9 +6,6 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.SetTheory.Ordinal.Basic
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!
 # Besicovitch covering theorems

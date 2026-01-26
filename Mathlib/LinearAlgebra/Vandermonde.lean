@@ -1,7 +1,16 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+/-
+Copyright (c) 2020 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Peter Nelson
+-/
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorial.SuperFactorial
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Vandermonde matrix

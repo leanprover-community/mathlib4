@@ -1,4 +1,17 @@
-import Mathlib.Data.Fin.Embedding
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.List.FinRange
 
 /-!
 # Instances for finite types

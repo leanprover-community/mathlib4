@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.PolynomialAlgebra
+/-
+Copyright (c) 2024 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
 # Bivariate polynomials

@@ -1,8 +1,15 @@
+/-
+Copyright (c) 2020 Zhangir Azerbayev. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser, Zhangir Azerbayev
+-/
+module
+
+public import Mathlib.GroupTheory.Perm.Sign
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 import Mathlib.Algebra.Module.Torsion.Pi
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Alternating Maps

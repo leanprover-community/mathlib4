@@ -1,4 +1,19 @@
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.ConjAct
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Properties of group actions involving quotient groups

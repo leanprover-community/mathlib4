@@ -1,4 +1,17 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Types.Set
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 
 /-!
 # Multicoequalizers in the category of types

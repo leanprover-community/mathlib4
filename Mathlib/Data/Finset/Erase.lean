@@ -1,4 +1,12 @@
-import Mathlib.Data.Multiset.AddSub
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Erasing an element from a finite set

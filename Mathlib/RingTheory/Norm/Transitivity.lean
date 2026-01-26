@@ -1,3 +1,19 @@
+/-
+Copyright (c) 2024 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.PolynomialAlgebra
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm

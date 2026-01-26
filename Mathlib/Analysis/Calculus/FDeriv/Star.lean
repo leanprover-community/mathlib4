@@ -1,5 +1,15 @@
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Calculus.TangentCone.Defs
+/-
+Copyright (c) 2023 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Star operations on derivatives

@@ -1,4 +1,17 @@
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
+/-
+Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Data.Set.Pointwise.Support
+public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Bump functions in finite-dimensional vector spaces

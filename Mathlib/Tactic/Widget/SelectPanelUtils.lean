@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2023 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot
+-/
+module
+
+public meta import Lean.Meta.ExprLens
+public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 

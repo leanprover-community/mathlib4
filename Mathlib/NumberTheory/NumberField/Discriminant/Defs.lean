@@ -1,4 +1,16 @@
-import Mathlib.RingTheory.Discriminant
+/-
+Copyright (c) 2023 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Init.Data.ULift
+public import Init.Data.Fin.Fold
+public import Init.Data.List.Nat.Pairwise
+public import Init.Data.List.Nat.Range
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 # Number field discriminant

@@ -6,8 +6,6 @@ Authors: Yoh Tanimoto
 module
 
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-import Mathlib.MeasureTheory.Integral.CompactlySupported
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`

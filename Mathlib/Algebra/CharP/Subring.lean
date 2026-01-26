@@ -6,8 +6,6 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Ring.Subring.Basic
 
 /-!
 # Characteristic of subrings

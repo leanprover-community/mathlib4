@@ -1,4 +1,17 @@
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+/-
+Copyright (c) 2022 Moritz Doll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Doll
+-/
+module
+
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.Normed.Lp.SmoothApprox
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Distribution.TemperateGrowth
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space

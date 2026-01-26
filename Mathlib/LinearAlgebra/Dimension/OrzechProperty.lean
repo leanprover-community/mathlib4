@@ -1,4 +1,12 @@
-import Mathlib.LinearAlgebra.Dimension.Constructions
+/-
+Copyright (c) 2018 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Junyan Xu
+-/
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.RingTheory.Noetherian.Orzech
 
 /-! # Bases of modules and the Orzech property
 

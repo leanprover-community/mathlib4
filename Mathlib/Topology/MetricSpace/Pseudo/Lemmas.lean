@@ -1,5 +1,13 @@
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Extra lemmas about pseudo-metric spaces

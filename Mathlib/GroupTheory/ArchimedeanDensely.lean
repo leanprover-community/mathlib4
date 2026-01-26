@@ -1,9 +1,17 @@
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Order.Hom.TypeTags
+/-
+Copyright (c) 2024 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.Monoid.LocallyFiniteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.GroupTheory.Archimedean
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Order.Interval.Finset.DenselyOrdered
 
 /-!
 # Archimedean groups are either discrete or densely ordered

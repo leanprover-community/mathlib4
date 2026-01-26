@@ -1,7 +1,16 @@
-import Mathlib.NumberTheory.Divisors
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Data.Nat.Factorization.Defs
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Periodic
 
 /-!
 # Euler's totient function

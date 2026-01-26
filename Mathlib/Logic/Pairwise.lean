@@ -1,5 +1,13 @@
-import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs.Unbundled
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Relations holding pairwise

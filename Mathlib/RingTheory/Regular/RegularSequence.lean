@@ -1,8 +1,14 @@
-import Mathlib.RingTheory.QuotSMulTop
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+/-
+Copyright (c) 2024 Brendan Murphy. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Brendan Murphy
+-/
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences

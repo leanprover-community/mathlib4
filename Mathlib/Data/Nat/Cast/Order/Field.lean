@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Yaël Dillies, Patrick Stevens
 module
 
 public import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Cast of naturals into ordered fields

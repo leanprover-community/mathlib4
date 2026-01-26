@@ -6,8 +6,6 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Integral curves of vector fields on a manifold

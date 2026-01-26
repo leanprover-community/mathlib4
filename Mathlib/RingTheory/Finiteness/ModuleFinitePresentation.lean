@@ -1,4 +1,12 @@
-import Mathlib.RingTheory.FinitePresentation
+/-
+Copyright (c) 2025 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Finitely presented algebras and finitely presented modules

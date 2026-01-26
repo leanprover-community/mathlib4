@@ -1,4 +1,16 @@
-import Mathlib.LinearAlgebra.Semisimple
+/-
+Copyright (c) 2024 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Algebra.Lie.Derivation.Killing
+public import Mathlib.Algebra.Lie.Killing
+public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.Algebra.Lie.Weights.Chain
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms

@@ -1,4 +1,13 @@
-import Mathlib.Data.Nat.Prime.Defs
+/-
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+module
+
+public import Mathlib.Data.Finite.Perm
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.GroupTheory.Index
 
 /-! # Subgroups of small index are normal
 

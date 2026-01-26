@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
+module
+
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Taylor series converges to function on whole ball

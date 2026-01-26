@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2018 Patrick Massot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Patrick Massot, Johannes Hölzl
+-/
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Rat
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed fields

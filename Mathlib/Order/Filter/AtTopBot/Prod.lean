@@ -1,4 +1,13 @@
-import Mathlib.Order.Filter.AtTopBot.Defs
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
+-/
+module
+
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Prod
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters on products

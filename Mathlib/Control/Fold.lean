@@ -1,3 +1,18 @@
+/-
+Copyright (c) 2018 Simon Hudon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Simon Hudon, Sean Leather
+-/
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 

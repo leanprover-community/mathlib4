@@ -1,4 +1,12 @@
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Ilmārs Cīrulis, Alex Meiburg
+-/
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Sign.Defs
 
 /-!
 # Normalized vector

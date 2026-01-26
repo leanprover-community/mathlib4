@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2020 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
+-/
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.LinearRecurrence
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Int.Fib.Basic
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.NatFib
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # The golden ratio and its conjugate

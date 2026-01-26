@@ -1,4 +1,13 @@
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+/-
+Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Kappelmann
+-/
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Data.Rat.Floor
 
 /-!
 # Termination of Continued Fraction Computations (`GenContFract.of`)

@@ -1,4 +1,16 @@
-import Mathlib.Algebra.Group.Defs
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Util.AssertExists
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa

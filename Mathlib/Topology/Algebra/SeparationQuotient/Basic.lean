@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.UniformSpace.Separation
 
 /-!
 # Algebraic operations on `SeparationQuotient`

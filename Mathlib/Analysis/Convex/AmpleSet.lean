@@ -1,6 +1,14 @@
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2021 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Floris van Doorn
+-/
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Ample subsets of real vector spaces

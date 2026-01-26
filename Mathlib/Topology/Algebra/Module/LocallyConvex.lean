@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Convex.Basic
+/-
+Copyright (c) 2022 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker
+-/
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Locally convex topological modules

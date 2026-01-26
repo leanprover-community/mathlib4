@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Convex.Hull
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Kim Morrison
+-/
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Carathéodory's convexity theorem

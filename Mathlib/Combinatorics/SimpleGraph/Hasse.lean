@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2022 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Prod
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.Relation
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The Hasse diagram as a graph

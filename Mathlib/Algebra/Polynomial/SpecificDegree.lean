@@ -1,4 +1,12 @@
-import Mathlib.Algebra.EuclideanDomain.Field
+/-
+Copyright (c) 2024 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Alex J. Best
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Polynomials of specific degree

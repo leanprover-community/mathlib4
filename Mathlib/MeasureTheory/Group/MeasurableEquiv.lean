@@ -6,7 +6,6 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # (Scalar) multiplication and (vector) addition as measurable equivalences

@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+/-
+Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Submodules of a module

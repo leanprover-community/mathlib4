@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Module.Basic
+/-
+Copyright (c) 2022 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers
+-/
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Sides of affine subspaces

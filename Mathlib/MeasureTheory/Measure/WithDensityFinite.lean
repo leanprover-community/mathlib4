@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure

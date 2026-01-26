@@ -1,4 +1,13 @@
-import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+/-
+Copyright (c) 2025 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1

@@ -1,4 +1,16 @@
-import Mathlib.Algebra.Category.Grp.Colimits
+/-
+Copyright (c) 2025 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
+module
+
+public import Mathlib.Algebra.Category.FGModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Products
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.LinearAlgebra.DirectSum.Finite
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite colimits.

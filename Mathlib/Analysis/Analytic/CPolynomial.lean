@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2023 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie Morel
+-/
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-! # Properties of continuously polynomial functions
 

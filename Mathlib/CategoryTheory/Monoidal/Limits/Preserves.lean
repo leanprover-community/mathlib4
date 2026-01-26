@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+/-
+Copyright (c) 2025 Robin Carlier. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robin Carlier
+-/
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Miscellany about preservation of (co)limits in monoidal categories

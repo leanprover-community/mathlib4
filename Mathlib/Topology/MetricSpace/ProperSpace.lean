@@ -1,4 +1,14 @@
-import Mathlib.Topology.MetricSpace.Pseudo.Constructions
+/-
+Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Topology.MetricSpace.Pseudo.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.Order.IsLUB
 
 /-! ## Proper spaces
 

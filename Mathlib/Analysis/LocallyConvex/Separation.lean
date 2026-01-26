@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2022 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta, Yaël Dillies
+-/
+module
+
+public import Mathlib.Analysis.Convex.Cone.Extension
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.RCLike.Extend
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Separation Hahn-Banach theorem

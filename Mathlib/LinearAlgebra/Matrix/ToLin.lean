@@ -1,4 +1,22 @@
-import Mathlib.Algebra.Algebra.Bilinear
+/-
+Copyright (c) 2019 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Basis.Fin
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Basis.SMul
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices

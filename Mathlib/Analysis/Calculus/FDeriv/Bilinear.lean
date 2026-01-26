@@ -6,9 +6,6 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # The derivative of bounded bilinear maps

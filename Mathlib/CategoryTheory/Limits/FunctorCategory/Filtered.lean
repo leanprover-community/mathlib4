@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2024 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Filtered
 
 /-!
 # Functor categories have filtered colimits when the target category does

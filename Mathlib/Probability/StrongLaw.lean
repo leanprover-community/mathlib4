@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.Independence.Integrable
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Analysis.SpecificLimits.FloorPow
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # The strong law of large numbers

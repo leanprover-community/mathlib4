@@ -1,6 +1,15 @@
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Order.Hom.Set
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.

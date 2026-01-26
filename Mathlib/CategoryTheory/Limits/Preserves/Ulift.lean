@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # `ULift` creates small (co)limits

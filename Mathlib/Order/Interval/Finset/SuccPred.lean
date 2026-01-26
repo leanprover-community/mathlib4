@@ -1,4 +1,12 @@
-import Mathlib.Order.SuccPred.Basic
+/-
+Copyright (c) 2025 Yaël Dillies. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies
+-/
+module
+
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Interval.Set.SuccPred
 
 /-!
 # Finset intervals in a successor-predecessor order

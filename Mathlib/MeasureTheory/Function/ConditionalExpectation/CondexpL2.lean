@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
+/-
+Copyright (c) 2021 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-! # Conditional expectation in L2
 

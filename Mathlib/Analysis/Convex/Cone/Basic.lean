@@ -1,4 +1,15 @@
-import Mathlib.Topology.Order.Basic
+/-
+Copyright (c) 2022 Apurva Nakade. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Apurva Nakade, Yaël Dillies
+-/
+module
+
+public import Mathlib.Analysis.Convex.Cone.Closure
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones

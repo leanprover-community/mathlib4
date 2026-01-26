@@ -1,8 +1,16 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.RingTheory.Algebraic.Defs
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+/-
+Copyright (c) 2021 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.MvRatFunc.Rank
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Cardinality of a transcendence basis

@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Data.SetLike.Fintype
+public import Mathlib.GroupTheory.PGroup
+public import Mathlib.GroupTheory.NoncommPiCoprod
 
 /-!
 # Sylow theorems

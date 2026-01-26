@@ -1,4 +1,12 @@
-import Mathlib.NumberTheory.BernoulliPolynomials
+/-
+Copyright (c) 2024 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.NumberTheory.ZetaValues
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # Special values of Hurwitz and Riemann zeta functions

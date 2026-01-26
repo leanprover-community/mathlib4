@@ -1,7 +1,17 @@
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.Algebra.Category.Ring.Basic
+/-
+Copyright (c) 2025 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.CategoryTheory.Monoidal.Skeleton
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.LinearDisjoint
+public import Mathlib.RingTheory.ClassGroup
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # The Picard group of a commutative ring

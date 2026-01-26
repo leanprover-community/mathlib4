@@ -1,5 +1,12 @@
-import Mathlib.Order.Directed
-import Mathlib.Order.Bounds.Defs
+/-
+Copyright (c) 2017 Paul Lezeau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl, Yury Kudryashov, Paul Lezeau
+-/
+module
+
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Order.Bounds.Basic
 
 /-!
 

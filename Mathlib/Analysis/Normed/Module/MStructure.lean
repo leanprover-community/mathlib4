@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Group.Idempotent
+/-
+Copyright (c) 2022 Christopher Hoskin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christopher Hoskin
+-/
+module
+
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # M-structure

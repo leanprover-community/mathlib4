@@ -1,6 +1,18 @@
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.RingTheory.DedekindDomain.Basic
-import Mathlib.RingTheory.Norm.Defs
+/-
+Copyright (c) 2022 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anne Baanen, Alex J. Best
+-/
+module
+
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.FreeModule.Determinant
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Ideal.Basis
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 

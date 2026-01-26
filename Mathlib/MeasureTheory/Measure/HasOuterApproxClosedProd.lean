@@ -1,4 +1,12 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
+/-
+Copyright (c) 2025 Etienne Marion. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Etienne Marion
+-/
+module
+
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Characterization of a finite measure by the integrals of products of bounded functions

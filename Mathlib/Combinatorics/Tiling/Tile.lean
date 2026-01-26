@@ -1,7 +1,12 @@
-import Mathlib.Data.Finite.Defs
-import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+/-
+Copyright (c) 2026 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers
+-/
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Finite
+public import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Tiles for tilings

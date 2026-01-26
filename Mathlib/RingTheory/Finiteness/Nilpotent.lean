@@ -1,5 +1,12 @@
-import Mathlib.Data.Matrix.Mul
-import Mathlib.RingTheory.Finiteness.Defs
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent maps on finite modules

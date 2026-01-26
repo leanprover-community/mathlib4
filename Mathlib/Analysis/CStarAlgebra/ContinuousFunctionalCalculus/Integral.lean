@@ -1,5 +1,15 @@
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+/-
+Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Dupuis, Anatole Dedecker
+-/
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMapZero
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Integrals and the continuous functional calculus

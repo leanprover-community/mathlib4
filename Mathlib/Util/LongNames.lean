@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2023 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # Commands `#long_names` and `#long_instances`

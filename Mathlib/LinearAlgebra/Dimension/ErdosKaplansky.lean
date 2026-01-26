@@ -1,5 +1,14 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.LinearAlgebra.Dimension.Basic
+/-
+Copyright (c) 2023 Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Junyan Xu
+-/
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Erdős-Kaplansky theorem

@@ -1,4 +1,19 @@
-import Mathlib.Order.Interval.Set.OrdConnected
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
+public import Mathlib.Data.Fin.SuccPredOrder
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.Interval.Set.Final
 
 /-!
 # A structure to describe transfinite compositions

@@ -1,6 +1,14 @@
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.RingTheory.Unramified.Locus
+/-
+Copyright (c) 2023 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Unramified
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.FractionalIdeal.Extended
+public import Mathlib.RingTheory.Trace.Quotient
 
 /-!
 # The different ideal

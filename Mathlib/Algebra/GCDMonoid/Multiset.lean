@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2020 Aaron Anderson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson
+-/
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets

@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Field.Lemmas
+/-
+Copyright (c) 2022 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+module
+
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Units of continuous functions

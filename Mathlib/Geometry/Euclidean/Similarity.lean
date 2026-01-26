@@ -1,4 +1,13 @@
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+/-
+Copyright (c) 2025 Chu Zheng. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chu Zheng
+-/
+module
+
+public import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Topology.MetricSpace.Similarity
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
 # Triangle Similarity

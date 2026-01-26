@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Field.Rat
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Floris van Doorn
+-/
+module
+
+public import Mathlib.Algebra.Order.CauSeq.Completion
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences

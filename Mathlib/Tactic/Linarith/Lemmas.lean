@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Order.Ring.Defs
+/-
+Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis
+-/
+module
+
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Lemmas for `linarith`.

@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Kappelmann
+-/
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Seq.Basic
 
 /-!
 # Basic Translation Lemmas Between Functions Defined for Continued Fractions

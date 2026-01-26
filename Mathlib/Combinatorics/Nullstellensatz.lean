@@ -1,6 +1,17 @@
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.Weight
+/-
+Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Groebner
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-! # Alon's Combinatorial Nullstellensatz
 

@@ -1,6 +1,15 @@
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Analysis.Calculus.Deriv.Basic
+/-
+Copyright (c) 2023 Luke Mantle. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Luke Mantle, Jake Levinson
+-/
+module
+
+public import Mathlib.RingTheory.Polynomial.Hermite.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Hermite polynomials and Gaussians

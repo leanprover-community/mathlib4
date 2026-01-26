@@ -1,6 +1,13 @@
-import Mathlib.Algebra.Polynomial.UnitTrinomial
-import Mathlib.Data.Complex.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
+/-
+Copyright (c) 2022 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
+public import Mathlib.RingTheory.Polynomial.GaussLemma
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Irreducibility of Selmer Polynomials

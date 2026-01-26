@@ -1,4 +1,13 @@
-import Mathlib.Order.CompleteLattice.Basic
+/-
+Copyright (c) 2021 Anne Baanen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Anne Baanen
+-/
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Lattice structure on order homomorphisms

@@ -6,7 +6,6 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum

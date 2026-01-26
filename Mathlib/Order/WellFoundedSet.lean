@@ -1,5 +1,15 @@
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Interval.Finset.Defs
+/-
+Copyright (c) 2021 Aaron Anderson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Anderson
+-/
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Data.Sigma.Lex
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.WellQuasiOrder
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Well-founded sets

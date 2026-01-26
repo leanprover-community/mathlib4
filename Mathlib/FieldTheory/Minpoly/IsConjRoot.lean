@@ -1,4 +1,14 @@
-import Mathlib.FieldTheory.Separable
+/-
+Copyright (c) 2024 Jiedong Jiang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiedong Jiang
+-/
+module
+
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Normal.Defs
 
 /-!
 # Conjugate roots

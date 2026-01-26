@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2025 Weiyi Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Weiyi Wang
+-/
+module
+
+public import Mathlib.Combinatorics.Enumerative.Partition.GenFun
+public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 
 /-!
 # Glaisher's theorem

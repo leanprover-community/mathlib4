@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jordan Brown, Thomas Browning, Patrick Lutz
+-/
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.GroupTheory.Commutator.Basic
+public import Mathlib.GroupTheory.Rank
+public import Mathlib.GroupTheory.Index
 
 /-!
 The commutator of a finite direct product is contained in the direct product of the commutators.

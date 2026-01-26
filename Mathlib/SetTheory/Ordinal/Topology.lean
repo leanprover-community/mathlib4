@@ -1,5 +1,14 @@
-import Mathlib.SetTheory.Ordinal.Family
-import Mathlib.Topology.Order.Basic
+/-
+Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Violeta Hernández Palacios
+-/
+module
+
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.Order.IsNormal
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 ### Topology of ordinals

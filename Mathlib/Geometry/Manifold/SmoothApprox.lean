@@ -1,4 +1,12 @@
-import Mathlib.Geometry.Manifold.ContMDiffMap
+/-
+Copyright (c) 2025 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Patrick Massot
+-/
+module
+
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
 # Approximation of continuous functions by smooth functions

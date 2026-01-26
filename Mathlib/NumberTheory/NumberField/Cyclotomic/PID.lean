@@ -1,4 +1,13 @@
-import Mathlib.NumberTheory.Cyclotomic.Basic
+/-
+Copyright (c) 2024 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
+module
+
+public import Mathlib.NumberTheory.NumberField.ClassNumber
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
 
 /-!
 # Cyclotomic fields whose ring of integers is a PID.

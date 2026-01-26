@@ -6,7 +6,6 @@ Authors: Kevin Kappelmann
 module
 
 public import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Algebra.ContinuedFractions.Basic
 
 /-!
 # Stabilisation of gcf Computations Under Termination

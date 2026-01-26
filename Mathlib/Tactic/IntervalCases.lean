@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2019 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison, Mario Carneiro
+-/
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Case bash on variables in finite intervals

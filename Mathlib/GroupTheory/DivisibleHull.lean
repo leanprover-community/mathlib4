@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Module.Defs
+/-
+Copyright (c) 2025 Weiyi Wang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Weiyi Wang
+-/
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Order.Module.Archimedean
+public import Mathlib.Algebra.Order.Monoid.PNat
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Divisible Hull of an abelian group

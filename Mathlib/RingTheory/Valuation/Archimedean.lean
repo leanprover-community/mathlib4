@@ -1,7 +1,12 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Algebra.Order.Archimedean.Basic
+/-
+Copyright (c) 2024 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Ring of integers under a given valuation in a multiplicatively archimedean codomain

@@ -1,4 +1,13 @@
-import Mathlib.Order.SetNotation
+/-
+Copyright (c) 2025 Oliver Butterley. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Butterley
+-/
+module
+
+public import Mathlib.Data.Finset.Range
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Extra lemmas about unions of intervals

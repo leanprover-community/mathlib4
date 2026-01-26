@@ -1,4 +1,15 @@
-import Mathlib.Algebra.Order.Ring.Defs
+/-
+Copyright (c) 2021 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.Order.Monoid.Submonoid
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.

@@ -1,4 +1,12 @@
-import Mathlib.CategoryTheory.Limits.HasLimits
+/-
+Copyright (c) 2025 Mario Carneiro and Emily Riehl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Emily Riehl
+-/
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+public import Mathlib.CategoryTheory.Monad.Limits
 
 
 /-!

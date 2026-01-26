@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker, Jireh Loreaux
+-/
+module
+
+public import Mathlib.Topology.Defs.Induced
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Semicontinuous maps

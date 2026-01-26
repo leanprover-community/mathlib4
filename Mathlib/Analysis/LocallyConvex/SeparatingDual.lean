@@ -1,6 +1,14 @@
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+/-
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
+-/
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Spaces with separating dual

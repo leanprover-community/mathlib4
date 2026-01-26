@@ -1,4 +1,15 @@
-import Mathlib.Topology.Metrizable.CompletelyMetrizable
+/-
+Copyright (c) 2023 Rémy Degenne. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Rémy Degenne, Peter Pfaffelhuber
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.GDelta.MetrizableSpace
+public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Inner regularity of finite measures

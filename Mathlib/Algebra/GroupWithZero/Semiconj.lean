@@ -1,5 +1,12 @@
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Group.Commute.Defs
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Group.Semiconj.Units
 
 /-!
 # Lemmas about semiconjugate elements in a `GroupWithZero`.

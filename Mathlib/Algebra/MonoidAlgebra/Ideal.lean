@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2023 Eric Wieser. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Eric Wieser
+-/
+module
+
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Span
+public import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Lemmas about ideals of `MonoidAlgebra` and `AddMonoidAlgebra`

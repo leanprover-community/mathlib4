@@ -1,4 +1,13 @@
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+/-
+Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro, Johannes Hölzl
+-/
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
+public import Mathlib.MeasureTheory.Measure.Count
 
 /-!
 # Lebesgue integral over finite and countable types, sets and measures

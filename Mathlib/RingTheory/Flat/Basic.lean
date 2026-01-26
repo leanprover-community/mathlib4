@@ -1,5 +1,17 @@
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.Adjoin.FG
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin, Jujian Zhang, Yongle Hu
+-/
+module
+
+public import Mathlib.Algebra.Colimit.TensorProduct
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Small
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.Adjoin.FGBaseChange
 
 /-!
 # Flat modules

@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2018 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
+  Rémy Degenne, David Loeffler
+-/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+public meta import Mathlib.Data.Nat.NthRoot.Defs
+public import Qq
 
 /-! # Power function on `ℝ`
 

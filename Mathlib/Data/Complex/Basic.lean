@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2017 Kevin Buzzard. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Buzzard, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers

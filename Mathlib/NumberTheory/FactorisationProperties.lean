@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2024 Colin Jones. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Colin Jones
+-/
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Factorisation properties of natural numbers

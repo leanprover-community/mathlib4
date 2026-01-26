@@ -1,5 +1,16 @@
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.RingTheory.Finiteness.Defs
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.LinearAlgebra.Basis.Cardinality
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.StdBasis
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Finite modules and types with finitely many elements

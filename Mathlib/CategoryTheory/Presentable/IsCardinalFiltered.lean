@@ -1,4 +1,16 @@
-import Mathlib.CategoryTheory.Limits.Final
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
+public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 

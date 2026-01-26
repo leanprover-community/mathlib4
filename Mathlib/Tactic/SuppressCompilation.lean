@@ -1,3 +1,12 @@
+/-
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex J. Best, Mac Malone
+-/
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Declaration
 
 /-!
 # Suppressing compilation to executable code in a file or in a section

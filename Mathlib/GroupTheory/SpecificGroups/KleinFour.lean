@@ -6,7 +6,6 @@ Authors: Newell Jensen
 module
 
 public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.Exponent
 
 /-!
 # Klein Four Group

@@ -6,8 +6,6 @@ Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 module
 
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # The Jacobi Symbol

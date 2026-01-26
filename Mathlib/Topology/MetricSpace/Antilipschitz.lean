@@ -1,4 +1,14 @@
-import Mathlib.Topology.MetricSpace.ProperSpace
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Antilipschitz functions

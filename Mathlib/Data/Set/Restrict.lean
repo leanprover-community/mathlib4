@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 module
 
 public import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Basic
 
 /-!
 # Restrict the domain of a function to a set

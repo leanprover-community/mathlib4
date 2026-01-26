@@ -1,5 +1,12 @@
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+/-
+Copyright (c) 2020 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.RingTheory.IntegralDomain
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!

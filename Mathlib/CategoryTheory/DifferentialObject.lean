@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+/-
+Copyright (c) 2020 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Differential objects in a category.

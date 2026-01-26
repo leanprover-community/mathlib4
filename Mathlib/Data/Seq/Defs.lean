@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2017 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Data.Option.NAry
+public import Mathlib.Data.Seq.Computation
+public import Mathlib.Data.ENat.Defs
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists

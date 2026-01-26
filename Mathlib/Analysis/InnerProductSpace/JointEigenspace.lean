@@ -1,5 +1,14 @@
-import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+/-
+Copyright (c) 2024 Jon Bannon. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jon Bannon, Jack Cheverton, Samyak Dhar Tuladhar
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.Analysis.InnerProductSpace.Semisimple
 
 /-! # Joint eigenspaces of commuting symmetric operators
 

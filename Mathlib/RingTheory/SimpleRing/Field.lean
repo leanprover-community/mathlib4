@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Field.IsField
-import Mathlib.RingTheory.SimpleRing.Defs
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+module
+
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.Field.Equiv
 
 /-!
 # Simple ring and fields

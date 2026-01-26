@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Moritz Firsching. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
+-/
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula

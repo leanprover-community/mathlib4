@@ -1,5 +1,15 @@
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Algebra.Group.Nat.Defs
+/-
+Copyright (c) 2021 Peter Nelson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Peter Nelson, Yaël Dillies
+-/
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Order.Atoms
 
 /-!
 # Order structures on finite types

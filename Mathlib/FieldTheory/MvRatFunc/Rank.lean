@@ -1,7 +1,15 @@
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+/-
+Copyright (c) 2024 Jz Pan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jz Pan
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Cardinal
+public import Mathlib.RingTheory.Algebraic.LinearIndependent
+public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.RingTheory.MvPolynomial
 
 /-!
 # Rank of multivariate rational function field

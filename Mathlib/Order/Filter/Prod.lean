@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heat
 module
 
 public import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Filter.Basic
 
 /-!
 # Product and coproduct filters

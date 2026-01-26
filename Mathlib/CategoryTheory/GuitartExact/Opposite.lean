@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
-import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # The opposite of a Guitart exact square

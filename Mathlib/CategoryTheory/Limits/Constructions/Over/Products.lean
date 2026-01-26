@@ -6,8 +6,6 @@ Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Products in the over category

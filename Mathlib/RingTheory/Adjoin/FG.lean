@@ -1,5 +1,15 @@
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.Algebra.Algebra.Subalgebra.Prod
+/-
+Copyright (c) 2019 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau
+-/
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Adjoining elements to form subalgebras

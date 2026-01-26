@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2019 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Sheafed spaces

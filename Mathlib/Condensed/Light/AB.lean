@@ -1,5 +1,13 @@
-import Mathlib.Condensed.Light.Limits
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.AB
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
+public import Mathlib.Condensed.Light.Epi
 /-!
 
 # Grothendieck's AB axioms for light condensed modules

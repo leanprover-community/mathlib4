@@ -1,5 +1,12 @@
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Set.Pairwise.Basic
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
+-/
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Finite
 
 /-!
 # Finiteness results on filter bases

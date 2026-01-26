@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+/-
+Copyright (c) 2023 Kalle Kytölä. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kalle Kytölä
+-/
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 
 /-!
 # Results about indicator functions, their integrals, and measures

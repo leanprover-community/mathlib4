@@ -1,4 +1,13 @@
-import Mathlib.Data.List.Rotate
+/-
+Copyright (c) 2021 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fin.Basic
 
 /-!
 # Cycles of a list

@@ -1,4 +1,12 @@
-import Mathlib.MeasureTheory.Group.Measure
+/-
+Copyright (c) 2025 David Ledvinka. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Ledvinka
+-/
+module
+
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.MeasureTheory.Group.LIntegral
 
 /-!
 # Convolution of functions using the Lebesgue integral

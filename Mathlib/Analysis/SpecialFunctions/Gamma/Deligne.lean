@@ -6,7 +6,6 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Deligne's archimedean Gamma-factors

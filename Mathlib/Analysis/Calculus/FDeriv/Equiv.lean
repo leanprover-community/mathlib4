@@ -1,8 +1,14 @@
-import Mathlib.Topology.OpenPartialHomeomorph.Defs
-import Mathlib.Analysis.Calculus.FDeriv.Defs
-import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Topology.Algebra.Module.StrongTopology
+/-
+Copyright (c) 2019 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
 
 /-!
 # The derivative of a linear equivalence

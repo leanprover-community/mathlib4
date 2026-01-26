@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Transvections in a module

@@ -1,4 +1,15 @@
-import Mathlib.Data.Nat.Prime.Defs
+/-
+Copyright (c) 2020 Paul van Wamelen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Paul van Wamelen
+-/
+module
+
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.PythagoreanTriples
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Fermat's Last Theorem for the case n = 4

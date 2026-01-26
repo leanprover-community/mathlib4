@@ -1,7 +1,12 @@
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Dimension.Finrank
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+/-
+Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Exact sequences with free modules

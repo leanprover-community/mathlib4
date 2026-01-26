@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Order.Interval.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Intervals as multisets

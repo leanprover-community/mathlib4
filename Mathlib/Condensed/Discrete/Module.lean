@@ -1,6 +1,15 @@
-import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Algebra.Category.Grp.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
+/-
+Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson
+-/
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Light.Module
+public import Mathlib.Condensed.Module
+public import Mathlib.Topology.LocallyConstant.Algebra
 /-!
 
 # Discrete condensed `R`-modules

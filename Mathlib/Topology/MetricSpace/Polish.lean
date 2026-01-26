@@ -1,4 +1,13 @@
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+/-
+Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Polish spaces

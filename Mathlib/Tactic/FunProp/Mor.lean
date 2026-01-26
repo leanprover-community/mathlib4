@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Tomáš Skřivan
+-/
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.CoeAttr
+public import Lean.Meta.CoeAttr
 
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.

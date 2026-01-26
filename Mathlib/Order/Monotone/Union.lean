@@ -1,6 +1,12 @@
-import Mathlib.Order.Lattice
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov, Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Monotonicity on intervals

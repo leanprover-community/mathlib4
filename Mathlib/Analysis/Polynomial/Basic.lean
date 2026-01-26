@@ -1,5 +1,13 @@
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Defs
+/-
+Copyright (c) 2020 Anatole Dedecker. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Anatole Dedecker, Devon Tuma
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Limits related to polynomial and rational functions

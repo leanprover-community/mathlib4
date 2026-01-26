@@ -1,5 +1,16 @@
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+/-
+Copyright (c) 2022 Adam Topaz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Adam Topaz, Junyan Xu, Jack McKoen
+-/
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationRing
+public import Mathlib.RingTheory.Localization.AsSubring
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Ring.Subring.Pointwise
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 

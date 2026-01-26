@@ -1,4 +1,12 @@
-import Mathlib.LinearAlgebra.Matrix.StdBasis
+/-
+Copyright (c) 2025 Yunzhou Xie. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunzhou Xie, Jujian Zhang
+-/
+module
+
+public import Mathlib.Algebra.Azumaya.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 # Matrix algebra is an Azumaya algebra over R

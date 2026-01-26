@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2021 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.RingTheory.Polynomial.Bernstein
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Topology.ContinuousMap.Polynomial
 
 /-!
 # Bernstein approximations and Weierstrass' theorem

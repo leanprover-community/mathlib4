@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2022 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
+-/
+module
+
+public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 

@@ -1,4 +1,13 @@
-import Mathlib.Data.Nat.Prime.Defs
+/-
+Copyright (c) 2020 Bryan Gin-ge Chen. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kevin Lacker, Bryan Gin-ge Chen
+-/
+module
+
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Lemmas about `Nat.Prime` using `Int`s

@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2023 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
+-/
+module
+
+public import Mathlib.Tactic.TautoSet
+public import Mathlib.Topology.Constructions
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces

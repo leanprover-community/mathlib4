@@ -1,4 +1,13 @@
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
+/-
+Copyright (c) 2024 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # The universal characteristic polynomial

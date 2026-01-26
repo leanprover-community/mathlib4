@@ -1,4 +1,14 @@
-import Mathlib.Data.Finite.Defs
+/-
+Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Violeta Hernández Palacios, Aaron Anderson
+-/
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Well quasi-orders

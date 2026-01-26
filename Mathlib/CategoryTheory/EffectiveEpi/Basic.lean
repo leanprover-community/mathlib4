@@ -6,7 +6,6 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 /-!
 
 # Effective epimorphisms

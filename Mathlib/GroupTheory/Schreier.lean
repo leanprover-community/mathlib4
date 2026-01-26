@@ -1,4 +1,14 @@
-import Mathlib.GroupTheory.Rank
+/-
+Copyright (c) 2022 Thomas Browning. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Thomas Browning
+-/
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.Transfer
 
 /-!
 # Schreier's Lemma

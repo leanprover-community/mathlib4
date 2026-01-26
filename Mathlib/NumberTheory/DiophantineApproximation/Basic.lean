@@ -1,4 +1,14 @@
-import Mathlib.Data.Rat.Floor
+/-
+Copyright (c) 2022 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Geißer, Michael Stoll
+-/
+module
+
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation

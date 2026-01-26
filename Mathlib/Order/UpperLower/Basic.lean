@@ -1,6 +1,14 @@
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
+/-
+Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Sara Rousta
+-/
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
 
 /-!
 # Properties of unbundled upper/lower sets

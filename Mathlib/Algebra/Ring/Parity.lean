@@ -1,8 +1,15 @@
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Ring.Hom.Defs
+/-
+Copyright (c) 2022 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.Group.Int.Even
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings

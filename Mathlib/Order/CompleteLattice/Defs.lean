@@ -1,5 +1,12 @@
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Heyting.Basic
+/-
+Copyright (c) 2017 Johannes Hölzl. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johannes Hölzl
+-/
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Definition of complete lattices

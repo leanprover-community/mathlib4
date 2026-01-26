@@ -1,4 +1,14 @@
-import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+/-
+Copyright (c) 2023 Winston Yin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Winston Yin
+-/
+module
+
+public import Mathlib.Analysis.ODE.Gronwall
+public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves

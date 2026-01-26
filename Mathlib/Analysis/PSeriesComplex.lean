@@ -1,4 +1,13 @@
-import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+/-
+Copyright (c) 2024 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.PSeries
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # Convergence of `p`-series (complex case)

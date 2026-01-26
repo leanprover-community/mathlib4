@@ -1,5 +1,13 @@
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+/-
+Copyright (c) 2025 Markus Himmel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Markus Himmel
+-/
+module
+
+public import Mathlib.CategoryTheory.Abelian.Yoneda
+public import Mathlib.CategoryTheory.Generator.Abelian
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
 # Embedding opposites of Grothendieck categories

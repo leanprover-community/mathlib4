@@ -1,3 +1,14 @@
+/-
+Copyright (c) 2021 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Algebraic structure on locally constant functions

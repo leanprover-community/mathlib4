@@ -1,7 +1,20 @@
+/-
+Copyright (c) 2022 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Algebra.Ring.AddAut
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+import Mathlib.Topology.Order.T5
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.Algebra.Group.Quotient
 
 /-!
 # The additive circle

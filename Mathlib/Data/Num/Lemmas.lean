@@ -1,6 +1,18 @@
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Data.Nat.Bits
-import Mathlib.Algebra.Order.Ring.Defs
+/-
+Copyright (c) 2014 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Bitwise
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.Nat.Size
+public import Mathlib.Data.Num.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Properties of the binary representation of integers

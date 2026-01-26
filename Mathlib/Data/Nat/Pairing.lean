@@ -1,5 +1,13 @@
-import Batteries.Data.Nat.Basic
-import Mathlib.Order.CompleteLattice.Defs
+/-
+Copyright (c) 2015 Microsoft Corporation. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Leonardo de Moura, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Naturals pairing function

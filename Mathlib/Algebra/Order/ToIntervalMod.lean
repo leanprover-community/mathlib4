@@ -1,3 +1,17 @@
+/-
+Copyright (c) 2022 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers
+-/
+module
+
+public import Mathlib.Algebra.Group.ModEq
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Circular
+import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # Reducing to an interval modulo its length

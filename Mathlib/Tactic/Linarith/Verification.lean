@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Robert Y. Lewis
+-/
+module
+
+public meta import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Linarith.Parsing
 
 /-!
 # Deriving a proof of false

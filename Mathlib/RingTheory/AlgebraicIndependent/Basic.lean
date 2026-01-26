@@ -1,6 +1,17 @@
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.SetTheory.Cardinal.Order
-import Mathlib.Algebra.Polynomial.Eval.Degree
+/-
+Copyright (c) 2021 Chris Hughes. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic Independence

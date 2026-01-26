@@ -6,9 +6,6 @@ Authors: Oliver Nash
 module
 
 public import Mathlib.MeasureTheory.Covering.DensityTheorem
-import Mathlib.MeasureTheory.Measure.Doubling
-import Mathlib.Topology.MetricSpace.Thickening
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Liminf, limsup, and uniformly locally doubling measures.

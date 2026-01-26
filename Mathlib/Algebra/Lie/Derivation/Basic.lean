@@ -1,3 +1,15 @@
+/-
+Copyright (c) 2024 Frédéric Marbach. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Frédéric Marbach
+-/
+module
+
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.RingTheory.Nilpotent.Exp
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations

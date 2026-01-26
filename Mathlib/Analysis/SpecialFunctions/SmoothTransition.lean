@@ -1,6 +1,15 @@
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Analysis.Complex.Exponential
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+/-
+Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel, Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.PolynomialExp
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Infinitely smooth transition function

@@ -1,4 +1,13 @@
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+/-
+Copyright (c) 2024 Michael Stoll. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michael Stoll
+-/
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.MulChar.Duality
 
 /-!
 # Orthogonality relations for Dirichlet characters

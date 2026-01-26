@@ -1,6 +1,13 @@
-import Mathlib.MeasureTheory.Group.Defs
-import Mathlib.MeasureTheory.Measure.OpenPos
-import Mathlib.MeasureTheory.Measure.Regular
+/-
+Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sébastien Gouëzel
+-/
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces

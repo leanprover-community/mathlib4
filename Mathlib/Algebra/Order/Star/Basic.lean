@@ -1,4 +1,19 @@
-import Mathlib.Algebra.Group.Submonoid.Operations
+/-
+Copyright (c) 2023 Kim Morrison. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Group.Opposite
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.StarProjection
 
 /-! # Star ordered rings
 

@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2022 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang, Junyan Xu
+-/
+module
+
+public import Mathlib.Topology.Sheaves.PUnit
+public import Mathlib.Topology.Sheaves.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Skyscraper (pre)sheaves

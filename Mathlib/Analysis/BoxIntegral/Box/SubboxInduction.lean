@@ -1,4 +1,12 @@
-import Mathlib.Order.OmegaCompletePartialOrder
+/-
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.BoxIntegral.Box.Basic
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Induction on subboxes

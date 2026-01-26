@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+/-
+Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
+-/
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Complex number as a vector space over `ℝ`

@@ -1,4 +1,15 @@
-import Lean.Meta.Tactic.Rewrite
+/-
+Copyright (c) 2025 Aaron Liu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Aaron Liu, Wojciech Nawrocki
+-/
+module
+
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.Tactic.Conv.Basic
+public meta import Lean.Elab.Tactic.Rewrite
+public import Mathlib.Init
+public import Lean.Elab.Tactic.Config
 
 /-! ## Dependent rewrite tactic -/
 

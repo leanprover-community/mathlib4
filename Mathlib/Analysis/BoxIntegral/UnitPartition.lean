@@ -1,5 +1,14 @@
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+/-
+Copyright (c) 2024 Xavier Roblot. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Xavier Roblot
+-/
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Unit Partition

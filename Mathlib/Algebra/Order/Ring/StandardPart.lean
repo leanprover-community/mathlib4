@@ -1,6 +1,17 @@
+/-
+Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Violeta Hernández Palacios
+-/
+module
+
+public import Mathlib.Algebra.Order.Ring.Archimedean
+public import Mathlib.Algebra.Ring.Subring.Order
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.Quotient
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 import Mathlib.Data.Real.CompleteField
-import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 # Standard part function

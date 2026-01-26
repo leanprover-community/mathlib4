@@ -1,5 +1,15 @@
-import Mathlib.Data.ZMod.Defs
-import Mathlib.RingTheory.Ideal.Maps
+/-
+Copyright (c) 2022 Alex J. Best. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex J. Best
+-/
+module
+
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Ring-theoretic facts about `ZMod n`

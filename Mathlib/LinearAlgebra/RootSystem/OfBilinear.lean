@@ -6,7 +6,6 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.LinearAlgebra.RootSystem.Defs
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Root pairings made from bilinear forms

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 module
 
 public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
 # Multiplicative maps on unique factorization domains

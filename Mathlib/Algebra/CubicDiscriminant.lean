@@ -1,4 +1,12 @@
-import Mathlib.Algebra.Polynomial.Degree.SmallDegree
+/-
+Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Kurniadi Angdinata
+-/
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants

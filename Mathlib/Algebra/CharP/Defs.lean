@@ -1,5 +1,15 @@
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Ring.Defs
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Joey van Langen, Casper Putz
+-/
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings

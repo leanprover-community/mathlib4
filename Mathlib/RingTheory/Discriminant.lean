@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2021 Riccardo Brasca. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Discriminant of a family of vectors

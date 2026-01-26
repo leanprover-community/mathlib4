@@ -6,9 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Bound
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Energy
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
 
 /-!
 # Szemerédi's Regularity Lemma

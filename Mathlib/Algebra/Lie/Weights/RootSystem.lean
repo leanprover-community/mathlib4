@@ -1,4 +1,16 @@
-import Mathlib.Algebra.Lie.Weights.Chain
+/-
+Copyright (c) 2024 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Lie.Weights.Killing
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # The root system associated with a Lie algebra

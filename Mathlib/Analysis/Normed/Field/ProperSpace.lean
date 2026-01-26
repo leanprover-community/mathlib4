@@ -1,4 +1,13 @@
-import Mathlib.Analysis.Normed.Field.Basic
+/-
+Copyright (c) 2024 Yakov Pechersky. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yakov Pechersky
+-/
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
 # Proper nontrivially normed fields

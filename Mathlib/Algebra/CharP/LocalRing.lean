@@ -1,4 +1,14 @@
-import Mathlib.RingTheory.LocalRing.Defs
+/-
+Copyright (c) 2022 Jon Eugster. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jon Eugster
+-/
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 
 /-!
 # Characteristics of local rings

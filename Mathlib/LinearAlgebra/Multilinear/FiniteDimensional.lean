@@ -1,6 +1,12 @@
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.RingTheory.Finiteness.Defs
+/-
+Copyright (c) 2022 Oliver Nash. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Oliver Nash
+-/
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.Curry
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-! # Multilinear maps over finite-dimensional spaces
 

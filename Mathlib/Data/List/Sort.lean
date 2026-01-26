@@ -1,3 +1,16 @@
+/-
+Copyright (c) 2016 Jeremy Avigad. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jeremy Avigad, Wrenna Robson
+-/
+module
+
+public import Batteries.Data.List.Pairwise
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Order.Fin.Basic
+import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
 /-!
 # Sorting algorithms on lists

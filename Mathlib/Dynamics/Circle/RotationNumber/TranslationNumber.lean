@@ -1,5 +1,15 @@
-import Mathlib.Algebra.Order.Group.End
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Iterate
+public import Mathlib.Order.SemiconjSup
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`

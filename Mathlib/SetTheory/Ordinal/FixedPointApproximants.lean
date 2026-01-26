@@ -6,7 +6,6 @@ Authors: Ira Fesefeldt
 module
 
 public import Mathlib.SetTheory.Ordinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Ordinal Approximants for the Fixed points on complete lattices

@@ -1,6 +1,12 @@
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+/-
+Copyright (c) 2025 Joseph Myers. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Myers
+-/
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.Ceva
 
 /-!
 # Ceva's theorem.

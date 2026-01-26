@@ -1,7 +1,14 @@
+/-
+Copyright (c) 2025 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
+-/
+module
+
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 import Mathlib.Algebra.Module.Torsion.Pi
-import Mathlib.LinearAlgebra.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 

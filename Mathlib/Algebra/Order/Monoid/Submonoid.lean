@@ -1,4 +1,13 @@
-import Mathlib.Algebra.Order.Monoid.Defs
+/-
+Copyright (c) 2021 Damiano Testa. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Damiano Testa
+-/
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Ordered instances on submonoids

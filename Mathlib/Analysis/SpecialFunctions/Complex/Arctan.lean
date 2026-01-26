@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 
 /-!
 # Complex arctangent

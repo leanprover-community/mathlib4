@@ -1,4 +1,14 @@
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+/-
+Copyright (c) 2024 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # 1-hypercovers

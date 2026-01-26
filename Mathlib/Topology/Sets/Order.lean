@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Topology.Sets.Closeds
-import Mathlib.Order.UpperLower.CompleteLattice
 
 /-!
 # Clopen upper sets

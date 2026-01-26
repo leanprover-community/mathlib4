@@ -1,5 +1,14 @@
-import Mathlib.Data.ZMod.Defs
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kenny Lau, Chris Hughes, Mario Carneiro
+-/
+module
+
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 

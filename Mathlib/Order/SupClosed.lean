@@ -1,5 +1,15 @@
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+/-
+Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Christopher Hoskin
+-/
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Sets closed under join/meet

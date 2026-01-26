@@ -1,5 +1,14 @@
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+/-
+Copyright (c) 2025 David Loeffler. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: David Loeffler
+-/
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`

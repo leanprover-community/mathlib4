@@ -1,4 +1,14 @@
-import Mathlib.Algebra.Ring.Parity
+/-
+Copyright (c) 2020 Kyle Miller. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kyle Miller
+-/
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Dart
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Degree-sum formula and handshaking lemma

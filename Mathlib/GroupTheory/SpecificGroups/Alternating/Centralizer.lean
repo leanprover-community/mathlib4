@@ -1,4 +1,12 @@
-import Mathlib.GroupTheory.Commutator.Basic
+/-
+Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir
+-/
+module
+
+public import Mathlib.GroupTheory.Perm.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Centralizer of an element in the alternating group
 
