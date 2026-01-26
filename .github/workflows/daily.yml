@@ -22,12 +22,12 @@ permissions:
 
 jobs:
   check-leanchecker:
-    runs-on: lean4checker
-    if: github.repository == 'leanprover-community/mathlib4'
+    runs-on: ubuntu-latest  # lean4checker
+    if: github.repository == 'leanprover-community/mathlib4-nightly-testing'
     strategy:
       fail-fast: false
       matrix:
-        branch_type: [nightly] #[master, nightly]  # TODO: reactivate master when leanchecker has landed there (also below)
+        branch_type: [nightly] #[master, nightly]  # TODO: reactivate master when leanchecker has landed there
     steps:
       # Checkout repository, so that we can fetch tags to decide which branch we want.
       - name: Checkout branch or tag
