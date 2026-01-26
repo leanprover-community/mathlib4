@@ -498,7 +498,7 @@ lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add₄_le /-- **Triangle inequality** for the norm. -/]
 lemma norm_mul₄_le' : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ :=
-    norm_mul_le_of_le' norm_mul₃_le' le_rfl
+  norm_mul_le_of_le' norm_mul₃_le' le_rfl
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
