@@ -13,8 +13,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 # Results about pointwise operations on sets and finitely supported functions.
 -/
 
-@[expose] public section
-
+public section
 
 namespace Set
 
