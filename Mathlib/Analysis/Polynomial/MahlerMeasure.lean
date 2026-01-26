@@ -81,8 +81,8 @@ theorem log_mahlerMeasure : log p.mahlerMeasure = p.logMahlerMeasure := by
   rw [mahlerMeasure]
   split_ifs <;> simp_all [logMahlerMeasure_def, circleAverage_def]
 
-@[deprecated log_mahlerMeasure (since := "2026-01-26")]
 variable {p} in
+@[deprecated log_mahlerMeasure (since := "2026-01-26")]
 theorem logMahlerMeasure_eq_log_MahlerMeasure : p.logMahlerMeasure = log p.mahlerMeasure :=
   p.log_mahlerMeasure.symm
 
