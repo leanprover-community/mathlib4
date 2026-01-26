@@ -22,7 +22,7 @@ This file is patterned after `MvPolynomials/Rename.lean`
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
