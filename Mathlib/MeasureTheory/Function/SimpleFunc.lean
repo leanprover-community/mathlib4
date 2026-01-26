@@ -198,7 +198,7 @@ def indexedPartitionPiecewise {ι : Type*} [Finite ι] {s : ι → Set α} (hs :
     letI : MeasurableSpace β := ⊤
     hs.measurable_piecewise hms (fun i => (f i).measurable) trivial
   finite_range' := (Set.finite_iUnion (fun i => (f i).finite_range)).subset
-    (hs.range_piecewise_subset)
+    (hs.range_piecewise_subset _)
 
 open scoped Classical in
 @[simp]
