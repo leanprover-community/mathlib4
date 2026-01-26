@@ -69,7 +69,7 @@ insert_to_additive_translation LinearOrderedCommGroup LinearOrderedAddCommGroup
 
 section LinearOrderedCommGroup
 
-variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a b : α}
 
 @[deprecated (since := "2025-10-06")]
 alias LinearOrderedCommGroup.mul_lt_mul_left' := mul_lt_mul_right
@@ -122,10 +122,10 @@ theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by contrapose!; exact inv_
 theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by contrapose!; exact inv_le_self_iff
 
 @[to_additive (attr := simp)]
-theorem div_le_mul_self_iff : x / y ≤ x * y ↔ 1 ≤ y := by simp [div_eq_mul_inv]
+theorem div_le_mul_self_iff : a / b ≤ a * b ↔ 1 ≤ b := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem div_lt_mul_self_iff : x / y < x * y ↔ 1 < y := by simp [div_eq_mul_inv]
+theorem div_lt_mul_self_iff : a / b < a * b ↔ 1 < b := by simp [div_eq_mul_inv]
 
 end LinearOrderedCommGroup
 
