@@ -617,7 +617,7 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
 
 @[simp]
 theorem measure_botSet : f.measure botSet = 0 := by
-  by_cases! hx : ∃ (x : R), IsBot x
+  by_cases! hx : ∃ x : R, IsBot x
   · simp [botSet_eq_singleton_of_isBot hx.choose_spec, leftLim_eq_of_isBot hx.choose_spec]
   · simp [botSet, hx]
 
