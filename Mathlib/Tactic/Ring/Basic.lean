@@ -445,17 +445,24 @@ def ringCompute :
     let ⟨qc, hc⟩ ← res.toRatNZ
     let ⟨c, pc⟩ := res.toRawEq
     return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
-  evalPow a za lit := do
-    let ⟨qa, ha⟩ := za
-    let ra := Result.ofRawRat qa a ha
-    let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
-      q(IsNat.raw_refl $lit) q(inferInstance) ra).run
-    match res with
-    | none => OptionT.fail
-    | some res =>
-      let ⟨qc, hc⟩ ← res.toRatNZ
-      let ⟨c, pc⟩ := res.toRawEq
-      return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+  evalPow a za b vb := do
+    match vb with
+    | .const _ =>
+      -- TODO: Decide if this is the best way to extract the exponent as a Nat.
+      have lit : Q(ℕ) := b.appArg!
+      let ⟨qa, ha⟩ := za
+      let ra := Result.ofRawRat qa a ha
+      let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
+        q(IsNat.raw_refl $lit) q(inferInstance) ra).run
+      match res with
+      | none => OptionT.fail
+      | some res =>
+        let ⟨qc, hc⟩ ← res.toRatNZ
+        let ⟨c, pc⟩ := res.toRawEq
+        have : $b =Q $lit := ⟨⟩
+        assumeInstancesCommute
+        return ⟨c, ⟨qc, hc⟩, q($pc)⟩
+    | _ => OptionT.fail
   evalInv {a} czα sfα za := do
     let ⟨qa, ha⟩ := za
     let ra := Result.ofRawRat qa a ha

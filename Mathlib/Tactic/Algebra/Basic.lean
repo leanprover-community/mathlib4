@@ -1016,9 +1016,11 @@ def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) : Common.RingCom
       return ⟨_, .mk _ vt, q(sorry)⟩
     | none => failure
   -- TODO: Regression: we can only handle literal exponents in the coefficient ring.
-  evalPow a za lit := do
+  evalPow a za b vb := do
     let ⟨r, vr⟩ := za
-    let ⟨s, vs, ps⟩ ← Common.evalPowNat sR (Ring.ringCompute sR) rcℕ vr lit
+    let ⟨b', vb'⟩ := vb.toExProdNat
+    have : $b =Q $b' := ⟨⟩
+    let ⟨s, vs, ps⟩ ← Common.evalPow₁ sR (Ring.ringCompute sR) rcℕ vr (vb')
     return ⟨_, ⟨_, vs⟩, q(sorry)⟩
   evalInv czR fR za := do
     let ⟨r, vr⟩ := za

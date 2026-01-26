@@ -244,8 +244,8 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → T
   --   baseType x → baseType y
   --   sorry
   evalNeg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → baseType x → MetaM (Result baseType q(-$x))
-  evalPow (sα) : ∀ x : Q($α), baseType x → (lit : Q(ℕ)) →
-    OptionT MetaM (Result baseType q($x ^ $lit))
+  evalPow (sα) : ∀ x : Q($α), baseType x → (b : Q(ℕ)) → (vb : ExProd btℕ sℕ q($b)) →
+    OptionT MetaM (Result baseType q($x ^ $b))
   -- TODO: Do we want this to run in AtomM or in MetaM & handle atoms on failure?
   evalInv : ∀ {x : Q($α)}, (czα : Option Q(CharZero $α)) → (fα : Q(Semifield $α)) → baseType x →
     AtomM (Option <| Result baseType q($x⁻¹))
@@ -850,15 +850,20 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
       | .none =>
-        match vb with
-        | .const _ =>
-          -- TODO: Decide if this is the best way to extract the exponent as a Nat.
-          have lit : Q(ℕ) := b.appArg!
-          let ⟨c, zc, pc⟩ ← rc.evalPow _ za lit
-          have : $b =Q $lit := ⟨⟩
-          assumeInstancesCommute
-          return ⟨c, .const zc, q($pc)⟩
-        | _ => OptionT.fail
+        let ⟨b', vb'⟩ := vb.toExProd
+        have : $b =Q $b' := ⟨⟩
+        let ⟨_, zc, pc⟩ ← rc.evalPow _ za _ vb'
+        return ⟨_, .const zc, q($pc)⟩
+        -- match vb with
+        -- | .const _ =>
+        --   -- TODO: Decide if this is the best way to extract the exponent as a Nat.
+        --   have lit : Q(ℕ) := b.appArg!
+        --   let ⟨c, zc, pc⟩ ← rc.evalPow _ za lit
+        --   have : $b =Q $lit := ⟨⟩
+        --   assumeInstancesCommute
+        --   return ⟨c, .const zc, q($pc)⟩
+        --   --TODO: In the case of the `algebra` tactic, we DO have a way to handle nonconstant `vb` - Need to change the interface of RingCompute.
+        -- | _ => OptionT.fail
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
       let ⟨b', vb'⟩ := vb.toExProd
@@ -981,12 +986,8 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
   match vb with
   | .zero =>
     let ⟨_, one, pf⟩ := rc.one
-    let test : ExSum bt sα _ := (ExProd.const (one)).toSum
     assumeInstancesCommute
-    return ⟨_,
-      test
-      ,
-      q($pf ▸ pow_zero $a)⟩ --TODO: Why doesn't assumeInstancesCommute work here?
+    return ⟨_, (ExProd.const (one)).toSum, q($pf ▸ pow_zero $a)⟩
   | .add vb₁ vb₂ =>
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ sα rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
