@@ -491,7 +491,11 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
               conventions. Consider using single underscores instead."
         -- Also check if a name is capitalized after an underscore: this is often wrong.
         let parts := declName.toString.splitOn "_" |>.drop 1
-        let allowed := #["Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio"]
+        let allowed := #[
+          "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
+          "IsBigO", "G2", "L1", "Lp",
+          "Gamma", -- TODO: want to remove this, probably!
+        ]
         let bad := parts.filter fun p ↦ p.front.isUpper && !(p.drop 1).front.isUpper && !allowed.contains p
         for badComponent in bad do
           Linter.logLint linter.style.nameCheck id
