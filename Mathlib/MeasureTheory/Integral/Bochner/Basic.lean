@@ -575,7 +575,28 @@ end Basic
 
 section Order
 
-variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
+variable [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
+
+@[gcongr]
+lemma integral_mono_measure [OrderClosedTopology E] {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
+    (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
+  by_cases hE : CompleteSpace E
+  swap; · simp [integral, hE]
+  borelize E
+  obtain ⟨g, hg, hg_nonneg, hfg⟩ := hfi.1.exists_stronglyMeasurable_range_subset
+    isClosed_Ici.measurableSet (Set.nonempty_Ici (a := 0)) hf
+  rw [integrable_congr hfg] at hfi
+  simp only [integral_congr_ae hfg, integral_congr_ae (ae_mono hle hfg)]
+  have _ := hg.separableSpace_range_union_singleton (b := 0)
+  have h₁ := tendsto_integral_approxOn_of_measurable_of_range_subset hg.measurable hfi _ le_rfl
+  have h₂ := tendsto_integral_approxOn_of_measurable_of_range_subset hg.measurable
+    (hfi.mono_measure hle) _ le_rfl
+  apply le_of_tendsto_of_tendsto' h₂ h₁
+  exact fun n ↦ SimpleFunc.integral_mono_measure
+    (Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n) hle
+    (SimpleFunc.integrable_approxOn_range _ hfi n)
+
+variable [ClosedIciTopology E]
 
 /-- The integral of a function which is nonnegative almost everywhere is nonnegative. -/
 lemma integral_nonneg_of_ae {f : α → E} (hf : 0 ≤ᵐ[μ] f) :
@@ -617,25 +638,6 @@ lemma integral_mono_of_nonneg {f g : α → E} (hf : 0 ≤ᵐ[μ] f) (hgi : Inte
   by_cases hfi : Integrable f μ
   · exact integral_mono_ae hfi hgi h
   · exact integral_undef hfi ▸ integral_nonneg_of_ae (hf.trans h)
-
-@[gcongr]
-lemma integral_mono_measure {f : α → E} {ν : Measure α} (hle : μ ≤ ν)
-    (hf : 0 ≤ᵐ[ν] f) (hfi : Integrable f ν) : ∫ (a : α), f a ∂μ ≤ ∫ (a : α), f a ∂ν := by
-  by_cases hE : CompleteSpace E
-  swap; · simp [integral, hE]
-  borelize E
-  obtain ⟨g, hg, hg_nonneg, hfg⟩ := hfi.1.exists_stronglyMeasurable_range_subset
-    isClosed_Ici.measurableSet (Set.nonempty_Ici (a := 0)) hf
-  rw [integrable_congr hfg] at hfi
-  simp only [integral_congr_ae hfg, integral_congr_ae (ae_mono hle hfg)]
-  have _ := hg.separableSpace_range_union_singleton (b := 0)
-  have h₁ := tendsto_integral_approxOn_of_measurable_of_range_subset hg.measurable hfi _ le_rfl
-  have h₂ := tendsto_integral_approxOn_of_measurable_of_range_subset hg.measurable
-    (hfi.mono_measure hle) _ le_rfl
-  apply le_of_tendsto_of_tendsto' h₂ h₁
-  exact fun n ↦ SimpleFunc.integral_mono_measure
-    (Eventually.of_forall <| SimpleFunc.approxOn_range_nonneg hg_nonneg n) hle
-    (SimpleFunc.integrable_approxOn_range _ hfi n)
 
 lemma integral_monotoneOn_of_integrand_ae {β : Type*} [Preorder β] {f : α → β → E}
     {s : Set β} (hf_mono : ∀ᵐ x ∂μ, MonotoneOn (f x) s)
