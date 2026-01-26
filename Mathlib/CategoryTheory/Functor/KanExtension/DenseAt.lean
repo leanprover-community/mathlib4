@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Canonical colimits, or functors that are dense at an object
@@ -48,6 +49,12 @@ i.e. `Y` identifies to the colimit of the obvious functor `CostructuredArrow F Y
 abbrev DenseAt (Y : D) : Type max u₁ u₂ v₂ :=
   (Functor.LeftExtension.mk (𝟭 D) F.rightUnitor.inv).IsPointwiseLeftKanExtensionAt Y
 
+/-- `F` is dense at `Y` if `Y` identifies to the colimit of the obvious functor
+`CostructuredArrow F Y ⥤ D`. -/
+def denseAtEquiv (Y : D) :
+    F.DenseAt Y ≃ IsColimit ((LeftExtension.mk (𝟭 D) F.rightUnitor.inv).coconeAt Y) :=
+  .refl _
+
 variable {F} {Y : D} (hY : F.DenseAt Y)
 
 /-- If `F : C ⥤ D` is dense at `Y : D`, then it is also at `Y'`
@@ -63,11 +70,24 @@ def DenseAt.ofNatIso {G : C ⥤ D} (e : F ≅ G) : G.DenseAt Y :=
       (by exact Cocones.ext (Iso.refl _)))
     (hY.whiskerEquivalence (CostructuredArrow.mapNatIso e.symm))
 
-/-- If `F : C ⥤ D` is dense at `Y : D`, then so is `G ⋙ F` if `G` is an equivalence. -/
-noncomputable def DenseAt.precompEquivalence
-    {C' : Type*} [Category* C'] (G : C' ⥤ C) [G.IsEquivalence] :
+/-- If the canonical functor `CostructuredArrow (G ≫ F) Y ⥤ CostructuredArrow F Y` is final, then
+`G ⋙ F` is dense at `Y` if and only if `F` is dense at `Y`. -/
+noncomputable def DenseAt.precompEquivOfFinal
+    {C' : Type*} [Category* C'] (G : C' ⥤ C) [(CostructuredArrow.pre G F Y).Final] :
+    (G ⋙ F).DenseAt Y ≃ F.DenseAt Y :=
+  Functor.Final.isColimitWhiskerEquiv (CostructuredArrow.pre G F Y)
+    ((LeftExtension.mk (𝟭 D) F.rightUnitor.inv).coconeAt Y)
+
+/-- If `F : C ⥤ D` is dense at `Y : D`, then so is `G ⋙ F` if
+the canonical functor `CostructuredArrow (G ≫ F) Y ⥤ CostructuredArrow F Y` is final.
+This holds in particular if `G` is an equivalence. -/
+noncomputable def DenseAt.precompOfFinal
+    {C' : Type*} [Category* C'] (G : C' ⥤ C) [(CostructuredArrow.pre G F Y).Final] :
     (G ⋙ F).DenseAt Y :=
-  hY.whiskerEquivalence (CostructuredArrow.pre G F Y).asEquivalence
+  (DenseAt.precompEquivOfFinal G).symm hY
+
+@[deprecated (since := "2025-12-17")]
+alias DenseAt.precompEquivalence := DenseAt.precompOfFinal
 
 /-- If `F : C ⥤ D` is dense at `Y : D` and `G : D ⥤ D'` is an equivalence,
 then `F ⋙ G` is dense at `G.obj Y`. -/
@@ -88,6 +108,10 @@ lemma isDenseAt_eq_isPointwiseLeftKanExtensionAt :
       (Functor.LeftExtension.mk (𝟭 D) F.rightUnitor.inv).isPointwiseLeftKanExtensionAt :=
   rfl
 
+lemma isDenseAt_iff {X : D} :
+    F.isDenseAt X ↔ Nonempty (IsColimit <| (LeftExtension.mk (𝟭 D) F.rightUnitor.inv).coconeAt X) :=
+  .rfl
+
 instance : F.isDenseAt.IsClosedUnderIsomorphisms := by
   rw [isDenseAt_eq_isPointwiseLeftKanExtensionAt]
   infer_instance
@@ -96,6 +120,16 @@ lemma congr_isDenseAt {G : C ⥤ D} (e : F ≅ G) :
     F.isDenseAt = G.isDenseAt := by
   ext X
   exact ⟨fun ⟨h⟩ ↦ ⟨h.ofNatIso e⟩, fun ⟨h⟩ ↦ ⟨h.ofNatIso e.symm⟩⟩
+
+lemma IsDenseAt.iff_of_final {C' : Type*} [Category* C'] (G : C' ⥤ C)
+    [(CostructuredArrow.pre G F Y).Final] :
+    (G ⋙ F).isDenseAt Y ↔ F.isDenseAt Y :=
+  (DenseAt.precompEquivOfFinal G).nonempty_congr
+
+lemma IsDenseAt.of_final {C' : Type*} [Category* C'] (G : C' ⥤ C)
+    [(CostructuredArrow.pre G F Y).Final] (hY : F.isDenseAt Y) :
+    (G ⋙ F).isDenseAt Y :=
+  (iff_of_final G).mpr hY
 
 end Functor
 

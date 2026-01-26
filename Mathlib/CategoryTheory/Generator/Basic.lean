@@ -33,7 +33,7 @@ There are, of course, also the dual notions of coseparating and codetecting sets
 We
 * define predicates `IsSeparating`, `IsCoseparating`, `IsDetecting` and `IsCodetecting` on
   `ObjectProperty C`;
-* show that equivalences of categories preserves these notions;
+* show that equivalences of categories preserve these notions;
 * show that separating and coseparating are dual notions;
 * show that detecting and codetecting are dual notions;
 * show that if `C` has equalizers, then detecting implies separating;
@@ -504,7 +504,7 @@ namespace StructuredArrow
 variable (S : D) (T : C ⥤ D)
 
 theorem isCoseparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsCoseparating) :
-    (P.inverseImage (proj S T)).IsCoseparating  := by
+    (P.inverseImage (proj S T)).IsCoseparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.right (hfg (mk (Y.hom ≫ T.map h)) hG (homMk h rfl))
 
@@ -515,7 +515,7 @@ namespace CostructuredArrow
 variable (S : C ⥤ D) (T : D)
 
 theorem isSeparating_inverseImage_proj {P : ObjectProperty C} (hP : P.IsSeparating) :
-    (P.inverseImage (proj S T)).IsSeparating  := by
+    (P.inverseImage (proj S T)).IsSeparating := by
   refine fun X Y f g hfg => ext _ _ (hP _ _ fun G hG h => ?_)
   exact congr_arg CommaMorphism.left (hfg (mk (S.map h ≫ X.hom)) hG (homMk h rfl))
 

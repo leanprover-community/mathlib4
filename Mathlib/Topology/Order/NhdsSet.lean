@@ -19,7 +19,7 @@ Then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are interval
 Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Filter OrderDual

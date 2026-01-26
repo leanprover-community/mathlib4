@@ -50,7 +50,7 @@ dependencies are not general enough to unify them. We should refactor
 arbitrary map.
 -/
 
-@[expose] public section
+public section
 
 
 variable {n : Type*} [Fintype n] [DecidableEq n]

@@ -18,7 +18,7 @@ several variants of this theorem, then uses it to show that the Lebesgue integra
 a constant.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.Algebra.ProperAction.Basic
+public import Mathlib.Topology.Compactness.CompactlyGeneratedSpace
 public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
@@ -26,7 +27,7 @@ weakly locally compact.
 group action, proper action, properly discontinuous, compactly generated
 -/
 
-@[expose] public section
+public section
 
 variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
 

@@ -17,7 +17,7 @@ intermediate values. The proof is based on the
 [Wikipedia](https://en.wikipedia.org/wiki/Darboux%27s_theorem_(analysis)) page about this theorem.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set
 

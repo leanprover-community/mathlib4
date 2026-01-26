@@ -87,6 +87,10 @@ nonrec def support (x : R⟦Γ⟧) : Set Γ :=
   support x.coeff
 
 @[simp]
+theorem support_mk (f : Γ → R) (h) : support ⟨f, h⟩ = Function.support f :=
+  rfl
+
+@[simp]
 theorem isPWO_support (x : R⟦Γ⟧) : x.support.IsPWO :=
   x.isPWO_support'
 
@@ -96,7 +100,7 @@ theorem isWF_support (x : R⟦Γ⟧) : x.support.IsWF :=
 
 @[simp]
 theorem mem_support (x : R⟦Γ⟧) (a : Γ) : a ∈ x.support ↔ x.coeff a ≠ 0 :=
-  Iff.refl _
+  .rfl
 
 instance : Zero R⟦Γ⟧ :=
   ⟨{  coeff := 0
@@ -143,6 +147,10 @@ def map [Zero S] (x : R⟦Γ⟧) {F : Type*} [FunLike F R S] [ZeroHomClass F R S
 @[simp]
 protected lemma map_zero [Zero S] (f : ZeroHom R S) : (0 : R⟦Γ⟧).map f = 0 := by
   ext; simp
+
+theorem support_map_subset [Zero S] (x : R⟦Γ⟧) (f : ZeroHom R S) :
+    (x.map f).support ⊆ x.support :=
+  Function.support_comp_subset (ZeroHomClass.map_zero f) _
 
 /-- Change a `HahnSeries` with coefficients in a `HahnSeries` to a `HahnSeries` on a Lex product. -/
 def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ where
@@ -376,9 +384,15 @@ theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
 
 @[deprecated (since := "2025-08-19")] alias order_eq_orderTop_of_ne := order_eq_orderTop_of_ne_zero
 
-theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 := by
+@[simp]
+theorem coeff_order_eq_zero {x : R⟦Γ⟧} : x.coeff x.order = 0 ↔ x = 0 := by
+  refine ⟨not_imp_not.1 fun hx ↦ ?_, by simp +contextual⟩
   rw [order_of_ne hx]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
+
+@[deprecated coeff_order_eq_zero (since := "2025-12-09")]
+theorem coeff_order_ne_zero {x : R⟦Γ⟧} (hx : x ≠ 0) : x.coeff x.order ≠ 0 :=
+  coeff_order_eq_zero.not.2 hx
 
 theorem order_le_of_coeff_ne_zero {Γ} [Zero Γ] [LinearOrder Γ] {x : R⟦Γ⟧}
     {g : Γ} (h : x.coeff g ≠ 0) : x.order ≤ g :=
@@ -442,7 +456,7 @@ def embDomain (f : Γ ↪o Γ') : R⟦Γ⟧ → R⟦Γ'⟧ := fun x =>
   { coeff := fun b : Γ' => if h : b ∈ f '' x.support then x.coeff (Classical.choose h) else 0
     isPWO_support' :=
       (x.isPWO_support.image_of_monotone f.monotone).mono fun b hb => by
-        contrapose! hb
+        contrapose hb
         rw [Function.mem_support, dif_neg hb, Classical.not_not] }
 
 @[simp]
@@ -471,7 +485,7 @@ theorem embDomain_notin_image_support {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'
 theorem support_embDomain_subset {f : Γ ↪o Γ'} {x : R⟦Γ⟧} :
     support (embDomain f x) ⊆ f '' x.support := by
   intro g hg
-  contrapose! hg
+  contrapose hg
   rw [mem_support, embDomain_notin_image_support hg, Classical.not_not]
 
 theorem embDomain_notin_range {f : Γ ↪o Γ'} {x : R⟦Γ⟧} {b : Γ'} (hb : b ∉ Set.range f) :
@@ -520,51 +534,85 @@ end Domain
 
 end Zero
 
-section LocallyFiniteLinearOrder
+section LinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
+@[deprecated "directly use n as a lower bound." (since := "2026-01-02")]
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
-  simp only [BddBelow, Set.Nonempty, lowerBounds]
-  use n
-  intro m hm
-  rw [Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  refine ⟨n, fun _ ↦ ?_⟩
+  contrapose
+  simp_all
 
+@[deprecated bddBelow_empty (since := "2026-01-02")]
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
-  simp only [Function.support_zero, bddBelow_empty]
+  simp
+
+theorem le_orderTop_iff_forall {x : R⟦Γ⟧} {i : WithTop Γ} :
+    i ≤ x.orderTop ↔ ∀ j : Γ, j < i → x.coeff j = 0 where
+  mp hi j hj := coeff_eq_zero_of_lt_orderTop (hj.trans_le hi)
+  mpr H := by
+    obtain rfl | h := eq_or_ne x 0
+    · simp
+    · by_contra! hi
+      exact x.isWF_support.min_mem (support_nonempty_iff.2 h) (H _ (orderTop_of_ne_zero h ▸ hi))
+
+theorem orderTop_lt_iff_exists {x : R⟦Γ⟧} {i : WithTop Γ} :
+    x.orderTop < i ↔ ∃ j : Γ, j < i ∧ x.coeff j ≠ 0 := by
+  rw [← not_le, le_orderTop_iff_forall]
+  simp
+
+theorem le_order_iff_forall [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
+    i ≤ x.order ↔ ∀ j < i, x.coeff j = 0 where
+  mp hi j hj := coeff_eq_zero_of_lt_order (hj.trans_le hi)
+  mpr H := by
+    contrapose! h
+    have := H _ h
+    rwa [coeff_order_eq_zero] at this
+
+theorem order_lt_iff_exists [Zero Γ] {x : R⟦Γ⟧} {i : Γ} (h : x ≠ 0) :
+    x.order < i ↔ ∃ j < i, x.coeff j ≠ 0 := by
+  rw [← not_le, le_order_iff_forall h]
+  simp
 
 variable [LocallyFiniteOrder Γ]
 
+@[deprecated BddBelow.isWF (since := "2026-01-02")]
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
   hf.isWF.isPWO
 
 /-- Construct a Hahn series from any function whose support is bounded below. -/
 @[simps]
-def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ where
-  coeff := f
-  isPWO_support' := suppBddBelow_supp_PWO f hf
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : R⟦Γ⟧ :=
+  ⟨f, hf.isWF.isPWO⟩
 
 @[simp]
-theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : R⟦Γ⟧) :=
+theorem ofSuppBddBelow_zero [Nonempty Γ] : ofSuppBddBelow 0 (by simp) = (0 : R⟦Γ⟧) :=
   rfl
 
+@[deprecated (since := "2026-01-02")]
+alias zero_ofSuppBddBelow := ofSuppBddBelow_zero
+
+@[simp]
+theorem ofSuppBddBelow_eq_zero {f : Γ → R} {hf} : ofSuppBddBelow f hf = 0 ↔ f = 0 :=
+  HahnSeries.ext_iff
+
+@[simp]
+theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff = f :=
+  rfl
+
+set_option linter.deprecated false in
+@[deprecated le_order_iff_forall (since := "2026-01-02")]
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
-  dsimp only [order]
-  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
-  cases h
-  · exact (hf rfl).elim
-  simp_all only [dite_false]
-  rw [Set.IsWF.le_min_iff]
-  intro m hm
-  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
-  exact not_lt.mp (mt (hn m) hm)
+  rw [le_order_iff_forall]
+  · exact hn
+  · simpa
 
-end LocallyFiniteLinearOrder
+end LinearOrder
 
 section Truncate
 variable [Zero R]
@@ -576,9 +624,18 @@ def truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) : ZeroHom R⟦Γ⟧ R⟦
       isPWO_support' := Set.IsPWO.mono x.isPWO_support (by simp) }
   map_zero' := by ext; simp
 
+theorem support_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) :
+    (truncLT c x).support = {y ∈ x.support | y < c} := by
+  simp [truncLT, Function.support, and_comm]
+
+theorem support_truncLT_subset [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) :
+    (truncLT c x).support ⊆ x.support := by
+  rw [support_truncLT]
+  exact Set.sep_subset ..
+
 @[simp]
 protected theorem coeff_truncLT [PartialOrder Γ] [DecidableLT Γ] (c : Γ) (x : R⟦Γ⟧) (i : Γ) :
-    (truncLT c x).coeff i = if i < c then x.coeff i else 0  := rfl
+    (truncLT c x).coeff i = if i < c then x.coeff i else 0 := rfl
 
 theorem coeff_truncLT_of_lt [PartialOrder Γ] [DecidableLT Γ] {c i : Γ} (h : i < c) (x : R⟦Γ⟧) :
     (truncLT c x).coeff i = x.coeff i := by
