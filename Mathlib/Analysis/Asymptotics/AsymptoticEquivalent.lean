@@ -210,6 +210,9 @@ theorem isEquivalent_of_tendsto_one (huv : Tendsto (u / v) l (𝓝 1)) :
   replace h : ∃ᶠ t in l, (u / v) t = 0 := h.mono fun x ⟨hv, hu⟩ ↦ by simp [hv]
   simpa using tendsto_nhds_unique_of_frequently_eq (b := 0) huv tendsto_const_nhds h
 
+@[deprecated (since := "2026-01-26")] alias isEquivalent_of_tendsto_one' :=
+  isEquivalent_of_tendsto_one
+
 theorem isEquivalent_iff_tendsto_one (hz : ∀ᶠ x in l, v x ≠ 0) :
     u ~[l] v ↔ Tendsto (u / v) l (𝓝 1) := by
   constructor
