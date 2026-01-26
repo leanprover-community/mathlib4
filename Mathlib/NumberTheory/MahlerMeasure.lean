@@ -165,6 +165,7 @@ theorem isIntegral_of_mahlerMeasure_eq_one : IsIntegral ℤ z := by
   have : (C (1 / p.leadingCoeff) * p).Monic := by aesop (add safe (by simp [Monic.def]))
   grind [IsIntegral, RingHom.IsIntegralElem, mem_roots', IsRoot.def, eval₂_mul, eval_map]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open Multiset in
 include h hz in
 /-- If an integer polynomial has Mahler measure equal to 1, then all its complex roots have norm at
@@ -190,7 +191,7 @@ to `ℚ`.
   let : NumberField K := {
     to_charZero := ℚ⟮z⟯.charZero,
     to_finiteDimensional := adjoin.finiteDimensional
-      (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top}
+      (isIntegral_of_mahlerMeasure_eq_one h hz).tower_top }
 -- `y` is `z` as an element of `K`
   let y : K := ⟨z, mem_adjoin_simple_self ℚ z⟩
   suffices ∃ (n : ℕ) (_ : 0 < n), y ^ n = 1 by
