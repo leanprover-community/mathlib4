@@ -34,7 +34,7 @@ open scoped RealInnerProductSpace
 
 namespace ProbabilityTheory
 
-variable {Ω E F ι : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω} {P : Measure Ω}
+variable {Ω E F ι : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 
 section Basic
 
@@ -207,15 +207,17 @@ variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   {X : (i : ι) → Ω → E i}
 
-omit [Fintype ι] in
 lemma eval (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i : ι) :
     HasGaussianLaw (X i) P := hX.map_of_measurable (.proj i) (measurable_pi_apply i)
 
 variable [∀ i, SecondCountableTopology (E i)]
 
-lemma prodMk (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
+lemma prodMk [Finite ι] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) (i j : ι) :
     HasGaussianLaw (fun ω ↦ (X i ω, X j ω)) P :=
+    letI := Fintype.ofFinite ι
     hX.map (.prod (.proj i) (.proj j))
+
+variable [Fintype ι]
 
 lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P :=
