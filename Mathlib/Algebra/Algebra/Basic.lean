@@ -440,19 +440,18 @@ instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsCance
 end FaithfulSMul
 
 namespace Module
-variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
 
 instance IsTorsionFree.to_faithfulSMul [IsCancelMulZero R] [Nontrivial A]
     [IsTorsionFree R A] : FaithfulSMul R A where
   eq_of_smul_eq_smul h := smul_left_injective _ one_ne_zero <| h 1
 
-variable [IsDomain R]
+variable [IsDomain A]
 
-lemma isTorsionFree_iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A :=
+lemma isTorsionFree_iff_faithfulSMul : IsTorsionFree R A ↔ FaithfulSMul R A :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-lemma isTorsionFree_iff_algebraMap_injective [IsDomain A] :
-    IsTorsionFree R A ↔ Injective (algebraMap R A) := by
+lemma isTorsionFree_iff_algebraMap_injective : IsTorsionFree R A ↔ Injective (algebraMap R A) := by
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
