@@ -734,13 +734,13 @@ lemma condIndepFun_of_measurable_left {mβ : MeasurableSpace β} {mβ' : Measura
   rw [condIndepFun_iff _ hm' _ _ (hX.mono hm' le_rfl) hY]
   rintro _ _ ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
   rw [show (fun ω : Ω ↦ (1 : ℝ)) = 1 from rfl, Set.inter_indicator_one]
-  calc μ[(X ⁻¹' s).indicator 1 * (Y ⁻¹' t).indicator 1|m']
-  _ =ᵐ[μ] (X ⁻¹' s).indicator 1 * μ[(Y ⁻¹' t).indicator 1|m'] := by
+  calc μ[(X ⁻¹' s).indicator 1 * (Y ⁻¹' t).indicator 1 | m']
+  _ =ᵐ[μ] (X ⁻¹' s).indicator 1 * μ[(Y ⁻¹' t).indicator 1 | m'] := by
     refine condExp_stronglyMeasurable_mul_of_bound hm' (stronglyMeasurable_const.indicator (hX hs))
       ((integrable_indicator_iff (hY ht)).2 integrableOn_const) 1 (ae_of_all μ fun ω ↦ ?_)
     rw [Set.indicator]
     split_ifs with h <;> simp
-  _ =ᵐ[μ] μ[(X ⁻¹' s).indicator 1|m'] * μ[(Y ⁻¹' t).indicator 1|m'] := by
+  _ =ᵐ[μ] μ[(X ⁻¹' s).indicator 1 | m'] * μ[(Y ⁻¹' t).indicator 1 | m'] := by
     nth_rw 2 [condExp_of_stronglyMeasurable hm']
     · exact stronglyMeasurable_const.indicator (hX hs)
     · exact (integrable_indicator_iff ((hX.le hm') hs)).2 integrableOn_const

@@ -1275,7 +1275,7 @@ variable [LinearOrder ι] {μ : Measure Ω} {ℱ : Filtration ι m} {τ σ : Ω 
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
     (hτ : IsStoppingTime ℱ τ) (h_countable : (Set.range τ).Countable)
     [SigmaFinite (μ.trim (hτ.measurableSpace_le))] (i : ι) :
-    μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] := by
+    μ[f | hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f | ℱ i] := by
   refine condExp_ae_eq_restrict_of_measurableSpace_eq_on
     (hτ.measurableSpace_le) (ℱ.le i)
     (hτ.measurableSet_eq_of_countable_range' h_countable i) fun t => ?_
@@ -1284,12 +1284,13 @@ theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteF
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable [Countable ι]
     [SigmaFiniteFiltration μ ℱ] (hτ : IsStoppingTime ℱ τ)
     [SigmaFinite (μ.trim hτ.measurableSpace_le)] (i : ι) :
-    μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] :=
+    μ[f | hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f | ℱ i] :=
   condExp_stopping_time_ae_eq_restrict_eq_of_countable_range hτ (Set.to_countable _) i
 
 theorem condExp_min_stopping_time_ae_eq_restrict_le_const (hτ : IsStoppingTime ℱ τ) (i : ι)
     [SigmaFinite (μ.trim (hτ.min_const i).measurableSpace_le)] :
-    μ[f|(hτ.min_const i).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ i}] μ[f|hτ.measurableSpace] := by
+    μ[f | (hτ.min_const i).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ i}]
+      μ[f | hτ.measurableSpace] := by
   have : SigmaFinite (μ.trim hτ.measurableSpace_le) :=
     haveI h_le : (hτ.min_const i).measurableSpace ≤ hτ.measurableSpace := by
       rw [IsStoppingTime.measurableSpace_min_const]
@@ -1304,7 +1305,7 @@ variable [TopologicalSpace ι] [OrderTopology ι]
 theorem condExp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
     [SigmaFiniteFiltration μ ℱ] (hτ : IsStoppingTime ℱ τ)
     [SigmaFinite (μ.trim hτ.measurableSpace_le)] (i : ι) :
-    μ[f|hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f|ℱ i] := by
+    μ[f | hτ.measurableSpace] =ᵐ[μ.restrict {x | τ x = i}] μ[f | ℱ i] := by
   refine condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le (ℱ.le i)
     (hτ.measurableSet_eq' i) fun t => ?_
   rw [Set.inter_comm _ t, IsStoppingTime.measurableSet_inter_eq_iff]
@@ -1312,7 +1313,8 @@ theorem condExp_stopping_time_ae_eq_restrict_eq [FirstCountableTopology ι]
 theorem condExp_min_stopping_time_ae_eq_restrict_le [SecondCountableTopology ι]
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ)
     [SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
-    μ[f|(hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}] μ[f|hτ.measurableSpace] := by
+    μ[f | (hτ.min hσ).measurableSpace] =ᵐ[μ.restrict {x | τ x ≤ σ x}]
+      μ[f | hτ.measurableSpace] := by
   have : SigmaFinite (μ.trim hτ.measurableSpace_le) :=
     sigmaFiniteTrim_mono _ (hτ.measurableSpace_min hσ ▸ inf_le_left)
   refine (condExp_ae_eq_restrict_of_measurableSpace_eq_on hτ.measurableSpace_le

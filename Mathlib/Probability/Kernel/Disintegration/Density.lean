@@ -279,7 +279,7 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
 
 lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    (ν a)[fun x ↦ densityProcess κ ν j a x s|countableFiltration γ i]
+    (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
   refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs

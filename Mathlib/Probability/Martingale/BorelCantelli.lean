@@ -250,14 +250,14 @@ theorem stronglyAdapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) :
 
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
-      ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
+      ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1 | ℱ k]) := by
   simp only [martingalePart_eq_sum, process_zero, zero_add]
   refine Finset.sum_congr rfl fun k _ => ?_
   simp only [process, Finset.sum_range_succ_sub_sum]
 
 theorem predictablePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω)
     (n : ℕ) : predictablePart (process s) ℱ μ n =
-    ∑ k ∈ Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k] := by
+    ∑ k ∈ Finset.range n, μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k] := by
   have := martingalePart_process_ae_eq ℱ μ s n
   simp_rw [martingalePart, process, Finset.sum_sub_distrib] at this
   exact sub_right_injective this
@@ -290,7 +290,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     (martingalePart_bdd_difference ℱ hbdd)
   have h₂ := (martingale_martingalePart hf hint).ae_not_tendsto_atTop_atBot
     (martingalePart_bdd_difference ℱ hbdd)
-  have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n|ℱ n]) ω := by
+  have h₃ : ∀ᵐ ω ∂μ, ∀ n, 0 ≤ (μ[f (n + 1) - f n | ℱ n]) ω := by
     refine ae_all_iff.2 fun n => condExp_nonneg ?_
     filter_upwards [ae_all_iff.1 hfmono n] with ω hω using sub_nonneg.2 hω
   filter_upwards [h₁, h₂, h₃, hfmono] with ω hω₁ hω₂ hω₃ hω₄
@@ -316,7 +316,7 @@ theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set �
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (s (k + 1)).indicator (1 : Ω → ℝ) ω) atTop atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k]) ω) atTop atTop := by
   have := tendsto_sum_indicator_atTop_iff (Eventually.of_forall fun ω n => ?_)
     (stronglyAdapted_process hs) (integrable_process μ hs)
     (Eventually.of_forall <| process_difference_le s)
@@ -333,7 +333,7 @@ everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
 theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ) | ℱ k]) ω) atTop atTop := by
   rw [← limsup_nat_add s 1,
     Set.limsup_eq_tendsto_sum_indicator_atTop (zero_lt_one (α := ℝ)) (fun n ↦ s (n + 1))]
   exact tendsto_sum_indicator_atTop_iff' hs
