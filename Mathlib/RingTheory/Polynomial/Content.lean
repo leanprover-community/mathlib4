@@ -486,7 +486,7 @@ lemma exists_lcm {R} [CommRing R] [IsGCDMonoid R] (p q : R[X]) :
     (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
   tauto
 
-noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+noncomputable instance normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
   normalizedGCDMonoidOfExistsLCM exists_lcm
 
@@ -500,13 +500,13 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
 
 end NormalizedGCDMonoid
 
-noncomputable instance (priority := 100) [StrongNormalizedGCDMonoid R] :
+noncomputable instance [StrongNormalizedGCDMonoid R] :
     StrongNormalizedGCDMonoid R[X] where
   __ := inferInstanceAs (NormalizedGCDMonoid R[X])
   __ := inferInstanceAs (StrongNormalizationMonoid R[X])
 
 -- We do not add a `GCDMonoid R[X]` instance because of diamonds
-instance (priority := 100) [IsGCDMonoid R] : IsGCDMonoid R[X] := by
+instance [IsGCDMonoid R] : IsGCDMonoid R[X] := by
   have := IsGCDMonoid.isCancelMulZero R
   classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
 
