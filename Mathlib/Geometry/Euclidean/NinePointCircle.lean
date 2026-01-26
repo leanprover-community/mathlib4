@@ -14,7 +14,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 # Nine-point circle
 
 This file defines the nine-point circle of a triangle, and its higher dimension analogue, the
-3(n+1)-point sphere of a simplex. Specifically for triangle, we show that it passes through nine
+3(n+1)-point sphere of a simplex. Specifically for triangles, we show that it passes through nine
 specific points as desired.
 
 ## Main definitions
