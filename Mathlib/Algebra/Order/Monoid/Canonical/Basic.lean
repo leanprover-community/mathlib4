@@ -83,7 +83,7 @@ variable [AddCommMagma α] [CanonicallyOrderedAdd α]
 
 theorem lt_add_iff_lt_right_or_exists_lt [AddLeftReflectLT α] [IsLeftCancelAdd α] {a b c : α} :
     a < b + c ↔ a < c ∨ ∃ d < b, a = d + c := by
-  rw [add_comm, lt_add_iff_lt_or_exists_lt_left]
+  rw [add_comm, lt_add_iff_lt_left_or_exists_lt]
   simp_rw [add_comm]
 
 theorem forall_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] {b c : α} :
@@ -98,7 +98,7 @@ theorem exists_lt_add_iff_lt_right [AddLeftReflectLT α] [IsLeftCancelAdd α] {b
 
 theorem le_add_iff_lt_right_or_exists_le [AddLeftMono α] [IsLeftCancelAdd α] {a b c : α} :
     a ≤ b + c ↔ a < c ∨ ∃ d ≤ b, a = d + c := by
-  rw [add_comm, le_add_iff_lt_or_exists_le_left]
+  rw [add_comm, le_add_iff_lt_left_or_exists_le]
   simp_rw [add_comm]
 
 theorem forall_le_add_iff_le_right [AddLeftMono α] [IsLeftCancelAdd α] {b c : α} :
