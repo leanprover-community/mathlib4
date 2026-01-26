@@ -151,7 +151,7 @@ theorem condExp_ae_le [LE E] (hf : Supermartingale f ℱ μ) {i j : ι} (hij : i
   hf.2.1 i j hij
 
 theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
-    [OrderClosedTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Supermartingale f ℱ μ)
+    [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Supermartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f j ω ∂μ ≤ ∫ ω in s, f i ω ∂μ := by
   rw [← setIntegral_condExp (ℱ.le i) (hf.integrable j) hs]
@@ -215,7 +215,7 @@ theorem neg [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ) :
 
 /-- The converse of this lemma is `MeasureTheory.submartingale_of_setIntegral_le`. -/
 theorem setIntegral_le [PartialOrder E] [IsOrderedAddMonoid E] [IsOrderedModule ℝ E]
-    [OrderClosedTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    [ClosedIciTopology E] [SigmaFiniteFiltration μ ℱ] {f : ι → Ω → E} (hf : Submartingale f ℱ μ)
     {i j : ι} (hij : i ≤ j) {s : Set Ω} (hs : MeasurableSet[ℱ i] s) :
     ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ := by
   rw [← neg_le_neg_iff, ← integral_neg, ← integral_neg]
@@ -535,7 +535,7 @@ end Submartingale
 
 section SumSMul
 
-variable [PartialOrder E] [IsOrderedModule ℝ E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
+variable [PartialOrder E] [IsOrderedModule ℝ E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
 
 theorem Submartingale.sum_smul_sub [IsFiniteMeasure μ] {R : ℝ} {f : ℕ → Ω → E} {ξ : ℕ → Ω → ℝ}
     (hf : Submartingale f 𝒢 μ) (hξ : StronglyAdapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
