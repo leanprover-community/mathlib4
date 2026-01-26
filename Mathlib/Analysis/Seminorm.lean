@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Analysis.LocallyConvex.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Data.Real.Pointwise
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Seminorms
@@ -1046,6 +1047,17 @@ section Continuity
 
 variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
+
+theorem continuous_finset_sup [TopologicalSpace E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
+    Continuous (s.sup p : Seminorm 𝕝 E) := by
+  classical
+  induction s using Finset.induction with
+  | empty => rw [Finset.sup_empty, coe_bot]; fun_prop
+  | insert j t _ H =>
+    rw [Finset.sup_insert, coe_sup]
+    exact (hcont _ <| Finset.mem_insert_self j _).sup
+      (H fun i hi ↦ hcont i (Finset.mem_insert_of_mem hi))
 
 /-- A seminorm is continuous at `0` if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
