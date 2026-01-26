@@ -583,6 +583,7 @@ public import Mathlib.Algebra.Homology.Embedding.TruncGEHomology
 public import Mathlib.Algebra.Homology.Embedding.TruncLE
 public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.Algebra.Homology.ExactSequenceFour
 public import Mathlib.Algebra.Homology.Factorizations.Basic
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.Functor
@@ -703,6 +704,7 @@ public import Mathlib.Algebra.Lie.Weights.IsSimple
 public import Mathlib.Algebra.Lie.Weights.Killing
 public import Mathlib.Algebra.Lie.Weights.Linear
 public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.Algebra.LieRinehartAlgebra.Defs
 public import Mathlib.Algebra.LinearRecurrence
 public import Mathlib.Algebra.ModEq
 public import Mathlib.Algebra.Module.Basic
@@ -1390,6 +1392,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
 public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
+public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureCofibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
@@ -1668,6 +1671,7 @@ public import Mathlib.Analysis.Calculus.TangentCone.Pi
 public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
 public import Mathlib.Analysis.Calculus.TangentCone.Real
+public import Mathlib.Analysis.Calculus.TangentCone.Seq
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Analysis.Calculus.VectorField
@@ -2397,6 +2401,7 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.Four
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Three
 public import Mathlib.CategoryTheory.ComposableArrows.Two
@@ -3540,6 +3545,7 @@ public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.CastCard
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Finset.DenselyOrdered
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Finset.Disjoint
 public import Mathlib.Data.Finset.Empty
@@ -5607,6 +5613,7 @@ public import Mathlib.Order.Interval.Set.IsoIoo
 public import Mathlib.Order.Interval.Set.Limit
 public import Mathlib.Order.Interval.Set.LinearOrder
 public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.Interval.Set.Nat
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.Interval.Set.OrdConnectedComponent
 public import Mathlib.Order.Interval.Set.OrdConnectedLinear
@@ -5850,6 +5857,7 @@ public import Mathlib.RepresentationTheory.Homological.Resolution
 public import Mathlib.RepresentationTheory.Induced
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
+public import Mathlib.RepresentationTheory.Irreducible
 public import Mathlib.RepresentationTheory.Maschke
 public import Mathlib.RepresentationTheory.Rep
 public import Mathlib.RepresentationTheory.Submodule
@@ -6323,6 +6331,7 @@ public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Bijective
+public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.Etale
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 public import Mathlib.RingTheory.RingHom.Finite
@@ -6443,6 +6452,7 @@ public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 public import Mathlib.RingTheory.Valuation.Extension
+public import Mathlib.RingTheory.Valuation.FiniteField
 public import Mathlib.RingTheory.Valuation.Integers
 public import Mathlib.RingTheory.Valuation.Integral
 public import Mathlib.RingTheory.Valuation.IntegrallyClosed
@@ -7384,6 +7394,7 @@ public import Mathlib.Topology.QuasiSeparated
 public import Mathlib.Topology.Semicontinuity.Basic
 public import Mathlib.Topology.Semicontinuity.Defs
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
+public import Mathlib.Topology.Semicontinuity.Lindelof
 public import Mathlib.Topology.Semicontinuous
 public import Mathlib.Topology.SeparatedMap
 public import Mathlib.Topology.Separation.AlexandrovDiscrete

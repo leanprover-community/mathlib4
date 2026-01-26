@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -540,6 +541,40 @@ theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
   rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
 
+open Finset
+
+theorem cos_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖cos x - (1 - x ^ 2 / 2)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
+  calc
+    ‖cos x - (1 - x ^ 2 / 2)‖ =
+        ‖(exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 +
+         (exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2‖ := by
+      simp [cos, field, Finset.sum_range_succ, Nat.factorial]
+      grind [I_sq, two_ne_zero]
+    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 +
+        ‖exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 := by
+      grw [norm_add_le]
+      simp
+    _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+        ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
+
+theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
+  calc
+    ‖sin x - (x - x ^ 3 / 6)‖ =
+        ‖(exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2 -
+         (exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I / 2‖ := by
+      simp [sin, field, Finset.sum_range_succ, Nat.factorial]
+      grind [I_sq, two_ne_zero]
+    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 +
+        ‖exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 := by
+      grw [norm_sub_le]
+      simp
+    _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+        ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
+
 end Complex
 
 namespace Real
@@ -831,63 +866,13 @@ end Real
 
 namespace Real
 
-open Complex Finset
+open Complex
 
-theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) :=
-  calc
-    |cos x - (1 - x ^ 2 / 2)| = ‖Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)‖ := by
-      rw [← Real.norm_eq_abs, ← norm_real]; simp
-    _ = ‖(Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2‖ := by
-      simp [Complex.cos, sub_div, add_div]
-    _ = ‖((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
-              (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2‖ :=
-      (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2) (by
-          simp only [neg_mul, pow_succ, pow_zero, sum_range_succ, range_zero, sum_empty,
-          Nat.factorial, Nat.cast_succ, zero_add, mul_one, Nat.mul_one, mul_neg, neg_neg]
-          apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf)))
-    _ ≤ ‖(Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2‖ +
-          ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2‖ := by
-      rw [add_div]; exact norm_add_le _ _
-    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
-          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp
-    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          ‖-x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
-      gcongr
-      · exact Complex.exp_bound (by simpa) (by decide)
-      · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) := by
+  simpa [← ofReal_cos, ← norm_eq_abs, ← norm_real] using Complex.cos_bound (x := x) (by simpa)
 
-theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
-  calc
-    |sin x - (x - x ^ 3 / 6)| = ‖Complex.sin x - (x - x ^ 3 / 6 : ℝ)‖ := by
-      rw [← Real.norm_eq_abs, ← norm_real]; simp
-    _ = ‖((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
-          (2 * x - x ^ 3 / 3 : ℝ)) / 2‖ := by
-      simp [Complex.sin, sub_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
-        div_div, show (3 : ℂ) * 2 = 6 by norm_num]
-    _ = ‖((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
-                (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2‖ :=
-      (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2)
-          (by
-            simp only [neg_mul, pow_succ, pow_zero, ofReal_sub, ofReal_mul, ofReal_ofNat,
-              ofReal_div, sum_range_succ, range_zero, sum_empty, Nat.factorial, Nat.cast_succ,
-              zero_add, mul_neg, mul_one, neg_neg, Nat.mul_one]
-            apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
-    _ ≤ ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2‖ +
-          ‖-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2‖ := by
-      rw [sub_mul, sub_eq_add_neg, add_div]; exact norm_add_le _ _
-    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
-          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp [add_comm]
-    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
-      gcongr
-      · exact Complex.exp_bound (by simpa) (by decide)
-      · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) := by
+  simpa [← ofReal_sin, ← norm_eq_abs, ← norm_real] using Complex.sin_bound (x := x) (by simpa)
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
   calc 0 < 1 - x ^ 2 / 2 - |x| ^ 4 * (5 / 96) :=
