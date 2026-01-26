@@ -536,7 +536,7 @@ lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x 
 
 end reflGen
 
-section SymmGen 
+section SymmGen
 
 theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
   funext₂ fun _ _ ↦ propext or_comm
