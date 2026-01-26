@@ -33,7 +33,7 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
   toFun r :=
     ObjectProperty.homMk
       { app M := @AddCommGrpCat.ofHom M.carrier M.carrier _ _
-          (DistribMulAction.toAddMonoidHom M r) }
+          (DistribSMul.toAddMonoidHom M r) }
   invFun φ := φ.hom.app (ModuleCat.of R R) (1 : R)
   left_inv _ := by simp
   right_inv φ := by
