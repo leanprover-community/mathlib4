@@ -13,10 +13,18 @@ public import Mathlib.Probability.Notation
 
 We define the conditional expectation of a `ℝ≥0∞`-valued function using the Lebesgue integral.
 Given a measure `P : Measure[mΩ₀] Ω` and a sub-σ-algebra `mΩ` of `mΩ₀` (meaning `hm : mΩ ≤ mΩ₀`)
-and a function `X : Ω → ℝ≥0∞`, if `P.trim hm` is σ-finite, then the conditional (lebesgue)
-expectation of `X` is the `mΩ`-measurable function such that for all `mΩ`-measurable sets `s`,
-`∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P` (see `setLIntegral_condLExp`). This is unique up to
-`P`-ae equality (see `eq_condLExp`).
+and a function `X : Ω → ℝ≥0∞`, if `P.trim hm` is σ-finite, then the conditional (Lebesgue)
+expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for all
+`mΩ`-measurable sets `s`, `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`
+(see `setLIntegral_condLExp`). This is unique up to `P`-ae equality (see `eq_condLExp`).
+
+## Main definitions
+
+* `condLExp` : conditional (Lebesgue) expectation of `X` with respect to `mΩ`.
+* `setLIntegral_condLExp`: For any `mΩ`-measurable set `s`,
+  `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`.
+* `eq_condLExp` : the conditional (Lebesgue) expectation is characterized by its (Lebesgue)
+  integral on `mΩ` sets up to `P`-ae equality.
 
 ## Design decisions
 
@@ -29,19 +37,15 @@ is just used to show existence. However for (potential) convenience the actual d
 `P⁻[X|mΩ] := X` in the case when `X` is `mΩ`-measurable (which can be invoked using
 `condLExp_eq_self`).
 
-## Main statements
-
-* `condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) : Ω → ℝ≥0∞`: conditional
-  (lebesgue) expectation of `X` with respect to `mΩ`.
-* `setLIntegral_condLExp (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) (hs : MeasurableSet[mΩ] s)`:
-  For any `mΩ`-measurable set `s`, `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`.
-* `eq_condLExp (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) (hs : MeasurableSet[mΩ] s)` : the conditional
-  (lebesgue) expectation is characterized by its lintegral on `mΩ` sets up to `P`-ae equality.
-
 ## Notation
 
 For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, we define the notation
 * `P⁻[X|mΩ] = condLExp mΩ P X`
+
+## To do
+
+* Prove the pullout property
+* Prove a dominated convergence theorem.
 
 -/
 
@@ -56,7 +60,7 @@ namespace MeasureTheory
 variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞}
 
 open Classical in
-/-- Conditional (lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
+/-- Conditional (Lebesgue) expectation of a function, with notation `P⁻[X|mΩ]`.
 
 It is defined as `0` if either `¬ mΩ ≤ mΩ₀` or `hm : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)`.
 
@@ -92,7 +96,7 @@ theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
     rw [condLExp, dif_neg hm_not]
 
 theorem condLExp_of_not_sigmaFinite (hm : mΩ ≤ mΩ₀) (hμm_not : ¬SigmaFinite (P.trim hm)) :
-    P⁻[X|mΩ] = 0 := by rwa [condLExp, dif_pos hm, dif_neg]
+    P⁻[X|mΩ] = 0 := by simp [condLExp, dif_pos hm, hμm_not]
 
 theorem condLExp_eq_self (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hX : Measurable[mΩ] X) : P⁻[X|mΩ] = X := by
@@ -114,10 +118,17 @@ theorem measurable_condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) 
     simp [condLExp_of_not_sigmaFinite hm hσ, measurable_zero]
   simp [condLExp_of_not_le hm, measurable_zero]
 
+@[fun_prop]
+theorem measurable_condLExp₀ (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
+    Measurable[mΩ₀] P⁻[X|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀
+  · exact (measurable_condLExp _ _ _).mono  hm (le_refl _)
+  · simp [condLExp_of_not_le hm, measurable_zero]
+
 variable (hm : mΩ ≤ mΩ₀)
 
-/-- The lintegral of the conditional (lebesgue) expectation `P⁻[X|mΩ]` over an `mΩ-measurable set
-is equal to the integral of `X` on that set. -/
+/-- The (Lebesgue) integral of the conditional (Lebesgue) expectation `P⁻[X|mΩ]` over an
+`mΩ`-measurable set is equal to the integral of `X` on that set. -/
 theorem setLIntegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) {s : Set Ω} (hs : MeasurableSet[mΩ] s) :
     ∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P := by
@@ -138,7 +149,7 @@ theorem lintegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim h
     ∫⁻ ω, P⁻[X|mΩ] ω ∂P = ∫⁻ ω, X ω ∂P := by
   simpa [← setLIntegral_univ] using setLIntegral_condLExp _ _ _ .univ
 
-theorem eq_condLExp_ae₀ (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
+theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ] Y (P.trim hm))
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
     Y =ᵐ[P] P⁻[X|mΩ] := by
@@ -148,12 +159,12 @@ theorem eq_condLExp_ae₀ (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm
   rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
   exact hXY s hs
 
-/- The conditional (lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
-function up to `P`-ae equality by its lintegral over all `mΩ`-measurable sets. -/
-theorem eq_condLExp_ae (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
+/- The conditional (Lebesgue) expectation `P⁻[X|mΩ]` is defined uniquely as an `mΩ`-measurable
+function up to `P`-ae equality by its (Lebesgue) integral over all `mΩ`-measurable sets. -/
+theorem ae_eq_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : Measurable[mΩ] Y)
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
-    Y =ᵐ[P] P⁻[X|mΩ] := eq_condLExp_ae₀ _ _ _ hY.aemeasurable hXY
+    Y =ᵐ[P] P⁻[X|mΩ] := ae_eq_condLExp₀ _ _ hY.aemeasurable hXY
 
 theorem condLExp_const (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] (c : ℝ≥0∞) :
     P⁻[fun _ : Ω ↦ c|mΩ] = fun _ ↦ c := condLExp_eq_self _ _ (measurable_const)
@@ -163,10 +174,10 @@ theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
     {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) : P⁻[X|mΩ] =ᵐ[P] P⁻[Y|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
   · by_cases hσ : SigmaFinite (P.trim hm)
-    · refine eq_condLExp_ae _ _ _ (measurable_condLExp _ _ _) (fun s hs ↦ ?_)
-     rw [setLIntegral_condLExp _ _ _ hs]
+    · refine ae_eq_condLExp _ _ _ (measurable_condLExp _ _ _) (fun s hs ↦ ?_)
+      rw [setLIntegral_condLExp _ _ _ hs]
       apply setLIntegral_congr_fun_ae (hm s hs)
-      filter_upwards [hXY] using (fun _ h _ ↦ h)
+      filter_upwards [hXY] with _ h _ using h
     simp [condLExp_of_not_sigmaFinite hm hσ]
   simp [condLExp_of_not_le hm]
 
@@ -183,7 +194,7 @@ theorem condLExp_bot' (P : Measure[mΩ₀] Ω) [NeZero P] (X : Ω → ℝ≥0∞
     rw [not_isFiniteMeasure_iff] at hP
     rw [condLExp_of_not_sigmaFinite bot_le hσ]
     simpa [hP] using (by rfl)
-  obtain ⟨c, h_eq⟩ := MeasurableSpace.measurable_bot_eq_const (measurable_condLExp ⊥ P X)
+  obtain ⟨c, h_eq⟩ := MeasurableSpace.eq_const_of_measurable_bot (measurable_condLExp ⊥ P X)
   ext _
   rw [← lintegral_condLExp bot_le]
   simp [h_eq, mul_comm, mul_assoc, ENNReal.mul_inv_cancel
@@ -227,22 +238,32 @@ theorem condLExp_add_le (X Y : Ω → ℝ≥0∞) :
   grw [le_lintegral_add]
   simp
 
-theorem condLExp_add_left (X Y : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X P) :
+theorem condLExp_add_left {X : Ω → ℝ≥0∞} (Y : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X P) :
     P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
   swap; · simp_rw [condLExp_of_not_le hm]; simp
   by_cases hσ : SigmaFinite (P.trim hm)
   swap; · simp_rw [condLExp_of_not_sigmaFinite hm hσ]; simp
-  refine (eq_condLExp_ae _ _ _ (by fun_prop) ?_).symm
+  refine (ae_eq_condLExp _ _ _ (by fun_prop) ?_).symm
   intro s hs
   simp only [Pi.add_apply]
   rw [lintegral_add_left (by measurability)]
   repeat rw [setLIntegral_condLExp hm _ _ hs]
   rw [lintegral_add_left' (by fun_prop)]
 
-theorem condLExp_add_right (X Y : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ₀] Y P) :
+theorem condLExp_add_right (X : Ω → ℝ≥0∞) {Y : Ω → ℝ≥0∞} (hY : AEMeasurable[mΩ₀] Y P) :
     P⁻[X + Y|mΩ] =ᵐ[P] P⁻[X|mΩ] + P⁻[Y|mΩ] := by
   rw [add_comm, add_comm P⁻[X|mΩ]]
-  exact condLExp_add_left Y X hY
+  exact condLExp_add_left X hY
+
+theorem condLExp_smul {R : Type*} {mR : MeasurableSpace R} [SMul R ℝ≥0∞]
+    [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [MeasurableSMul R ℝ≥0∞] (X : Ω → ℝ≥0∞) (c : R) :
+    P⁻[c • X|mΩ] =ᵐ[P] c • P⁻[X|mΩ] := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · sorry
+  by_cases hσ : SigmaFinite (P.trim hm)
+  swap; · sorry
+  refine (ae_eq_condLExp _ _ _ (by fun_prop) ?_).symm
+  intro s hs
 
 end MeasureTheory
