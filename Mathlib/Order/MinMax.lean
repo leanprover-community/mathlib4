@@ -36,6 +36,12 @@ theorem le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
 theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
   le_sup_iff
 
+instance [LinearOrder α] : Std.LawfulOrderSup α where
+  max_le_iff _ _ _ := max_le_iff
+
+instance [LinearOrder α] : Std.LawfulOrderInf α where
+  le_min_iff _ _ _ := le_min_iff
+
 theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
   inf_le_iff
 
