@@ -296,8 +296,8 @@ protected theorem IndexedPartition.measurable_piecewise {ι : Type*} {s : ι →
     (hms : ∀ i, MeasurableSet (s i)) {f : ι → α → β} (hs : IndexedPartition s)
     (hmf : ∀ i, Measurable (f i)) : Measurable (hs.piecewise f) := by
   refine fun t ht => ?_
-  rw [IndexedPartition.piecewise_preimage]
-  exact MeasurableSet.iUnion (fun i => (hms i).inter (measurableSet_preimage (hmf i) ht))
+  rw [piecewise_preimage]
+  exact .iUnion (fun i => (hms i).inter ((hmf i) ht))
 
 /-- This is slightly different from `Measurable.piecewise`. It can be used to show
 `Measurable (ite (x=0) 0 1)` by
