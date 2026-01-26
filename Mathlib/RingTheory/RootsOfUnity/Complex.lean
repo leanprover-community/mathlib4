@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Snir Broshi
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Complex.Log
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Complex roots of unity

@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Qinchuan Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Qinchuan Zhang
--/
-module
-
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Vieta's Formula for polynomial of small degrees.

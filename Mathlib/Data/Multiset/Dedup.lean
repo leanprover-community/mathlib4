@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Data.List.Dedup
-public import Mathlib.Data.Multiset.UnionInter
+import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Erasing duplicates in a multiset.

@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Equiv.Opposite
-public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Algebra.GroupWithZero.InjSurj
-public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Algebra.Ring.Hom.Defs
-public import Mathlib.Logic.Equiv.Set
-public import Mathlib.Util.Delaborators
+import Mathlib.Data.Set.Operations
 
 /-!
 # (Semi)ring equivs

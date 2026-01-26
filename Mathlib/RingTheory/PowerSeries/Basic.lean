@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Tactic.MoveAdd
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Field.IsField
 
 /-!
 # Formal power series (in one variable)

@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2024 Yakov Pechersky. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
--/
-module
-
-public import Mathlib.Analysis.Normed.Field.Lemmas
-public import Mathlib.Analysis.Normed.Field.ProperSpace
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
-public import Mathlib.RingTheory.Valuation.Archimedean
-public import Mathlib.Topology.Algebra.Valued.NormedValued
-public import Mathlib.Topology.Algebra.Valued.ValuedField
 
 /-!
 # Necessary and sufficient conditions for a locally compact valued field

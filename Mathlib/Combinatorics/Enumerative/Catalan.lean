@@ -1,17 +1,5 @@
-/-
-Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Julian Kuelshammer
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Data.Nat.Choose.Central
-
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Tactic.Field
+import Mathlib.Data.Tree.Basic
 
 /-!
 # Catalan numbers

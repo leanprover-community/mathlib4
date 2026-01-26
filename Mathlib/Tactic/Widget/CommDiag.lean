@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Wojciech Nawrocki. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wojciech Nawrocki
--/
-module
-
-public meta import Aesop
-public import Mathlib.CategoryTheory.Category.Basic
-public meta import Mathlib.Tactic.ToDual
-public import ProofWidgets.Component.PenroseDiagram
-public import ProofWidgets.Presentation.Expr
 
 /-! This module defines tactic/meta infrastructure for displaying commutative diagrams in the
 infoview. -/

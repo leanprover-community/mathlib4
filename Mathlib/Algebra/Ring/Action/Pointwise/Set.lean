@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 # Pointwise operations of sets in a ring

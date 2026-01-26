@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.PeakFunction
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+import Mathlib.Analysis.Fourier.FourierTransform
 
 /-!
 # Fourier inversion formula

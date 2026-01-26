@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.Nonneg.Ring
-public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-public import Mathlib.LinearAlgebra.Ray
 
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Order.Nonneg.Lattice
 
 /-!
 # Segments in vector spaces

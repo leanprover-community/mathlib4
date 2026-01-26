@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2019 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Expect
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Convex.Jensen
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.Data.Real.ConjExponents
 
 /-!
 # Mean value inequalities

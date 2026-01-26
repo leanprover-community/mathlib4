@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.CategoryTheory.Category.GaloisConnection
-public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.Topology.Category.TopCat.EpiMono
-public import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # The category of open sets in a topological space.

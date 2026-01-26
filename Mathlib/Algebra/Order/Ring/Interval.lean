@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Int.Interval
-import Mathlib.Algebra.Order.Ring.Cast
 
 /-! # Intervals of integers in strict ordered rings
 

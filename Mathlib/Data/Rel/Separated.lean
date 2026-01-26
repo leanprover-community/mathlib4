@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Set.Pairwise.Basic
-public import Mathlib.Data.Rel
+import Mathlib.Logic.Pairwise
 
 /-!
 # Uniform separation

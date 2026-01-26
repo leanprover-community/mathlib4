@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.List.Palindrome
-public import Mathlib.Data.Nat.Digits.Lemmas
+import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Nat.Digits.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Divisibility tests for natural numbers in terms of digits.

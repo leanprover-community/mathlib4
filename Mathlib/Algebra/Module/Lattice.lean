@@ -1,13 +1,9 @@
-/-
-Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Christian Merten
--/
-module
-
-public import Mathlib.LinearAlgebra.Dimension.Localization
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Lattices

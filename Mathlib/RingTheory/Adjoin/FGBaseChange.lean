@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Dion Leijnse. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dion Leijnse
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-public import Mathlib.RingTheory.TensorProduct.Maps
-public import Mathlib.RingTheory.Adjoin.FG
 
 /-!
 # Finitely generated subalgebras of a base change obtained from an element

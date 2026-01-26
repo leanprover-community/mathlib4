@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Algebra.Order.ToIntervalMod
-public import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!

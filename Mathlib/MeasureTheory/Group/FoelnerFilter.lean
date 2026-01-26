@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Stefano Rocca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Stefano Rocca
--/
-module
-
-public import Mathlib.MeasureTheory.Group.Defs
-public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Følner sequences and filters - definitions and properties

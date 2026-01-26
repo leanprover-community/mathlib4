@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Results relating rank and torsion.

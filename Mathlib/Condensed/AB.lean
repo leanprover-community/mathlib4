@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.AB
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
-public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
-public import Mathlib.Condensed.Equivalence
-public import Mathlib.Condensed.Limits
+import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+import Mathlib.Topology.Category.Stonean.Limits
 /-!
 
 # AB axioms in condensed modules

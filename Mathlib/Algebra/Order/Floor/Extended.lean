@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Data.Real.ENatENNReal
-
-import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Extended floor and ceil

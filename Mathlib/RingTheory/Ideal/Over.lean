@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Yongle Hu
--/
-module
-
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Group.Subgroup.Actions
-public import Mathlib.RingTheory.Ideal.Pointwise
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Ideals over/under ideals

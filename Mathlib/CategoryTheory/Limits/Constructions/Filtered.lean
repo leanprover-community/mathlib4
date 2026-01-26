@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
-public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Constructing colimits from finite colimits and filtered colimits

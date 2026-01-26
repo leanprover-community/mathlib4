@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Group.Hom.Instances
-public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.Algebra.Module.RingHom
-public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.Algebra.Ring.Basic
 
 /-!
 # (Semi)linear maps

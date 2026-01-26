@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2024 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Sums over residue classes

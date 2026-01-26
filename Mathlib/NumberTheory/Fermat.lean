@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2024 Moritz Firsching. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching
--/
-module
-
-public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-public import Mathlib.NumberTheory.LucasPrimality
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Fermat numbers

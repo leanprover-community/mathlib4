@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández
--/
-module
-
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
-public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
-public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.RingTheory.Polynomial.Vieta
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
 /-!
 # The spectral norm and the norm extension theorem

@@ -1,20 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-public import Mathlib.Algebra.MonoidAlgebra.Support
-public import Mathlib.Algebra.Regular.Pow
-public import Mathlib.Data.Finsupp.Antidiagonal
-public import Mathlib.Data.Finsupp.Order
-public import Mathlib.Order.SymmDiff
 
 /-!
 # Multivariate polynomials

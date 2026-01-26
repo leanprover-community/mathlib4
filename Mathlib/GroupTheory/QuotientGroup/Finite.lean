@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2018 Kevin Buzzard, Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Patrick Massot
--/
--- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Finite
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.Coset.Basic
 
 /-!
 # Deducing finiteness of a group.

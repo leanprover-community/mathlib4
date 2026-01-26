@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.MeasureTheory.Integral.Layercake
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Japanese Bracket

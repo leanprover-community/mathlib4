@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
-Floris van Doorn, Edward Ayers, Arthur Paulino, Thomas R. Murrills
--/
-module
-
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  --shake: keep
-public import Lean.Meta.AppBuilder
-public import Lean.Meta.Match.MatcherInfo
-public import Lean.Meta.Transform
-public import Lean.Structure
 
 /-!
 # Additional operations on Expr and related types

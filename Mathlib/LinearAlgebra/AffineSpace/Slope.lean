@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Module
 
 /-!
 # Slope of a function

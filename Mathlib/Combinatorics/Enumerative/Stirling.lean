@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Beibei Xiong. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
--/
-module
-
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Stirling Numbers

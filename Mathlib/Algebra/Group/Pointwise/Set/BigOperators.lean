@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
-public import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Results about pointwise operations on sets and big operators.

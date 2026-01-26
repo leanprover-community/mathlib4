@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Analysis.Convex.Join
+import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Stone's separation theorem

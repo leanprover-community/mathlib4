@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Data.Set.Image
-public import Mathlib.Data.List.Defs
+import Mathlib.Tactic.Lift
+import Mathlib.Data.Set.Operations
 
 /-!
 # Lemmas about `List`s and `Set.range`

@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Condensed.Module
+import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
 

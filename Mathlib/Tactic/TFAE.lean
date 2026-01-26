@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2018 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
--/
-module
-
-public meta import Qq
-public meta import Mathlib.Util.AtomM
-public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.ExtendDoc
-public import Mathlib.Util.AtomM
 
 /-!
 # The Following Are Equivalent (TFAE)

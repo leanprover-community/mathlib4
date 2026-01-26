@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2025 Matthew Jasper. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Matthew Jasper, Kevin Buzzard
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.RingTheory.DedekindDomain.Dvr
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.Flat.Tensor
-public import Mathlib.RingTheory.Ideal.IsPrincipal
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Relationships between flatness and torsionfreeness.

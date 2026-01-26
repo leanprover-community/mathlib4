@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Damien Thomine. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damien Thomine, Pietro Monticone
--/
-module
-
-public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.Constructions.SumProd
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Dynamical entourages

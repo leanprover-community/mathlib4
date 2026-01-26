@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Basic
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Big operators on a list in rings

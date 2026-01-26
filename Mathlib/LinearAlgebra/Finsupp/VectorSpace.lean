@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.MonoidAlgebra.Defs
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.LinearAlgebra.Projection
+import Mathlib.GroupTheory.FreeAbelianGroup
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`

@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Robin Carlier. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robin Carlier, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Fubini
-public import Mathlib.CategoryTheory.Functor.Currying
-public import Mathlib.CategoryTheory.Limits.HasLimits
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservations of limits for bifunctors

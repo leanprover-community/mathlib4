@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.MeasureTheory.Function.Jacobian
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Change of variable formulas for integrals in dimension 1

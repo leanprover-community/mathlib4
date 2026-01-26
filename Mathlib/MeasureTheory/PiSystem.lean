@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Martin Zinkevich. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
--/
-module
-
-public import Mathlib.Logic.Encodable.Lattice
-public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.

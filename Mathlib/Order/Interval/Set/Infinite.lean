@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2020 Reid Barton. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton
--/
-module
-
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Max
+import Mathlib.Data.Finite.Defs
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Infinitude of intervals

@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Topology.Algebra.ConstMulAction
 
 /-!
 # Multiplicative action on the completion of a uniform space

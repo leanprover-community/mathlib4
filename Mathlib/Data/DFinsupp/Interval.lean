@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.DFinsupp.BigOperators
-public import Mathlib.Data.DFinsupp.Order
-public import Mathlib.Order.Interval.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Finite intervals of finitely supported functions

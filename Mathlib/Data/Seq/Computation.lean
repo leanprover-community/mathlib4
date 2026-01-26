@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Nat.Find
-public import Mathlib.Data.Stream.Init
-public import Mathlib.Tactic.Common
-public import Batteries.Tactic.Lint.Simp
+import Mathlib.Data.Stream.Defs
 
 /-!
 # Coinductive formalization of unbounded computations.

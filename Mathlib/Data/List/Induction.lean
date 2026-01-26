@@ -6,6 +6,7 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 module
 
 public import Mathlib.Data.List.Basic
+import Batteries.Logic
 
 /-! ### Induction principles for lists -/
 

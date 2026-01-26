@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning, Patrick Lutz
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Directed
-public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
-public import Mathlib.FieldTheory.Separable
-public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.RingTheory.Adjoin.Dimension
-public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Adjoining Elements to Fields

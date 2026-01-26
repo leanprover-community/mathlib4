@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.MvPolynomial.Eval
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Analysis.Analytic.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # Polynomials are analytic

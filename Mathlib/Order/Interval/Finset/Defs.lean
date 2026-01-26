@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Finset.Preimage
-public import Mathlib.Data.Finset.Prod
-public import Mathlib.Order.Hom.WithTopBot
-public import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Data.Finset.Option
 
 /-!
 # Locally finite orders

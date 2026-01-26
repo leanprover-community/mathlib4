@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
-Yuyang Zhao
--/
-module
-
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-public import Mathlib.Data.Ordering.Basic
-public import Mathlib.Order.MinMax
-public import Mathlib.Tactic.Contrapose
-public import Mathlib.Tactic.Use
-public import Mathlib.Tactic.GRewrite
+import Mathlib.Order.Lattice
 
 /-!
 # Ordered monoids

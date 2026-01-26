@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Data.Set.NAry
-public import Mathlib.Data.ULift
-public import Mathlib.Order.CompleteLattice.Defs
-public import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Theory of complete lattices

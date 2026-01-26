@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Order.Interval.Finset.SuccPred
+import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Finset intervals in an additive successor-predecessor order

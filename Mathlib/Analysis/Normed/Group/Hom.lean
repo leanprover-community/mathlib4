@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.Int
-public import Mathlib.Analysis.Normed.Group.Subgroup
-public import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Topology.MetricSpace.Algebra
+import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Normed groups homomorphisms

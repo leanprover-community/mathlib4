@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2023 Gareth Ma. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gareth Ma
--/
-module
-
-public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Data.Int.ModEq
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Lucas's theorem

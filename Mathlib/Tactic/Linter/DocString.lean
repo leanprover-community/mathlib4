@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang, Damiano Testa
--/
-module
-
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
 
 /-!
 # The "DocString" style linter

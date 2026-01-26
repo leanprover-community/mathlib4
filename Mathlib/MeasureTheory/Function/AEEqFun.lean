@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2019 Johannes Hölzl, Zhouhang Zhou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Zhouhang Zhou
--/
-module
-
-public import Mathlib.Dynamics.Ergodic.MeasurePreserving
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
-public import Mathlib.Order.Filter.Germ.Basic
-public import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 

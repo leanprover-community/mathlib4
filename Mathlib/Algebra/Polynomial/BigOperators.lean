@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jalex Stark
 module
 
 public import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Degree.Operations
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.

@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
-public import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+import Mathlib.Topology.Category.LightProfinite.Limits
 
 /-!
 # `HasSheafify` instances

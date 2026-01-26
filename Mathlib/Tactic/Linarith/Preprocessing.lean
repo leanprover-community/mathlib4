@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
--/
-module
-
-public meta import Mathlib.Control.Basic
-public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Tactic.Linarith.Datatypes
-public meta import Mathlib.Util.AtomM
-public import Mathlib.Tactic.CancelDenoms.Core
-public import Mathlib.Tactic.Linarith.Datatypes
-public import Mathlib.Tactic.Zify
 
 /-!
 # Linarith preprocessing

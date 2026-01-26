@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-! # Possible cycle types of permutations
 

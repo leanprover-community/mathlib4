@@ -1,19 +1,4 @@
-/-
-Copyright (c) 2024 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Expect
-public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Algebra.Order.Module.Rat
-public import Mathlib.Tactic.GCongr
-
-import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Order properties of the average over a finset

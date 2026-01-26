@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2015 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Tactic.Bound.Attribute
-public import Mathlib.Topology.EMetricSpace.Basic
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.Metrizable.Basic
+import Mathlib.Topology.UniformSpace.LocallyUniformConvergence
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 ## Pseudo-metric spaces

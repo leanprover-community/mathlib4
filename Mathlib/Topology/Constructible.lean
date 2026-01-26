@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2024 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Order.BooleanSubalgebra
-public import Mathlib.Topology.Compactness.Bases
-public import Mathlib.Topology.LocalAtTarget
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Spectral.Hom
-public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Constructible sets

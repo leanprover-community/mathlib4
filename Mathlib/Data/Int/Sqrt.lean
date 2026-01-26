@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Data.Nat.Sqrt
-public import Mathlib.Tactic.Common
+import Batteries.Data.Nat.Basic
 
 /-!
 # Square root of integers

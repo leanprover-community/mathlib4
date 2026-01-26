@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Algebra.Order.Hom.Monoid
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-! # Positive linear maps
 

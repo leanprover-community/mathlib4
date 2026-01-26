@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.RingHom.FinitePresentation
-public import Mathlib.RingTheory.Smooth.Locus
+import Mathlib.RingTheory.LocalProperties.Basic
+import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 # Smooth ring homomorphisms

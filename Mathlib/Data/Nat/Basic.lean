@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Nat.Init
-public import Mathlib.Logic.Basic
-public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Tactic.GCongr.Core
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers

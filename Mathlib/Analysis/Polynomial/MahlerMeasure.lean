@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fabrizio Barroero
--/
-module
-
-public import Mathlib.Analysis.Analytic.Polynomial
-public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+import Mathlib.MeasureTheory.Integral.CircleAverage
+import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 
 /-!
 # Mahler measure of complex polynomials

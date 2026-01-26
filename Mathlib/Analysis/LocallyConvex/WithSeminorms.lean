@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll, Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.Seminorm
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Topology.Algebra.Equicontinuity
-public import Mathlib.Topology.MetricSpace.Equicontinuity
-public import Mathlib.Topology.Algebra.FilterBasis
-public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Topology induced by a family of seminorms

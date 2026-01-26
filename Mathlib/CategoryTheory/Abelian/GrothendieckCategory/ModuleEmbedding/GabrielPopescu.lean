@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2025 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.Injective
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
-public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # The Gabriel-Popescu theorem

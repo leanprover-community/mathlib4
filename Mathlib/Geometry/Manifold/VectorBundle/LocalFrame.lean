@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Michael Rothgang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Michael Rothgang
--/
-module
-
-public import Mathlib.Geometry.Manifold.Algebra.Monoid
-public import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Local frames in a vector bundle

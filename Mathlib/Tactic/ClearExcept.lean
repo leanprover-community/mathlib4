@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2022 Joshua Clune. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joshua Clune
--/
-module
-
-public import Mathlib.Init
-public meta import Lean.Elab.Tactic.ElabTerm
 
 /-!
 # The `clear*` tactic

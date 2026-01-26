@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.UniformSpace.UniformConvergence
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Locally uniform convergence

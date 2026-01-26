@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.Final.Connected
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Sifted
 
 /-!
 # Final functors with filtered (co)domain

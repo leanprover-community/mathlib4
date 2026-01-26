@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2019 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.RingTheory.Polynomial.Basic
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
-public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 # Unique factorization for univariate and multivariate polynomials

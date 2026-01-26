@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Miyahara Kō
--/
-module
-
-public meta import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Logic.Basic
-public import Mathlib.Tactic.CC.Datatypes
-public import Mathlib.Tactic.Relation.Rfl
-public import Mathlib.Tactic.Relation.Symm
+import Mathlib.Lean.Meta.Basic
 
 /-!
 # Make proofs from a congruence closure

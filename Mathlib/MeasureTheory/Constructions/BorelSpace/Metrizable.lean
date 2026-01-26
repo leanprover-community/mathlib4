@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2020 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.Topology.Metrizable.Real
-public import Mathlib.Topology.IndicatorConstPointwise
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces

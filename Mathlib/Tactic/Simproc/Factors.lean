@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Eric Wieser
--/
-module
-
-import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
-public meta import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Data.Nat.Factors
-public import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `simproc` for `Nat.primeFactorsList`

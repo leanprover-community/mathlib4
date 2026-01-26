@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Jeremy Tan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Tan
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Turán's theorem

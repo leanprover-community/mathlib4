@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Connected
+import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-! Localization
 

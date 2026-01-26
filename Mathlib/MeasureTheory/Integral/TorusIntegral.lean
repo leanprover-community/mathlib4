@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2022 Cuma Kökmen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Cuma Kökmen, Yury Kudryashov
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.CircleIntegral
-public import Mathlib.MeasureTheory.Integral.Prod
-public import Mathlib.Order.Fin.Tuple
-public import Mathlib.Util.Superscript
+import Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 # Integral over a torus in `ℂⁿ`

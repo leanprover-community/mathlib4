@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Bhavik Mehta
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Combinatorics.SimpleGraph.Density
-public import Mathlib.Data.Nat.Cast.Order.Field
-public import Mathlib.Order.Partition.Equipartition
-public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions

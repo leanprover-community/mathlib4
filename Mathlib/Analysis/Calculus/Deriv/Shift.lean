@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll, Yaël Dillies
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Add
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.CompMul
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 ### Invariance of the derivative under translation

@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 P. Michael Kielstra. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: P. Michael Kielstra
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Tactic.Field
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # The trapezoidal rule

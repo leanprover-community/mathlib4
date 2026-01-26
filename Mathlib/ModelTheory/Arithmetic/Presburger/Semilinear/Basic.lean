@@ -1,23 +1,5 @@
-/-
-Copyright (c) 2025 Dexin Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dexin Zhang
--/
-module
-
-public import Mathlib.Data.Matrix.ColumnRowPartitioned
-public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
-
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Algebra.Order.Group.Ideal
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Sub.Prod
-import Mathlib.Algebra.Order.Sub.Unbundled.Hom
-import Mathlib.Data.Pi.Interval
-import Mathlib.Data.Rat.Floor
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Localization.Module
+import Mathlib.LinearAlgebra.StdBasis
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Semilinear sets are closed under intersection, set difference and complement

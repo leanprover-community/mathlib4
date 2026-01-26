@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.DualNumber
-public import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
+import Mathlib.Topology.Instances.TrivSqZeroExt
+import Mathlib.Analysis.Normed.Algebra.Exponential
 
 /-!
 # Results on `DualNumber R` related to the norm

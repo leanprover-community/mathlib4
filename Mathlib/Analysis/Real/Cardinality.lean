@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2019 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.Rat.Cardinal
-public import Mathlib.SetTheory.Cardinal.Continuum
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # The cardinality of the reals

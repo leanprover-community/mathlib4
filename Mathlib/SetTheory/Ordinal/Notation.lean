@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Ordering.Lemmas
-public import Mathlib.Data.PNat.Basic
-public import Mathlib.SetTheory.Ordinal.Principal
-public import Mathlib.Tactic.NormNum
+import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
 # Ordinal notation

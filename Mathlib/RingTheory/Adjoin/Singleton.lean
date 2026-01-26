@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Xavier Généreux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Généreux, María Inés de Frutos Fernández
--/
-module
-
-public import Mathlib.RingTheory.Adjoin.Polynomial
-public import Mathlib.RingTheory.Polynomial.Tower
 /-!
 # Adjoin one single element
 

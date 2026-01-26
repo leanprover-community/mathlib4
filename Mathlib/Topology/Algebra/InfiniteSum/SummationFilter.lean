@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.Data.Finset.Preimage
-public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.LiminfLimsup
 
 
 /-!

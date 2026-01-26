@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Tanner Duve. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tanner Duve, Elan Roth
--/
-module
-
-public import Mathlib.Computability.Partrec
-public import Mathlib.Order.Antisymmetrization
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Oracle computability and Turing degrees

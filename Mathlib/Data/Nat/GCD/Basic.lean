@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2014 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura
--/
-module
-
-public import Mathlib.Algebra.Group.Nat.Units
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`

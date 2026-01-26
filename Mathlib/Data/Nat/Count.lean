@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
--/
-module
-
-public import Mathlib.Algebra.Group.Nat.Range
-public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Counting on ℕ

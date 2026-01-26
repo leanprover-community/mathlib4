@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
-public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
-public import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
-public import Mathlib.CategoryTheory.Presentable.Finite
-public import Mathlib.CategoryTheory.Presentable.Presheaf
+import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # Finite simplicial sets are presentable

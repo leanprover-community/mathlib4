@@ -1,12 +1,9 @@
-/-
-Copyright (c) 2022 Jon Eugster. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jon Eugster
--/
-module
-
-public import Mathlib.Algebra.CharP.LocalRing
-public import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.RingTheory.Ideal.Maximal
+import Mathlib.RingTheory.LocalRing.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Equal and mixed characteristic

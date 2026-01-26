@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adrian Wüthrich
--/
-module
-
-public import Mathlib.Analysis.Matrix.Order
-public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Laplacian Matrix

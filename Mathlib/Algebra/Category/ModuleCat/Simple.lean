@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Pierre-Alexandre Bazin, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.Algebra
-public import Mathlib.Algebra.Category.ModuleCat.Subobject
-public import Mathlib.CategoryTheory.Simple
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.SimpleModule.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Simple objects in the category of `R`-modules

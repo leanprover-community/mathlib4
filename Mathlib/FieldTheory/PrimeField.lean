@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Xavier Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot, Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Field.Subfield.Basic
 
 /-!
 # Prime fields

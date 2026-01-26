@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Bhavik Mehta, Daniel Carranza, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Monoidal.Functor
-public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Adjunction.Mates
-public import Mathlib.CategoryTheory.Adjunction.Parametrized
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Closed monoidal categories

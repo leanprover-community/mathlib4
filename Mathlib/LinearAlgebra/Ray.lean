@@ -1,18 +1,6 @@
-/-
-Copyright (c) 2021 Joseph Myers. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.Algebra.Order.Algebra
-public import Mathlib.Algebra.Ring.Subring.Units
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Module
-public import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Algebra.Group.Subgroup.Actions
 
 /-!
 # Rays in modules

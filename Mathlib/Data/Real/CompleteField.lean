@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Alex J. Best. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex J. Best
--/
-module
-
-public import Mathlib.Algebra.Order.CompleteField
-public import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.Archimedean
 
 /-!
 # The reals are a conditionally complete linearly ordered field

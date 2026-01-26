@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-public import Mathlib.Algebra.Order.Nonneg.Basic
-public import Mathlib.Algebra.Order.Nonneg.Lattice
-public import Mathlib.Algebra.Order.Ring.InjSurj
-public import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements

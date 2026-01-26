@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2023 Adam Topaz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Topology.Category.CompHaus.Limits
-public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.Topology.Category.CompHaus.Basic
+import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Effective epimorphisms in `CompHaus`

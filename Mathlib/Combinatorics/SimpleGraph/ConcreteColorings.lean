@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2023 Iván Renison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Iván Renison
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Bipartite
-public import Mathlib.Combinatorics.SimpleGraph.Circulant
-public import Mathlib.Combinatorics.SimpleGraph.Coloring
-public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Combinatorics.SimpleGraph.Hasse
-public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs

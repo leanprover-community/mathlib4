@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Init
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Rel
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Sym.Sym2
-public import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Simple graphs

@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2025 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.RingTheory.FiniteLength
-public import Mathlib.RingTheory.Noetherian.Nilpotent
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-public import Mathlib.RingTheory.KrullDimension.Zero
+import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 
 /-!
 ## The Hopkins–Levitzki theorem

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2023 Amelia Livingston. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Amelia Livingston
--/
-module
-
-public import Mathlib.RepresentationTheory.Homological.GroupCohomology.FiniteCyclic
-public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 # Hilbert's Theorem 90

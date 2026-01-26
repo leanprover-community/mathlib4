@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Stuart Presnell. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stuart Presnell
--/
-module
-
-public import Batteries.Data.List.Count
-public import Mathlib.Data.Finsupp.Multiset
-public import Mathlib.Data.Finsupp.Order
-public import Mathlib.Data.Nat.PrimeFin
-public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+import Mathlib.Data.PNat.Notation
 
 /-!
 # Prime factorizations

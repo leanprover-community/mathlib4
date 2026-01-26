@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Measurable
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 /-! # Measurability of the line derivative
 

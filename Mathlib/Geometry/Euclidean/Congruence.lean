@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jovan Gerbscheid, Chu Zheng
--/
-module
-
-public import Mathlib.Topology.MetricSpace.Congruence
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Triangle congruence

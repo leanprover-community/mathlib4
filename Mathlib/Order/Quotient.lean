@@ -6,6 +6,8 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Lattice
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 ### Order instances on quotients

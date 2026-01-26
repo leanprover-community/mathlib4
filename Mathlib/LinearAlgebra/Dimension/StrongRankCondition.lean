@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.Basis.Submodule
-public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.

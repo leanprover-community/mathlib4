@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Vincent Beffara. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vincent Beffara
--/
-module
-
-public import Mathlib.Analysis.Complex.RemovableSingularity
-public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
+import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 /-!
 # Locally uniform limits of holomorphic functions

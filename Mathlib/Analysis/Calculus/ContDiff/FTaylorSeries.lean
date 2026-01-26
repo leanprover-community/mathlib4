@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.FormalMultilinearSeries
-public import Mathlib.Data.ENat.Lattice
+import Mathlib.Analysis.Calculus.FDeriv.Defs
+import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 /-!
 # Iterated derivatives of a function

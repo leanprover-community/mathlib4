@@ -6,6 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.EquivFin
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Set.Operations
 
 /-!
 # Lemmas about `Finite` and `Set`s

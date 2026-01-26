@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, Richard Copley
--/
-module
-
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.GroupTheory.Complement
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Data.Rat.Defs
+import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 

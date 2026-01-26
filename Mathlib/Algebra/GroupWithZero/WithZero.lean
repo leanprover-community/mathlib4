@@ -1,17 +1,5 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Algebra.Group.WithOne.Defs
-public import Mathlib.Algebra.GroupWithZero.Equiv
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Data.Option.NAry
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Adjoining a zero to a group

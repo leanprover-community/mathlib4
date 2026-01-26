@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
--/
-module
-
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
-public import Mathlib.Topology.Algebra.ClopenNhdofOne
+import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 # A profinite group is the projective limit of finite groups

@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-public import Mathlib.Topology.Bornology.Real
-public import Mathlib.Topology.Instances.Int
-public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Topology.Order.Real
-public import Mathlib.Topology.UniformSpace.Real
+import Mathlib.Topology.Algebra.Field
 
 /-!
 # Topological algebra properties of ℝ

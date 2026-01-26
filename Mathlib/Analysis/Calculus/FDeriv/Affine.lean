@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.Calculus.FDeriv.Defs
+import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 
 /-!

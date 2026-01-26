@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2023 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Divisibility.Basic
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Algebra.GCDMonoid.Basic
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Lemmas about divisibility in rings

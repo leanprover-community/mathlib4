@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2019 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Data.List.Lex
-public import Mathlib.Data.List.Induction
-public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.Prod.Basic
-public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Data.List.Monad
 
 /-! # sublists
 

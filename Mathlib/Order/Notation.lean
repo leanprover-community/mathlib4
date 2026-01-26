@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Qq
-public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.TypeStar
-public import Mathlib.Tactic.Simps.NotationClass
-public import Mathlib.Tactic.ToDual
 
 /-!
 # Notation classes for lattice operations

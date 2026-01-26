@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.CategoryTheory.Sites.Precoverage
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage

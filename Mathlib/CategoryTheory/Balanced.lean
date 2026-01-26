@@ -6,6 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.EpiMono
+import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Balanced categories

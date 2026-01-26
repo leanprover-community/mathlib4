@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2019 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Order.WellFounded
-public import Mathlib.Tactic.Common
+import Mathlib.Order.Lattice
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Lexicographic order on Pi types

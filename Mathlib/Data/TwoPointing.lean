@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Logic.Nontrivial.Defs
-public import Mathlib.Logic.Nonempty
-public import Mathlib.Tactic.Simps.Basic
-public import Batteries.Logic
 
 /-!
 # Two-pointings

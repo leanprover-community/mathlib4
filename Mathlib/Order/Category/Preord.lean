@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Elementwise
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Order.CompleteBooleanAlgebra
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Category of preorders

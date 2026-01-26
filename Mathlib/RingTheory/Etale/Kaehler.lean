@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.RingTheory.Kaehler.JacobiZariski
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Smooth.Kaehler
-public import Mathlib.RingTheory.Flat.Localization
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # The differential module and étale algebras

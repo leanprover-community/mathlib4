@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Anatole Dedeker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
--/
-module
-
-public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.MulAction
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action

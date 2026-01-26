@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Snir Broshi. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Snir Broshi
--/
-module
-
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # `Finset.lcm` lemmas

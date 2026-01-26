@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
--/
-module
-
-public import Mathlib.Algebra.Order.Monoid.Basic
-public import Mathlib.SetTheory.Cardinal.ToNat
-public import Mathlib.SetTheory.Cardinal.ENat
-public import Mathlib.SetTheory.Ordinal.Enum
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Omega, aleph, and beth functions

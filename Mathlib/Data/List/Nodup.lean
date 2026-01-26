@@ -6,6 +6,9 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.List.Forall2
+import Mathlib.Logic.Relator
+import Mathlib.Data.List.Defs
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Lists with no duplicates

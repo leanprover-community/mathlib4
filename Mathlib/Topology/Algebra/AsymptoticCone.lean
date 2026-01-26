@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2025 Attila Gáspár. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Attila Gáspár
--/
-module
-
-public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Analysis.Convex.Topology
-public import Mathlib.Topology.Algebra.Group.AddTorsor
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Asymptotic cone of a set

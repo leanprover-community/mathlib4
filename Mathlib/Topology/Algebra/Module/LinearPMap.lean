@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
-
-public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.Topology.Algebra.Module.Basic
-public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Partially defined linear operators over topological vector spaces

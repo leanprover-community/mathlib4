@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Polynomial.Content
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-! # The Eisenstein criterion
 

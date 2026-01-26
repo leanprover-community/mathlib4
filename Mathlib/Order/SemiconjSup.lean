@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Order.Group.End
-public import Mathlib.Logic.Function.Conjugate
-public import Mathlib.Order.Bounds.OrderIso
-public import Mathlib.Order.OrdContinuous
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Semiconjugate by `sSup`

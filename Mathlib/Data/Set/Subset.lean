@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Miguel Marco. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Miguel Marco
--/
-module
-
-public import Mathlib.Data.Set.Function
-public import Mathlib.Data.Set.Functor
+import Mathlib.Order.SetNotation
 
 /-!
 # Sets in subtypes

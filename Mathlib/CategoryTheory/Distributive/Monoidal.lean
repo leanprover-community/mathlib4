@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2024 Sina Hazratpour. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sina Hazratpour
--/
-module
-
-public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.End
-public import Mathlib.CategoryTheory.Monoidal.Preadditive
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Distributive monoidal categories

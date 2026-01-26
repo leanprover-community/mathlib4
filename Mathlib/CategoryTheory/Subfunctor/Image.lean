@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Subfunctor.Basic
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # The image of a subfunctor

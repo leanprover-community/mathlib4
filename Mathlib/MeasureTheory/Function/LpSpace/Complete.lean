@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2020 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # `Lp` is a complete space

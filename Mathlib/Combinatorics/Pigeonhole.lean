@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2020 Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Data.Nat.ModEq
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Pigeonhole principles

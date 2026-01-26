@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2014 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura
--/
-module
-
-public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
-public import Mathlib.Data.Prod.Basic
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Data.Set.SymmDiff
-public import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets

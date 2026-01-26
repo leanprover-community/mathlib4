@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2023 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Sub.Basic
-public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Flooring, ceiling division

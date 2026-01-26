@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 /-!
 # Results about `minpoly R x / (X - C x)`

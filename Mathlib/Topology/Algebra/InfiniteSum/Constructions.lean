@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Order.Filter.AtTopBot.Finset
-public import Mathlib.Topology.Algebra.InfiniteSum.Group
-public import Mathlib.Topology.Algebra.Star
+import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Topological sums and functorial constructions

@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Christian Merten
--/
-module
-
-public import Mathlib.Algebra.FiveLemma
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.AdicCompletion.Exactness
-public import Mathlib.RingTheory.Flat.Tensor
+import Mathlib.RingTheory.AdicCompletion.Functoriality
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 

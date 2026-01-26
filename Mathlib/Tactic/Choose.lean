@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan Commelin
--/
-module
-
-public import Batteries.Lean.Expr
-public meta import Batteries.Lean.Expr
-public import Mathlib.Logic.Function.Basic
-public meta import Mathlib.Tactic.Basic
 
 /-!
 # `choose` tactic

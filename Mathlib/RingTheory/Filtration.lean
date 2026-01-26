@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.RingTheory.Finiteness.Nakayama
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.ReesAlgebra
+import Mathlib.RingTheory.Jacobson.Ideal
+import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 

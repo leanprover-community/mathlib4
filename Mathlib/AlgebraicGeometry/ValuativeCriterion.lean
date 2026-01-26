@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Andrew Yang, Qi Ge, Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Qi Ge, Christian Merten
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-public import Mathlib.AlgebraicGeometry.Morphisms.Proper
-public import Mathlib.RingTheory.RingHom.Injective
-public import Mathlib.RingTheory.Valuation.LocalSubring
+import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Valuative criterion

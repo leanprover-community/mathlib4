@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.ObjectProperty.Local
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.Localization.Adjunction
+import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Bousfield localization

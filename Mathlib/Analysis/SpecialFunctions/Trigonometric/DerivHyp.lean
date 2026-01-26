@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
--/
-module
-
-public import Mathlib.Order.Monotone.Odd
-public import Mathlib.Analysis.Calculus.LogDeriv
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Differentiability of hyperbolic trigonometric functions

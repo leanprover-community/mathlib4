@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.SetTheory.Game.Birthday
-public import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Data.Fintype.Sum
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Short` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

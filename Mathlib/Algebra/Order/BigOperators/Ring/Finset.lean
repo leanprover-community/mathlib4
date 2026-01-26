@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2019 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
-public import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Big operators on a finset in ordered rings

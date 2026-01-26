@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Subtraction of Lebesgue integrals

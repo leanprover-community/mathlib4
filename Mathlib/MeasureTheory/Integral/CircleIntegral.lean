@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
-public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integral over a circle in `ℂ`

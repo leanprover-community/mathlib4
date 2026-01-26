@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.Basis
-public import Mathlib.RingTheory.TensorProduct.Maps
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Properties of centers and centralizers

@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.Group.Fin.Tuple
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.LinearAlgebra.Matrix.RowCol
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Algebra.BigOperators.Fin
-public meta import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Matrix and vector notation

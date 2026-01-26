@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2022 Joshua Clune. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joshua Clune
--/
-module
-
-public meta import Lean.Elab.Tactic.ElabTerm
-public import Mathlib.Tactic.TypeStar
 
 /-!
 Defines the `inhabit α` tactic, which tries to construct an `Inhabited α` instance,

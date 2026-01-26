@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomáš Skřivan
--/
-module
-
-
-public meta import Mathlib.Tactic.FunProp.Mor
-public import Mathlib.Tactic.FunProp.Mor
-public import Mathlib.Tactic.FunProp.ToBatteries
-public meta import Std.Do
 
 /-!
 ## `funProp` data structure holding information about a function

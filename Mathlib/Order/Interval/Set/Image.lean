@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Yaël Dillies
--/
-module
-
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.Data.Set.Function
-public import Mathlib.Order.Directed
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Monotone functions on intervals

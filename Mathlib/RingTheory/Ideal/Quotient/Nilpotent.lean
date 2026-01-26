@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2021 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Nilpotent elements in quotient rings

@@ -1,22 +1,6 @@
-/-
-Copyright (c) 2021 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Algebra.Group.Units.Opposite
-public import Mathlib.Algebra.Regular.Opposite
-public import Mathlib.Data.SetLike.Fintype
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.Order.Filter.EventuallyConst
-public import Mathlib.RingTheory.Ideal.Prod
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Jacobson.Semiprimary
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.RingTheory.Spectrum.Maximal.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Artinian rings and modules

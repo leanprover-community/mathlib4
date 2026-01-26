@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Olivia Röhrig
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Maps
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Finset.Sym
 
 /-!
 # Edge labelings

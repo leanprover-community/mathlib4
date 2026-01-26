@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Joseph Myers. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-public import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.Metrizable.Uniformity
 
 
 /-!

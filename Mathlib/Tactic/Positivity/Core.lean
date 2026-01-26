@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
--/
-module
-
-public meta import Mathlib.Control.Basic
-public meta import Qq
-public import Mathlib.Algebra.Order.Invertible
-public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Tactic.HaveI
-public import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 ## `positivity` core functionality

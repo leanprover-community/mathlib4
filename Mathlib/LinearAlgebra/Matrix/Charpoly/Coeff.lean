@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Laurent
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
-public import Mathlib.LinearAlgebra.Matrix.Reindex
-public import Mathlib.LinearAlgebra.Matrix.SchurComplement
-public import Mathlib.RingTheory.Polynomial.Nilpotent
-public import Mathlib.Data.Matrix.DMatrix
 
 /-!
 # Characteristic polynomials

@@ -1,18 +1,9 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Algebra.Order.Monoid.WithTop
-public import Mathlib.Algebra.Regular.Basic
 
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.TermCongr
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined

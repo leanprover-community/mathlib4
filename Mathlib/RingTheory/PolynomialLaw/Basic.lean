@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir & María-Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Congruence.Hom
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
+import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Polynomial laws on modules
 

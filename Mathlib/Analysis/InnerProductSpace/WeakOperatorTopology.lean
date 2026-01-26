@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # The weak operator topology in Hilbert spaces

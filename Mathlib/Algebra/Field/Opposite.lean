@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Field structure on the multiplicative/additive opposite

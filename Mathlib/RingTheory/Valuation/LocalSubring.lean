@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras, Daniel Funck, Junyan Xu
--/
-module
-
-public import Mathlib.RingTheory.Ideal.GoingUp
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.LocalRing.LocalSubring
-public import Mathlib.RingTheory.Polynomial.Ideal
-public import Mathlib.RingTheory.Valuation.Integral
-public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 

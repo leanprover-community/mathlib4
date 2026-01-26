@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2018 Ellen Arlt. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
--/
-module
-
-public import Mathlib.Algebra.Algebra.Opposite
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Matrix.Mul
-public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.GroupTheory.DedekindFinite
 
 /-!
 # Matrices

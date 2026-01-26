@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Connected
-public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Relation of morphism properties with limits

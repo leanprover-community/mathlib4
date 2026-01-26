@@ -1,16 +1,8 @@
-/-
-Copyright (c) 2024 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Analysis.Complex.Spectrum
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
-public import Mathlib.Analysis.RCLike.Lemmas
+import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.Analysis.Real.Spectrum
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.Analysis.Normed.Algebra.Unitization
+import Mathlib.Topology.Algebra.Module.ModuleTopology
 
 /-! # Instances of the continuous functional calculus
 

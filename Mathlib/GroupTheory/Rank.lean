@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Thomas Browning. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
--/
-module
-
-public import Mathlib.GroupTheory.Finiteness
-public import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-!
 # Rank of a group

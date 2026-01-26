@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Haitian Wang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Haitian Wang, Malvin Gattinger
--/
-module
-
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Data.Multiset.OrderedMonoid
+import Mathlib.Data.Multiset.AddSub
 
 /-!
 # Dershowitz-Manna ordering

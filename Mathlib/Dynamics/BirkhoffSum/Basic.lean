@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Dynamics.FixedPoints.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Birkhoff sums

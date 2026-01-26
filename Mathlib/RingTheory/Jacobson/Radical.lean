@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.LinearAlgebra.Pi
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Jacobson radical of modules and rings

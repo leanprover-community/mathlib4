@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2023 Kevin Buzzard. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
--/
-module
-
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Statement of Fermat's Last Theorem

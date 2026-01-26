@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Order.Basic
-public import Mathlib.Data.Fintype.WithTopBot
 
 /-! # Order topology on `WithTop ι`
 

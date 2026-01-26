@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2020 Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
--/
-module
-
-public import Mathlib.Data.Set.Function
-public import Mathlib.Order.Interval.Set.LinearOrder
+import Mathlib.Order.Lattice
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Monotone surjective functions are surjective on intervals

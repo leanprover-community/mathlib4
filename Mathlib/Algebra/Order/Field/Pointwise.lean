@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Alex J. Best. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex J. Best, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Pointwise operations on ordered algebraic objects

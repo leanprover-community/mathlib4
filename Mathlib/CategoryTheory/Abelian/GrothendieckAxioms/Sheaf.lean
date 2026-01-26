@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Generator.Sheaf
-public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
 

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-public import Mathlib.Topology.QuasiSeparated
-public import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!
 # Quasi-separated morphisms

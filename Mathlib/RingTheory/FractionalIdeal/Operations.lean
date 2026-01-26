@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Filippo A. E. Nuccio
--/
-module
-
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.RingTheory.FractionalIdeal.Basic
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Tactic.Field
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # More operations on fractional ideals

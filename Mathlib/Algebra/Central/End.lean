@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Monica Omar. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Monica Omar
--/
-module
-
-public import Mathlib.Algebra.Central.Basic
-public import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.Algebra.Central.Defs
 
 /-!
 # `Module.End R M` is a central algebra

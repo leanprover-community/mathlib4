@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Typeclasses for measurability of lattice operations

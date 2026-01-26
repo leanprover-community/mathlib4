@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Sym
-public import Mathlib.Data.Finsupp.Pointwise
-public import Mathlib.Data.Sym.Sym2.Finsupp
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis

@@ -1,16 +1,7 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Morenikeji Neri
--/
-module
-
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.EuclideanDomain.Field
-public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.RingTheory.Ideal.Prod
-public import Mathlib.RingTheory.Ideal.Nonunits
-public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
+import Mathlib.Algebra.EuclideanDomain.Defs
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings

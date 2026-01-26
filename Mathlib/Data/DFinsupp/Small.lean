@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Sophie. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sophie Morel, Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.Data.Finsupp.ToDFinsupp
-public import Mathlib.Data.DFinsupp.Defs
-public import Mathlib.Logic.Small.Basic
+import Mathlib.Data.Finsupp.Defs
+import Mathlib.Logic.Small.Defs
 
 /-!
 # Smallness of the `DFinsupp` type

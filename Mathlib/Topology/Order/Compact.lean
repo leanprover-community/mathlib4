@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Yury Kudryashov
--/
-module
-
-public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.IsLUB
-public import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Connected.Basic
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Compactness of a closed interval

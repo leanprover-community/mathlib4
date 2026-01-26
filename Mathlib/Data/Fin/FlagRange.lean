@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2023 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Order.Fin.Basic
-public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`

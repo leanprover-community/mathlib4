@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2018 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
-public import Mathlib.Analysis.Normed.Group.Bounded
-public import Mathlib.Analysis.Normed.Group.Int
-public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Normed rings

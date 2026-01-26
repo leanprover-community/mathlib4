@@ -1,18 +1,6 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.Algebra.Ring.Action.Subobjects
-public import Mathlib.Algebra.Ring.Equiv
-public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Algebra.Ring.Subsemiring.Defs
-public import Mathlib.GroupTheory.Submonoid.Centralizer
-public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-public import Mathlib.Algebra.Module.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Set.Finite.Range
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Bundled subsemirings

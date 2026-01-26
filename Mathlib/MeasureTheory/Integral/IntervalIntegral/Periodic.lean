@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.MeasureTheory.Measure.Haar.Quotient
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
-public import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.MeasureTheory.Group.FundamentalDomain
 
 /-!
 # Integrals of periodic functions

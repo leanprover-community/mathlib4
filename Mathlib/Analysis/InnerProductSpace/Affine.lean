@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.InnerProductSpace.Defs
 /-!
 # Normed affine spaces over an inner product space
 -/

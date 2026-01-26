@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Lattice
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Types.Set
+import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # The functor from `Set X` to types preserves filtered colimits

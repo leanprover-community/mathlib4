@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Center.NegOnePow
-public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.CategoryTheory.Shift.Twist
-public import Mathlib.CategoryTheory.Shift.Pullback
 
 /-!
 # Commutation with shifts of functors in two variables

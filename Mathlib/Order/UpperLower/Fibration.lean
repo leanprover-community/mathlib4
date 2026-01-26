@@ -6,6 +6,9 @@ Authors: Yaël Dillies, Sara Rousta
 module
 
 public import Mathlib.Order.UpperLower.Basic
+import Mathlib.Logic.Relation
+import Mathlib.Order.Monotone.Defs
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Upper/lower sets and fibrations

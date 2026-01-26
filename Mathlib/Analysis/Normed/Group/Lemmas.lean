@@ -6,6 +6,7 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Further lemmas about normed groups

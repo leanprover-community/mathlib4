@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.LogDeriv
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Tactic.AdaptationNote
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Derivative and series expansion of real logarithm

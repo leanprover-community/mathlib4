@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler
--/
-module
-
-public import Mathlib.Order.Filter.AtTopBot.Archimedean
-public import Mathlib.Order.Filter.Prod
-public import Mathlib.Order.Interval.Finset.Defs
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Limits of intervals along filters

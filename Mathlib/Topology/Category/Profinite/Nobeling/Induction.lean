@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.Free
-public import Mathlib.Topology.Category.Profinite.Nobeling.Span
-public import Mathlib.Topology.Category.Profinite.Nobeling.Successor
-public import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Nöbeling's theorem

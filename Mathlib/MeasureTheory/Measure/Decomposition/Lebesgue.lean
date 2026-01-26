@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Kexing Ying. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
-public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-public import Mathlib.MeasureTheory.Measure.Sub
+import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # Lebesgue decomposition

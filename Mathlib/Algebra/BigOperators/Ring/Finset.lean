@@ -1,17 +1,7 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.BigOperators.Ring.Multiset
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Results about big operators with values in a (semi)ring

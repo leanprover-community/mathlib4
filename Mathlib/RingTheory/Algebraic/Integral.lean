@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.LinearAlgebra.Dimension.Localization
-public import Mathlib.RingTheory.Algebraic.Basic
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-public import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 
 /-!
 # Algebraic elements and integral elements

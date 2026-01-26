@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
-public import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 
 /-! # The fully faithful embedding of the abelian category in its derived category
 

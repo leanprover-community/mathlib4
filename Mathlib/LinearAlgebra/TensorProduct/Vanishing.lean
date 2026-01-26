@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Mitchell Lee. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Lee, Junyan Xu
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-! # Vanishing of elements in a tensor product of two modules
 

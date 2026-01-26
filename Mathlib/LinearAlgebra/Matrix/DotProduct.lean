@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
--/
-module
-
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Algebra.Star.Pi
-public import Mathlib.LinearAlgebra.Matrix.RowCol
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Dot product of two vectors

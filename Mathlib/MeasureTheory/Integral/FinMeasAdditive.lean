@@ -6,6 +6,7 @@ Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # Additivity on measurable sets with finite measure

@@ -6,6 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Defs
 
 /-!
 # Finiteness of sum types

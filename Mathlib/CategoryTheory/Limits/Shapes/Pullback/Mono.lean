@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Pullbacks and monomorphisms

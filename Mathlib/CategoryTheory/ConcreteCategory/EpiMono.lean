@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Images
-public import Mathlib.CategoryTheory.MorphismProperty.Concrete
-public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Epi and mono in concrete categories

@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.CStarAlgebra.Exponential
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # The unitary group in a unital C⋆-algebra is locally path connected
 

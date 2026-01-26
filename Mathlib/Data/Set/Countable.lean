@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Data.Countable.Basic
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Subsingleton
-public import Mathlib.Logic.Equiv.List
-public import Mathlib.Order.Preorder.Finite
+import Mathlib.Data.Finset.Defs
+import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Countable sets

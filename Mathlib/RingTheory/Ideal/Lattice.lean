@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.RingTheory.Ideal.Defs
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # The lattice of ideals in a ring

@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Algebra.Order.Group.Indicator
-public import Mathlib.Analysis.PSeries
-public import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The sum of the reciprocals of the primes diverges

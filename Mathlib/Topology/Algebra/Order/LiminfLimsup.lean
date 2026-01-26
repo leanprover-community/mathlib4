@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.Group.DenselyOrdered
-public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Topology.Algebra.Group.Basic
-public import Mathlib.Topology.Order.LiminfLimsup
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

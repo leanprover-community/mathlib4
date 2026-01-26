@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-module
-
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Nat.Bitwise
-public import Mathlib.Data.Nat.Size
-public import Batteries.Data.Int
-import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `Nat.bitwise`
-import all Init.Data.Int.Bitwise.Basic  -- for unfolding `Int.bitwise`
+import Mathlib.Data.Nat.Bits
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Bitwise operations on integers

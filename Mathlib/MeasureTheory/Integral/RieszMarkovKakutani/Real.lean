@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yoh Tanimoto, Oliver Butterley
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.MeasureTheory.Integral.CompactlySupported
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.Order.Interval.Set.Union
+import Mathlib.Topology.Compactness.Paracompact
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals

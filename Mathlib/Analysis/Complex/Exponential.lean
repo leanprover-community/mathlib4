@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
--/
-module
-
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Analysis.Complex.Norm
-public import Mathlib.Algebra.Order.CauSeq.BigOperators
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.Complex.BigOperators
-public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function

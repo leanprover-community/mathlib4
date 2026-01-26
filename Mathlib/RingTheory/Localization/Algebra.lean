@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2024 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Localization.Basic
-public import Mathlib.RingTheory.Localization.Ideal
-public import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Localization of algebra maps

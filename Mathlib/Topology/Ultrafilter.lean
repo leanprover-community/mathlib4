@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
--/
-module
-
-public import Mathlib.Order.Filter.Ultrafilter.Basic
-public import Mathlib.Topology.Continuous
+import Mathlib.Topology.Defs.Filter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-! # Characterization of basic topological properties in terms of ultrafilters -/
 

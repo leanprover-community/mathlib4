@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2019 Neil Strickland. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Neil Strickland, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Commute.Defs
-public import Mathlib.Algebra.Group.Semiconj.Basic
+import Mathlib.Algebra.Group.Basic
 
 /-!
 # Additional lemmas about commuting pairs of elements in monoids

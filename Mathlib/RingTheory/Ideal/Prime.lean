@@ -6,6 +6,8 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 module
 
 public import Mathlib.RingTheory.Ideal.Lattice
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-!
 

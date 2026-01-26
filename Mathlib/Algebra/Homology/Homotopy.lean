@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Homology.Linear
-public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 
 /-!
 # Chain homotopies

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2015 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Countable.Defs
-public import Mathlib.Data.Nat.Factors
-public import Mathlib.Data.Nat.Prime.Infinite
-public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Prime numbers

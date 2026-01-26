@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Order.SuccPred.WithBot
-public import Mathlib.Algebra.Polynomial.CoeffMem
-public import Mathlib.Data.DFinsupp.WellFounded
-public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
-public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 
 /-!
 # Chevalley's theorem with complexity bound

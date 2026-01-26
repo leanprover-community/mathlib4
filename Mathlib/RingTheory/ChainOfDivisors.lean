@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2021 Paul Lezeau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen, Paul Lezeau
--/
-module
-
-public import Mathlib.Algebra.GCDMonoid.Basic
-public import Mathlib.Algebra.IsPrimePow
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-public import Mathlib.Order.Atoms
-public import Mathlib.Order.Hom.Bounded
+import Mathlib.RingTheory.Multiplicity
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 /-!
 
 # Chains of divisors

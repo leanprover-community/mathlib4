@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Center.Preadditive
-public import Mathlib.CategoryTheory.Localization.Predicate
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Center.Basic
 
 /-!
 # Localization of the center of a category

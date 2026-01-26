@@ -6,6 +6,9 @@ Authors: Damien Thomine
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Data.EReal.Inv
+import Mathlib.Topology.Order.Real
 
 /-!
 # Linear growth

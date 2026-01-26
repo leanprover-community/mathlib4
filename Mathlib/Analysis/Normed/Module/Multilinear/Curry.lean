@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.LinearAlgebra.Multilinear.Curry
+import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Currying and uncurrying continuous multilinear maps

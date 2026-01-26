@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Ben Eltschig. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ben Eltschig
--/
-module
-
-public import Mathlib.CategoryTheory.Adjunction.Triple
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Adjoint quadruples

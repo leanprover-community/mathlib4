@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
-public import Mathlib.CategoryTheory.Presentable.Dense
+import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # Ind and pro-properties

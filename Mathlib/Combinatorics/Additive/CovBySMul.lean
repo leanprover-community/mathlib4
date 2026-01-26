@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2024 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Data.Real.Basic
-public import Mathlib.Tactic.Positivity.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Data.Finset.Card
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Relation of covering by cosets

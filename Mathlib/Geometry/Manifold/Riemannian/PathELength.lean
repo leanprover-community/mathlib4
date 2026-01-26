@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.AddTorsor.AffineMap
-public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.Instances.Icc
-public import Mathlib.MeasureTheory.Constructions.UnitInterval
-public import Mathlib.MeasureTheory.Function.JacobianOneDim
 
 /-! # Lengths of paths in manifolds
 

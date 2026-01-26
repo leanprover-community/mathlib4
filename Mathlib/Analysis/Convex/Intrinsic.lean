@@ -6,6 +6,9 @@ Authors: Paul Reichert, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+import Mathlib.Analysis.Convex.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Intrinsic frontier and interior

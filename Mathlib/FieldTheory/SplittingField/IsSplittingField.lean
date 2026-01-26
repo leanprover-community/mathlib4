@@ -1,13 +1,8 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.RingTheory.Adjoin.Field
+import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 
 /-!
 # Splitting fields

@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Finprod
-public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.Compactness.Paracompact
-public import Mathlib.Topology.ShrinkingLemma
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Topology.ContinuousMap.Ordered
+import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Continuous partition of unity

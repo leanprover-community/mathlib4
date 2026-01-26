@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker, Eric Wieser
--/
-module
-
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Normed.Lp.PiLp
+import Mathlib.Analysis.Calculus.FDeriv.Defs
 
 /-!
 # Derivatives on `WithLp`

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Floris van Doorn
--/
-module
-
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.SetTheory.Cardinal.Regular
+import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # Infinite pigeonhole principle

@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`

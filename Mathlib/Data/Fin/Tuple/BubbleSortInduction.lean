@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Order.WellFounded
-public import Mathlib.Order.PiLex
-public import Mathlib.Data.Finite.Prod
 
 /-!
 # "Bubble sort" induction

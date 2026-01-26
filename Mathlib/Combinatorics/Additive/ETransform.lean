@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2023 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # e-transforms

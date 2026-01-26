@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Order.LeftRight
-public import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Left and right limits

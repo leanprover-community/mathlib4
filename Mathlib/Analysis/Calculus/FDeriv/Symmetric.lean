@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Analytic.IteratedFDeriv
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Symmetry of the second derivative

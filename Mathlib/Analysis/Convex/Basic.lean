@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Ring.Action.Pointwise.Set
-public import Mathlib.Analysis.Convex.Star
-public import Mathlib.Tactic.Field
-public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
-public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Convex sets

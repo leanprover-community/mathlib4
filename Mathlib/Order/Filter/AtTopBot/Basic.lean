@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
--/
-module
-
-public import Mathlib.Order.Filter.Bases.Basic
-public import Mathlib.Order.Filter.AtTopBot.Tendsto
-public import Mathlib.Order.Nat
-public import Mathlib.Tactic.Subsingleton
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+import Mathlib.Analysis.CStarAlgebra.Classes
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 

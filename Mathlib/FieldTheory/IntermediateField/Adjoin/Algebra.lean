@@ -1,15 +1,7 @@
-/-
-Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning, Patrick Lutz
--/
-module
-
-public import Mathlib.FieldTheory.Finiteness
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-public import Mathlib.FieldTheory.IntermediateField.Algebraic
-public import Mathlib.RingTheory.Adjoin.Singleton
-public import Mathlib.RingTheory.EssentialFiniteness
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Adjoining Elements to Fields

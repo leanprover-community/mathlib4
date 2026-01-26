@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2019 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Order.Monoid.OrderDual
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Order.Filter.AtTopBot.Tendsto
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Convergence to ±infinity in ordered commutative monoids

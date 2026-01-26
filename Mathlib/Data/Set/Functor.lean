@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2016 Leonardo de Moura. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura
--/
-module
-
-public import Batteries.Control.AlternativeMonad
-public import Mathlib.Control.Basic
-public import Mathlib.Data.Set.Defs
-public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Data.Set.Notation
+import Mathlib.Order.SetNotation
+import Mathlib.Data.Set.Restrict
 
 /-!
 # Functoriality of `Set`

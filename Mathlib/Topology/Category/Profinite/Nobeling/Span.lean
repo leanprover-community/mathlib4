@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Data.Finset.Sort
-public import Mathlib.Tactic.NoncommRing
-public import Mathlib.Topology.Category.Profinite.CofilteredLimit
-public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # The good products span

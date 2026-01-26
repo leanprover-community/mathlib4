@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2019 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public meta import Mathlib.Tactic.Basic
-public meta import Batteries.Lean.Expr
-public meta import Batteries.Lean.Meta.UnusedNames
-public import Mathlib.Tactic.Basic
 
 /-!
 # lift tactic

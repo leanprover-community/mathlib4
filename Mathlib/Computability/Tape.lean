@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.ApplyFun
-public import Mathlib.Data.List.GetD
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Defs
 
 /-!
 # Turing machine tapes

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasilii Nesterov
--/
-module
-
-public import Mathlib.Topology.Instances.CantorSet
-public import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Hausdorff–Alexandroff Theorem

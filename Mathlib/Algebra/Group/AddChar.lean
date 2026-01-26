@@ -1,16 +1,7 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Group.Subgroup.Ker
-public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Ring.Regular
+import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.Ring.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Characters from additive to multiplicative monoids

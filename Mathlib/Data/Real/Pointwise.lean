@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.Order.Module.Pointwise
-public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Pointwise operations on sets of reals

@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Topology.Order.LiminfLimsup
-public import Mathlib.Topology.Metrizable.Real
+import Mathlib.Order.LiminfLimsup
+import Mathlib.Data.ENNReal.Basic
+import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Limsup and liminf of reals

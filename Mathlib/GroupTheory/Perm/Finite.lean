@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Data.Finite.Sum
-public import Mathlib.GroupTheory.OrderOfElement
-public import Mathlib.GroupTheory.Perm.Support
-public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # Permutations on `Fintype`s

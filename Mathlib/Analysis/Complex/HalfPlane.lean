@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2024 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Half-planes in ℂ are open

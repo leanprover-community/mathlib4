@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Topology.UrysohnsLemma
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrals of continuous functions with respect to regular measures

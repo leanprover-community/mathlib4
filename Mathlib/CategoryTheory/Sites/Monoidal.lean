@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Basic
-public import Mathlib.CategoryTheory.Localization.Monoidal.Braided
-public import Mathlib.CategoryTheory.Sites.Equivalence
-public import Mathlib.CategoryTheory.Sites.SheafHom
+import Mathlib.CategoryTheory.Enriched.FunctorCategory
+import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 
 /-!
 # Monoidal category structure on categories of sheaves

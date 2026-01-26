@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Felix Weilacher. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Felix Weilacher
--/
-module
-
-public import Mathlib.Topology.Perfect
-public import Mathlib.Topology.MetricSpace.Polish
-public import Mathlib.Topology.MetricSpace.CantorScheme
-public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets

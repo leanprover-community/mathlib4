@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa, Ruben Van de Velde
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Algebra.Group.Subsemigroup.Operations
-public import Mathlib.Algebra.Order.Group.Unbundled.Abs
-public import Mathlib.Algebra.Order.Monoid.Basic
-public import Mathlib.Order.Atoms
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Facts about ordered structures and ordered instances on subgroups

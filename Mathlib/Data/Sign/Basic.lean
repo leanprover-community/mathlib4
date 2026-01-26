@@ -1,15 +1,8 @@
-/-
-Copyright (c) 2022 Eric Rodriguez. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Rodriguez
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Ring.Cast
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Sign.Defs
+import Mathlib.Algebra.Ring.Parity
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Sign function

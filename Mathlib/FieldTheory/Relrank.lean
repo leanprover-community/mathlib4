@@ -6,6 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 
 /-!
 

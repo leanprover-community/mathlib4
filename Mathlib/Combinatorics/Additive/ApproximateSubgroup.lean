@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Bhavik Mehta
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Combinatorics.Additive.CovBySMul
-public import Mathlib.Combinatorics.Additive.RuzsaCovering
-public import Mathlib.Combinatorics.Additive.SmallTripling
+import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Approximate subgroups

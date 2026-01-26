@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Yourong Zang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yourong Zang
--/
-module
-
-public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-public import Mathlib.Analysis.InnerProductSpace.ConformalLinearMap
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # Conformal maps between inner product spaces

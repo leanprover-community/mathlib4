@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Data.Rat.Cast.CharZero
-public import Mathlib.Data.Rat.Cast.Lemmas
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 The `OfScientific` instance for any characteristic zero field

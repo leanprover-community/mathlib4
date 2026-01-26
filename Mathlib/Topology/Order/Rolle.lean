@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Topology.Order.ExtendFrom
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.LocalExtr
-public import Mathlib.Topology.Order.T5
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Rolle's Theorem (topological part)

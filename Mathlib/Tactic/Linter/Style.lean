@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2024 Michael Rothgang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang
--/
-module
-
-public meta import Lean.Elab.Command
-public meta import Lean.Server.InfoUtils
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
-public import Lean.Parser.Command
-public import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters

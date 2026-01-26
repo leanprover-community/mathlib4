@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Winston Yin
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
-public import Mathlib.Topology.MetricSpace.Contracting
+import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem

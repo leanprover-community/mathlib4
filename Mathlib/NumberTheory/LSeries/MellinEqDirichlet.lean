@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+import Mathlib.Analysis.MellinTransform
 /-!
 # Dirichlet series as Mellin transforms
 

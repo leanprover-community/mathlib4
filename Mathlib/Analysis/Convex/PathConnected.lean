@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2020 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Segment between 2 points as a bundled path

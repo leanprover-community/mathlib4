@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.Fintype.BigOperators
-
-import Mathlib.Algebra.Module.End
+import Mathlib.Data.Fintype.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Finite sums over modules over a ring

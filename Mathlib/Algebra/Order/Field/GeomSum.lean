@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2019 Neil Strickland. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Neil Strickland
--/
-module
-
-public import Mathlib.Algebra.Field.GeomSum
-public import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Partial sums of geometric series in an ordered field

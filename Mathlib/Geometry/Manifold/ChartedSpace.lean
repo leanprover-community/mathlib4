@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Geometry.Manifold.StructureGroupoid
+import Mathlib.Topology.Connected.LocPathConnected
+import Mathlib.Topology.OpenPartialHomeomorph.Constructions
 
 /-!
 # Charted spaces

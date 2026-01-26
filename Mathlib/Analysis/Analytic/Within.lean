@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Geoffrey Irving. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Geoffrey Irving
--/
-module
-
-public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.Analysis.Analytic.ChangeOrigin
+import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Properties of analyticity restricted to a set

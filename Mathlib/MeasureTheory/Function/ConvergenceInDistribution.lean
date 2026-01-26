@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.Portmanteau
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
 # Convergence in distribution

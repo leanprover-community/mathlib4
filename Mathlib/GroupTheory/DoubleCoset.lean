@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2021 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-!
 # Double cosets

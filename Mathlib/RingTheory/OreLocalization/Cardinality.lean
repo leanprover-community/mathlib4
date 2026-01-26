@@ -1,12 +1,8 @@
-/-
-Copyright (c) 2024 Jz Pan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jz Pan
--/
-module
-
-public import Mathlib.GroupTheory.OreLocalization.Cardinality
-public import Mathlib.RingTheory.OreLocalization.Ring
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Module.Defs
+import Mathlib.GroupTheory.OreLocalization.Basic
+import Mathlib.SetTheory.Cardinal.Defs
 
 /-!
 # Cardinality of Ore localizations of rings

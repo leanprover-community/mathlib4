@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.Data.DFinsupp.Lex
-public import Mathlib.Order.Antisymmetrization
-public import Mathlib.Order.GameAdd
-public import Mathlib.SetTheory.Cardinal.Order
-public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Well-foundedness of the lexicographic and product orders on `DFinsupp` and `Pi`

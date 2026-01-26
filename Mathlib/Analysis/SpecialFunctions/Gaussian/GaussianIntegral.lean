@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-public import Mathlib.Analysis.SpecialFunctions.PolarCoord
-public import Mathlib.Analysis.Complex.Convex
-public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Gaussian integral

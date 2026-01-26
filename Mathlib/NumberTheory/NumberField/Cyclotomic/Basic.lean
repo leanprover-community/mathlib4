@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2022 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.NumberTheory.Cyclotomic.Discriminant
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-public import Mathlib.NumberTheory.NumberField.Discriminant.Different
-public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-public import Mathlib.RingTheory.Prime
+import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+import Mathlib.NumberTheory.NumberField.Units.Basic
 
 /-!
 # Ring of integers of cyclotomic fields

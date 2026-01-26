@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Subsingleton
 
 /-!
 # N-ary images of sets

@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.Algebra.Order.Group.Finset
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Eval.SMul
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.EuclideanDomain
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Theory of univariate polynomials

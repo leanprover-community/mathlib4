@@ -6,6 +6,8 @@ Authors: Christian Merten
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
+import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
 /-!
 # Flat monomorphisms of finite presentation are open immersions

@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dual.Basis
-public import Mathlib.LinearAlgebra.Matrix.Dual
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 /-!
 # The special linear group of a module

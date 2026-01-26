@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Operations
 /-!
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API

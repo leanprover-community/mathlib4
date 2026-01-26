@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Logic.Encodable.Pi
-public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.Topology.MetricSpace.Closeds
-public import Mathlib.Topology.MetricSpace.Completion
-public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
-public import Mathlib.Topology.MetricSpace.Kuratowski
 
 /-!
 # Gromov-Hausdorff distance

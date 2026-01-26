@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2019 Minchao Wu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
--/
-module
-
-public import Mathlib.Data.List.Basic
-public import Mathlib.Order.BoundedOrder.Lattice
-public import Mathlib.Data.List.Induction
-public import Mathlib.Order.MinMax
-public import Mathlib.Order.WithBot
 
 /-!
 # Minimum and maximum of lists

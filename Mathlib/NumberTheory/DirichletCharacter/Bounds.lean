@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2023 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.NumberTheory.DirichletCharacter.Basic
 
 /-!
 # Bounds for values of Dirichlet characters

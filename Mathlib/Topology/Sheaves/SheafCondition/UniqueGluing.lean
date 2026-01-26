@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2021 Justus Springer. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Justus Springer
--/
-module
-
-public import Mathlib.Topology.Sheaves.Forget
-public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # The sheaf condition in terms of unique gluings

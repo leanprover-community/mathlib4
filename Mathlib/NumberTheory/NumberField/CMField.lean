@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2025 X. Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot
--/
-module
-
-public import Mathlib.FieldTheory.Galois.Abelian
-public import Mathlib.FieldTheory.Galois.IsGaloisGroup
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-public import Mathlib.NumberTheory.NumberField.Units.Regulator
+import Mathlib.NumberTheory.Cyclotomic.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # CM-extension of number fields

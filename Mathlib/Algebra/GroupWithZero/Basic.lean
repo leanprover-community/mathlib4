@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Conv
-public import Batteries.Tactic.SeqFocus
+import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
 # Groups with an adjoined zero element

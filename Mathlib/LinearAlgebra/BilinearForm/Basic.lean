@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andreas Swerdlow, Kexing Ying
--/
-module
-
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Algebra.Algebra.Basic
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Bilinear form

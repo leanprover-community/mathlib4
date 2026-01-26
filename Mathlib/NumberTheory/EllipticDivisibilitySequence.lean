@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Kurniadi Angdinata
--/
-module
-
-public import Mathlib.Data.Nat.EvenOddRec
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.LinearCombination
 import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Elliptic divisibility sequences

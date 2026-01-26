@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2021 Kexing Ying. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying, Rémy Degenne
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.Cylinders
-public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-public import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+import Mathlib.Order.Restriction
+import Mathlib.MeasureTheory.Function.UniformIntegrable
+import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
 # Filtrations

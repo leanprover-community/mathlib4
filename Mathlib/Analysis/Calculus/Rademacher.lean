@@ -1,17 +1,8 @@
-/-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.LineDeriv.Measurable
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.Analysis.BoundedVariation
-public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
-public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
+import Mathlib.FieldTheory.Finiteness
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere

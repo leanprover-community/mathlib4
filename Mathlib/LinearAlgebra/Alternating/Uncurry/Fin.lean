@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.LinearAlgebra.Alternating.Curry
-public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps

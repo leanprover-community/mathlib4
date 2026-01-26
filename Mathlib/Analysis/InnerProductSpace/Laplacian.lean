@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Stefan Kebekus. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stefan Kebekus
--/
-module
-
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Distribution.DerivNotation
-public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian

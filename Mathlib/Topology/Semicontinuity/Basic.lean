@@ -1,14 +1,8 @@
-/-
-Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
--/
-module
-
-public import Mathlib.Topology.Semicontinuity.Defs
-public import Mathlib.Algebra.GroupWithZero.Indicator
-public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Order.Filter.Extr
+import Mathlib.Topology.Order.Real
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Lower and Upper Semicontinuity

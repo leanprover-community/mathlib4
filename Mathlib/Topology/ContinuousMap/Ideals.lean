@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2022 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Analysis.Normed.Ring.Units
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
+import Mathlib.Topology.ContinuousMap.Star
+import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 # Ideals of continuous functions

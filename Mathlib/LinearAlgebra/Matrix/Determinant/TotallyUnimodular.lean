@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Martin Dvorak. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Martin Dvorak, Vladimir Kolmogorov, Ivan Sergeev, Bhavik Mehta
--/
-module
-
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.Data.Matrix.ColumnRowPartitioned
-public import Mathlib.Data.Sign.Basic
+import Mathlib.Data.Sign.Defs
 
 /-!
 # Totally unimodular matrices

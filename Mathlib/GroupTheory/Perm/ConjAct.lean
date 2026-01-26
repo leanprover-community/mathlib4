@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.GroupTheory.Perm.Cycle.Factors
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Some lemmas pertaining to the action of `ConjAct (Perm α)` on `Perm α`

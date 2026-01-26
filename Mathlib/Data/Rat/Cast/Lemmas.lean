@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Order.Nonneg.Field
-public import Mathlib.Data.Rat.Cast.Defs
-public import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Algebra.Field.Rat
 
 /-!
 # Some exiled lemmas about casting

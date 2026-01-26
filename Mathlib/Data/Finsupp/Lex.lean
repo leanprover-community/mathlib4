@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
--/
-module
-
-public import Mathlib.Data.Finsupp.Order
-public import Mathlib.Data.DFinsupp.Lex
-public import Mathlib.Data.Finsupp.ToDFinsupp
+import Mathlib.Order.Preorder.Finsupp
 
 /-!
 # Lexicographic order on finitely supported functions

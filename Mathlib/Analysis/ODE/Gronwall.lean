@@ -6,6 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Grönwall's inequality

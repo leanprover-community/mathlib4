@@ -6,6 +6,7 @@ Authors: Kevin Buzzard
 module
 
 public import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.Basic
 
 /-!
 # The extended real numbers

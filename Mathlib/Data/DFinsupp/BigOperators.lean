@@ -1,12 +1,9 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Data.DFinsupp.Ext
+import Mathlib.Data.DFinsupp.Defs
+import Mathlib.Data.Finset.Union
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Dependent functions with finite support

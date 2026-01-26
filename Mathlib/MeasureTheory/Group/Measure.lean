@@ -1,18 +1,6 @@
-/-
-Copyright (c) 2020 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.Group.Pointwise.Set.Card
-public import Mathlib.GroupTheory.Complement
-public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.MeasureTheory.Group.Pointwise
-public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Algebra.Module.Equiv
-public import Mathlib.Topology.ContinuousMap.CocompactMap
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+import Mathlib.MeasureTheory.Group.Defs
+import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Measures on Groups

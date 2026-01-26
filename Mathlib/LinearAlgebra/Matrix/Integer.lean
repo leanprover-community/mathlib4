@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2025 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.GCDMonoid.Finset
-public import Mathlib.Algebra.GCDMonoid.Nat
-public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Data.Fintype.Prod
 
 /-!
 # Lemmas on integer matrices

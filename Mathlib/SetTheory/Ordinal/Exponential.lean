@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Ordinal.Family
+import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Ordinal exponential

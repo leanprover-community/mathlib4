@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Topology.Algebra.Group.Pointwise
-public import Mathlib.Topology.Algebra.RestrictedProduct.Basic
-public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Restricted products of topological spaces, topological groups and rings

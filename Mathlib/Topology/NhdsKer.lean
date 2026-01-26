@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2023 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Yury Kudryashov
--/
-module
-
-public import Mathlib.Topology.NhdsSet
-public import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Constructions
 
 /-!
 # Neighborhoods kernel of a set

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Adam Topaz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Topology.Category.Profinite.EffectiveEpi
-public import Mathlib.Topology.Category.Stonean.EffectiveEpi
-public import Mathlib.Condensed.Basic
-public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+import Mathlib.Topology.Category.Profinite.Limits
+import Mathlib.Topology.Category.Stonean.Limits
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean

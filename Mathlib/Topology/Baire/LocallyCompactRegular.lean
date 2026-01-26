@@ -6,6 +6,7 @@ Authors: Damien Thomine
 module
 
 public import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Second Baire theorem

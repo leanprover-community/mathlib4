@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Hom
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Group actions and (endo)morphisms

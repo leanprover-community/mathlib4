@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Yakov Pechersky. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
--/
-module
-
-public import Mathlib.Data.List.Cycle
-public import Mathlib.GroupTheory.Perm.Cycle.Type
-public import Mathlib.GroupTheory.Perm.List
+import Mathlib.Algebra.Order.Monoid.NatCast
 
 /-!
 

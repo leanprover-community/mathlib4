@@ -6,6 +6,9 @@ Authors: Chris Hughes, Johan Commelin
 module
 
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 /-!
 # Minimal polynomials

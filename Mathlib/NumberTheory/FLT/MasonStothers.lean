@@ -6,6 +6,8 @@ Authors: Jineon Baek, Seewoo Lee
 module
 
 public import Mathlib.RingTheory.Polynomial.Radical
+import Mathlib.RingTheory.Radical
+import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Mason-Stothers theorem

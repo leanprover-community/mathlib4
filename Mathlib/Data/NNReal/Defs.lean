@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2018 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Data.Real.Archimedean
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Nonneg.Field
 
 /-!
 # Nonnegative real numbers

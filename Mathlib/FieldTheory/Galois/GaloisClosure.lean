@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yuyang Zhao
--/
-module
-
-public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 

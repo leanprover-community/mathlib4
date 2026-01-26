@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
--/
-module
-
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
-public import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Basic results on bases

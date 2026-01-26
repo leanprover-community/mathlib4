@@ -6,6 +6,7 @@ Authors: Chris Hughes, Michael Stoll
 module
 
 public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Legendre symbol

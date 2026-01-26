@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Module.Submodule.Defs
-public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Logic.Small.Basic
+import Mathlib.Logic.Small.Defs
 
 /-!
 # Quotients by submodules

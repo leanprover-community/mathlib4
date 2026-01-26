@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2020 Aaron Anderson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Degree.Lemmas
-public import Mathlib.Tactic.ComputeDegree
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 # Cancel the leading terms of two polynomials

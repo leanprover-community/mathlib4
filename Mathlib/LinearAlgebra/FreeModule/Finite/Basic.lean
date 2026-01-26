@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.Matrix.StdBasis
-public import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.LinearAlgebra.Matrix.Defs
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Finite and free modules

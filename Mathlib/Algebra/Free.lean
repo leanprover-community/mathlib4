@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2019 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Control.Applicative
-public import Mathlib.Control.Traversable.Basic
-public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Free constructions

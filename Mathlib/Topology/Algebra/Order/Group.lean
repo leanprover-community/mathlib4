@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on a linear ordered commutative group

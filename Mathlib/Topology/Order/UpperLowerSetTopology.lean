@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2023 Christopher Hoskin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christopher Hoskin
--/
-module
-
-public import Mathlib.Logic.Lemmas
-public import Mathlib.Topology.AlexandrovDiscrete
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Topology.Order.LowerUpperTopology
 
 /-!
 # Upper and lower sets topologies

@@ -6,6 +6,7 @@ Authors: Anatole Dedecker, Etienne Marion
 module
 
 public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Proper maps between topological spaces

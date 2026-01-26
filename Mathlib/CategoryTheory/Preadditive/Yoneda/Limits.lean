@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-public import Mathlib.Algebra.Category.ModuleCat.Abelian
-public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits

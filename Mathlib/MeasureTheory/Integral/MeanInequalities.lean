@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2020 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.MeanInequalitiesPow
-public import Mathlib.MeasureTheory.Function.SpecialFunctions.Basic
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+import Mathlib.Data.Real.ConjExponents
+import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Mean value inequalities for integrals

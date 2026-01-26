@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.GradedObject.Associator
-public import Mathlib.CategoryTheory.GradedObject.Single
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 /-!
 # The left and right unitors
 

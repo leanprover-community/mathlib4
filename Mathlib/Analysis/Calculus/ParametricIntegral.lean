@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
--/
-module
-
-public import Mathlib.Analysis.Calculus.MeanValue
-public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Derivatives of integrals depending on parameters

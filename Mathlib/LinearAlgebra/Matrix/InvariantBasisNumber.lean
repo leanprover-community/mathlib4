@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2022 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Module.Projective
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-public import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Invertible matrices over a ring with invariant basis number are square.

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson, Jack McKoen, Christian Merten, Joël Riou, Adam Topaz
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.CategoryTheory.Monad.Comonadicity
-public import Mathlib.RingTheory.Flat.CategoryTheory
-public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
 # Faithfully flat descent for modules

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
+import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
 /-! # Functions a.e. measurable with respect to a sub-σ-algebra
 

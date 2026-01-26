@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.Order.Filter.Finite
-public import Mathlib.Order.Filter.Map
+import Mathlib.Data.Countable.Defs
+import Mathlib.Order.Filter.Defs
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Cardinality of a set with a countable cover

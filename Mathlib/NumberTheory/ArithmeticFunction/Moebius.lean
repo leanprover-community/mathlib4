@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.Data.Nat.Squarefree
 /-!
 # The Möbius function and Möbius inversion
 

@@ -1,19 +1,3 @@
-/-
-Copyright (c) 2021 Apurva Nakade. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Apurva Nakade
--/
-module
-
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Order.Group.Basic
-public import Mathlib.Algebra.Ring.Regular
-public import Mathlib.GroupTheory.MonoidLocalization.Away
-public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.SetTheory.Game.Birthday
-public import Mathlib.SetTheory.Surreal.Multiplication
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Surreal.Dyadic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Group.Center
-public import Mathlib.Algebra.Module.Equiv.Opposite
-public import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Endomorphisms of a module

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.Complex.Convex
-public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.SpecificLimits.RCLike
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Estimates for the complex logarithm

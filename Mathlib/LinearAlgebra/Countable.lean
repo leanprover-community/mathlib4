@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Data.Finsupp.Encodable
-public import Mathlib.Data.Set.Countable
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Data.Countable.Defs
+import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Countable modules

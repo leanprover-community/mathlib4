@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2025 Yunzhou Xie. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yunzhou Xie, Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.Azumaya.Defs
-public import Mathlib.Algebra.Central.End
-public import Mathlib.Algebra.Central.TensorProduct
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.RingTheory.TensorProduct.Maps
+import Mathlib.Algebra.Central.Defs
 
 /-!
 # Basic properties of Azumaya algebras

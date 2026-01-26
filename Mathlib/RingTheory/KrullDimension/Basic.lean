@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2024 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Fangming Li, Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.MvPolynomial.Basic  -- shake: keep (used in `proof_wanted` only)
-public import Mathlib.Order.KrullDimension
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-public import Mathlib.RingTheory.Jacobson.Radical
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Spectrum.Prime.Defs
 
 /-!
 # Krull dimensions of (commutative) rings

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.CategoryTheory.Elementwise
-public import Mathlib.Topology.Sequences
-public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Defs.Sequences
 /-!
 
 # The category of sequential topological spaces

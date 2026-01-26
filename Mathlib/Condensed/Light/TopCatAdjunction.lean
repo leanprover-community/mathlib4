@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Condensed.Light.TopComparison
-public import Mathlib.Topology.Category.Sequential
-public import Mathlib.Topology.Category.LightProfinite.Sequence
+import Mathlib.CategoryTheory.Adjunction.Restrict
 /-!
 
 # The adjunction between light condensed sets and topological spaces

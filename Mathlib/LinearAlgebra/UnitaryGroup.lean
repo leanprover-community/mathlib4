@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Shing Tak Lam. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Shing Tak Lam
--/
-module
-
-public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Matrix.Reflection
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+import Mathlib.LinearAlgebra.Matrix.Kronecker
 
 /-!
 # The Unitary Group

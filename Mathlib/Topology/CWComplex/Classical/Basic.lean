@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Floris van Doorn and Hannah Scholz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Hannah Scholz
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Data.ENat.Basic
-public import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.MetricSpace.Pseudo.Pi
 
 /-!
 # CW complexes

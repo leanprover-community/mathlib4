@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Semiquot
-public import Mathlib.Data.Nat.Size
-public import Mathlib.Data.PNat.Defs
-public import Mathlib.Data.Rat.Init
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Bits
 
 /-!
 # Implementation of floating-point numbers (experimental).

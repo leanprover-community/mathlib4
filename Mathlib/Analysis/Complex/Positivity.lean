@@ -6,6 +6,8 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Nonnegativity of values of holomorphic functions

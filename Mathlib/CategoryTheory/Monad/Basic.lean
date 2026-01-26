@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Bhavik Mehta, Adam Topaz
--/
-module
-
-public import Mathlib.CategoryTheory.Functor.Category
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Monads

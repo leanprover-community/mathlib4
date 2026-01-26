@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Joseph Myers. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
--/
-module
-
-public import Mathlib.FieldTheory.Finiteness
-public import Mathlib.LinearAlgebra.AffineSpace.Basis
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Centroid
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # Finite-dimensional subspaces of affine spaces.

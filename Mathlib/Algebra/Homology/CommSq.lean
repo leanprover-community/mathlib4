@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences

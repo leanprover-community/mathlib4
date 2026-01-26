@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Kappelmann
--/
-module
-
-public import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
-public import Mathlib.Algebra.ContinuedFractions.TerminatedStable
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Equivalence of Recursive and Direct Computations of Convergents of Generalized Continued Fractions

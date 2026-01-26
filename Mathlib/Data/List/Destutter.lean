@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2022 Eric Rodriguez. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Rodriguez, Eric Wieser
--/
-module
-
-public import Mathlib.Data.List.Chain
-public import Mathlib.Data.List.Dedup
+import Mathlib.Order.Basic
+import Mathlib.Data.List.Defs
 
 /-!
 # Destuttering of Lists

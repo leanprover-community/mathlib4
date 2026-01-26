@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Group.MinMax
-public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Setoid.Basic
-public import Mathlib.GroupTheory.GroupAction.Ring
-public import Mathlib.Tactic.GCongr
 
 /-!
 # Cauchy sequences

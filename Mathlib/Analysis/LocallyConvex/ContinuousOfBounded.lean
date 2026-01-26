@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2022 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
-
-public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Continuity and Von Neumann boundedness

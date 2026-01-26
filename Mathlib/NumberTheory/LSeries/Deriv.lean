@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.NumberTheory.LSeries.Convergence
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-public import Mathlib.Analysis.Complex.HalfPlane
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Differentiability and derivatives of L-series

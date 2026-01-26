@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Gareth Ma. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gareth Ma
--/
-module
-
-public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+import Mathlib.Tactic.CategoryTheory.Coherence.Basic
+import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 /-!
 # Deriving `RigidCategory` instance for braided and left/right rigid categories.

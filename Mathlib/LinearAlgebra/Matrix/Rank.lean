@@ -1,17 +1,7 @@
-/-
-Copyright (c) 2021 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Eric Wieser
--/
-module
-
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.Matrix.Diagonal
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
-public import Mathlib.LinearAlgebra.Matrix.Dual
+import Mathlib.LinearAlgebra.Dimension.LinearMap
+import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Rank of matrices

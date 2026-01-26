@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Yunzhou Xie
--/
-module
-
-public import Mathlib.Algebra.Central.Basic
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.Algebra.Central.Defs
 
 /-!
 

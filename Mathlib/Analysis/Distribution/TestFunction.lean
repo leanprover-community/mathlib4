@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Luigi Massacci. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luigi Massacci, Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Continuously differentiable functions with compact support

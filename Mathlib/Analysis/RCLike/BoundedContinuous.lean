@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Jakob Stiefel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jakob Stiefel
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Analysis.Normed.Operator.NNNorm
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-! # Results on bounded continuous functions with `RCLike` values -/
 

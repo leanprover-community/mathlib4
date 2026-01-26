@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Felix Weilacher
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.Topology.MetricSpace.Perfect
-public import Mathlib.Topology.Separation.CountableSeparatingOn
+import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # The Borel sigma-algebra on Polish spaces

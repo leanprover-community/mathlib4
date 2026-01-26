@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.RingTheory.MvPolynomial.Basic
+import Mathlib.Algebra.CharP.Lemmas
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 ## Polynomials over finite fields

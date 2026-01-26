@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-public import Mathlib.MeasureTheory.Covering.Besicovitch
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces

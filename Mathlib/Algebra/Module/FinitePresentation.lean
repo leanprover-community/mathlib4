@@ -1,17 +1,9 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-public import Mathlib.RingTheory.Finiteness.Projective
-public import Mathlib.RingTheory.Localization.BaseChange
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.Algebra.Exact
+import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.Algebra.Module.Projective
+import Mathlib.RingTheory.Ideal.Prime
+import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Praneeth Kolichala
--/
-module
-
-public import Mathlib.Topology.Homotopy.Path
-public import Mathlib.Topology.Homotopy.Equiv
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Contractible spaces

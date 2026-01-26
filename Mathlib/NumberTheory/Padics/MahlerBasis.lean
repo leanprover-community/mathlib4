@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Giulio Caflisch, David Loeffler
--/
-module
-
-public import Mathlib.Algebra.Group.ForwardDiff
-public import Mathlib.Analysis.Normed.Group.Ultra
-public import Mathlib.NumberTheory.Padics.ProperSpace
-public import Mathlib.RingTheory.Binomial
-public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+import Mathlib.Topology.ContinuousMap.Compact
 
 /-!
 # The Mahler basis of continuous functions

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2015 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Data.ENNReal.Lemmas
-public import Mathlib.Topology.Bornology.Constructions
-public import Mathlib.Topology.EMetricSpace.Pi
-public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+import Mathlib.Order.Filter.Finite
 
 /-!
 # Product of pseudometric spaces

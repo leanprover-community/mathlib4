@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-public import Mathlib.NumberTheory.GaussSum
 
 /-!
 # Quadratic characters of finite fields

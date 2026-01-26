@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public meta import Lean.Elab.Command
-public meta import Lean.Elab.ParseImportsFast
-public meta import Lean.Linter.Basic
-public import Lean.Message
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter

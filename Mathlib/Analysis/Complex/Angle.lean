@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Angle between complex numbers

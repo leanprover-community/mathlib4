@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Jingting Wang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jingting Wang, Sihan Su, Yi Song, Christian Merten
--/
-module
-
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.RingTheory.KrullDimension.PID
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
+import Mathlib.RingTheory.Ideal.Height
 
 /-!
 # Krull dimension of polynomial ring

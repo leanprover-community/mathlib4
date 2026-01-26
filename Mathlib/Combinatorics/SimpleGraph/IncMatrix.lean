@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Gabriel Moise. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Data.Finset.Sym
-public import Mathlib.Data.Matrix.Mul
+import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Incidence matrix of a simple graph

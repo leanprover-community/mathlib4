@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Frédéric Dupuis
--/
-module
-
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Module.LinearMap.Star
-public import Mathlib.Algebra.Module.Rat
-public import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Star.Rat
 
 /-!
 # The star operation, bundled as a star-linear equiv

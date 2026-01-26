@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Martin Zinkevich. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.Pi
-public import Mathlib.Probability.Independence.Integrable
-public import Mathlib.Probability.Notation
+import Mathlib.Probability.Independence.Basic
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Integration in Probability Theory

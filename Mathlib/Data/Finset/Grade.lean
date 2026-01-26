@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Atoms
-public import Mathlib.Order.Grade
-public import Mathlib.Order.Nat
+import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Finset.Card
 
 /-!
 # Finsets and multisets form a graded order

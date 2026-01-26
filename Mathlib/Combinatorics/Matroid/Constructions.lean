@@ -6,6 +6,7 @@ Authors: Peter Nelson
 module
 
 public import Mathlib.Combinatorics.Matroid.Minor.Restrict
+import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Some constructions of matroids

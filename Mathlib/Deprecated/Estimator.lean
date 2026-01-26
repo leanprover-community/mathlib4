@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2023 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Order.Heyting.Basic
-public import Mathlib.Order.RelClasses
-public import Mathlib.Order.Hom.Basic
-public import Mathlib.Lean.Thunk
 
 /-!
 # Improvable lower bounds.

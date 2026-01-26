@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
--/
-module
-
-public import Mathlib.GroupTheory.MonoidLocalization.Away
-public import Mathlib.RingTheory.Ideal.IsPrimary
-public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
-public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings

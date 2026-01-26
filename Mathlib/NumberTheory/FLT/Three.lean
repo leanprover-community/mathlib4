@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2024 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
-  Lorenzo Luccioli, Pietro Monticone, Alexis Saurin, Florent Schaffhauser
--/
-module
-
-public import Mathlib.NumberTheory.FLT.Basic
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
+import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
 
 /-!
 # Fermat Last Theorem in the case `n = 3`

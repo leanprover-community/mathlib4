@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2025 Vlad Tsyrklevich. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vlad Tsyrklevich
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Set.Card
-
-import Mathlib.Data.Finite.Card
-import Mathlib.Tactic.ENatToNat
 
 /-!
 # Vertex cover

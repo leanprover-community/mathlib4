@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Module.Opposite
-public import Mathlib.Topology.Algebra.Group.Quotient
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Pi
-public import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Theory of topological modules

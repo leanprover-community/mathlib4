@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.SetTheory.Cardinal.ENat
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Projection from cardinal numbers to natural numbers

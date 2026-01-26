@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2023 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.NumberTheory.EulerProduct.ExpLog
-public import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.SmoothNumbers
+import Mathlib.NumberTheory.DirichletCharacter.Basic
+import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-module
-
-public import Mathlib.Tactic.Tauto
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Units in the integers

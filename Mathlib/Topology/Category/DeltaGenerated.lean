@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Ben Eltschig. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ben Eltschig
--/
-module
-
-public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
-public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Delta-generated topological spaces

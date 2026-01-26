@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Mathlib.Data.Set.Disjoint
+import Mathlib.Data.Set.Basic
 
 /-!
 # Lemmas about insertion, singleton, and pairs

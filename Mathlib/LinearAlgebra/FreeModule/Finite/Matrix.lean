@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2021 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Finite and free modules using matrices

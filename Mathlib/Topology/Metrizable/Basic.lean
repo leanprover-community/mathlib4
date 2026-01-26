@@ -6,6 +6,8 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Metrizable Spaces

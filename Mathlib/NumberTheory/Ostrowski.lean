@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola,
-María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
-Francesco Veneziano
--/
-module
-
-public import Mathlib.Analysis.AbsoluteValue.Equivalence
-public import Mathlib.Analysis.SpecialFunctions.Log.Base
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
 # Ostrowski’s Theorem

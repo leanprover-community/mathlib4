@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2018 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.Order.AbsoluteValue.Basic
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Algebra.Ring.Prod
-public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.Topology.Algebra.Group.GroupTopology
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 

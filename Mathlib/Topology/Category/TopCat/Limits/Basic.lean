@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2017 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
--/
-module
-
-public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.CategoryTheory.Limits.Types.Limits
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-public import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Types.ColimitType
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # The category of topological spaces has all limits and colimits

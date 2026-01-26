@@ -1,19 +1,4 @@
-/-
-Copyright (c) 2014 Parikshit Khanna. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Data.List.Count
-public import Mathlib.Data.List.Duplicate
-public import Mathlib.Data.List.InsertIdx
-public import Mathlib.Data.List.Induction
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Perm.Basic
-public import Mathlib.Order.Lattice
-public import Mathlib.Tactic.Finiteness.Attr
+import Mathlib.Data.List.Defs
 
 /-!
 # Permutations of a list

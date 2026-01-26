@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2021 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Topology.Algebra.InfiniteSum.Real
-public import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-! # Multiplying two infinite sums in a normed ring
 

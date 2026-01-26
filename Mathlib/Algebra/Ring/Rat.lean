@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Ring.Basic
-public import Mathlib.Algebra.Ring.Int.Defs
-public import Mathlib.Data.Rat.Defs
-public import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.CharZero.Defs
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The rational numbers are a commutative ring

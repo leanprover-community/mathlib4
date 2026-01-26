@@ -6,6 +6,7 @@ Authors: Sven Manthe
 module
 
 public import Mathlib.Order.CompleteLattice.SetLike
+import Mathlib.Order.CompleteSublattice
 
 /-!
 # Trees in the sense of descriptive set theory

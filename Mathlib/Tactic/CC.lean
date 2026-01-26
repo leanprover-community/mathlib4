@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Miyahara Kō
 module
 
 public import Mathlib.Tactic.CC.Addition
+import Mathlib.Tactic.CC.Datatypes
 
 /-!
 # Congruence closure

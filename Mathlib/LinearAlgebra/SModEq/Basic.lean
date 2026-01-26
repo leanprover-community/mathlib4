@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2020 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Map
-public import Mathlib.Algebra.Polynomial.Eval.Defs
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # modular equivalence for submodule

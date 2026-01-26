@@ -6,6 +6,8 @@ Authors: Anne Baanen
 module
 
 public import Mathlib.Data.ZMod.Basic
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings

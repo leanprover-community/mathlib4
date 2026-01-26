@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
-  Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
-public import Mathlib.Data.Finset.Sym
+import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Antidiagonal of functions as finsets

@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
--/
-module
-
-public import Mathlib.Order.ConditionallyCompleteLattice.Finset
-public import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Nat
+import Mathlib.Data.Finite.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Conditionally complete linear order structure on `ℕ`

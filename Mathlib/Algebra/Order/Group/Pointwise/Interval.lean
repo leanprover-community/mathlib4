@@ -1,18 +1,7 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Patrick Massot
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Group.MinMax
-public import Mathlib.Algebra.Order.Interval.Set.Monoid
-public import Mathlib.Order.Interval.Set.OrderIso
-public import Mathlib.Order.Interval.Set.UnorderedInterval
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Field.Defs
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
 
 /-!
 # (Pre)images of intervals

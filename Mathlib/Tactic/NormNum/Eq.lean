@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Core
 
 /-!
 # `norm_num` extension for equalities

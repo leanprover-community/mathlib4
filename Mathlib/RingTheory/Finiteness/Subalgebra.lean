@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Bilinear
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Subalgebras that are finitely generated as submodules

@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-public import Mathlib.FieldTheory.Finite.Trace
-public import Mathlib.Algebra.Group.AddChar
-public import Mathlib.Data.ZMod.Units
-public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields

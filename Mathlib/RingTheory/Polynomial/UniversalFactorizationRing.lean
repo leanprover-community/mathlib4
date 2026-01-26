@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.FiniteStability
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Polynomial.IsIntegral
-public import Mathlib.RingTheory.Polynomial.Resultant.Basic
-public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+import Mathlib.RingTheory.Etale.Basic
 
 
 /-!

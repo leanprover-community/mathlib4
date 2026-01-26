@@ -1,17 +1,5 @@
-/-
-Copyright (c) 2025 Stefan Kebekus. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stefan Kebekus
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Defs
-public import Mathlib.Algebra.Group.Support
-public import Mathlib.Algebra.Order.Group.PosPart
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Topology.DiscreteSubset
-public import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Type of functions with locally finite support

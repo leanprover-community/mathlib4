@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Admissible absolute value on the integers

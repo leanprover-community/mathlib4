@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2018 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.Seminorm
-public import Mathlib.Data.NNReal.Basic
-public import Mathlib.Topology.Algebra.Support
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.Order.Real
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Normed (semi)groups

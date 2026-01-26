@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-meta import Batteries.Data.Rat.Float  -- shake: keep (for `#eval` sanity check)
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Tactic.Positivity
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Chudnovsky's formula for π

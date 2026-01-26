@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Analysis.Calculus.TangentCone.Defs
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Unique differentiability property of a set in the base field

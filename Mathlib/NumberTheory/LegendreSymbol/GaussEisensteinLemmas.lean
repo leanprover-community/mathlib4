@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Data.Nat.Prime.Factorial
-public import Mathlib.NumberTheory.LegendreSymbol.Basic
+import Mathlib.Data.ZMod.ValMinAbs
 
 /-!
 # Lemmas of Gauss and Eisenstein

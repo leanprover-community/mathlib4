@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 module
 
 public import Mathlib.Data.List.Chain
+import Batteries.Data.List.Basic
 
 /-!
 # Ranges of naturals as lists

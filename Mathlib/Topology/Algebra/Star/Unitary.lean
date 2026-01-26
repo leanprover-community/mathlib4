@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux, Bhavik Mehta
--/
-module
-
-public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Topology.Algebra.Star
-public import Mathlib.Topology.Algebra.Monoid
 
 /-! # Topological properties of the unitary (sub)group
 

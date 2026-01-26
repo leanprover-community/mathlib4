@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2025 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-public import Mathlib.Analysis.Normed.Group.Int
-public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Analysis.Normed.MulAction
-public import Mathlib.Order.Filter.AtTopBot.Interval
-public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+import Mathlib.Algebra.Group.EvenFunction
+import Mathlib.Analysis.Normed.Group.Continuity
 
 
 /-!

@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Baire.Lemmas
-public import Mathlib.Topology.Baire.CompleteMetrizable
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
-public import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Banach open mapping theorem

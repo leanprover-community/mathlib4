@@ -1,17 +1,6 @@
-/-
-Copyright (c) 2022 Eric Rodriguez. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Rodriguez
--/
-module
-
-public import Mathlib.Algebra.Field.TransferInstance
-public import Mathlib.Algebra.Field.ULift
-public import Mathlib.Algebra.MvPolynomial.Cardinal
-public import Mathlib.Data.Rat.Encodable
-public import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.Localization.Cardinality
-public import Mathlib.SetTheory.Cardinal.Divisibility
+import Mathlib.Algebra.IsPrimePow
+import Mathlib.Algebra.Field.IsField
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Cardinality of Fields

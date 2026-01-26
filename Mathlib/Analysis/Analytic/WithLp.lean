@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Etienne Marion. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Etienne Marion
--/
-module
-
-public import Mathlib.Analysis.Analytic.Linear
-public import Mathlib.Analysis.Normed.Lp.PiLp
+import Mathlib.Analysis.Analytic.Basic
 
 /-!
 # Analyticity on `WithLp`

@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
--/
-module
-
-public import Mathlib.Algebra.EuclideanDomain.Basic
-public import Mathlib.Algebra.Order.Group.Finset
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Data.Nat.PrimeFin
-public import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.Algebra.EuclideanDomain.Defs
 
 /-!
 # Radical of an element of a unique factorization normalization monoid

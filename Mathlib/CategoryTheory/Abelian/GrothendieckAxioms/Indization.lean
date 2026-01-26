@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2025 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
-public import Mathlib.CategoryTheory.Abelian.Indization
-public import Mathlib.CategoryTheory.Limits.Indization.Category
-public import Mathlib.CategoryTheory.Generator.Indization
-public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 
 /-!
 # AB axioms in the category of ind-objects

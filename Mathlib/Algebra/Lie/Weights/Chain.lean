@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2024 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.DirectSum.LinearMap
-public import Mathlib.Algebra.Lie.Weights.Cartan
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.RingTheory.Finiteness.Nilpotent
-public import Mathlib.Data.Int.Interval
-public import Mathlib.Order.Filter.Cofinite
+import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Chains of roots and weights

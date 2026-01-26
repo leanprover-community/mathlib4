@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2022 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
-public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-public import Mathlib.Data.Set.Subsingleton
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.Data.Matrix.Mul
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 
 /-!
 # Hom orthogonal families.

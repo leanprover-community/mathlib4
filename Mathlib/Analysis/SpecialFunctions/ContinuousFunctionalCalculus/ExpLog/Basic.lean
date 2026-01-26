@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus

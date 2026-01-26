@@ -1,20 +1,7 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Chris Hughes
--/
-module
-
-public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Adjoin.Basic
-public import Mathlib.RingTheory.FinitePresentation
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-public import Mathlib.RingTheory.PowerBasis
-public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.Polynomial.Quotient
+import Mathlib.Algebra.Polynomial.Splits
+import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 
 /-!
 # Adjoining roots of polynomials

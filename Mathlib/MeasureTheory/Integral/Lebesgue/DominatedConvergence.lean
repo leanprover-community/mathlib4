@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Dominated convergence theorem

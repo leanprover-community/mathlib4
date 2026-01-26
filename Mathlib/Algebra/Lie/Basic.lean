@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2019 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Equiv
-public import Mathlib.Algebra.Module.Equiv.Basic
-public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.Bracket
-public import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Rat
 
 /-!
 # Lie algebras

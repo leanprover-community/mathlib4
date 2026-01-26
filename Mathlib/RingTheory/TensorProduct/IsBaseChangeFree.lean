@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.RingTheory.IsTensorProduct
 
 /-! # Base change of a free module
 

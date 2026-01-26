@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Yizheng Zhu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yizheng Zhu
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.MeasureTheory.Covering.OneDim
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Lebesgue Differentiation Theorem (Interval Version)

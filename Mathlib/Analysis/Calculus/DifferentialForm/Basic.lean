@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Sam Lindauer
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
-public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
 
 /-!
 # Exterior derivative of a differential form on a normed space

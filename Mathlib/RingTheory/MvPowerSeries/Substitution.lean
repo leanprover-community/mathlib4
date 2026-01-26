@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
--/
-module
-
-public import Mathlib.RingTheory.MvPowerSeries.Evaluation
-public import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Topology.UniformSpace.DiscreteUniformity
-public import Mathlib.Data.ENat.Lattice
 
 /-! # Substitutions in multivariate power series
 

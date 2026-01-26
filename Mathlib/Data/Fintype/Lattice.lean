@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Lemmas relating fintypes and order/lattice structure.

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasilii Nesterov
--/
-module
-
-public import Batteries.Data.List
-public import Batteries.Tactic.GeneralizeProofs
-public import Mathlib.Tactic.Order.CollectFacts
-public meta import Mathlib.Util.AtomM
-public import Mathlib.Util.Qq
 
 /-!
 # Translating linear orders to ℤ

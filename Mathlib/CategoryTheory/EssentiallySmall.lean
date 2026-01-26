@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.CategoryTheory.Category.ULift
-public import Mathlib.CategoryTheory.EqToHom
-public import Mathlib.CategoryTheory.Skeletal
-public import Mathlib.CategoryTheory.Comma.Arrow
-public import Mathlib.Logic.UnivLE
-public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.

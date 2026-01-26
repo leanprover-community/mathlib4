@@ -1,21 +1,5 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Joey van Langen, Casper Putz
--/
-module
-
-public import Mathlib.Algebra.CharP.Algebra
-public import Mathlib.Algebra.CharP.Reduced
-public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.Data.ZMod.ValMinAbs
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-public import Mathlib.FieldTheory.Finiteness
-public import Mathlib.FieldTheory.Galois.Notation
-public import Mathlib.FieldTheory.Perfect
-public import Mathlib.FieldTheory.Separable
-public import Mathlib.RingTheory.IntegralDomain
+import Mathlib.Data.Fintype.Units
+import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Finite fields

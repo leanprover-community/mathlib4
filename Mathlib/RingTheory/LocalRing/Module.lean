@@ -1,21 +1,5 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Module.FinitePresentation
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Flat.EquationalCriterion
-public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
-public import Mathlib.RingTheory.LocalProperties.Exactness
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-public import Mathlib.RingTheory.Nakayama
-public import Mathlib.RingTheory.Support
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Finite modules over local rings

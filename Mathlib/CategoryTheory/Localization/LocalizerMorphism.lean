@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Localization.Equivalence
-public import Mathlib.CategoryTheory.Localization.Opposite
+import Mathlib.CategoryTheory.CatCommSq
+import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Morphisms of localizers

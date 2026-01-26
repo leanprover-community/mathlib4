@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Geißer, Michael Stoll
--/
-module
-
-public import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
-public import Mathlib.Algebra.ContinuedFractions.Computation.Translations
-public import Mathlib.NumberTheory.DiophantineApproximation.Basic
+import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 
 /-!
 # Diophantine Approximation using continued fractions

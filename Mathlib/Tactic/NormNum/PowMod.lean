@@ -6,6 +6,7 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.Tactic.NormNum.Pow
+import Qq.Typ
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.

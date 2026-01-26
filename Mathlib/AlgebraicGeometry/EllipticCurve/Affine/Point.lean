@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Kurniadi Angdinata
--/
-module
-
-public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-public import Mathlib.LinearAlgebra.FreeModule.Norm
-public import Mathlib.RingTheory.ClassGroup
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.RingTheory.Norm.Defs
 
 /-!
 # Nonsingular points and the group law in affine coordinates

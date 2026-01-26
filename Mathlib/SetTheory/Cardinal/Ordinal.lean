@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández Palacios
--/
-module
-
-public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.Ordinal.Principal
+import Mathlib.SetTheory.Cardinal.Aleph
 
 /-!
 # Ordinal arithmetic with cardinals

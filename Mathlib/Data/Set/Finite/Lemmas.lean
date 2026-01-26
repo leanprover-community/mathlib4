@@ -1,15 +1,7 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
--/
-module
-
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Logic.Embedding.Set
+import Mathlib.Order.SetNotation
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Set.Basic
+import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Lemmas on finiteness of sets

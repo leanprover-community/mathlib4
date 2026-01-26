@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Moritz Firsching. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Associated
-public import Mathlib.Data.ZMod.Basic
-public import Mathlib.RingTheory.Coprime.Lemmas
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Lemmas about units in `ZMod`.

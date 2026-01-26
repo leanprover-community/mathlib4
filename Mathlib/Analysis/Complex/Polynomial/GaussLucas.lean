@@ -6,6 +6,9 @@ Authors: Yury Kudryashov, Aristotle AI
 module
 
 public import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Gauss-Lucas Theorem

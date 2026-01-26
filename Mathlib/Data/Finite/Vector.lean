@@ -6,6 +6,8 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Data.Fintype.Vector
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Sym.Basic
 
 /-!
 # Finiteness of vector types

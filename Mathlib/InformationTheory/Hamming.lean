@@ -6,6 +6,7 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Algebra.Module.Pi
 
 /-!
 # Hamming spaces

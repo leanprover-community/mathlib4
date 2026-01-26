@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll, Patrick Massot, Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.Order.Filter.IsBounded
-public import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # A normed field is a completable topological field

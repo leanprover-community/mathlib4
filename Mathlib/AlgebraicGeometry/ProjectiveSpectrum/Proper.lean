@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
-  Justus Springer, Andrew Yang, Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
-public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
 /-!
 # Properness of `Proj A`

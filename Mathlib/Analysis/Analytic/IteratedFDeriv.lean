@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-public import Mathlib.Data.Fintype.Perm
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # The iterated derivative of an analytic function

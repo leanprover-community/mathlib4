@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2018 Ellen Arlt. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
--/
-module
-
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Algebra.Ring.Subsemiring.Defs
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Matrix.Diagonal
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Matrix multiplication

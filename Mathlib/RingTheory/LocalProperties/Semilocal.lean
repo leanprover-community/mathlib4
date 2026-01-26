@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2025 Yiming Fu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yiming Fu
--/
-module
-
-public import Mathlib.RingTheory.DedekindDomain.PID
-public import Mathlib.RingTheory.KrullDimension.PID
+import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.Algebra.Module.LocalizedModule.Submodule
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 # Local properties for semilocal rings

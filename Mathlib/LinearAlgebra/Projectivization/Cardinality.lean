@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Christian Merten
--/
-module
-
-public import Mathlib.Algebra.Ring.GeomSum
-public import Mathlib.Data.Finite.Sum
-public import Mathlib.Data.Fintype.Units
-public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Cardinality of projective spaces

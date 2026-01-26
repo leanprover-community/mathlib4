@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2022 Xavier Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot
--/
-module
-
-public import Mathlib.Algebra.Module.ZLattice.Basic
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
-public import Mathlib.MeasureTheory.Measure.Haar.Unique
-public import Mathlib.NumberTheory.NumberField.FractionalIdeal
-public import Mathlib.NumberTheory.NumberField.Units.Basic
+import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Canonical embedding of a number field

@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Lie.EngelSubalgebra
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Module.LinearMap.Polynomial
-public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Rank of a Lie algebra and regular elements

@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
 /-!
 # Lp seminorm with respect to trimmed measure

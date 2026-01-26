@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Order.Minimal
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Empty
 
 /-!
 # Finite preorders and finite sets in a preorder

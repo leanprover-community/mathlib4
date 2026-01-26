@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2019 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.GroupTheory.Perm.Basic
-public import Mathlib.GroupTheory.Perm.Finite
-public import Mathlib.GroupTheory.Perm.List
-public import Mathlib.GroupTheory.Perm.Sign
+import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Cycles of a permutation

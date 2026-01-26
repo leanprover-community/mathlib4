@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Adam Topaz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Adjunction.Restrict
-public import Mathlib.CategoryTheory.Adjunction.Whiskering
-public import Mathlib.CategoryTheory.Sites.PreservesSheafification
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 

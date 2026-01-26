@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.CategoryTheory.Adjunction.Lifting.Right
-public import Mathlib.CategoryTheory.Monoidal.Closed.FunctorCategory.Groupoid
-public import Mathlib.CategoryTheory.Groupoid.Discrete
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Monad.Comonadicity
+import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 /-!
 
 # Functors into a complete monoidal closed category form a monoidal closed category.

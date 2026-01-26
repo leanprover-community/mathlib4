@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Floris van Doorn
--/
-module
-
-public import Mathlib.Analysis.Calculus.ContDiff.Defs
-public import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
-public import Mathlib.Analysis.Calculus.FDeriv.Affine
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+import Mathlib.Topology.Algebra.ContinuousAffineMap
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Higher differentiability of composition

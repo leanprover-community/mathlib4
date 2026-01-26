@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
--/
-module
-
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.NeZero
-public import Mathlib.Order.BoundedOrder.Basic
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Canonically ordered monoids

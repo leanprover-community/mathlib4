@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Group.Hom.End
-public import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Module structure and endomorphisms

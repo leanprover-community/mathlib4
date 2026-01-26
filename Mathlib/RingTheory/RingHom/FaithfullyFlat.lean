@@ -6,6 +6,7 @@ Authors: Christian Merten, Joël Riou
 module
 
 public import Mathlib.RingTheory.RingHom.Flat
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Faithfully flat ring maps

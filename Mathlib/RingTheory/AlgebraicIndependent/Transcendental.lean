@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Data.Fin.Tuple.Reflection
-public import Mathlib.RingTheory.Algebraic.MvPolynomial
-public import Mathlib.RingTheory.AlgebraicIndependent.Basic
+import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Algebraic Independence

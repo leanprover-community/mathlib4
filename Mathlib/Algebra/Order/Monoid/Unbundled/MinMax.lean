@@ -6,6 +6,8 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.

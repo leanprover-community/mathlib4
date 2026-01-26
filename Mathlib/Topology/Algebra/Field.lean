@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Field.Subfield.Defs
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
-public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Algebra.Order.Nonneg.Field
 
 /-!
 # Topological fields

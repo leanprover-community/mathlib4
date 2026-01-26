@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2026 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Empty
 
 /-!
 # Dense orders and finsets

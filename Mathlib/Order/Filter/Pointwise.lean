@@ -1,20 +1,4 @@
-/-
-Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhouhang Zhou, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Order.Filter.AtTopBot.Map
-public import Mathlib.Order.Filter.NAry
-public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Data.Finset.Attr
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Pointwise operations on filters

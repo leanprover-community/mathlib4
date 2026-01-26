@@ -6,6 +6,7 @@ Authors: Yury Kudryashov, Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Pullback of a measure

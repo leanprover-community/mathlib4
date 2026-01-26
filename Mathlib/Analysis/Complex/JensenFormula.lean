@@ -6,6 +6,9 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+import Mathlib.Analysis.Meromorphic.Divisor
+import Mathlib.Analysis.Meromorphic.TrailingCoefficient
+import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Jensen's Formula of Complex Analysis

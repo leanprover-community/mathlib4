@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.Algebra.Category.Ring.Instances
-public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.Algebra.Ring.Subring.Basic
-public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Topology.Sheaves.LocalPredicate
 
 /-!
 # The structure sheaf on `PrimeSpectrum R`.

@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Rudy Peterson
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 
 /-!
 # Bind operation for multisets

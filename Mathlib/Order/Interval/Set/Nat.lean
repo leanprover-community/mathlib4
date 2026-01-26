@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2026 Yael Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yael Dillies
--/
-module
-
-public import Mathlib.Data.Set.Card
-
-import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Finite intervals of naturals

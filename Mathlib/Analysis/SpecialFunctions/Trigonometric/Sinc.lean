@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-public import Mathlib.Analysis.Calculus.DSlope
+import Mathlib.Analysis.Complex.Trigonometric
 
 /-!
 # Sinc function

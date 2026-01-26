@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2020 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Logic.Encodable.Pi
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.MeasurableSpace.Pi
-public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Topology.Constructions
 
 /-!
 # Indexed product measures

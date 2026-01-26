@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2021 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
-public import Mathlib.Algebra.Star.Pointwise
-public import Mathlib.RingTheory.Ideal.Maps
-public import Mathlib.RingTheory.Ideal.Nonunits
-public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra

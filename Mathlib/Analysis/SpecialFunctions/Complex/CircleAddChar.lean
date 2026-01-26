@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
-public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-public import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Additive characters valued in the unit circle

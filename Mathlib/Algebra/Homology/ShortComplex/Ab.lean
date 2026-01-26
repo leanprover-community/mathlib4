@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Category.Grp.Abelian
-public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups

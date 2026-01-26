@@ -6,6 +6,7 @@ Authors: Jon Bannon, Jireh Loreaux
 module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 

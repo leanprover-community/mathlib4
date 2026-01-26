@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Attila Gáspár. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Attila Gáspár
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Topology.Algebra.AsymptoticCone
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Asymptotic cones in normed spaces

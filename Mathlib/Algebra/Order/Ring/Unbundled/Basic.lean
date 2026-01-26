@@ -1,19 +1,6 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.NeZero
-public import Mathlib.Algebra.Order.Group.Unbundled.Basic
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Algebra.Order.Monoid.NatCast
-public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Tactic.Tauto
+import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 
 /-!
 # Basic facts for ordered rings and semirings

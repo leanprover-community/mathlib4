@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2019 Reid Barton. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton
--/
-module
-
-public import Mathlib.Topology.Category.TopCat.Adjunctions
-public import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Epi- and monomorphisms in `Top`

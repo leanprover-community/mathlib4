@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2017 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Adam Topaz
--/
-module
-
-public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Basic
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.Limits.Types.Images
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.CategoryTheory.Limits.Yoneda
+import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Facts about (co)limits of functors into concrete categories

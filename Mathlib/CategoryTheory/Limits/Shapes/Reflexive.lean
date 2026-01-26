@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Robin Carlier
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Reflexive coequalizers

@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Fintype.Option
-public import Mathlib.Topology.Separation.Regular
-public import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Separation properties: profinite spaces

@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2023 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public meta import Mathlib.Util.AtLocation
-public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
-public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
-import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
-public import Mathlib.Tactic.NormNum.PowMod
-public import Mathlib.Tactic.ReduceModChar.Ext
 
 /-!
 # `reduce_mod_char` tactic

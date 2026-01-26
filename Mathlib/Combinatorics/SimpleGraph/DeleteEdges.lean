@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
--/
-module
-
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Combinatorics.SimpleGraph.Finite
-public import Mathlib.Combinatorics.SimpleGraph.Maps
-public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Edge deletion

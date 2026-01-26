@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jovan Gerbscheid, Anand Rao
--/
-module
-
-public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Lean.Meta.RefinedDiscrTree
-public import Mathlib.Tactic.Widget.InteractiveUnfold
-public import ProofWidgets.Component.FilterDetails
+import Mathlib.Tactic.Widget.SelectPanelUtils
+import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 /-!
 # Point & click library rewriting

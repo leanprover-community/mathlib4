@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives

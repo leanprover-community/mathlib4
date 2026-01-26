@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
+import Mathlib.RingTheory.Ideal.Prod
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Prime spectrum of a commutative (semi)ring

@@ -1,19 +1,4 @@
-/-
-Copyright (c) 2022 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.RingTheory.Filtration
-public import Mathlib.RingTheory.Ideal.Operations
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-public import Mathlib.RingTheory.Nakayama
+import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 # The module `I ⧸ I ^ 2`

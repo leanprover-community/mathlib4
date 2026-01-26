@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Order.ConditionallyCompleteLattice.Group
-public import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Tactic.Linarith.Lemmas
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # Metric space gluing

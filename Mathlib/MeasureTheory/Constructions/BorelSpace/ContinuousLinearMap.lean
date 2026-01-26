@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
--/
-module
-
-public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Measurable functions in normed spaces

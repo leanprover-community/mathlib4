@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Kevin Buzzard. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard
--/
-module
-
-public import Mathlib.Data.ENNReal.Inv
-public import Mathlib.Data.EReal.Operations
-public import Mathlib.Data.Sign.Basic
-public import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Data.Sign.Defs
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers

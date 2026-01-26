@@ -6,6 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Arithmetic-geometric sequences

@@ -6,6 +6,7 @@ Authors: Eric Wieser, Gaëtan Serré
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The canonical measure on the unit interval

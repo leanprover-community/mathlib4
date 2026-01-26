@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Measurability of `⌊x⌋` etc

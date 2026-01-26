@@ -6,6 +6,12 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.Choose.Factorization
+import Mathlib.RingTheory.Multiplicity
+import Mathlib.Data.Nat.Log
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Nat.Digits.Defs
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Natural number multiplicity

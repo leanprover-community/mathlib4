@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2023 Sidharth Hariharan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Sidharth Hariharan
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.Logic.Function.Basic
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 

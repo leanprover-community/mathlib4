@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2015 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.List.Defs
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Data.Multiset.Basic
-public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Sums and products over multisets

@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2020 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Abelian.Exact
-public import Mathlib.CategoryTheory.Comma.Over.Basic
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Module.Submodule.Range
 
 /-!
 # Pseudoelements in abelian categories

@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
-public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-public import Mathlib.Analysis.Calculus.ContDiff.WithLp
-public import Mathlib.Analysis.Calculus.FDeriv.WithLp
+import Mathlib.Analysis.Calculus.ContDiff.Defs
+import Mathlib.Topology.Algebra.Module.ModuleTopology
 
 /-!
 # Calculus in inner product spaces

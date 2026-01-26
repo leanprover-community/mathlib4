@@ -6,6 +6,8 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Directed
+import Mathlib.Order.Bounds.Defs
 
 /-!
 # Scott continuity

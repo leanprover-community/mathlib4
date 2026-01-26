@@ -1,23 +1,6 @@
-/-
-Copyright (c) 2020 Aaron Anderson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
--/
-module
-
-public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Data.Finite.Card
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Order.Atoms.Finite
-public import Mathlib.Order.CompactlyGenerated.Intervals
-public import Mathlib.Order.JordanHolder
-public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Noetherian.Defs
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Simple Modules

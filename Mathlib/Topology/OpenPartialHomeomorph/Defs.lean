@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Partial homeomorphisms: definitions

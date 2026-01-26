@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Damiano Testa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damiano Testa
--/
-module
-
-public import Mathlib.Algebra.Group.Equiv.Basic
-public import Mathlib.Algebra.Group.Equiv.Opposite
-public import Mathlib.Algebra.Group.TypeTags.Basic
-public import Mathlib.Data.Set.Operations
+import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Squares and even elements

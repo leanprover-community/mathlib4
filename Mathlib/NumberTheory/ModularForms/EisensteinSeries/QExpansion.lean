@@ -1,16 +1,8 @@
-/-
-Copyright (c) 2025 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Analysis.Complex.SummableUniformlyOn
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-public import Mathlib.NumberTheory.LSeries.Dirichlet
-public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-public import Mathlib.NumberTheory.TsumDivisorsAntidiagonal
+import Mathlib.NumberTheory.Bernoulli
+import Mathlib.Analysis.CStarAlgebra.Classes
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.NumberTheory.LSeries.RiemannZeta
+import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Eisenstein series q-expansions

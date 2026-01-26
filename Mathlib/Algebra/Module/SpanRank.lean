@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, Andrew Yang
--/
-module
-
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Minimum Cardinality of generating set of a submodule

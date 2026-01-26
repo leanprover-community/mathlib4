@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 PFR contributors. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: PFR contributors
--/
-module
-
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Topology.Piecewise
-public import Mathlib.Topology.Clopen
+import Mathlib.Topology.Defs.Filter
 
 /-!
 # Continuity of indicator functions

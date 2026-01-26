@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis, Keeley Hoek
--/
-module
-
-public import Mathlib.Data.Int.DivMod
-public import Mathlib.Order.Lattice
-public import Mathlib.Tactic.Common
-public import Batteries.Data.Fin.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # The finite type with `n` elements

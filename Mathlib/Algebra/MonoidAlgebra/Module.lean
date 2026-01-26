@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Span.Defs
-
-import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # Module structure on monoid algebras

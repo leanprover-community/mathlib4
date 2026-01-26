@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.GroupTheory.Index
+import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Complements

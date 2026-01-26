@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2019 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Order.Filter.Tendsto
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-public import Mathlib.Algebra.Order.Group.Defs
-public import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Order.ConditionallyCompleteLattice.Defs
+import Mathlib.Order.Filter.Defs
+import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set

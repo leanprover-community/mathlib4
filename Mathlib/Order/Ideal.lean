@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 David Wärn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Wärn
--/
-module
-
-public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Logic.Encodable.Basic
-public import Mathlib.Order.Atoms
-public import Mathlib.Order.Cofinal
-public import Mathlib.Order.UpperLower.Principal
+import Mathlib.Order.Preorder.Chain
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma

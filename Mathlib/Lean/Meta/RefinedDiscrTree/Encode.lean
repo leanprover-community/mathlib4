@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jovan Gerbscheid
--/
-module
-
-public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-public import Lean.Meta.DiscrTree
-public import Lean.Meta.LazyDiscrTree
-import all Lean.Meta.DiscrTree
-public import Lean.Meta
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s

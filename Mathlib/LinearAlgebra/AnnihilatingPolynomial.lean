@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Justin Thomas. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Justin Thomas
--/
-module
-
-public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.Algebra.Polynomial.Module.AEval
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.FieldTheory.Minpoly.Basic
 
 /-!
 # Annihilating Ideal

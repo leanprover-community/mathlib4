@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.RingTheory.Localization.Finiteness
-public import Mathlib.RingTheory.RingHom.FiniteType
-public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.FinitePresentation
+import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 

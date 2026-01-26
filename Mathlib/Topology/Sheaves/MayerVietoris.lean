@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
-public import Mathlib.CategoryTheory.Sites.Spaces
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
 # Mayer-Vietoris squares

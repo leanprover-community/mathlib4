@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Data.Real.Star
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.

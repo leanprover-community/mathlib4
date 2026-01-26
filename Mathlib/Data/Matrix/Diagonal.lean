@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2018 Ellen Arlt. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
--/
-module
-
-public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Data.Int.Cast.Pi
-public import Mathlib.Data.Nat.Cast.Basic
-public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Diagonal matrices

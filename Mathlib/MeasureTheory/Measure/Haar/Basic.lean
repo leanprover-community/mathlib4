@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Content
-public import Mathlib.MeasureTheory.Group.Prod
-public import Mathlib.Topology.Algebra.Group.Compact
+import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Haar measure

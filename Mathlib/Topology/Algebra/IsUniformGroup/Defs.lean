@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2018 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
--/
-module
-
-public import Mathlib.Topology.UniformSpace.Basic
-public import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Topology.Algebra.Group.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Uniform structure on topological groups

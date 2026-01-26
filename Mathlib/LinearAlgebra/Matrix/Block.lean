@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Wen Yang
--/
-module
-
-public import Mathlib.LinearAlgebra.Matrix.Transvection
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 # Block matrices and their determinant

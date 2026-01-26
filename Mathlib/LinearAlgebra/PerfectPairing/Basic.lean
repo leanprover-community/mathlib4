@@ -6,6 +6,7 @@ Authors: Oliver Nash, Yaël Dillies
 module
 
 public import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # Perfect pairings

@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2015 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Rudy Peterson
--/
-module
-
-public import Mathlib.Data.Multiset.MapFold
-public import Mathlib.Data.Set.Function
-public import Mathlib.Order.Hom.Basic
 
 /-!
 # Filtering multisets by a predicate

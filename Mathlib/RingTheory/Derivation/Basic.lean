@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nicolò Cavalleri, Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Derivations

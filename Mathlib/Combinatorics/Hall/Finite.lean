@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
--/
-module
-
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Hall's Marriage Theorem for finite index types

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Divisibility
-public import Mathlib.Algebra.Ring.Rat
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Data.PNat.Defs
+import Mathlib.Algebra.Group.Even
+import Mathlib.Data.Rat.Defs
 
 /-!
 # Further lemmas for the Rational Numbers

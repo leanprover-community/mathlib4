@@ -1,17 +1,5 @@
-/-
-Copyright (c) 2022 Adam Topaz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
--/
-module
-
-public import Mathlib.RingTheory.Bezout
-public import Mathlib.RingTheory.LocalRing.Basic
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Integer
-public import Mathlib.RingTheory.Valuation.Integers
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.FieldSimp
+import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Valuation Rings

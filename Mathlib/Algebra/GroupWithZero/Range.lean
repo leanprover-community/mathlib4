@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir and Filippo Nuccio. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-public import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-! # The range of a MonoidWithZeroHom
 Given a `MonoidWithZeroHom` `f : A → B` whose codomain `B` is a `MonoidWithZero`, we define the

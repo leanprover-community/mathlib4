@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Jack McKoen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jack McKoen, Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
-public import Mathlib.CategoryTheory.LiftingProperties.Limits
-public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Left and right lifting properties

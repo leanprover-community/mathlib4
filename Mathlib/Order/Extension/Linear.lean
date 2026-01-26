@@ -6,6 +6,7 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.Order.Zorn
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Extend a partial order to a linear order

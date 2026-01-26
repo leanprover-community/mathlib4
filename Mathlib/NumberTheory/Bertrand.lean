@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Patrick Stevens. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Stevens, Bolton Bailey
--/
-module
-
-public import Mathlib.Data.Nat.Choose.Factorization
-public import Mathlib.NumberTheory.Primorial
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-public import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
-public import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Bertrand's Postulate

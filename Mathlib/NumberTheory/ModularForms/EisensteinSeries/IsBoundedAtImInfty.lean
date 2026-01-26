@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Defs
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-public import Mathlib.NumberTheory.ModularForms.Identities
 
 /-!
 # Boundedness of Eisenstein series

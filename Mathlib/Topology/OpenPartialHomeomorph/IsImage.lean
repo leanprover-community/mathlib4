@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
+import Mathlib.Topology.OpenPartialHomeomorph.Basic
 /-!
 # Partial homeomorphisms: Images of sets
 

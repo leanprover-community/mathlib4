@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-public import Mathlib.Analysis.PSeries
-public import Mathlib.Order.Interval.Finset.Box
-public import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Summability of Eisenstein series

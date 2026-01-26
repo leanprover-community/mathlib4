@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Justus Springer. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Justus Springer
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Types.Filtered
-public import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.

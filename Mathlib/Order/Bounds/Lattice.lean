@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Unions and intersections of bounds

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Christopher Hoskin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christopher Hoskin
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Idempotent
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Order.Notation
-public import Mathlib.Tactic.Convert
-public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Idempotent elements of a ring

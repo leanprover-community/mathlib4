@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.Algebra.Pointwise.Stabilizer
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.GroupTheory.GroupAction.Pointwise
-public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.GroupTheory.Index
-public import Mathlib.Tactic.IntervalCases
 
 /-! # Blocks
 

@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Cardinal
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Cardinality of algebraic extensions

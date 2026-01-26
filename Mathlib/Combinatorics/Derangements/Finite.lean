@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Henry Swanson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Henry Swanson
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Combinatorics.Derangements.Basic
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes

@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
--/
-module
-
-public import Mathlib.Analysis.Convex.Slope
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Analysis.Calculus.Deriv.Basic
+import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Convexity of functions and derivatives

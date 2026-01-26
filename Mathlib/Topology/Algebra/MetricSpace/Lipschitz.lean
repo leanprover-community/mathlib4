@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.MetricSpace.Lipschitz
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Lipschitz continuous functions

@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ashvni Narayanan
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Subgroup.Basic
-public import Mathlib.Algebra.Ring.Subring.Defs
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.RingTheory.NonUnitalSubring.Defs
-public import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Subrings

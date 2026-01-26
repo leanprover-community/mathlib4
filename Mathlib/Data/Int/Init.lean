@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-module
-
-public import Batteries.Logic
-public import Mathlib.Data.Int.Notation
-public import Mathlib.Data.Nat.Notation
-public import Mathlib.Tactic.Lemma
-public import Mathlib.Tactic.TypeStar
 
 /-!
 # Basic operations on the integers

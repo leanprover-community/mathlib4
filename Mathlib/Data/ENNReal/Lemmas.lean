@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Data.ENNReal.Basic
-public import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Some lemmas on extended non-negative reals

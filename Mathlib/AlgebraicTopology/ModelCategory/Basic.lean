@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.MorphismProperty.Composition
-public import Mathlib.CategoryTheory.MorphismProperty.Factorization
-public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-public import Mathlib.AlgebraicTopology.ModelCategory.Instances
+import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
 # Model categories

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Pfaffelhuber
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-! # Gram Matrices
 

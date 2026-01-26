@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Timothy Carlin-Burns
--/
-module
-
-public import Mathlib.Data.Set.Lattice
-public import Mathlib.Logic.Small.Basic
+import Mathlib.Order.SetNotation
+import Mathlib.Logic.Small.Defs
 
 /-!
 # Results about `Small` on coerced sets

@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Brian Nugent. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Brian Nugent
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Noetherian
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-public import Mathlib.RingTheory.HopkinsLevitzki
 
 /-!
 # Artinian and Locally Artinian Schemes

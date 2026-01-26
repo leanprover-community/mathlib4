@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Baire.Lemmas
-public import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-! # Open mapping theorem for morphisms of topological groups
 

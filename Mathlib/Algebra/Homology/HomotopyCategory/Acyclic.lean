@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
-public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
-public import Mathlib.Algebra.Homology.Localization
+import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
 /-!
 # The triangulated subcategory of acyclic complex in the homotopy category

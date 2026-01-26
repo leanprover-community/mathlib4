@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Basic
-public import Mathlib.Algebra.Module.Basic
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Regular.SMul
-public import Mathlib.Data.Finsupp.Basic
-public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Declarations about scalar multiplication on `Finsupp`

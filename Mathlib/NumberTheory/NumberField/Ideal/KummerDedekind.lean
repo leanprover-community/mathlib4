@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2025 Xavier Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot
--/
-module
-
-public import Mathlib.NumberTheory.KummerDedekind
-public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.NumberTheory.RamificationInertia.Basic
-public import Mathlib.RingTheory.Ideal.Int
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.Data.ZMod.QuotientRing
+import Mathlib.RingTheory.DedekindDomain.Dvr
 
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers

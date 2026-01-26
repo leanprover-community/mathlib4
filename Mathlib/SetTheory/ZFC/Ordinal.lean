@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Violeta Hernández Palacios
--/
-module
-
-public import Mathlib.Order.GameAdd
-public import Mathlib.Order.RelIso.Set
-public import Mathlib.SetTheory.Ordinal.Arithmetic
-public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann ordinals

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.Topology.Constructions
-public import Mathlib.Tactic.TFAE
+import Mathlib.Topology.Defs.Induced
 
 /-!
 # Locally closed sets

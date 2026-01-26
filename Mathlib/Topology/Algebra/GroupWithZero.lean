@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.GroupWithZero.Units.Equiv
-public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topological group with zero

@@ -1,23 +1,4 @@
-/-
-Copyright (c) 2020 Simon Hudon. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Simon Hudon
--/
-module
-
-public meta import Mathlib.Data.Finsupp.ToDFinsupp
-public meta import Mathlib.Data.Int.Range
-public meta import Mathlib.Data.List.Sigma
-public meta import Plausible.Functions
-public import Batteries.Data.MLList.Basic
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Data.DFinsupp.Defs
-public import Mathlib.Data.Finsupp.Defs
-public import Mathlib.Data.Int.Range
-public import Mathlib.Data.List.Sigma
-public import Mathlib.Data.PNat.Notation
-public import Mathlib.Tactic.Bound.Init
+import Mathlib.Data.List.Perm.Lattice
 
 /-!
 ## `Plausible`: generators for functions

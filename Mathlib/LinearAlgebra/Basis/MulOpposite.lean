@@ -6,6 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 /-!
 # Basis of an opposite space

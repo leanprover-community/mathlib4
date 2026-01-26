@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2021 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Aaron Anderson
--/
-module
-
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Algebra.Order.Sub.Basic
-public import Mathlib.Data.Finsupp.Basic
-public import Mathlib.Data.Finsupp.SMulWithZero
-public import Mathlib.Order.Preorder.Finsupp
+import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Pointwise order on finitely supported functions

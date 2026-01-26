@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, Anatole Dedecker
--/
-module
-
-public import Mathlib.Order.ConditionallyCompleteLattice.Basic
-public import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Saddle points of a map

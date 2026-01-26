@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ashvni Narayanan, Anne Baanen
--/
-module
-
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.CharZero.AddMonoidHom
-public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
-public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+import Mathlib.RingTheory.AdjoinRoot
+import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.RingTheory.DedekindDomain.Basic
 
 /-!
 # Number fields

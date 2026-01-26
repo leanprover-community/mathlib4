@@ -6,6 +6,7 @@ Authors: Jujian Zhang
 module
 
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
 # Presheaves on `PUnit`

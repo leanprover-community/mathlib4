@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Group.Ext
-public import Mathlib.CategoryTheory.Simple
-public import Mathlib.CategoryTheory.Linear.Basic
-public import Mathlib.CategoryTheory.Endomorphism
-public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Schur's lemma

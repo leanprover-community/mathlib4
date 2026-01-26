@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2018 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-module
-
-public import Mathlib.Data.Set.Prod
-public import Mathlib.Order.RelIso.Basic
-public import Mathlib.Order.SetNotation
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Relations as sets of pairs

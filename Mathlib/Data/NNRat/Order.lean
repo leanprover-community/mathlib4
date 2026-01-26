@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Bhavik Mehta
--/
-module
-
-public import Mathlib.Data.NNRat.Defs
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Bundled ordered algebra structures on `ℚ≥0`

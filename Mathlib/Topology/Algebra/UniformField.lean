@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2019 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
--/
-module
-
-public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.Topology.Algebra.Field
-public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Completion of topological fields

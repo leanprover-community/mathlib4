@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp
--/
-module
-
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Triangularizable linear endomorphisms

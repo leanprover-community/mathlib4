@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 module
 
 public import Mathlib.Topology.Maps.Proper.Basic
+import Mathlib.Topology.Constructions
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 

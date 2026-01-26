@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.GradedObject.Bifunctor
-public import Mathlib.CategoryTheory.Functor.Trifunctor
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 /-!
 # The action of trifunctors on graded objects
 

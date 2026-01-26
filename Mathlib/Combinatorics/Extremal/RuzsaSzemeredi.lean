@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-public import Mathlib.Tactic.Rify
-public import Mathlib.Tactic.Qify
+import Mathlib.Analysis.SpecialFunctions.Log.Basic
+import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+import Mathlib.Combinatorics.Additive.AP.Three.Defs
 
 /-!
 # The Ruzsa-Szemerédi problem

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2019 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.LinearAlgebra.Matrix.Symmetric
-public import Mathlib.LinearAlgebra.Matrix.MvPolynomial
-public import Mathlib.LinearAlgebra.Matrix.Polynomial
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Cramer's rule and adjugate matrices

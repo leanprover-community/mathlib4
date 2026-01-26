@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-public import Mathlib.Algebra.Homology.ShortComplex.Abelian
-public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-public import Mathlib.CategoryTheory.Abelian.Opposite
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # Exact short complexes

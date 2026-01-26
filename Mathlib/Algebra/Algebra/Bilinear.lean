@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products

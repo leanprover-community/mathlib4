@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2019 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Calculus.FDeriv.Basic
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Analysis.Calculus.FDeriv.Defs
+import Mathlib.Analysis.Calculus.TangentCone.Defs
 
 /-!
 # The derivative of bounded linear maps

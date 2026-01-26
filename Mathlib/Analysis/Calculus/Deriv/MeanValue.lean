@@ -1,17 +1,5 @@
-/-
-Copyright (c) 2019 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Analysis.RCLike.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Analysis.Calculus.Deriv.Basic
 /-!
 # Mean value theorem
 

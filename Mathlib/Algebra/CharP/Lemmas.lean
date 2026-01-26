@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Joey van Langen, Casper Putz
--/
-module
-
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Data.Nat.Multiplicity
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Characteristic of semirings

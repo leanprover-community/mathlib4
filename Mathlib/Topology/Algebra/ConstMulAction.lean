@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Kontorovich, Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.Module.ULift
-public import Mathlib.GroupTheory.GroupAction.Defs
-public import Mathlib.Topology.Algebra.Constructions
-public import Mathlib.Topology.Algebra.Support
+import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Monoid actions continuous in the second variable

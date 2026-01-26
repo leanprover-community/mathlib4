@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Fixed-point-free automorphisms

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
--/
-module
-
-public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Topology.Basic
+import Mathlib.Topology.Defs.Basic
 /-!
 # Induced and coinduced topologies
 

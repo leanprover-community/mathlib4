@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
 # Weak factorization systems

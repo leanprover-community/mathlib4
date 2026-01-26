@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
--/
-module
-
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Topology.Closure
+import Mathlib.Topology.Defs.Filter
+import Mathlib.Order.Filter.AtTopBot.Defs
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Neighborhoods in topological spaces

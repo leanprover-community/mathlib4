@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Paul Reichert. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Paul Reichert
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Types.Colimits
-public import Mathlib.CategoryTheory.IsConnected
-public import Mathlib.CategoryTheory.Limits.Final
-public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories

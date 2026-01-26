@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2025 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 
 /-!
 # Big operators on a finset in groups with zero involving order

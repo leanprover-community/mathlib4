@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Yakov Pechersky. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
--/
-module
-
-public import Mathlib.Algebra.Order.Monoid.Defs
-public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Rel
+import Mathlib.Algebra.Notation.Pi.Defs
 
 /-!
 # Pseudometrics as bundled functions

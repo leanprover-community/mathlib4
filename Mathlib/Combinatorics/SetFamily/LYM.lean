@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Field.Basic
-public import Mathlib.Algebra.Field.Rat
-public import Mathlib.Combinatorics.Enumerative.DoubleCounting
-public import Mathlib.Combinatorics.SetFamily.Shadow
-public import Mathlib.Data.NNRat.Order
-public import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # Lubell-Yamamoto-Meshalkin inequality and Sperner's theorem

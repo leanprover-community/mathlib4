@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-public import Mathlib.CategoryTheory.Sites.Whiskering
-public import Mathlib.Condensed.Basic
-public import Mathlib.Topology.Category.Stonean.Basic
+import Mathlib.CategoryTheory.Sites.Canonical
 
 /-!
 # Functors from categories of topological spaces to condensed sets

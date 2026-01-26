@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 

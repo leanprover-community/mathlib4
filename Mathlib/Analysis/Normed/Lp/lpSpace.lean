@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2021 Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
--/
-module
-
-public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.MeanInequalitiesPow
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Data.Set.Image
-public import Mathlib.Topology.Algebra.ContinuousMonoidHom
-public import Mathlib.Algebra.Order.Group.Pointwise.Bounds
+import Mathlib.Data.Real.ConjExponents
+import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # ℓp space

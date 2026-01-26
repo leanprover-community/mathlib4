@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Chris Hughes, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Data.Fin.VecNotation
-public import Mathlib.Data.Nat.Choose.Sum
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.RingTheory.Ideal.Maximal
-public import Mathlib.Tactic.FinCases
+import Mathlib.Algebra.Ring.Pi
 
 /-!
 

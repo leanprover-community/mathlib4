@@ -1,14 +1,7 @@
-/-
-Copyright (c) 2023 Jon Eugster. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
--/
-module
-
-public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
-public import Mathlib.Topology.Category.Profinite.Limits
-public import Mathlib.Topology.Category.Stonean.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Enough
+import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Effective epimorphisms in `Profinite`

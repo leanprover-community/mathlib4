@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis, Heather Macbeth
--/
-module
-
-public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+import Mathlib.RingTheory.WittVector.Domain
+import Mathlib.RingTheory.WittVector.MulCoeff
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`

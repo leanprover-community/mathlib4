@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Semiconj
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Tactic.Nontriviality
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Lemmas about commuting elements in a `MonoidWithZero` or a `GroupWithZero`.

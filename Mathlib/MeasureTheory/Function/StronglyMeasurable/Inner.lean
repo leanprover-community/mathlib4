@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Continuous
-public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # Inner products of strongly measurable functions are strongly measurable.

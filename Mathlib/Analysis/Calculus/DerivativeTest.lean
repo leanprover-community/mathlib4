@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bjørn Kjos-Hanssen, Patrick Massot, Floris van Doorn, Jireh Loreaux, Eric Wieser
--/
-module
-
-public import Mathlib.Topology.Order.OrderClosedExtr
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
-public import Mathlib.Order.Interval.Set.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Ordered
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # The First- and Second-Derivative Tests

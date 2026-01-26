@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Data.ZMod.Coprime
-public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-public import Mathlib.NumberTheory.LSeries.Linearity
-public import Mathlib.NumberTheory.LSeries.Nonvanishing
+import Mathlib.NumberTheory.LSeries.DirichletContinuation
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression

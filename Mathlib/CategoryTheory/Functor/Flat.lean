@@ -1,20 +1,5 @@
-/-
-Copyright (c) 2021 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.CategoryTheory.Filtered.Connected
-public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-public import Mathlib.CategoryTheory.Limits.Bicones
-public import Mathlib.CategoryTheory.Limits.Comma
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 /-!
 # Representably flat functors
 

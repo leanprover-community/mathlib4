@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Lorenzo Luccioli
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
-public import Mathlib.MeasureTheory.Measure.LogLikelihoodRatio
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # The real function `fun x ↦ x * log x + 1 - x`

@@ -1,13 +1,8 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public import Mathlib.FieldTheory.Minpoly.Field
-public import Mathlib.LinearAlgebra.SModEq.Basic
-public import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Power basis

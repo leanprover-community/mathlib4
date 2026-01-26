@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2023 Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller
--/
-module
-
-public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
-public import Mathlib.Tactic.ProxyType
-public meta import Mathlib.Tactic.ToAdditive
-public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `Fintype` derive handler

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.Quotient
-public import Mathlib.RingTheory.Flat.Stability
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Faithfully flat modules

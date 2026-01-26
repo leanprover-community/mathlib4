@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Algebra.Order.Star.Prod
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # Real powers defined via the continuous functional calculus

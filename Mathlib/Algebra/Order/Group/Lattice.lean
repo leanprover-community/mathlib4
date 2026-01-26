@@ -6,6 +6,8 @@ Authors: Christopher Hoskin, Yaël Dillies
 module
 
 public import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Order.Lattice
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-!
 # Lattice ordered groups

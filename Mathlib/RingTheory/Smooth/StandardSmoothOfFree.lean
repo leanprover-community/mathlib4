@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.RingTheory.Extension.Cotangent.Basis
-public import Mathlib.RingTheory.Extension.Cotangent.Free
-public import Mathlib.RingTheory.Smooth.Locus
+import Mathlib.RingTheory.Smooth.StandardSmooth
 
 /-!
 # Standard smooth of free Kaehler differentials

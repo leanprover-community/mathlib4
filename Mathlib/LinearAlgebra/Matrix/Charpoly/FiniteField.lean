@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jalex Stark
--/
-module
-
-public import Mathlib.FieldTheory.Finite.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.LinearAlgebra.Matrix.CharP
+import Mathlib.Algebra.Field.ZMod
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 /-!
 # Results on characteristic polynomials and traces over finite fields.

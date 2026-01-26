@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nailin Guan, Yuyang Zhao, Jujian Zhang
--/
-module
-
-public import Mathlib.FieldTheory.KrullTopology
-public import Mathlib.FieldTheory.Galois.GaloisClosure
-public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+import Mathlib.FieldTheory.Normal.Basic
 
 /-!
 

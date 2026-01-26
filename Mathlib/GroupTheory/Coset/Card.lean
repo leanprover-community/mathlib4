@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2018 Mitchell Rowett. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Rowett, Kim Morrison
--/
-module
-
-public import Mathlib.GroupTheory.Coset.Basic
-public import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.Algebra.Group.Subgroup.Map
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.

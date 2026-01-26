@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Defs.Filter
 
 /-!
 ### Continuity of piecewise defined functions

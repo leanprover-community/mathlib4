@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Pim Spelier, Daan van Gent
--/
-module
-
-public import Mathlib.Data.Fintype.Basic
-public import Mathlib.Data.Num.Lemmas
-public import Mathlib.Data.Option.Basic
-public import Mathlib.SetTheory.Cardinal.Basic
-public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Fintype.Sum
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Encodings

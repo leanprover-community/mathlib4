@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Logic.Encodable.Pi
-public import Mathlib.Logic.Function.Iterate
+import Mathlib.Logic.Denumerable
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The primitive recursive functions

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
--/
-module
-
-public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-public import Mathlib.CategoryTheory.Subfunctor.Equalizer
+import Mathlib.Algebra.Order.Monoid.NatCast
 
 /-!
 # Horns

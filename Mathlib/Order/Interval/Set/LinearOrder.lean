@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy
 module
 
 public import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Data.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Interval properties in linear orders

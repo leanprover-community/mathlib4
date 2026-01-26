@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
--/
-module
-
-public import Mathlib.Algebra.Group.Even
-public import Mathlib.Algebra.Group.Pi.Basic
-public import Mathlib.Algebra.Order.Group.Lattice
-public meta import Mathlib.Tactic.ToDual
+import Mathlib.Order.Hom.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-!
 # Absolute values in ordered groups

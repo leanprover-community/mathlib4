@@ -6,6 +6,9 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 # The Chevalley–Warning theorem

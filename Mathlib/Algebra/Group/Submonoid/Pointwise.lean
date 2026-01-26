@@ -1,14 +1,8 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-public import Mathlib.Algebra.Group.Submonoid.Membership
-public import Mathlib.Algebra.Order.BigOperators.Group.List
-public import Mathlib.Order.WellFoundedSet
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Pointwise instances on `Submonoid`s and `AddSubmonoid`s

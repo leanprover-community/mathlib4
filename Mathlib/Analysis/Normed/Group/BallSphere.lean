@@ -6,6 +6,8 @@ Authors: Yury Kudryashov, Heather Macbeth
 module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Negation on spheres and balls

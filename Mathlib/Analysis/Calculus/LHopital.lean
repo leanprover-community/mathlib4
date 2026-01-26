@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2020 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms

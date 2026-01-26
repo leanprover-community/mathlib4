@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.MeasureTheory.Group.Action
-public import Mathlib.Order.Filter.EventuallyConst
+import Mathlib.MeasureTheory.Group.Defs
 
 /-!
 # A.e. stabilizer of a set

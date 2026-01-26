@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2020 Kevin Buzzard. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard
--/
-module
-
-public import Mathlib.RingTheory.AdicCompletion.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
-public import Mathlib.RingTheory.Valuation.ValuationRing
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 
 /-!
 # Discrete valuation rings

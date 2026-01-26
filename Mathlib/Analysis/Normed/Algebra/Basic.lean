@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Topology.Algebra.Module.CharacterSpace
-public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 /-!
 # Normed algebras

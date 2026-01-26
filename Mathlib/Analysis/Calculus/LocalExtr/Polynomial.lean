@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2021 Benjamin Davidson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Benjamin Davidson, Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Real.Basic
 
 /-!
 # Rolle's Theorem for polynomials

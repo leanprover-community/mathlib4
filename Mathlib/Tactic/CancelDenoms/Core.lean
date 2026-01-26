@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
--/
-module
-
-public meta import Mathlib.Data.Tree.Basic
-public meta import Mathlib.Logic.Basic
-public import Mathlib.Algebra.Field.Basic
-public meta import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Algebra.Order.Ring.Defs
-public import Mathlib.Data.Tree.Basic
-public import Mathlib.Tactic.NormNum.Core
-public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators

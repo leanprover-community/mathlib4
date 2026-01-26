@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.RingTheory.FiniteLength
-public import Mathlib.RingTheory.SimpleModule.Isotypic
-public import Mathlib.RingTheory.SimpleRing.Congr
-public import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Wedderburn–Artin Theorem

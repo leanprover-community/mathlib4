@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
--/
-module
-
-public import Mathlib.Data.Set.SymmDiff
-public import Mathlib.Order.SuccPred.Relation
-public import Mathlib.Topology.Irreducible
+import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Connected subsets of topological spaces

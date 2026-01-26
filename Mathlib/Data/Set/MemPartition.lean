@@ -6,6 +6,8 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Partitions based on membership of a sequence of sets

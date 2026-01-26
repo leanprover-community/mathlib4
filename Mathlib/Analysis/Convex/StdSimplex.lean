@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies, Joël Riou
--/
-module
-
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Analysis.Convex.PathConnected
-public import Mathlib.Topology.Algebra.Monoid.FunOnFinite
-public import Mathlib.Topology.UnitInterval
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # The standard simplex

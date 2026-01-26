@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Lie.Matrix
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Weights.Basic
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system

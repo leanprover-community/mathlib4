@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten, Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
-public import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.Algebra.DirectSum.Module
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Base change properties

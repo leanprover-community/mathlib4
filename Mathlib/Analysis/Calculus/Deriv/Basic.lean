@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2019 Gabriel Ebner. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gabriel Ebner, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.FDeriv.Const
-public import Mathlib.Analysis.Calculus.TangentCone.DimOne
-public import Mathlib.Analysis.Calculus.TangentCone.Real
-public import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Analysis.Calculus.FDeriv.Defs
+import Mathlib.Analysis.Calculus.TangentCone.Defs
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 

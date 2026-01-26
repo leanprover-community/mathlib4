@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Heather Macbeth, Johannes Hölzl, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Intervals
-public import Mathlib.Analysis.Normed.Group.Uniform
-public import Mathlib.Topology.Instances.NNReal.Lemmas
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+import Mathlib.Topology.UniformSpace.Real
+import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Infinite sums in (semi)normed groups

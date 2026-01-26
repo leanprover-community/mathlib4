@@ -1,20 +1,5 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.LocalProperties.Projective
-public import Mathlib.RingTheory.LocalRing.Module
-public import Mathlib.RingTheory.Localization.Free
-public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.RingTheory.Spectrum.Prime.Topology
-public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.RingTheory.TensorProduct.Free
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-public import Mathlib.RingTheory.Support
+import Mathlib.Algebra.Module.FinitePresentation
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 

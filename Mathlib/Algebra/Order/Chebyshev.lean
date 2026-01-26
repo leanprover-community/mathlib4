@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mantas Bakšys, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.Monovary
-public import Mathlib.Algebra.Order.Rearrangement
-public import Mathlib.GroupTheory.Perm.Cycle.Basic
-public import Mathlib.Tactic.GCongr
-public import Mathlib.Tactic.Positivity
+import Mathlib.Order.Monotone.Monovary
+import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Chebyshev's sum inequality

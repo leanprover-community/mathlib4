@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
--/
-module
-
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Squarefree.Basic
-public import Mathlib.RingTheory.ChainOfDivisors
-public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
-public import Mathlib.RingTheory.Spectrum.Maximal.Localization
-public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.OrderIso
+import Mathlib.RingTheory.Localization.AsSubring
 
 /-!
 # Dedekind domains and ideals

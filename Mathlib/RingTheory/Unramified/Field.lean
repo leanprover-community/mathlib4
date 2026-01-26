@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2024 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.Algebra.Polynomial.Taylor
-public import Mathlib.RingTheory.Unramified.Finite
+import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 # Unramified algebras over fields

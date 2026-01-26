@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.MetricSpace.Bounded
-public import Mathlib.Topology.Order.IntermediateValue
-public import Mathlib.Topology.Order.LocalExtr
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Proper spaces

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2020 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.FieldTheory.RatFunc.AsPolynomial
-public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
-public import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.FieldTheory.Separable
+import Mathlib.FieldTheory.RatFunc.Basic
 
 /-!
 # Cyclotomic polynomials.

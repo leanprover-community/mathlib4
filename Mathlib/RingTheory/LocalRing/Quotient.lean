@@ -1,21 +1,6 @@
-/-
-Copyright (c) 2024 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Riccardo Brasca
--/
-module
-
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-public import Mathlib.RingTheory.Artinian.Ring
-public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.RingTheory.Ideal.Quotient.Index
-public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-public import Mathlib.RingTheory.LocalRing.RingHom.Basic
-public import Mathlib.RingTheory.Nakayama
 
 import Mathlib.Algebra.Module.Torsion.Field
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 

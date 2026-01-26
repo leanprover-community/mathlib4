@@ -1,19 +1,4 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-public import Mathlib.Algebra.Order.Sub.Unbundled.Basic
-public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.Fin.Basic
-public import Mathlib.Order.Nat
-public import Mathlib.Order.SuccPred.Archimedean
-public import Mathlib.Order.SuccPred.WithBot
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Successors and predecessors of naturals

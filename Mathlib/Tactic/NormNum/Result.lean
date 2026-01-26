@@ -1,16 +1,5 @@
-/-
-Copyright (c) 2022 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.GroupWithZero.Invertible
-public meta import Mathlib.Data.Sigma.Basic
-public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Data.Int.Cast.Basic
-public meta import Qq.MetaM
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Invertible.Defs
 
 /-!
 ## The `Result` type for `norm_num`

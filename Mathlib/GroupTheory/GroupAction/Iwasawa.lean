@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.Algebra.Group.Action.End
-public import Mathlib.GroupTheory.GroupAction.Primitive
-public import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.GroupTheory.Commutator.Basic
 
 /-! # Iwasawa criterion for simplicity
 

@@ -1,13 +1,8 @@
-/-
-Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ruben Van de Velde
--/
-module
-
-public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-public import Mathlib.Algebra.Order.BigOperators.Ring.List
-public import Mathlib.Algebra.Order.Group.Opposite
+import Mathlib.Algebra.Order.ZeroLEOne
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Big operators on a multiset in ordered rings

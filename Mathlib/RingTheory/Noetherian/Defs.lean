@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kevin Buzzard
--/
-module
-
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # Noetherian rings and modules

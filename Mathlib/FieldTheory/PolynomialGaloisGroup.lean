@@ -6,6 +6,8 @@ Authors: Thomas Browning, Patrick Lutz
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Fixed
+import Mathlib.FieldTheory.Normal.Basic
 
 /-!
 # Galois Groups of Polynomials

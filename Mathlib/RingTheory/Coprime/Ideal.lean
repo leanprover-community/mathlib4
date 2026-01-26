@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Pierre-Alexandre Bazin
--/
-module
-
-public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.Algebra.Operations
+import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # An additional lemma about coprime ideals

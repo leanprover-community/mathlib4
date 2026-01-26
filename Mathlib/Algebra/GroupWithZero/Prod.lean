@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.GroupWithZero.Hom
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Algebra.GroupWithZero.WithZero
+import Mathlib.Algebra.GroupWithZero.Equiv
 
 /-!
 # Products of monoids with zero, groups with zero

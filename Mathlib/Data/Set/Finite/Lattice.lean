@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
--/
-module
-
-public import Mathlib.Data.Set.Finite.Powerset
-public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Finset.Union
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Finiteness of unions and intersections

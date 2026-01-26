@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2023 Jz Pan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jz Pan
--/
-module
-
-public import Mathlib.FieldTheory.SeparableDegree
-public import Mathlib.FieldTheory.IsSepClosed
-public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
 /-!
 

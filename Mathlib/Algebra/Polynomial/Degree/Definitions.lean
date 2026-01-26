@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.MonoidAlgebra.Degree
-public import Mathlib.Algebra.Order.Ring.WithTop
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Data.Nat.Cast.WithTop
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials

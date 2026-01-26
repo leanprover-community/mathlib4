@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Algebra.Central.Defs
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.Analysis.Normed.Operator.Bilinear
+import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-! # Completeness of spaces of linear and multilinear maps
 

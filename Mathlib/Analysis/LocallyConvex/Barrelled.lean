@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Topology.Semicontinuity.Basic
-public import Mathlib.Topology.Baire.Lemmas
+import Mathlib.Topology.Semicontinuity.Defs
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle

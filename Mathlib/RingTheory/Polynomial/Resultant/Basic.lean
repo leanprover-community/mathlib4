@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Anne Baanen, Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Algebra.Polynomial.Div
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.Polynomial.DegreeLT
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
 
 /-!
 # Resultant of two polynomials

@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne
+import Mathlib.NumberTheory.ModularForms.Basic
 
 /-!
 # Norm and trace maps

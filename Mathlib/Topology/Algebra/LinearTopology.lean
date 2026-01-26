@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedecker
--/
-module
-
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
-public import Mathlib.Topology.Algebra.Ring.Basic
-public import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-! # Linear topologies on modules and rings
 

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Xavier Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot
--/
-module
-
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
-public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
+import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Ideals in cyclotomic fields

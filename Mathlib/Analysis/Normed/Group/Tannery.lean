@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Tannery's theorem

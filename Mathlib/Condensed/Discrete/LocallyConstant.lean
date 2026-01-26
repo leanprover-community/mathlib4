@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Condensed.Discrete.Basic
-public import Mathlib.Condensed.TopComparison
-public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
-public import Mathlib.Topology.FiberPartition
+import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`

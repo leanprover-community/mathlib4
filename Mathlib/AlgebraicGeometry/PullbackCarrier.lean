@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Qi Ge, Christian Merten, Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Qi Ge, Christian Merten, Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.Category.Ring.LinearAlgebra
-public import Mathlib.AlgebraicGeometry.ResidueField
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 # Underlying topological space of fibre product of schemes

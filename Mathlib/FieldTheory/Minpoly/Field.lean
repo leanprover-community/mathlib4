@@ -1,15 +1,7 @@
-/-
-Copyright (c) 2019 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca, Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.Algebra.Polynomial.Lifts
-public import Mathlib.FieldTheory.Minpoly.Basic
-public import Mathlib.RingTheory.Algebraic.Integral
-public import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 
 /-!
 # Minimal polynomials on an algebra over a field

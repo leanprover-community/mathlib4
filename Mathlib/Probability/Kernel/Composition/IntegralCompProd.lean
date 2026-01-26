@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2023 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Etienne Marion
--/
-module
-
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
-public import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Bochner integral of a function against the composition and the composition-products of two kernels

@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2022 Yuyang Zhao. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yuyang Zhao
--/
-module
-
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
-public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Algebra towers for multivariate polynomial

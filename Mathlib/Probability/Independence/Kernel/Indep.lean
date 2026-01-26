@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Probability.Kernel.Basic
-public import Mathlib.Tactic.Peel
-public import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Probability.Kernel.Defs
 
 /-!
 # Independence of families of sets with respect to a kernel and a measure

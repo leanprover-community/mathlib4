@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.CategoryTheory.Galois.EssSurj
-public import Mathlib.CategoryTheory.Action.Continuous
-public import Mathlib.Topology.Category.FinTopCat
+import Mathlib.CategoryTheory.Galois.Action
+import Mathlib.CategoryTheory.Galois.Topology
 
 /-!
 # Fiber functors induce an equivalence of categories

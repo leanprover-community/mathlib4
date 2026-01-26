@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Rat.Encodable
-public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.ProperSpace
-public import Mathlib.Topology.Order.Compact
-public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Topology.Order.Real
-public import Mathlib.Topology.UniformSpace.Real
 
 /-!
 # Second countability of the reals

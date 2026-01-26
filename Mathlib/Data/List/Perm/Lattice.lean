@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2015 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.List.TakeDrop
-public import Mathlib.Data.List.Lattice
-public import Mathlib.Data.List.Nodup
+import Batteries.Data.List.Basic
 
 /-!
 # List Permutations and list lattice operations.

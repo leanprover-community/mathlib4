@@ -6,6 +6,8 @@ Authors: Patrick Massot
 module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
+import Mathlib.Topology.MetricSpace.Defs
+import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Hofer's lemma

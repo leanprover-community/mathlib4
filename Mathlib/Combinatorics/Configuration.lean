@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Thomas Browning. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
--/
-module
-
-public import Mathlib.Combinatorics.Hall.Basic
-public import Mathlib.LinearAlgebra.Matrix.Rank
-public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines

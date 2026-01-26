@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Lorenzo Luccioli
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Prod
-public import Mathlib.Probability.Kernel.Composition.MapComap
-public import Mathlib.Probability.Kernel.MeasurableLIntegral
+import Mathlib.Probability.Kernel.Basic
 
 /-!
 

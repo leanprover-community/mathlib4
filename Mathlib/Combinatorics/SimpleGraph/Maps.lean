@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Hunter Monroe. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Hunter Monroe, Kyle Miller
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Dart
-public import Mathlib.Data.FunLike.Fintype
-public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Maps between graphs

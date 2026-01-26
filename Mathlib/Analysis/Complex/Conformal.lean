@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2021 Yourong Zang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yourong Zang, Stefan Kebekus
--/
-module
-
-public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
-public import Mathlib.Analysis.Complex.Isometry
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.LinearAlgebra.Complex.Module
+import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Conformal maps between complex vector spaces

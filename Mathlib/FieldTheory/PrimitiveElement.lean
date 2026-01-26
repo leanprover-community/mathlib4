@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning, Patrick Lutz
--/
-module
-
-public import Mathlib.Data.Fintype.Pigeonhole
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.SplittingField.Construction
-public import Mathlib.RingTheory.IntegralDomain
-public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Primitive Element Theorem

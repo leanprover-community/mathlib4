@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomáš Skřivan
--/
-module
-
-public meta import Mathlib.Tactic.FunProp.Theorems
-public meta import Mathlib.Tactic.FunProp.ToBatteries
-public meta import Mathlib.Tactic.FunProp.Types
-public meta import Mathlib.Lean.Expr.Basic
-public import Batteries.Tactic.Exact
-public import Mathlib.Tactic.FunProp.Theorems
-public import Qq
+import Mathlib.Tactic.FunProp.Decl
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...

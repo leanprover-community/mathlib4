@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2016 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad
--/
-module
-
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Group.Nat.Even
-public import Mathlib.Data.Int.Sqrt
+import Mathlib.Algebra.Group.Even
 
 /-!
 # Parity of integers

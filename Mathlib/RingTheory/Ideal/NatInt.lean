@@ -1,17 +1,6 @@
-/-
-Copyright (c) 2025 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Data.Nat.Prime.Int
-public import Mathlib.RingTheory.Int.Basic
-public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
-public import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Prime ideals in ℕ and ℤ

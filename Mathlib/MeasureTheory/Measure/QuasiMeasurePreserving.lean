@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
-public import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
 # Quasi-Measure-Preserving Functions

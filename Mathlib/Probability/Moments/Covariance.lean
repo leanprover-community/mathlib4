@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Etienne Marion
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Independence.Integration
-public import Mathlib.Probability.Notation
 
 /-!
 # Covariance

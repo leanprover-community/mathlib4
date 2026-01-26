@@ -6,6 +6,8 @@ Authors: Michal Staromiejski
 module
 
 public import Mathlib.RingTheory.Trace.Basic
+import Mathlib.FieldTheory.PurelyInseparable.Basic
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 

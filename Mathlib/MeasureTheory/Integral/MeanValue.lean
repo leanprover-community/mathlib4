@@ -6,6 +6,7 @@ Authors: Louis (Yiyang) Liu
 module
 
 public import Mathlib.MeasureTheory.Integral.Average
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # First mean value theorem for set integrals

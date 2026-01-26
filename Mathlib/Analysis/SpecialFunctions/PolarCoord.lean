@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.MeasureTheory.Function.Jacobian
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+import Mathlib.Analysis.Calculus.FDeriv.Defs
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Polar coordinates

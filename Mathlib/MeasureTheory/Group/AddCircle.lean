@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
-public import Mathlib.Data.ZMod.QuotientGroup
-public import Mathlib.MeasureTheory.Group.AEStabilizer
 
 /-!
 # Measure-theoretic results about the additive circle

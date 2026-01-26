@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Analytic.CPolynomial
-public import Mathlib.Analysis.Analytic.Inverse
-public import Mathlib.Analysis.Analytic.Within
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Prod
-public import Mathlib.Analysis.Normed.Module.Completion
+import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-!
 # Fréchet derivatives of analytic functions.

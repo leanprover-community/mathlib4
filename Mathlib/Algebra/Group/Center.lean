@@ -1,14 +1,7 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Jireh Loreaux
--/
-module
-
-public import Mathlib.Algebra.Group.Invertible.Basic
-public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Data.Set.Basic
-public import Mathlib.Util.Delaborators
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.Notation.Pi.Defs
 
 /-!
 # Centers of magmas and semigroups

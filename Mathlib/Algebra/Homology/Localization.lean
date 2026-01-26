@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2023 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Homology.HomotopyCofiber
-public import Mathlib.Algebra.Homology.HomotopyCategory
-public import Mathlib.Algebra.Homology.QuasiIso
-public import Mathlib.CategoryTheory.Localization.Composition
-public import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-! The category of homological complexes up to quasi-isomorphisms
 

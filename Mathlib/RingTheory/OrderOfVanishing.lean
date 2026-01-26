@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Raphael Douglas Giles
--/
-module
-
-public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
-public import Mathlib.RingTheory.Length
-public import Mathlib.RingTheory.HopkinsLevitzki
+import Mathlib.RingTheory.KrullDimension.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Order of vanishing

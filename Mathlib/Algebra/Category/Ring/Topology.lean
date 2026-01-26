@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Christian Merten
--/
-module
-
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Topology on `Hom(R, S)`

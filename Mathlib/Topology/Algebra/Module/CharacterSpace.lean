@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Topology.Algebra.Module.WeakDual
-public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Data.Set.Lattice
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Character space of a topological algebra

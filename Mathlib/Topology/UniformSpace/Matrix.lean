@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Heather Macbeth
--/
-module
-
-public import Mathlib.LinearAlgebra.Matrix.Defs
-public import Mathlib.Topology.UniformSpace.Pi
-public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Uniform space structure on matrices

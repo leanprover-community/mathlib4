@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-public import Mathlib.MeasureTheory.Integral.MeanInequalities
+import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 
 /-!
 # Triangle inequality for `Lp`-seminorm

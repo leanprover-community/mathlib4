@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Yaël Dillies
--/
-module
-
-public import Mathlib.Analysis.Convex.Cone.Dual
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.Topology.Algebra.Order.Module
 
 /-!
 # Inner dual cone of a set

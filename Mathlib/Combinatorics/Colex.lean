@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2020 Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Order.Ring.GeomSum
-public import Mathlib.Data.Finset.Slice
-public import Mathlib.Data.Nat.BitIndices
-public import Mathlib.Order.SupClosed
-public import Mathlib.Order.UpperLower.Closure
+import Mathlib.Data.Finset.Max
+import Mathlib.Data.Finset.SymmDiff
 
 /-!
 # Colexigraphic order

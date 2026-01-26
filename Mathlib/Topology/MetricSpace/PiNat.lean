@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.FunctionSeries
-public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Order.ProjIcc
-public import Mathlib.Topology.UnitInterval
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`

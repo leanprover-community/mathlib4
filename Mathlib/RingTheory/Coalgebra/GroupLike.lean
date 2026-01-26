@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Yaël Dillies, Michał Mrugała. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Michał Mrugała
--/
-module
-
-public import Mathlib.RingTheory.Coalgebra.Equiv
-public import Mathlib.RingTheory.Flat.Domain
 
 /-!
 # Group-like elements in a coalgebra

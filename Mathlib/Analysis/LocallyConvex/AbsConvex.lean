@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
-
-public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-public import Mathlib.Analysis.Convex.TotallyBounded
-public import Mathlib.Analysis.LocallyConvex.Bounded
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Absolutely convex sets

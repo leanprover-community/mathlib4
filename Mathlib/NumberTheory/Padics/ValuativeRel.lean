@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Yakov Pechersky. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
--/
-module
-
-public import Mathlib.NumberTheory.Padics.PadicNumbers
-public import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # p-adic numbers with a valuative relation

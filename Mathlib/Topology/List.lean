@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2019 Reid Barton. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Topology.Constructions
-public import Mathlib.Order.Filter.ListTraverse
-public import Mathlib.Tactic.AdaptationNote
-public import Mathlib.Topology.Algebra.Monoid.Defs
-public import Mathlib.Data.Vector.Basic
 
 /-!
 # Topology on lists and vectors

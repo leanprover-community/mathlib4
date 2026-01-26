@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Nat.Find
-public import Mathlib.Data.Set.Basic
-public import Mathlib.Tactic.ByContra
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Further lemmas about the natural numbers

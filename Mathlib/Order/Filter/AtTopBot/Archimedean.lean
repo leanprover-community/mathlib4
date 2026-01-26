@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2019 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Order.Archimedean.Basic
-public import Mathlib.Order.Filter.AtTopBot.Group
-public import Mathlib.Order.Filter.CountablyGenerated
-public import Mathlib.Tactic.GCongr
 import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields

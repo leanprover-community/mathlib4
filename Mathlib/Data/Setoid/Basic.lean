@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2019 Amelia Livingston. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Amelia Livingston, Bryan Gin-ge Chen
--/
-module
-
-public import Mathlib.Logic.Relation
-public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # Equivalence relations

@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
--/
-module
-
-public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.Algebra.Order.Hom.Basic
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Finset.Powerset
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Nonarchimedean functions

@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public import Mathlib.RingTheory.Norm.Defs
-public import Mathlib.FieldTheory.PrimitiveElement
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Norm for (finite) ring extensions

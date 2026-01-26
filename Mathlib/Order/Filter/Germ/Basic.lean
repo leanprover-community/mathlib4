@@ -1,16 +1,7 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
--/
-module
-
-public import Mathlib.Algebra.Module.Pi
-public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-public import Mathlib.Data.Int.Cast.Basic
-public import Mathlib.Data.Int.Cast.Pi
-public import Mathlib.Data.Nat.Cast.Basic
-public import Mathlib.Order.Filter.Tendsto
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Ring.Pi
+import Mathlib.Order.Filter.Defs
+import Mathlib.Algebra.Group.Action.Pi
 
 /-!
 # Germ of a function at a filter

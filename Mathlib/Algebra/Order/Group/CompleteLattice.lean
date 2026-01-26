@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Order.Group.OrderIso
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.ConditionallyCompleteLattice.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 
 /-!
 # Distributivity of group operations over supremum/infimum

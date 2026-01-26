@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.CategoryTheory.Galois.Examples
-public import Mathlib.CategoryTheory.Galois.Prorepresentability
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Galois.GaloisObjects
 
 /-!
 

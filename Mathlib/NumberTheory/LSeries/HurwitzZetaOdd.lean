@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.NumberTheory.LSeries.AbstractFuncEq
-public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
-public import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
-public import Mathlib.NumberTheory.LSeries.Basic
+import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
 # Odd Hurwitz zeta functions

@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Thomas Browning, Patrick Lutz
--/
-module
-
-public import Mathlib.FieldTheory.Extension
-public import Mathlib.FieldTheory.Normal.Defs
-public import Mathlib.GroupTheory.Solvable
-public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Normal field extensions

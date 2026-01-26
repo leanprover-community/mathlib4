@@ -1,17 +1,7 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Christian Merten, Junyan Xu
--/
-module
-
-public import Mathlib.Algebra.CharP.IntermediateField
-public import Mathlib.Algebra.MvPolynomial.Nilpotent
-public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
-public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.FieldTheory.SeparableClosure
-public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
-public import Mathlib.RingTheory.Polynomial.GaussLemma
+import Mathlib.FieldTheory.Perfect
+import Mathlib.RingTheory.EssentialFiniteness
+import Mathlib.RingTheory.AlgebraicIndependent.Defs
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 
 /-!
 

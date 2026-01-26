@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Pi
-public import Mathlib.Algebra.GroupWithZero.Action.Prod
-public import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 
 /-!
 # Ordered scalar product

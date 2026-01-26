@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2022 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz, Jujian Zhang
--/
-module
-
-public import Mathlib.CategoryTheory.Abelian.FunctorCategory
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Abelian.Transfer
-public import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Category of sheaves is abelian

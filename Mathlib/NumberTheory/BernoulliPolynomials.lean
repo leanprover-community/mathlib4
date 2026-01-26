@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ashvni Narayanan, David Loeffler
--/
-module
-
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Data.Nat.Choose.Cast
-public import Mathlib.NumberTheory.Bernoulli
 
 /-!
 # Bernoulli polynomials

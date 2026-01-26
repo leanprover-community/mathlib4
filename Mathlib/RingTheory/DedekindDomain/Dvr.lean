@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio, Yongle Hu
--/
-module
-
-public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
-public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
+import Mathlib.RingTheory.DedekindDomain.Basic
+import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 # Dedekind domains

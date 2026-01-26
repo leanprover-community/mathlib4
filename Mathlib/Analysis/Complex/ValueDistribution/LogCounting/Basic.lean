@@ -6,6 +6,9 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Complex.JensenFormula
+import Mathlib.Analysis.Meromorphic.Divisor
+import Mathlib.Analysis.Meromorphic.TrailingCoefficient
+import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # The Logarithmic Counting Function of Value Distribution Theory

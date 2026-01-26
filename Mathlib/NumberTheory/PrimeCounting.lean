@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Bolton Bailey. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bolton Bailey, Ralf Stephan
--/
-module
-
-public import Mathlib.Data.Nat.Prime.Nth
-public import Mathlib.Data.Nat.Totient
-public import Mathlib.NumberTheory.SmoothNumbers
-public import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Data.Nat.Nth
+import Mathlib.Order.Filter.AtTopBot.Defs
 
 /-!
 # The Prime Counting Function

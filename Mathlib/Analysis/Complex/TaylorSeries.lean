@@ -6,6 +6,8 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Convergence of Taylor series of holomorphic functions

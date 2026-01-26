@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2021 Eric Rodriguez. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Rodriguez
--/
-module
-
-public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-public import Mathlib.Tactic.ByContra
-public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.NumberTheory.Padics.PadicVal.Basic
-public import Mathlib.Analysis.Complex.Arg
+import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
 
 /-!
 # Evaluating cyclotomic polynomials

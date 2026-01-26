@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Dexin Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dexin Zhang
--/
-module
-
-public import Mathlib.Algebra.Group.Ideal
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-public import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.WellQuasiOrder
 
 /-!
 # Semigroup ideals in a canonically ordered and well-quasi-ordered monoid

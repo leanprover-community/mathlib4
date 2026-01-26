@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Robin Carlier. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robin Carlier
--/
-module
-
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-public import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 # Chosen finite products on sheaves

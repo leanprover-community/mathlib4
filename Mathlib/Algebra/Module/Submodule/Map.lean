@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Map
-public import Mathlib.Algebra.Module.Submodule.Basic
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Module.Submodule.LinearMap
+import Mathlib.Algebra.Field.Defs
 
 /-!
 # `map` and `comap` for `Submodule`s

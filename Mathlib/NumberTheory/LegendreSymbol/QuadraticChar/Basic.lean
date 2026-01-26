@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Data.Fintype.Parity
-public import Mathlib.NumberTheory.LegendreSymbol.ZModChar
-public import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 # Quadratic characters of finite fields

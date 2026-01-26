@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2025 Henrik Böving, Yaël Dillies, Kyle Miller. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Henrik Böving, Yaël Dillies, Kyle Miller
--/
-module
-
-public meta import Mathlib.Lean.Expr.Basic
-public meta import Lean.Elab.Command
-public import Lean.Meta.Sorry
 
 /-!
 # Tracking uses of `sorry`

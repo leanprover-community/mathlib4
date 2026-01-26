@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Violeta Hernández Palacios
--/
-module
-
-public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.SetTheory.Cardinal.Continuum
-public import Mathlib.SetTheory.Cardinal.Ordinal
 
 /-!
 # Cardinal of sigma-algebras

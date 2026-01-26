@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Yury Kudryashov
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.MeasurableSpace.Prod
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-public import Mathlib.Topology.Instances.Real.Lemmas
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞

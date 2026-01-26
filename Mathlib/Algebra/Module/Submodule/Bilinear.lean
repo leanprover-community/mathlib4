@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2019 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Eric Wieser
--/
-module
-
-public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # Images of pairs of submodules under bilinear maps

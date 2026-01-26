@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2025 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
--/
-module
-
-public import Mathlib.RingTheory.SimpleRing.Basic
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-!
 # Simplicity is preserved by ring isomorphisms/surjective ring homomorphisms

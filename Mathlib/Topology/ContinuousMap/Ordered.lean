@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Shing Tak Lam
--/
-module
-
-public import Mathlib.Topology.Order.Lattice
-public import Mathlib.Topology.Order.ProjIcc
-public import Mathlib.Topology.ContinuousMap.Defs
+import Mathlib.Topology.Order.Basic
+import Mathlib.Order.Interval.Set.ProjIcc
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology

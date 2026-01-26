@@ -1,18 +1,8 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
--/
-module
-
-public import Mathlib.Data.Countable.Small
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.Data.Nat.Cast.Order.Basic
-public import Mathlib.Data.Set.Countable
-public import Mathlib.Logic.Small.Set
-public import Mathlib.Logic.UnivLE
-public import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.Logic.Denumerable
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Data.Vector.Defs
+import Mathlib.Logic.Small.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Basic results on cardinal numbers

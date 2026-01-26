@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Yury Kudryashov
--/
-module
-
-public import Mathlib.Data.Finset.Fin
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`

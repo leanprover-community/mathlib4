@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
--/
-module
-
-public import Mathlib.Order.Filter.Lift
-public import Mathlib.Topology.Basic
+import Mathlib.Data.Finite.Defs
+import Mathlib.Data.Finset.Defs
+import Mathlib.Topology.Defs.Basic
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Interior, closure and frontier of a set

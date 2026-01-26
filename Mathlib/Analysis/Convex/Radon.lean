@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2023 Vasily Nesterov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Vasily Nesterov
--/
-module
-
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.Data.Set.Card
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Analysis.Convex.Hull
+import Mathlib.LinearAlgebra.AffineSpace.Independent
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # Radon's theorem on convex sets

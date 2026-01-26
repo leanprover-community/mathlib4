@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2026 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
-public import Mathlib.Analysis.Calculus.Deriv.Polynomial
-public import Mathlib.Topology.Algebra.Polynomial
-public import Mathlib.Topology.Covering.Quotient
+import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
 # Covering maps involving the complex plane

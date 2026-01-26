@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Probability.Kernel.Condexp
-public import Mathlib.Probability.Moments.MGFAnalytic
-public import Mathlib.Probability.Moments.Tilted
+import Mathlib.Probability.Moments.Basic
+import Mathlib.Probability.Moments.IntegrableExpMul
 
 /-!
 # Sub-Gaussian random variables

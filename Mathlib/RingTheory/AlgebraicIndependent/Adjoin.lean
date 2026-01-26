@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2021 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes
--/
-module
-
-public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 
 /-!
 # Algebraic Independence

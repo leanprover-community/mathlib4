@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.MeasureTheory.Measure.Count
-public import Mathlib.Order.Filter.ENNReal
-public import Mathlib.Probability.UniformOn
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Essential supremum and infimum

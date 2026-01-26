@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Yunzhou Xie. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yunzhou Xie
--/
-module
-
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Mₙ(R)-module structure on `Mⁿ`

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
--/
-module
-
-public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Topology.Algebra.Group.Pointwise
-public import Mathlib.Topology.Maps.OpenQuotient
+import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topology on the quotient group

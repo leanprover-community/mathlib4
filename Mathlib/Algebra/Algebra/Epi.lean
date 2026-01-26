@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2026 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.TensorProduct.Finite
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Algebras which are commutative ring epimorphisms

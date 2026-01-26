@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2025 Yongle Hu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yongle Hu, Nailin Guan
--/
-module
-
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-public import Mathlib.RingTheory.Flat.Localization
-public import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change

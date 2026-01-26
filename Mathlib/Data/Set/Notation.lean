@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Peter Nelson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
--/
-module
-
-public import Mathlib.Util.Notation3
-public meta import Mathlib.Lean.Expr.ExtraRecognizers
-public import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.CoeSort
 
 /-!
 # Set Notation

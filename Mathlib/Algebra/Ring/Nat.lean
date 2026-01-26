@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.CharZero.Defs
-public import Mathlib.Algebra.GroupWithZero.Nat
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Data.Nat.Basic
 
 /-!
 # The natural numbers form a semiring

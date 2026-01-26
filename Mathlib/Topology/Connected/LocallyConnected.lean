@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2022 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.Connected.Clopen
+import Mathlib.Topology.Bases
 
 /-!
 # Locally connected topological spaces

@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kevin Kappelmann
--/
-module
-
-public import Mathlib.Algebra.Order.Field.Basic
-public import Mathlib.Algebra.Order.Floor.Semiring
-public import Mathlib.Tactic.Abel
-public import Mathlib.Tactic.Field
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Order.Floor.Defs
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`

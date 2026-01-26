@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Geoffrey Irving. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Geoffrey Irving
--/
-module
-
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Higher smoothness of polynomials

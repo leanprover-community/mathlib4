@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2025 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Order.Field.Pointwise
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Integral of a 1-form along a path

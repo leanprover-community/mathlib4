@@ -6,6 +6,7 @@ Authors: Hanting Zhang
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-! # The Wallis formula for Pi
 

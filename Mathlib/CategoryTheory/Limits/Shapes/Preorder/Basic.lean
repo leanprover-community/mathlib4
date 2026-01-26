@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preorder
+import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits and colimits indexed by preorders

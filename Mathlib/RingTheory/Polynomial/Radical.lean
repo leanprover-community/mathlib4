@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jineon Baek, Seewoo Lee
--/
-module
-
-public import Mathlib.Algebra.Polynomial.FieldDivision
-public import Mathlib.RingTheory.Polynomial.Wronskian
-public import Mathlib.RingTheory.Radical
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Radical of a polynomial

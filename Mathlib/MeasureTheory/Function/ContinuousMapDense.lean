@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2021 Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.Regular
-public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-public import Mathlib.Topology.UrysohnsLemma
-public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions

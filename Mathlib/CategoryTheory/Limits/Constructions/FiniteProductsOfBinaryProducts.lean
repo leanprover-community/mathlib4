@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2020 Bhavik Mehta. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 # Constructing finite products from binary products and terminal.

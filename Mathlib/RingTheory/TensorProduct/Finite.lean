@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison, Johan Commelin
--/
-module
-
-public import Mathlib.LinearAlgebra.Isomorphisms
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.RingTheory.Finiteness.Bilinear
-public import Mathlib.RingTheory.Ideal.Quotient.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
+import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Finiteness of the tensor product of (sub)modules

@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2017 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
--/
-module
-
-public import Mathlib.Data.Set.Image
-public import Mathlib.Data.SProd
-public import Mathlib.Data.Sum.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Sets in product and pi types

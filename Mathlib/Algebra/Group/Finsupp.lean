@@ -1,14 +1,7 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Data.Finset.Max
-public import Mathlib.Data.Finsupp.Single
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Additive monoid structure on `ι →₀ M`

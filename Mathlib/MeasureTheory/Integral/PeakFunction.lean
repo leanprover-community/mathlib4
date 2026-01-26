@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrals against peak functions

@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Logic.Relation
-public import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes

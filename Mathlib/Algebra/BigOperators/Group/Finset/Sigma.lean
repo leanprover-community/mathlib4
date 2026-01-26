@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Data.Finset.Sigma
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Finset.Prod
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Product and sums indexed by finite sets in sigma types.

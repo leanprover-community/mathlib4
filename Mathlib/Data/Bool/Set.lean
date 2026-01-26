@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Insert
+import Mathlib.Data.Set.Operations
 
 /-!
 # Booleans and set operations

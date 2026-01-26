@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2024 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Limits
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Sheafification
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The sheafification functor for presheaves of modules

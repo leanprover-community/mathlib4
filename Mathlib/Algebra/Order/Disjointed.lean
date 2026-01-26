@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.Algebra.Order.SuccPred.PartialSups
-public import Mathlib.Data.Nat.SuccPred
-public import Mathlib.Order.Disjointed
+import Mathlib.Algebra.Order.SuccPred
 
 /-!
 # `Disjointed` for functions on a `SuccAddOrder`

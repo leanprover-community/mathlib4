@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.Convex
-public import Mathlib.Analysis.Normed.Module.Ray
-public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Strictly convex spaces

@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Lawrence Wu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Lawrence Wu
--/
-module
-
-public import Mathlib.MeasureTheory.Group.Measure
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+import Mathlib.MeasureTheory.Function.LocallyIntegrable
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Bounding of integrals by asymptotics

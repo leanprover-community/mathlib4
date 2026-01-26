@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.Ring.Associated
-public import Mathlib.Algebra.Ring.Regular
+import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.NumberTheory.Modular
-public import Mathlib.NumberTheory.ModularForms.Petersson
+import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # Bounds for the norm of a modular form

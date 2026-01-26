@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2025 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Data.NNReal.Defs
 
 /-!
 # Specific lemmas about convexity over `ℝ≥0`

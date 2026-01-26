@@ -1,13 +1,7 @@
-/-
-Copyright (c) 2024 Jakob Stiefel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jakob Stiefel
--/
-module
-
-public import Mathlib.Analysis.RCLike.BoundedContinuous
-public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
-public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Topology.MetricSpace.Polish
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # Extensionality of finite measures

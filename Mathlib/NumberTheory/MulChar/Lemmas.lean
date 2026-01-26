@@ -1,12 +1,6 @@
-/-
-Copyright (c) 2024 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.NumberTheory.MulChar.Basic
-public import Mathlib.RingTheory.RootsOfUnity.Complex
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Further Results on multiplicative characters

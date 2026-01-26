@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Aaron Anderson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson
--/
-module
-
-public import Mathlib.Data.Set.Finite.Lattice
-public import Mathlib.Order.Atoms
-public import Mathlib.Order.Interval.Finset.Defs
-public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness

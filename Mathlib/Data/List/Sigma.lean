@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Sean Leather
--/
-module
-
-public import Batteries.Data.List.Perm
-public import Mathlib.Data.List.Pairwise
-public import Mathlib.Data.List.Nodup
-public import Mathlib.Data.List.Lookmap
-public import Mathlib.Data.Sigma.Basic
-public import Mathlib.Data.Nat.Basic
+import Batteries.Data.List.Basic
 
 /-!
 # Utilities for lists of sigmas

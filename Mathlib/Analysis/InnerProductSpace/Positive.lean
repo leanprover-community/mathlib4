@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.Analysis.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Positive operators

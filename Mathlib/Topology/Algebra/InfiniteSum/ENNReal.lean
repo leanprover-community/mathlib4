@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2024 Edward van de Meent. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Edward van de Meent
--/
-module
-
-public import Mathlib.Data.Real.ENatENNReal
-public import Mathlib.Data.Set.Card
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+import Mathlib.Topology.Order.Real
+import Mathlib.Topology.UniformSpace.Real
+import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 /-!
 # Infinite sums in extended nonnegative reals

@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Topology.ContinuousMap.Bounded.Star
-public import Mathlib.Topology.ContinuousMap.Star
-public import Mathlib.Topology.UniformSpace.Compact
-public import Mathlib.Topology.CompactOpen
-public import Mathlib.Topology.Sets.Compacts
-public import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Continuous functions on a compact space

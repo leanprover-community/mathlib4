@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Topology.Continuous
-public import Mathlib.Topology.Defs.Induced
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.Bases.Basic
 
 /-!
 # Ordering on topologies and (co)induced topologies

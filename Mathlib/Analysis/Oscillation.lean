@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2024 James Sundstrom. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: James Sundstrom
--/
-module
-
-public import Mathlib.Data.ENNReal.Real
-public import Mathlib.Order.WellFoundedSet
-public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Oscillation

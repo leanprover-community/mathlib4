@@ -1,17 +1,6 @@
-/-
-Copyright (c) 2019 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-public import Mathlib.RingTheory.Polynomial.IntegralNormalization
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
-public import Mathlib.RingTheory.TensorProduct.MvPolynomial
+import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # # Integral closure as a characteristic predicate

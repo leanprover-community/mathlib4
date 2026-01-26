@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Scott Carnahan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Carnahan
--/
-module
-
-public import Mathlib.LinearAlgebra.RootSystem.Hom
-public import Mathlib.RepresentationTheory.Basic
+import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The Weyl group of a root pairing

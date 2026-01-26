@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
-  Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Finset.Union
 
 /-!
 # The span of a set of vectors, as a submodule

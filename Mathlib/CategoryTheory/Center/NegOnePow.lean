@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.CategoryTheory.Center.Preadditive
-public import Mathlib.Algebra.Ring.NegOnePow
+import Mathlib.CategoryTheory.Center.Basic
+import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Powers of `-1` in the center of a preadditive category

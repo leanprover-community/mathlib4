@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Etienne Marion. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Etienne Marion
--/
-module
-
-public import Mathlib.Analysis.Normed.Lp.PiLp
-public import Mathlib.MeasureTheory.SpecificCodomains.Pi
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integrability in `WithLp`

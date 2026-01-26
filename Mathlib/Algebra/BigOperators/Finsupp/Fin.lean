@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Bolton Bailey. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bolton Bailey
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Fin
-public import Mathlib.Algebra.BigOperators.Finsupp.Basic
-public import Mathlib.Data.Finsupp.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # `Finsupp.sum` and `Finsupp.prod` over `Fin`

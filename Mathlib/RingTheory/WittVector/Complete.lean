@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Jiedong Jiang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang
--/
-module
-
-public import Mathlib.RingTheory.WittVector.Domain
-public import Mathlib.RingTheory.WittVector.Truncated
-public import Mathlib.RingTheory.WittVector.Teichmuller
-public import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.WittVector.Frobenius
 
 /-!
 # The ring of Witt vectors is p-torsion free and p-adically complete

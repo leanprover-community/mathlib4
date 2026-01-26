@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl
--/
-module
-
-public import Mathlib.Logic.Relation
-public import Mathlib.Logic.Unique
-public import Mathlib.Util.Notation3
 
 /-!
 # Quotient types

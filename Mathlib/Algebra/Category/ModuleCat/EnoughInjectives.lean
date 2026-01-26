@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2023 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.Category.Grp.EnoughInjectives
-public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-public import Mathlib.Algebra.Ring.Shrink
+import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Category of $R$-modules has enough injectives

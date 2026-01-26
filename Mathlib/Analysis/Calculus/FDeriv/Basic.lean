@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2019 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Asymptotics.Lemmas
-public import Mathlib.Analysis.Calculus.FDeriv.Defs
-public import Mathlib.Analysis.Normed.Operator.Asymptotics
-public import Mathlib.Analysis.Calculus.TangentCone.Basic
+import Mathlib.Analysis.Calculus.TangentCone.Defs
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # The Fréchet derivative: basic properties

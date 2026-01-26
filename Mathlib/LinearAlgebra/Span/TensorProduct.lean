@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2026 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Algebra.Epi
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Span.Basic
-public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-public import Mathlib.RingTheory.Flat.Basic
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # The interaction of linear span and tensor product for mixed scalars.

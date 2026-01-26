@@ -1,17 +1,6 @@
-/-
-Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis
--/
-module
-
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Inductions
-public import Mathlib.Algebra.Polynomial.Splits
-public import Mathlib.Analysis.Normed.Field.Basic
-public import Mathlib.Analysis.Normed.Ring.Lemmas
-public import Mathlib.RingTheory.Polynomial.Vieta
-public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+import Mathlib.Topology.MetricSpace.ProperSpace
+import Mathlib.Topology.Algebra.Ring.Basic
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Polynomials and limits

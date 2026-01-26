@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Yaël Dillies
--/
-module
-
-public import Mathlib.LinearAlgebra.Ray
-public import Mathlib.Analysis.Normed.Module.RCLike.Real
-public import Mathlib.Algebra.Ring.Regular
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Rays in a real normed vector space

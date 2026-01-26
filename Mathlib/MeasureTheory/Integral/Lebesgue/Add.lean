@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl
--/
-module
-
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # Monotone convergence theorem and addition of Lebesgue integrals

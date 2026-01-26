@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Ching-Tsun Chou, Chris Wong, Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Ching-Tsun Chou, Chris Wong, Yaël Dillies
--/
-module
-
-public import Mathlib.Data.Finset.Density
-public import Mathlib.Data.Fintype.Prod
-public import Mathlib.Data.Fintype.Perm
-public import Mathlib.Data.Nat.Choose.Cast
+import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # The Katona circle method

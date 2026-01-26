@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Calculus.ParametricIntegral
-public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-public import Mathlib.Analysis.Fourier.AddCircle
-public import Mathlib.Analysis.Fourier.FourierTransform
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
-public import Mathlib.Analysis.Calculus.ContDiff.Bounds
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Derivatives of the Fourier transform

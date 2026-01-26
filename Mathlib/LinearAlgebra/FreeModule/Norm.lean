@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-public import Mathlib.RingTheory.AdjoinRoot
-public import Mathlib.RingTheory.Norm.Defs
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Norms on free modules over principal ideal domains

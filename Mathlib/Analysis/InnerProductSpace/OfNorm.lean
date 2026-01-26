@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2020 Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Heather Macbeth
--/
-module
-
-public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Analysis.InnerProductSpace.Convex
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Tactic.Module
+import Mathlib.Analysis.Convex.Uniform
+import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # Inner product space derived from a norm

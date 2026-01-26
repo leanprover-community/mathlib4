@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Geometry.Manifold.ContMDiff.Basic
-public import Mathlib.Geometry.Manifold.Instances.Real
-public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+import Mathlib.Geometry.Manifold.ContMDiff.Defs
+import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-! # Manifold structure on real intervals
 

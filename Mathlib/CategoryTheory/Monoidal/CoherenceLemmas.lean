@@ -6,6 +6,7 @@ Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 module
 
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+import Mathlib.CategoryTheory.Monoidal.Category
 
 /-!
 # Lemmas which are consequences of monoidal coherence

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2023 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Star
+import Mathlib.Analysis.CStarAlgebra.Basic
 
 /-!
 # Star operations on derivatives

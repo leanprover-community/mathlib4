@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2022 Peter Nelson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
--/
-module
-
-public import Mathlib.Data.ENat.Basic
-public import Mathlib.Topology.Instances.Discrete
-public import Mathlib.Order.Interval.Set.WithBotTop
-public import Mathlib.Order.Filter.Pointwise
-public import Mathlib.Topology.Algebra.Monoid.Defs
+import Mathlib.Topology.Order.Basic
 
 /-!
 # Topology on extended natural numbers

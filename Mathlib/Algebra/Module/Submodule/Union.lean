@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2025 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Algebra.Module.Torsion.Field
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.SetTheory.Cardinal.Finite
-public import Mathlib.Tactic.NormNum.Inv
-public import Mathlib.Tactic.NormNum.Pow
-
-import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Unions of `Submodule`s

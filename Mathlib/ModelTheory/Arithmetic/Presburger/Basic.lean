@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Dexin Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dexin Zhang
--/
-module
-
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.Module.NatInt
-public import Mathlib.ModelTheory.Semantics
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Presburger arithmetic

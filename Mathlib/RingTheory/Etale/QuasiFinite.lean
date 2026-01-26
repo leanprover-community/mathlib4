@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
-public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-public import Mathlib.RingTheory.QuasiFinite.Basic
+import Mathlib.RingTheory.Etale.Basic
 
 /-!
 # Etale local structure of finite maps

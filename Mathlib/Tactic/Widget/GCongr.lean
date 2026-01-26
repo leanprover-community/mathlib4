@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2023 Patrick Massot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot
--/
-module
-
-public import Mathlib.Tactic.Basic
-public meta import Mathlib.Tactic.Basic
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.Basic
-public import ProofWidgets.Component.OfRpcMethod
 
 /-! # GCongr widget
 

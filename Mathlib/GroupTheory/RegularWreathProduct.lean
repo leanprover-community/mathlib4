@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Francisco Silva. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Francisco Silva
--/
-module
-
-public import Mathlib.GroupTheory.Sylow
-public import Mathlib.Algebra.Group.PUnit
-public import Mathlib.Data.Finite.Perm
-public import Mathlib.Algebra.Group.End
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Regular wreath product

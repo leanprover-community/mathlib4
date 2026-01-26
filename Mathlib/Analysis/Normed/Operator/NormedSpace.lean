@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2019 Jan-David Salchow. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
--/
-module
-
-public import Mathlib.Analysis.Normed.Module.Span
-public import Mathlib.Analysis.Normed.Operator.Bilinear
-public import Mathlib.Analysis.Normed.Operator.NNNorm
 
 /-!
 # Operator norm for maps on normed spaces

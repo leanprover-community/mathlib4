@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Robert Y. Lewis
--/
-module
-
-public import Mathlib.Algebra.MvPolynomial.Funext
-public import Mathlib.Algebra.Ring.ULift
-public import Mathlib.RingTheory.WittVector.Basic
-public meta import Mathlib.Lean.Elab.Tactic.Basic
 /-!
 # The `IsPoly` predicate
 

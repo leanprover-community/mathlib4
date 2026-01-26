@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2018 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.IsLimit
-public import Mathlib.CategoryTheory.Category.ULift
-public import Mathlib.CategoryTheory.EssentiallySmall
-public import Mathlib.CategoryTheory.Functor.EpiMono
-public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits

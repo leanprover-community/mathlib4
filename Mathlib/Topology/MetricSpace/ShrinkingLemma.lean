@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Topology.EMetricSpace.Paracompact
-public import Mathlib.Topology.MetricSpace.Basic
-public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
-public import Mathlib.Topology.ShrinkingLemma
+import Mathlib.Topology.MetricSpace.Defs
+import Mathlib.Topology.MetricSpace.ProperSpace
 
 /-!
 # Shrinking lemma in a proper metric space

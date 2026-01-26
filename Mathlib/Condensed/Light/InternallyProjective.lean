@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
-public import Mathlib.Condensed.Light.Epi
-public import Mathlib.Condensed.Light.Functors
-public import Mathlib.Condensed.Light.Monoidal
+import Mathlib.CategoryTheory.Sites.Subcanonical
+import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 /-!
 
 # Characterization of internal projectivity in light condensed modules

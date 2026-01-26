@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
--/
-module
-
-public import Mathlib.AlgebraicTopology.SimplexCategory.Defs
-public import Mathlib.Data.Fintype.Sort
-public import Mathlib.Order.Category.NonemptyFinLinOrd
-public import Mathlib.Tactic.FinCases
-public import Mathlib.Tactic.NormNum
+import Mathlib.Algebra.Order.Group.Nat
 
 /-! # Basic properties of the simplex category
 

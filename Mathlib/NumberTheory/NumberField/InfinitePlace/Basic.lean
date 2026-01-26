@@ -1,16 +1,3 @@
-/-
-Copyright (c) 2022 Xavier Roblot. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Xavier Roblot
--/
-module
-
-public import Mathlib.Analysis.AbsoluteValue.Equivalence
-public import Mathlib.Analysis.Normed.Field.WithAbs
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-public import Mathlib.NumberTheory.NumberField.Norm
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-public import Mathlib.Topology.Instances.Complex
 
 /-!
 # Infinite places of a number field

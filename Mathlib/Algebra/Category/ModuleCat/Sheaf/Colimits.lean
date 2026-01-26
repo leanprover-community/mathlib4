@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+import Mathlib.Algebra.Category.ModuleCat.Sheaf
 
 /-!
 # Colimits in categories of sheaves of modules

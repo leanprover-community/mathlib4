@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2025 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
+import Mathlib.AlgebraicGeometry.Pullbacks
 
 /-!
 # Grothendieck topology defined by a morphism property

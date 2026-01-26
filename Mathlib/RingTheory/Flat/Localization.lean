@@ -1,12 +1,7 @@
-/-
-Copyright (c) 2024 Junyan Xu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
--/
-module
-
-public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.LocalProperties.Exactness
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
+import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 # Flatness and localization

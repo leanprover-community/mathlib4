@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2020 Anatole Dedecker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anatole Dedecker
--/
-module
-
-public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Order.Filter.AtTopBot.Floor
-public import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topological facts about `Int.floor`, `Int.ceil` and `Int.fract`

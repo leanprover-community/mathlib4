@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2021 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 
 /-!
 

@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2025 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Probability.Moments.ComplexMGF
-public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
-public import Mathlib.Analysis.Calculus.Taylor
+import Mathlib.Probability.Moments.Basic
+import Mathlib.Probability.Moments.IntegrableExpMul
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # The moment-generating function is analytic

@@ -1,19 +1,8 @@
-/-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck
--/
-module
-
-public import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.Complex.IntegerCompl
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Analysis.PSeries
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
-public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+import Mathlib.Analysis.Calculus.LogDeriv
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Cotangent

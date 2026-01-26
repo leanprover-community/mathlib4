@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Riccardo Brasca
--/
-module
-
-public import Mathlib.Analysis.Normed.Group.Constructions
-public import Mathlib.Analysis.Normed.Group.Hom
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
-public import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # The category of seminormed groups

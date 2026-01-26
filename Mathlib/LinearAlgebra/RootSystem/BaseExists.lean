@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2025 Oliver Nash. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Group.Irreducible.Indecomposable
-public import Mathlib.Algebra.Module.LinearMap.Rat
-public import Mathlib.Algebra.Module.Submodule.Union
-public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
-public import Mathlib.LinearAlgebra.QuadraticForm.Dual
-public import Mathlib.LinearAlgebra.RootSystem.Base
-public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Existence of bases for crystallographic root systems

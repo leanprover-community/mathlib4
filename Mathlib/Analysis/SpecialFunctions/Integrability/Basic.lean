@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Benjamin Davidson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Benjamin Davidson
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Integrability of Special Functions

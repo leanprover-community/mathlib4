@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Justus Springer. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Justus Springer
--/
-module
-
-public import Mathlib.Algebra.Category.Grp.FilteredColimits
-public import Mathlib.Algebra.Category.ModuleCat.Colimits
+import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.

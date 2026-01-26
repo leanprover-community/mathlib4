@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler
--/
-module
-
-public import Mathlib.Analysis.Complex.LocallyUniformLimit
-public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+import Mathlib.Analysis.Complex.Periodic
+import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Dedekind eta function

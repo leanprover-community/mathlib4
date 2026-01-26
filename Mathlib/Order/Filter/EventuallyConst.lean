@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2023 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Floris van Doorn
--/
-module
-
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Order.Filter.AtTopBot.Basic
-public import Mathlib.Order.Filter.Subsingleton
+import Mathlib.Order.Filter.AtTopBot.Defs
 /-!
 # Functions that are eventually constant along a filter
 

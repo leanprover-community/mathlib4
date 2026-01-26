@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2020 Jean Lo. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jean Lo
--/
-module
-
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Topology.Algebra.Monoid
-public import Mathlib.Topology.Algebra.Group.Defs
-public import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Flows and invariant sets

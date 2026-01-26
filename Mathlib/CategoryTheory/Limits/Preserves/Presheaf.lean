@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Markus Himmel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel
--/
-module
-
-public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.Elements
+import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
 # Finite-limit-preserving presheaves

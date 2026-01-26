@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2024 Josha Dekker. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne, Josha Dekker, Arav Bhattacharyya
--/
-module
-
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Metrizable.CompletelyMetrizable
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!
 # Tight sets of measures

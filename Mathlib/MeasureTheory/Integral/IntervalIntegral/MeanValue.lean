@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Louis (Yiyang) Liu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Louis (Yiyang) Liu
--/
-module
-
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Integral.MeanValue
 
 /-!
 # First mean value theorem for interval integrals

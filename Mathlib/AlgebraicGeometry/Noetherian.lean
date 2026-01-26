@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 Geno Racklin Asher. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Geno Racklin Asher
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 
 /-!
 # Noetherian and Locally Noetherian Schemes

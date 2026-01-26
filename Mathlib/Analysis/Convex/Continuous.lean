@@ -6,6 +6,9 @@ Authors: Yaël Dillies, Zichen Wang
 module
 
 public import Mathlib.Analysis.Normed.Affine.Convex
+import Mathlib.Analysis.Convex.Function
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Convex functions are continuous

@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2020 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-public import Mathlib.Algebra.MonoidAlgebra.Module
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.GroupTheory.FreeAbelianGroup
+import Mathlib.LinearAlgebra.Quotient.Defs
+import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Finiteness of (sub)modules and finitely supported functions

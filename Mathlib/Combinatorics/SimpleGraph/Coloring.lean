@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2021 Arthur Paulino. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino, Kyle Miller
--/
-module
-
-public import Mathlib.Combinatorics.SimpleGraph.Clique
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Combinatorics.SimpleGraph.Copy
-public import Mathlib.Data.ENat.Lattice
-public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Data.Setoid.Partition
-public import Mathlib.Order.Antichain
-public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Graph Coloring

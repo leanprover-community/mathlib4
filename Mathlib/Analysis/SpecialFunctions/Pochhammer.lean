@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2025 Mitchell Horner. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Horner
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Analysis.Convex.Deriv
-public import Mathlib.Analysis.Convex.Piecewise
-public import Mathlib.Analysis.Convex.Jensen
+import Mathlib.RingTheory.Polynomial.Pochhammer
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Pochhammer polynomials

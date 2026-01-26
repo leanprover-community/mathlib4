@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Christian Merten
--/
-module
-
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.RingTheory.AdicCompletion.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Algebra instance on adic completion

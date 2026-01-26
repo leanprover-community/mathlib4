@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
--/
-module
-
-public import Mathlib.Topology.Bases
-public import Mathlib.Topology.Compactness.LocallyCompact
-public import Mathlib.Topology.Compactness.LocallyFinite
+import Mathlib.Topology.LocallyFinite
+import Mathlib.Data.Set.Accumulate
 
 /-!
 # Sigma-compactness in topological spaces

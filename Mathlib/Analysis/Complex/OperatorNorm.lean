@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.LinearAlgebra.Complex.Determinant
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.Analysis.Normed.Operator.Basic
 
 /-! # The basic continuous linear maps associated to `ℂ`
 

@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2024 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Topology.Algebra.Module.WeakDual
+import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-! # Closures of convex sets in locally convex spaces
 

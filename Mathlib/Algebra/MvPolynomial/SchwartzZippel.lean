@@ -1,19 +1,5 @@
-/-
-Copyright (c) 2023 Bolton Bailey. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bolton Bailey, Yaël Dillies, Andrew Yang
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Algebra.MvPolynomial.Equiv
-public import Mathlib.Algebra.MvPolynomial.Variables
-public import Mathlib.Algebra.Order.GroupWithZero.Finset
-public import Mathlib.Algebra.Order.Ring.Finset
-public import Mathlib.Algebra.Polynomial.Roots
-public import Mathlib.Data.Fin.Tuple.Finset
-public import Mathlib.Tactic.Positivity.Finset
-public import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Data.Finsupp.Lex
 
 /-!
 # The Schwartz-Zippel lemma

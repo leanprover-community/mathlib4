@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2025 Stepan Nesterov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stepan Nesterov
--/
-module
-
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations

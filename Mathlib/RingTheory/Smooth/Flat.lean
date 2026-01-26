@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Judith Ludwig, Christian Merten
--/
-module
-
-public import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
-public import Mathlib.RingTheory.Flat.Stability
-public import Mathlib.RingTheory.Smooth.AdicCompletion
-public import Mathlib.RingTheory.Smooth.NoetherianDescent
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 # Smooth algebras are flat

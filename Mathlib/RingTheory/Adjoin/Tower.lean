@@ -6,6 +6,7 @@ Authors: Kenny Lau
 module
 
 public import Mathlib.RingTheory.Adjoin.FG
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 # Adjoining elements and being finitely generated in an algebra tower

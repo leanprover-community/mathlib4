@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
--/
-module
-
-public import Mathlib.Order.Hom.CompleteLattice
-public import Mathlib.Topology.Compactness.Bases
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Order.CompactlyGenerated.Basic
-public import Mathlib.Order.Copy
 
 /-!
 # Open sets

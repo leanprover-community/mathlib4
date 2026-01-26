@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.CharP.Defs
-public import Mathlib.Algebra.MonoidAlgebra.Support
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Regular.Basic
-public import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
 # Theory of univariate polynomials

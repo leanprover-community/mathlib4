@@ -1,17 +1,3 @@
-/-
-Copyright (c) 2025 Monica Omar. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Monica Omar
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
-public import Mathlib.Analysis.Normed.Operator.Banach
-public import Mathlib.Topology.Algebra.Algebra.Equiv
-
-import Mathlib.Algebra.Central.Basic
 
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner

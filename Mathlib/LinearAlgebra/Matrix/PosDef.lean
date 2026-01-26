@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alexander Bentkamp, Mohanad Ahmed
--/
-module
-
-public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Data.Real.Star
-public import Mathlib.LinearAlgebra.Matrix.DotProduct
-public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.LinearAlgebra.Matrix.Vec
-public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.Algebra.Order.Star.Basic
 
 /-! # Positive Definite Matrices
 

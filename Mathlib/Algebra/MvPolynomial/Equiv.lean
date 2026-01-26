@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Finsupp.Fin
-public import Mathlib.Algebra.MvPolynomial.Degrees
-public import Mathlib.Algebra.MvPolynomial.Rename
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Data.Finsupp.Option
-public import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Data.Finsupp.Fin
 
 /-!
 # Equivalences between polynomial rings

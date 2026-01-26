@@ -6,6 +6,9 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 
 /-!
 

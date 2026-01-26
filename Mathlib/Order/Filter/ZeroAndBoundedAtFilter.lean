@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2022 Chris Birkbeck. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, David Loeffler
--/
-module
-
-public import Mathlib.Algebra.Module.Submodule.Basic
-public import Mathlib.Analysis.Asymptotics.Lemmas
-public import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Topology.MetricSpace.Algebra
 
 /-!
 # Zero and Bounded at filter

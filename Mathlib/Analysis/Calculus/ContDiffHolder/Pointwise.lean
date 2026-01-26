@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2026 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
-public import Mathlib.Topology.MetricSpace.Holder
+import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # Continuously `k` times differentiable functions with pointwise Hölder continuous derivatives

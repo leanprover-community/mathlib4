@@ -1,19 +1,5 @@
-/-
-Copyright (c) 2021 Thomas Browning. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
--/
-module
-
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Data.Finite.Card
-public import Mathlib.Data.Finite.Prod
-public import Mathlib.Data.Set.Card
-public import Mathlib.GroupTheory.Coset.Card
-public import Mathlib.GroupTheory.GroupAction.Quotient
-public import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.Algebra.Group.Subgroup.Actions
 
 /-!
 # Index of a Subgroup

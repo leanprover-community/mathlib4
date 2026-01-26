@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Basic
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Data.Nat.Factorial.Cast
+import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Cast of binomial coefficients

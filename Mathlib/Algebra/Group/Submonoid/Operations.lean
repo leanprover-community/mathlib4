@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
-Amelia Livingston, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Nat.Defs
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.Group.Submonoid.Basic
-public import Mathlib.Algebra.Group.Submonoid.MulAction
-public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Operations on `Submonoid`s

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-public import Mathlib.FieldTheory.Galois.Basic
-public import Mathlib.FieldTheory.KummerPolynomial
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Kummer Extensions

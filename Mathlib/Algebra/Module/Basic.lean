@@ -1,16 +1,6 @@
-/-
-Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.Group.Action.Pi
-public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Group.Action.Units
+import Mathlib.Algebra.Group.Invertible.Defs
 
 /-!
 # Further basic results about modules.

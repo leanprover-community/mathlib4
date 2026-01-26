@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.CategoryTheory.Adjunction.Limits
-public import Mathlib.CategoryTheory.Comma.Over.Pullback
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-public import Mathlib.CategoryTheory.Monoidal.CommMon_
-public import Mathlib.CategoryTheory.Monoidal.Grp_
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 

@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2025 Weiyi Wang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Weiyi Wang
--/
-module
-
-public import Mathlib.Algebra.DirectSum.Decomposition
-public import Mathlib.Algebra.DirectSum.Module
-public import Mathlib.Algebra.Module.Submodule.Order
-public import Mathlib.Algebra.Order.Module.Archimedean
-public import Mathlib.Algebra.Order.Module.Equiv
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.LinearPMap
-public import Mathlib.RingTheory.HahnSeries.Lex
 
 /-!
 # Hahn embedding theorem on ordered modules

@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Michael Stoll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Stoll
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Data.Fintype.Order
 
 /-!
 # Basic theory of heights

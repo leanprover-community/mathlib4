@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2023 Moritz Firsching. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching
--/
-module
-
-public import Mathlib.Data.Nat.Factorial.BigOperators
-public import Mathlib.Data.ZMod.Basic
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Facts about factorials in ZMod

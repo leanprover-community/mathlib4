@@ -1,15 +1,6 @@
-/-
-Copyright (c) 2025 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler
--/
-module
-
-public import Mathlib.GroupTheory.ArchimedeanDensely
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-public import Mathlib.Topology.Algebra.Order.Archimedean
-public import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.Basic
+import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups

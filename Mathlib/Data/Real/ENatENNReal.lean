@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Data.ENat.Basic
-public import Mathlib.Data.ENNReal.Basic
+import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`

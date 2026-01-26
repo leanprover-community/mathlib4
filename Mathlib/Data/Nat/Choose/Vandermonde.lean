@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2021 Johan Commelin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
--/
-module
-
-public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 

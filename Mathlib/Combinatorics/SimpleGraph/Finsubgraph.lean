@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2022 Joanna Choules. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joanna Choules
--/
-module
-
-public import Mathlib.CategoryTheory.CofilteredSystem
-public import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Homomorphisms from finite subgraphs

@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2022 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
-public import Mathlib.RingTheory.Polynomial.ScaleRoots
+import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # Eisenstein polynomials

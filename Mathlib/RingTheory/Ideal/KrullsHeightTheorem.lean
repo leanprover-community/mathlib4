@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2025 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, Shouxin Zhang
--/
-module
-
-public import Mathlib.RingTheory.HopkinsLevitzki
-public import Mathlib.RingTheory.Ideal.GoingDown
-public import Mathlib.RingTheory.Ideal.Height
-public import Mathlib.RingTheory.Localization.Submodule
-public import Mathlib.RingTheory.Nakayama
 
 /-!
 # Krull's Height Theorem

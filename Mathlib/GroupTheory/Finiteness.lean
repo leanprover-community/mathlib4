@@ -1,16 +1,7 @@
-/-
-Copyright (c) 2021 Riccardo Brasca. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Riccardo Brasca
--/
-module
-
-public import Mathlib.Algebra.Group.Pointwise.Set.Finite
-public import Mathlib.Algebra.Group.Subgroup.Pointwise
-public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-public import Mathlib.Algebra.Group.Submonoid.BigOperators
-public import Mathlib.GroupTheory.FreeGroup.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Order.WellQuasiOrder
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Finitely generated monoids and groups

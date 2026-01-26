@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Jujian Zhang
--/
-module
-
-public import Mathlib.LinearAlgebra.DirectSum.Finsupp
-public import Mathlib.RingTheory.IsTensorProduct
-public import Mathlib.RingTheory.Localization.Away.Basic
-public import Mathlib.RingTheory.Localization.Module
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 
 /-!
 # Localized Module

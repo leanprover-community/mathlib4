@@ -1,20 +1,6 @@
-/-
-Copyright (c) 2025 Janos Wolosz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Janos Wolosz
--/
-module
-
-public import Mathlib.Algebra.Algebra.Basic
-public import Mathlib.Algebra.Algebra.Bilinear
-public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.Module.BigOperators
-public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Data.Nat.Cast.Field
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
-public import Mathlib.Tactic.FieldSimp
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Exponential map on algebras

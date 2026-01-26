@@ -1,19 +1,4 @@
-/-
-Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
--/
-module
-
-public import Mathlib.Algebra.Algebra.IsSimpleRing
-public import Mathlib.Algebra.BigOperators.Balance
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Analysis.CStarAlgebra.Basic
-public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-public import Mathlib.Analysis.Normed.Ring.Finite
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Tactic.LinearCombination
+import Mathlib.Algebra.Group.AddChar
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ

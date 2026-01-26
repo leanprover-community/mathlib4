@@ -1,18 +1,7 @@
-/-
-Copyright (c) 2018 Guy Leroy. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Semiconj
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Data.Set.Operations
-public import Mathlib.Order.Basic
-public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.Divisibility.Basic
-public import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Data.Nat.Init
+import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ

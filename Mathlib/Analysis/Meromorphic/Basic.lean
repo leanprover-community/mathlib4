@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2024 David Loeffler. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler, Stefan Kebekus
--/
-module
-
-public import Mathlib.Analysis.Analytic.Order
-public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Calculus.Deriv.ZPow
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Meromorphic functions

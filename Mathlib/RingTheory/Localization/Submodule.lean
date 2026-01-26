@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2018 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
--/
-module
-
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Localization.Ideal
-public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Submodules in localizations of commutative rings

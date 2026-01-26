@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2026 Mathlib contributors. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mathlib contributors
--/
-module
-
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Data.Nat.Cast.Field
-public import Mathlib.RingTheory.PowerSeries.Derivative
 
 /-!
 # Exponential Power Series

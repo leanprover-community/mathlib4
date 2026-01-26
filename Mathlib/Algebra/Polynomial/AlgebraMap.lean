@@ -1,18 +1,8 @@
-/-
-Copyright (c) 2018 Chris Hughes. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Algebra.Prod
-public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.MonoidAlgebra.Basic
-public import Mathlib.Algebra.Polynomial.Eval.Algebra
-public import Mathlib.Algebra.Polynomial.Eval.Degree
-public import Mathlib.Algebra.Polynomial.Monomial
+import Mathlib.Algebra.Polynomial.Coeff
+import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Theory of univariate polynomials

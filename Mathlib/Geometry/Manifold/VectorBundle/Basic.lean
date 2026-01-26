@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn, Heather Macbeth
--/
-module
-
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
-public import Mathlib.Topology.VectorBundle.Constructions
 
 /-! # `C^n` vector bundles
 

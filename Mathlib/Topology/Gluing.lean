@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2021 Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
--/
-module
-
-public import Mathlib.CategoryTheory.GlueData
-public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-public import Mathlib.Topology.Category.TopCat.Opens
-public import Mathlib.CategoryTheory.Elementwise
-public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Logic.Function.Coequalizer
 
 /-!
 # Gluing Topological spaces

@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth
--/
-module
-
-public import Mathlib.Algebra.Module.Rat
-public import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Ring.Rat
 
 /-!
 # Reinterpret an additive homomorphism as a `ℚ`-linear map.

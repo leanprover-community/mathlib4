@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.Analysis.Complex.Convex
-public import Mathlib.Analysis.Complex.ReImTopology
-public import Mathlib.Topology.Homotopy.Contractible
-public import Mathlib.Topology.OpenPartialHomeomorph.Basic
+import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Topology on the upper half plane

@@ -6,6 +6,7 @@ Authors: Wrenna Robson
 module
 
 public import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Infimum separation

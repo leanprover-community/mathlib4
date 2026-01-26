@@ -6,6 +6,8 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
 # Products of finite measures and probability measures

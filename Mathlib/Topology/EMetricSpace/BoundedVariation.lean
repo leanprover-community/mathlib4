@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
--/
-module
-
-public import Mathlib.Order.Interval.Set.ProjIcc
-public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Semicontinuity.Defs
+import Mathlib.Topology.EMetricSpace.Lipschitz
+import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Functions of bounded variation

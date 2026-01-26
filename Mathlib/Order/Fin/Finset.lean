@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2025 Joël Riou. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
--/
-module
-
-public import Mathlib.Order.Fin.Tuple
-public import Mathlib.Order.Hom.Set
-public import Mathlib.Data.Finset.Insert
+import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Order isomorphisms from Fin to finsets

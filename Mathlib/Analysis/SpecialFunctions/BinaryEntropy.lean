@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2023 Adomas Baliuka. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adomas Baliuka
--/
-module
-
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions

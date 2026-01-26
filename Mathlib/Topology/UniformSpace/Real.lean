@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2017 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
--/
-module
-
-public import Mathlib.Topology.ContinuousMap.Basic
-public import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.MetricSpace.Pseudo.Constructions
 
 /-!
 # The reals are complete

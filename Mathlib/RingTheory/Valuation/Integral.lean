@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2020 Kenny Lau. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kenny Lau, Yakov Pechersky
--/
-module
-
-public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-public import Mathlib.RingTheory.Valuation.ValuationRing
+import Mathlib.RingTheory.Valuation.Integers
 
 /-!
 # Integral elements over the ring of integers of a valuation

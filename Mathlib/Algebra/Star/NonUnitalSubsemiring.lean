@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2024 Christopher Hoskin. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christopher Hoskin
--/
-module
-
-public import Mathlib.Algebra.Ring.Defs
-public import Mathlib.Algebra.Group.Subsemigroup.Basic
-public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-public import Mathlib.Algebra.Star.Center
+import Mathlib.Algebra.Star.Basic
 
 /-!
 # Non-unital Star Subsemirings

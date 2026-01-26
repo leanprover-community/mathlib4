@@ -1,13 +1,5 @@
-/-
-Copyright (c) 2024 Christian Merten. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Christian Merten
--/
-module
-
-public import Mathlib.AlgebraicGeometry.Morphisms.Affine
-public import Mathlib.AlgebraicGeometry.PullbackCarrier
-public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 /-!
 # Flat morphisms

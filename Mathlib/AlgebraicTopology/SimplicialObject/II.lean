@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+import Mathlib.Data.Finset.Max
 
 /-!
 # A construction by Gabriel and Zisman

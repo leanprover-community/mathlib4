@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2020 Joseph Myers. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Myers
--/
-module
-
-public import Mathlib.Order.Atoms
-public import Mathlib.LinearAlgebra.Span.Defs
-public import Mathlib.LinearAlgebra.AffineSpace.Defs
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Affine spaces

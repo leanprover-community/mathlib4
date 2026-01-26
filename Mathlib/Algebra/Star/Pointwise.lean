@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux
--/
-module
-
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.Set.Finite.Basic
-public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Order.SetNotation
+import Mathlib.Data.Finite.Defs
 
 /-!
 # Pointwise star operation on sets

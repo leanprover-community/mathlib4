@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2025 Scott Carnahan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Carnahan
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
-public import Mathlib.Data.Finsupp.Defs
-public import Mathlib.Data.Set.SMulAntidiagonal
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Scalar multiplication by finitely supported functions.

@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis, Heather Macbeth
--/
-module
-
-public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Adjoint of operators on Hilbert spaces

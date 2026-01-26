@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 
 /-!
 # Equivalences of sheaf categories

@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2023 Robin Böhne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
--/
-module
-
-public import Mathlib.Lean.Name
-public import Lean.PrettyPrinter.Delaborator.Builtins
-public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.OfRpcMethod
 
 /-! # Conv widget
 

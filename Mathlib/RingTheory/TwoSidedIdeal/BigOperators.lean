@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
--/
-module
-
-public import Mathlib.RingTheory.Congruence.BigOperators
-public import Mathlib.RingTheory.TwoSidedIdeal.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Interactions between `∑, ∏` and two-sided ideals

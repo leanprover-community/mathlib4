@@ -1,14 +1,3 @@
-/-
-Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
--/
-module
-
-public import Mathlib.Data.Set.Prod
-public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.ModelTheory.LanguageMap
-public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Basics on First-Order Syntax

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2022 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.FDeriv.Add
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.LinearAlgebra.AffineSpace.Slope
+import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Slope of a differentiable function

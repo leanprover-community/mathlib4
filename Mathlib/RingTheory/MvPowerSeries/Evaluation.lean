@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
--/
-module
-
-public import Mathlib.Algebra.MvPolynomial.CommRing
-public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.RingTheory.MvPowerSeries.Trunc
-public import Mathlib.Topology.Algebra.Algebra
-public import Mathlib.Topology.Algebra.TopologicallyNilpotent
-public import Mathlib.Topology.Algebra.LinearTopology
-public import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series
 

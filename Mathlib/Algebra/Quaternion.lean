@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2020 Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-
-import Mathlib.Algebra.Module.Torsion.Prod
+import Mathlib.LinearAlgebra.InvariantBasisNumber
+import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Quaternions

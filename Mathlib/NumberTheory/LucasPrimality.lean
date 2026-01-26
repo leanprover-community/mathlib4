@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2020 Bolton Bailey. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bolton Bailey
--/
-module
-
-public import Mathlib.Algebra.Field.ZMod
-public import Mathlib.RingTheory.IntegralDomain
+import Mathlib.Data.ZMod.Defs
+import Mathlib.Data.Nat.Prime.Defs
 
 /-!
 # The Lucas test for primes

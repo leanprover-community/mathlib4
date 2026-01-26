@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2018 Johannes Hölzl. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jens Wagemaker
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Associated elements in rings

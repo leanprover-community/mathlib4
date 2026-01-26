@@ -1,15 +1,5 @@
-/-
-Copyright (c) 2022 Jujian Zhang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.GroupTheory.Coset.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.CategoryTheory.Functor.EpiMono
+import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 # Monomorphisms and epimorphisms in `Group`

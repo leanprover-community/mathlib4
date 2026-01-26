@@ -1,13 +1,6 @@
-/-
-Copyright (c) 2020 Jean Lo, Yury Kudryashov. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jean Lo, Yury Kudryashov
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-public import Mathlib.Algebra.Ring.Action.Pointwise.Set
-public import Mathlib.Topology.Bornology.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Absorption of sets

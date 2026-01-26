@@ -1,12 +1,4 @@
-/-
-Copyright (c) 2024 Alvan Caleb Arulandu. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Alvan Caleb Arulandu
--/
-module
-
-public import Mathlib.Probability.CDF
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-! # Pareto distributions over ℝ
 

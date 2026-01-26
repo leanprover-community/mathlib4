@@ -1,16 +1,4 @@
-/-
-Copyright (c) 2024 Peter Nelson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
--/
-module
-
-public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Algebra.Order.BigOperators.Group.List
-public import Mathlib.Algebra.Order.Group.Nat
-public import Mathlib.Algebra.Order.Sub.Basic
-public import Mathlib.Data.List.Sort
-public import Mathlib.Data.Nat.Bitwise
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Bit Indices

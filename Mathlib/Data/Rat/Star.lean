@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2023 Jireh Loreaux. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jireh Loreaux, Yaël Dillies
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.Order.Monoid.Submonoid
-public import Mathlib.Algebra.Order.Ring.Abs
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.Data.NNRat.Order
+import Mathlib.Algebra.Star.Rat
 
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`

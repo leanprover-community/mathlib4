@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2022 Moritz Doll. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Doll
--/
-module
-
-public import Mathlib.Analysis.Normed.Field.Lemmas
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
-public import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.LinearAlgebra.Finsupp.Span
-public import Mathlib.Topology.Algebra.Module.WeakBilin
+import Mathlib.Algebra.EuclideanDomain.Field
 
 /-!
 # Weak Dual in Topological Vector Spaces

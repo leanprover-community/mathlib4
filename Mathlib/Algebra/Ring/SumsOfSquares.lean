@@ -1,15 +1,4 @@
-/-
-Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Florent Schaffhauser, Artie Khovanov
--/
-module
-
-public import Mathlib.Algebra.Group.Subgroup.Even
-public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
-public import Mathlib.Algebra.Ring.Subsemiring.Basic
-public import Mathlib.Tactic.ApplyFun
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Sums of squares

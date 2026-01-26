@@ -1,19 +1,6 @@
-/-
-Copyright (c) 2020 Kim Morrison. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
--/
-module
-
-public import Mathlib.Algebra.Group.Action.Opposite
-public import Mathlib.Algebra.Group.Action.Units
-public import Mathlib.Algebra.Group.Invertible.Defs
-public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-public import Mathlib.Algebra.Ring.Aut
-public import Mathlib.Algebra.Ring.CompTypeclasses
-public import Mathlib.Algebra.Ring.Opposite
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.SetLike.Basic
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Star monoids, rings, and modules

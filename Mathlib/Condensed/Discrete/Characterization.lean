@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson
--/
-module
-
-public import Mathlib.Condensed.Discrete.Colimit
-public import Mathlib.Condensed.Discrete.Module
+import Mathlib.Condensed.Equivalence
+import Mathlib.Topology.Category.LightProfinite.AsLimit
 /-!
 
 # Characterizing discrete condensed sets and `R`-modules.

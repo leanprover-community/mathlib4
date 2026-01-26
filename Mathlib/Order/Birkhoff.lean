@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2022 Yaël Dillies. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
--/
-module
-
-public import Mathlib.Data.Fintype.Order
-public import Mathlib.Order.Interval.Finset.Basic
-public import Mathlib.Order.Irreducible
-public import Mathlib.Order.UpperLower.Closure
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Birkhoff representation

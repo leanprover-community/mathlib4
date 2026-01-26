@@ -6,6 +6,9 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.MeasureTheory.Integral.Prod
+import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Integration with respect to a finite product of measures

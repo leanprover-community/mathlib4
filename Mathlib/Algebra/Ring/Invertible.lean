@@ -1,12 +1,5 @@
-/-
-Copyright (c) 2020 Anne Baanen. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Invertible
-public import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 /-!
 # Theorems about additively and multiplicatively invertible elements in rings

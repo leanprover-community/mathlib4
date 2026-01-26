@@ -1,14 +1,4 @@
-/-
-Copyright (c) 2021 Eric Wieser. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Jujian Zhang
--/
-module
-
-public import Mathlib.Algebra.GroupWithZero.Subgroup
-public import Mathlib.Algebra.Order.Group.Action
-public import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Span.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-! # Pointwise instances on `Submodule`s
 

@@ -1,17 +1,4 @@
-/-
-Copyright (c) 2021 Aaron Anderson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Antoine Chambert-Loir
--/
-module
-
-public import Mathlib.Algebra.Ring.CharZero
-public import Mathlib.Data.Fintype.Units
-public import Mathlib.GroupTheory.IndexNormal
-public import Mathlib.GroupTheory.Perm.Fin
-public import Mathlib.GroupTheory.Subgroup.Simple
-public import Mathlib.Logic.Equiv.Fin.Rotate
-public import Mathlib.Tactic.IntervalCases
+import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-!
 # Alternating Groups

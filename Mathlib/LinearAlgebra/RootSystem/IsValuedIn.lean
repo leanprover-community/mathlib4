@@ -1,18 +1,3 @@
-/-
-Copyright (c) 2025 Scott Carnahan. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Carnahan, Oliver Nash
--/
-module
-
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Module.Submodule.Invariant
-public import Mathlib.LinearAlgebra.PerfectPairing.Restrict
-public import Mathlib.LinearAlgebra.RootSystem.Defs
-
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.Span.TensorProduct
-import Mathlib.RingTheory.Flat.TorsionFree
 
 /-!
 # Root pairings taking values in a subring

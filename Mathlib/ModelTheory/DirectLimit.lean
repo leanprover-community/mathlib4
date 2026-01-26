@@ -1,15 +1,3 @@
-/-
-Copyright (c) 2022 Aaron Anderson. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Aaron Anderson, Gabin Kolly
--/
-module
-
-public import Mathlib.Data.Finite.Sum
-public import Mathlib.Data.Fintype.Order
-public import Mathlib.ModelTheory.FinitelyGenerated
-public import Mathlib.ModelTheory.Quotients
-public import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures

@@ -1,13 +1,3 @@
-/-
-Copyright (c) 2014 Jeremy Avigad. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
--/
-module
-
-public import Mathlib.Algebra.Group.Basic
-public import Mathlib.Algebra.GroupWithZero.Regular
-public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Lemmas about regular elements in rings.

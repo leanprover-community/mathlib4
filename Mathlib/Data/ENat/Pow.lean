@@ -1,12 +1,3 @@
-/-
-Copyright (c) 2025 Damien Thomine. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Damien Thomine
--/
-module
-
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-public import Mathlib.Data.ENat.Basic
 
 /-!
 # Powers of extended natural numbers

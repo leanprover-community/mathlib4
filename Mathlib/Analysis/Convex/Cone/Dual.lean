@@ -1,14 +1,6 @@
-/-
-Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Andrew Yang
--/
-module
-
-public import Mathlib.Analysis.Convex.Cone.Basic
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Geometry.Convex.Cone.Dual
-public import Mathlib.Topology.Algebra.Module.PerfectPairing
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # The topological dual of a cone and Farkas' lemma

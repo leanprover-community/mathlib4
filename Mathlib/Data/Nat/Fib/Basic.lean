@@ -1,18 +1,4 @@
-/-
-Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
--/
-module
-
-public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.Data.Nat.GCD.Basic
-public import Mathlib.Data.Nat.BinaryRec
-public import Mathlib.Logic.Function.Iterate
-public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Zify
-public import Mathlib.Data.Nat.Choose.Basic
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Fibonacci numbers

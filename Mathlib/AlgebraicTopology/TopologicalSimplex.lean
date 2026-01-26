@@ -1,13 +1,4 @@
-/-
-Copyright (c) 2021 Adam Topaz. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Adam Topaz, Joël Riou
--/
-module
-
-public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-public import Mathlib.Analysis.Convex.StdSimplex
-public import Mathlib.Topology.Category.TopCat.ULift
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Topological simplices

@@ -1,14 +1,5 @@
-/-
-Copyright (c) 2023 Rémy Degenne. All rights reserved.
-Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
--/
-module
-
-public import Mathlib.Probability.Independence.Kernel.Indep
-public import Mathlib.MeasureTheory.MeasurableSpace.Pi
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Independence of random variables with respect to a kernel and a measure
