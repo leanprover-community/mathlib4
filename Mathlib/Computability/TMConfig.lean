@@ -576,7 +576,7 @@ def Code.Ok (c : Code) :=
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
     Turing.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
   rw [h, ← bind_pure_comp]; congr; funext v
-  exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single rfl, rfl⟩)
+  exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single _ _ rfl, rfl⟩)
 
 theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' := by
   induction c generalizing k v with
@@ -615,7 +615,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       obtain ⟨v'', h₁, h₂⟩ := this
       rw [reaches_eval] at h₂
       swap
-      · exact ReflTransGen.single rfl
+      · exact ReflTransGen.single _ _ rfl
       cases Part.mem_unique h₂ (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
       refine ⟨v', h₁, ?_⟩
       rw [stepRet] at h
@@ -624,7 +624,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       · refine ⟨_, Part.mem_some _, ?_⟩
         rw [reaches_eval]
         · exact h
-        exact ReflTransGen.single rfl
+        exact ReflTransGen.single _ _ rfl
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
         rw [e₀, Cont.then, Cfg.then] at e₁
@@ -640,7 +640,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
     swap
-    · exact ReflTransGen.single rfl
+    · exact ReflTransGen.single _ _ rfl
     refine PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => ?_
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
     obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
@@ -649,7 +649,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine ⟨_, he₁, ?_⟩
       rw [reaches_eval]
       swap
-      · exact ReflTransGen.single rfl
+      · exact ReflTransGen.single _ _ rfl
       rwa [stepRet, if_pos h]
     · obtain ⟨v₁, he₁, he₂⟩ := (Part.mem_map_iff _).1 he₁'
       split_ifs at he₂ with h; cases he₂
@@ -657,7 +657,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine ⟨_, he₁, ?_⟩
       rw [reaches_eval]
       swap
-      · exact ReflTransGen.single rfl
+      · exact ReflTransGen.single _ _ rfl
       rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 
@@ -667,15 +667,15 @@ theorem code_is_ok (c) : Code.Ok c := by
     rw [Code.eval, IHf]
     simp only [bind_assoc, pure_bind]; congr; funext v
     rw [reaches_eval]; swap
-    · exact ReflTransGen.single rfl
+    · exact ReflTransGen.single _ _ rfl
     rw [stepRet, IHfs]; congr; funext v'
     refine Eq.trans (b := eval step (stepRet (Cont.cons₂ v k) v')) ?_ (Eq.symm ?_) <;>
-      exact reaches_eval (ReflTransGen.single rfl)
+      exact reaches_eval (ReflTransGen.single _ _ rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
     simp only [bind_assoc]; congr; funext v
     rw [reaches_eval]; swap
-    · exact ReflTransGen.single rfl
+    · exact ReflTransGen.single _ _ rfl
     rw [stepRet, IHf]
   | case f g IHf IHg =>
     simp only [Code.eval]
@@ -695,21 +695,21 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
-    · exact ReflTransGen.single rfl
+    · exact ReflTransGen.single _ _ rfl
     rw [stepRet, IH, bind_pure_comp]
   | cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
   | comp f k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
     rw [reaches_eval]; swap
-    · exact ReflTransGen.single rfl
+    · exact ReflTransGen.single _ _ rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
     rw [Cont.eval, stepRet]; simp only
     split_ifs; · exact IH
     simp only [← bind_pure_comp, bind_assoc, cont_eval_fix (code_is_ok _)]
     congr; funext; rw [bind_pure_comp, ← IH]
-    exact reaches_eval (ReflTransGen.single rfl)
+    exact reaches_eval (ReflTransGen.single _ _ rfl)
 
 end ToPartrec
 

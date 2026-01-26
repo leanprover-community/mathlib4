@@ -271,7 +271,7 @@ theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equ
   intro i
   replace h₁ := congr_fun (congr_fun h₁ Fin2.fz) i
   simp only [TypeVec.comp, appendFun, splitFun] at h₁
-  replace h₁ := Quot.eqvGen_exact h₁
+  replace h₁ := Quot.eqvGen_exact _ _ h₁
   rw [h₀.eqvGen_iff] at h₁
   exact h₁
 

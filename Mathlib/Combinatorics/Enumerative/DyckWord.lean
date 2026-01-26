@@ -411,7 +411,7 @@ lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
   · simp [h]
   · have := semilength_outsidePart_lt h
     exact (le_add_self p.outsidePart q).trans
-      (Relation.ReflTransGen.single (Or.inr (outsidePart_add h).symm))
+      (Relation.ReflTransGen.single _ _ (Or.inr (outsidePart_add h).symm))
 termination_by p.semilength
 
 variable (p) in protected lemma zero_le : 0 ≤ p := add_zero p ▸ le_add_self p 0

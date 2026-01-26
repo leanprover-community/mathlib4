@@ -154,7 +154,7 @@ lemma Derives.refl (w : List (Symbol T g.NT)) : g.Derives w w :=
   Relation.ReflTransGen.refl
 
 lemma Produces.single {v w : List (Symbol T g.NT)} (hvw : g.Produces v w) : g.Derives v w :=
-  Relation.ReflTransGen.single hvw
+  Relation.ReflTransGen.single _ _ hvw
 
 @[trans]
 lemma Derives.trans {u v w : List (Symbol T g.NT)} (huv : g.Derives u v) (hvw : g.Derives v w) :
