@@ -143,7 +143,7 @@ theorem eq_condLExp_ae₀ (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
     Y =ᵐ[P] P⁻[X|mΩ] := by
   apply ae_eq_of_ae_eq_trim
-  apply ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ (μ := P.trim hm) hY (by fun_prop)
+  apply ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite₀ hY (by fun_prop)
   intro s hs _
   rw [setLIntegral_trim_ae hm hY hs, setLIntegral_condLExp_trim _ _ _ hs]
   exact hXY s hs
