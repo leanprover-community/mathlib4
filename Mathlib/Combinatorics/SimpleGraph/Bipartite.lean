@@ -449,12 +449,6 @@ section
 
 variable {W₁ W₂ : Type*}
 
-theorem Sym2.eq_out (v : Sym2 V) : v = s(v.out.1, v.out.2) := Sym2.ext (by simp)
-
-theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
-  refine Set.ext fun x ↦ ⟨fun h ↦ ?_, by grind [mem_edgeSet]⟩
-  exact ⟨x.out.1, x.out.2, by simp [G.mem_edgeSet.mp <| Sym2.eq_out x ▸ h]⟩
-
 theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
     Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
   refine Set.ext fun x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩

@@ -559,6 +559,10 @@ theorem adj_iff_exists_edge {v w : V} : G.Adj v w ↔ v ≠ w ∧ ∃ e ∈ G.ed
 theorem adj_iff_exists_edge_coe : G.Adj a b ↔ ∃ e : G.edgeSet, e.val = s(a, b) := by
   simp only [mem_edgeSet, exists_prop, SetCoe.exists, exists_eq_right]
 
+theorem edgeSet_eq : G.edgeSet = { x | ∃ v w : V, x = s(v, w) ∧ G.Adj v w } := by
+  refine Set.ext fun x ↦ ⟨fun h ↦ ?_, by grind [mem_edgeSet]⟩
+  exact ⟨x.out.1, x.out.2, by simp [G.mem_edgeSet.mp <| Sym2.eq_out x ▸ h]⟩
+
 variable (G G₁ G₂)
 
 theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) :
