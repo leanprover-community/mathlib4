@@ -19,7 +19,7 @@ specific points as desired.
 
 ## Main definitions
 * `Affine.Simplex.ninePointCircle`: the 3(n+1)-point sphere of a simplex.
-* `Affine.Simplex.eulerPoint`: the $1/n$ of the way from the Monge point to a vertex.
+* `Affine.Simplex.eulerPoint`: the $1/n$th of the way from the Monge point to a vertex.
 * `Affine.Simplex.faceOppositeCentroid_mem_ninePointCircle`: the 3(n+1)-point sphere passes through
   the centroid of each face of the simplex
 * `Affine.Simplex.eulerPoint_mem_ninePointCircle`: the 3(n+1)-point sphere passes through all Euler
