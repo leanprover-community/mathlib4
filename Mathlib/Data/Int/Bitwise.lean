@@ -93,9 +93,9 @@ protected def xor : ℤ → ℤ → ℤ
 instance : ShiftLeft ℤ where
   shiftLeft
   | (m : ℕ), (n : ℕ) => Nat.shiftLeft' false m n
-  | (m : ℕ), -[n +1] => m >>> (Nat.succ n)
-  | -[m +1], (n : ℕ) => -[Nat.shiftLeft' true m n +1]
-  | -[m +1], -[n +1] => -[m >>> (Nat.succ n) +1]
+  | (m : ℕ), -[n+1] => m >>> (Nat.succ n)
+  | -[m+1], (n : ℕ) => -[Nat.shiftLeft' true m n+1]
+  | -[m+1], -[n+1] => -[m >>> (Nat.succ n)+1]
 
 /-- `m >>> n` produces an integer whose binary representation
   is obtained by right-shifting the binary representation of `m` by `n` places -/

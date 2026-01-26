@@ -139,7 +139,7 @@ lemma lie_e_f_same :
     ⁅e i, f i⁆ = h i := by
   letI := P.indexNeg
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   classical
   ext (k | k) (l | l)
   · simp [e, f, h]

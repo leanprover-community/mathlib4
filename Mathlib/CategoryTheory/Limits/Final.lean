@@ -1162,4 +1162,38 @@ theorem initial_ι {C : Type u₁} [Category.{v₁} C] (P : ObjectProperty C)
 
 end ObjectProperty
 
+section Restriction
+
+variable {J C : Type*} [Category* J] [Category* C] {D : J ⥤ C}
+
+/-- If `Over j ⥤ J` is initial, restricting a limit cone to the diagram above `j`,
+preserves the limit. -/
+noncomputable def Limits.IsLimit.overPost {c : Cone D} (hc : IsLimit c) (j : J)
+    [(CategoryTheory.Over.forget j).Initial] : IsLimit (c.overPost j) := by
+  haveI : Nonempty (Over j) := ⟨Over.mk (𝟙 j)⟩
+  letI c'' := Over.liftCone (Over.forget j ⋙ D) (X := D.obj j)
+    (Functor.whiskerRight (Over.forgetCocone j).ι D ≫ (Functor.constComp _ _ _).hom)
+    (c.whisker (CategoryTheory.Over.forget j)) (c.π.app j) (by cat_disch)
+  letI hc'' : IsLimit c'' :=
+    Over.isLimitLiftCone _ _ _ _ _ <| (Functor.Initial.isLimitWhiskerEquiv _ _).symm hc
+  refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ hc''
+  · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Over.isoMk (Iso.refl _))
+  · exact Cones.ext (Iso.refl _)
+
+/-- If `Over j ⥤ J` is final, restricting a colimit cocone to the diagram below `j`,
+preserves the limit. -/
+noncomputable def Limits.IsColimit.underPost {c : Cocone D} (hc : IsColimit c) (j : J)
+    [(CategoryTheory.Under.forget j).Final] : IsColimit (c.underPost j) := by
+  haveI : Nonempty (Under j) := ⟨CategoryTheory.Under.mk (𝟙 j)⟩
+  letI c'' := Under.liftCocone (CategoryTheory.Under.forget j ⋙ D) (X := D.obj j)
+    ((Functor.constComp _ _ _).inv ≫ Functor.whiskerRight ((Under.forgetCone j).π) D)
+    (c.whisker (CategoryTheory.Under.forget j)) (c.ι.app j) (by cat_disch)
+  letI hc'' : IsColimit c'' :=
+    Under.isColimitLiftCocone _ _ _ _ _ <| (Functor.Final.isColimitWhiskerEquiv _ _).symm hc
+  refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ hc''
+  · exact NatIso.ofComponents (fun k ↦ CategoryTheory.Under.isoMk (Iso.refl _))
+  · exact Cocones.ext (Iso.refl _)
+
+end Restriction
+
 end CategoryTheory

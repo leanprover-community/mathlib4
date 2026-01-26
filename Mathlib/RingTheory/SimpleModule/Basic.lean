@@ -17,6 +17,8 @@ public import Mathlib.Order.JordanHolder
 public import Mathlib.RingTheory.Ideal.Colon
 public import Mathlib.RingTheory.Noetherian.Defs
 
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+
 /-!
 # Simple Modules
 
@@ -421,9 +423,11 @@ theorem IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule [IsSemisimpl
   have ⟨I, ⟨e'⟩⟩ := IsSemisimpleModule.exists_submodule_linearEquiv_quotient J
   ⟨I, ⟨e.trans e'.symm⟩⟩
 
-instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
-  have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
+instance (ι) [IsSemisimpleModule R M] : IsSemisimpleModule R (ι →₀ M) :=
+  isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
+
+instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
 instance IsSemisimpleModule.isCoatomic_submodule [IsSemisimpleModule R M] :
@@ -530,7 +534,7 @@ noncomputable instance _root_.Module.End.instDivisionRing
 instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Module.End R M) M :=
   isSimpleModule_iff_toSpanSingleton_surjective.mpr <| .intro ‹_› fun v hv w ↦
     have ⟨f, eq⟩ := IsSemisimpleModule.extension_property _
-      (ker_eq_bot.mp (ker_toSpanSingleton R M hv)) (toSpanSingleton R M w)
+      (ker_eq_bot.mp (ker_toSpanSingleton R hv)) (toSpanSingleton R M w)
     ⟨f, by simpa using congr($eq 1)⟩
 
 end LinearMap
@@ -552,3 +556,37 @@ instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
     exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 end JordanHolderModule
+
+section jacobson_density
+
+open Module (End)
+open Submodule IsCompl
+
+variable [IsSemisimpleModule R M]
+
+-- Statement and proof follow [Lorenz2008], Chapter 28, F20.
+theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
+    ∃ r : R, ∀ m ∈ s, f m = r • m :=
+  let x := Finsupp.equivFunOnFinite.symm (·.1 : s → M)
+  have ⟨_, h⟩ := exists_isCompl (R ∙ x)
+  let p := projection h
+  let f := End.ringHomEndFinsupp s f
+  have : f (p • x) = f x := congr(f $(projection_apply_left h ⟨x, mem_span_singleton_self x⟩))
+  have : f x ∈ R ∙ x := by rw [← this, map_smul, End.smul_def]; apply projection_apply_mem
+  have ⟨r, hr⟩ := mem_span_singleton.mp this
+  ⟨r, fun m hm ↦ by simpa [x] using congr($hr ⟨m, hm⟩).symm⟩
+
+/-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
+protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
+    Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by
+  have ⟨s, hs⟩ := Module.Finite.fg_top (R := End R M) (M := M)
+  intro f
+  have ⟨r, hr⟩ := jacobson_density f s
+  refine ⟨r, LinearMap.ext fun m ↦ ?_⟩
+  induction hs.ge (trivial : m ∈ ⊤) using Submodule.span_induction with
+  | mem m hm => exact (hr m hm).symm
+  | zero => simp
+  | add _ _ _ _ h₁ h₂ => simpa using congr($h₁ + $h₂)
+  | smul g _ _ h => simp_rw [map_smul, h]
+
+end jacobson_density
