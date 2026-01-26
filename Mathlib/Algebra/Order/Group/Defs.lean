@@ -121,6 +121,12 @@ theorem le_inv_self_iff : a ≤ a⁻¹ ↔ a ≤ 1 := by contrapose!; exact inv_
 @[to_additive (attr := simp)]
 theorem lt_inv_self_iff : a < a⁻¹ ↔ a < 1 := by contrapose!; exact inv_le_self_iff
 
+@[to_additive (attr := simp)]
+theorem div_le_mul_self_iff : x / y ≤ x * y ↔ 1 ≤ y := by simp [div_eq_mul_inv]
+
+@[to_additive (attr := simp)]
+theorem div_lt_mul_self_iff : x / y < x * y ↔ 1 < y := by simp [div_eq_mul_inv]
+
 end LinearOrderedCommGroup
 
 section NormNumLemmas
