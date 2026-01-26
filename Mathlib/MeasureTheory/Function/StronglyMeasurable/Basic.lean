@@ -795,7 +795,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
       StronglyMeasurable.tendsto_approx]
   · simp only [not_finite_iff_infinite] at Fi
     obtain ⟨e, -⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
-    let he := Equiv.bijective e
+    have he := e.bijective
     classical
     let g (n : ℕ) : ι → Fin (n + 1) := fun i =>
       if hi : ∃ m < n, i = e m then ⟨hi.choose, by linarith [hi.choose_spec.1]⟩ else Fin.last n
