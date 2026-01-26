@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
 ## Basic properties of `C^n` functions between manifolds
@@ -20,6 +22,8 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 chain rule, manifolds, higher derivative
 
 -/
+
+public section
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
@@ -68,7 +72,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]
@@ -158,6 +162,25 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
+/-! ### Iterated functions -/
+
+section Iterate
+
+/-- The iterates of `C^n` functions on domains are `C^n`. -/
+theorem ContMDiffOn.iterate {f : M → M} (hf : ContMDiffOn I I n f s)
+    (hmaps : Set.MapsTo f s s) (k : ℕ) :
+    ContMDiffOn I I n (f^[k]) s := by
+  induction k with
+  | zero => simpa using contMDiffOn_id
+  | succ k h => simpa using h.comp hf hmaps
+
+/-- The iterates of `C^n` functions are `C^n`. -/
+theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :
+    ContMDiff I I n (f^[k]) :=
+  contMDiffOn_univ.mp ((contMDiffOn_univ.mpr hf).iterate (univ.mapsTo_univ f) k)
+
+end Iterate
+
 /-! ### Constants are `C^n` -/
 
 section const
@@ -223,9 +246,9 @@ end const
 
 /-- `f` is continuously differentiable if it is cont. differentiable at
 each `x ∈ mulTSupport f`. -/
-@[to_additive "`f` is continuously differentiable if it is continuously
+@[to_additive /-- `f` is continuously differentiable if it is continuously
 differentiable at each `x ∈ tsupport f`. See also `contMDiff_section_of_tsupport`
-for a similar result for sections of vector bundles."]
+for a similar result for sections of vector bundles. -/]
 theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
     (hf : ∀ x ∈ mulTSupport f, ContMDiffAt I I' n f x) : ContMDiff I I' n f := by
   intro x
@@ -241,23 +264,11 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_notMem_mulTSupport hx)
 
-@[deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
-
-@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
-
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_notMem]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
-
-@[deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
-
-@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 /-- Given two `C^n` functions `f` and `g` which coincide locally around the frontier of a set `s`,
 then the piecewise function defined using `f` on `s` and `g` elsewhere is `C^n`. -/
@@ -352,8 +363,6 @@ theorem contMDiffAt_subtype_iff {n : WithTop ℕ∞} {U : Opens M} {f : M → M'
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
 
-@[deprecated (since := "2024-11-20")] alias contMdiffAt_subtype_iff := contMDiffAt_subtype_iff
-
 theorem contMDiff_subtype_val {n : WithTop ℕ∞} {U : Opens M} :
     ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMDiffAt_subtype_iff.mpr contMDiffAt_id
@@ -396,13 +405,13 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
   haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
-  intros x y
+  intro x y
   -- show the function is actually the identity on the range of I ∘ e
   apply contDiffOn_id.congr
-  intros z hz
+  intro z hz
   -- factorise into the chart `e` and the model `id`
   simp only [mfld_simps]
-  rw [h.toPartialHomeomorph_right_inv]
+  rw [h.toOpenPartialHomeomorph_right_inv]
   · rw [I.right_inv]
     apply mem_of_subset_of_mem _ hz.1
     exact letI := h.singletonChartedSpace; extChartAt_target_subset_range (I := I) x
@@ -410,30 +419,30 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
     have := hz.1
     rw [@extChartAt_target _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace] at this
     have := this.1
-    rw [mem_preimage, PartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      h.toPartialHomeomorph_target] at this
+    rw [mem_preimage, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+      h.toOpenPartialHomeomorph_target] at this
     exact this
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
-      n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
+      n (IsOpenEmbedding.toOpenPartialHomeomorph e h).symm (range e) := by
   haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiffOn_iff]
   constructor
-  · rw [← h.toPartialHomeomorph_target]
-    exact (h.toPartialHomeomorph e).continuousOn_symm
-  · intros z hz
+  · rw [← h.toOpenPartialHomeomorph_target]
+    exact (h.toOpenPartialHomeomorph e).continuousOn_symm
+  · intro z hz
     -- show the function is actually the identity on the range of I ∘ e
     apply contDiffOn_id.congr
-    intros z hz
+    intro z hz
     -- factorise into the chart `e` and the model `id`
     simp only [mfld_simps]
     have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
       exact hz.2.1
-    rw [h.toPartialHomeomorph_right_inv e this]
+    rw [h.toOpenPartialHomeomorph_right_inv e this]
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _) hz.1
 
@@ -446,9 +455,9 @@ space `H'`. If `e' ∘ f : M → H'` is `C^n`, then `f` is `C^n`.
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     haveI := h'.singletonChartedSpace; ContMDiff I I' n f := by
-  have : f = (h'.toPartialHomeomorph e').symm ∘ e' ∘ f := by
+  have : f = (h'.toOpenPartialHomeomorph e').symm ∘ e' ∘ f := by
     ext
-    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toPartialHomeomorph_left_inv]
+    rw [Function.comp_apply, Function.comp_apply, IsOpenEmbedding.toOpenPartialHomeomorph_left_inv]
   rw [this]
   apply @ContMDiffOn.comp_contMDiff _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
     h'.singletonChartedSpace _ _ (range e') _ (contMDiffOn_isOpenEmbedding_symm h') hf

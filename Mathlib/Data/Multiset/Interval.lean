@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Interval
-import Mathlib.Data.DFinsupp.Multiset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Data.DFinsupp.Interval
+public import Mathlib.Data.DFinsupp.Multiset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Finite intervals of multisets
@@ -22,6 +24,8 @@ entries as it contains duplicates. We do not go via `Finsupp` as this would be n
 multisets are typically used computationally.
 
 -/
+
+@[expose] public section
 
 
 open Finset DFinsupp Function

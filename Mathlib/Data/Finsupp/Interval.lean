@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Finsupp
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Finsupp
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of finitely supported functions
@@ -22,6 +24,8 @@ finite and calculates the cardinality of its finite intervals.
 Both these definitions use the fact that `0 = {0}` to ensure that the resulting function is finitely
 supported.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -55,13 +59,16 @@ variable [Zero α] [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq ι]
 variable {f g : ι →₀ α} {i : ι} {a : α}
 
 /-- Pointwise `Finset.Icc` bundled as a `Finsupp`. -/
-@[simps toFun]
+@[simps apply]
 def rangeIcc (f g : ι →₀ α) : ι →₀ Finset α where
   toFun i := Icc (f i) (g i)
   support := f.support ∪ g.support
   mem_support_toFun i := by
     rw [mem_union, ← not_iff_not, not_or, notMem_support_iff, notMem_support_iff, not_ne_iff]
     exact Icc_eq_singleton_iff.symm
+
+@[deprecated (since := "2025-12-15")]
+alias rangeIcc_toFun := rangeIcc_apply
 
 lemma coe_rangeIcc (f g : ι →₀ α) : rangeIcc f g i = Icc (f i) (g i) := rfl
 
@@ -88,7 +95,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (ι →₀ α) :=
 
 theorem Icc_eq : Icc f g = (f.support ∪ g.support).finsupp (f.rangeIcc g) := rfl
 
-theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)):= by
+theorem card_Icc : #(Icc f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) := by
   simp_rw [Icc_eq, card_finsupp, coe_rangeIcc]
 
 theorem card_Ico : #(Ico f g) = ∏ i ∈ f.support ∪ g.support, #(Icc (f i) (g i)) - 1 := by

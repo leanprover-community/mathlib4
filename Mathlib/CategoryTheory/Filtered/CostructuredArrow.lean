@@ -3,11 +3,13 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories
@@ -17,6 +19,8 @@ import Mathlib.CategoryTheory.Limits.Final
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
 
 -/
+
+public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

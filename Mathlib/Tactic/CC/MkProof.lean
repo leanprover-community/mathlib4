@@ -3,14 +3,19 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Tactic.CC.Datatypes
-import Mathlib.Tactic.CC.Lemmas
-import Mathlib.Tactic.Relation.Rfl
-import Mathlib.Tactic.Relation.Symm
+module
+
+public meta import Mathlib.Tactic.CC.Datatypes
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.CC.Datatypes
+public import Mathlib.Tactic.Relation.Rfl
+public import Mathlib.Tactic.Relation.Symm
 
 /-!
 # Make proofs from a congruence closure
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic Std
 
@@ -559,7 +564,7 @@ def mkACProof (e₁ e₂ : Expr) : MetaM Expr := do
 
 /-- Given `tr := t*r` `sr := s*r` `tEqs : t = s`, return a proof for `tr = sr`
 
-    We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
+We use `a*b` to denote an AC application. That is, `(a*b)*(c*a)` is the term `a*a*b*c`. -/
 def mkACSimpProof (tr t s r sr : ACApps) (tEqs : DelayedExpr) : MetaM DelayedExpr := do
   if tr == t then
     return tEqs

@@ -77,7 +77,7 @@ example {R : Type u} [Add R] [CommSemigroup R] {a b c d e f g : R} :
   rfl
 
 /-
-#  Sample usage of `move_oper`
+# Sample usage of `move_oper`
 -/
 
 example (a b c : Prop) : a ∧ b ∧ c ↔ b ∧ c ∧ a := by

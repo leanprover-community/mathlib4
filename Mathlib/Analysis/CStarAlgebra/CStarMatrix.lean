@@ -3,10 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix
-import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Topology.UniformSpace.Matrix
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-!
 # Matrices with entries in a C⋆-algebra
@@ -31,6 +33,8 @@ replace the uniformity and bornology by the Pi ones when registering the
 `NormedAddCommGroup (CStarMatrix m n A)` instance. See the docstring of the `TopologyAux` section
 below for more details.
 -/
+
+@[expose] public section
 
 open scoped ComplexOrder Topology Uniformity Bornology Matrix NNReal InnerProductSpace
   WithCStarModule
@@ -418,8 +422,7 @@ lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
 
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
-    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
-  ext; simp [reindexₐ, reindexₗ]
+    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
 @[simp]
 lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -471,7 +474,7 @@ variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
-               map_smul' := M.vecMul_smul
+               map_smul' := M.smul_vecMul
                cont := Continuous.comp (by fun_prop) (by fun_prop) }
   map_add' M₁ M₂ := by
     ext
@@ -483,12 +486,9 @@ noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A
     ext x i
     simp only [ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       WithCStarModule.equivL_apply, WithCStarModule.equivL_symm_apply,
-      WithCStarModule.equiv_symm_pi_apply, Matrix.vecMul, dotProduct,
-      WithCStarModule.equiv_pi_apply, RingHom.id_apply, ContinuousLinearMap.coe_smul',
-      Pi.smul_apply, WithCStarModule.smul_apply, Finset.smul_sum]
-    congr
-    ext j
-    rw [CStarMatrix.smul_apply, mul_smul_comm]
+      WithCStarModule.equiv_symm_pi_apply, ContinuousLinearMap.smul_apply,
+      WithCStarModule.smul_apply, RingHom.id_apply]
+    rw [Matrix.vecMul_smul, Pi.smul_apply]
 
 lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
     toCLM M v = (WithCStarModule.equiv _ _).symm (M.vecMul v) := rfl
@@ -621,6 +621,7 @@ namespace CStarMatrix
 variable {m n A : Type*} [Fintype m] [Fintype n]
   [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.privateInPublic true in
 private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
@@ -632,7 +633,7 @@ private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
 which induces a topology that is not defeq with the matrix one, and the elementwise norm on
 matrices, in order to show that the two topologies are in fact equal -/
-attribute [local instance] normedSpaceAux Matrix.normedAddCommGroup Matrix.normedSpace
+open scoped Matrix.Norms.Elementwise
 
 private lemma nnnorm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, CStarMatrix.toCLM M v⟫_A‖₊ ≤ C * ‖v‖₊ * ‖w‖₊) : ‖M‖₊ ≤ C :=
@@ -673,6 +674,7 @@ private lemma uniformInducing_toMatrixAux :
   AntilipschitzWith.isUniformInducing antilipschitzWith_toMatrixAux
     lipschitzWith_toMatrixAux.uniformContinuous
 
+set_option backward.privateInPublic true in
 private lemma uniformity_eq_aux :
     𝓤 (CStarMatrix m n A) = (𝓤[Pi.uniformSpace _] :
       Filter (CStarMatrix m n A × CStarMatrix m n A)) := by
@@ -684,6 +686,7 @@ private lemma uniformity_eq_aux :
   rfl
 
 open Bornology in
+set_option backward.privateInPublic true in
 private lemma cobounded_eq_aux :
     cobounded (CStarMatrix m n A) = @cobounded _ Pi.instBornology := by
   have : cobounded (CStarMatrix m n A) = Filter.comap ofMatrix.symm (cobounded _) := by
@@ -698,7 +701,7 @@ end TopologyAux
 
 namespace CStarMatrix
 
-section non_unital
+section NonUnital
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -717,12 +720,11 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :
 instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
   Pi.instIsUniformAddGroup
 
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  CStarMatrix.instIsUniformAddGroup
-
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance instNormedAddCommGroup :
     NormedAddCommGroup (CStarMatrix m n A) :=
   .ofCoreReplaceAll CStarMatrix.normedSpaceCore
@@ -762,7 +764,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]
-      gcongr
+      · gcongr
       positivity
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]
@@ -778,9 +780,9 @@ noncomputable instance instPartialOrder :
 instance instStarOrderedRing :
     StarOrderedRing (CStarMatrix n n A) := CStarAlgebra.spectralOrderedRing _
 
-end non_unital
+end NonUnital
 
-section unital
+section Unital
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -796,7 +798,7 @@ noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A)
 /-- Matrices with entries in a unital C⋆-algebra form a unital C⋆-algebra. -/
 noncomputable instance instCStarAlgebra [DecidableEq n] : CStarAlgebra (CStarMatrix n n A) where
 
-end unital
+end Unital
 
 section
 

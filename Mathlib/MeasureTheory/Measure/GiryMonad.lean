@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # The Giry monad
@@ -15,7 +17,7 @@ measurable spaces and measurable functions, called the Giry monad.
 Note that most sources use the term "Giry monad" for the restriction
 to *probability* measures. Here we include all measures on X.
 
-See also `MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
+See also `Mathlib/MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
 monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 ## References
@@ -26,6 +28,8 @@ monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 giry monad
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -59,6 +63,15 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
+
+-- There is no typeclass for measurability of `SMul` only on that side, otherwise we could
+-- turn that into an instance.
+@[fun_prop]
+lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
+    Measurable (fun x ↦ f x • μ) := by
+  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
+  simp only [Measure.smul_apply, smul_eq_mul]
+  fun_prop
 
 theorem measurable_measure {μ : α → Measure β} :
     Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=
@@ -102,7 +115,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n => Finset.measurable_fun_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
@@ -223,7 +236,7 @@ theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs 
   apply lintegral_map_le
 
 theorem ae_ae_of_ae_bind {m : Measure α} {f : α → Measure β} {p : β → Prop} (hf : AEMeasurable f m)
-    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂ f a, p b :=
+    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂f a, p b :=
   ae_of_ae_map hf <| ae_ae_of_ae_join h
 
 theorem _root_.AEMeasurable.ae_of_bind {γ : Type*} {_ : MeasurableSpace γ} {m : Measure α}

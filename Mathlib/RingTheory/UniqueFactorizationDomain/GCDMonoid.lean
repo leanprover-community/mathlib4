@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.FactorSet
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Building GCD out of unique factorization
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 ## Main results
 * `UniqueFactorizationMonoid.toGCDMonoid`: choose a GCD monoid structure given unique factorization.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -22,7 +26,7 @@ section
 open Associates UniqueFactorizationMonoid
 
 /-- `toGCDMonoid` constructs a GCD monoid out of a unique factorization domain. -/
-noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelCommMonoidWithZero α]
+noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMonoidWithZero α]
     [UniqueFactorizationMonoid α] : GCDMonoid α where
   gcd a b := Quot.out (Associates.mk a ⊓ Associates.mk b : Associates α)
   lcm a b := Quot.out (Associates.mk a ⊔ Associates.mk b : Associates α)
@@ -45,7 +49,7 @@ noncomputable def UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CancelComm
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
 noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
-    [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
+    [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
     gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
@@ -65,7 +69,7 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     normalize_gcd := fun a b => by apply normalize_out _
     normalize_lcm := fun a b => by apply normalize_out _ }
 
-instance (α) [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+instance (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
     Nonempty (NormalizedGCDMonoid α) := by
   letI := UniqueFactorizationMonoid.normalizationMonoid (α := α)
   classical exact ⟨UniqueFactorizationMonoid.toNormalizedGCDMonoid α⟩

@@ -3,8 +3,10 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.Sheaf.Smooth
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.Geometry.Manifold.Sheaf.Smooth
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -26,6 +28,8 @@ Characterize morphisms-of-locally-ringed-spaces (`AlgebraicGeometry.LocallyRinge
 smooth manifolds.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 universe u
@@ -57,7 +61,7 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
       convert hf
       exact (smoothSheafCommRing.eval_germ U x hxU f).symm
     -- In fact, by continuity, `f` is nonzero on a neighbourhood `V` of `x`
-    have H :  ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
+    have H : ∀ᶠ (z : U) in 𝓝 ⟨x, hxU⟩, f z ≠ 0 := f.2.continuous.continuousAt.eventually_ne hf'
     rw [eventually_nhds_iff] at H
     obtain ⟨V₀, hV₀f, hV₀, hxV₀⟩ := H
     let V : Opens M := ⟨Subtype.val '' V₀, U.2.isOpenMap_subtype_val V₀ hV₀⟩
@@ -123,6 +127,3 @@ def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
-
-@[deprecated (since := "2025-01-09")]
-noncomputable alias SmoothManifoldWithCorners.locallyRingedSpace := IsManifold.locallyRingedSpace

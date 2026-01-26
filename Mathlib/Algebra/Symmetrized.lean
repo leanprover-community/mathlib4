@@ -3,14 +3,16 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Jordan.Basic
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Algebra.Jordan.Basic
+public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Symmetrized algebra
 
 A commutative multiplication on a real or complex space can be constructed from any multiplication
-by "symmetrization" i.e
+by "symmetrization" i.e.
 $$
 a \circ b = \frac{1}{2}(ab + ba)
 $$
@@ -30,6 +32,8 @@ See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a
 
 * [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
 -/
+
+@[expose] public section
 
 
 open Function
@@ -51,8 +55,7 @@ def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
+-- We add `@[pp_nodot]` in case RFC https://github.com/leanprover/lean4/issues/6178 happens.
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
@@ -248,8 +251,6 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
 
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
-    one := 1
-    mul := (· * ·)
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]

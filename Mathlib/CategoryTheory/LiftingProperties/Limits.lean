@@ -3,7 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Lifting properties and (co)limits
@@ -13,13 +16,15 @@ certain (co)limits.
 
 -/
 
+@[expose] public section
+
 universe v
 
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] {X Y Z W : C}
+variable {C : Type*} [Category* C] {X Y Z W : C}
   {f : X ⟶ Y} {s : X ⟶ Z} {g : Z ⟶ W} {t : Y ⟶ W}
 
 lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)

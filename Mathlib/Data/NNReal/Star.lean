@@ -3,12 +3,16 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Data.Real.Star
+module
+
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Data.Real.Star
 
 /-!
 # The non-negative real numbers are a `*`-ring, with the trivial `*`-structure
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

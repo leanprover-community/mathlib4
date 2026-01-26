@@ -3,16 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Filtered.Connected
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Bicones
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Bicones
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 /-!
 # Representably flat functors
 
@@ -20,7 +22,8 @@ We define representably flat functors as functors such that the category of stru
 over `X` is cofiltered for each `X`. This concept is also known as flat functors as in [Elephant]
 Remark C2.3.7, and this name is suggested by Mike Shulman in
 https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
-confusion with other notions of flatness.
+confusion with other notions of flatness (e.g. see the notion of flat type-valued
+functor in the file `Mathlib/CategoryTheory/Functor/TypeValuedFlat.lean`).
 
 This definition is equivalent to left exact functors (functors that preserves finite limits) when
 `C` has all finite limits.
@@ -41,6 +44,8 @@ This definition is equivalent to left exact functors (functors that preserves fi
   does.
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
@@ -83,8 +88,6 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
--- this slow simp lemma causes a maxHeartbeats exception
-attribute [-simp] CostructuredArrow.right_eq_id in
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
     [RepresentablyFlat G] : RepresentablyFlat (F ⋙ G) := by
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
@@ -159,10 +162,7 @@ theorem flat_of_preservesFiniteLimits [HasFiniteLimits C] (F : C ⥤ D) [Preserv
   ⟨fun X =>
     haveI : HasFiniteLimits (StructuredArrow X F) := by
       apply hasFiniteLimits_of_hasFiniteLimits_of_size.{v₁} (StructuredArrow X F)
-      intro J sJ fJ
-      constructor
-      -- Porting note: instance was inferred automatically in Lean 3
-      infer_instance
+      exact fun _ _ _ => HasLimitsOfShape.mk
     IsCofiltered.of_hasFiniteLimits _⟩
 
 theorem coflat_of_preservesFiniteColimits [HasFiniteColimits C] (F : C ⥤ D)
@@ -228,17 +228,13 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
-      intro j; rfl
+      aesop
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      -- Porting note: was `by tidy`, but `aesop` only works if max heartbeats
-      -- is increased, so we replace it by the output of `tidy?`
-      intro _; rfl
+      aesop
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp
@@ -279,7 +275,7 @@ lemma preservesFiniteLimits_iff_flat [HasFiniteLimits C] (F : C ⥤ D) :
   ⟨fun _ ↦ preservesFiniteLimits_of_flat F, fun _ ↦ flat_of_preservesFiniteLimits F⟩
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably coflat iff it preserves
-finite colmits. -/
+finite colimits. -/
 lemma preservesFiniteColimits_iff_coflat [HasFiniteColimits C] (F : C ⥤ D) :
     RepresentablyCoflat F ↔ PreservesFiniteColimits F :=
   ⟨fun _ => preservesFiniteColimits_of_coflat F, fun _ => coflat_of_preservesFiniteColimits F⟩

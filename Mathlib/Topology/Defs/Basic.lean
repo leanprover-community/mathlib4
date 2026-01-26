@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.SetNotation
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.FunProp
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.ToAdditive
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.SetNotation
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.FunProp
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Util.AssertExists
 
 /-!
 # Basic definitions about topological spaces
@@ -56,6 +58,8 @@ other than `Mathlib/Data/Set/Lattice.lean`.
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -164,7 +168,7 @@ Many important quotient maps are open quotient maps, including
 
 - the quotient map from a topological space to its quotient by the action of a group;
 - the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological spaace to its separation quotient.
+- the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.

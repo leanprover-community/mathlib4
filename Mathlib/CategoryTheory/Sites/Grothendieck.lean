@@ -3,11 +3,13 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.Order.Copy
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.Order.Copy
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Grothendieck topologies
@@ -49,6 +51,8 @@ small category and Lawvere-Tierney topologies on its presheaf topos, as well as 
 between Grothendieck topoi and left exact reflective subcategories of presheaf toposes.
 -/
 
+@[expose] public section
+
 
 universe v₁ u₁ v u
 
@@ -71,15 +75,14 @@ See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
-    which satisfy some axioms. -/
+  which satisfy some axioms. -/
   sieves : ∀ X : C, Set (Sieve X)
   /-- The sieves associated to each object must contain the top sieve.
-    Use `GrothendieckTopology.top_mem`. -/
+  Use `GrothendieckTopology.top_mem`. -/
   top_mem' : ∀ X, ⊤ ∈ sieves X
   /-- Stability under pullback. Use `GrothendieckTopology.pullback_stable`. -/
   pullback_stable' : ∀ ⦃X Y : C⦄ ⦃S : Sieve X⦄ (f : Y ⟶ X), S ∈ sieves X → S.pullback f ∈ sieves Y
-  /-- Transitivity of sieves in a Grothendieck topology.
-    Use `GrothendieckTopology.transitive`. -/
+  /-- Transitivity of sieves in a Grothendieck topology. Use `GrothendieckTopology.transitive`. -/
   transitive' :
     ∀ ⦃X⦄ ⦃S : Sieve X⦄ (_ : S ∈ sieves X) (R : Sieve X),
       (∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → R.pullback f ∈ sieves Y) → R ∈ sieves X
@@ -130,13 +133,36 @@ theorem transitive (hS : S ∈ J X) (R : Sieve X) (h : ∀ ⦃Y⦄ ⦃f : Y ⟶ 
 
 theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_mem X
 
+/-- Given a `GrothendieckTopology` and a set of sieves `s` that is equal, form a new
+`GrothendieckTopology` whose set of sieves is definitionally equal to `s`. -/
+def copy (J : GrothendieckTopology C) (s : ∀ X : C, Set (Sieve X)) (h : J.sieves = s) :
+    GrothendieckTopology C where
+  sieves := s
+  top_mem' := h ▸ J.top_mem'
+  pullback_stable' := h ▸ J.pullback_stable'
+  transitive' := h ▸ J.transitive'
+
+@[simp]
+theorem sieves_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    (J.copy s h).sieves = s :=
+  rfl
+
+@[simp]
+theorem coe_copy {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    ⇑(J.copy s h) = s :=
+  rfl
+
+theorem copy_eq {J : GrothendieckTopology C} {s : ∀ X : C, Set (Sieve X)} {h : J.sieves = s} :
+    J.copy s h = J :=
+  GrothendieckTopology.ext h.symm
+
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
 See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
 @[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
-  intros Y f hf
+  intro Y f hf
   apply covering_of_eq_top
   rw [← top_le_iff, ← S.pullback_eq_top_of_mem hf]
   apply Sieve.pullback_monotone _ Hss
@@ -147,7 +173,7 @@ See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
 @[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
-  intros Y f hf
+  intro Y f hf
   rw [Sieve.pullback_inter, R.pullback_eq_top_of_mem hf]
   simp [sj]
 
@@ -372,14 +398,9 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
--- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X }
--- The `Preorder` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance (X : C) : Preorder (J.Cover X) :=
-  show Preorder {S : Sieve X // S ∈ J X} from inferInstance
+deriving Preorder
 
 namespace Cover
 
@@ -432,7 +453,7 @@ structure Arrow.Relation {S : J.Cover X} (I₁ I₂ : S.Arrow) where
   /-- The second arrow defining the relation. -/
   g₂ : Z ⟶ I₂.Y
   /-- The relation itself. -/
-  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by aesop_cat
+  w : g₁ ≫ I₁.f = g₂ ≫ I₂.f := by cat_disch
 
 attribute [reassoc] Arrow.Relation.w
 

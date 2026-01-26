@@ -3,19 +3,20 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Chu Zheng
 -/
+module
 
-import Mathlib.Topology.MetricSpace.Congruence
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Triangle
+public import Mathlib.Topology.MetricSpace.Congruence
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Triangle
 
 /-!
 # Triangle congruence
 
 This file proves the classical triangle congruence criteria for (possibly degenerate) triangles
 in real inner product spaces and Euclidean affine spaces.
-We prove SSS, SAS ASA, and AAS congruence.
+We prove SSS, SAS, ASA, and AAS congruence.
 
 ## Implementation notes
 
@@ -30,6 +31,8 @@ then reduces to ASA.
 * https://en.wikipedia.org/wiki/Congruence_(geometry)
 
 -/
+
+public section
 
 open scoped Congruent
 
@@ -64,7 +67,7 @@ theorem side_angle_side (h : ∠ a b c = ∠ a' b' c') (hd₁ : dist a b = dist 
   apply side_side_side hd₁ hd₂
   rw [dist_comm, dist_comm c' a', ← sq_eq_sq₀ (by positivity) (by positivity), pow_two, pow_two,
     EuclideanGeometry.law_cos a b c, EuclideanGeometry.law_cos a' b' c']
-  field_simp [h, hd₁, hd₂, dist_comm]
+  simp [h, hd₁, hd₂, dist_comm]
 
 /-- **Angle–Side–Angle (ASA) congruence**
 If two triangles have two equal angles and the included side equal, then the triangles are

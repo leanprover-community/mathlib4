@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Enough
-import Mathlib.CategoryTheory.EffectiveEpi.Preserves
-import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Enough
+public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+public import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
 /-!
 
 # Reflecting the property of being preregular
@@ -15,9 +17,11 @@ object `X` of `D` there exists an object `W` of `C` with an effective epi `π : 
 category `C` is `Preregular`.
 -/
 
+public section
+
 namespace CategoryTheory
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
   [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis]
   [F.EffectivelyEnough]
   [Preregular D] [F.Full] [F.Faithful]

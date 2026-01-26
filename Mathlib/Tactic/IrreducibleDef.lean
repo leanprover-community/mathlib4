@@ -3,9 +3,12 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.Eqns
-import Mathlib.Util.TermReduce
+module
+
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Eqns
+public meta import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Util.TermReduce
 
 /-!
 # Irreducible definitions
@@ -27,6 +30,8 @@ example : frobnicate a 0 = a := by
 ```
 
 -/
+
+public meta section
 
 namespace Lean.Elab.Command
 
@@ -82,10 +87,9 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
       { scopes with name := scopes.name.appendAfter "_def" }
   let `(Parser.Command.declModifiersF|
       $[$doc:docComment]? $[@[$attrs,*]]?
-      $[$vis]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
+      $[$vis]? $[$prot:protected]? $[$nc:noncomputable]? $[$uns:unsafe]?) := mods
     | throwError "unsupported modifiers {format mods}"
   let attrs := attrs.getD {}
-  let prot := vis.filter (· matches `(Parser.Command.visibility| protected))
   let priv := vis.filter (· matches `(Parser.Command.visibility| private))
   elabCommand <|<- `(stop_at_first_error
     $[$nc:noncomputable]? $[$uns]? def definition$[.{$us,*}]? $declSig:optDeclSig $val

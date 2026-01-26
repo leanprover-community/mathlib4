@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.DistribMulAction
-import Mathlib.GroupTheory.Subgroup.Center
+module
+
+public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
+public import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # Actions by `Subgroup`s
@@ -16,6 +18,8 @@ subgroup, subgroups
 
 -/
 
+@[expose] public section
+
 
 namespace Subgroup
 variable {G α β : Type*} [Group G]
@@ -24,7 +28,8 @@ section MulAction
 variable [MulAction G α] {S : Subgroup G}
 
 /-- The action by a subgroup is the action by the underlying group. -/
-@[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
+@[to_additive
+/-- The additive action by an add_subgroup is the action by the underlying `AddGroup`. -/]
 instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
 
 @[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
