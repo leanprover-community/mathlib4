@@ -116,19 +116,19 @@ variable {j : Fin n} {f : Fin n → α} [Preorder α] {a : α}
 `a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
 theorem lt_card_le_iff_apply_le_of_monotone [DecidableLE α] (h_sorted : Monotone f) :
     j < #{i | f i ≤ a} ↔ f j ≤ a :=
-  Fin.lt_card_filter_iff_apply_of_imp (f · ≤ a) (by grind [Monotone])
+  Fin.lt_card_filter_univ_iff_apply_of_imp (f · ≤ a) (by grind [Monotone])
 
 theorem lt_card_ge_iff_apply_ge_of_antitone [DecidableLE α] (h_sorted : Antitone f) :
     j < #{i | a ≤ f i} ↔ a ≤ f j :=
-  Fin.lt_card_filter_iff_apply_of_imp (a ≤ f ·) (by grind [Antitone])
+  Fin.lt_card_filter_univ_iff_apply_of_imp (a ≤ f ·) (by grind [Antitone])
 
 theorem lt_card_lt_iff_apply_lt_of_monotone [DecidableLT α] (h_sorted : Monotone f) :
     j < #{i | f i < a} ↔ f j < a :=
-  Fin.lt_card_filter_iff_apply_of_imp (f · < a) (by grind [Monotone])
+  Fin.lt_card_filter_univ_iff_apply_of_imp (f · < a) (by grind [Monotone])
 
 theorem lt_card_gt_iff_apply_gt_of_antitone [DecidableLT α] (h_sorted : Antitone f) :
     j < #{i | a < f i} ↔ a < f j :=
-  Fin.lt_card_filter_iff_apply_of_imp (a < f ·) (by grind [Antitone])
+  Fin.lt_card_filter_univ_iff_apply_of_imp (a < f ·) (by grind [Antitone])
 
 end
 
