@@ -141,7 +141,7 @@ theorem norm_eval_le_projectiveSeminorm {G : Type*} [SeminormedAddCommGroup G]
   rw [norm_def, mul_comm, Real.iInf_mul_of_nonneg (norm_nonneg _)]
   refine le_ciInf fun ⟨p, hp⟩ ↦ ?_
   simp_rw [← ((mem_lifts_iff x p).mp hp), ← List.sum_map_hom, ← Multiset.sum_coe]
-  refine le_trans (norm_multiset_sum_le _) ?_
+  grw [norm_multiset_sum_le]
   simp only [mul_comm, ← smul_eq_mul, List.smul_sum, projectiveSeminormAux]
   refine List.Forall₂.sum_le_sum ?_
   simp only [smul_eq_mul, List.forall₂_map_right_iff, Function.comp_apply,
