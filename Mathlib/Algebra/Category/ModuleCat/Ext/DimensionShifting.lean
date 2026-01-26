@@ -46,19 +46,6 @@ theorem ModuleCat.shortExact_projectiveShortComplex [Small.{v} R] (M : ModuleCat
 instance [Small.{v} R] (M : ModuleCat.{v} R) : Module.Free R M.projectiveShortComplex.X₂ :=
   Module.Free.finsupp R _ _
 
-/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
-noncomputable abbrev CategoryTheory.InjectivePresentation.shortComplex
-    {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : ShortComplex (ModuleCat.{v} R) :=
-  ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
-
-theorem CategoryTheory.InjectivePresentation.shortExact_shortComplex {M : ModuleCat.{v} R}
-    (ip : InjectivePresentation M) : ip.shortComplex.ShortExact :=
-  { exact := ShortComplex.exact_cokernel ip.3
-    mono_f := ip.4
-    epi_g := Limits.coequalizer.π_epi }
-
-instance {M : ModuleCat.{v} R} (ip : InjectivePresentation M) : Injective ip.shortComplex.X₂ := ip.2
-
 /-- The connection maps in the contravariant long exact sequence of `Ext` are surjective if
 the middle term of the short exact sequence is projective. -/
 theorem precomp_extClass_surjective_of_projective_X₂ [Small.{v} R]
