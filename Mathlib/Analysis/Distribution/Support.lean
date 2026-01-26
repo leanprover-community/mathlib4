@@ -50,10 +50,15 @@ theorem IsVanishingOn.mono (hs : s₂ ⊆ s₁) (hf : f.IsVanishingOn s₁) : f.
 open scoped Topology
 
 -- Hörmander 7.1.8
+variable [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] in
 theorem foo (f : 𝓢(E, F)) : ∃ (u : ℕ → 𝓢(E, F)), Filter.Tendsto u Filter.atTop (𝓝 f) ∧
     ∀ i, tsupport (u i) ⊆ tsupport f ∧ HasCompactSupport (u i) := by
+  set g := ExistsContDiffBumpBase.y (E := E) (1/2)
+  have hg₁ : ContDiff ℝ ∞ g := by sorry
+  have hg₂ : tsupport g ⊆ Metric.ball 0 (1/2) := by sorry
   sorry
 
+variable [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] in
 theorem isVanishingOn_iff_forall_hasCompactSupport : f.IsVanishingOn s ↔
     ∀ (u : 𝓢(E, ℂ)), HasCompactSupport u → tsupport u ⊆ s → f u = 0 := by
   constructor
@@ -241,7 +246,7 @@ theorem support_subset_support
 theorem isClosed_support : IsClosed f.support := by
   grind [support, isClosed_sInter]
 
-variable [FiniteDimensional ℝ E] in
+variable [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] in
 theorem isVanishingOn_support_compl : f.IsVanishingOn (f.support)ᶜ := by
   rw [support_compl_eq_sUnion_isBounded, isVanishingOn_iff_forall_hasCompactSupport,
     Set.sUnion_eq_iUnion]
