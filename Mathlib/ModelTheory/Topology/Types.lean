@@ -40,7 +40,7 @@ public lemma isTopologicalBasis_range_typesWith :
     rw [typesWith_inf, ht₁, ht₂]
     exact ⟨hx, fun _ ↦ id⟩
   sUnion_eq := by
-    rw [←Set.univ_subset_iff]
+    rw [← Set.univ_subset_iff]
     exact Set.subset_sUnion_of_mem ⟨_, typesWith_top⟩
   eq_generateFrom := rfl
 
@@ -48,7 +48,7 @@ public lemma isOpen_typesWith (φ : L[[α]].Sentence) : IsOpen (typesWith (T := 
   isOpen_generateFrom_of_mem ⟨φ, rfl⟩
 
 public lemma isClosed_typesWith (φ : L[[α]].Sentence) : IsClosed (typesWith (T := T) φ) where
-  isOpen_compl := by rw [←typesWith_not]; exact isOpen_typesWith _
+  isOpen_compl := by rw [← typesWith_not]; exact isOpen_typesWith _
 
 public lemma isClopen_typesWith (φ : L[[α]].Sentence) : IsClopen (typesWith (T := T) φ) where
   left := isClosed_typesWith _
