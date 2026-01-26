@@ -88,7 +88,7 @@ theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex
 
 /-- Euler points are a set of points that `ninePointCircle` passes through. It is defined as
 the $1/n$ of the way from the Monge point to a vertex. Specifically for triangle, this is the
-midpoint of the orthocenter and a vertex (`Affine.Triangle.eulerPoint_eq_midPoint`). -/
+midpoint of the orthocenter and a vertex (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
 def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
     (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
 
@@ -158,7 +158,7 @@ end Affine.Simplex
 
 namespace Affine.Triangle
 
-theorem eulerPoint_eq_midPoint (s : Triangle ℝ P) (i : Fin 3) :
+theorem eulerPoint_eq_midpoint (s : Triangle ℝ P) (i : Fin 3) :
     s.eulerPoint i = midpoint ℝ s.orthocenter (s.points i) := by
   apply vsub_right_cancel (p := s.points i)
   rw [orthocenter_eq_mongePoint, Simplex.points_vsub_eulerPoint, vsub_midpoint]

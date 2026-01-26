@@ -32,6 +32,8 @@ simplex.
 
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
 
+* `medial` is the simplex formed by all `faceOppositeCentroid`.
+
 ## References
 
 * https://en.wikipedia.org/wiki/Median_(geometry)
@@ -532,7 +534,7 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
 
 end median
 
-/-- The medial simplex is the simplex formed by centroids on all faces. -/
+/-- The medial is the simplex formed by centroids on all faces. -/
 def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
   points i := s.faceOppositeCentroid i
   independent := by
@@ -542,7 +544,7 @@ def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
     convert h.units_smul fun _ ↦ Units.mk0 (-n)⁻¹ (by simpa using NeZero.ne n) with i
     simp [← smul_neg]
 
-def medial_points [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
+theorem medial_points [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.medial.points i = s.faceOppositeCentroid i := rfl
 
 open Pointwise in
