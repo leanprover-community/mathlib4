@@ -159,7 +159,7 @@ namespace ProbabilityTheory
 
 section iIndepFun
 
-variable {ι : Type*} [Fintype ι] {E : ι → Type*}
+variable {ι : Type*} [Finite ι] {E : ι → Type*}
   [∀ i, NormedAddCommGroup (E i)] [∀ i, MeasurableSpace (E i)]
   [∀ i, CompleteSpace (E i)] [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)]
 
@@ -172,6 +172,7 @@ lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iInd
     HasGaussianLaw (fun ω ↦ (X · ω)) P where
   isGaussian_map := by
     have := hX2.isProbabilityMeasure
+    let := Fintype.ofFinite ι
     rw [isGaussian_iff_gaussian_charFunDual]
     classical
     refine ⟨fun i ↦ ∫ x, x ∂P.map (X i),
@@ -196,6 +197,7 @@ lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fu
   simp_rw [Function.comp_def] at h
   have := hX.isProbabilityMeasure
   classical
+  let := Fintype.ofFinite ι
   rw [iIndepFun_iff_charFunDual_pi fun i ↦ hX.aemeasurable.eval i]
   intro L
   have this ω : L (X · ω) = ∑ i, (L ∘L (single ℝ E i)) (X i ω) := by
@@ -235,13 +237,15 @@ section Real
 /-- If $((X_{i,j})_{j \in \kappa_i})_{i \in \iota}$ are jointly Gaussian, then they are independent
 if for all $i_1 \ne i_2 \in \iota$ and for all $j_1 \in \kappa_{i_1}, j_2 \in \kappa_{i_2}$,
 $\mathrm{Cov}(X_{i_1, j_1}, X_{i_2, j_2}) = 0$. -/
-lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Fintype (κ i)]
+lemma HasGaussianLaw.iIndepFun_of_covariance_eval {κ : ι → Type*} [∀ i, Finite (κ i)]
     {X : (i : ι) → κ i → Ω → ℝ} (hX : HasGaussianLaw (fun ω i j ↦ X i j ω) P)
     (h : ∀ i j, i ≠ j → ∀ k l, cov[X i k, X j l; P] = 0) :
     iIndepFun (fun i ω j ↦ X i j ω) P := by
   have := hX.isProbabilityMeasure
   have : (fun i ω j ↦ X i j ω) = fun i ↦ (ofLp ∘ (toLp 2 ∘ fun ω j ↦ X i j ω)) := by ext; simp
   rw [this]
+  let (i : ι) := Fintype.ofFinite (κ i)
+  let := Fintype.ofFinite ι
   refine (HasGaussianLaw.iIndepFun_of_covariance_inner ?_ fun i j hij x y ↦ ?_).comp _ (by fun_prop)
   · exact hX.map_equiv (.piCongrRight (fun _ ↦ (PiLp.continuousLinearEquiv 2 ℝ (fun _ ↦ ℝ)).symm))
   rw [← (EuclideanSpace.basisFun _ _).sum_repr x, ← (EuclideanSpace.basisFun _ _).sum_repr y]
@@ -335,7 +339,7 @@ lemma HasGaussianLaw.indepFun_of_covariance_inner [InnerProductSpace ℝ E] [Inn
 /-- If $((X_i)_{i \in \iota}, (Y_j)_{j \in \kappa})$ is Gaussian, then $(X_i)_{i \in \iota}$ and
 $(Y_j)_{j \in \kappa}$ are independent if for all $i \in \iota, j \in \kappa$,
 $\mathrm{Cov}(X_i, Y_j) = 0$. -/
-lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Fintype ι] [Fintype κ]
+lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Finite ι] [Finite κ]
     {X : ι → Ω → ℝ} {Y : κ → Ω → ℝ}
     (hXY : HasGaussianLaw (fun ω ↦ (fun i ↦ X i ω, fun j ↦ Y j ω)) P)
     (h : ∀ i j, cov[X i, Y j; P] = 0) :
@@ -344,6 +348,8 @@ lemma HasGaussianLaw.indepFun_of_covariance_eval {ι κ : Type*} [Fintype ι] [F
   have hX : (fun ω i ↦ X i ω) = (ofLp ∘ (toLp 2 ∘ fun ω i ↦ X i ω)) := by ext; simp
   have hY : (fun ω j ↦ Y j ω) = (ofLp ∘ (toLp 2 ∘ fun ω j ↦ Y j ω)) := by ext; simp
   rw [hX, hY]
+  let := Fintype.ofFinite ι
+  let := Fintype.ofFinite κ
   refine IndepFun.comp (HasGaussianLaw.indepFun_of_covariance_inner ?_ fun x y ↦ ?_)
     (by fun_prop) (by fun_prop)
   · exact hXY.map_equiv (.prodCongr (PiLp.continuousLinearEquiv 2 ℝ (fun _ ↦ ℝ)).symm
