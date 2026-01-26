@@ -67,8 +67,8 @@ theorem logMahlerMeasure_X : (X : ℂ[X]).logMahlerMeasure = 0 := by
 theorem logMahlerMeasure_monomial (n : ℕ) (z : ℂ) : (monomial n z).logMahlerMeasure = log ‖z‖ := by
   simp [logMahlerMeasure_def, circleAverage_def, mul_assoc]
 
-/-- The Mahler measure of a polynomial `p` defined as `e ^ (logMahlerMeasure p)` if `p` is nonzero
-and `0` otherwise -/
+/-- The Mahler measure of a polynomial `p` is defined as `exp (logMahlerMeasure p)` if `p` is
+nonzero and `0` otherwise. -/
 noncomputable def mahlerMeasure : ℝ := if p ≠ 0 then exp (p.logMahlerMeasure) else 0
 
 variable {p} in
@@ -76,10 +76,15 @@ theorem mahlerMeasure_def_of_ne_zero (hp : p ≠ 0) : p.mahlerMeasure =
     exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖) := by
   simp [mahlerMeasure, hp, logMahlerMeasure_def, circleAverage_def]
 
-variable {p} in
-theorem logMahlerMeasure_eq_log_MahlerMeasure : p.logMahlerMeasure = log p.mahlerMeasure := by
+@[simp]
+theorem log_mahlerMeasure : log p.mahlerMeasure = p.logMahlerMeasure := by
   rw [mahlerMeasure]
   split_ifs <;> simp_all [logMahlerMeasure_def, circleAverage_def]
+
+@[deprecated log_mahlerMeasure (since := "2026-01-26")]
+variable {p} in
+theorem logMahlerMeasure_eq_log_MahlerMeasure : p.logMahlerMeasure = log p.mahlerMeasure :=
+  p.log_mahlerMeasure.symm
 
 @[simp]
 theorem mahlerMeasure_zero : (0 : ℂ[X]).mahlerMeasure = 0 := by simp [mahlerMeasure]
@@ -145,7 +150,7 @@ theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
 
 theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
-  simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
+  simp_all [← log_mahlerMeasure, mahlerMeasure_mul, log_mul]
 
 @[deprecated (since := "2025-11-17")]
 alias logMahlerMeasure_mul_eq_add_logMahelerMeasure := logMahlerMeasure_mul_eq_add_logMahlerMeasure
@@ -178,7 +183,7 @@ theorem logMahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.lo
 @[simp]
 theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z‖ := by
   have := logMahlerMeasure_X_sub_C z
-  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  rw [← log_mahlerMeasure] at this
   apply_fun exp at this
   rwa [posLog_eq_log_max_one (norm_nonneg z),
     exp_log (mahlerMeasure_pos_of_ne_zero <| X_sub_C_ne_zero z),
@@ -211,7 +216,7 @@ theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.
   have : ∀ x ∈ Multiset.map (fun x ↦ max 1 ‖x‖) p.roots, x ≠ 0 := by grind [Multiset.mem_map]
   nth_rw 1 [(IsAlgClosed.splits p).eq_prod_roots]
   rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [hp, X_sub_C_ne_zero])]
-  simp [posLog_eq_log_max_one, logMahlerMeasure_eq_log_MahlerMeasure,
+  simp [posLog_eq_log_max_one, ← log_mahlerMeasure,
     prod_mahlerMeasure_eq_mahlerMeasure_prod, log_multiset_prod this]
 
 /-- The Mahler measure of a polynomial is the absolute value of its leading coefficient times
@@ -221,7 +226,7 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   by_cases hp : p = 0;
   · simp [hp]
   have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
-  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  rw [← log_mahlerMeasure] at this
   apply_fun exp at this
   rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
     exp_log <| norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
