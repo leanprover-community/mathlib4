@@ -230,6 +230,16 @@ lemma epi_map_iff {X Y : C} (f : X ⟶ Y) :
     obtain ⟨W, s, hs, eq⟩ := hz
     refine ⟨_, s ≫ f, MorphismProperty.comp_mem _ _ _ hs hf, by simpa⟩
 
+lemma inverseImage_monomorphisms :
+    (MorphismProperty.monomorphisms _).inverseImage L = P.monoModSerre := by
+  ext
+  simp [mono_map_iff L P]
+
+lemma inverseImage_epimorphisms :
+    (MorphismProperty.epimorphisms _).inverseImage L = P.epiModSerre := by
+  ext
+  simp [epi_map_iff L P]
+
 lemma preservesMonomorphisms : L.PreservesMonomorphisms where
   preserves f _ := by simpa only [mono_map_iff _ P] using P.monoModSerre_of_mono f
 
@@ -442,6 +452,16 @@ lemma preservesFiniteColimits : PreservesFiniteColimits L := by
   rw [this]
   intro _ _ f
   exact preservesCokernel L P f
+
+lemma isIso_map_iff {X Y : C} (f : X ⟶ Y) :
+    IsIso (L.map f) ↔ P.isoModSerre f := by
+  letI := abelian L P
+  rw [isIso_iff_mono_and_epi, mono_map_iff L P, epi_map_iff L P, isoModSerre_iff]
+
+lemma inverseImage_isomorphisms :
+    (MorphismProperty.isomorphisms _).inverseImage L = P.isoModSerre := by
+  ext
+  simp [isIso_map_iff L P]
 
 end SerreClassLocalization
 
