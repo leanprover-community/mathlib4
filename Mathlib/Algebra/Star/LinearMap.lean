@@ -156,7 +156,7 @@ namespace LinearMap
 
 theorem toMatrix'_intrinsicStar (f : (m → R) →ₗ[R] (n → R)) :
     (star f).toMatrix' = f.toMatrix'.map star := by
-  ext; simp [Pi.star_def, apply_ite]
+  ext; simp
 
 /-- A linear map `f : (m → R) →ₗ (n → R)` is self-adjoint (with respect to the intrinsic star)
 iff its corresponding matrix `f.toMatrix'` has all self-adjoint elements.

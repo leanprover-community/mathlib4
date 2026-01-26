@@ -10,6 +10,8 @@ public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 
 
 /-!

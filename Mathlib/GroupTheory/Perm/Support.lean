@@ -290,11 +290,7 @@ theorem support_refl : support (Equiv.refl α) = ∅ :=
   support_one
 
 theorem support_congr (h : f.support ⊆ g.support) (h' : ∀ x ∈ g.support, f x = g x) : f = g := by
-  ext x
-  by_cases hx : x ∈ g.support
-  · exact h' x hx
-  · rw [notMem_support.mp hx, ← notMem_support]
-    exact fun H => hx (h H)
+  grind [notMem_support]
 
 /-- If g and c commute, then g stabilizes the support of c -/
 theorem mem_support_iff_of_commute {g c : Perm α} (hgc : Commute g c) (x : α) :
