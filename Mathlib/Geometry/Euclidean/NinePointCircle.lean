@@ -44,7 +44,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 namespace Affine.Simplex
 
 /--
-The 3(n+1)-point sphere of a simplex. Due to lack of a better name and avoiding numbers in the
+The 3(n+1)-point sphere of a simplex. Due to the lack of a better name and to avoid numbers in the
 identifier, we still use the name "nine-point circle" even for higher dimension. The center
 $N$ is defined on the Euler line, collinear with circumcenter $O$ and centroid $G$, in the order of
 $O$, $G$, and $N$, with $OG : GN = n : 1$. The radius is $1/n$ of the circumradius.
