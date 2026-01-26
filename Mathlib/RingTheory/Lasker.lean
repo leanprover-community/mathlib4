@@ -30,23 +30,6 @@ public import Mathlib.RingTheory.Noetherian.Defs
 
 @[expose] public section
 
--- all PRed
-section for_mathlib
-
-open Ideal
-
-theorem Submodule.comap_finset_inf {R M M' : Type*} [Semiring R] [AddCommMonoid M]
-    [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M')
-    {ι : Type*} (s : Finset ι) (g : ι → Submodule R M') : (s.inf g).comap f =
-      s.inf (Submodule.comap f ∘ g) := by
-  simp [Finset.inf_eq_iInf]
-
-theorem Ideal.comap_finset_inf {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
-    {ι : Type*} (s : Finset ι) (g : ι → Ideal S) : (s.inf g).comap f = s.inf (comap f ∘ g) := by
-  exact Finset.comp_inf_eq_inf_comp (comap f) (fun x ↦ congrFun rfl) rfl
-
-end for_mathlib
-
 section IsLasker
 
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -215,7 +198,7 @@ theorem IsMinimalPrimaryDecomposition.foobar'
   set f := mkLinearMap S M
   have h : IsLocalizedModule S f := inferInstance
   change ⨅ q ∈ s, q = (Submodule.localized₀ S f I).comap f
-  rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finset_inf]
+  rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finsetInf]
   simp only [Function.comp_def, id_eq, localized₀FrameHom_apply]
   rw [← Finset.sdiff_union_of_subset hs, Finset.inf_union]
   have key0 : ∀ q ∈ s, (S : Set R) ⊆ (q.colon Set.univ).radicalᶜ := by
