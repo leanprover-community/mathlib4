@@ -23,7 +23,7 @@ A further lemma, `Metric.closedBall_infDist_compl_subset_closure`, finds a *clos
 the closure of a set `s` of optimal distance from a point in `x` to the frontier of `s`.
 -/
 
-@[expose] public section
+public section
 
 
 open Set Metric

@@ -277,6 +277,13 @@ theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
   rw [s.openPartialHomeomorphSubtypeCoe_target, mem_preimage, e.leftInvOn hxe]
   exact x.prop
 
+lemma subtypeRestr_target_subset (hs : Nonempty s) : (e.subtypeRestr hs).target ⊆ e.target := by
+  rw [← e.image_source_eq_target, ← OpenPartialHomeomorph.image_source_eq_target,
+    e.subtypeRestr_source]
+  rintro z ⟨z₀, hz₀, rfl⟩
+  use z₀.val
+  simpa
+
 /-- This lemma characterizes the transition functions of an open subset in terms of the transition
 functions of the original space. -/
 theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) :
@@ -296,13 +303,18 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) 
   refine Setoid.trans (symm_trans_self (s.openPartialHomeomorphSubtypeCoe hs)) ?_
   simp only [mfld_simps, Setoid.refl]
 
-theorem subtypeRestr_symm_eqOn {U : Opens X} (hU : Nonempty U) :
-    EqOn e.symm (Subtype.val ∘ (e.subtypeRestr hU).symm) (e.subtypeRestr hU).target := by
-  intro y hy
-  rw [eq_comm, eq_symm_apply _ _ hy.1]
+theorem subtypeRestr_symm_apply {U : Opens X} (hU : Nonempty U)
+    {y : Y} (hy : y ∈ (e.subtypeRestr hU).target) :
+    (Subtype.val ∘ (e.subtypeRestr hU).symm) y = e.symm y := by
+  rw [e.eq_symm_apply _ hy.1]
   · change restrict _ e _ = _
-    rw [← subtypeRestr_coe _ hU, (e.subtypeRestr hU).right_inv hy]
-  · have := map_target _ hy; rwa [subtypeRestr_source] at this
+    rw [← e.subtypeRestr_coe hU, (e.subtypeRestr hU).right_inv hy]
+  · have := OpenPartialHomeomorph.map_target _ hy
+    rwa [e.subtypeRestr_source] at this
+
+theorem subtypeRestr_symm_eqOn {U : Opens X} (hU : Nonempty U) :
+    EqOn e.symm (Subtype.val ∘ (e.subtypeRestr hU).symm) (e.subtypeRestr hU).target :=
+  fun _y hy ↦ (e.subtypeRestr_symm_apply hU hy).symm
 
 theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Nonempty V)
     (hUV : U ≤ V) : EqOn (e.subtypeRestr hV).symm (Set.inclusion hUV ∘ (e.subtypeRestr hU).symm)

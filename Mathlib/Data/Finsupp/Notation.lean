@@ -15,7 +15,7 @@ This file provides `fun₀ | 3 => a | 7 => b` notation for `Finsupp`, which desu
 `singleton`.
 -/
 
-@[expose] public section
+public section
 
 namespace Finsupp
 

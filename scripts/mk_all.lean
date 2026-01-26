@@ -30,7 +30,7 @@ def getLeanLibs : IO (Array String) := do
     | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
-  return if package.name == `mathlib then
+  return if package.baseName == `mathlib then
     libs.erase "Cache" |>.erase "LongestPole" |>.erase "MathlibTest"
       |>.push ("Mathlib".push pathSeparator ++ "Tactic")
   else
@@ -60,7 +60,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := (if useModule then "module\n\n" else "") ++
+    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
       ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"

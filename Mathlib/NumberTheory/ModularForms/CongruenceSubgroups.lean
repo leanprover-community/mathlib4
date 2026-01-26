@@ -233,11 +233,6 @@ lemma conjGL_coe (Γ : Subgroup SL(2, ℤ)) (g : SL(2, ℤ)) :
   simp_rw [mem_conjGL, ← map_inv, ← map_mul, toGL_injective.eq_iff, map_intCast_injective.eq_iff,
     exists_eq_right, toConjAct_inv, Subgroup.mem_inv_pointwise_smul_iff, toConjAct_smul]
 
-@[deprecated (since := "2025-05-15")] alias conjGLPos := conjGL
-@[deprecated (since := "2025-05-15")] alias conjGLPos_coe := conjGL_coe
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos := mem_conjGL
-@[deprecated (since := "2025-05-15")] alias mem_conjGLPos' := mem_conjGL'
-
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
 

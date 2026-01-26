@@ -28,7 +28,7 @@ more painful with reals than nonnegative extended reals. They should probably be
 run.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff

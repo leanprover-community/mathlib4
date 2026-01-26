@@ -39,7 +39,7 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-@[expose] public section
+public section
 
 variable {K : Type*} (v : K) [Field K] [LinearOrder K] [IsStrictOrderedRing K] [FloorRing K]
 

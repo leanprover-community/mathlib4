@@ -21,7 +21,7 @@ can be extended to strongly measurable functions without assuming separability o
 The purpose of this file is to collect those results.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Set TopologicalSpace
 

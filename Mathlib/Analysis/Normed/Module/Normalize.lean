@@ -54,7 +54,7 @@ theorem normalize_normalize (x : V) : normalize (normalize x) = normalize x := b
   · simp [normalize_eq_self_of_norm_eq_one, hx]
 
 @[simp]
-theorem normalize_neg (x : V) : normalize (- x) = - normalize x := by
+theorem normalize_neg (x : V) : normalize (-x) = - normalize x := by
   simp [normalize]
 
 theorem normalize_smul_of_pos {r : ℝ} (hr : 0 < r) (x : V) :
