@@ -55,7 +55,7 @@ theorem edist_top_right {a : α} :
 theorem edist_cast_cast {a b : α} :
     edist (self := OnePoint.toEDist (α := α)) a b = edist a b := rfl
 
-theorem im_ball (a : α) (r : ENNReal) :
+theorem image_ball (a : α) (r : ENNReal) :
     OnePoint.some '' EMetric.ball a r = EMetric.ball (α := OnePoint α) a r := by
   ext x
   dsimp
