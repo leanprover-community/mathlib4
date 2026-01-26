@@ -6,15 +6,18 @@ Authors: Matteo Cipollina, Jonathan Washburn
 
 module
 
-public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.Subobject.MonoOver
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 ## Filtrations
 
 A filtration on `X` indexed by `ι` is a functor `ι ⥤ MonoOver X`.
 
-We also define the category of filtered objects and, for decreasing `ℤ`-filtrations (`ℤᵒᵖ`),
-basic operations (boundedness, shift, graded pieces).
+We also define the category of filtered objects, strict morphisms, and a `ComposableArrows`-based
+graded construction.
 -/
 
 @[expose] public section
@@ -61,22 +64,6 @@ abbrev inj (F : Filtration X ι) (i : ι) : F.obj i ⟶ X :=
 @[simp]
 lemma inj_eq (F : Filtration X ι) (i : ι) :
     F.inj i = (F.toMonoOver.obj i).obj.hom := rfl
-
-/-- The `i`-th filtration step as a subobject of `X`. -/
-noncomputable def subobject (F : Filtration X ι) (i : ι) : Subobject X :=
-  Subobject.mk (F.inj i)
-
-@[simp, reassoc]
-lemma subobject_arrow_eq (F : Filtration X ι) (i : ι) :
-    (Subobject.mk (F.toMonoOver.obj i).obj.hom).arrow = (F.subobject i).arrow := by
-  rfl
-
-/-- A morphism in the index category induces an inclusion of steps. -/
-lemma subobject_le_of_hom (F : Filtration X ι) {i j : ι} (f : i ⟶ j) :
-    F.subobject i ≤ F.subobject j := by
-  classical
-  refine Subobject.mk_le_mk_of_comm ((F.toMonoOver.map f).hom.left) ?_
-  simp [Filtration.inj]
 
 end Filtration
 
@@ -164,56 +151,6 @@ end FilteredObject
 
 namespace FilteredObject
 
-section Images
-
-variable [HasImages C]
-
-/-- The image of a subobject under a morphism. -/
-noncomputable def imageSubobject {A B : C} (f : A ⟶ B) (S : Subobject A) : Subobject B :=
-  Subobject.mk (image.ι (S.arrow ≫ f))
-
-lemma imageSubobject_mono {A B : C} (f : A ⟶ B) :
-    Monotone (imageSubobject (C := C) f) := by
-  intro S T hle
-  dsimp [imageSubobject]
-  refine Subobject.mk_le_mk_of_comm (image.lift
-    { I := image (T.arrow ≫ f)
-      m := image.ι (T.arrow ≫ f)
-      e := S.ofLE T hle ≫ factorThruImage (T.arrow ≫ f)
-      fac := by
-        rw [Category.assoc, image.fac, ← Category.assoc, Subobject.ofLE_arrow] }) ?_
-  exact image.lift_fac _
-
-/-- A basic functoriality inequality for `imageSubobject`. -/
-lemma imageSubobject_comp_le {A B D : C} (f : A ⟶ B) (g : B ⟶ D) (S : Subobject A) :
-    imageSubobject (C := C) (f ≫ g) S ≤
-      imageSubobject (C := C) g (imageSubobject (C := C) f S) := by
-  dsimp only [imageSubobject]
-  let T := Subobject.mk (image.ι (S.arrow ≫ f))
-  let sfg := S.arrow ≫ f ≫ g
-  let sf := S.arrow ≫ f
-  let Tg := T.arrow ≫ g
-  have key : (Subobject.underlyingIso (image.ι sf)).inv ≫ T.arrow = image.ι sf :=
-    Subobject.underlyingIso_arrow _
-  have fac_eq :
-      (factorThruImage sf ≫ (Subobject.underlyingIso (image.ι sf)).inv ≫ factorThruImage Tg) ≫
-          image.ι Tg =
-        sfg := by
-    rw [Category.assoc, Category.assoc, image.fac]
-    rw [← Category.assoc (Subobject.underlyingIso _).inv, key]
-    rw [← Category.assoc, image.fac]
-    aesop
-  let MF : MonoFactorisation sfg :=
-    { I := image Tg
-      m := image.ι Tg
-      e := factorThruImage sf ≫ (Subobject.underlyingIso (image.ι sf)).inv ≫ factorThruImage Tg
-      fac := fac_eq }
-  refine Subobject.mk_le_of_comm
-    (image.lift MF ≫ (Subobject.underlyingIso (image.ι Tg)).inv) ?_
-  rw [Category.assoc, Subobject.underlyingIso_arrow, image.lift_fac]
-
-end Images
-
 section Compatibility
 
 variable {ι : Type*} [Category ι]
@@ -244,49 +181,7 @@ lemma compatibleWith_iff_exists_hom (f : F.X ⟶ G.X) :
 
 end Compatibility
 
-section DeligneCompatibility
-
-variable [HasImages C]
-variable {ι : Type*} [Category ι]
-variable {F G : FilteredObject C ι}
-
-/-!
-### Deligne-style filtration preservation (via images)
--/
-
-/-- Deligne-style filtration preservation for a morphism `f : F.X ⟶ G.X`. -/
-def PreservesFiltration (f : F.X ⟶ G.X) : Prop :=
-  ∀ i : ι,
-    imageSubobject (C := C) f (F.filtration.subobject i) ≤ G.filtration.subobject i
-
-/-- A morphism of filtered objects induces Deligne-style filtration preservation. -/
-lemma Hom.preservesFiltration (f : F ⟶ G) :
-    PreservesFiltration (C := C) (F := F) (G := G) f.hom := by
-  intro i
-  classical
-  -- Let `S` be the `i`-th filtration subobject of `F.X`.
-  set S : Subobject F.X := F.filtration.subobject i
-  dsimp [PreservesFiltration, imageSubobject]
-  have hS : S.arrow = (Subobject.underlyingIso (F.filtration.inj i)).hom ≫ F.filtration.inj i := by
-    simp [S, Filtration.subobject]
-  let MF : MonoFactorisation (S.arrow ≫ f.hom) :=
-    { I := G.filtration.obj i
-      m := G.filtration.inj i
-      e := (Subobject.underlyingIso (F.filtration.inj i)).hom ≫ f.natTrans.app i
-      fac := by
-        simp [hS, Category.assoc, f.comm i] }
-  refine Subobject.mk_le_mk_of_comm (image.lift MF) ?_
-  exact image.lift_fac MF
-
-end DeligneCompatibility
-
 end FilteredObject
-
-/-
-## `ℤ`-indexed specializations
-
-We work with decreasing `ℤ`-filtrations encoded as `Filtration X ℤᵒᵖ`.
--/
 
 namespace Filtration
 
@@ -298,57 +193,6 @@ abbrev DecFiltration (X : C) : Type _ := Filtration X (ℤᵒᵖ)
 namespace DecFiltration
 
 variable {X : C}
-
-/-- The `n`-th step as a subobject of `X`. -/
-noncomputable abbrev step (F : DecFiltration (C := C) X) (n : ℤ) : Subobject X :=
-  F.subobject (Opposite.op n)
-
-@[simp]
-lemma step_def (F : DecFiltration (C := C) X) (n : ℤ) :
-    F.step n = F.subobject (Opposite.op n) := rfl
-
-section Finite
-
-variable [HasZeroObject C] [HasZeroMorphisms C]
-
-/-- Finiteness/boundedness of a decreasing `ℤ`-filtration (Deligne 1.1.4). -/
-def IsFinite (F : DecFiltration (C := C) X) : Prop :=
-  ∃ a b : ℤ,
-    (∀ n : ℤ, n ≤ a → F.step n = ⊤) ∧ (∀ n : ℤ, b ≤ n → F.step n = ⊥)
-
-end Finite
-
-section OfSubobject
-
-/-- Build a decreasing `ℤ`-filtration from an antitone function `ℤ → Subobject X`. -/
-noncomputable def ofAntitone (F : ℤ → Subobject X) (hF : Antitone F) :
-    DecFiltration (C := C) X :=
-by
-  classical
-  -- We define the functor on the thin category `ℤᵒᵖ`.
-  refine { toMonoOver := ?_ }
-  refine
-    { obj := fun n => MonoOver.mk (X := X) (F (Opposite.unop n)).arrow
-      map := fun {i j} f => by
-        have hij : Opposite.unop j ≤ Opposite.unop i := by
-          simpa using (show Opposite.unop j ≤ Opposite.unop i from leOfHom f.unop)
-        have hle : F (Opposite.unop i) ≤ F (Opposite.unop j) := hF hij
-        refine MonoOver.homMk ((F (Opposite.unop i)).ofLE (F (Opposite.unop j)) hle) ?_
-        simp [MonoOver.mk, MonoOver.arrow, Subobject.ofLE_arrow]
-      map_id := by
-        intro i
-        apply Subsingleton.elim
-      map_comp := by
-        intro i j k f g
-        apply Subsingleton.elim }
-
-@[simp]
-lemma ofAntitone_step (F : ℤ → Subobject X) (hF : Antitone F) (n : ℤ) :
-    (ofAntitone (C := C) (X := X) F hF).step n = F n := by
-  classical
-  simp [ofAntitone, DecFiltration.step, Filtration.subobject, Filtration.inj, Subobject.mk_arrow]
-
-end OfSubobject
 
 /-- The translation functor `ℤᵒᵖ ⥤ ℤᵒᵖ` sending `n` to `n + k`. -/
 noncomputable def shiftFunctor (k : ℤ) : (ℤᵒᵖ) ⥤ (ℤᵒᵖ) where
@@ -369,25 +213,9 @@ noncomputable def shiftFunctor (k : ℤ) : (ℤᵒᵖ) ⥤ (ℤᵒᵖ) where
 lemma shiftFunctor_obj (k : ℤ) (n : ℤᵒᵖ) :
     (shiftFunctor k).obj n = Opposite.op (k + Opposite.unop n) := rfl
 
-/-- Shift a decreasing `ℤ`-filtration: `(F.shift k).step n = F.step (n + k)`. -/
+/-- Shift a decreasing `ℤ`-filtration. -/
 noncomputable def shift (F : DecFiltration (C := C) X) (k : ℤ) : DecFiltration (C := C) X where
   toMonoOver := shiftFunctor k ⋙ F.toMonoOver
-
-@[simp]
-lemma shift_step (F : DecFiltration (C := C) X) (k n : ℤ) :
-    (F.shift k).step n = F.step (n + k) := by
-  -- By definition, shifting uses `k + n`; rewrite using commutativity of `ℤ`.
-  simpa [add_comm] using (show (F.shift k).step n = F.step (k + n) from rfl)
-
-lemma step_le_step_of_le (F : DecFiltration (C := C) X) {n m : ℤ} (h : n ≤ m) :
-    F.step m ≤ F.step n := by
-  -- A morphism `op m ⟶ op n` in `ℤᵒᵖ` is the opposite of a morphism `n ⟶ m` in `ℤ`.
-  simpa [DecFiltration.step] using F.subobject_le_of_hom ((homOfLE h).op)
-
-/-- The steps of a decreasing `ℤ`-filtration form an antitone function. -/
-lemma step_antitone (F : DecFiltration (C := C) X) : Antitone F.step := by
-  intro n m h
-  exact step_le_step_of_le (C := C) (X := X) F h
 
 /-- The canonical inclusion map `F^{n+1} ⟶ F^n` between successive steps. -/
 noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
@@ -411,7 +239,7 @@ lemma succHom_comp_inj (F : DecFiltration (C := C) X) (n : ℤ) :
         le_add_of_nonneg_right (show (0 : ℤ) ≤ 1 by decide))).op)))
   simp [succHom, Filtration.inj]
 
-section Graded
+section GradedZ
 
 variable [HasZeroMorphisms C] [HasCokernels C]
 
@@ -421,17 +249,85 @@ noncomputable def gr (F : DecFiltration (C := C) X) (n : ℤ) : C :=
 
 /-- The canonical projection `F^n ⟶ Gr^n` (the cokernel map). -/
 noncomputable def grπ (F : DecFiltration (C := C) X) (n : ℤ) :
-    (F.obj (Opposite.op n)) ⟶ F.gr n :=
+    (F.obj (Opposite.op n)) ⟶ F.gr (C := C) (X := X) n :=
   cokernel.π (succHom (C := C) (X := X) F n)
 
 @[simp, reassoc]
 lemma succHom_grπ (F : DecFiltration (C := C) X) (n : ℤ) :
-    succHom (C := C) (X := X) F n ≫ F.grπ n = 0 := by
+    succHom (C := C) (X := X) F n ≫ F.grπ (C := C) (X := X) n = 0 := by
   simp [DecFiltration.grπ]
 
-end Graded
+end GradedZ
 
 end DecFiltration
+
+section Graded
+
+variable {ι : Type*} [Category ι] {X : C}
+variable [HasZeroMorphisms C] [HasCokernels C]
+
+/-- The map in `C` associated to `S : ComposableArrows ι 1`. -/
+noncomputable def grMap (F : Filtration X ι) (S : ComposableArrows ι 1) :
+    F.obj S.left ⟶ F.obj S.right :=
+  (F.toMonoOver.map S.hom).hom.left
+
+/-- The graded piece attached to `S : ComposableArrows ι 1`. -/
+noncomputable def gr (F : Filtration X ι) (S : ComposableArrows ι 1) : C :=
+  cokernel (grMap (C := C) F S)
+
+/-- The canonical projection `F.obj S.right ⟶ F.gr S`. -/
+noncomputable def grπ (F : Filtration X ι) (S : ComposableArrows ι 1) :
+    F.obj S.right ⟶ F.gr (C := C) (X := X) S :=
+  cokernel.π (grMap (C := C) F S)
+
+@[simp, reassoc]
+lemma grMap_grπ (F : Filtration X ι) (S : ComposableArrows ι 1) :
+    grMap (C := C) F S ≫ grπ (C := C) F S = 0 := by
+  simp [grπ, grMap]
+
+/-- The graded pieces of a filtration, as a functor `ComposableArrows ι 1 ⥤ C`. -/
+noncomputable def grFunctor (F : Filtration X ι) : ComposableArrows ι 1 ⥤ C where
+  obj S := F.gr (C := C) (X := X) S
+  map {S T} φ := by
+    classical
+    let l : S.left ⟶ T.left := φ.app 0
+    let r : S.right ⟶ T.right := φ.app 1
+    refine cokernel.map (grMap (C := C) F S) (grMap (C := C) F T)
+      ((F.toMonoOver.map l).hom.left) ((F.toMonoOver.map r).hom.left) ?_
+    have hι : S.hom ≫ r = l ≫ T.hom := by
+      simp [CategoryTheory.ComposableArrows.hom, l, r]
+    dsimp [grMap, l, r]
+    simpa [Functor.map_comp, Category.assoc] using
+      congrArg (fun k => (F.toMonoOver.map k).hom.left) hι
+  map_id := by
+    intro S
+    apply coequalizer.hom_ext
+    have hid : (F.toMonoOver.map (𝟙 (S.obj 1))).hom.left = 𝟙 _ := by
+      simp
+    simp only [coequalizer_as_cokernel, Nat.reduceAdd, Fin.isValue, NatTrans.id_app,
+      cokernel.π_desc]
+    rw [hid]
+    calc
+      𝟙 _ ≫ cokernel.π (f := (F.toMonoOver.map S.hom).hom.left)
+          = cokernel.π (f := (F.toMonoOver.map S.hom).hom.left) := by simp
+      _ = cokernel.π (f := (F.toMonoOver.map S.hom).hom.left) ≫ 𝟙 (F.gr S) := by
+        exact (Category.comp_id (cokernel.π (f := (F.toMonoOver.map S.hom).hom.left))).symm
+  map_comp := by
+    intro S T U φ ψ
+    apply coequalizer.hom_ext
+    simp [cokernel.map, grMap, Functor.map_comp, Category.assoc]
+
+@[simp]
+lemma grFunctor_obj (F : Filtration X ι) (S : ComposableArrows ι 1) :
+    (grFunctor (C := C) (X := X) F).obj S = F.gr (C := C) (X := X) S := rfl
+
+@[simp, reassoc]
+lemma grπ_grFunctor_map (F : Filtration X ι) {S T : ComposableArrows ι 1} (φ : S ⟶ T) :
+    grπ (C := C) (X := X) F S ≫ (grFunctor (C := C) (X := X) F).map φ =
+      (F.toMonoOver.map (φ.app 1)).hom.left ≫ grπ (C := C) (X := X) F T := by
+  simp [grFunctor, grπ, cokernel.map, grMap]
+
+end Graded
 
 end Filtration
 
