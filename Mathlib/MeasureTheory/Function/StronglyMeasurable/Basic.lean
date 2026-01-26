@@ -794,7 +794,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
     simp [SimpleFunc.indexedPartitionPiecewise, IndexedPartition.piecewise_apply,
       StronglyMeasurable.tendsto_approx]
   · simp only [not_finite_iff_infinite] at Fi
-    obtain ⟨e, _⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
+    obtain ⟨e, -⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
     let he := Equiv.bijective e
     classical
     let g (n : ℕ) : ι → Fin (n + 1) := fun i =>
