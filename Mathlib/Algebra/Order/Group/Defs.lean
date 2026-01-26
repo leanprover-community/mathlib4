@@ -127,6 +127,12 @@ theorem div_le_mul_self_iff : a / b ≤ a * b ↔ 1 ≤ b := by simp [div_eq_mul
 @[to_additive (attr := simp)]
 theorem div_lt_mul_self_iff : a / b < a * b ↔ 1 < b := by simp [div_eq_mul_inv]
 
+@[to_additive (attr := simp)]
+theorem mul_le_div_self_iff : a * b ≤ a / b ↔ b ≤ 1 := by simp [div_eq_mul_inv, mul_assoc]
+
+@[to_additive (attr := simp)]
+theorem mul_lt_div_self_iff : a * b < a / b ↔ b < 1 := by simp [div_eq_mul_inv, mul_assoc]
+
 end LinearOrderedCommGroup
 
 section NormNumLemmas
