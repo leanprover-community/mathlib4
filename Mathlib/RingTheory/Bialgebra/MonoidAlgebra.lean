@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.RingTheory.Bialgebra.Hom
-import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+module
+
+public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
 # The bialgebra structure on monoid algebras
@@ -22,6 +24,8 @@ coalgebra structure.
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Bialgebra
@@ -32,7 +36,8 @@ namespace MonoidAlgebra
 variable [CommSemiring R] [Semiring A] [Bialgebra R A] [Monoid M] [Monoid N] [Monoid O]
 
 variable (R A M) in
-instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
+@[to_additive (dont_translate := R A) (relevant_arg := M)]
+instance instBialgebra : Bialgebra R A[M] where
   counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
   mul_compr₂_counit := by ext; simp
   comul_one := by
@@ -44,72 +49,39 @@ instance instBialgebra : Bialgebra R (MonoidAlgebra A M) where
       LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
       ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
       Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-      LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
+      LinearMap.compl₁₂_apply, LinearMap.coe_sum, Finset.sum_apply,
       Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
 
--- TODO: Generalise to `MonoidAlgebra A M →ₐc[R] MonoidAlgebra A N` under `Bialgebra R A`
+-- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
+variable (R) [AddMonoid M] [AddMonoid N] in
+/-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
+their additive monoid algebras. -/
+noncomputable def _root_.AddMonoidAlgebra.mapDomainBialgHom (f : M →+ N) :
+    AddMonoidAlgebra R M →ₐc[R] AddMonoidAlgebra R N :=
+  .ofAlgHom (AddMonoidAlgebra.mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
+
+-- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
 variable (R) in
 /-- If `f : M → N` is a monoid hom, then `MonoidAlgebra.mapDomain f` is a bialgebra hom between
 their monoid algebras. -/
-@[simps!]
-noncomputable def mapDomainBialgHom (f : M →* N) : MonoidAlgebra R M →ₐc[R] MonoidAlgebra R N :=
+@[to_additive existing (attr := simps!)]
+noncomputable def mapDomainBialgHom (f : M →* N) : R[M] →ₐc[R] R[N] :=
   .ofAlgHom (mapDomainAlgHom R R f) (by ext; simp) (by ext; simp)
 
-@[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
+@[to_additive (attr := simp)]
+lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id R R[M] := by ext; simp
 
-@[simp]
+@[to_additive (attr := simp)]
 lemma mapDomainBialgHom_comp (f : N →* O) (g : M →* N) :
     mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
   ext; simp [Finsupp.mapDomain_comp]
 
-lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : MonoidAlgebra R M) :
+@[to_additive]
+lemma mapDomainBialgHom_mapDomainBialgHom (f : N →* O) (g : M →* N) (x : R[M]) :
     mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
   ext; simp
 
 end MonoidAlgebra
-
-namespace AddMonoidAlgebra
-variable [CommSemiring R] [Semiring A] [Bialgebra R A] [AddMonoid M] [AddMonoid N] [AddMonoid O]
-
-variable (R A M) in
-instance instBialgebra : Bialgebra R A[M] where
-  counit_one := by simp only [one_def, counit_single, Bialgebra.counit_one]
-  mul_compr₂_counit := by ext; simp [single_mul_single]
-  comul_one := by
-    simp only [one_def, comul_single, Bialgebra.comul_one, Algebra.TensorProduct.one_def,
-      TensorProduct.map_tmul, lsingle_apply]
-  mul_compr₂_comul := by
-    ext a b c d
-    simp only [Function.comp_apply, LinearMap.coe_comp, LinearMap.compr₂_apply,
-      LinearMap.mul_apply', single_mul_single, comul_single, Bialgebra.comul_mul,
-      ← (Coalgebra.Repr.arbitrary R b).eq, ← (Coalgebra.Repr.arbitrary R d).eq, Finset.sum_mul_sum,
-      Algebra.TensorProduct.tmul_mul_tmul, map_sum, TensorProduct.map_tmul, lsingle_apply,
-      LinearMap.compl₁₂_apply, LinearMap.coeFn_sum, Finset.sum_apply,
-      Finset.sum_comm (s := (Coalgebra.Repr.arbitrary R b).index)]
-
--- TODO: Generalise to `A[M] →ₐc[R] A[N]` under `Bialgebra R A`
-variable (R) in
-/-- If `f : M → N` is a monoid hom, then `AddMonoidAlgebra.mapDomain f` is a bialgebra hom between
-their monoid algebras. -/
-@[simps]
-noncomputable def mapDomainBialgHom (f : M →+ N) : R[M] →ₐc[R] R[N] where
-  __ := mapDomainAlgHom R R f
-  map_smul' m x := by simp
-  counit_comp := by ext; simp
-  map_comp_comul := by ext; simp
-
-@[simp] lemma mapDomainBialgHom_id : mapDomainBialgHom R (.id M) = .id _ _ := by ext; simp
-
-@[simp]
-lemma mapDomainBialgHom_comp (f : N →+ O) (g : M →+ N) :
-    mapDomainBialgHom R (f.comp g) = (mapDomainBialgHom R f).comp (mapDomainBialgHom R g) := by
-  ext; simp
-
-lemma mapDomainBialgHom_mapDomainBialgHom (f : N →+ O) (g : M →+ N) (x : R[M]) :
-    mapDomainBialgHom R f (mapDomainBialgHom R g x) = mapDomainBialgHom R (f.comp g) x := by
-  ext; simp
-
-end AddMonoidAlgebra
 
 namespace LaurentPolynomial
 

@@ -3,7 +3,9 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Univariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Univariate.Basic
 
 /-!
 # M-types
@@ -11,6 +13,8 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
 -/
+
+@[expose] public section
 
 
 universe u uA uB v w
@@ -84,18 +88,16 @@ def truncate : ∀ {n : ℕ}, CofixA F (n + 1) → CofixA F n
 
 theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) (h : Agree x y) :
     truncate y = x := by
-  induction n <;> cases x <;> cases y
-  · rfl
-  · -- cases' h with _ _ _ _ _ h₀ h₁
-    cases h
+  induction n with
+  | zero =>
+    cases x
+    cases y
+    rfl
+  | succ n n_ih =>
+    cases h with | intro f y h₁ =>
     simp only [truncate, Function.comp_def]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
-    rename_i n_ih a f y h₁
-    suffices (fun x => truncate (y x)) = f
-      by simp [this]
-    funext y
-    apply n_ih
-    apply h₁
+    congr with y
+    exact n_ih _ _ (h₁ y)
 
 variable {X : Type w}
 variable (f : X → F X)
@@ -109,11 +111,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction n generalizing i with
   | zero => constructor
-  | succ n n_ih =>
-    obtain ⟨y, g⟩ := f i
-    constructor
-    introv
-    apply n_ih
+  | succ n n_ih => exact .intro _ _ fun _ => n_ih _
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{uA, uB}) :=
@@ -128,28 +126,10 @@ instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
 theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
     head' (x (succ n)) = head' (x (succ m)) := by
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
-  clear m n
   intro n
-  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
-  cases h₁ : x 1
-  dsimp only [head']
   induction n with
-  | zero =>
-    rw [h₁] at h₀
-    cases h₀
-    trivial
-  | succ n n_ih =>
-    have H := Hconsistent (succ n)
-    cases h₂ : x (succ n)
-    rw [h₀, h₂] at H
-    apply n_ih (truncate ∘ f₀)
-    rw [h₂]
-    obtain - | ⟨_, _, hagree⟩ := H
-    congr
-    funext j
-    dsimp only [comp_apply]
-    rw [truncate_eq_of_agree]
-    apply hagree
+  | zero => grind
+  | succ n n_ih => grind +splitIndPred [Hconsistent (succ n), head']
 
 end Approx
 
@@ -354,12 +334,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
 
 @[simp]
 theorem cases_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
-    PFunctor.M.cases f (M.mk x) = f x := by
-  dsimp only [M.mk, PFunctor.M.cases, dest, head, Approx.sMk, head']
-  cases x; dsimp only [Approx.sMk]
-  simp only [Eq.mpr]
-  apply congrFun
-  rfl
+    PFunctor.M.cases f (M.mk x) = f x := rfl
 
 @[simp]
 theorem casesOn_mk {r : M F → Sort*} (x : F (M F)) (f : ∀ x : F (M F), r (M.mk x)) :
@@ -402,8 +377,7 @@ def isubtree [DecidableEq F.A] [Inhabited (M F)] : Path F → M F → M F
       if h : a = a' then
         isubtree ps (f <| cast (by rw [h]) i)
       else
-        default (α := M F)
-    )
+        default (α := M F))
 
 /-- similar to `isubtree` but returns the data at the end of the path instead
 of the whole subtree -/
@@ -554,7 +528,7 @@ theorem nth_of_bisim [Inhabited (M F)] [DecidableEq F.A]
     apply bisim.tail h₀
   | cons i ps ps_ih => ?_
   obtain ⟨a', i⟩ := i
-  obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
+  obtain rfl : a = a' := by rcases hh with hh | hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
   induction h : f i using PFunctor.M.casesOn' with | _ a₀ f₀

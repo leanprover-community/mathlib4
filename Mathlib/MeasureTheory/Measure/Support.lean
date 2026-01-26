@@ -3,8 +3,9 @@ Copyright (c) 2025 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
 # Support of a Measure
@@ -35,6 +36,8 @@ and various descriptions of the complement of the support are provided.
 
 measure, support, Lindelöf
 -/
+
+@[expose] public section
 
 section Support
 
@@ -128,7 +131,7 @@ lemma compl_support_eq_sUnion : μ.supportᶜ = ⋃₀ {t : Set X | IsOpen t ∧
 
 lemma support_eq_sInter : μ.support = ⋂₀ {t : Set X | IsClosed t ∧ μ tᶜ = 0} := by
   convert congr($(compl_support_eq_sUnion (μ := μ))ᶜ)
-  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage]
+  all_goals simp [Set.compl_sUnion, compl_involutive.image_eq_preimage_symm]
 
 section Lindelof
 
@@ -142,7 +145,7 @@ variable [HereditarilyLindelofSpace X]
 
 /-- In a hereditarily Lindelöf space, the support of a measure is conull. -/
 lemma support_mem_ae : μ.support ∈ ae μ :=
-  support_mem_ae_of_isLindelof <| HereditarilyLindelof_LindelofSets μ.supportᶜ
+  support_mem_ae_of_isLindelof <| HereditarilyLindelofSpace.isLindelof μ.supportᶜ
 
 @[simp]
 lemma measure_compl_support : μ μ.supportᶜ = 0 := support_mem_ae

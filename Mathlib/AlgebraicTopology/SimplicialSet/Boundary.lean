@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # The boundary of the standard simplex
@@ -15,11 +17,13 @@ We introduce the boundary `∂Δ[n]` of the standard simplex `Δ[n]`.
 
 There isn't yet a complete API for simplices, boundaries, and horns.
 As an example, we should have a function that constructs
-from a non-surjective order preserving function `Fin n → Fin n`
+from a non-surjective order-preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 
 -/
+
+@[expose] public section
 
 universe u
 

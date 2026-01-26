@@ -2,7 +2,7 @@ import Mathlib
 
 variable {K : Type*} [Field K] {x : K}
 
-set_option maxHeartbeats 1500 in -- uses about 1000 as of 2025-09-10
+set_option maxHeartbeats 1000 in -- uses about 850 as of 2025-09-10
 /--
 error: failed to synthesize
   Lean.Grind.NoNatZeroDivisors K

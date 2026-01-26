@@ -3,8 +3,10 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Enriched.Basic
-import Mathlib.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Basic
+public import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # The bicategory of `V`-enriched categories
@@ -17,6 +19,8 @@ category `V`.
 * Define change of base and `ForgetEnrichment` as 2-functors.
 * Define the bicategory of enriched ordinary categories.
 -/
+
+@[expose] public section
 
 
 universe w v u u₁ u₂ u₃

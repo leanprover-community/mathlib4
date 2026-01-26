@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Multiset.Basic
-import Mathlib.Data.Multiset.Filter
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Sums and products over multisets
@@ -20,6 +22,8 @@ and sums indexed by finite sets.
   the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -56,6 +60,10 @@ theorem prod_coe (l : List M) : prod ↑l = l.prod := rfl
 theorem prod_toList (s : Multiset M) : s.toList.prod = s.prod := by
   conv_rhs => rw [← coe_toList s]
   rw [prod_coe]
+
+@[to_additive (attr := simp, grind =)]
+theorem prod_map_toList (s : Multiset ι) (f : ι → M) : (s.toList.map f).prod = (s.map f).prod := by
+  rw [← Multiset.prod_coe, ← Multiset.map_coe, coe_toList]
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_zero : @prod M _ 0 = 1 :=

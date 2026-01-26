@@ -3,9 +3,11 @@ Copyright (c) 2021 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Jacobson.Ring
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+module
+
+public import Mathlib.RingTheory.Jacobson.Ring
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Nullstellensatz
@@ -20,6 +22,8 @@ Suggestions for better ways to state this theorem or organize things are welcome
 The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
   directly needed in this proof, since I'm not sure if they are the right approach.
 -/
+
+@[expose] public section
 
 open Ideal
 
@@ -56,10 +60,10 @@ variable (k) in
 /-- Ideal of polynomials with common zeroes at all elements of a set -/
 def vanishingIdeal (V : Set (σ → K)) : Ideal (MvPolynomial σ k) where
   carrier := {p | ∀ x ∈ V, aeval x p = 0}
-  zero_mem' _ _ := RingHom.map_zero _
+  zero_mem' _ _ := map_zero _
   add_mem' {p q} hp hq x hx := by simp only [hq x hx, hp x hx, add_zero, map_add]
   smul_mem' p q hq x hx := by
-    simp only [hq x hx, Algebra.id.smul_eq_mul, mul_zero, map_mul]
+    simp only [hq x hx, smul_eq_mul, mul_zero, map_mul]
 
 @[simp]
 theorem mem_vanishingIdeal_iff {V : Set (σ → K)} {p : MvPolynomial σ k} :
@@ -126,8 +130,8 @@ theorem vanishingIdeal_pointToPoint (V : Set (σ → K)) :
     PrimeSpectrum.vanishingIdeal (pointToPoint '' V) = MvPolynomial.vanishingIdeal k V :=
   le_antisymm
     (fun _ hp x hx =>
-      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal k {x}, by infer_instance⟩ <| by
-          exact ⟨x, ⟨hx, rfl⟩⟩) -- Porting note: tactic mode code compiles but term mode does not
+      (((PrimeSpectrum.mem_vanishingIdeal _ _).1 hp) ⟨vanishingIdeal k {x}, by infer_instance⟩
+        (⟨x, hx, rfl⟩ : _))
         x rfl)
     fun _ hp =>
     (PrimeSpectrum.mem_vanishingIdeal _ _).2 fun _ hI =>
@@ -175,8 +179,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal (MvPolynomial σ k)) :
   rw [← mem_vanishingIdeal_singleton_iff, Set.mem_singleton_iff.1 hy, ← hx]
   exact hJI hp
 
--- Porting note: marked this as high priority to short cut simplifier
-@[simp (high)]
+@[simp high] -- This needs to fire before `vanishingIdeal_zeroLocus_eq_radical`
 theorem IsPrime.vanishingIdeal_zeroLocus (P : Ideal (MvPolynomial σ k)) [h : P.IsPrime] :
     vanishingIdeal k (zeroLocus K P) = P :=
   Trans.trans (vanishingIdeal_zeroLocus_eq_radical P) h.radical

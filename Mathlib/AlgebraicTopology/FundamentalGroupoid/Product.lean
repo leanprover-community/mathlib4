@@ -3,10 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Products
-import Mathlib.Topology.Homotopy.Product
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Products
+public import Mathlib.Topology.Homotopy.Product
 
 /-!
 # Fundamental groupoid preserves products
@@ -24,6 +26,8 @@ In this file, we give the following definitions/theorems:
     preserves all products.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -31,7 +35,7 @@ open scoped FundamentalGroupoid CategoryTheory
 
 namespace FundamentalGroupoidFunctor
 
-universe u
+universe u v
 
 section Pi
 
@@ -56,7 +60,7 @@ def piToPiTop : (∀ i, πₓ (X i)) ⥤ πₓ (TopCat.of (∀ i, X i)) where
   obj g := ⟨fun i => (g i).as⟩
   map p := Path.Homotopic.pi p
   map_id x := by
-    change (Path.Homotopic.pi fun i => ⟦_⟧) = _
+    change (Path.Homotopic.pi fun i => Path.Homotopic.Quotient.mk _) = _
     simp only [Path.Homotopic.pi_lift]
     rfl
   map_comp f g := (Path.Homotopic.comp_pi_eq_pi_comp f g).symm
@@ -119,15 +123,15 @@ end Pi
 
 section Prod
 
-variable (A B : TopCat.{u})
+variable (A : TopCat.{u}) (B : TopCat.{v})
 
 /-- The induced map of the left projection map X × Y → X -/
 def projLeft : πₓ (TopCat.of (A × B)) ⥤ πₓ A :=
-  πₘ (TopCat.ofHom ⟨_, continuous_fst⟩)
+  FundamentalGroupoid.map .fst
 
 /-- The induced map of the right projection map X × Y → Y -/
 def projRight : πₓ (TopCat.of (A × B)) ⥤ πₓ B :=
-  πₘ (TopCat.ofHom ⟨_, continuous_snd⟩)
+  FundamentalGroupoid.map .snd
 
 @[simp]
 theorem projLeft_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
@@ -177,7 +181,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     have : Path.Homotopic.projLeft ((prodToProdTop A B).map (f₀, f₁)) = f₀ ∧
       Path.Homotopic.projRight ((prodToProdTop A B).map (f₀, f₁)) = f₁ :=
         And.intro (Path.Homotopic.projLeft_prod f₀ f₁) (Path.Homotopic.projRight_prod f₀ f₁)
-    simpa
+    cat_disch
   inv_hom_id := by
     change (projLeft A B).prod' (projRight A B) ⋙ prodToProdTop A B = 𝟭 _
     apply CategoryTheory.Functor.hext

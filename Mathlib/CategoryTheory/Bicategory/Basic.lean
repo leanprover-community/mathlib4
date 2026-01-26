@@ -3,7 +3,9 @@ Copyright (c) 2021 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Bicategories
@@ -36,6 +38,8 @@ between 1-morphisms `f g : a ⟶ b` and a 1-morphism `f : b ⟶ c`, there is a 2
 `whiskerLeft f θ ≫ whiskerRight η i = whiskerRight η h ≫ whiskerLeft g θ`,
 which is required as an axiom in the definition here.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -227,7 +231,7 @@ def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f 
 instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) :=
   (whiskerLeftIso f (asIso η)).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
     inv (f ◁ η) = f ◁ inv η := by
   apply IsIso.inv_eq_of_hom_inv_id
@@ -242,7 +246,7 @@ def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g
 instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) :=
   (whiskerRightIso (asIso η) h).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
     inv (η ▷ h) = inv η ▷ h := by
   apply IsIso.inv_eq_of_hom_inv_id

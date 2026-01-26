@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Theory of sieves
@@ -14,12 +16,14 @@ import Mathlib.Data.Set.BooleanAlgebra
 - The complete lattice structure on sieves is given, as well as the Galois insertion
   given by downward-closing.
 - A `Sieve X` (functorially) induces a presheaf on `C` together with a monomorphism to
-  the yoneda embedding of `X`.
+  the Yoneda embedding of `X`.
 
 ## Tags
 
 sieve, pullback
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -33,11 +37,15 @@ variable {X Y Z : C} (f : Y ⟶ X)
 
 /-- A set of arrows all with codomain `X`. -/
 def Presieve (X : C) :=
-  ∀ ⦃Y⦄, Set (Y ⟶ X)-- deriving CompleteLattice
+  ∀ ⦃Y⦄, Set (Y ⟶ X) -- deriving CompleteLattice
 
 instance : CompleteLattice (Presieve X) := by
   dsimp [Presieve]
   infer_instance
+
+@[simp]
+lemma top_apply (f : Y ⟶ X) : (⊤ : Presieve X) f :=
+  trivial
 
 namespace Presieve
 
@@ -220,12 +228,66 @@ lemma exists_eq_ofArrows (R : Presieve X) :
   use ι, fun x ↦ x.1.1, fun x ↦ x.1.2
   exact le_antisymm (fun Z g hg ↦ .mk (⟨⟨_, _⟩, hg⟩ : ι)) fun Z g ⟨x⟩ ↦ x.2
 
+lemma ofArrows_category {S : C} (R : Presieve S) :
+    Presieve.ofArrows _ (fun (f : R.category) ↦ f.obj.hom) = R := by
+  refine le_antisymm ?_ ?_
+  · rintro _ _ ⟨X, h⟩
+    exact h
+  · rintro X g hg
+    exact .mk (ι := R.category) ⟨Over.mk g, hg⟩
+
+/-- If `g : Y ⟶ S` is in the presieve given by the indexed family `fᵢ`, this is a choice
+of index such that `g = fᵢ` modulo `eqToHom`.
+Note: This should generally not be used! If possible, use the induction principle
+for the type `Presieve.ofArrows` instead (using e.g., `rintro / obtain`). -/
+noncomputable
+def ofArrows.idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : Presieve.ofArrows X f g) : ι :=
+  (ofArrows_surj _ _ hf).choose
+
+lemma ofArrows.obj_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : ofArrows X f g) : X hf.idx = Y :=
+  (ofArrows_surj _ _ hf).choose_spec.1
+
+lemma ofArrows.eq_eqToHom_comp_hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C}
+    {g : Y ⟶ S} (hf : ofArrows X f g) : g = eqToHom hf.obj_idx.symm ≫ f hf.idx :=
+  (Presieve.ofArrows_surj _ _ hf).choose_spec.2
+
+lemma ofArrows.hom_idx {ι : Type*} {S : C} {X : ι → C} {f : ∀ i, X i ⟶ S} {Y : C} {g : Y ⟶ S}
+    (hf : ofArrows X f g) : f hf.idx = eqToHom hf.obj_idx ≫ g := by
+  simp [eq_eqToHom_comp_hom_idx hf]
+
+lemma ofArrows_comp_le {X : C} {ι σ : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) (a : σ → ι) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) ≤ ofArrows Y f := by
+  rintro - - ⟨i⟩
+  use a i
+
+lemma ofArrows_comp_eq_of_surjective {X : C} {ι σ : Type*} {Y : ι → C}
+    (f : ∀ i, Y i ⟶ X) {a : σ → ι} (ha : a.Surjective) :
+    ofArrows (Y ∘ a) (fun i ↦ f (a i)) = ofArrows Y f := by
+  refine le_antisymm (ofArrows_comp_le f a) ?_
+  rintro - - ⟨i⟩
+  obtain ⟨j, rfl⟩ := ha i
+  use j
+
+lemma ofArrows_le_iff {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} {R : Presieve X} :
+    Presieve.ofArrows Y f ≤ R ↔ ∀ i, R (f i) :=
+  ⟨fun hle i ↦ hle _ ⟨i⟩, fun h _ g ⟨i⟩ ↦ h i⟩
+
 /-- A convenient constructor for a refinement of a presieve of the form `Presieve.ofArrows`.
 This contains a sieve obtained by `Sieve.bind` and `Sieve.ofArrows`, see
 `Presieve.bind_ofArrows_le_bindOfArrows`, but has better definitional properties. -/
 inductive bindOfArrows {ι : Type*} {X : C} (Y : ι → C)
     (f : ∀ i, Y i ⟶ X) (R : ∀ i, Presieve (Y i)) : Presieve X
   | mk (i : ι) {Z : C} (g : Z ⟶ Y i) (hg : R i g) : bindOfArrows Y f R (g ≫ f i)
+
+lemma bindOfArrows_ofArrows {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
+    {σ : ι → Type*} {Y : (i : ι) → σ i → C} (g : (i : ι) → (j : σ i) → Y i j ⟶ X i) :
+    Presieve.bindOfArrows X f (fun i ↦ .ofArrows (Y i) (g i)) =
+      Presieve.ofArrows (fun p : Σ i, σ i ↦ Y p.1 p.2) (fun p ↦ g p.1 p.2 ≫ f p.1) := by
+  refine le_antisymm ?_ (fun _ _ ⟨p⟩ ↦ ⟨p.1, _, ⟨p.2⟩⟩)
+  rintro W u ⟨i, v, ⟨j⟩⟩
+  exact ⟨Sigma.mk i j⟩
 
 /-- Given a presieve on `F(X)`, we can define a presieve on `X` by taking the preimage via `F`. -/
 def functorPullback (R : Presieve (F.obj X)) : Presieve X := fun _ f => R (F.map f)
@@ -323,6 +385,16 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
   rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
 
+lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
+  fun _ _ ⟨hu⟩ ↦ hu
+
+@[simp]
+lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
+  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
+
+lemma map_monotone {R S : Presieve X} (h : R ≤ S) : R.map F ≤ S.map F :=
+  fun _ _ ⟨hf⟩ ↦ ⟨h _ hf⟩
+
 end
 
 end FunctorPushforward
@@ -354,7 +426,7 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
 
 @[simp] theorem uncurry_bind (t : ⦃Y : C⦄ → (f : Y ⟶ X) → s f → Presieve Y) :
     (s.bind t).uncurry = ⋃ i ∈ s.uncurry,
-      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t _ ‹_›).uncurry := by
+      Sigma.map id (fun Z g ↦ (g ≫ i.2 : Z ⟶ X)) '' (t i.2 ‹_›).uncurry := by
   ext ⟨Z, v⟩; simp only [Set.mem_iUnion, Set.mem_image]; constructor
   · rintro ⟨Y, g, f, hf, ht, hv⟩
     exact ⟨⟨_, f⟩, hf, ⟨_, g⟩, ht, Sigma.ext rfl (heq_of_eq hv)⟩
@@ -369,6 +441,11 @@ def uncurry : Set (Σ Y, Y ⟶ X) :=
   ext ⟨Z, v⟩; simp only [Set.mem_range, Sigma.mk.injEq]; constructor
   · rintro ⟨i⟩; exact ⟨_, rfl, HEq.refl _⟩
   · rintro ⟨i, rfl, h⟩; rw [← eq_of_heq h]; exact ⟨i⟩
+
+lemma ofArrows_eq_ofArrows_uncurry {ι : Type*} {S : C} {X : ι → C} (f : ∀ i, X i ⟶ S) :
+    ofArrows X f = ofArrows _ (fun i : (Presieve.ofArrows X f).uncurry ↦ f i.2.idx) := by
+  refine le_antisymm (fun Z g hg ↦ ?_) fun Z g ⟨i⟩ ↦ .mk _
+  exact .mk' ⟨⟨_, _⟩, hg⟩ (by simp [ofArrows.obj_idx]) (by simp [ofArrows.hom_idx])
 
 end uncurry
 
@@ -453,7 +530,7 @@ instance : CompleteLattice (Sieve X) where
   le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
   le_sup_left _ _ _ _ := Or.inl
   le_sup_right _ _ _ _ := Or.inr
-  sup_le _ _ _ h₁ h₂ _ f := by--ℰ S hS Y f := by
+  sup_le _ _ _ h₁ h₂ _ f := by
     rintro (hf | hf)
     · exact h₁ _ hf
     · exact h₂ _ hf
@@ -485,9 +562,14 @@ theorem inter_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊓ S) f ↔ R f ∧ 
 theorem union_apply {R S : Sieve X} {Y} (f : Y ⟶ X) : (R ⊔ S) f ↔ R f ∨ S f :=
   Iff.rfl
 
-@[simp]
 theorem top_apply (f : Y ⟶ X) : (⊤ : Sieve X) f :=
   trivial
+
+@[simp]
+lemma arrows_top : (⊤ : Sieve X).arrows = ⊤ := rfl
+
+lemma arrows_eq_top_iff {S : Sieve X} : S.arrows = ⊤ ↔ S = ⊤ :=
+  ⟨fun h ↦ arrows_ext (h ▸ arrows_top), fun h ↦ h ▸ arrows_top⟩
 
 /-- Generate the smallest sieve containing the given set of arrows. -/
 @[simps]
@@ -605,6 +687,26 @@ lemma ofArrows.fac : h hg ≫ f (i hg) = g :=
 
 end
 
+/-- The sieve generated by the morphisms in `R.category`
+for a presieve `R` is the sieve generated by `R`. -/
+lemma ofArrows_category' {S : C} (R : Presieve S) :
+    Sieve.ofArrows _ (fun (f : R.category) ↦ f.obj.hom) = generate R := by
+  refine le_antisymm ?_ ?_
+  · rw [Sieve.generate_le_iff]
+    rintro _ _ ⟨f, hf⟩
+    exact ⟨_, 𝟙 _, f.hom, hf, by simp⟩
+  · rintro _ _ ⟨_, a, b, h, rfl⟩
+    exact ⟨_, _, _, .mk (ι := R.category) ⟨Over.mk b, h⟩, rfl⟩
+
+lemma ofArrows_category {S : C} (R : Sieve S) :
+    Sieve.ofArrows _ (fun (f : R.arrows.category) ↦ f.obj.hom) = R := by
+  rw [ofArrows_category', generate_sieve]
+
+lemma exists_eq_ofArrows (R : Sieve X) :
+    ∃ (I : Type max u₁ v₁) (Y : I → C) (f : ∀ i, Y i ⟶ X),
+      R = Sieve.ofArrows _ f :=
+  ⟨_, _, _, (ofArrows_category R).symm⟩
+
 /-- The sieve generated by two morphisms. -/
 abbrev ofTwoArrows {U V X : C} (i : U ⟶ X) (j : V ⟶ X) : Sieve X :=
   Sieve.ofArrows (Y := pairFunction U V) (fun k ↦ WalkingPair.casesOn k i j)
@@ -657,6 +759,18 @@ theorem pullback_comp {f : Y ⟶ X} {g : Z ⟶ Y} (S : Sieve X) :
 theorem pullback_inter {f : Y ⟶ X} (S R : Sieve X) :
     (S ⊓ R).pullback f = S.pullback f ⊓ R.pullback f := by simp [Sieve.ext_iff]
 
+lemma pullback_ofArrows_of_iso
+    {I : Type*} {X : C} (Z : I → C) (f : ∀ i, Z i ⟶ X) {X' : C} (e : X' ≅ X) :
+    pullback e.hom (Sieve.ofArrows _ f) =
+      Sieve.ofArrows _ (fun i ↦ f i ≫ e.inv) := by
+  rw [Sieve.ext_iff]
+  intro W a
+  constructor
+  · rintro ⟨T, b, c, ⟨i⟩, fac⟩
+    exact ⟨_, b, _, ⟨i⟩, by simp [reassoc_of% fac]⟩
+  · rintro ⟨_, a, _, ⟨i⟩, rfl⟩
+    exact ⟨_, a, _, ⟨i⟩, by simp⟩
+
 theorem mem_iff_pullback_eq_top (f : Y ⟶ X) : S f ↔ S.pullback f = ⊤ := by
   rw [← id_mem_iff_eq_top, pullback_apply, id_comp]
 
@@ -668,7 +782,7 @@ lemma pullback_ofObjects_eq_top
     ofObjects Y X = ⊤ := by
   ext Z h
   simp only [top_apply, iff_true]
-  rw [mem_ofObjects_iff ]
+  rw [mem_ofObjects_iff]
   exact ⟨i, ⟨h ≫ g⟩⟩
 
 /-- Push a sieve `R` on `Y` forward along an arrow `f : Y ⟶ X`: `gf : Z ⟶ X` is in the sieve if `gf`
@@ -776,6 +890,17 @@ theorem functorPullback_comp (R : Sieve ((F ⋙ G).obj X)) :
   ext
   rfl
 
+lemma generate_functorPullback_le {X : C} (R : Presieve (F.obj X)) :
+     generate (R.functorPullback F) ≤ functorPullback F (generate R) := by
+  rw [generate_le_iff]
+  intro Z g hg
+  exact le_generate _ _ hg
+
+lemma functorPullback_pullback {X Y : C} (f : X ⟶ Y) (S : Sieve (F.obj Y)) :
+    functorPullback F (pullback (F.map f) S) = pullback f (functorPullback F S) := by
+  ext
+  simp
+
 theorem functorPushforward_extend_eq {R : Presieve X} :
     (generate R).arrows.functorPushforward F = R.functorPushforward F := by
   funext Y
@@ -829,6 +954,10 @@ theorem functor_galoisConnection (X : C) :
     apply Sieve.downward_closed S
     exact hle g hg
 
+lemma functorPushforward_le_iff_le_functorPullback {X : C} (S : Sieve X) (R : Sieve (F.obj X)) :
+    S.functorPushforward F ≤ R ↔ S ≤ R.functorPullback F :=
+  (Sieve.functor_galoisConnection F X).le_iff_le
+
 theorem functorPullback_monotone (X : C) :
     Monotone (Sieve.functorPullback F : Sieve (F.obj X) → Sieve X) :=
   (functor_galoisConnection F X).monotone_u
@@ -878,6 +1007,12 @@ theorem functorPullback_top (F : C ⥤ D) (X : C) : (⊤ : Sieve (F.obj X)).func
 theorem image_mem_functorPushforward (R : Sieve X) {V} {f : V ⟶ X} (h : R f) :
     R.functorPushforward F (F.map f) :=
   ⟨V, f, 𝟙 _, h, by simp⟩
+
+lemma functorPushforward_pullback_le {X Y : C} (f : Y ⟶ X) (S : Sieve X) :
+    (S.pullback f).functorPushforward F ≤ (S.functorPushforward F).pullback (F.map f) := by
+  rw [Sieve.functorPushforward_le_iff_le_functorPullback, Sieve.functorPullback_pullback]
+  apply Sieve.pullback_monotone
+  exact Sieve.le_functorPushforward_pullback _ _
 
 /-- When `F` is essentially surjective and full, the Galois connection is a Galois insertion. -/
 def essSurjFullFunctorGaloisInsertion [F.EssSurj] [F.Full] (X : C) :
@@ -1000,6 +1135,19 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
   ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+
+lemma ofArrows_eq_pullback_of_isPullback {ι : Type*} {S : C} {X : ι → C} (f : (i : ι) → X i ⟶ S)
+    {Y : C} {g : Y ⟶ S} {P : ι → C} {p₁ : (i : ι) → P i ⟶ Y} {p₂ : (i : ι) → P i ⟶ X i}
+    (h : ∀ (i : ι), IsPullback (p₁ i) (p₂ i) g (f i)) :
+    Sieve.ofArrows P p₁ = Sieve.pullback g (Sieve.ofArrows X f) := by
+  refine le_antisymm ?_ ?_
+  · rw [Sieve.ofArrows, Sieve.generate_le_iff]
+    rintro - - ⟨i⟩
+    use X i, p₂ i, f i, ⟨i⟩
+    exact (h i).w.symm
+  · rintro W u ⟨Z, v, s, ⟨i⟩, heq⟩
+    use P i, (h i).lift u v heq.symm, p₁ i, ⟨i⟩
+    simp
 
 end Sieve
 

@@ -3,13 +3,15 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -30,12 +32,20 @@ and provides lemmas that deal with this function and its connection to `Nat.coun
 * `Nat.nth_eq_orderIsoOfNat`: For an infinitely-often true predicate, `nth` agrees with the
   order-isomorphism of the subtype to the natural numbers.
 
+## Implementation details
+
+Much of the below was written before `Set.encard` existed and partly for this reason uses the
+pattern `∀ hf : Set.Finite (setOf p), n < hf.toFinset.card` rather than `n < {x | p x}.encard`.
+We should consider changing this.
+
 There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -49,7 +59,7 @@ natural number satisfying `p`), or `0` if there is no such number. See also
 `Subtype.orderIsoOfNat` for the order isomorphism with ℕ when `p` is infinitely often true. -/
 noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
   classical exact
-    if h : Set.Finite (setOf p) then (h.toFinset.sort (· ≤ ·)).getD n 0
+    if h : Set.Finite (setOf p) then h.toFinset.sort.getD n 0
     else @Nat.Subtype.orderIsoOfNat (setOf p) (Set.Infinite.to_subtype h) n
 
 variable {p}
@@ -63,7 +73,7 @@ theorem nth_of_card_le (hf : (setOf p).Finite) {n : ℕ} (hn : #hf.toFinset ≤ 
     nth p n = 0 := by rw [nth, dif_pos hf, List.getD_eq_default]; rwa [Finset.length_sort]
 
 theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
-    nth p n = (h.toFinset.sort (· ≤ ·)).getD n 0 :=
+    nth p n = h.toFinset.sort.getD n 0 :=
   dif_pos h
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < #hf.toFinset) :
@@ -212,10 +222,9 @@ that `Nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assum
 nonempty because we use the same "garbage value" `0` both for `sInf` on `ℕ` and for `Nat.nth s n`
 for `n ≥ #s`. -/
 theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ ∀ k < n, nth p k < x} := by
-  by_cases hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset
+  by_cases! hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset
   · exact (isLeast_nth hn).csInf_eq.symm
-  · push_neg at hn
-    rcases hn with ⟨hf, hn⟩
+  · rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
     refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
@@ -274,6 +283,54 @@ lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) :
     have hb0 : nth p b = 0 := by simp [nth_eq_zero, h'b]
     rw [ha0]
     rwa [hb0] at h
+
+/-- `Nat.nth p` is the least strictly monotone function whose image is contained in `setOf p` -/
+lemma nth_le_of_strictMonoOn_of_mapsTo {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ} :
+    nth p n ≤ f n := by
+  by_cases hn : (∀ hf : Set.Finite (setOf p), n < hf.toFinset.card)
+  · induction n using Nat.strong_induction_on with | _ n ih =>
+    rw [nth_eq_sInf]
+    refine csInf_le (by simp) ⟨hmaps hn, fun k hk => ?_⟩
+    have : f k < f n := by apply hmono <;> grind
+    grind
+  · push_neg at hn
+    rcases hn with ⟨hf, hn⟩
+    rw [nth, dif_pos hf, List.getD_eq_default _ _ (by simp [hn])]
+    exact Nat.zero_le _
+
+/-- `Nat.nth p` is the greatest monotone function whose image contains `setOf p`. -/
+lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : MonotoneOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) {n : ℕ}
+    (hn : ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card) : f n ≤ nth p n := by
+  induction n with
+  | zero =>
+    rw [Nat.nth_zero]
+    refine le_csInf ⟨_, nth_mem _ hn⟩ fun b hb => ?_
+    rcases hsurj hb with ⟨k, hk, rfl⟩
+    exact hmono hn hk (Nat.zero_le _)
+  | succ n ih =>
+    rw [nth_eq_sInf]
+    refine le_csInf ?_ ?_
+    · use nth p (n + 1), nth_mem _ hn
+      exact fun k hk => nth_lt_nth' hk hn
+    rintro b ⟨hb, h⟩
+    rcases hsurj hb with ⟨m, hm, rfl⟩
+    apply hmono hn hm
+    rw [Nat.succ_le_iff]
+    apply hmono.reflect_lt <;> grind
+
+/-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/
+lemma eq_nth_of_strictMonoOn_of_mapsTo_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
+    (hsurj : Set.SurjOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmaps : Set.MapsTo f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } (setOf p))
+    (hmono : StrictMonoOn f { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card }) :
+    Set.EqOn f (nth p) { n : ℕ | ∀ hf : Set.Finite (setOf p), n < hf.toFinset.card } :=
+  fun _ hi => le_antisymm
+    (Nat.le_nth_of_monotoneOn_of_surjOn _ hsurj hmono.monotoneOn hi)
+    (Nat.nth_le_of_strictMonoOn_of_mapsTo _ hmaps hmono)
 
 lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
     (h0 : ∀ k, p k → k ∈ Set.range f) (h : ∀ hfi : (setOf p).Finite, n < hfi.toFinset.card) :

@@ -3,9 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.Algebra.Homology.CommSq
+module
+
+public import Mathlib.CategoryTheory.Abelian.Refinements
+public import Mathlib.Algebra.Homology.CommSq
 
 /-!
 # The exact sequence attached to a pushout square
@@ -22,6 +23,8 @@ X₃ ⟶ X₄
 We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
 
 -/
+
+public section
 
 universe v u
 

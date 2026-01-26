@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Localization.Adjunction
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.Pi
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Localization.Adjunction
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Localization.Pi
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-! The localized category has finite products
 
@@ -18,6 +20,8 @@ a localization functor for `W : MorphismProperty C` and that
 products, and `L` preserves finite products.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -94,7 +98,7 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
     (HasProductsOfShapeAux.adj L W J).isLeftAdjoint
 
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
-identities and is stable by products indexed by `J`,
+identities and is stable under products indexed by `J`,
 then any localization functor for `W` preserves finite products indexed by `J`. -/
 lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] [W.IsStableUnderProductsOfShape J] :
@@ -110,7 +114,7 @@ lemma hasFiniteProducts : HasFiniteProducts D :=
 
 include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
-identities and is stable by finite products,
+identities and is stable under finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where

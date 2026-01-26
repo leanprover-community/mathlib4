@@ -3,7 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+module
+
+public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
 # Almost everywhere disjoint sets
@@ -12,6 +14,8 @@ We say that sets `s` and `t` are `μ`-a.e. disjoint (see `MeasureTheory.AEDisjoi
 intersection has measure zero. This assumption can be used instead of `Disjoint` in most theorems in
 measure theory.
 -/
+
+@[expose] public section
 
 
 open Set Function

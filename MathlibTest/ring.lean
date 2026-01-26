@@ -1,4 +1,3 @@
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
 
@@ -49,6 +48,10 @@ example {α} [CommSemiring α] (x y z : α) (n : ℕ) :
 example {α} [CommRing α] (a b c d e : α) :
   (-(a * b) + c + d) * e = (c + (d + -a * b)) * e := by ring
 example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
+
+example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
+example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
 
 section Rat
 
@@ -116,7 +119,7 @@ example : 22 + 7 * 4 + 3 * 8 = 0 + 7 * 4 + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -136,7 +139,7 @@ example (x : ℕ) : 22 + 7 * x + 3 * 8 = 0 + 7 * x + 46 := by
 
 /--
 info: Try this:
-  ring_nf
+  [apply] ring_nf
   ⏎
   The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
     ⏎
@@ -259,3 +262,16 @@ example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
 
 -- Test that `ring` works for division without subtraction
 example {R : Type} [Semifield R] [CharZero R] {x : R} : x / 2 + x / 2 = x := by ring
+
+theorem test_axioms {R : Type} [CommRing R] (a b : R) :
+    (a + b) ^ 2 + (a * b) ^ 3 = a ^ 2 + (2 : R) * a * b + b ^ 2 + a ^ 3 * b ^ 3 := by
+  ring
+
+/-!
+Test that `ring` does not depend on the axiom of choice.
+-/
+/--
+info: 'test_axioms' depends on axioms: [propext]
+-/
+#guard_msgs in
+#print axioms test_axioms

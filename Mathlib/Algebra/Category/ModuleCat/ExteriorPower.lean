@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
@@ -13,6 +15,8 @@ In this file, given `M : ModuleCat R` and `n : ℕ`, we define `M.exteriorPower 
 and this extends to a functor `ModuleCat.exteriorPower.functor : ModuleCat R ⥤ ModuleCat R`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

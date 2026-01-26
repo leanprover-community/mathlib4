@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Andrew Yang
 -/
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Jacobson.Ring
+module
+
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Jacobson.Ring
 
 /-!
 # Artinian rings over Jacobson rings
@@ -14,6 +16,8 @@ import Mathlib.RingTheory.Jacobson.Ring
 then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
 -/
+
+public section
 
 variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteType R A]
 

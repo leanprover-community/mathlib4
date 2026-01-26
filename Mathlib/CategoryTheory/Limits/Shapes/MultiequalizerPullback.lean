@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Multicoequalizers that are pushouts
@@ -15,9 +17,11 @@ a pushout when `ι` has exactly two elements.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits.Multicofork.IsColimit
 
-variable {C : Type*} [Category C] {J : MultispanShape} [Unique J.L]
+variable {C : Type*} [Category* C] {J : MultispanShape} [Unique J.L]
   {I : MultispanIndex J C} (c : Multicofork I)
   (h : {J.fst default, J.snd default} = Set.univ) (h' : J.fst default ≠ J.snd default)
 
@@ -38,7 +42,7 @@ noncomputable def multicofork : Multicofork I :=
         eqToHom (by
           obtain rfl : k = J.snd default := by
             have := h.symm.le (Set.mem_univ k)
-            simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+            push _ ∈ _ at this
             tauto
           rfl) ≫ s.inr)
     (by
@@ -72,7 +76,7 @@ lemma isPushout (hc : IsColimit c) :
       apply Multicofork.IsColimit.hom_ext hc
       intro k
       have := h.symm.le (Set.mem_univ k)
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+      push _ ∈ _ at this
       obtain rfl | rfl := this
       · simpa [h₁] using (hc.fac (isPushout.multicofork h h' s) (.right (J.fst default))).symm
       · simpa [h₂] using (hc.fac (isPushout.multicofork h h' s) (.right (J.snd default))).symm)⟩

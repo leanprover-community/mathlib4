@@ -3,9 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Basis.Submodule
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Basis.Submodule
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Bases and matrices
@@ -29,6 +32,8 @@ the matrix of their coordinates with respect to some basis.
 
 matrix, basis
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -123,13 +128,13 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
   toFun := e.toMatrix
   map_add' v w := by
     ext i j
-    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, LinearEquiv.map_add]
+    rw [Matrix.add_apply, e.toMatrix_apply, Pi.add_apply, map_add]
     rfl
   map_smul' := by
     intro c v
     ext i j
     dsimp only []
-    rw [e.toMatrix_apply, Pi.smul_apply, LinearEquiv.map_smul]
+    rw [e.toMatrix_apply, Pi.smul_apply, map_smul]
     rfl
   invFun m j := ∑ i, m i j • e i
   left_inv := by
@@ -144,7 +149,7 @@ def toMatrixEquiv [Fintype ι] (e : Basis ι R M) : (ι → M) ≃ₗ[R] Matrix 
 
 variable (R₂) in
 theorem restrictScalars_toMatrix [Fintype ι] [DecidableEq ι] {S : Type*} [CommRing S] [Nontrivial S]
-    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [NoZeroSMulDivisors R₂ S]
+    [Algebra R₂ S] [Module S M₂] [IsScalarTower R₂ S M₂] [IsDomain R₂] [IsTorsionFree R₂ S]
     (b : Basis ι S M₂) (v : ι → span R₂ (Set.range b)) :
     (algebraMap R₂ S).mapMatrix ((b.restrictScalars R₂).toMatrix v) =
       b.toMatrix (fun i ↦ (v i : M₂)) := by

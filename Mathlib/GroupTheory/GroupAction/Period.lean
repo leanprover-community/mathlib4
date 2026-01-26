@@ -3,10 +3,11 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
+module
 
-import Mathlib.Dynamics.PeriodicPts.Lemmas
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Period of a group action
@@ -18,6 +19,8 @@ The period of a point `a` by a group element `g` is the smallest `m` such that `
 If such an `m` does not exist,
 then by convention `MulAction.period` and `AddAction.period` return 0.
 -/
+
+public section
 
 namespace MulAction
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Measure.Haar.Quotient
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.Topology.Instances.AddCircle.Real
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Measure.Haar.Quotient
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.Topology.Instances.AddCircle.Real
 
 /-!
 # Integrals of periodic functions
@@ -24,6 +26,8 @@ Another consequence (`Function.Periodic.intervalIntegral_add_eq` and related dec
 period `T`.
 -/
 
+@[expose] public section
+
 open Set Function MeasureTheory MeasureTheory.Measure TopologicalSpace AddSubgroup intervalIntegral
 
 open scoped MeasureTheory NNReal ENNReal
@@ -32,7 +36,7 @@ open scoped MeasureTheory NNReal ENNReal
 ## Measures and integrability on ℝ and on the circle
 -/
 
-@[measurability]
+@[fun_prop]
 protected theorem AddCircle.measurable_mk' {a : ℝ} :
     Measurable (β := AddCircle a) ((↑) : ℝ → AddCircle a) :=
   Continuous.measurable <| AddCircle.continuous_mk' a
@@ -90,7 +94,7 @@ protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
       (volume.restrict (Ioc t (t + T))) :=
   measurePreserving_quotientAddGroup_mk_of_AddQuotientMeasureEqMeasurePreimage
-    volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
+    volume (𝓕 := Ioc t (t + T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 
 lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
     volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
@@ -110,7 +114,7 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
-  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T/2))
+  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T / 2))
     measurableSet_closedBall, (by linarith : -(T / 2) + T = T / 2), h₂]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
@@ -141,6 +145,22 @@ noncomputable def measurableEquivIco (a : ℝ) : AddCircle T ≃ᵐ Ico a (a + T
     (continuousOn_iff_continuous_restrict.mp <| continuousOn_of_forall_continuousAt fun _x hx =>
       continuousAt_equivIco T a hx).measurable
   measurable_invFun := AddCircle.measurable_mk'.comp measurable_subtype_coe
+
+/-- The equivalence `equivIoc` is measure preserving with respect to the natural volume measures. -/
+lemma measurePreserving_equivIoc {a : ℝ} :
+    MeasurePreserving (equivIoc T a) volume (Measure.comap Subtype.val volume) := by
+  have h := (measurableEquivIoc T a).measurable
+  refine ⟨h, ?_⟩
+  ext s hs
+  rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
+    map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]
+  congr!
+  ext x
+  simp only [mem_inter_iff, mem_preimage, mem_image, Subtype.exists, exists_and_right,
+    exists_eq_right]
+  rw [and_comm, ← exists_prop]
+  congr! with hx
+  rw [equivIoc_coe_eq hx]
 
 attribute [local instance] Subtype.measureSpace in
 /-- The lower integral of a function over `AddCircle T` is equal to the lower integral over an
@@ -187,11 +207,29 @@ protected theorem intervalIntegral_preimage (t : ℝ) (f : AddCircle T → E) :
   rw [integral_of_le, AddCircle.integral_preimage T t f]
   linarith [hT.out]
 
+/-- The integral of a function lifted to AddCircle from an interval `(t, t + T]` to `AddCircle T`
+is equal to the intervalIntegral over the interval. -/
+lemma integral_liftIoc_eq_intervalIntegral {t : ℝ} {f : ℝ → E} :
+    ∫ a, liftIoc T t f a = ∫ a in t..t + T, f a := by
+  rw [← AddCircle.intervalIntegral_preimage T t]
+  apply intervalIntegral.integral_congr_ae
+  refine .of_forall fun x hx ↦ ?_
+  rw [uIoc_of_le (by linarith [hT.out])] at hx
+  rw [liftIoc_coe_apply hx]
+
 end AddCircle
 
-namespace UnitAddCircle
+/-- If a function satisfies `MemLp` on the interval `(t, t + T]`, then its lift to the AddCircle
+also satisfies `MemLp` with respect to the Haar measure. -/
+lemma MeasureTheory.MemLp.memLp_liftIoc {T : ℝ} [hT : Fact (0 < T)] {t : ℝ} {f : ℝ → ℂ} {p : ℝ≥0∞}
+    (hLp : MemLp f p (volume.restrict (Ioc t (t + T)))) :
+      MemLp (AddCircle.liftIoc T t f) p := by
+  simp only [AddCircle.liftIoc, Set.restrict_def, Function.comp_def]
+  apply hLp.comp_measurePreserving
+  refine .comp (measurePreserving_subtype_coe measurableSet_Ioc) ?_
+  exact AddCircle.measurePreserving_equivIoc T
 
-attribute [local instance] Real.fact_zero_lt_one
+namespace UnitAddCircle
 
 protected theorem measure_univ : volume (Set.univ : Set UnitAddCircle) = 1 := by simp
 

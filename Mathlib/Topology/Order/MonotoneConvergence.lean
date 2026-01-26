@@ -3,7 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Bounded monotone sequences converge
@@ -24,6 +26,8 @@ then `f n ≤ a` for all `n`.
 
 monotone convergence
 -/
+
+@[expose] public section
 
 open Filter Set Function
 open scoped Topology
@@ -193,17 +197,31 @@ instance Pi.infConvergenceClass' {ι : Type*} [Preorder α] [TopologicalSpace α
     [InfConvergenceClass α] : InfConvergenceClass (ι → α) :=
   Pi.infConvergenceClass
 
-theorem tendsto_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+theorem tendsto_atTop_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
     Tendsto f atTop atTop ∨ ∃ l, Tendsto f atTop (𝓝 l) := by
   classical
   exact if H : BddAbove (range f) then Or.inr ⟨_, tendsto_atTop_ciSup h_mono H⟩
   else Or.inl <| tendsto_atTop_atTop_of_monotone' h_mono H
 
-theorem tendsto_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+@[deprecated (since := "2026-01-22")] alias tendsto_of_monotone := tendsto_atTop_of_monotone
+
+theorem tendsto_atTop_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
     [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
     Tendsto f atTop atBot ∨ ∃ l, Tendsto f atTop (𝓝 l) :=
-  @tendsto_of_monotone ι αᵒᵈ _ _ _ _ _ h_mono
+  tendsto_atTop_of_monotone (α := αᵒᵈ) h_mono
+
+@[deprecated (since := "2026-01-22")] alias tendsto_of_antitone := tendsto_atTop_of_antitone
+
+theorem tendsto_atBot_of_monotone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Monotone f) :
+    Tendsto f atBot atBot ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
+  tendsto_atTop_of_monotone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
+
+theorem tendsto_atBot_of_antitone {ι α : Type*} [Preorder ι] [TopologicalSpace α]
+    [ConditionallyCompleteLinearOrder α] [OrderTopology α] {f : ι → α} (h_mono : Antitone f) :
+    Tendsto f atBot atTop ∨ ∃ l, Tendsto f atBot (𝓝 l) :=
+  tendsto_atTop_of_antitone (ι := ιᵒᵈ) (α := αᵒᵈ) h_mono.dual
 
 theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [SemilatticeSup ι₁] [Preorder ι₂]
     [Nonempty ι₁] [TopologicalSpace α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
@@ -211,7 +229,7 @@ theorem tendsto_iff_tendsto_subseq_of_monotone {ι₁ ι₂ α : Type*} [Semilat
     (hg : Tendsto φ atTop atTop) : Tendsto f atTop (𝓝 l) ↔ Tendsto (f ∘ φ) atTop (𝓝 l) := by
   constructor <;> intro h
   · exact h.comp hg
-  · rcases tendsto_of_monotone hf with (h' | ⟨l', hl'⟩)
+  · rcases tendsto_atTop_of_monotone hf with (h' | ⟨l', hl'⟩)
     · exact (not_tendsto_atTop_of_tendsto_nhds h (h'.comp hg)).elim
     · rwa [tendsto_nhds_unique h (hl'.comp hg)]
 

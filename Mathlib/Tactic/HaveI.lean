@@ -3,18 +3,21 @@ Copyright (c) 2023 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 /-!
 # Variants of `haveI`/`letI` for use in do-notation.
 
-This files implements the `haveI'` and `letI'` macros which have the same semantics as
+This file implements the `haveI'` and `letI'` macros which have the same semantics as
 `haveI` and `letI`, but are `doElem`s and can be used inside do-notation.
 
 They need an apostrophe after their name for disambiguation with the term variants.
 This is necessary because the do-notation has a hardcoded list of keywords which can appear both
 as term-mode and do-elem syntax (like for example `let` or `have`).
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.HaveI
 

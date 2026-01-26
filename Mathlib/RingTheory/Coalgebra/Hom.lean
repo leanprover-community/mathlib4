@@ -3,7 +3,9 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov, Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
 # Homomorphisms of `R`-coalgebras
@@ -22,6 +24,8 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
 
 -/
+
+@[expose] public section
 
 open TensorProduct Coalgebra
 
@@ -79,7 +83,7 @@ theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=
 
 @[simp]
 theorem map_comp_comul_apply (f : F) (x : A) :
-    TensorProduct.map f f (comul x) = comul (R := R) (f x) :=
+    TensorProduct.map f f (σ₁₂ := .id _) (comul x) = comul (R := R) (f x) :=
   LinearMap.congr_fun (map_comp_comul f) _
 
 end CoalgHomClass
