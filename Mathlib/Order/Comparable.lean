@@ -10,22 +10,20 @@ public import Mathlib.Order.Antisymmetrization
 /-!
 # Comparability and incomparability relations
 
-Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define both the
-comparability and incomparability relations.
+Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define the
+incomparability relations and inherit comparability from `Relation.SymmGen`.
 
-In a linear order, `CompRel (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
-false.
+In a linear order, `Relation.SymmGen (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is
+always false.
 
 ## Implementation notes
 
 Although comparability and incomparability are negations of each other, both relations are
 convenient in different contexts, and as such, it's useful to keep them distinct. To move from one
-to the other, use `not_compRel_iff` and `not_incompRel_iff`.
+to the other, use `not_symmGen_iff` and `not_incompRel_iff`.
 
 ## Main declarations
 
-* `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
-  either direction by `r`.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
