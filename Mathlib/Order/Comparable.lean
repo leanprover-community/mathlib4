@@ -5,7 +5,6 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
-public import Mathlib.Logic.Relation
 public import Mathlib.Order.Antisymmetrization
 
 /-!
