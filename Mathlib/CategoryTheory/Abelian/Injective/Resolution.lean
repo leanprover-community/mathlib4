@@ -5,8 +5,10 @@ Authors: Jujian Zhang, Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.AdaptationNote
 
@@ -338,5 +340,20 @@ instance (priority := 100) (Z : C) : HasInjectiveResolution Z where out := ⟨of
 instance (priority := 100) : HasInjectiveResolutions C where out _ := inferInstance
 
 end InjectiveResolution
+
+variable [Abelian C]
+
+/-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
+noncomputable abbrev InjectivePresentation.shortComplex
+    {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
+  ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
+
+theorem InjectivePresentation.shortExact_shortComplex {X : C}
+    (ip : InjectivePresentation X) : ip.shortComplex.ShortExact :=
+  { exact := ShortComplex.exact_cokernel ip.3
+    mono_f := ip.4
+    epi_g := Limits.coequalizer.π_epi }
+
+instance {X : C} (ip : InjectivePresentation X) : Injective ip.shortComplex.X₂ := ip.2
 
 end CategoryTheory
