@@ -343,10 +343,6 @@ end ReflGen
 
 namespace SymmGen
 
-theorem to_eqvGen : SymmGen r a b → EqvGen r a b
-  | .inl hab => .rel a b hab
-  | .inr hba => .symm b a (.rel b a hba)
-
 theorem of_rel (h : r a b) : SymmGen r a b :=
   Or.inl h
 
@@ -547,11 +543,6 @@ theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
 theorem symmGen_swap_apply (r : α → α → Prop) : SymmGen (swap r) a b ↔ SymmGen r a b :=
   or_comm
 
-theorem reflGen_symmGen_symmetric : Symmetric (ReflGen (SymmGen r))
-  | _, _, .refl => .refl
-  | _, _, .single (.inl h) => .single (.inr h)
-  | _, _, .single (.inr h) => .single (.inl h)
-
 theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
   comm
 
@@ -712,26 +703,6 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
     · exact TransGen.mono (fun _ _ ↦ .single) h
-
-@[simp, grind =]
-theorem reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
-  ext a b
-  constructor
-  · intro h
-    induction h with
-    | refl => exact .refl _
-    | tail hab hbc ih =>
-      cases hbc with
-      | inl h => exact ih.trans _ _ _ (.rel _ _ h)
-      | inr h => exact ih.trans _ _ _ (.symm _ _ (.rel _ _ h))
-  · intro h
-    induction h with
-    | rel _ _ ih => exact .single (.inl ih)
-    | refl x => exact .refl
-    | symm x y eq ih =>
-      rw [symmGen_swap]
-      exact reflTransGen_swap.mp ih
-    | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 @[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
