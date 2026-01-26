@@ -183,11 +183,11 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
 
-lemma IsHamiltonian.of_card_ne_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
+lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
   (· h |>.elim)
 
 lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
-  of_card_ne_one <| Fintype.card_unique
+  of_card_eq_one <| Fintype.card_unique
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
