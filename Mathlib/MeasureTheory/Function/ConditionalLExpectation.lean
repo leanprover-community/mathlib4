@@ -18,7 +18,7 @@ expectation of `X` is the `mΩ`-measurable function such that for all `mΩ`-meas
 `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P` (see `setLIntegral_condLExp`). This is unique up to
 `P`-ae equality (see `eq_condLExp`).
 
-## Design Decisions
+## Design decisions
 
 `P⁻[X|mΩ]` is assigned the junk value `0` when either `¬ mΩ ≤ mΩ₀` (`mΩ` is not a sub-σ-algebra)
 or `h : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)` (the latter always holds when `P` is a
