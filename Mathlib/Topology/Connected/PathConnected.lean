@@ -187,7 +187,7 @@ theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn 
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by
   refine ⟨⟨⟨Set.piecewise {1} (const I y) (const I x), ?_⟩, by simp, by simp⟩, fun t ↦ ?_⟩
-  · exact isClosed_singleton.continuous_piecewise_of_specializes continuous_const continuous_const
+  · exact isClosed_singleton.continuous_piecewise_of_specializes .const .const
       fun _ ↦ h
   · simp only [Path.coe_mk_mk, piecewise]
     split_ifs <;> assumption

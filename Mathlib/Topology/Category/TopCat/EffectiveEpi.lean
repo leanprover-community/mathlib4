@@ -49,8 +49,8 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
   uniq e h g hm := by
     suffices g = ofHom (hπ.liftEquiv ⟨e.hom,
       fun a b hab ↦ CategoryTheory.congr_fun (h
-          (ofHom ⟨fun _ ↦ a, continuous_const⟩)
-          (ofHom ⟨fun _ ↦ b, continuous_const⟩)
+          (ofHom ⟨fun _ ↦ a, .const⟩)
+          (ofHom ⟨fun _ ↦ b, .const⟩)
           (by ext; exact hab))
         a⟩) by assumption
     apply hom_ext

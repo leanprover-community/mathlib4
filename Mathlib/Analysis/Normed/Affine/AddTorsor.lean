@@ -232,7 +232,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
     fun x y => by simp [h]).toRealLinearMap <| by
-        apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
+        apply_rules [Continuous.vadd, Continuous.vsub, Continuous.const, hfc.comp, continuous_id]))
     c fun p => by simp
 
 end

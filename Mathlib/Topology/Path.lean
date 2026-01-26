@@ -278,7 +278,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
+      (Continuous.if_le ?_ ?_ continuous_id .const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
   source' := by simp

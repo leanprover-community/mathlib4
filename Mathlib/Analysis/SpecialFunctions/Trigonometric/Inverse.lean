@@ -392,7 +392,7 @@ theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
 
 @[continuity, fun_prop]
 theorem continuous_arccos : Continuous arccos :=
-  continuous_const.sub continuous_arcsin
+  Continuous.const.sub continuous_arcsin
 
 -- The junk values for `arccos` and `sqrt` make this true even outside `[-1, 1]`.
 theorem tan_arccos (x : ℝ) : tan (arccos x) = √(1 - x ^ 2) / x := by

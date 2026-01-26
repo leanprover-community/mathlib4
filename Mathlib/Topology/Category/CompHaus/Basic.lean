@@ -198,7 +198,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       ⟨fun y' => ⟨⟨φ y', hφ01 y'⟩⟩,
         continuous_uliftUp.comp (φ.continuous.subtype_mk fun y' => hφ01 y')⟩
     let h : Y ⟶ Z := ofHom _
-      ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, continuous_const⟩
+      ⟨fun _ => ⟨⟨0, Set.left_mem_Icc.mpr zero_le_one⟩⟩, .const⟩
     have H : h = g := by
       rw [← cancel_epi f]
       ext x : 4

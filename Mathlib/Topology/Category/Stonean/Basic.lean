@@ -134,7 +134,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) := ConcreteCategory.ofHom
     ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-  let h : Y ⟶ mkFinite (ULift (Fin 2)) := ConcreteCategory.ofHom ⟨fun _ => ⟨1⟩, continuous_const⟩
+  let h : Y ⟶ mkFinite (ULift (Fin 2)) := ConcreteCategory.ofHom ⟨fun _ => ⟨1⟩, .const⟩
   have H : h = g := by
     rw [← cancel_epi f]
     ext x

@@ -1103,7 +1103,7 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   cases isEmpty_or_nonempty X
   · exact continuous_of_discreteTopology
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
-  convert continuous_const (y := denseSeq X n)
+  exact .const (y := denseSeq X n)
 
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by
