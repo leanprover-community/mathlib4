@@ -144,7 +144,7 @@ def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
 /-- Restriction of a flow onto an invariant set. -/
 def restrict {s : Set α} (h : IsInvariant ϕ s) : Flow τ (↥s) where
   toFun t := (h t).restrict _ _ _
-  cont' := (ϕ.continuous continuous_fst continuous_subtype_val.snd').subtype_mk _
+  cont' := Continuous.subtype_mk (by fun_prop) _
   map_add' _ _ _ := Subtype.ext (map_add _ _ _ _)
   map_zero' _ := Subtype.ext (map_zero_apply _ _)
 

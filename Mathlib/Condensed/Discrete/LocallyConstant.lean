@@ -190,7 +190,7 @@ noncomputable def componentHom (a : Fiber (f.comap g.hom.hom)) :
       convert map_eq_image _ _ x
       exact map_preimage_eq_image_map _ _ a⟩
     continuous_toFun := by
-      exact Continuous.subtype_mk (g.hom.hom.continuous.comp continuous_subtype_val) _ }
+      exact Continuous.subtype_mk (by fun_prop) _ }
       -- term mode gives "unknown free variable" error.
 
 lemma incl_comap {S T : (CompHausLike P)ᵒᵖ}
