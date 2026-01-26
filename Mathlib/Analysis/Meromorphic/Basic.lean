@@ -488,8 +488,8 @@ include hf in
 @[simp] lemma neg_iff : MeromorphicOn (-f) U ↔ MeromorphicOn f U :=
   ⟨fun h ↦ by simpa only [neg_neg] using h.neg, neg⟩
 
-include hf in
-@[to_fun] lemma smul {s : 𝕜 → 𝕜} (hs : MeromorphicOn s U) : MeromorphicOn (s • f) U :=
+@[to_fun] lemma smul {s : 𝕜 → 𝕜} (hs : MeromorphicOn s U) {f : 𝕜 → E} (hf : MeromorphicOn f U) :
+    MeromorphicOn (s • f) U :=
   fun x hx ↦ (hs x hx).smul (hf x hx)
 
 include hs ht in
