@@ -112,6 +112,10 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
   simp only [fract, cast_sub, cast_intCast, floor_cast]
 
+@[simp]
+theorem den_intFract (x : ℚ) : (fract x).den = x.den :=
+  Rat.sub_intCast_den _ _
+
 section NormNum
 
 open Mathlib.Meta.NormNum Qq
