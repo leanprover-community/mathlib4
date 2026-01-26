@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.Polynomial.IsIntegral
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra

@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Central.Defs
 
+import Mathlib.Algebra.Module.Torsion.Field
+
 /-!
 # Central Algebras
 
