@@ -30,6 +30,9 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
 * `AnalyticAt.eventually_constant_or_nhds_le_map_nhds` is the local version of the open mapping
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
+
+As an immediate corollary, we show that a holomorphic function whose real part is constant is itself
+constant.
 -/
 
 public section
@@ -169,3 +172,27 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
+constant.
+-/
+theorem AnalyticOnNhd.constant_if_re_constant {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ c, ∀ x ∈ U, f x = c := by
+  obtain ⟨z₀, _⟩ := h₂U.nonempty
+  by_contra h₅
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (re '' (f '' U)) = { c₀ }), isOpenMap_re
+    (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
+constant.
+-/
+theorem AnalyticOnNhd.constant_if_re_constant₁ {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ (c : ℝ), ∀ x ∈ U, f x = c₀ + c * I := by
+  obtain ⟨cc, hcc⟩ := constant_if_re_constant h₁f h₂f h₁U h₂U
+  use cc.im
+  simp_rw [Complex.ext_iff]
+  aesop
