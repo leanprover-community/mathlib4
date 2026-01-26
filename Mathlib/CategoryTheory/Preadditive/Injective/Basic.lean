@@ -270,7 +270,7 @@ end Injective
 
 namespace Adjunction
 
-variable {D : Type*} [Category D] {F : C ⥤ D} {G : D ⥤ C}
+variable {D : Type*} [Category* D] {F : C ⥤ D} {G : D ⥤ C}
 
 theorem map_injective (adj : F ⊣ G) [F.PreservesMonomorphisms] (I : D) (hI : Injective I) :
     Injective (G.obj I) :=
@@ -315,7 +315,7 @@ end Adjunction
 
 namespace Functor
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem injective_of_map_injective [F.Full] [F.Faithful]
     [F.PreservesMonomorphisms] {I : C} (hI : Injective (F.obj I)) : Injective I where
@@ -343,7 +343,7 @@ lemma EnoughInjectives.of_equivalence {C : Type u₁} {D : Type u₂}
 
 namespace Equivalence
 
-variable {D : Type*} [Category D] (F : C ≌ D)
+variable {D : Type*} [Category* D] (F : C ≌ D)
 
 theorem map_injective_iff (P : C) : Injective (F.functor.obj P) ↔ Injective P :=
   ⟨F.symm.toAdjunction.injective_of_map_injective P, F.symm.toAdjunction.map_injective P⟩

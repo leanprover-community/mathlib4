@@ -22,7 +22,7 @@ This file contains two main results:
   a monic polynomial of degree two times another monic factor.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial.IsMonicOfDegree
 
@@ -65,7 +65,7 @@ lemma eq_isMonicOfDegree_two_mul_isMonicOfDegree {f : ℝ[X]} {n : ℕ}
     ∃ f₁ f₂ : ℝ[X], IsMonicOfDegree f₁ 2 ∧ IsMonicOfDegree f₂ n ∧ f = f₁ * f₂ := by
   obtain ⟨g₁, g₂, hd₁ | hd₂, h⟩ := hf.eq_isMonicOfDegree_one_or_two_mul
   all_goals rw [h, add_comm] at hf
-  · have hg₂ := of_mul_left hd₁ <| (show 2 + n = 1 + (n + 1) by cutsat) ▸ hf
+  · have hg₂ := of_mul_left hd₁ <| (show 2 + n = 1 + (n + 1) by lia) ▸ hf
     obtain ⟨p₁, p₂, hp₁ | hp₂, h'⟩ := hg₂.eq_isMonicOfDegree_one_or_two_mul
     · rw [h', ← mul_assoc] at h hf
       exact ⟨g₁ * p₁, p₂, hd₁.mul hp₁, (hd₁.mul hp₁).of_mul_left hf, h⟩

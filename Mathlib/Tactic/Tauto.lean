@@ -5,11 +5,11 @@ Authors: Simon Hudon, David Renshaw
 -/
 module
 
-public meta import Mathlib.Tactic.CasesM
-public meta import Mathlib.Tactic.Core
-public meta import Mathlib.Lean.Elab.Tactic.Basic
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic  -- shake: keep (dependency of tactic output)
 public meta import Qq
+public meta import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CasesM
+public import Mathlib.Tactic.Core
 
 /-!
 The `tauto` tactic.
@@ -200,13 +200,16 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
   | _ => pure false
 
 /-- Implementation of the `tauto` tactic. -/
-def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
+def tautology : TacticM Unit := focus do
   classical do
+    let g ← getMainGoal
     tautoCore
     allGoals (iterateUntilFailure
       (evalTactic (← `(tactic| rfl)) <|>
       evalTactic (← `(tactic| solve_by_elim)) <|>
       liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
+    unless (← getUnsolvedGoals).isEmpty do
+      throwTacticEx `tauto g
 
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`

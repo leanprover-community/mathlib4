@@ -164,11 +164,10 @@ just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
     log⁺ (∑ t ∈ s, f t) ≤ log (s.card) + ∑ t ∈ s, log⁺ (f t) := by
   -- Trivial case: empty sum
-  by_cases hs : s = ∅
+  by_cases! hs : s = ∅
   · simp [hs, posLog]
   -- Nontrivial case: Obtain maximal element…
-  obtain ⟨t_max, ht_max⟩ := s.exists_max_image (fun t ↦ |f t|)
-    (Finset.nonempty_iff_ne_empty.mpr hs)
+  obtain ⟨t_max, ht_max⟩ := s.exists_max_image (fun t ↦ |f t|) hs
   -- …then calculate
   calc log⁺ (∑ t ∈ s, f t)
   _ = log⁺ |∑ t ∈ s, f t| := by

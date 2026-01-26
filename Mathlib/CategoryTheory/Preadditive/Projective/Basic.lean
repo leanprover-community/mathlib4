@@ -226,7 +226,7 @@ end Adjunction
 
 namespace Functor
 
-variable {D : Type*} [Category D] (F : C ⥤ D)
+variable {D : Type*} [Category* D] (F : C ⥤ D)
 
 theorem projective_of_map_projective [F.Full] [F.Faithful]
     [F.PreservesEpimorphisms] {P : C} (hP : Projective (F.obj P)) : Projective P where

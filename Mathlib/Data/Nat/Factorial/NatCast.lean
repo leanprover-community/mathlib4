@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Data.Finset.NatAntidiagonal
-public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.Data.Nat.Choose.Basic
 
 /-!
 # Invertibility of factorials
@@ -18,7 +18,7 @@ to be a unit.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsUnit
 
@@ -91,9 +91,9 @@ theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :
   | zero => simp
   | succ n ih =>
     simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
-    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by cutsat)⟩
+    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by lia)⟩
     rw [Nat.Prime.coprime_iff_not_dvd Fact.out]
-    exact Nat.not_dvd_of_pos_of_lt (by cutsat) h
+    exact Nat.not_dvd_of_pos_of_lt (by lia) h
 
 end Nilpotent
 

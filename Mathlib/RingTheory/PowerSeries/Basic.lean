@@ -560,6 +560,28 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff φ =
 
 end Semiring
 
+section toSubring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a formal power series `p` and a subring `T` that contains the
+ coefficients of `p`, return the corresponding formal power series
+ whose coefficients are in `T`. -/
+def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : ℕ} : (p.toSubring T hp).coeff n = p.coeff n := by
+  rw [toSubring, coeff_mk]
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff :=
+  coeff_zero_eq_constantCoeff_apply p
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := ext fun n => by simp
+
+end toSubring
+
 section CommSemiring
 
 variable [CommSemiring R]
@@ -677,14 +699,14 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => cutsat
+  | zero => lia
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
       · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
           add_tsub_cancel_right]
-        have h₀ : n' = 0 ∨ 1 ≤ n' := by omega
+        have h₀ : n' = 0 ∨ 1 ≤ n' := by lia
         rcases h₀ with h' | h'
         · by_contra h''
           rw [h'] at h''

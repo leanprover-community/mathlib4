@@ -9,14 +9,14 @@ public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Free groups
 
 This file defines free groups over a type. Furthermore, it is shown that the free group construction
 is an instance of a monad. For the result that `FreeGroup` is the left adjoint to the forgetful
-functor from groups to types, see `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
+functor from groups to types, see `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -338,7 +338,7 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
     induction L1 with
     | nil =>
       dsimp
-      cutsat
+      lia
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
