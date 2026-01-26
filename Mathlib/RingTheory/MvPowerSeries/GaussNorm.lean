@@ -39,24 +39,24 @@ namespace MvPowerSeries
 
 variable {R F σ : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : σ → ℝ) (f : MvPowerSeries σ R)
 
-/-- Given a multivariate power series `f` in, a function `v : R → ℝ` and a real number `c`,
-  the Gauss norm is defined as the supremum of the set of all values of
+/-- Given a multivariate power series `f` in, a function `v : R → ℝ` and a tuple `c` of real
+  numbers, the Gauss norm is defined as the supremum of the set of all values of
   `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`. -/
 noncomputable def gaussNormC : ℝ :=
    ⨆ t : σ →₀ ℕ, v (coeff t f) * t.prod (c · ^ ·)
 
+abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
+
 @[simp]
 theorem gaussNormC_zero [ZeroHomClass F R ℝ] : gaussNormC v c 0 = 0 := by simp [gaussNormC]
 
-lemma le_gaussNormC (hbd : BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) *
-      ∏ i ∈ t.support, (c i) ^ (t i))))) (t : σ →₀ ℕ) :
-    v (coeff t f) * ∏ i ∈ t.support, (c i) ^ (t i) ≤ gaussNormC v c f := by
+lemma le_gaussNormC (hbd : HasGaussNorm v c f) (t : σ →₀ ℕ) :
+    v (coeff t f) * t.prod (c · ^ ·) ≤ gaussNormC v c f := by
   apply le_ciSup hbd
 
 theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ gaussNormC v c f := by
   rw [gaussNormC]
-  by_cases h : BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) *
-    ∏ i ∈ t.support, (c i) ^ (t i))))
+  by_cases h : HasGaussNorm v c f
   · calc
     _ ≤ v (constantCoeff f) := by simp
     _ ≤ _ := by
@@ -65,9 +65,8 @@ theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ gaussNormC v c f := b
   · simp [h]
 
 theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {v : F}
-    (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : ∀ i, 0 < c i)
-    (hbd : BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) *
-      ∏ i ∈ t.support, (c i) ^ (t i))))) : gaussNormC v c f = 0 ↔ f = 0 := by
+    (h_eq_zero : ∀ x : R, v x = 0 → x = 0) (hc : ∀ i, 0 < c i) (hbd : HasGaussNorm v c f) :
+    gaussNormC v c f = 0 ↔ f = 0 := by
   refine ⟨?_, fun hf ↦ by simp [hf]⟩
   contrapose!
   intro hf
@@ -83,10 +82,7 @@ theorem gaussNormC_eq_zero_iff [ZeroHomClass F R ℝ] [NonnegHomClass F R ℝ] {
 
 theorem gaussNormC_nonarchimedean (f g : MvPowerSeries σ R) (hc : 0 ≤ c)
     [NonnegHomClass F R ℝ] (hv : ∀ x y, v (x + y) ≤ max (v x) (v y))
-    (hbfd : BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) *
-      ∏ i ∈ t.support, (c i) ^ (t i)))))
-    (hbgd : BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t g) *
-      ∏ i ∈ t.support, (c i) ^ (t i))))) :
+    (hbfd : HasGaussNorm v c f) (hbgd : HasGaussNorm v c g) :
     gaussNormC v c (f + g) ≤ max (gaussNormC v c f) (gaussNormC v c g) := by
   have H (t : σ →₀ ℕ) : 0 ≤ ∏ i ∈ t.support, c i ^ t i :=
     Finset.prod_nonneg (fun i hi ↦ pow_nonneg (hc i) (t i))
