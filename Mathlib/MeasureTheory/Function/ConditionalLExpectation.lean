@@ -29,7 +29,7 @@ is just used to show existence. However for (potential) convenience the actual d
 `P⁻[X|mΩ] := X` in the case when `X` is `mΩ`-measurable (which can be invoked using
 `condLExp_eq_self`).
 
-## Main Statements
+## Main statements
 
 * `condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) : Ω → ℝ≥0∞`: conditional
   (lebesgue) expectation of `X` with respect to `mΩ`.
