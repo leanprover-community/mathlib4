@@ -176,11 +176,13 @@ theorem measurable_bot_eq_const {β : Type*} [MeasurableSpace β] [Nonempty β]
     by_contra! h
     obtain ⟨s, hs, hx, hy⟩ := exists_measurableSet_of_ne h
     obtain h' | h' := MeasurableSpace.measurableSet_bot_iff.mp (hf hs)
-    · absurd hx; simp [← mem_preimage, h']
-    · absurd hy; simp [← mem_preimage, h']
-  by_cases! h' : Nonempty α; swap
+    · absurd hx
+      simp [← mem_preimage, h']
+    · absurd hy
+      simp [← mem_preimage, h']
+  obtain h' | h' := isEmpty_or_nonempty α
   · use (Classical.ofNonempty : β), funext (by simp)
-  use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
+  · use f (Classical.ofNonempty : α), funext (fun x ↦ h _ _)
 
 /-- We say that a measurable space is countably separated if there is a
 countable sequence of measurable sets separating points. -/
