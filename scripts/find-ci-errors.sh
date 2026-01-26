@@ -13,7 +13,6 @@
 # Options:
 #   --please-merge-master  Add the 'please-merge-master' label to all matching PRs
 #                          (except those with the 'merge-conflict' label).
-#                          The label is automatically removed by CI once the build completes.
 #
 # Examples:
 #   # Find PRs failing with a specific error

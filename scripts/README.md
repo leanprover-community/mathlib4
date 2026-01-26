@@ -104,8 +104,7 @@ to learn about it as well!
 
   **Options:**
   - `--please-merge-master`: Adds the `please-merge-master` label to all matching PRs,
-    except those with the `merge-conflict` label. The label is automatically removed
-    by CI once the build completes.
+    except those with the `merge-conflict` label.
 
   **Notes:**
   - Downloads CI logs to `/tmp/gh-run-*.log` (cached to avoid re-downloading)
