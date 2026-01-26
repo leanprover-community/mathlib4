@@ -114,10 +114,10 @@ theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
 
 section Set
 
-lemma bddAbove_natCast_image_iff {s : Set ℕ} : BddAbove ((↑) '' s : Set ℝ≥0) ↔ BddAbove s :=
+@[simp] lemma bddAbove_natCast_image_iff {s : Set ℕ} : BddAbove ((↑) '' s : Set ℝ≥0) ↔ BddAbove s :=
   ⟨.imp' Nat.floor (by simp [upperBounds, Nat.le_floor_iff]), .imp' (↑) (by simp [upperBounds])⟩
 
-lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
+@[simp, norm_cast] lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
     BddAbove (Set.range (f ·) : Set NNReal) ↔ BddAbove (Set.range f) := by
   rw [← bddAbove_natCast_image_iff, ← Set.range_comp]
   rfl
@@ -194,11 +194,9 @@ theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a �
 @[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
     ⨆ i, f i = (⨆ i, f i : NNReal) := by
   by_cases h : BddAbove (Set.range f)
-  · have h' : BddAbove (Set.range (fun i ↦ (f i : NNReal))) := by rwa [bddAbove_range_natCast_iff]
-    refine eq_of_forall_ge_iff fun c ↦ ?_
-    simp [ciSup_le_iff', h, h', ← Nat.le_floor_iff]
-  · have h' : ¬ BddAbove (Set.range (fun i ↦ (f i : NNReal))) := by rwa [bddAbove_range_natCast_iff]
-    rw [iSup_of_not_bddAbove h', Nat.cast_eq_zero, Nat.iSup_of_not_bddAbove h]
+  · apply eq_of_forall_ge_iff
+    simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
+  · simp [*]
 
 @[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
     ⨅ i, f i = (⨅ i, f i : NNReal) := by
