@@ -140,7 +140,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
   · intro h
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff hf).1 h
     filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
-      ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
+      ((h₁g.continuousAt.ne_iff_eventually_ne .const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 

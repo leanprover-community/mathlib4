@@ -88,7 +88,7 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
-  refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
+  refine (continuous_id.sub .const).norm.tendsto' _ _ ?_
   rw [_root_.id, sub_self, norm_zero]
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :

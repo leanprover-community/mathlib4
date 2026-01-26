@@ -983,7 +983,7 @@ protected theorem HasFPowerSeriesWithinOnBall.continuousOn
     ContinuousOn f (insert x s ∩ EMetric.ball x r) :=
   hf.tendstoLocallyUniformlyOn'.continuousOn <|
     Frequently.of_forall fun n =>
-      ((p.partialSum_continuous n).comp (continuous_id.sub continuous_const)).continuousOn
+      ((p.partialSum_continuous n).comp (continuous_id.sub .const)).continuousOn
 
 /-- If a function admits a power series expansion on a ball, then it is continuous there. -/
 protected theorem HasFPowerSeriesOnBall.continuousOn (hf : HasFPowerSeriesOnBall f p x r) :

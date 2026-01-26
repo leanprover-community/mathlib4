@@ -201,7 +201,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
-      (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
+      (PiLp.continuous_apply 2 _ 0).max .const).subtype_mk _
 
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
@@ -228,7 +228,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     exact ⟨toLp 2 fun i ↦ 1, by simp⟩
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk ((PiLp.continuous_toLp 2 _).comp <|
-    (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max continuous_const))) _
+    (continuous_pi fun i ↦ ((PiLp.continuous_apply 2 _ i).max .const))) _
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]

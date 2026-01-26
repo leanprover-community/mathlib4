@@ -214,7 +214,7 @@ def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterva
   continuous_invFun := by
     apply Continuous.subtype_mk
     exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
+      ⟨Continuous.const.sub continuous_subtype_val, continuous_subtype_val⟩)
 
 @[simp]
 lemma stdSimplexHomeomorphUnitInterval_zero :

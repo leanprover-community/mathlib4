@@ -123,7 +123,7 @@ theorem relative_hyperplane_separation {C : ProperCone ℝ E} {f : E →L[ℝ] F
     rintro x seq hmem hx htends y hinner
     obtain rfl : f ∘ seq = x := funext hx
     have h n : 0 ≤ ⟪f (seq n), y⟫_ℝ := by simpa [real_inner_comm] using hinner (hmem n)
-    exact ge_of_tendsto' ((continuous_id.inner continuous_const).seqContinuous htends) h
+    exact ge_of_tendsto' ((continuous_id.inner .const).seqContinuous htends) h
   mpr h := by
     -- By contradiction, suppose `b ∉ C.map f`.
     contrapose! h

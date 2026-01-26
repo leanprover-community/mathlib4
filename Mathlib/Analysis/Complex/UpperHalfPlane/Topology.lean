@@ -78,7 +78,7 @@ instance instContinuousGLSMul : ContinuousConstSMul (GL (Fin 2) ℝ) ℍ where
     · split_ifs
       exacts [continuous_id, continuous_conj]
     · refine .div ?_ ?_ (fun x ↦ denom_ne_zero g x) <;>
-      exact (continuous_const.mul continuous_coe).add continuous_const
+      exact (Continuous.const.mul continuous_coe).add .const
 
 section strips
 

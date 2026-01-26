@@ -189,10 +189,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // g 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
-  have hmB : Continuous mB := by
-    refine continuous_matrix ?_
-    simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
-      cons_val_one, and_self_iff]
+  have hmB : Continuous mB := continuous_matrix (by simp [mB, Continuous.const, continuous_id'])
   refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
@@ -536,10 +533,10 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
   rw [Subtype.isCompact_iff, coe_truncatedFundamentalDomain, Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
-    apply (isClosed_le continuous_const Complex.continuous_im).inter
-    apply (isClosed_le Complex.continuous_im continuous_const).inter
-    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
-    exact isClosed_le continuous_const continuous_norm
+    apply (isClosed_le .const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im .const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) .const).inter
+    exact isClosed_le .const continuous_norm
   · -- show bounded
     refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
     simp only [mem_closedBall_zero_iff]

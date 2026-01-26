@@ -217,8 +217,8 @@ open Submodule
 variable {K} {x y : E}
 
 theorem eq_zero_of_inner_left (hK : Dense (K : Set E)) (h : ∀ v : K, ⟪x, v⟫ = 0) : x = 0 := by
-  have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
-    hK continuous_const (Subtype.forall.1 h)
+  have : (⟪x, ·⟫) = 0 := (Continuous.const.inner continuous_id).ext_on
+    hK .const (Subtype.forall.1 h)
   simpa using congr_fun this x
 
 theorem eq_zero_of_mem_orthogonal (hK : Dense (K : Set E)) (h : x ∈ Kᗮ) : x = 0 :=
