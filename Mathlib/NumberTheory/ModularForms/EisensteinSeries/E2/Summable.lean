@@ -169,19 +169,10 @@ lemma tsum_symmetricIco_tsum_eq_S_act :
   rw [Summable.tsum_finsetSum]
   exact fun i hi ↦ by simpa using linear_left_summable (ne_zero z) i le_rfl
 
-private lemma telescope_aux' (b : ℕ)  {α : Type*} [AddCommGroup α] (f : ℤ → α) :
-    ∑ n ∈ Ico (-b : ℤ) b, (f n - f (n + 1)) = f (-b) - f b := by
-  induction b with
-  | zero => aesop
-  | succ b ihb =>
-    simp only [Nat.cast_add_one, Ico_succ_succ]
-    rw [sum_union (by aesop), sum_insert (by grind), sum_singleton, ihb]
-    grind
-
 private lemma telescope_aux (z : ℂ) (m : ℤ) (b : ℕ) :
     ∑ n ∈ Ico (-b : ℤ) b, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     1 / (m * z - b) - 1 / (m * z + b) := by
-  convert telescope_aux' b (fun n ↦ 1 / ((m : ℂ) * z + n)) using 2 <;>
+  convert Finset.Int_sum_Ico_sub b (fun n ↦ 1 / ((m : ℂ) * z + n)) using 2 <;>
   simp [add_assoc, sub_eq_add_neg]
 
 lemma tsum_symmetricIco_linear_sub_linear_add_one_eq_zero (m : ℤ) :
@@ -266,7 +257,6 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
   apply Tendsto.add
   · exact tendsto_comp_val_Ioi_atTop.mpr <|
       by simpa using (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
-    exact tendsto_comp_val_Ioi_atTop.mpr this
   · simpa only [aux_tsum_identity_2] using tendsto_comp_val_Ioi_atTop.mpr (aux_tendsto_tsum z)
 
 /- These are the two key lemmas, which show that swapping the order of summation gives
