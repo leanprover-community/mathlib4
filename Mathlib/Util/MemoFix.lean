@@ -7,6 +7,7 @@ module
 
 public import Std.Data.HashMap.Basic
 public import Mathlib.Init
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Fixpoint function with memoisation
