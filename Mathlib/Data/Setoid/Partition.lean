@@ -514,7 +514,7 @@ theorem piecewise_preimage (t : Set β) : hs.piecewise f ⁻¹' t = ⋃ i, s i �
     simp_all [piecewise_apply]
 
 theorem range_piecewise : range (hs.piecewise f) = ⋃ i, f i '' s i := by
-  ext x; constructor
+  refine ext fun x => ⟨?_, fun ⟨t, ⟨i, hi⟩, ht⟩ ↦ ?_⟩
   · rintro ⟨x, rfl⟩
     exact mem_iUnion_of_mem (hs.index x) ⟨x, hs.mem_index x, rfl⟩
   · rintro ⟨t, ⟨i, hi⟩, ht⟩
