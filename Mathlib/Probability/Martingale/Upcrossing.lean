@@ -463,10 +463,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
   induction n with
   | zero =>
     simp only [upperCrossingTime_zero, bot_eq_zero',
-      lowerCrossingTime_zero, true_and]
-    #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-    `eq_comm` replaced by `symm` due to simp perm lemma handling change -/
-    symm
+      lowerCrossingTime_zero, true_and, eq_comm]
     refine hittingBtwn_eq_hittingBtwn_of_exists hNM ?_
     rw [lowerCrossingTime, hittingBtwn_lt_iff] at h
     · obtain ⟨j, hj₁, hj₂⟩ := h
@@ -483,10 +480,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
         exact hittingBtwn_eq_hittingBtwn_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
       · exact le_rfl
     refine ⟨this, ?_⟩
-    simp only [lowerCrossingTime, this, Nat.succ_eq_add_one]
-    #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-    `eq_comm` replaced by `symm` due to simp perm lemma handling change -/
-    symm
+    simp only [lowerCrossingTime, eq_comm, this, Nat.succ_eq_add_one]
     refine hittingBtwn_eq_hittingBtwn_of_exists hNM ?_
     rw [lowerCrossingTime, hittingBtwn_lt_iff _ le_rfl] at h
     obtain ⟨j, hj₁, hj₂⟩ := h

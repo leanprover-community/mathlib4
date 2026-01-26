@@ -128,8 +128,8 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
   #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
   `mul_comm, mul_left_comm` removed from simp arguments due to simp perm lemma handling change -/
   (hp.dvd_or_dvd hpd).elim
-    (fun ⟨d, hd⟩ => Or.inl ⟨d, by simp [*, pow_succ, mul_assoc]⟩)
-    fun ⟨d, hd⟩ => Or.inr ⟨d, by simp [*, pow_succ, mul_assoc]⟩
+    (fun ⟨d, hd⟩ => Or.inl ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩)
+    fun ⟨d, hd⟩ => Or.inr ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩
 
 theorem Prime.not_isSquare (hp : Prime p) : ¬IsSquare p :=
   hp.irreducible.not_isSquare

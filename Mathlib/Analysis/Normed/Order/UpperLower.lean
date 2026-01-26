@@ -133,7 +133,7 @@ lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+  simpa only [dist_comm] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
@@ -142,7 +142,7 @@ lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   exact Real.toNNReal_mono (sub_le_sub_left (hy _) _)
 
 lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
-  simpa only [dist_comm _ x] using dist_anti_left_pi (y := x)
+  simpa only [dist_comm] using dist_anti_left_pi (y := x)
 
 lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
     dist a₁ b₁ ≤ dist a₂ b₂ :=

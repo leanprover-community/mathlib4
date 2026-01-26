@@ -266,9 +266,7 @@ end ModEq
 @[simp]
 theorem zsmul_modEq_zsmul [IsAddTorsionFree G] (hn : z ≠ 0) :
     z • a ≡ z • b [PMOD z • p] ↔ a ≡ b [PMOD p] := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-  `zsmul_comm _ z` requires explicit argument due to simp perm lemma handling change -/
-  simp [modEq_iff_zsmul, ← zsmul_sub, zsmul_comm _ z, zsmul_right_inj hn]
+  simp [modEq_iff_zsmul, ← zsmul_sub, zsmul_comm, zsmul_right_inj hn]
 
 alias ⟨ModEq.zsmul_cancel, _⟩ := zsmul_modEq_zsmul
 

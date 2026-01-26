@@ -145,9 +145,7 @@ lemma mul_sSup : a * sSup s = ⨆ b ∈ s, a * b := by
   simp_rw [sSup_eq_iSup, mul_iSup]
 
 lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-  `mul_comm _ a` requires explicit argument due to simp perm lemma handling change -/
-  simp_rw [mul_comm _ a, mul_sSup]
+  simp_rw [mul_comm, mul_sSup]
 
 lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
   refine (le_iInf fun x ↦ by grw [iInf_le]).antisymm ?_

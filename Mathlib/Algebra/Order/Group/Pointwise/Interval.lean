@@ -501,9 +501,7 @@ theorem image_const_sub_uIcc : (fun x => a - x) '' [[b, c]] = [[a - b, a - c]] :
 
 @[simp]
 theorem image_sub_const_uIcc : (fun x => x - a) '' [[b, c]] = [[b - a, c - a]] := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-  `add_comm` removed from simp arguments due to simp perm lemma handling change -/
-  simp [sub_eq_add_neg]
+  simp [sub_eq_add_neg, add_comm]
 
 theorem image_neg_uIcc : Neg.neg '' [[a, b]] = [[-a, -b]] := by simp
 

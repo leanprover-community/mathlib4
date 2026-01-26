@@ -444,9 +444,7 @@ theorem sSup_disjoint_iff {s : Set α} : Disjoint (sSup s) a ↔ ∀ b ∈ s, Di
   simp only [disjoint_iff, sSup_inf_eq, iSup_eq_bot]
 
 theorem disjoint_sSup_iff {s : Set α} : Disjoint a (sSup s) ↔ ∀ b ∈ s, Disjoint a b := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-  `disjoint_comm (a := a)` requires explicit argument due to simp perm lemma handling change -/
-  simpa only [disjoint_comm (a := a)] using @sSup_disjoint_iff
+  simpa only [disjoint_comm] using @sSup_disjoint_iff
 
 theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f g : ι → α}
     (hf : Monotone f) (hg : Monotone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by

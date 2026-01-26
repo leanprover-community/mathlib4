@@ -52,9 +52,7 @@ lemma angle_one_right (hx : x ≠ 0) : angle x 1 = |x.arg| := by simp [angle_eq_
     simp [angle_eq_abs_arg, mul_div_mul_left, *]
 
 @[simp] lemma angle_mul_right (ha : a ≠ 0) (x y : ℂ) : angle (x * a) (y * a) = angle x y := by
-  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
-  `mul_comm _ a` requires explicit argument due to simp perm lemma handling change -/
-  simp [mul_comm _ a, angle_mul_left ha]
+  simp [mul_comm, angle_mul_left ha]
 
 lemma angle_div_left_eq_angle_mul_right (a x y : ℂ) : angle (x / a) y = angle x (y * a) := by
   obtain rfl | ha := eq_or_ne a 0
