@@ -431,3 +431,17 @@ lemma subsingleton_setOf_mem_iff_pairwise_disjoint {f : ι → Set α} :
 
 lemma pairwise_ne_iff_injective {f : ι → α} : Pairwise (fun i j ↦ f i ≠ f j) ↔ f.Injective := by
   simp
+
+section subtype
+
+lemma Set.PairwiseDisjoint.singleton_subtype' (s : Set α) :
+    Pairwise (Disjoint on fun (x : s) => ({x.val} : Set α)) := by
+  intro a b hab
+  simp_rw [Set.disjoint_singleton_left, Set.mem_singleton_iff, Subtype.coe_ne_coe.mpr hab,
+    not_false_eq_true]
+
+lemma Set.PairwiseDisjoint.fiber_subtype {g : α → β} (s : Set β) :
+    Pairwise (Disjoint on fun (x : s) => (g⁻¹' {x.val} : Set α)) :=
+  fun _ _ hab ↦ pairwise_disjoint_fiber g (Subtype.coe_ne_coe.mpr hab)
+
+end subtype

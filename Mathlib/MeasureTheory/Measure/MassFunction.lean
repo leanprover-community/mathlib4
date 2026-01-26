@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Measure.Dirac
-public import Mathlib.Order.BourbakiWitt
 
 /-!
 # Mass functions
@@ -37,15 +36,34 @@ universe u
 
 variable {α β γ δ : Type*}
 
-lemma Set.PairwiseDisjoint.singleton_subtype (s : Set α) :
-    Pairwise (Disjoint on fun (x : s) => ({x.val} : Set α)) := by
-  intro a b hab
-  simp_rw [Set.disjoint_singleton_left, Set.mem_singleton_iff, Subtype.coe_ne_coe.mpr hab,
-    not_false_eq_true]
+open Classical in
+lemma Function.support_subsingleton_of_disjoint [Zero β] {s : δ → Set α} (f : α → β)
+    (hs : Pairwise (Disjoint on s)) (i : α) (j : δ) (hj : i ∈ s j) :
+    Function.support (fun d ↦ if i ∈ s d then f i else 0) ⊆ {j} := by
+  intro d
+  simp_rw [Set.mem_singleton_iff, Function.mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp]
+  rw [← not_imp_not]
+  intro hd e
+  obtain r := Set.disjoint_iff_inter_eq_empty.mp (hs hd)
+  revert r
+  change s d ∩ s j ≠ ∅
+  rw [← Set.nonempty_iff_ne_empty, Set.nonempty_def]
+  exact ⟨i, ⟨e.1, hj⟩⟩
 
-lemma Set.PairwiseDisjoint.fiber_subtype {g : α → β} (s : Set β) :
-    Pairwise (Disjoint on fun (x : s) => (g⁻¹' {x.val} : Set α)) :=
-  fun _ _ hab ↦ pairwise_disjoint_fiber g (Subtype.coe_ne_coe.mpr hab)
+lemma Set.indicator_iUnion_of_disjoint [AddCommMonoid β] [TopologicalSpace β]
+    (s : δ → Set α) (hs : Pairwise (Disjoint on s)) (f : α → β) (i : α) :
+    (⋃ d, s d).indicator f i = ∑' d, (s d).indicator f i := by
+  classical
+  simp only [Set.indicator, Set.mem_iUnion]
+  by_cases h₀ : ∃ d, i ∈ s d <;> simp only [h₀, ↓reduceIte]
+  · obtain ⟨j, hj⟩ := h₀
+    rw [← tsum_subtype_eq_of_support_subset (s := {j})]
+    · simp only [tsum_fintype, Finset.univ_unique, Set.default_coe_singleton, Finset.sum_singleton,
+      left_eq_ite_iff]
+      exact fun h ↦ False.elim (h hj)
+    · apply (support_subsingleton_of_disjoint f hs i j hj)
+  · push_neg at h₀
+    simp_rw [if_neg (h₀ _), tsum_zero]
 
 open ENNReal MeasureTheory
 
@@ -93,16 +111,9 @@ lemma toMeasure_apply₂ (μ : MassFunction α) (s : Set α) : μ.toMeasure s = 
   simp [toMeasure_apply, tsum_subtype]
 
 @[simp]
-lemma toMeasure_apply_singleton (μ : MassFunction α) (a : α) :
-    ∑' (i : α), ({a} : Set α).indicator μ i = μ a := by
+lemma toMeasure_apply_singleton (μ : MassFunction α) (a : α) : μ.toMeasure {a} = μ a := by
+  simp only [toMeasure_apply, Set.indicator.mul_indicator_eq]
   rw [← tsum_subtype, tsum_singleton]
-
-@[simp]
-lemma toMeasure_apply_singleton' (μ : MassFunction α) (a : α) : μ.toMeasure {a} = μ a := by
-  simp [toMeasure_apply]
-
-lemma toMeasure_singleton_eq (μ : MassFunction α) : (fun (a : α) ↦ μ.toMeasure {a}) = μ := by
-  simp [toMeasure_apply]
 
 theorem toMeasure_apply_eq_zero_iff {μ : MassFunction α} {s : Set α} :
     μ.toMeasure s = 0 ↔ Disjoint μ.support s := by
@@ -124,23 +135,9 @@ theorem toMeasure_apply_eq_of_inter_support_eq {μ : MassFunction α} {s t : Set
 to arbitrary ones. -/
 lemma toMeasure_additive (μ : MassFunction α) (s : δ → Set α) (hs : Pairwise (Disjoint on s)) :
     μ.toMeasure (⋃ d, s d) = ∑' (d : δ), μ.toMeasure (s d) := by
-  simp only [toMeasure_apply]
+  simp only [toMeasure_apply, Set.indicator.mul_indicator_eq]
   rw [ENNReal.tsum_comm]
-  apply tsum_congr (fun b ↦ ?_)
-  simp only [Set.indicator, Set.mem_iUnion]
-  by_cases h₀ : ∃ i, b ∈ s i <;> simp only [Set.mem_iUnion, h₀, ↓reduceIte, Pi.one_apply,
-    mul_one, mul_ite, mul_zero]
-  · obtain ⟨i, hi⟩ := h₀
-    rw [ENNReal.tsum_eq_add_tsum_ite i]
-    simp only [hi, ↓reduceIte]
-    nth_rw 1 [← add_zero (μ b)]
-    congr
-    apply (ENNReal.tsum_eq_zero.mpr ?_).symm
-    simp only [ite_eq_left_iff, ite_eq_right_iff]
-    exact fun j hj hb ↦ False.elim <| Disjoint.notMem_of_mem_left (hs (id (Ne.symm hj))) hi hb
-  · refine (ENNReal.tsum_eq_zero.mpr (fun j ↦ ?_)).symm
-    push_neg at h₀
-    simp [h₀ j]
+  exact tsum_congr (fun b ↦ Set.indicator_iUnion_of_disjoint s hs μ b)
 
 @[simp]
 theorem toMeasure_apply_finset {μ : MassFunction α} (s : Finset α) : μ.toMeasure s = ∑ x ∈ s, μ x
@@ -166,7 +163,7 @@ lemma toMeasure_apply_univ' (μ : MassFunction α) (s : δ → Set α) (hs₀ : 
 theorem toMeasure_injective : (toMeasure : MassFunction α → @Measure α ⊤).Injective := by
   intro μ ν h
   ext x
-  rw [← toMeasure_apply_singleton' μ, ← toMeasure_apply_singleton' ν, h]
+  rw [← toMeasure_apply_singleton μ, ← toMeasure_apply_singleton ν, h]
 
 @[simp]
 theorem toMeasure_inj {μ ν : MassFunction α} : μ.toMeasure = ν.toMeasure ↔ μ = ν :=
