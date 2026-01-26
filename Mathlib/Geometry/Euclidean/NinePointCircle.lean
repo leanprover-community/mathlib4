@@ -57,20 +57,34 @@ theorem ninePointCircle_center {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.center =
     ((n + 1) / n : ℝ) • (s.centroid -ᵥ s.circumcenter) +ᵥ s.circumcenter := rfl
 
+theorem ninePointCircle_center_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
+    s.ninePointCircle.center ∈ affineSpan ℝ (Set.range s.points) := by
+  rw [ninePointCircle_center]
+  refine AffineSubspace.vadd_mem_of_mem_direction ?_ s.circumcenter_mem_affineSpan
+  apply Submodule.smul_mem
+  exact AffineSubspace.vsub_mem_direction s.centroid_mem_affineSpan s.circumcenter_mem_affineSpan
+
 theorem ninePointCircle_radius {n : ℕ} (s : Simplex ℝ P n) :
     s.ninePointCircle.radius = s.circumradius / (n : ℝ) := rfl
 
-theorem faceOppositeCentroid_mem_ninePointCircle {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
+theorem faceOppositeCentroid_mem_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) : s.faceOppositeCentroid i ∈ s.ninePointCircle := by
   rw [mem_sphere, ninePointCircle_center, ninePointCircle_radius,
     ← dist_circumcenter_eq_circumradius' s i]
   simp_rw [dist_eq_norm_vsub]
-  rw [eq_div_iff_mul_eq (by simpa using hn.out), mul_comm]
+  rw [eq_div_iff_mul_eq (by simpa using NeZero.ne n), mul_comm]
   nth_rw 1 [show (n : ℝ) = ‖(n : ℝ)‖ by simp]
-  rw [← norm_smul]
-  rw [vsub_vadd_eq_vsub_sub, smul_sub, smul_smul, mul_div_cancel₀ _ (by simpa using hn.out)]
-  rw [add_smul, one_smul, ← sub_sub, ← smul_sub, vsub_sub_vsub_cancel_right]
-  rw [← centroid_vsub_point_eq_smul_vsub, vsub_sub_vsub_cancel_left]
+  rw [← norm_smul, vsub_vadd_eq_vsub_sub, smul_sub, smul_smul,
+    mul_div_cancel₀ _ (by simpa using NeZero.ne n), add_smul, one_smul, ← sub_sub, ← smul_sub,
+    vsub_sub_vsub_cancel_right, ← centroid_vsub_point_eq_smul_vsub, vsub_sub_vsub_cancel_left]
+
+theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex ℝ P n) :
+    s.ninePointCircle = s.medial.circumsphere := by
+  apply s.medial.circumsphere_unique_dist_eq.2
+  constructor
+  · simpa using s.ninePointCircle_center_mem_affineSpan
+  · rw [Set.range_subset_iff]
+    simpa [medial_points] using s.faceOppositeCentroid_mem_ninePointCircle
 
 /-- Euler points are a set of points that `ninePointCircle` passes through. It is defined as
 the $1/n$ of the way from the Monge point to a vertex. Specifically for triangle, this is the
@@ -104,8 +118,7 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
     suffices (2⁻¹ : ℝ) • (s.faceOppositeCentroid i -ᵥ s.centroid) +
         (2⁻¹ : ℝ) • (s.points i -ᵥ s.centroid) = 0 by
       simpa [circumcenter_eq_centroid, centroid]
-    rw [faceOppositeCentroid_vsub_centroid_eq_smul_vsub]
-    rw [← smul_add]
+    rw [faceOppositeCentroid_vsub_centroid_eq_smul_vsub, ← smul_add]
     exact (smul_eq_zero_of_right _ (by simp))
   have hltn : 1 < n := by
     have _ := hn.out
@@ -113,11 +126,11 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
   have hnsub1 : (n - 1 : ℕ) = (n : ℝ) - 1 := by
     push_cast [hltn]
     rfl
-  rw [vadd_vadd, vadd_vsub, vsub_vadd_eq_vsub_sub, smul_sub, sub_add, smul_smul, ← sub_smul]
-  rw [← sub_one_mul, show ((n : ℝ)⁻¹ - 1) = -(n - 1) / n by field [hn.out]]
-  rw [neg_div, neg_mul, hnsub1, div_mul_div_cancel₀' (by simpa [sub_eq_zero] using hn1)]
-  rw [neg_smul, sub_neg_eq_add, faceOppositeCentroid_eq_smul_vsub_vadd_point]
-  rw [← smul_add, vadd_vsub_assoc, add_add_add_comm, ← smul_add, vsub_add_vsub_cancel, ← add_assoc]
+  rw [vadd_vadd, vadd_vsub, vsub_vadd_eq_vsub_sub, smul_sub, sub_add, smul_smul, ← sub_smul,
+    ← sub_one_mul, show ((n : ℝ)⁻¹ - 1) = -(n - 1) / n by field [hn.out],
+    neg_div, neg_mul, hnsub1, div_mul_div_cancel₀' (by simpa [sub_eq_zero] using hn1),
+    neg_smul, sub_neg_eq_add, faceOppositeCentroid_eq_smul_vsub_vadd_point,
+    ← smul_add, vadd_vsub_assoc, add_add_add_comm, ← smul_add, vsub_add_vsub_cancel, ← add_assoc]
   push_cast
   have : (n : ℝ)⁻¹ • (s.centroid -ᵥ s.circumcenter) + (s.centroid -ᵥ s.circumcenter) =
       (((n + 1) / n : ℝ)) • (s.centroid -ᵥ s.circumcenter) := by
@@ -125,17 +138,17 @@ theorem midpoint_faceOppositeCentroid_eulerPoint {n : ℕ} [hn : NeZero n] (s : 
   rw [this, ← two_smul ℝ, smul_smul]
   norm_num
 
-theorem isDiameter_ninePointCircle {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
+theorem isDiameter_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) :
     s.ninePointCircle.IsDiameter (s.faceOppositeCentroid i) (s.eulerPoint i) where
   left_mem := s.faceOppositeCentroid_mem_ninePointCircle i
   midpoint_eq_center := s.midpoint_faceOppositeCentroid_eulerPoint i
 
-theorem eulerPoint_mem_ninePointCircle {n : ℕ} [hn : NeZero n] (s : Simplex ℝ P n)
+theorem eulerPoint_mem_ninePointCircle {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) : s.eulerPoint i ∈ s.ninePointCircle :=
   (s.isDiameter_ninePointCircle i).right_mem
 
-theorem orthoganolProjectionSpan_eulerPoint_mem_ninePointCircle {n : ℕ} [hn : NeZero n]
+theorem orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle {n : ℕ} [NeZero n]
     (s : Simplex ℝ P n) (i : Fin (n + 1)) :
     ((s.faceOpposite i).orthogonalProjectionSpan (s.eulerPoint i)).val ∈ s.ninePointCircle := by
   rw [← Sphere.thales_theorem (s.isDiameter_ninePointCircle i), orthogonalProjectionSpan]
@@ -153,13 +166,13 @@ theorem eulerPoint_eq_midPoint (s : Triangle ℝ P) (i : Fin 3) :
 
 theorem altitudeFoot_mem_ninePointCircle (s : Triangle ℝ P) (i : Fin 3) :
     s.altitudeFoot i ∈ s.ninePointCircle := by
-  convert s.orthoganolProjectionSpan_eulerPoint_mem_ninePointCircle i
+  convert s.orthogonalProjectionSpan_eulerPoint_mem_ninePointCircle i
   rw [Simplex.altitudeFoot]
   unfold Simplex.orthogonalProjectionSpan
   congr 1
-  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem]
-  rw [Simplex.points_vsub_eulerPoint, Submodule.smul_mem_iff _ (by norm_num)]
-  rw [← orthocenter_eq_mongePoint, direction_affineSpan, Simplex.range_faceOpposite_points]
+  rw [orthogonalProjection_eq_orthogonalProjection_iff_vsub_mem,
+    Simplex.points_vsub_eulerPoint, Submodule.smul_mem_iff _ (by norm_num),
+    ← orthocenter_eq_mongePoint, direction_affineSpan, Simplex.range_faceOpposite_points]
   refine Set.mem_of_mem_of_subset ?_ (s.vectorSpan_isOrtho_altitude_direction i).ge
   exact vsub_mem_direction (s.mem_altitude i) (s.orthocenter_mem_altitude)
 
