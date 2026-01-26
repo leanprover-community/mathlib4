@@ -113,9 +113,9 @@ theorem ninePointCircle_eq_circumsphere_medial {n : ℕ} [NeZero n] (s : Simplex
   · rw [Set.range_subset_iff]
     simpa [medial_points] using s.faceOppositeCentroid_mem_ninePointCircle
 
-/-- Euler points are a set of points that `ninePointCircle` passes through. It is defined as
-the $1/n$ of the way from the Monge point to a vertex. Specifically for triangle, this is the
-midpoint of the orthocenter and a vertex (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
+/-- Euler points are a set of points that the `ninePointCircle` passes through. They are defined as being
+$1/n$th of the way from the Monge point to a vertex. Specifically for triangles, these are the
+midpoints between the orthocenter and a given vertex (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
 def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
     (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
 
