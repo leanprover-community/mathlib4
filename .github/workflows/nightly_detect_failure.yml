@@ -112,12 +112,18 @@ jobs:
         import zulip
         client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
 
-        # Get the last message in the 'status updates' topic
+        # Get the last message from the bot in the 'status updates' topic.
+        # We narrow by sender to ignore human replies in between.
+        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
         request = {
           'anchor': 'newest',
           'num_before': 1,
           'num_after': 0,
-          'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib status updates'}],
+          'narrow': [
+            {'operator': 'stream', 'operand': 'nightly-testing'},
+            {'operator': 'topic', 'operand': 'Mathlib status updates'},
+            {'operator': 'sender', 'operand': bot_email}
+          ],
           'apply_markdown': False    # Otherwise the content test below fails.
         }
         response = client.get_messages(request)
@@ -355,20 +361,23 @@ jobs:
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
-            # Get recent messages in the 'Mathlib bump branch reminders' topic
-            # We fetch multiple messages to find the last bot message, ignoring human replies.
+            # Get the last message from the bot in the 'Mathlib bump branch reminders' topic.
+            # We narrow by sender to ignore human replies in between.
+            bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
             request = {
               'anchor': 'newest',
-              'num_before': 20,
+              'num_before': 1,
               'num_after': 0,
-              'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
+              'narrow': [
+                {'operator': 'stream', 'operand': 'nightly-testing'},
+                {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
+                {'operator': 'sender', 'operand': bot_email}
+              ],
               'apply_markdown': False    # Otherwise the content test below fails.
             }
             response = client.get_messages(request)
             messages = response['messages']
-            # Find the last message from the bot (ignoring human messages in between)
-            bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
-            last_bot_message = next((m for m in messages if m['sender_email'] == bot_email), None)
+            last_bot_message = messages[0] if messages else None
             bump_branch_suffix = bump_branch.replace('bump/', '')
             failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
             payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
