@@ -15,14 +15,11 @@ The `vecPerm` simproc computes the new entries of a vector after applying a perm
 
 -/
 
--- Turn this off since the only public thing in this module is the simproc declaration
-set_option linter.privateModule false
-
-meta section
+namespace FinVec
 
 open Lean Elab Meta Simp Qq
 
-namespace FinVec
+meta section
 
 /--
 Takes an expression representing a vector `Fin n → α` and returns the corresponding
@@ -82,6 +79,10 @@ def listOfVecFinQ (n : Q(ℕ)) (vn : ℕ) (perm : Q(Fin $n → Fin $n)) :
     catch _ =>
       return none
 
+end
+
+@[expose] public section
+
 /--
 The `vecPerm` simproc computes the new entries of a vector after applying a permutation to them.
 This can be used to simplify expressions as follows:
@@ -102,5 +103,7 @@ simproc_decl vecPerm (_ ∘ (_ : Fin _ → Fin _)) := fun e ↦ do
   let pf ← mkAppM ``Eq.symm #[pf]
   let result : Result := {expr := out, proof? := some pf}
   return Step.continue result
+
+end
 
 end FinVec
