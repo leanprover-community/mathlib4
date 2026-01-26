@@ -304,6 +304,11 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | refl : ReflGen r a a
   | single {b} : r a b → ReflGen r a b
 
+/-- The comparability relation `SymmGen r a b` means that either `r a b` or `r b a`. -/
+@[grind]
+def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
+  r a b ∨ r b a
+
 variable (r) in
 /-- `EqvGen r`: equivalence closure of `r`. -/
 @[mk_iff]
@@ -332,6 +337,50 @@ instance : Std.Refl (ReflGen r) :=
   ⟨@refl α r⟩
 
 end ReflGen
+
+namespace SymmGen
+
+theorem to_eqvGen : SymmGen r a b → EqvGen r a b
+  | .inl hab => .rel a b hab
+  | .inr hba => .symm b a (.rel b a hba)
+
+theorem of_rel (h : r a b) : SymmGen r a b :=
+  Or.inl h
+
+theorem of_rel_symm (h : r b a) : SymmGen r a b :=
+  Or.inr h
+
+theorem swap (h : SymmGen r b a) : SymmGen (swap r) a b := by
+  induction h with
+  | inl hba => exact of_rel hba
+  | inr hab => exact of_rel_symm hab
+
+@[simp, refl]
+theorem refl (r : α → α → Prop) [Std.Refl r] (a : α) : SymmGen r a a :=
+  .of_rel (_root_.refl _)
+
+theorem rfl [Std.Refl r] : SymmGen r a a := .refl ..
+
+instance [Std.Refl r] : Std.Refl (SymmGen r) where
+  refl := .refl r
+
+@[symm]
+theorem symm : SymmGen r a b → SymmGen r b a :=
+  Or.symm
+
+instance : Std.Symm (SymmGen r) where
+  symm _ _ := SymmGen.symm
+
+instance decidableRel [DecidableRel r] : DecidableRel (SymmGen r) :=
+  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
+
+theorem of_le [LE α] (h : a ≤ b) : SymmGen (· ≤ ·) a b := .of_rel h
+theorem of_ge [LE α] (h : b ≤ a) : SymmGen (· ≤ ·) a b := .of_rel_symm h
+
+alias _root_.LE.le.symmGen := SymmGen.of_le
+alias _root_.LE.le.symmGen_symm := SymmGen.of_ge
+
+end SymmGen
 
 namespace ReflTransGen
 
@@ -487,6 +536,28 @@ lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x 
 
 end reflGen
 
+section SymmGen 
+
+theorem symmGen_swap (r : α → α → Prop) : SymmGen (swap r) = SymmGen r :=
+  funext₂ fun _ _ ↦ propext or_comm
+
+theorem symmGen_swap_apply (r : α → α → Prop) : SymmGen (swap r) a b ↔ SymmGen r a b :=
+  or_comm
+
+theorem reflGen_symmGen_symmetric : Symmetric (ReflGen (SymmGen r))
+  | _, _, .refl => .refl
+  | _, _, .single (.inl h) => .single (.inr h)
+  | _, _, .single (.inr h) => .single (.inl h)
+
+theorem symmGen_comm {a b : α} : SymmGen r a b ↔ SymmGen r b a :=
+  comm
+
+@[simp]
+theorem symmGen_of_total [Std.Total r] (a b : α) : SymmGen r a b :=
+  Std.Total.total a b
+
+end SymmGen
+
 section TransGen
 
 instance : IsTrans α (TransGen r) :=
@@ -638,6 +709,26 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
     · exact TransGen.mono (fun _ _ ↦ .single) h
+
+@[simp, grind =]
+theorem reflTransGen_compRel : ReflTransGen (SymmGen r) = EqvGen r := by
+  ext a b
+  constructor
+  · intro h
+    induction h with
+    | refl => exact .refl _
+    | tail hab hbc ih =>
+      cases hbc with
+      | inl h => exact ih.trans _ _ _ (.rel _ _ h)
+      | inr h => exact ih.trans _ _ _ (.symm _ _ (.rel _ _ h))
+  · intro h
+    induction h with
+    | rel _ _ ih => exact .single (.inl ih)
+    | refl x => exact .refl
+    | symm x y eq ih =>
+      rw [symmGen_swap]
+      exact reflTransGen_swap.mp ih
+    | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
 
 @[simp, grind =] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
