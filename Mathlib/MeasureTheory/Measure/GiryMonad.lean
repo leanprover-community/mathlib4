@@ -272,7 +272,7 @@ theorem aemeasurable_bind {g : α → Measure β} {m : Measure (Measure α)}
   let ⟨f, hfm, hf⟩ := hg
   ⟨(bind · f), measurable_bind' hfm, (ae_ae_of_ae_join hf).mono fun _ ↦ bind_congr_right⟩
 
-theorem sum_bind {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
+theorem bind_sum {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
     (h : AEMeasurable f (sum fun i => m i)) :
     (sum fun (i : ι) ↦ m i).bind f = sum fun (i : ι) ↦ (m i).bind f := by
   simp_rw [bind, map_sum h, join_sum]
