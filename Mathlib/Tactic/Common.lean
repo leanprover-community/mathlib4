@@ -104,22 +104,23 @@ public import Mathlib.Tactic.ToFun
 public import Mathlib.Tactic.TermCongr
 -- TFAE imports `Mathlib/Data/List/TFAE.lean` and thence `Mathlib/Data/List/Basic.lean`.
 -- import Mathlib.Tactic.TFAE
-public meta import Mathlib.Tactic.ToExpr
-public meta import Mathlib.Tactic.ToLevel
-public meta import Mathlib.Tactic.Trace
-public meta import Mathlib.Tactic.TypeCheck
-public meta import Mathlib.Tactic.UnsetOption
-public meta import Mathlib.Tactic.Use
-public meta import Mathlib.Tactic.Variable
-public meta import Mathlib.Tactic.Widget.Calc
-public meta import Mathlib.Tactic.Widget.CongrM
-public meta import Mathlib.Tactic.Widget.Conv
-public meta import Mathlib.Tactic.Widget.LibraryRewrite
-public meta import Mathlib.Tactic.WLOG
-public meta import Mathlib.Util.CountHeartbeats
-public meta import Mathlib.Util.PrintSorries
-public meta import Mathlib.Util.TransImports
-public meta import Mathlib.Util.WhatsNew
+public import Mathlib.Tactic.ToExpr
+public import Mathlib.Tactic.ToLevel
+public import Mathlib.Tactic.Trace
+public import Mathlib.Tactic.TypeCheck
+public import Mathlib.Tactic.UnsetOption
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.Variable
+public import Mathlib.Tactic.Widget.Calc
+public import Mathlib.Tactic.Widget.CongrM
+public import Mathlib.Tactic.Widget.Conv
+public import Mathlib.Tactic.Widget.LibraryRewrite
+public import Mathlib.Tactic.WLOG
+public import Mathlib.Util.AssertExists
+public import Mathlib.Util.CountHeartbeats
+public import Mathlib.Util.PrintSorries
+public import Mathlib.Util.TransImports
+public import Mathlib.Util.WhatsNew
 
 /-!
 This file imports all tactics which do not have significant theory imports,
