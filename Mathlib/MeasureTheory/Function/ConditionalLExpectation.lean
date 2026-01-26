@@ -222,7 +222,7 @@ theorem condLExp_add_le (X Y : Ω → ℝ≥0∞) :
   apply ae_le_of_forall_setLIntegral_le_of_sigmaFinite (μ := P.trim hm) (by fun_prop)
   intro s hs _
   simp only [Pi.add_apply]
-  rw [lintegral_add_left (by measurability)]
+  rw [lintegral_add_left (by fun_prop)]
   repeat rw [setLIntegral_condLExp_trim hm _ _ hs]
   grw [le_lintegral_add]
   simp
