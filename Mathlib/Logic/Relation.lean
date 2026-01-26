@@ -469,6 +469,12 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
 
+theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
+  intro x y h
+  induction h with
+  | single i => exact .single (hr i)
+  | tail _ h₁ h₂ => exact .head (hr h₁) h₂
+
 end TransGen
 
 
