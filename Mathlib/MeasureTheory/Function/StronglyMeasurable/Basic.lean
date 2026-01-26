@@ -793,7 +793,7 @@ protected theorem _root_.IndexedPartition.stronglyMeasurable_piecewise {s : ι �
       fun x => ?_⟩
     simp [SimpleFunc.indexedPartitionPiecewise, IndexedPartition.piecewise_apply,
       StronglyMeasurable.tendsto_approx]
-  · simp only [not_finite_iff_infinite] at Fi
+  simp only [not_finite_iff_infinite] at Fi
     obtain ⟨e, -⟩ := exists_true_iff_nonempty.mpr (nonempty_equiv_of_countable (α := ℕ) (β := ι))
     have he := e.bijective
     classical
