@@ -2475,8 +2475,6 @@ public import Mathlib.CategoryTheory.Filtered.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Filtered.Small
 public import Mathlib.CategoryTheory.Filtration.Basic
-public import Mathlib.CategoryTheory.Filtration.InducedOnGr
-public import Mathlib.CategoryTheory.Filtration.Opposed
 public import Mathlib.CategoryTheory.FinCategory.AsType
 public import Mathlib.CategoryTheory.FinCategory.Basic
 public import Mathlib.CategoryTheory.FintypeCat
