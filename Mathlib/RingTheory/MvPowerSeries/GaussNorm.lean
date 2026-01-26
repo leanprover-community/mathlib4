@@ -45,6 +45,8 @@ variable {R F σ : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : σ → ℝ
 noncomputable def gaussNormC : ℝ :=
    ⨆ t : σ →₀ ℕ, v (coeff t f) * t.prod (c · ^ ·)
 
+/-- We say `f` HasGaussNorm if the values `v (coeff t f) * ∏ i : t.support, c i` is bounded above,
+  that is `gaussNormC f` is finite. -/
 abbrev HasGaussNorm := BddAbove (Set.range (fun (t : σ →₀ ℕ) ↦ (v (coeff t f) * t.prod (c · ^ ·))))
 
 @[simp]
