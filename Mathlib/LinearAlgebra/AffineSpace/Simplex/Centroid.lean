@@ -547,6 +547,19 @@ def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
 theorem medial_points [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.medial.points i = s.faceOppositeCentroid i := rfl
 
+theorem medial_reindex {m n : ℕ} [NeZero m] [NeZero n]
+    [CharZero k] (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).medial = s.medial.reindex e := by
+  ext i
+  simp [medial_points]
+
+theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] [CharZero k]
+    {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    (s.map f hf).medial = s.medial.map f hf := by
+  ext i
+  simp [medial_points]
+
 open Pointwise in
 @[simp]
 theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
@@ -569,6 +582,14 @@ theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
       faceOppositeCentroid_vsub_faceOppositeCentroid]
   congrm ∃ a b, ?_ = v
   simp [← smul_neg]
+
+theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).medial = s.medial.restrict S (s.affineSpan_range_medial ▸ hS) := by
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  ext i
+  simp [medial_points]
 
 end Simplex
 
