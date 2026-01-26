@@ -356,17 +356,6 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       rintro f g h ⟨k⟩ ⟨l⟩
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
-theorem inf_isPullback {A : C} (f g : Subobject A) :
-    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
-  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
-    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
-  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
-  · cat_disch
-  · ext
-    simp [s.condition]
-  · ext
-    simp [← h]
-
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf := fun m n => (inf.obj m).obj n
   inf_le_left := inf_le_left
@@ -389,6 +378,17 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+
+theorem inf_isPullback {A : C} (f g : Subobject A) :
+    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
+    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
+  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
+  · cat_disch
+  · ext
+    simp [s.condition]
+  · ext
+    simp [← h]
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩
