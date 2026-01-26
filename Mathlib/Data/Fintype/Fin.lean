@@ -64,7 +64,7 @@ theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : L
       hxs, List.count_cons, add_comm (ite (x = a) 1 0), beq_iff_eq]
 
 /--
-Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`), 
+Given a "downward-closed" predicate `p` on `Fin n` (which could be spelt `Antitone p`),
 then `p` holds for more than `j` elements iff it holds for `p` itself.
 -/
 theorem lt_card_iff_apply_of_imp {j : Fin n} (p : Fin n → Prop) [DecidablePred p]
