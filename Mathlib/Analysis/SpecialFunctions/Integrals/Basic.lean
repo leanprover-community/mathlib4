@@ -210,9 +210,8 @@ theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 @[simp]
 theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  rw [integral_deriv_eq_sub' _ deriv_log' (fun x hx => differentiableAt_log (h' x hx))
-      (continuousOn_inv₀.mono <| subset_compl_singleton_iff.mpr h),
-    log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
+  rw [integral_deriv_eq_sub' _ deriv_log' (differentiableOn_log.mono h')
+    (continuousOn_inv₀.mono h'), log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
 
 @[simp]
 theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
@@ -235,7 +234,7 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · exact fun _ _ => differentiableAt_exp
+  · exact differentiable_exp.differentiableOn
   · exact continuousOn_exp
 
 theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
@@ -246,7 +245,8 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
     rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
-  rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
+  rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv)
+    (fun x _ => (D x).differentiableAt.differentiableWithinAt)]
   · ring
   · fun_prop
 
@@ -310,14 +310,14 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
   · simp
-  · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
+  · exact differentiable_cos.neg.differentiableOn
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · simp only [differentiableAt_sin, implies_true]
+  · exact differentiable_sin.differentiableOn
   · exact continuousOn_cos
 
 theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
@@ -344,7 +344,7 @@ theorem integral_cos_sq_sub_sin_sq :
 
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan differentiable_arctan.differentiableOn
     (continuous_const.div ?_ fun x => ?_).continuousOn
   · fun_prop
   · nlinarith

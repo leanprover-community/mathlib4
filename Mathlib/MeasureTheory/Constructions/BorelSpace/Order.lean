@@ -554,6 +554,10 @@ theorem measurableSet_uIcc : MeasurableSet (uIcc a b) :=
 theorem measurableSet_uIoc : MeasurableSet (uIoc a b) :=
   measurableSet_Ioc
 
+@[measurability]
+theorem measurableSet_uIoo : MeasurableSet (uIoo a b) :=
+  measurableSet_Ioo
+
 variable [SecondCountableTopology α]
 
 @[fun_prop]

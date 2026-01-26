@@ -1144,12 +1144,20 @@ theorem integral_eq_sub_of_hasDerivAt_of_le (hab : a ≤ b) (hcont : ContinuousO
   integral_eq_sub_of_hasDeriv_right_of_le hab hcont (fun x hx => (hderiv x hx).hasDerivWithinAt)
     hint
 
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f'` within
+  `[a, b]` and `f'` is integrable on `[a, b]`, then `∫ y in a..b, f' y` equals `f b - f a`. -/
+theorem integral_eq_sub_of_hasDerivWithinAt
+    (hderiv : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) (uIcc a b) x)
+    (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a :=
+  integral_eq_sub_of_hasDeriv_right (fun x hx => HasDerivWithinAt.continuousWithinAt (hderiv x hx))
+    (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivAt
+      (Icc_mem_nhds (by simpa using hx.1) (by simpa using hx.2)) |>.hasDerivWithinAt) hint
+
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f' x` for all `x` in
   `[a, b]` and `f'` is integrable on `[a, b]`, then `∫ y in a..b, f' y` equals `f b - f a`. -/
 theorem integral_eq_sub_of_hasDerivAt (hderiv : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
     (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a :=
-  integral_eq_sub_of_hasDeriv_right (HasDerivAt.continuousOn hderiv)
-    (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivWithinAt) hint
+  integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt) hint
 
 theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hint : IntervalIntegrable f' volume a b)
@@ -1170,17 +1178,28 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
       filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
-/-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
+theorem integral_derivWithin_eq_sub (hderiv : DifferentiableOn ℝ f (uIcc a b))
+    (hint : IntervalIntegrable (derivWithin f (uIcc a b)) volume a b) :
+    ∫ y in a..b, derivWithin f (uIcc a b) y = f b - f a :=
+  integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt) hint
+
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable on `[a, b]` and
 its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
 
 See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
-theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
-    (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
-  integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
+theorem integral_deriv_eq_sub (hderiv : DifferentiableOn ℝ f (uIcc a b))
+    (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a := by
+  have ae_eq : deriv f =ᵐ[volume.restrict (uIoc a b)] derivWithin f (uIcc a b) := by
+    rw [ae_restrict_uIoc_eq, ← restrict_Ioo_eq_restrict_Ioc, ← restrict_Ioo_eq_restrict_Ioc,
+      ← ae_restrict_union_eq, ← Set.uIoo_eq_union]
+    apply ae_restrict_of_forall_mem measurableSet_uIoo
+    refine fun x hx => ((hderiv x (uIoo_subset_uIcc_self hx)).hasDerivWithinAt.hasDerivAt ?_).deriv
+    exact Icc_mem_nhds hx.1 hx.2
+  rw [intervalIntegral.integral_congr_ae_restrict ae_eq]
+  exact integral_derivWithin_eq_sub hderiv (hint.congr_ae ae_eq)
 
-theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
-    (hdiff : ∀ x ∈ uIcc a b, DifferentiableAt ℝ f x) (hcont : ContinuousOn f' (uIcc a b)) :
-    ∫ y in a..b, f' y = f b - f a := by
+theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f') (hdiff : DifferentiableOn ℝ f (uIcc a b))
+    (hcont : ContinuousOn f' (uIcc a b)) : ∫ y in a..b, f' y = f b - f a := by
   rw [← hderiv, integral_deriv_eq_sub hdiff]
   rw [hderiv]
   exact hcont.intervalIntegrable
@@ -1198,7 +1217,7 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsS
   have hderiv' (t) (ht : t ∈ Set.uIcc (0 : ℝ) 1) : HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t := by
     refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t <| .const_add _ ?_
     simp [hasDerivAt_iff_isLittleO, sub_smul]
-  convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
+  convert integral_eq_sub_of_hasDerivAt hderiv' hint using 1
   · simp_rw [← integral_smul, Function.comp_apply, γ]
   · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
