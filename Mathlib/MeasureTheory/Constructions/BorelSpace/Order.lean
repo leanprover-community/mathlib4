@@ -427,6 +427,17 @@ theorem borel_eq_generateFrom_Ioc (α : Type*) [TopologicalSpace α] [SecondCoun
     (@dense_univ α _).borel_eq_generateFrom_Ioc_mem_aux (fun _ _ => mem_univ _) fun _ _ _ _ =>
       mem_univ _
 
+theorem borel_eq_generateFrom_Ioc_le (α : Type*) [TopologicalSpace α] [SecondCountableTopology α]
+    [LinearOrder α] [OrderTopology α] :
+    borel α = .generateFrom { S : Set α | ∃ l u, l ≤ u ∧ Ioc l u = S } := by
+  apply le_antisymm
+  · rw [borel_eq_generateFrom_Ioc]
+    apply generateFrom_mono (by grind)
+  · apply generateFrom_le
+    rintro - ⟨u, v, -, rfl⟩
+    borelize α
+    exact measurableSet_Ioc
+
 namespace MeasureTheory.Measure
 
 /-- Two finite measures on a Borel space are equal if they agree on all closed-open intervals.  If
