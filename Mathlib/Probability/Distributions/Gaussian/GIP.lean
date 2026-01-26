@@ -1,18 +1,12 @@
 /-
-Gaussian integration by parts (Stein lemma), coordinate form.
-
-Target statement (centered case):
-  E[X_i * f(X)] = ∑ j, Cov(X_i, X_j) * E[∂_j f(X)]
-
-Blueprint structure:
-  1) 1D Stein lemma for gaussianReal on ℝ
-  2) nD identity-covariance case for product measure (iid standard normals)
-  3) general covariance via linear pushforward by a matrix A
-  4) optional corollary for random vectors using HasLaw
+Copyright (c) 2026 Shuta Nakajima. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Shuta Nakajima
 -/
+module
 
-import Mathlib.Probability.Distributions.Gaussian.Real
-import Mathlib.Probability.Distributions.Gaussian.Basic
+public import Mathlib.Probability.Distributions.Gaussian.Real
+
 import Mathlib.Probability.Moments.Covariance
 import Mathlib.Probability.Moments.CovarianceBilin
 import Mathlib.MeasureTheory.Integral.CompactlySupported
@@ -33,6 +27,25 @@ import Mathlib.Data.Fin.Tuple.Basic
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Mul
 import Mathlib.LinearAlgebra.Matrix.ToLin
+
+/-!
+# Gaussian integration by parts (Stein lemma)
+
+This file proves a coordinate form of the Gaussian integration-by-parts identity (Stein lemma).
+In the centered case, for a Gaussian random vector `X` with covariance matrix `Σ` and a compactly
+supported `C^1` function `f`, the identity reads
+
+`E[X i * f X] = ∑ j, Σ i j * E[∂_j f X]`.
+
+## Main results
+
+* `ProbabilityTheory.gaussianReal_ibp`: one-dimensional Stein lemma for `gaussianReal`.
+* `ProbabilityTheory.gaussianStd_ibp_coord`: identity-covariance case for `gaussianStd n`.
+* `ProbabilityTheory.gaussianLin_ibp_coord`: correlated case for `gaussianLin A`.
+
+-/
+
+@[expose] public section
 
 open scoped BigOperators
 open MeasureTheory
@@ -1060,31 +1073,3 @@ theorem gaussianLin_ibp_coord
 end
 
 end ProbabilityTheory
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
