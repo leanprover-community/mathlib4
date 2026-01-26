@@ -181,11 +181,11 @@ variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
   [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :
-    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by
-  refine isEquivalent_of_tendsto_one tendsto_nat_floor_div_atTop
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_floor_div_atTop
 
 theorem Asymptotics.isEquivalent_nat_ceil :
-    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) := by
-  refine isEquivalent_of_tendsto_one tendsto_nat_ceil_div_atTop
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) :=
+  isEquivalent_of_tendsto_one tendsto_nat_ceil_div_atTop
 
 end NormedLinearOrderedField

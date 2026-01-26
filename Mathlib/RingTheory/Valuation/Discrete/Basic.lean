@@ -132,7 +132,16 @@ instance : v.IsNontrivial := by
     intro y x
     specialize h1 x
     aesop
+  #adaptation_note
+  /-- Until nightly-2026-01-07, this was:
+  ```
   aesop (add safe forward [generator_lt_one, generator_zpowers_eq_valueGroup])
+  ```
+  -/
+  simp_all only [ne_eq]
+  have : generator v < 1 := generator_lt_one v
+  have : zpowers (generator v) = valueGroup v := generator_zpowers_eq_valueGroup v
+  simp_all only [zpowers_eq_bot, lt_self_iff_false]
 
 lemma valueGroup_genLTOne_eq_generator : (valueGroup v).genLTOne = generator v :=
   ((valueGroup v).genLTOne_unique (generator_lt_one v) (generator_zpowers_eq_valueGroup v)).symm
