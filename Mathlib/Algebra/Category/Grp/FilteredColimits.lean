@@ -60,7 +60,8 @@ abbrev G.mk : (Σ j, F.obj j) → G.{v, u} F :=
 theorem G.mk_eq (x y : Σ j, F.obj j)
     (h : ∃ (k : J) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2) :
     G.mk.{v, u} F x = G.mk F y :=
-  Quot.eqvGen_sound (Types.FilteredColimit.eqvGen_colimitTypeRel_of_rel (F ⋙ forget GrpCat) x y h)
+  Quot.eqvGen_sound _ _ <|
+    Types.FilteredColimit.eqvGen_colimitTypeRel_of_rel (F ⋙ forget GrpCat) x y h
 
 @[to_additive]
 theorem colimit_one_eq (j : J) : (1 : G.{v, u} F) = G.mk F ⟨j, 1⟩ :=
