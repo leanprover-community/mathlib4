@@ -714,7 +714,7 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
     · exact TransGen.mono (fun _ _ ↦ .single) h
 
 @[simp, grind =]
-theorem reflTransGen_compRel : ReflTransGen (SymmGen r) = EqvGen r := by
+theorem reflTransGen_symmGen : ReflTransGen (SymmGen r) = EqvGen r := by
   ext a b
   constructor
   · intro h
