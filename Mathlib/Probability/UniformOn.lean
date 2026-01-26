@@ -103,7 +103,7 @@ theorem isProbabilityMeasure_uniformOn {s : Set Ω} (hs : s.Finite) (hs' : s.Non
   · exact (Measure.count_apply_lt_top.2 hs).ne
 
 @[deprecated (since := "2026-01-26")]
-alias uniofmrOn_isProbabilityMeasure := isProbabilityMeasure_uniformOn
+alias uniformOn_isProbabilityMeasure := isProbabilityMeasure_uniformOn
 
 theorem uniformOn_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     uniformOn {ω} t = if ω ∈ t then 1 else 0 := by
