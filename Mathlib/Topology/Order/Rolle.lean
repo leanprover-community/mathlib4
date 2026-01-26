@@ -85,7 +85,7 @@ lemma exists_isLocalExtr_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo
 
 /-- A continuous function on an unordered closed interval with `f a = f b`
 takes either its maximum or its minimum value at a point in the interior of the interval. -/
-theorem exists_uIoo_isExtrOn_uIcc (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b)) 
+theorem exists_uIoo_isExtrOn_uIcc (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b))
     (hfI : f a = f b) :
     ∃ c ∈ uIoo a b, IsExtrOn f (uIcc a b) c :=
   exists_Ioo_extr_on_Icc (by simp [hab.symm]) hfc (by grind)
