@@ -121,7 +121,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     apply hw.ne'
     have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by omega
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by lia
     rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h
@@ -199,4 +199,17 @@ entries. -/
 theorem antitone_pair_of_not_sorted (h : f ≠ f ∘ sort f) : ∃ i j, i < j ∧ f j < f i :=
   antitone_pair_of_not_sorted' (id h : f ∘ Equiv.refl _ ≠ _)
 
+/-- The sorted version of a permutation `σ` is its inverse `σ⁻¹`. -/
+@[simp]
+theorem sort_perm (σ : Equiv.Perm (Fin n)) :
+    sort σ = σ⁻¹ := by
+  apply (eq_sort_iff.2 ⟨?_ , ?_⟩).symm
+  · simpa using monotone_id
+  · intro _ _ hij h
+    exact (hij.ne (by simpa using h)).elim
+
 end Tuple
+
+theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
+    Monotone σ ↔ σ = 1 := by
+  rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]

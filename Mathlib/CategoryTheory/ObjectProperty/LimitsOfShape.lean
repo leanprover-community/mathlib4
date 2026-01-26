@@ -45,7 +45,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C : Type*} [Category* C] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -108,7 +108,7 @@ def toStructuredArrow
     {X : C} (p : P.LimitOfShape J X) :
     J ⥤ StructuredArrow X P.ι where
   obj j := StructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.π.app j)
-  map f := StructuredArrow.homMk (by exact p.diag.map f)
+  map f := StructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
     (by simpa using (p.π.naturality f).symm)
 
 end LimitOfShape

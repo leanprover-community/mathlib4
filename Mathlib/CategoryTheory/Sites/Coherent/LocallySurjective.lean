@@ -29,7 +29,7 @@ and extensive topologies.
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
 
-@[expose] public section
+public section
 
 universe w
 
@@ -37,7 +37,7 @@ open CategoryTheory Sheaf Limits Opposite
 
 namespace CategoryTheory
 
-variable {C : Type*} (D : Type*) [Category C] [Category D] {FD : D → D → Type*} {CD : D → Type w}
+variable {C : Type*} (D : Type*) [Category* C] [Category* D] {FD : D → D → Type*} {CD : D → Type w}
   [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
 
 lemma regularTopology.isLocallySurjective_iff [Preregular C] {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G) :

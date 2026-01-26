@@ -42,14 +42,14 @@ noncomputable def singleFunctors : SingleFunctors C (CochainComplex C ℤ) ℤ w
   shiftIso n a a' ha' := NatIso.ofComponents
     (fun X => Hom.isoOfComponents
       (fun i => eqToIso (by
-        obtain rfl : a' = a + n := by omega
+        obtain rfl : a' = a + n := by lia
         by_cases h : i = a
         · subst h
           simp only [Functor.comp_obj, shiftFunctor_obj_X', single_obj_X_self]
         · dsimp [single]
-          rw [if_neg h, if_neg (fun h' => h (by omega))])))
+          rw [if_neg h, if_neg (fun h' => h (by lia))])))
     (fun {X Y} f => by
-      obtain rfl : a' = a + n := by omega
+      obtain rfl : a' = a + n := by lia
       ext
       simp [single])
   shiftIso_zero a := by
@@ -91,6 +91,19 @@ instance (n : ℤ) : (singleFunctor C n).Faithful :=
   inferInstanceAs (single _ _ _).Faithful
 
 end CochainComplex
+
+section
+
+variable {C} {D : Type u'} [Category.{v'} D] [Abelian D]
+variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+
+/-- `CochainComplex.singleFunctor` commutes with `F` and `F.mapHomologicalComplex`. -/
+noncomputable def CategoryTheory.Functor.mapCochainComplexSingleFunctor (n : ℤ) :
+    CochainComplex.singleFunctor C n ⋙ F.mapHomologicalComplex (ComplexShape.up ℤ) ≅
+      F ⋙ CochainComplex.singleFunctor D n :=
+  HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n
+
+end
 
 namespace HomotopyCategory
 

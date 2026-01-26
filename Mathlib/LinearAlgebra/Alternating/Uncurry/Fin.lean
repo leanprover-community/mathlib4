@@ -190,10 +190,9 @@ theorem alternatizeUncurryFin_alternatizeUncurryFinLM_comp_apply
         (-1 : ℤ) ^ (i + j : ℕ) •
           (f (v i.castSucc) (v j.succ) (j.removeNth <| i.castSucc.removeNth v) -
             f (v j.succ) (v i.castSucc) (j.removeNth <| i.castSucc.removeNth v)) := by
-  simp? [alternatizeUncurryFin_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add] says
-    simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
-      alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, coe_castSucc,
-      val_succ]
+  simp only [alternatizeUncurryFin_apply, Int.reduceNeg, LinearMap.coe_comp, comp_apply,
+    alternatizeUncurryFinLM_apply, Finset.smul_sum, sum_sum_eq_sum_triangle_add, val_castSucc,
+    val_succ]
   refine Fintype.sum_congr _ _ fun i ↦ Finset.sum_congr rfl fun j hj ↦ ?_
   rw [Finset.mem_Ici] at hj
   have H₁ : i.castSucc.removeNth v j = v j.succ := by
