@@ -3,8 +3,10 @@ Copyright (c) 2024 Raghuram Sundararajan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raghuram Sundararajan
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Ext
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Ext
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -26,6 +28,8 @@ sometimes we don't need them to prove extensionality.
 ## Tags
 semiring, ring, extensionality
 -/
+
+public section
 
 local macro:max "local_hAdd[" type:term ", " inst:term "]" : term =>
   `(term| (letI := $inst; HAdd.hAdd : $type → $type → $type))
@@ -222,7 +226,7 @@ TODO consider relocating these lemmas. -/
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
-    | ofNat n => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n => rewrite [Int.ofNat_eq_natCast, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr

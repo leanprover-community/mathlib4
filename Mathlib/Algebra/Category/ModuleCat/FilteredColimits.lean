@@ -3,8 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -19,6 +21,8 @@ functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In 
 implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -126,7 +130,7 @@ instance colimitModule : Module R (M F) :=
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j), colimit_smul_mk_eq, smul_add,
       colimit_add_mk_eq _ ⟨i, _⟩ ⟨j, _⟩ (max' i j) (IsFiltered.leftToMax i j)
-      (IsFiltered.rightToMax i j), LinearMap.map_smul, LinearMap.map_smul]
+      (IsFiltered.rightToMax i j), map_smul, map_smul]
   add_smul r s x := by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x
     simp [_root_.add_smul, colimit_add_mk_eq'] }

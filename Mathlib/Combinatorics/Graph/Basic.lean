@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-!
 # Multigraphs
@@ -60,6 +62,8 @@ Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` t
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
 If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
 
@@ -218,11 +222,11 @@ lemma Inc.inc_other (h : G.Inc e x) : G.Inc e h.other :=
 
 lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
     x = y ∨ x = z ∨ y = z := by
-  by_contra! hcon
+  by_contra! ⟨hxy, hxz, hyz⟩
   obtain ⟨x', hx'⟩ := hx
-  obtain rfl := hy.eq_of_isLink_of_ne_left hx' hcon.1.symm
-  obtain rfl := hz.eq_of_isLink_of_ne_left hx' hcon.2.1.symm
-  exact hcon.2.2 rfl
+  obtain rfl := hy.eq_of_isLink_of_ne_left hx' hxy.symm
+  obtain rfl := hz.eq_of_isLink_of_ne_left hx' hxz.symm
+  exact hyz rfl
 
 /-- `G.IsLoopAt e x` means that both ends of the edge `e` are equal to the vertex `x`. -/
 def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x

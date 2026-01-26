@@ -102,7 +102,7 @@ Group Theory:
     signature: 'Equiv.Perm.sign'
     alternating group: 'alternatingGroup'
   Classical automorphism groups:
-    general linear group: 'LinearMap.GeneralLinearGroup'
+    general linear group: 'Matrix.GeneralLinearGroup'
     special linear group: 'Matrix.SpecialLinearGroup'
     orthogonal group: 'Matrix.orthogonalGroup'
     special orthogonal group: 'https://en.wikipedia.org/wiki/Orthogonal_group#SO(n)'
@@ -377,7 +377,7 @@ Single Variable Complex Analysis:
     power series expansion of elementary functions:
       cos: 'Complex.hasSum_cos'
       sin: 'Complex.hasSum_sin'
-      log: ''
+      log: 'Complex.hasSum_taylorSeries_log'
   Functions on one complex variable:
     holomorphic functions: 'DifferentiableOn'
     Cauchy-Riemann conditions: ''
@@ -409,7 +409,7 @@ Topology:
     continuous functions: 'Continuous'
     homeomorphisms: 'Homeomorph'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
-    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'UniformSpace.isCompact_iff_isSeqCompact'
+    sequential compactness is equivalent to compactness (Bolzano-Weierstrass): 'isCompact_iff_isSeqCompact'
     connectedness: 'ConnectedSpace'
     connected components: 'connectedComponent'
     path connectedness: 'IsPathConnected'
@@ -534,10 +534,10 @@ Measures and integral calculus:
     Dirichlet theorem: ''
     Fejer theorem: ''
     Parseval theorem: 'tsum_sq_fourierCoeff'
-    Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral_eq'
-    Fourier transform on $\mathrm{L}^2(\R^d)$: ''
+    Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourier_eq'
+    Fourier transform on $\mathrm{L}^2(\R^d)$: 'MeasureTheory.Lp.fourierTransformₗᵢ'
     Plancherel’s theorem: 'SchwartzMap.integral_inner_fourier_fourier'
-    Fourier inversion formula: 'Continuous.fourier_inversion'
+    Fourier inversion formula: 'Continuous.fourierInv_fourier_eq'
 
 # 11.
 Probability Theory:
@@ -586,13 +586,13 @@ Probability Theory:
 # 12.
 Distribution calculus:
   Spaces $\mathcal{D}(\R^d)$:
-    smooth functions with compact support on $\R^d$: ''
+    smooth functions with compact support on $\R^d$: 'TestFunction'
     stability by derivation: ''
     stability by multiplication by a smooth function: ''
     partitions of unity: ''
     constructing approximations of probability density functions in spaces of common functions (trig, exp, rational, log, etc): ''
   Distributions on $\R^d$:
-    definition of distributions: ''
+    definition of distributions: 'Distribution'
     locally integrable functions as distributions: ''
     derivative of a distribution: ''
     Dirac measures: ''
@@ -608,21 +608,21 @@ Distribution calculus:
     stability by multiplication by a slowly growing smooth function: 'SchwartzMap.bilinLeftCLM'
     Gaussian functions: ''
     Fourier transforms on $\mathcal{S}(\R^d)$: 'SchwartzMap.fourierTransformCLM'
-    convolution of two functions of $\mathcal{S}(\R^d)$: ''
+    convolution of two functions of $\mathcal{S}(\R^d)$: 'SchwartzMap.convolution'
   Tempered distributions:
-    definition: ''
-    derivation of tempered distributions: ''
-    multiplication by a function $C^\infty$ of slow growth: ''
+    definition: 'TemperedDistribution'
+    derivation of tempered distributions: 'TemperedDistribution.instLineDeriv'
+    multiplication by a function $C^\infty$ of slow growth: 'TemperedDistribution.smulLeftCLM'
     $L^2$ functions and Riesz representation: ''
-    $L^p$ functions: ''
+    $L^p$ functions: 'MeasureTheory.Lp.toTemperedDistributionCLM'
     periodic functions: ''
     Dirac comb: ''
-    Fourier transforms: ''
-    inverse Fourier transform: ''
+    Fourier transforms: 'TemperedDistribution.fourierTransformCLM'
+    inverse Fourier transform: 'TemperedDistribution.fourierTransformInvCLM'
     Fourier transform and derivation: ''
     Fourier transform and convolution product: ''
   Applications:
-    Poisson’s formula: 'SchwartzMap.tsum_eq_tsum_fourierIntegral'
+    Poisson’s formula: 'SchwartzMap.tsum_eq_tsum_fourier'
     using convolution and Fourier-Laplace transform to solve one-dimensional linear differential equations: ''
     weak solution of partial derivative equation: ''
     fundamental solution of the Laplacian: ''

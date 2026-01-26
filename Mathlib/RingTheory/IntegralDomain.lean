@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Fintype.Inv
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Fintype.Inv
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -28,6 +30,8 @@ is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 integral domain, finite integral domain, finite field
 -/
 
+@[expose] public section
+
 section
 
 open Finset Polynomial Function
@@ -35,26 +39,28 @@ open Finset Polynomial Function
 section CancelMonoidWithZero
 
 -- There doesn't seem to be a better home for these right now
-variable {M : Type*} [CancelMonoidWithZero M] [Finite M]
+variable {M : Type*} [MonoidWithZero M] [Finite M]
 
-theorem mul_right_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => a * b :=
+theorem mul_right_bijective_of_finite₀ [IsLeftCancelMulZero M] {a : M} (ha : a ≠ 0) :
+    Bijective fun b => a * b :=
   Finite.injective_iff_bijective.1 <| mul_right_injective₀ ha
 
-theorem mul_left_bijective_of_finite₀ {a : M} (ha : a ≠ 0) : Bijective fun b => b * a :=
+theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a ≠ 0) :
+    Bijective fun b => b * a :=
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
 /-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
-def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [DecidableEq M] [Fintype M]
-    [Nontrivial M] : GroupWithZero M :=
+def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
+    [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
-    ‹CancelMonoidWithZero M› with
+    ‹MonoidWithZero M› with
     inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
     mul_inv_cancel := fun a ha => by
       simp only [dif_neg ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
 
-theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
+theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R]
     [GCDMonoid R] [Subsingleton Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
   refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
@@ -64,7 +70,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
     (dvd_mul_of_dvd_right (gcd_dvd_right _ _) _)
 
 nonrec
-theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R] [IsDomain R]
+theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiring R]
     [GCDMonoid R] [Subsingleton Rˣ] {n : ℕ} {c : R} {s : Finset ι} {f : ι → R}
     (h : ∀ i ∈ s, ∀ j ∈ s, i ≠ j → IsCoprime (f i) (f j))
     (hprod : ∏ i ∈ s, f i = c ^ n) : ∀ i ∈ s, ∃ d : R, f i = d ^ n := by
@@ -83,13 +89,11 @@ variable {R : Type*} {G : Type*}
 
 section Ring
 
-variable [Ring R] [IsDomain R] [Fintype R]
-
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib/RingTheory/LittleWedderburn.lean`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
-  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
+  __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
@@ -183,7 +187,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
-      fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
+      fun h => hx1 (Subtype.ext (Units.ext (sub_eq_zero.1 h)))
     let c := #{g | f.toHomUnits g = 1}
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl

@@ -3,10 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -27,6 +29,8 @@ left with angle less than `π`.
 * https://planetmath.org/proofofabelslimittheorem
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
+
+@[expose] public section
 
 
 open Filter Finset
@@ -62,7 +66,7 @@ theorem nhdsWithin_lt_le_nhdsWithin_stolzSet {M : ℝ} (hM : 1 < M) :
     (tendsto_nhdsWithin_of_tendsto_nhds <| ofRealCLM.continuous.tendsto' 1 1 rfl) ?_
   simp only [eventually_iff, mem_nhdsWithin]
   refine ⟨Set.Ioo 0 2, isOpen_Ioo, by simp, fun x hx ↦ ?_⟩
-  simp only [Set.mem_inter_iff, Set.mem_Ioo, Set.mem_Iio] at hx
+  push _ ∈ _ at hx
   simp only [Set.mem_setOf_eq, stolzSet, ← ofReal_one, ← ofReal_sub, norm_real,
     norm_of_nonneg hx.1.1.le, norm_of_nonneg <| (sub_pos.mpr hx.2).le]
   exact ⟨hx.2, lt_mul_left (sub_pos.mpr hx.2) hM⟩

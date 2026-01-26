@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-import Mathlib.Topology.LocalAtTarget
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.RingTheory.RingHom.Surjective
+public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Morphisms surjective on stalks
@@ -19,6 +21,8 @@ if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a
 `X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
 
+@[expose] public section
+
 open CategoryTheory CategoryTheory.Limits Topology
 
 namespace AlgebraicGeometry
@@ -30,12 +34,13 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 /-- The class of morphisms `f : X ⟶ Y` between schemes such that
 `𝒪_{Y, f x} ⟶ 𝒪_{X, x}` is surjective for all `x : X`. -/
 @[mk_iff]
-class SurjectiveOnStalks : Prop where
-  surj_on_stalks : ∀ x, Function.Surjective (f.stalkMap x)
+class SurjectiveOnStalks (f : X ⟶ Y) : Prop where
+  stalkMap_surjective (f) : ∀ x, Function.Surjective (f.stalkMap x)
 
-theorem Scheme.Hom.stalkMap_surjective (f : X.Hom Y) [SurjectiveOnStalks f] (x) :
-    Function.Surjective (f.stalkMap x) :=
-  SurjectiveOnStalks.surj_on_stalks x
+alias Scheme.Hom.stalkMap_surjective := SurjectiveOnStalks.stalkMap_surjective
+
+@[deprecated (since := "2026-01-20")]
+alias SurjectiveOnStalks.surj_on_stalks := Scheme.Hom.stalkMap_surjective
 
 namespace SurjectiveOnStalks
 
@@ -47,7 +52,7 @@ instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   comp_mem {X Y Z} f g hf hg := by
     refine ⟨fun x ↦ ?_⟩
     rw [Scheme.Hom.stalkMap_comp]
-    exact (hf.surj_on_stalks x).comp (hg.surj_on_stalks (f x))
+    exact (f.stalkMap_surjective x).comp (g.stalkMap_surjective (f x))
 
 instance comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [SurjectiveOnStalks f]
     [SurjectiveOnStalks g] : SurjectiveOnStalks (f ≫ g) :=
@@ -101,7 +106,7 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f) : Mon
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :
-    IsEmbedding (fun x ↦ (pullback.fst f g x, pullback.snd f g x)) := by
+    IsEmbedding fun x ↦ (pullback.fst f g x, pullback.snd f g x) := by
   let L := (fun x ↦ (pullback.fst f g x, pullback.snd f g x))
   have H : ∀ R A B (f' : Spec A ⟶ Spec R) (g' : Spec B ⟶ Spec R) (iX : Spec A ⟶ X)
       (iY : Spec B ⟶ Y) (iS : Spec R ⟶ S) (e₁ e₂), IsOpenImmersion iX → IsOpenImmersion iY →

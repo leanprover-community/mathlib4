@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Tactic.Abel
 
 /-!
 # Unitization of a non-unital algebra
@@ -53,6 +55,8 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 * prove the unitization operation is a functor between the appropriate categories
 * prove the image of the coercion is an essential ideal, maximal if scalars are a field.
 -/
+
+@[expose] public section
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
@@ -568,7 +572,7 @@ instance instAlgebra : Algebra S (Unitization R A) where
     induction x with
     | inl_add_inr =>
       change _ = inl (algebraMap S R s) * _
-      rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
+      rw [mul_add, smul_add, Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
         smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=

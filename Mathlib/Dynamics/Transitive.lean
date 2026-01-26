@@ -3,7 +3,9 @@ Copyright (c) 2025 Daniel Figueroa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Figueroa
 -/
-import Mathlib.Dynamics.Minimal
+module
+
+public import Mathlib.Dynamics.Minimal
 
 /-!
 # Topologically transitive monoid actions
@@ -17,6 +19,8 @@ and prove basic facts about topologically transitive actions.
 
 group action, topologically transitive
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise

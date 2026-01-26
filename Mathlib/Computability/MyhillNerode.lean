@@ -3,8 +3,10 @@ Copyright (c) 2024 Google. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Wong
 -/
-import Mathlib.Computability.DFA
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Computability.DFA
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Myhill–Nerode theorem
@@ -20,6 +22,8 @@ there are finitely many such states.
 
 * <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
 -/
+
+@[expose] public section
 
 universe u v
 variable {α : Type u} {σ : Type v} {L : Language α}

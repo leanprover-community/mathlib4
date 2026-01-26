@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # (Co)limit presentations
@@ -27,6 +29,8 @@ presentation of a colimit of objects that are equipped with presentations.)
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
 
+@[expose] public section
+
 universe s t w v u
 
 namespace CategoryTheory.Limits
@@ -48,6 +52,11 @@ variable {J : Type w} [Category.{t} J] {X : C}
 namespace ColimitPresentation
 
 initialize_simps_projections ColimitPresentation (-isColimit)
+
+@[reassoc]
+lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
+    pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
+  simp
 
 /-- The cocone associated to a colimit presentation. -/
 abbrev cocone (pres : ColimitPresentation J X) : Cocone pres.diag :=
@@ -76,7 +85,7 @@ noncomputable def colimit (F : J ⥤ C) [HasColimit F] :
 colimit presentations of `F(X)`. -/
 @[simps]
 noncomputable
-def map (P : ColimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
+def map (P : ColimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesColimitsOfShape J F] : ColimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   ι := Functor.whiskerRight P.ι F ≫ (F.constComp _ _).hom
@@ -101,7 +110,7 @@ def ofIso (P : ColimitPresentation J X) {Y : C} (e : X ≅ Y) : ColimitPresentat
 /-- Change the index category of a colimit presentation. -/
 @[simps]
 noncomputable
-def reindex (P : ColimitPresentation J X) {J' : Type*} [Category J'] (F : J' ⥤ J) [F.Final] :
+def reindex (P : ColimitPresentation J X) {J' : Type*} [Category* J'] (F : J' ⥤ J) [F.Final] :
     ColimitPresentation J' X where
   diag := F ⋙ P.diag
   ι := F.whiskerLeft P.ι
@@ -124,6 +133,11 @@ variable {J : Type w} [Category.{t} J] {X : C}
 namespace LimitPresentation
 
 initialize_simps_projections LimitPresentation (-isLimit)
+
+@[reassoc]
+lemma w (pres : LimitPresentation J X) {i j : J} (f : i ⟶ j) :
+    pres.π.app i ≫ pres.diag.map f = pres.π.app j := by
+  simpa using (pres.π.naturality f).symm
 
 /-- The cone associated to a limit presentation. -/
 abbrev cone (pres : LimitPresentation J X) : Cone pres.diag :=
@@ -152,7 +166,7 @@ noncomputable def limit (F : J ⥤ C) [HasLimit F] :
 limit presentations of `F(X)`. -/
 @[simps]
 noncomputable
-def map (P : LimitPresentation J X) {D : Type*} [Category D] (F : C ⥤ D)
+def map (P : LimitPresentation J X) {D : Type*} [Category* D] (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : LimitPresentation J (F.obj X) where
   diag := P.diag ⋙ F
   π := (F.constComp _ _).inv ≫ Functor.whiskerRight P.π F
@@ -177,7 +191,7 @@ def ofIso (P : LimitPresentation J X) {Y : C} (e : X ≅ Y) : LimitPresentation 
 /-- Change the index category of a limit presentation. -/
 @[simps]
 noncomputable
-def reindex (P : LimitPresentation J X) {J' : Type*} [Category J'] (F : J' ⥤ J) [F.Initial] :
+def reindex (P : LimitPresentation J X) {J' : Type*} [Category* J'] (F : J' ⥤ J) [F.Initial] :
     LimitPresentation J' X where
   diag := F ⋙ P.diag
   π := F.whiskerLeft P.π

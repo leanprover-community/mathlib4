@@ -3,8 +3,10 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.ZPow
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Logarithmic Derivatives
@@ -13,6 +15,8 @@ We define the logarithmic derivative of a function `f` as `deriv f / f`. We then
 facts about this, including how it changes under multiplication and composition.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -83,7 +87,7 @@ lemma logDeriv_fun_zpow {f : 𝕜 → 𝕜'} {x : 𝕜} (hdf : DifferentiableAt 
   rcases eq_or_ne n 0 with rfl | hn; · simp
   rcases eq_or_ne (f x) 0 with hf | hf
   · simp [logDeriv_apply, zero_zpow, *]
-  · rw [logDeriv_apply, ← comp_def (·^n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
+  · rw [logDeriv_apply, ← comp_def (· ^ n), deriv_comp _ (differentiableAt_zpow.2 <| .inl hf) hdf,
       deriv_zpow, logDeriv_apply]
     simp [field, zpow_sub_one₀ hf]
 

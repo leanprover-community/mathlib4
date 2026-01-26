@@ -3,10 +3,12 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Analysis.ODE.Gronwall
-import Mathlib.Analysis.ODE.PicardLindelof
-import Mathlib.Geometry.Manifold.IntegralCurve.Transform
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Analysis.ODE.Gronwall
+public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves
@@ -41,6 +43,8 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 
 integral curve, vector field, local existence, uniqueness
 -/
+
+public section
 
 open scoped Topology
 
@@ -278,7 +282,6 @@ lemma IsMIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     (hγ : IsMIntegralCurve γ v)
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (heq : γ a = γ b) : Periodic γ (a - b) := by
-  intro t
   apply congrFun <|
     isMIntegralCurve_Ioo_eq_of_contMDiff_boundaryless (t₀ := b) hv (hγ.comp_add _) hγ _
   rw [comp_apply, add_sub_cancel, heq]

@@ -3,10 +3,12 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.QuotSMulTop
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 # Lemmas about the `IsSMulRegular` Predicate
@@ -23,6 +25,8 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 
 module, regular element, commutative algebra
 -/
+
+public section
 
 section Congr
 
@@ -63,11 +67,6 @@ lemma IsSMulRegular.rTensor : IsSMulRegular (M' ⊗[R] M) r :=
   h1.subst (Module.Flat.rTensor_preserves_injective_linearMap _ h)
 
 end TensorProduct
-
-lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
-    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
-  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
 
 section Ring
 
@@ -162,9 +161,9 @@ variable {r}
 
 lemma IsSMulRegular.isSMulRegular_on_quot_iff_smul_top_inf_eq_smul :
     IsSMulRegular M r → (IsSMulRegular (M ⧸ N) r ↔ r • ⊤ ⊓ N ≤ r • N) := by
-  intro (h : Function.Injective (DistribMulAction.toLinearMap R M r))
+  intro (h : Function.Injective (DistribSMul.toLinearMap R M r))
   rw [isSMulRegular_on_quot_iff_lsmul_comap_le, ← map_le_map_iff_of_injective h,
-    ← LinearMap.lsmul_eq_DistribMulAction_toLinearMap,
+    ← LinearMap.lsmul_eq_distribSMultoLinearMap,
     map_comap_eq, LinearMap.range_eq_map]; rfl
 
 lemma isSMulRegular_of_ker_lsmul_eq_bot

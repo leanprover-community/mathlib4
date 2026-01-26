@@ -3,13 +3,15 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.WellFounded
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.Order.WellFounded
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # The `n`th Number Satisfying a Predicate
@@ -42,6 +44,8 @@ There has been some discussion on the subject of whether both of `nth` and
 Future work should address how lemmas that use these should be written.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -315,7 +319,7 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     rintro b ⟨hb, h⟩
     rcases hsurj hb with ⟨m, hm, rfl⟩
     apply hmono hn hm
-    rw [Nat.succ_le]
+    rw [Nat.succ_le_iff]
     apply hmono.reflect_lt <;> grind
 
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/

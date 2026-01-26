@@ -3,13 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Piecewise
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.Curry
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Piecewise
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -34,6 +37,8 @@ neighborhood filters and so on.
 product, subspace, quotient space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -239,13 +244,33 @@ theorem nhds_ne_subtype_neBot_iff {S : Set X} {x : S} :
 
 end Top
 
+section IsDiscrete
+
+variable {X : Type*} [TopologicalSpace X] {s : Set X}
+
+/-- A subset `s` is **discrete** if the corresponding subtype (with the subspace topology) is a
+discrete space. -/
+structure IsDiscrete (s : Set X) : Prop where
+  to_subtype : DiscreteTopology ↥s
+
+lemma isDiscrete_iff_discreteTopology : IsDiscrete s ↔ DiscreteTopology s :=
+  ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
+
+lemma SetLike.isDiscrete_iff_discreteTopology {S : Type*} [SetLike S X] {s : S} :
+    IsDiscrete (s : Set X) ↔ DiscreteTopology s :=
+  ⟨fun s ↦ s.to_subtype, fun s ↦ ⟨s⟩⟩
+
+lemma DiscreteTopology.isDiscrete [DiscreteTopology s] : IsDiscrete s := ⟨inferInstance⟩
+
+end IsDiscrete
+
 /-- A type synonym equipped with the topology whose open sets are the empty set and the sets with
 finite complements. -/
 def CofiniteTopology (X : Type*) := X
 
 namespace CofiniteTopology
 
-/-- The identity equivalence between `` and `CofiniteTopology `. -/
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
 def of : X ≃ CofiniteTopology X :=
   Equiv.refl X
 
@@ -436,6 +461,17 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtype_val.continuousAt
 
+/-- The induced homeomorphism between two equal subtypes of a given topological space:
+the underlying equivalence is `Equiv.subtypeEquivProp`. -/
+def Homeomorph.ofEqSubtypes {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ Subtype q where
+  toEquiv := Equiv.subtypeEquivProp hpq
+  continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+  continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+
+@[simp]
+lemma Homeomorph.ofEqSubtypes_toEquiv {p q : X → Prop} (hpq : p = q) :
+    (Homeomorph.ofEqSubtypes hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
+
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
   rfl
@@ -550,10 +586,19 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   isClosed_range := by rwa [range_inclusion]
 
 /-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
-by `X`on `s` is discrete, then also the topology induces on `t` is discrete. -/
+by `X` on `s` is discrete, then also the topology induces on `t` is discrete.
+
+(Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.) -/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (IsEmbedding.inclusion ts).discreteTopology
+
+/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
+then `t` is discrete.
+
+(Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.) -/
+lemma IsDiscrete.mono {t : Set X} (hs : IsDiscrete s) (hst : t ⊆ s) : IsDiscrete t :=
+  ⟨.of_subset hs.to_subtype hst⟩
 
 /-- Let `s` be a discrete subset of a topological space. Then the preimage of `s` by
 a continuous injective map is also discrete. -/
@@ -592,6 +637,21 @@ open scoped Set.Notation
 
 lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
+
+/-- If `s` is dense in `X` and `u` is open and dense in `s`, then `u = v ∩ s` for some `v` that is
+open and dense in `X`. -/
+lemma exists_open_dense_of_open_dense_subtype (hs : Dense s) {u : Set s} (huo : IsOpen u)
+    (hud : Dense u) :
+    ∃ v : Set X, IsOpen v ∧ Dense v ∧ Subtype.val ⁻¹' v = u := by
+  choose v hv1 hv2 using huo
+  refine ⟨v, hv1, ?_, hv2⟩
+  rw [dense_iff_inter_open] at *
+  intro t ht ht'
+  subst hv2
+  refine nonempty_of_nonempty_preimage (f := (Subtype.val : s → X)) (hud (Subtype.val ⁻¹' t) ?_ ?_)
+  · exact IsOpen.preimage_val ht
+  · obtain ⟨x, hx⟩ := hs t ht ht'
+    simpa using ⟨⟨x, hx.2⟩, hx.1⟩
 
 lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
   ht.preimage continuous_subtype_val
@@ -751,6 +811,17 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
+
+/-- Homeomorphism between `X → Y → Z` and `X × Y → Z` with product topologies. -/
+@[simps]
+def Homeomorph.piCurry {X Y Z : Type*}
+    [TopologicalSpace Z] :
+    (X × Y → Z) ≃ₜ (X → Y → Z) where
+  toFun := Function.curry
+  invFun := Function.uncurry
+  right_inv := congrFun rfl
+  left_inv := congrFun rfl
+  continuous_toFun := continuous_pi (fun i ↦ Pi.continuous_precomp (Prod.mk i))
 
 @[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :

@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Xavier Roblot
 -/
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Torsion-free monoids with zero
@@ -16,14 +18,18 @@ Note. You need to import this file to get that the monoid of ideals of a Dedekin
 torsion-free.
 -/
 
-variable {M : Type*} [CancelCommMonoidWithZero M]
+@[expose] public section
 
-theorem IsMulTorsionFree.mk' (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
+variable {M : Type*} [CommMonoidWithZero M]
+
+theorem IsMulTorsionFree.mk' [NoZeroDivisors M]
+    (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
     IsMulTorsionFree M := by
   refine ⟨fun n hn x y hxy ↦ ?_⟩
   by_cases h : x ≠ 0 ∧ y ≠ 0
   · exact ih x h.1 y h.2 n hn hxy
-  grind [pow_eq_zero, zero_pow]
+  have : IsReduced M := inferInstance
+  grind [eq_zero_of_pow_eq_zero, zero_pow]
 
 variable [UniqueFactorizationMonoid M] [NormalizationMonoid M] [IsMulTorsionFree Mˣ]
 
@@ -37,7 +43,7 @@ instance : IsMulTorsionFree M := by
       ← associated_iff_normalizedFactors_eq_normalizedFactors hx hy] at this
   replace hx : IsLeftRegular (x ^ n) := (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero hx).pow n
   rw [← hu, mul_pow, eq_comm, IsLeftRegular.mul_left_eq_self_iff hx, ← Units.val_pow_eq_pow_val,
-    Units.val_eq_one, IsMulTorsionFree.pow_eq_one_iff_left hn] at hxy
+    Units.val_eq_one, pow_eq_one_iff_left hn] at hxy
   rwa [hxy, Units.val_one, mul_one] at hu
 
 end UniqueFactorizationMonoid

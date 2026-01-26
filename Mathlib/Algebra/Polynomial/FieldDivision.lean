@@ -3,12 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -16,6 +19,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 This file starts looking like the ring theory of $R[X]$
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -131,18 +136,20 @@ theorem one_lt_rootMultiplicity_iff_isRoot
   rw [one_lt_rootMultiplicity_iff_isRoot_iterate_derivative h]
   refine ⟨fun h ↦ ⟨h 0 (by simp), h 1 (by simp)⟩, fun ⟨h0, h1⟩ m hm ↦ ?_⟩
   obtain (_ | _ | m) := m
-  exacts [h0, h1, by cutsat]
+  exacts [h0, h1, by lia]
 
 end CommRing
 
 section IsDomain
 
-variable [CommRing R] [IsDomain R]
+variable [CommRing R]
 
 theorem one_lt_rootMultiplicity_iff_isRoot_gcd
     [GCDMonoid R[X]] {p : R[X]} {t : R} (h : p ≠ 0) :
     1 < p.rootMultiplicity t ↔ (gcd p (derivative p)).IsRoot t := by
   simp_rw [one_lt_rootMultiplicity_iff_isRoot h, ← dvd_iff_isRoot, dvd_gcd_iff]
+
+variable [NoZeroDivisors R]
 
 theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt : p.IsRoot t) :
     p.derivative.rootMultiplicity t = p.rootMultiplicity t - 1 := by
@@ -185,10 +192,11 @@ theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : 
   by_contra hg
   have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
   have hr' := congr_arg (rootMultiplicity a) hr
+  have : IsDomain R := {}
   rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
     rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
     Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
-  cutsat
+  lia
 
 section NormalizationMonoid
 
@@ -197,7 +205,7 @@ variable [NormalizationMonoid R]
 instance instNormalizationMonoid : NormalizationMonoid R[X] where
   normUnit p :=
     ⟨C ↑(normUnit p.leadingCoeff), C ↑(normUnit p.leadingCoeff)⁻¹, by
-      rw [← RingHom.map_mul, Units.mul_inv, C_1], by rw [← RingHom.map_mul, Units.inv_mul, C_1]⟩
+      rw [← map_mul, Units.mul_inv, C_1], by rw [← map_mul, Units.inv_mul, C_1]⟩
   normUnit_zero := Units.ext (by simp)
   normUnit_mul hp0 hq0 :=
     Units.ext
@@ -226,7 +234,8 @@ theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := b
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
 
-theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
+theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p : R[X]} :
+    (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
 theorem normUnit_X : normUnit (X : Polynomial R) = 1 := by
@@ -351,8 +360,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     remainder := (· % ·)
     r := _
     r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
     mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
@@ -424,6 +433,21 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
+
+theorem degree_mod_lt (p : R[X]) {q : R[X]} (hq : q ≠ 0) : (p % q).degree < q.degree := by
+  rw [Polynomial.mod_def]
+  refine (Polynomial.degree_modByMonic_lt p ?_).trans_eq (by simp)
+  simp [Polynomial.Monic.def, hq]
+
+theorem add_mod (p₁ p₂ q : R[X]) : (p₁ + p₂) % q = p₁ % q + p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.add_modByMonic]
+
+theorem sub_mod (p₁ p₂ q : R[X]) : (p₁ - p₂) % q = p₁ % q - p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.sub_modByMonic]
+
+theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % q) % q := by
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.mul_modByMonic
 
 section
 
@@ -615,10 +639,6 @@ theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
   simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
     modByMonic_X_sub_C_eq_C_eval] using key
 
-@[deprecated (since := "2025-07-08")]
-alias divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative :=
-divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
-
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative f a
@@ -700,6 +720,14 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
 theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by
   simp [mapAlg_eq_map, monic_map_iff]
+
+theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % q = p₂ % q := by
+  obtain rfl | hq := eq_or_ne q 0
+  · simpa [sub_eq_zero] using h
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.modByMonic_eq_of_dvd_sub (by simp [Polynomial.Monic.def, hq])
+  rw [mul_comm]
+  exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
 
 end Field
 

@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Analysis.Normed.Group.InfiniteSum
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Continuous functions on a compact space
@@ -23,6 +25,8 @@ If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)`
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -384,18 +388,6 @@ theorem dist_lt_of_dist_lt_modulus (f : C(α, β)) (ε : ℝ) (h : 0 < ε) {a b 
 end UniformContinuity
 
 end ContinuousMap
-
-section CompLeft
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact :=
-  ContinuousLinearMap.compLeftContinuous
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
-  ContinuousLinearMap.compLeftContinuous_apply
-
-end CompLeft
 
 namespace ContinuousMap
 

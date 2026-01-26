@@ -3,9 +3,10 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard
 -/
+module
 
-import Mathlib.Analysis.Normed.Field.ProperSpace
-import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.Analysis.Normed.Field.ProperSpace
+public import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
 # Properness of the p-adic numbers
@@ -28,6 +29,8 @@ and that `ℚ_[p]` is proper.
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
   Cham, Springer International Publishing
 -/
+
+@[expose] public section
 
 assert_not_exists FiniteDimensional
 

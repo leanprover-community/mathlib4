@@ -3,12 +3,16 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent elements in quotient rings
 -/
+
+public section
 
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by
@@ -41,7 +45,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
     · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one]
-      apply Ideal.pow_le_pow_right (by cutsat)
+      apply Ideal.pow_le_pow_right (by lia)
     · exact n.succ.lt_succ_self
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]

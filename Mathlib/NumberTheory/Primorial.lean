@@ -3,12 +3,14 @@ Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Primorial
@@ -21,6 +23,8 @@ and proves that `primorial n ≤ 4 ^ n`.
 We use the local notation `n#` for the primorial of `n`: that is, the product of the primes less
 than or equal to `n`.
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -44,7 +48,7 @@ theorem primorial_succ {n : ℕ} (hn1 : n ≠ 1) (hn : Odd n) : (n + 1)# = n# :=
 theorem primorial_add (m n : ℕ) :
     (m + n)# = m# * ∏ p ∈ Ico (m + 1) (m + n + 1) with p.Prime, p := by
   rw [primorial, primorial, ← Ico_zero_eq_range, ← prod_union, ← filter_union, Ico_union_Ico_eq_Ico]
-  exacts [Nat.zero_le _, by cutsat, disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
+  exacts [Nat.zero_le _, by lia, disjoint_filter_filter <| Ico_disjoint_Ico_consecutive _ _ _]
 
 theorem primorial_add_dvd {m n : ℕ} (h : n ≤ m) : (m + n)# ∣ m# * choose (m + n) m :=
   calc

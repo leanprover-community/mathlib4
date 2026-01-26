@@ -3,9 +3,11 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Combinatorics.Hall.Finite
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Combinatorics.Hall.Finite
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Data.Rel
 
 /-!
 # Hall's Marriage Theorem
@@ -45,6 +47,8 @@ The core of this module is constructing the inverse system: for every finite sub
 
 Hall's Marriage Theorem, indexed families
 -/
+
+@[expose] public section
 
 open Finset Function CategoryTheory
 open scoped SetRel
@@ -127,7 +131,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (hallMatchingsFunctor t)
       -- Interpret the resulting section of the inverse limit
       refine ⟨?_, ?_, ?_⟩
-      ·-- Build the matching function from the section
+      · -- Build the matching function from the section
         exact fun i =>
           (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective

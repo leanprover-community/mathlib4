@@ -3,13 +3,15 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
-import Mathlib.MeasureTheory.Measure.Real
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
+public import Mathlib.MeasureTheory.Measure.Real
 
 /-! # Conditional expectation in L1
 
 This file contains two more steps of the construction of the conditional expectation, which is
-completed in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a
+completed in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
 description of the full process.
 
 The conditional expectation of an `L²` function is defined in
@@ -26,6 +28,8 @@ The conditional expectation of an `L²` function is defined in
 * `condExpL1`: Conditional expectation of a function as a linear map from `L1` to itself.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -499,7 +503,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
+    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

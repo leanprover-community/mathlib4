@@ -3,11 +3,14 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kenny Lau
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Formal Coproducts
@@ -28,6 +31,8 @@ In this file we construct the category of formal coproducts given a category.
 * `FormalCoproduct.incl C : C ⥤ FormalCoproduct.{w} C` probably preserves every limit?
 
 -/
+
+@[expose] public section
 
 universe w w₁ w₂ w₃ v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -59,7 +64,7 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
   /-- The map on each component. -/
   φ (i : X.I) : X.obj i ⟶ Y.obj (f i)
 
--- this category identifies to the fullsubcategory of the category of
+-- this category identifies to the full subcategory of the category of
 -- presheaves of sets on `C` which are coproducts of representable presheaves
 @[simps!] instance category : Category (FormalCoproduct.{w} C) where
   Hom := Hom

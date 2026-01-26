@@ -3,11 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Tactic.Induction
-import Batteries.Tactic.OpenPrivate
-import Batteries.Data.List.Basic
-import Batteries.Lean.Expr
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Tactic.Induction
+public meta import Batteries.Data.List.Basic
+public meta import Batteries.Lean.Expr
+import all Lean.Elab.Tactic.Induction
+public import Mathlib.Init
 
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
@@ -34,6 +36,8 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Elab.Tactic
@@ -68,7 +72,6 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
 /-- The `induction'` tactic is similar to the `induction` tactic in Lean 4 core,
 but with slightly different syntax (such as, no requirement to name the constructors).
 

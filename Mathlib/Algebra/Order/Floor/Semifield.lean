@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Lemmas on `Nat.floor` and `Nat.ceil` for semifields
@@ -17,6 +19,8 @@ This file contains basic results on the natural-valued floor and ceiling functio
 rounding, floor, ceil
 -/
 
+public section
+
 assert_not_exists Finset
 
 open Set
@@ -25,28 +29,15 @@ variable {R K : Type*}
 
 namespace Nat
 
+-- TODO: should these lemmas be `simp`? `norm_cast`?
 section LinearOrderedSemifield
-
 variable [Semifield K] [LinearOrder K] [IsStrictOrderedRing K] [FloorSemiring K]
 
--- TODO: should these lemmas be `simp`? `norm_cast`?
-
 theorem floor_div_natCast (a : K) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
-  rcases le_total a 0 with ha | ha
-  · rw [floor_of_nonpos, floor_of_nonpos ha]
-    · simp
-    apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
   obtain rfl | hn := n.eq_zero_or_pos
   · simp
-  refine eq_of_forall_le_iff fun m ↦ ?_
-  rw [Nat.le_div_iff_mul_le hn, le_floor_iff (by positivity), le_floor_iff ha,
-    le_div_iff₀ (by positivity), cast_mul]
-
-theorem cast_mul_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊n * a⌋₊ / n = ⌊a⌋₊ := by
-  simpa [hn] using (floor_div_natCast (n * a) n).symm
-
-theorem mul_cast_floor_div_cancel {n : ℕ} (hn : n ≠ 0) (a : K) : ⌊a * n⌋₊ / n = ⌊a⌋₊ := by
-  rw [mul_comm, cast_mul_floor_div_cancel hn]
+  nth_rw 2 [← div_mul_cancel₀ (a := a) (b := ↑n) (by positivity)]
+  rw [mul_cast_floor_div_cancel (Nat.ne_zero_of_lt hn)]
 
 theorem floor_div_ofNat (a : K) (n : ℕ) [n.AtLeastTwo] :
     ⌊a / ofNat(n)⌋₊ = ⌊a⌋₊ / ofNat(n) :=
@@ -136,7 +127,7 @@ theorem IsRat.natFloor {R : Type*} [Field R] [LinearOrder R] [IsStrictOrderedRin
 open Lean in
 /-- `norm_num` extension for `Nat.floor` -/
 @[norm_num ⌊_⌋₊]
-def evalNatFloor : NormNumExt where eval {u αZ} e := do
+meta def evalNatFloor : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
   | 0, ~q(ℕ), ~q(@Nat.floor $α $instSemiring $instPartialOrder $instFloorSemiring $x) =>
     match ← derive x with

@@ -3,16 +3,17 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions
@@ -30,12 +31,13 @@ of `•` belong elsewhere.
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
-open Pointwise
-
-open Function
+open Function Module
+open scoped Pointwise
 
 namespace MulAction
 
@@ -101,7 +103,7 @@ end MulAction
 
 /-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
-The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
+The typeclass that restricts all terms of `M` to have this property is `Module.IsTorsionFree`. -/
 theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
     [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
@@ -390,8 +392,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 end MulAction
 
 section
-
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :

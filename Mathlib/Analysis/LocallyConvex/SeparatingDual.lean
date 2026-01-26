@@ -3,10 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Analysis.LocallyConvex.Separation
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Spaces with separating dual
@@ -31,6 +33,8 @@ Under the assumption `SeparatingDual R V`, we show in
 `SeparatingDual.exists_continuousLinearEquiv_apply_eq` that the group of continuous linear
 equivalences acts transitively on the set of nonzero vectors.
 -/
+
+@[expose] public section
 /-- When `E` is a topological module over a topological ring `R`, the class `SeparatingDual R E`
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
@@ -131,10 +135,10 @@ lemma exists_eq_one {x : V} (hx : x ≠ 0) :
 theorem exists_eq_one_ne_zero_of_ne_zero_pair {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
     ∃ f : StrongDual R V, f x = 1 ∧ f y ≠ 0 := by
   obtain ⟨u, ux⟩ : ∃ u : StrongDual R V, u x = 1 := exists_eq_one hx
-  rcases ne_or_eq (u y) 0 with uy|uy
+  rcases ne_or_eq (u y) 0 with uy | uy
   · exact ⟨u, ux, uy⟩
   obtain ⟨v, vy⟩ : ∃ v : StrongDual R V, v y = 1 := exists_eq_one hy
-  rcases ne_or_eq (v x) 0 with vx|vx
+  rcases ne_or_eq (v x) 0 with vx | vx
   · exact ⟨(v x)⁻¹ • v, inv_mul_cancel₀ vx, show (v x)⁻¹ * v y ≠ 0 by simp [vx, vy]⟩
   · exact ⟨u + v, by simp [ux, vx], by simp [uy, vy]⟩
 
@@ -162,7 +166,7 @@ theorem exists_continuousLinearEquiv_apply_eq [ContinuousSMul R V]
     exists_eq_one_ne_zero_of_ne_zero_pair hx hy
   let A : V ≃L[R] V :=
   { toFun := fun z ↦ z + G z • (y - x)
-    invFun := fun z ↦ z + ((G y) ⁻¹ * G z) • (x - y)
+    invFun := fun z ↦ z + ((G y)⁻¹ * G z) • (x - y)
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by

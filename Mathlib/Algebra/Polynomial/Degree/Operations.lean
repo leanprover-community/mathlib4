@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Definitions
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials
@@ -15,6 +17,8 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
     The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -330,9 +334,7 @@ theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 
 theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  unfold leadingCoeff
-  rw [natDegree_mul' h, coeff_mul_degree_add_degree]
-  rfl
+  simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by
@@ -629,9 +631,6 @@ theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α 
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
 
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
-
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
   simp
 
@@ -779,9 +778,6 @@ theorem zero_notMem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α 
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
-
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_sub_C := zero_notMem_multiset_map_X_sub_C
 
 theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by
   rw [sub_eq_add_neg, ← map_neg C r, natDegree_X_pow_add_C]

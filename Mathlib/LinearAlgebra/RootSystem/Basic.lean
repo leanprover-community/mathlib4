@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.Defs
-import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Defs
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
 
 /-!
 # Root data and root systems
@@ -26,6 +28,8 @@ This file contains basic results for root systems and root data.
 
 -/
 
+@[expose] public section
+
 open Set Function
 open Module hiding reflection
 open Submodule (span)
@@ -45,6 +49,7 @@ variable (p : M →ₗ[R] N →ₗ[R] R) (root : ι ↪ M) (coroot : ι ↪ N) (
     (range root) (range root))
 include h
 
+set_option backward.privateInPublic true in
 private theorem exist_eq_reflection_of_mapsTo :
     ∃ k, root k = (preReflection (root i) (p.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
@@ -52,6 +57,7 @@ private theorem exist_eq_reflection_of_mapsTo :
 variable (hp : ∀ i, p (root i) (coroot i) = 2)
 include hp
 
+set_option backward.privateInPublic true in
 private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i
       (exist_eq_reflection_of_mapsTo p root coroot i j h).choose h).choose = j := by
@@ -60,6 +66,8 @@ private theorem choose_choose_eq_of_mapsTo :
     (exist_eq_reflection_of_mapsTo p root coroot i j h).choose_spec]
   apply involutive_preReflection (x := root i) (hp i)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The bijection on the indexing set induced by reflection. -/
 @[simps]
 protected def equiv_of_mapsTo :
@@ -89,7 +97,7 @@ unique.
 
 Formally, the point is that the hypothesis `hc` depends only on the range of the coroot mappings. -/
 @[ext]
-protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
+protected lemma ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
     {P₁ P₂ : RootPairing ι R M N}
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root)
@@ -103,7 +111,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
     simp only [hr, he, hc']
   suffices P₁.coroot = P₂.coroot by
     obtain ⟨p₁⟩ := P₁; obtain ⟨p₂⟩ := P₂; grind
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, comp_apply]
@@ -114,7 +122,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisors R M]
+private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -144,7 +152,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.flip.toPerfPair.injective this
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
@@ -155,7 +163,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
 
 /-- In characteristic zero if there is no torsion, to check that two finite families of roots and
 coroots form a root pairing, it is sufficient to check that they are stable under reflections. -/
-def mk' [CharZero R] [NoZeroSMulDivisors R M]
+def mk' [CharZero R] [IsDomain R] [IsTorsionFree R M]
     (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
@@ -174,35 +182,25 @@ def mk' [CharZero R] [NoZeroSMulDivisors R M]
     refine (coroot_eq_coreflection_of_root_eq' p root coroot hp hr hc ?_).symm
     rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hr).choose_spec]
 
-end RootPairing
-
-namespace RootSystem
-
-open RootPairing
-
-variable [Finite ι] (P : RootSystem ι R M N)
+variable [P.IsRootSystem]
 
 /-- In characteristic zero if there is no torsion, a finite root system is determined entirely by
 its roots. -/
-@[ext]
-protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
-    {P₁ P₂ : RootSystem ι R M N}
+protected lemma IsRootSystem.ext [CharZero R] [IsDomain R] [IsTorsionFree R M]
+    {P₁ P₂ : RootPairing ι R M N} [P₁.IsRootSystem] [P₂.IsRootSystem]
     (he : P₁.toLinearMap = P₂.toLinearMap)
     (hr : P₁.root = P₂.root) :
     P₁ = P₂ := by
-  suffices ∀ P₁ P₂ : RootSystem ι R M N, P₁.toLinearMap = P₂.toLinearMap →
-      P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
+  suffices ∀ (P₁ P₂ : RootPairing ι R M N) [P₁.IsRootSystem] [P₂.IsRootSystem],
+      P₁.toLinearMap = P₂.toLinearMap → P₁.root = P₂.root → range P₁.coroot ⊆ range P₂.coroot by
     have h₁ := this P₁ P₂ he hr
     have h₂ := this P₂ P₁ he.symm hr.symm
-    obtain ⟨P₁⟩ := P₁
-    obtain ⟨P₂⟩ := P₂
-    congr
     exact RootPairing.ext he hr (le_antisymm h₁ h₂)
   clear! P₁ P₂
-  rintro P₁ P₂ he hr - ⟨i, rfl⟩
+  rintro P₁ P₂ hP₁ hP₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.flip.toPerfPair.injective
-  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_root_eq_top
+  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) IsRootSystem.span_root_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · change MapsTo (preReflection _ (P₁.toLinearMap.flip.toPerfPair _)) _ _
     simp_rw [hr, he]
@@ -210,8 +208,10 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
 
-private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZeroSMulDivisors R M]
-    (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
+@[deprecated (since := "2025-12-14")] alias _root_.RootSystem.ext := IsRootSystem.ext
+
+private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [IsDomain R]
+    [IsTorsionFree R M] (p : M →ₗ[R] N →ₗ[R] R) [p.IsPerfPair]
     (root : ι ↪ M)
     (coroot : ι ↪ N)
     (hp : ∀ i, p (root i) (coroot i) = 2)
@@ -239,28 +239,39 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
   · rw [hk, LinearMap.toLinearMap_toPerfPair, hij]
     exact (hs i).comp <| (hs j).comp (hs i)
 
+section
+
+variable {k : Type*} [Field k] [CharZero k] [Module k M] [Module k N]
+  (p : M →ₗ[k] N →ₗ[k] k) [p.IsPerfPair]
+  (root : ι ↪ M)
+  (coroot : ι ↪ N)
+  (hp : ∀ i, p (root i) (coroot i) = 2)
+  (hs : ∀ i, MapsTo (preReflection (root i) (p.flip (coroot i))) (range root) (range root))
+  (hsp : span k (range root) = ⊤)
+
 /-- Over a field of characteristic zero, to check that a finite family of roots form a
 crystallographic root system, we do not need to check that the coroots are stable under reflections
 since this follows from the corresponding property for the roots. Likewise, we do not need to
 check that the coroots span. -/
-def mk' {k : Type*} [Field k] [CharZero k] [Module k M] [Module k N]
-    (p : M →ₗ[k] N →ₗ[k] k) [p.IsPerfPair]
-    (root : ι ↪ M)
-    (coroot : ι ↪ N)
-    (hp : ∀ i, p (root i) (coroot i) = 2)
-    (hs : ∀ i, MapsTo (preReflection (root i) (p.flip (coroot i))) (range root) (range root))
-    (hsp : span k (range root) = ⊤)
-    (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :
-    RootSystem ι k M N :=
-  let P := RootPairing.mk' p root coroot hp hs <| by
+def mk'' :
+    RootPairing ι k M N :=
+  .mk' p root coroot hp hs <| by
     rintro i - ⟨j, rfl⟩
     use RootPairing.equiv_of_mapsTo p root coroot i hs hp j
     refine (coroot_eq_coreflection_of_root_eq_of_span_eq_top p root coroot hp hs hsp ?_)
-    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo  p root coroot i j hs).choose_spec]
-  have _i : P.IsCrystallographic := ⟨h_int⟩
-  have _i : Fintype ι := Fintype.ofFinite ι
-  { toRootPairing := P,
-    span_root_eq_top := hsp,
-    span_coroot_eq_top := P.rootSpan_eq_top_iff.mp hsp }
+    rw [equiv_of_mapsTo_apply, (exist_eq_reflection_of_mapsTo p root coroot i j hs).choose_spec]
 
-end RootSystem
+@[deprecated (since := "2025-12-14")] noncomputable alias _root_.RootSystem.mk' := mk''
+
+variable {p root coroot hp hs hsp} in
+lemma isRootSystem_mk'' (h_int : ∀ i j, ∃ z : ℤ, z = p (root i) (coroot j)) :
+    (mk'' p root coroot hp hs hsp).IsRootSystem where
+  span_root_eq_top := hsp
+  span_coroot_eq_top :=
+    have _i : (mk'' p root coroot hp hs hsp).IsCrystallographic := ⟨h_int⟩
+    have _i : Fintype ι := Fintype.ofFinite ι
+    (rootSpan_eq_top_iff _).mp hsp
+
+end
+
+end RootPairing

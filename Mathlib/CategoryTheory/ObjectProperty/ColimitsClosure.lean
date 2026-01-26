@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 /-!
 # Closure of a property of objects under colimits of certain shapes
@@ -15,9 +17,11 @@ family of categories `J : α → Type _`, we introduce the closure
 and under certain smallness assumptions, we show that it is essentially small.
 
 (We deduce these results about the closure under colimits by dualising the
-results in the file `ObjectProperty.LimitsClosure`.)
+results in the file `Mathlib/CategoryTheory/ObjectProperty/LimitsClosure.lean`.)
 
 -/
+
+@[expose] public section
 
 universe w w' t v' u' v u
 

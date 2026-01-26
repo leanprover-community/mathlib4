@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Grönwall's inequality
@@ -26,6 +28,8 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   or more generally `liminf_{y→x+0} (f y - f x)/(y - x) ≤ K x * f x + ε` with any sign
   of `K x` and `f x`.
 -/
+
+@[expose] public section
 
 open Metric Set Asymptotics Filter Real
 open scoped Topology NNReal
@@ -85,6 +89,16 @@ theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwa
   · simp only [gronwallBound_of_K_ne_0 hK]
     exact continuous_const.add ((continuous_id.mul continuous_const).mul continuous_const)
 
+/-- The Gronwall bound is monotone with respect to the time variable `x`. -/
+lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
+    Monotone (gronwallBound δ K ε) := by
+  intro x₁ x₂ hx
+  unfold gronwallBound
+  split_ifs with hK₀
+  · gcongr
+  · have hK_pos : 0 < K := by positivity
+    gcongr
+
 /-! ### Inequality and corollaries -/
 
 /-- A Grönwall-like inequality: if `f : ℝ → ℝ` is continuous on `[a, b]` and satisfies
@@ -111,7 +125,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
   convert continuousWithinAt_const.closure_le _ _ (H x hx)
-  · simp only [closure_Ioi, left_mem_Ici]
+  · simp only [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
 /-- A Grönwall-like inequality: if `f : ℝ → E` is continuous on `[a, b]`, has right derivative
@@ -226,7 +240,7 @@ theorem dist_le_of_trajectories_ODE
   dist_le_of_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg
     hg' (fun _ _ => trivial) ha
 
-/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) in a set `s ⊆ ℝ × E` with
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ in a set `s ⊆ ℝ × E` with
 a given initial value provided that the RHS is Lipschitz continuous in `x` within `s`,
 and we consider only solutions included in `s`.
 
@@ -259,7 +273,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
   have hv' : ∀ t ∈ Ico (-b) (-a), LipschitzOnWith K (Neg.neg ∘ (v (-t))) (s (-t)) := by
     intro t ht
     replace ht : -t ∈ Ioc a b := by
-      simp only [mem_Ico, mem_Ioc] at ht ⊢
+      push _ ∈ _ at ht ⊢
       constructor <;> linarith
     rw [← one_mul K]
     exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
@@ -360,7 +374,7 @@ theorem ODE_solution_unique_of_eventually
     (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
     (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2) heq
 
-/-- There exists only one solution of an ODE \(\dot x=v(t, x)\) with
+/-- There exists only one solution of an ODE $\dot x=v(t, x)$ with
 a given initial value provided that the RHS is Lipschitz continuous in `x`. -/
 theorem ODE_solution_unique
     (hv : ∀ t, LipschitzWith K (v t))
@@ -374,7 +388,7 @@ theorem ODE_solution_unique
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
 
-/-- There exists only one global solution to an ODE \(\dot x=v(t, x\) with a given initial value
+/-- There exists only one global solution to an ODE $\dot x=v(t, x)$ with a given initial value
 provided that the RHS is Lipschitz continuous. -/
 theorem ODE_solution_unique_univ
     (hv : ∀ t, LipschitzOnWith K (v t) (s t))

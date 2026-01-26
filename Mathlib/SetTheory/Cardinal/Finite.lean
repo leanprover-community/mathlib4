@@ -3,11 +3,13 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.ENat.Pow
-import Mathlib.Data.ULift
-import Mathlib.Data.ZMod.Defs
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
+module
+
+public import Mathlib.Data.ENat.Pow
+public import Mathlib.Data.ULift
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
 
 /-!
 # Finite Cardinality Functions
@@ -19,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
 * `ENat.card α` is the cardinality of `α` as an extended natural number.
   If `α` is infinite, `ENat.card α = ⊤`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -315,7 +319,7 @@ lemma card_le_card_of_injective {α β : Type*} {f : α → β} (hf : Injective 
 @[simp]
 theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toENat c ↔ ↑n ≤ c := by
-  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 natCast_le_aleph0]
 
 theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toENat c ≤ n ↔ c ≤ n := by simp

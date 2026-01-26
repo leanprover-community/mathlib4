@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Tactic.Monotonicity.Attr
-import Mathlib.Tactic.SetLike
-import Mathlib.Data.Set.Basic
+module
+
+public import Mathlib.Tactic.Monotonicity.Attr
+public import Mathlib.Tactic.SetLike
+public import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -70,6 +72,8 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
@@ -119,7 +123,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
 @[app_delab Subtype]
-def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
+meta def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
   let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
@@ -165,7 +169,7 @@ theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
   coe_injective.eq_iff.symm.trans Set.ext_iff
 
-@[simp]
+@[simp, push]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 

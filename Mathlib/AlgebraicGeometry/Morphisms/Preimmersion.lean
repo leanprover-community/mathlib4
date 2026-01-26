@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 
 /-!
 
@@ -17,6 +19,8 @@ in the literature but it is useful for generalizing results on immersions to oth
 
 -/
 
+@[expose] public section
+
 universe v u
 
 open CategoryTheory Topology
@@ -27,10 +31,11 @@ namespace AlgebraicGeometry
 topological spaces is an embedding and the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
 class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
-  base_embedding : IsEmbedding f
+  isEmbedding (f) : IsEmbedding f
 
-lemma Scheme.Hom.isEmbedding {X Y : Scheme} (f : X ⟶ Y) [IsPreimmersion f] : IsEmbedding f :=
-  IsPreimmersion.base_embedding
+alias Scheme.Hom.isEmbedding := IsPreimmersion.isEmbedding
+
+@[deprecated (since := "2026-01-20")] alias IsPreimmersion.base_embedding := Scheme.Hom.isEmbedding
 
 lemma isPreimmersion_eq_inf :
     @IsPreimmersion = (@SurjectiveOnStalks ⊓ topologically IsEmbedding : MorphismProperty _) := by
@@ -44,8 +49,8 @@ instance : IsZariskiLocalAtTarget @IsPreimmersion :=
   isPreimmersion_eq_inf ▸ inferInstance
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsPreimmersion f where
-  base_embedding := f.isOpenEmbedding.isEmbedding
-  surj_on_stalks _ := (ConcreteCategory.bijective_of_isIso _).2
+  isEmbedding := f.isOpenEmbedding.isEmbedding
+  stalkMap_surjective _ := (ConcreteCategory.bijective_of_isIso _).2
 
 instance : MorphismProperty.IsMultiplicative @IsPreimmersion where
   id_mem _ := inferInstance
@@ -60,10 +65,10 @@ instance (priority := 900) {X Y} (f : X ⟶ Y) [IsPreimmersion f] : Mono f :=
 
 theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsPreimmersion g]
     [IsPreimmersion (f ≫ g)] : IsPreimmersion f where
-  base_embedding := by
+  isEmbedding := by
     have h := (f ≫ g).isEmbedding
     rwa [← g.isEmbedding.of_comp_iff]
-  surj_on_stalks x := by
+  stalkMap_surjective x := by
     have h := (f ≫ g).stalkMap_surjective x
     rw [Scheme.Hom.stalkMap_comp] at h
     exact Function.Surjective.of_comp h

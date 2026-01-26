@@ -3,10 +3,12 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Irreducible
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Order.Irreducible
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Lasker ring
@@ -27,6 +29,8 @@ Also, one needs to prove that the radicals of minimal decompositions are indepen
   precise decomposition.
 
 -/
+
+@[expose] public section
 
 section IsLasker
 
@@ -63,20 +67,12 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
   classical
   refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
-  · rw [← hs]
-    refine le_antisymm ?_ ?_ <;> intro x hx
-    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finsetInf,
-      Function.comp_apply, Finset.mem_filter, id_eq, and_imp] at hx ⊢
-      intro J hJ
-      exact hx J hJ J hJ rfl
-    · simp only [Submodule.mem_finsetInf, id_eq, Finset.inf_image, CompTriple.comp_eq,
-      Function.comp_apply, Finset.mem_filter, and_imp] at hx ⊢
-      intro J _ K hK _
-      exact hx K hK
+  · ext
+    grind [Finset.inf_image, Submodule.mem_finsetInf]
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
-    refine isPrimary_finset_inf (i := J) ?_ ?_ (by simp)
+    refine isPrimary_finsetInf (i := J) ?_ ?_ (by simp)
     · simp [hJ]
     · simp only [Finset.mem_filter, id_eq, and_imp]
       intro y hy
@@ -101,12 +97,25 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition [Decidab
   obtain ⟨u, hut, hu, hu'⟩ := decomposition_erase_inf ht
   exact ⟨u, hu, fun _ hi ↦ ht' (hut hi), ht''.mono hut, hu'⟩
 
-lemma IsLasker.minimal [DecidableEq (Ideal R)] (h : IsLasker R) (I : Ideal R) :
-    ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
-      ((t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)) ∧
-      (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
-  obtain ⟨s, hs, hs'⟩ := h I
-  exact exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs hs'
+/-- A `Finset` of ideals is a maximal primary decomposition of `I` if the ideals intersect to `I`,
+are primary, have pairwise distinct radicals, and removing any ideal changes the intersection. -/
+structure IsMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
+    (I : Ideal R) (t : Finset (Ideal R)) : Prop where
+  inf_eq : t.inf id = I
+  primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
+  distinct : (t : Set (Ideal R)).Pairwise ((· ≠ ·) on radical)
+  minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
+
+lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Ideal R)]
+    (h : IsLasker R) (I : Ideal R) :
+    ∃ t : Finset (Ideal R), I.IsMinimalPrimaryDecomposition t := by
+  obtain ⟨s, hs₁, hs₂⟩ := h I
+  obtain ⟨t, h₁, h₂, h₃, h₄⟩ :=
+    exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs₁ hs₂
+  exact ⟨t, h₁, h₂, h₃, h₄⟩
+
+@[deprecated (since := "2026-01-09")]
+alias IsLasker.minimal := IsLasker.exists_isMinimalPrimaryDecomposition
 
 end Ideal
 
@@ -131,26 +140,26 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
   rcases h with ⟨-, h⟩
   specialize @h (I.colon (span {b ^ n})) (I + (span {b ^ n})) ?_
   · refine le_antisymm (fun r ↦ ?_) (le_inf (fun _ ↦ ?_) ?_)
-    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_singleton,
+    · simp only [Submodule.add_eq_sup, sup_comm I, mem_inf, mem_colon_span_singleton,
         mem_span_singleton_sup, and_imp, forall_exists_index]
       rintro hrb t s hs rfl
       refine add_mem ?_ hs
       have := hn (n + n) (by simp)
       simp only [OrderHom.coe_mk, f] at this
       rw [add_mul, mul_assoc, ← pow_add] at hrb
-      rwa [← mem_colon_singleton, this, mem_colon_singleton,
+      rwa [← mem_colon_span_singleton, this, mem_colon_span_singleton,
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
-    · simpa only [mem_colon_singleton] using mul_mem_right _ _
+    · simpa only [mem_colon_span_singleton] using mul_mem_right _ _
     · simp
   rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
       rcases eq_or_ne n 0 with rfl | hn'
-      · simpa [f] using hn 1 zero_le_one
+      · simpa [f, ← Ideal.colon_span (R := R) (S := {1})] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro
-        simpa only [mem_colon_singleton] using mul_mem_right _ _
+        simpa only [mem_colon_span_singleton] using mul_mem_right _ _
       · exact span_singleton_le_span_singleton.mpr (dvd_pow_self b hn')
-    rw [← mem_colon_singleton, ← h] at hab
+    rw [← mem_colon_span_singleton, ← h] at hab
     exact Or.inl hab
   · rw [← h]
     refine Or.inr ⟨n, ?_⟩

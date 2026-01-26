@@ -3,16 +3,17 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.OrderOfElement
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.OrderOfElement
 
 /-!
 # Multiplicative characters of finite rings and fields
 
-Let `R` and `R'` be a commutative rings.
+Let `R` and `R'` be commutative rings.
 A *multiplicative character* of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.
@@ -35,6 +36,8 @@ character vanishes; see `MulChar.IsNontrivial.sum_eq_zero`.
 
 multiplicative character
 -/
+
+@[expose] public section
 
 
 /-!
@@ -112,11 +115,7 @@ theorem coe_mk (f : R →* R') (hf) : (MulChar.mk f hf : R → R') = f :=
   rfl
 
 /-- Extensionality. See `ext` below for the version that will actually be used. -/
-theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := by
-  cases χ
-  cases χ'
-  congr
-  exact MonoidHom.ext h
+theorem ext' {χ χ' : MulChar R R'} (h : ∀ a, χ a = χ' a) : χ = χ' := DFunLike.ext _ _ h
 
 instance : MulCharClass (MulChar R R') R R' where
   map_mul χ := χ.map_mul'
@@ -497,7 +496,7 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
 if and only if `χ^2 = 1`. -/
 lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
     [Nontrivial R] {χ : MulChar M R} :
-    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+    IsQuadratic χ ↔ χ ^ 2 = 1 := by
   refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
   · rw [one_apply_coe, χ.pow_apply_coe]
     rcases h x with H | H | H

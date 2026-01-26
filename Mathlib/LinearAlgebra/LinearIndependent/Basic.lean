@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Linear independence
@@ -37,6 +39,8 @@ Rework proofs to hold in semirings, by avoiding the path through
 linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
+
+public section
 
 assert_not_exists Cardinal
 
@@ -253,9 +257,6 @@ theorem LinearIndependent.notMem_span_image [Nontrivial R] (hv : LinearIndepende
   refine disjoint_def.1 (hv.disjoint_span_image ?_) (v x) h' w
   simpa using h
 
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.not_mem_span_image := LinearIndependent.notMem_span_image
-
 theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     (hv : LinearIndependent R v) {x : ι} (f : ι →₀ R) (h : x ∉ f.support) :
     f.linearCombination R v ≠ v x := by
@@ -265,10 +266,6 @@ theorem LinearIndependent.linearCombination_ne_of_notMem_support [Nontrivial R]
     Finsupp.linearCombination R v x ≠ f.linearCombination R v := by
     simpa [← w, Finsupp.span_image_eq_map_linearCombination] using hv.notMem_span_image h
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2025-05-23")]
-alias LinearIndependent.linearCombination_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_notMem_support
 
 end Subtype
 
@@ -487,7 +484,7 @@ theorem LinearIndepOn.image {s : Set M} {f : M →ₗ[R] M'}
 /-- Dedekind's linear independence of characters -/
 @[stacks 0CKL]
 theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [CommRing L]
-    [NoZeroDivisors L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
+    [IsDomain L] : LinearIndependent L (M := G → L) (fun f => f : (G →* L) → G → L) := by
   letI := Classical.decEq (G →* L)
   letI : MulAction L L := DistribMulAction.toMulAction
   -- We prove linear independence by showing that only the trivial linear combination vanishes.
@@ -552,8 +549,8 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 
 end Module
 
-section Nontrivial
-variable [Ring R] [AddCommGroup M] [Module R M] [Nontrivial R] [NoZeroSMulDivisors R M]
+section IsDomain
+variable [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [Module.IsTorsionFree R M]
   {v : ι → M} {i : ι}
 
 lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
@@ -578,4 +575,4 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
 
-end Nontrivial
+end IsDomain

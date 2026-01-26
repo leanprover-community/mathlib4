@@ -3,8 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces
@@ -18,6 +22,8 @@ and the affine span of a set of points.
   parallel (one being a translate of the other).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -331,12 +337,12 @@ theorem affineSpan_singleton_union_vadd_eq_top_of_span_eq_top {s : Set V} (p : P
 variable (k)
 
 /-- The `vectorSpan` of two points is the span of their difference. -/
-theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₁ -ᵥ p₂ := by
+theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₁ -ᵥ p₂) := by
   simp_rw [vectorSpan_eq_span_vsub_set_left k (mem_insert p₁ _), image_pair, vsub_self,
     Submodule.span_insert_zero]
 
 /-- The `vectorSpan` of two points is the span of their difference (reversed). -/
-theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ p₂ -ᵥ p₁ := by
+theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₂ -ᵥ p₁) := by
   rw [pair_comm, vectorSpan_pair]
 
 variable {k}
@@ -391,6 +397,21 @@ theorem vadd_right_mem_affineSpan_pair {p₁ p₂ : P} {v : V} :
   rw [vadd_mem_iff_mem_direction _ (right_mem_affineSpan_pair _ _ _), direction_affineSpan,
     mem_vectorSpan_pair]
 
+lemma mem_affineSpan_pair_iff_exists_lineMap_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₁ p₂ r = p := by
+  constructor
+  · intro h
+    rw [← vsub_vadd p p₁, vadd_left_mem_affineSpan_pair] at h
+    obtain ⟨r, hr⟩ := h
+    refine ⟨r, ?_⟩
+    rw [← vsub_vadd p p₁, ← hr, AffineMap.lineMap_apply]
+  · rintro ⟨r, rfl⟩
+    exact AffineMap.lineMap_mem_affineSpan_pair _ _ _
+
+lemma mem_affineSpan_pair_iff_exists_lineMap_rev_eq {p p₁ p₂ : P} :
+    p ∈ line[k, p₁, p₂] ↔ ∃ r : k, AffineMap.lineMap p₂ p₁ r = p := by
+  rw [Set.pair_comm, mem_affineSpan_pair_iff_exists_lineMap_eq]
+
 end AffineSpace'
 
 namespace AffineSubspace
@@ -401,7 +422,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 /-- The direction of the sup of two nonempty affine subspaces is the sup of the two directions and
 of any one difference between points in the two subspaces. -/
 theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : p₁ ∈ s₁) (hp₂ : p₂ ∈ s₂) :
-    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ p₂ -ᵥ p₁ := by
+    (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction ⊔ k ∙ (p₂ -ᵥ p₁) := by
   refine le_antisymm ?_ ?_
   · change (affineSpan k ((s₁ : Set P) ∪ s₂)).direction ≤ _
     rw [← mem_coe] at hp₁
@@ -487,10 +508,15 @@ section
 
 variable (f : P₁ →ᵃ[k] P₂)
 
+/-- The affine version of `LinearMap.map_span`. -/
 @[simp]
-theorem AffineMap.vectorSpan_image_eq_submodule_map {s : Set P₁} :
+theorem AffineMap.map_vectorSpan {s : Set P₁} :
     Submodule.map f.linear (vectorSpan k s) = vectorSpan k (f '' s) := by
   simp [vectorSpan_def, f.image_vsub_image]
+
+-- this name was backwards
+@[deprecated (since := "2026-01-20")]
+alias AffineMap.vectorSpan_image_eq_submodule_map := AffineMap.map_vectorSpan
 
 namespace AffineSubspace
 
@@ -543,7 +569,7 @@ theorem map_map (s : AffineSubspace k P₁) (f : P₁ →ᵃ[k] P₂) (g : P₂ 
 @[simp]
 theorem map_direction (s : AffineSubspace k P₁) :
     (s.map f).direction = s.direction.map f.linear := by
-  simp [direction_eq_vectorSpan, AffineMap.vectorSpan_image_eq_submodule_map]
+  simp [direction_eq_vectorSpan, AffineMap.map_vectorSpan]
 
 theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s) := by
   rcases s.eq_empty_or_nonempty with (rfl | ⟨p, hp⟩)
@@ -556,6 +582,25 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
 @[gcongr]
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h
+
+lemma map_inf_le (s₁ s₂ : AffineSubspace k P₁) : (s₁ ⊓ s₂).map f ≤ s₁.map f ⊓ s₂.map f :=
+  le_inf (map_mono _ inf_le_left) (map_mono _ inf_le_right)
+
+lemma map_inf_eq (hf : Function.Injective f) (s₁ s₂ : AffineSubspace k P₁) :
+    (s₁ ⊓ s₂).map f = s₁.map f ⊓ s₂.map f := by
+  ext p
+  simp [mem_inf_iff]
+  grind
+
+lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
+    (mk' p direction).map f = mk' (f p) (direction.map f.linear) := by
+  ext q
+  simp only [mem_map, mem_mk', Submodule.mem_map]
+  constructor
+  · rintro ⟨r, hr, rfl⟩
+    exact ⟨r -ᵥ p, hr, by simp⟩
+  · rintro ⟨r, hr, he⟩
+    exact ⟨r +ᵥ p, by simp [hr], by simp [he]⟩
 
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
@@ -616,7 +661,7 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
     {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
     (h_span : affineSpan k s = ⊤)
     (h_agree : s.EqOn f g) : f = g := by
-  simpa [h_span]  using eqOn_affineSpan h_agree
+  simpa [h_span] using eqOn_affineSpan h_agree
 
 end AffineMap
 
@@ -626,7 +671,7 @@ namespace AffineEquiv
 theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
     {s : Set P₁} (h_span : affineSpan k s = ⊤)
     (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
-  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
+  AffineEquiv.toAffineMap_inj.mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
@@ -673,7 +718,7 @@ def comap (f : P₁ →ᵃ[k] P₂) (s : AffineSubspace k P₂) : AffineSubspace
   carrier := f ⁻¹' s
   smul_vsub_vadd_mem t p₁ p₂ p₃ (hp₁ : f p₁ ∈ s) (hp₂ : f p₂ ∈ s) (hp₃ : f p₃ ∈ s) :=
     show f _ ∈ s by
-      rw [AffineMap.map_vadd, LinearMap.map_smul, AffineMap.linearMap_vsub]
+      rw [AffineMap.map_vadd, map_smul, AffineMap.linearMap_vsub]
       apply s.smul_vsub_vadd_mem _ hp₁ hp₂ hp₃
 
 @[simp]
@@ -744,6 +789,15 @@ theorem map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
 theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
   rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
+    GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun s p ↦ by simp; grind
+
+lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
+    (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
+  (gciMapComap hf).u_l_eq _
 
 end AffineSubspace
 
@@ -837,9 +891,32 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
     not_nonempty_iff_eq_empty]
 
+lemma affineSpan_pair_parallel_iff_exists_unit_smul' [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₁ -ᵥ p₁) = q₂ -ᵥ p₂ := by
+  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
+    vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton]
+
+lemma affineSpan_pair_parallel_iff_exists_unit_smul [IsDomain k] [Module.IsTorsionFree k V]
+    {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
+  rw [affineSpan_pair_parallel_iff_exists_unit_smul']
+  exact ⟨fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩, fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩⟩
+
+lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁].direction ≤ line[k, p₂, q₂].direction ↔ ∃ z : k, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
+  rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
+    Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+
+theorem affineSpan_pair_comm {p₁ p₂ : P} :
+    line[k, p₁, p₂] = line[k, p₂, p₁] := by
+  rw [Set.pair_comm]
+
 end AffineSubspace
 
 section DivisionRing
+
+open AffineSubspace
 
 variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
@@ -876,5 +953,37 @@ lemma affineSpan_pair_eq_of_right_mem_of_ne {p₁ p₂ p₃ : P} (h : p₁ ∈ l
     (hne : p₁ ≠ p₂) :
     line[k, p₂, p₁] = line[k, p₂, p₃] :=
   affineSpan_pair_eq_of_mem_of_mem_of_ne (left_mem_affineSpan_pair _ _ _) h hne.symm
+
+/-- Given two triples of non-collinear points, if the lines determined by corresponding pairs of
+points are parallel, then the vectors between corresponding pairs of points are all related by the
+same nonzero scale factor. (The formal statement is slightly more general.) -/
+theorem exists_eq_smul_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[k, p₁, p₃])
+    (h₁₂₄₅ : line[k, p₁, p₂] ∥ line[k, p₄, p₅])
+    (h₂₃₅₆ : line[k, p₅, p₆].direction ≤ line[k, p₂, p₃].direction)
+    (h₃₁₆₄ : line[k, p₆, p₄].direction ≤ line[k, p₃, p₁].direction) :
+    ∃ r : k, r ≠ 0 ∧ p₅ -ᵥ p₄ = r • (p₂ -ᵥ p₁) ∧ p₆ -ᵥ p₅ = r • (p₃ -ᵥ p₂) ∧
+      p₄ -ᵥ p₆ = r • (p₁ -ᵥ p₃) := by
+  rw [affineSpan_pair_parallel_iff_exists_unit_smul'] at h₁₂₄₅
+  rw [direction_affineSpan_pair_le_iff_exists_smul] at h₂₃₅₆ h₃₁₆₄
+  obtain ⟨r₁, hr₁⟩ := h₁₂₄₅
+  obtain ⟨r₂, hr₂⟩ := h₂₃₅₆
+  obtain ⟨r₃, hr₃⟩ := h₃₁₆₄
+  rw [Units.smul_def] at hr₁
+  by_cases h : (r₁ : k) = r₂
+  · refine ⟨r₁, r₁.ne_zero, hr₁.symm, h ▸ hr₂.symm, ?_⟩
+    rw [← neg_inj, neg_vsub_eq_vsub_rev, ← smul_neg, neg_vsub_eq_vsub_rev,
+      ← vsub_add_vsub_cancel p₆ p₅ p₄, ← vsub_add_vsub_cancel p₃ p₂ p₁, smul_add, hr₁, h, hr₂]
+  · exfalso
+    have h₁₂ : (r₁ : k) • (p₂ -ᵥ p₁) + r₂ • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      rw [hr₁, hr₂, add_comm, vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, neg_mem_iff, ← hr₃]
+      exact smul_vsub_mem_vectorSpan_pair _ _ _
+    have h₁₁ : (r₁ : k) • (p₂ -ᵥ p₁) + (r₁ : k) • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      rw [add_comm, ← smul_add, vsub_add_vsub_cancel]
+      exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
+    have h₂₁ : (r₂ - r₁) • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      simpa [sub_smul] using sub_mem h₁₂ h₁₁
+    rw [Submodule.smul_mem_iff _ (by rwa [sub_ne_zero, ne_comm]), ← direction_affineSpan,
+      vsub_left_mem_direction_iff_mem (right_mem_affineSpan_pair _ _ _)] at h₂₁
+    exact h₂ h₂₁
 
 end DivisionRing

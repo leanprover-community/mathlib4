@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Covers of schemes
@@ -22,6 +24,8 @@ know that these assumptions are satisfied for open immersions and hence the cove
 immersions can be used to deduce these assumptions in the general case.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -164,7 +168,7 @@ nonrec def Cover.add {X Y : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (f : Y 
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
     refine ⟨fun x ↦ ⟨some <| 𝒰.idx x, 𝒰.covers x⟩, ?_⟩
-    rintro (i|i) <;> simp [hf, 𝒰.map_prop]
+    rintro (i | i) <;> simp [hf, 𝒰.map_prop]
 
 @[deprecated (since := "2025-10-02")]
 alias Cover.pullbackCover := Precoverage.ZeroHypercover.pullback₁
@@ -243,62 +247,32 @@ instance : Precoverage.Small.{u} (precoverage P) where
 
 section category
 
--- TODO: replace this by `ZeroHypercover.Hom`
 /--
 A morphism between covers `𝒰 ⟶ 𝒱` indicates that `𝒰` is a refinement of `𝒱`.
 Since covers of schemes are indexed, the definition also involves a map on the
 indexing types.
+This is implemented as an `abbrev` for `CategoryTheory.Precoverage.ZeroHypercover.Hom`.
 -/
-@[ext]
-structure Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} (precoverage P) X) where
-  /-- The map on indexing types associated to a morphism of covers. -/
-  idx : 𝒰.I₀ → 𝒱.I₀
-  /-- The morphism between open subsets associated to a morphism of covers. -/
-  app (j : 𝒰.I₀) : 𝒰.X j ⟶ 𝒱.X (idx j)
-  app_prop (j : 𝒰.I₀) : P (app j) := by infer_instance
-  w (j : 𝒰.I₀) : app j ≫ 𝒱.f _ = 𝒰.f _ := by cat_disch
+abbrev Cover.Hom {X : Scheme.{u}} (𝒰 𝒱 : Cover.{v} K X) :=
+  Precoverage.ZeroHypercover.Hom K 𝒰 𝒱
 
-attribute [reassoc (attr := simp)] Cover.Hom.w
+@[deprecated (since := "2026-01-13")] alias Cover.Hom.idx := PreZeroHypercover.Hom.s₀
 
-/-- The identity morphism in the category of covers of a scheme. -/
-def Cover.Hom.id [P.ContainsIdentities] {X : Scheme.{u}} (𝒰 : Cover.{v} (precoverage P) X) :
-    𝒰.Hom 𝒰 where
-  idx j := j
-  app _ := 𝟙 _
-  app_prop _ := P.id_mem _
+@[deprecated (since := "2026-01-13")] alias Cover.Hom.app := PreZeroHypercover.Hom.h₀
 
-/-- The composition of two morphisms in the category of covers of a scheme. -/
-def Cover.Hom.comp [P.IsStableUnderComposition] {X : Scheme.{u}}
-    {𝒰 𝒱 𝒲 : Cover.{v} (precoverage P) X} (f : 𝒰.Hom 𝒱) (g : 𝒱.Hom 𝒲) : 𝒰.Hom 𝒲 where
-  idx j := g.idx <| f.idx j
-  app _ := f.app _ ≫ g.app _
-  app_prop _ := P.comp_mem _ _ (f.app_prop _) (g.app_prop _)
+@[deprecated (since := "2026-01-13")] alias Cover.Hom.w := PreZeroHypercover.Hom.w₀
 
-instance Cover.category [P.IsMultiplicative] {X : Scheme.{u}} :
-    Category (Cover.{v} (precoverage P) X) where
-  Hom 𝒰 𝒱 := 𝒰.Hom 𝒱
-  id := Cover.Hom.id
-  comp f g := f.comp g
+@[deprecated (since := "2026-01-13")] alias Cover.Hom.id := PreZeroHypercover.Hom.id
 
-variable [P.IsMultiplicative]
+@[deprecated (since := "2026-01-13")] alias Cover.Hom.comp := PreZeroHypercover.Hom.comp
 
-@[simp]
-lemma Cover.id_idx_apply {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (j : 𝒰.I₀) :
-    (𝟙 𝒰 : 𝒰 ⟶ 𝒰).idx j = j := rfl
+@[deprecated (since := "2026-01-13")] alias Cover.id_idx_apply := PreZeroHypercover.id_s₀
 
-@[simp]
-lemma Cover.id_app {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (j : 𝒰.I₀) :
-    (𝟙 𝒰 : 𝒰 ⟶ 𝒰).app j = 𝟙 _ := rfl
+@[deprecated (since := "2026-01-13")] alias Cover.id_app := PreZeroHypercover.id_h₀
 
-@[simp]
-lemma Cover.comp_idx_apply {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover (precoverage P)}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
-    (f ≫ g).idx j = g.idx (f.idx j) := rfl
+@[deprecated (since := "2026-01-13")] alias Cover.comp_idx_apply := PreZeroHypercover.comp_s₀
 
-@[simp]
-lemma Cover.comp_app {X : Scheme.{u}} {𝒰 𝒱 𝒲 : X.Cover (precoverage P)}
-    (f : 𝒰 ⟶ 𝒱) (g : 𝒱 ⟶ 𝒲) (j : 𝒰.I₀) :
-    (f ≫ g).app j = f.app j ≫ g.app _ := rfl
+@[deprecated (since := "2026-01-13")] alias Cover.comp_app := PreZeroHypercover.comp_h₀
 
 end category
 

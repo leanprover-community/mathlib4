@@ -3,18 +3,20 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.GradedMulAction
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
 /-!
 # The filtration on abelian groups and rings
 
 In this file, we define the concept of filtration for abelian groups, rings, and modules.
 
-# Main definitions
+## Main definitions
 
 * `IsFiltration` : For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a
   filtration if there is another series `F_lt` in `σ` equal to the
@@ -25,11 +27,13 @@ In this file, we define the concept of filtration for abelian groups, rings, and
   is in `F (i + j)`.
 
 * `IsModuleFiltration` : For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a
-  family of subsets of a `R` module `M`, an increasing series `FM` in `σM` is a module filtration
+  family of subsets of an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration
   if `IsFiltration F F_lt` and the pointwise scalar multiplication of `F i` and `FM j`
   is in `F (i +ᵥ j)`.
 
 -/
+
+@[expose] public section
 
 section GeneralFiltration
 
@@ -84,7 +88,7 @@ variable {ι ιM R M σ σM : Type*} [AddMonoid ι] [PartialOrder ι] [PartialOr
 variable [Semiring R] [SetLike σ R] [AddCommMonoid M] [Module R M] [SetLike σM M]
 
 /-- For `F` satisfying `IsRingFiltration F F_lt` in a semiring `R` and `σM` a family of subsets of
-a `R` module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
+an `R`-module `M`, an increasing series `FM` in `σM` is a module filtration if `IsFiltration F F_lt`
 and the pointwise scalar multiplication of `F i` and `FM j` is in `F (i +ᵥ j)`.
 
 The index set `ιM` for the module can be more general, however usually we take `ιM = ι`. -/

@@ -3,7 +3,9 @@ Copyright (c) 2022 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Standard constructions on fiber bundles
@@ -24,6 +26,8 @@ This file contains several standard constructions on fiber bundles:
 fiber bundle, fibre bundle, fiberwise product, pullback
 
 -/
+
+@[expose] public section
 
 open Bundle Filter Set TopologicalSpace Topology
 
@@ -209,8 +213,6 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   source_eq := rfl
   target_eq := rfl
   proj_toFun _ _ := rfl
-
-@[deprecated (since := "2025-06-19")] alias baseSet_prod := prod_baseSet
 
 theorem prod_symm_apply (x : B) (w₁ : F₁) (w₂ : F₂) :
     (prod e₁ e₂).toPartialEquiv.symm (x, w₁, w₂) = ⟨x, e₁.symm x w₁, e₂.symm x w₂⟩ := rfl

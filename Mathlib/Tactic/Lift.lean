@@ -3,9 +3,12 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Basic
-import Batteries.Lean.Expr
-import Batteries.Lean.Meta.UnusedNames
+module
+
+public meta import Mathlib.Tactic.Basic
+public meta import Batteries.Lean.Expr
+public meta import Batteries.Lean.Meta.UnusedNames
+public import Mathlib.Tactic.Basic
 
 /-!
 # lift tactic
@@ -17,6 +20,8 @@ under a specified condition.
 
 lift, tactic
 -/
+
+public meta section
 
 /-- A class specifying that you can lift elements from `α` to `β` assuming `cond` is true.
   Used by the tactic `lift`. -/
@@ -106,6 +111,8 @@ open Lean Parser Elab Tactic Meta
 integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥ 0`;
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
+
+The `norm_cast` tactic can be used after `lift` to normalize introduced casts.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
   (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic

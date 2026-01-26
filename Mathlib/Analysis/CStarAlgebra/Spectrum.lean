@@ -3,11 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Analysis.Normed.Algebra.GelfandFormula
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Algebra.Star.StarAlgHom
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -52,6 +54,8 @@ we can still establish a form of spectral permanence.
 + prove a variation of spectral permanence for `quasispectrum`.
 
 -/
+
+public section
 
 
 local notation "σ" => spectrum
@@ -150,9 +154,10 @@ variable [StarModule ℂ A]
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
-  have hu := exp_mem_unitary_of_mem_skewAdjoint ℂ (ha.smul_mem_skewAdjoint conj_I)
+  let +nondep : NormedAlgebra ℚ A := .restrictScalars ℚ ℂ A
+  have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
-  have : NormedSpace.exp ℂ (I • z) ∈ spectrum ℂ (NormedSpace.exp ℂ (I • a)) := by
+  have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by

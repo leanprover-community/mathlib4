@@ -3,11 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
@@ -23,6 +25,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
   value
 -/
+
+@[expose] public section
 
 variable {ι α R S : Type*}
 
@@ -98,7 +102,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 lemma listSum_le [AddLeftMono S] (l : List R) : abv l.sum ≤ (l.map abv).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_right ih (abv head)
 
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
@@ -144,13 +148,13 @@ section Semiring
 section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
--- `IsDomain`/`CancelMonoidWithZero` API
+-- `IsDomain`/`IsCancelMulZero` API
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (IsRegular.of_ne_zero <| abv.ne_zero one_ne_zero).left
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
@@ -404,10 +408,14 @@ variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 
 open Lean Meta Mathlib Meta Positivity Qq in
-/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+/-- The `positivity` extension which identifies expressions of the form `abv a`.
+For performance reasons, we only attempt to apply this when `abv` is a variable.
+If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
   let (.app f a) ← whnfR e | throwError "not abv ·"
+  if !f.getAppFn.isFVar then
+    throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
   pure (.nonnegative pa')
 
@@ -524,7 +532,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
-    (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
+    (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S where

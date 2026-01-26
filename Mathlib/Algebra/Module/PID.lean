@@ -3,11 +3,13 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.DedekindDomain
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -44,6 +46,8 @@ Then we get the general result using that a torsion free module is free (which h
 
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
+
+public section
 
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.
@@ -152,7 +156,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   have : p ^ k • f1.choose ∈ R ∙ z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
     convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
-    rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
+    rw [← mk_smul, Quotient.mk_eq_zero, smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
@@ -210,7 +214,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           ext i : 3
           simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_apply_one, Ideal.Quotient.mk_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩

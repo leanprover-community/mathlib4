@@ -3,16 +3,18 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.NAry
+public import Mathlib.Order.Filter.Ultrafilter.Defs
+public import Mathlib.Data.Finset.Attr
 
 /-!
 # Pointwise operations on filters
@@ -58,6 +60,8 @@ instances reducible changes the behavior of `simp`).
 
 filter multiplication, filter addition, pointwise addition, pointwise multiplication,
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Pointwise
@@ -176,7 +180,7 @@ protected theorem map_inv : f.map Inv.inv = f⁻¹ :=
 theorem mem_inv : s ∈ f⁻¹ ↔ Inv.inv ⁻¹' s ∈ f :=
   Iff.rfl
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 protected theorem inv_le_inv (hf : f ≤ g) : f⁻¹ ≤ g⁻¹ :=
   map_mono hf
 
@@ -432,7 +436,7 @@ theorem div_pure : f / pure b = f.map (· / b) :=
 @[to_additive]
 theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) := by simp
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 protected theorem div_le_div : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ / g₁ ≤ f₂ / g₂ :=
   map₂_mono
 
@@ -715,10 +719,7 @@ theorem not_one_le_div_iff : ¬1 ≤ f / g ↔ Disjoint f g :=
 
 @[to_additive]
 theorem NeBot.one_le_div (h : f.NeBot) : 1 ≤ f / f := by
-  rintro s ⟨t₁, h₁, t₂, h₂, hs⟩
-  obtain ⟨a, ha₁, ha₂⟩ := Set.not_disjoint_iff.1 (h.not_disjoint h₁ h₂)
-  rw [mem_one, ← div_self' a]
-  exact hs (Set.div_mem_div ha₁ ha₂)
+  simpa using neBot_iff.mp h
 
 @[to_additive]
 theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
@@ -843,7 +844,7 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
 @[to_additive]
 theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) := by simp
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem smul_le_smul : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ • g₁ ≤ f₂ • g₂ :=
   map₂_mono
 
@@ -929,6 +930,7 @@ theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
 
 theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) := by simp
 
+@[gcongr]
 theorem vsub_le_vsub : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ -ᵥ g₁ ≤ f₂ -ᵥ g₂ :=
   map₂_mono
 
@@ -993,7 +995,7 @@ lemma smul_filter.instNeBot [NeBot f] : NeBot (a • f) := .smul_filter ‹_›
 
 scoped[Pointwise] attribute [instance] smul_filter.instNeBot vadd_filter.instNeBot
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem smul_filter_le_smul_filter (hf : f₁ ≤ f₂) : a • f₁ ≤ a • f₂ :=
   map_mono hf
 

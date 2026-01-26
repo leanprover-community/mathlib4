@@ -3,12 +3,14 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Johan Commelin, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.Images
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Abelian.NonPreadditive
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.Pullbacks
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 
 /-!
 # Abelian categories
@@ -17,12 +19,12 @@ This file contains the definition and basic properties of abelian categories.
 
 There are many definitions of abelian category. Our definition is as follows:
 A category is called abelian if it is preadditive,
-has a finite products, kernels and cokernels,
+has finite products, kernels, and cokernels,
 and if every monomorphism and epimorphism is normal.
 
-It should be noted that if we also assume coproducts, then preadditivity is
+It should be noted that if we also assume finite coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
-`NonPreadditiveAbelian.lean`. However, this fact is of little practical
+`Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a
 preadditive structure. In this way, by requiring preadditivity, we allow the
 user to pass in the "native" preadditive structure for the specific category they are
@@ -60,7 +62,7 @@ to avoid having to deal with comparing the two `HasZeroMorphisms` instances
 As a consequence, at the beginning of this file we trivially build
 a `NonPreadditiveAbelian` instance from an `Abelian` instance,
 and use this to restate a number of theorems,
-in each case just reusing the proof from `NonPreadditiveAbelian.lean`.
+in each case just reusing the proof from `Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`.
 
 We don't show this yet, but abelian categories are finitely complete and finitely cocomplete.
 However, the limits we can construct at this level of generality will most likely be less nice than
@@ -79,6 +81,8 @@ convention:
 * [P. Aluffi, *Algebra: Chapter 0*][aluffi2016]
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -282,7 +286,7 @@ end ToNonPreadditiveAbelian
 
 section
 
-/-! We now promote some instances that were constructed using `non_preadditive_abelian`. -/
+/-! We now promote some instances that were constructed using `nonPreadditiveAbelian`. -/
 
 
 attribute [local instance] nonPreadditiveAbelian
@@ -496,7 +500,7 @@ theorem monoLift_comp [Mono f] {T : C} (g : T ⟶ Y) (hg : g ≫ cokernel.π f =
 
 section
 
-variable {D : Type*} [Category D] [HasZeroMorphisms D]
+variable {D : Type*} [Category* D] [HasZeroMorphisms D]
 
 /-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
 admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
@@ -792,7 +796,7 @@ namespace CategoryTheory.NonPreadditiveAbelian
 
 variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 
-/-- Every NonPreadditiveAbelian category can be promoted to an abelian category. -/
+/-- Every `NonPreadditiveAbelian` category can be promoted to an abelian category. -/
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
   normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩

@@ -3,10 +3,11 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.LocallyConvex.SeparatingDual
-import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # The weak operator topology
@@ -47,6 +48,8 @@ We also prove that the WOT is induced by the family of seminorms `‖y (A x)‖`
 In most of the literature, the WOT is defined on maps between Banach spaces. Here, we only assume
 that the domain and codomains are topological vector spaces over a normed field.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -118,7 +121,7 @@ def _root_.ContinuousLinearMap.toWOT :
   LinearEquiv.refl 𝕜₂ _
 
 instance instFunLike : FunLike (E →SWOT[σ] F) E F where
-  coe f :=  ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
+  coe f := ((ContinuousLinearMap.toWOT σ E F).symm f : E → F)
   coe_injective' := by intro; simp
 
 instance instContinuousLinearMapClass : ContinuousSemilinearMapClass (E →SWOT[σ] F) σ E F where

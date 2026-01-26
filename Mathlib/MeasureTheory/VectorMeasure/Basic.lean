@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
@@ -20,7 +22,7 @@ Similarly, when `M = ℂ`, we call the measure a complex measure and write `Comp
 ## Main definitions
 
 * `MeasureTheory.VectorMeasure` is a vector-valued, σ-additive function that maps the empty
-  and non-measurable set to zero.
+  and non-measurable sets to zero.
 * `MeasureTheory.VectorMeasure.map` is the pushforward of a vector measure along a function.
 * `MeasureTheory.VectorMeasure.restrict` is the restriction of a vector measure on some set.
 
@@ -42,12 +44,14 @@ since this provides summability.
 vector measure, signed measure, complex measure
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open NNReal ENNReal
+open NNReal ENNReal Filter
 
-open scoped Function -- required for scoped `on` notation
+open scoped Topology Function -- required for scoped `on` notation
 namespace MeasureTheory
 
 variable {α β : Type*} {m : MeasurableSpace α}
@@ -150,6 +154,11 @@ theorem of_diff {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
     (h : A ⊆ B) : v (B \ A) = v B - v A := by
   rw [← of_add_of_diff hA hB h, add_sub_cancel_left]
 
+theorem of_compl {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M]
+    {v : VectorMeasure α M} {A : Set α} (hA : MeasurableSet A) :
+    v Aᶜ = v univ - v A := by
+  simpa [compl_eq_univ_diff] using of_diff hA .univ (v := v) (subset_univ _)
+
 theorem of_diff_of_diff_eq_zero {A B : Set α} (hA : MeasurableSet A) (hB : MeasurableSet B)
     (h' : v (B \ A) = 0) : v (A \ B) + v B = v A := by
   symm
@@ -191,6 +200,50 @@ theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (
     (hAB : s (A ∪ B) = 0) : s A = 0 := by
   rw [of_union h hA₁ hB₁] at hAB
   linarith
+
+lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
+    (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s has ih =>
+    simp only [Finset.mem_insert, iUnion_iUnion_eq_or_left, has, not_false_eq_true,
+      Finset.sum_insert]
+    rw [of_union, ih]
+    · exact hd.subset (by simp)
+    · grind
+    · simp only [disjoint_iUnion_right]
+      exact fun i hi ↦  hd (by simp) (by simp [hi]) (by grind)
+    · apply hm _ (by simp)
+    · apply Finset.measurableSet_biUnion _ (by grind)
+
+theorem tendsto_vectorMeasure_iUnion_atTop_nat
+    {s : ℕ → Set α} (hm : Monotone s) (hs : ∀ i, MeasurableSet (s i)) :
+    Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋃ n, s n))) := by
+  set t : ℕ → Set α := disjointed s
+  have ht n : MeasurableSet (t n) := .disjointed (fun n ↦ hs n) n
+  have : HasSum (fun n ↦ v (t n)) (v (⋃ n, s n)) := by
+    rw [← iUnion_disjointed]
+    apply m_iUnion _ ht (disjoint_disjointed _)
+  convert (HasSum.tendsto_sum_nat this).comp (tendsto_add_atTop_nat 1) with n
+  dsimp
+  rw [← of_biUnion_finset]
+  · rw [biUnion_range_succ_disjointed, Monotone.partialSups_eq hm]
+  · exact fun i hi j hj hij ↦ disjoint_disjointed _ hij
+  · exact fun b hb ↦ ht _
+
+theorem tendsto_vectorMeasure_iInter_atTop_nat
+    {M : Type*} [AddCommGroup M] [TopologicalSpace M] [T2Space M] [ContinuousSub M]
+    {v : VectorMeasure α M} {s : ℕ → Set α} (hm : Antitone s) (hs : ∀ i, MeasurableSet (s i)) :
+    Tendsto (fun n ↦ v (s n)) atTop (𝓝 (v (⋂ n, s n))) := by
+  have I n : v (s n) = v univ - v (s n)ᶜ := by simp [of_compl (hs n)]
+  have J : v (⋂ n, s n) = v univ - v (⋃ n, (s n)ᶜ) := by
+    rw [← of_compl (MeasurableSet.iUnion (fun n ↦ (hs n).compl))]
+    simp
+  simp_rw [I, J]
+  apply tendsto_const_nhds.sub
+  exact tendsto_vectorMeasure_iUnion_atTop_nat (fun i j hij ↦ by simpa using hm hij)
+    (fun i ↦ (hs i).compl)
 
 end
 
@@ -320,6 +373,40 @@ instance instModule [ContinuousAdd M] : Module R (VectorMeasure α M) :=
   Function.Injective.module R coeFnAddMonoidHom coe_injective coe_smul
 
 end Module
+
+section Dirac
+
+variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [MeasurableSpace β]
+  {x : β} {v : M} {s : Set β}
+
+open scoped Classical in
+/-- The Dirac vector measure with mass `v` at a point `x`. It gives mass `v` to measurable sets
+containing `x`, and `0` otherwise. -/
+def dirac (x : β) (v : M) : VectorMeasure β M where
+  measureOf' s := if MeasurableSet s ∧ x ∈ s then v else 0
+  empty' := by simp
+  not_measurable' := by simp +contextual
+  m_iUnion' f f_meas f_disj := by
+    by_cases hx : x ∈ ⋃ i, f i; swap
+    · simp only [mem_iUnion, not_exists] at hx
+      simp [hx, hasSum_zero]
+    have : MeasurableSet (⋃ i, f i) := by
+      apply MeasurableSet.iUnion f_meas
+    simp only [f_meas, true_and, MeasurableSet.iUnion f_meas, hx, and_self, ↓reduceIte]
+    obtain ⟨j, hj⟩ : ∃ j, x ∈ f j := by simpa using hx
+    nth_rewrite 2 [show v = if x ∈ f j then v else 0 by simp [hj]]
+    apply hasSum_single
+    intro i hi
+    have : Disjoint (f i) (f j) := f_disj hi
+    grind
+
+@[simp] lemma dirac_apply_of_mem (hs : MeasurableSet s) (hx : x ∈ s) : dirac x v s = v := by
+  simp [dirac, hs, hx]
+
+@[simp] lemma dirac_apply_of_notMem (hx : x ∉ s) : dirac x v s = 0 := by
+  simp [dirac, hx]
+
+end Dirac
 
 end VectorMeasure
 
@@ -1194,9 +1281,7 @@ theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj�
     s.toMeasureOfLEZero i hi₁ hi j = ((↑) : ℝ≥0 → ℝ≥0∞) ⟨-s (i ∩ j), neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
       (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi))⟩ := by
-  erw [toMeasureOfZeroLE_apply]
-  · simp
-  · assumption
+  simp [toMeasureOfLEZero, toMeasureOfZeroLE_apply _ _ _ hj₁]
 
 theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)
     (hj₁ : MeasurableSet j) :

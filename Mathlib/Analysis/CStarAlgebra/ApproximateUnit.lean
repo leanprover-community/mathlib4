@@ -3,10 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Topology.ApproximateUnit
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Topology.ApproximateUnit
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-! # Nonnegative contractions in a C⋆-algebra form an approximate unit
 
@@ -35,6 +38,8 @@ moreover, this filter is an increasing approximate unit.
   increasing approximate unit.
 
 -/
+
+@[expose] public section
 
 variable {A : Type*} [NonUnitalCStarAlgebra A]
 
@@ -98,8 +103,6 @@ lemma norm_cfcₙ_one_sub_one_add_inv_lt_one (a : A) :
     ‖cfcₙ (fun x : ℝ≥0 ↦ 1 - (1 + x)⁻¹) a‖ < 1 :=
   nnnorm_cfcₙ_nnreal_lt fun x _ ↦ tsub_lt_self zero_lt_one (by positivity)
 
--- the calls to `fun_prop` with a discharger set off the linter
-set_option linter.style.multiGoal false in
 lemma CStarAlgebra.directedOn_nonneg_ball :
     DirectedOn (· ≤ ·) ({x : A | 0 ≤ x} ∩ Metric.ball 0 1) := by
   let f : ℝ≥0 → ℝ≥0 := fun x => 1 - (1 + x)⁻¹
@@ -121,7 +124,7 @@ lemma CStarAlgebra.directedOn_nonneg_ball :
     _ = cfcₙ f (cfcₙ g a) := by
       rw [cfcₙ_comp f g a ?_ (by simp [f, tsub_self]) ?_ (by simp [g]) ha₁]
       · fun_prop (disch := intro _ _; positivity)
-      · have (x) (hx : x ∈ σₙ ℝ≥0 a) :  1 - x ≠ 0 := by
+      · have (x) (hx : x ∈ σₙ ℝ≥0 a) : 1 - x ≠ 0 := by
           refine tsub_pos_of_lt ?_ |>.ne'
           exact lt_of_le_of_lt (le_nnnorm_of_mem_quasispectrum hx) ha₂
         fun_prop (disch := assumption)

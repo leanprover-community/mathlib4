@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.Algebra.Algebra.Operations
+module
+
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Localization.Module
+public import Mathlib.Algebra.Algebra.Operations
 
 /-!
 # Localization of Submodules
@@ -16,7 +18,7 @@ Results about localizations of submodules and quotient modules are provided in t
 ## Main results
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
-  A direct consequence of this is that `Rₚ` is flat over `R, see `IsLocalization.flat`.
+  A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
 - `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
 - `Submodule.toLocalizedQuotient`:
@@ -27,13 +29,15 @@ Results about localizations of submodules and quotient modules are provided in t
 
 -/
 
+@[expose] public section
+
 open nonZeroDivisors
 
 variable {R S M N : Type*}
 variable (S) [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [AddCommMonoid N]
 variable [Module R M] [Module R N] [Algebra R S] [Module S N] [IsScalarTower R S N]
 variable (p : Submonoid R) [IsLocalization p S] (f : M →ₗ[R] N) [IsLocalizedModule p f]
-variable (M' : Submodule R M)
+variable (M' M'' : Submodule R M)
 
 namespace Submodule
 
@@ -75,6 +79,11 @@ theorem localized'_eq_span : localized' S p f M' = span S (f '' M') := by
   rw [← one_smul R m, ← mul_one s, ← IsLocalizedModule.mk'_smul_mk' S]
   exact smul_mem _ _ (subset_span ⟨m, hm, by simp⟩)
 
+theorem map_le_localized₀ : M'.map f ≤ localized₀ p f M' := by
+  rintro - ⟨x, hx, rfl⟩
+  rw [mem_localized₀]
+  exact ⟨x, hx, 1, IsLocalizedModule.mk'_one p f x⟩
+
 /-- The Galois insertion between `Submodule R M` and `Submodule S N`,
 where `S` is the localization of `R` at `p` and `N` is the localization of `M` at `p`. -/
 def localized'gi : GaloisInsertion (localized' S p f) (comap f <| ·.restrictScalars R) where
@@ -113,6 +122,58 @@ lemma localized₀_top : (⊤ : Submodule R M).localized₀ p f = ⊤ := by
 @[simp]
 lemma localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ :=
   SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_top p f)
+
+theorem localized₀_inf :
+    (M' ⊓ M'').localized₀ p f = M'.localized₀ p f ⊓ M''.localized₀ p f := by
+  simp only [Submodule.ext_iff, Submodule.mem_inf, mem_localized₀]
+  refine fun x ↦ ⟨by grind, ?_⟩
+  rintro ⟨⟨i, hi, s, hs⟩, j, hj, t, ht⟩
+  have h := ht.trans hs.symm
+  rw [IsLocalizedModule.mk'_eq_mk'_iff] at h
+  obtain ⟨k, hk⟩ := h
+  refine ⟨(k * t) • i, ⟨M'.smul_of_tower_mem (k * t) hi, ?_⟩, k * s * t, ?_⟩
+  · rw [mul_smul, hk, smul_smul]
+    exact M''.smul_of_tower_mem (k * s) hj
+  · rwa [mul_smul, hk, smul_smul, IsLocalizedModule.mk'_cancel_left]
+
+theorem localized'_inf :
+    (M' ⊓ M'').localized' S p f = M'.localized' S p f ⊓ M''.localized' S p f :=
+  SetLike.ext' (by apply SetLike.ext'_iff.mp <| Submodule.localized₀_inf p f M' M'')
+
+theorem localized'_iSup {ι : Type*} (g : ι → Submodule R M) :
+    (⨆ i, g i).localized' S p f = ⨆ i, (g i).localized' S p f := by
+  exact GaloisConnection.l_iSup (localized'gi S p f).gc
+
+theorem localized₀_iSup {ι : Type*} (g : ι → Submodule R M) :
+    (⨆ i, g i).localized₀ p f = ⨆ i, (g i).localized₀ p f := by
+  let : Module (Localization p) N := IsLocalizedModule.module p f
+  have : IsScalarTower R (Localization p) N := IsLocalizedModule.isScalarTower_module p f
+  simpa using congr_arg (restrictScalars R) (localized'_iSup (Localization p) p f g)
+
+/-- `localized₀` as a `FrameHom`. -/
+noncomputable def localized₀FrameHom : FrameHom (Submodule R M) (Submodule R N) where
+  toFun := localized₀ p f
+  map_inf' := localized₀_inf p f
+  map_top' := localized₀_top p f
+  map_sSup' s := by rw [sSup_eq_iSup', localized₀_iSup, sSup_image']
+
+@[simp]
+lemma IsLocalizedModule.localized₀FrameHom_apply :
+    localized₀FrameHom p f M' = M'.localized₀ p f :=
+  rfl
+
+/-- `localized'` as a `FrameHom`. -/
+noncomputable def localized'FrameHom :
+    FrameHom (Submodule R M) (Submodule S N) where
+  toFun := localized' S p f
+  map_inf' := localized'_inf S p f
+  map_top' := localized'_top S p f
+  map_sSup' s := by rw [sSup_eq_iSup', localized'_iSup, sSup_image']
+
+@[simp]
+lemma IsLocalizedModule.localized'FrameHom_apply :
+    localized'FrameHom S p f M' = M'.localized' S p f :=
+  rfl
 
 @[simp]
 lemma localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by

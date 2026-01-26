@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 
@@ -28,6 +30,8 @@ of localizations.
 - `Localization.AtPrime.prime_unique_of_minimal`: When localizing at a minimal prime ideal `I`,
   the resulting ring only has a single prime ideal.
 -/
+
+public section
 
 
 section
@@ -178,7 +182,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]

@@ -3,10 +3,12 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Data.List.ToFinsupp
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Data.List.ToFinsupp
+public import Mathlib.LinearAlgebra.Pi
 /-!
 # `Polynomial.ofFn` and `Polynomial.toFn`
 
@@ -19,6 +21,8 @@ of its coefficients and vice versa. We prove some basic APIs for these functions
 - `Polynomial.ofFn n` associates to a vector of length `n` the polynomial that has the entries of
   the vector as coefficients.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -108,7 +112,7 @@ theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R[X]} (h_deg : p.nat
   ext i
   by_cases! h : i < n
   · simp [h, toFn]
-  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by cutsat
+  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by lia
     simp [*]
 
 end ofFn

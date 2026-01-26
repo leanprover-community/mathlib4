@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Heyting.Hom
+module
+
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Heyting.Hom
 
 /-!
 # The category of Heyting algebras
 
 This file defines `HeytAlg`, the category of Heyting algebras.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -37,6 +41,7 @@ attribute [coe] HeytAlg.carrier
 /-- Construct a bundled `HeytAlg` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [HeytingAlgebra X] : HeytAlg := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `HeytAlg R`. -/
 @[ext]
 structure Hom (X Y : HeytAlg.{u}) where
@@ -44,11 +49,15 @@ structure Hom (X Y : HeytAlg.{u}) where
   /-- The underlying `HeytingHom`. -/
   hom' : HeytingHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category HeytAlg.{u} where
   Hom X Y := Hom X Y
   id X := ⟨HeytingHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory HeytAlg (HeytingHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

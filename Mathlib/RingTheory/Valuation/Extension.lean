@@ -3,7 +3,11 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Extension of Valuations
@@ -44,6 +48,11 @@ without first determining the normalizations once and for all.
 Valuation, Extension of Valuations
 
 -/
+
+@[expose] public section
+
+open Module
+
 namespace Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
@@ -120,6 +129,11 @@ instance instAlgebraInteger : Algebra vR.integer vA.integer where
 theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
   rfl
 
+@[simp]
+lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
+    (⟨r, hr⟩ : vR.integer) • (⟨a, ha⟩ : vA.integer) =
+      ⟨r • a, Algebra.smul_def r a ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr hr) ha⟩ := rfl
+
 @[simp, norm_cast]
 theorem val_algebraMap (r : vR.integer) :
     ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
@@ -130,11 +144,8 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
 
-instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
-    NoZeroSMulDivisors vR.integer vA.integer := by
-  refine ⟨fun {x y} e ↦ ?_⟩
-  have : (x : R) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
-  simpa only [Subtype.ext_iff, smul_eq_zero] using this
+instance instIsTorsionFreeInteger [IsDomain R] [IsTorsionFree R A] :
+    IsTorsionFree vR.integer vA.integer := .of_smul_eq_zero <| by simp
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
     Function.Injective (algebraMap vK.integer vA.integer) :=

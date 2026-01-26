@@ -3,7 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Matrices as a normed space
@@ -49,6 +51,8 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 `Mathlib/Analysis/CStarAlgebra/Matrix.lean` and `open scoped Matrix.Norms.L2Operator`.
 It is separated to avoid extraneous imports in this file.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -247,6 +251,7 @@ protected theorem linftyOpIsBoundedSMul
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.pseudoMetricSpaceToPi 1 (fun _ : n ↦ α)
+  letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
   inferInstanceAs (IsBoundedSMul R (m → n → α))
 
 /-- This applies to the sup norm of L1 norm. -/
@@ -255,6 +260,7 @@ protected theorem linftyOpNormSMulClass
     [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
   inferInstanceAs (NormSMulClass R (m → n → α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
@@ -264,6 +270,7 @@ matrix. -/
 protected def linftyOpNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
+  letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
   inferInstanceAs (NormedSpace R (m → n → α))
 
 section SeminormedAddCommGroup
@@ -405,7 +412,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   · rw [← nnnorm_eq_zero] at h
     rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel₀ h]
 
-private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
+private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ) := by
   simp only [unitOf, coe_nnnorm]
   split_ifs with h
   · simp [h]
@@ -504,6 +511,7 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
     [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.isBoundedSMulSeminormedAddCommGroupToPi 2 _
 
 /-- This applies to the Frobenius norm. -/
@@ -512,6 +520,7 @@ theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [M
     [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normSMulClassSeminormedAddCommGroupToPi 2 _
 
 /-- Normed space instance (using the Frobenius norm) for matrices over a normed space.  Not
@@ -521,6 +530,7 @@ matrix. -/
 def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
+  letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _
 
 section SeminormedAddCommGroup

@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property
@@ -20,13 +22,15 @@ this construction by intersecting with the pretopology of surjective families.
 
 -/
 
+@[expose] public section
+
 universe w
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace MorphismProperty
 
@@ -69,6 +73,12 @@ lemma precoverage_inf : precoverage (P ⊓ Q) = precoverage P ⊓ precoverage Q 
   ext X R
   exact ⟨fun hS ↦ ⟨fun _ _ hf ↦ (hS hf).left, fun _ _ hf ↦ (hS hf).right⟩,
     fun h ↦ fun _ _ hf ↦ ⟨h.left hf, h.right hf⟩⟩
+
+lemma comap_precoverage {D : Type*} [Category* D] (P : MorphismProperty D) (F : C ⥤ D) :
+    P.precoverage.comap F = (P.inverseImage F).precoverage := by
+  ext X R
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  simp
 
 /-- If `P` is stable under base change, this is the coverage on `C` where covering presieves
 are those where every morphism satisfies `P`. -/

@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 
@@ -21,6 +23,8 @@ A morphism of schemes is separated if its diagonal morphism is a closed immersio
 - `AlgebraicGeometry.IsSeparated.hasAffineProperty`:
   A morphism is separated iff the preimage of affine opens are separated schemes.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -39,7 +43,10 @@ variable {W X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 @[mk_iff]
 class IsSeparated : Prop where
   /-- A morphism is separated if the diagonal map is a closed immersion. -/
-  diagonal_isClosedImmersion : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+  isClosedImmersion_diagonal : IsClosedImmersion (pullback.diagonal f) := by infer_instance
+
+@[deprecated (since := "2026-01-20")]
+alias IsSeparated.diagonal_isClosedImmersion := IsSeparated.isClosedImmersion_diagonal
 
 namespace IsSeparated
 
@@ -234,7 +241,7 @@ instance {I J : X.IdealSheafData} (h : I ≤ J) : IsClosedImmersion (I.inclusion
   exact .of_comp _ I.subschemeι
 
 lemma IsSeparated.of_comp [IsSeparated (f ≫ g)] : IsSeparated f := by
-  have := IsSeparated.diagonal_isClosedImmersion (f := f ≫ g)
+  have : IsClosedImmersion (pullback.diagonal (f ≫ g)) := inferInstance
   rw [pullback.diagonal_comp] at this
   exact ⟨@IsClosedImmersion.of_comp _ _ _ _ _ this inferInstance⟩
 
@@ -285,7 +292,7 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
     · rwa [← Over.comp_left, equalizer.lift_ι]
     · ext1; exact hU
   have : Surjective (equalizer.ι f' g').left :=
-    surjective_of_isDominant_of_isClosed_range _ IsClosedImmersion.base_closed.2
+    surjective_of_isDominant_of_isClosed_range _ (Scheme.Hom.isClosedEmbedding _).isClosed_range
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)

@@ -3,9 +3,11 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor products of cones
@@ -42,6 +44,8 @@ We define the minimal and maximal tensor products of pointed cones:
 
 -/
 
+@[expose] public section
+
 open TensorProduct Module
 
 variable {R : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
@@ -71,8 +75,8 @@ theorem mem_maxTensorProduct {C₁ : PointedCone R G} {C₂ : PointedCone R H} {
       ∀ φ ∈ PointedCone.dual (dualPairing R G).flip C₁,
       ∀ ψ ∈ PointedCone.dual (dualPairing R H).flip C₂,
       0 ≤ dualDistrib R G H (φ ⊗ₜ[R] ψ) z := by
-  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2]
-  rfl
+  simp only [maxTensorProduct, minTensorProduct, dual_span, mem_dual, Set.forall_mem_image2,
+    SetLike.mem_coe, mem_dual, LinearMap.flip_apply, dualPairing_apply]
 
 /-- Elementary tensors are members of the maximal tensor product. -/
 theorem tmul_mem_maxTensorProduct {x y} {C₁ : PointedCone R G} {C₂ : PointedCone R H} (hx : x ∈ C₁)
@@ -99,5 +103,27 @@ theorem tmul_subset_minTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCon
 theorem minTensorProduct_le_maxTensorProduct (C₁ : PointedCone R G) (C₂ : PointedCone R H) :
     minTensorProduct C₁ C₂ ≤ maxTensorProduct C₁ C₂ := by
   exact Submodule.span_le.mpr (tmul_subset_maxTensorProduct C₁ C₂)
+
+variable {C₁ : PointedCone R G} {C₂ : PointedCone R H} {z : G ⊗[R] H}
+
+/-- The minimal tensor product is commutative. -/
+@[simp]
+theorem minTensorProduct_comm :
+    (minTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = minTensorProduct C₂ C₁ := by
+  simp [minTensorProduct, map, span, Submodule.map_span, Set.image_image2,
+    Set.image2_swap (· ⊗ₜ[R] · : H → G → _)]
+
+/-- The maximal tensor product is commutative. -/
+@[simp]
+theorem maxTensorProduct_comm :
+    (maxTensorProduct C₁ C₂).map (TensorProduct.comm R G H) = maxTensorProduct C₂ C₁ := by
+  ext z
+  simp only [mem_map, mem_maxTensorProduct]
+  refine ⟨?_, fun hz ↦
+    ⟨(TensorProduct.comm R H G) z, ?_, (TensorProduct.comm R H G).symm_apply_apply z⟩⟩
+  · rintro ⟨w, hw, rfl⟩ ψ hψ φ hφ
+    simpa [dualDistrib_apply_comm] using hw φ hφ ψ hψ
+  · intro φ hφ ψ hψ
+    simpa [dualDistrib_apply_comm] using hz ψ hψ φ hφ
 
 end PointedCone

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Jacobson.Ideal
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
-import Mathlib.RingTheory.Spectrum.Maximal.Defs
+module
+
+public import Mathlib.RingTheory.Jacobson.Ideal
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
+public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
 
@@ -15,15 +17,15 @@ We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
+@[expose] public section
+
 namespace IsLocalRing
 
 variable {R S K : Type*}
 
 section CommSemiring
 
-variable [CommSemiring R]
-
-variable [IsLocalRing R]
+variable [CommSemiring R] [IsLocalRing R]
 
 @[simp]
 theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
@@ -81,8 +83,6 @@ iff it is a unit.
 theorem notMem_maximalIdeal {x : R} : x ∉ maximalIdeal R ↔ IsUnit x := by
   simp only [mem_maximalIdeal, mem_nonunits_iff, not_not]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_maximalIdeal := notMem_maximalIdeal
-
 theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
   not_iff_not.mp
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
@@ -92,9 +92,7 @@ end CommSemiring
 
 section CommRing
 
-variable [CommRing R]
-
-variable [IsLocalRing R]
+variable [CommRing R] [IsLocalRing R]
 
 theorem maximalIdeal_le_jacobson (I : Ideal R) :
     IsLocalRing.maximalIdeal R ≤ I.jacobson :=

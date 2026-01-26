@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Preadditive.Biproducts
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Basic
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
@@ -29,11 +31,13 @@ via the obvious map `X₁ ⟶ X₂ ⊞ X₃`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
   {X₁ X₂ X₃ X₄ : C} [HasBinaryBiproduct X₂ X₃]
 
 section Pushout

@@ -3,13 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Algebra.Field.Equiv
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Submonoid
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -33,6 +35,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 
@@ -534,11 +538,10 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 variable (R S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S] [h : IsFractionRing R S]
 
 theorem nontrivial_iff_nontrivial : Nontrivial R ↔ Nontrivial S := by
-  by_contra! h'
-  rcases h' with ⟨_, _⟩ | ⟨_, _⟩
+  by_contra! ⟨_, _⟩ | ⟨_, _⟩
   · obtain ⟨c, hc⟩ := h.exists_of_eq (x := 1) (y := 0) (Subsingleton.elim _ _)
     simp at hc
-  · apply (h.map_units 1).ne_zero
+  · apply (h.map_units S 1).ne_zero
     rw [Subsingleton.eq_zero ((1 : nonZeroDivisors R) : R), map_zero]
 
 protected theorem nontrivial [hR : Nontrivial R] : Nontrivial S :=
@@ -601,18 +604,18 @@ variable [Field K] [Algebra R K] [FaithfulSMul R K]
 Should usually be introduced locally along with `isScalarTower_liftAlgebra`
 See note [reducible non-instances]. -/
 noncomputable abbrev liftAlgebra : Algebra (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   RingHom.toAlgebra (IsFractionRing.lift (FaithfulSMul.algebraMap_injective R K))
 
 attribute [local instance] liftAlgebra
 
 instance isScalarTower_liftAlgebra : IsScalarTower R (FractionRing R) K :=
-  have := (FaithfulSMul.algebraMap_injective R K).isDomain
+  have := IsDomain.of_faithfulSMul R K
   .of_algebraMap_eq fun x ↦
     (IsFractionRing.lift_algebraMap (FaithfulSMul.algebraMap_injective R K) x).symm
 
 lemma algebraMap_liftAlgebra :
-    have := (FaithfulSMul.algebraMap_injective R K).isDomain
+    have := IsDomain.of_faithfulSMul R K
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
 

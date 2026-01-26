@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Support of the derivative of a function
@@ -16,6 +18,8 @@ compact support.
 
 derivative, support
 -/
+
+public section
 
 
 universe u v

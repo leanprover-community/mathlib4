@@ -3,11 +3,13 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Option.Basic
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Data.Option.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Encodings
@@ -23,6 +25,8 @@ It also contains several examples:
 - `unaryFinEncodingNat` : a unary encoding of ℕ
 - `finEncodingBoolBool` : an encoding of bool.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -84,7 +88,7 @@ theorem inclusionBoolΓ'_injective : Function.Injective inclusionBoolΓ' :=
 
 /-- An encoding function of the positive binary numbers in bool. -/
 def encodePosNum : PosNum → List Bool
-  | PosNum.one    => [true]
+  | PosNum.one => [true]
   | PosNum.bit0 n => false :: encodePosNum n
   | PosNum.bit1 n => true :: encodePosNum n
 
@@ -101,7 +105,7 @@ def encodeNat (n : ℕ) : List Bool :=
 def decodePosNum : List Bool → PosNum
   | false :: l => PosNum.bit0 (decodePosNum l)
   | true  :: l => ite (l = []) PosNum.one (PosNum.bit1 (decodePosNum l))
-  | _          => PosNum.one
+  | _ => PosNum.one
 
 /-- A decoding function from `List Bool` to the binary numbers. -/
 def decodeNum : List Bool → Num := fun l => ite (l = []) Num.zero <| decodePosNum l

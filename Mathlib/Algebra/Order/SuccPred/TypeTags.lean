@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.SuccPred.Archimedean
-import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
+module
+
+public import Mathlib.Order.SuccPred.Archimedean
+public import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 
 /-!
 # Successor and predecessor on type tags
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 This file declates successor and predecessor orders on type tags.
 
 -/
+
+@[expose] public section
 
 variable {X : Type*}
 

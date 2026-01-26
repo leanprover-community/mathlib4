@@ -3,10 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Trace of a matrix
@@ -21,6 +23,8 @@ See also `LinearAlgebra.Trace` for the trace of an endomorphism.
 matrix, trace, diagonal
 
 -/
+
+@[expose] public section
 
 
 open Matrix
@@ -244,15 +248,9 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 theorem trace_single_eq_of_ne (h : i ≠ j) : trace (single i j c) = 0 := by
   simp [trace, h]
 
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_zero := trace_single_eq_of_ne
-
 @[simp]
 theorem trace_single_eq_same : trace (single i i c) = c := by
   simp [trace]
-
-@[deprecated (since := "2025-05-05")]
-alias StdBasisMatrix.trace_eq := trace_single_eq_same
 
 theorem trace_single_mul [NonUnitalNonAssocSemiring R] [Fintype m]
     (i : n) (j : m) (a : R) (x : Matrix m n R) :
@@ -265,6 +263,12 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
   simp [trace, mul_apply, single, ite_and]
 
 end single
+
+theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+    Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
+  classical
+  inhabit n
+  exact ⟨single default default r, trace_single_eq_same default r⟩
 
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
 theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :

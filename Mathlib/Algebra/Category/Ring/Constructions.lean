@@ -3,14 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Instances
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Tactic.Algebraize
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -25,6 +25,8 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `RingHom.eqLocus` is the equalizer
 
 -/
+
+@[expose] public section
 
 universe u u'
 
@@ -151,6 +153,17 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h4
   simp [Iso.commRingCatIsoToRingEquiv, h1, e', e, h4]
 
+lemma isPushout_of_isLocalization {R S Rₘ Sₘ : Type u}
+    [CommRing R] [CommRing Rₘ] [Algebra R Rₘ] [CommRing S] [CommRing Sₘ] [Algebra S Sₘ]
+    (f : R →+* S) (fₘ : Rₘ →+* Sₘ) (H : fₘ.comp (algebraMap _ _) = (algebraMap _ _).comp f)
+    (M : Submonoid R) [IsLocalization M Rₘ] [IsLocalization (M.map f) Sₘ] :
+    IsPushout (CommRingCat.ofHom f) (CommRingCat.ofHom (algebraMap R Rₘ))
+      (CommRingCat.ofHom (algebraMap S Sₘ)) (CommRingCat.ofHom fₘ) := by
+  algebraize [f, fₘ, fₘ.comp (algebraMap R Rₘ)]
+  have : IsScalarTower R S Sₘ := .of_algebraMap_eq' H
+  have : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ := ‹_›
+  exact CommRingCat.isPushout_iff_isPushout.mpr (Algebra.isPushout_of_isLocalization M _ _ _)
+
 lemma closure_range_union_range_eq_top_of_isPushout
     {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
     (H : IsPushout f g a b) :
@@ -174,8 +187,8 @@ variable (A B : CommRingCat.{u})
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
   BinaryCofan.mk
-    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶ of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶ of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl :
@@ -201,9 +214,9 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
     constructor
     · ext a
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+      simp [map_one, mul_one, ← hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ← hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
@@ -346,7 +359,7 @@ instance : IsLocalHom (equalizerFork f g).ι.hom := by
     conv_rhs => rw [h₁]
     rw [← f.hom.map_mul, ← g.hom.map_mul, h₄, f.hom.map_one, g.hom.map_one]
   rw [isUnit_iff_exists_inv]
-  exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
+  exact ⟨⟨y, this⟩, Subtype.ext h₃⟩
 
 @[instance]
 theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :

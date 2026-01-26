@@ -3,16 +3,21 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-import Mathlib.Tactic.TacticAnalysis
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
-import Lean.Elab.Command
+module
+
+public meta import Mathlib.Tactic.TacticAnalysis
+public meta import Lean.Elab.Command
+public import Mathlib.Tactic.ExtractGoal
+public import Mathlib.Tactic.TacticAnalysis
+public import Mathlib.Util.ParseCommand
 
 /-!
 # Tactic linters
 
 This file defines passes to run from the tactic analysis framework.
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -60,7 +65,7 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
     catch _e =>
       let name ← mkAuxDeclName `extracted
       -- Rerun in the original tactic context, since `omega` changes the state.
-      let ((sig, _, modules), _) ← ctxI.runTactic i goal (fun goal =>
+      let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
         (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run)
       let imports := modules.toList.map (s!"import {·}")
       return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"
@@ -103,6 +108,21 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
     }
 
 
+/-- Convert a term syntax to a grindParam syntax (wrapping in grindLemma).
+If the term is a simple identifier (like `pi_pos`), wrap it in an explicit application
+`(id pi_pos)` so grind treats it as a term rather than an e-matching theorem. -/
+private def termToGrindParam (t : Syntax) : Syntax :=
+  -- grindLemma := ppGroup((Attr.grindMod ppSpace)? term)
+  -- grindParam := grindErase <|> grindLemmaMin <|> grindLemma <|> anchor
+  -- With no modifier, the first child is a null node
+  -- If t is a simple identifier, wrap as `(id t)` to force term interpretation
+  let t' : Syntax := if t.isIdent then
+      -- Create `id t` application - this ensures grind sees it as a term, not an e-match candidate
+      mkNode ``Lean.Parser.Term.app #[mkIdent `id, mkNullNode #[t]]
+    else t
+  let grindLemma := mkNode ``Lean.Parser.Tactic.grindLemma #[mkNullNode, t']
+  mkNode ``Lean.Parser.Tactic.grindParam #[grindLemma]
+
 /--
 Define a pass that tries replacing a specific tactic with `grind`.
 
@@ -112,12 +132,46 @@ all produce the same message.
 
 `tacticKind` is the `SyntaxNodeKind` for the tactic's main parser,
 for example `Mathlib.Tactic.linarith`.
+
+If `extractArgs` is provided, it extracts term arguments from the original tactic
+(e.g., `linarith [X, Y]`) and passes them to grind (e.g., `grind [X, Y]`).
+Local hypotheses are filtered out since grind uses them automatically.
 -/
 def grindReplacementWith (tacticName : String) (tacticKind : SyntaxNodeKind)
+    (extractArgs : Syntax → Option (Syntax.TSepArray `term ",") := fun _ => none)
     (reportFailure : Bool := true) (reportSuccess : Bool := false)
     (reportSlowdown : Bool := false) (maxSlowdown : Float := 1) :
     TacticAnalysis.Config :=
-  terminalReplacement tacticName "grind" tacticKind (fun _ _ _ => `(tactic| grind))
+  let newTactic : ContextInfo → TacticInfo → Syntax → CommandElabM (TSyntax `tactic) :=
+    fun _ctxI tacI stx => do
+      match extractArgs stx with
+      | some args =>
+        if args.getElems.isEmpty then
+          return ← `(tactic| grind)
+        -- Get local hypothesis names from the goal's local context
+        let lctxNames : Std.HashSet Name :=
+          match tacI.goalsBefore.head? with
+          | some goal =>
+            let goalDecl := tacI.mctxBefore.decls.find! goal
+            goalDecl.lctx.foldl (init := {}) fun s decl =>
+              if decl.isImplementationDetail then s else s.insert decl.userName
+          | none => {}
+        -- Filter out terms that are simple identifiers matching local hypotheses
+        let filteredElems := args.getElems.filter fun term =>
+          match term.raw with
+          | .ident _ _ name _ => !lctxNames.contains name
+          | _ => true  -- Keep non-identifier terms (like `foo.bar x`)
+        if filteredElems.isEmpty then
+          return ← `(tactic| grind)
+        -- Build comma-separated list from filtered elements
+        let grindElemsAndSeps := filteredElems.foldl (init := #[]) fun acc elem =>
+          if acc.isEmpty then #[termToGrindParam elem]
+          else acc.push (mkAtom ",") |>.push (termToGrindParam elem)
+        let grindArgs : Syntax.TSepArray ``Lean.Parser.Tactic.grindParam "," :=
+          ⟨grindElemsAndSeps⟩
+        `(tactic| grind [$grindArgs,*])
+      | none => `(tactic| grind)
+  terminalReplacement tacticName "grind" tacticKind newTactic
     reportFailure reportSuccess reportSlowdown maxSlowdown
 
 end Mathlib.TacticAnalysis
@@ -131,6 +185,13 @@ register_option linter.tacticAnalysis.regressions.linarithToGrind : Bool := {
 @[tacticAnalysis linter.tacticAnalysis.regressions.linarithToGrind,
   inherit_doc linter.tacticAnalysis.regressions.linarithToGrind]
 def linarithToGrindRegressions := grindReplacementWith "linarith" `Mathlib.Tactic.linarith
+    (extractArgs := fun stx => do
+      -- linarith syntax: "linarith" "!"? linarithArgsRest
+      -- linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
+      let rest := stx[2]  -- linarithArgsRest
+      let argsGroup := rest[2]  -- the optional bracket group
+      guard (argsGroup.getNumArgs >= 2)
+      return ⟨argsGroup[1].getArgs⟩)
 
 /-- Debug `grind` by identifying places where it does not yet supersede `ring`. -/
 register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
@@ -140,24 +201,24 @@ register_option linter.tacticAnalysis.regressions.ringToGrind : Bool := {
   inherit_doc linter.tacticAnalysis.regressions.ringToGrind]
 def ringToGrindRegressions := grindReplacementWith "ring" `Mathlib.Tactic.RingNF.ring
 
-/-- Debug `cutsat` by identifying places where it does not yet supersede `omega`. -/
-register_option linter.tacticAnalysis.regressions.omegaToCutsat : Bool := {
+/-- Debug `lia` by identifying places where it does not yet supersede `omega`. -/
+register_option linter.tacticAnalysis.regressions.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.regressions.omegaToCutsat]
-def omegaToCutsatRegressions :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
+@[tacticAnalysis linter.tacticAnalysis.regressions.omegaToLia,
+  inherit_doc linter.tacticAnalysis.regressions.omegaToLia]
+def omegaToLiaRegressions :=
+  terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := false) (reportFailure := true)
 
-/-- Report places where `omega` can be replaced by `cutsat`. -/
-register_option linter.tacticAnalysis.omegaToCutsat : Bool := {
+/-- Report places where `omega` can be replaced by `lia`. -/
+register_option linter.tacticAnalysis.omegaToLia : Bool := {
   defValue := false
 }
-@[tacticAnalysis linter.tacticAnalysis.omegaToCutsat,
-  inherit_doc linter.tacticAnalysis.omegaToCutsat]
-def omegaToCutsat :=
-  terminalReplacement "omega" "cutsat" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| cutsat))
+@[tacticAnalysis linter.tacticAnalysis.omegaToLia,
+  inherit_doc linter.tacticAnalysis.omegaToLia]
+def omegaToLia :=
+  terminalReplacement "omega" "lia" ``Lean.Parser.Tactic.omega (fun _ _ _ => `(tactic| lia))
     (reportSuccess := true) (reportFailure := false)
 
 /-- Suggest merging two adjacent `rw` tactics if that also solves the goal. -/
@@ -284,20 +345,141 @@ register_option linter.tacticAnalysis.tryAtEachStep.fraction : Nat := {
   defValue := 1
 }
 
-/-- Run a tactic at each proof step. -/
-def Mathlib.TacticAnalysis.tryAtEachStep (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config where
+/--
+Whether to show timing information in "tryAtEachStep" tactic analysis output.
+
+When true (default), messages include elapsed time like `(23ms)`.
+Set to false in tests to avoid non-deterministic output.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.showTiming : Bool := {
+  defValue := true
+}
+
+/--
+Whether to report when a tactic can be replaced with itself.
+
+When true (default), all successful replacements are reported, including when
+the suggested tactic matches the existing proof.
+When false, self-replacements are suppressed.
+-/
+register_option linter.tacticAnalysis.tryAtEachStep.selfReplacements : Bool := {
+  defValue := true
+}
+
+/-- Run a tactic at each proof step, with optional timing.
+
+`label` is an optional human-readable name for output. If `none`, the tactic syntax is used.
+
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepCore
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic))
+    (label : Option String := none) : TacticAnalysis.Config where
   run seq := do
-    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get (← getOptions)
-    for i in seq do
+    let opts ← getOptions
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
+    let showTiming := linter.tacticAnalysis.tryAtEachStep.showTiming.get opts
+    let selfReplacements := linter.tacticAnalysis.tryAtEachStep.selfReplacements.get opts
+    for h : idx in [:seq.size] do
+      let i := seq[idx]
       if let [goal] := i.tacI.goalsBefore then
-        if (hash goal) % fraction = 0 then
+        -- Hash the pretty-printed goal for stability across runs
+        let goalDecl := i.tacI.mctxBefore.decls.find! goal
+        let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
+          withOptions (·.setBool `pp.mvars false) do
+            return toString (← Meta.ppGoal goal)
+        if (hash goalPP) % fraction = 0 then
           let tac ← tac i.tacI.stx goal
+          let startTime ← IO.monoMsNow
           let goalsAfter ← try
             i.runTacticCode goal tac
           catch _e =>
             pure [goal]
+          let elapsedMs := (← IO.monoMsNow) - startTime
           if goalsAfter.isEmpty then
-            logInfoAt i.tacI.stx m!"`{i.tacI.stx}` can be replaced with `{tac}`"
+            -- Extract just the tactic name, ignoring trailing comments/whitespace
+            -- Use try/catch because ppTactic can fail on certain syntax (e.g., `congr($h x)`)
+            let oldTacticPP := (← try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic ⟨i.tacI.stx⟩).pretty.splitOn "\n")[0]!.trimAscii
+            catch _ =>
+              return i.tacI.stx.reprint.getD "???")
+            let newTacticPP ← label.getDM (try
+              return ((← liftCoreM <| PrettyPrinter.ppTactic tac).pretty.splitOn "\n")[0]!.trimAscii.copy
+            catch _ =>
+              return tac.raw.reprint.getD "???")
+            -- Check if this is a self-replacement (tactic replacing itself)
+            if !selfReplacements && oldTacticPP == newTacticPP then
+              continue
+            let laterSteps := seq.size - 1 - idx
+            let laterMsg := if laterSteps > 0 then s!" (+{laterSteps} later steps)" else ""
+            if showTiming then
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}` ({elapsedMs}ms)"
+            else
+              logInfoAt i.tacI.stx m!"`{oldTacticPP}`{laterMsg} can be replaced with `{newTacticPP}`"
+
+/-- Run a tactic at each proof step. See `tryAtEachStepCore` for details. -/
+def Mathlib.TacticAnalysis.tryAtEachStep
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config :=
+  tryAtEachStepCore tac
+
+/-- Run a tactic (given as a string) at each proof step, with optional timing.
+
+`label` is the human-readable name shown in output (e.g., "grind").
+`tacticStr` is the tactic syntax as a string (e.g., "grind +suggestions").
+Tactic sequences like "simp; grind" are also supported.
+
+Reports elapsed time in milliseconds for each successful replacement
+when `linter.tacticAnalysis.tryAtEachStep.showTiming` is true.
+To limit tactic runtime, use `set_option maxHeartbeats N` in the build command.
+
+When `linter.tacticAnalysis.tryAtEachStep.selfReplacements` is false, cases where
+the suggested tactic matches the existing proof are suppressed.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
+    (label : String) (tacticStr : String) : TacticAnalysis.Config where
+  run seq := do
+    -- Parse using `tacticSeq.fn` directly since `tacticSeq` is not a parser category.
+    -- See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/piggy.20back.20off.20of.20the.20lean4.20parser
+    let tacSeq ← try
+      ofExcept <|
+        Mathlib.GuardExceptions.captureException (← getEnv) Parser.Tactic.tacticSeq.fn tacticStr
+    catch _ =>
+      -- Tactic not available (e.g., `aesop` before Aesop is imported) - skip silently
+      return
+    let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
+    (tryAtEachStepCore (fun _ _ => pure tac) label).run seq
+
+/-- Run a custom tactic at each proof step, configured via environment variables.
+
+Reads from environment variables:
+- `TRY_AT_EACH_STEP_TACTIC`: Tactic syntax to try (e.g., "grind +suggestions") - required
+- `TRY_AT_EACH_STEP_LABEL`: Human-readable label for output (optional, defaults to tactic)
+
+If `TRY_AT_EACH_STEP_TACTIC` is missing, this linter does nothing.
+
+To enable, add to the `mathlibOnlyLinters` array in `lakefile.lean`:
+```lean
+⟨`linter.tacticAnalysis.tryAtEachStepFromEnv, true⟩,
+```
+
+Then run with the environment variable:
+```bash
+TRY_AT_EACH_STEP_TACTIC="grind +suggestions" lake build Mathlib
+```
+
+This generic entry point is used by the hammer-bench benchmarking tool
+(https://github.com/leanprover-community/hammer-bench) to test arbitrary tactics
+without requiring Mathlib code changes for each new tactic variant.
+-/
+def Mathlib.TacticAnalysis.tryAtEachStepFromEnvImpl : TacticAnalysis.Config where
+  run seq := do
+    let some tacticStr := (← IO.getEnv "TRY_AT_EACH_STEP_TACTIC") | return
+    let label := (← IO.getEnv "TRY_AT_EACH_STEP_LABEL").getD tacticStr
+    (tryAtEachStepFromStrings label tacticStr).run seq
 
 /-- Run `grind` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
@@ -329,14 +511,36 @@ def tryAtEachStepAesop := tryAtEachStep
   fun _ _ => return ⟨TSyntax.raw <|
     mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
-/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
-register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+/-- Run `grind +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
   defValue := false
 }
 
-@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
-   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep fun _ _ => `(tactic| grind +premises)
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindSuggestions]
+def tryAtEachStepGrindSuggestions := tryAtEachStep fun _ _ => `(tactic| grind +suggestions)
+
+/-- Run `simp_all? +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
+
+/-- Run a custom tactic at every step in proofs, configured via environment variables.
+
+Set `TRY_AT_EACH_STEP_TACTIC` to the tactic syntax to try (required).
+Set `TRY_AT_EACH_STEP_LABEL` to the label for output messages (optional, defaults to tactic).
+-/
+register_option linter.tacticAnalysis.tryAtEachStepFromEnv : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepFromEnv,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepFromEnv]
+def tryAtEachStepFromEnv := tryAtEachStepFromEnvImpl
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Properties of centers and centralizers
@@ -21,6 +23,8 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 - `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
+
+public section
 
 namespace Subalgebra
 
@@ -120,7 +124,7 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
         by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
     · rintro ⟨y, hy⟩
       refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-      rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+      rw [← hy, comm_comp_map_apply, ← Algebra.TensorProduct.comm_symm, AlgEquiv.symm_apply_apply]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.

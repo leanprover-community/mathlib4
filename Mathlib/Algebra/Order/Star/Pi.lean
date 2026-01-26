@@ -3,13 +3,17 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Group.Submonoid.Finite
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Pi
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finite
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pi
 
 /-!
 # Pi-types of star-ordered rings
 -/
+
+@[expose] public section
 
 variable {ι : Type*} [Finite ι]
   {A : ι → Type*} [Π i, PartialOrder (A i)] [Π i, NonUnitalSemiring (A i)]

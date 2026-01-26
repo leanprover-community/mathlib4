@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Order.Fin.Basic
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
@@ -36,6 +38,8 @@ We provide the following functions to work with these objects:
   The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
   This notation is available with `open SimplexCategory.Truncated`.
 -/
+
+@[expose] public section
 
 universe v
 
@@ -172,11 +176,8 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+abbrev inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   ObjectProperty.ι _
-
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := ObjectProperty.full_ι _
-instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := ObjectProperty.faithful_ι _
 
 /-- A proof that the full subcategory inclusion is fully faithful -/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
@@ -184,12 +185,13 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
   Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
-theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
-    f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b)
+    (h : f.hom.toOrderHom = g.hom.toOrderHom) : f = g :=
+  ObjectProperty.hom_ext _ (SimplexCategory.Hom.ext _ _ h)
 
 /-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 scoped macro "trunc" : tactic =>
-  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> lia)
 
 open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
@@ -209,7 +211,7 @@ is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
 abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
-  f
+  ObjectProperty.homMk f
 
 @[simp]
 lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
@@ -222,10 +224,15 @@ lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c
     tr (f ≫ g) = tr f ≫ tr g :=
   rfl
 
+@[reassoc]
+lemma Hom.tr_comp' {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) {hb : b.len ≤ n}
+    {hc : c.len ≤ n} (g : (⟨b, hb⟩ : Truncated n) ⟶ ⟨c, hc⟩) (ha : a.len ≤ n := by trunc) :
+    tr (f ≫ g.hom) = tr f ≫ g :=
+  rfl
+
 /-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
-def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
-  obj a := ⟨a.1, a.2.trans h⟩
-  map := id
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m :=
+  ObjectProperty.ιOfLE (fun _ h' ↦ h'.trans h)
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
 def inclCompInclusion {n m : ℕ} (h : n ≤ m) :

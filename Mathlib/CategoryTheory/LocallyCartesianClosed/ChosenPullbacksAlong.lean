@@ -3,10 +3,12 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Adjunction.Unique
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Chosen pullbacks along a morphism
@@ -32,6 +34,8 @@ import Mathlib.CategoryTheory.Adjunction.Unique
   the product projections have chosen pullbacks.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -63,15 +67,34 @@ noncomputable def ofHasPullbacksAlong {Y X : C} (f : Y ⟶ X) [HasPullbacksAlong
   mapPullbackAdj := Over.mapPullbackAdj f
 
 /-- The identity morphism has a functorial choice of pullbacks. -/
-@[simps]
 def id (X : C) : ChosenPullbacksAlong (𝟙 X) where
   pullback := 𝟭 _
   mapPullbackAdj := (Adjunction.id).ofNatIsoLeft (Over.mapId _).symm
 
-attribute [local instance] ChosenPullbacksAlong.id in
-/-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
-identity functor. -/
-def pullbackId (X : C) : pullback (𝟙 X) ≅ 𝟭 (Over X) := Iso.refl _
+/-- Any chosen pullback functor of the identity morphism is naturally isomorphic to the identity
+functor. -/
+def pullbackId (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+    pullback (𝟙 X) ≅ 𝟭 (Over X) :=
+  (mapPullbackAdj (𝟙 X)).rightAdjointUniq (id X).mapPullbackAdj
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom_app (X : C) [ChosenPullbacksAlong (𝟙 X)] (Y : Over X) :
+    (mapPullbackAdj (𝟙 X)).unit.app Y ≫ (pullbackId X).hom.app ((Over.map (𝟙 X)).obj Y) =
+      (id X).mapPullbackAdj.unit.app Y := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom_app]
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackId_hom (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+    (mapPullbackAdj (𝟙 X)).unit ≫ (Over.map (𝟙 X)).whiskerLeft (pullbackId X).hom =
+      (id X).mapPullbackAdj.unit := by
+  rw [pullbackId, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackId_hom_counit (X : C) [ChosenPullbacksAlong (𝟙 X)] :
+    Functor.whiskerRight (pullbackId X).hom (Over.map (𝟙 X)) ≫ (id X).mapPullbackAdj.counit =
+      (mapPullbackAdj (𝟙 X)).counit := by
+  have := Adjunction.rightAdjointUniq_hom_counit (mapPullbackAdj (𝟙 X)) (id X).mapPullbackAdj
+  rw [pullbackId, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- Every isomorphism has a functorial choice of pullbacks. -/
 @[simps]
@@ -86,20 +109,33 @@ def iso {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.hom where
 def isoInv {Y X : C} (f : Y ≅ X) : ChosenPullbacksAlong f.inv := iso f.symm
 
 /-- The composition of morphisms with chosen pullbacks has a chosen pullback. -/
-@[simps]
-def comp {Z Y X : C} (f : Y ⟶ X) (g : Z ⟶ Y)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (g ≫ f) where
-  pullback := pullback f ⋙ pullback g
-  mapPullbackAdj := ((mapPullbackAdj g).comp (mapPullbackAdj f)).ofNatIsoLeft
-    (Over.mapComp g f).symm
+def comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] : ChosenPullbacksAlong (f ≫ g) where
+  pullback := pullback g ⋙ pullback f
+  mapPullbackAdj := ((mapPullbackAdj f).comp (mapPullbackAdj g)).ofNatIsoLeft
+    (Over.mapComp f g).symm
 
-attribute [local instance] ChosenPullbacksAlong.comp in
-/-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
-the composition of the chosen pullback functors. -/
+/-- Any chosen pullback of a composite of morphisms is naturally isomorphic to the composition of
+chosen pullback functors. -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] :
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  Iso.refl _
+  Adjunction.rightAdjointUniq (mapPullbackAdj (f ≫ g)) ((comp f g).mapPullbackAdj)
+
+@[reassoc (attr := simp)]
+theorem unit_pullbackComp_hom {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    (mapPullbackAdj (f ≫ g)).unit ≫ (Over.map (f ≫ g)).whiskerLeft (pullbackComp f g).hom =
+      (comp f g).mapPullbackAdj.unit := by
+  rw [pullbackComp, Adjunction.unit_rightAdjointUniq_hom]
+
+@[reassoc (attr := simp)]
+theorem pullbackComp_hom_counit {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g] [ChosenPullbacksAlong (f ≫ g)] :
+    Functor.whiskerRight (pullbackComp f g).hom (Over.map (f ≫ g)) ≫
+      (comp f g).mapPullbackAdj.counit =
+      (mapPullbackAdj (f ≫ g)).counit := by
+  rw [pullbackComp, Adjunction.rightAdjointUniq_hom_counit]
 
 /-- In cartesian monoidal categories, any morphism to the terminal tensor unit has a functorial
 choice of pullbacks. -/
@@ -181,11 +217,13 @@ section Lift
 
 variable {W : C} (a : W ⟶ Y) (b : W ⟶ Z) (h : a ≫ f = b ≫ g := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Given morphisms `a : W ⟶ Y` and `b : W ⟶ Z` satisfying `a ≫ f = b ≫ g`,
 constructs the unique morphism `W ⟶ pullbackObj f g` which lifts `a` and `b`. -/
 def lift : W ⟶ pullbackObj f g :=
   (((mapPullbackAdj g).homEquiv (Over.mk b) (Over.mk f)) (Over.homMk a)).left
 
+set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_fst : lift a b h ≫ fst f g = a := by
   let adj := mapPullbackAdj g
@@ -194,6 +232,7 @@ theorem lift_fst : lift a b h ≫ fst f g = a := by
     simp only [← Adjunction.homEquiv_counit, Equiv.symm_apply_apply, adj, a']
   exact congr_arg CommaMorphism.left this
 
+set_option backward.privateInPublic true in
 @[reassoc (attr := simp)]
 theorem lift_snd : lift a b h ≫ snd f g = b := by
   simp [lift]
@@ -261,11 +300,26 @@ end PullbackMap
 
 variable (f g)
 
+/-- The canonical pullback cone from the data of a chosen pullback of `f` along `g`. -/
+def pullbackCone : PullbackCone f g :=
+  PullbackCone.mk (fst f g) (snd f g) (by rw [condition])
+
+@[simp] lemma pullbackCone_fst : (pullbackCone f g).fst = fst f g := rfl
+
+@[simp] lemma pullbackCone_snd : (pullbackCone f g).snd = snd f g := rfl
+
+/-- The canonical pullback cone is a limit cone.
+Note: this limit cone is computable as lifts are constructed from the data contained in the
+`ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
+`CategoryTheory.Square.IsPullback` (a `Prop`). -/
+def isLimitPullbackCone :
+    IsLimit (pullbackCone f g) :=
+  PullbackCone.IsLimit.mk condition (fun s ↦ lift s.fst s.snd s.condition)
+    (by cat_disch) (by cat_disch) (by cat_disch)
+
 theorem isPullback : IsPullback (fst f g) (snd f g) f g where
   w := condition
-  isLimit' :=
-    ⟨PullbackCone.IsLimit.mk _ (fun s ↦ lift s.fst s.snd s.condition)
-      (by simp) (by simp) (by cat_disch)⟩
+  isLimit' := ⟨isLimitPullbackCone f g⟩
 
 attribute [local simp] condition in
 /-- If `g` has a chosen pullback, then `Over.ChosenPullbacksAlong.fst f g` has a chosen pullback. -/

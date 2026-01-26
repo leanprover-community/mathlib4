@@ -3,8 +3,10 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -20,6 +22,8 @@ This means there exists an extension of `f` which is analytic and agrees with `f
 Here we prove basic properties of these definitions. Where convenient we assume completeness of the
 ambient space, which allows us to relate `AnalyticWithinAt` to analyticity of a local extension.
 -/
+
+public section
 
 noncomputable section
 
@@ -106,7 +110,6 @@ result for `AnalyticOn`, as this requires a bit more work to show that local ext
 be stitched together.
 -/
 
-set_option linter.style.multiGoal false in
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpace F] {f : E → F}
     {p : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞} :
@@ -119,11 +122,11 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
     · intro y ⟨ys,yb⟩
       simp only [EMetric.mem_ball, edist_eq_enorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
-      have e1 := (h.hasSum (y := y - x) ?_ ?_)
-      · simp only [add_sub_cancel] at e1
-        exact e1.unique e0
-      · simpa only [add_sub_cancel]
-      · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
+      · have e1 := (h.hasSum (y := y - x) ?_ ?_)
+        · simp only [add_sub_cancel] at e1
+          exact e1.unique e0
+        · simpa only [add_sub_cancel]
+        · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
       · simp only [EMetric.mem_ball, edist_zero_eq_enorm]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩

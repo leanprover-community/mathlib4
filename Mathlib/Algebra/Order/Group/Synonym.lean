@@ -3,14 +3,18 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Synonym
 
 /-!
 # Group structure on the order type synonyms
 
 Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
+
+@[expose] public section
 
 
 open OrderDual
@@ -104,6 +108,9 @@ theorem toDual_one [One α] : toDual (1 : α) = 1 := rfl
 @[to_additive (attr := simp)]
 theorem ofDual_one [One α] : (ofDual 1 : α) = 1 := rfl
 
+@[to_additive (attr := simp)] lemma toDual_eq_one [One α] {a : α} : toDual a = 1 ↔ a = 1 := .rfl
+@[to_additive (attr := simp)] lemma ofDual_eq_one [One α] {a : αᵒᵈ} : ofDual a = 1 ↔ a = 1 := .rfl
+
 @[to_additive (attr := simp)]
 theorem toDual_mul [Mul α] (a b : α) : toDual (a * b) = toDual a * toDual b := rfl
 
@@ -133,6 +140,29 @@ theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
+
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toDual {a : α} : IsLeftRegular (toDual a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofDual {a : αᵒᵈ} : IsLeftRegular (ofDual a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toDual {a : α} : IsRightRegular (toDual a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofDual {a : αᵒᵈ} : IsRightRegular (ofDual a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toDual {a : α} : IsRegular (toDual a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofDual {a : αᵒᵈ} : IsRegular (ofDual a) ↔ IsRegular a := .rfl
+
+end Monoid
 
 /-! ### Lexicographical order -/
 
@@ -260,6 +290,29 @@ theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toLex {a : α} : IsLeftRegular (toLex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofLex {a : Lex α} : IsLeftRegular (ofLex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toLex {a : α} : IsRightRegular (toLex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofLex {a : Lex α} : IsRightRegular (ofLex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toLex {a : α} : IsRegular (toLex a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := .rfl
+
+end Monoid
+
 /-! ### Colexicographical order -/
 
 
@@ -385,3 +438,26 @@ theorem pow_toColex [Pow α β] (a : α) (b : β) : a ^ toColex b = a ^ b := rfl
 
 @[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul']
 theorem pow_ofColex [Pow α β] (a : α) (b : Colex β) : a ^ ofColex b = a ^ b := rfl
+
+section Monoid
+variable [Monoid α]
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_toColex {a : α} : IsLeftRegular (toColex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isLeftRegular_ofColex {a : Colex α} : IsLeftRegular (ofColex a) ↔ IsLeftRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_toColex {a : α} : IsRightRegular (toColex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRightRegular_ofColex {a : Colex α} : IsRightRegular (ofColex a) ↔ IsRightRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_toColex {a : α} : IsRegular (toColex a) ↔ IsRegular a := .rfl
+
+@[to_additive (attr := simp)]
+lemma isRegular_ofColex {a : Colex α} : IsRegular (ofColex a) ↔ IsRegular a := .rfl
+
+end Monoid

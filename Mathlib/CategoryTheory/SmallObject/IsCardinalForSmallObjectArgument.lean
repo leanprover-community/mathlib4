@@ -3,12 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Construction
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -18,7 +21,7 @@ a regular cardinal `κ : Cardinal.{w}`, we define a typeclass
 `IsCardinalForSmallObjectArgument I κ` which requires certain
 smallness properties (`I` is `w`-small, `C` is locally `w`-small),
 the existence of certain colimits (pushouts, coproducts of size `w`,
-and the condition `HasIterationOfShape κ.ord.toType C` about the
+and the condition `HasIterationOfShape κ.ord.ToType C` about the
 existence of colimits indexed by limit ordinal smaller than or equal
 to `κ.ord`), and the technical assumption that if `A` is the
 a morphism in `I`, then the functor `Hom(A, _)` should commute
@@ -40,19 +43,21 @@ is factored as `ιObj I κ f ≫ πObj I κ f = f`. It is shown that `ιObj I κ
 is a relative `I`-cell complex (see `SmallObject.relativeCellComplexιObj`)
 and that `πObj I κ f` has the right lifting property with respect to `I`
 (see `SmallObject.rlp_πObj`). This construction is obtained by
-iterating to the power `κ.ord.toType` the functor `Arrow C ⥤ Arrow C` defined
+iterating to the power `κ.ord.ToType` the functor `Arrow C ⥤ Arrow C` defined
 in the file `Mathlib/CategoryTheory/SmallObject/Construction.lean`.
 This factorization is functorial in `f`
 and gives the property `HasFunctorialFactorization I.rlp.llp I.rlp`.
 Finally, the lemma `llp_rlp_of_isCardinalForSmallObjectArgument`
 (and its primed version) shows that the morphisms in `I.rlp.llp` are exactly
-the retracts of the transfinite compositions (of shape `κ.ord.toType`) of
+the retracts of the transfinite compositions (of shape `κ.ord.ToType`) of
 pushouts of coproducts of morphisms in `I`.
 
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -67,16 +72,16 @@ namespace MorphismProperty
 /-- Given `I : MorphismProperty C` and a regular cardinal `κ : Cardinal.{w}`,
 this property asserts the technical conditions which allow to proceed
 to the small object argument by doing a construction by transfinite
-induction indexed by the well-ordered type `κ.ord.toType`. -/
+induction indexed by the well-ordered type `κ.ord.ToType`. -/
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [OrderBot κ.ord.toType] : Prop where
+    [OrderBot κ.ord.ToType] : Prop where
   isSmall : IsSmall.{w} I := by infer_instance
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasPushouts : HasPushouts C := by infer_instance
   hasCoproducts : HasCoproducts.{w} C := by infer_instance
-  hasIterationOfShape : HasIterationOfShape κ.ord.toType C := by infer_instance
+  hasIterationOfShape : HasIterationOfShape κ.ord.ToType C := by infer_instance
   preservesColimit {A B X Y : C} (i : A ⟶ B) (_ : I i) (f : X ⟶ Y)
-    (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
+    (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.ToType) ↦ I.homFamily) f) :
     PreservesColimit hf.F (coyoneda.obj (Opposite.op A))
 
 end MorphismProperty
@@ -85,7 +90,7 @@ namespace SmallObject
 
 open MorphismProperty
 
-variable (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.toType]
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.ToType]
   [I.IsCardinalForSmallObjectArgument κ]
 
 include I κ
@@ -96,7 +101,7 @@ lemma isSmall : IsSmall.{w} I :=
 lemma locallySmall : LocallySmall.{w} C :=
   IsCardinalForSmallObjectArgument.locallySmall I κ
 
-lemma hasIterationOfShape : HasIterationOfShape κ.ord.toType C :=
+lemma hasIterationOfShape : HasIterationOfShape κ.ord.ToType C :=
   IsCardinalForSmallObjectArgument.hasIterationOfShape I
 
 lemma hasPushouts : HasPushouts C :=
@@ -106,7 +111,7 @@ lemma hasCoproducts : HasCoproducts.{w} C :=
   IsCardinalForSmallObjectArgument.hasCoproducts I κ
 
 lemma preservesColimit {A B X Y : C} (i : A ⟶ B) (hi : I i) (f : X ⟶ Y)
-    (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily) f) :
+    (hf : RelativeCellComplex.{w} (fun (_ : κ.ord.ToType) ↦ I.homFamily) f) :
     PreservesColimit hf.F (coyoneda.obj (Opposite.op A)) :=
   IsCardinalForSmallObjectArgument.preservesColimit i hi f hf
 
@@ -164,28 +169,28 @@ lemma succStruct_prop_le_propArrow :
     dsimp [succStruct]
     infer_instance
 
-/-- The functor `κ.ord.toType ⥤ Arrow C ⥤ Arrow C` corresponding to the
+/-- The functor `κ.ord.ToType ⥤ Arrow C ⥤ Arrow C` corresponding to the
 iterations of the successor structure `succStruct I κ`. -/
-noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
+noncomputable def iterationFunctor : κ.ord.ToType ⥤ Arrow C ⥤ Arrow C :=
   haveI := hasIterationOfShape I κ
-  (succStruct I κ).iterationFunctor κ.ord.toType
+  (succStruct I κ).iterationFunctor κ.ord.ToType
 
 /-- The colimit of `iterationFunctor I κ`. -/
 noncomputable def iteration : Arrow C ⥤ Arrow C :=
   haveI := hasIterationOfShape I κ
-  (succStruct I κ).iteration κ.ord.toType
+  (succStruct I κ).iteration κ.ord.ToType
 
 /-- The natural "inclusion" `𝟭 (Arrow C) ⟶ iteration I κ`. -/
 noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
   haveI := hasIterationOfShape I κ
-  (succStruct I κ).ιIteration κ.ord.toType
+  (succStruct I κ).ιIteration κ.ord.ToType
 
 /-- The morphism `ιIteration I κ` is a transfinite composition of shape
-`κ.ord.toType` of morphisms satisfying `(succStruct I κ).prop`. -/
+`κ.ord.ToType` of morphisms satisfying `(succStruct I κ).prop`. -/
 noncomputable def transfiniteCompositionOfShapeSuccStructPropιIteration :
-    (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.toType (ιIteration I κ) :=
+    (succStruct I κ).prop.TransfiniteCompositionOfShape κ.ord.ToType (ιIteration I κ) :=
   haveI := hasIterationOfShape I κ
-  (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.toType
+  (succStruct I κ).transfiniteCompositionOfShapeιIteration κ.ord.ToType
 
 @[simp]
 lemma transfiniteCompositionOfShapeSuccStructPropιIteration_F :
@@ -196,7 +201,7 @@ lemma transfiniteCompositionOfShapeSuccStructPropιIteration_F :
 /-- For any `f : Arrow C`, the map `((ιIteration I κ).app f).right` is
 a transfinite composition of isomorphisms. -/
 noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C) :
-    (isomorphisms C).TransfiniteCompositionOfShape κ.ord.toType
+    (isomorphisms C).TransfiniteCompositionOfShape κ.ord.ToType
       ((ιIteration I κ).app f).right :=
   haveI := hasIterationOfShape I κ
   let h := transfiniteCompositionOfShapeSuccStructPropιIteration I κ
@@ -207,7 +212,7 @@ noncomputable def transfiniteCompositionOfShapeιIterationAppRight (f : Arrow C)
 instance (f : Arrow C) : IsIso ((ιIteration I κ).app f).right :=
   (transfiniteCompositionOfShapeιIterationAppRight I κ f).isIso
 
-instance {j₁ j₂ : κ.ord.toType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
+instance {j₁ j₂ : κ.ord.ToType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
   inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
@@ -218,29 +223,29 @@ noncomputable def iterationObjRightIso (f : Arrow C) :
     f.right ≅ ((iteration I κ).obj f).right :=
   asIso ((ιIteration I κ).app f).right
 
-/-- For any `f : Arrow C` and `j : κ.ord.toType`, the object
+/-- For any `f : Arrow C` and `j : κ.ord.ToType`, the object
 `(((iterationFunctor I κ).obj j).obj f).right` identifies to `f.right`. -/
-noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.toType) :
+noncomputable def iterationFunctorObjObjRightIso (f : Arrow C) (j : κ.ord.ToType) :
     (((iterationFunctor I κ).obj j).obj f).right ≅ f.right :=
   asIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j) ≪≫
     (iterationObjRightIso I κ f).symm
 
 @[reassoc (attr := simp)]
-lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.toType) :
+lemma iterationFunctorObjObjRightIso_ιIteration_app_right (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorObjObjRightIso I κ f j).hom ≫ ((ιIteration I κ).app f).right =
       (transfiniteCompositionOfShapeιIterationAppRight I κ f).incl.app j := by
   simp [iterationFunctorObjObjRightIso, iterationObjRightIso]
 
-lemma prop_iterationFunctor_map_succ (j : κ.ord.toType) :
+lemma prop_iterationFunctor_map_succ (j : κ.ord.ToType) :
     (succStruct I κ).prop ((iterationFunctor I κ).map (homOfLE (Order.le_succ j))) := by
   have := hasIterationOfShape I κ
   have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
   exact (succStruct I κ).prop_iterationFunctor_map_succ j (not_isMax j)
 
-/-- For any `f : Arrow C` and `j : κ.ord.toType`, the morphism
+/-- For any `f : Arrow C` and `j : κ.ord.ToType`, the morphism
 `((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f` identifies
 to a morphism given by `SmallObject.ε I.homFamily`. -/
-noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.toType) :
+noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     Arrow.mk (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f) ≅
@@ -257,12 +262,12 @@ noncomputable def iterationFunctorMapSuccAppArrowIso (f : Arrow C) (j : κ.ord.t
     dsimp [succStruct])
 
 @[simp]
-lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.toType) :
+lemma iterationFunctorMapSuccAppArrowIso_hom_left (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorMapSuccAppArrowIso I κ f j).hom.left = 𝟙 _ := rfl
 
 @[reassoc (attr := simp)]
 lemma iterationFunctorMapSuccAppArrowIso_hom_right_right_comp
-    (f : Arrow C) (j : κ.ord.toType) :
+    (f : Arrow C) (j : κ.ord.ToType) :
     (iterationFunctorMapSuccAppArrowIso I κ f j).hom.right.right ≫
       (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).right = 𝟙 _ := by
   have := Arrow.rightFunc.congr_map ((iterationFunctorMapSuccAppArrowIso I κ f j).hom.w)
@@ -298,7 +303,7 @@ lemma ιObj_πObj : ιObj I κ f ≫ πObj I κ f = f := by
 
 /-- The morphism `ιObj I κ f` is a relative `I`-cell complex. -/
 noncomputable def relativeCellComplexιObj :
-    RelativeCellComplex.{w} (fun (_ : κ.ord.toType) ↦ I.homFamily)
+    RelativeCellComplex.{w} (fun (_ : κ.ord.ToType) ↦ I.homFamily)
       (ιObj I κ f) := by
   have := hasIterationOfShape I κ
   let h := transfiniteCompositionOfShapeSuccStructPropιIteration I κ
@@ -309,19 +314,19 @@ noncomputable def relativeCellComplexιObj :
       attachCellsOfSuccStructProp I κ (h.map_mem j hj) f }
 
 lemma transfiniteCompositionsOfShape_ιObj :
-    (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
+    (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.ToType
       (ιObj I κ f) :=
   ⟨((relativeCellComplexιObj I κ f).transfiniteCompositionOfShape).ofLE
     (by simp)⟩
 
 lemma llp_rlp_ιObj : I.rlp.llp (ιObj I κ f) := by
-  apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp κ.ord.toType
+  apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp κ.ord.ToType
   apply transfiniteCompositionsOfShape_ιObj
 
 /-- When `ιObj I κ f` is considered as a relative `I`-cell complex,
 the object at the `j`th step is obtained by applying the construction
 `SmallObject.functorObj`. -/
-noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.toType) :
+noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     (relativeCellComplexιObj I κ f).F.obj (Order.succ j) ≅
@@ -329,7 +334,7 @@ noncomputable def relativeCellComplexιObjFObjSuccIso (j : κ.ord.toType) :
   (Arrow.rightFunc ⋙ Arrow.leftFunc).mapIso
     (iterationFunctorMapSuccAppArrowIso I κ f j)
 
-lemma ιFunctorObj_eq (j : κ.ord.toType) :
+lemma ιFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     ιFunctorObj I.homFamily (((iterationFunctor I κ).obj j).obj (Arrow.mk f)).hom =
@@ -337,7 +342,7 @@ lemma ιFunctorObj_eq (j : κ.ord.toType) :
         (relativeCellComplexιObjFObjSuccIso I κ f j).hom := by
   simpa using Arrow.leftFunc.congr_map (iterationFunctorMapSuccAppArrowIso I κ f j).hom.w
 
-lemma πFunctorObj_eq (j : κ.ord.toType) :
+lemma πFunctorObj_eq (j : κ.ord.ToType) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
     πFunctorObj I.homFamily (((iterationFunctor I κ).obj j).obj (Arrow.mk f)).hom =
@@ -448,13 +453,13 @@ lemma hasFunctorialFactorization :
 
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
-of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
+of transfinite compositions (of shape `κ.ord.ToType`) of pushouts of coproducts
 of maps in `I`. -/
 lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape
-      (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
+      (coproducts.{w} I).pushouts κ.ord.ToType).retracts := by
   refine le_antisymm ?_
-    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp I κ.ord.toType)
+    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_llp_rlp I κ.ord.ToType)
   intro X Y f hf
   have sq : CommSq (ιObj I κ f) f (πObj I κ f) (𝟙 _) := ⟨by simp⟩
   have := hf _ (rlp_πObj I κ f)

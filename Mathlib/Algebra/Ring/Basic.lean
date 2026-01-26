@@ -3,12 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Semirings and rings
@@ -20,6 +22,8 @@ the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.cast_sub
 
@@ -165,16 +169,6 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsLeftCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
-    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
-
-lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
-    [IsRightCancelMulZero α] : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
-    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
-
 section NonUnitalNonAssocRing
 
 variable {R : Type*} [NonUnitalNonAssocRing R] {r : R}
@@ -292,9 +286,6 @@ lemma div_neg_eq_neg_div' (a : R) : a / -b = -a / b := neg_div b a ▸ div_neg _
 
 @[simp]
 lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
-
-@[deprecated (since := "2025-04-24")]
-alias inv_neg' := inv_neg
 
 lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
 

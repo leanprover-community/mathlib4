@@ -3,11 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.IntUnitsPower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.Algebra.DirectSum.Algebra
+module
+
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.IntUnitsPower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.Algebra.DirectSum.Algebra
 
 /-!
 # Graded tensor products over graded algebras
@@ -42,6 +44,8 @@ multiplication follows trivially from this after some point-free nonsense.
 * [*Algebra I*, Bourbaki : Chapter III, §4.7, example (2)][bourbaki1989]
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct DirectSum
 
@@ -193,14 +197,14 @@ theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
   -- the tower smul lemmas elaborate too slowly
   rw [Units.smul_def, Units.smul_def, ← Int.cast_smul_eq_zsmul R, ← Int.cast_smul_eq_zsmul R]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, LinearMap.map_smul]
+  rw [← smul_tmul', LinearEquiv.map_smul, tmul_smul, LinearEquiv.map_smul, map_smul]
   dsimp
 
 variable {R}
 
 theorem algebraMap_gradedMul (r : R) (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
     gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) x = r • x := by
-  suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
+  suffices gradedMul R 𝒜 ℬ (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
     exact DFunLike.congr_fun this x
   ext ia a ib b
   dsimp
@@ -215,7 +219,7 @@ theorem one_gradedMul (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) :
 
 theorem gradedMul_algebraMap (x : (⨁ i, 𝒜 i) ⊗[R] (⨁ i, ℬ i)) (r : R) :
     gradedMul R 𝒜 ℬ x (algebraMap R _ r ⊗ₜ 1) = r • x := by
-  suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribMulAction.toLinearMap R _ r by
+  suffices (gradedMul R 𝒜 ℬ).flip (algebraMap R _ r ⊗ₜ 1) = DistribSMul.toLinearMap R _ r by
     exact DFunLike.congr_fun this x
   ext
   dsimp
@@ -240,7 +244,7 @@ theorem gradedMul_assoc (x y z : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   ext ixa xa ixb xb iya ya iyb yb iza za izb zb
   dsimp [mA]
   simp_rw [tmul_of_gradedMul_of_tmul, Units.smul_def, ← Int.cast_smul_eq_zsmul R,
-    LinearMap.map_smul₂, LinearMap.map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
+    LinearMap.map_smul₂, map_smul, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, tmul_of_gradedMul_of_tmul, DirectSum.lof_eq_of, ← DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, mul_assoc]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, smul_smul, ← uzpow_add, add_mul, mul_add]
@@ -258,7 +262,7 @@ theorem gradedComm_gradedMul (x y : DirectSum _ 𝒜 ⊗[R] DirectSum _ ℬ) :
   dsimp
   rw [gradedComm_of_tmul_of, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul]
   -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to avoid timeouts.
-  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, LinearMap.map_smul,
+  simp_rw [Units.smul_def, ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     LinearMap.smul_apply]
   simp_rw [Int.cast_smul_eq_zsmul R, ← Units.smul_def, DirectSum.lof_eq_of, DirectSum.of_mul_of,
     ← DirectSum.lof_eq_of R, gradedComm_of_tmul_of, tmul_of_gradedMul_of_tmul, smul_smul,

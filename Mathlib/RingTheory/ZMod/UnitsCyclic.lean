@@ -3,11 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.ZMod.Units
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-! # Cyclicity of the units of `ZMod n`
 
@@ -46,6 +48,8 @@ The proofs mostly follow [Ireland and Rosen,
   [IrelandRosen1990].
 
 -/
+
+public section
 
 open scoped Nat
 
@@ -109,13 +113,13 @@ lemma exists_one_add_mul_pow_prime_eq
   congr 1
   · congr! 1 with i hi
     simp only [Finset.mem_erase, ne_eq, Finset.mem_range] at hi
-    have hi' : 2 ≤ i := by omega
+    have hi' : 2 ≤ i := by lia
     calc
       (u * x) ^ i * p.choose i =
         (u * x) ^ (2 + (i - 2)) * p.choose i := by rw [Nat.add_sub_of_le hi']
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p.choose i := by ring_nf
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * (p * (p.choose i / p) : ℕ) := by
-        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by cutsat)]
+        rw [Nat.mul_div_cancel' (hp.dvd_choose_self hi.2.2.1 <| by lia)]
       _ = u ^ 2 * x ^ 2 * (u * x) ^ (i - 2) * p * (p.choose i / p : ℕ) := by
         simp only [Nat.cast_mul]; ring_nf
       _ = p * u * (v * (a * x ^ 2 * ((u * x) ^ (i - 2) * (p.choose i / p : ℕ)))) := by
@@ -179,7 +183,7 @@ theorem orderOf_one_add_mul_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (a : 
     orderOf (1 + p * a : ZMod (p ^ (n + 1))) = p ^ n := by
   convert orderOf_one_add_mul_prime_pow hp 1 one_ne_zero _ a ha n using 1
   · rw [pow_one]
-  · have := hp.two_le; cutsat
+  · have := hp.two_le; lia
 
 theorem orderOf_one_add_prime {p : ℕ} (hp : p.Prime) (hp2 : p ≠ 2) (n : ℕ) :
     orderOf (1 + p : ZMod (p ^ (n + 1))) = p ^ n := by
@@ -233,7 +237,7 @@ theorem isCyclic_units_two_pow_iff (n : ℕ) :
     simp only [Nat.reduceLeDiff, iff_false]
     intro H
     apply not_isCyclic_units_eight
-    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by cutsat)
+    have h : 2 ^ 3 ∣ 2 ^ (n + 3) := pow_dvd_pow _ (by lia)
     exact isCyclic_of_surjective _ (unitsMap_surjective h)
 
 lemma orderOf_one_add_four_mul (a : ℤ) (ha : Odd a) (n : ℕ) :
@@ -270,7 +274,7 @@ theorem isCyclic_units_four_mul_iff (n : ℕ) :
   have : NeZero n := ⟨hn0⟩
   have : Odd (φ n) := by simpa [show φ 4 = 2 from rfl] using h
   rw [Nat.odd_totient_iff] at this
-  cutsat
+  lia
 
 theorem isCyclic_units_two_mul_iff_of_odd (n : ℕ) (hn : Odd n) :
     IsCyclic (ZMod (2 * n))ˣ ↔ IsCyclic (ZMod n)ˣ := by
@@ -308,7 +312,7 @@ theorem isCyclic_units_iff_of_odd {n : ℕ} (hn : Odd n) :
     rw [← Nat.mul_div_cancel' this]
     refine not_isCyclic_units_of_mul_coprime _ _ (hn.of_dvd_nat this) ?_
       (hn.of_dvd_nat (Nat.div_dvd_of_dvd this)) ?_ ((Nat.coprime_ordCompl hp hn0).pow_left ..)
-    · simpa only [Ne, pow_eq_one_iff (hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
+    · simpa [(hp.factorization_pos_of_dvd hn0 dvd).ne'] using hp.ne_one
     · contrapose! hnp
       conv_lhs => rw [← Nat.div_mul_cancel this, hnp, one_mul]
   rintro ⟨q, m, hq, -, rfl⟩
@@ -357,7 +361,7 @@ theorem isCyclic_units_iff (n : ℕ) :
   obtain ⟨n, rfl⟩ := hn.two_dvd
   apply iff_of_false
   · rw [← mul_assoc, show 2 * 2 = 4 from rfl, isCyclic_units_four_mul_iff]
-    cutsat
+    lia
   grind
 
 end ZMod

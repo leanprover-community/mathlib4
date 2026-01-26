@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.LinearDisjoint
+public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 
@@ -40,6 +42,8 @@ This file contains results related to `Field.sepDegree`, `Field.insepDegree` and
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+public section
 
 open Polynomial IntermediateField Field
 

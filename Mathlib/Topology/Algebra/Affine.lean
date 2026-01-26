@@ -3,15 +3,19 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Attila Gáspár
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.Topology.Algebra.Group.AddTorsor
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
 # Topological properties of affine spaces and maps
 
 This file contains a few facts regarding the continuity of affine maps.
 -/
+
+public section
 
 
 namespace AffineMap

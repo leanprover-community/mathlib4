@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Algebra.MvPolynomial.Degrees
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Algebra.MvPolynomial.Degrees
 
 /-!
 # Variables of polynomials
@@ -38,6 +40,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -93,9 +97,6 @@ theorem mem_support_notMem_vars_zero {f : MvPolynomial σ R} {x : σ →₀ ℕ}
     {v : σ} (h : v ∉ vars f) : x v = 0 := by
   contrapose! h
   exact (mem_vars v).mpr ⟨x, H, Finsupp.mem_support_iff.mpr h⟩
-
-@[deprecated (since := "2025-05-23")]
-alias mem_support_not_mem_vars_zero := mem_support_notMem_vars_zero
 
 theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by

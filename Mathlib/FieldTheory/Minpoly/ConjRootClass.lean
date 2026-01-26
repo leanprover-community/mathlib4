@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.FieldTheory.Minpoly.IsConjRoot
+module
+
+public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
 /-!
 # Conjugate root classes
@@ -11,6 +13,8 @@ import Mathlib.FieldTheory.Minpoly.IsConjRoot
 In this file, we define the `ConjRootClass` of a field extension `L / K` as the quotient of `L` by
 the relation `IsConjRoot K`.
 -/
+
+@[expose] public section
 
 variable (K L S : Type*) [Field K] [Field L] [Field S]
 variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
@@ -83,7 +87,7 @@ instance : InvolutiveNeg (ConjRootClass K L) where
   neg_neg c := by induction c; rw [mk_neg, mk_neg, neg_neg]
 
 @[simp]
-theorem carrier_neg (c : ConjRootClass K L) : carrier (- c) = - carrier c := by
+theorem carrier_neg (c : ConjRootClass K L) : carrier (-c) = - carrier c := by
   ext
   simp [mem_carrier, ← mk_neg, neg_eq_iff_eq_neg]
 
@@ -128,7 +132,7 @@ theorem minpoly_injective : Function.Injective (ConjRootClass.minpoly (K := K) (
   fun _ _ ↦ minpoly_inj.mp
 
 theorem splits_minpoly [n : Normal K L] (c : ConjRootClass K L) :
-    Splits (algebraMap K L) c.minpoly := by
+    Splits (c.minpoly.map (algebraMap K L)) := by
   induction c
   rw [minpoly_mk]
   exact n.splits _
@@ -191,7 +195,7 @@ theorem minpoly.map_eq_prod [Normal K L] (c : ConjRootClass K L) [Fintype c.carr
     Finset.toFinset_coe, Multiset.toFinset_val]
   rw [Multiset.dedup_eq_self.mpr (nodup_roots c.separable_minpoly.map),
     prod_multiset_X_sub_C_of_monic_of_roots_card_eq (c.monic_minpoly.map _)]
-  rw [← splits_iff_card_roots, splits_id_iff_splits]
+  rw [← splits_iff_card_roots]
   exact c.splits_minpoly
 
 end IsSeparable

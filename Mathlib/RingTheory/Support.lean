@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.QuotSMulTop
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Localization.Finiteness
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.QuotSMulTop
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 
@@ -31,6 +33,8 @@ depending on the Zariski topology.
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)
 -/
 
+@[expose] public section
+
 -- Basic files in `RingTheory` should avoid depending on the Zariski topology
 -- See `Mathlib/RingTheory/Spectrum/Prime/Module.lean`
 assert_not_exists TopologicalSpace
@@ -50,15 +54,10 @@ lemma Module.notMem_support_iff :
     p ∉ Module.support R M ↔ Subsingleton (LocalizedModule p.asIdeal.primeCompl M) :=
   not_nontrivial_iff_subsingleton
 
-@[deprecated (since := "2025-05-23")] alias Module.not_mem_support_iff := Module.notMem_support_iff
-
 lemma Module.notMem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
   simp only [notMem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
     Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
-
-@[deprecated (since := "2025-05-23")]
-alias Module.not_mem_support_iff' := Module.notMem_support_iff'
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
@@ -142,7 +141,7 @@ lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
 
-lemma Module.support_of_noZeroSMulDivisors [NoZeroSMulDivisors R M] [Nontrivial M] :
+lemma Module.support_of_noZeroSMulDivisors [IsDomain R] [IsTorsionFree R M] [Nontrivial M] :
     Module.support R M = Set.univ := by
   simp only [Set.eq_univ_iff_forall, mem_support_iff', ne_eq, smul_eq_zero, not_or]
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
@@ -229,6 +228,14 @@ lemma LocalizedModule.exists_subsingleton_away (p : Ideal R) [p.IsPrime]
   exact ⟨f, by simpa using hf', subsingleton_iff.mpr
     fun m ↦ ⟨f, Submonoid.mem_powers f, Module.mem_annihilator.mp hf _⟩⟩
 
+lemma IsLocalizedModule.exists_subsingleton_away {M' : Type*} [AddCommMonoid M'] [Module R M']
+    (l : M →ₗ[R] M') (p : Ideal R) [p.IsPrime] [IsLocalizedModule p.primeCompl l]
+    [Subsingleton M'] :
+    ∃ f ∉ p, Subsingleton (LocalizedModule (.powers f) M) := by
+  let e := IsLocalizedModule.iso p.primeCompl l
+  have : Subsingleton (LocalizedModule p.primeCompl M) := e.subsingleton
+  exact LocalizedModule.exists_subsingleton_away p
+
 /-- `Supp(M/IM) = Supp(M) ∩ Z(I)`. -/
 @[stacks 00L3 "(1)"]
 theorem Module.support_quotient (I : Ideal R) :
@@ -239,7 +246,7 @@ theorem Module.support_quotient (I : Ideal R) :
     · rw [support_eq_zeroLocus]
       apply PrimeSpectrum.zeroLocus_anti_mono_ideal
       rw [Submodule.annihilator_quotient]
-      exact fun x hx ↦ Submodule.mem_colon.mpr fun p ↦ Submodule.smul_mem_smul hx
+      exact fun x hx ↦ Submodule.mem_colon.mpr fun p hp ↦ Submodule.smul_mem_smul hx hp
   · rintro p ⟨hp₁, hp₂⟩
     rw [Module.mem_support_iff] at hp₁ ⊢
     let Rₚ := Localization.AtPrime p.asIdeal
@@ -250,8 +257,7 @@ theorem Module.support_quotient (I : Ideal R) :
       Submodule.quotEquivOfEq _ _ (by rw [Submodule.localized,
         Submodule.localized'_smul, Ideal.localized'_eq_map, Submodule.localized'_top])
     have : Nontrivial Mₚ'' := by
-      apply Submodule.Quotient.nontrivial_of_lt_top
-      rw [lt_top_iff_ne_top, ne_comm]
+      rw [Submodule.Quotient.nontrivial_iff, ne_comm]
       apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       refine trans ?_ (IsLocalRing.maximalIdeal_le_jacobson _)
       rw [← Localization.AtPrime.map_eq_maximalIdeal]

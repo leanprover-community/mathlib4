@@ -3,7 +3,9 @@ Copyright (c) 2023 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Klein Four Group
@@ -39,7 +41,9 @@ produces the third one.
 non-cyclic abelian group
 -/
 
-/-! # Klein four-groups as a mixin class -/
+@[expose] public section
+
+/-! ### Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
 class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where

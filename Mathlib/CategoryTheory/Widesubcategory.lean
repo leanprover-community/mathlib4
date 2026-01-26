@@ -3,8 +3,10 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Wide subcategories
@@ -23,6 +25,8 @@ The instance `WideSubcategory.category` provides a category structure on `WideSu
 whose objects are the objects of `C` and morphisms are the morphisms in `C` which have the
 property `P`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

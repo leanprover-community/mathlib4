@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Order.Iterate
-import Mathlib.Order.SemiconjSup
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Algebra.CharP.Defs
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Order.Iterate
+public import Mathlib.Order.SemiconjSup
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`
@@ -70,7 +72,7 @@ We prove the following properties of `CircleDeg1Lift.translationNumber`.
   homomorphisms from `G →* CircleDeg1Lift`). If the translation numbers of `f₁ g` and `f₂ g` are
   equal to each other for all `g : G`, then these two actions are semiconjugate by some
   `F : CircleDeg1Lift`. This is a version of Proposition 5.4 from [Étienne Ghys, Groupes
-  d'homeomorphismes du cercle et cohomologie bornee][ghys87:groupes].
+  d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes].
 
 ## Notation
 
@@ -92,7 +94,7 @@ preserving circle homeomorphisms for two reasons:
 
 ## References
 
-* [Étienne Ghys, Groupes d'homeomorphismes du cercle et cohomologie bornee][ghys87:groupes]
+* [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes]
 
 ## TODO
 
@@ -114,6 +116,8 @@ Here are some short-term goals.
 
 circle homeomorphism, rotation number
 -/
+
+@[expose] public section
 
 open Filter Set Int Topology
 open Function hiding Commute
@@ -266,7 +270,7 @@ theorem translate_inv_apply (x y : ℝ) : (translate <| Multiplicative.ofAdd x)�
 @[simp]
 theorem translate_zpow (x : ℝ) (n : ℤ) :
     translate (Multiplicative.ofAdd x) ^ n = translate (Multiplicative.ofAdd <| ↑n * x) := by
-  simp only [← zsmul_eq_mul, ofAdd_zsmul, MonoidHom.map_zpow]
+  simp only [← zsmul_eq_mul, ofAdd_zsmul, map_zpow]
 
 @[simp]
 theorem translate_pow (x : ℝ) (n : ℕ) :
@@ -823,8 +827,8 @@ orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the 
 `f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
-This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homeomorphismes du cercle et
-cohomologie bornee][ghys87:groupes]. -/
+This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
+cohomologie bornée][ghys87:groupes]. -/
 theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Group G]
     (f₁ f₂ : G →* CircleDeg1Lift) (h : ∀ g, τ (f₁ g) = τ (f₂ g)) :
     ∃ F : CircleDeg1Lift, ∀ g, Semiconj F (f₁ g) (f₂ g) := by
@@ -834,7 +838,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     refine fun x => ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
-      rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
+      rw [← MonoidHom.coe_toHomUnits, map_inv, translationNumber_units_inv,
         MonoidHom.coe_toHomUnits]
     calc
       f₂ g⁻¹ (f₁ g x) ≤ f₂ g⁻¹ (x + τ (f₁ g) + 1) :=

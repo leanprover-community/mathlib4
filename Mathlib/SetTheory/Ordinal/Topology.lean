@@ -3,10 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.IsNormal
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.Tactic.TFAE
+public import Mathlib.Topology.Order.IsNormal
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 ### Topology of ordinals
@@ -22,6 +24,8 @@ We prove some miscellaneous results involving the order topology of ordinals.
 * `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
   normal iff the set is closed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -161,9 +165,6 @@ theorem isSuccLimit_of_mem_frontier (ha : a ∈ frontier s) : IsSuccLimit a := b
   subst hb; subst hc
   exact hc' hb'
 
-@[deprecated (since := "2025-07-08")]
-alias isLimit_of_mem_frontier := isSuccLimit_of_mem_frontier
-
 @[deprecated Order.isNormal_iff_strictMono_and_continuous (since := "2025-08-21")]
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f :=
@@ -174,12 +175,12 @@ theorem enumOrd_isNormal_iff_isClosed (hs : ¬ BddAbove s) :
   have Hs := enumOrd_strictMono hs
   refine
     ⟨fun h => isClosed_iff_iSup.2 fun {ι} hι f hf => ?_, fun h =>
-      (isNormal_iff_strictMono_limit _).2 ⟨Hs, fun a ha o H => ?_⟩⟩
+      isNormal_iff.2 ⟨Hs, fun a ha o H => ?_⟩⟩
   · let g : ι → Ordinal.{u} := fun i => (enumOrdOrderIso s hs).symm ⟨_, hf i⟩
     suffices enumOrd s (⨆ i, g i) = ⨆ i, f i by
       rw [← this]
       exact enumOrd_mem hs _
-    rw [IsNormal.map_iSup h g]
+    rw [h.map_iSup (bddAbove_of_small _)]
     congr
     ext x
     change (enumOrdOrderIso s hs _).val = f x
@@ -226,7 +227,7 @@ theorem isAcc_iff (o : Ordinal) (S : Set Ordinal) : o.IsAcc S ↔
       rwa [← succ_eq_add_one, lt_succ_iff] at this
   · rw [accPt_iff_nhds]
     intro h u umem
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, Ordinal.pos_iff_ne_zero.mpr h.1⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds umem ⟨0, pos_iff_ne_zero.mpr h.1⟩
     obtain ⟨x, hx⟩ := h.2 l hl.1
     use x
     exact ⟨⟨hl.2 ⟨hx.2.1, hx.2.2.le⟩, hx.1⟩, hx.2.2.ne⟩
@@ -235,7 +236,7 @@ theorem IsAcc.forall_lt {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
     ∀ p < o, (S ∩ Ioo p o).Nonempty := ((isAcc_iff _ _).mp h).2
 
 theorem IsAcc.pos {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) :
-    0 < o := Ordinal.pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
+    0 < o := pos_iff_ne_zero.mpr ((isAcc_iff _ _).mp h).1
 
 theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSuccLimit o := by
   rw [isAcc_iff] at h
@@ -243,9 +244,6 @@ theorem IsAcc.isSuccLimit {o : Ordinal} {S : Set Ordinal} (h : o.IsAcc S) : IsSu
   refine ⟨h.1, isSuccPrelimit_of_succ_ne fun x hx ↦ ?_⟩
   rcases h.2 x (lt_of_lt_of_le (lt_succ x) hx.le) with ⟨p, hp⟩
   exact (hx.symm ▸ (succ_le_iff.mpr hp.2.1)).not_gt hp.2.2
-
-@[deprecated IsAcc.isSuccLimit (since := "2025-07-08")]
-alias IsAcc.isLimit := IsAcc.isSuccLimit
 
 theorem IsAcc.mono {o : Ordinal} {S T : Set Ordinal} (h : S ⊆ T) (ho : o.IsAcc S) :
     o.IsAcc T := by
@@ -302,7 +300,7 @@ theorem accPt_subtype {p o : Ordinal} (S : Set Ordinal) (hpo : p < o) :
       have : ↑x < o := x.2
       simp_rw [hp, zero_add, lt_one_iff_zero] at this
       exact hx.2 (SetCoe.ext this)
-    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, Ordinal.pos_iff_ne_zero.mpr ppos⟩
+    obtain ⟨l, hl⟩ := exists_Ioc_subset_of_mem_nhds hu ⟨0, pos_iff_ne_zero.mpr ppos⟩
     obtain ⟨x, hx⟩ := h (Ioi ⟨l, hl.1.trans hpo⟩) (Ioi_mem_nhds hl.1)
     use x
     refine ⟨⟨hl.2 ⟨hx.1.1, ?_⟩, hx.1.2⟩, fun h ↦ hx.2 (SetCoe.ext h)⟩

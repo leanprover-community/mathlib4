@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Subalgebras in towers of algebras
@@ -25,6 +27,8 @@ compatibility condition `(r • s) • a = r • (s • a)`.
   given that `A/S/R` is a tower
 
 -/
+
+@[expose] public section
 
 
 open Pointwise
@@ -119,7 +123,7 @@ section CommSemiring
 @[simp]
 lemma range_isScalarTower_toAlgHom [CommSemiring R] [CommSemiring A]
     [Algebra R A] (S : Subalgebra R A) :
-    LinearMap.range (IsScalarTower.toAlgHom R S A) = Subalgebra.toSubmodule S := by
+    LinearMap.range (IsScalarTower.toAlgHom R S A : S →ₗ[R] A) = Subalgebra.toSubmodule S := by
   ext
   simp [algebraMap_eq]
 

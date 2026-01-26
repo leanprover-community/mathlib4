@@ -3,13 +3,17 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
 # Algebraic structures over `C^n` functions
 
 In this file, we define instances of algebraic structures over `C^n` functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,9 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Limits related to polynomial and rational functions
@@ -19,6 +21,8 @@ We can then use this result to prove various limits for polynomial and rational
 functions, depending on the degrees and leading coefficients of the considered
 polynomials.
 -/
+
+public section
 
 
 open Filter Finset Asymptotics
@@ -129,7 +133,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [← mul_zero]
   refine (tendsto_zpow_atTop_zero ?_).const_mul _
-  cutsat
+  lia
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
@@ -163,7 +167,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atTop ?_
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  cutsat
+  lia
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
@@ -184,7 +188,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atBot ?_
   apply Tendsto.const_mul_atTop_of_neg hneg
   apply tendsto_zpow_atTop_atTop
-  cutsat
+  lia
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :

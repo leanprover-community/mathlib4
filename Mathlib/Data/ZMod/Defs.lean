@@ -3,12 +3,15 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.GrindInstances
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Fintype.EquivFin
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.GrindInstances  -- shake: keep (used in `example` only)
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Algebra.Ring.Nat
 
 /-!
 # Definition of `ZMod n` + basic results.
@@ -28,6 +31,8 @@ is not an issue mathematically. For this to be possible, however, we need `CharP
 able to import some part of `ZMod`.
 
 -/
+
+@[expose] public section
 
 
 namespace Fin
@@ -54,10 +59,10 @@ open scoped Fin.IntCast Fin.NatCast
     split <;> rename_i h
     · rw [← Int.natCast_dvd] at h
       rw [Int.emod_eq_zero_of_dvd h, Int.toNat_zero]
-    · rw [Int.emod_natAbs_of_neg (by cutsat) (NeZero.ne n),
+    · rw [Int.emod_natAbs_of_neg (by lia) (NeZero.ne n),
         if_neg (by rwa [← Int.natCast_dvd] at h)]
-      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; cutsat)
-      cutsat
+      have : x % n < n := Int.emod_lt_of_pos x (by have := NeZero.ne n; lia)
+      lia
 
 /-- Multiplicative commutative semigroup structure on `Fin n`. -/
 instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
@@ -70,6 +75,7 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
 
+set_option backward.privateInPublic true in
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, _⟩ ⟨b, _⟩ ⟨c, _⟩ =>
   Fin.eq_of_val_eq <|
@@ -78,6 +84,8 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
       _ ≡ a * b + a * c [MOD n] := by rw [mul_add]
       _ ≡ a * b % n + a * c % n [MOD n] := (Nat.mod_modEq _ _).symm.add (Nat.mod_modEq _ _).symm
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Distributive structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instCommSemigroup n with

@@ -3,13 +3,17 @@ Copyright (c) 2022 Evan Lohn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Evan Lohn, Mario Carneiro
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 # The `substs` macro
 
 The `substs` macro applies the `subst` tactic to a list of hypothesis, in left to right order.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Substs
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Strictly unitary lax functors and pseudofunctors
@@ -17,7 +19,7 @@ unit 2-morphism `F.obj (𝟙 _) → 𝟙 (F.obj _)` is the identity 2-morphism i
 by this equality.
 
 A pseudofunctor is called *strictly unitary* (or a *normal homomorphism*) if it
-satisfies the same condition (i.e its "underlying" lax functor is strictly
+satisfies the same condition (i.e. its "underlying" lax functor is strictly
 unitary).
 
 ## References
@@ -33,6 +35,8 @@ bicategories, strictly unitary pseudofunctors and icons.
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

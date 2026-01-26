@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integration by parts for line derivatives
@@ -43,6 +45,8 @@ towards applications to Fourier transforms.
 TODO: prove similar theorems assuming that the functions tend to zero at infinity and have
 integrable derivatives.
 -/
+
+public section
 
 open MeasureTheory Measure Module Topology
 

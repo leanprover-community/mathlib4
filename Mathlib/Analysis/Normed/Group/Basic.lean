@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Seminorm
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -38,6 +40,8 @@ to for performance concerns.
 
 normed group
 -/
+
+@[expose] public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
@@ -505,6 +509,7 @@ theorem norm_nonneg' (a : E) : 0 ≤ ‖a‖ := by
   exact dist_nonneg
 
 attribute [bound] norm_nonneg
+attribute [grind .] norm_nonneg
 
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
@@ -640,7 +645,7 @@ theorem mem_closedBall_iff_norm''' : b ∈ closedBall a r ↔ ‖a / b‖ ≤ r 
 
 @[to_additive norm_le_of_mem_closedBall]
 theorem norm_le_of_mem_closedBall' (h : b ∈ closedBall a r) : ‖b‖ ≤ ‖a‖ + r :=
-  (norm_le_norm_add_norm_div' _ _).trans <| add_le_add_left (by rwa [← dist_eq_norm_div]) _
+  (norm_le_norm_add_norm_div' _ _).trans <| add_le_add_right (by rwa [← dist_eq_norm_div]) _
 
 @[to_additive norm_le_norm_add_const_of_dist_le]
 theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b‖ + r :=
@@ -648,7 +653,7 @@ theorem norm_le_norm_add_const_of_dist_le' : dist a b ≤ r → ‖a‖ ≤ ‖b
 
 @[to_additive norm_lt_of_mem_ball]
 theorem norm_lt_of_mem_ball' (h : b ∈ ball a r) : ‖b‖ < ‖a‖ + r :=
-  (norm_le_norm_add_norm_div' _ _).trans_lt <| add_lt_add_left (by rwa [← dist_eq_norm_div]) _
+  (norm_le_norm_add_norm_div' _ _).trans_lt <| add_lt_add_right (by rwa [← dist_eq_norm_div]) _
 
 @[to_additive]
 theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w‖ ≤ ‖u / v‖ := by
@@ -657,7 +662,7 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
 lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
-  simpa [- tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
+  simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
@@ -1110,7 +1115,7 @@ theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
 
-lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
+lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ := by
   simp [Real.enorm_of_nonneg, ha]
 
 @[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]
@@ -1391,7 +1396,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
@@ -1413,7 +1418,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)

@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # The rational numbers are a commutative ring
@@ -17,7 +19,9 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest
 
 namespace Rat
 

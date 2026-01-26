@@ -3,7 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Multiplicative maps on unique factorization domains
@@ -15,18 +17,20 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   primes `p`, and `f` is multiplicative on coprime elements, then `f` is multiplicative everywhere.
 -/
 
+public section
+
 assert_not_exists Field
 
 variable {α : Type*}
 
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 section Multiplicative
 
-variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
-variable {β : Type*} [CancelCommMonoidWithZero β]
+variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
+variable {β : Type*} [CommMonoidWithZero β]
 
 theorem prime_pow_coprime_prod_of_coprime_insert [DecidableEq α] {s : Finset α} (i : α → ℕ) (p : α)
     (hps : p ∉ s) (is_prime : ∀ q ∈ insert p s, Prime q)

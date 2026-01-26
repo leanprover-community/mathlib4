@@ -3,9 +3,10 @@ Copyright (c) 2023 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
 # Hadamard three-lines Theorem
@@ -56,6 +57,8 @@ functions defined in this file.
 The proof follows from Phragmén-Lindelöf when both frontiers are not everywhere zero.
 We then use a limit argument to cover the case when either of the sides are `0`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Complex Topology
@@ -405,7 +408,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
-to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
+to the bounds for its scaled version on the strip `re ⁻¹' [0, 1]`. -/
 lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul : l < u) (z : ℂ) : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']
@@ -416,7 +419,7 @@ variable [NormedSpace ℂ E]
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' verticalClosedStrip 0 1))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
-    ‖f z‖ ≤  ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
+    ‖f z‖ ≤ ‖((ε + sSupNormIm f 0) ^ (1 - z) * (ε + sSupNormIm f 1) ^ z : ℂ)‖ := by
   simp only [norm_mul, ← ofReal_add, norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε _) _,
     sub_re, one_re]
   rw [← mul_inv_le_iff₀', ← one_mul (((ε + sSupNormIm f 1) ^ z.re)), ← mul_inv_le_iff₀,

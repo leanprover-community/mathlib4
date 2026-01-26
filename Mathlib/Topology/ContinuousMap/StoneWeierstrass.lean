@@ -3,14 +3,17 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.Algebra.StarSubalgebra
-import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Lattice
-import Mathlib.Topology.ContinuousMap.Weierstrass
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.Algebra.StarSubalgebra
+public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.Lattice
+public import Mathlib.Topology.ContinuousMap.Weierstrass
+public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # The Stone-Weierstrass theorem
@@ -45,6 +48,8 @@ Extend to cover the case of subalgebras of the continuous functions vanishing at
 on non-compact spaces.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Unitization
 
@@ -376,7 +381,7 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
   have hFA : F ∈ A := by
     refine A.sub_mem hfA (@Eq.subst _ (· ∈ A) _ _ ?_ <| A.smul_mem A.one_mem <| f x₂)
     ext1
-    simp only [smul_apply, one_apply, Algebra.id.smul_eq_mul, mul_one,
+    simp only [smul_apply, one_apply, smul_eq_mul, mul_one,
       const_apply]
   -- Consider now the function `fun x ↦ |f x - f x₂| ^ 2`
   refine ⟨_, ⟨⟨(‖F ·‖ ^ 2), by fun_prop⟩, ?_, rfl⟩, ?_⟩
@@ -400,10 +405,10 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
   let I : C(X, ℝ) →L[ℝ] C(X, 𝕜) := ofRealCLM.compLeftContinuous ℝ X
   -- The main point of the proof is that its range (i.e., every real-valued function) is contained
   -- in the closure of `A`
-  have key : LinearMap.range I ≤ (A.toSubmodule.restrictScalars ℝ).topologicalClosure := by
+  have key : I.range ≤ (A.toSubmodule.restrictScalars ℝ).topologicalClosure := by
     -- Let `A₀` be the subalgebra of `C(X, ℝ)` consisting of `A`'s purely real elements; it is the
     -- preimage of `A` under `I`.  In this argument we only need its submodule structure.
-    let A₀ : Submodule ℝ C(X, ℝ) := (A.toSubmodule.restrictScalars ℝ).comap I
+    let A₀ : Submodule ℝ C(X, ℝ) := (A.toSubmodule.restrictScalars ℝ).comap I.toLinearMap
     -- By `Subalgebra.SeparatesPoints.rclike_to_real`, this subalgebra also separates points, so
     -- we may apply the real Stone-Weierstrass result to it.
     have SW : A₀.topologicalClosure = ⊤ :=
@@ -413,7 +418,7 @@ theorem ContinuousMap.starSubalgebra_topologicalClosure_eq_top_of_separatesPoint
     -- So it suffices to prove that the image under `I` of the closure of `A₀` is contained in the
     -- closure of `A`, which follows by abstract nonsense
     have h₁ := A₀.topologicalClosure_map I
-    have h₂ := (A.toSubmodule.restrictScalars ℝ).map_comap_le I
+    have h₂ := (A.toSubmodule.restrictScalars ℝ).map_comap_le I.toLinearMap
     exact h₁.trans (Submodule.topologicalClosure_mono h₂)
   -- In particular, for a function `f` in `C(X, 𝕜)`, the real and imaginary parts of `f` are in the
   -- closure of `A`
@@ -475,7 +480,7 @@ theorem ContinuousMap.induction_on {𝕜 : Type*} [RCLike 𝕜] {s : Set 𝕜}
   rw [polynomialFunctions.starClosure_eq_adjoin_X] at hf
   induction hf using Algebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
+    push _ ∈ _ at hf
     rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
     obtain (rfl | rfl) := hf
     all_goals simpa only [toContinuousMapOnAlgHom_apply, toContinuousMapOn_X_eq_restrict_id]
@@ -613,7 +618,7 @@ lemma ker_evalStarAlgHom_eq_closure_adjoin_id (s : Set 𝕜) (h0 : 0 ∈ s) [Com
   convert (Set.univ_inter _).symm
   rw [← Polynomial.toContinuousMapOn_X_eq_restrict_id, ← Polynomial.toContinuousMapOnAlgHom_apply,
     ← polynomialFunctions.starClosure_eq_adjoin_X s]
-  congrm(($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
+  congrm (($(polynomialFunctions.starClosure_topologicalClosure s) : Set C(s, 𝕜)))
 
 end ContinuousMap
 
@@ -652,8 +657,8 @@ lemma ContinuousMapZero.induction_on {s : Set 𝕜} [Fact (0 ∈ s)]
   refine closure (fun f hf => ?_) f
   induction hf using NonUnitalAlgebra.adjoin_induction with
   | mem f hf =>
-    simp only [Set.mem_union, Set.mem_singleton_iff, Set.mem_star] at hf
-    rw [star_eq_iff_star_eq, eq_comm (b := f)] at hf
+    push _ ∈ _ at hf
+    rw [star_eq_iff_star_eq] at hf
     obtain (rfl | rfl) := hf
     all_goals assumption
   | zero => exact zero

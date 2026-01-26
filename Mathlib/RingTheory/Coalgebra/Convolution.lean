@@ -3,11 +3,14 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała, Yunzhou Xie. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała, Yunzhou Xie
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Hom
-import Mathlib.RingTheory.Coalgebra.TensorProduct
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Convolution product on linear maps from a coalgebra to an algebra
@@ -31,6 +34,8 @@ Note that in the case `C = A` this convolution product conflicts with the (unfor
 group instance on `Module.End R A` with multiplication defined as composition.
 As a result, the convolution product is scoped to `ConvolutionProduct`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
 /-!
 # The covariant involution of the simplex category
@@ -14,6 +16,8 @@ category of nonempty finite linearly ordered types, corresponds to
 the *covariant* functor which sends a type `α` to `αᵒᵈ`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

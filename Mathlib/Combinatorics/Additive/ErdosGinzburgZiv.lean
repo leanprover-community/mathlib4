@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.ChevalleyWarning
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.ChevalleyWarning
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem
@@ -19,6 +21,8 @@ elements of sum zero.
 * `Int.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ℤ`
 * `ZMod.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ZMod n`
 -/
+
+public section
 
 open Finset MvPolynomial
 
@@ -43,7 +47,7 @@ private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
       gcongr <;> apply totalDegree_finsetSum_le <;> rintro i _
       · exact (totalDegree_X_pow ..).le
       · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
-    _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; cutsat
+    _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; lia
 
 /-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ/pℤ`.
 
@@ -152,7 +156,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
     -- taken in any element of `𝒜`.
     have : 2 * n - 1 ≤ #(s \ 𝒜.biUnion id) := by
       calc
-        _ ≤ (2 * m - k) * n - 1 := by gcongr; cutsat
+        _ ≤ (2 * m - k) * n - 1 := by gcongr; lia
         _ = (2 * (m * n) - 1) - ∑ t ∈ 𝒜, #t := by
           rw [tsub_mul, mul_assoc, tsub_right_comm, sum_const_nat fun t ht ↦ (h𝒜 ht).2.1, h𝒜card]
         _ ≤ #s - #(𝒜.biUnion id) := by gcongr; exact card_biUnion_le
@@ -165,7 +169,7 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
       rintro h
       obtain rfl : n = 0 := by
         simpa [← card_eq_zero, ht₀card] using sdiff_disjoint.mono ht₀ <| subset_biUnion_of_mem id h
-      omega
+      lia
     refine ⟨𝒜.cons t₀ this, by rw [card_cons, h𝒜card], ?_, ?_⟩
     · simp only [cons_eq_insert, coe_insert, Set.pairwise_insert_of_symmetric symmetric_disjoint,
         mem_coe, ne_eq]

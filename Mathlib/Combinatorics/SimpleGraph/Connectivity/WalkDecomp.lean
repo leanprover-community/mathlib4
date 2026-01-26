@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Walk
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Subwalks
 
 /-!
 # Decomposing walks
@@ -13,6 +15,8 @@ import Mathlib.Combinatorics.SimpleGraph.Walk
 - `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
 - `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph.Walk
 
@@ -51,17 +55,7 @@ lemma takeUntil_first (p : G.Walk u v) :
 
 @[simp]
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
-    (p.takeUntil w hwp).Nil ↔ u = w := by
-  refine ⟨?_, fun h => by subst h; simp⟩
-  intro hnil
-  cases p with
-  | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
-  | cons h q =>
-    simp only [support_cons, List.mem_cons] at hwp
-    obtain hl | hr := hwp
-    · exact hl.symm
-    · by_contra! hc
-      simp [takeUntil_cons hr hc] at hnil
+    (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
 the end. In other words, drop vertices from the front of a path until (and not including)
@@ -90,6 +84,12 @@ theorem take_spec {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     · simp!
     · simp! only
       split_ifs with h' <;> subst_vars <;> simp [*]
+
+theorem isSubwalk_takeUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.takeUntil w h).IsSubwalk p :=
+  ⟨nil, p.dropUntil w h, by simp⟩
+
+theorem isSubwalk_dropUntil (p : G.Walk u v) (h : w ∈ p.support) : (p.dropUntil w h).IsSubwalk p :=
+  ⟨p.takeUntil w h, nil, by simp⟩
 
 theorem mem_support_iff_exists_append {V : Type u} {G : SimpleGraph V} {u v w : V}
     {p : G.Walk u v} : w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), p = q.append r := by
@@ -188,7 +188,7 @@ theorem length_dropUntil_le {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
   exact Nat.le.intro this
 
 lemma takeUntil_append_of_mem_left {x : V} (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
-    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx := by
   induction p with
   | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
   | @cons u _ _ _ _ ih =>
@@ -253,11 +253,7 @@ lemma notMem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : 
   have h2 : ((p.takeUntil w hw).takeUntil x hx).length < (p.takeUntil w hw).length := by
     exact length_takeUntil_lt _ h
   simp only [takeUntil_takeUntil] at h1 h2
-  cutsat
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_support_takeUntil_support_takeUntil_subset :=
-  notMem_support_takeUntil_support_takeUntil_subset
+  lia
 
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
@@ -269,6 +265,11 @@ theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
   simp only [rotate, tail_support_append]
   apply List.IsRotated.trans List.isRotated_append
   rw [← tail_support_append, take_spec]
+
+@[simp]
+theorem mem_support_rotate_iff (c : G.Walk v v) (h : u ∈ c.support) :
+    w ∈ (c.rotate h).support ↔ w ∈ c.support := by
+  grind [rotate, take_spec, mem_support_append_iff]
 
 theorem rotate_darts {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).darts ~r c.darts := by

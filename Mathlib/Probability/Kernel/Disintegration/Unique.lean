@@ -3,7 +3,9 @@ Copyright (c) 2023 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Disintegration.Integral
+module
+
+public import Mathlib.Probability.Kernel.Disintegration.Integral
 
 /-!
 # Uniqueness of the conditional kernel
@@ -20,6 +22,8 @@ We prove that the conditional kernels `ProbabilityTheory.Kernel.condKernel` and
 * `ProbabilityTheory.Kernel.condKernel_apply_eq_condKernel`: the kernel `condKernel` is almost
   everywhere equal to the measure `condKernel`.
 -/
+
+public section
 
 open MeasureTheory Set Filter MeasurableSpace
 
@@ -38,8 +42,8 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 The conditional kernel of a measure is unique almost everywhere. -/
 
-/-- A s-finite kernel which satisfy the disintegration property of the given measure `ρ` is almost
-everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
+/-- An s-finite kernel which satisfies the disintegration property of the given measure `ρ` is
+almost everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
 
 This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
 which asserts that the kernels are equal almost everywhere and not just on a given measurable

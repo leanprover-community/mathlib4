@@ -3,19 +3,24 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.FieldSimp.Attr
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public meta import Mathlib.Data.Ineq
+public meta import Mathlib.Util.AtLocation
+public import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # `field_simp` tactic
 
 Tactic to clear denominators in algebraic expressions.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -255,7 +260,7 @@ namespace DenomCondition
 
 /-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
 to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
-def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
   | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
   | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))
@@ -444,7 +449,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
-  /- normalize a inversion: `y⁻¹` -/
+  /- normalize an inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
     let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
     let pf_y ← Sign.inv iM y' g
@@ -787,4 +792,5 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 /-!
  We register `field_simp` with the `hint` tactic.
  -/
-register_hint field_simp
+register_hint 1000 field_simp
+register_try?_tactic (priority := 1000) field_simp

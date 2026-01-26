@@ -3,9 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
-import Mathlib.Analysis.Normed.Group.NullSubmodule
-import Mathlib.Topology.Algebra.Module.PerfectPairing
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
+public import Mathlib.Analysis.Normed.Group.NullSubmodule
+public import Mathlib.Topology.Algebra.Module.PerfectPairing
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -33,6 +35,8 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 
 dual, Fréchet-Riesz
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -66,8 +70,13 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
-  rfl
+theorem toContinuousLinearMap_toDualMap :
+    (toDualMap 𝕜 E).toContinuousLinearMap = innerSL 𝕜 := rfl
+
+@[simp]
+theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
 
 variable {𝕜} in
 @[simp]
@@ -80,11 +89,11 @@ section NullSubmodule
 open LinearMap
 
 /-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E x).ker :=
   fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
 
 /-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
-lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ (toDualMap 𝕜 E).ker :=
   fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
 
 end NullSubmodule
@@ -108,8 +117,7 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   apply (toDualMap 𝕜 E).map_eq_iff.mp
   refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
-  simp only [ContinuousLinearMap.coe_coe]
-  rw [toDualMap_apply, toDualMap_apply]
+  simp only [ContinuousLinearMap.coe_coe, toDualMap_apply_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
@@ -131,7 +139,7 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
   LinearIsometryEquiv.ofSurjective (toDualMap 𝕜 E)
     (by
       intro ℓ
-      set Y := LinearMap.ker ℓ
+      set Y := ℓ.ker
       by_cases htriv : Y = ⊤
       · have hℓ : ℓ = 0 := by
           have h' := LinearMap.ker_eq_top.mp htriv
@@ -147,8 +155,8 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
         apply ContinuousLinearMap.ext
         intro x
         have h₁ : ℓ z • x - ℓ x • z ∈ Y := by
-          rw [LinearMap.mem_ker, map_sub, ContinuousLinearMap.map_smul,
-            ContinuousLinearMap.map_smul, Algebra.id.smul_eq_mul, Algebra.id.smul_eq_mul, mul_comm]
+          rw [LinearMap.mem_ker, map_sub, map_smul, map_smul, smul_eq_mul,
+            smul_eq_mul, mul_comm]
           exact sub_self (ℓ x * ℓ z)
         have h₂ : ℓ z * ⟪z, x⟫ = ℓ x * ⟪z, z⟫ :=
           haveI h₃ :=
@@ -163,18 +171,26 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
           ⟪(ℓ z† / ⟪z, z⟫) • z, x⟫ = ℓ z / ⟪z, z⟫ * ⟪z, x⟫ := by simp [inner_smul_left]
           _ = ℓ z * ⟪z, x⟫ / ⟪z, z⟫ := by rw [← div_mul_eq_mul_div]
           _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
-          _ = ℓ x := by field [inner_self_ne_zero.2])
+          _ = ℓ x := by have : ⟪z, z⟫ ≠ 0 := inner_self_ne_zero.mpr z_ne_0; field)
 
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
-  rfl
+theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
 
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
-  rw [← toDual_apply]
+  rw [← toDual_apply_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
+
+@[simp]
+lemma toLinearIsometry_toDual :
+    (toDual 𝕜 E).toLinearIsometry = toDualMap 𝕜 E := rfl
+
+lemma toDual_apply_eq_toDualMap_apply (x : E) :
+    toDual 𝕜 E x = toDualMap 𝕜 E x := rfl
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
@@ -213,5 +229,13 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     convert (toDual ℝ E).bijective
     ext y
     simp
+
+/-- A nonzero rank-one operator has rank one. -/
+lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (rankOne 𝕜 x y).rank = 1 := by
+  rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
+  · exact finrank_span_singleton hx
+  · exact map_eq_zero_iff _ (toDualMap 𝕜 F).injective |>.not.mpr hy
 
 end InnerProductSpace

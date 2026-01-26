@@ -3,8 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Graded.External
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.External
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Graded tensor products over graded algebras
@@ -46,6 +49,8 @@ type.
 * Show that the tensor product of graded algebras is itself a graded algebra.
 * Determine if replacing the synonym with a single-field structure improves performance.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

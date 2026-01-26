@@ -3,10 +3,14 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.GCD.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Group.ModEq
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Congruences modulo a natural number
@@ -24,16 +28,45 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 ModEq, congruence, mod, MOD, modulo
 -/
 
+@[expose] public section
+
 assert_not_exists IsOrderedMonoid Function.support
 
-namespace Nat
-
 /-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
-def ModEq (n a b : ℕ) :=
+def Nat.ModEq (n a b : ℕ) :=
   a % n = b % n
 
 @[inherit_doc]
-notation:50 a " ≡ " b " [MOD " n "]" => ModEq n a b
+notation:50 a " ≡ " b " [MOD " n "]" => Nat.ModEq n a b
+
+namespace AddCommGroup
+
+@[simp]
+theorem modEq_iff_natModEq {a b n : ℕ} : a ≡ b [PMOD n] ↔ a ≡ b [MOD n] := by
+  constructor
+  · rw [modEq_iff_nsmul, Nat.ModEq]
+    rintro ⟨k, l, h⟩
+    simpa using congr($h % n)
+  · rw [Nat.ModEq]
+    intro h
+    rw [← Nat.div_add_mod' a n, ← Nat.div_add_mod' b n, ← Nat.nsmul_eq_mul, ← Nat.nsmul_eq_mul, h]
+    exact nsmul_add_modEq _ |>.trans (nsmul_add_modEq _).symm
+
+variable {M : Type*} [AddCommMonoidWithOne M]
+
+theorem ModEq.natCast {a b n : ℕ} (h : a ≡ b [MOD n]) : a ≡ b [PMOD (n : M)] := by
+  rw [← modEq_iff_natModEq] at h
+  exact h.map (Nat.castAddMonoidHom M)
+
+@[simp, norm_cast]
+theorem natCast_modEq_natCast [CharZero M] {a b n : ℕ} : a ≡ b [PMOD (n : M)] ↔ a ≡ b [MOD n] := by
+  simpa using map_modEq_iff (Nat.castAddMonoidHom M) Nat.cast_injective
+
+alias ⟨_root_.Nat.ModEq.of_natCast, _⟩ := natCast_modEq_natCast
+
+end AddCommGroup
+
+namespace Nat
 
 variable {m n a b c d : ℕ}
 
@@ -48,7 +81,7 @@ protected theorem refl (a : ℕ) : a ≡ a [MOD n] := rfl
 protected theorem rfl : a ≡ a [MOD n] :=
   ModEq.refl _
 
-instance : IsRefl _ (ModEq n) :=
+instance : Std.Refl (ModEq n) :=
   ⟨ModEq.refl⟩
 
 @[symm]
@@ -310,15 +343,19 @@ lemma add_modEq_left : n + a ≡ a [MOD n] := by simp
 
 lemma add_modEq_right : a + n ≡ a [MOD n] := by simp
 
+theorem modEq_iff_exists_eq_add (h : a ≤ b) : a ≡ b [MOD n] ↔ ∃ (t : ℕ), b = a + n * t := by
+  rw [modEq_iff_dvd' h, dvd_def]
+  exact exists_congr (fun _ => Nat.sub_eq_iff_eq_add' h)
+
 namespace ModEq
 
 theorem le_of_lt_add (h1 : a ≡ b [MOD m]) (h2 : a < b + m) : a ≤ b :=
   (le_total a b).elim id fun h3 =>
     Nat.le_of_sub_eq_zero
-      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by cutsat))
+      (eq_zero_of_dvd_of_lt ((modEq_iff_dvd' h3).mp h1.symm) (by lia))
 
 theorem add_le_of_lt (h1 : a ≡ b [MOD m]) (h2 : a < b) : a + m ≤ b :=
-  le_of_lt_add (add_modEq_right.trans h1) (by cutsat)
+  le_of_lt_add (add_modEq_right.trans h1) (by lia)
 
 theorem dvd_iff (h : a ≡ b [MOD m]) (hdm : d ∣ m) : d ∣ a ↔ d ∣ b := by
   simp only [← modEq_zero_iff_dvd]
@@ -341,7 +378,7 @@ lemma eq_of_lt_of_lt (h : a ≡ b [MOD m]) (ha : a < m) (hb : b < m) : a = b :=
   h.eq_of_abs_lt <| Int.abs_sub_lt_of_lt_lt ha hb
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c` -/
-lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) :  a ≡ b [MOD m / gcd m c] := by
+lemma cancel_left_div_gcd (hm : 0 < m) (h : c * a ≡ c * b [MOD m]) : a ≡ b [MOD m / gcd m c] := by
   let d := gcd m c
   have hmd := gcd_dvd_left m c
   have hcd := gcd_dvd_right m c
@@ -445,7 +482,7 @@ theorem mod_lcm (hn : a ≡ b [MOD n]) (hm : a ≡ b [MOD m]) : a ≡ b [MOD lcm
   Nat.modEq_iff_dvd.mpr <| Int.coe_lcm_dvd (Nat.modEq_iff_dvd.mp hn) (Nat.modEq_iff_dvd.mp hm)
 
 theorem chineseRemainder_modEq_unique (co : n.Coprime m) {a b z}
-    (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n*m] := by
+    (hzan : z ≡ a [MOD n]) (hzbm : z ≡ b [MOD m]) : z ≡ chineseRemainder co a b [MOD n * m] := by
   simpa [Nat.Coprime.lcm_eq_mul co] using
     mod_lcm (hzan.trans ((chineseRemainder co a b).prop.1).symm)
       (hzbm.trans ((chineseRemainder co a b).prop.2).symm)
@@ -536,7 +573,7 @@ theorem odd_mul_odd_div_two {m n : ℕ} (hm1 : m % 2 = 1) (hn1 : n % 2 = 1) :
     dsimp
     rw [mul_add, two_mul_odd_div_two hm1, mul_left_comm, two_mul_odd_div_two hn1,
       two_mul_odd_div_two (Nat.odd_mul_odd hm1 hn1), Nat.mul_sub, mul_one, ←
-      Nat.add_sub_assoc (by cutsat), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
+      Nat.add_sub_assoc (by lia), Nat.sub_add_cancel (Nat.le_mul_of_pos_right m hn0)]
 
 theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 1 2
@@ -548,7 +585,7 @@ theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>
-    help (n % 4) (mod_lt n (by cutsat)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
+    help (n % 4) (mod_lt n (by lia)) <| (mod_mod_of_dvd n (by decide : 2 ∣ 4)).trans hn,
     fun h => Or.elim h odd_of_mod_four_eq_one odd_of_mod_four_eq_three⟩
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=

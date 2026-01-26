@@ -3,9 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Topology
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Topology
+import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Integral over an interval
@@ -44,6 +47,8 @@ three possible intervals with the same endpoints for two reasons:
 
 integral
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -287,6 +292,13 @@ omit [PseudoMetrizableSpace ε] in
 protected theorem aestronglyMeasurable' (h : IntervalIntegrable f μ a b) :
     AEStronglyMeasurable f (μ.restrict (Ioc b a)) :=
   h.2.aestronglyMeasurable
+
+omit [PseudoMetrizableSpace ε] in
+protected theorem aestronglyMeasurable_restrict_uIoc (h : IntervalIntegrable f μ a b) :
+    AEStronglyMeasurable f (μ.restrict (uIoc a b)) := by
+  by_cases hab : a ≤ b
+  · rw [uIoc_of_le hab]; exact h.aestronglyMeasurable
+  · rw [uIoc_of_ge (by linarith)]; exact h.aestronglyMeasurable'
 
 end
 
@@ -1074,6 +1086,25 @@ theorem integral_Iic_sub_Iic (ha : IntegrableOn f (Iic a) μ) (hb : IntegrableOn
   rw [sub_eq_iff_eq_add', integral_of_le hab, ← setIntegral_union (Iic_disjoint_Ioc le_rfl),
     Iic_union_Ioc_eq_Iic hab]
   exacts [measurableSet_Ioc, ha, hb.mono_set fun _ => And.right]
+
+theorem integral_interval_add_Ioi (ha : IntegrableOn f (Ioi a) μ)
+    (hb : IntegrableOn f (Ioi b) μ) :
+    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Ioi b, f x ∂μ
+    = ∫ (x : ℝ) in Ioi a, f x ∂μ := by
+  wlog hab : a ≤ b generalizing a b
+  · rw [integral_symm, ← this hb ha (le_of_not_ge hab)]; grind
+  rw [integral_of_le hab, ← setIntegral_union Ioc_disjoint_Ioi_same measurableSet_Ioi
+    (ha.mono_set Ioc_subset_Ioi_self) hb, Ioc_union_Ioi_eq_Ioi hab]
+
+theorem integral_interval_add_Ioi' (ha : IntervalIntegrable f μ a b)
+    (hb : IntegrableOn f (Ioi b) μ) :
+    ∫ (x : ℝ) in a..b, f x ∂μ + ∫ (x : ℝ) in Ioi b, f x ∂μ
+    = ∫ (x : ℝ) in Ioi a, f x ∂μ := by
+  rw [integral_interval_add_Ioi _ hb]
+  by_cases! h : a ≤ b
+  · exact (Ioc_union_Ioi_eq_Ioi h) ▸ IntegrableOn.union
+      ((intervalIntegrable_iff_integrableOn_Ioc_of_le h).1 ha) hb
+  · exact hb.mono_set <| Ioi_subset_Ioi h.le
 
 theorem integral_Iic_add_Ioi (h_left : IntegrableOn f (Iic b) μ)
     (h_right : IntegrableOn f (Ioi b) μ) :

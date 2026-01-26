@@ -3,13 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Emirhan Duysak, Adem Alp Gök, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Order.BooleanAlgebra.Set
+module
+
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The integers form a linear ordered ring
@@ -27,6 +29,8 @@ This file contains:
 * `Int.inductionOn'`: Simple growing induction for numbers greater than `b`, plus simple decreasing
   induction on numbers less than `b`.
 -/
+
+@[expose] public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
@@ -77,15 +81,15 @@ theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.g
   have : a * p.succ + b * q.succ = n := by rw [add_mul, ← add_assoc,
     add_right_comm, mul_right_comm, ← add_mul, Int.emod_add_ediv_mul, eq, mul_comm, mul_comm b_n]
   rw [Nat.cast_add, Nat.cast_mul, Nat.cast_mul, Int.natCast_toNat_eq_self.mpr
-    (Int.emod_nonneg _ <| by cutsat), Int.natCast_toNat_eq_self.mpr, this]
+    (Int.emod_nonneg _ <| by lia), Int.natCast_toNat_eq_self.mpr, this]
   -- show b ≥ 0 by contradiction
   by_contra hb
-  replace hb : b ≤ -1 := by omega
+  replace hb : b ≤ -1 := by lia
   apply lt_irrefl (n : ℤ)
-  have ha := Int.emod_lt a_n (by cutsat : (q.succ : ℤ) ≠ 0)
+  have ha := Int.emod_lt a_n (by lia : (q.succ : ℤ) ≠ 0)
   rw [p.pred_succ, q.pred_succ] at le
   calc n = a * p.succ + b * q.succ := this.symm
-       _ ≤ q * p.succ + -1 * q.succ := by gcongr <;> omega
-       _ = p * q - 1 := by simp_rw [Nat.cast_succ, mul_add, mul_comm]; cutsat
+       _ ≤ q * p.succ + -1 * q.succ := by gcongr <;> lia
+       _ = p * q - 1 := by simp_rw [Nat.cast_succ, mul_add, mul_comm]; lia
        _ ≤ n - 1 := by rwa [sub_le_sub_iff_right, ← Nat.cast_mul, Nat.cast_le]
-       _ < n := by cutsat
+       _ < n := by lia

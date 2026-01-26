@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MonoidAlgebra.Degree
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Degree
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Degrees of polynomials
@@ -46,6 +48,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -226,6 +230,10 @@ theorem degreeOf_zero (n : σ) : degreeOf n (0 : MvPolynomial σ R) = 0 := by
   classical simp only [degreeOf_def, degrees_zero, Multiset.count_zero]
 
 @[simp]
+theorem degreeOf_one (n : σ) : degreeOf n (1 : MvPolynomial σ R) = 0 := by
+  classical simp [degreeOf_def, degrees_one]
+
+@[simp]
 theorem degreeOf_C (a : R) (x : σ) : degreeOf x (C a : MvPolynomial σ R) = 0 := by
   classical simp [degreeOf_def, degrees_C]
 
@@ -249,7 +257,9 @@ lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
   classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
--- TODO we can prove equality with `NoZeroDivisors R`
+/--
+Note that `degreeOf_prod_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
+-/
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
     degreeOf i (f * g) ≤ degreeOf i f + degreeOf i g := by
   classical
@@ -262,13 +272,17 @@ theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPoly
   simp_rw [degreeOf_eq_sup]
   exact supDegree_sum_le
 
--- TODO we can prove equality with `NoZeroDivisors R`
+/--
+Note that `degreeOf_mul_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
+-/
 theorem degreeOf_prod_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
     degreeOf i (∏ j ∈ s, f j) ≤ ∑ j ∈ s, (f j).degreeOf i := by
   simp_rw [degreeOf_eq_sup]
   exact supDegree_prod_le (by simp only [coe_zero, Pi.zero_apply]) (by simp)
 
--- TODO we can prove equality with `NoZeroDivisors R`
+/--
+Note that `degreeOf_pow_eq` proves equality with `NoZeroDivisors R` and nonzero polynomials.
+-/
 theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
     degreeOf i (p ^ n) ≤ n * degreeOf i p := by
   simpa using degreeOf_prod_le i (Finset.range n) (fun _ => p)
@@ -455,8 +469,8 @@ lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolyno
   (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
-  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by cutsat) fun h ↦
-    (Finset.single_le_sum (by cutsat) <| Finsupp.mem_support_iff.mpr h).trans
+  degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (by lia) fun h ↦
+    (Finset.single_le_sum (by lia) <| Finsupp.mem_support_iff.mpr h).trans
     (le_totalDegree hd)
 
 theorem exists_degree_lt [Fintype σ] (f : MvPolynomial σ R) (n : ℕ)

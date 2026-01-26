@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.Set.NAry
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Pointwise scalar operations of sets
@@ -39,13 +41,15 @@ Appropriate definitions and results are also transported to the additive theory 
 * We put all instances in the scope `Pointwise`, so that these instances are not available by
   default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
   since we expect the scope to be open whenever the instances are actually used (and making the
-  instances reducible changes the behavior of `simp`.
+  instances reducible changes the behavior of `simp`).
 
 ## Tags
 
 set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+@[expose] public section
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
@@ -54,8 +58,6 @@ open Function MulOpposite
 variable {F α β γ : Type*}
 
 namespace Set
-
-open Pointwise
 
 /-! ### Translation/scaling of sets -/
 
@@ -75,6 +77,8 @@ protected def smul [SMul α β] : SMul (Set α) (Set β) where smul := image2 (�
 
 scoped[Pointwise] attribute [instance] Set.smulSet Set.smul
 scoped[Pointwise] attribute [instance] Set.vaddSet Set.vadd
+
+open Pointwise
 
 section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
@@ -273,6 +277,8 @@ lemma union_vsub_inter_subset_union : s₁ ∪ s₂ -ᵥ t₁ ∩ t₂ ⊆ s₁ 
   image2_union_inter_subset_union
 
 end VSub
+
+open Pointwise
 
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :

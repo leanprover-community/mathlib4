@@ -3,10 +3,12 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Combinatorics.Derangements.Finite
-import Mathlib.Data.Nat.Cast.Field
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Combinatorics.Derangements.Finite
+public import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Derangement exponential series
@@ -14,6 +16,8 @@ import Mathlib.Data.Nat.Cast.Field
 This file proves that the probability of a permutation on n elements being a derangement is 1/e.
 The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
+
+public section
 
 
 open Filter NormedSpace
@@ -36,7 +40,7 @@ theorem numDerangements_tendsto_inv_e :
     -- there's no specific lemma for ℝ that ∑ x^k/k! sums to exp(x), but it's
     -- true in more general fields, so use that lemma
     rw [Real.exp_eq_exp_ℝ]
-    exact expSeries_div_hasSum_exp ℝ (-1 : ℝ)
+    exact expSeries_div_hasSum_exp (-1 : ℝ)
   intro n
   rw [← Int.cast_natCast, numDerangements_sum]
   push_cast

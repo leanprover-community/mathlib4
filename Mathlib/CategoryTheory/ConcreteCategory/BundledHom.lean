@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # Category instances for algebraic structures that use bundled homs.
@@ -16,6 +18,8 @@ This file provides a basic infrastructure to define concrete categories using bu
 define forgetful functors between them.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -23,8 +27,11 @@ namespace CategoryTheory
 
 variable {c : Type u → Type u} (hom : ∀ ⦃α β : Type u⦄ (_ : c α) (_ : c β), Type u)
 
-/-- Class for bundled homs. Note that the arguments order follows that of lemmas for `MonoidHom`.
+/-- Class for bundled homs. Note that the argument order follows that of lemmas for `MonoidHom`.
 This way we can use `⟨@MonoidHom.toFun, @MonoidHom.id ...⟩` in an instance. -/
+@[deprecated "The preferred method for talking about concrete categories is to implement the \
+category manually and then provide the `ConcreteCategory` instance on top of this. See \
+`Mathlib/CategoryTheory/ConcreteCategory/Basic.lean`" (since := "2025-11-17")]
 structure BundledHom where
   /-- the underlying map of a bundled morphism -/
   toFun : ∀ {α β : Type u} (Iα : c α) (Iβ : c β), hom Iα Iβ → α → β
@@ -49,6 +56,8 @@ attribute [simp] BundledHom.id_toFun BundledHom.comp_toFun
 
 namespace BundledHom
 
+set_option linter.deprecated false
+
 variable [𝒞 : BundledHom hom]
 
 set_option synthInstance.checkSynthOrder false in
@@ -71,7 +80,7 @@ instance hasForget : HasForget.{u} (Bundled c) where
     { obj := fun X => X
       map := fun {X Y} f => 𝒞.toFun X.str Y.str f
       map_id := fun X => 𝒞.id_toFun X.str
-      map_comp := fun f g => by erw [𝒞.comp_toFun]; rfl }
+      map_comp := fun _ _ => 𝒞.comp_toFun _ _ _ _ _ }
   forget_faithful := { map_injective := by (intros; apply 𝒞.hom_ext) }
 
 /-- This unification hint helps `rw` to figure out how to apply statements about abstract

@@ -3,8 +3,10 @@ Copyright (c) 2022 Joanna Choules. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joanna Choules
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Homomorphisms from finite subgraphs
@@ -29,6 +31,8 @@ The proof here uses compactness as formulated in `nonempty_sections_of_finite_in
 finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restricts homomorphisms
 `G' →fg F` to domain `G''`.
 -/
+
+@[expose] public section
 
 
 open Set CategoryTheory
@@ -82,7 +86,7 @@ section Finite
 variable [Finite V]
 
 instance instTop : Top G.Finsubgraph where top := ⟨⊤, finite_univ⟩
-instance instHasCompl : HasCompl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
+instance instCompl : Compl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
 instance instHNot : HNot G.Finsubgraph where hnot G' := ⟨￢G', Set.toFinite _⟩
 instance instHImp : HImp G.Finsubgraph where himp G₁ G₂ := ⟨G₁ ⇨ G₂, Set.toFinite _⟩
 instance instSupSet : SupSet G.Finsubgraph where sSup s := ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩

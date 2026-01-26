@@ -3,13 +3,15 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.Order.Group.PosPart
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Topology.DiscreteSubset
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Topology.DiscreteSubset
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Type of functions with locally finite support
@@ -20,6 +22,8 @@ commutative group.
 
 Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 
@@ -104,8 +108,6 @@ lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
-@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
-
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
 `U`.
@@ -121,10 +123,10 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   exact D.supportLocallyFiniteWithinDomain
 
 /--
-On a T1 space, the support of a functions with locally finite support within `U` is discrete.
+On a T1 space, the support of a function with locally finite support within `U` is discrete.
 -/
 theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
-    DiscreteTopology D.support := by
+    IsDiscrete D.support := by
   have : D.support = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
@@ -133,7 +135,8 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
       rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
       tauto
   rw [this]
-  apply discreteTopology_of_codiscreteWithin
+  apply isDiscrete_of_codiscreteWithin
+  rw [compl_compl]
   apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
   exact D.supportLocallyFiniteWithinDomain
 
@@ -308,8 +311,6 @@ section Lattice
 variable [Lattice Y]
 
 instance [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by simp [le_def]
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
@@ -467,5 +468,22 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
 lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
+/--
+Restriction commutes with taking positive parts.
+-/
+lemma restrict_posPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁺.restrict h = (D.restrict h)⁺ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.posPart_apply]
+  aesop
+
+/--
+Restriction commutes with taking negative parts.
+-/
+lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁻.restrict h = (D.restrict h)⁻ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
+  aesop
 
 end Function.locallyFinsuppWithin

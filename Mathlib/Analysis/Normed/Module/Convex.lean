@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Convex.PathConnected
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Module.RCLike.Real
+module
+
+public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.Analysis.Convex.PathConnected
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
 
 /-!
 # Metric properties of convex sets in normed spaces
@@ -24,6 +26,8 @@ We prove the following facts:
 * `isBounded_convexHull` : convex hull of a set is bounded if and only if the original set
   is bounded.
 -/
+
+@[expose] public section
 
 -- TODO assert_not_exists Cardinal
 
@@ -62,10 +66,9 @@ theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
 theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
   simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-
 open Pointwise in
-theorem convexHull_sphere_eq_closedBall [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
     rw [← add_zero x, ← vadd_eq_add, ← vadd_sphere, convexHull_vadd,
@@ -120,13 +123,13 @@ theorem convexHull_exists_dist_ge2 {s t : Set E} {x y : E} (hx : x ∈ convexHul
 
 /-- Emetric diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
-theorem convexHull_ediam (s : Set E) : EMetric.diam (convexHull ℝ s) = EMetric.diam s := by
-  refine (EMetric.diam_le fun x hx y hy => ?_).antisymm (EMetric.diam_mono <| subset_convexHull ℝ s)
+theorem convexHull_ediam (s : Set E) : ediam (convexHull ℝ s) = ediam s := by
+  refine (ediam_le fun x hx y hy => ?_).antisymm (ediam_mono <| subset_convexHull ℝ s)
   rcases convexHull_exists_dist_ge2 hx hy with ⟨x', hx', y', hy', H⟩
   rw [edist_dist]
   apply le_trans (ENNReal.ofReal_le_ofReal H)
   rw [← edist_dist]
-  exact EMetric.edist_le_diam_of_mem hx' hy'
+  exact edist_le_ediam_of_mem hx' hy'
 
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]

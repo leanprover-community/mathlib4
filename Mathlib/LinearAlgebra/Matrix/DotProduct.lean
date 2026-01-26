@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Star.Pi
-import Mathlib.LinearAlgebra.Matrix.RowCol
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.RowCol
 
 /-!
 # Dot product of two vectors
@@ -25,6 +27,8 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 matrix
 
 -/
+
+public section
 
 
 variable {m n p R : Type*}
@@ -166,7 +170,7 @@ theorem dotProduct_star_self_pos_iff {v : n → R} :
   constructor
   · rintro h hv
     simp [hv] at h
-  · exact (star_mul_self_pos <| isRegular_of_ne_zero ·)
+  · exact (star_mul_self_pos <| .of_ne_zero ·)
 
 /-- Note that this applies to `ℂ` via `RCLike.toStarOrderedRing`. -/
 @[simp]

@@ -3,9 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-import Mathlib.LinearAlgebra.Matrix.ZPow
+module
+
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-! # Hermitian matrices
 
@@ -23,14 +24,15 @@ self-adjoint matrix, hermitian matrix
 
 -/
 
+@[expose] public section
+
+-- TODO:
+-- assert_not_exists MonoidAlgebra
+assert_not_exists NormedGroup
 
 namespace Matrix
 
-variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
-
-open scoped Matrix
-
-local notation "⟪" x ", " y "⟫" => inner α x y
+variable {α β m n : Type*} {A : Matrix n n α}
 
 section Star
 
@@ -64,6 +66,10 @@ theorem IsHermitian.ext_iff {A : Matrix n n α} : A.IsHermitian ↔ ∀ i j, sta
 theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian :=
   (conjTranspose_map f hf).symm.trans <| h.eq.symm ▸ rfl
+
+@[simp, nontriviality]
+theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.IsHermitian :=
+  .ext fun _ _ ↦ Subsingleton.elim ..
 
 theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]
@@ -205,7 +211,7 @@ lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
 
-@[deprecated (since := "13-08-2025")] alias commute_iff := IsHermitian.commute_iff
+@[deprecated (since := "2025-08-13")] alias commute_iff := IsHermitian.commute_iff
 
 end NonUnitalSemiring
 
@@ -307,40 +313,4 @@ end IsHermitian
 end SchurComplement
 
 end CommRing
-
-section RCLike
-
-open RCLike
-
-variable [RCLike α]
-
-/-- The diagonal elements of a complex Hermitian matrix are real. -/
-theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i : n) :
-    (re (A i i) : α) = A i i := by rw [← conj_eq_iff_re, ← star_def, ← conjTranspose_apply, h.eq]
-
-/-- The diagonal elements of a complex Hermitian matrix are real. -/
-theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
-    (fun i => (re (A.diag i) : α)) = A.diag :=
-  funext h.coe_re_apply_self
-
-/-- A matrix is Hermitian iff the corresponding linear map is self adjoint. -/
-theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
-    IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
-  rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
-  simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
-    star_mulVec]
-  constructor
-  · rintro (h : Aᴴ = A) x y
-    rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]
-  · intro h
-    ext i j
-    simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
-
-theorem IsHermitian.im_star_dotProduct_mulVec_self [Fintype n] {A : Matrix n n α}
-    (hA : A.IsHermitian) (x : n → α) : RCLike.im (star x ⬝ᵥ A *ᵥ x) = 0 := by
-  classical
-  exact dotProduct_comm _ (star x) ▸ (isHermitian_iff_isSymmetric.mp hA).im_inner_self_apply _
-
-end RCLike
-
 end Matrix

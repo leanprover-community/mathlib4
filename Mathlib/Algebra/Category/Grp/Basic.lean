@@ -3,10 +3,12 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -19,6 +21,8 @@ We introduce the bundled categories:
 
 along with the relevant forgetful functors between them, and to the bundled monoid categories.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -63,6 +67,7 @@ structure AddGrpCat.Hom (A B : AddGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `GrpCat R`. -/
 @[to_additive, ext]
 structure GrpCat.Hom (A B : GrpCat.{u}) where
@@ -72,12 +77,16 @@ structure GrpCat.Hom (A B : GrpCat.{u}) where
 
 namespace GrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category GrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory GrpCat (· →* ·) where
   hom := Hom.hom'
@@ -272,6 +281,7 @@ structure AddCommGrpCat.Hom (A B : AddCommGrpCat.{u}) where
   /-- The underlying monoid homomorphism. -/
   hom' : A →+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `CommGrpCat R`. -/
 @[to_additive, ext]
 structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
@@ -281,12 +291,16 @@ structure CommGrpCat.Hom (A B : CommGrpCat.{u}) where
 
 namespace CommGrpCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category CommGrpCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MonoidHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory CommGrpCat (· →* ·) where
   hom := Hom.hom'
@@ -577,12 +591,12 @@ instance GrpCat.forget_reflects_isos : (forget GrpCat.{u}).ReflectsIsomorphisms 
 instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
+    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
     exact e.toCommGrpIso.isIso_hom
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`
 -- as the `Category` instance is not found on the additive variant
--- this variant is then renamed with a `Aux` suffix
+-- this variant is then renamed with an `Aux` suffix
 
 /-- An alias for `GrpCat.{max u v}`, to deal around unification issues. -/
 @[to_additive (attr := nolint checkUnivs) GrpMaxAux

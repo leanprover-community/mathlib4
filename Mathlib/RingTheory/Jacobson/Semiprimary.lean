@@ -3,9 +3,10 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Jacobson.Radical
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semiprimary rings
@@ -16,10 +17,11 @@ import Mathlib.RingTheory.SimpleModule.Basic
   `Ring.jacobson R` is nilpotent and `R ⧸ Ring.jacobson R` is semisimple.
 -/
 
+@[expose] public section
+
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂] (f : F)
 
 theorem IsSimpleModule.jacobson_eq_bot [IsSimpleModule R M] : Module.jacobson R M = ⊥ :=
   le_bot_iff.mp <| sInf_le isCoatom_bot
@@ -34,7 +36,7 @@ theorem IsSemisimpleModule.jacobson_eq_bot [IsSemisimpleModule R M] :
 theorem IsSemisimpleRing.jacobson_eq_bot [IsSemisimpleRing R] : Ring.jacobson R = ⊥ :=
   IsSemisimpleModule.jacobson_eq_bot R R
 
-theorem IsSemisimpleModule.jacobson_le_ker [IsSemisimpleModule R₂ M₂] :
+theorem IsSemisimpleModule.jacobson_le_ker [IsSemisimpleModule R₂ M₂] (f : M →ₛₗ[τ₁₂] M₂) :
     Module.jacobson R M ≤ LinearMap.ker f :=
   (Module.le_comap_jacobson f).trans <| by simp_rw [jacobson_eq_bot, LinearMap.ker, le_rfl]
 

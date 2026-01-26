@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 /-!
 
@@ -13,10 +15,12 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 -/
 
+@[expose] public section
+
 
 open scoped Polynomial
 
-variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLocalization M A]
     (z : A) : ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by

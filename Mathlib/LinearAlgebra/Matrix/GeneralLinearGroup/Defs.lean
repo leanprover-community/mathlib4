@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Ring.Subring.Units
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
+public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -24,6 +26,8 @@ consisting of all invertible `n` by `n` `R`-matrices.
 
 matrix group, group, matrix inverse
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -73,6 +77,18 @@ lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
 `LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
+
+/-- The isomorphism from `GL n R` to the general linear group of a module
+associated with a basis. -/
+noncomputable def toLin'
+    {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
+    GL n R ≃* LinearMap.GeneralLinearGroup R V :=
+  toLin.trans <| LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm
+
+lemma toLin'_apply {V : Type*} [AddCommGroup V] [Module R V]
+    (b : Module.Basis n R V) (M : GL n R) (v : V) :
+    (toLin' b M).toLinearEquiv v = Fintype.linearCombination R ⇑b (↑M *ᵥ (b.repr v)) := by
+  simp [toLin', toLin, Fintype.linearCombination_apply, MulEquiv.trans_apply]
 
 /-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 @[simps! val]
@@ -241,9 +257,7 @@ def mapGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n S :=
 @[simp]
 lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
     mapGL S g = mapGL S g' ↔ g = g' := by
-  refine ⟨fun h ↦ ?_, by tauto⟩
-  apply SpecialLinearGroup.ext
-  simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
+  simp [mapGL, ext_iff]
 
 lemma mapGL_injective [FaithfulSMul R S] :
     Function.Injective (mapGL (R := R) (n := n) S) :=

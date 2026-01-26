@@ -3,13 +3,16 @@ Copyright (c) 2021 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Kronecker product of matrices
@@ -41,6 +44,8 @@ These require `open Kronecker`:
   Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -114,10 +119,7 @@ theorem kroneckerMap_single_single
     kroneckerMap f (single i₁ j₁ a) (single i₂ j₂ b) = single (i₁, i₂) (j₁, j₂) (f a b) := by
   ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
   dsimp [single]
-  aesop
-
-@[deprecated (since := "2025-05-05")]
-alias kroneckerMap_stdBasisMatrix_stdBasisMatrix := kroneckerMap_single_single
+  grind
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
@@ -305,9 +307,6 @@ theorem single_kronecker_single
     single ia ja a ⊗ₖ single ib jb b = single (ia, ib) (ja, jb) (a * b) :=
   kroneckerMap_single_single _ _ _ _ _ zero_mul mul_zero _ _
 
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_kronecker_stdBasisMatrix := single_kronecker_single
-
 theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [DecidableEq n] (a : m → α)
     (b : n → α) : diagonal a ⊗ₖ diagonal b = diagonal fun mn => a mn.1 * b mn.2 :=
   kroneckerMap_diagonal_diagonal _ zero_mul mul_zero _ _
@@ -430,7 +429,7 @@ def kroneckerTMul : Matrix l m α → Matrix n p β → Matrix (l × n) (m × p)
   kroneckerMap (· ⊗ₜ ·)
 
 @[inherit_doc kroneckerTMul]
-scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (· ⊗ₜ ·)
+scoped[Kronecker] infixl:100 " ⊗ₖₜ " => Matrix.kroneckerMap (TensorProduct.tmul _)
 
 @[inherit_doc kroneckerTMul] scoped[Kronecker] notation:100 x " ⊗ₖₜ[" R "] " y:100 =>
   Matrix.kroneckerMap (TensorProduct.tmul R) x y
@@ -487,9 +486,6 @@ theorem single_kroneckerTMul_single
     (i₁ : l) (j₁ : m) (i₂ : n) (j₂ : p) (a : α) (b : β) :
     single i₁ j₁ a ⊗ₖₜ[R] single i₂ j₂ b = single (i₁, i₂) (j₁, j₂) (a ⊗ₜ b) :=
   kroneckerMap_single_single _ _ _ _ _ (zero_tmul _) (tmul_zero _) _ _
-
-@[deprecated (since := "2025-05-05")]
-alias stdBasisMatrix_kroneckerTMul_stdBasisMatrix := single_kroneckerTMul_single
 
 theorem diagonal_kroneckerTMul_diagonal [DecidableEq m] [DecidableEq n] (a : m → α) (b : n → β) :
     diagonal a ⊗ₖₜ[R] diagonal b = diagonal fun mn => a mn.1 ⊗ₜ b mn.2 :=

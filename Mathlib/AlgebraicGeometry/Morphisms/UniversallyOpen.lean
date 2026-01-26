@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.AlgebraicGeometry.Morphisms.Flat
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.RingTheory.Spectrum.Prime.Chevalley
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.AlgebraicGeometry.Morphisms.Flat
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!
 # Universally open morphism
@@ -18,6 +20,8 @@ We show that being universally open is local at the target, and is stable under 
 base changes.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -36,10 +40,13 @@ along any morphism `Y' ⟶ Y` is (topologically) an open map.
 -/
 @[mk_iff]
 class UniversallyOpen (f : X ⟶ Y) : Prop where
-  out : universally (topologically @IsOpenMap) f
+  universally_isOpenMap : universally (topologically @IsOpenMap) f
+
+@[deprecated (since := "2026-01-20")]
+alias UniversallyOpen.out := UniversallyOpen.universally_isOpenMap
 
 lemma Scheme.Hom.isOpenMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyOpen f] :
-    IsOpenMap f := UniversallyOpen.out _ _ _ IsPullback.of_id_snd
+    IsOpenMap f := UniversallyOpen.universally_isOpenMap _ _ _ IsPullback.of_id_snd
 
 namespace UniversallyOpen
 

@@ -3,10 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Emily Riehl, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.TwoSquare
-import Mathlib.CategoryTheory.HomCongr
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mate of natural transformations
@@ -25,7 +26,7 @@ where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformat
 
 This bijection includes a number of interesting cases as specializations. For instance, in the
 special case where `G,H` are identity functors then the bijection preserves and reflects
-isomorphisms (i.e. we have bijections`(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the
+isomorphisms (i.e. we have bijections `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the
 other side is as well). This demonstrates that adjoints to a given functor are unique up to
 isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
@@ -39,6 +40,8 @@ https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 namespace CategoryTheory
@@ -445,7 +448,6 @@ theorem iterated_mateEquiv_conjugateEquiv (α : TwoSquare F₁ L₁ L₂ F₂) :
     (mateEquiv adj₄ adj₃ (mateEquiv adj₁ adj₂ α)).natTrans =
       conjugateEquiv (adj₁.comp adj₄) (adj₃.comp adj₂) α := by
   ext d
-  unfold conjugateEquiv mateEquiv Adjunction.comp
   simp
 
 theorem iterated_mateEquiv_conjugateEquiv_symm (α : TwoSquare U₂ R₂ R₁ U₁) :
@@ -468,7 +470,6 @@ theorem mateEquiv_conjugateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ α (L₃.leftUnitor.hom ≫ β ≫ L₂.rightUnitor.inv)
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerRight TwoSquare.whiskerBottom conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerLeft_comp, assoc, mateEquiv_apply, whiskerLeft_twice,
     Iso.hom_inv_id_assoc, whiskerRight_comp, comp_app, Functor.whiskerLeft_app,
@@ -486,7 +487,6 @@ theorem conjugateEquiv_mateEquiv_vcomp {L₁ : A ⥤ B} {R₁ : B ⥤ A} {L₂ :
   ext b
   have vcomp := mateEquiv_vcomp adj₁ adj₂ adj₃ (L₂.leftUnitor.hom ≫ α ≫ L₁.rightUnitor.inv) β
   unfold vComp hComp at vcomp
-  unfold TwoSquare.whiskerLeft TwoSquare.whiskerTop conjugateEquiv
   have vcompb := congr_app vcomp b
   simp only [comp_obj, id_obj, whiskerRight_comp, assoc, mateEquiv_apply, whiskerLeft_comp,
     whiskerLeft_twice, comp_app, Functor.whiskerLeft_app, Functor.whiskerRight_app,

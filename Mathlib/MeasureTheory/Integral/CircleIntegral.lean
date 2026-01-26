@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
+public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 
 /-!
 # Integral over a circle in `ℂ`
@@ -62,6 +64,8 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 integral, circle, Cauchy integral
 -/
 
+@[expose] public section
+
 variable {E : Type*} [NormedAddCommGroup E]
 
 noncomputable section
@@ -116,7 +120,7 @@ theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
 theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
   (differentiable_circleMap c R).continuous
 
-@[fun_prop, measurability]
+@[fun_prop]
 theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
   (continuous_circleMap c R).measurable
 
@@ -200,6 +204,13 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
   rw [CircleIntegrable, (by aesop : (fun θ ↦ (∑ i ∈ s, f i) (circleMap c R θ))
     = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
+
+/-- Sums of circle integrable functions are circle integrable. -/
+theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
+  convert CircleIntegrable.sum s h
+  simp
 
 /-- `finsum`s of circle integrable functions are circle integrable. -/
 protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
@@ -301,7 +312,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine IsBigO.of_bound |R|⁻¹ (this.mono fun θ' hθ' => ?_)
     set x := ‖f θ'‖
     suffices x⁻¹ ≤ x ^ n by
-      simp only [Algebra.id.smul_eq_mul, norm_mul,
+      simp only [smul_eq_mul, norm_mul,
         norm_inv, norm_I, mul_one]
       simpa only [norm_circleMap_zero, norm_zpow, Ne, abs_eq_zero.not.2 hR, not_false_iff,
         inv_mul_cancel_left₀] using this
@@ -375,6 +386,12 @@ theorem integral_sub {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrabl
     (hg : CircleIntegrable g c R) :
     (∮ z in C(c, R), f z - g z) = (∮ z in C(c, R), f z) - ∮ z in C(c, R), g z := by
   simp only [circleIntegral, smul_sub, intervalIntegral.integral_sub hf.out hg.out]
+
+theorem integral_fun_sum {ι : Type*} {s : Finset ι} {f : ι → ℂ → E} {c : ℂ} {R : ℝ}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    (∮ z in C(c, R), ∑ i ∈ s, f i z) = ∑ i ∈ s, ∮ z in C(c, R), f i z := by
+  simp only [circleIntegral, Finset.smul_sum,
+    intervalIntegral.integral_finset_sum fun i hi ↦ (h i hi).out]
 
 theorem norm_integral_le_of_norm_le_const' {f : ℂ → E} {c : ℂ} {R C : ℝ}
     (hf : ∀ z ∈ sphere c |R|, ‖f z‖ ≤ C) : ‖∮ z in C(c, R), f z‖ ≤ 2 * π * |R| * C :=
