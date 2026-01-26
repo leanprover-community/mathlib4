@@ -46,6 +46,9 @@ noncomputable abbrev UniqueFactorizationMonoid.toGCDMonoid (α : Type*) [CommMon
     rw [← mk_eq_mk_iff_associated, ← Associates.mk_mul_mk, ← associated_iff_eq, Associates.quot_out,
       Associates.quot_out, mul_comm, sup_mul_inf, Associates.mk_mul_mk]
 
+instance (priority := 100) (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] :
+    IsGCDMonoid α := ⟨toGCDMonoid α⟩
+
 /-- `toNormalizedGCDMonoid` constructs a GCD monoid out of a normalization on a
   unique factorization domain. -/
 noncomputable abbrev UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
@@ -76,9 +79,5 @@ noncomputable abbrev UniqueFactorizationMonoid.toStrongNormalizedGCDMonoid (α :
     StrongNormalizedGCDMonoid α where
   __ := toNormalizedGCDMonoid α
   __ := ‹StrongNormalizationMonoid α›
-
-instance (α) [CommMonoidWithZero α] [UniqueFactorizationMonoid α] : IsStrongNormalizedGCDMonoid α :=
-  letI := UniqueFactorizationMonoid.strongNormalizationMonoid (α := α)
-  ⟨toStrongNormalizedGCDMonoid α⟩
 
 end

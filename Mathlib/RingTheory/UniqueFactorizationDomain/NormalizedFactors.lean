@@ -410,4 +410,7 @@ protected noncomputable abbrev strongNormalizationMonoid : StrongNormalizationMo
 @[deprecated (since := "2026-01-13")]
 protected alias normalizationMonoid := UniqueFactorizationMonoid.strongNormalizationMonoid
 
+instance (priority := 100) : Nonempty (StrongNormalizationMonoid α) :=
+  ⟨UniqueFactorizationMonoid.strongNormalizationMonoid⟩
+
 end UniqueFactorizationMonoid

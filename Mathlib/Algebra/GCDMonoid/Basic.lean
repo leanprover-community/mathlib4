@@ -200,9 +200,8 @@ theorem normalize_eq_normalize {a b : α} (hab : a ∣ b) (hba : b ∣ a) :
     normalize a = normalize b :=
   normalize_eq_normalize_iff_associated.mpr (associated_of_dvd_dvd hab hba)
 
-theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x :=
-  ⟨fun h => ⟨Units.dvd_mul_right.1 ⟨_, h.symm⟩, Units.dvd_mul_right.1 ⟨_, h⟩⟩, fun ⟨hxy, hyx⟩ =>
-    normalize_eq_normalize hxy hyx⟩
+theorem normalize_eq_normalize_iff {x y : α} : normalize x = normalize y ↔ x ∣ y ∧ y ∣ x := by
+  rw [normalize_eq_normalize_iff_associated, dvd_dvd_iff_associated]
 
 theorem dvd_antisymm_of_normalize_eq {a b : α} (ha : normalize a = a) (hb : normalize b = b)
     (hab : a ∣ b) (hba : b ∣ a) : a = b :=
@@ -355,10 +354,6 @@ class StrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] extends
   /-- The LCM is normalized to itself. -/
   normalize_lcm : ∀ a b, normalize (lcm a b) = lcm a b
 
-/-- Existence of a `StrongNormalizedGCDMonoid` structure on a `CommMonoidWithZero`. -/
-class inductive IsStrongNormalizedGCDMonoid (α : Type*) [CommMonoidWithZero α] : Prop
-  | intro : StrongNormalizedGCDMonoid α → IsStrongNormalizedGCDMonoid α
-
 export GCDMonoid (gcd lcm gcd_dvd_left gcd_dvd_right dvd_gcd
   gcd_mul_lcm lcm_zero_left lcm_zero_right)
 
@@ -373,15 +368,9 @@ section GCDMonoid
 variable [CommMonoidWithZero α]
 
 instance [NormalizationMonoid α] : Nonempty (NormalizationMonoid α) := ⟨‹_›⟩
-instance (priority := 100) [GCDMonoid α] : IsGCDMonoid α := ⟨‹_›⟩
 instance [StrongNormalizationMonoid α] : Nonempty (StrongNormalizationMonoid α) := ⟨‹_›⟩
-instance (priority := 100) [StrongNormalizedGCDMonoid α] : IsStrongNormalizedGCDMonoid α := ⟨‹_›⟩
-instance (priority := 100) [h : IsStrongNormalizedGCDMonoid α] : IsGCDMonoid α :=
-  h.rec fun _ ↦ inferInstance
-instance [h : IsStrongNormalizedGCDMonoid α] : Nonempty (StrongNormalizationMonoid α) :=
-  h.rec fun _ ↦ inferInstance
-instance [h : Nonempty (StrongNormalizationMonoid α)] : Nonempty (NormalizationMonoid α) :=
-  h.elim fun _ ↦ inferInstance
+
+instance (priority := 100) [GCDMonoid α] : IsGCDMonoid α := ⟨‹_›⟩
 
 variable (α) in
 -- This is not an instance due to performance reasons.
@@ -970,22 +959,15 @@ section UniqueUnit
 variable [CommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrongNormalizationMonoid.ofUniqueUnits :
-    StrongNormalizationMonoid α where
+instance (priority := 100) : StrongNormalizationMonoid α where
   normUnit _ := 1
   normUnit_zero := rfl
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 
-instance uniqueStrongNormalizationMonoidOfUniqueUnits : Unique (StrongNormalizationMonoid α) where
-  default := .ofUniqueUnits
+instance : Unique (StrongNormalizationMonoid α) where
+  default := inferInstance
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
-
-@[deprecated (since := "2026-01-12")]
-alias NormalizationMonoid.ofUniqueUnits := StrongNormalizationMonoid.ofUniqueUnits
-
-@[deprecated (since := "2026-01-12")]
-alias uniqueNormalizationMonoidOfUniqueUnits:= uniqueStrongNormalizationMonoidOfUniqueUnits
 
 instance : Unique (NormalizationMonoid α) where
   default := inferInstance
@@ -1318,6 +1300,12 @@ theorem nonempty_normalizedGCDMonoid_iff_isGCDMonoid {α} [CommMonoidWithZero α
 
 instance (α) [CommMonoidWithZero α] [IsGCDMonoid α] : Nonempty (NormalizedGCDMonoid α) :=
   nonempty_normalizedGCDMonoid_iff_isGCDMonoid.mpr ‹_›
+
+theorem nonempty_strongNormalizedGCDMonoid_iff {α} [CommMonoidWithZero α] :
+    Nonempty (StrongNormalizedGCDMonoid α) ↔
+    IsGCDMonoid α ∧ Nonempty (StrongNormalizationMonoid α) :=
+  ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨⟨_⟩, ⟨_⟩⟩ ↦ by classical exact
+    ⟨strongNormalizedGCDMonoidOfExistsGCD fun _ _ ↦ ⟨_, fun _ ↦ (dvd_gcd_iff ..).symm⟩⟩⟩
 
 /-- Define a `GCDMonoid` structure on a monoid just from the existence of an `lcm`. -/
 abbrev gcdMonoidOfExistsLCM [DecidableEq α]
