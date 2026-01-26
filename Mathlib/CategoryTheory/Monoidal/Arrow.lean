@@ -256,11 +256,10 @@ lemma _root_.CategoryTheory.MonoidalCategory.temp₁ (X₁ X₂ X₃ Y₁ Y₂ Y
     (α_ Y₁.left X₂.right X₃.right).hom ≫
     Y₁.left ◁ f₂.right ▷ X₃.right ≫
     Y₁.left ◁ Y₂.right ◁ f₃.right := by
-  rw [associator_inv_naturality_right_assoc, associator_naturality_left_assoc,
-    associator_naturality_right_assoc, associator_naturality_left_assoc, Iso.cancel_iso_hom_left,
-    Iso.inv_comp_eq, Iso.cancel_iso_hom_left, whisker_exchange_assoc,
-    ← MonoidalCategory.whiskerLeft_comp, whisker_exchange, MonoidalCategory.whiskerLeft_comp]
+  simp only [Iso.inv_hom_id_assoc, associator_naturality_left_assoc, whisker_exchange_assoc,
+    ← MonoidalCategory.whiskerLeft_comp, whisker_exchange]
 
+/-
 omit [HasPushouts C] in
 @[reassoc]
 lemma temp₂ (X₁ X₂ X₃ Y₁ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (f₃ : X₃ ⟶ Y₃) :
@@ -274,6 +273,7 @@ lemma temp₂ (X₁ X₂ X₃ Y₁ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (f₃ 
     Y₁.right ◁ X₂.left ◁ f₃.right := by
   simp only [associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← associator_inv_naturality_left_assoc, associator_naturality_right]
+-/
 
 @[reassoc]
 lemma temp₃ (X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
@@ -287,13 +287,13 @@ lemma temp₃ (X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C) (f₁ : X₁ ⟶ Y₁) (
     X₁.right ◁ Y₂.left ◁ f₃.right ≫
     X₁.right ◁ pushout.inr (Y₂.hom ▷ Y₃.left) (Y₂.left ◁ Y₃.hom) ≫
     f₁.right ▷ pushout (Y₂.hom ▷ Y₃.left) (Y₂.left ◁ Y₃.hom) := by
-  rw [← MonoidalCategory.whiskerLeft_comp_assoc]
-  rw [whisker_exchange, whisker_exchange_assoc, ← whisker_exchange]
-  simp only [associator_inv_naturality_right_assoc, whisker_exchange_assoc,
-    ← associator_inv_naturality_left_assoc, associator_naturality_right]
-  sorry
+  rw [← MonoidalCategory.whiskerLeft_comp_assoc, whisker_exchange, whisker_exchange_assoc,
+    ← whisker_exchange, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
+    ← associator_inv_naturality_left_assoc, associator_naturality_right_assoc, Iso.inv_hom_id_assoc,
+    MonoidalCategory.whiskerLeft_comp_assoc]
 
-lemma PushoutProduct.associator_naturality
+lemma PushoutProduct.associator_naturality {C : Type u} [Category.{v} C] [HasPushouts C]
+    [CartesianMonoidalCategory C]
     [∀ S : C, PreservesColimitsOfSize (tensorLeft S)]
     [∀ S : C, PreservesColimitsOfSize (tensorRight S)]
     {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Arrow C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
