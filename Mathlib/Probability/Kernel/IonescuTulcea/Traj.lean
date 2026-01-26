@@ -228,7 +228,7 @@ lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i)
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    AddContent (measurableCylinders X) :=
+    AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_partialTraj κ x₀)
 
 variable {κ}
@@ -393,7 +393,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     exact lmarginalPartialTraj_mono _ _ (χ_anti hmn) _
   -- Therefore it converges to some function `lₖ`.
   have this k x : ∃ l, Tendsto (fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x) atTop (𝓝 l) := by
-    obtain h | h := tendsto_of_antitone (anti_lma k x)
+    obtain h | h := tendsto_atTop_of_antitone (anti_lma k x)
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
     · exact h

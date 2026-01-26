@@ -157,7 +157,6 @@ def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
-  rfl
 
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
