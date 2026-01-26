@@ -189,31 +189,6 @@ section FDerivProperties
 
 /-! ### Basic properties of the derivative -/
 
-
-theorem hasFDerivAtFilter_iff_tendsto :
-    HasFDerivAtFilter f f' x L ↔
-      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) := by
-  have h : ∀ x', ‖x' - x‖ = 0 → ‖f x' - f x - f' (x' - x)‖ = 0 := fun x' hx' => by
-    rw [sub_eq_zero.1 (norm_eq_zero.1 hx')]
-    simp
-  rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
-    isLittleO_iff_tendsto h]
-  exact tendsto_congr fun _ => div_eq_inv_mul _ _
-
-theorem hasFDerivWithinAt_iff_tendsto :
-    HasFDerivWithinAt f f' s x ↔
-      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝[s] x) (𝓝 0) :=
-  hasFDerivAtFilter_iff_tendsto
-
-theorem hasFDerivAt_iff_tendsto :
-    HasFDerivAt f f' x ↔ Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝 x) (𝓝 0) :=
-  hasFDerivAtFilter_iff_tendsto
-
-theorem hasFDerivAt_iff_isLittleO_nhds_zero :
-    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
-  simp [Function.comp_def]
-
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
   .of_isLittleOTVS <| h.isLittleOTVS.mono hst
@@ -318,14 +293,6 @@ theorem DifferentiableWithinAt.of_subsingleton (h : s.Subsingleton) :
     DifferentiableWithinAt 𝕜 f s x :=
   .of_finite h.finite
 
-theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
-    (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
-  hf.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
-
-theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
-    (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
-  h.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_sub _ _)
-
 @[fun_prop]
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x :=
@@ -335,23 +302,6 @@ protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
   hf.hasFDerivAt.differentiableAt
-
-/-- If `f` is strictly differentiable at `x` with derivative `f'` and `K > ‖f'‖₊`, then `f` is
-`K`-Lipschitz in a neighborhood of `x`. -/
-theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
-    (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
-  have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
-  simp only [sub_add_cancel, IsBigOWith] at this
-  rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
-  exact
-    ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
-
-/-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
-neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
-more precise statement. -/
-theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x) :
-    ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
-  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
 
 /-- Directional derivative agrees with `HasFDeriv`. -/
 theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α → 𝕜} {l : Filter α}
@@ -547,34 +497,6 @@ theorem fderivWithin_mem_iff {f : E → F} {t : Set E} {s : Set (E →L[𝕜] F)
   by_cases hx : DifferentiableWithinAt 𝕜 f t x <;>
     simp [fderivWithin_zero_of_not_differentiableWithinAt, *]
 
-theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
-    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
-    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
-  simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
-    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
-    h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
-
-theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
-    (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by
-  rw [← nhdsWithin_univ] at h
-  exact (h.hasFDerivWithinAt (mem_univ _) hn).hasFDerivAt_of_univ
-
-nonrec theorem HasFDerivWithinAt.isBigO_sub {f : E → F} {s : Set E} {x₀ : E} {f' : E →L[𝕜] F}
-    (h : HasFDerivWithinAt f f' s x₀) : (f · - f x₀) =O[𝓝[s] x₀] (· - x₀) :=
-  h.isBigO_sub
-
-lemma DifferentiableWithinAt.isBigO_sub {f : E → F} {s : Set E} {x₀ : E}
-    (h : DifferentiableWithinAt 𝕜 f s x₀) : (f · - f x₀) =O[𝓝[s] x₀] (· - x₀) :=
-  h.hasFDerivWithinAt.isBigO_sub
-
-nonrec theorem HasFDerivAt.isBigO_sub {f : E → F} {x₀ : E} {f' : E →L[𝕜] F}
-    (h : HasFDerivAt f f' x₀) : (f · - f x₀) =O[𝓝 x₀] (· - x₀) :=
-  h.isBigO_sub
-
-nonrec theorem DifferentiableAt.isBigO_sub {f : E → F} {x₀ : E} (h : DifferentiableAt 𝕜 f x₀) :
-    (f · - f x₀) =O[𝓝 x₀] (· - x₀) :=
-  h.hasFDerivAt.isBigO_sub
-
 end FDerivProperties
 
 /-! ### Being differentiable on a union of open sets can be tested on each set -/
@@ -670,20 +592,6 @@ protected theorem HasStrictFDerivAt.continuousAt (hf : HasStrictFDerivAt f f' x)
     ContinuousAt f x :=
   hf.hasFDerivAt.continuousAt
 
-theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
-    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
-    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
-  ((f'.isBigO_comp_rev _ _).trans
-      (hf.isLittleO.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
-    (fun _ => rfl) fun _ => sub_add_cancel _ _
-
-theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
-    (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
-  have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
-    isBigO_iff.2 ⟨C, Eventually.of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
-  (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
-    sub_add_cancel _ _
-
 end Continuous
 
 section id
@@ -752,6 +660,112 @@ theorem fderivWithin_id' (hxs : UniqueDiffWithinAt 𝕜 s x) :
 
 end id
 
+end
+
+-- These lemmas won't generalize to Topological Vector Spaces, at least without changing the
+-- statement.
+section not_TVS
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
+
+theorem hasFDerivAtFilter_iff_tendsto :
+    HasFDerivAtFilter f f' x L ↔
+      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) L (𝓝 0) := by
+  have h : ∀ x', ‖x' - x‖ = 0 → ‖f x' - f x - f' (x' - x)‖ = 0 := fun x' hx' => by
+    rw [sub_eq_zero.1 (norm_eq_zero.1 hx')]
+    simp
+  rw [hasFDerivAtFilter_iff_isLittleO, ← isLittleO_norm_left, ← isLittleO_norm_right,
+    isLittleO_iff_tendsto h]
+  exact tendsto_congr fun _ => div_eq_inv_mul _ _
+
+theorem hasFDerivWithinAt_iff_tendsto :
+    HasFDerivWithinAt f f' s x ↔
+      Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝[s] x) (𝓝 0) :=
+  hasFDerivAtFilter_iff_tendsto
+
+theorem hasFDerivAt_iff_tendsto :
+    HasFDerivAt f f' x ↔ Tendsto (fun x' => ‖x' - x‖⁻¹ * ‖f x' - f x - f' (x' - x)‖) (𝓝 x) (𝓝 0) :=
+  hasFDerivAtFilter_iff_tendsto
+
+theorem hasFDerivAt_iff_isLittleO_nhds_zero :
+    HasFDerivAt f f' x ↔ (fun h : E => f (x + h) - f x - f' h) =o[𝓝 0] fun h => h := by
+  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
+  simp [Function.comp_def]
+
+theorem HasStrictFDerivAt.isBigO_sub (hf : HasStrictFDerivAt f f' x) :
+    (fun p : E × E => f p.1 - f p.2) =O[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
+  hf.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_comp _ _)
+
+theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
+    (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
+  h.isLittleO.isBigO.congr_of_sub.2 (f'.isBigO_sub _ _)
+
+/-- If `f` is strictly differentiable at `x` with derivative `f'` and `K > ‖f'‖₊`, then `f` is
+`K`-Lipschitz in a neighborhood of `x`. -/
+theorem HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt (hf : HasStrictFDerivAt f f' x)
+    (K : ℝ≥0) (hK : ‖f'‖₊ < K) : ∃ s ∈ 𝓝 x, LipschitzOnWith K f s := by
+  have := hf.isLittleO.add_isBigOWith (f'.isBigOWith_comp _ _) hK
+  simp only [sub_add_cancel, IsBigOWith] at this
+  rcases exists_nhds_square this with ⟨U, Uo, xU, hU⟩
+  exact
+    ⟨U, Uo.mem_nhds xU, lipschitzOnWith_iff_norm_sub_le.2 fun x hx y hy => hU (mk_mem_prod hx hy)⟩
+
+/-- If `f` is strictly differentiable at `x` with derivative `f'`, then `f` is Lipschitz in a
+neighborhood of `x`. See also `HasStrictFDerivAt.exists_lipschitzOnWith_of_nnnorm_lt` for a
+more precise statement. -/
+theorem HasStrictFDerivAt.exists_lipschitzOnWith (hf : HasStrictFDerivAt f f' x) :
+    ∃ K, ∃ s ∈ 𝓝 x, LipschitzOnWith K f s :=
+  (exists_gt _).imp hf.exists_lipschitzOnWith_of_nnnorm_lt
+
+nonrec theorem HasFDerivWithinAt.isBigO_sub {f : E → F} {s : Set E} {x₀ : E} {f' : E →L[𝕜] F}
+    (h : HasFDerivWithinAt f f' s x₀) : (f · - f x₀) =O[𝓝[s] x₀] (· - x₀) :=
+  h.isBigO_sub
+
+lemma DifferentiableWithinAt.isBigO_sub {f : E → F} {s : Set E} {x₀ : E}
+    (h : DifferentiableWithinAt 𝕜 f s x₀) : (f · - f x₀) =O[𝓝[s] x₀] (· - x₀) :=
+  h.hasFDerivWithinAt.isBigO_sub
+
+nonrec theorem HasFDerivAt.isBigO_sub {f : E → F} {x₀ : E} {f' : E →L[𝕜] F}
+    (h : HasFDerivAt f f' x₀) : (f · - f x₀) =O[𝓝 x₀] (· - x₀) :=
+  h.isBigO_sub
+
+nonrec theorem DifferentiableAt.isBigO_sub {f : E → F} {x₀ : E} (h : DifferentiableAt 𝕜 f x₀) :
+    (f · - f x₀) =O[𝓝 x₀] (· - x₀) :=
+  h.hasFDerivAt.isBigO_sub
+
+theorem Asymptotics.IsBigO.hasFDerivWithinAt {s : Set E} {x₀ : E} {n : ℕ}
+    (h : f =O[𝓝[s] x₀] fun x => ‖x - x₀‖ ^ n) (hx₀ : x₀ ∈ s) (hn : 1 < n) :
+    HasFDerivWithinAt f (0 : E →L[𝕜] F) s x₀ := by
+  simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO,
+    h.eq_zero_of_norm_pow_within hx₀ hn.ne_bot, zero_apply, sub_zero,
+    h.trans_isLittleO ((isLittleO_pow_sub_sub x₀ hn).mono nhdsWithin_le_nhds)]
+
+theorem Asymptotics.IsBigO.hasFDerivAt {x₀ : E} {n : ℕ} (h : f =O[𝓝 x₀] fun x => ‖x - x₀‖ ^ n)
+    (hn : 1 < n) : HasFDerivAt f (0 : E →L[𝕜] F) x₀ := by
+  rw [← nhdsWithin_univ] at h
+  exact (h.hasFDerivWithinAt (mem_univ _) hn).hasFDerivAt_of_univ
+
+theorem HasStrictFDerivAt.isBigO_sub_rev {f' : E ≃L[𝕜] F}
+    (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) x) :
+    (fun p : E × E => p.1 - p.2) =O[𝓝 (x, x)] fun p : E × E => f p.1 - f p.2 :=
+  ((f'.isBigO_comp_rev _ _).trans
+      (hf.isLittleO.trans_isBigO (f'.isBigO_comp_rev _ _)).right_isBigO_add).congr
+    (fun _ => rfl) fun _ => sub_add_cancel _ _
+
+theorem HasFDerivAtFilter.isBigO_sub_rev (hf : HasFDerivAtFilter f f' x L) {C}
+    (hf' : AntilipschitzWith C f') : (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
+  have : (fun x' => x' - x) =O[L] fun x' => f' (x' - x) :=
+    isBigO_iff.2 ⟨C, Eventually.of_forall fun _ => ZeroHomClass.bound_of_antilipschitz f' hf' _⟩
+  (this.trans (hf.isLittleO.trans_isBigO this).right_isBigO_add).congr (fun _ => rfl) fun _ =>
+    sub_add_cancel _ _
+
 section MeanValue
 
 /-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
@@ -813,7 +827,7 @@ theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
 
 end MeanValue
 
-end
+end not_TVS
 
 section Semilinear
 /-!
