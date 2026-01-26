@@ -38,7 +38,7 @@ noncomputable section
 
 open AffineSubspace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace Affine.Simplex
