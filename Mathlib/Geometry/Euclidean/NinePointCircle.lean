@@ -25,7 +25,7 @@ specific points as desired.
 * `Affine.Simplex.eulerPoint_mem_ninePointCircle`: the 3(n+1)-point sphere passes through all Euler
   points.
 * `Affine.Triangle.altitudeFoot_mem_ninePointCircle`: the nine-point circle passes through all
-  three altitude foots of the triangle.
+  three altitude feet of the triangle.
 
 ## References
 * Małgorzata Buba-Brzozowa, [The Monge Point and the 3(n+1) Point Sphere of an
