@@ -80,13 +80,23 @@ lemma eq_bot_or_top_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : IsSubnormal H)
   (hN.normal_of_isSimpleGroup hG).eq_bot_or_eq_top
 
 lemma iff_eq_top_or_exists :
-    IsSubnormal H ↔ H = ⊤ ∨ ∃ K, H ≤ K ∧ IsSubnormal K ∧ (H.subgroupOf K).Normal where
+    IsSubnormal H ↔ H = ⊤ ∨ ∃ K, H < K ∧ IsSubnormal K ∧ (H.subgroupOf K).Normal where
   mp h := by
-    induction h with grind
+    induction h with
+    | top => simp
+    | step H K HK hS hN ih =>
+      obtain rfl | ⟨K', HK', hS', hN'⟩ := ih
+      · obtain rfl | hH := eq_or_ne H ⊤
+        · simp
+        · exact Or.inr ⟨⊤, by simp [hH.lt_top , *]⟩
+      right
+      obtain rfl | hH := eq_or_ne H K
+      · use K'
+      · exact ⟨K, by simpa [*] using lt_of_le_of_ne HK hH⟩
   mpr h := by
     obtain rfl | ⟨K, HK, Ksn, h⟩ := h
     · exact top
-    · exact step _ _ HK Ksn h
+    · exact step _ _ HK.le Ksn h
 
 /-- A proper subnormal subgroup is contained in a proper normal subgroup. -/
 lemma exists_normal_and_ne_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
