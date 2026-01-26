@@ -42,7 +42,8 @@ def vecOfListQ {u : Level} {α : Q(Type u)}
   | n + 1, head :: rest =>
     return q(Matrix.vecCons $head $(← vecOfListQ n rest))
   | 0, [] => return q(Matrix.vecEmpty)
-  | _, _ => throwError "error message here"
+  | _, _ =>
+    throwError s!"Invalid input: the list has length {vec.length} but is meant to have length {n}"
 
 /--
 Given a list `l` of elements of type `α` and a list `perm` of indices (as natural numbers), outputs
