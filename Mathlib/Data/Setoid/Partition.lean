@@ -522,7 +522,7 @@ theorem range_piecewise : range (hs.piecewise f) = ⋃ i, f i '' s i := by
     simp only [← hi, mem_image] at ht
     obtain ⟨a, ha1, ha2⟩ := ht
     refine ⟨a, ?_⟩
-    simp [hs.mem_iff_index_eq] at ha1
+    simp only [hs.mem_iff_index_eq] at ha1
     simpa [hs.mem_iff_index_eq, ← ha1] using ha2
 
 theorem range_piecewise_subset : range (hs.piecewise f) ⊆ ⋃ i, range (f i) :=
