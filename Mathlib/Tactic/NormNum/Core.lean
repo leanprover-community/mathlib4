@@ -266,8 +266,8 @@ open Lean.Parser.Tactic Meta.NormNum
 
 /--
 `norm_num` normalizes numerical expressions in the goal. By default, it supports the operations
-`+` `-` `*` `/` `⁻¹` `^` and `%` over `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and all types with the appropriate
-algebraic structures. In addition to evaluating numerical expressions, `norm_num` will use `simp`
+`+` `-` `*` `/` `⁻¹` `^` and `%` over types with (at least) an `AddMonoidWithOne` instance, such as
+`ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`. In addition to evaluating numerical expressions, `norm_num` will use `simp`
 to simplify the goal. If the goal has the form `A = B`, `A ≠ B`, `A < B` or `A ≤ B`, where `A` and
 `B` are numerical expressions, `norm_num` will try to close it. It also has a relatively simple
 primality prover.
@@ -294,10 +294,10 @@ elab (name := normNum)
 `norm_num1` normalizes numerical expressions in the goal. It is a basic version of `norm_num`
 that does not call `simp`.
 
-By default, it supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%` over `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`
-and all types with the appropriate algebraic structures. If the goal has the form `A = B`, `A ≠ B`,
-`A < B` or `A ≤ B`, where `A` and `B` are numerical expressions, `norm_num1` will try to close it.
-It also has a relatively simple primality prover.
+By default, it supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%` over types with (at least)
+an `AddMonoidWithOne` instance, such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`. If the goal has the form `A = B`,
+`A ≠ B`, `A < B` or `A ≤ B`, where `A` and `B` are numerical expressions, `norm_num1` will try to
+close it. It also has a relatively simple primality prover.
 
 This tactic is extensible. Extensions can allow `norm_num1` to evaluate more kinds of expressions,
 or to prove more kinds of propositions. See the `@[norm_num]` attribute for further information on
