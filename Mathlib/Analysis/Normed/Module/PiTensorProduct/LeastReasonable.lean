@@ -53,6 +53,18 @@ values in `(⨂[𝕜] _ : ι, 𝕜)`. Only later do we define an isometric equiv
   the normed spaces, such as the applicability of Hahn-Banach).
 -/
 
+@[expose] public section
+
+open scoped TensorProduct
+
+namespace PiTensorProduct
+
+universe uι u𝕜 uE uF
+
+variable {ι : Type uι} [Fintype ι] {𝕜 : Type u𝕜}
+variable {E : ι → Type uE} [∀ i, SeminormedAddCommGroup (E i)]
+variable [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
+
 section LeastReasonable
 
 variable (𝕜) in
@@ -96,6 +108,8 @@ theorem norm_mapL_le_leastCrossnorm (x : (⨂[𝕜] i, E i)) (f : Π i, StrongDu
 
 section map
 
+variable {E' : ι → Type*}
+variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 variable (f : Π i, E i →L[𝕜] E' i)
 
 open ContinuousLinearMap in

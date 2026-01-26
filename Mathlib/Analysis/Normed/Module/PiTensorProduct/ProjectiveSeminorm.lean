@@ -217,6 +217,11 @@ theorem liftIsometry_tprodL :
     liftIsometry 𝕜 E _ (tprodL 𝕜) = ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i) := by
   ext; simp
 
+@[simp]
+theorem opNorm_tprodL_eq_id :
+    ‖tprodL (𝕜 := 𝕜) (E := E)‖ = ‖ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i)‖ :=
+  LinearIsometryEquiv.norm_map _ _
+
 section map
 
 variable {E' E'' : ι → Type*}
@@ -327,11 +332,6 @@ variable {𝕜 E E'}
 #  WIP new material below.
 --------------------------
 -/
-
-@[simp]
-theorem opNorm_tprodL_eq_id :
-    ‖tprodL (𝕜 := 𝕜) (E := E)‖ = ‖ContinuousLinearMap.id 𝕜 (⨂[𝕜] i, E i)‖ :=
-  LinearIsometryEquiv.norm_map _ _
 
 /-- Continuous version of `PiTensorProduct.piTensorHomMap`. -/
 noncomputable def piTensorHomMapL :

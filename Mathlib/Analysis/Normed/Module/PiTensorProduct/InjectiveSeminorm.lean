@@ -97,6 +97,7 @@ variable (F) in
 /-- The linear map from `⨂[𝕜] i, Eᵢ` to `ContinuousMultilinearMap 𝕜 E F →L[𝕜] F` sending
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`.
 -/
+@[simps!]
 noncomputable def toDualContinuousMultilinearMap : (⨂[𝕜] i, E i) →ₗ[𝕜]
     ContinuousMultilinearMap 𝕜 E F →L[𝕜] F where
   toFun x := LinearMap.mkContinuous
@@ -224,7 +225,5 @@ set_option linter.deprecated false in
 theorem injectiveSeminorm_tprod_le (m : Π (i : ι), E i) :
     injectiveSeminorm (⨂ₜ[𝕜] i, m i) ≤ ∏ i, ‖m i‖ :=
   le_trans (injectiveSeminorm_le_projectiveSeminorm _) (projectiveSeminorm_tprod_le m)
-
-end seminorm
 
 end PiTensorProduct

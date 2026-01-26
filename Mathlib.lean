@@ -2000,8 +2000,9 @@ public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.InjectiveSeminorm
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.LeastReasonable
 public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
-public import Mathlib.Analysis.Normed.Module.PiTensorProduct.WIP
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
