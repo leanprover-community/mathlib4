@@ -58,13 +58,16 @@ variable {α β : Type v} [Fintype α] [DecidableEq α] [Fintype β] [DecidableE
 --   (symbols M).card = n
 
 abbrev once_per_row (M : Matrix m n α) : Prop :=
-  ∀ i : m, ∀ y : α, ∃! j: n, M i j = y
+  -- ∀ i : m, ∀ y : α, ∃! j: n, M i j = y
+  ∀ i, Function.Bijective (M.row i)
 
 abbrev distinct_col_entries (M : Matrix m n α) : Prop :=
-  ∀ y : n, ∀ x₁ x₂ : m, x₁ ≠ x₂ → M x₁ y ≠ M x₂ y
+  -- ∀ y : n, ∀ x₁ x₂ : m, x₁ ≠ x₂ → M x₁ y ≠ M x₂ y
+  ∀ y, Function.Injective (M.col y)
 
 abbrev distinct_row_entries (M : Matrix m n α) : Prop :=
-  ∀ x : m, ∀ y₁ y₂ : n, y₁ ≠ y₂ → M x y₁ ≠ M x y₂
+  -- ∀ x : m, ∀ y₁ y₂ : n, y₁ ≠ y₂ → M x y₁ ≠ M x y₂
+  ∀ y, Function.Injective (M.row y)
 
 /-- For m ≤ n, an m × n Latin rectangle is a partial n × n Latin Square where
     the first m entries are filled. -/
@@ -89,7 +92,8 @@ instance {m n : Nat} {α : Type u} [DecidableEq α] [Fintype α] [ToString α] :
       String.intercalate "\n" (List.ofFn row)
 
 abbrev once_per_column (M : Matrix m n α) : Prop :=
-  ∀ j : n, ∀ x : α, ∃! i : m, M i j = x
+  -- ∀ j : n, ∀ x : α, ∃! i : m, M i j = x
+  ∀ j, Function.Bijective (M.col j)
 
 lemma latin_square_row_implies_latin_rectangle_row
   (M : Matrix n n α)
@@ -99,7 +103,12 @@ lemma latin_square_row_implies_latin_rectangle_row
 lemma latin_square_col_implies_latin_rectangle_col
   (M : Matrix n n α)
   (h₂ : once_per_column M) :
-  (∀ (y : n), ∀ (x₁ x₂ : n), x₁ ≠ x₂ → ((M x₁ y) ≠ (M x₂ y))) := by sorry
+  distinct_col_entries M := by
+    rw [once_per_column] at h₂ 
+    rw [distinct_col_entries]
+    intro j
+    specialize h₂ j
+    exact h₂.1
 
 /-- A LatinSquare is an n × n array containing exactly n symbols,
     each occurring exactly once in each row and exactly once in each column. -/
@@ -108,8 +117,8 @@ class LatinSquare (n : Type u) (α : Type v) [Fintype n] [Fintype α] [Decidable
   /-- Each column contains each symbol exactly once. -/
   once_per_column : once_per_column M
   /-- If each column contains each symbol exactly once, then there are no repeats across columns. -/
-  distinct_col_entries := latin_square_col_implies_latin_rectangle_col
-    M once_per_column
+  distinct_col_entries := latin_square_col_implies_latin_rectangle_col M once_per_column 
+
   m_le_n := by rfl
   
 @[coe]
@@ -121,17 +130,14 @@ instance {m : Type u} {n : Type u'} {α : Type v} [Fintype m]
   Coe (LatinRectangle m n α) (Matrix m n α) where
   coe := to_matrix
 
+instance {n : Type u'} {α : Type v}
+  [Fintype n] [Fintype α] [DecidableEq α] : 
+  Coe (LatinSquare n α) (LatinRectangle n n α) where
+  coe := fun A => A.toLatinRectangle
+
 abbrev col (A : LatinRectangle m n α) : n → m → α := Matrix.col A
 abbrev row (A : LatinRectangle m n α) : m → n → α := Matrix.row A
   
-
-
-lemma col_map_inj (A : LatinRectangle m n α) :
-  Function.Injective (col A) := by sorry
-  
-lemma col_map_bij (A : LatinSquare n α) :
-  Function.Bijective (col A) := by sorry
-
 @[coe]
 def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α) 
   | A => {
@@ -149,24 +155,8 @@ def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α)
 instance : Coe (LatinRectangle n n α) (LatinSquare n α) where 
   coe := lr_to_ls
 
-  
-
-
-def LatinRectangle.to_latin_sq (A : LatinRectangle n n α) : (LatinSquare n α) := 
-{
-  M := A.M,
-  exactly_n_symbols := A.exactly_n_symbols,
-  once_per_row := A.once_per_row,
-  once_per_column := by
-    have h := A.distinct_col_entries
-    have s := A.exactly_n_symbols
-    unfold _root_.distinct_col_entries at h
-    unfold once_per_column 
-    intro y x
-    sorry
-}
-
--- TODO add coe from square LR to LS
+theorem lr_as_ls_as_lr_is_eq (A : LatinRectangle n n α) :
+  ((A : LatinSquare n α ) : LatinRectangle n n α) = A := by sorry
 
 instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
