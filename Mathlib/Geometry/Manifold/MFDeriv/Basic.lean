@@ -836,7 +836,7 @@ theorem tangentMapWithin_proj {p : TangentBundle I M} :
   rfl
 
 @[simp, mfld_simps]
-lemma tangentMapWithin_snd (f : M → M') (X : TangentSpace I x) :
+lemma tangentMapWithin_snd {X : TangentSpace I x} :
     (tangentMapWithin I I' f s X).2 = (mfderivWithin I I' f s x) X := rfl
 
 @[simp, mfld_simps]
