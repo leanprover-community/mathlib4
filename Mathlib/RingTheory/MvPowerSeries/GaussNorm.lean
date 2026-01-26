@@ -43,7 +43,7 @@ variable {R F σ : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : σ → ℝ
   the Gauss norm is defined as the supremum of the set of all values of
   `v (coeff t f) * ∏ i : t.support, c i` for all `t : σ →₀ ℕ`. -/
 noncomputable def gaussNormC : ℝ :=
-   ⨆ t : σ →₀ ℕ, v (coeff t f) * ∏ i ∈ t.support, (c i) ^ (t i)
+   ⨆ t : σ →₀ ℕ, v (coeff t f) * t.prod (c · ^ ·)
 
 @[simp]
 theorem gaussNormC_zero [ZeroHomClass F R ℝ] : gaussNormC v c 0 = 0 := by simp [gaussNormC]
