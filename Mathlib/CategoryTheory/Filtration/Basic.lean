@@ -12,12 +12,34 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
-## Filtrations
+# Filtrations
 
-A filtration on `X` indexed by `ι` is a functor `ι ⥤ MonoOver X`.
+In this file, a filtration on `X` indexed by a category `ι` is defined as a functor
+`ι ⥤ MonoOver X`.
 
-We also define the category of filtered objects, strict morphisms, and a `ComposableArrows`-based
-graded construction.
+We also define the category of filtered objects, strict morphisms (pullback squares at each level),
+and graded pieces (as cokernels) packaged as a functor out of `ComposableArrows ι 1`.
+
+## Main definitions
+
+- `CategoryTheory.Filtration`: a filtration on `X` indexed by `ι`.
+- `CategoryTheory.FilteredObject`: an object of `C` equipped with a filtration.
+- `CategoryTheory.FilteredObject.IsStrictHom`: strictness of a morphism of filtered objects.
+- `CategoryTheory.Filtration.grFunctor`: graded pieces as a functor `ComposableArrows ι 1 ⥤ C`.
+
+## Implementation notes
+
+We model a filtration as a functor to `MonoOver X` so that it is functorial in the index category.
+This also makes it easy to compare with other constructions indexed by morphisms in `ι`, via
+`ComposableArrows ι 1`.
+
+## References
+
+* [P. Deligne, *Théorie de Hodge : II*][deligne_hodge2]
+
+## Tags
+
+filtration, filtered object, graded piece, cokernel, strict morphism
 -/
 
 @[expose] public section
@@ -106,10 +128,16 @@ instance : Category (FilteredObject C ι) where
   Hom F G := Hom F G
   id F :=
     { hom := 𝟙 _
-      natTrans := 𝟙 _ }
+      natTrans := 𝟙 _
+      comm := by
+        intro i
+        simp }
   comp f g :=
     { hom := f.hom ≫ g.hom
-      natTrans := f.natTrans ≫ g.natTrans }
+      natTrans := f.natTrans ≫ g.natTrans
+      comm := by
+        intro i
+        simp [Category.assoc] }
 
 @[simp]
 lemma hom_id (F : FilteredObject C ι) : (𝟙 F : F ⟶ F).hom = 𝟙 _ := rfl
@@ -127,6 +155,7 @@ lemma natTrans_comp {F G H : FilteredObject C ι} (f : F ⟶ G) (g : G ⟶ H) :
 
 /-- Strictness of a filtered morphism: each compatibility square is a pullback. -/
 class IsStrictHom {F G : FilteredObject C ι} (f : F ⟶ G) : Prop where
+  /-- The square at each filtration step is a pullback square. -/
   isPullback (i : ι) :
     IsPullback (f.natTrans.app i) (F.filtration.inj i) (G.filtration.inj i) f.hom
 
@@ -220,8 +249,6 @@ noncomputable def shift (F : DecFiltration (C := C) X) (k : ℤ) : DecFiltration
 /-- The canonical inclusion map `F^{n+1} ⟶ F^n` between successive steps. -/
 noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
     (F.obj (Opposite.op (n + 1))) ⟶ (F.obj (Opposite.op n)) := by
-  classical
-  -- A morphism `op (n+1) ⟶ op n` in `ℤᵒᵖ` is the opposite of a morphism `n ⟶ n+1` in `ℤ`.
   exact
     (F.toMonoOver.map
         ((homOfLE (show n ≤ n + 1 from
@@ -231,19 +258,14 @@ noncomputable def succHom (F : DecFiltration (C := C) X) (n : ℤ) :
 lemma succHom_comp_inj (F : DecFiltration (C := C) X) (n : ℤ) :
     succHom (C := C) (X := X) F n ≫ F.inj (Opposite.op n) =
       F.inj (Opposite.op (n + 1)) := by
-  classical
-  -- This is the commutativity in `MonoOver X` for the arrow `op (n+1) ⟶ op n`.
-  have h :=
-    (MonoOver.w (k := F.toMonoOver.map
-      ((homOfLE (show n ≤ n + 1 from
-        le_add_of_nonneg_right (show (0 : ℤ) ≤ 1 by decide))).op)))
   simp [succHom, Filtration.inj]
 
 section GradedZ
 
 variable [HasZeroMorphisms C] [HasCokernels C]
 
-/-- The graded piece `Gr^n(X) := F^n / F^{n+1}` (Deligne 1.1.7), defined as a cokernel. -/
+/-- The graded piece `Gr^n(X) := F^n / F^{n+1}`, defined as a cokernel.
+See [deligne_hodge2, §1.1.7]. -/
 noncomputable def gr (F : DecFiltration (C := C) X) (n : ℤ) : C :=
   cokernel (succHom (C := C) (X := X) F n)
 
