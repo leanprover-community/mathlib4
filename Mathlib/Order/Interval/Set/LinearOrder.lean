@@ -101,6 +101,14 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
   convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
+theorem Ioc_eq_Ioc_iff {a b c d : α} (hab : a < b ∨ c < d) : Ioc a b = Ioc c d ↔ a = c ∧ b = d := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  have hab : a < b := by grind [Set.nonempty_Ioc]
+  have hcd : c < d := by grind [Set.nonempty_Ioc]
+  have : b ≤ d ∧ c ≤ a := (Ioc_subset_Ioc_iff hab).1 h.subset
+  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff hcd).1 h.superset
+  grind
+
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => by
