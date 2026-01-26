@@ -114,7 +114,7 @@ private lemma concatFn_length_mem_Icc {S : Finset (List α)}
       Finset.sum_le_sum (fun i _ => hpos i)
     simpa using this
   · -- upper bound
-    exact (Finset.sum_le_sum (fun i _ => (Finset.le_sup (w i).prop))).trans_eq (by simp)
+    exact (Finset.sum_le_sum (fun i _ => Finset.le_sup (w i).prop)).trans_eq (by simp)
 
 /-- Auxiliary bound for Kraft–McMillan.
 
@@ -161,8 +161,8 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   -- there are ≤ `D^s` words of length `s`, and each has weight `(1/D)^s`.
   apply le_trans (Finset.sum_le_sum
       (fun _ _ => sum_pow_length_filter_eq_le_card_mul))
-  -- Summing these bounds over `s ∈ [r, r*maxLen]` gives a factor of
-  -- `card (Icc r (r*maxLen)) = (r*maxLen + 1) - r ≤ r*maxLen` (using `1 ≤ r`).
+  -- Summing these bounds over the interval s ∈ [r, r * maxLen] multiplies the term
+  -- by the number of lengths. Since r ≥ 1, this count is at most r * maxLen.
   rcases r with (_ | _ | r) <;> rcases maxLen with (_ | _ | maxLen) <;> norm_num at *
   · positivity
   · rw [Nat.cast_sub] <;> push_cast <;> nlinarith only
