@@ -153,8 +153,7 @@ theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
 
 theorem hasFiniteIntegral_const_iff {c : β} :
     HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
-  rw [hasFiniteIntegral_const_iff_enorm enorm_ne_top]
-  simp
+  simp [hasFiniteIntegral_const_iff_enorm enorm_ne_top]
 
 lemma hasFiniteIntegral_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
@@ -314,26 +313,33 @@ variable {F : ℕ → α → β} {f : α → β} {bound : α → ℝ}
   {ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {F' : ℕ → α → ε} {f' : α → ε} {bound' : α → ℝ≥0∞}
 
-theorem all_ae_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
+theorem all_ae_norm_ofReal_F_le_bound (h : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) :
     ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a‖ ≤ ENNReal.ofReal (bound a) := fun n =>
   (h n).mono fun _ h => ENNReal.ofReal_le_ofReal h
+
+@[deprecated (since := "2026-01-26")] alias
+all_ae_ofReal_F_le_bound := all_ae_norm_ofReal_F_le_bound
 
 theorem ae_tendsto_enorm (h : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop <| 𝓝 <| f' a) :
     ∀ᵐ a ∂μ, Tendsto (fun n ↦ ‖F' n a‖ₑ) atTop <| 𝓝 <| ‖f' a‖ₑ :=
   h.mono fun _ h ↦ Tendsto.comp (Continuous.tendsto continuous_enorm _) h
 
-theorem all_ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
+theorem ae_tendsto_ofReal_norm (h : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop <| 𝓝 <| f a) :
     ∀ᵐ a ∂μ, Tendsto (fun n => ENNReal.ofReal ‖F n a‖) atTop <| 𝓝 <| ENNReal.ofReal ‖f a‖ := by
   convert ae_tendsto_enorm h <;> simp
 
-theorem all_ae_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
+@[deprecated (since := "2026-01-26")] alias all_ae_tendsto_ofReal_norm := ae_tendsto_ofReal_norm
+
+theorem ae_norm_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
     ∀ᵐ a ∂μ, ENNReal.ofReal ‖f a‖ ≤ ENNReal.ofReal (bound a) := by
-  have F_le_bound := all_ae_ofReal_F_le_bound h_bound
+  have F_le_bound := all_ae_norm_ofReal_F_le_bound h_bound
   rw [← ae_all_iff] at F_le_bound
-  apply F_le_bound.mp ((all_ae_tendsto_ofReal_norm h_lim).mono _)
+  apply F_le_bound.mp ((ae_tendsto_ofReal_norm h_lim).mono _)
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
+
+@[deprecated (since := "2026-01-26")] alias all_ae_ofReal_f_le_bound := ae_norm_ofReal_f_le_bound
 
 theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
@@ -364,7 +370,7 @@ theorem hasFiniteIntegral_of_dominated_convergence
   rw [hasFiniteIntegral_iff_norm]
   calc
     (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) ≤ ∫⁻ a, ENNReal.ofReal (bound a) ∂μ :=
-      lintegral_mono_ae <| all_ae_ofReal_f_le_bound h_bound h_lim
+      lintegral_mono_ae <| ae_norm_ofReal_f_le_bound h_bound h_lim
     _ < ∞ := by
       rw [← hasFiniteIntegral_iff_ofReal]
       · exact bound_hasFiniteIntegral
@@ -384,8 +390,8 @@ theorem tendsto_lintegral_norm_of_dominated_convergence
     triangle inequality, have `‖F n a - f a‖ ≤ 2 * (bound a)`. -/
   have hb : ∀ n, ∀ᵐ a ∂μ, ENNReal.ofReal ‖F n a - f a‖ ≤ b a := by
     intro n
-    filter_upwards [all_ae_ofReal_F_le_bound h_bound n,
-      all_ae_ofReal_f_le_bound h_bound h_lim] with a h₁ h₂
+    filter_upwards [all_ae_norm_ofReal_F_le_bound h_bound n,
+      ae_norm_ofReal_f_le_bound h_bound h_lim] with a h₁ h₂
     calc
       ENNReal.ofReal ‖F n a - f a‖ ≤ ENNReal.ofReal ‖F n a‖ + ENNReal.ofReal ‖f a‖ := by
         rw [← ENNReal.ofReal_add]
