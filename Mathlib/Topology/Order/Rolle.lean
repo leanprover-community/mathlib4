@@ -85,7 +85,8 @@ lemma exists_isLocalExtr_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo
 
 /-- A continuous function on an unordered closed interval with `f a = f b`
 takes either its maximum or its minimum value at a point in the interior of the interval. -/
-theorem exists_uIoo_isExtrOn_uIcc (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b)) (hfI : f a = f b) :
+theorem exists_uIoo_isExtrOn_uIcc (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b)) 
+    (hfI : f a = f b) :
     ∃ c ∈ uIoo a b, IsExtrOn f (uIcc a b) c :=
   exists_Ioo_extr_on_Icc (by simp [hab.symm]) hfc (by grind)
 
@@ -103,7 +104,7 @@ lemma exists_isExtrOn_uIoo_of_tendsto (hab : a ≠ b) (hfc : ContinuousOn f (uIo
     ∃ c ∈ uIoo a b, IsExtrOn f (uIoo a b) c := by
   have h : EqOn (extendFrom (uIoo a b) f) f (uIoo a b) := extendFrom_extends hfc
   obtain ⟨c, hc, hfc⟩ : ∃ c ∈ uIoo a b, IsExtrOn (extendFrom (uIoo a b) f) (uIcc a b) c :=
-    exists_uIoo_extr_on_uIcc hab (continuousOn_uIcc_extendFrom_uIoo hab hfc ha hb)
+    exists_uIoo_isExtrOn_uIcc hab (continuousOn_uIcc_extendFrom_uIoo hab hfc ha hb)
       ((eq_lim_at_left_extendFrom_uIoo hab ha).trans (eq_lim_at_right_extendFrom_uIoo hab hb).symm)
   exact ⟨c, hc, (hfc.on_subset uIoo_subset_uIcc_self).congr h (h hc)⟩
 
