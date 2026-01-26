@@ -264,7 +264,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
   simp only [telescope_aux z, aux_tsum_identity_1 z] at this
   rw [this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
   apply Tendsto.add
-  · exact tendsto_comp_val_Ioi_atTop.mpr <| 
+  · exact tendsto_comp_val_Ioi_atTop.mpr <|
       by simpa using (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
     exact tendsto_comp_val_Ioi_atTop.mpr this
   · simpa only [aux_tsum_identity_2] using tendsto_comp_val_Ioi_atTop.mpr (aux_tendsto_tsum z)
