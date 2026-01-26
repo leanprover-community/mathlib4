@@ -574,14 +574,18 @@ lemma ker_naive {σ : Type*} {I : Ideal (MvPolynomial σ R)}
     (Generators.naive s hs).ker = I :=
   I.mk_ker
 
-@[simp]
+-- FIXME: `simpNF` times out synthesizing
+-- `FaithfulSMul (Algebra.Generators.ofAlgHom f h).toExtension.Ring S`.
+@[simp, nolint simpNF]
 lemma ker_ofAlgHom {I : Type*} (f : MvPolynomial I R →ₐ[R] S) (h : Function.Surjective ⇑f) :
     (ofAlgHom f h).ker = RingHom.ker f.toRingHom := by
   change RingHom.ker _ = _
   congr
   exact MvPolynomial.ringHom_ext (by simp) (by simp [ofAlgHom])
 
-@[simp]
+-- FIXME: `simpNF` times out synthesizing
+-- `FaithfulSMul (P.ofAlgEquiv e).toExtension.Ring T`.
+@[simp, nolint simpNF]
 lemma ker_ofAlgEquiv (P : Generators R S ι) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     (P.ofAlgEquiv e).ker = P.ker := by
   rw [ker_eq_ker_aeval_val, ofAlgEquiv_val, Function.comp_def, ← AlgHom.coe_coe,
