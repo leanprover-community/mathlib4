@@ -551,8 +551,6 @@ protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
 
 /-- A homeomorphism between two Borel spaces is a measurable equivalence. -/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
-  measurable_toFun := h.measurable
-  measurable_invFun := h.symm.measurable
   toEquiv := h.toEquiv
 
 lemma Homeomorph.measurableEmbedding (h : γ ≃ₜ γ₂) : MeasurableEmbedding h :=
