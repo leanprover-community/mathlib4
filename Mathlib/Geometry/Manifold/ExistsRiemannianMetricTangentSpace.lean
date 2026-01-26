@@ -37,13 +37,14 @@ variable
   {EB : Type*} [NormedAddCommGroup EB] [InnerProductSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ x, TopologicalSpace (E x)] [∀ x, AddCommGroup (E x)] [∀ x, Module ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
   [IsManifold IB ω B] [ContMDiffVectorBundle ω F E IB]
 
 variable [FiniteDimensional ℝ EB] [IsManifold IB ω B] [SigmaCompactSpace B] [T2Space B]
+variable [FiniteDimensional ℝ F]
 
 noncomputable instance : TopologicalSpace (TotalSpace EB (TangentSpace (M := B) IB)) :=
   inferInstanceAs (TopologicalSpace (TangentBundle IB B))
@@ -75,11 +76,6 @@ noncomputable instance : FiberBundle (F →L[ℝ] ℝ) (V E) := by
   infer_instance
 
 noncomputable instance : VectorBundle ℝ (F →L[ℝ] ℝ) (V E) := by
-  unfold V
-  infer_instance
-
-noncomputable instance :
-VectorBundle ℝ (EB →L[ℝ] ℝ) (V (TangentSpace (M := B) IB)) := by
   unfold V
   infer_instance
 
@@ -172,6 +168,16 @@ def g_bilin_1 (i b : B) :
   · exact ⟨b, 0⟩
 
 noncomputable
+def g_bilin_1a (i b : B) :
+ (TotalSpace (F →L[ℝ] F →L[ℝ] ℝ)
+             (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ)) := by
+  let ψ := FiberBundle.trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
+      (fun (x : B) ↦ E x →L[ℝ] E x →L[ℝ] ℝ) i
+  by_cases h : (b, (fun (x : B) ↦ innerSL ℝ) b) ∈ ψ.target
+  · exact ψ.invFun (b, (fun (x : B) ↦ innerSL ℝ) b)
+  · exact ⟨b, 0⟩
+
+noncomputable
 def g_bilin_2 (i p : B) :
   (TangentSpace IB) p →L[ℝ]  ((TangentSpace IB) p →L[ℝ] ℝ) := by
   let χ := trivializationAt EB (TangentSpace (M := B) IB) i
@@ -181,32 +187,50 @@ def g_bilin_2 (i p : B) :
   · exact 0
 
 /-
-Overloading the use of π, let φ : π⁻¹(U) → U × ℝⁿ and ψ : π⁻¹(U) → U × (ℝⁿ ⊗ ℝⁿ →ₗ ℝ) be local
-trivialisations of the tangent bundle and the bundle of bilinear forms respectively and
-w ∈ π⁻¹(U) and (x, u) and (y, v) ∈ U × ℝⁿ then ψ(w)(u, v) = w(φ⁻¹(x, u), φ⁻¹(x, v))
+Overloading the use of π, let
+
+* `φ : π⁻¹(U) → U × F` be a local trivialization of the vector bundle `E : B → Type*`
+with fiber `F`, and
+* `ψ : π⁻¹(U) → U × (F →L[ℝ] F →L[ℝ] ℝ)` be the induced local trivialization of the
+bundle of bilinear forms on `E`.
+
+Then for any `w ∈ π⁻¹(U)` and `u, v ∈ F`, if `(x, u)` and `(x, v)` denote coordinates
+in `U × F`, we have
+
+```lean
+ψ(w)(u, v) = w(φ.symm (x, u), φ.symm (x, v))
+```
+
+That is, evaluating the bilinear form in coordinates is the same as pulling back
+along the trivialization.
 -/
-lemma trivializationAt_tangentSpace_bilinearForm_apply (x₀ x : B)
-    (w : (TangentSpace (M := B) IB) x →L[ℝ] (TangentSpace (M := B) IB) x →L[ℝ] ℝ)
-    (u v : EB)
-    (hx : x ∈ (trivializationAt EB (TangentSpace (M := B) IB) x₀).baseSet) :
-  (trivializationAt (EB →L[ℝ] EB →L[ℝ] ℝ)
-                    (fun x ↦ (TangentSpace (M := B) IB) x →L[ℝ]
-                             (TangentSpace (M := B) IB) x →L[ℝ]
-                              ℝ) x₀).continuousLinearMapAt ℝ x w u v =
-  w ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x u)
-    ((trivializationAt EB (TangentSpace (M := B) IB) x₀).symm x v) := by
+lemma trivializationAt_vectorBundle_bilinearForm_apply
+    {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
+    (x₀ x : B)
+    (w : E x →L[ℝ] E x →L[ℝ] ℝ)
+    (u v : F)
+    (hx : x ∈ (trivializationAt F E x₀).baseSet) :
+  (trivializationAt (F →L[ℝ] F →L[ℝ] ℝ)
+                    (fun x ↦ E x →L[ℝ] E x →L[ℝ] ℝ) x₀).continuousLinearMapAt ℝ x w u v =
+    w ((trivializationAt F E x₀).symm x u)
+      ((trivializationAt F E x₀).symm x v) := by
   rw [Trivialization.continuousLinearMapAt_apply]
   rw [@Trivialization.linearMapAt_apply]
-  simp only [hom_trivializationAt_baseSet, TangentBundle.trivializationAt_baseSet,
-      Trivial.fiberBundle_trivializationAt', Trivial.trivialization_baseSet, Set.inter_univ,
-      Set.inter_self]
-  have hx' : x ∈ (chartAt HB x₀).source ∩ ((chartAt HB x₀).source ∩ Set.univ) := by
-    simpa [Trivialization.baseSet, hx]
+  simp only [hom_trivializationAt_baseSet,
+             Trivial.fiberBundle_trivializationAt',
+             Trivial.trivialization_baseSet,
+             Set.inter_univ,
+             Set.inter_self]
   rw [@hom_trivializationAt_apply]
-  simp only [hx', ↓reduceIte]
+  have hx' : x ∈ (trivializationAt F E x₀).baseSet ∩
+    ((trivializationAt F E x₀).baseSet ∩ Set.univ) := by
+    exact ⟨hx, ⟨hx, trivial⟩⟩
+  rw [if_pos hx']
   rw [inCoordinates_apply_eq₂ hx hx (by simp : x ∈ (trivializationAt ℝ (fun _ ↦ ℝ) x₀).baseSet)]
-  simp only [Trivial.fiberBundle_trivializationAt', Trivial.linearMapAt_trivialization,
-      LinearMap.id_coe, id_eq]
+  simp only [Trivial.fiberBundle_trivializationAt',
+             Trivial.linearMapAt_trivialization,
+             LinearMap.id_coe,
+             id_eq]
 
 /-
 We are going to show that `(g_bilin_1 (IB := IB) i b).snd.toFun α β = (g_bilin_2 i b).toFun α β`
@@ -232,7 +256,7 @@ lemma g_bilin_eq_00 (i b : B)
   have h1 : ∀ u v,
     (((Trivialization.continuousLinearMapAt ℝ ψ b) w) u) v =
      w (χ.symm b u) (χ.symm b v)
-     := fun u v ↦ trivializationAt_tangentSpace_bilinearForm_apply i b w u v hb
+     := fun u v ↦ trivializationAt_vectorBundle_bilinearForm_apply (HB := HB) i b w u v hb
   have h4 : ∀ u v,
     (((Trivialization.continuousLinearMapAt ℝ ψ b) (ψ.symmL ℝ b (innerSL ℝ))) u) v =
     innerSL ℝ u v := by
