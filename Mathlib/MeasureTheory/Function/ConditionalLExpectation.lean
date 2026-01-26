@@ -65,8 +65,8 @@ One should typically not use the definition directly.
 noncomputable irreducible_def condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω)
     (X : Ω → ℝ≥0∞) : Ω → ℝ≥0∞ :=
   if hm : mΩ ≤ mΩ₀ then
-    if _ : SigmaFinite (P.trim hm) then
-      if _ : Measurable[mΩ] X then X else
+    if SigmaFinite (P.trim hm) then
+      if Measurable[mΩ] X then X else
       ∂((P.withDensity X).trim hm)/∂(P.trim hm)
     else 0
   else 0
