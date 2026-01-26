@@ -12,8 +12,7 @@ public import Mathlib.Algebra.Group.TypeTags.Basic
 # Lemmas about pointwise operations in the presence of `Multiplicative` and `Additive`.
 -/
 
-@[expose] public section
-
+public section
 
 open Pointwise
 
