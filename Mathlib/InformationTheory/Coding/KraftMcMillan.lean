@@ -139,7 +139,7 @@ private lemma kraft_mcmillan_inequality_aux {S : Finset (List α)} [Fintype α] 
   let D := (Fintype.card α : ℝ)
   -- Expand the `r`-th power as a sum over `r`-tuples of codewords;
   -- each tuple contributes the weight `(1/D)^{|concatFn w|}`.
-  calc
+  calc (∑ w ∈ S, (1 / (Fintype.card α) : ℝ) ^ w.length) ^ r
     _ = ∑ w : Fin r → S, ∏ i : Fin r, (1 / D) ^ (w i).val.length := by
             simpa [(Finset.sum_coe_sort S _).symm] using
               Fintype.sum_pow (f := fun c : S => (1 / D) ^ c.val.length) r
