@@ -508,11 +508,10 @@ theorem piecewise_bij {t : ι → Set β} (ht : IndexedPartition t)
 
 theorem piecewise_preimage (t : Set β) : hs.piecewise f ⁻¹' t = ⋃ i, s i ∩ (f i ⁻¹' t) := by
   refine ext fun x => ⟨fun hx => ?_, fun ⟨a, ⟨i, hi⟩, ha⟩ => ?_⟩
-  · rw [mem_preimage, IndexedPartition.piecewise_apply, ← mem_preimage] at hx
-    exact mem_iUnion_of_mem (s := fun i => s i ∩ ((f i)⁻¹' t)) (hs.index x)
-      (mem_inter (hs.mem_index x) hx)
-  · rw [← hi, ← (IndexedPartition.mem_iff_index_eq hs).mp ha.1] at ha
-    simp_all [IndexedPartition.piecewise_apply]
+  · rw [mem_preimage, piecewise_apply, ← mem_preimage] at hx
+    exact mem_iUnion_of_mem (hs.index x) (mem_inter (hs.mem_index x) hx)
+  · rw [← hi, ← (mem_iff_index_eq hs).mp ha.1] at ha
+    simp_all [piecewise_apply]
 
 theorem range_piecewise : range (hs.piecewise f) = ⋃ i, f i '' s i := by
   ext x; constructor
