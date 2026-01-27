@@ -196,3 +196,27 @@ theorem AnalyticOnNhd.constant_if_re_constant₁ {U : Set ℂ} {c₀ : ℝ} (h�
   use cc.im
   simp_rw [Complex.ext_iff]
   aesop
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
+itself constant.
+-/
+theorem AnalyticOnNhd.constant_if_im_constant {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ c, ∀ x ∈ U, f x = c := by
+  obtain ⟨z₀, _⟩ := h₂U.nonempty
+  by_contra h₅
+  grind [not_isOpen_singleton (c₀ : ℝ), (by aesop : (im '' (f '' U)) = { c₀ }), isOpenMap_im
+    (f '' U) ((h₁f.is_constant_or_isOpen h₂U.isPreconnected).resolve_left h₅ U (by tauto) h₁U)]
+
+/--
+Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
+itself constant.
+-/
+theorem AnalyticOnNhd.constant_if_im_constant₁ {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+    (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+    ∃ (c : ℝ), ∀ x ∈ U, f x = c + c₀ * I := by
+  obtain ⟨cc, hcc⟩ := constant_if_im_constant h₁f h₂f h₁U h₂U
+  use cc.re
+  simp_rw [Complex.ext_iff]
+  aesop
