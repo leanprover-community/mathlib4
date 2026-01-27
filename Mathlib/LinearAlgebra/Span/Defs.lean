@@ -290,7 +290,7 @@ theorem span_iUnion₂ {ι} {κ : ι → Sort*} (s : ∀ i, κ i → Set M) :
   (Submodule.gi R M).gc.l_iSup₂
 
 theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
-    span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]
+    span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by push_cast; simp [span_iUnion]
 
 theorem sup_span : p ⊔ span R s = span R (p ∪ s) := by rw [Submodule.span_union, p.span_eq]
 
@@ -338,8 +338,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
 @[simp]
 theorem mem_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M) (H : Directed (· ≤ ·) S) {x} :
     x ∈ iSup S ↔ ∃ i, x ∈ S i := by
-  rw [← SetLike.mem_coe, coe_iSup_of_directed S H, mem_iUnion]
-  rfl
+  rw [coe_iSup_of_directed S H, mem_iUnion]
 
 theorem mem_sSup_of_directed {s : Set (Submodule R M)} {z} (hs : s.Nonempty)
     (hdir : DirectedOn (· ≤ ·) s) : z ∈ sSup s ↔ ∃ y ∈ s, z ∈ y := by
@@ -387,8 +386,7 @@ variable (p p')
 
 theorem coe_sup : ↑(p ⊔ p') = (p + p' : Set M) := by
   ext
-  rw [SetLike.mem_coe, mem_sup, Set.mem_add]
-  simp
+  rw [mem_sup, Set.mem_add]
 
 theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'.toAddSubmonoid := by
   ext x
@@ -654,7 +652,7 @@ theorem Module.isPrincipal_submodule_iff {p : Submodule R M} :
   simp_rw [IsPrincipal, isPrincipal_iff]
   constructor <;> rintro ⟨a, ha⟩
   · refine ⟨a, le_antisymm (fun m hm ↦ ?_) <| (span_singleton_le_iff_mem ..).mpr a.2⟩
-    have ⟨r, hr⟩ := mem_span_singleton.mp (ha ▸ (trivial : (⟨m, hm⟩ : p) ∈ ⊤))
+    have ⟨r, hr⟩ := mem_span_singleton.mp (ha ▸ (mem_top : (⟨m, hm⟩ : p) ∈ ↑⊤))
     exact mem_span_singleton.mpr ⟨r, congr($hr)⟩
   · refine ⟨⟨a, ha ▸ mem_span_singleton_self a⟩, .symm <| top_unique fun x _ ↦ ?_⟩
     have ⟨r, hr⟩ := mem_span_singleton.mp (ha.le x.2)

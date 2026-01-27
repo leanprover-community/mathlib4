@@ -94,13 +94,11 @@ theorem Finset.ciInf_mem_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf �
 theorem Set.Finite.ciSup_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
     ⨆ i ∈ s, f i ∈ f '' s := by
   lift s to Finset ι using hs
-  simp only [Finset.mem_coe] at h
   simpa using Finset.ciSup_mem_image f h
 
 theorem Set.Finite.ciInf_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s, f x ≤ sInf ∅) :
     ⨅ i ∈ s, f i ∈ f '' s := by
   lift s to Finset ι using hs
-  simp only [Finset.mem_coe] at h
   simpa using Finset.ciInf_mem_image f h
 
 theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)

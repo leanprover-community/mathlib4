@@ -222,7 +222,7 @@ theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :
 theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
   Subtype.coe_injective
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
   rfl
 
@@ -230,7 +230,7 @@ theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
 noncomputable def quotientOut (α) [s : Setoid α] : Quotient s ↪ α :=
   ⟨_, Quotient.out_injective⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_quotientOut (α) [Setoid α] : ↑(quotientOut α) = Quotient.out :=
   rfl
 
@@ -262,7 +262,7 @@ def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=
   ⟨Prod.map e₁ e₂, e₁.injective.prodMap e₂.injective⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) :
     e₁.prodMap e₂ = Prod.map e₁ e₂ :=
   rfl
@@ -280,7 +280,7 @@ open Sum
 def sumMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α ⊕ γ ↪ β ⊕ δ :=
   ⟨Sum.map e₁ e₂, e₁.injective.sumMap e₂.injective⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_sumMap {α β γ δ} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : sumMap e₁ e₂ = Sum.map e₁ e₂ :=
   rfl
 

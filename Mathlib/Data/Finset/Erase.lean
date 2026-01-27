@@ -91,7 +91,7 @@ theorem erase_subset (a : α) (s : Finset α) : erase s a ⊆ s :=
 
 theorem subset_erase {a : α} {s t : Finset α} : s ⊆ t.erase a ↔ s ⊆ t ∧ a ∉ s := by grind
 
-@[simp, norm_cast]
+@[norm_cast]
 theorem coe_erase (a : α) (s : Finset α) : ↑(erase s a) = (s \ {a} : Set α) := by grind
 
 theorem erase_idem {a : α} {s : Finset α} : erase (erase s a) a = erase s a := by simp

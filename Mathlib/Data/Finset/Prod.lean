@@ -102,7 +102,9 @@ theorem prodMap_image_product {δ : Type*} [DecidableEq β] [DecidableEq δ]
 
 theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Finset α) (t : Finset γ) :
     (s ×ˢ t).map (f.prodMap g) = s.map f ×ˢ t.map g := by
-  simpa [← coe_inj] using Set.prodMap_image_prod f g s t
+  rw [← coe_inj]
+  push_cast
+  apply Set.prodMap_image_prod
 
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=

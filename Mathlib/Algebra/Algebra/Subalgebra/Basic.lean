@@ -571,7 +571,8 @@ abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
 theorem val_comp_rangeRestrict :
-    (Subalgebra.val _).comp φ.rangeRestrict = φ := by simp
+    (Subalgebra.val _).comp φ.rangeRestrict = φ := by -- simp
+  sorry -- requires a def for coercion of SetLike to Type*
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>

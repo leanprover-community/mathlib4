@@ -711,6 +711,16 @@ theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
 theorem iInf_inf_eq : ⨅ x, f x ⊓ g x = (⨅ x, f x) ⊓ ⨅ x, g x :=
   @iSup_sup_eq αᵒᵈ _ _ _ _
 
+@[simp]
+theorem iSup_coe_set {ι : Type*} (s : Set ι) (f : s → α) :
+    ⨆ i, f i = ⨆ i ∈ s, f ⟨i, ‹i ∈ s›⟩ :=
+  iSup_subtype
+
+@[simp]
+theorem iInf_coe_set {ι : Type*} (s : Set ι) (f : s → α) :
+    ⨅ i, f i = ⨅ i ∈ s, f ⟨i, ‹i ∈ s›⟩ :=
+  iInf_subtype
+
 lemma Equiv.biSup_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : Set ι') :
     ⨆ i ∈ e.symm '' s, g (e i) = ⨆ i ∈ s, g i := by
   simpa only [iSup_subtype'] using (image e.symm s).symm.iSup_comp (g := g ∘ (↑))

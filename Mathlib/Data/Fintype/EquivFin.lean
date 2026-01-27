@@ -381,7 +381,8 @@ lemma exists_of_card_eq_finset [Fintype α] {s : Finset β} (hsn : Fintype.card 
   obtain ⟨f : α ↪ β, hf⟩ := exists_of_card_le_finset (Nat.le_of_eq hsn)
   use f
   apply Finset.eq_of_subset_of_card_le
-  · simp [← coe_subset, hf]
+  · rw [← coe_subset, coe_map]
+    simp [hf]
   · simp [← hsn]
 
 end Function.Embedding
