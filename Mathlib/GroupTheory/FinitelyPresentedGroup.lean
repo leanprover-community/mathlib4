@@ -468,4 +468,4 @@ variable {G H : Type*} [Group G] [Group H]
 
 end IsFinitelyPresented
 
-#min_imports
+-- #min_imports
