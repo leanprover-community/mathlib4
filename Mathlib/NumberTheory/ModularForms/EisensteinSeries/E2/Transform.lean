@@ -87,19 +87,13 @@ private lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
 @[simp]
 private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 
+lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
+  filter_upwards [eventually_cofinite_ne ![0, 0], eventually_cofinite_ne ![0, -1]] with x hx hx'
+  simp_all [δ]
+
 /-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
 abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
-
-/-- The equivalence on `Fin 2 → α` given by swapping the two coordinates. -/
-def piFinTwoSwap {α : Type*} : Equiv.Perm (Fin 2 → α) where
-  toFun b := ![b 1, b 0]
-  invFun b := ![b 1, b 0]
-  left_inv b := by ext i; fin_cases i <;> rfl
-  right_inv b := by ext i; fin_cases i <;> rfl
-
-@[simp]
-lemma piFinTwoSwap_apply {α : Type*} (b : Fin 2 → α) : piFinTwoSwap b = ![b 1, b 0] := rfl
 
 section transform
 
@@ -109,12 +103,7 @@ lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by
     apply summable_of_isBigO_rpow_norm (a := 3) (by linarith)
     simpa [pow_three, pow_two, ← mul_assoc] using ((isBigO_linear_add_const_vec z 0 1).mul
       (isBigO_linear_add_const_vec z 0 0)).mul (isBigO_linear_add_const_vec z 0 0)
-  let s : Finset (Fin 2 → ℤ) := {![0,0], ![0,-1]}
-  rw [← Finset.summable_compl_iff s]
-  apply (H.subtype sᶜ).congr (fun b ↦ ?_)
-  have hb1 : b.1 ≠ ![0, 0] := by aesop
-  have hb2 : b.1 ≠ ![0, -1] := by aesop
-  simp [δ, hb1, hb2]
+  exact H.congr_cofinite <| δ_eventually_cofinite.mp <| .of_forall <| by simp +contextual
 
 --This is the version we use the most.
 lemma G2Term_prod_summable (z : ℍ) : Summable (fun p : ℤ × ℤ ↦ G2Term z ![p.1, p.2]) := by
@@ -178,7 +167,7 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
   · have := G2Term_summable z
-    rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
+    rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at this
     exact this.prod
 
 private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
@@ -192,7 +181,7 @@ private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term 
   · exact G2Term_prod_summable z
   · exact (G2Term_prod_summable z).prod_factor
   · have H := G2Term_summable z
-    rw [← piFinTwoSwap.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at H
+    rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
     exact H.prod_factor
 
 /-- This is the key identity for how `G2` transforms under the slash action by `S`. -/

@@ -226,8 +226,7 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
       (fun n : ℕ+ ↦ (-2 * π * I / z) - (2 / z * (2 * π * I)) *
       (∑' m : ℕ+, cexp (2 * π * I * (-n / z)) ^ (m : ℕ)) + 2 / n) := by
     ext N
-    have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement
-      ⟨-N / z, im_pnat_div_pos N z⟩)
+    have h2 := cot_series_rep (coe_mem_integerComplement ⟨-N / z, im_pnat_div_pos N z⟩)
     rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
       ← tsum_zero_pnat_eq_tsum_nat
       (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)] at *
