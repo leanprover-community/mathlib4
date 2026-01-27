@@ -307,7 +307,7 @@ inductive ReflGen (r : α → α → Prop) (a : α) : α → Prop
   | single {b} : r a b → ReflGen r a b
 
 /-- `SymmGen r`: symmetric closure of `r`. This is also the comparability relation,
-  such that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`) -/
+  such that `SymmGen r a b` means that either `r a b` or `r b a` (see `Mathlib.Order.Comparable`). -/
 def SymmGen (r : α → α → Prop) (a b : α) : Prop :=
   r a b ∨ r b a
 
