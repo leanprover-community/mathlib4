@@ -290,7 +290,7 @@ lemma AddContent.onIocAux_apply {f : α → G} {u v : α} (h : u ≤ v) :
   have hu'v' : u' ≤ v' ∧ Ioc u v = Ioc u' v' := h'.choose_spec
   rcases h.eq_or_lt with rfl | huv
   · grind [Set.Ioc_eq_empty_iff]
-  rw [Set.Ioc_eq_Ioc_iff huv] at hu'v'
+  rw [Ioc_eq_Ioc_iff (Or.inl huv)] at hu'v'
   grind
 
 lemma AddContent.onIocAux_empty (f : α → G) :
