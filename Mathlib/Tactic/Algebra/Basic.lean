@@ -161,66 +161,97 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
   let pf : Q($r₀ = $r_cast) ← res.getProof
   return ⟨r₀, q(fun a ↦ $pf ▸ algebraMap_smul $R $r' a)⟩
 
+namespace RingCompute
+
+def add (cR : Algebra.Cache sR) (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
+    MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
+  let ⟨r, vr⟩ := za
+  let ⟨s, vs⟩ := zb
+  let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute sR) rcℕ vr vs
+  match vt with
+  | .zero =>
+    -- TODO: Why doesn't the match substitute t?
+    have : $t =Q 0 := ⟨⟩
+    return  ⟨⟨_, .mk _ vt, q(sorry)⟩, some q(sorry)⟩
+  | vt =>
+    return ⟨⟨_, .mk _ vt, q(sorry)⟩, none⟩
+
+def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
+    MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
+  let ⟨r, vr⟩ := za
+  let ⟨s, vs⟩ := zb
+  let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute sR) rcℕ vr vs
+  return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
+
+def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSemiring $R'))
+    (_smul : Q(HSMul $R' $A $A)) (r' : Q($R'))
+    (_rx : AtomM (Common.Result (Common.ExSum (Ring.baseType sR') q($sR')) q($r'))) :
+    AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
+      Q(∀ (a : $A), $r' • a = $y * a)) := do
+  let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
+  have : u' =QL u := ⟨⟩
+  /- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v,
+    introducing kernel errors during runtime. -/
+  let ⟨_r'', vr, pr⟩ ←
+    Common.eval Ring.ringCompute rcℕ (Ring.ringCompute sR) cR.toCache q($r)
+  return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
+
+def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
+    MetaM (Common.Result (BaseType sAlg) q(-$a)) := do
+  let ⟨r, vr⟩ := za
+  match cR.rα with
+  | some rR =>
+    let ⟨t, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute sR) q($rR) vr
+    return ⟨_, .mk _ vt, q(sorry)⟩
+  | none => failure
+
+def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
+    (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
+    OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
+  let ⟨r, vr⟩ := za
+  let ⟨b', vb'⟩ := vb.toExProdNat
+  have : $b =Q $b' := ⟨⟩
+  let ⟨s, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
+  return ⟨_, ⟨_, vs⟩, q(sorry)⟩
+
+def inv {a : Q($A)} (czA : Option Q(CharZero $A)) (fA : Q(Semifield $A))
+    (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) := do
+  let ⟨r, vr⟩ := za
+  let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute sR) rcℕ fA czA vr
+  return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
+
+def derive' (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
+    MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
+  let res ← NormNum.derive x
+  return ← evalCast sAlg cR cA res
+
+def isOne {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
+  let ⟨_, vx⟩ := zx
+  match vx with
+  | .add (.const c) .zero =>
+    match (Ring.ringCompute sR).isOne c with
+    | some pf => some q(sorry)
+    | none => none
+  | .zero => none
+  | _ => none
+
+end RingCompute
+
+open RingCompute in
 def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
     Common.RingCompute (BaseType sAlg) sA where
-  evalAdd a b za zb := do
-    let ⟨r, vr⟩ := za
-    let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute sR) rcℕ vr vs
-    match vt with
-    | .zero =>
-      -- TODO: Why doesn't the match substitute t?
-      have : $t =Q 0 := ⟨⟩
-      return  ⟨⟨_, .mk _ vt, q(sorry)⟩, some q(sorry)⟩
-    | vt =>
-      return ⟨⟨_, .mk _ vt, q(sorry)⟩, none⟩
-  evalMul a b za zb := do
-    let ⟨r, vr⟩ := za
-    let ⟨s, vs⟩ := zb
-    let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute sR) rcℕ vr vs
-    return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
-  evalCast u' R' sR' _ r' _ := do
-    let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
-    have : u' =QL u := ⟨⟩
-    /- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v,
-      introducing kernel errors during runtime. -/
-    let ⟨_r'', vr, pr⟩ ←
-      Common.eval Ring.ringCompute rcℕ (Ring.ringCompute sR) cR.toCache q($r)
-    return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
-  evalNeg a rR za := do
-    let ⟨r, vr⟩ := za
-    match cR.rα with
-    | some rR =>
-      let ⟨t, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute sR) q($rR) vr
-      return ⟨_, .mk _ vt, q(sorry)⟩
-    | none => failure
-  -- TODO: Regression: we can only handle literal exponents in the coefficient ring.
-  evalPow a za b vb := do
-    let ⟨r, vr⟩ := za
-    let ⟨b', vb'⟩ := vb.toExProdNat
-    have : $b =Q $b' := ⟨⟩
-    let ⟨s, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
-    return ⟨_, ⟨_, vs⟩, q(sorry)⟩
-  evalInv czR fR za := do
-    let ⟨r, vr⟩ := za
-    let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute sR) rcℕ fR czR vr
-    return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
-  derive x := do
-    let res ← derive x
-    return ← evalCast sAlg cR cA res
+  evalAdd := add sAlg cR
+  evalMul := mul sAlg
+  evalCast := cast sAlg cR
+  evalNeg := neg sAlg cR
+  evalPow := pow sAlg
+  evalInv := inv sAlg
+  derive := derive' sAlg cR cA
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
-  isOne := fun ⟨x, vx⟩ ↦
-    match vx with
-    | .add (.const c) .zero =>
-      match (Ring.ringCompute sR).isOne c with
-      | some pf => some q(sorry)
-      | none => none
-    | .zero => none
-    | _ => none
+  isOne := isOne sAlg
   one := ⟨_, ⟨_, (Ring.ExProd.mkNat sR 1).2.toSum⟩, q(by simp)⟩
   toString := fun ⟨_, vx⟩ ↦ s!"{vx.toString rcℕ (Ring.ringCompute sR)}"
-
 
 end BaseType
 
