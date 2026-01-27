@@ -202,7 +202,7 @@ theorem _root_.Pi.intrinsicStar_comul [Π i, CoalgebraStruct R (B i)]
 /-- The intrinsic star convolutive ring on linear maps from `n → R` to `m → R`.
 
 See note [reducible non-instances]. -/
-def _root_.Pi.convIntrinsicStarRingCommSemiring {m : Type*} :
+abbrev _root_.Pi.convIntrinsicStarRingCommSemiring {m : Type*} :
     StarRing ((n → R) →ₗ[R] m → R) := convIntrinsicStarRing (by simp)
 
 end convRing
