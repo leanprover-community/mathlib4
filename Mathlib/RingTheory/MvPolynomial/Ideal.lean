@@ -84,10 +84,10 @@ theorem pow_idealOfVars (n : ℕ) :
   rw [idealOfVars_eq_restrictSupportIdeal]
   apply Submodule.restrictScalars_injective R
   by_cases hn : n = 0
-  · simp [hn]
+  · simp [hn, Set.Ici_zero_eq_univ]
   rw [Submodule.restrictScalars_pow hn]
   refine (restrictSupport_nsmul ..).symm.trans (congr_arg (restrictSupport R) ?_)
-  simp [← degree_preimage_nsmul, hn]
+  simp [← degree_preimage_nsmul, hn, Set.Ici_nsmul_eq]
 
 /-- The `n`th power of `idealOfVars` is spanned by all monic monomials of total degree `n`. -/
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
