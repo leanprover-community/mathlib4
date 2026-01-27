@@ -164,12 +164,10 @@ lemma of_formallyUnramified_of_field [EssFiniteType K A] [FormallyUnramified K A
     FormallyEtale K A := by
   have := FormallyUnramified.isReduced_of_field K A
   have : IsArtinianRing A := .of_finite K A
-  let e : A ≃ₐ[K] ((I : MaximalSpectrum A) → A ⧸ I.asIdeal) :=
-    { __ := IsArtinianRing.equivPi A, commutes' r := rfl }
   have (I : MaximalSpectrum A) : FormallyEtale K (A ⧸ I.asIdeal) := by
     rw [FormallyEtale.iff_isSeparable, ← FormallyUnramified.iff_isSeparable]
     infer_instance
-  exact .of_equiv e.symm
+  exact .of_equiv ((IsArtinianRing.equivPi A).restrictScalars K).symm
 
 variable {K A} in
 lemma iff_formallyUnramified_of_field [EssFiniteType K A] :
@@ -192,12 +190,11 @@ theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
     have := FormallyUnramified.finite_of_free K A
     have := FormallyUnramified.isReduced_of_field K A
     have : IsArtinianRing A := isArtinian_of_tower K inferInstance
-    letI : Fintype (MaximalSpectrum A) := (nonempty_fintype _).some
     let v (i : MaximalSpectrum A) : A := (IsArtinianRing.equivPi A).symm (Pi.single i 1)
-    let e : A ≃ₐ[K] _ := { __ := IsArtinianRing.equivPi A, commutes' := fun r ↦ rfl }
-    have := (FormallyEtale.iff_of_equiv e).mp inferInstance
-    rw [FormallyEtale.pi_iff] at this
-    exact ⟨_, inferInstance, _, _, _, e, fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩
+    rw [FormallyEtale.iff_of_equiv ((IsArtinianRing.equivPi A).restrictScalars K),
+      FormallyEtale.pi_iff] at H
+    exact ⟨_, inferInstance, _, _, _, (IsArtinianRing.equivPi A).restrictScalars K,
+      fun I ↦ (iff_isSeparable _ _).mp inferInstance⟩
   · intro ⟨I, _, Ai, _, _, e, _⟩
     rw [FormallyEtale.iff_of_equiv e, FormallyEtale.pi_iff]
     exact fun I ↦ of_isSeparable K (Ai I)
