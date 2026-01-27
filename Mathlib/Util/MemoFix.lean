@@ -7,14 +7,11 @@ module
 
 public import Std.Data.HashMap.Basic
 public import Mathlib.Init
-public import Mathlib.Tactic.Linter.DeprecatedModule
 
 /-!
 # Fixpoint function with memoisation
 
 -/
-
-deprecated_module (since := "2026-01-26")
 
 variable {α β : Type}
 
