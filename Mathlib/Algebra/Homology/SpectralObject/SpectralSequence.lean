@@ -301,9 +301,8 @@ noncomputable def ccSc : ShortComplex C :=
 
 instance : Epi (ccSc X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃').g := by
-  refine @epi_comp _ _ _ _ _ _ inferInstance _ ?_
-  apply epi_EMap
-  all_goals rfl
+  dsimp
+  infer_instance
 
 variable [X.HasSpectralSequence data] in
 include hpq hn₁' in
@@ -400,7 +399,7 @@ noncomputable def homologyIso' :
 to the objects on the next page. -/
 noncomputable def homologyIso :
     (page X data r hr).homology pq' ≅
-      (page X data r' (hr.trans (by rw [← hrr']; exact Int.le.intro 1 rfl))).X pq' :=
+      (page X data r' (hr.trans (by lia))).X pq' :=
   homologyIso' X data r r' hrr' hr _ pq' _ rfl rfl
     (data.deg pq' - 1) (data.deg pq') (data.deg pq' + 1) (by simp)
     rfl rfl _ _ _ _ _ _ rfl rfl rfl rfl rfl rfl
@@ -484,6 +483,7 @@ lemma isZero_spectralSequence_page_X_of_isZero_H' (r : ℤ) (hr : r₀ ≤ r)
   X.isZero_spectralSequence_page_X_of_isZero_H data r hr pq _ rfl _ _ rfl rfl h
 
 section
+
 variable (r r' : ℤ) (hrr' : r + 1 = r') (hr : r₀ ≤ r)
   (pq pq' pq'' : κ) (hpq : (c r).prev pq' = pq) (hpq' : (c r).next pq' = pq'')
   (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂)
