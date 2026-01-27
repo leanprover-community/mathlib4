@@ -212,7 +212,7 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
         simp only [← biUnion_associatedPrimes_eq_compl_regular, Set.mem_iUnion, SetLike.mem_coe,
           exists_prop] at mem_ass
         rcases mem_ass with ⟨p, ass, xmem⟩
-        let _ := (isCohenMacaulayLocalRing_iff R).mp (by assumption)
+        let _ := (isCohenMacaulayLocalRing_iff R).mp ‹_›
         have eq := ModuleCat.depth_eq_supportDim_of_cohenMacaulay (ModuleCat.of R R)
         rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p (ModuleCat.of R R) ass,
           Module.supportDim_self_eq_ringKrullDim, WithBot.coe_unbot] at eq
@@ -266,15 +266,14 @@ lemma isRegular_of_maximalIdeal_mem_ofList_minimalPrimes
             fun r hr ↦ map_nonunit (Ideal.Quotient.mk (x • (⊤ : Ideal R))) r
             (mem.1.2 (Ideal.subset_span (by simp [hr])))
         exact ne_top_of_le_ne_top Ideal.IsPrime.ne_top' (Ideal.span_le.mpr mem_max)
-      let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp
-          (by assumption)
+      let _ := (quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay R x xreg xmem).mp ‹_›
       rw [← RingTheory.Sequence.isWeaklyRegular_map_algebraMap_iff R' R' rs']
       apply hn (rs'.map (algebraMap R R')) min _ (by simpa using len)
       have : ringKrullDim (QuotSMulTop x R) + 1 = ringKrullDim R := by
         rw [← Module.supportDim_quotient_eq_ringKrullDim, ← Module.supportDim_self_eq_ringKrullDim]
         exact Module.supportDim_quotSMulTop_succ_eq_supportDim xreg xmem
       simp only [List.length_cons, Nat.cast_add, Nat.cast_one, ← this] at dim
-      simpa [List.length_map] using (WithBot.add_natCast_cancel _ _ 1).mp dim
+      simpa [List.length_map] using WithBot.add_one_cancel.mp dim
 
 lemma isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing [IsCohenMacaulayLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
@@ -294,20 +293,19 @@ lemma Ideal.depth_le_height [IsLocalRing R] (I : Ideal R) (netop : I ≠ ⊤) :
   simp only [IsLocalRing.ideal_depth_eq_sSup_length_regular I netop (ModuleCat.of R R), exists_prop,
     sSup_le_iff, Set.mem_setOf_eq, forall_exists_index, and_imp]
   intro n rs reg mem len
-  rw [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
-    (fun r hr ↦ le_maximalIdeal netop (mem r hr))]
-  exact Ideal.height_mono (span_le.mpr mem)
+  simpa [← len, ← ofList_height_eq_length_of_isWeaklyRegular' rs reg.1
+    (fun r hr ↦ le_maximalIdeal netop (mem r hr))] using Ideal.height_mono (span_le.mpr mem)
 
 lemma Ideal.exist_regular_sequence_length_eq_height [IsCohenMacaulayLocalRing R]
     (I : Ideal R) (netop : I ≠ ⊤) :
     ∃ rs : List R, IsRegular R rs ∧ (∀ r ∈ rs, r ∈ I) ∧ rs.length = I.height := by
   rcases Ideal.exists_spanRank_eq_and_height_eq I netop with ⟨J, le, rank, ht⟩
   simp only [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr
-      ((isNoetherianRing_iff_ideal_fg R).mp (by assumption) J), Cardinal.nat_eq_ofENat] at rank
+      ((isNoetherianRing_iff_ideal_fg R).mp ‹_› J), Cardinal.nat_eq_ofENat] at rank
   obtain ⟨⟨s, span⟩, hs⟩ : ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card =
     Submodule.spanFinrank J := by
     have : {x | ∃ s : { s : Finset R // Submodule.span R s = J}, s.1.card = x}.Nonempty := by
-      rcases (isNoetherianRing_iff_ideal_fg R).mp (by assumption) J with ⟨s, hs⟩
+      rcases (isNoetherianRing_iff_ideal_fg R).mp ‹_› J with ⟨s, hs⟩
       use s.card, ⟨s, hs⟩
     simpa only [Submodule.spanFinrank_eq_iInf J, iInf, Set.range] using Nat.sInf_mem this
   simp only [← hs] at rank
@@ -338,10 +336,9 @@ lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaul
   rcases Ideal.exist_regular_sequence_length_eq_height p IsPrime.ne_top' with ⟨rs, reg, mem, len⟩
   have mem' := (fun r hr ↦ le_maximalIdeal_of_isPrime p (mem r hr))
   have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay (ModuleCat.of R R) rs reg).mp
-    ((isCohenMacaulayLocalRing_iff R).mp (by assumption))
+    ((isCohenMacaulayLocalRing_iff R).mp ‹_›)
   have ht_eq := Ideal.ofList_height_eq_length_of_isWeaklyRegular' rs reg.1 mem'
-  rw [← Ideal.height_eq_primeHeight, ← len]
-  rw [(isCohenMacaulayLocalRing_def R).mp (by assumption),
+  rw [← Ideal.height_eq_primeHeight, ← len, (isCohenMacaulayLocalRing_def R).mp ‹_›,
     ← depth_quotient_regular_sequence_add_length_eq_depth (ModuleCat.of R R) rs reg]
   have ass : p ∈ associatedPrimes R (R ⧸ ofList rs • (⊤ : Ideal R)) := by
     apply Module.associatedPrimes.minimalPrimes_annihilator_subset_associatedPrimes
@@ -350,8 +347,7 @@ lemma Ideal.primeHeight_add_ringKrullDim_quotient_eq_ringKrullDim [IsCohenMacaul
     · exact (span_le.mpr mem)
     · simp [← len, ← ht_eq]
   let _ : Nontrivial (R ⧸ ofList rs • (⊤ : Ideal R)) := IsRegular.quot_ofList_smul_nontrivial reg ⊤
-  rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p
-    (ModuleCat.of R (R ⧸ ofList rs • (⊤ : Ideal R))) ass]
+  rw [depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay p _ ass]
   simp [add_comm]
 
 omit [IsNoetherianRing R] in
