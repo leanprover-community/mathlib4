@@ -38,12 +38,6 @@ be written as `poly i` instead of `poly.vertices i` -/
 instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
   coe := Polygon.vertices
 
-@[simp]
-theorem coe_mk (vertices : Fin n → P) : (⟨vertices⟩ : Polygon P n) = vertices := rfl
-
-@[simp]
-theorem vertices_eq_coe (poly : Polygon P n) : poly.vertices = poly := rfl
-
 variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P] [NeZero n]
 
 /-- The `i`-th edge as an affine map `R →ᵃ[R] P`. -/
