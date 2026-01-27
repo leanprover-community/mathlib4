@@ -159,7 +159,7 @@ lemma quotSMulTop_isCohenMacaulay_iff_isCohenMacaulay (M : ModuleCat.{v} R) [Mod
     simp only [not_subsingleton_iff_nontrivial.mpr ntr2, false_or, ntr]
     rw [← Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem,
       ← IsLocalRing.depth_quotSMulTop_succ_eq_moduleDepth M r reg mem, WithBot.coe_add]
-    exact WithBot.add_natCast_cancel _ _ 1
+    exact WithBot.add_natCast_cancel
 
 lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (M : ModuleCat.{v} R) [Module.Finite R M] (rs : List R) (reg : IsRegular M rs) :
@@ -173,7 +173,7 @@ lemma quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     false_or, ntr2]
   rw [← Module.supportDim_add_length_eq_supportDim_of_isRegular rs reg,
     ← depth_quotient_regular_sequence_add_length_eq_depth M rs reg, WithBot.coe_add]
-  exact WithBot.add_natCast_cancel _ _ rs.length
+  exact WithBot.add_natCast_cancel
 
 variable [p.IsPrime] {Rₚ : Type u'} [CommRing Rₚ] [Algebra R Rₚ] [IsLocalization.AtPrime Rₚ p]
 
@@ -548,7 +548,7 @@ lemma quotient_regular_smul_top_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
     exact (Module.supportDim_quotSMulTop_succ_eq_supportDim reg mem).symm
   simp only [isCohenMacaulayLocalRing_def, this, ← depth_quotient_regular_succ_eq_depth x reg mem,
     WithBot.coe_add, WithBot.coe_one]
-  exact WithBot.add_natCast_cancel _ _ 1
+  exact WithBot.add_natCast_cancel
 
 lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] [IsNoetherianRing R]
     (x : R) (reg : IsSMulRegular R x) (mem : x ∈ maximalIdeal R) :
@@ -562,7 +562,7 @@ lemma quotient_span_regular_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R] 
   simp only [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_quotient_span_singleton_succ_eq_ringKrullDim reg mem,
     ← depth_quotient_span_regular_succ_eq_depth x reg mem, WithBot.coe_add, WithBot.coe_one]
-  exact WithBot.add_natCast_cancel _ _ 1
+  exact WithBot.add_natCast_cancel
 
 lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing R]
     [IsNoetherianRing R] (rs : List R) (reg : IsWeaklyRegular R rs)
@@ -579,4 +579,4 @@ lemma quotient_regular_sequence_isCohenMacaulay_iff_isCohenMacaulay [IsLocalRing
   simp only [isCohenMacaulayLocalRing_def,
     ← ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg',
     ← depth_quotient_regular_sequence_add_length_eq_depth rs reg mem, WithBot.coe_add]
-  exact WithBot.add_natCast_cancel _ _ rs.length
+  exact WithBot.add_natCast_cancel
