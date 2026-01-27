@@ -895,7 +895,7 @@ theorem Ici_mul_Ici_eq {a b : α} :
 theorem Ici_pow_eq {a : α} :
     ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
   | 1, _ => by simp
-  | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq_of_canonicallyOrdered]
+  | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq]
 
 omit [MulRightMono α] in
 @[to_additive (attr := simp)]
