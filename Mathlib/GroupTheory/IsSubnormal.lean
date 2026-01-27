@@ -55,14 +55,14 @@ inductive IsSubnormal : Subgroup G → Prop where
 
 attribute [simp] Subgroup.IsSubnormal.top
 
+/-- A normal subgroup is subnormal. -/
+lemma Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
+  IsSubnormal.step _ ⊤ le_top IsSubnormal.top normal_subgroupOf
+
 namespace IsSubnormal
 
 /-- The trivial subgroup is subnormal. -/
-@[simp] lemma bot : IsSubnormal (⊥ : Subgroup G) := step _ ⊤ le_top top normal_subgroupOf
-
-/-- A normal subgroup is subnormal. -/
-lemma _root_.Subgroup.Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
-  step _ ⊤ le_top top normal_subgroupOf
+@[simp] lemma bot : IsSubnormal (⊥ : Subgroup G) := (normal_of_characteristic ⊥).isSubnormal
 
 /-- A subnormal subgroup of a simple group is normal. -/
 lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
