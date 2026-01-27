@@ -305,7 +305,7 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
   have : IsOpenImmersion (Sigma.desc f) := by
     refine isOpenImmersion_sigmaDesc _ _ (fun i j hij ↦ ?_)
     simpa [Function.onFun_apply, disjoint_iff, Opens.ext_iff] using hdisj hij
-  simp only [← Cofan.isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
+  simp only [Cofan.nonempty_isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
   apply isIso_of_isOpenImmersion_of_opensRange_eq_top
   rw [eq_top_iff]
   intro x hx
