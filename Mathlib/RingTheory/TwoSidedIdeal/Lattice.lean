@@ -124,6 +124,8 @@ lemma bot_ringCon : (⊥ : TwoSidedIdeal R).ringCon = ⊥ := rfl
 lemma mem_bot {x : R} : x ∈ (⊥ : TwoSidedIdeal R) ↔ x = 0 :=
   Iff.rfl
 
+lemma eq_bot_iff (I : TwoSidedIdeal R) : I = ⊥ ↔ ∀ x ∈ I, x = 0 := by aesop
+
 instance : CompleteLattice (TwoSidedIdeal R) where
   __ := (inferInstance : SemilatticeSup (TwoSidedIdeal R))
   __ := (inferInstance : SemilatticeInf (TwoSidedIdeal R))
