@@ -13,8 +13,8 @@ public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 This file established the classic mean value properties of complex differentiable functions,
 computing the value of a function at the center of a circle as a circle average. It also provides
-generalized versions that computing the value of a function at arbitrary points of a circle as
-circle averages over suitable weighted functions.
+generalized versions that computing the value of a function at arbitrary points of a disk as circle
+averages over suitable weighted functions.
 -/
 
 public section
@@ -49,13 +49,13 @@ private theorem circleAverage_of_differentiable_on_off_countable_posRadius (hR :
 ## Generalized Mean Value Properties
 
 For a complex differentiable function `f`, the theorems in this section compute values of `f` in the
-interior of a circle as circle averages of a weighted function.
+interior of a disk as circle averages of a weighted function.
 -/
 
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
 continuous on a closed disc of radius `R` and center `c`, and is complex differentiable at all but
-countably many points of its interior, then the circle average
+countably many points of its interior, then for every point `w` in the disk, the circle average
 `circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R` equals `f w`.
 -/
 theorem circleAverage_of_differentiable_on_off_countable₁ (hs : s.Countable)
@@ -73,8 +73,9 @@ theorem circleAverage_of_differentiable_on_off_countable₁ (hs : s.Countable)
 
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
-complex differentiable at all points of a closed disc of radius `R` and center `c`, then the circle
-average `circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R` equals `f w`.
+complex differentiable at all points of a closed disc of radius `R` and center `c`, then for every
+point `w` in the disk, the circle average `circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R`
+equals `f w`.
 -/
 theorem circleAverage_of_differentiable_on₁ (hf : ∀ z ∈ closedBall c |R|, DifferentiableAt ℂ f z)
     (hw : w ∈ ball c |R|) (hR : R ≠ 0) :
