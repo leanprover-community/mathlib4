@@ -8,7 +8,8 @@ module
 public import Mathlib.Data.Option.NAry
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.ENat.Defs
-import Batteries.Data.MLList.Basic
+public import Batteries.Data.MLList.Basic
+public import Mathlib.Data.Subtype
 
 /-!
 # Possibly infinite lists
@@ -521,8 +522,6 @@ theorem mem_iff_exists_get? {s : Seq α} {x : α} : x ∈ s ↔ ∃ i, some x = 
 
 @[simp]
 theorem notMem_nil (a : α) : a ∉ @nil α := fun ⟨_, (h : some a = none)⟩ => by injection h
-
-@[deprecated (since := "2025-05-23")] alias not_mem_nil := notMem_nil
 
 theorem mem_cons (a : α) : ∀ s : Seq α, a ∈ cons a s
   | ⟨_, _⟩ => Stream'.mem_cons (some a) _

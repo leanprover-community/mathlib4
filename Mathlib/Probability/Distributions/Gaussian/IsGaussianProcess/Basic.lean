@@ -13,7 +13,7 @@ import Mathlib.Probability.Process.FiniteDimensionalLaws
 /-!
 # Gaussian processes
 
-This file prove basic properties of Gaussian processes. In particular,
+This file contains basic properties of Gaussian processes. In particular,
 in `IsGaussianProcess.of_isGaussianProcess`, we show that if a stochastic
 process `Y : S → Ω → F` is such that for each `s : S`, `Y s` can be written as a linear map
 applied to finitely many values of a certain Gaussian process,

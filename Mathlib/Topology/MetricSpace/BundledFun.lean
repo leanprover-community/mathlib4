@@ -142,9 +142,7 @@ instance : OrderBot (PseudoMetric X R) where
 lemma coe_finsetSup [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
     (hs : s.Nonempty) :
     ⇑(s.sup f) = s.sup' hs (f ·) := by
-  induction hs using Finset.Nonempty.cons_induction with
-  | singleton i => simp
-  | cons a s ha hs ih => simp [hs, ih]
+  simpa using (Finset.sup'_eq_sup hs (f ·)).symm
 
 lemma finsetSup_apply [IsOrderedAddMonoid R] {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :

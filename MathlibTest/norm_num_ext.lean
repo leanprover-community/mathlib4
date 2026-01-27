@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.IsSquare
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
@@ -62,6 +63,25 @@ theorem ex15 : ¬ Nat.Coprime 2 0 := by norm_num1
 theorem ex16 : Nat.Coprime 2 3 := by norm_num1
 theorem ex16' : Nat.Coprime 3 2 := by norm_num1
 theorem ex17 : ¬ Nat.Coprime 2 4 := by norm_num1
+
+example : IsSquare 0 := by norm_num1
+example : IsSquare 1 := by norm_num1
+example : IsSquare 1024 := by norm_num1
+example : ¬IsSquare 2048 := by norm_num1
+example : ¬IsSquare (5 : ℤ) := by norm_num1
+example : IsSquare (-0 : ℤ) := by norm_num1
+example : ¬IsSquare (-5 : ℤ) := by norm_num1
+example : IsSquare (2^20 : ℤ) := by norm_num1
+example : ¬IsSquare (2 ^ 200 + 1 : ℤ) := by norm_num1
+example : IsSquare (0 : ℚ) := by norm_num1
+example : IsSquare (4 : ℚ) := by norm_num1
+example : ¬IsSquare (5 : ℚ) := by norm_num1
+example : ¬IsSquare (-1 : ℚ) := by norm_num1
+example : IsSquare (8 / 18 : ℚ) := by norm_num1
+example : IsSquare (2 ^ 100 / 3 ^ 200 : ℚ) := by norm_num1
+example : ¬IsSquare (5 / 4 : ℚ) := by norm_num1
+example : ¬IsSquare (4 / 5 : ℚ) := by norm_num1
+example : ¬IsSquare (-1 / 4 : ℚ) := by norm_num1
 
 theorem ex21 : Nat.gcd 1 2 = 1 := by norm_num1
 theorem ex22 : Nat.gcd 2 1 = 1 := by norm_num1

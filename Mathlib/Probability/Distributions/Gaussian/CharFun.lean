@@ -5,15 +5,18 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
+
+import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Facts about Gaussian characteristic function
 
 In this file we prove that Gaussian measures over a Banach space `E` are exactly those measures
 `μ` such that there exist `m : E` and `f : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ`
-satisfying `f.toBilinForm.IsPosSemidef` and `charFunDual μ L = exp (L m * I - f L L / 2)`.
+positive semidefinite (satisfying `f.toBilinForm.IsPosSemidef`) such that
+`charFunDual μ L = exp (L m * I - f L L / 2)`.
 We also prove that such `m` and `f` are unique and equal to `∫ x, x ∂μ` and `covarianceBilinDual μ`.
 
 We also specialize these statements in the case of Hilbert spaces, with
@@ -37,7 +40,7 @@ Gaussian measure, characteristic function
 public section
 
 
-open Complex MeasureTheory WithLp NormedSpace ContinuousLinearMap
+open Complex MeasureTheory WithLp ContinuousLinearMap
 
 open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
 
@@ -103,7 +106,7 @@ lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, div_left_inj', sub_im, mul_im, div_ofNat_im,
     zero_div, sub_zero] at hn
   constructor
-  · rw [eq_iff_forall_dual_eq ℝ]
+  · rw [NormedSpace.eq_iff_forall_dual_eq ℝ]
     simp [hn]
   · rw [← toBilinForm_inj]
     apply LinearMap.BilinForm.ext_of_isSymm hf.isSymm isPosSemidef_covarianceBilinDual.isSymm

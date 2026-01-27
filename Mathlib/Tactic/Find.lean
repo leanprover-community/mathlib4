@@ -9,6 +9,7 @@ public import Mathlib.Init
 public meta import Batteries.Util.Cache
 public meta import Lean.HeadIndex
 public meta import Lean.Elab.Command
+public import Batteries.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -131,9 +132,17 @@ see `#find`, which is also available as a tactic.
 elab "find" : tactic => do
   findType (← getMainTarget)
 
-/-
-Tactic version of the `#find` command.
-See also the `find` tactic to search for theorems matching the current goal.
+/--
+The `#find` tactic finds definitions & lemmas using pattern matching on the type. For instance:
+```lean
+#find _ + _ = _ + _
+#find ?n + _ = _ + ?n
+#find (_ : Nat) + _ = _ + _
+#find Nat → Nat
+```
+This is the tactic equivalent to the `#find` command.
+There is also the `find` tactic which looks for
+lemmas which are `apply`able against the current goal.
 -/
 elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none

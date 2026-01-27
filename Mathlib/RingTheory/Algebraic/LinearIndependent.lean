@@ -17,7 +17,7 @@ public import Mathlib.RingTheory.Algebraic.Defs
   then `{(x - a)⁻¹ | a : F}` is linearly independent over `F`.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial
 

@@ -21,7 +21,7 @@ Note that if the norm on `R` is not strictly multiplicative, then the condition 
 topologically nilpotent is strictly weaker than assuming `‖κ 1 - 1‖ < 1`, although they are
 equivalent if `NormMulClass R` holds.
 
-## Main definitions and theorems:
+## Main definitions and theorems:
 
 * `addChar_of_value_at_one`: given a topologically nilpotent `r : R`, construct a continuous
   additive character of `ℤ_[p]` mapping `1` to `1 + r`.
@@ -32,7 +32,7 @@ equivalent if `NormMulClass R` holds.
   sub-multiplicative), then `addChar_of_value_at_one` is a bijection between continuous additive
   characters `ℤ_[p] → R` and elements of `R` with `‖r‖ < 1`.
 
-## TODO:
+## TODO:
 
 * Show that the above equivalences are homeomorphisms, for appropriate choices of the topology.
 -/
