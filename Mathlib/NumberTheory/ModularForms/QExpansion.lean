@@ -426,11 +426,10 @@ lemma qExpansion_mul {f g : ℍ → ℂ} {s : Set ℂ} (hsO : IsOpen s) (hs : 0 
       (hg.continuousOn.continuousAt ((IsOpen.mem_nhds_iff hsO).mpr hs))
     have := iteratedDerivWithin_mul hs hsO.uniqueDiffOn (n := m + 1)
       (((hf.contDiffWithinAt hs).of_le le_top)) (((hg.contDiffWithinAt hs).of_le le_top))
-    simp_rw [← iteratedDeriv_eq_iteratedDerivWithin (m + 1) _ hsO hs] at this
+    simp_rw [iteratedDerivWithin_of_isOpen (n := m + 1) hsO hs] at this
     conv at this =>
       enter [2,2,n]
-      rw [← iteratedDeriv_eq_iteratedDerivWithin n _ hsO hs,
-        ← iteratedDeriv_eq_iteratedDerivWithin (m + 1 - n) _ hsO hs]
+      rw [iteratedDerivWithin_of_isOpen hsO hs, iteratedDerivWithin_of_isOpen hsO hs]
     simp only [qExpansion_coeff, H, PowerSeries.coeff_mul, this]
     have h0 : ((m + 1)! : ℂ) ≠ 0 := by
       simp [Nat.factorial_ne_zero (m + 1)]
@@ -476,8 +475,8 @@ lemma qExpansion_smul [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) (a : ℂ) (f : F) [ModularFormClass F Γ k] :
     (qExpansion h (a • f)) = (a • qExpansion h f) := by
   ext m
-  simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk,
-    cuspFunction_smul (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, IteratedDeriv_const_smul]
+  simp_rw [_root_.map_smul, smul_eq_mul, qExpansion, PowerSeries.coeff_mk, cuspFunction_smul
+    (analyticAt_cuspFunction_zero f hh hΓ).continuousAt, iteratedDeriv_fun_const_smul]
   grind [Pi.smul_apply, smul_eq_mul]
 
 lemma qExpansion_neg [Γ.HasDetPlusMinusOne] [DiscreteTopology Γ]

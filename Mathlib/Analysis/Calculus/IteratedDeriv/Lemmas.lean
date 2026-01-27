@@ -48,13 +48,6 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     Set.EqOn (iteratedDerivWithin n f s) (iteratedDerivWithin n g s) s :=
   fun _ hx ↦ hfg.eventuallyEq_nhdsWithin.iteratedDerivWithin_eq (hfg hx)
 
-lemma iteratedDeriv_eq_iteratedDerivWithin (n : ℕ) (f : 𝕜 → F) {s : Set 𝕜} (hs : IsOpen s)
-    {z : 𝕜} (hz : z ∈ s) : iteratedDeriv n f z = iteratedDerivWithin n f s z := by
-  simp_rw [← iteratedDerivWithin_univ, iteratedDerivWithin]
-  rw [iteratedFDerivWithin_congr_set]
-  apply Filter.EventuallyEq.symm
-  simpa [Filter.eventuallyEq_univ] using hs.mem_nhds hz
-
 include h hx in
 theorem iteratedDerivWithin_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
@@ -252,6 +245,16 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜
     iteratedDerivWithin_const_smul (Set.mem_univ x) uniqueDiffOn_univ
       c (contDiffWithinAt_univ.mpr h)
 
+lemma iteratedDeriv_fun_const_smul {E : Type*} [NontriviallyNormedField E] [NormedAlgebra 𝕜 E]
+    (a : E) (f : 𝕜 → E) (m : ℕ) : iteratedDeriv m (a • f) = a • iteratedDeriv m f := by
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [iteratedDeriv_succ, iteratedDeriv_succ, hm]
+    ext x
+    rw [@Pi.smul_def]
+    exact deriv_const_smul' a ..
+
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
     iteratedDeriv n (fun z => c * f z) x = c * iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
@@ -362,19 +365,3 @@ lemma iteratedDeriv_comp_const_sub :
     iteratedDeriv_comp_neg n (fun z => f (z + s))
 
 end shift_invariance
-
-section smul
-
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField E] [NormedAlgebra 𝕜 E]
-
-lemma IteratedDeriv_const_smul (a : E) (f : 𝕜 → E) (m : ℕ) :
-    iteratedDeriv m (a • f) = a • iteratedDeriv m f := by
-  induction m with
-  | zero => simp
-  | succ m hm =>
-    rw [iteratedDeriv_succ, iteratedDeriv_succ, hm]
-    ext x
-    rw [@Pi.smul_def]
-    exact deriv_const_smul' a ..
-
-end smul
