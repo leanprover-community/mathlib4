@@ -217,8 +217,8 @@ def proveLE (g : MVarId) : MetaM Unit := do
   let c ← Common.mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do
-      pure (← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₁,
-            ← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₂)
+      pure (← Common.eval ringCompute rcℕ (ringCompute ics) c e₁,
+            ← Common.eval ringCompute rcℕ (ringCompute ics) c e₂)
   match ← evalLE ics ipo sα va vb with
   | .ok p => g.assign q(le_congr $pa $p $pb)
   | .error e =>
@@ -245,8 +245,8 @@ def proveLT (g : MVarId) : MetaM Unit := do
   let c ← Common.mkCache q($ics)
   let (⟨a, va, pa⟩, ⟨b, vb, pb⟩)
     ← AtomM.run .instances do
-      pure (← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₁,
-            ← Common.eval (fun _ _ => ringCompute) rcℕ (ringCompute ics) c e₂)
+      pure (← Common.eval ringCompute rcℕ (ringCompute ics) c e₁,
+            ← Common.eval ringCompute rcℕ (ringCompute ics) c e₂)
   match ← evalLT ics ipo sα va vb with
   | .ok p => g.assign q(lt_congr $pa $p $pb)
   | .error e =>
