@@ -158,7 +158,7 @@ def reorganizeUniverseParams
     unless wildcardKind matches .param _ do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
-    let dependencies := 
+    let dependencies :=
       constLevels.foldr (stop := idx + 1) CollectLevelParams.visitLevel {} |>.params
     -- Remove newParamName from list
     let currentNames := result.filter (· != newParamName)
