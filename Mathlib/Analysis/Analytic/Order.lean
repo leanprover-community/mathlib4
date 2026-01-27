@@ -455,7 +455,7 @@ theorem isClopen_setOf_analyticOrderAt_eq_top (hf : AnalyticOnNhd 𝕜 f U) :
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
-        simp only [mem_compl_iff, mem_setOf_eq]
+        push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
         · rw [(hf _ w.2).analyticOrderAt_eq_zero.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
