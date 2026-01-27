@@ -150,7 +150,7 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   by_cases hj₁ : j = 0
   · simp only [hj₁]
     by_cases hk : 0 = k
-    · simp only [natCast_zero_eq_zero, intervalGapsWithin_zero_fst]
+    · simp only [natCast_zero, intervalGapsWithin_zero_fst]
       simp [show 0 = last k by grind, hab]
     · exact hFab (F.intervalGapsWithin_mapsTo h a b (x := 0) (by grind)) |>.left
   have hk : k - 1 + 1 = k := by omega
