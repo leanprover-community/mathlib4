@@ -189,7 +189,7 @@ lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
   | top =>
     rwa [← MonoidHom.range_eq_map, range_subtype]
   | step A B h_le hSubn hN ih =>
-    apply step (A.map K.subtype) (B.map K.subtype) (map_mono h_le) ih
+    refine step (A.map K.subtype) (B.map K.subtype) (map_mono h_le) ih ?_
     rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
     rw [normal_subgroupOf_iff_le_normalizer (map_mono h_le)]
     exact le_trans (map_mono hN) (le_normalizer_map _)
