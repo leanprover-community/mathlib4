@@ -10,7 +10,7 @@ public import Mathlib.Order.Antisymmetrization
 /-!
 # Comparability and incomparability relations
 
-Two values in a preorder are said to be comparable whenever `a ≤ b` or `b ≤ a`. We define both the
+Two values in a preorder are said to be comparable (`SymmRel`) whenever `a ≤ b` or `b ≤ a`. We define both the
 comparability and incomparability relations.
 
 In a linear order, `SymmGen (· ≤ ·) a b` is always true, and `IncompRel (· ≤ ·) a b` is always
