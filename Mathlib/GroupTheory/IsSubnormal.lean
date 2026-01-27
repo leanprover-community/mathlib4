@@ -33,11 +33,13 @@ attribute [local simp] normal_of_characteristic
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
-Equivalently, `H.IsSubnormal` means that there is a finite chain of subgroups
+
+Equivalently, `H.IsSubnormal` means that there is a chain of subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
 * `H = H₀`,
 * `G = Hₙ`,
-* for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₋₁`.
+* for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₊₁`.
+
 See `IsSubnormal_iff` for this characterisation.
 -/
 inductive IsSubnormal : Subgroup G → Prop where
