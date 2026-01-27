@@ -48,10 +48,10 @@ variable {c₁ c₂ bc}
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
 def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
   mkFanLimit _
-    (fun s ↦ Fan.IsLimit.desc h <| fun i ↦ by
+    (fun s ↦ Fan.IsLimit.lift h <| fun i ↦ by
       cases i
-      · exact Fan.IsLimit.desc h₁ (fun a ↦ s.proj (.inl a))
-      · exact Fan.IsLimit.desc h₂ (fun a ↦ s.proj (.inr a)))
+      · exact Fan.IsLimit.lift h₁ (fun a ↦ s.proj (.inl a))
+      · exact Fan.IsLimit.lift h₂ (fun a ↦ s.proj (.inr a)))
     (fun s w ↦ by
       cases w <;>
       · simp only [fan_mk_proj, combPairHoms]
