@@ -6,6 +6,7 @@ Authors: Filippo A. E. Nuccio
 import Mathlib.Algebra.GroupWithZero.Range
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.MonoidWithZero
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 
@@ -66,6 +67,10 @@ instance : IsOrderedMonoid (ValueGroup₀ f) :=
     <| OrderEmbedding.le_iff_le ValueGroup₀.orderEmbedding'
 
 instance : LinearOrderedCommGroupWithZero (ValueGroup₀ f) where
-  zero_le_one := by simp
+  zero_le := by simp
+  mul_lt_mul_of_pos_left a ha b c hbc := by
+    simp only [← OrderEmbedding.lt_iff_lt ValueGroup₀.orderEmbedding',
+      ValueGroup₀.orderEmbedding'_mul] at *
+    exact (mul_lt_mul_iff_of_pos_left ha).mpr hbc
 
 end MonoidWithZeroHom
