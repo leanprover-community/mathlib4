@@ -6,7 +6,6 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.RingTheory.Jacobson.Radical
-public import Mathlib.RingTheory.Nilpotent.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
