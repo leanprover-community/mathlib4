@@ -49,18 +49,20 @@ is indicated by the syntax.
 
 open Lean Meta Elab Term
 
+public section
 /-- The syntax category for wildcard universe levels -/
 declare_syntax_cat wildcard_level
 /-- The syntax category for comma-separated wildcard universe levels.
 We need this as a separate category to handle the token `,*` as separate `,` and `*`. -/
 declare_syntax_cat comma_wildcard_level
+end
 
 @[nolint docBlame] syntax "*" : wildcard_level
 @[nolint docBlame] syntax ident noWs "*" : wildcard_level
 @[nolint docBlame] syntax level : wildcard_level
 
 @[nolint docBlame] syntax ",*" : comma_wildcard_level
-@[nolint docBlame] syntax ", " wildcard_level : comma_wildcard_level
+@[nolint docBlame] syntax "," wildcard_level : comma_wildcard_level
 
 /--
 Term elaborator for the wildcard universe syntax `Foo.{u₁, u₂, ...}`.
@@ -123,27 +125,33 @@ def elabWildcardUniverses {m : Type → Type} [Monad m] [MonadExceptOf Exception
     | _ => throwUnsupportedSyntax
 
 /--
+Extracts all universe parameter names appearing in a level expression.
+-/
+def Lean.Level.getParams (l : Level) : Array Name :=
+  (Lean.CollectLevelParams.visitLevel l {}).params
+
+/--
 Reorganizes universe parameter names to ensure proper dependency ordering.
 This is used in the implementation of `elabAppWithWildcards`.
 -/
 def reorganizeUniverseParams
-    (levels : Array LevelWildcardKind)
+    (levels : Array (Option LevelWildcardKind))
     (constLevels : Array Level)
     (levelNames : List Name) : List Name := Id.run do
   let mut result := levelNames
   for ((wildcardKind, elaboratedLevel), idx) in (levels.zip constLevels).zipIdx do
     -- Only process param wildcards that elaborated to param levels
-    unless wildcardKind matches (.param _) do continue
+    unless wildcardKind matches some (.param _) do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
-    let dependencies :=
-      constLevels.foldr (stop := idx + 1) CollectLevelParams.visitLevel {} |>.params
-    -- Remove newParamName from list
+    let laterLevels := constLevels.extract (idx + 1) constLevels.size
+    let dependencies := laterLevels.flatMap (·.getParams) |>.filter (· != newParamName)
+    -- Remove newParamName from list (if it already exists)
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
-    let insertPos := currentNames.zipIdx
-      |>.findRev? (fun (name, _) => dependencies.contains name)
-      |>.map (·.2 + 1) |>.getD 0
+    let lastDependencyIdx := currentNames.zipIdx
+      |>.foldl (fun acc (name, idx) => if dependencies.contains name then some idx else acc) none
+    let insertPos := lastDependencyIdx.map (· + 1) |>.getD 0
     result := currentNames.insertIdx insertPos newParamName
   return result
 
@@ -161,12 +169,15 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
 
     -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
-    let mut levels : Array LevelWildcardKind ← elabWildcardUniverses us constInfo.levelParams
-    let mut constLevels : Array Level ← levels.mapM fun
-      | .param baseName => mkFreshLevelParam baseName
-      | .explicit l => elabLevel l
+    let mut levels : Array (Option LevelWildcardKind) :=
+      (← elabWildcardUniverses us constInfo.levelParams).map some
     while levels.size < constInfo.levelParams.length do
-      constLevels := constLevels.push (← mkFreshLevelMVar)
+      levels := levels.push none
+
+    let constLevels : Array Level ← levels.mapM fun
+      | none => mkFreshLevelMVar
+      | some (.param baseName) => mkFreshLevelParam baseName
+      | some (.explicit l) => elabLevel l
 
     -- Create constant expression using Term.mkConst (handles deprecation)
     let fn ← mkConst constName constLevels.toList
@@ -177,7 +188,7 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
       (explicit := expl.isSome) (ellipsis := ellipsis)
 
     -- Instantiate level mvars and reorganize
-    constLevels ← constLevels.mapM instantiateLevelMVars
+    let constLevels ← constLevels.mapM instantiateLevelMVars
     setLevelNames <| reorganizeUniverseParams levels constLevels (← getLevelNames)
 
     return expr
