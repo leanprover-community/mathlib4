@@ -153,7 +153,7 @@ lemma indepFun_of_covariance_inner [InnerProductSpace ℝ E]
   hXY.indepFun_of_covariance_strongDual mX mY fun s t L₁ L₂ ↦ by
     simpa using h s t ((toDual ℝ E).symm L₁) ((toDual ℝ E).symm L₂)
 
-/-- Two Gaussian process $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
+/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
 are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
 lemma indepFun_of_covariance_eq_zero {X : S → Ω → ℝ} {Y : T → Ω → ℝ}
     (hXY : IsGaussianProcess (Sum.elim X Y) P) (mX : ∀ s, Measurable (X s))
