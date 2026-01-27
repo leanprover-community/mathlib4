@@ -45,6 +45,10 @@ variable (X : Type*) (y : ULift.{0} X)
 
 The elaborator automatically reorganizes universe parameters to ensure the ordering matches what
 is indicated by the syntax.
+
+## Projects
+
+- Add support for nested wildcard levels, e.g. `Category.{* + 1}`.
 -/
 
 open Lean Meta Elab Term
@@ -81,6 +85,7 @@ Represents the kind of wildcard universe parameter.
 inductive LevelWildcardKind where
   | param (baseName : Name)
   | explicit (l : TSyntax `level)
+  | mvar
 
 meta section
 
@@ -130,16 +135,33 @@ def Lean.Level.getParams (l : Level) : Array Name :=
 
 /--
 Reorganizes universe parameter names to ensure proper dependency ordering.
+
+Algorithm:
+* Iterate over universe arguments from left to right.
+* Only act on arguments that were written as a wildcard parameter (`*` or `name*`)
+  and actually elaborated to a `Level.param`.
+* For such a parameter name `p` at index `i`, compute `dependencies` as the set of
+  level parameter names appearing in the *later* universe arguments
+  `constLevels[i+1..]` (excluding `p` itself).
+* Remove `p` from the current list (if present), then insert it immediately after
+  the last occurrence of any name in `dependencies`. If no dependency occurs in
+  the list, insert `p` at the front.
+
+This only reorders parameter names introduced by wildcards; explicit levels and
+level mvars are ignored. The result keeps any parameters used by later arguments
+before the freshly introduced wildcard parameter, which matches the dependency
+ordering implied by the application.
+
 This is used in the implementation of `elabAppWithWildcards`.
 -/
 def reorganizeUniverseParams
-    (levels : Array (Option LevelWildcardKind))
+    (levels : Array LevelWildcardKind)
     (constLevels : Array Level)
     (levelNames : List Name) : List Name := Id.run do
   let mut result := levelNames
   for ((wildcardKind, elaboratedLevel), idx) in (levels.zip constLevels).zipIdx do
     -- Only process param wildcards that elaborated to param levels
-    unless wildcardKind matches some (.param _) do continue
+    unless wildcardKind matches .param _ do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
     let laterLevels := constLevels.extract (idx + 1) constLevels.size
@@ -167,15 +189,14 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
 
     -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
-    let mut levels : Array (Option LevelWildcardKind) :=
-      (← elabWildcardUniverses us constInfo.levelParams).map some
+    let mut levels : Array LevelWildcardKind ← elabWildcardUniverses us constInfo.levelParams
     while levels.size < constInfo.levelParams.length do
-      levels := levels.push none
+      levels := levels.push .mvar
 
     let constLevels : Array Level ← levels.mapM fun
-      | none => mkFreshLevelMVar
-      | some (.param baseName) => mkFreshLevelParam baseName
-      | some (.explicit l) => elabLevel l
+      | .mvar => mkFreshLevelMVar
+      | .param baseName => mkFreshLevelParam baseName
+      | .explicit l => elabLevel l
 
     -- Create constant expression using Term.mkConst (handles deprecation)
     let fn ← mkConst constName constLevels.toList
