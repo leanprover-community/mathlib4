@@ -183,6 +183,19 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     G.Reachable u v := by
   rw [Subsingleton.allEq u v]
 
+lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
+  rintro ⟨_ | @⟨u, x, v, hadj, w'⟩⟩
+  · contradiction
+  · have : 0 < G.degree u := (G.degree_pos_iff_exists_adj u).mpr ⟨x, hadj⟩
+    rw [hu] at this
+    contradiction
+
+lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
+    (huv : u ≠ v) (hu : G.degree v = 0) : ¬G.Reachable u v := by
+  rw [reachable_comm]
+  exact not_reachable_of_left_degree_zero huv.symm hu
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
