@@ -264,27 +264,23 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 /-! Exactness properties of the exterior power functor. -/
 
-variable {K E F : Type*} [Field K] [AddCommGroup E] [Module K E] [AddCommGroup F] [Module K F]
-
 /-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
-lemma map_injective {f : M →ₗ[R] N} (hf : ∃ (g : N →ₗ[R] M), g.comp f = LinearMap.id) :
-    Function.Injective (map n f) :=
-  let ⟨g, hgf⟩ := hf
-  Function.RightInverse.injective (g := map n g)
-    (fun _ ↦ by rw [← LinearMap.comp_apply, ← map_comp, hgf, map_id, LinearMap.id_coe, id_eq])
+lemma map_injective {f : M →ₗ[R] N} (g : N →ₗ[R] M) (hg : g ∘ₗ f = .id) :
+    Injective (map n f) :=
+  RightInverse.injective (g := map n g)
+    (fun _ ↦ by rw [← LinearMap.comp_apply, ← map_comp, hg, map_id, LinearMap.id_coe, id_eq])
 
 /-- If the base ring is a field, then any injective linear map induces an injective map on
 exterior powers. -/
-lemma map_injective_field {f : E →ₗ[K] F} (hf : LinearMap.ker f = ⊥) :
-    Function.Injective (map n f) :=
-  map_injective (LinearMap.exists_leftInverse_of_injective f hf)
+lemma map_injective_field {K : Type*} [Field K] [Module K M] [Module K N]
+    {f : M →ₗ[K] N} (hf : Injective f) :
+    Injective (map n f) :=
+  map_injective _ (f.exists_leftInverse_of_injective (LinearMap.ker_eq_bot.mpr hf)).choose_spec
 
 /-- If a linear map is surjective, then the map it induces on exterior powers is surjective. -/
-lemma map_surjective {f : M →ₗ[R] N} (hf : Function.Surjective f) :
-    Function.Surjective (map n f) := by
-  rw [← LinearMap.range_eq_top]
-  conv_lhs => rw [LinearMap.range_eq_map]
-  rw [← ιMulti_span, ← ιMulti_span,
+lemma map_surjective {f : M →ₗ[R] N} (hf : Surjective f) :
+    Surjective (map n f) := by
+  rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, ← ιMulti_span, ← ιMulti_span,
     Submodule.map_span, ← Set.range_comp, ← LinearMap.coe_compAlternatingMap, map_comp_ιMulti,
     AlternatingMap.coe_compLinearMap, Set.range_comp]
   conv_rhs => rw [← Set.image_univ]
