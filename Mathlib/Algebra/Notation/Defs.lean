@@ -8,7 +8,6 @@ module
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
 public import Mathlib.Tactic.ToAdditive
-public import Mathlib.Util.AssertExists
 
 /-!
 # Typeclasses for algebraic operations
@@ -168,7 +167,7 @@ end ite
 
 variable {α : Type u}
 
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
+@[to_additive]
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 
 @[to_additive]

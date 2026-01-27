@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-public import Mathlib.Tactic.FinCases
 
 /-!
 # Affine combinations of points

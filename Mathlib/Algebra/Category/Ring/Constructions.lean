@@ -8,9 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`

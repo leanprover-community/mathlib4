@@ -184,7 +184,7 @@ variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 
 This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
-  smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
+  smul a S := S.map (DistribSMul.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
   mul_smul _a₁ _a₂ S :=
@@ -230,6 +230,11 @@ theorem smul_bot' (a : α) : a • (⊥ : Submodule R M) = ⊥ :=
 /-- See also `Submodule.smul_sup`. -/
 theorem smul_sup' (a : α) (S T : Submodule R M) : a • (S ⊔ T) = a • S ⊔ a • T :=
   map_sup _ _ _
+
+/-- See also `Submodule.smul_iSup`. -/
+theorem smul_iSup' (a : α) {ι : Sort*} (f : ι → Submodule R M) :
+    a • ⨆ i, f i = ⨆ i, a • f i :=
+  map_iSup _ _
 
 theorem smul_span (a : α) (s : Set M) : a • span R s = span R (a • s) :=
   map_span _ _
@@ -414,7 +419,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
 lemma set_smul_eq_map [SMulCommClass R R N] :
     sR • N =
     Submodule.map
-      (N.subtype.comp (Finsupp.lsum R <| DistribMulAction.toLinearMap _ _))
+      (N.subtype.comp (Finsupp.lsum R <| DistribSMul.toLinearMap _ _))
       (Finsupp.supported N R sR) := by
   classical
   apply set_smul_eq_of_le
@@ -495,7 +500,7 @@ lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → 
     p x (by rwa [← Submodule.singleton_set_smul])
   refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
       (fun r n hr hn ↦ ?_) smul₁ add zero
-  · simp only [Set.mem_singleton_iff] at hr
+  · push _ ∈ _ at hr
     subst hr
     exact smul₀ n hn
 
