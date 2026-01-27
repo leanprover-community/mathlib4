@@ -213,6 +213,13 @@ theorem coeFnAddMonoidHom_injective : Function.Injective (coeFnAddMonoidHom 𝕜
 
 variable {𝕜 E}
 
+theorem coe_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : ⇑(∑ i ∈ s, p i) = ∑ i ∈ s, ⇑(p i) :=
+  map_sum (coeFnAddMonoidHom 𝕜 E) _ _
+
+@[simp]
+theorem sum_apply (p : ι → Seminorm 𝕜 E) (s : Finset ι) : (∑ i ∈ s, p i) x = ∑ i ∈ s, p i x := by
+  rw [coe_sum, Finset.sum_apply]
+
 instance instDistribMulAction [Monoid R] [DistribMulAction R ℝ] [SMul R ℝ≥0]
     [IsScalarTower R ℝ≥0 ℝ] : DistribMulAction R (Seminorm 𝕜 E) :=
   (coeFnAddMonoidHom_injective 𝕜 E).distribMulAction _ (by intros; rfl)
@@ -1048,6 +1055,14 @@ section Continuity
 variable [NontriviallyNormedField 𝕜] [SeminormedRing 𝕝] [AddCommGroup E] [Module 𝕜 E]
 variable [Module 𝕝 E]
 
+@[fun_prop]
+protected theorem continuous_finset_sum [TopologicalSpace E]
+    {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
+    Continuous (∑ i ∈ s, p i : Seminorm 𝕝 E) := by
+  suffices Continuous fun x ↦ ∑ i ∈ s, p i x from this.congr (fun x ↦ by simp)
+  exact continuous_finset_sum _ hcont
+
+@[fun_prop]
 theorem continuous_finset_sup [TopologicalSpace E]
     {p : ι → Seminorm 𝕝 E} {s : Finset ι} (hcont : ∀ i ∈ s, Continuous (p i)) :
     Continuous (s.sup p : Seminorm 𝕝 E) := by

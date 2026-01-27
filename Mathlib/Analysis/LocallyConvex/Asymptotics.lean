@@ -21,7 +21,6 @@ variable {ι κ α 𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
-
 namespace PolynormableSpace
 
 variable [PolynormableSpace 𝕜 E] [PolynormableSpace 𝕜 F]
@@ -106,31 +105,36 @@ namespace WithSeminorms
 
 variable {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 F κ}
 
-theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
-    f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, ∃ C : ℝ≥0, p i ∘ f ≤ᶠ[l] ((C • s.sup q) ∘ g) := by
+theorem isBigOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace 𝕜 F] :
+    f =O[𝕜; l] g ↔ ∀ i : ι, ∃ q : Seminorm 𝕜 F, Continuous q ∧ p i ∘ f ≤ᶠ[l] (q ∘ g) := by
   have := hp.toPolynormableSpace
-  have := hq.toPolynormableSpace
   rw [PolynormableSpace.isBigOTVS_iff_le]
   constructor <;> intro H
-  · intro i
-    obtain ⟨r, r_cont, hr⟩ := H (p i) (hp.continuous_seminorm i)
-    obtain ⟨s, C, -, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
-    exact ⟨s, C, hr.mono fun x hx ↦ hx.trans (hC _)⟩
+  · exact fun i ↦ H (p i) (hp.continuous_seminorm i)
   · intro r r_cont
-    refine Seminorm.induction_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
-    · intro i
-      obtain ⟨s, C, hC⟩ := H i
-      refine ⟨_, ?_, hC⟩
-      exact (Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i).const_smul _
+    refine Seminorm.induction_add_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
+    · assumption
     · exact ⟨0, continuous_zero, .rfl⟩
-    · rintro r₁ r₂ ⟨s₁, s₁_cont, h₁⟩ ⟨s₂, s₂_cont, h₂⟩
-      use s₁ ⊔ s₂, by fun_prop
-      filter_upwards [h₁, h₂] with x h₁ h₂ using sup_le_sup h₁ h₂
-    · rintro r₁ r₂ h ⟨s, s_cont, hs⟩
-      exact ⟨s, s_cont, hs.mono fun x ↦ (h _).trans⟩
-    · rintro r C ⟨s, s_cont, hs⟩
-      refine ⟨C • s, s_cont.const_smul _, hs.mono fun x hx ↦ ?_⟩
-      apply _root_.smul_le_smul le_rfl hx <;> simp
+    · rintro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
+      use q₁ + q₂, q₁_cont.add q₂_cont
+      filter_upwards [hq₁, hq₂] with x using add_le_add
+    · rintro r₁ r₂ h ⟨q, q_cont, hq⟩
+      exact ⟨q, q_cont, hq.mono fun x hx ↦ (h _).trans hx⟩
+    · rintro r C ⟨q, q_cont, hq⟩
+      exact ⟨C • q, q_cont.const_smul _, hq.mono fun x hx ↦ (smul_le_smul_of_nonneg_left hx C.2)⟩
+
+theorem isBigOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
+    f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, ∃ C : ℝ≥0, p i ∘ f ≤ᶠ[l] ((C • s.sup q) ∘ g) := by
+  have := hq.toPolynormableSpace
+  rw [hp.isBigOTVS_iff_le_continuous]
+  congrm ∀ i, ?_
+  constructor
+  · rintro ⟨r, r_cont, hr⟩
+    obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
+    exact ⟨s, C, hr.mono fun x hx ↦ hx.trans (hC _)⟩
+  · rintro ⟨s, C, hC⟩
+    use C • s.sup q
+    use (Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i).const_smul _
 
 theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =O[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =O[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
@@ -145,35 +149,43 @@ theorem isBigOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     refine ⟨C.toNNReal, ?_⟩
     simpa [NNReal.smul_def, C_pos.le]
 
+theorem isLittleOTVS_iff_le_continuous (hp : WithSeminorms p) [PolynormableSpace 𝕜 F] :
+    f =o[𝕜; l] g ↔
+      ∀ i : ι, ∃ q : Seminorm 𝕜 F, Continuous q ∧
+        ∀ ε : ℝ≥0, ε ≠ 0 → p i ∘ f ≤ᶠ[l] ((ε • q) ∘ g) := by
+  have := hp.toPolynormableSpace
+  rw [PolynormableSpace.isLittleOTVS_iff_le]
+  constructor <;> intro H
+  · exact fun i ↦ H (p i) (hp.continuous_seminorm i)
+  · intro r r_cont
+    refine Seminorm.induction_add_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
+    · assumption
+    · exact ⟨0, continuous_zero, fun _ _ ↦ by simpa using .rfl⟩
+    · rintro r₁ r₂ ⟨q₁, q₁_cont, hq₁⟩ ⟨q₂, q₂_cont, hq₂⟩
+      refine ⟨q₁ + q₂, q₁_cont.add q₂_cont, fun ε ε_ne ↦ ?_⟩
+      filter_upwards [hq₁ ε ε_ne, hq₂ ε ε_ne] with x hx₁ hx₂
+      simpa using add_le_add hx₁ hx₂
+    · rintro r₁ r₂ h ⟨q, q_cont, hq⟩
+      exact ⟨q, q_cont, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ (h _).trans hx⟩
+    · rintro r C ⟨q, q_cont, hq⟩
+      refine ⟨C • q, q_cont.const_smul _, fun ε ε_ne ↦ (hq ε ε_ne).mono fun x hx ↦ ?_⟩
+      rw [smul_comm]
+      exact smul_le_smul_of_nonneg_left hx C.2
+
 theorem isLittleOTVS_iff_le (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔
       ∀ i : ι, ∃ s : Finset κ, ∀ ε : ℝ≥0, ε ≠ 0 → p i ∘ f ≤ᶠ[l] ((ε • s.sup q) ∘ g) := by
-  have := hp.toPolynormableSpace
   have := hq.toPolynormableSpace
-  rw [PolynormableSpace.isLittleOTVS_iff_le]
-  constructor <;> intro H
-  · intro i
-    obtain ⟨r, r_cont, hr⟩ := H (p i) (hp.continuous_seminorm i)
+  rw [hp.isLittleOTVS_iff_le_continuous]
+  congrm ∀ i, ?_
+  constructor
+  · rintro ⟨r, r_cont, hr⟩
     obtain ⟨s, C, C_ne, hC⟩ := Seminorm.bound_of_continuous hq r r_cont
-    refine ⟨s, fun ε ε_pos ↦ (hr (ε/C) (by positivity)).mono fun x hx ↦ ?_⟩
+    refine ⟨s, fun ε ε_ne ↦ (hr (ε/C) (by positivity)).mono fun x hx ↦ ?_⟩
     simp only [Function.comp_apply, Seminorm.le_def, Seminorm.smul_apply] at hx hC ⊢
     grw [hx, hC _, ← mul_smul, div_mul_cancel₀ _ C_ne]
-  · intro r r_cont
-    refine Seminorm.induction_of_continuous hp ?_ ?_ ?_ ?_ ?_ r_cont
-    · intro i
-      obtain ⟨s, hs⟩ := H i
-      exact ⟨_, Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i, hs⟩
-    · exact ⟨0, continuous_zero, fun _ _ ↦ by simpa using .rfl⟩
-    · rintro r₁ r₂ ⟨s₁, s₁_cont, h₁⟩ ⟨s₂, s₂_cont, h₂⟩
-      refine ⟨s₁ ⊔ s₂, by fun_prop, fun ε ε_ne ↦ ?_⟩
-      rw [Seminorm.smul_sup]
-      filter_upwards [h₁ ε ε_ne, h₂ ε ε_ne] with x h₁ h₂ using sup_le_sup h₁ h₂
-    · rintro r₁ r₂ h ⟨s, s_cont, hs⟩
-      exact ⟨s, s_cont, fun ε ε_pos ↦ (hs ε ε_pos).mono fun x ↦ (h _).trans⟩
-    · rintro r C ⟨s, s_cont, hs⟩
-      refine ⟨C • s, s_cont.const_smul _, fun ε ε_pos ↦ (hs ε ε_pos).mono fun x hx ↦ ?_⟩
-      rw [smul_comm]
-      exact _root_.smul_le_smul le_rfl hx (by positivity) (apply_nonneg _ _)
+  · rintro ⟨s, hs⟩
+    use s.sup q, Seminorm.continuous_finset_sup fun i _ ↦ hq.continuous_seminorm i
 
 theorem isLittleOTVS_iff (hp : WithSeminorms p) (hq : WithSeminorms q) :
     f =o[𝕜; l] g ↔ ∀ i : ι, ∃ s : Finset κ, (p i ∘ f) =o[l] ((s.sup q : Seminorm 𝕜 F) ∘ g) := by
