@@ -133,7 +133,7 @@ Reorganizes universe parameter names to ensure proper dependency ordering.
 This is used in the implementation of `elabAppWithWildcards`.
 -/
 def reorganizeUniverseParams
-    (levels : Array (Option LevelWildcardKind))
+    (levels : Array LevelWildcardKind)
     (constLevels : Array Level)
     (levelNames : List Name) : List Name := Id.run do
   let mut result := levelNames
@@ -142,14 +142,14 @@ def reorganizeUniverseParams
     unless wildcardKind matches some (.param _) do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
-    let laterLevels := constLevels.extract (idx + 1) constLevels.size
-    let dependencies := laterLevels.flatMap (·.getParams) |>.filter (· != newParamName)
-    -- Remove newParamName from list (if it already exists)
+    let dependencies :=
+      constLevels.foldr (stop := idx + 1) CollectLevelParams.visitLevel {} |>.params
+    -- Remove newParamName from list
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
-    let lastDependencyIdx := currentNames.zipIdx
-      |>.foldl (fun acc (name, idx) => if dependencies.contains name then some idx else acc) none
-    let insertPos := lastDependencyIdx.map (· + 1) |>.getD 0
+    let insertPos := currentNames.zipIdx
+      |>.findRev? (fun (name, _) => dependencies.contains name)
+      |>.map (·.2 + 1) |>.getD 0
     result := currentNames.insertIdx insertPos newParamName
   return result
 
@@ -167,15 +167,12 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
 
     -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
-    let mut levels : Array (Option LevelWildcardKind) :=
-      (← elabWildcardUniverses us constInfo.levelParams).map some
-    while levels.size < constInfo.levelParams.length do
-      levels := levels.push none
-
+    let mut levels : Array LevelWildcardKind ← elabWildcardUniverses us constInfo.levelParams
     let constLevels : Array Level ← levels.mapM fun
-      | none => mkFreshLevelMVar
-      | some (.param baseName) => mkFreshLevelParam baseName
-      | some (.explicit l) => elabLevel l
+      | .param baseName => mkFreshLevelParam baseName
+      | .explicit l => elabLevel l
+    while levels.size < constInfo.levelParams.length do
+      constLevels := constLevels.push (← mkFreshLevelMVar)
 
     -- Create constant expression using Term.mkConst (handles deprecation)
     let fn ← mkConst constName constLevels.toList
