@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finsupp.Antidiagonal
 public import Mathlib.Data.Finsupp.Order
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Algebra.Group.TypeTags.Pointwise
 
 /-! # weights of Finsupp functions
 
@@ -267,18 +268,6 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R]
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
 
-open scoped Pointwise in
-lemma smul_range_single_one (σ : Type*) (n : ℕ) :
-    n • Set.range (single · 1) = degree (σ := σ) ⁻¹' {n} := by
-  induction n with
-  | zero => aesop (add simp degree_eq_zero_iff)
-  | succ n IH =>
-    simp only [succ_nsmul, IH, Set.ext_iff, Set.mem_add]
-    refine fun f ↦ ⟨by aesop, fun H ↦ ?_⟩
-    obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
-    have := le_iff_exists_add'.mp (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
-    aesop
-
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by
   induction n with
@@ -303,5 +292,43 @@ lemma degree_preimage_nsmul {σ : Type*} (s : Set ℕ) (n : ℕ) (hn : n ≠ 0) 
     degree (σ := σ) ⁻¹' (n • s) = n • degree (σ := σ) ⁻¹' s := by
   obtain (_ | n) := n; · contradiction
   induction n <;> simp_all [succ_nsmul, degree_preimage_add]
+
+open scoped Pointwise in
+lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
+    n • (single · 1) '' s = {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by
+  classical
+  induction n with
+  | zero => aesop (add simp degree_eq_zero_iff)
+  | succ n ih =>
+    simp only [succ_nsmul, ih, Set.ext_iff, Set.mem_add, Set.mem_setOf_eq, Set.mem_image,
+      exists_exists_and_eq_and]
+    refine fun f ↦ ⟨fun ⟨x, ⟨x_deg, x_supp⟩, ⟨c, c_in, hc⟩⟩ ↦ ⟨?_, ?_⟩, fun ⟨f_deg, f_supp⟩ ↦ ?_⟩
+    · rw [← hc, map_add, x_deg, degree_single]
+    · rw [← hc]; trans ↑(x.support ∪ (single c 1).support)
+      · rw [SetLike.coe_subset_coe, Finset.le_iff_subset]
+        exact support_add
+      rw [Finset.coe_union, Set.union_subset_iff]
+      exact ⟨x_supp, by simpa [support_single_ne_zero]⟩
+    obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
+    obtain ⟨x, hx⟩ := le_iff_exists_add'.mp (show single i 1 ≤ f by
+      simpa [Nat.one_le_iff_ne_zero] using hi)
+    use x; split_ands
+    · aesop
+    · trans ↑f.support
+      · simpa [hx, SetLike.coe_subset_coe, Finset.le_eq_subset] using support_mono le_self_add
+      exact f_supp
+    exact ⟨i, ⟨f_supp (Finset.mem_coe.mpr hi) , hx.symm⟩⟩
+
+open scoped Pointwise in
+theorem image_pow_eq_image_finsupp_prod {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
+    (f '' s) ^ n = (·.prod (f · ^ ·)) '' {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by
+  classical
+  suffices ∀ (s : Set (α →₀ ℕ)), ((·.prod (f · ^ ·)) '' s) ^ n = (·.prod (f · ^ ·)) '' (n • s) by
+    simp [← nsmul_single_one_image, ← this, Set.image_image]
+  intro s
+  refine (Set.image_pow (⟨⟨(·.prod (f · ^ ·)) ∘ Multiplicative.toAdd, by simp⟩,
+    by simp [Finsupp.prod_add_index, pow_add]⟩ : Multiplicative (α →₀ ℕ) →* β) _ _).symm.trans ?_
+  simp [-Function.comp_apply, Set.image_comp, show Multiplicative.toAdd '' s = s from
+    Set.image_id _]
 
 end Finsupp
