@@ -11,14 +11,77 @@ open CategoryTheory Limits Functor
 
 namespace CategoryTheory.Adjunction
 
-variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-    [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
+private lemma aux {C : Type u₁} {D : Type u₂} [Category.{w} C] [Category.{w} D]
+    (R : C ⥤ D) [IsLocallyPresentable.{w} C] [IsLocallyPresentable.{w} D]
+    [IsAccessible.{w} R] [PreservesLimitsOfSize.{w, w} R]
+    [HasLimits C] : R.IsRightAdjoint := by
+  refine isRightAdjoint_of_preservesLimits_of_solutionSetCondition _ fun A ↦ ?_
+  obtain ⟨κ₁, _, ⟨h⟩⟩ := IsAccessible.exists_cardinal (F := R)
+  obtain ⟨κ₀₁, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
+  obtain ⟨κ₀₂, _, h₂⟩ := IsLocallyPresentable.exists_cardinal (C := D)
+  obtain ⟨κ₀, _, hC, hD⟩ : ∃ (κ₀ : Cardinal.{w}) (_ : Fact κ₀.IsRegular),
+      IsCardinalLocallyPresentable C κ₀ ∧ IsCardinalLocallyPresentable D κ₀ := by
+    have : Fact (κ₀₁ ⊔ κ₀₂).IsRegular := ⟨iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out)⟩
+    have h₀₁ : κ₀₁ ≤ κ₀₁ ⊔ κ₀₂ := by simp
+    have h₀₂ : κ₀₂ ≤ κ₀₁ ⊔ κ₀₂ := by simp
+    refine ⟨κ₀₁ ⊔ κ₀₂, inferInstance, .of_le _ h₀₁, .of_le _ h₀₂⟩
+  obtain ⟨P, _, ⟨le, h⟩⟩ := hD.1
+  obtain ⟨J, _, cf, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h A
+  obtain ⟨κ', hκ', lt⟩ := HasCardinalLT.exists_regular_cardinal (Arrow J)
+  obtain ⟨κ, _, h₀, h₁, ⟨_⟩⟩ : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), κ₀ ≤ κ ∧ κ₁ ≤ κ ∧
+      isCardinalPresentable D κ A := by
+    have : Fact (κ₀ ⊔ κ₁ ⊔ κ').IsRegular :=
+      ⟨iteInduction (fun a ↦ hκ') (fun a ↦ iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out))⟩
+    have hκ₀ : κ₀ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
+    have hκ₁ : κ₁ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
+    have (k : J) : IsCardinalPresentable (diag.obj k) (κ₀ ⊔ κ₁ ⊔ κ') := by
+      have := le _ (hx k)
+      dsimp [isCardinalPresentable] at this
+      apply isCardinalPresentable_of_le _ hκ₀
+    exact ⟨κ₀ ⊔ κ₁ ⊔ κ', inferInstance, hκ₀, hκ₁,
+      isCardinalPresentable_of_isColimit _ hc _ (lt.of_le (by simp))⟩
+  obtain ⟨P, _, ⟨_, h⟩⟩ := (IsCardinalLocallyPresentable.of_le C h₀).1
+  obtain ⟨Q, _, _, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
+  refine ⟨(X : Shrink (Subtype Q)) × (A ⟶ R.obj ((equivShrink (Subtype Q)).symm X).val),
+    fun X ↦ ((equivShrink _).symm X.fst).val, fun X ↦ X.snd, fun X f ↦ ?_⟩
+  obtain ⟨J, _, _, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h X
+  have : IsCardinalFiltered J κ₁ := IsCardinalFiltered.of_le J h₁
+  replace hc := isColimitOfPreserves (coyoneda.obj ⟨A⟩) (isColimitOfPreserves R hc)
+  obtain ⟨j, hj, w⟩ := Types.jointly_surjective_of_isColimit hc f
+  obtain ⟨d, hd, ⟨i⟩⟩ := hPQ _ (hx j)
+  exact ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
+    eqToHom (by simp) ≫ i.inv ≫ ι.app _, by simp [← w]⟩
+
+-- there is a stronger result (depending on some fairly hard sorries) at the bottom of the file
+instance {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
+    (R : C ⥤ D) [IsLocallyPresentable.{w} C] [IsLocallyPresentable.{w} D]
+    [IsAccessible.{w} R] [PreservesLimitsOfSize.{w, w} R]
+    [HasLimitsOfSize.{w, w} C] : R.IsRightAdjoint := by
+  obtain ⟨κC, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
+  obtain ⟨κD, _, h₂⟩ := IsLocallyPresentable.exists_cardinal (C := D)
+  obtain ⟨κR, _, h₃⟩ := IsAccessible.exists_cardinal (F := R)
+  let R' := (ShrinkHoms.equivalence.{w} C).symm.functor ⋙ R ⋙ (ShrinkHoms.equivalence.{w} D).functor
+  have : IsLocallyPresentable.{w} (ShrinkHoms C) :=
+    ⟨κC, inferInstance, (ShrinkHoms.equivalence.{w} C).isCardinalLocallyPresentable _⟩
+  have : IsLocallyPresentable.{w} (ShrinkHoms D) :=
+    ⟨κD, inferInstance, (ShrinkHoms.equivalence.{w} D).isCardinalLocallyPresentable _⟩
+  have : IsAccessible.{w} R' := ⟨κR, inferInstance, inferInstance⟩
+  have : HasLimits (ShrinkHoms C) :=
+    has_limits_of_equivalence (ShrinkHoms.equivalence.{w} C).inverse
+  have : IsRightAdjoint R' := by apply aux
+  let i : R ≅ (ShrinkHoms.equivalence.{w} C).functor ⋙ R' ⋙
+      (ShrinkHoms.equivalence.{w} D).inverse :=
+    .isoCompInverse <| .isoInverseComp (.refl _ : _ ≅ R')
+  exact isRightAdjoint_of_iso i.symm
 
 lemma nonempty_of_isCardinalFiltered {J : Type*} [Category* J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hJ : IsCardinalFiltered J κ) : Nonempty J := by
   obtain ⟨c⟩ := hJ.1 (Functor.empty _) <| hasCardinalLT_of_finite _ _
     (Cardinal.IsRegular.aleph0_le Fact.out)
   exact ⟨c.pt⟩
+
+variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
+    [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
 instance (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F] [IsAccessible.{w} G] :
     IsAccessible.{w} (F ⋙ G) where
@@ -119,63 +182,21 @@ lemma solutionSetCondition_of_isAccessible (R : C ⥤ D) [IsAccessible.{w} R] :
   refine ⟨equivShrink _ ⟨x, qx⟩, eqToHom (by simp) ≫ ix.inv.right ≫ (ι.app _).right, ?_⟩
   simp [← Category.assoc, eqToHom_map, ← CommaMorphism.w, CA]
 
-private lemma aux {C : Type u₁} {D : Type u₂} [Category.{w} C] [Category.{w} D]
-    (R : C ⥤ D) [IsLocallyPresentable.{w} C] [IsLocallyPresentable.{w} D]
-    [IsAccessible.{w} R] [PreservesLimitsOfSize.{w, w} R]
-    [HasLimits C] : R.IsRightAdjoint := by
-  refine isRightAdjoint_of_preservesLimits_of_solutionSetCondition _ fun A ↦ ?_
-  obtain ⟨κ₁, _, ⟨h⟩⟩ := IsAccessible.exists_cardinal (F := R)
-  obtain ⟨κ₀₁, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
-  obtain ⟨κ₀₂, _, h₂⟩ := IsLocallyPresentable.exists_cardinal (C := D)
-  obtain ⟨κ₀, _, hC, hD⟩ : ∃ (κ₀ : Cardinal.{w}) (_ : Fact κ₀.IsRegular),
-      IsCardinalLocallyPresentable C κ₀ ∧ IsCardinalLocallyPresentable D κ₀ := by
-    have : Fact (κ₀₁ ⊔ κ₀₂).IsRegular := ⟨iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out)⟩
-    have h₀₁ : κ₀₁ ≤ κ₀₁ ⊔ κ₀₂ := by simp
-    have h₀₂ : κ₀₂ ≤ κ₀₁ ⊔ κ₀₂ := by simp
-    refine ⟨κ₀₁ ⊔ κ₀₂, inferInstance, .of_le _ h₀₁, .of_le _ h₀₂⟩
-  obtain ⟨P, _, ⟨le, h⟩⟩ := hD.1
-  obtain ⟨J, _, cf, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h A
-  obtain ⟨κ', hκ', lt⟩ := HasCardinalLT.exists_regular_cardinal (Arrow J)
-  obtain ⟨κ, _, h₀, h₁, ⟨_⟩⟩ : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), κ₀ ≤ κ ∧ κ₁ ≤ κ ∧
-      isCardinalPresentable D κ A := by
-    have : Fact (κ₀ ⊔ κ₁ ⊔ κ').IsRegular :=
-      ⟨iteInduction (fun a ↦ hκ') (fun a ↦ iteInduction (fun a ↦ Fact.out) (fun a ↦ Fact.out))⟩
-    have hκ₀ : κ₀ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
-    have hκ₁ : κ₁ ≤ κ₀ ⊔ κ₁ ⊔ κ' := by simp
-    have (k : J) : IsCardinalPresentable (diag.obj k) (κ₀ ⊔ κ₁ ⊔ κ') := by
-      have := le _ (hx k)
-      dsimp [isCardinalPresentable] at this
-      apply isCardinalPresentable_of_le _ hκ₀
-    exact ⟨κ₀ ⊔ κ₁ ⊔ κ', inferInstance, hκ₀, hκ₁,
-      isCardinalPresentable_of_isColimit _ hc _ (lt.of_le (by simp))⟩
-  obtain ⟨P, _, ⟨_, h⟩⟩ := (IsCardinalLocallyPresentable.of_le C h₀).1
-  obtain ⟨Q, _, _, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
-  refine ⟨(X : Shrink (Subtype Q)) × (A ⟶ R.obj ((equivShrink (Subtype Q)).symm X).val),
-    fun X ↦ ((equivShrink _).symm X.fst).val, fun X ↦ X.snd, fun X f ↦ ?_⟩
-  obtain ⟨J, _, _, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := h X
-  have : IsCardinalFiltered J κ₁ := IsCardinalFiltered.of_le J h₁
-  replace hc := isColimitOfPreserves (coyoneda.obj ⟨A⟩) (isColimitOfPreserves R hc)
-  obtain ⟨j, hj, w⟩ := Types.jointly_surjective_of_isColimit hc f
-  obtain ⟨d, hd, ⟨i⟩⟩ := hPQ _ (hx j)
-  exact ⟨⟨equivShrink _ ⟨d, hd⟩, hj ≫ R.map i.hom ≫ R.map (eqToHom (by simp))⟩,
-    eqToHom (by simp) ≫ i.inv ≫ ι.app _, by simp [← w]⟩
+private lemma aux' {C : Type u₁} {D : Type u₂} [Category.{w} C] [Category.{w} D]
+    (R : C ⥤ D) [IsAccessible.{w} R] [PreservesLimits R] [HasLimits C] : R.IsRightAdjoint := by
+  exact isRightAdjoint_of_preservesLimits_of_solutionSetCondition _
+    (solutionSetCondition_of_isAccessible R)
 
 instance {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
-    (R : C ⥤ D) [IsLocallyPresentable.{w} C] [IsLocallyPresentable.{w} D]
+    (R : C ⥤ D) [LocallySmall.{w} C] [LocallySmall.{w} D]
     [IsAccessible.{w} R] [PreservesLimitsOfSize.{w, w} R]
     [HasLimitsOfSize.{w, w} C] : R.IsRightAdjoint := by
-  obtain ⟨κC, _, h₁⟩ := IsLocallyPresentable.exists_cardinal (C := C)
-  obtain ⟨κD, _, h₂⟩ := IsLocallyPresentable.exists_cardinal (C := D)
   obtain ⟨κR, _, h₃⟩ := IsAccessible.exists_cardinal (F := R)
   let R' := (ShrinkHoms.equivalence.{w} C).symm.functor ⋙ R ⋙ (ShrinkHoms.equivalence.{w} D).functor
-  have : IsLocallyPresentable.{w} (ShrinkHoms C) :=
-    ⟨κC, inferInstance, (ShrinkHoms.equivalence.{w} C).isCardinalLocallyPresentable _⟩
-  have : IsLocallyPresentable.{w} (ShrinkHoms D) :=
-    ⟨κD, inferInstance, (ShrinkHoms.equivalence.{w} D).isCardinalLocallyPresentable _⟩
   have : IsAccessible.{w} R' := ⟨κR, inferInstance, inferInstance⟩
   have : HasLimits (ShrinkHoms C) :=
     has_limits_of_equivalence (ShrinkHoms.equivalence.{w} C).inverse
-  have : IsRightAdjoint R' := by apply aux
+  have : IsRightAdjoint R' := by apply aux'
   let i : R ≅ (ShrinkHoms.equivalence.{w} C).functor ⋙ R' ⋙
       (ShrinkHoms.equivalence.{w} D).inverse :=
     .isoCompInverse <| .isoInverseComp (.refl _ : _ ≅ R')
