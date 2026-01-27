@@ -112,10 +112,10 @@ theorem dual_ker_pi (s : Set M) : dual p s = ker (LinearMap.pi fun x : s => p x)
 theorem dual_ker_pi' (s : Finset M) : dual p s = ker (LinearMap.pi fun x : s => p x) := by
   simp [dual_ker_pi]
 
-/-- Any set is a subset of its double dual cone. -/
+/-- Any set is a subset of its double dual submodule. -/
 theorem subset_dual_dual : s ⊆ dual p.flip (dual p s) := fun _x hx _y hy ↦ hy hx
 
-/-- Any submodule is contained in its double dual cone. -/
+/-- Any submodule is contained in its double dual submodule. -/
 theorem le_dual_dual {S : Submodule R M} : S ≤ dual p.flip (dual p S) := subset_dual_dual
 
 theorem le_dual_of_le_dual {S : Submodule R M} {T : Submodule R N} (hST : T ≤ dual p S) :
