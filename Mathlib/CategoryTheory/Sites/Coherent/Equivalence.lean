@@ -19,13 +19,13 @@ categories.
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 open GrothendieckTopology
 
 namespace Equivalence
 
-variable {D : Type*} [Category D]
+variable {D : Type*} [Category* D]
 
 section Coherent
 
@@ -43,7 +43,7 @@ instance (e : C ≌ D) : haveI := precoherent e
     rw [coherentTopology.eq_induced e.inverse]
     simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
-variable (A : Type*) [Category A]
+variable (A : Type*) [Category* A]
 
 /--
 Equivalent precoherent categories give equivalent coherent toposes.
@@ -91,7 +91,7 @@ instance (e : C ≌ D) : haveI := preregular e
     rw [regularTopology.eq_induced e.inverse]
     simp only [Functor.mem_inducedTopology_sieves_iff, implies_true]
 
-variable (A : Type*) [Category A]
+variable (A : Type*) [Category* A]
 
 /--
 Equivalent preregular categories give equivalent regular toposes.

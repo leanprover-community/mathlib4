@@ -36,7 +36,7 @@ of separability in the metric space made by constant indicators equipped with th
 
 * `MeasureTheory.Measure.MeasureDense μ 𝒜`: `𝒜` is a measure-dense family if it only contains
   measurable sets and if the following condition is satisfied: if `s` is measurable with finite
-  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε `.
+  measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε`.
 * `MeasureTheory.IsSeparable`: A measure is separable if there exists a countable and
   measure-dense family.
 
@@ -82,7 +82,7 @@ section MeasureDense
 measurable sets and can approximate any measurable set with finite measure, in the sense that
 for any measurable set `s` with finite measure the symmetric difference `s ∆ t` can be made
 arbitrarily small when `t ∈ 𝒜`. We show below that such a family can be chosen to contain only
-sets with finite measures.
+sets with finite measure.
 
 The term "measure-dense" is justified by the fact that the approximating condition translates
 to the usual notion of density in the metric space made by constant indicators of measurable sets
@@ -272,7 +272,7 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite (h𝒜 : I
   measurable s hs := hgen ▸ measurableSet_generateFrom hs
   approx s ms hμs ε ε_pos := by
     -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
-    let T := Accumulate S.set
+    let T := accumulate S.set
     have T_mem (n) : T n ∈ 𝒜 := by
       simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
     have T_finite (n) : μ (T n) < ∞ := by

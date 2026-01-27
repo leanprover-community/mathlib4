@@ -66,7 +66,7 @@ An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(
 For the infinitesimal lifting definition,
 see `FormallySmooth.lift` and `FormallySmooth.iff_comp_surjective`.
 -/
-@[stacks 00TI "Also see 031J (6) for the the equivalence with the definition given here.", mk_iff]
+@[stacks 00TI "Also see 031J (6) for the equivalence with the definition given here.", mk_iff]
 class FormallySmooth : Prop where
   projective_kaehlerDifferential : Module.Projective A Ω[A⁄R]
   subsingleton_h1Cotangent : Subsingleton (H1Cotangent R A)
@@ -184,6 +184,9 @@ theorem comp_liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker (g : B →+* C)) :
     g.comp (FormallySmooth.liftOfSurjective f g hg hg') = f :=
   AlgHom.ext (FormallySmooth.liftOfSurjective_apply f g hg hg')
+
+instance [EssFiniteType R A] [FormallySmooth R A] : Module.FinitePresentation A Ω[A⁄R] :=
+  Module.finitePresentation_of_projective A Ω[A⁄R]
 
 end FormallySmooth
 
@@ -483,6 +486,10 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
   refine IsLocalization.ringHom_ext M ?_
   ext
   simp
+
+instance [FormallySmooth R A] (M : Submonoid A) : FormallySmooth R (Localization M) :=
+  have : FormallySmooth A (Localization M) := of_isLocalization M
+  .comp _ A _
 
 theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := by
   refine .of_comp_surjective fun Q _ _ I e f ↦ ?_

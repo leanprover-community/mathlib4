@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.CategoryTheory.Functor.Basic
 public import Mathlib.CategoryTheory.Iso
 public import Mathlib.Order.Basic
@@ -79,6 +78,13 @@ lemma ofObj_le_iff (P : ObjectProperty C) :
   ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
 
 end
+
+@[simp]
+lemma ofObj_subtypeVal (P : ObjectProperty C) :
+    ofObj (Subtype.val : Subtype P → C) = P := by
+  ext X
+  exact ⟨by rintro ⟨X, hX⟩; exact hX,
+    fun hX ↦ ofObj_apply Subtype.val ⟨X, hX⟩⟩
 
 /-- The property of objects in a category that is satisfied by a single object `X : C`. -/
 abbrev singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)

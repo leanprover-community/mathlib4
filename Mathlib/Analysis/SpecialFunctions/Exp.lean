@@ -68,9 +68,7 @@ theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
       (fun y ↦ by
-        convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
-        congr
-        ring)
+        simpa [dist_eq_norm, one_add_one_eq_two] using locally_lipschitz_exp zero_le_one le_rfl x y)
 
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
@@ -211,6 +209,12 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
     tendsto_atTop_add_const_right atTop 1 tendsto_id
   have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩
   exact tendsto_atTop_mono' atTop B A
+
+/-- The function `y ↦ y * exp (-y)` is bounded above by `exp (-1)`. -/
+theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
+  have h_le : y ≤ exp (y - 1) := by simpa using add_one_le_exp (y - 1)
+  have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr
+  simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le
 
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/

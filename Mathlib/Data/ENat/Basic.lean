@@ -252,8 +252,6 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
--- TODO: fix the linter violations, perhaps using a tactics which allows avoiding the rename_i
-set_option linter.flexible false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
@@ -306,8 +304,8 @@ theorem lt_coe_add_one_iff {m : ℕ∞} {n : ℕ} : m < n + 1 ↔ m ≤ n :=
 theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n = n₀ ∧ n₀ ≤ k :=
   WithTop.le_coe_iff
 
-lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
-  cases n <;> simp
+@[deprecated not_lt_zero (since := "2025-12-03")]
+protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
@@ -574,14 +572,19 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         | top =>
           have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
           simp [mul_top hx, WithTop.mul_top this]
-        | coe y => simp [← Nat.cast_mul, - coe_mul] }
+        | coe y => simp [← Nat.cast_mul, -coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }
+
+@[simp]
+lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
+    (map Nat.cast (a * b) : WithTop R) = map Nat.cast a * map Nat.cast b :=
+  map_mul ((Nat.castRingHom R : ℕ →*₀ R).ENatMap Nat.cast_injective) a b
 
 end ENat
 

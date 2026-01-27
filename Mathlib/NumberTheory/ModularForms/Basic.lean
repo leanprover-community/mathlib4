@@ -153,6 +153,10 @@ instance (priority := 100) CuspFormClass.cuspForm : CuspFormClass (CuspForm Γ k
   holo := CuspForm.holo'
   zero_at_cusps := CuspForm.zero_at_cusps'
 
+initialize_simps_projections ModularForm (toFun → coe, as_prefix coe)
+
+initialize_simps_projections CuspForm (toFun → coe, as_prefix coe)
+
 variable {F Γ k}
 
 theorem ModularForm.toFun_eq_coe (f : ModularForm Γ k) : f.toFun = (f : ℍ → ℂ) :=
@@ -226,6 +230,10 @@ theorem coe_zero : ⇑(0 : ModularForm Γ k) = (0 : ℍ → ℂ) :=
 @[simp]
 theorem zero_apply (z : ℍ) : (0 : ModularForm Γ k) z = 0 :=
   rfl
+
+@[simp] lemma coe_eq_zero_iff (f : ModularForm Γ k) :
+    (f : ℍ → ℂ) = 0 ↔ f = 0 := by
+  rw [← coe_zero, DFunLike.coe_fn_eq]
 
 section
 -- scalar multiplication by real types (no assumption on `Γ`)
@@ -323,6 +331,7 @@ instance : Inhabited (ModularForm Γ k) :=
 
 /-- The modular form of weight `k_1 + k_2` given by the product of two modular forms of weights
 `k_1` and `k_2`. -/
+@[simps! -fullyApplied coe]
 def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : ModularForm Γ k_2) :
     ModularForm Γ (k_1 + k_2) where
   toSlashInvariantForm := f.1.mul g.1
@@ -330,27 +339,28 @@ def mul {k_1 k_2 : ℤ} [Γ.HasDetPlusMinusOne] (f : ModularForm Γ k_1) (g : Mo
   bdd_at_cusps' hc γ hγ := by
     simpa [mul_slash] using ((f.bdd_at_cusps' hc γ hγ).mul (g.bdd_at_cusps' hc γ hγ)).smul _
 
-@[simp]
-theorem mul_coe [Γ.HasDetPlusMinusOne] {k_1 k_2 : ℤ} (f : ModularForm Γ k_1)
-    (g : ModularForm Γ k_2) : (f.mul g : ℍ → ℂ) = f * g :=
-  rfl
+@[deprecated (since := "2025-12-06")] alias mul_coe := coe_mul
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-def const (x : ℂ) [Γ.HasDetOne] : ModularForm Γ 0 where
+@[simps! -fullyApplied] def const (x : ℂ) [Γ.HasDetOne] : ModularForm Γ 0 where
   toSlashInvariantForm := .const x
   holo' _ := mdifferentiableAt_const
-  bdd_at_cusps' hc g hg := by simpa only [const_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
+  bdd_at_cusps' hc g hg := by simpa only [coe_const, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+
+@[deprecated (since := "2025-12-06")] alias const_toFun := coe_const
 
 @[simp]
 lemma const_apply [Γ.HasDetOne] (x : ℂ) (τ : ℍ) : (const x : ModularForm Γ 0) τ = x := rfl
 
 /-- The constant function with value `x : ℂ` as a modular form of weight 0 and any level. -/
-def constℝ (x : ℝ) [Γ.HasDetPlusMinusOne] : ModularForm Γ 0 where
+@[simps! -fullyApplied coe] def constℝ (x : ℝ) [Γ.HasDetPlusMinusOne] : ModularForm Γ 0 where
   toSlashInvariantForm := .constℝ x
   holo' _ := mdifferentiableAt_const
-  bdd_at_cusps' hc g hg := by simpa only [constℝ_toFun, slash_def, SlashInvariantForm.toFun_eq_coe,
+  bdd_at_cusps' hc g hg := by simpa only [coe_constℝ, slash_def, SlashInvariantForm.toFun_eq_coe,
       Function.const_apply, neg_zero, zpow_zero] using atImInfty.const_boundedAtFilter _
+
+@[deprecated (since := "2025-12-06")] alias constℝ_toFun := coe_constℝ
 
 @[simp]
 lemma constℝ_apply [Γ.HasDetPlusMinusOne] (x : ℝ) (τ : ℍ) :
@@ -536,7 +546,6 @@ def mcast {a b : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)} (h : a = b) (f : ModularF
 theorem gradedMonoid_eq_of_cast {Γ : Subgroup (GL (Fin 2) ℝ)} {a b : GradedMonoid (ModularForm Γ)}
     (h : a.fst = b.fst) (h2 : mcast h a.snd = b.snd) : a = b := by
   obtain ⟨i, a⟩ := a
-  obtain ⟨j, b⟩ := b
   cases h
   exact congr_arg _ h2
 
@@ -576,6 +585,36 @@ instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] :
 open scoped DirectSum in
 example (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] : Algebra ℂ (⨁ i, ModularForm Γ i) :=
 inferInstance
+
+open Filter SlashInvariantForm
+
+/-- Given `ModularForm`'s `F i` of weight `k i` for `i : ι`, define the form which as a
+function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
+@[simps! -fullyApplied]
+def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ (k i)) : ModularForm Γ m where
+  toSlashInvariantForm := SlashInvariantForm.prod m hm (fun i ↦ (F i))
+  holo' := MDifferentiable.prod (t := s) (f := fun (i : ι) ↦ (F i).1)
+      (by intro (i : ι) hi; simpa using (F i).holo')
+  bdd_at_cusps' hc γ hγ := by
+    change IsBoundedAtImInfty (((∏ i ∈ s, ((F i).1 : ℍ → ℂ)) ∣[m] γ))
+    rw [hm, prod_slash_sum_weights, IsBoundedAtImInfty]
+    refine BoundedAtFilter.smul _ (BoundedAtFilter.prod (s := s) ?_)
+    intro i hi
+    simpa [toFun_eq_coe, IsBoundedAtImInfty] using (F i).bdd_at_cusps' hc γ hγ
+
+/-- Given `ModularForm`'s `F i` of weight `k`, define the form which as a function is a product of
+those indexed by `s : Finset ι` with weight `#s * k`. -/
+@[simps! -fullyApplied]
+def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+     {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (F : (i : ι) → ModularForm Γ k) : ModularForm Γ (s.card * k) :=
+  prod (s := s) (s.card * k) (by simp) F
+
+open BigOperators
+
+
 
 end GradedRing
 

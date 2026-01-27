@@ -53,7 +53,7 @@ theorem nonempty_star [InvolutiveStar α] {s : Set α} : s⋆.Nonempty ↔ s.Non
 theorem Nonempty.star [InvolutiveStar α] {s : Set α} (h : s.Nonempty) : s⋆.Nonempty :=
   nonempty_star.2 h
 
-@[simp]
+@[simp, push]
 theorem mem_star [Star α] : a ∈ s⋆ ↔ a⋆ ∈ s := Iff.rfl
 
 theorem star_mem_star [InvolutiveStar α] : a⋆ ∈ s⋆ ↔ a ∈ s := by simp only [mem_star, star_star]
@@ -129,6 +129,5 @@ end Set
 @[simp]
 lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
     [StarMemClass S α] (s : S) : star (s : Set α) = s := by
-  ext x
-  simp only [Set.mem_star, SetLike.mem_coe]
-  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩
+  ext
+  simpa using star_mem_iff

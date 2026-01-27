@@ -27,9 +27,10 @@ open scoped ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} (X : Ω → 𝓧)
-  (μ : Measure 𝓧)
+variable {Ω 𝓧 : Type*} {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} {X Y : Ω → 𝓧}
+  {μ : Measure 𝓧} {P : Measure Ω}
 
+variable (X μ) in
 /-- The predicate `HasLaw X μ P` registers the fact that the random variable `X` has law `μ` under
 the measure `P`, in other words that `P.map X = μ`. We also require `X` to be `AEMeasurable`,
 to allow for nice interactions with operations on the codomain of `X`. See for instance
@@ -41,11 +42,13 @@ structure HasLaw (P : Measure Ω := by volume_tac) : Prop where
 
 attribute [fun_prop] HasLaw.aemeasurable
 
-variable {X μ} {P : Measure Ω}
-
-lemma HasLaw.congr {Y : Ω → 𝓧} (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
+lemma HasLaw.congr (hX : HasLaw X μ P) (hY : Y =ᵐ[P] X) : HasLaw Y μ P where
   aemeasurable := hX.aemeasurable.congr hY.symm
   map_eq := by rw [map_congr hY, hX.map_eq]
+
+lemma hasLaw_congr (hXY : X =ᵐ[P] Y) : HasLaw X μ P ↔ HasLaw Y μ P where
+  mp h := h.congr hXY.symm
+  mpr h := h.congr hXY
 
 lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P μ) :
     HasLaw X μ P where
@@ -60,13 +63,23 @@ lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
 protected lemma HasLaw.id : HasLaw id μ μ where
   map_eq := map_id
 
+protected lemma HasLaw.ae_iff (hX : HasLaw X μ P) {p : 𝓧 → Prop} (hp : Measurable p) :
+    (∀ᵐ ω ∂P, p (X ω)) ↔ ∀ᵐ x ∂μ, p x := by
+  rw [← hX.map_eq, ae_map_iff hX.aemeasurable (measurableSet_setOf.2 hp)]
+
 protected theorem HasLaw.isFiniteMeasure_iff (hX : HasLaw X μ P) :
-    IsFiniteMeasure μ ↔ IsFiniteMeasure P := by
+    IsFiniteMeasure P ↔ IsFiniteMeasure μ := by
   rw [← hX.map_eq, isFiniteMeasure_map_iff hX.aemeasurable]
 
 protected theorem HasLaw.isProbabilityMeasure_iff (hX : HasLaw X μ P) :
-    IsProbabilityMeasure μ ↔ IsProbabilityMeasure P := by
+    IsProbabilityMeasure P ↔ IsProbabilityMeasure μ := by
   rw [← hX.map_eq, isProbabilityMeasure_map_iff hX.aemeasurable]
+
+lemma HasLaw.isFiniteMeasure [IsFiniteMeasure μ] (hX : HasLaw X μ P) : IsFiniteMeasure P :=
+  hX.isFiniteMeasure_iff.2 ‹_›
+
+lemma HasLaw.isProbabilityMeasure [IsProbabilityMeasure μ] (hX : HasLaw X μ P) :
+    IsProbabilityMeasure P := hX.isProbabilityMeasure_iff.2 ‹_›
 
 @[fun_prop]
 lemma HasLaw.comp {𝒴 : Type*} {m𝒴 : MeasurableSpace 𝒴} {ν : Measure 𝒴} {Y : 𝓧 → 𝒴}
