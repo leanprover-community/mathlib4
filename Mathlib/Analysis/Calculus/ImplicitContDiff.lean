@@ -21,8 +21,7 @@ is $C^n$ at a point `(u₁, u₂) : E₁ × E₂`, where `n ≥ 1`. Let `f'` be 
 neighbourhood of `u₁`. Furthermore, `ψ` is $C^n$ at `u₁`.
 
 ## TODO
-* Local uniqueness of the implicit function
-* Derivative of the implicit function
+* Faà di Bruno.
 
 ## Tags
 
@@ -53,38 +52,46 @@ open scoped Topology
 
 namespace ContDiffAt
 
+variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {n : WithTop ℕ∞}
+
 /-- Implicit function `ψ` defined by `f (x, ψ x) = f u`. -/
-noncomputable def implicitFunction {f : E₁ × E₂ → F} {u : E₁ × E₂} {n : WithTop ℕ∞}
+noncomputable def implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
   (cdf.hasStrictFDerivAt pn).implicitFunctionOfProdDomain if₂
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
-theorem image_implicitFunction {f : E₁ × E₂ → F} {u : E₁ × E₂} {n : WithTop ℕ∞}
+theorem image_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
   (cdf.hasStrictFDerivAt pn).image_implicitFunctionOfProdDomain if₂
 
-theorem eventually_implicitFunction_apply_eq {f : E₁ × E₂ → F} {u : E₁ × E₂} {n : WithTop ℕ∞}
+theorem eventually_implicitFunction_apply_eq
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
   (cdf.hasStrictFDerivAt pn).image_eq_iff_implicitFunctionOfProdDomain if₂
 
 /-- If the implicit equation `f` is $C^n$ at `(u₁, u₂)`, then its implicit function `ψ` around `u₁`
 is also $C^n$ at `u₁`. -/
-theorem contDiffAt_implicitFunction {f : E₁ × E₂ → F} {u : E₁ × E₂} {n : WithTop ℕ∞}
+theorem contDiffAt_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂) u.1 := by
   have := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
-            |>.contDiff_implicitFunction cdf contDiffAt_fst pn
+    |>.contDiff_implicitFunction cdf contDiffAt_fst pn
   unfold implicitFunction HasStrictFDerivAt.implicitFunctionOfProdDomain
   fun_prop
+
+theorem hasStrictFDerivAt_implicitFunction
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    HasStrictFDerivAt (cdf.implicitFunction pn if₂)
+      (-(fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).inverse ∘L (fderiv 𝕜 f u ∘L .inl 𝕜 E₁ E₂)) u.1 :=
+  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
 
 end ContDiffAt
 
 /-- A predicate stating the sufficient conditions on an implicit equation `f : E₁ × E₂ → F` that
 will lead to a $C^n$ implicit function `ψ : E₁ → E₂`. -/
-@[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-19")]
+@[deprecated "ContDiffAt.implicitFunction does not require this" (since := "2026-01-27")]
 structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E₁ × E₂ → F) (f' : E₁ × E₂ →L[𝕜] F)
     (u : E₁ × E₂) : Prop where
   hasFDerivAt : HasFDerivAt f f' u
@@ -94,16 +101,16 @@ structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E₁ × E₂ → F) (f'
 
 namespace IsContDiffImplicitAt
 
-@[deprecated (since := "2026-01-19")]
+@[deprecated (since := "2026-01-27")]
 alias implicitFunction := ContDiffAt.implicitFunction
 
-@[deprecated (since := "2026-01-19")]
+@[deprecated (since := "2026-01-27")]
 alias apply_implicitFunction := ContDiffAt.image_implicitFunction
 
-@[deprecated (since := "2026-01-19")]
+@[deprecated (since := "2026-01-27")]
 alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_implicitFunction_apply_eq
 
-@[deprecated (since := "2026-01-19")]
+@[deprecated (since := "2026-01-27")]
 alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
 
 end IsContDiffImplicitAt

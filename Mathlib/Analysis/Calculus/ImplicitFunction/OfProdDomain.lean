@@ -8,28 +8,20 @@ module
 public import Mathlib.Analysis.Calculus.Implicit
 
 /-!
-# Implicit function theorem
+# Implicit function theorem — domain a product space
 
 We consider the common case of bivariate `f`, the second of whose partial derivatives is invertible.
-Then we may apply the general theorem to obtain `ψ` such that for `(v₁, v₂)` in a neighbourhood of
-`(u₁, u₂)` we have `f (v₁, v₂) = f (u₁, u₂) ↔ ψ v₁ = v₂`.
+Then we may specialize `HasStrictFDerivAt.implicitFunction` to
+`HasStrictFDerivAt.implicitFunctionOfProdDomain`, giving us a `ψ` such that for `(v₁, v₂)` in a
+neighbourhood of `(u₁, u₂)` we have `f (v₁, v₂) = f (u₁, u₂) ↔ ψ v₁ = v₂`. A formula for the first
+derivative of `ψ` follows.
 
 ## Tags
 
-implicit function, inverse function
+implicit function
 -/
 
-@[expose] public section ProdDomain
-
-/-!
-### Case of a product space domain
-
-Given strictly differentiable `f : E₁ × E₂ → F`, the second of whose partial derivatives is known to
-be invertible, we may construct an `ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` with `f` as its `leftFun`
-and `Prod.fst : E₁ × E₂ → E₁` as its `rightFun`. We may then extract `ψ : E₁ → E₂` with the desired
-properties. This functionality is wrapped by `HasStrictFDerivAt.implicitFunctionOfProdDomain`. A
-formula for the first derivative of `ψ` is immediately derived.
--/
+@[expose] public section
 
 open Filter
 open scoped Topology
@@ -41,12 +33,14 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 namespace HasStrictFDerivAt
 
-/-- Given `HasStrictFDerivAt f f' u` with `f' : E₁ × E₂ →L[𝕜] F` decomposing into `f₁ : E₁ →L[𝕜] F`
-and `f₂ : E₂ →L[𝕜] F`, the latter invertible, we prove that the kernels of `f'` and
-`ContinuousLinearMap.fst 𝕜 E₁ E₂` are complementary and construct an object of type
-`ImplicitFunctionData` thereby permitting use of the general machinery provided above. -/
-def implicitFunctionDataOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+variable {u : E₁ × E₂} {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
+
+/-- Given strictly differentiable `f : E₁ × E₂ → F` with partial derivative `f₂ : E₂ →L[𝕜] F`
+invertible, we may construct an `ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁` using `f` as `leftFun` and
+`Prod.fst : E₁ × E₂ → E₁` as `rightFun` and proving that the kernels of associated `leftDeriv` and
+`rightDeriv` are complementary. -/
+def implicitFunctionDataOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ImplicitFunctionData 𝕜 (E₁ × E₂) F E₁ where
   leftFun := f
   rightFun := Prod.fst
@@ -72,13 +66,13 @@ def implicitFunctionDataOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂
 
 /-- Implicit function `ψ : E₁ → E₂` associated with the (uncurried) bivariate function
 `f : E₁ × E₂ → F` at `u`. -/
-noncomputable def implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+noncomputable def implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     E₁ → E₂ :=
   fun x => ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2
 
-theorem hasStrictFDerivAt_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     HasStrictFDerivAt (dfu.implicitFunctionOfProdDomain if₂)
       (-(f' ∘L .inr 𝕜 E₁ E₂).inverse ∘L (f' ∘L .inl 𝕜 E₁ E₂)) u.1 := by
   have : f' ∘L (.prod (.id _ _) (-(f' ∘L .inr _ _ _).inverse ∘L (f' ∘L .inl _ _ _))) = 0 := by
@@ -88,21 +82,21 @@ theorem hasStrictFDerivAt_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} 
   exact ((dfu.implicitFunctionDataOfProdDomain if₂).hasStrictFDerivAt_implicitFunction _
     (ContinuousLinearMap.fst_comp_prod _ _) this).snd
 
-theorem image_eq_iff_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+theorem image_eq_iff_implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ dfu.implicitFunctionOfProdDomain if₂ v.1 = v.2 := by
   let φ := dfu.implicitFunctionDataOfProdDomain if₂
   filter_upwards [φ.leftFun_eq_iff_implicitFunction, φ.rightFun_implicitFunction] with y h h'
   exact Iff.trans h ⟨congrArg _, by aesop⟩
 
-theorem tendsto_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+theorem tendsto_implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     Tendsto (dfu.implicitFunctionOfProdDomain if₂) (𝓝 u.1) (𝓝 u.2) := by
   have := (dfu.hasStrictFDerivAt_implicitFunctionOfProdDomain if₂).continuousAt.tendsto
   rwa [(dfu.image_eq_iff_implicitFunctionOfProdDomain if₂).self_of_nhds.mp rfl] at this
 
-theorem image_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ × E₂ →L[𝕜] F}
-    {u : E₁ × E₂} (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+theorem image_implicitFunctionOfProdDomain
+    (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ x in 𝓝 u.1, f (x, dfu.implicitFunctionOfProdDomain if₂ x) = f u := by
   have hψ := dfu.tendsto_implicitFunctionOfProdDomain if₂
   set ψ := dfu.implicitFunctionOfProdDomain if₂
@@ -113,4 +107,4 @@ theorem image_implicitFunctionOfProdDomain {f : E₁ × E₂ → F} {f' : E₁ �
 
 end HasStrictFDerivAt
 
-end ProdDomain
+end
