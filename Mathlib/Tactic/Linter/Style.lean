@@ -470,6 +470,37 @@ public register_option linter.style.nameCheck : Bool := {
 
 namespace Style.nameCheck
 
+/-- Is `s` a string consisting only of digits, uppercase letters and primes? -/
+def isAcronymLike (s : String) : Bool :=
+  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || c = '\'')
+
+/-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
+def allowed : Array String.Slice := #[
+  "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
+  "IsBigO", "Lp", "Lq", -- TODO: should Lp and Lq be used in names? should it be `isBigO` instead?
+  "Gamma", "Gammaℝ", "Gammaℂ", -- TODO: want to remove this, probably!
+]
+
+def isWronglyCased (s : String) : Bool :=
+  -- The string starts with an uppercase character, is not like an acronym
+  -- and (after removing any trailing primes) is not an allowed exception.
+ s.front.isUpper && !(isAcronymLike s) && (!allowed.contains (s.dropEndWhile '\''))
+
+#guard !isWronglyCased "something"
+#guard !isWronglyCased "myDeclaration"
+#guard !isWronglyCased "lowerCamelCase"
+#guard isWronglyCased "Foo"
+-- Acronyms
+#guard !isWronglyCased "ofLE"
+#guard !isWronglyCased "LE"
+-- Explicit exceptions.
+#guard !isWronglyCased "Ioo"
+#guard !isWronglyCased "Lp"
+#guard !isWronglyCased "Ioo'"
+#guard !isWronglyCased "L1"
+#guard !isWronglyCased "L1H'"
+#guard !isWronglyCased "L1"
+
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
     unless getLinterValue linter.style.nameCheck (← getLinterOptions) do
@@ -491,12 +522,7 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
               conventions. Consider using single underscores instead."
         -- Also check if a name is capitalized after an underscore: this is often wrong.
         let parts := declName.toString.splitOn "_" |>.drop 1
-        let allowed := #[
-          "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
-          "IsBigO", "G2", "L1", "Lp",
-          "Gamma", -- TODO: want to remove this, probably!
-        ]
-        let bad := parts.filter fun p ↦ p.front.isUpper && !(p.drop 1).front.isUpper && !allowed.contains p
+        let bad := parts.filter (isWronglyCased ·)
         for badComponent in bad do
           Linter.logLint linter.style.nameCheck id
             m!"The component `{bad}` of `{id}` starts in uppercase, but is not an acronym. \
