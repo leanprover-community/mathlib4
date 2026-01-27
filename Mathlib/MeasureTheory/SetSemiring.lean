@@ -438,7 +438,7 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
 
 end disjointOfUnion
 
-lemma _root_.Set.Ioc_mem_setOf_Ioc_le {α : Type*} [LinearOrder α] (u v : α) :
+lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
     Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} := by
   rcases le_or_gt u v with h | h
   · exact ⟨u, v, h, rfl⟩
@@ -448,7 +448,7 @@ lemma _root_.Set.Ioc_mem_setOf_Ioc_le {α : Type*} [LinearOrder α] (u v : α) :
     exact ⟨u, u, le_rfl, by simp⟩
 
 /-- The set of open-closed intervals is a semi-ring of sets. -/
-lemma Ioc {α : Type*} [LinearOrder α] [Nonempty α] :
+protected lemma Ioc {α : Type*} [LinearOrder α] [Nonempty α] :
     IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
   empty_mem := by
     inhabit α
