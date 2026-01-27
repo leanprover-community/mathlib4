@@ -156,16 +156,17 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure 
     (hC : IsSetSemiring C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
     {s : Set α} (hs : MeasurableSet s) {ε : ℝ≥0∞} (hε : 0 < ε) :
-    ∃ t ∈ C.finiteUnions, μ (t ∆ s) < ε := by
-  apply exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC.isSetRing_finiteUnions ?_
+    ∃ t ∈ supClosure C, μ (t ∆ s) < ε := by
+  apply exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC.isSetRing_supClosure ?_
     ?_ hs hε
   · rcases h'C with ⟨D, D_count, DC, hD⟩
-    exact ⟨D, D_count, DC.trans (self_subset_finiteUnions C), hD⟩
+    exact ⟨D, D_count, DC.trans subset_supClosure, hD⟩
   · rw [h]
-    apply le_antisymm (generateFrom_mono (self_subset_finiteUnions C))
+    apply le_antisymm (generateFrom_mono subset_supClosure)
     apply generateFrom_le (fun t ht ↦ ?_)
-    rcases ht with ⟨J, JC, hJ, rfl⟩
-    exact MeasurableSet.sUnion (Finset.countable_toSet J)
-      (fun s hs ↦ measurableSet_generateFrom (JC hs))
+    rcases ht with ⟨P, hP, PC, rfl⟩
+    rw [Finset.sup'_eq_sup, Finset.sup_id_set_eq_sUnion]
+    exact MeasurableSet.sUnion (Finset.countable_toSet P)
+      (fun s hs ↦ measurableSet_generateFrom (PC hs))
 
 end MeasureTheory

@@ -231,39 +231,45 @@ theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Se
 
 open scoped Classical in
 /-- Extend a content over `C` to the finite unions of elements of `C` by additivity.
-Use instead `AddContent.extendUnion` which is the same function bundled as an `AddContent`. -/
-noncomputable def AddContent.extendUnionFun (m : AddContent G C) (s : Set α) : G :=
+Use instead `AddContent.supClosure` which is the same function bundled as an `AddContent`. -/
+noncomputable def AddContent.supClosureFun (m : AddContent G C) (s : Set α) : G :=
   if h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J
     then ∑ s ∈ h.choose, m s
   else 0
 
-lemma AddContent.extendUnionFun_eq (hC : IsSetSemiring C)
+lemma AddContent.supClosureFun_apply (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
     (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
-    m.extendUnionFun s = ∑ s ∈ J, m s := by
+    m.supClosureFun s = ∑ s ∈ J, m s := by
   have h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J :=
     ⟨J, hJ, h'J, hs⟩
-  simp only [extendUnionFun, h, ↓reduceDIte]
+  simp only [supClosureFun, h, ↓reduceDIte]
   apply sum_addContent_eq_of_sUnion_eq hC _ _ h.choose_spec.1 h.choose_spec.2.1 hJ h'J
   rw [← hs]
   exact h.choose_spec.2.2.symm
 
-lemma AddContent.extendUnionFun_eq_of_mem (hC : IsSetSemiring C)
+lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
-    m.extendUnionFun s = m s := by
-  have : m.extendUnionFun s = ∑ t ∈ {s}, m t :=
-    m.extendUnionFun_eq hC (by simp [hs]) (by simp) (by simp)
+    m.supClosureFun s = m s := by
+  have : m.supClosureFun s = ∑ t ∈ {s}, m t :=
+    m.supClosureFun_apply hC (by simp [hs]) (by simp) (by simp)
   simp [this]
 
 /-- Extend a content over `C` to the finite unions of elements of `C` by additivity. -/
-noncomputable def AddContent.extendUnion (m : AddContent G C) (hC : IsSetSemiring C) :
-    AddContent G C.finiteUnions where
-  toFun := m.extendUnionFun
-  empty' := by rw [m.extendUnionFun_eq_of_mem hC hC.empty_mem, addContent_empty]
+noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring C) :
+    AddContent G (supClosure C) where
+  toFun := m.supClosureFun
+  empty' := by rw [m.supClosureFun_apply_of_mem hC hC.empty_mem, addContent_empty]
   sUnion' I hI h'I hh'I := by
     classical
     have A (s) (hs : s ∈ I) : ∃ (J : Finset (Set α)),
-        ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J := hI hs
+        ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J := by
+      obtain ⟨P, PC⟩ : ∃ (P : Finpartition s), ↑P.parts ⊆ C := by
+        have := hI hs
+        rwa [hC.mem_supClosure_iff] at this
+      refine ⟨P.parts, PC, P.disjoint, ?_⟩
+      convert P.sup_parts.symm
+      simp [sUnion_eq_biUnion]
     choose! J hJC hJdisj hJs using A
     have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
       rw [hJs i hi]
@@ -272,7 +278,7 @@ noncomputable def AddContent.extendUnion (m : AddContent G C) (hC : IsSetSemirin
     let K : Finset (Set α) := Finset.biUnion I J
     have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
       simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
-    rw [this, m.extendUnionFun_eq hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
+    rw [this, m.supClosureFun_apply hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
     · intro a ha b hb hab
       simp only [coe_biUnion, SetLike.mem_coe, mem_iUnion, exists_prop, K] at ha hb
       rcases ha with ⟨i, iI, hi⟩
@@ -290,18 +296,25 @@ noncomputable def AddContent.extendUnion (m : AddContent G C) (hC : IsSetSemirin
       simp only [disjoint_self, Set.bot_eq_empty] at this
       simp [this]
     apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-    exact (m.extendUnionFun_eq hC (hJC i hi) (hJdisj i hi) (hJs i hi)).symm
+    exact (m.supClosureFun_apply hC (hJC i hi) (hJdisj i hi) (hJs i hi)).symm
 
-lemma AddContent.extendUnion_eq (hC : IsSetSemiring C)
+lemma AddContent.supClosure_apply (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
     (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
-    m.extendUnion hC s = ∑ s ∈ J, m s :=
-  m.extendUnionFun_eq hC hJ h'J hs
+    m.supClosure hC s = ∑ s ∈ J, m s :=
+  m.supClosureFun_apply hC hJ h'J hs
 
-lemma AddContent.extendUnion_eq_of_mem (hC : IsSetSemiring C)
+lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
+    (m : AddContent G C) {s : Set α} {J : Finpartition s} (hJ : ↑J.parts ⊆ C) :
+    m.supClosure hC s = ∑ s ∈ J.parts, m s := by
+  rw [m.supClosure_apply _ hJ J.disjoint]
+  nth_rewrite 1 [← J.sup_parts, Finset.sup_set_eq_biUnion, sUnion_eq_biUnion]
+  rfl
+
+lemma AddContent.supClosure_apply_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
-    m.extendUnion hC s = m s :=
-  m.extendUnionFun_eq_of_mem hC hs
+    m.supClosure hC s = m s :=
+  m.supClosureFun_apply_of_mem hC hs
 
 variable [PartialOrder G] [CanonicallyOrderedAdd G]
 

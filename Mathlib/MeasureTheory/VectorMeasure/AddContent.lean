@@ -255,25 +255,28 @@ vector measure. -/
 lemma exists_extension_of_isSetSemiring_of_le_measure_of_dense [IsFiniteMeasure μ]
     {C : Set (Set α)} {m : AddContent E C} (hCs : IsSetSemiring C)
     (hC : ∀ s ∈ C, MeasurableSet s) (hm : ∀ s ∈ C, ‖m s‖ₑ ≤ μ s)
-    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ C.finiteUnions, μ (s ∆ t) < ε) :
+    (h'C : ∀ t ε, MeasurableSet t → 0 < ε → ∃ s ∈ supClosure C, μ (s ∆ t) < ε) :
     ∃ m' : VectorMeasure α E, (∀ s ∈ C, m' s = m s) ∧ ∀ s, ‖m' s‖ₑ ≤ μ s := by
-  set m₀ : AddContent E C.finiteUnions := m.extendUnion hCs with hm₀
-  have A (s) (hs : s ∈ C.finiteUnions) : ‖m₀ s‖ₑ ≤ μ s := by
-    rcases hs with ⟨J, JC, Jdisj, rfl⟩
-    rw [hm₀, AddContent.extendUnion_eq hCs _ JC Jdisj rfl]
-    simp only [Set.sUnion_eq_biUnion, SetLike.mem_coe]
-    rw [measure_biUnion_finset (by exact Jdisj) (fun b hb ↦ hC _ (JC hb))]
+  set m₀ : AddContent E (supClosure C) := m.supClosure hCs with hm₀
+  have A (s) (hs : s ∈ supClosure C) : ‖m₀ s‖ₑ ≤ μ s := by
+    rw [hCs.mem_supClosure_iff] at hs
+    rcases hs with ⟨P, PC⟩
+    nth_rewrite 2 [← P.sup_parts]
+    rw [hm₀, AddContent.supClosure_apply_finpartition hCs _ PC, Finset.sup_set_eq_biUnion,
+      measure_biUnion_finset P.disjoint (fun b hb ↦ hC _ (PC hb))]
     apply (enorm_sum_le _ _).trans
-    gcongr with s hs
-    exact hm _ (JC hs)
-  have B : ∀ s ∈ C.finiteUnions, MeasurableSet s := by
-    rintro s ⟨J, JC, Jdisj, rfl⟩
-    apply MeasurableSet.sUnion J.countable_toSet (fun t ht ↦ hC _ (JC ht))
+    gcongr with t ht
+    exact hm _ (PC ht)
+  have B (s) (hs : s ∈ supClosure C) : MeasurableSet s := by
+    rw [hCs.mem_supClosure_iff] at hs
+    rcases hs with ⟨P, PC⟩
+    rw [← P.sup_parts, Finset.sup_set_eq_biUnion]
+    exact Finset.measurableSet_biUnion _ (fun b hb ↦ hC _ (PC hb))
   rcases VectorMeasure.exists_extension_of_isSetRing_of_le_measure_of_dense
-    hCs.isSetRing_finiteUnions B A h'C with ⟨m', hm', m'bound⟩
+    hCs.isSetRing_supClosure B A h'C with ⟨m', hm', m'bound⟩
   refine ⟨m', fun s hs ↦ ?_, m'bound⟩
-  rw [hm' _ (Set.self_subset_finiteUnions _ hs)]
-  exact AddContent.extendUnion_eq_of_mem _ _ hs
+  rw [hm' _ (subset_supClosure hs)]
+  exact AddContent.supClosure_apply_of_mem _ _ hs
 
 /-- Consider an additive content `m ` on a semi-ring of sets `C`, which is dominated by a finite
 measure `μ`. Assume that `C` generates the sigma-algebra and covers the space up to measure zero.
