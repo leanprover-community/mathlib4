@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.AkraBazzi.SumTransform
 public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
