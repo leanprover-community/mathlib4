@@ -505,7 +505,7 @@ noncomputable instance [StrongNormalizedGCDMonoid R] :
   __ := inferInstanceAs (NormalizedGCDMonoid R[X])
   __ := inferInstanceAs (StrongNormalizationMonoid R[X])
 
--- We do not add a `GCDMonoid R[X]` instance because of diamonds
+-- We do not add a `GCDMonoid R[X]` instance due to diamond
 instance [IsGCDMonoid R] : IsGCDMonoid R[X] := by
   have := IsGCDMonoid.isCancelMulZero R
   classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
