@@ -144,41 +144,45 @@ instance (L : C ⥤ E) (R : D ⥤ E) [IsAccessible.{w} L] [IsAccessible.{w} R] :
 instance (L : C ⥤ E) (R : D ⥤ E) [IsAccessible.{w} L] [IsAccessible.{w} R] :
     IsAccessible.{w} (Comma.snd L R) := sorry
 
+instance (κ : Cardinal.{w}) [Fact κ.IsRegular] (A : C) :
+    IsCardinalAccessible ((Functor.const C).obj A) κ where
+  preservesColimitOfShape J _ hJ := {
+    preservesColimit := {
+      preserves hc := let j := (nonempty_of_isCardinalFiltered κ hJ).some
+      ⟨{
+        desc s := s.ι.app j
+        fac s j' := by
+          rw [isCardinalFiltered_iff] at hJ
+          obtain ⟨k, hk⟩ := @hJ.1 ({j, j'} : Set J) Subtype.val
+            (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
+          have hj := s.ι.naturality (hk ⟨j, by simp⟩).some
+          have hj' := s.ι.naturality (hk ⟨j', by simp⟩).some
+          simp_all
+        uniq s m h := by simpa using h j }⟩ } }
+
+instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) := by
+  have : Fact Cardinal.aleph0.IsRegular := Cardinal.fact_isRegular_aleph0
+  refine ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
+
 lemma solutionSetCondition_of_isAccessible (R : C ⥤ D) [IsAccessible.{w} R] :
     SolutionSetCondition.{w} R := by
   intro A
   let CA : D ⥤ D := (Functor.const _).obj A
   have : IsAccessible.{w} CA := by
     dsimp [CA]
-    obtain ⟨κ, _, this⟩ := IsAccessible.exists_cardinal (F := R)
-    refine ⟨κ, inferInstance, ⟨fun J _ hJ ↦ ?_⟩⟩
-    let j := (nonempty_of_isCardinalFiltered κ hJ).some
-    exact ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨{
-      desc s := s.ι.app j
-      fac s j' := by
-        rw [isCardinalFiltered_iff] at hJ
-        obtain ⟨k, hk⟩ := @hJ.1 ({j, j'} : Set J) Subtype.val
-          (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
-        have hj := s.ι.naturality (hk ⟨j, by simp⟩).some
-        have hj' := s.ι.naturality (hk ⟨j', by simp⟩).some
-        simp_all
-      uniq s m h := by simpa using h j }⟩⟩⟩
+    infer_instance
   have : IsAccessibleCategory.{w} <| Comma CA R := inferInstance
   obtain ⟨κ, _, this⟩ := this
   have h₁ := this.1
-  have _ := this.2
   obtain ⟨P, _, hP⟩ := h₁
   obtain ⟨Q, _, _, hPQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
   obtain ⟨_, hP⟩ := hP
-  have : IsAccessible.{w} (Comma.snd CA R) := inferInstance
   refine ⟨Shrink <| Subtype Q, fun b ↦ (equivShrink _ |>.symm b).val.right,
     fun b ↦ (equivShrink _ |>.symm b).val.hom, ?_⟩
   intro X h
   obtain ⟨J, _, hJ, ⟨⟨⟨diag, ι, hc⟩, hx⟩⟩⟩ := hP (Comma.mk (R.obj X) _ h)
   let j := (nonempty_of_isCardinalFiltered κ hJ).some
-  have : P (diag.obj j) := hx j
-  have := hPQ _ this
-  obtain ⟨x, qx, ⟨ix⟩⟩ := this
+  obtain ⟨x, qx, ⟨ix⟩⟩ := hPQ _ (hx j)
   refine ⟨equivShrink _ ⟨x, qx⟩, eqToHom (by simp) ≫ ix.inv.right ≫ (ι.app _).right, ?_⟩
   simp [← Category.assoc, eqToHom_map, ← CommaMorphism.w, CA]
 
