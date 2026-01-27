@@ -163,7 +163,7 @@ def reorganizeUniverseParams
     -- Remove newParamName from list
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
-    let insertPos := currentNames.zipIdx 
+    let insertPos := currentNames.zipIdx
       |>.findRev? (fun (name, _) => dependencies.contains name)
       |>.map (·.snd + 1) |>.getD 0
     result := currentNames.insertIdx insertPos newParamName
