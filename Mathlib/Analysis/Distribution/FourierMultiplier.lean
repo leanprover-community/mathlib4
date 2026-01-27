@@ -50,7 +50,7 @@ theorem fourierMultiplierCLM_sum {g : ι → E → 𝕜} {s : Finset ι}
     (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
     fourierMultiplierCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, fourierMultiplierCLM F (g i) := by
   ext1 f
-  simpa [fourierMultiplierCLM_apply, smulLeftCLM_sum hg] using map_sum _ _ _
+  simp [fourierMultiplierCLM_apply, smulLeftCLM_sum hg]
 
 variable [CompleteSpace F]
 
@@ -73,7 +73,7 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢(E, F)) :
   rw [fourierMultiplierCLM_apply, ← FourierTransform.fourierInv_smul, ← fourier_lineDerivOp_eq,
     FourierTransform.fourierInv_fourier_eq]
 
-/-open Laplacian
+open Laplacian
 
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (‖·‖ ^ 2) f := by
@@ -93,9 +93,8 @@ theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢(E, F)) :
     simp
   rw [fourierMultiplierCLM_ofReal ℂ (by fun_prop)]
   rw [fourierMultiplierCLM_fourierMultiplierCLM_apply (by fun_prop) (by fun_prop)]
+  simp [pow_two]
   congr 3
-  ext y
-  simp [pow_two]-/
 
 end SchwartzMap
 
@@ -174,7 +173,7 @@ theorem lineDeriv_eq_fourierMultiplierCLM (m : E) (f : 𝓢'(E, F)) :
   rw [fourierMultiplierCLM_apply, ← FourierTransform.fourierInv_smul, ← fourier_lineDerivOp_eq,
     FourierTransform.fourierInv_fourier_eq]
 
-/-open Laplacian
+open Laplacian
 
 theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
     Δ f = -(2 * π) ^ 2 • fourierMultiplierCLM F (fun x ↦ Complex.ofReal (‖x‖ ^ 2)) f := by
@@ -196,6 +195,6 @@ theorem laplacian_eq_fourierMultiplierCLM (f : 𝓢'(E, F)) :
     simp
   · ext y
     simp
-    ring-/
+    ring
 
 end TemperedDistribution
