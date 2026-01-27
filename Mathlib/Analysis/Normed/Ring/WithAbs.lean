@@ -5,39 +5,50 @@ Authors: Salvatore Mercuri
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Basic
-public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Analysis.Normed.Ring.TransferInstance
 
 /-!
-# WithAbs
+# `WithAbs` type synonym
 
-`WithAbs v` is a type synonym for a semiring `R` which depends on an absolute value. The point of
-this is to allow the type class inference system to handle multiple sources of instances that
-arise from absolute values.
+`WithAbs v` is a copy of the semiring `R` with the same underlying ring structure, but assigned
+`v`-dependent instances (such as `NormedRing`) where `v` is an absolute value on `R`.
 
 ## Main definitions
 - `WithAbs` : type synonym for a semiring which depends on an absolute value. This is
   a function that takes an absolute value on a semiring and returns the semiring. This can be used
   to assign and infer instances on a semiring that depend on absolute values.
-- `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
-- `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
+- `WithAbs.equivAux v` : the canonical (type) equivalence between `WithAbs v` and `R`.
+- `WithAbs.equiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
 -/
 
 @[expose] public section
 
 open Topology
 
-noncomputable section
-
-variable {R S : Type*} [Semiring S] [PartialOrder S]
+variable {R : Type*} {S : Type*} [Semiring S] [PartialOrder S]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
 on a semiring that depend on absolute values.
 
 This is also helpful when dealing with several absolute values on the same semiring. -/
-@[nolint unusedArguments]
-def WithAbs [Semiring R] : AbsoluteValue R S → Type _ := fun _ => R
+structure WithAbs [Semiring R] (v : AbsoluteValue R S) where
+  /-- Converts an element of `R` to an element of `WithAbs v`. -/
+  toAbs (v) ::
+  /-- Converts an element of `WithAbs v` to an element of `R`. -/
+  ofAbs : R
+
+section Notation
+
+open Lean.PrettyPrinter.Delaborator
+
+/-- This prevents `toAbs p x` being printed as `{ ofAbs := x }` by `delabStructureInstance`. -/
+@[app_delab WithAbs.toAbs]
+meta def WithAbs.delabToAbs : Delab := delabApp
+
+end Notation
 
 namespace WithAbs
 
@@ -45,95 +56,228 @@ section semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
 
-instance instNontrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
+lemma ofAbs_toAbs (x : R) : ofAbs (toAbs v x) = x := rfl
+@[simp] lemma toAbs_ofAbs (x : WithAbs v) : toAbs v (ofAbs x) = x := rfl
 
-instance instUnique [Unique R] : Unique (WithAbs v) := inferInstanceAs (Unique R)
+lemma ofAbs_surjective : Function.Surjective (ofAbs (v := v)) :=
+  Function.RightInverse.surjective <| ofAbs_toAbs _
 
-instance instSemiring : Semiring (WithAbs v) := inferInstanceAs (Semiring R)
+lemma toAbs_surjective : Function.Surjective (toAbs v) :=
+  Function.RightInverse.surjective <| toAbs_ofAbs _
 
+lemma ofAbs_injective : Function.Injective (ofAbs (v := v)) :=
+  Function.LeftInverse.injective <| toAbs_ofAbs _
+
+lemma toAbs_injective : Function.Injective (toAbs v) :=
+  Function.LeftInverse.injective <| ofAbs_toAbs _
+
+lemma ofAbs_bijective : Function.Bijective (ofAbs (v := v)) :=
+  ⟨ofAbs_injective v, ofAbs_surjective v⟩
+
+lemma toAbs_bijective : Function.Bijective (toAbs v) :=
+  ⟨toAbs_injective v, toAbs_surjective v⟩
+
+/-- The canonical (type) equivalence between `WithAbs v` and `R`. See `WithAbs.equiv` for
+the semiring equivalence. -/
+def equivAux : WithAbs v ≃ R where
+  toFun := ofAbs
+  invFun := toAbs v
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+instance instNontrivial [Nontrivial R] : Nontrivial (WithAbs v) := (equivAux v).nontrivial
+instance instUnique [Unique R] : Unique (WithAbs v) := (equivAux v).unique
+instance instSemiring : Semiring (WithAbs v) := (equivAux v).semiring
 instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 
+@[simp] lemma toAbs_zero : toAbs v (0 : R) = 0 := rfl
+@[simp] lemma ofAbs_zero : ofAbs (0 : WithAbs v) = 0 := rfl
+
+@[simp] lemma toAbs_one : toAbs v (1 : R) = 1 := rfl
+@[simp] lemma ofAbs_one : ofAbs (1 : WithAbs v) = 1 := rfl
+
+@[simp] lemma toAbs_add (x y : R) : toAbs v (x + y) = toAbs v x + toAbs v y := rfl
+@[simp] lemma ofAbs_add (x y : WithAbs v) : ofAbs (x + y) = ofAbs x + ofAbs y := rfl
+
+@[simp] lemma toAbs_eq_zero {x : R} : toAbs v x = 0 ↔ x = 0 := (toAbs_injective v).eq_iff
+@[simp] lemma ofAbs_eq_zero {x : WithAbs v} : ofAbs x = 0 ↔ x = 0 := (ofAbs_injective v).eq_iff
+
+@[simp] lemma toAbs_pow (x : R) (n : ℕ) : toAbs v (x ^ n) = toAbs v x ^ n := rfl
+@[simp] lemma ofAbs_pow (x : WithAbs v) (n : ℕ) : ofAbs (x ^ n) = ofAbs x ^ n := rfl
+
 /-- The canonical (semiring) equivalence between `WithAbs v` and `R`. -/
-def equiv : WithAbs v ≃+* R := RingEquiv.refl _
+@[simps apply symm_apply]
+def equiv : WithAbs v ≃+* R where
+  toFun := ofAbs
+  invFun := toAbs v
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+
+variable {T : Type*} [Semiring T] (w : AbsoluteValue T S)
+
+/-- Lift a ring hom to `WithAbs`. -/
+def map (f : R →+* T) : WithAbs v →+* WithAbs w :=
+  (equiv w).symm.toRingHom.comp (f.comp (equiv v).toRingHom)
+
+@[simp]
+theorem map_id : WithAbs.map v v (RingHom.id R) = RingHom.id (WithAbs v) := rfl
+
+theorem map_comp {U : Type*} [Semiring U] (u : AbsoluteValue U S) (f : T →+* U)
+    (g : R →+* T) : map v u (f.comp g) = (map w u f).comp (map v w g) :=
+  rfl
+
+/-- Lift a `RingEquiv` to `WithAbs`. -/
+def congr (f : R ≃+* T) : WithAbs v ≃+* WithAbs w where
+  __ := (WithAbs.map v w f.toRingHom)
+  invFun := (WithAbs.map w v f.symm.toRingHom)
+  left_inv x := by simp [← RingHom.comp_apply, ← map_comp]
+  right_inv x := by simp [← RingHom.comp_apply, ← map_comp]
+
+@[simp]
+theorem congr_refl : congr v v (RingEquiv.refl R) = RingEquiv.refl (WithAbs v) :=
+  rfl
+
+theorem congr_trans {U : Type*} [Semiring U] (u : AbsoluteValue U S)
+    (f : T ≃+* U) (g : R ≃+* T) :
+    congr v u (g.trans f) = (congr v w g).trans (congr w u f) :=
+  rfl
+
+theorem congr_symm (f : R ≃+* T) : (congr v w f).symm = congr w v f.symm := rfl
+
+@[simp]
+theorem ofAbs_congr_apply {x : WithAbs v} (f : R ≃+* T) :
+    (congr v w f x).ofAbs = f x.ofAbs := rfl
+
+@[simp]
+theorem congr_toAbs_apply {x : R} (f : R ≃+* T) :
+    congr v w f (toAbs v x) = toAbs w (f x) := rfl
+
+@[simp]
+theorem congr_symm_toAbs_apply {x : T} (f : R ≃+* T) :
+    (congr v w f).symm (toAbs w x) = toAbs v (f.symm x) := rfl
 
 /-- The canonical (semiring) equivalence between `WithAbs v` and `WithAbs w`, for any two
 absolute values `v` and `w` on `R`. -/
+@[deprecated "Use `WithAbs.congr` instead." (since := "2026-01-23")]
 def equivWithAbs (v w : AbsoluteValue R S) : WithAbs v ≃+* WithAbs w :=
-    (WithAbs.equiv v).trans <| (WithAbs.equiv w).symm
+    congr v w (.refl R)
 
+@[deprecated "Use `WithAbs.congr_symm` instead." (since := "2026-01-23")]
 theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
-    (equivWithAbs v w).symm = equivWithAbs w v := rfl
+    (congr v w (.refl R)).symm = (congr w v (RingEquiv.refl R).symm) :=
+  congr_symm _ _ _
 
-@[simp]
+@[deprecated "Use `WithAbs.ofAbs_congr_apply` instead." (since := "2026-01-23")]
 theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
-    equiv v ((equivWithAbs v w).symm x) = equiv w x := rfl
+    equiv v ((congr v w (.refl R)).symm x) = equiv w x := ofAbs_congr_apply v w (.refl R)
 
-@[simp]
+@[deprecated "Use `WithAbs.congr_toAbs_apply` instead." (since := "2026-01-23")]
 theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    equivWithAbs v w ((equiv v).symm x) = (equiv w).symm x := rfl
+    congr v w (.refl R) ((equiv v).symm x) = (equiv w).symm x := congr_toAbs_apply _ _ _
 
-@[simp]
+@[deprecated "Use `WithAbs.congr_symm_toAbs_apply` instead." (since := "2026-01-23")]
 theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
-    (equivWithAbs v w).symm ((equiv w).symm x) = (equiv v).symm x := rfl
+    (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x :=
+  congr_symm_toAbs_apply _ _ _
 
 end semiring
 
-section more_instances
+section comm_semiring
 
-instance instCommSemiring [CommSemiring R] (v : AbsoluteValue R S) : CommSemiring (WithAbs v) :=
-  inferInstanceAs (CommSemiring R)
+variable [CommSemiring R] (v : AbsoluteValue R S)
 
-instance instRing [Ring R] (v : AbsoluteValue R S) : Ring (WithAbs v) := inferInstanceAs (Ring R)
+instance instCommSemiring : CommSemiring (WithAbs v) := (equiv v).commSemiring
 
-instance instCommRing [CommRing R] (v : AbsoluteValue R S) : CommRing (WithAbs v) :=
-  inferInstanceAs (CommRing R)
+end comm_semiring
 
-instance normedRing [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
-  v.toNormedRing
+section ring
 
-lemma norm_eq_abv [Ring R] (v : AbsoluteValue R ℝ) (x : WithAbs v) :
+variable [Ring R]
+
+instance instRing (v : AbsoluteValue R S) : Ring (WithAbs v) := (equiv v).ring
+
+noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
+  letI := v.toNormedRing
+  (equiv v).normedRing
+
+lemma norm_eq_abv (v : AbsoluteValue R ℝ) (x : WithAbs v) :
     ‖x‖ = v (WithAbs.equiv v x) := rfl
 
-end more_instances
+lemma norm_eq_abv' (v : AbsoluteValue R ℝ) (x : R) :
+    ‖(WithAbs.equiv v).symm x‖ = v x := rfl
 
-section module
+variable (v : AbsoluteValue R S)
 
-variable {R' : Type*} [Semiring R]
+@[simp] lemma toAbs_sub (x y : R) : toAbs v (x - y) = toAbs v x - toAbs v y := rfl
+@[simp] lemma ofAbs_sub (x y : WithAbs v) : ofAbs (x - y) = ofAbs x - ofAbs y := rfl
 
-instance instModule_left [AddCommGroup R'] [Module R R'] (v : AbsoluteValue R S) :
-    Module (WithAbs v) R' :=
-  inferInstanceAs <| Module R R'
+@[simp] lemma toAbs_neg (x : R) : toAbs v (-x) = - toAbs v x := rfl
+@[simp] lemma ofAbs_neg (x : WithAbs v) : ofAbs (-x) = - ofAbs x := rfl
 
-instance instModule_right [Semiring R'] [Module R R'] (v : AbsoluteValue R' S) :
-    Module R (WithAbs v) :=
-  inferInstanceAs <| Module R R'
+end ring
 
-end module
+section comm_ring
+
+variable [CommRing R] (v : AbsoluteValue R S)
+
+instance instCommRing : CommRing (WithAbs v) := (equiv v).commRing
+
+end comm_ring
+
+section Module
+
+variable {R T : Type*} [Semiring R] [Semiring T] [Module R T]
+
+instance instModule_left (v : AbsoluteValue R S) : Module (WithAbs v) T :=
+  .compHom T (equiv v).toRingHom
+
+instance instModule_right (v : AbsoluteValue T S) : Module R (WithAbs v) := (equiv v).module R
+
+variable (v : AbsoluteValue T S)
+
+@[simp] lemma toAbs_smul (r : R) (t : T) : toAbs v (r • t) = r • toAbs v t := rfl
+@[simp] lemma ofAbs_smul (r : R) (x : WithAbs v) : ofAbs (r • x) = r • ofAbs x := rfl
+
+end Module
 
 section algebra
 
-variable {R' : Type*} [CommSemiring R] [Semiring R'] [Algebra R R']
+variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 
-instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) R' :=
-  inferInstanceAs <| Algebra R R'
+instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
+  .compHom T (equiv v).toRingHom
 
-theorem algebraMap_left_apply (v : AbsoluteValue R S) (x : WithAbs v) :
-    algebraMap (WithAbs v) R' x = algebraMap R R' (WithAbs.equiv v x) := rfl
+theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
+    algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
-instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) :=
-  inferInstanceAs <| Algebra R R'
+instance instAlgebra_right (v : AbsoluteValue T S) : Algebra R (WithAbs v) := (equiv v).algebra R
 
-theorem algebraMap_right_apply (v : AbsoluteValue R' S) (x : R) :
-    algebraMap R (WithAbs v) x = WithAbs.equiv v (algebraMap R R' x) := rfl
+theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
+    algebraMap R (WithAbs v) x = toAbs v (algebraMap R T x):= rfl
 
-theorem equiv_algebraMap_apply (v : AbsoluteValue R S) (w : AbsoluteValue R' S) (x : WithAbs v) :
-    equiv w (algebraMap (WithAbs v) (WithAbs w) x) = algebraMap R R' (equiv v x) := rfl
+theorem algebraMap_apply_ofAbs (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
+    (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
 to `R'`. -/
-def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.refl (A₁ := R')
+def algEquiv (v : AbsoluteValue T S) : (WithAbs v) ≃ₐ[R] T := (equiv v).algEquiv R
 
 end algebra
+
+section is_scalar_tower
+
+variable {R T : Type*} [CommSemiring R] [Semiring T]
+
+instance instIsScalarTower [Module R T] (v : AbsoluteValue R S) : IsScalarTower R (WithAbs v) T :=
+  .of_compHom R (WithAbs v) T
+
+instance instIsScalarTowerLeft [Module R T] (v : AbsoluteValue R S) :
+    IsScalarTower (WithAbs v) R T := .of_compHom (WithAbs v) R T
+
+instance instIsScalarTowerRight [Algebra R T] (v : AbsoluteValue T S) :
+    IsScalarTower R T (WithAbs v) := (equiv v).isScalarTower R T
+
+end is_scalar_tower
 
 end WithAbs
 
