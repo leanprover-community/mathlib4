@@ -5,8 +5,8 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Analysis.Normed.Field.WithAbs
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Equivalence of real-valued absolute values
@@ -352,12 +352,12 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
         aesop (add simp [h.isNontrivial_congr])⟩
 
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
-    (hU : U ∈ 𝓝 0) : WithAbs.equivWithAbs v w '' U ∈ 𝓝 0 := by
+    (hU : U ∈ 𝓝 0) : WithAbs.congr v w (.refl F) '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
   obtain ⟨ε, hε, hU⟩ := hU
   obtain ⟨c, hc, hvw⟩ := isEquiv_iff_exists_rpow_eq.1 h
   refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
-  rw [← RingEquiv.apply_symm_apply (WithAbs.equivWithAbs v w) x]
+  rw [← RingEquiv.apply_symm_apply (WithAbs.congr v w (.refl F)) x]
   refine Set.mem_image_of_mem _ (hU ?_)
   rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
     rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
@@ -365,18 +365,18 @@ theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (Wit
 
 open Topology IsTopologicalAddGroup in
 theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
-    IsEmbedding (WithAbs.equivWithAbs v w) := by
+    IsEmbedding (WithAbs.congr v w (.refl F)) := by
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
-  · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by simp [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+  · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
+      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
-    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss
+    rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
-    v.IsEquiv w ↔ IsHomeomorph (WithAbs.equivWithAbs v w) := by
+    v.IsEquiv w ↔ IsHomeomorph (WithAbs.congr v w (.refl F)) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]
   refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
   refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
@@ -384,7 +384,7 @@ theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
   conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
   simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
   exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
-    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.equivWithAbs v w).symm)).2
+    simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.congr v w (.refl F)).symm)).2
       continuous_id |>.tendsto 0 |>.comp h ⟩
 
 end Real
