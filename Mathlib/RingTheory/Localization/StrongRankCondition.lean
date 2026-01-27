@@ -33,7 +33,7 @@ private def localizationMap (ι : Type*) :
   map_add' _ _ := funext fun i ↦ by simp
   isLocalizationMap' := .pi _ fun i ↦ by exact h
 
-lemma localizationMap_smul {ι : Type*} {r : R} {x : ι → R} :
+private lemma localizationMap_smul {ι : Type*} {r : R} {x : ι → R} :
     localizationMap h ι (r • x) = r • localizationMap h ι x :=
   funext fun i ↦ smul_assoc r (x i) 1
 
