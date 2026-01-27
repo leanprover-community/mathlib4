@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Square
 public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+public import Mathlib.CategoryTheory.Abelian.CommSq
 public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.KernelCokernelComp
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Retract
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
@@ -37,86 +39,8 @@ namespace CategoryTheory
 
 open Category Limits ZeroObject MorphismProperty
 
-section -- to be moved
-
-variable {C : Type*} [Category* C] [HasZeroMorphisms C]
-  {X₁ X₂ X₃ X₄ : C} {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
-
-lemma Abelian.isIso_kernel_map_of_isPullback [HasKernel t] [HasKernel b]
-    (sq : IsPullback t l r b) :
-    IsIso (kernel.map _ _ _ _ sq.w) :=
-  ⟨kernel.lift _ (sq.lift 0 (kernel.ι b) (by simp)) (by simp),
-    by ext; exact sq.hom_ext (by cat_disch) (by cat_disch), by cat_disch⟩
-
-lemma Abelian.isIso_cokernel_map_of_isPushout [HasCokernel t] [HasCokernel b]
-    (sq : IsPushout t l r b) :
-    IsIso (cokernel.map _ _ _ _ sq.w) :=
-  ⟨cokernel.desc _ (sq.desc (cokernel.π t) 0 (by simp)) (by simp),
-    by cat_disch, by ext; exact sq.hom_ext (by cat_disch) (by cat_disch)⟩
-
-end
-
-section -- to be moved
-
-variable {C : Type*} [Category* C] [HasZeroMorphisms C]
-  {X₁ X₂ X₃ X₄ : C} (t : X₁ ⟶ X₂) (b : X₃ ⟶ X₄) (l : X₁ ⟶ X₃) (r : X₂ ⟶ X₄)
-  (fac : t ≫ r = l ≫ b)
-
-instance isIso_kernel_map_of_isIso_of_mono [HasKernel t] [HasKernel b]
-    [IsIso l] [Mono r] :
-    IsIso (kernel.map _ _ _ _ fac) :=
-  ⟨kernel.lift _ (kernel.ι b ≫ inv l) (by simp [← cancel_mono r, fac]),
-    by cat_disch, by cat_disch⟩
-
-instance isIso_cokernel_map_of_isIso_of_epi [HasCokernel t] [HasCokernel b]
-    [Epi l] [IsIso r] :
-    IsIso (cokernel.map _ _ _ _ fac) :=
-  ⟨cokernel.desc _ (inv r ≫ cokernel.π t) (by simp [← cancel_epi l, ← reassoc_of% fac]),
-    by cat_disch, by cat_disch⟩
-
-end
-
-
 variable {C : Type u} [Category.{v} C] [Abelian C]
   {D : Type u'} [Category.{v'} D] [Abelian D]
-
-namespace Abelian -- to be moved
-
-variable {X₁ X₂ X₃ X₄ : C} {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
-
-lemma mono_cokernel_map_of_isPullback (sq : IsPullback t l r b) :
-    Mono (cokernel.map _ _ _ _ sq.w) := by
-  rw [Preadditive.mono_iff_cancel_zero]
-  intro A₀ z hz
-  obtain ⟨A₁, π₁, _, x₂, hx₂⟩ :=
-    surjective_up_to_refinements_of_epi (cokernel.π t) z
-  have : (ShortComplex.mk _ _ (cokernel.condition b)).Exact :=
-    ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel b)
-  obtain ⟨A₂, π₂, _, x₃, hx₃⟩ := this.exact_up_to_refinements (x₂ ≫ r) (by
-    simpa [hz] using hx₂.symm =≫ cokernel.map _ _ _ _ sq.w)
-  obtain ⟨x₁, hx₁, rfl⟩ := sq.exists_lift (π₂ ≫ x₂) x₃ (by simpa)
-  simp [← cancel_epi π₁, ← cancel_epi π₂, hx₂, ← reassoc_of% hx₁]
-
-lemma epi_kernel_map_of_isPushout (sq : IsPushout t l r b) :
-    Epi (kernel.map _ _ _ _ sq.w) := by
-  rw [epi_iff_surjective_up_to_refinements]
-  intro A₀ z
-  obtain ⟨A₁, π₁, _, x₁, hx₁⟩ := ((ShortComplex.mk _ _
-    sq.cokernelCofork.condition).exact_of_g_is_cokernel
-      sq.isColimitCokernelCofork).exact_up_to_refinements
-        (z ≫ kernel.ι _ ≫ biprod.inr) (by simp)
-  refine ⟨A₁, π₁, inferInstance, -kernel.lift _ x₁ ?_, ?_⟩
-  · simpa using hx₁.symm =≫ biprod.fst
-  · ext
-    simpa using hx₁ =≫ biprod.snd
-
-end Abelian
-
-instance : (monomorphisms C).IsStableUnderCobaseChange :=
-  .mk' (fun _ _ _ _ _ _ (_ : Mono _) ↦ inferInstanceAs (Mono _))
-
-instance : (epimorphisms C).IsStableUnderBaseChange :=
-  .mk' (fun _ _ _ _ _ _ (_ : Epi _) ↦ inferInstanceAs (Epi _))
 
 namespace ObjectProperty
 
@@ -266,7 +190,7 @@ lemma isoModSerre_isInvertedBy_iff (F : C ⥤ D)
 
 instance : P.monoModSerre.IsStableUnderBaseChange where
   of_isPullback sq h :=
-    have := Abelian.isIso_kernel_map_of_isPullback sq.flip
+    have := isIso_kernel_map_of_isPullback sq.flip
     P.prop_of_iso (asIso (kernel.map _ _ _ _ sq.w.symm)).symm h
 
 instance : P.epiModSerre.IsStableUnderBaseChange where
@@ -285,7 +209,7 @@ instance : P.monoModSerre.IsStableUnderCobaseChange where
 
 instance : P.epiModSerre.IsStableUnderCobaseChange where
   of_isPushout sq h :=
-    have := Abelian.isIso_cokernel_map_of_isPushout sq.flip
+    have := isIso_cokernel_map_of_isPushout sq.flip
     P.prop_of_iso (asIso (cokernel.map _ _ _ _ sq.w.symm)) h
 
 instance : P.isoModSerre.IsStableUnderCobaseChange := by
