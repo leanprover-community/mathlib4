@@ -96,7 +96,7 @@ lemma iff_eq_top_or_exists :
     · exact step _ _ HK.le Ksn h
 
 /-- A proper subnormal subgroup is contained in a proper normal subgroup. -/
-lemma exists_normal_and_ne_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
+lemma exists_normal_and_le_and_lt_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
     ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
   induction hN with
   | top => contradiction
@@ -109,10 +109,10 @@ lemma exists_normal_and_ne_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
 /--
 A subnormal subgroup is either the whole group or it is contained in a proper normal subgroup.
 -/
-lemma le_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
+lemma lt_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
   obtain rfl | H_ne := eq_or_ne H ⊤
   · simp
-  · grind only [iff_eq_top_or_exists, exists_normal_and_ne_top_of_ne]
+  · grind only [iff_eq_top_or_exists, exists_normal_and_le_and_lt_top_of_ne]
 
 /--
 A characterisation of satisfying `IsSubnormal` in terms of chains of subgroups, each normal in
