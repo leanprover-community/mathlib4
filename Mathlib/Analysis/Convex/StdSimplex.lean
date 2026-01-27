@@ -224,6 +224,36 @@ lemma stdSimplexHomeomorphUnitInterval_zero :
 lemma stdSimplexHomeomorphUnitInterval_one :
     stdSimplexHomeomorphUnitInterval ⟨_, single_mem_stdSimplex _ 1⟩ = 1 := rfl
 
+/-! ### Diameter of a Standard Simplex (sup metric) -/
+
+variable {ι}
+
+/-- The (sup metric) diameter of a standard simplex is less than or equal to 1. -/
+theorem diam_stdSimplex_le : Metric.diam (stdSimplex ℝ ι) ≤ 1 :=
+  Metric.diam_le_of_forall_dist_le zero_le_one fun x hx y hy ↦
+    (dist_pi_le_iff zero_le_one).2 fun i ↦ by
+      have hx := mem_Icc_of_mem_stdSimplex hx i
+      have hy := mem_Icc_of_mem_stdSimplex hy i
+      grind [Real.dist_eq]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a subsingleton is 0. -/
+@[simp]
+theorem diam_stdSimplex_of_subsingleton [Subsingleton ι] : Metric.diam (stdSimplex ℝ ι) = 0 := by
+  cases isEmpty_or_nonempty ι with
+  | inl h => rw [stdSimplex_of_isEmpty_index, Metric.diam_empty]
+  | inr h => rw [stdSimplex_unique, Metric.diam_singleton]
+
+/-- The (sup metric) diameter of a standard simplex indexed by a nontrivial index is 1. -/
+@[simp]
+theorem diam_stdSimplex [Nontrivial ι] : Metric.diam (stdSimplex ℝ ι) = 1 := by
+  refine le_antisymm diam_stdSimplex_le ?_
+  obtain ⟨i, j, hij⟩ := exists_pair_ne ι
+  classical
+  rw [show (1 : ℝ) = dist (Pi.single i 1 : ι → ℝ) (Pi.single j 1) by
+    simp [dist_single_single i j (1 : ℝ) 1 hij, Real.dist_eq]]
+  exact Metric.dist_le_diam_of_mem (bounded_stdSimplex _)
+    (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
+
 end Topology
 
 namespace stdSimplex
