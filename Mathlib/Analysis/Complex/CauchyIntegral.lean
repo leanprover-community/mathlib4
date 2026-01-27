@@ -15,6 +15,7 @@ public import Mathlib.Analysis.Real.Cardinality
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
+import Mathlib.Algebra.Divisibility.Basic
 
 /-!
 # Cauchy integral formula
@@ -705,33 +706,77 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 open AnalyticAt
 
-lemma analyticOrderAt_deriv_of_pos {f : ℂ → ℂ} {z₀ : ℂ} (hf : AnalyticAt ℂ f z₀) {n : ℕ}
-    (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0) :
+lemma foo {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {n : ℕ} (x : E) (hn : (n : 𝕜) ≠ 0) (hx : x ≠ 0) : n • x ≠ 0 := by
+  intro h
+  apply hx
+  have : x = (1 / (n : 𝕜)) • ((n : 𝕜) • x) := by
+    rw [← smul_assoc]
+    aesop
+  norm_cast at this
+  rw [this, h]
+  simp
+
+lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
+  (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0)
+   (hchar : ¬ ringChar 𝕜 ∣ n) :
     analyticOrderAt (deriv f) z₀ = (n - 1 : ℕ) := by
   have ⟨g, hg, hgneq0, hexp⟩ := analyticOrderAt_eq_natCast hf |>.mp horder
-  refine analyticOrderAt_eq_natCast hf.deriv |>.mpr ⟨fun z ↦ n * g z + (z - z₀) * deriv g z, ?_⟩
-  refine ⟨fun_add (by simpa using fun_const_smul hg) (by fun_prop), by simp_all, ?_⟩
+  refine analyticOrderAt_eq_natCast hf.deriv |>.mpr ⟨fun z ↦ n • g z + (z - z₀) • deriv g z, ?_⟩
+  refine ⟨fun_add (by
+    have := fun_const_smul (c := (n : 𝕜)) (f := g) (x := z₀) hg
+    norm_cast at this
+    ) (by fun_prop), by
+      simp only [sub_self, zero_smul, add_zero]
+      have Hnx {x : E} (hn : (n : 𝕜) ≠ 0) (hx : x ≠ 0) : n • x ≠ 0 := by
+        intro h
+        apply hx
+        have : x = (1 / (n : 𝕜)) • ((n : 𝕜) • x) := by rw [← smul_assoc]; aesop
+        norm_cast at this
+        rw [this, h]
+        simp
+      apply Hnx
+      · intros H
+        have := ringChar.dvd H
+        contradiction
+      · exact hgneq0
+    , ?_⟩
   apply eventually_iff_exists_mem.mpr
   have ⟨Ug, hU, hUf⟩ := eventually_iff_exists_mem.mp hexp
   have ⟨Ur, hgz, hgN⟩ := exists_mem_nhds_analyticOnNhd hg
   refine ⟨interior (Ug ∩ Ur), by simp_all, fun z Hz ↦ ?_⟩
-  trans deriv (fun z ↦ (z - z₀) ^ n * g z) z
+  trans deriv (fun z ↦ (z - z₀) ^ n • g z) z
   · rw [EventuallyEq.deriv_eq <| eventually_iff_exists_mem.mpr ?_]
     exact ⟨_, isOpen_interior.mem_nhds Hz, (hUf · <| interior_subset · |>.left)⟩
   have := interior_subset Hz |>.right
-  rw [smul_eq_mul, mul_add, deriv_fun_mul (by simp_all) (differentiableAt <| by aesop)]
+  rw [ smul_add, deriv_fun_smul (by simp_all) (differentiableAt <| by aesop)]
   simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
-    deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', ← mul_assoc, ← pow_succ]
-  grind
+    deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', ← mul_smul, ← pow_succ]
+  have : n - 1 + 1 = n := by lia
+  rw [this]
+  have : (1 : 𝕜) - 0 = 1 := by aesop
+  rw [this]
+  rw [add_comm, mul_one]
+  simp_all only [ne_eq, interior_inter, mem_inter_iff, sub_zero, add_left_inj]
+  obtain ⟨left, right⟩ := Hz
+  have : n • g z = (n : 𝕜) • g z := by norm_cast
+  rw [this]
+  rw [← mul_smul]
+  rw [mul_comm]
 
 lemma analyticOrderAt_iterated_deriv {z₀} (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (k n : ℕ) :
-    n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
+  n = analyticOrderAt f z₀ → n ≠ 0 → k ≤ n → analyticOrderAt (deriv^[k] f) z₀ = (n - k : ℕ) := by
   induction k generalizing n with
   | zero => exact fun Hn Hpos Hk ↦ Hn.symm
-  | succ n hk =>
+  | succ n' hk =>
     intro Hn Hpos Hk
     rw [Function.iterate_succ']
-    exact analyticOrderAt_deriv_of_pos (iterated_deriv hf _) (hk _ Hn Hpos <| by lia) (by lia)
+    apply analyticOrderAt_deriv_of_pos (iterated_deriv hf _) (hk _ Hn Hpos <| by lia) (by lia)
+    have hchar : ringChar ℂ = 0 := by aesop
+    rw [hchar]
+    simp only [zero_dvd_iff, ne_eq]
+    grind
 
 end analyticity
 
