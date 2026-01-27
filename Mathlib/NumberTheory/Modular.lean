@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Instances.ZMultiples
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Localization.Submodule
 public import Mathlib.RingTheory.PowerBasis
 
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # The conductor ideal
