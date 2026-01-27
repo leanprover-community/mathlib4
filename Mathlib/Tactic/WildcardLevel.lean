@@ -49,13 +49,11 @@ is indicated by the syntax.
 
 open Lean Meta Elab Term
 
-public section
 /-- The syntax category for wildcard universe levels -/
 declare_syntax_cat wildcard_level
 /-- The syntax category for comma-separated wildcard universe levels.
 We need this as a separate category to handle the token `,*` as separate `,` and `*`. -/
 declare_syntax_cat comma_wildcard_level
-end
 
 @[nolint docBlame] syntax "*" : wildcard_level
 @[nolint docBlame] syntax ident noWs "*" : wildcard_level
