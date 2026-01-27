@@ -9,12 +9,13 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Orthogonality
 public import Mathlib.Analysis.Complex.Trigonometric
+import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: Chebyshev–Gauss
 
 The Chebyshev–Gauss property calculates an integral of a polynomial of degree `< 2 * n`
-with respect to the weight function `1 / √ (1 - x ^ 2)` supported on `[-1, 1]` by a sum
+with respect to the weight function `√(1 - x ^ 2)⁻¹` supported on `[-1, 1]` by a sum
 over appropriate evaluations of the polynomial.
 
 ## Main statements
@@ -44,11 +45,9 @@ private lemma exp_sub_one_ne_zero {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2
 
 private theorem sum_exp {n : ℕ} {k : ℤ} (hn : n ≠ 0) (hk : ¬ (2 * n : ℤ) ∣ k) :
     ∑ i ∈ range n, exp ((k * ((2 * i + 1) / (2 * n) * π)) * I) =
-    (exp (k / (2 * n) * π * I) / (exp (k / n * π * I) - 1)) *
-    ((-1) ^ k - 1) := by
+      (exp (k / (2 * n) * π * I) / (exp (k / n * π * I) - 1)) * ((-1) ^ k - 1) := by
   suffices (∑ i ∈ range n, exp ((k * ((2 * i + 1) / (2 * n) * π)) * I)) *
-    exp (-(k / (2 * n) * π * I)) * (exp (k / n * π * I) - 1) =
-    (-1) ^ k - 1 by
+    exp (-(k / (2 * n) * π * I)) * (exp (k / n * π * I) - 1) = (-1) ^ k - 1 by
     rw [Complex.exp_neg] at this
     have hf {s a b t : ℂ} (h : s * a⁻¹ * b = t) (ha : a ≠ 0) (hb : b ≠ 0) : s = a / b * t := by
       linear_combination (norm := field) h * a / b
@@ -147,21 +146,21 @@ theorem poly_eq_sum_of_deg {F : Type*} [Field F] {n : ℕ} {P : F[X]} {Q : Fin n
         grind
 
 theorem integral_eq_sumZeroes {n : ℕ} {P : ℝ[X]} (hn : n ≠ 0) (hP : P.degree < 2 * n) :
-    ∫ x in -1..1, P.eval x * (1 / √(1 - x ^ 2)) = sumZeroes n P := by
+    ∫ x, P.eval x ∂measureT = sumZeroes n P := by
   obtain ⟨c, rfl⟩ := poly_eq_sum_of_deg hP (fun i => show (T ℝ i).degree = i by simp; rfl)
-  simp_rw [eval_finset_sum, eval_smul, sum_mul]
-  rw [intervalIntegral.integral_finset_sum, sumZeroes_sum]
-  · simp_rw [sumZeroes_smul, smul_eq_mul, mul_assoc, intervalIntegral.integral_const_mul]
+  simp_rw [eval_finset_sum, eval_smul]
+  rw [MeasureTheory.integral_finset_sum, sumZeroes_sum]
+  · simp_rw [sumZeroes_smul, smul_eq_mul, MeasureTheory.integral_const_mul]
     congr! with i hi
     by_cases i.val = 0
-    case pos hi => rw [hi, Nat.cast_zero, integral_T_real_zero, sumZeroes_T_zero hn]
+    case pos hi => rw [hi, Nat.cast_zero, integral_eval_T_real_measureT_zero, sumZeroes_T_zero hn]
     case neg hi =>
       have : ¬ (2 * n : ℤ) ∣ i := by
         refine (Int.not_dvd_iff_lt_mul_succ _ (by grind)).mpr ⟨0, ⟨by grind, ?_⟩⟩
         rw_mod_cast [zero_add, mul_one]
         exact i.isLt
-      rw [integral_T_real_of_ne_zero (by grind), sumZeroes_T_of_not_dvd this]
+      rw [integral_eval_T_real_measureT_of_ne_zero (by grind), sumZeroes_T_of_not_dvd this]
   · simp_rw [← eval_smul]
-    exact fun i hi => integrable_poly_T _
+    exact fun i hi => integrable_measureT (by fun_prop)
 
 end Polynomial.Chebyshev
