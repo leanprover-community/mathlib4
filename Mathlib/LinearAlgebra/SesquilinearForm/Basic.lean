@@ -170,19 +170,21 @@ theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl
   simp_rw [domRestrict₁₂_apply]
   exact H _ _
 end
+
 @[simp]
 theorem flip_isRefl_iff : B.flip.IsRefl ↔ B.IsRefl :=
-  ⟨fun h x y H ↦ h y x ((B.flip_apply _ _).trans H), fun h x y ↦ h y x⟩
+  forall_comm
+
+lemma ker_flip (H : B.IsRefl) : B.flip.ker = B.ker := by
+  ext x
+  simp [LinearMap.ext_iff, H.eq_iff]
 
 theorem ker_flip_eq_bot (H : B.IsRefl) (h : LinearMap.ker B = ⊥) : LinearMap.ker B.flip = ⊥ := by
-  refine ker_eq_bot'.mpr fun _ hx ↦ ker_eq_bot'.mp h _ ?_
-  ext
-  exact H _ _ (LinearMap.congr_fun hx _)
+  rwa [H.ker_flip]
 
 theorem ker_eq_bot_iff_ker_flip_eq_bot (H : B.IsRefl) :
     LinearMap.ker B = ⊥ ↔ LinearMap.ker B.flip = ⊥ := by
-  refine ⟨ker_flip_eq_bot H, fun h ↦ ?_⟩
-  exact (congr_arg _ B.flip_flip.symm).trans (ker_flip_eq_bot (flip_isRefl_iff.mpr H) h)
+  rwa [ker_flip]
 
 end IsRefl
 
