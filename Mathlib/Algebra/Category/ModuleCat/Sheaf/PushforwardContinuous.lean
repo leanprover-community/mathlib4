@@ -276,6 +276,9 @@ def overPushforwardOverAdj (x : C) :
   · ext y : 2
     simp [pushforwardOver, ← Functor.map_comp, ← op_comp]
 
+instance (x : C) : IsLeftAdjoint (pushforward.{u'} (𝟙 (R.over x))) where
+  exists_rightAdjoint := ⟨_, Nonempty.intro (overPushforwardOverAdj x)⟩
+
 end
 
 end Adjunction
