@@ -218,14 +218,10 @@ lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
   suffices (span S (range (inclusion h₁))).map q.subtype = q by
     apply map_injective_of_injective q.injective_subtype
     rw [this, q.map_subtype_top]
-  rw [map_span]
-  suffices q.subtype '' ((LinearMap.range (inclusion h₁)) : Set <| q.restrictScalars R) = p by
-    sorry
-    -- refine this ▸ le_antisymm ?_ h₂
-    -- simpa using span_mono (R := S) h₁
-  ext x
-  sorry -- requires a def for coercion of SetLike to Type*
-  -- simpa [range_inclusion] using fun hx ↦ h₁ hx
+  simp_rw [map_span, ← range_comp', coe_subtype, coe_inclusion, Subtype.range_val]
+  refine le_antisymm ?_ h₂
+  grw [h₁]
+  simp
 
 
 @[simp]

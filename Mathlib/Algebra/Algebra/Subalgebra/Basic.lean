@@ -529,7 +529,7 @@ variable [Semiring A] [Algebra R A] [Semiring B] [Algebra R B] [Semiring C] [Alg
 variable (φ : A →ₐ[R] B)
 
 /-- Range of an `AlgHom` as a subalgebra. -/
-@[simps! coe toSubsemiring]
+@[simps! -isSimp coe toSubsemiring]
 protected def range (φ : A →ₐ[R] B) : Subalgebra R B :=
   { φ.toRingHom.rangeS with algebraMap_mem' := fun r => ⟨algebraMap R A r, φ.commutes r⟩ }
 
@@ -571,8 +571,7 @@ abbrev rangeRestrict (f : A →ₐ[R] B) : A →ₐ[R] f.range :=
   f.codRestrict f.range f.mem_range_self
 
 theorem val_comp_rangeRestrict :
-    (Subalgebra.val _).comp φ.rangeRestrict = φ := by -- simp
-  sorry -- requires a def for coercion of SetLike to Type*
+    φ.range.val.comp φ.rangeRestrict = φ := by simp
 
 theorem rangeRestrict_surjective (f : A →ₐ[R] B) : Function.Surjective (f.rangeRestrict) :=
   fun ⟨_y, hy⟩ =>
