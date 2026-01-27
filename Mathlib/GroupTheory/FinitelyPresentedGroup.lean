@@ -75,14 +75,9 @@ def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ where
     toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
     invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
-    left_inv := by
-      intro x
-      simp
-    right_inv := by
-      intro z
-      simp
-    map_mul' := by
-      intro x y
+    left_inv _ := by simp
+    right_inv _ := by simp
+    map_mul' _ _  := by
       ext
       simp [FreeGroup.freeGroupUnitEquivInt]
 
