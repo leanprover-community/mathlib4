@@ -6,6 +6,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 module
 
 public import Mathlib.Analysis.Complex.Exponential
+import Mathlib.Tactic.NormNum.NatFactorial
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -416,6 +417,14 @@ theorem tan_mul_cos {x : ℂ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
 
 @[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  inv_div ..
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  inv_div ..
+
+@[simp]
 theorem tan_neg : tan (-x) = -tan x := by simp [tan, neg_div]
 
 theorem tan_conj : tan (conj x) = conj (tan x) := by rw [tan, sin_conj, cos_conj, ← map_div₀, tan]
@@ -532,6 +541,40 @@ theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
     (cos z + sin z * I) ^ n = cos (↑n * z) + sin (↑n * z) * I := by
   rw [← exp_mul_I, ← exp_mul_I, ← exp_nat_mul, mul_assoc]
 
+open Finset
+
+theorem cos_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖cos x - (1 - x ^ 2 / 2)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
+  calc
+    ‖cos x - (1 - x ^ 2 / 2)‖ =
+        ‖(exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2 +
+         (exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2‖ := by
+      simp [cos, field, Finset.sum_range_succ, Nat.factorial]
+      grind [I_sq, two_ne_zero]
+    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 +
+        ‖exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 := by
+      grw [norm_add_le]
+      simp
+    _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+        ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
+
+theorem sin_bound {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖sin x - (x - x ^ 3 / 6)‖ ≤ ‖x‖ ^ 4 * (5 / 96) :=
+  calc
+    ‖sin x - (x - x ^ 3 / 6)‖ =
+        ‖(exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2 -
+         (exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I / 2‖ := by
+      simp [sin, field, Finset.sum_range_succ, Nat.factorial]
+      grind [I_sq, two_ne_zero]
+    _ ≤ ‖exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 +
+        ‖exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 := by
+      grw [norm_sub_le]
+      simp
+    _ ≤ ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
+        ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
+      grw [exp_bound (by simpa) (by simp), exp_bound (by simpa) (by simp)]
+    _ ≤ ‖x‖ ^ 4 * (5 / 96) := by norm_num
+
 end Complex
 
 namespace Real
@@ -601,6 +644,14 @@ nonrec theorem cot_eq_cos_div_sin : cot x = cos x / sin x :=
 
 theorem tan_mul_cos {x : ℝ} (hx : cos x ≠ 0) : tan x * cos x = sin x := by
   rw [tan_eq_sin_div_cos, div_mul_cancel₀ _ hx]
+
+@[simp]
+theorem tan_inv_eq_cot : (tan x)⁻¹ = cot x :=
+  ofReal_injective <| by simp
+
+@[simp]
+theorem cot_inv_eq_tan : (cot x)⁻¹ = tan x :=
+  ofReal_injective <| by simp
 
 @[simp]
 theorem tan_zero : tan 0 = 0 := by simp [tan]
@@ -732,6 +783,10 @@ theorem cosh_sub : cosh (x - y) = cosh x * cosh y - sinh x * sinh y := by
 nonrec theorem tanh_eq_sinh_div_cosh : tanh x = sinh x / cosh x :=
   ofReal_inj.1 <| by simp [tanh_eq_sinh_div_cosh]
 
+/-- The definition of `tanh` in terms of `exp`. -/
+theorem tanh_eq (x : ℝ) : tanh x = (exp x - exp (-x)) / (exp x + exp (-x)) := by
+  rw [tanh_eq_sinh_div_cosh, sinh_eq, cosh_eq, div_div_div_cancel_right₀ two_ne_zero]
+
 @[simp]
 theorem tanh_zero : tanh 0 = 0 := by simp [tanh]
 
@@ -791,67 +846,33 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
 theorem sinh_lt_cosh : sinh x < cosh x :=
   lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
+theorem tanh_lt_one (x : ℝ) : tanh x < 1 := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem neg_one_lt_tanh (x : ℝ) : -1 < tanh x := by
+  rw [tanh_eq]
+  field_simp
+  grind [exp_pos]
+
+theorem abs_tanh_lt_one (x : ℝ) : |tanh x| < 1 :=
+  abs_lt.mpr ⟨neg_one_lt_tanh x, tanh_lt_one x⟩
+
+theorem tanh_sq_lt_one (x : ℝ) : (tanh x) ^ 2 < 1 :=
+  (sq_lt_one_iff_abs_lt_one (tanh x)).mpr (abs_tanh_lt_one x)
+
 end Real
 
 namespace Real
 
-open Complex Finset
+open Complex
 
-theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) :=
-  calc
-    |cos x - (1 - x ^ 2 / 2)| = ‖Complex.cos x - (1 - (x : ℂ) ^ 2 / 2)‖ := by
-      rw [← Real.norm_eq_abs, ← norm_real]; simp
-    _ = ‖(Complex.exp (x * I) + Complex.exp (-x * I) - (2 - (x : ℂ) ^ 2)) / 2‖ := by
-      simp [Complex.cos, sub_div, add_div]
-    _ = ‖((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) +
-              (Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial)) / 2‖ :=
-      (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2) (by
-          simp only [neg_mul, pow_succ, pow_zero, sum_range_succ, range_zero, sum_empty,
-          Nat.factorial, Nat.cast_succ, zero_add, mul_one, Nat.mul_one, mul_neg, neg_neg]
-          apply Complex.ext <;> simp [div_eq_mul_inv, normSq] <;> ring_nf)))
-    _ ≤ ‖(Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) / 2‖ +
-          ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) / 2‖ := by
-      rw [add_div]; exact norm_add_le _ _
-    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
-          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp
-    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          ‖-x * I‖ ^ 4 * (Nat.succ 4 * ((Nat.factorial 4) * (4 : ℕ) : ℝ)⁻¹) / 2 := by
-      gcongr
-      · exact Complex.exp_bound (by simpa) (by decide)
-      · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+theorem cos_bound {x : ℝ} (hx : |x| ≤ 1) : |cos x - (1 - x ^ 2 / 2)| ≤ |x| ^ 4 * (5 / 96) := by
+  simpa [← ofReal_cos, ← norm_eq_abs, ← norm_real] using Complex.cos_bound (x := x) (by simpa)
 
-theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) :=
-  calc
-    |sin x - (x - x ^ 3 / 6)| = ‖Complex.sin x - (x - x ^ 3 / 6 : ℝ)‖ := by
-      rw [← Real.norm_eq_abs, ← norm_real]; simp
-    _ = ‖((Complex.exp (-x * I) - Complex.exp (x * I)) * I -
-          (2 * x - x ^ 3 / 3 : ℝ)) / 2‖ := by
-      simp [Complex.sin, sub_div, mul_div_cancel_left₀ _ (two_ne_zero' ℂ),
-        div_div, show (3 : ℂ) * 2 = 6 by norm_num]
-    _ = ‖((Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) -
-                (Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial)) * I / 2‖ :=
-      (congr_arg (‖·‖ : ℂ → ℝ)
-        (congr_arg (fun x : ℂ => x / 2)
-          (by
-            simp only [neg_mul, pow_succ, pow_zero, ofReal_sub, ofReal_mul, ofReal_ofNat,
-              ofReal_div, sum_range_succ, range_zero, sum_empty, Nat.factorial, Nat.cast_succ,
-              zero_add, mul_neg, mul_one, neg_neg, Nat.mul_one]
-            apply Complex.ext <;> simp [div_eq_mul_inv, normSq]; ring)))
-    _ ≤ ‖(Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial) * I / 2‖ +
-          ‖-((Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial) * I) / 2‖ := by
-      rw [sub_mul, sub_eq_add_neg, add_div]; exact norm_add_le _ _
-    _ = ‖Complex.exp (x * I) - ∑ m ∈ range 4, (x * I) ^ m / m.factorial‖ / 2 +
-          ‖Complex.exp (-x * I) - ∑ m ∈ range 4, (-x * I) ^ m / m.factorial‖ / 2 := by
-      simp [add_comm]
-    _ ≤ ‖x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 +
-          ‖-x * I‖ ^ 4 * (Nat.succ 4 * (Nat.factorial 4 * (4 : ℕ) : ℝ)⁻¹) / 2 := by
-      gcongr
-      · exact Complex.exp_bound (by simpa) (by decide)
-      · exact Complex.exp_bound (by simpa) (by decide)
-    _ ≤ |x| ^ 4 * (5 / 96) := by norm_num [Nat.factorial]
+theorem sin_bound {x : ℝ} (hx : |x| ≤ 1) : |sin x - (x - x ^ 3 / 6)| ≤ |x| ^ 4 * (5 / 96) := by
+  simpa [← ofReal_sin, ← norm_eq_abs, ← norm_real] using Complex.sin_bound (x := x) (by simpa)
 
 theorem cos_pos_of_le_one {x : ℝ} (hx : |x| ≤ 1) : 0 < cos x :=
   calc 0 < 1 - x ^ 2 / 2 - |x| ^ 4 * (5 / 96) :=

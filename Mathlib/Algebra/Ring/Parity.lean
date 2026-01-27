@@ -50,6 +50,28 @@ end Monoid
 
 @[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
 
+section AddMonoidWithOne
+variable [AddMonoidWithOne α]
+
+@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
+
+end AddMonoidWithOne
+
+section Distrib
+variable [Add α] [Mul α] {a : α}
+
+@[simp] lemma Even.mul_left [LeftDistribClass α] (ha : Even a) (b : α) : Even (b * a) := by
+  rcases ha with ⟨k, rfl⟩
+  use b * k
+  rw [mul_add]
+
+@[simp] lemma Even.mul_right [RightDistribClass α] (ha : Even a) (b : α) : Even (a * b) := by
+  rcases ha with ⟨k, rfl⟩
+  use k * b
+  rw [add_mul]
+
+end Distrib
+
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
@@ -69,11 +91,6 @@ lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
   ext x
   simp [eq_comm, two_mul, Even]
 
-@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
-
-@[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
-
-@[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
 
 lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 
@@ -201,6 +218,38 @@ lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
 lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
   rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 
+@[simp]
+lemma even_add_one : Even (a + 1) ↔ Odd a :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma even_sub_one : Even (a - 1) ↔ Odd a :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma even_add_two : Even (a + 2) ↔ Even a :=
+  ⟨(by convert ·.sub even_two; rw [eq_sub_iff_add_eq]), (·.add even_two)⟩
+
+@[simp]
+lemma even_sub_two : Even (a - 2) ↔ Even a :=
+  ⟨(by convert ·.add even_two; rw [sub_add_cancel]), (·.sub even_two)⟩
+
+@[simp]
+lemma odd_add_one : Odd (a + 1) ↔ Even a :=
+  ⟨(by convert ·.sub_odd odd_one; rw [eq_sub_iff_add_eq]), (·.add_one)⟩
+
+@[simp]
+lemma odd_sub_one : Odd (a - 1) ↔ Even a :=
+  ⟨(by convert ·.add_odd odd_one; rw [sub_add_cancel]), (·.sub_odd odd_one)⟩
+
+@[simp]
+lemma odd_add_two : Odd (a + 2) ↔ Odd a := by
+  rw [← one_add_one_eq_two, ← add_assoc, odd_add_one, even_add_one]
+
+@[simp]
+lemma odd_sub_two : Odd (a - 2) ↔ Odd a := by
+  rw [← odd_add_two (a := a - 2), add_comm_sub, sub_self, add_zero]
+
 end Ring
 
 namespace Nat
@@ -208,7 +257,7 @@ variable {m n : ℕ}
 
 @[grind =]
 lemma odd_iff : Odd n ↔ n % 2 = 1 :=
-  ⟨fun ⟨m, hm⟩ ↦ by cutsat, fun h ↦ ⟨n / 2, by cutsat⟩⟩
+  ⟨fun ⟨m, hm⟩ ↦ by lia, fun h ↦ ⟨n / 2, by lia⟩⟩
 
 instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ odd_iff.symm
 
@@ -237,9 +286,9 @@ lemma odd_add_one {n : ℕ} : Odd (n + 1) ↔ ¬ Odd n := by grind
 
 lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m + n) % 2 = 1 := by grind
 
-@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by cutsat
+@[simp] lemma mod_two_add_succ_mod_two (m : ℕ) : m % 2 + (m + 1) % 2 = 1 := by lia
 
-@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by cutsat
+@[simp] lemma succ_mod_two_add_mod_two (m : ℕ) : (m + 1) % 2 + m % 2 = 1 := by lia
 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by grind
 
@@ -288,6 +337,10 @@ lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by grind
 
 lemma two_dvd_mul_add_one (k : ℕ) : 2 ∣ k * (k + 1) :=
   even_iff_two_dvd.mp (even_mul_succ_self k)
+
+lemma two_dvd_mul_sub_one (k : ℕ) : 2 ∣ k * (k - 1) := by
+  rcases k with rfl | k; · simp
+  simpa [mul_comm (k + 1)] using k.two_dvd_mul_add_one
 
 -- Here are examples of how `parity_simps` can be used with `Nat`.
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by

@@ -139,7 +139,7 @@ theorem repr_mul_isIntegral (hB : IsIntegral R B.gen) {x y : A}
     map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun I _ => ?_
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, map_smulₛₗ, RingHom.id_apply,
-    Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
+    Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
   refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
   exact repr_gen_pow_isIntegral hB hmin _ _

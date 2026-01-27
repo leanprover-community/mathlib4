@@ -9,7 +9,9 @@ public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 public import Mathlib.CategoryTheory.CommSq
-public import Mathlib.Tactic.FinCases
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.SetLike
 
 /-!
 # Multicoequalizer diagrams in complete lattices
@@ -125,5 +127,4 @@ lemma Lattice.BicartSq.multicoequalizerDiagram {T : Type u} [CompleteLattice T]
       (fun i j ↦ bif i then bif j then x₃ else x₁
         else bif j then x₁ else x₂) where
   iSup_eq := by rw [← sq.sup_eq, sup_comm, sup_eq_iSup]
-  eq_inf i j := by
-    grind [inf_idem, inf_comm]
+  eq_inf i j := by grind

@@ -26,14 +26,14 @@ We state several lemmas about the trace and norm maps for finite fields.
 finite field, trace, norm
 -/
 
-@[expose] public section
+public section
 
 
 namespace FiniteField
 
 open Fintype
 
-/-- The trace map from a finite field to its prime field is nongedenerate. -/
+/-- The trace map from a finite field to its prime field is nondegenerate. -/
 theorem trace_to_zmod_nondegenerate (F : Type*) [Field F] [Finite F]
     [Algebra (ZMod (ringChar F)) F] {a : F} (ha : a ≠ 0) :
     ∃ b : F, Algebra.trace (ZMod (ringChar F)) F (a * b) ≠ 0 := by

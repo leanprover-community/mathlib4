@@ -86,7 +86,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
   have h₄ : a ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₁
   have h₅ : b ^ (N + 1) = 0 := pow_eq_zero_of_le (by omega) hn₂
   rw [exp_eq_sum (k := 2 * N + 1)
-    (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by cutsat)),
+    (Commute.add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero h₁ h₄ h₅ (by lia)),
     exp_eq_sum h₄, exp_eq_sum h₅]
   set R2N := range (2 * N + 1) with hR2N
   set RN := range (N + 1) with hRN
@@ -113,14 +113,14 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     · rw [hR2N, sum_sigma']
       apply sum_bij (fun ⟨i, j⟩ _ ↦ (j, i - j))
       · simp only [mem_sigma, mem_range, mem_filter, mem_product, and_imp]
-        cutsat
+        lia
       · simp only [mem_sigma, mem_range, Prod.mk.injEq, and_imp]
         rintro ⟨x₁, y₁⟩ - h₁ ⟨x₂, y₂⟩ - h₂ h₃ h₄
         simp_all
-        cutsat
+        lia
       · simp only [mem_filter, mem_product, mem_range, mem_sigma, exists_prop, Sigma.exists,
           and_imp, Prod.forall, Prod.mk.injEq]
-        exact fun x y _ _ _ ↦ ⟨x + y, x, by cutsat⟩
+        exact fun x y _ _ _ ↦ ⟨x + y, x, by lia⟩
       · simp only [mem_sigma, mem_range, implies_true]
   have z₁ : ∑ ij ∈ R2N ×ˢ R2N with ¬ ij.1 + ij.2 ≤ 2 * N,
       ((ij.1 ! : ℚ)⁻¹ * (ij.2 ! : ℚ)⁻¹) • (a ^ ij.1 * b ^ ij.2) = 0 :=
@@ -152,7 +152,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
     apply sum_congr
     · ext x
       simp only [mem_filter, mem_product, mem_range, hR2N, hRN]
-      cutsat
+      lia
     · tauto
   rw [restrict] at s₁
   have s₂ := by
@@ -198,6 +198,13 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     (g : G) {a : A} (ha : IsNilpotent a) :
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
+
+theorem isNilpotent_exp_sub_one {a : A} (ha : IsNilpotent a) : IsNilpotent (exp a - 1) := by
+  nontriviality A
+  rw [exp, ← Nat.sub_add_cancel (pos_nilpotencyClass_iff.2 ha), Finset.sum_range_succ']
+  norm_num
+  apply Commute.isNilpotent_sum fun _ _ ↦ smul (pow_of_pos ha <| by positivity) _
+  simp [Nat.factorial_ne_zero]
 
 end IsNilpotent
 

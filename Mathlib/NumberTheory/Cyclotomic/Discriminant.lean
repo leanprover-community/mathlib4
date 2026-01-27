@@ -21,7 +21,7 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v
@@ -112,7 +112,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     replace H := (mul_left_inj' fun h => ?_).1 H
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
-      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by cutsat)] at this
+      rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by lia)] at this
       exact absurd (eq_zero_of_pow_eq_zero h) this
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of

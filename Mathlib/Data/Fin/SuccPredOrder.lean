@@ -62,7 +62,7 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
         rfl)
 
 lemma orderPred_eq {n : ℕ} :
-    Order.succ = Fin.lastCases (Fin.last n) Fin.succ := rfl
+    Order.pred = Fin.cases 0 Fin.castSucc (n := n) := rfl
 
 lemma orderPred_apply {n : ℕ} (i : Fin (n + 1)) :
     Order.pred i = Fin.cases 0 Fin.castSucc i := rfl
