@@ -122,10 +122,14 @@ lemma TwoSidedIdeal.eq_bot_of_map_comap_eq_bot [hA : IsSimpleRing A]
         (Finset.mem_insert_self _ _)
       simp [g, dif_neg hjs] at hb
   refine _root_.eq_bot_iff.mpr fun x hx ↦ ?_
-  obtain ⟨s, c, rfl⟩ := Submodule.mem_span_range_iff_exists.mp <|
-    Submodule.eq_top_iff'.mp (𝓑.baseChange A).span_eq x
-  specialize main s c (by simpa [← TensorProduct.tmul_eq_smul_one_tmul] using hx)
-  simp +contextual [main]
+  obtain ⟨s, _, c, rfl⟩ := Submodule.mem_span_image_iff_exists_fun (R := A) (v := 𝓑.baseChange A)
+    (s := Set.univ) (x := x)|>.1 <| Set.image_univ ▸ Submodule.eq_top_iff'.1
+    (𝓑.baseChange A).span_eq x
+  classical
+  specialize main s (fun i ↦ if hi : i ∈ s then c ⟨i, hi⟩ else 0)
+    (by rw [← Finset.sum_attach]; simpa [← TensorProduct.tmul_eq_smul_one_tmul] using hx)
+  simp +contextual only [↓reduceDIte] at main
+  simp [main]
 
 open TwoSidedIdeal in
 lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : IsSimpleRing B]
