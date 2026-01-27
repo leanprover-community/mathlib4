@@ -31,6 +31,11 @@ namespace UpperHalfPlane
 def atImInfty :=
   Filter.atTop.comap UpperHalfPlane.im
 
+instance : atImInfty.NeBot := by
+  refine comap_neBot_iff_frequently.mpr (Eventually.frequently ?_)
+  filter_upwards [eventually_gt_atTop 0] with t ht
+    using ⟨⟨I * t, by simp [ht]⟩, by simp [← coe_im]⟩
+
 theorem atImInfty_basis : atImInfty.HasBasis (fun _ => True) fun i : ℝ => im ⁻¹' Set.Ici i :=
   Filter.HasBasis.comap UpperHalfPlane.im Filter.atTop_basis
 

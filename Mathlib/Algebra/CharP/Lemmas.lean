@@ -42,7 +42,7 @@ protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
     -- The maths is over now. We just commute things to their place.
     rw [Nat.cast_comm, mul_assoc (_ * _)]
     norm_cast
-    rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> omega
+    rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> lia
 
 protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
@@ -52,7 +52,7 @@ protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
   rw [h.add_pow_prime_pow_eq' hp, mul_assoc _ x, mul_assoc, mul_sum _ _ (_ * _)]
   congr! 3 with k hk
   obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
-  rw [← mul_pow_sub_one (by omega), ← mul_pow_sub_one (n := p ^ n - k) (by omega)]
+  rw [← mul_pow_sub_one (by lia), ← mul_pow_sub_one (n := p ^ n - k) (by lia)]
   rw [(h.pow_left _).mul_mul_mul_comm, mul_assoc (x * y)]
 
 protected lemma add_pow_prime_eq' (h : Commute x y) :

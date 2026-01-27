@@ -284,6 +284,24 @@ lemma IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·)
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α]
+
+lemma upperClosure_eq_bot {s : Set α} (hs : ¬ BddBelow s) : upperClosure s = ⊥ :=
+  le_bot_iff.mp fun x _ ↦ ⟨_, (not_bddBelow_iff.mp hs x).choose_spec.imp id le_of_lt⟩
+
+lemma upperClosure_eq_bot_iff [NoMinOrder α] {s : Set α} : upperClosure s = ⊥ ↔ ¬ BddBelow s :=
+  ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddBelow_upperClosure.mpr h₂, upperClosure_eq_bot⟩
+
+lemma lowerClosure_eq_top {s : Set α} (hs : ¬ BddAbove s) : lowerClosure s = ⊤ :=
+  SetLike.coe_injective congr($(upperClosure_eq_bot (α := αᵒᵈ) hs).1)
+
+lemma lowerClosure_eq_top_iff [NoMaxOrder α] {s : Set α} : lowerClosure s = ⊤ ↔ ¬ BddAbove s :=
+  ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddAbove_lowerClosure.mpr h₂, lowerClosure_eq_top⟩
+
+end LinearOrder
+
 /-! ### Set Difference -/
 
 namespace LowerSet
@@ -350,12 +368,12 @@ end LowerSet
 namespace UpperSet
 variable [Preorder α] {s : UpperSet α} {t : Set α} {a : α}
 
-/-- The biggest upper subset of a upper set `s` disjoint from a set `t`. -/
+/-- The biggest upper subset of an upper set `s` disjoint from a set `t`. -/
 def sdiff (s : UpperSet α) (t : Set α) : UpperSet α where
   carrier := s \ lowerClosure t
   upper' := s.upper.sdiff_of_isLowerSet (lowerClosure t).lower
 
-/-- The biggest upper subset of a upper set `s` not containing an element `a`. -/
+/-- The biggest upper subset of an upper set `s` not containing an element `a`. -/
 def erase (s : UpperSet α) (a : α) : UpperSet α where
   carrier := s \ LowerSet.Iic a
   upper' := s.upper.sdiff_of_isLowerSet (LowerSet.Iic a).lower

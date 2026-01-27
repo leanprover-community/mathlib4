@@ -42,7 +42,7 @@ should be connected.
 bitwise, and, or, xor
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -340,15 +340,15 @@ theorem xor_mod_two_eq {m n : ℕ} : (m ^^^ n) % 2 = (m + n) % 2 := by
   by_cases h : (m + n) % 2 = 0
   · simp only [h, mod_two_eq_zero_iff_testBit_zero, testBit_zero, xor_mod_two_eq_one, decide_not,
       Bool.decide_iff_dist, Bool.not_eq_false', beq_iff_eq, decide_eq_decide]
-    cutsat
+    lia
   · simp only [mod_two_ne_zero] at h
     simp only [h, xor_mod_two_eq_one]
-    cutsat
+    lia
 
 @[simp]
 theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
-  cutsat
+  lia
 
 @[simp]
 theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
@@ -390,7 +390,7 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       apply zero_xor
 
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> omega
+  cases b <;> simp <;> lia
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]

@@ -62,7 +62,7 @@ docstrings instead of the names.
 pigeonhole principle
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w

@@ -257,7 +257,8 @@ variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X] {s : Set X}
   {μ : Measure X} [IsOpenPosMeasure μ]
 
 /-- A *closed* measure zero subset is nowhere dense. (Closedness is required: for instance, the
-rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense). -/
+rational numbers are countable (thus have measure zero), but are dense (hence not nowhere dense).)
+-/
 lemma IsNowhereDense.of_isClosed_null (h₁s : IsClosed s) (h₂s : μ s = 0) :
     IsNowhereDense s := h₁s.isNowhereDense_iff.mpr (interior_eq_empty_of_null h₂s)
 

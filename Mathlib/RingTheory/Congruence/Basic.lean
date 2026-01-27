@@ -26,7 +26,7 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 ## TODO
 
 * Use this for `RingQuot` too.
-* Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
+* Copy across more API from `Con` and `AddCon` in `Mathlib/GroupTheory/Congruence/`.
 -/
 
 @[expose] public section
@@ -99,7 +99,7 @@ end Quotient
 
 /-! ### Lattice structure
 
-The API in this section is copied from `Mathlib/GroupTheory/Congruence.lean`
+The API in this section is copied from `Mathlib/GroupTheory/Congruence/Defs.lean`
 -/
 
 section Lattice
@@ -113,6 +113,12 @@ instance : LE (RingCon R) where
 
 /-- Definition of `≤` for congruence relations. -/
 theorem le_def : c ≤ d ↔ ∀ {x y}, c x y → d x y := .rfl
+
+theorem comap_mono {R' : Type*} [Add R'] [Mul R']
+    {F : Type*} [FunLike F R R'] [AddHomClass F R R'] [MulHomClass F R R']
+    {J J' : RingCon R'} {f : F} (h : J ≤ J') :
+    J.comap f ≤ J'.comap f :=
+  fun _ _ h₁ ↦ h h₁
 
 /-- The infimum of a set of congruence relations on a given type with multiplication and
 addition. -/

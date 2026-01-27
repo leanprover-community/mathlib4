@@ -56,13 +56,13 @@ open Limits Category
 
 section
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C : Type*) [Category* C] (A : Type*) [AddMonoid A] [HasShift C A]
 
 namespace HasShift
 
 /-- Construction of the naive shift on the opposite category of a category `C`:
 the shiftfunctor by `n` is `(shiftFunctor C n).op`. -/
-noncomputable def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
+def mkShiftCoreOp : ShiftMkCore Cᵒᵖ A where
   F n := (shiftFunctor C n).op
   zero := (NatIso.op (shiftFunctorZero C A)).symm
   add a b := (NatIso.op (shiftFunctorAdd C a b)).symm
@@ -83,7 +83,7 @@ def OppositeShift (A : Type*) [AddMonoid A] [HasShift C A] := Cᵒᵖ
 
 instance : Category (OppositeShift C A) := inferInstanceAs (Category Cᵒᵖ)
 
-noncomputable instance : HasShift (OppositeShift C A) A :=
+instance : HasShift (OppositeShift C A) A :=
   hasShiftMk Cᵒᵖ A (HasShift.mkShiftCoreOp C A)
 
 instance [HasZeroObject C] : HasZeroObject (OppositeShift C A) := by
@@ -139,14 +139,14 @@ lemma oppositeShiftFunctorAdd'_hom_app :
 
 end
 
-variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
+variable {C D : Type*} [Category* C] [Category* D] (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A] (F : C ⥤ D)
 
 /--
 The functor `F.op`, seen as a functor from `OppositeShift C A` to `OppositeShift D A`.
 (We will use this to carry a `CommShift` instance for the naive shifts on the opposite category.
 Then, in the pretriangulated case, we will be able to put a `CommShift` instance on `F.op`
-for the modified shifts and not deal with instance clashes.
+for the modified shifts and not deal with instance clashes.)
 -/
 def OppositeShift.functor : OppositeShift C A ⥤ OppositeShift D A := F.op
 
@@ -165,7 +165,7 @@ namespace Functor
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-noncomputable instance commShiftOp [CommShift F A] :
+instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   commShiftIso a := (NatIso.op (F.commShiftIso a)).symm
   commShiftIso_zero := by
@@ -191,7 +191,7 @@ Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps -isSimp]
-noncomputable def commShiftUnop
+def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   commShiftIso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   commShiftIso_zero := by
@@ -221,7 +221,7 @@ instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
-    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
     dsimp
     simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
@@ -249,7 +249,7 @@ instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
       comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
     rfl
 
-variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
+variable {E : Type*} [Category* E] [HasShift E A] (G : D ⥤ E)
 
 /-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
 composition of `OppositeShift.functor F` and `OppositeShift.functor G`.

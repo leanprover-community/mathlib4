@@ -56,6 +56,8 @@ def tensorObj (m n : AugmentedSimplexCategory) : AugmentedSimplexCategory :=
   | .star, x => x
   | x, .star => x
 
+-- TODO: fix non-terminal simp: run on four different goals with different simp sets
+set_option linter.flexible false in
 /-- The action of the tensor product on maps coming from `SimplexCategory`. -/
 def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (f₂ : x₂ ⟶ y₂) :
     tensorObjOf x₁ x₂ ⟶ tensorObjOf y₁ y₂ :=
@@ -70,11 +72,10 @@ def tensorHomOf {x₁ y₁ x₂ y₂ : SimplexCategory} (f₁ : x₁ ⟶ y₁) (
         cases i using Fin.addCases <;>
         cases j using Fin.addCases <;>
         rw [Fin.le_def] at h ⊢ <;>
-        simp [Fin.coe_castAdd, Fin.coe_natAdd, Fin.addCases_left,
-          Fin.addCases_right] at h ⊢
+        simp [Fin.addCases_left, Fin.addCases_right] at h ⊢
         · case left.left i j => exact f₁.toOrderHom.monotone h
-        · case left.right i j => omega
-        · case right.left i j => omega
+        · case left.right i j => lia
+        · case right.left i j => lia
         · case right.right i j => exact f₂.toOrderHom.monotone h }
   (eqToHom (congrArg _ (Nat.succ_add _ _)).symm ≫ (SimplexCategory.mkHom f₁) ≫
     eqToHom (congrArg _ (Nat.succ_add _ _)) : _ ⟶ ⦋y₁.len + y₂.len + 1⦌)

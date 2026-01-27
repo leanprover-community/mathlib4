@@ -617,7 +617,7 @@ theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
       (fun fb ↦ ∑ i, ((fb.1 i) • (bil (Finsupp.single i 1) fb.2) : C)) := by
     ext ⟨f, b⟩
     nth_rw 1 [← Finset.univ_sum_single f]
-    simp_rw [← Finsupp.single_eq_pi_single, map_sum, LinearMap.coeFn_sum, Finset.sum_apply]
+    simp_rw [← Finsupp.single_eq_pi_single, map_sum, LinearMap.coe_sum, Finset.sum_apply]
     refine Finset.sum_congr rfl (fun x _ ↦ ?_)
     rw [← Finsupp.smul_single_one]
     push_cast

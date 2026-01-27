@@ -146,7 +146,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
     map_one := map_one'
     commutes := fun φ r => by
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_self, RingHom.id_apply]
-      rw [map_smul, Algebra.id.smul_eq_mul, map_one' φ, mul_one] }
+      rw [map_smul, smul_eq_mul, map_one' φ, mul_one] }
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]

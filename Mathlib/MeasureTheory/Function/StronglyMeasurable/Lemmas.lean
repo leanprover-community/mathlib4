@@ -24,7 +24,7 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set ENNReal NNReal
 
@@ -71,7 +71,7 @@ theorem StronglyMeasurable.apply_continuousLinearMap
     StronglyMeasurable fun a => φ a v :=
   (ContinuousLinearMap.apply 𝕜 E v).continuous.comp_stronglyMeasurable hφ
 
-@[measurability]
+@[fun_prop]
 theorem MeasureTheory.AEStronglyMeasurable.apply_continuousLinearMap {φ : α → F →L[𝕜] E}
     (hφ : AEStronglyMeasurable φ μ) (v : F) :
     AEStronglyMeasurable (fun a => φ a v) μ :=

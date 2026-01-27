@@ -30,7 +30,7 @@ We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log
 the problem that this expression does not type-check.
 -/
 
-@[expose] public section
+public section
 
 open Complex LSeries
 

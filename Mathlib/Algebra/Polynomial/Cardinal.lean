@@ -15,7 +15,7 @@ The result in this file is that the cardinality of `R[X]` is at most the maximum
 of `#R` and `ℵ₀`.
 -/
 
-@[expose] public section
+public section
 
 
 universe u

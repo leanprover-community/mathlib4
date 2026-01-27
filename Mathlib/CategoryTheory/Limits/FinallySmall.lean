@@ -16,13 +16,13 @@ A category given by `(J : Type u) [Category.{v} J]` is `w`-finally small if ther
 `FinalModel J ⥤ J`.
 
 This means that if a category `C` has colimits of size `w` and `J` is `w`-finally small, then
-`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen of a
+`C` has colimits of shape `J`. In this way, the notion of "finally small" can be seen as a
 generalization of the notion of "essentially small" for indexing categories of colimits.
 
 Dually, we have a notion of initially small category.
 
 We show that a finally small category admits a small weakly terminal set, i.e., a small set `s` of
-objects such that from every object there a morphism to a member of `s`. We also show that the
+objects such that from every object there is a morphism to a member of `s`. We also show that the
 converse holds if `J` is filtered.
 -/
 

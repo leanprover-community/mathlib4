@@ -5,10 +5,10 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # Representation of reals in positional system
@@ -121,12 +121,13 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
       mul_left_comm, mul_inv_cancel₀ (by positivity), mul_one, mul_comm x, pow_succ', mul_assoc]
     set y := (b : ℝ) ^ n * x
     norm_cast
-    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by cutsat),
+    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by lia),
       Fin.val_ofNat, Nat.div_add_mod]
 
-theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
+theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b]
     (hx : x ∈ Set.Ico 0 1) (n : ℕ) :
     x - (b⁻¹ : ℝ) ^ n ≤ ∑ i ∈ Finset.range n, ofDigitsTerm (digits x b) i := by
+  have := NeZero.pos b
   have := ofDigits_digits_sum_eq (b := b) hx n
   have h_le := Nat.lt_floor_add_one (b ^ n * x)
   rw [← this] at h_le
@@ -147,7 +148,7 @@ theorem hasSum_ofDigitsTerm_digits (x : ℝ) {b : ℕ} [NeZero b] (hb : 1 < b) (
     HasSum (ofDigitsTerm (digits x b)) x := by
   rw [hasSum_iff_tendsto_nat_of_summable_norm (by exact summable_ofDigitsTerm.abs)]
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds
-    (le_sum_ofDigitsTerm_digits hb hx) (sum_ofDigitsTerm_digits_le hx)
+    (le_sum_ofDigitsTerm_digits hx) (sum_ofDigitsTerm_digits_le hx)
   convert tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_abs_lt_one _)
   · simp
   · simp [abs_of_nonneg, inv_lt_one_iff₀, hb]
@@ -204,7 +205,7 @@ theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
     refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
     · simp only [ofDigitsTerm]
       fun_prop
-    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · exact summable_geometric_of_lt_one (by positivity) (inv_lt_one_of_one_lt₀ hb)
     · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
       apply ofDigitsTerm_le.trans
       calc

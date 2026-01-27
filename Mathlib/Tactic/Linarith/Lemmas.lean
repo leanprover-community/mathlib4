@@ -6,12 +6,10 @@ Authors: Robert Y. Lewis
 module
 
 public meta import Batteries.Tactic.Lint.Basic
-public meta import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-public meta import Mathlib.Algebra.Order.Ring.Defs
-public meta import Mathlib.Algebra.Order.ZeroLEOne
-public meta import Mathlib.Data.Nat.Cast.Order.Ring
-public meta import Mathlib.Data.Int.Order.Basic
 public meta import Mathlib.Data.Ineq
+public import Mathlib.Data.Ineq
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 # Lemmas for `linarith`.
@@ -116,13 +114,3 @@ lemma zero_mul_eq {α} {R : α → α → Prop} [Semiring α] {a b : α} (h : a 
   simp [h]
 
 end Mathlib.Tactic.Linarith
-
-section
-
-@[deprecated GT.gt.lt (since := "2025-06-16")]
-theorem lt_zero_of_zero_gt {α : Type*} [Zero α] [LT α] {a : α} (h : 0 > a) : a < 0 := h
-
-@[deprecated GE.ge.le (since := "2025-06-16")]
-theorem le_zero_of_zero_ge {α : Type*} [Zero α] [LE α] {a : α} (h : 0 ≥ a) : a ≤ 0 := h
-
-end
