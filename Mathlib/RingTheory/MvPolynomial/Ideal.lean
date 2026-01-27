@@ -9,7 +9,6 @@ public import Mathlib.Algebra.MonoidAlgebra.Ideal
 public import Mathlib.Algebra.MvPolynomial.Division
 public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 public import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finsupp
 import Mathlib.Algebra.Order.Group.Pointwise.CanonicallyOrdered
 import Mathlib.RingTheory.Ideal.Operations
 
@@ -94,8 +93,8 @@ theorem pow_idealOfVars (n : ℕ) :
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
-    Set.image_pow_eq_image_finsupp_prod]
-  simp [monomial_eq, Set.preimage, degree, sum]
+    image_pow_eq_image_finsupp_prod]
+  simp [monomial_eq, Set.preimage, degree]
 
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
