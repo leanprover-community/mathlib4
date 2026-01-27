@@ -18,3 +18,4 @@ variable {R S T ι : Type*}
 #synth FaithfulSMul (P.ofAlgEquiv e).Ring T
 -- master: Used 19452 heartbeats
 -- #33697: Used 22693 heartbeats
+-- #34475: Used 15502 heartbeats
