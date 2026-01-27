@@ -120,7 +120,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
         exacts [h₁, h₂]
     · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
 
-lemma IsPushout.isVanKampen'_ofIsVanKampen {H : IsPushout f g h i} :
+lemma IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
     H.IsVanKampen ↔ H.IsVanKampen' := by
   constructor
   · intro VK X' Y' Z' h' i' αX αY αZ csh csi _
@@ -133,7 +133,7 @@ lemma IsPushout.isVanKampen'_ofIsVanKampen {H : IsPushout f g h i} :
       · exact IsPullback.of_hasPullback αX f
       · refine IsPullback.of_right' ?_ pbi
         rw [← H.w]
-        refine IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) pbh
+        exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) pbh
       · refine (VK (pullback.fst αX f) l  h' i' (pullback.snd αX f) αX αY αZ
           (IsPullback.of_hasPullback αX f) ?_
             pbh.toCommSq pbi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨pbh, pbi⟩
@@ -151,23 +151,14 @@ lemma IsPushout.isVanKampen'_ofIsVanKampen {H : IsPushout f g h i} :
       rw [this]
       refine ⟨W', f', g', αW, pbf, pbg, H'⟩
     · intro ⟨pbh, pbi⟩
-      letI : HasPullback αX f := IsPullback.hasPullback pbf
+      letI : HasPullback αX f := pbf.hasPullback
       obtain ⟨W'', f'', g'', αW', pbf', pbg', hP⟩ := (VK h' i' αX αY αZ csh csi).1 ⟨pbh, pbi⟩
-      let paste_f := IsPullback.paste_horiz pbf pbh
-      let paste_g := IsPullback.paste_horiz pbg pbi
-      let paste_f' := IsPullback.paste_horiz pbf' pbh
-      let paste_g' := IsPullback.paste_horiz pbg' pbi
-      rw [← H.w] at paste_g'
-      rw [← hP.w] at paste_g'
-      refine hP.of_iso ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_
-      · sorry --IsPullback.isoIsPullback _ _ pbf' pbf
-      · exact Iso.refl _
-      · exact Iso.refl _
-      · exact Iso.refl _
+      refine hP.of_iso ?_ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_ ?_
+      · exact (IsPullback.isoIsPullback _ _ pbf' pbf)
       · simp
-        sorry
-      · simp
-        sorry
+      · apply pbi.hom_ext
+        · simp [← cs.w, hP.w]
+        · simp [pbg.w, pbg'.w]
       · simp
       · simp
 
@@ -178,7 +169,7 @@ lemma IsPushout.VanKampen_isPullback_isPullback_hom_ext
     (h₁ : IsPullback h' αX αZ h) (h₂ : IsPullback i' αY αZ i)
     (h'_eq : h' ≫ f₁ = h' ≫ f₂) (i'_eq : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
   obtain ⟨W, f', g', αW, h₃, h₄, h₅⟩ :=
-    (isVanKampen'_ofIsVanKampen.1 H' h' i' αX αY αZ h₁.toCommSq h₂.toCommSq).1 ⟨h₁, h₂⟩
+    (isVanKampen_iff'.1 H' h' i' αX αY αZ h₁.toCommSq h₂.toCommSq).1 ⟨h₁, h₂⟩
   exact h₅.hom_ext h'_eq i'_eq
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
@@ -346,7 +337,7 @@ instance [Adhesive C] {Z A B : C} {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] 
     let m₂ := pullback.fst g v
     let g₂ := pullback.snd g v
     letI : HasPullback (pullback.snd f u) (pullback.fst a b) := hasPullback_symmetry _ _
-    obtain ⟨_, f', _, _, p₁, p₂, h₁⟩ := (isVanKampen'_ofIsVanKampen.1 (van_kampen (of_hasPushout _ _))
+    obtain ⟨_, f', _, _, p₁, p₂, h₁⟩ := (isVanKampen_iff'.1 (van_kampen (of_hasPushout _ _))
       _ _ _ _ _ f_sq_left.toCommSq f_sq_right.toCommSq).1 ⟨f_sq_left, f_sq_right⟩
     letI : Mono f' := by
       rw [← p₁.isoPullback_hom_fst]
