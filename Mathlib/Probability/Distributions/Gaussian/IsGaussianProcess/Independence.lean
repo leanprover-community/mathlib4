@@ -25,7 +25,7 @@ then they are independent if their marginals are uncorrelated.
   are jointly Gaussian. Then they are independent if for all $t_1, t_2 \in T$ with $t_1 \ne t_2$
   and $s_1 \in S_{t_1}$, $s_2 \in S_{t_2}$, $\mathrm{Cov}(X^{t_1}_{s_1}, X^{t_2}_{s_2} = 0$.
 
-* `indepFun_of_covariance_eq_zero`: Two Gaussian process $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$
+* `indepFun_of_covariance_eq_zero`: Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$
   that are jointly Gaussian are independent if for all $s \in S$ and $t \in T$,
   $\mathrm{Cov}(X_s, Y_t) = 0$.
 
@@ -117,7 +117,7 @@ section IndepFun
 
 variable {S : Type*} {X : S → Ω → E} {Y : T → Ω → E}
 
-/-- Two Gaussian process $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
+/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
 are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
 lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
     (hXY : IsGaussianProcess (Sum.elim X Y) P)
@@ -143,7 +143,7 @@ lemma indepFun_of_covariance_strongDual [NormedSpace ℝ E]
   · exact fun s ↦ ((hXY.hasGaussianLaw_eval (.inl s)).map _).memLp_two
   · exact fun t ↦ ((hXY.hasGaussianLaw_eval (.inr t)).map _).memLp_two
 
-/-- Two Gaussian process $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
+/-- Two Gaussian processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ that are jointly Gaussian
 are independent if for all $s \in S$ and $t \in T$, $X_s$ and $Y_t$ are uncorrelated. -/
 lemma indepFun_of_covariance_inner [InnerProductSpace ℝ E]
     (hXY : IsGaussianProcess (Sum.elim X Y) P)
