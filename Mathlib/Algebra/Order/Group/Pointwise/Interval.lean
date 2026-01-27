@@ -884,7 +884,7 @@ variable {α : Type*} [Monoid α]
 variable [Preorder α] [CanonicallyOrderedMul α] [MulRightMono α]
 
 @[to_additive (attr := simp)]
-theorem Ici_mul_Ici_eq_of_canonicallyOrdered {a b : α} :
+theorem Ici_mul_Ici_eq {a b : α} :
     Ici a * Ici b = Ici (a * b) := by
   refine Subset.antisymm (Ici_mul_Ici_subset' ..) (subset_def ▸ fun c c_in ↦
     mem_mul.mpr ⟨a, ⟨by simp, ?_⟩⟩)
@@ -892,14 +892,14 @@ theorem Ici_mul_Ici_eq_of_canonicallyOrdered {a b : α} :
   exact ⟨b * d, by simp [← mul_assoc, hd]⟩
 
 @[to_additive (attr := simp)]
-theorem Ici_pow_eq_of_canonicallyOrdered {a : α} :
+theorem Ici_pow_eq {a : α} :
     ∀ n ≠ 0, Ici a ^ n = Ici (a ^ n)
   | 1, _ => by simp
   | n + 2, _ => by simp [pow_succ _ n.succ, Ici_pow_eq_of_canonicallyOrdered]
 
 omit [MulRightMono α] in
 @[to_additive (attr := simp)]
-lemma Ici_one_eq_univ_of_canonicallyOrdered : Set.Ici (1 : α) = Set.univ := by aesop
+lemma Ici_one_eq_univ : Set.Ici (1 : α) = Set.univ := by aesop
 
 end CanonicallyOrdered
 
