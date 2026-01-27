@@ -243,7 +243,7 @@ order of the sum it tends to `0` instead. -/
 lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
-  have (N : ℕ+) : 
+  have (N : ℕ+) :
       ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ , (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
       = ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
@@ -252,7 +252,7 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
   simp only [telescope_aux, aux_tsum_identity_1] at this
   rw [funext this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
   apply Tendsto.add
-  · simpa [← PNat.tendsto_comp_val_iff] using 
+  · simpa [← PNat.tendsto_comp_val_iff] using
       (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
   · simpa only [aux_tsum_identity_2, ← PNat.tendsto_comp_val_iff] using aux_tendsto_tsum z
 
@@ -262,7 +262,7 @@ lemma tsum_symmetricIco_tsum_sub_eq :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
-  simpa [HasSum, ← Nat.map_cast_int_atTop, ← PNat.tendsto_comp_val_iff] 
+  simpa [HasSum, ← Nat.map_cast_int_atTop, ← PNat.tendsto_comp_val_iff]
     using tendsto_tsum_one_div_linear_sub_succ_eq z
 
 lemma tsum_tsum_symmetricIco_sub_eq :
