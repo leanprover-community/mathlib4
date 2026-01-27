@@ -315,7 +315,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
     use x; split_ands
     · aesop
     · trans ↑f.support
-      · simpa [hx, SetLike.coe_subset_coe, Finset.le_eq_subset] using support_mono le_self_add
+      · simpa [hx] using support_mono le_self_add
       exact f_supp
     exact ⟨i, ⟨f_supp (Finset.mem_coe.mpr hi) , hx.symm⟩⟩
 
