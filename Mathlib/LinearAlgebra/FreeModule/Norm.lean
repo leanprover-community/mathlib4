@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Norm.Defs
