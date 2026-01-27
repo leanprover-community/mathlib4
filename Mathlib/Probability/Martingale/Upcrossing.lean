@@ -319,33 +319,24 @@ theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
   | zero =>
     refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp only [lowerCrossingTime_zero, Nat.bot_eq_zero]
-    exact hittingBtwn_isStoppingTime hf measurableSet_Iic
+    exact hf.adapted.isStoppingTime_hittingBtwn measurableSet_Iic
   | succ k ih =>
     have : IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]
-      refine isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici hf _
+      refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime ih.2 ?_ measurableSet_Ici _
       simp [lowerCrossingTime_le]
     refine ⟨this, fun n ↦ ?_⟩
-    refine isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic hf _
+    refine hf.adapted.isStoppingTime_hittingBtwn_isStoppingTime this ?_ measurableSet_Iic _
     simp [upperCrossingTime_le]
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.isStoppingTime_crossing := StronglyAdapted.isStoppingTime_crossing
 
 theorem StronglyAdapted.isStoppingTime_upperCrossingTime (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) :=
   hf.isStoppingTime_crossing.1
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.isStoppingTime_upperCrossingTime := StronglyAdapted.isStoppingTime_upperCrossingTime
-
 theorem StronglyAdapted.isStoppingTime_lowerCrossingTime (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) :=
   hf.isStoppingTime_crossing.2
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.isStoppingTime_lowerCrossingTime := StronglyAdapted.isStoppingTime_lowerCrossingTime
 
 /-- `upcrossingStrat a b f N n` is 1 if `n` is between a consecutive pair of lower and upper
 crossings and is 0 otherwise. `upcrossingStrat` is shifted by one index so that it is adapted
@@ -389,9 +380,6 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
   simp only [ENat.some_eq_coe, Nat.cast_le] at hl hu
   simp_rw [← not_le]
   exact hl.inter hu.compl
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.upcrossingStrat := StronglyAdapted.upcrossingStrat
 
 theorem Submartingale.sum_upcrossingStrat_mul [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (a b : ℝ) (N : ℕ) : Submartingale (fun n : ℕ =>
@@ -769,9 +757,6 @@ theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f
   simpa only [ENat.some_eq_coe, Nat.cast_lt] using
     hf.isStoppingTime_upperCrossingTime.measurableSet_lt_of_pred N
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.measurable_upcrossingsBefore := StronglyAdapted.measurable_upcrossingsBefore
-
 theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]
     (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Integrable (fun ω => (upcrossingsBefore a b f N ω : ℝ)) μ :=
@@ -782,9 +767,6 @@ theorem StronglyAdapted.integrable_upcrossingsBefore [IsFiniteMeasure μ]
   ⟨Measurable.aestronglyMeasurable (measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)),
     .of_bounded this⟩
 
-@[deprecated (since := "2025-12-19")]
-alias Adapted.integrable_upcrossingsBefore := StronglyAdapted.integrable_upcrossingsBefore
-
 /-- The number of upcrossings of a realization of a stochastic process (`upcrossings` takes value
 in `ℝ≥0∞` and so is allowed to be `∞`). -/
 noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ) (f : ι → Ω → ℝ)
@@ -794,9 +776,6 @@ noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ
 theorem StronglyAdapted.measurable_upcrossings (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
   .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
-
-@[deprecated (since := "2025-12-19")]
-alias Adapted.measurable_upcrossings := StronglyAdapted.measurable_upcrossings
 
 theorem upcrossings_lt_top_iff :
     upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by
