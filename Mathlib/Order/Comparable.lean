@@ -20,7 +20,7 @@ false.
 
 Although comparability and incomparability are negations of each other, both relations are
 convenient in different contexts, and as such, it's useful to keep them distinct. To move from one
-to the other, use `not_compRel_iff` and `not_incompRel_iff`.
+to the other, use `not_symmGen_iff` and `not_incompRel_iff`.
 
 ## Main declarations
 
@@ -262,6 +262,7 @@ theorem not_symmGen_iff : ¬ Relation.SymmGen r a b ↔ IncompRel r a b := by
   simp [Relation.SymmGen, IncompRel]
 
 set_option linter.deprecated false in
+@[deprecated not_symmGen_iff (since := "2026-01-25")]
 theorem not_compRel_iff : ¬ CompRel r a b ↔ IncompRel r a b :=
   not_symmGen_iff
 
