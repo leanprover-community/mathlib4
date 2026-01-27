@@ -98,7 +98,21 @@ theorem induction_empty_option {P : ∀ (α : Type u) [Fintype α], Prop}
     @truncRecEmptyOption (fun α => ∀ h, @P α h) (@fun α β e hα hβ => @of_equiv α β hβ e (hα _))
       f_empty h_option α _ (Classical.decEq α)
   exact p _
-  -- ·
+
+/-- `Fintype.induction_empty_option` with a workaround for leanprover/lean4#4246.
+
+This can be used as
+```
+induction V, ‹Fintype V› using Fintype.induction_empty_option_lean_4246
+```
+
+The only difference is that `h_fintype` is explicit. -/
+@[elab_as_elim]
+theorem induction_empty_option_lean_4246 {P : ∀ (α : Type u) [Fintype α], Prop}
+    (of_equiv : ∀ (α β) [Fintype β] (e : α ≃ β), @P α (@Fintype.ofEquiv α β ‹_› e.symm) → @P β ‹_›)
+    (h_empty : P PEmpty) (h_option : ∀ (α) [Fintype α], P α → P (Option α)) (α : Type u)
+    (h_fintype : Fintype α) : P α :=
+  induction_empty_option (P := P) of_equiv h_empty h_option α
 
 end Fintype
 
