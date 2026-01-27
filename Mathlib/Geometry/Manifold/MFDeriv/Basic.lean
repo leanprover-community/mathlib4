@@ -844,8 +844,7 @@ theorem tangentMap_proj {p : TangentBundle I M} : (tangentMap I I' f p).proj = f
   rfl
 
 @[simp, mfld_simps]
-lemma tangentMap_snd (f : M → M') (X : TangentSpace I x) :
-    (tangentMap I I' f X).2 = (mfderiv I I' f x) X := rfl
+lemma tangentMap_snd {X : TangentSpace I x} : (tangentMap I I' f X).2 = (mfderiv I I' f x) X := rfl
 
 /-- If two sets coincide locally around `x`, except maybe at a point `y`, then their
 preimage under `extChartAt x` coincide locally, except maybe at `extChartAt I x x`. -/
