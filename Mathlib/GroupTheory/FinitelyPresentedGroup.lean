@@ -72,8 +72,7 @@ def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 
 /-- We define that the free group on one element as isomorphic to ℤ. -/
 def FreeGroup.freeGroupUnitMulEquivInt :
-    FreeGroup Unit ≃* Multiplicative ℤ := by
-  refine
+    FreeGroup Unit ≃* Multiplicative ℤ where
     { toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
       invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
       left_inv := by
