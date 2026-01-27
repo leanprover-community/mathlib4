@@ -320,7 +320,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
     exact ⟨i, ⟨f_supp (Finset.mem_coe.mpr hi) , hx.symm⟩⟩
 
 open scoped Pointwise in
-theorem image_pow_eq_image_finsupp_prod {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
+theorem image_pow_eq_finsuppProd_image {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
     (f '' s) ^ n = (·.prod (f · ^ ·)) '' {x : α →₀ ℕ | x.degree = n ∧ ↑x.support ⊆ s} := by
   classical
   suffices ∀ (s : Set (α →₀ ℕ)), ((·.prod (f · ^ ·)) '' s) ^ n = (·.prod (f · ^ ·)) '' (n • s) by
