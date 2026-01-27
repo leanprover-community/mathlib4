@@ -7,13 +7,10 @@ Authors: Riccardo Brasca, Fabrizio Barroero, Stefano Francaviglia,
 module
 
 public import Mathlib.Algebra.Group.PUnit
-public import Mathlib.Data.Int.Basic
-public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.Finite.Card
-public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.PresentedGroup
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.GroupTheory.Finiteness
 
 /-!
 # Finitely Presented Groups
