@@ -201,7 +201,7 @@ recommended_spelling "inf" for "⊓" in [«term_⊓_»]
 
 recommended_spelling "max" for "max" in [Max.max]
 recommended_spelling "min" for "min" in [Min.min]
-/-- `⊔` is the more preferred notation for `max` when the type is not linear order. -/
+/-- `⊔` is the preferred notation for `max` when the type is not linearly ordered. -/
 recommended_spelling "sup" for "⊔" in [Max.max]
-/-- `⊓` is the more preferred notation for `min` when the type is not linear order. -/
+/-- `⊓` is the preferred notation for `min` when the type is not linearly ordered. -/
 recommended_spelling "inf" for "⊓" in [Min.min]
