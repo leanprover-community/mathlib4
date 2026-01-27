@@ -211,7 +211,7 @@ private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.
   obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
     hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
   use i
-  rw [unsortedEigenvalues, hi, show x.val = μ from rfl, ← RCLike.conj_eq_iff_re,
+  rw [unsortedEigenvalues, hi, hx, Eigenvalues.val_mk, ← RCLike.conj_eq_iff_re,
     hT.conj_eigenvalue_eq_self hμ]
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
