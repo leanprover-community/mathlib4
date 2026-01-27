@@ -341,13 +341,13 @@ def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
 
 
 
-
+-- Partial because the termination checker failed
 mutual
 
 variable (rcℕ : RingCompute btℕ sℕ)
 
 /-- Equality test for expressions. This is not a `BEq` instance because it is heterogeneous. -/
-def ExBase.eq
+partial def ExBase.eq
     {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Bool
@@ -356,7 +356,7 @@ def ExBase.eq
   | _, _ => false
 
 @[inherit_doc ExBase.eq]
-def ExProd.eq
+partial def ExProd.eq
     {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Bool
@@ -365,7 +365,7 @@ def ExProd.eq
   | _, _ => false
 
 @[inherit_doc ExBase.eq]
-def ExSum.eq
+partial def ExSum.eq
     {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα)
     {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Bool
@@ -374,6 +374,7 @@ def ExSum.eq
   | _, _ => false
 end
 
+-- Partial because the termination checker failed
 mutual
 
 variable (rcℕ : RingCompute btℕ sℕ)
@@ -382,7 +383,7 @@ variable (rcℕ : RingCompute btℕ sℕ)
 A total order on normalized expressions.
 This is not an `Ord` instance because it is heterogeneous.
 -/
-def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+partial def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
     (rc : RingCompute bt sα) {a b : Q($α)} :
     ExBase bt sα a → ExBase bt sα b → Ordering
   | .atom i, .atom j => compare i j
@@ -391,7 +392,7 @@ def ExBase.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)
   | .sum .., .atom .. => .gt
 
 @[inherit_doc ExBase.cmp]
-def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+partial def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
     (rc : RingCompute bt sα) {a b : Q($α)} :
     ExProd bt sα a → ExProd bt sα b → Ordering
   | .const i, .const j => rc.compare i j
@@ -401,7 +402,7 @@ def ExProd.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)
   | .mul .., .const _ => .gt
 
 @[inherit_doc ExBase.cmp]
-def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
+partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiring $α)}
     (rc : RingCompute bt sα) {a b : Q($α)} :
     ExSum bt sα a → ExSum bt sα b → Ordering
   | .zero, .zero => .eq
