@@ -191,7 +191,7 @@ protected theorem mem_map_of_mem {R S : Type*}
     {x : R} (hx : x ∈ I) : f x ∈ I.map f :=
   TwoSidedIdeal.subset_span ⟨x, hx, rfl⟩
 
-lemma map_surjective (hf : Function.Surjective f) (I : TwoSidedIdeal R) : I.map f = f '' I :=
+lemma coe_map_of_surjective (hf : Function.Surjective f) (I : TwoSidedIdeal R) : I.map f = f '' I :=
   Set.ext_iff.2 fun x ↦ ⟨I.mem_image_of_mem_map_of_surjective hf, fun ⟨x, hx1, hx2⟩ ↦ by
     simpa [hx2] using I.mem_map_of_mem (f := f) <| (mem_iff I x).2 hx1⟩
 
