@@ -15,7 +15,8 @@ public import Mathlib.GroupTheory.QuotientGroup.Basic
 /-!
 # Finitely Presented Groups
 
-This file defines when a group is finitely presented.
+This file defines finitely-presented groups.
+
 The formal definition of when a group is (finitely) presented is when there exists an isomorphism
 between G and F_S / << R >> where S is the generating set and R are the relations. This is reflected
 in the definition of `Is(Finitely)Presented`.
