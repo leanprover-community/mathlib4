@@ -426,14 +426,11 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hF : F ≤ G) (h
     refine sup_le_iff.mpr ⟨by grind, ?_⟩
     rw [← F'.fromEdgeSet_edgeSet]
     grind [fromEdgeSet_mono]
-  have e_ndiag : ¬ e.IsDiag := by
-    suffices e ∈ Sym2.diagSetᶜ by simpa using this
-    exact F'.edgeSet_subset_setOf_not_isDiag he.1
   have F_sdiff_eq : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by
     simpa using he.2
   have h_bridge : (F ⊔ fromEdgeSet {e}).IsBridge e := by
     apply isAcyclic_iff_forall_edge_isBridge.mp this
-    simpa using Or.inr e_ndiag
+    simp [F'.not_isDiag_of_mem_edgeSet he.1]
   simp only [IsBridge, F_sdiff_eq] at h_bridge
   cases e
   case h u v =>
