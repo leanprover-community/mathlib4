@@ -138,7 +138,7 @@ noncomputable def page (r : ℤ) (hr : r₀ ≤ r) :
 
 section
 
-/-- The short complexe of the `r`th page of the spectral sequence on position `pq'`
+/-- The short complex of the `r`th page of the spectral sequence on position `pq'`
 identifies to the short complex given by the differentials of the spectral object. -/
 noncomputable def shortComplexIso (r : ℤ) (hr : r₀ ≤ r) (pq pq' pq'' : κ)
     (hpq : (c r).Rel pq pq') (hpq' : (c r).Rel pq' pq'')
