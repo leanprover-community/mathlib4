@@ -14,7 +14,7 @@ Since every pair of elements are comparable in a linear order, intervals over th
 better behaved. This file collects their properties under this assumption.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists RelIso
 
@@ -27,22 +27,14 @@ variable {α : Type*} [LinearOrder α] {a a₁ a₂ b b₁ b₂ c d : α}
 theorem notMem_Ici : c ∉ Ici a ↔ c < a :=
   not_le
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ici := notMem_Ici
-
 theorem notMem_Iic : c ∉ Iic b ↔ b < c :=
   not_le
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iic := notMem_Iic
 
 theorem notMem_Ioi : c ∉ Ioi a ↔ c ≤ a :=
   not_lt
 
-@[deprecated (since := "2025-05-23")] alias not_mem_Ioi := notMem_Ioi
-
 theorem notMem_Iio : c ∉ Iio b ↔ b ≤ c :=
   not_lt
-
-@[deprecated (since := "2025-05-23")] alias not_mem_Iio := notMem_Iio
 
 @[simp]
 theorem compl_Iic : (Iic a)ᶜ = Ioi a :=
@@ -109,6 +101,18 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
   convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
+theorem Ico_eq_Ico_iff (h : a < b ∨ c < d) : Ico a b = Ico c d ↔ a = c ∧ b = d := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  have : c ≤ a ∧ b ≤ d := (Ico_subset_Ico_iff (show a < b by grind [Set.nonempty_Ico])).1 h.subset
+  have : a ≤ c ∧ d ≤ b := (Ico_subset_Ico_iff (show c < d by grind [Set.nonempty_Ico])).1 h.superset
+  grind
+
+theorem Ioc_eq_Ioc_iff (hab : a < b ∨ c < d) : Ioc a b = Ioc c d ↔ a = c ∧ b = d := by
+  refine ⟨fun h ↦ ?_, by grind⟩
+  have : b ≤ d ∧ c ≤ a := (Ioc_subset_Ioc_iff (show a < b by grind [Set.nonempty_Ioc])).1 h.subset
+  have : d ≤ b ∧ a ≤ c := (Ioc_subset_Ioc_iff (show c < d by grind [Set.nonempty_Ioc])).1 h.superset
+  grind
+
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => by
@@ -119,17 +123,6 @@ theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     · have ab := xa.trans (h ⟨xa, xb⟩).2
       exact lt_irrefl _ (h ⟨ab, h'⟩).2,
     fun ⟨h₁, h₂⟩ => Ioo_subset_Ioo h₁ h₂⟩
-
-theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  ⟨fun e => by
-      simp only [Subset.antisymm_iff] at e
-      simp only [le_antisymm_iff]
-      rcases h with h | h <;>
-      simp only [Ico_subset_Ico_iff h] at e <;>
-      [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
-      have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      tauto,
-    fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   refine ⟨fun h y ↦ ?_, fun h ↦ by ext y; simp [(h y).ge_iff_eq]⟩

@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public meta import Mathlib.Tactic.Push
+public import Mathlib.Tactic.Push
 
 /-! # Contrapose
 
@@ -21,7 +21,9 @@ implication or an iff. It also avoids creating a double negation if there alread
 -/
 
 public meta section
+
 namespace Mathlib.Tactic.Contrapose
+open Lean.Parser.Tactic
 
 /-- An option to turn off the feature that `contrapose` negates both sides of `↔` goals.
 This may be useful for teaching. -/
@@ -88,10 +90,18 @@ elab_rules : tactic
 Transforms the goal into its contrapositive and pushes negations in the result.
 Usage matches `contrapose`
 -/
-syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
+syntax (name := contrapose!)
+  "contrapose!" optConfig (ppSpace colGt ident (" with " ident)?)? : tactic
+
+local elab "try_push_neg" cfg:optConfig : tactic => do
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
+    (failIfUnchanged := false)
+
 macro_rules
-  | `(tactic| contrapose!) => `(tactic| (contrapose; try push_neg))
-  | `(tactic| contrapose! $e) => `(tactic| (revert $e:ident; contrapose!; intro $e:ident))
-  | `(tactic| contrapose! $e with $e') => `(tactic| (revert $e:ident; contrapose!; intro $e':ident))
+  | `(tactic| contrapose! $cfg) => `(tactic| (contrapose; try_push_neg $cfg))
+  | `(tactic| contrapose! $cfg:optConfig $e) =>
+    `(tactic| (revert $e:ident; contrapose! $cfg; intro $e:ident))
+  | `(tactic| contrapose! $cfg:optConfig $e with $e') =>
+    `(tactic| (revert $e:ident; contrapose! $cfg; intro $e':ident))
 
 end Mathlib.Tactic.Contrapose

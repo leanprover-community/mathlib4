@@ -108,8 +108,6 @@ lemma apply_eq_zero_of_notMem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
     (hz : z ∉ U) :
     D z = 0 := notMem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
-@[deprecated (since := "2025-05-23")] alias apply_eq_zero_of_not_mem := apply_eq_zero_of_notMem
-
 /--
 On a T1 space, the support of a function with locally finite support within `U` is discrete within
 `U`.
@@ -125,10 +123,10 @@ theorem eq_zero_codiscreteWithin [Zero Y] [T1Space X] (D : locallyFinsuppWithin 
   exact D.supportLocallyFiniteWithinDomain
 
 /--
-On a T1 space, the support of a functions with locally finite support within `U` is discrete.
+On a T1 space, the support of a function with locally finite support within `U` is discrete.
 -/
 theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
-    DiscreteTopology D.support := by
+    IsDiscrete D.support := by
   have : D.support = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
@@ -137,7 +135,8 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
       rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
       tauto
   rw [this]
-  apply discreteTopology_of_codiscreteWithin
+  apply isDiscrete_of_codiscreteWithin
+  rw [compl_compl]
   apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
   exact D.supportLocallyFiniteWithinDomain
 

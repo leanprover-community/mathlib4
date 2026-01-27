@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
@@ -170,12 +169,13 @@ protected theorem splits (n : ℕ) :
   Nat.recOn (motive := fun n => ∀ {K : Type u} [Field K], ∀ (f : K[X]) (_hfn : f.natDegree = n),
       Splits (f.map (algebraMap K <| SplittingFieldAux n f))) n
     (fun {_} _ _ hf =>
-      splits_of_degree_le_one _
+      Splits.of_degree_le_one <| degree_map_le.trans
         (le_trans degree_le_natDegree <| hf.symm ▸ WithBot.coe_le_coe.2 zero_le_one))
     fun n ih {K} _ f hf => by
-    rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
+    rw [algebraMap_succ, ← map_map,
       ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
-    exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
+    rw [Polynomial.map_mul]
+    exact Splits.mul ((Splits.X_sub_C _).map _) (ih _ (natDegree_removeFactor' hf))
 
 theorem adjoin_rootSet (n : ℕ) :
     ∀ {K : Type u} [Field K],
@@ -296,7 +296,7 @@ instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
 instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
   Module.finite_of_finite K
 
-instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
+instance (f : K[X]) : Module.IsTorsionFree K f.SplittingField :=
   inferInstance
 
 /-- Any splitting field is isomorphic to `SplittingFieldAux f`. -/

@@ -96,20 +96,20 @@ section MeasurableSup
 
 variable [MeasurableSup M]
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.const_sup (hf : Measurable f) (c : M) : Measurable fun x => c ⊔ f x :=
   (measurable_const_sup c).comp hf
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.const_sup (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c ⊔ f x) μ :=
   (MeasurableSup.measurable_const_sup c).comp_aemeasurable hf
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.sup_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊔ c :=
   (measurable_sup_const c).comp hf
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.sup_const (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x ⊔ c) μ :=
   (measurable_sup_const c).comp_aemeasurable hf
@@ -120,20 +120,20 @@ section MeasurableSup₂
 
 variable [MeasurableSup₂ M]
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.sup' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊔ g) :=
   measurable_sup.comp (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.sup (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊔ g a :=
   measurable_sup.comp (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.sup' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊔ g) μ :=
   measurable_sup.comp_aemeasurable (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.sup (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊔ g a) μ :=
   measurable_sup.comp_aemeasurable (hf.prodMk hg)
@@ -153,20 +153,20 @@ section MeasurableInf
 
 variable [MeasurableInf M]
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.const_inf (hf : Measurable f) (c : M) : Measurable fun x => c ⊓ f x :=
   (measurable_const_inf c).comp hf
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.const_inf (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => c ⊓ f x) μ :=
   (MeasurableInf.measurable_const_inf c).comp_aemeasurable hf
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.inf_const (hf : Measurable f) (c : M) : Measurable fun x => f x ⊓ c :=
   (measurable_inf_const c).comp hf
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.inf_const (hf : AEMeasurable f μ) (c : M) :
     AEMeasurable (fun x => f x ⊓ c) μ :=
   (measurable_inf_const c).comp_aemeasurable hf
@@ -177,20 +177,20 @@ section MeasurableInf₂
 
 variable [MeasurableInf₂ M]
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.inf' (hf : Measurable f) (hg : Measurable g) : Measurable (f ⊓ g) :=
   measurable_inf.comp (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem Measurable.inf (hf : Measurable f) (hg : Measurable g) : Measurable fun a => f a ⊓ g a :=
   measurable_inf.comp (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.inf' (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (f ⊓ g) μ :=
   measurable_inf.comp_aemeasurable (hf.prodMk hg)
 
-@[measurability]
+@[fun_prop]
 theorem AEMeasurable.inf (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => f a ⊓ g a) μ :=
   measurable_inf.comp_aemeasurable (hf.prodMk hg)
@@ -216,7 +216,6 @@ theorem Finset.measurable_sup' {ι : Type*} {s : Finset ι} (hs : s.Nonempty) {f
 @[measurability]
 theorem Finset.measurable_range_sup' {f : ℕ → δ → α} {n : ℕ} (hf : ∀ k ≤ n, Measurable (f k)) :
     Measurable ((range (n + 1)).sup' nonempty_range_add_one f) := by
-  simp_rw [← Nat.lt_succ_iff] at hf
   refine Finset.measurable_sup' _ ?_
   simpa [Finset.mem_range]
 

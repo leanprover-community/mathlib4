@@ -10,7 +10,8 @@ public meta import Lean.Meta.Tactic.Assumption
 public meta import Lean.Meta.MatchUtil
 public meta import Lean.Meta.Tactic.Intro
 public meta import Lean.Elab.DeclarationRange
-public meta import Mathlib.Tactic.Attr.Register
+public import Lean.Meta.Tactic.Simp
+public import Mathlib.Init
 
 /-!
 # HigherOrder attribute
@@ -95,7 +96,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
           type := hot
           value := prf }
       addDeclarationRangesFromSyntax hothmName (← getRef) ref
-      _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams hothmName
+      addTermInfo' ref (← mkConstWithLevelParams hothmName) (isBinder := true)
       let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then
         addSimpTheorem simpExtension hothmName true false .global 1000

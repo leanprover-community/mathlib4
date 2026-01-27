@@ -98,17 +98,14 @@ theorem rootsOfUnity_le_of_dvd (h : k ∣ l) : rootsOfUnity k M ≤ rootsOfUnity
 
 theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f ≤ rootsOfUnity k N := by
   rintro _ ⟨ζ, h, rfl⟩
-  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
+  simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, map_one]
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
 lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
     (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
-  refine le_antisymm ?_ ?_
-  · intro
-    simp +contextual [pow_gcd_eq_one]
-  · rw [le_inf_iff]
-    exact ⟨rootsOfUnity_le_of_dvd (m.gcd_dvd_left n), rootsOfUnity_le_of_dvd (m.gcd_dvd_right n)⟩
+  ext
+  simp
 
 lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
     Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
@@ -177,7 +174,6 @@ theorem Units.val_set_image_rootsOfUnity [NeZero k] :
     fun h ↦ ⟨(rootsOfUnity.mkOfPowEq x h), ⟨Subtype.coe_prop (rootsOfUnity.mkOfPowEq x h), rfl⟩⟩⟩
 
 theorem Units.val_set_image_rootsOfUnity_one : ((↑) : Rˣ → R) '' (rootsOfUnity 1 R) = {1} := by
-  ext x
   simp
 
 end CommMonoid

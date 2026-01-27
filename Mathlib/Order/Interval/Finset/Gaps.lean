@@ -5,8 +5,8 @@ Authors: Yizheng Zhu
 -/
 module
 
-public import Mathlib.Order.Interval.Lex
 public import Mathlib.Data.Finset.Sort
+public import Mathlib.Order.Interval.Lex
 
 /-!
 # Gaps of disjoint closed intervals
@@ -14,182 +14,182 @@ public import Mathlib.Data.Finset.Sort
 This file defines `Finset.intervalGapsWithin` that computes the complement of the union of a
 collection of pairwise disjoint subintervals of `[a, b]`.
 
-If `LinearOrder α` and `F` is a finite subset of `α × α` such that for any `(x, y) ∈ F`,
-`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, we order `F` from left to right as
-`(x 0, y 0), ..., (x (F.card - 1), y (F.card - 1))`, then `F.intervalGapsWithin a b i` is
-- `(a, x 0)` if `0 = i < F.card`;
-- `(y (i - 1), x i)` if `0 < i < F.card`;
-- `(y (i - 1), b)` if `0 < i = F.card`;
-- `(a, b)` otherwise.
+If `LinearOrder α`, `F` is a finite subset of `α × α` such that for any `(x, y) ∈ F`,
+`a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `F.card = k`,
+`i` is in `Fin (k + 1)`, we order `F` from left to right as
+`(x 0, y 0), ..., (x (k - 1), y (k - 1))`, then `F.intervalGapsWithin h a b i` is
+- `(a, b)` if `0 = i = k`;
+- `(a, x 0)` if `0 = i < k`;
+- `(y (i - 1), x i)` if `0 < i < k`;
+- `(y (i - 1), b)` if `0 < i = k`.
 
 Technically, the definition `F.intervalGapsWithin a b` does not require `F` to be pairwise disjoint
 or endpoints to be within `[a, b]` or even require that `a ≤ b`, but it makes the most sense if
 they are actually satisfied. If they are actually satisfied, then we show that
-* `Finset.intervalGapsWithin_mapsTo`, `Finset.intervalGapsWithin_injOn`,
+* `Finset.intervalGapsWithin_mapsTo`, `Finset.intervalGapsWithin_injective`,
 `Finset.intervalGapsWithin_surjOn`:
-`(fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1))` is a bijection
-between `Set.Iio F.card` and `F`.
+`(fun j ↦ ((F.intervalGapsWithin h a b j.castSucc).2, (F.intervalGapsWithin h a b j.succ).1))` is
+a bijection between `Set.Iio k` and `F`.
 * `Finset.intervalGapsWithin_le_fst`, `Finset.intervalGapsWithin_snd_le`,
 `Finset.intervalGapsWithin_fst_le_snd`:
-`[(F.intervalGapsWithin a b i).1, (F.intervalGapsWithin a b i).2]` is indeed a subinterval of
-`[a, b]`.
+`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2]` is indeed a subinterval of
+`[a, b]` when `j < k`.
 * `Finset.intervalGapsWithin_pairwiseDisjoint_Ioc`: the half-closed intervals
-`[(F.intervalGapsWithin a b i).1, (F.intervalGapsWithin a b i).2)` are pairwise disjoint for
-`i ≤ F.card`.
+`[(F.intervalGapsWithin h a b j).1, (F.intervalGapsWithin h a b j).2)` are pairwise disjoint
+for `j < k + 1`.
 -/
 
 @[expose] public section
 
-open Set
+open Fin Fin.NatCast Set
 
 section IntervalGapsWithin
 
 namespace Finset
 
-variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) (a b : α) {i : ℕ}
+variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : F.card = k) (a b : α)
+  (j : ℕ)
 
-/-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (F.card - 1), y (F.card - 1))`.
-Then `F.intervalGapsWithin a b i` is
-- `(a, x 0)` if `0 = i < F.card`;
-- `(y (i - 1), x i)` if `0 < i < F.card`;
-- `(y (i - 1), b)` if `0 < i = F.card`;
-- `(a, b)` otherwise.
+/-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.
+Then `F.intervalGapsWithin h a b i` is
+- `(a, b)` if `0 = i = k`;
+- `(a, x 0)` if `0 = i < k`;
+- `(y (i - 1), x i)` if `0 < i < k`;
+- `(y (i - 1), b)` if `0 < i = k`.
 -/
-noncomputable def intervalGapsWithin (i : ℕ) : α × α := (fst, snd) where
-  /-- The first coordinate of `F.intervalGapsWithin a b i` is `y (i - 1)` if `0 < i ≤ F.card`,
-  `a` otherwise. -/
-  fst := match i with
-    | 0 => a
-    | i + 1 => if hi : i < F.card then F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩ |>.2 else a
-  /-- The second coordinate of `F.intervalGapsWithin a b i` is `x i` if `i < F.card`,
-  `b` otherwise. -/
-  snd := if hi : i < F.card then F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩ |>.1 else b
+noncomputable def intervalGapsWithin (i : Fin (k + 1)) : α × α := (fst, snd) where
+  /-- The first coordinate of `F.intervalGapsWithin h a b i` is `a` if `i = 0`,
+  `y (i - 1)` otherwise. -/
+  fst := if hi : i = 0 then a else
+    F.orderEmbOfFin (α := α ×ₗ α) h (i.pred hi) |>.2
+  /-- The second coordinate of `F.intervalGapsWithin h a b i` is `b` if `i = k`,
+  `x i` otherwise. -/
+  snd := if hi : i = last k then b else
+    F.orderEmbOfFin (α := α ×ₗ α) h (i.castPred hi) |>.1
 
 @[simp]
-theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin a b 0).1 = a := by
+theorem intervalGapsWithin_zero_fst : (F.intervalGapsWithin h a b 0).1 = a := by
   simp [intervalGapsWithin, intervalGapsWithin.fst]
 
-@[simp]
-theorem intervalGapsWithin_fst_of_card_lt (hi : F.card < i) :
-    (F.intervalGapsWithin a b i).1 = a := by
-  simp only [intervalGapsWithin, intervalGapsWithin.fst]
-  grind
+theorem intervalGapsWithin_succ_fst_of_lt (hj : j < k) :
+    (F.intervalGapsWithin h a b (j.succ)).1 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j, hj⟩).2 := by
+  have : (j.succ : Fin (k + 1)) = (⟨j, hj⟩ : Fin k).succ := by ext; simp [hj]
+  grind [intervalGapsWithin, intervalGapsWithin.fst]
 
-@[simp]
-theorem intervalGapsWithin_snd_of_card_le (hi : F.card ≤ i) :
-    (F.intervalGapsWithin a b i).2 = b := by
-  simp only [intervalGapsWithin, intervalGapsWithin.snd]
-  grind
-
-theorem intervalGapsWithin_card_snd : (F.intervalGapsWithin a b F.card).2 = b := by
-  simp
-
-theorem intervalGapsWithin_snd_of_card_eq (hi : F.card = i) :
-    (F.intervalGapsWithin a b i).2 = b :=
-  intervalGapsWithin_snd_of_card_le F a b hi.le
-
-theorem intervalGapsWithin_succ_fst_of_lt_card (hi : i < F.card) :
-    (F.intervalGapsWithin a b (i + 1)).1 = (F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩).2 := by
-  simp [intervalGapsWithin, intervalGapsWithin.fst, hi]
-
-theorem intervalGapsWithin_fst_of_zero_lt_le_card (hi₀ : 0 < i) (hi : i ≤ F.card) :
-    (F.intervalGapsWithin a b i).1 =
-      (F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i - 1, Nat.sub_one_lt_of_le hi₀ hi⟩).2 := by
-  convert F.intervalGapsWithin_succ_fst_of_lt_card a b (i := i - 1) (by omega)
+theorem intervalGapsWithin_fst_of_lt_lt (hj₁ : 0 < j) (hj₂ : j - 1 < k) :
+    (F.intervalGapsWithin h a b j).1 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j - 1, hj₂⟩).2 := by
+  convert F.intervalGapsWithin_succ_fst_of_lt h a b (j - 1) hj₂
   omega
 
-theorem intervalGapsWithin_snd_of_lt_card (hi : i < F.card) :
-    (F.intervalGapsWithin a b i).2 = (F.orderEmbOfFin (α := α ×ₗ α) rfl ⟨i, hi⟩).1 := by
-  simp [intervalGapsWithin, intervalGapsWithin.snd, hi]
+@[simp]
+theorem intervalGapsWithin_last_snd : (F.intervalGapsWithin h a b (last k)).2 = b := by
+  simp [intervalGapsWithin, intervalGapsWithin.snd]
 
-theorem intervalGapsWithin_mapsTo : (Set.Iio F.card).MapsTo
-    (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) F := by
-  intro i hi
-  rw [Set.mem_Iio] at hi
-  simp only [hi, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card]
-  convert F.orderEmbOfFin_mem rfl ⟨i, hi⟩ using 1
+theorem intervalGapsWithin_snd_of_lt (hj : j < k) :
+    (F.intervalGapsWithin h a b j).2 = (F.orderEmbOfFin (α := α ×ₗ α) h ⟨j, hj⟩).1 := by
+  have : (j : Fin (k + 1)) ≠ last k := by grind [val_cast_of_lt]
+  simp only [intervalGapsWithin, intervalGapsWithin.snd, this, ↓reduceDIte]
+  congr
+  ext
+  simp only [coe_castPred, val_natCast, Nat.mod_succ_eq_iff_lt]
+  omega
 
-theorem intervalGapsWithin_injOn : (Set.Iio F.card).InjOn
-    (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) := by
-  intro i hi j hj
-  rw [Set.mem_Iio] at hi hj
-  simp only [hi, hj, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card]
-  exact fun hij ↦ Fin.ext_iff.mp (F.orderEmbOfFin (α := α ×ₗ α) rfl |>.injective hij)
+theorem intervalGapsWithin_mapsTo : (Set.Iio k).MapsTo
+    (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
+    F := by
+  intro j hj
+  rw [mem_Iio] at hj
+  simp only [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt,
+    Prod.mk.eta, SetLike.mem_coe, hj]
+  convert F.orderEmbOfFin_mem h ⟨j, hj⟩ using 1
 
-theorem intervalGapsWithin_surjOn : (Set.Iio F.card).SurjOn
-    (fun i ↦ ((F.intervalGapsWithin a b i).2, (F.intervalGapsWithin a b (i + 1)).1)) F := by
+theorem intervalGapsWithin_injOn : (Set.Iio k).InjOn
+    (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1)) := by
+  intro j hj j' hj' hjj'
+  rw [mem_Iio] at hj hj'
+  simp only [hj, hj', intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt] at hjj'
+  grind [F.orderEmbOfFin (α := α ×ₗ α) h |>.injective hjj']
+
+theorem intervalGapsWithin_surjOn : (Set.Iio k).SurjOn
+    (fun (j : ℕ) ↦ ((F.intervalGapsWithin h a b j).2, (F.intervalGapsWithin h a b j.succ).1))
+    F := by
   intro z hz
-  rw [← F.range_orderEmbOfFin rfl (α := α ×ₗ α)] at hz
-  obtain ⟨i, hi⟩ := hz
-  use i.val, i.prop
-  simp [i.prop, intervalGapsWithin_snd_of_lt_card, intervalGapsWithin_succ_fst_of_lt_card, hi]
+  rw [← F.range_orderEmbOfFin h (α := α ×ₗ α)] at hz
+  obtain ⟨j, hj⟩ := hz
+  use j.val, j.prop
+  simp [intervalGapsWithin_snd_of_lt, intervalGapsWithin_succ_fst_of_lt, j.prop, hj,
+    -coe_eq_castSucc]
 
-theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
-    (i : ℕ) : a ≤ (F.intervalGapsWithin a b i).1 := by
-  by_cases hi : i = 0 ∨ F.card < i
-  · rcases hi with hi | hi <;> simp [hi]
-  · have := hFab (F.intervalGapsWithin_mapsTo a b (x := i - 1) (by grind))
+theorem intervalGapsWithin_le_fst {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
+    a ≤ (F.intervalGapsWithin h a b j).1 := by
+  wlog hj : j < k + 1 generalizing j
+  · convert this (j : Fin (k + 1)) (by grind) using 3; grind [cast_val_eq_self]
+  by_cases hj : j = 0
+  · simp [hj]
+  · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind))
+    have hj₀ : j - 1 + 1 = j := by omega
+    simp only [Nat.succ_eq_add_one, hj₀] at this
     grind
 
-theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
-    (i : ℕ) : (F.intervalGapsWithin a b i).2 ≤ b := by
-  by_cases hi : F.card ≤ i
-  · simp [hi]
-  · have := hFab (F.intervalGapsWithin_mapsTo a b (x := i) (by grind))
+theorem intervalGapsWithin_snd_le {a b : α} (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
+    (F.intervalGapsWithin h a b j).2 ≤ b := by
+  wlog hj : j < k + 1 generalizing j
+  · convert this (j : Fin (k + 1)) (by grind) using 3; grind [cast_val_eq_self]
+  by_cases hj : j = k
+  · simp [hj]
+  · have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j) (by grind))
+    simp only [Nat.succ_eq_add_one] at this
     grind
 
 theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
-    (hF : (SetLike.coe F).PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) (i : ℕ) :
-    (F.intervalGapsWithin a b i).1 ≤ (F.intervalGapsWithin a b i).2 := by
-  by_cases hi : i ≤ F.card
-  swap
-  · rwa [intervalGapsWithin_fst_of_card_lt _ _ _ (by omega),
-      intervalGapsWithin_snd_of_card_le _ _ _ (by omega)]
-  by_cases hi₁ : i = 0
-  · simp only [hi₁, intervalGapsWithin_zero_fst]
-    by_cases hi₂ : F.card = 0
-    · simp [hi₂, hab]
-    · exact hFab (F.intervalGapsWithin_mapsTo a b (by grind)) |>.left
-  · by_cases hi₂ : F.card = i
-    · simp only [hi₂.le, intervalGapsWithin_snd_of_card_le]
-      convert hFab (F.intervalGapsWithin_mapsTo a b (x := i - 1) (by grind)) |>.right.right using 1
-      simp only
-      congr
-      omega
-    · replace hi₂ : i < F.card := by omega
-      replace hi₁ : 0 < i := Nat.zero_lt_of_ne_zero hi₁
-      simp only [hi₂, hi₁, hi, intervalGapsWithin_snd_of_lt_card,
-        intervalGapsWithin_fst_of_zero_lt_le_card]
-      set G := F.orderEmbOfFin (α := α ×ₗ α) rfl
-      have hi' : (⟨i - 1, by omega⟩ : Fin F.card) < ⟨i, hi₂⟩ := Fin.mk_lt_mk.mpr (by omega)
-      have hG : (G ⟨i - 1, by omega⟩).1 ≤ (G ⟨i, hi₂⟩).1 :=
-        Prod.Lex.le_iff'.mp (G.monotone hi'.le) |>.left
-      have := hF (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
-        (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)]) (G.injective.ne hi'.ne)
-      contrapose! this
-      simp only [Set.not_disjoint_iff, Set.mem_Icc]
-      use (G ⟨i, hi₂⟩).1
-      have hFabi := hFab (z := G ⟨i, hi₂⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
-      simp [hFabi, this.le, hG]
+    (hF : (SetLike.coe F).PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) :
+    (F.intervalGapsWithin h a b j).1 ≤ (F.intervalGapsWithin h a b j).2 := by
+  wlog hj : j < k + 1 generalizing j
+  · convert this (j : Fin (k + 1)) (by grind) using 3 <;> grind [cast_val_eq_self]
+  by_cases hj₁ : j = 0
+  · simp only [hj₁]
+    by_cases hk : 0 = k
+    · simp only [natCast_zero, intervalGapsWithin_zero_fst]
+      simp [show 0 = last k by grind, hab]
+    · exact hFab (F.intervalGapsWithin_mapsTo h a b (x := 0) (by grind)) |>.left
+  have hk : k - 1 + 1 = k := by omega
+  by_cases hj₂ : j = k
+  · simp only [hj₂, natCast_eq_last, intervalGapsWithin_last_snd, ge_iff_le]
+    convert hFab (F.intervalGapsWithin_mapsTo h a b (x := j - 1) (by grind)) |>.right.right
+      using 1
+    simp [hj₂, hk]
+  rw [intervalGapsWithin_fst_of_lt_lt (hj₁ := by omega) (hj₂ := by omega),
+      intervalGapsWithin_snd_of_lt (hj := by omega)]
+  have hj₃ : (⟨j - 1, by omega⟩ : Fin k) ≠ ⟨j, by omega⟩ := by grind
+  set G := F.orderEmbOfFin (α := α ×ₗ α) h
+  have := hF (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
+    (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)]) (G.injective.ne (hj₃))
+  contrapose! this
+  simp only [Set.not_disjoint_iff, Set.mem_Icc]
+  use (G ⟨j, by omega⟩).1
+  have hG : (G ⟨j - 1, by omega⟩).1 ≤ (G ⟨j, by omega⟩).1 :=
+    Prod.Lex.le_iff'.mp (G.monotone (by simp [le_iff_val_le_val])) |>.left
+  have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
+  simp [hFabi, this.le, hG]
 
 theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
-    (Set.Iio (F.card + 1)).PairwiseDisjoint
-      (fun i ↦ Set.Ioc (F.intervalGapsWithin a b i).1 (F.intervalGapsWithin a b i).2) := by
-  intro i hi j hj hij
-  wlog hij' : i < j generalizing i j
-  · exact (this hj hi hij.symm (by omega)).symm
-  · rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
-    suffices (F.intervalGapsWithin a b i).2 ≤ (F.intervalGapsWithin a b j).1 by grind
-    have hi : i < F.card := by grind
-    have hj : j - 1 < F.card := by grind
-    have hij'' : (⟨i, hi⟩ : Fin F.card) ≤ ⟨j - 1, hj⟩ := Fin.mk_le_mk.mpr (by omega)
-    trans (F.intervalGapsWithin a b (j - 1)).2
-    · simp only [hi, hj, intervalGapsWithin_snd_of_lt_card]
-      exact Prod.Lex.le_iff'.mp (F.orderEmbOfFin (α := α ×ₗ α) rfl |>.monotone hij'') |>.left
-    · have := hFab (intervalGapsWithin_mapsTo F a b (x := j - 1) (by grind))
-      grind
+    (Set.Iio (k + 1)).PairwiseDisjoint (fun (j : ℕ) ↦
+      Set.Ioc (F.intervalGapsWithin h a b j).1 (F.intervalGapsWithin h a b j).2) := by
+  intro j hj j' hj' hjj'
+  rw [mem_Iio] at hj hj'
+  wlog hij' : j < j' generalizing j j'
+  · exact (this hj' hj hjj'.symm (by omega)).symm
+  rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
+  suffices (F.intervalGapsWithin h a b j).2 ≤ (F.intervalGapsWithin h a b j').1 by grind
+  have hj'₀ : j' - 1 + 1 = j' := by omega
+  have := hFab (F.intervalGapsWithin_mapsTo h a b (x := j' - 1) (by grind)) |>.right.left
+  simp only [Nat.succ_eq_add_one, hj'₀] at this
+  grw [← this]
+  rw [intervalGapsWithin_snd_of_lt (hj := by omega),
+      intervalGapsWithin_snd_of_lt (hj := by omega)]
+  exact Prod.Lex.le_iff'.mp (F.orderEmbOfFin (α := α ×ₗ α) h |>.monotone (by grind)) |>.left
 
 end Finset
 
