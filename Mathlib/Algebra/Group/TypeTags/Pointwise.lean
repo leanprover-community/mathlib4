@@ -35,7 +35,7 @@ lemma ofAdd_image_nsmul (n : ℕ) (s : Set M) :
   | succ n IH => simp [succ_nsmul, pow_succ, IH]
 
 @[simp]
-lemma toAdd_image_setMul {M : Type*} [AddMonoid M] (s t : Set (Multiplicative M)) :
+lemma toAdd_image_setMul (s t : Set (Multiplicative M)) :
     Multiplicative.toAdd '' (s * t) =
       (Multiplicative.toAdd '' s) + (Multiplicative.toAdd '' t) := by
   rw [← Set.image2_mul, Set.image_image2_distrib toAdd_mul, Set.image2_add]
