@@ -127,11 +127,7 @@ theorem tendsto_verticalIntegral (hb : 0 < b.re) (c : ℝ) :
 
 theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     Integrable fun x : ℝ => cexp (-b * (x + c * I) ^ 2) := by
-  refine
-    ⟨(Complex.continuous_exp.comp
-          (continuous_const.mul
-            ((continuous_ofReal.add continuous_const).pow 2))).aestronglyMeasurable,
-      ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq_add_mul_I' hb.ne', neg_sub _ (c ^ 2 * _),
     sub_eq_add_neg _ (b.re * _), Real.exp_add]
@@ -173,7 +169,7 @@ theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
       change I₁ T = I₂ T + I * (I₄ T - I₅ T)
       rw [mul_sub, ← C]
       abel
-    all_goals apply Continuous.intervalIntegrable; continuity
+    all_goals apply Continuous.intervalIntegrable; fun_prop
   rw [this, ← add_zero ((π / b : ℂ) ^ (1 / 2 : ℂ)), ← integral_gaussian_complex hb]
   refine Tendsto.add ?_ (tendsto_verticalIntegral hb c)
   exact
