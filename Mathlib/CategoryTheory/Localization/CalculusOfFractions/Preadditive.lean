@@ -8,8 +8,7 @@ module
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 public import Mathlib.CategoryTheory.Localization.HasLocalization
-public import Mathlib.CategoryTheory.Preadditive.Opposite
-public import Mathlib.CategoryTheory.Preadditive.Transfer
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The preadditive category structure on the localized category
@@ -301,8 +300,6 @@ end ImplementationDetails
 
 end Preadditive
 
-section
-
 variable [W.HasLeftCalculusOfFractions]
 
 /-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
@@ -353,37 +350,6 @@ variable [W.HasLocalization]
 noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
 instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
-
-end
-
-section
-
-variable [W.HasRightCalculusOfFractions]
-
-/-- The preadditive structure on `D`, when `L : C ⥤ D` is a localization
-functor, `C` is preadditive and there is a right calculus of fractions.
-If both left and right calculus of fractions are available, it is advisable
-to use `Localization.preadditive` instead. -/
-noncomputable def preadditive' : Preadditive D := by
-  letI := preadditive L.op W.op
-  exact Preadditive.ofFullyFaithful (opOpEquivalence D).fullyFaithfulInverse
-
-lemma functor_additive' :
-    letI := preadditive' L W
-    L.Additive := by
-  letI := preadditive L.op W.op
-  letI := preadditive' L W
-  have := functor_additive L.op W.op
-  have : (opOpEquivalence C).inverse.Additive := { }
-  have : (opOpEquivalence D).functor.Additive := by
-    have : (opOpEquivalence D).symm.functor.Additive :=
-      (opOpEquivalence D).fullyFaithfulInverse.additive_ofFullyFaithful
-    exact Equivalence.inverse_additive (opOpEquivalence D).symm
-  exact Functor.additive_of_iso
-    (show (opOpEquivalence C).inverse ⋙ L.op.op ⋙ (opOpEquivalence D).functor ≅ L
-      from Iso.refl _)
-
-end
 
 end Localization
 
