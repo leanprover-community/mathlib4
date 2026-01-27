@@ -31,28 +31,31 @@ structure Polygon (P : Type*) (n : ℕ) where
 
 namespace Polygon
 
-variable {R : Type*} {V : Type*} {P : Type*} {n : ℕ}
+variable {R V P : Type*} {n : ℕ}
 
 /-- A coercion to function so that vertices can
 be written as `poly i` instead of `poly.vertices i` -/
 instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
   coe := Polygon.vertices
 
-variable [Ring R] [PartialOrder R] [AddCommGroup V] [Module R V] [AddTorsor V P] [NeZero n]
+variable [AddCommGroup V] [AddTorsor V P] [NeZero n]
 
 /-- The `i`-th edge as an affine map `R →ᵃ[R] P`. -/
-def edgePath (poly : Polygon P n) (i : Fin n) : R →ᵃ[R] P :=
+def edgePath (R : Type*) [Ring R] [Module R V] (poly : Polygon P n) (i : Fin n) : R →ᵃ[R] P :=
   AffineMap.lineMap (poly i) (poly (i + 1))
 
 /-- The `i`-th edge as a set of points using an `affineSegment`. -/
-def edgeSet (poly : Polygon P n) (i : Fin n) : Set P :=
+def edgeSet (R : Type*) [Ring R] [PartialOrder R] [Module R V]
+    (poly : Polygon P n) (i : Fin n) : Set P :=
   affineSegment R (poly i) (poly (i + 1))
 
 /-- The `edgeSet` is equivalent to the image of the `edgePath`. -/
-theorem edgeSet_eq_image_edgePath (poly : Polygon P n) (i : Fin n) :
-    poly.edgeSet (R := R) i = poly.edgePath (R := R) i '' Icc (0 : R) 1 := rfl
+theorem edgeSet_eq_image_edgePath (R : Type*) [Ring R] [PartialOrder R] [Module R V]
+    (poly : Polygon P n) (i : Fin n) :
+    poly.edgeSet R i = poly.edgePath R i '' Icc (0 : R) 1 := rfl
 
 /-- The boundary of the polygon is the union of all its edges. -/
-def boundary (poly : Polygon P n) : Set P := ⋃ i, poly.edgeSet (R := R) i
+def boundary (R : Type*) [Ring R] [PartialOrder R] [Module R V] (poly : Polygon P n) : Set P :=
+  ⋃ i, poly.edgeSet R i
 
 end Polygon
