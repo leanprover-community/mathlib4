@@ -344,7 +344,7 @@ theorem integral_cos_sq_sub_sin_sq :
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
   refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
-    (continuous_const.div ?_ fun x => ?_).continuousOn
+    (Continuous.const.div ?_ fun x => ?_).continuousOn
   · fun_prop
   · nlinarith
 

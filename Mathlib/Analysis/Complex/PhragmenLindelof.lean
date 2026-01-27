@@ -144,7 +144,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     for all negative `ε`. -/
   suffices ∀ᶠ ε : ℝ in 𝓝[<] (0 : ℝ), ‖g ε z • f z‖ ≤ C by
     refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
-    apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
+    apply ((continuous_ofReal.mul .const).cexp.smul .const).norm.tendsto'
     simp
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
   -- An upper estimate on `‖g ε w‖` that will be used in two branches of the proof.
