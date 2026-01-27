@@ -8,8 +8,8 @@ example (x : ℚ) (n : ℕ) : n • x + x = (n: ℤ) • x + x := by
 example (x : ℚ) (a : ℤ) : algebraMap ℤ ℚ a * x = a • x := by
   algebra
 
-example {R A : Type*} {a b : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x y : A) :
-    a • y = a • y := by
+example {R A : Type*} {a : R} [CommSemiring R] [CommSemiring A] [Algebra R A] (x : A) :
+    a • x = a • x := by
   algebra with R
 
 -- Test universe polymorphism.

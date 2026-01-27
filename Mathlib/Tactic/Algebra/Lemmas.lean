@@ -58,6 +58,11 @@ theorem isNat_zero_eq {a : A} (h : IsNat a 0) : a = 0 := by
   have := h.out
   simp [this]
 
+/- evalCast -/
+theorem isNat_eq_rawCast {a : A} {lit : ℕ} (h : IsNat a lit) :
+    a = algebraMap R A (lit + 0 : R) + 0 := by
+  simp [h.out]
+
 section cleanup
 
 variable {n d : ℕ}
@@ -171,5 +176,49 @@ theorem mul_eq_mul_of_eq {c a b : A}
   simp [h]
 
 end equateScalars
+
+section RingCompute
+
+/- RingCompute.add -/
+theorem add_algebraMap {r s t : R} (h : r + s = t) :
+    algebraMap R A r + algebraMap R A s = algebraMap R A t := by
+  rw [← map_add, h]
+
+/- RingCompute.add -/
+theorem add_algebraMap_isNat_zero {r s : R} (h : r + s = 0) :
+    IsNat (algebraMap R A r + algebraMap R A s) 0 := by
+  rw [← map_add, h, map_zero]
+  exact ⟨by simp⟩
+
+/- RingCompute.cast -/
+theorem cast_smul_eq_mul {R' : Type*} [CommSemiring R'] [HSMul R' A A] {r' : R'} {r r'' : R}
+    (hr : r = r'') (h_smul : ∀ (a : A), r • a = r' • a) (a : A) :
+    r' • a = (algebraMap R A r'' + 0) * a := by
+  simp [← h_smul, ← hr, Algebra.smul_def r a]
+
+/- RingCompute.neg -/
+theorem neg_algebraMap {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    {r t : R} (h : -r = t) :
+    -(algebraMap R A r) = algebraMap R A t := by
+  rw [← map_neg, h]
+
+/- RingCompute.pow -/
+theorem pow_algebraMap {r s : R} {b : ℕ} (h : r ^ b = s) :
+    (algebraMap R A r) ^ b = algebraMap R A s := by
+  rw [← map_pow, h]
+
+/- RingCompute.inv -/
+theorem inv_algebraMap {R A : Type*} [Semifield R] [Semifield A] [Algebra R A]
+    {r s : R} (h : r⁻¹ = s) :
+    (algebraMap R A r)⁻¹ = algebraMap R A s := by
+  rw [← map_inv₀, h]
+
+/- RingCompute.isOne -/
+theorem isOne_algebraMap {r : R} (h : IsNat r 1) :
+    IsNat (algebraMap R A (r + 0)) 1 := by
+  simp only [h.out, Nat.cast_one, add_zero, map_one]
+  exact ⟨by simp⟩
+
+end RingCompute
 
 end Mathlib.Tactic.Algebra

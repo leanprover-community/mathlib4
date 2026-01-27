@@ -82,6 +82,7 @@ def ExProd := Common.ExProd (BaseType sAlg) sA
 @[expose]
 def ExSum := Common.ExSum (BaseType sAlg) sA
 
+set_option linter.unusedVariables false in
 variable {a} in
 /-- Evaluates a numeric literal in the algebra `A` by lifting it through the base ring `R`. -/
 def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
@@ -94,7 +95,8 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     let ⟨r, vr⟩ := Ring.ExProd.mkNat sR lit.natLit!
     -- Lift the literal to the base ring as a scalar multiple of 1
     pure ⟨_, (Common.ExProd.const ⟨_, (vr.toSum)⟩).toSum,
-      (q(sorry))⟩
+      have : $r =Q Nat.rawCast $lit := ⟨⟩
+      (q(isNat_eq_rawCast $p))⟩
   | .isNegNat rA lit p => do
     let some crR := cR.rα | none
     let some crA := cA.rα | none
@@ -172,9 +174,9 @@ def add (cR : Algebra.Cache sR) (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseT
   | .zero =>
     -- TODO: Why doesn't the match substitute t?
     have : $t =Q 0 := ⟨⟩
-    return  ⟨⟨_, .mk _ vt, q(sorry)⟩, some q(sorry)⟩
+    return  ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, some q(add_algebraMap_isNat_zero $pt)⟩
   | vt =>
-    return ⟨⟨_, .mk _ vt, q(sorry)⟩, none⟩
+    return ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, none⟩
 
 def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
@@ -188,21 +190,24 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSem
     (_rx : AtomM (Common.Result (Common.ExSum (Ring.BaseType sR') q($sR')) q($r'))) :
     AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
       Q(∀ (a : $A), $r' • a = $y * a)) := do
-  let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
+  let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
   have : u' =QL u := ⟨⟩
   /- Here's a terrifying error: Replacing the sR with q($sR) makes Qq believe that u = v,
     introducing kernel errors during runtime. -/
   let ⟨_r'', vr, pr⟩ ←
     Common.eval Ring.ringCompute rcℕ (Ring.ringCompute sR) cR.toCache q($r)
-  return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero, q(sorry)⟩
+  assumeInstancesCommute
+  return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
+    q(cast_smul_eq_mul $pr $pf_smul)⟩
 
 def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
     MetaM (Common.Result (BaseType sAlg) q(-$a)) := do
   let ⟨r, vr⟩ := za
   match cR.rα with
   | some rR =>
-    let ⟨t, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute sR) q($rR) vr
-    return ⟨_, .mk _ vt, q(sorry)⟩
+    let ⟨_, vt, pt⟩ ← Common.evalNeg (Ring.ringCompute sR) q($rR) vr
+    assumeInstancesCommute
+    return ⟨_, .mk _ vt, q(neg_algebraMap $pt)⟩
   | none => failure
 
 def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
@@ -211,14 +216,19 @@ def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
   let ⟨r, vr⟩ := za
   let ⟨b', vb'⟩ := vb.toExProdNat
   have : $b =Q $b' := ⟨⟩
-  let ⟨s, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
-  return ⟨_, ⟨_, vs⟩, q(sorry)⟩
+  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
+  return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
-def inv {a : Q($A)} (czA : Option Q(CharZero $A)) (fA : Q(Semifield $A))
+def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(Semifield $A))
     (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) := do
-  let ⟨r, vr⟩ := za
-  let ⟨s, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute sR) rcℕ fA czA vr
-  return some ⟨_, ⟨_, vs⟩, q(sorry)⟩
+  match cR.dsα with
+  | some fR =>
+    let ⟨r, vr⟩ := za
+    let ⟨_, vs, ps⟩ ← Common.ExSum.evalInv (Ring.ringCompute sR) rcℕ q($fR) cR.czα vr
+    assumeInstancesCommute
+    return some ⟨_, ⟨_, vs⟩, q(inv_algebraMap $ps)⟩
+  | none =>
+    return none
 
 def derive' (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
     MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
@@ -230,7 +240,7 @@ def isOne {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
   match vx with
   | .add (.const c) .zero =>
     match (Ring.ringCompute sR).isOne c with
-    | some pf => some q(sorry)
+    | some pf => some q(isOne_algebraMap $pf)
     | none => none
   | .zero => none
   | _ => none
@@ -245,7 +255,7 @@ def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
   cast := cast sAlg cR
   neg := neg sAlg cR
   pow := pow sAlg
-  inv := inv sAlg
+  inv := inv sAlg cR
   derive := derive' sAlg cR cA
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy

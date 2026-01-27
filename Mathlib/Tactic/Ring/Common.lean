@@ -846,14 +846,13 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
     match va with
     | va@(.const za) =>
       match rc.isOne za with
-        --  want to continue onto other branch...
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
       | .none =>
         let ⟨b', vb'⟩ := vb.toExProd
         have : $b =Q $b' := ⟨⟩
-        let ⟨c, zc, pc⟩ ← rc.pow _ za _ vb'
-        return ⟨_, .const zc, q(sorry)⟩
+        let ⟨_, zc, pc⟩ ← rc.pow _ za _ vb'
+        return ⟨_, .const zc, q($pc)⟩
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
       let ⟨b', vb'⟩ := vb.toExProd
@@ -864,9 +863,6 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       have : $b =Q $b' := ⟨⟩
       have : $ea₁ =Q $ea₁' := ⟨⟩
       return ⟨_, .mul vxa₁ vc₁' vc₂, q(mul_pow $pc₁ $pc₂)⟩
-    -- match va, vb with
-    -- | .mul vxa₁ vea₁ va₂, vb =>
-    -- | _, _ => OptionT.fail
   return (← res.run).getD (evalPowProdAtom rc va vb)
 
 /--
