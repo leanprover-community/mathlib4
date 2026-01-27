@@ -32,8 +32,8 @@ theorem isSheaf_of_isTerminal_of_indiscrete {X : TopCat.{w}} (hind : X.str = ⊤
     · refine ⟨it.from _, fun U hU hs => IsTerminal.hom_ext ?_ _ _⟩
       rwa [le_bot_iff.1 hU.le]
     · apply it.hom_ext
-  · convert Presieve.isSheafFor_top_sieve (F ⋙ coyoneda.obj (@op C c))
-    rw [← Sieve.id_mem_iff_eq_top]
+  · convert Presieve.isSheafFor_top (F ⋙ coyoneda.obj (@op C c))
+    rw [Sieve.arrows_eq_top_iff, ← Sieve.id_mem_iff_eq_top]
     have := (U.eq_bot_or_top hind).resolve_left hne
     subst this
     obtain he | ⟨⟨x⟩⟩ := isEmpty_or_nonempty X

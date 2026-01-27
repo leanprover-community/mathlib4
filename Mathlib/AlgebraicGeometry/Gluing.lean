@@ -809,6 +809,19 @@ lemma ι_eq_ι_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
   · simp [← glueDataι_naturality F kj]; rfl
   · simp [← glueDataι_naturality F ki, ← hy]; rfl
 
+lemma ι_jointly_surjective (x : ↑(colimit F)) :
+    ∃ (i : J) (xi : F.obj i), colimit.ι F i xi = x := by
+  obtain ⟨i, xi, h⟩ :=
+    (IsLocallyDirected.glueData F).ι_jointly_surjective
+      (((IsLocallyDirected.isColimit F).coconePointUniqueUpToIso (colimit.isColimit _)).inv x)
+  use (equivShrink J).symm i, xi
+  apply ((isColimit F).coconePointUniqueUpToIso (colimit.isColimit F)).inv.isOpenEmbedding.injective
+  simp_rw [← h, colimit.cocone_x, ← Scheme.Hom.comp_apply]
+  congr 5
+  have := eqToHom_naturality (fun j ↦ (glueData F).ι j)
+    (show i = ((equivShrink J) ((equivShrink J).symm i)) by simp)
+  simp [cocone, Functor.const_obj_obj, eqToHom_map, ← this]
+
 instance (F : WidePushoutShape J ⥤ Scheme.{u}) [∀ {i j} (f : i ⟶ j), IsOpenImmersion (F.map f)] :
     (F ⋙ forget).IsLocallyDirected :=
   have (i : _) : Mono ((F ⋙ forget).map (.init i)) :=

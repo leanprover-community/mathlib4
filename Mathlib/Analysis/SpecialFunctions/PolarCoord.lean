@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Function.Jacobian
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Polar coordinates

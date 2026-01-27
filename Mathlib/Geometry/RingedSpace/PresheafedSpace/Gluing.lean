@@ -82,8 +82,8 @@ namespace PresheafedSpace
 3. A presheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → PresheafedSpace C` rather than `J → J → PresheafedSpace C` to
   connect to the limits library more easily.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -521,8 +521,8 @@ namespace SheafedSpace
 3. A sheafed space `V i j` for each `i j : J`.
   (Note that this is `J × J → SheafedSpace C` rather than `J → J → SheafedSpace C` to
   connect to the limits library more easily.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
@@ -593,8 +593,8 @@ namespace LocallyRingedSpace
 3. A locally ringed space `V i j` for each `i j : J`.
   (Note that this is `J × J → LocallyRingedSpace` rather than `J → J → LocallyRingedSpace` to
   connect to the limits library more easily.)
-4. An open immersion `f i j : V i j ⟶ U i` for each `i j : ι`.
-5. A transition map `t i j : V i j ⟶ V j i` for each `i j : ι`.
+4. An open immersion `f i j : V i j ⟶ U i` for each `i j : J`.
+5. A transition map `t i j : V i j ⟶ V j i` for each `i j : J`.
 such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.

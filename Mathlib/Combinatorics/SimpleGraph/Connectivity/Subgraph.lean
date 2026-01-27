@@ -466,7 +466,7 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by
   have : w ∈ p.toSubgraph.neighborSet v := hadj
   rw [h.neighborSet_toSubgraph_endpoint] at this
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at this
+  push _ ∈ _ at this
   obtain hl | hr := this
   · exact ⟨p, ⟨h, hl.symm, rfl⟩⟩
   · use p.reverse

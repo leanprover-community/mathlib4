@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Data.Set.Image
+public import Mathlib.Util.Delaborators
 
 /-!
 # Directed indexed families and sets
@@ -18,7 +19,7 @@ directed iff each pair of elements has a shared upper bound.
 * `Directed r f`: Predicate stating that the indexed family `f` is `r`-directed.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
-  unbundled relation classes such as `IsTotal`.
+  unbundled relation classes such as `Std.Total`.
 
 ## TODO
 
@@ -125,7 +126,7 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
+theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
@@ -164,8 +165,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
     @directedOn_univ _ _⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
-  directed_id_iff.1 <| IsTotal.directed _
+instance (priority := 100) Std.Total.to_isDirected [Std.Total r] : IsDirected α r :=
+  directed_id_iff.1 <| Std.Total.directed _
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
   ⟨fun a b =>

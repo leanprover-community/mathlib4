@@ -11,6 +11,7 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The standard simplex

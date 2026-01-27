@@ -419,7 +419,7 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b c : E} {r r₁ r₂ : ℝ}
+  {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
@@ -494,6 +494,11 @@ theorem norm_mul_le_of_le' (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add₃_le /-- **Triangle inequality** for the norm. -/]
 lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_mul_le_of_le' (norm_mul_le' _ _) le_rfl
+
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add₄_le /-- **Triangle inequality** for the norm. -/]
+lemma norm_mul₄_le' : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ :=
+  norm_mul_le_of_le' norm_mul₃_le' le_rfl
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
@@ -978,6 +983,19 @@ variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
 
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+
+@[to_additive enorm_add_le_of_le]
+theorem enorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
+    (h₁ : ‖a₁‖ₑ ≤ r₁) (h₂ : ‖a₂‖ₑ ≤ r₂) : ‖a₁ * a₂‖ₑ ≤ r₁ + r₂ :=
+  (enorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
+
+@[to_additive enorm_add₃_le]
+lemma enorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
+  enorm_mul_le_of_le' (enorm_mul_le' _ _) le_rfl
+
+@[to_additive enorm_add₄_le]
+lemma enorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
+  enorm_mul_le_of_le' enorm_mul₃_le' le_rfl
 
 end ESeminormedMonoid
 

@@ -34,7 +34,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 @[expose] public section
 
 
-library_note2 «category theory universes»
+library_note «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 

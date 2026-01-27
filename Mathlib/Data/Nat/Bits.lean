@@ -5,12 +5,10 @@ Authors: Praneeth Kolichala
 -/
 module
 
-public import Batteries.Tactic.GeneralizeProofs
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Says
-public import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
