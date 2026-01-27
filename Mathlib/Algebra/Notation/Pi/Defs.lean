@@ -6,7 +6,6 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 module
 
 public import Mathlib.Algebra.Notation.Defs
-public import Mathlib.Util.AssertExists
 public import Mathlib.Tactic.Push.Attr
 
 /-!
