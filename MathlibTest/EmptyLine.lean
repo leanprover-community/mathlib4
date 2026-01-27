@@ -147,7 +147,7 @@ structure WithAString
 
                   embedded empty lines, but that is ok!"
 
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 example : True := by  -- The following empty line is not reported, since the command is noisy.
 
