@@ -432,7 +432,7 @@ section div_tendsto_infty
 variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
   {l : Filter α} {f g : α → 𝕜}
 
-theorem isLittleO_of_div_tendsto_top (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
+theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
   apply Asymptotics.isLittleO_of_tendsto'
   · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
     intro x h h0
@@ -441,8 +441,8 @@ theorem isLittleO_of_div_tendsto_top (h : Tendsto (fun x ↦ g x / f x) l atTop)
   · convert Tendsto.comp tendsto_inv_atTop_zero h
     simp
 
-theorem isLittleO_of_div_tendsto_bot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
-  refine IsLittleO.of_neg_left (isLittleO_of_div_tendsto_top ?_)
+theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
+  refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)
   rw [← tendsto_neg_atBot_iff]
   convert h using 2
   simp [div_neg_eq_neg_div]
