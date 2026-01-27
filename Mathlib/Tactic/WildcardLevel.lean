@@ -160,12 +160,12 @@ def reorganizeUniverseParams
     -- Collect dependencies: params from later universe arguments
     let dependencies := 
       constLevels.foldr (stop := idx + 1) CollectLevelParams.visitLevel {} |>.params
-    -- Remove newParamName from list (if it already exists)
+    -- Remove newParamName from list
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
-    let lastDependencyIdx := currentNames.zipIdx
-      |>.foldl (fun acc (name, idx) => if dependencies.contains name then some idx else acc) none
-    let insertPos := lastDependencyIdx.map (· + 1) |>.getD 0
+    let insertPos := currentNames.zipIdx 
+      |>.findRev? (fun (name, _) => dependencies.contains name)
+      |>.map (·.snd + 1) |>.getD 0
     result := currentNames.insertIdx insertPos newParamName
   return result
 
