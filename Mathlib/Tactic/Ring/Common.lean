@@ -108,14 +108,14 @@ ring subexpressions of type `ℤ`.
 -/
 def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
-structure _root_.Mathlib.Tactic.Ring.baseType {u : Lean.Level} {α : Q(Type u)}
+structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
     (sα : Q(CommSemiring $α)) (e : Q($α)) where
   value : ℚ
   hyp : Option Expr
   -- isNat? : Option (Σ n : Q(ℕ), Q(IsNat $e $n))
 deriving Inhabited
 
-def btℕ (e : Q(ℕ)) : Type := Ring.baseType sℕ q($e)
+def btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
 
 instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
 
@@ -167,7 +167,7 @@ end
 mutual
 
 /-- The base `e` of a normalized exponent expression. -/
-inductive ExBase {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /--
   An atomic expression `e` with id `id`.
@@ -181,34 +181,34 @@ inductive ExBase {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
   while `value : expr` contains a representative of this class.
   The function `resolve_atom` determines the appropriate atom for a given expression.
   -/
-  | atom {e} (id : ℕ) : ExBase baseType sα e
+  | atom {e} (id : ℕ) : ExBase BaseType sα e
   /-- A sum of monomials. -/
-  | sum {e} (_ : ExSum baseType sα e) : ExBase baseType sα e
+  | sum {e} (_ : ExSum BaseType sα e) : ExBase BaseType sα e
 
 
 /--
 A monomial, which is a product of powers of `ExBase` expressions,
 terminated by a (nonzero) constant coefficient.
 -/
-inductive ExProd {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
-  | const {e : Q($α)} (value : baseType e) : ExProd baseType sα e
+  | const {e : Q($α)} (value : BaseType e) : ExProd BaseType sα e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
   and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
-    ExBase baseType sα x → ExProdNat e → ExProd baseType sα b → ExProd baseType sα q($x ^ $e * $b)
+    ExBase BaseType sα x → ExProdNat e → ExProd BaseType sα b → ExProd BaseType sα q($x ^ $e * $b)
 
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+inductive ExSum {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
     (sα : Q(CommSemiring $α)) : (e : Q($α)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
-  | zero : ExSum baseType sα q(0 : $α)
+  | zero : ExSum BaseType sα q(0 : $α)
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
   | add {a b : Q($α)} :
-    ExProd baseType sα a → ExSum baseType sα b → ExSum baseType sα q($a + $b)
+    ExProd BaseType sα a → ExSum BaseType sα b → ExSum BaseType sα q($a + $b)
 end
 
 variable {u : Lean.Level}
@@ -230,30 +230,30 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
-structure RingCompute {u : Lean.Level} {α : Q(Type u)} (baseType : Q($α) → Type)
+structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) where
-  evalAdd (sα) : ∀ x y : Q($α), baseType x → baseType y →
-    MetaM ((Result baseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
-  evalMul (sα) : ∀ x y : Q($α), baseType x → baseType y → MetaM (Result baseType q($x * $y))
-  evalCast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
+  add (sα) : ∀ x y : Q($α), BaseType x → BaseType y →
+    MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
+  mul (sα) : ∀ x y : Q($α), BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
+  cast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
       (_ : Q(HSMul $β $α $α)) (x : Q($β)),
-      (AtomM <| Result (ExSum (Ring.baseType sβ) q($sβ)) q($x)) →
+      (AtomM <| Result (ExSum (Ring.BaseType sβ) q($sβ)) q($x)) →
     /- We require the latter proof because we don't have any facts about
     Algebra imported in this file.-/
-    AtomM (Σ y : Q($α), ExSum baseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
-  evalNeg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → baseType x → MetaM (Result baseType q(-$x))
-  evalPow (sα) : ∀ x : Q($α), baseType x → (b : Q(ℕ)) → (vb : ExProd btℕ sℕ q($b)) →
-    OptionT MetaM (Result baseType q($x ^ $b))
+    AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
+  neg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → BaseType x → MetaM (Result BaseType q(-$x))
+  pow (sα) : ∀ x : Q($α), BaseType x → (b : Q(ℕ)) → (vb : ExProd btℕ sℕ q($b)) →
+    OptionT MetaM (Result BaseType q($x ^ $b))
   -- TODO: Do we want this to run in AtomM or in MetaM & handle atoms on failure?
-  evalInv : ∀ {x : Q($α)}, (czα : Option Q(CharZero $α)) → (fα : Q(Semifield $α)) → baseType x →
-    AtomM (Option <| Result baseType q($x⁻¹))
-  derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum baseType sα) q($x))
-  eq (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Bool
-  compare (sα) : ∀ {x y : Q($α)}, baseType x → baseType y → Ordering
-  isOne (sα) : ∀ {x : Q($α)}, baseType x → Option Q(NormNum.IsNat $x 1)
-  one (sα) : Result baseType q((nat_lit 1).rawCast)
+  inv : ∀ {x : Q($α)}, (czα : Option Q(CharZero $α)) → (fα : Q(Semifield $α)) → BaseType x →
+    AtomM (Option <| Result BaseType q($x⁻¹))
+  derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum BaseType sα) q($x))
+  eq (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
+  compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
+  isOne (sα) : ∀ {x : Q($α)}, BaseType x → Option Q(NormNum.IsNat $x 1)
+  one (sα) : Result BaseType q((nat_lit 1).rawCast)
   -- Used only for debugging.
-  toString : ∀ {x : Q($α)}, baseType x → String
+  toString : ∀ {x : Q($α)}, BaseType x → String
 
 
 
@@ -281,7 +281,7 @@ partial def ExProdNat.toExProd (e : Q(ℕ)) : ExProdNat e → Σ e', ExProd bt�
   | .mul vx ve vt => ⟨_, .mul vx.toExBase.2 ve vt.toExProd.2⟩
 
 partial def ExSumNat.toExSum (e : Q(ℕ)) : ExSumNat e → Σ e', ExSum btℕ sℕ e' := fun
-  | .zero => ⟨_, .zero (baseType := btℕ) (sα := sℕ)⟩
+  | .zero => ⟨_, .zero (BaseType := btℕ) (sα := sℕ)⟩
   | .add va vb => ⟨_, .add va.toExProd.2 vb.toExSum.2⟩
 
 end
@@ -465,7 +465,7 @@ def evalAddOverlap {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt sα b) 
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za, .const zb => do
-    let ⟨⟨_, zc, pf⟩, isZero⟩ ← rc.evalAdd (u := u) (sα := sα) _ _ za zb
+    let ⟨⟨_, zc, pf⟩, isZero⟩ ← rc.add (u := u) (sα := sα) _ _ za zb
     match isZero with
     | .some pf => pure <| .zero q($pf)
     | .none =>
@@ -561,7 +561,7 @@ partial def evalMulProd {a b : Q($α)} (va : ExProd bt sα a) (vb : ExProd bt s�
   Lean.Core.checkSystem decl_name%.toString
   match va, vb with
   | .const za, .const zb =>
-    let ⟨_, zc, pf⟩ ← rc.evalMul _ _ za zb
+    let ⟨_, zc, pf⟩ ← rc.mul _ _ za zb
     assumeInstancesCommute
     return ⟨_, .const zc, q($pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, vb@(.const _) =>
@@ -649,7 +649,7 @@ def evalNegProd {a : Q($α)} (rα : Q(CommRing $α)) (va : ExProd bt sα a) :
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const za =>
-    let ⟨b, zb, pb⟩ ← rc.evalNeg _ q($rα) za
+    let ⟨b, zb, pb⟩ ← rc.neg _ q($rα) za
     return ⟨b, .const zb,  q($pb)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ ← evalNegProd rα va₃
@@ -852,7 +852,7 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       | .none =>
         let ⟨b', vb'⟩ := vb.toExProd
         have : $b =Q $b' := ⟨⟩
-        let ⟨c, zc, pc⟩ ← rc.evalPow _ za _ vb'
+        let ⟨c, zc, pc⟩ ← rc.pow _ za _ vb'
         return ⟨_, .const zc, q(sorry)⟩
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
@@ -1059,7 +1059,7 @@ def ExProd.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExProd bt 
   Lean.Core.checkSystem decl_name%.toString
   match va with
   | .const c =>
-    match ← rc.evalInv czα q($dsα) c with
+    match ← rc.inv czα q($dsα) c with
     | some ⟨_, vd, pd⟩ => pure ⟨_, .const vd, q($pd)⟩
     | none =>
         let ⟨_, vc, pc⟩ ← evalInvAtom dsα a
@@ -1188,7 +1188,7 @@ def isAtomOrDerivable
 end
 
 variable (rcRing : ∀ {u : Lean.Level} {α : Q(Type u)},
-  ∀ (sα : Q(CommSemiring $α)), RingCompute (Ring.baseType sα) sα) (rcℕ : RingCompute btℕ sℕ) in
+  ∀ (sα : Q(CommSemiring $α)), RingCompute (Ring.BaseType sα) sα) (rcℕ : RingCompute btℕ sℕ) in
 
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
@@ -1231,12 +1231,12 @@ partial def eval  {u : Lean.Level}
       try
         let sR : Q(CommSemiring $R) ← synthInstanceQ q(CommSemiring $R)
         -- Lazily evaluate `vs` only if we actually need the normalized expression in `R`.
-        let vs : AtomM <| Result (ExSum (Ring.baseType sR) sR) q($r) := do
+        let vs : AtomM <| Result (ExSum (Ring.BaseType sR) sR) q($r) := do
           -- TODO: special case Nat and Int for the cache?
           let cR ← mkCache sR
           eval (rcRing sR) cR r
         let ⟨_, vb, pb⟩ ← eval rc c a
-        let ⟨_, vt, pt⟩ ← rc.evalCast _ _ q($sR) q(inferInstance) _ vs
+        let ⟨_, vt, pt⟩ ← rc.cast _ _ q($sR) q(inferInstance) _ vs
         let ⟨_, vc, pc⟩ ← evalMul rc rcℕ vt vb
         return ⟨_, vc, q(hsmul_congr rfl $pb $pt $pc)⟩
       catch _ => els

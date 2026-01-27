@@ -115,11 +115,11 @@ def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
 @[reducible]
-def ExBase := Common.ExBase (Ring.baseType sα) sα
+def ExBase := Common.ExBase (BaseType sα) sα
 @[reducible]
-def ExProd := Common.ExProd (Ring.baseType sα) sα
+def ExProd := Common.ExProd (BaseType sα) sα
 @[reducible]
-def ExSum := Common.ExSum (Ring.baseType sα) sα
+def ExSum := Common.ExSum (BaseType sα) sα
 
 section
 variable {R : Type*} [CommSemiring R] {a : R}
@@ -394,8 +394,8 @@ theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} :
 
 namespace RingCompute
 
-def add (a b : Q($α)) (za : Ring.baseType sα a) (zb : Ring.baseType sα b) :
-    MetaM (Result (Ring.baseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
+def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+    MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let ⟨qa, ha⟩ := za
   let ⟨qb, hb⟩ := zb
   let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
@@ -403,7 +403,7 @@ def add (a b : Q($α)) (za : Ring.baseType sα a) (zb : Ring.baseType sα b) :
   let isZero : Option Q(IsNat ($a + $b) 0) := match res with
   | Result.isNat inst lit pf =>
     if lit.natLit! == 0 then
-      -- WARNING: unsafe Qq
+      -- WARNING: unsafe Qq, issues with assumeInstancesCommute, even in MetaM.
       some pf
     else
       none
@@ -412,8 +412,8 @@ def add (a b : Q($α)) (za : Ring.baseType sα a) (zb : Ring.baseType sα b) :
   let ⟨c, pc⟩ := res.toRawEq
   return ⟨⟨q($c), ⟨qc, hc⟩, q($pc)⟩, isZero⟩
 
-def mul (a b : Q($α)) (za : Ring.baseType sα a) (zb : Ring.baseType sα b) :
-    MetaM (Result (Ring.baseType sα) q($a * $b)) := do
+def mul (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
+    MetaM (Result (BaseType sα) q($a * $b)) := do
   let ⟨qa, ha⟩ := za
   let ⟨qb, hb⟩ := zb
   let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
@@ -424,8 +424,8 @@ def mul (a b : Q($α)) (za : Ring.baseType sα a) (zb : Ring.baseType sα b) :
 
 def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     (_smul : Q(HSMul $β $α $α)) (_x : Q($β))
-    (rx : AtomM (Result (Common.ExSum (Ring.baseType sβ) q($sβ)) q($_x))) :
-    AtomM ((y : Q($α)) × Common.ExSum (Ring.baseType sα) sα q($y) ×
+    (rx : AtomM (Result (Common.ExSum (BaseType sβ) q($sβ)) q($_x))) :
+    AtomM ((y : Q($α)) × Common.ExSum (BaseType sα) sα q($y) ×
       Q(∀ (a : $α), $_x • a = $y * a)) := do
   let ⟨x', vx, px⟩ ← rx
   if (← isDefEq sα sβ) then
@@ -449,8 +449,8 @@ def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     return ⟨y, vy, q(fun _ => $px ▸ Int.smul_eq_mul $py)⟩
   | _ => failure
 
-def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : Ring.baseType sα a) :
-    MetaM (Result (Ring.baseType sα) q(-$a)) := do
+def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
+    MetaM (Result (BaseType sα) q(-$a)) := do
   let ⟨qa, ha⟩ := za
   let ra := Result.ofRawRat qa a ha
   let res ← ra.neg q(inferInstance)
@@ -458,9 +458,9 @@ def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : Ring.baseType sα a) :
   let ⟨c, pc⟩ := res.toRawEq
   return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
 
-def pow (a : Q($α)) (za : Ring.baseType sα a) (b : Q(ℕ))
+def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
-    OptionT MetaM (Result (Ring.baseType sα) q($a ^ $b)) := do
+    OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
   | .const _ =>
     -- TODO: Decide if this is the best way to extract the exponent as a Nat.
@@ -480,7 +480,7 @@ def pow (a : Q($α)) (za : Ring.baseType sα a) (b : Q(ℕ))
   | _ => OptionT.fail
 
 def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
-    (za : Ring.baseType sα a) : AtomM (Option (Result (Ring.baseType sα) q($a⁻¹))) := do
+    (za : BaseType sα a) : AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
   let ⟨qa, ha⟩ := za
   let ra := Result.ofRawRat qa a ha
   match (← (Lean.observing? <| ra.inv _ czα :)) with
@@ -490,12 +490,12 @@ def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
     return some ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
   | none => return none
 
-def derive (x : Q($α)) : MetaM (Result (Common.ExSum (Ring.baseType sα) sα) q($x)) := do
+def derive (x : Q($α)) : MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do
   let res ← NormNum.derive x
   let ⟨_, va, pa⟩ ← evalCast sα res
   return ⟨_, va, q($pa)⟩
 
-def isOne {x : Q($α)} (zx : Ring.baseType sα x) : Option Q(IsNat $x 1) := do
+def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
   let ⟨qx, _hx⟩ := zx
   if qx == 1 then
     have : $x =Q Nat.rawCast 1 := ⟨⟩
@@ -507,14 +507,13 @@ def isOne {x : Q($α)} (zx : Ring.baseType sα x) : Option Q(IsNat $x 1) := do
 end RingCompute
 
 open RingCompute in
-def ringCompute :
-    Common.RingCompute (Ring.baseType sα) sα where
-  evalAdd := add sα
-  evalMul := mul sα
-  evalCast := cast sα
-  evalNeg := neg sα
-  evalPow := pow sα
-  evalInv := inv sα
+def ringCompute : Common.RingCompute (BaseType sα) sα where
+  add := add sα
+  mul := mul sα
+  cast := cast sα
+  neg := neg sα
+  pow := pow sα
+  inv := inv sα
   derive := derive sα
   eq zx zy := zx.value == zy.value
   compare zx zy := compare zx.value zy.value

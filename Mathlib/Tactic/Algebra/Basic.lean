@@ -185,7 +185,7 @@ def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
 
 def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSemiring $R'))
     (_smul : Q(HSMul $R' $A $A)) (r' : Q($R'))
-    (_rx : AtomM (Common.Result (Common.ExSum (Ring.baseType sR') q($sR')) q($r'))) :
+    (_rx : AtomM (Common.Result (Common.ExSum (Ring.BaseType sR') q($sR')) q($r'))) :
     AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
       Q(∀ (a : $A), $r' • a = $y * a)) := do
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q(inferInstance) r'
@@ -240,12 +240,12 @@ end RingCompute
 open RingCompute in
 def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
     Common.RingCompute (BaseType sAlg) sA where
-  evalAdd := add sAlg cR
-  evalMul := mul sAlg
-  evalCast := cast sAlg cR
-  evalNeg := neg sAlg cR
-  evalPow := pow sAlg
-  evalInv := inv sAlg
+  add := add sAlg cR
+  mul := mul sAlg
+  cast := cast sAlg cR
+  neg := neg sAlg cR
+  pow := pow sAlg
+  inv := inv sAlg
   derive := derive' sAlg cR cA
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
