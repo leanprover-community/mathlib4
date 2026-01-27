@@ -3,6 +3,8 @@ Copyright (c) 2026 A. M. Berns. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: A. M. Berns
 -/
+module
+
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Topology.Algebra.Affine
 
