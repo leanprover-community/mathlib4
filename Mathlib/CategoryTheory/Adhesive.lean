@@ -49,7 +49,7 @@ variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
-/-- A convenience formulation for a pushout being a van Kampen colimit.
+/-- A convenient formulation for a pushout being a van Kampen colimit.
 See `IsPushout.isVanKampen_iff` below. -/
 @[nolint unusedArguments]
 def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
@@ -58,7 +58,7 @@ def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
     (_ : IsPullback g' αW αY g) (_ : CommSq h' αX αZ h) (_ : CommSq i' αY αZ i)
     (_ : CommSq f' g' h' i'), IsPushout f' g' h' i' ↔ IsPullback h' αX αZ h ∧ IsPullback i' αY αZ i
 
-/-- An alternative formulation for a pushout being a van Kampen colimit.
+/-- An alternate formulation for a pushout being a van Kampen colimit.
 See `IsPushout.isVanKampen_iff'` below. -/
 @[nolint unusedArguments]
 def IsPushout.IsVanKampen' (_ : IsPushout f g h i) : Prop :=
@@ -123,44 +123,37 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
 lemma IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
     H.IsVanKampen ↔ H.IsVanKampen' := by
   constructor
-  · intro VK X' Y' Z' h' i' αX αY αZ csh csi _
+  · intro hvk X' Y' Z' h' i' αX αY αZ sq_h sq_i _
     constructor
-    · intro ⟨pbh, pbi⟩
-      let l := pbi.lift ((pullback.fst αX f) ≫ h') ((pullback.snd αX f) ≫ g)
-          (by simp only [Category.assoc, csh.w, pullback.condition_assoc, ← H.w])
+    · intro ⟨hh, hi⟩
+      let l := hi.lift ((pullback.fst αX f) ≫ h') ((pullback.snd αX f) ≫ g)
+          (by simp only [Category.assoc, sq_h.w, pullback.condition_assoc, ← H.w])
       use (pullback αX f), (pullback.fst αX f), l, (pullback.snd αX f)
-      refine ⟨?_, ?_, ?_⟩
-      · exact IsPullback.of_hasPullback αX f
-      · refine IsPullback.of_right' ?_ pbi
+      refine ⟨IsPullback.of_hasPullback αX f, ?_, ?_⟩
+      · refine IsPullback.of_right' ?_ hi
         rw [← H.w]
-        exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) pbh
-      · refine (VK (pullback.fst αX f) l  h' i' (pullback.snd αX f) αX αY αZ
+        exact IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
+      · refine (hvk (pullback.fst αX f) l  h' i' (pullback.snd αX f) αX αY αZ
           (IsPullback.of_hasPullback αX f) ?_
-            pbh.toCommSq pbi.toCommSq ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨pbh, pbi⟩
-        · dsimp [l]
-          refine IsPullback.of_right' ?_ pbi
+            sq_h sq_i ⟨by simp only [IsPullback.lift_fst, l]⟩).2 ⟨hh, hi⟩
+        · refine IsPullback.of_right' ?_ hi
           rw [← H.w]
-          refine IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) pbh
-    · intro ⟨W', f', g', αW, pbf, pbg, H'⟩
-      rwa [← VK f' g' h' i' αW αX αY αZ pbf pbg csh csi H'.toCommSq]
-  · intro VK W' X' Y' Z' f' g' h' i' αW αX αY αZ pbf pbg csh csi cs
+          refine IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
+    · intro ⟨W', f', g', αW, hf, hg, H'⟩
+      rwa [← hvk f' g' h' i' αW αX αY αZ hf hg sq_h sq_i H'.toCommSq]
+  · intro hvk W' X' Y' Z' f' g' h' i' αW αX αY αZ hf hg hcₕ hcᵢ cs
+    letI : HasPullback αX f := hf.hasPullback
     constructor
     · intro H'
-      letI : HasPullback αX f := IsPullback.hasPullback pbf
-      have := VK h' i' αX αY αZ csh csi
-      rw [this]
-      refine ⟨W', f', g', αW, pbf, pbg, H'⟩
-    · intro ⟨pbh, pbi⟩
-      letI : HasPullback αX f := pbf.hasPullback
-      obtain ⟨W'', f'', g'', αW', pbf', pbg', hP⟩ := (VK h' i' αX αY αZ csh csi).1 ⟨pbh, pbi⟩
-      refine hP.of_iso ?_ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_ ?_
-      · exact (IsPullback.isoIsPullback _ _ pbf' pbf)
-      · simp
-      · apply pbi.hom_ext
+      rw [hvk h' i' αX αY αZ hcₕ hcᵢ]
+      refine ⟨W', f', g', αW, hf, hg, H'⟩
+    · intro ⟨hh, hi⟩
+      obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (hvk h' i' αX αY αZ hcₕ hcᵢ).1 ⟨hh, hi⟩
+      refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)
+        (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) ?_ (by simp) (by simp)
+      · apply hi.hom_ext
         · simp [← cs.w, hP.w]
-        · simp [pbg.w, pbg'.w]
-      · simp
-      · simp
+        · simp [hg.w, hg'.w]
 
 lemma IsPushout.VanKampen_isPullback_isPullback_hom_ext
     {H : IsPushout f g h i} (H' : H.IsVanKampen)
@@ -168,8 +161,8 @@ lemma IsPushout.VanKampen_isPullback_isPullback_hom_ext
     {αX : X' ⟶ X} [HasPullback αX f] {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z} {f₁ f₂ : Z' ⟶ W}
     (h₁ : IsPullback h' αX αZ h) (h₂ : IsPullback i' αY αZ i)
     (h'_eq : h' ≫ f₁ = h' ≫ f₂) (i'_eq : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
-  obtain ⟨W, f', g', αW, h₃, h₄, h₅⟩ :=
-    (isVanKampen_iff'.1 H' h' i' αX αY αZ h₁.toCommSq h₂.toCommSq).1 ⟨h₁, h₂⟩
+  rw [isVanKampen_iff'] at H'
+  obtain ⟨W, f', g', αW, h₃, h₄, h₅⟩ := (H' h' i' αX αY αZ h₁.toCommSq h₂.toCommSq).1 ⟨h₁, h₂⟩
   exact h₅.hom_ext h'_eq i'_eq
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
@@ -213,13 +206,13 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
     [HasPullbacks C] (hc : IsColimit c) (f : W ⟶ X) (h : X ⟶ Z) (i : c.pt ⟶ Z)
     (H : IsPushout f c.inl h i) : H.IsVanKampen := by
-  obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
+  obtain ⟨sq_h⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
   introv W' hf hg hh hi w
-  obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
+  obtain ⟨sq_i⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
     (BinaryCofan.mk _ (pullback.fst _ _)) _ _ _ hg.w.symm pullback.condition.symm).mpr
     ⟨hg, IsPullback.of_hasPullback αY c.inr⟩
-  refine (is_coprod_iff_isPushout _ hc₂ w).symm.trans ?_
-  refine ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
+  refine (is_coprod_iff_isPushout _ sq_i w).symm.trans ?_
+  refine ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ sq_h)
     (BinaryCofan.mk _ _) (pullback.snd _ _) _ _ ?_ hh.w.symm).trans ?_
   · dsimp; rw [← pullback.condition_assoc, Category.assoc, hi.w]
   constructor
@@ -241,10 +234,10 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
           rw [Category.assoc, pullback.lift_fst]; exact hc₃
     rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd _ _ = αY from pullback.lift_snd _ _ _]
     apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
-    have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
-      apply BinaryCofan.IsColimit.hom_ext hc₂
-      exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
-        (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
+    have : cmp = (sq_i.coconePointUniqueUpToIso hc₄).hom := by
+      apply BinaryCofan.IsColimit.hom_ext sq_i
+      exacts [(sq_i.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
+        (sq_i.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
     rw [this]
     exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
   · rintro ⟨hc₃, hc₄⟩
