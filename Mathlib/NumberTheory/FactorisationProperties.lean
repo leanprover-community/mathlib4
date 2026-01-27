@@ -229,8 +229,8 @@ theorem Abundant.mul_left (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
-  have ha : Abundant 945 := by decide +kernel
-  use (2 * (a + 1)) * 945
+  have ha : Abundant 12 := by decide
+  use (2 * (a + 1)) * 12
   grind [Abundant.mul_left ha (show 2 * (a + 1) ≠ 0 by grind)]
 
 theorem infinite_odd_abundant : {n : ℕ | Odd n ∧ n.Abundant}.Infinite := by
