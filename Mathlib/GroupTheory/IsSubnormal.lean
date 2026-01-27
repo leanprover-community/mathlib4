@@ -16,7 +16,7 @@ We also prove a few basic facts.
 * The definition is equivalent to the existence of a finite chain of inclusions of
   subgroups, each normal in the successor, starting at the subgroup itself and
   ending with the whole group (`IsSubnormal_iff`).
-* The relation of being `IsSubnormal` is transitive (`trans`).
+* The relation of being `IsSubnormal` is transitive (`IsSubnormal.trans`).
 * The image of a subnormal subgroup under a surjective group homomorphism is subnormal (`map`).
 * The quotient of a subnormal subgroup is a subnormal subgroup (`quotient` --
   this is a convenient specialisation of `map`).
@@ -151,6 +151,11 @@ lemma IsSubnormal_iff : H.IsSubnormal ↔
 
 alias ⟨exists_chain, _⟩ := IsSubnormal_iff
 
+/--
+Subnormality is transitive.
+
+This version involves an explicit `subtype`, which the version `IsSubnormal.trans` does not.
+-/
 protected
 lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
     IsSubnormal (H.map K.subtype) := by
