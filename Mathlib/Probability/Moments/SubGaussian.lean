@@ -561,7 +561,7 @@ lemma cgf_le (h : HasCondSubgaussianMGF m hm X c μ) :
   Kernel.HasSubgaussianMGF.cgf_le h
 
 lemma ae_trim_condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
-    ∀ᵐ ω' ∂(μ.trim hm), (μ[fun ω ↦ exp (t * X ω)|m]) ω' ≤ exp (c * t ^ 2 / 2) := by
+    ∀ᵐ ω' ∂(μ.trim hm), (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) := by
   have h_eq := condExp_ae_eq_trim_integral_condExpKernel hm (h.integrable_exp_mul t)
   simp_rw [condExpKernel_comp_trim] at h_eq
   filter_upwards [h.mgf_le, h_eq] with ω' h_mgf h_eq
@@ -569,7 +569,7 @@ lemma ae_trim_condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
   exact h_mgf t
 
 lemma ae_condExp_le (h : HasCondSubgaussianMGF m hm X c μ) (t : ℝ) :
-    ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω)|m]) ω' ≤ exp (c * t ^ 2 / 2) :=
+    ∀ᵐ ω' ∂μ, (μ[fun ω ↦ exp (t * X ω) | m]) ω' ≤ exp (c * t ^ 2 / 2) :=
   ae_of_ae_trim hm (h.ae_trim_condExp_le t)
 
 @[simp]
