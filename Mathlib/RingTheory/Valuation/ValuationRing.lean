@@ -260,7 +260,7 @@ end
 
 section
 
-variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
+variable (A : Type u) [CommRing A] [PreValuationRing A] [Nontrivial A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
   IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
