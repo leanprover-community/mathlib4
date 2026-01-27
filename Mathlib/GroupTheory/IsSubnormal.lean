@@ -182,6 +182,18 @@ lemma IsSubnormal_iff : H.IsSubnormal ↔
 
 alias ⟨exists_chain, _⟩ := IsSubnormal_iff
 
+protected
+lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
+    IsSubnormal (H.map K.subtype) := by
+  induction Hsn with
+  | top =>
+    rwa [← MonoidHom.range_eq_map, range_subtype]
+  | step A B h_le hSubn hN ih =>
+    apply step (A.map K.subtype) (B.map K.subtype) (map_mono h_le) ih
+    rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
+    rw [normal_subgroupOf_iff_le_normalizer (map_mono h_le)]
+    exact le_trans (map_mono hN) (le_normalizer_map _)
+
 /--
 If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`, then
 `H` is a subnormal subgroup of `G`.
@@ -189,60 +201,7 @@ If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`, th
 protected
 lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnormal K) :
     IsSubnormal H := by
-  rw [IsSubnormal_iff'] at Hsn Ksn ⊢
-  obtain ⟨nH, fH, hypsH⟩ := Hsn
-  obtain ⟨nK, fK, hypsK⟩ := Ksn
-  use nH + nK, fun n ↦ if n ≤ nH then (fH n).map K.subtype else fK (n - nH)
-  constructor
-  · intros i hi
-    split_ifs with h1 h2
-    · simp [*]
-    · have : map K.subtype ⊤ = K := by ext; simp
-      grind
-    · grind
-    · grind
-  constructor
-  · intro i hi
-    split_ifs with h1
-    · split
-      · rename_i inH
-        rw [if_pos h1]
-        have := hypsH.2.1 _ inH
-        rw [normal_subgroupOf_iff_le_normalizer_inf] at this ⊢
-        intro g hg
-        simp only [mem_map, subtype_apply, Subtype.exists, exists_and_right, exists_eq_right] at hg
-        obtain ⟨g', hg'⟩ := hg
-        have := this hg'
-        simp_all only [inf_of_le_left, map_subtype_le_map_subtype]
-        rw [mem_normalizer_iff] at this ⊢
-        simp only [Subtype.forall, MulMemClass.mk_mul_mk, mem_map, subtype_apply, Subtype.exists,
-          exists_and_right, exists_eq_right] at this ⊢
-        intro h'
-        constructor
-        · rintro ⟨x, hx⟩
-          constructor
-          · exact (this h' x).mp hx
-          · exact mul_mem (mul_mem g' x) (inv_mem g')
-        · rintro ⟨hconj, hx⟩
-          have h'K : h' ∈ K := by
-            have := mul_mem hconj g'
-            have := mul_mem (inv_mem g') this
-            simpa [mul_assoc] using this
-          use h'K, (this h' h'K).mpr hx
-      · grind
-    · rw [if_neg (by grind)]
-      obtain rfl | inh := eq_or_ne nH i
-      · rw [if_pos le_rfl, hypsH.2.2.2, Nat.add_sub_cancel_left, ← hypsK.2.2.1,
-          show map (fK 0).subtype ⊤ = fK 0 by ext; simp]
-        simpa using (hypsK.2.1 0 (by grind))
-      · rw [if_neg (by grind), Nat.sub_add_comm (not_lt.mp h1)]
-        refine (hypsK.2.1 (i - nH) ?_)
-        grind
-  rw [if_pos (Nat.zero_le _)]
-  constructor
-  · simp_all only [subgroupOf_map_subtype, inf_of_le_left]
-  · obtain rfl | inh := eq_or_ne nK 0
-    · grind only [toGroup.hcongr_3, subgroupOf_eq_top, top_subgroupOf, map_subgroupOf_eq_of_le]
-    · grind
+  have key := Hsn.trans' Ksn
+  rwa [map_subgroupOf_eq_of_le HK] at key
 
 end Subgroup.IsSubnormal
