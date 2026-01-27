@@ -346,10 +346,10 @@ variable [Abelian C]
 /-- Given an injective presentaion `M → I`, the short complex `0 → M → I → N → 0`. -/
 noncomputable abbrev InjectivePresentation.shortComplex
     {X : C} (ip : InjectivePresentation X) : ShortComplex C :=
-  ShortComplex.mk ip.3 (Limits.cokernel.π ip.3) (Limits.cokernel.condition ip.3)
+  ShortComplex.mk ip.f (Limits.cokernel.π ip.f) (Limits.cokernel.condition ip.f)
 
 theorem InjectivePresentation.shortExact_shortComplex {X : C}
     (ip : InjectivePresentation X) : ip.shortComplex.ShortExact :=
-  { exact := ShortComplex.exact_cokernel ip.3 }
+  { exact := ShortComplex.exact_cokernel ip.f }
 
 end CategoryTheory
