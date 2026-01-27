@@ -212,6 +212,15 @@ instance distribMulAction [Monoid R] [AddMonoid α] [DistribMulAction R α] :
 instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix m n α) :=
   Pi.module _ _ _
 
+instance hasLE [LE α] : LE (Matrix m n α) :=
+  Pi.hasLe
+
+instance preorder [Preorder α] : Preorder (Matrix m n α) :=
+  Pi.preorder
+
+instance partialOrder [PartialOrder α] : PartialOrder (Matrix m n α) :=
+  Pi.partialOrder
+
 section
 
 @[simp]
