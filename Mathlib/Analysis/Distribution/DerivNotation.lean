@@ -29,7 +29,7 @@ function spaces).
 
 universe u' u v w
 
-variable {ι ι' 𝕜 R V E F F₁ F₂ F₃ V₁ V₂ V₃ : Type*}
+variable {ι ι' 𝕜 R V E F V₁ V₂ V₃ : Type*}
 
 /-! ## Line derivative -/
 
@@ -57,7 +57,7 @@ def iteratedLineDerivOp {n : ℕ} : (Fin n → V) → E → E :=
 @[inherit_doc] scoped notation "∂^{" v "}" => LineDeriv.iteratedLineDerivOp v
 
 @[simp]
-theorem iteratedLineDerivOp_zero (m : Fin 0 → V) (f : E) : ∂^{m} f = f :=
+theorem iteratedLineDerivOp_fin_zero (m : Fin 0 → V) (f : E) : ∂^{m} f = f :=
   rfl
 
 @[simp]
@@ -142,6 +142,38 @@ export LineDerivSMul (lineDerivOp_smul)
 export LineDerivLeftSMul (lineDerivOp_left_smul)
 export ContinuousLineDeriv (continuous_lineDerivOp)
 
+section lineDerivOp
+
+variable [AddCommGroup V] [AddCommGroup E] [AddCommGroup F] [LineDeriv V E F] [LineDerivAdd V E F]
+
+@[simp]
+theorem lineDerivOp_zero (v : V) : ∂_{v} (0 : E) = 0 :=
+  map_zero (AddMonoidHom.mk' ∂_{v} (lineDerivOp_add v))
+
+@[simp]
+theorem lineDerivOp_neg (v : V) (x : E) : ∂_{v} (-x) = - ∂_{v} x :=
+  map_neg (AddMonoidHom.mk' ∂_{v} (lineDerivOp_add v)) x
+
+@[simp]
+theorem lineDerivOp_sum (v : V) (f : ι → E) (s : Finset ι) :
+    ∂_{v} (∑ i ∈ s, f i) = ∑ i ∈ s, ∂_{v} (f i) :=
+  map_sum (AddMonoidHom.mk' ∂_{v} (lineDerivOp_add v)) f s
+
+@[simp]
+theorem lineDerivOp_left_zero (x : E) : ∂_{(0 : V)} x = 0 :=
+  map_zero (AddMonoidHom.mk' (∂_{·} x) (lineDerivOp_left_add · · x))
+
+@[simp]
+theorem lineDerivOp_left_neg (v : V) (x : E) : ∂_{-v} x = - ∂_{v} x :=
+  map_neg (AddMonoidHom.mk' (∂_{·} x) (lineDerivOp_left_add · · x)) v
+
+@[simp]
+theorem lineDerivOp_left_sum (f : ι → V) (x : E) (s : Finset ι) :
+    ∂_{∑ i ∈ s, f i} x = ∑ i ∈ s, ∂_{f i} x :=
+  map_sum (AddMonoidHom.mk' (∂_{·} x) (lineDerivOp_left_add · · x)) f s
+
+end lineDerivOp
+
 section lineDerivOpCLM
 
 variable [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
@@ -167,13 +199,32 @@ section iteratedLineDerivOp
 variable [LineDeriv V E E]
 variable {n : ℕ} (m : Fin n → V)
 
-theorem iteratedLineDerivOp_add [AddCommGroup V] [AddCommGroup E] [LineDerivAdd V E E] (x y : E) :
+section add
+
+variable [AddCommGroup V] [AddCommGroup E] [LineDerivAdd V E E]
+
+theorem iteratedLineDerivOp_add (x y : E) :
     ∂^{m} (x + y) = ∂^{m} x + ∂^{m} y := by
   induction n with
   | zero =>
     simp
   | succ n IH =>
     simp_rw [iteratedLineDerivOp_succ_left, IH, lineDerivOp_add]
+
+@[simp]
+theorem iteratedLineDerivOp_zero : ∂^{m} (0 : E) = 0 :=
+  map_zero (AddMonoidHom.mk' ∂^{m} (iteratedLineDerivOp_add m))
+
+@[simp]
+theorem iteratedLineDerivOp_neg (x : E) : ∂^{m} (-x) = - ∂^{m} x :=
+  map_neg (AddMonoidHom.mk' ∂^{m} (iteratedLineDerivOp_add m)) x
+
+@[simp]
+theorem iteratedLineDerivOp_sum (f : ι → E) (s : Finset ι) :
+    ∂^{m} (∑ i ∈ s, f i) = ∑ i ∈ s, ∂^{m} (f i) :=
+  map_sum (AddMonoidHom.mk' ∂^{m} (iteratedLineDerivOp_add m)) f s
+
+end add
 
 theorem iteratedLineDerivOp_smul [SMul R E] [LineDerivSMul R V E E] (r : R) (x : E) :
     ∂^{m} (r • x) = r • ∂^{m} x := by

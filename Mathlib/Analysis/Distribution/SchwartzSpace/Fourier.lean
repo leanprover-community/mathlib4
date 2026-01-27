@@ -241,8 +241,10 @@ Fourier transform of the multiplication with `(2 * π * Complex.I) • (inner �
 theorem lineDerivOp_fourierInv_eq (f : 𝓢(V, E)) (m : V) :
     ∂_{m} (𝓕⁻ f) = 𝓕⁻ ((2 * π * Complex.I) • smulLeftCLM E (inner ℝ · m) f) := by
   have : (inner ℝ · m).HasTemperateGrowth := by fun_prop
-  simp [fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv, lineDerivOp_fourier_eq,
-    smulLeftCLM_fun_neg this]
+  -- TODO: this `simp` call should be revisited once the `simp` lemmas for FT are in:
+  -- simp [fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv, lineDerivOp_fourier_eq]
+  simp [-lineDerivOp_left_neg, fourierInv_apply_eq, lineDerivOp_compCLMOfContinuousLinearEquiv,
+    lineDerivOp_fourier_eq, smulLeftCLM_fun_neg this]
 
 /- The inverse Fourier transform of line derivative in direction `m` is given by multiplication of
 `-(2 * π * Complex.I) • (inner ℝ · m)` with the inverse Fourier transform. -/
