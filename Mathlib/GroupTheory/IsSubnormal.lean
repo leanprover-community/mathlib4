@@ -120,13 +120,13 @@ lemma le_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K < ⊤ ∧ K.Normal �
 /--
 A characterisation of satisfying `IsSubnormal` in terms of chains of subgroups, each normal in
 the following one.
-This version forces the chain to terminate with the `⊤` subgroup *twice*.
-See `IsSubnormal_iff` for a version that does not do this.
+
+The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
 -- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
-lemma IsSubnormal_iff' : H.IsSubnormal ↔
+lemma IsSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
-    (∀ i ≤ n, f i ≤ f (i + 1)) ∧ (∀ i ≤ n, ((f i).subgroupOf (f (i + 1))).Normal) ∧
+    (∀ i, f i ≤ f (i + 1)) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
       f 0 = H ∧ f n = ⊤ where
   mp h := by
     induction h with
@@ -145,40 +145,9 @@ lemma IsSubnormal_iff' : H.IsSubnormal ↔
     | succ n ih =>
       rintro J ⟨F, hF, H_le, rfl, ih1⟩
       apply step
-      · exact hF _ (by simp only [Nat.le_add_left])
+      · apply hF 0
       · exact ih ⟨fun n ↦ F (n + 1), by grind only⟩
       · grind only
-
-/--
-A characterisation of satisfying `IsSubnormal` in terms of chains of subgroups, each normal in
-the following one.
-This version forces the chain to terminate with the `⊤` subgroup *once*.
-Depending on the context, it may be a little harder to use than `IsSubnormal_iff'`, due to the
-hypotheses involving strict inequalities.
--/
--- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
-lemma IsSubnormal_iff : H.IsSubnormal ↔
-    ∃ n, ∃ f : ℕ → Subgroup G,
-    (∀ i < n, f i ≤ f (i + 1)) ∧ (∀ i < n, ((f i).subgroupOf (f (i + 1))).Normal) ∧
-      f 0 = H ∧ f n = ⊤ where
-  mp h := by
-    obtain ⟨n, f, hyps⟩ := IsSubnormal_iff'.mp h
-    use n, f
-    grind
-  mpr := by
-    rintro ⟨n, f, hyps⟩
-    apply (IsSubnormal_iff' (H := H)).mpr
-    use n, fun i ↦ if i ≤ n then f i else ⊤
-    refine ⟨?_, ?_, ?_, ?_⟩
-    · grind only
-    · dsimp only
-      intro i a
-      split_ifs with hi
-      · grind only
-      · have : i = n := by grind
-        simp [*]
-    · grind
-    · grind
 
 alias ⟨exists_chain, _⟩ := IsSubnormal_iff
 
