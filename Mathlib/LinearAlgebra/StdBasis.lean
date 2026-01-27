@@ -133,6 +133,18 @@ theorem basisFun_repr (x : η → R) (i : η) : (Pi.basisFun R η).repr x i = x 
 theorem basisFun_equivFun : (Pi.basisFun R η).equivFun = LinearEquiv.refl _ _ :=
   Basis.equivFun_ofEquivFun _
 
+variable {η}
+
+/-- The `R`-submodule of `η → R` consisting of functions supported in the subset `s`. -/
+def spanSubset (s : Set η) : Submodule R (η → R) :=
+  .span R (Pi.basisFun R η '' s)
+
+variable {R} {s : Set η}
+
+lemma mem_spanSubset_iff {s : Set η} {v : η → R} :
+    v ∈ spanSubset R s ↔ ∀ i ∉ s, v i = 0 := by
+  simp [spanSubset, Module.Basis.mem_span_image, Finsupp.support_subset_iff]
+
 end
 
 end Module
