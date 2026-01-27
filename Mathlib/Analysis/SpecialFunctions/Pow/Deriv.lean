@@ -428,7 +428,7 @@ theorem hasDerivAt_rpow_const {x p : ℝ} (h : x ≠ 0 ∨ 1 ≤ p) :
   apply hasDerivAt_of_hasDerivAt_of_ne fun x hx =>
     (hasStrictDerivAt_rpow_const_of_ne hx p).hasDerivAt
   exacts [continuousAt_id.rpow_const (Or.inr (zero_le_one.trans h)),
-    continuousAt_const.mul (continuousAt_id.rpow_const (Or.inr (sub_nonneg.2 h)))]
+    ContinuousAt.const.mul (continuousAt_id.rpow_const (Or.inr (sub_nonneg.2 h)))]
 
 theorem differentiable_rpow_const {p : ℝ} (hp : 1 ≤ p) : Differentiable ℝ fun x : ℝ => x ^ p :=
   fun _ => (hasDerivAt_rpow_const (Or.inr hp)).differentiableAt

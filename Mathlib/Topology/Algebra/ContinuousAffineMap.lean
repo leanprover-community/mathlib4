@@ -115,7 +115,7 @@ variable (R P)
 
 /-- The constant map as a continuous affine map -/
 def const (q : Q) : P →ᴬ[R] Q :=
-  { AffineMap.const R P q with cont := continuous_const }
+  { AffineMap.const R P q with cont := .const }
 
 @[simp]
 theorem coe_const (q : Q) : ⇑(const R P q) = Function.const P q := rfl
@@ -159,7 +159,7 @@ theorem apply_lineMap (f : P →ᴬ[R] Q) (p₀ p₁ : P) (c : R) :
 def lineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] : R →ᴬ[R] P where
   toAffineMap := AffineMap.lineMap p₀ p₁
-  cont := (continuous_id.smul continuous_const).vadd continuous_const
+  cont := (continuous_id.smul .const).vadd .const
 
 @[simp] lemma lineMap_toAffineMap (p₀ p₁ : P) [TopologicalSpace R] [TopologicalSpace V]
     [ContinuousSMul R V] [ContinuousVAdd V P] :

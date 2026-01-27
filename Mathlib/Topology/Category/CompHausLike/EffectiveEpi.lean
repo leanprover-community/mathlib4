@@ -39,8 +39,8 @@ def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Sur
     ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).lift e.hom.hom
       fun a b hab ↦
         CategoryTheory.congr_fun (h
-          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
-          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ a, .const⟩)
+          (ofHom _ ⟨fun _ ↦ b, .const⟩)
         (by ext; exact hab)) a)
   fac e h :=
     InducedCategory.hom_ext (TopCat.hom_ext
@@ -50,8 +50,8 @@ def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Sur
         ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv ⟨e.hom.hom,
       fun a b hab ↦ CategoryTheory.congr_fun
         (h
-          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
-          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ a, .const⟩)
+          (ofHom _ ⟨fun _ ↦ b, .const⟩)
           (by ext; exact hab))
         a⟩) by assumption
     apply ConcreteCategory.ext

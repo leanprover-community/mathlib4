@@ -171,8 +171,8 @@ private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   revert r
   rw [← funext_iff]
   refine Rat.isDenseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
-  · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
-  · exact (continuous_conj.comp continuous_ofReal).mul continuous_const
+  · exact (continuous_ofReal.smul .const).inner_ .const
+  · exact (continuous_conj.comp continuous_ofReal).mul .const
   · simp only [Function.comp_apply, RCLike.ofReal_ratCast, rat_prop _ _]
 
 private theorem I_prop : innerProp' E (I : 𝕜) := by

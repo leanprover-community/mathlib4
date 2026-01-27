@@ -239,7 +239,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       let Z := of (ULift.{u} <| Fin 2)
       let g : Y ⟶ Z := ofHom _
         ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let h : Y ⟶ Z := ofHom _ ⟨fun _ => ⟨1⟩, .const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x

@@ -55,7 +55,7 @@ noncomputable def concat (f : C(Icc a b, E)) (g : C(Icc b c, E)) :
   by_cases hb : f ⊤ = g ⊥
   · let h (t : α) : E := if t ≤ b then IccExtendCM f t else IccExtendCM g t
     suffices Continuous h from ⟨fun t => h t, by fun_prop⟩
-    apply Continuous.if_le (by fun_prop) (by fun_prop) continuous_id continuous_const
+    apply Continuous.if_le (by fun_prop) (by fun_prop) continuous_id .const
     rintro x rfl
     simpa [IccExtendCM, projIccCM]
   · exact .const _ (f ⊥) -- junk value

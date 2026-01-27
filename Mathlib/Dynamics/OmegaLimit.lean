@@ -310,7 +310,7 @@ theorem isInvariant_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : IsInvariant 
   refine fun t ↦ MapsTo.mono_right ?_ (omegaLimit_subset_of_tendsto ϕ s (hf t))
   exact
     mapsTo_omegaLimit _ (mapsTo_id _) (fun t' x ↦ (ϕ.map_add _ _ _).symm)
-      (continuous_const.flow ϕ continuous_id)
+      (Continuous.const.flow ϕ continuous_id)
 
 theorem omegaLimit_image_subset (t : τ) (ht : Tendsto (· + t) f f) :
     ω f ϕ (ϕ t '' s) ⊆ ω f ϕ s := by

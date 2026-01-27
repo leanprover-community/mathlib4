@@ -84,7 +84,7 @@ instance : ContinuousSMul (ULift M) X :=
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
-  continuous_const_smul _ := continuous_smul.comp (continuous_const.prodMk continuous_id)
+  continuous_const_smul _ := continuous_smul.comp (Continuous.const.prodMk continuous_id)
 
 theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
     [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
@@ -310,7 +310,7 @@ protected theorem AddTorsor.connectedSpace : ConnectedSpace P :=
   { isPreconnected_univ := by
       convert
         isPreconnected_univ.image (Equiv.vaddConst (Classical.arbitrary P) : G → P)
-          (continuous_id.vadd continuous_const).continuousOn
+          (continuous_id.vadd Continuous.const).continuousOn
       rw [Set.image_univ, Equiv.range_eq_univ]
     toNonempty := inferInstance }
 

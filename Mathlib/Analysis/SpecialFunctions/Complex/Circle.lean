@@ -152,7 +152,7 @@ theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
+  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h

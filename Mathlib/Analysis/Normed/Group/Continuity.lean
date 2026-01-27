@@ -85,7 +85,7 @@ theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := b
 
 @[to_additive (attr := continuity, fun_prop) continuous_norm]
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
-  simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
+  simpa using continuous_id.dist (Continuous.const : Continuous fun _a => (1 : E))
 
 @[to_additive (attr := continuity, fun_prop) continuous_nnnorm]
 theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=

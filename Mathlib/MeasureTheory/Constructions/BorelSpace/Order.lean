@@ -613,8 +613,8 @@ variable [TopologicalSpace γ] {mγ : MeasurableSpace γ} [BorelSpace γ]
 
 instance (priority := 100) ContinuousSup.measurableSup [Max γ] [ContinuousSup γ] :
     MeasurableSup γ where
-  measurable_const_sup _ := (continuous_const.sup continuous_id).measurable
-  measurable_sup_const _ := (continuous_id.sup continuous_const).measurable
+  measurable_const_sup _ := by fun_prop
+  measurable_sup_const _ := by fun_prop
 
 instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopology γ] [Max γ]
     [ContinuousSup γ] : MeasurableSup₂ γ :=
@@ -622,8 +622,8 @@ instance (priority := 100) ContinuousSup.measurableSup₂ [SecondCountableTopolo
 
 instance (priority := 100) ContinuousInf.measurableInf [Min γ] [ContinuousInf γ] :
     MeasurableInf γ where
-  measurable_const_inf _ := (continuous_const.inf continuous_id).measurable
-  measurable_inf_const _ := (continuous_id.inf continuous_const).measurable
+  measurable_const_inf _ := by fun_prop
+  measurable_inf_const _ := by fun_prop
 
 instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopology γ] [Min γ]
     [ContinuousInf γ] : MeasurableInf₂ γ :=

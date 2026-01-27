@@ -216,7 +216,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       let Z := of (ULift.{u} <| Fin 2)
       let g : Y ⟶ Z := CompHausLike.ofHom _
         ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := CompHausLike.ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let h : Y ⟶ Z := CompHausLike.ofHom _ ⟨fun _ => ⟨1⟩, .const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x

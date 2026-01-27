@@ -140,7 +140,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
   · intro h
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (meromorphicOrderAt_ne_top_iff hf).1 h
     filter_upwards [h₃g, self_mem_nhdsWithin, eventually_nhdsWithin_of_eventually_nhds
-      ((h₁g.continuousAt.ne_iff_eventually_ne continuousAt_const).mp h₂g)]
+      ((h₁g.continuousAt.ne_iff_eventually_ne .const).mp h₂g)]
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 
@@ -159,8 +159,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
       g_an.continuousAt.continuousWithinAt.tendsto.norm
     have : Tendsto (fun z ↦ z - x) (𝓝[≠] x) (𝓝[≠] 0) := by
       refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
-      · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
-          ContinuousAt.continuousWithinAt (by fun_prop)
+      · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x := (by fun_prop)
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy

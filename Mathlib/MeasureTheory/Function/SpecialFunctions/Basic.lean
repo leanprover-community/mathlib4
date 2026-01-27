@@ -113,8 +113,8 @@ theorem measurable_arg : Measurable arg :=
     Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
   have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / ‖x‖) :=
     Real.measurable_arcsin.comp ((measurable_im.comp measurable_neg).div measurable_norm)
-  Measurable.ite (isClosed_le continuous_const continuous_re).measurableSet A <|
-    Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)
+  Measurable.ite (isClosed_le .const continuous_re).measurableSet A <|
+    Measurable.ite (isClosed_le .const continuous_im).measurableSet (B.add_const _)
       (B.sub_const _)
 
 theorem measurable_log : Measurable log :=

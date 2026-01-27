@@ -157,7 +157,7 @@ from `p₀.trans p₁` to `q₀.trans q₁`.
 def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.trans p₁) (q₀.trans q₁) where
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
-  continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
+  continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) .const
     (F.toHomotopy.continuous.comp (by continuity)).continuousOn
     (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
   map_zero_left x := by simp [Path.trans]

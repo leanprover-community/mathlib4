@@ -254,7 +254,7 @@ instance : MetricSpace ℍ :=
     · refine (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 ?_
       have : ∀ x : ℍ × ℍ, 2 * √(x.1.im * x.2.im) ≠ 0 := fun x => by positivity
       -- `continuity` fails to apply `Continuous.div`
-      apply_rules [Continuous.div, Continuous.mul, continuous_const, Continuous.arsinh,
+      apply_rules [Continuous.div, Continuous.mul, Continuous.const, Continuous.arsinh,
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
     · letI : MetricSpace ℍ := metricSpaceAux

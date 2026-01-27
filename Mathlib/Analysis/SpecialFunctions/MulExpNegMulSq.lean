@@ -148,7 +148,7 @@ theorem tendsto_mulExpNegMulSq {x : ℝ} :
   have : x = (fun ε : ℝ => mulExpNegMulSq ε x) 0 := by
     simp only [mulExpNegMulSq, zero_mul, neg_zero, exp_zero, mul_one]
   nth_rw 2 [this]
-  apply Continuous.tendsto (Continuous.mul continuous_const (by fun_prop))
+  apply (Continuous.mul .const (by fun_prop)).tendsto
 
 /-- For a fixed bounded function `g`, `mulExpNegMulSq ε ∘ g` is bounded by `norm g`,
 uniformly in `ε ≥ 0`. -/

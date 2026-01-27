@@ -57,7 +57,7 @@ protected theorem dist_eq (x y : α) : dist (x : Completion α) y = dist x y :=
 properties on α and extending them to `Completion α` by continuity. -/
 protected theorem dist_self (x : Completion α) : dist x x = 0 := by
   refine induction_on x ?_ ?_
-  · refine isClosed_eq ?_ continuous_const
+  · refine isClosed_eq ?_ .const
     exact Completion.continuous_dist continuous_id continuous_id
   · intro a
     rw [Completion.dist_eq, dist_self]
@@ -98,7 +98,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
                { p : Completion α × Completion α | ε ≤ dist p.1 p.2 } ∪ t := by ext; simp
         rw [this]
         apply IsClosed.union _ tclosed
-        exact isClosed_le continuous_const Completion.uniformContinuous_dist.continuous
+        exact isClosed_le .const Completion.uniformContinuous_dist.continuous
       · intro x y
         rw [Completion.dist_eq]
         by_cases! h : ε ≤ dist x y
@@ -164,19 +164,13 @@ instance {M} [Zero M] [Zero α] [SMul M α] [PseudoMetricSpace M] [IsBoundedSMul
     IsBoundedSMul M (Completion α) where
   dist_smul_pair' c x₁ x₂ := by
     induction x₁, x₂ using induction_on₂ with
-    | hp =>
-      exact isClosed_le
-        ((continuous_fst.const_smul _).dist (continuous_snd.const_smul _))
-        (continuous_const.mul (continuous_fst.dist continuous_snd))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x₁ x₂ =>
       rw [← coe_smul, ← coe_smul, Completion.dist_eq, Completion.dist_eq]
       exact dist_smul_pair c x₁ x₂
   dist_pair_smul' c₁ c₂ x := by
     induction x using induction_on with
-    | hp =>
-      exact isClosed_le
-        ((continuous_const_smul _).dist (continuous_const_smul _))
-        (continuous_const.mul (continuous_id.dist continuous_const))
+    | hp => exact isClosed_le (by fun_prop) (by fun_prop)
     | ih x =>
       rw [← coe_smul, ← coe_smul, Completion.dist_eq, ← coe_zero, Completion.dist_eq]
       exact dist_pair_smul c₁ c₂ x

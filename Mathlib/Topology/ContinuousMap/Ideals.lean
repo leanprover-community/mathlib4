@@ -96,7 +96,7 @@ theorem idealOfSet_closed [T2Space R] (s : Set X) :
     IsClosed (idealOfSet R s : Set C(X, R)) := by
   simp only [idealOfSet, Submodule.coe_set_mk, Set.setOf_forall]
   exact isClosed_iInter fun x => isClosed_iInter fun _ =>
-    isClosed_eq (continuous_eval_const x) continuous_const
+    isClosed_eq (continuous_eval_const x) .const
 
 variable {R}
 
@@ -124,7 +124,7 @@ theorem setOfIdeal_open [T2Space R] (I : Ideal C(X, R)) : IsOpen (setOfIdeal I) 
   simp only [setOfIdeal, Set.setOf_forall, isOpen_compl_iff]
   exact
     isClosed_iInter fun f =>
-      isClosed_iInter fun _ => isClosed_eq (map_continuous f) continuous_const
+      isClosed_iInter fun _ => isClosed_eq (map_continuous f) .const
 
 /-- The open set `ContinuousMap.setOfIdeal I` realized as a term of `opens X`. -/
 @[simps]
@@ -197,7 +197,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   norm_cast
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
-  have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
+  have ht : IsClosed t := isClosed_le .const (map_continuous f).nnnorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine Set.subset_compl_iff_disjoint_left.mp fun x hx => ?_
     simpa only [t, Set.mem_setOf, Set.mem_compl_iff, not_le] using

@@ -851,7 +851,7 @@ theorem isClosedEmbedding_update {ι : Type*} {β : ι → Type*}
     [DecidableEq ι] [(i : ι) → TopologicalSpace (β i)]
     (x : (i : ι) → β i) (i : ι) [(i : ι) → T1Space (β i)] :
     IsClosedEmbedding (update x i) := by
-  refine .of_continuous_injective_isClosedMap (continuous_const.update i continuous_id)
+  refine .of_continuous_injective_isClosedMap (Continuous.const.update i continuous_id)
     (update_injective x i) fun s hs ↦ ?_
   rw [update_image]
   apply isClosed_set_pi

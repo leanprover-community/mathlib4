@@ -184,8 +184,8 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
   let f : E → E := fun y ↦ x + (r * ‖y‖⁻¹) • y
   have A : ContinuousOn f {0}ᶜ := by
     intro y hy
-    apply (continuousAt_const.add _).continuousWithinAt
-    apply (continuousAt_const.mul (ContinuousAt.inv₀ continuousAt_id.norm ?_)).smul continuousAt_id
+    apply (ContinuousAt.const.add _).continuousWithinAt
+    apply (ContinuousAt.const.mul (ContinuousAt.inv₀ continuousAt_id.norm ?_)).smul continuousAt_id
     simpa using hy
   have B : IsPathConnected ({0}ᶜ : Set E) := isPathConnected_compl_singleton_of_one_lt_rank h 0
   have C : IsPathConnected (f '' {0}ᶜ) := B.image' A

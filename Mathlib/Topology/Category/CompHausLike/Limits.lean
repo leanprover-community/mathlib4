@@ -366,7 +366,7 @@ variable {P : TopCat.{u} → Prop}
 def isTerminalPUnit [HasProp P PUnit.{u + 1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
-    ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
+    ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, Continuous.const⟩⟩, fun _ ↦ rfl⟩
   Limits.IsTerminal.ofUnique _
 
 end Terminal

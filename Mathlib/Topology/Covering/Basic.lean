@@ -473,7 +473,7 @@ Then `f` admits a `Trivialization` over the base set `V`. -/
     open_source := open_source,
     open_target := open_V.prod isOpen_univ,
     continuousOn_toFun := cont_f.prodMk <| continuousOn_of_forall_continuousAt fun e he ↦
-      continuous_const (y := idx e he) |>.continuousAt.congr <| mem_nhds_iff.mpr
+      Continuous.const (y := idx e he) |>.continuousAt.congr <| mem_nhds_iff.mpr
         ⟨U (idx e he) ∩ F.source, fun e' he' ↦ ?_, ?_, idx_U e he, he⟩
     continuousOn_invFun := continuousOn_prod_of_discrete_right.mpr fun i ↦ ?_,
     baseSet := V,

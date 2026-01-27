@@ -278,7 +278,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
   toFun := (fun t : ℝ => if t ≤ 1 / 2 then γ.extend (2 * t) else γ'.extend (2 * t - 1)) ∘ (↑)
   continuous_toFun := by
     refine
-      (Continuous.if_le ?_ ?_ continuous_id continuous_const (by simp)).comp
+      (Continuous.if_le ?_ ?_ continuous_id .const (by simp)).comp
         continuous_subtype_val <;>
     fun_prop
   source' := by simp
@@ -448,16 +448,13 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   have h₁' := Path.continuous_uncurry_extend_of_continuous_family γ₁ h₁
   have h₂' := Path.continuous_uncurry_extend_of_continuous_family γ₂ h₂
   simp only [HasUncurry.uncurry, Path.trans]
-  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) continuous_const ?_
+  refine Continuous.if_le ?_ ?_ (continuous_subtype_val.comp continuous_snd) .const ?_
   · change
       Continuous ((fun p : ι × ℝ => (γ₁ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x : I → ℝ))
-    exact h₁'.comp (continuous_id.prodMap <| continuous_const.mul continuous_subtype_val)
+    exact h₁'.comp (continuous_id.prodMap <| Continuous.const.mul continuous_subtype_val)
   · change
       Continuous ((fun p : ι × ℝ => (γ₂ p.1).extend p.2) ∘ Prod.map id (fun x => 2 * x - 1 : I → ℝ))
-    exact
-      h₂'.comp
-        (continuous_id.prodMap <|
-          (continuous_const.mul continuous_subtype_val).sub continuous_const)
+    exact h₂'.comp (continuous_id.prodMap <| by fun_prop)
   · rintro st hst
     simp [hst]
 
@@ -547,8 +544,7 @@ and stays still otherwise. -/
 def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
     Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
-  continuous_toFun :=
-    γ.continuous_extend.comp ((continuous_subtype_val.max continuous_const).min continuous_const)
+  continuous_toFun := γ.continuous_extend.comp (by fun_prop)
   source' := by
     simp only [min_def, max_def']
     split_ifs with h₁ h₂ h₃ h₄

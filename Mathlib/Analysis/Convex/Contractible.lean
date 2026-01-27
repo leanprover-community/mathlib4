@@ -29,10 +29,9 @@ protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s
       ⟨⟨x, h.mem hne⟩,
         ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), ?_⟩, ?_⟩, fun x => ?_, fun x => ?_⟩⟩⟩
   · exact h p.2.2 p.1.2.1 (sub_nonneg.2 p.1.2.2) (add_sub_cancel _ _)
-  · exact
-      ((continuous_subtype_val.fst'.smul continuous_const).add
-            ((continuous_const.sub continuous_subtype_val.fst').smul
-              continuous_subtype_val.snd')).subtype_mk
+  · exact ((continuous_subtype_val.fst'.smul .const).add
+      ((Continuous.const.sub continuous_subtype_val.fst').smul
+        continuous_subtype_val.snd')).subtype_mk
         _
   · simp
   · simp
