@@ -60,7 +60,7 @@ namespace Nat
 variable {n m p : ℕ}
 
 /-- `n : ℕ` is _abundant_ if the sum of the proper divisors of `n` is greater than `n`. -/
-def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i
+def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i deriving Decidable
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
 def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
@@ -197,11 +197,6 @@ theorem infinite_odd_deficient : {n : ℕ | Odd n ∧ n.Deficient}.Infinite := b
   exact ⟨p, Set.mem_setOf.mpr ⟨Prime.odd_of_ne_two h2 (Ne.symm (ne_of_lt (by grind))),
     Prime.deficient h2⟩, by grind⟩
 
-set_option maxRecDepth 2000 in
-theorem abundant_945 : Abundant 945 := by
-  simp [Abundant, show properDivisors 945 =
-      {1, 3, 5, 7, 9, 15, 21, 27, 35, 45, 63, 105, 135, 189, 315} from rfl]
-
 theorem abundant_iff_sum_divisors : Abundant n ↔ 2 * n < ∑ i ∈ n.divisors, i := by
   grind [Abundant, sum_divisors_eq_sum_properDivisors_add_self]
 
@@ -234,13 +229,15 @@ theorem Abundant.mul_left (h : Abundant n) (hm : m ≠ 0) : Abundant (m * n) := 
 theorem infinite_even_abundant : {n : ℕ | Even n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
+  have ha : Abundant 945 := by decide +kernel
   use (2 * (a + 1)) * 945
-  grind [Abundant.mul_left abundant_945 (show 2 * (a + 1) ≠ 0 by grind)]
+  grind [Abundant.mul_left ha (show 2 * (a + 1) ≠ 0 by grind)]
 
 theorem infinite_odd_abundant : {n : ℕ | Odd n ∧ n.Abundant}.Infinite := by
   rw [Set.infinite_iff_exists_gt]
   intro a
+  have ha : Abundant 945 := by decide +kernel
   use (2 * a + 1) * 945
-  grind [Abundant.mul_left abundant_945 (show 2 * a + 1 ≠ 0 by grind)]
+  grind [Abundant.mul_left ha (show 2 * a + 1 ≠ 0 by grind)]
 
 end Nat
