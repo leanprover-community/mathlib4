@@ -185,11 +185,42 @@ lemma Ideal.comap_toTwoSided {R S F : Type*} [Ring R] [Ring S] [FunLike F R S] (
     (I.comap f).toTwoSided = (I.toTwoSided).comap f := by
   ext; simp [TwoSidedIdeal.mem_comap]
 
+lemma TwoSidedIdeal.map_congr {R S : Type*}
+    [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S]
+    {F G : Type*} [FunLike G R S] [FunLike F R S] {f : F} {g : G} {I : TwoSidedIdeal R}
+    (hfg : ∀ x, f x = g x) : I.map f = I.map g := by
+  ext s
+  simp only [map]
+  rw [Set.image_congr' hfg]
+
+lemma TwoSidedIdeal.gc_map_comap {R S F : Type*} [NonUnitalNonAssocRing R]
+    [NonUnitalNonAssocRing S] [FunLike F R S] (f : F) [NonUnitalRingHomClass F R S] :
+    GaloisConnection (TwoSidedIdeal.map f) (TwoSidedIdeal.comap f) :=
+  fun I J ↦ TwoSidedIdeal.map_le_iff_le_comap f I J
+
+lemma TwoSidedIdeal.map_map {R S T : Type*} [NonAssocRing R] [NonAssocRing S] [NonAssocRing T]
+    {f : R →+* S} {g : S →+* T} (I : TwoSidedIdeal R) :
+    (I.map f).map g = I.map (g.comp f) :=
+  ((gc_map_comap f).compose (gc_map_comap g)).l_unique (gc_map_comap (g.comp f))
+    fun _ ↦ comap_comap _ _ _
+
 lemma TwoSidedIdeal.map_eq_bot_iff_le_ker {R S F : Type*} [Ring R] [Ring S]
     [FunLike F R S] {f : F} [RingHomClass F R S] (I : TwoSidedIdeal R) :
     I.map f = ⊥ ↔ I ≤ (RingHom.ker f).toTwoSided := by
   unfold RingHom.ker
   rw [Ideal.comap_toTwoSided, Ideal.bot_toTwoSided, ← map_le_iff_le_comap, le_bot_iff]
+
+lemma TwoSidedIdeal.map_id {R : Type*} [NonAssocRing R] (I : TwoSidedIdeal R) :
+    I.map (RingHom.id R) = I := by
+  simp only [map, RingHom.id_apply, Set.image_id']
+  exact le_antisymm (span_le.2 le_rfl) subset_span
+
+lemma TwoSidedIdeal.map_of_equiv {R S : Type*} [NonAssocRing R] [NonAssocRing S]
+    (e : R ≃+* S) (I : TwoSidedIdeal R) : (I.map e).map e.symm = I := by
+  change (I.map e.toRingHom).map e.symm.toRingHom = I
+  nth_rw 2 [← I.map_id];
+  rw [map_map]
+  exact map_congr fun x ↦ by simp
 
 lemma Ideal.span_le_twoSided {R : Type*} [Ring R] (s : Set R) :
     Ideal.span s ≤ (TwoSidedIdeal.span s).asIdeal := fun x hx ↦ by
@@ -207,7 +238,7 @@ lemma Ideal.map_le_twoSided' {R S F : Type*} [FunLike F R S] [Ring R] [Ring S] {
   rw [asIdeal_toTwoSided]
   conv_lhs => enter [2]; rw [← I.asIdeal_toTwoSided]
   exact Ideal.map_le_twoSided _
-
+open TwoSidedIdeal in
 lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : IsSimpleRing B]
     (I : TwoSidedIdeal (A ⊗[K] B)) :
     letI f : B →ₐ[K] A ⊗[K] B := Algebra.TensorProduct.includeRight
@@ -222,26 +253,28 @@ lemma TensorProduct.map_comap_eq [IsSimpleRing A] [Algebra.IsCentral K A] [hB : 
     rw [SetLike.mem_coe, TwoSidedIdeal.mem_comap] at hx
     exact hx
   refine (eq_or_ne I ⊥).casesOn (fun h ↦ h ▸ bot_le) <| fun h ↦ ?_
+  set J := (I.comap f).asIdeal with hJ_def
   have eq1 : ((TwoSidedIdeal.comap Algebra.TensorProduct.includeRight)
     (TwoSidedIdeal.map (Algebra.TensorProduct.lTensor (S := K) A
-      (Ideal.Quotient.mkₐ K (TwoSidedIdeal.asIdeal ((TwoSidedIdeal.comap f) I)))) I)) = ⊥ := by
+      (Ideal.Quotient.mkₐ K J)) I)) = ⊥ := by
       ext x
-      -- simp only [TwoSidedIdeal.mem_comap, Algebra.TensorProduct.includeRight_apply,
-      --   TwoSidedIdeal.mem_bot]
-      -- refine ⟨fun h ↦ ?_, ?_⟩
-      -- · erw [← SetLike.mem_coe, I.map_surjective this] at h
-      --   obtain ⟨ab, h1, h2⟩ := h
-      --   induction ab using TensorProduct.induction_on with
-      --   | zero => sorry
-      --   | tmul a b =>
-      --     simp at h2
-
-      --     sorry
-      --   | add x y hx hy => sorry
-      sorry
+      simp only [TwoSidedIdeal.mem_comap, Algebra.TensorProduct.includeRight_apply,
+        TwoSidedIdeal.mem_bot]
+      refine Quotient.inductionOn' x fun b ↦ ⟨fun hb ↦ ?_, fun hb ↦ by simp [hb]⟩
+      rw [Submodule.Quotient.mk''_eq_mk, Submodule.Quotient.mk_eq_zero]
+      rcases hB.1.2 (I.comap f) with hcomap | hcomap
+      · have hJ : J = ⊥ := by simp [hJ_def, hcomap]
+        rw [hJ, Submodule.mem_bot]
+        suffices h' : (1 : A) ⊗ₜ[K] b ∈ I from mem_bot _ |>.1 <| hcomap ▸ (mem_comap f).2 h'
+        rw [← I.map_of_equiv (Algebra.TensorProduct.congr (AlgEquiv.refl (R := K) (A₁ := A)) <|
+            (Ideal.quotientEquivAlgOfEq K hJ).trans (AlgEquiv.quotientBot K B)).toRingEquiv.symm]
+        exact TwoSidedIdeal.mem_map_of_mem hb
+      · have hJ : J = ⊤ := by simp [hJ_def, hcomap, TwoSidedIdeal.top_asIdeal]
+        rw [hJ]
+        exact Submodule.mem_top
   have := TwoSidedIdeal.eq_bot_of_map_comap_eq_bot K A (B ⧸ (I.comap f).asIdeal)
       (I.map (Algebra.TensorProduct.lTensor (S := K) A (Ideal.Quotient.mkₐ _ _)))
-      (by simp [eq1, TwoSidedIdeal.map_bot])
+      (by rw [eq1, TwoSidedIdeal.map_bot])
   rw [TwoSidedIdeal.map_eq_bot_iff_le_ker] at this
   have eq2 : RingHom.ker (Algebra.TensorProduct.lTensor (S := K) A
     (Ideal.Quotient.mkₐ K (TwoSidedIdeal.asIdeal ((TwoSidedIdeal.comap f) I)))) =
