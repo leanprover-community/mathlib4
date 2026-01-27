@@ -25,17 +25,17 @@ namespace CategoryTheory
 /-- Category of quivers. -/
 @[nolint checkUnivs]
 def Quiv :=
-  Bundled Quiver.{v + 1, u}
+  Bundled Quiver.{v, u}
 
 namespace Quiv
 
 instance : CoeSort Quiv (Type u) where coe := Bundled.α
 
-instance str' (C : Quiv.{v, u}) : Quiver.{v + 1, u} C :=
+instance str' (C : Quiv.{v, u}) : Quiver.{v, u} C :=
   C.str
 
 /-- Construct a bundled `Quiv` from the underlying type and the typeclass. -/
-def of (C : Type u) [Quiver.{v + 1} C] : Quiv.{v, u} :=
+def of (C : Type u) [Quiver.{v} C] : Quiv.{v, u} :=
   Bundled.of C
 
 instance : Inhabited Quiv :=
@@ -64,7 +64,7 @@ end Quiv
 namespace Prefunctor
 
 /-- Prefunctors between quivers define arrows in `Quiv`. -/
-def toQuivHom {C D : Type u} [Quiver.{v + 1} C] [Quiver.{v + 1} D] (F : C ⥤q D) :
+def toQuivHom {C D : Type u} [Quiver.{v} C] [Quiver.{v} D] (F : C ⥤q D) :
     Quiv.of C ⟶ Quiv.of D := F
 
 /-- Arrows in `Quiv` define prefunctors. -/
@@ -99,14 +99,14 @@ theorem freeMap_id (V : Type*) [Quiver V] :
 to equality. -/
 @[simps!]
 def freeMapCompIso {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
-    [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃] (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
+    [Quiver.{v₁} V₁] [Quiver.{v₂} V₂] [Quiver.{v₃} V₃] (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
     freeMap (F ⋙q G) ≅ freeMap F ⋙ freeMap G :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun f ↦ by
     dsimp
     simp only [Category.comp_id, Category.id_comp, Prefunctor.mapPath_comp_apply])
 
 theorem freeMap_comp {V₁ : Type u₁} {V₂ : Type u₂} {V₃ : Type u₃}
-    [Quiver.{v₁ + 1} V₁] [Quiver.{v₂ + 1} V₂] [Quiver.{v₃ + 1} V₃]
+    [Quiver.{v₁} V₁] [Quiver.{v₂} V₂] [Quiver.{v₃} V₃]
     (F : V₁ ⥤q V₂) (G : V₂ ⥤q V₃) :
     freeMap (F ⋙q G) = freeMap F ⋙ freeMap G :=
   Functor.ext_of_iso (freeMapCompIso F G) (fun _ ↦ rfl)
@@ -190,7 +190,7 @@ end
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
-def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{v₁} C]
+def lift {V : Type u} [Quiver.{v} V] {C : Type u₁} [Category.{v₁} C]
     (F : Prefunctor V C) : Paths V ⥤ C where
   obj X := F.obj X
   map f := composePath (F.mapPath f)
@@ -211,15 +211,15 @@ theorem pathComposition_naturality {C : Type u} {D : Type u₁}
 /-- Naturality of `Paths.of`, which defines a natural transformation
 ` 𝟭 _⟶ Cat.free ⋙ Quiv.forget`. -/
 lemma pathsOf_freeMap_toPrefunctor
-    {V : Type u} {W : Type u₁} [Quiver.{v + 1} V] [Quiver.{v₁ + 1} W] (F : V ⥤q W) :
+    {V : Type u} {W : Type u₁} [Quiver.{v} V] [Quiver.{v₁} W] (F : V ⥤q W) :
     Paths.of V ⋙q (Cat.freeMap F).toPrefunctor = F ⋙q Paths.of W := rfl
 
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
-def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :
+def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v} V] :
     Cat.freeMap (Paths.of V) ⋙ pathComposition (Paths V) ≅ 𝟭 (Paths V) :=
   Paths.liftNatIso (fun v ↦ Iso.refl _) (by simp)
 
-lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{v + 1} V] :
+lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{v} V] :
     Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Paths V) = 𝟭 (Paths V) :=
   Paths.ext_functor rfl (by simp)
 
@@ -250,7 +250,7 @@ def adj : Cat.free ⊣ Quiv.forget :=
   }
 
 /-- The universal property of the path category of a quiver. -/
-def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v + 1} V] [Category.{v₁} C] :
+def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v} V] [Category.{v₁} C] :
     (Paths V ⥤ C) ≃ V ⥤q C where
   toFun F := (Paths.of V).comp F.toPrefunctor
   invFun G := Cat.freeMap G ⋙ pathComposition C
@@ -265,7 +265,7 @@ def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v + 1} V] [Category.{v₁} 
       pathsOf_pathComposition_toPrefunctor, Prefunctor.comp_id]
 
 @[simp]
-lemma adj_homEquiv {V C : Type u} [Quiver.{max u v + 1} V] [Category.{max u v} C] :
+lemma adj_homEquiv {V C : Type u} [Quiver.{max u v} V] [Category.{max u v} C] :
     adj.homEquiv (Quiv.of V) (Cat.of C) =
       (Cat.Hom.equivFunctor (.of (Paths V)) (.of C)).trans (pathsEquiv (V := V) (C := C)) := rfl
 

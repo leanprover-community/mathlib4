@@ -42,7 +42,7 @@ open CategoryTheory
 
 universe u v u' v' u'' v''
 
-variable {V : Type u} [Quiver.{v + 1} V]
+variable {V : Type u} [Quiver.{v} V]
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
 abbrev Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
@@ -178,7 +178,7 @@ section Functoriality
 
 open FreeGroupoid
 
-variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
+variable {V' : Type u'} [Quiver.{v'} V'] {V'' : Type u''} [Quiver.{v''} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
 def freeGroupoidFunctor (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ Quiver.FreeGroupoid V' :=

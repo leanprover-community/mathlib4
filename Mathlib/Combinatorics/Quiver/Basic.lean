@@ -13,15 +13,8 @@ public import Mathlib.Tactic.ToDual
 
 This module defines quivers. A quiver on a type `V` of vertices assigns to every
 pair `a b : V` of vertices a type `a ⟶ b` of arrows from `a` to `b`. This
-is a very permissive notion of directed graph.
+is a generalization of `Digraph V`, which can be thought of as "a proposition `a ⟶ b` of arrows".
 
-## Implementation notes
-
-Currently `Quiver` is defined with `Hom : V → V → Sort v`.
-This is different from the category theory setup,
-where we insist that morphisms live in some `Type`.
-There's some balance here: it's nice to allow `Prop` to ensure there are no multiple arrows,
-but it also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
 @[expose] public section
@@ -33,18 +26,18 @@ open Opposite
 universe v v₁ v₂ u u₁ u₂
 
 /-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
-a type `a ⟶ b` of arrows from `a` to `b`.
+a type `a ⟶ b` of arrows from `a` to `b`. This is hence a form of directed multigraphs.
 
-For graphs with no repeated edges, one can use `Quiver.{0} V`, which ensures
-`a ⟶ b : Prop`. For multigraphs, one can use `Quiver.{v+1} V`, which ensures
-`a ⟶ b : Type v`.
+For graphs with no repeated edges, one can either use `Quiver.IsThin` to demand
+that the hom sets are subsingletons, or `Digraph V` (where the hom sets
+are Prop-valued).
 
 Because `Category` will later extend this class, we call the field `Hom`.
 Except when constructing instances, you should rarely see this, and use the `⟶` notation instead.
 -/
 class Quiver (V : Type u) where
   /-- The type of edges/arrows/morphisms between a given source and target. -/
-  Hom : V → V → Sort v
+  Hom : V → V → Type v
 
 attribute [to_dual self (reorder := 3 4)] Quiver.Hom
 

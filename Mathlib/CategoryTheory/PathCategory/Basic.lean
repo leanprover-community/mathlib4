@@ -37,7 +37,7 @@ instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)
 instance (V : Type u₁) [Unique V] : Unique (Paths V) where
   uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
@@ -185,7 +185,7 @@ theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.o
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
