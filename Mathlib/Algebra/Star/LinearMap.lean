@@ -173,7 +173,7 @@ In finite-dimensional C⋆-algebras, under the GNS construction, and the adjoint
 coalgebra, we get this hypothesis.
 
 See note [reducible non-instances]. -/
-def convIntrinsicStarRing [Coalgebra R C]
+abbrev convIntrinsicStarRing [Coalgebra R C]
     (h : star comul = (TensorProduct.comm R C C).toLinearMap ∘ₗ comul) :
     StarRing (C →ₗ[R] A) where
   __ := intrinsicStarAddMonoid
