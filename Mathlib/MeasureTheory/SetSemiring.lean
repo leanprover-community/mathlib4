@@ -87,7 +87,6 @@ theorem exists_finpartition_diff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t �
   · rw [sup_id_eq_sSup, sSup_eq_sUnion, hst]
   · grw [Finpartition.ofErase_parts, Finset.erase_subset, hIC]
 
-set_option pp.funBinderTypes true in
 theorem mem_supClosure_iff (hC : IsSetSemiring C) :
     s ∈ supClosure C ↔ ∃ P : Finpartition s, ↑P.parts ⊆ C where
   mp := by
@@ -95,15 +94,15 @@ theorem mem_supClosure_iff (hC : IsSetSemiring C) :
     rintro ⟨S, hS, hSC, rfl⟩
     rw [sup'_eq_sup]
     clear hS
-    induction S using Finset.cons_induction with
+    induction S using Finset.induction with
     | empty =>
       rw [sup_empty]
       exact ⟨.empty _, hSC⟩
-    | cons s S _ ih =>
-      rw [coe_cons, insert_subset_iff] at hSC
+    | insert s S _ ih =>
+      rw [coe_insert, insert_subset_iff] at hSC
       obtain ⟨hsC, hSC⟩ := hSC
       obtain ⟨P, hP⟩ := ih hSC
-      rw [sup_cons, sup_comm, id]
+      rw [sup_insert, sup_comm, id]
       rcases eq_or_ne s ⊥ with rfl | hs
       · rw [sup_bot_eq]; exact ⟨P, hP⟩
       choose Q hQ using show ∀ t ∈ (P.avoid s).parts, ∃ Q : Finpartition t, ↑Q.parts ⊆ C by
@@ -130,14 +129,15 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
   empty_mem := subset_supClosure hC.empty_mem
   union_mem _ _ h₁ h₂ := supClosed_supClosure h₁ h₂
   diff_mem := by
+    classical
     rintro s _ hs ⟨T, hT, hTC, rfl⟩
     rw [sup'_eq_sup]
     clear hT
-    induction T using Finset.cons_induction generalizing s with
+    induction T using Finset.induction generalizing s with
     | empty => simpa
-    | cons t T _ ih =>
-      simp_rw [sup_cons, id, sup_eq_union, ← diff_diff]
-      rw [coe_cons, insert_subset_iff] at hTC
+    | insert t T _ ih =>
+      simp_rw [sup_insert, id, sup_eq_union, ← diff_diff]
+      rw [coe_insert, insert_subset_iff] at hTC
       obtain ⟨htC, hTC⟩ := hTC
       refine ih ?_ hTC
       obtain ⟨S, hS, hSC, rfl⟩ := hs
