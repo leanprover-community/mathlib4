@@ -1325,9 +1325,23 @@ theorem prod_smul_pow_GSVN [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2)
     exact hP
   · exact pow_ne_zero f h₁
 
+#exit
+
+example :
+    (equivGalZMod p f K L hζ F).symm (ZMod.unitOfCoprime p sorry) • 𝓟 = 𝓟 := by
+  simp [equivGalZMod]
+
+  sorry
+
 example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
     1 = 0 := by
+  classical
+  let Q := under (𝓞 F) 𝓟
+  have {σ : Gal(L/F)} : (σ • 𝓟).LiesOver Q := sorry
   have := prod_smul_pow_GSVN p f P L 𝓟 hζ F h
+  rw [← Finset.univ.prod_fiberwise (κ := Q.primesOver (𝓞 L))
+    (fun σ ↦ (primesOver.mk Q (σ • 𝓟)))] at this
+
   let e := Equiv.inv Gal(L/F)
   rw [← e.prod_comp] at this
   simp only [Equiv.inv_apply, inv_inv, e] at this
@@ -1335,7 +1349,7 @@ example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) :
   rw [← e.symm.prod_comp] at this
   simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.toEquiv_symm, MulEquiv.coe_toEquiv_symm, e] at this
   simp_rw [GSVN_eq p f P L 𝓟 hζ h _ sorry, n𝓢_equivGalZMod] at this
-  
+
 
 
 #exit
