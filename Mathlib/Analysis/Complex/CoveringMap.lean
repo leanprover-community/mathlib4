@@ -6,6 +6,8 @@ Authors: Junyan Xu
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.Covering.Quotient
 
 /-!
@@ -38,3 +40,18 @@ theorem isCoveringMapOn_exp : IsCoveringMapOn Complex.exp {0}ᶜ :=
   .of_isCoveringMap_subtype (by simp) _ isCoveringMap_exp
 
 end Complex
+
+namespace Polynomial
+
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜] (p : 𝕜[X])
+
+theorem isCoveringMapOn_eval :
+    IsCoveringMapOn p.eval (p.eval '' {k | p.derivative.eval k = 0})ᶜ := by
+  refine p.isClosedMap_eval.isCoveringMapOn_of_openPartialHomeomorph (fun x hx ↦ ?_)
+    fun x hx ↦ ⟨_, ((p.hasStrictDerivAt x).hasStrictFDerivAt_equiv
+      fun h ↦ hx ⟨x, h, rfl⟩).mem_toOpenPartialHomeomorph_source, by simp⟩
+  obtain rfl | ne := eq_or_ne p (C x)
+  · simp at hx
+  · simpa only [preimage_eval_singleton ne] using rootSet_finite ..
+
+end Polynomial
