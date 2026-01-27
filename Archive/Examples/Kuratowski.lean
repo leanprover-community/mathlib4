@@ -177,22 +177,24 @@ theorem i_fourteenSet : i fourteenSet = Ioo 0 1 ∪ Ioo 1 2 := by
   have := interior_eq_empty_iff_dense_compl.mpr dense_irrational
   rw [fourteenSet, interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
   · simp [(isOpen_Ioo.union isOpen_Ioo).interior_eq, this]
-  all_goals norm_num [-union_singleton, k_Icc_4_5_inter_rat,
-    disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
+  all_goals
+  · simp [k_Icc_4_5_inter_rat, -union_singleton, closure_union, disjoint_iff_inter_eq_empty,
+      union_inter_distrib_right, Icc_inter_Icc]
+    norm_num
 
 theorem k_fourteenSet : k fourteenSet = Icc 0 2 ∪ {3} ∪ Icc 4 5 := by
   simp_rw [fourteenSet, closure_union]
-  rw [closure_Ioo, closure_Ioo, k_Icc_4_5_inter_rat, Icc_union_Icc']
-  all_goals norm_num
+  rw [closure_Ioo, closure_Ioo, k_Icc_4_5_inter_rat, Icc_union_Icc'] <;> simp
 
 theorem kc_fourteenSet : k fourteenSetᶜ = (Ioo 0 1 ∪ Ioo 1 2)ᶜ := by
   rw [closure_compl, compl_inj_iff, i_fourteenSet]
 
 theorem kck_fourteenSet : k (k fourteenSet)ᶜ = (Ioo 0 2 ∪ Ioo 4 5)ᶜ := by
   rw [closure_compl, k_fourteenSet,
-    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure]
+    interior_union_of_disjoint_closure, interior_union_of_disjoint_closure] <;>
+  all_goals
+     simp [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
   all_goals norm_num
-    [-union_singleton, disjoint_iff_inter_eq_empty, union_inter_distrib_right, Icc_inter_Icc]
 
 theorem kckc_fourteenSet : k (k fourteenSetᶜ)ᶜ = Icc 0 2 := by
   rw [kc_fourteenSet, compl_compl, closure_union, closure_Ioo, closure_Ioo]
