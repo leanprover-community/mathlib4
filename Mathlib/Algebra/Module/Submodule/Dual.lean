@@ -64,9 +64,6 @@ open Pointwise in
 theorem dual_univ_eq_ker : dual p univ = ker p.flip := by
   ext x; simpa [Eq.comm] using (funext_iff (f := (0 : M →ₗ[R] R)) (g := p.flip x)).symm
 
-theorem dual_flip_univ_eq_ker : dual p.flip univ = ker p := by
-  nth_rw 2 [← flip_flip p]; exact dual_univ_eq_ker
-
 @[gcongr] theorem dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
 
 alias dual_anti := dual_le_dual
@@ -74,10 +71,10 @@ alias dual_anti := dual_le_dual
 theorem dual_antitone : Antitone (dual p) := fun _ _ h => dual_le_dual h
 
 theorem ker_le_dual (s : Set M) : ker p.flip ≤ dual p s := by
-  simp [← dual_flip_univ_eq_ker, dual_anti]
+  simp [← dual_univ_eq_ker, dual_anti]
 
 theorem ker_le_dual_flip (s : Set N) : ker p ≤ dual p.flip s := by
-  simp [← dual_flip_univ_eq_ker, dual_anti]
+  rw [← flip_flip p]; exact ker_le_dual s
 
 theorem dual_singleton (x : M) : dual p {x} = ker (p x) := by ext x; simp [Eq.comm]
 
@@ -142,7 +139,7 @@ variable (s) in
   le_antisymm (dual_le_dual subset_dual_dual) subset_dual_dual
 
 @[simp] theorem dual_flip_dual_dual_flip (s : Set N) :
-    dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual _
+    dual p.flip (dual p (dual p.flip s)) = dual p.flip s := dual_dual_flip_dual s
 
 @[simp]
 theorem dual_span (s : Set M) : dual p (span R s) = dual p s := by
