@@ -68,8 +68,6 @@ def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 { toEquiv := FreeGroup.freeGroupEmptyEquivUnit
   map_mul' _ _ := rfl }
 
--- TODO review this
-
 /-- We define that the free group on one element as isomorphic to ℤ. -/
 def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ where
@@ -86,22 +84,23 @@ FreeGroup.map is also surjective. -/
 theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
   Function.Surjective (FreeGroup.map f) := by
   intro x
-  induction x using FreeGroup.induction_on
-  · use 1
-    rfl
-  · rename_i b
-    rcases hf b with ⟨a, ha⟩
-    refine ⟨FreeGroup.of a, ?_⟩
-    simp [ha]
-  · rename_i b hb
-    rcases hb with ⟨a, ha⟩
-    refine ⟨a⁻¹, ?_⟩
-    simp [ha]
-  · rename_i b c hb hc
-    rcases hb with ⟨a, ha⟩
-    rcases hc with ⟨d, hd⟩
-    refine ⟨a * d, ?_⟩
-    simp [ha, hd]
+  induction x using FreeGroup.induction_on with
+  | C1 =>
+      use 1
+      rfl
+  | of b =>
+      rcases hf b with ⟨a, ha⟩
+      refine ⟨FreeGroup.of a, ?_⟩
+      simp [ha]
+  | inv_of b hb =>
+      rcases hb with ⟨a, ha⟩
+      refine ⟨a⁻¹, ?_⟩
+      simp [ha]
+  | mul b c hb hc =>
+      rcases hb with ⟨a, ha⟩
+      rcases hc with ⟨d, hd⟩
+      refine ⟨a * d, ?_⟩
+      simp [ha, hd]
 -- end of addition to #FreeGroup
 
 -- Start of suggested additions to #Subgroup
