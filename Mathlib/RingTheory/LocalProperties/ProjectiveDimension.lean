@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
@@ -51,7 +52,7 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
     induction n generalizing M
     · simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
       refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
-      · let _ : Small.{v, u} (Localization p.asIdeal.primeCompl) :=
+      · let _ : Small.{v} (Localization p.asIdeal.primeCompl) :=
           small_of_surjective Localization.mkHom_surjective
         rw [← IsProjective.iff_projective]
         exact Module.projective_of_isLocalizedModule p.1.primeCompl
@@ -70,27 +71,9 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v, u} R] [IsNoet
           (M.localizedModuleMkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M)))
     · rename_i n ih _
-      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-      let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-        (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-      have surjf : Function.Surjective f := by simpa [f] using hf'
-      let S : ShortComplex (ModuleCat.{v} R) := {
-        f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-        g := ModuleCat.ofHom.{v} f
-        zero := by
-          ext x
-          simp }
-      have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
-        intro x
-        simp [S]
-      have S_exact : S.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
-        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-      let _ : Module.Finite R S.X₂ := by
-        simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-      let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-      let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      rcases Module.exists_finite_presentation R M with ⟨P, _, _, _, _, f, surjf⟩
+      let S := f.shortComplexKer
+      have S_exact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       let Sp (p : PrimeSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
       have Sp_exact (p : PrimeSpectrum R) : (Sp p).ShortExact :=
@@ -143,27 +126,9 @@ lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v, u} R] [IsNo
           (M.localizedModuleMkLinearMap p.primeCompl)
           (LocalizedModule.mkLinearMap p.primeCompl M)))
     · rename_i n ih _
-      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-      let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-        (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-      have surjf : Function.Surjective f := by simpa [f] using hf'
-      let S : ShortComplex (ModuleCat.{v} R) := {
-        f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-        g := ModuleCat.ofHom.{v} f
-        zero := by
-          ext x
-          simp }
-      have S_exact' : Function.Exact (ConcreteCategory.hom S.f) (ConcreteCategory.hom S.g) := by
-        intro x
-        simp [S]
-      have S_exact : S.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
-        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-      let _ : Module.Finite R S.X₂ := by
-        simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-      let _ : Module.Free R (Shrink.{v, u} R) :=  Module.Free.of_equiv (Shrink.linearEquiv R R).symm
-      let _ : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      rcases Module.exists_finite_presentation R M with ⟨P, _, _, _, _, f, surjf⟩
+      let S := f.shortComplexKer
+      have S_exact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
       let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModule_functor p.1.primeCompl)
       have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact :=
@@ -205,26 +170,13 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
     · rename_i n ih
       rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
       let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
-      have T_exact : T.ShortExact := {
-        exact := ShortComplex.exact_kernel f
-        mono_f := equalizer.ι_mono
-        epi_g := ‹_›}
-      have T_exact' : Function.Exact (ConcreteCategory.hom T.f) (ConcreteCategory.hom T.g) :=
-        (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp T_exact.1
-      have TS_exact' := IsLocalizedModule.map_exact S
-        (T.X₁.localizedModuleMkLinearMap S)
-        (T.X₂.localizedModuleMkLinearMap S)
-        (T.X₃.localizedModuleMkLinearMap S)
-        _ _ T_exact'
+      have T_exact : T.ShortExact := { exact := ShortComplex.exact_kernel f }
+      have TS_exact' := IsLocalizedModule.map_exact S (T.X₁.localizedModuleMkLinearMap S)
+        (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S)
+        _ _ ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp T_exact.1)
       let TS := T.map (ModuleCat.localizedModule_functor S)
-      have TS_exact : TS.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr TS_exact'
-        mono_f := (ModuleCat.mono_iff_injective _).mpr (IsLocalizedModule.map_injective S
-          (T.X₁.localizedModuleMkLinearMap S) (T.X₂.localizedModuleMkLinearMap S)
-            _ ((ModuleCat.mono_iff_injective T.f).mp T_exact.2))
-        epi_g := (ModuleCat.epi_iff_surjective _).mpr (IsLocalizedModule.map_surjective S
-          (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S)
-            _ ((ModuleCat.epi_iff_surjective T.g).mp T_exact.3)) }
+      have TS_exact : TS.ShortExact :=
+        T_exact.map_of_exact (ModuleCat.localizedModule_functor S)
       let _ : Projective TS.X₂ := (ModuleCat.localizedModule_functor.{v} S).projective_obj _
       intro h
       exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr
