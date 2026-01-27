@@ -119,7 +119,6 @@ theorem type_of_unique [LinearOrder α] [Nonempty α] [Subsingleton α] : type �
   cases nonempty_unique α
   exact (OrderIso.ofUnique α _).type_congr
 
-@[simp]
 theorem type_eq_one [LinearOrder α] : type α = 1 ↔ Nonempty (Unique α) :=
   ⟨fun h ↦ let ⟨s⟩ := type_eq_type.1 h; ⟨s.toEquiv.unique⟩,
     fun ⟨_⟩ ↦ type_of_unique⟩
