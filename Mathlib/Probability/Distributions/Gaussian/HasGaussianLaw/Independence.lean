@@ -55,8 +55,8 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
   {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
-`diagonalStrongDualPi L` is a continuous bilinear form is the continuous bilinear form over
-`(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
+`diagonalStrongDualPi L` is the continuous bilinear form over `(Π i, E i)'`
+which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
 `∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`.
 
 This is an implementation detail used in `iIndepFun.hasGaussianLaw`. -/
@@ -102,9 +102,9 @@ variable {E F : Type*}
   {L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ}
 
 /-- Given `L₁ : E' × E' → ℝ` and `L₂ : F' × F' → ℝ` two continuous bilinear forms,
-`diagonalStrongDualProd L` is a continuous bilinear form is the continuous bilinear form over
-`(Π i, E i)'` which maps `(x, y) : (Π i, E i)' × (Π i, E i)'` to
-`∑ i, L i (fun a ↦ x aᵢ) (fun a ↦ y aᵢ)`.
+`diagonalStrongDualProd L₁ L₂` is the continuous bilinear form over `(E × F)'`
+which maps `(x, y) : (E × F)' × (E × F)'` to
+`L₁ (fun (a, b) ↦ x a) (fun (a, b) ↦ y a) + L₂ (fun (a, b) ↦ x b) (fun (a, b) ↦ y b)`.
 
 This is an implementation detail used in `IndepFun.hasGaussianLaw`. -/
 noncomputable
@@ -188,8 +188,7 @@ lemma iIndepFun.hasGaussianLaw (hX1 : ∀ i, HasGaussianLaw (X i) P) (hX2 : iInd
     · exact (hX1 i).isGaussian_map.memLp_two_id
     · exact (hX1 i).isGaussian_map.integrable_id
 
-/-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if they are
-uncorrelated. -/
+/-- If $(X_i)_{i \in \iota}$ are jointly Gaussian and uncorrelated, then they are independent. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_strongDual (hX : HasGaussianLaw (fun ω i ↦ X i ω) P)
     (h : ∀ i j, i ≠ j → ∀ (L₁ : StrongDual ℝ (E i)) (L₂ : StrongDual ℝ (E j)),
       cov[L₁ ∘ (X i), L₂ ∘ (X j); P] = 0) :
@@ -220,8 +219,7 @@ section InnerProductSpace
 
 variable [∀ i, InnerProductSpace ℝ (E i)]
 
-/-- If $(X_i)_{i \in \iota}$ are jointly Gaussian, then they are independent if they are
-uncorrelated. -/
+/-- If $(X_i)_{i \in \iota}$ are jointly Gaussian and uncorrelated, then they are independent. -/
 lemma HasGaussianLaw.iIndepFun_of_covariance_inner
     {X : Π i, Ω → (E i)} (hX : HasGaussianLaw (fun ω i ↦ X i ω) P)
     (h : ∀ i j, i ≠ j → ∀ (x : E i) (y : E j),
