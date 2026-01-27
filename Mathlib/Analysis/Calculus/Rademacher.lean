@@ -162,8 +162,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
       exact indicator_nonneg (fun y _hy ↦ by positivity) _
   · rw [integrable_indicator_iff K_compact.measurableSet]
-    apply ContinuousOn.integrableOn_compact K_compact
-    exact (Continuous.mul continuous_const hg.norm).continuousOn
+    exact ContinuousOn.integrableOn_compact K_compact (by fun_prop)
   · filter_upwards [hf.ae_lineDifferentiableAt v] with x hx
     exact hx.hasLineDerivAt.tendsto_slope_zero_right.mul tendsto_const_nhds
 
