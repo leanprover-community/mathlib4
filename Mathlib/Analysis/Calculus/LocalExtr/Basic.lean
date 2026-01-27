@@ -62,7 +62,7 @@ universe u v
 
 open Filter Set
 
-open scoped Topology Convex
+open scoped Topology Convex NNReal
 
 section Module
 
@@ -73,46 +73,27 @@ variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E]
 ### Positive tangent cone
 -/
 
-/-- "Positive" tangent cone to `s` at `x`; the only difference from `tangentConeAt`
-is that we require `c n → ∞` instead of `‖c n‖ → ∞`. One can think about `posTangentConeAt`
-as `tangentConeAt NNReal` but we have no theory of normed semifields yet. -/
-def posTangentConeAt (s : Set E) (x : E) : Set E :=
-  { y : E | ∃ (c : ℕ → ℝ) (d : ℕ → E), (∀ᶠ n in atTop, x + d n ∈ s) ∧
-    Tendsto c atTop atTop ∧ Tendsto (fun n => c n • d n) atTop (𝓝 y) }
-
 theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
-  rintro s t hst y ⟨c, d, hd, hc, hcd⟩
-  exact ⟨c, d, mem_of_superset hd fun h hn => hst hn, hc, hcd⟩
+  intro s t hst
+  exact tangentConeAt_mono hst
 
 theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
     y ∈ posTangentConeAt s x := by
-  obtain ⟨a, ha, has⟩ := Filter.exists_seq_forall_of_frequently h
-  refine ⟨a⁻¹, (a · • y), Eventually.of_forall has, tendsto_inv_nhdsGT_zero.comp ha, ?_⟩
-  refine tendsto_const_nhds.congr' ?_
-  filter_upwards [(tendsto_nhdsWithin_iff.1 ha).2] with n (hn : 0 < a n)
-  simp [ne_of_gt hn]
-
-/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangent cone of `s`.
-
-Before 2024-07-13, this lemma used to be called `mem_posTangentConeAt_of_segment_subset`.
-See also `sub_mem_posTangentConeAt_of_segment_subset`
-for the lemma that used to be called `mem_posTangentConeAt_of_segment_subset`. -/
-theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
-    y ∈ posTangentConeAt s x := by
-  refine mem_posTangentConeAt_of_frequently_mem (Eventually.frequently ?_)
-  rw [eventually_nhdsWithin_iff]
-  filter_upwards [ge_mem_nhds one_pos] with t ht₁ ht₀
-  apply h
-  rw [segment_eq_image', add_sub_cancel_left]
-  exact mem_image_of_mem _ ⟨le_of_lt ht₀, ht₁⟩
+  rw [← NNReal.coe_zero, ← NNReal.map_coe_nhdsGT, frequently_map, frequently_iff_neBot] at h
+  apply mem_tangentConeAt_of_add_smul_mem (l := 𝓝[>] (0 : ℝ≥0) ⊓ 𝓟 {t | x + (t : ℝ) • y ∈ s})
+  · exact tendsto_id'.mpr <| inf_le_left.trans <| nhdsGT_le_nhdsNE _
+  · simp [eventually_inf_principal, NNReal.smul_def]
 
 theorem sub_mem_posTangentConeAt_of_segment_subset (h : segment ℝ x y ⊆ s) :
     y - x ∈ posTangentConeAt s x :=
-  mem_posTangentConeAt_of_segment_subset <| by rwa [add_sub_cancel]
+  sub_mem_posTangentConeAt_of_openSegment_subset <| (openSegment_subset_segment ..).trans h
 
-@[simp]
-theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
-  eq_univ_of_forall fun _ => mem_posTangentConeAt_of_segment_subset (subset_univ _)
+/-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangent cone of `s`. -/
+theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
+    y ∈ posTangentConeAt s x := by
+  simpa using sub_mem_posTangentConeAt_of_segment_subset h
+
+theorem posTangentConeAt_univ : posTangentConeAt univ a = univ := tangentConeAt_univ
 
 /-!
 ### Fermat's Theorem (vector space)
@@ -122,15 +103,14 @@ theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=
 `y` belongs to the positive tangent cone of `s` at `a`, then `f' y ≤ 0`. -/
 theorem IsLocalMaxOn.hasFDerivWithinAt_nonpos (h : IsLocalMaxOn f s a)
     (hf : HasFDerivWithinAt f f' s a) (hy : y ∈ posTangentConeAt s a) : f' y ≤ 0 := by
-  rcases hy with ⟨c, d, hd, hc, hcd⟩
-  have hc' : Tendsto (‖c ·‖) atTop atTop := tendsto_abs_atTop_atTop.comp hc
-  suffices ∀ᶠ n in atTop, c n • (f (a + d n) - f a) ≤ 0 from
-    le_of_tendsto (hf.lim atTop hd hc' hcd) this
-  replace hd : Tendsto (fun n => a + d n) atTop (𝓝[s] (a + 0)) :=
-    tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add (tangentConeAt.lim_zero _ hc' hcd), hd⟩
+  rcases exists_fun_of_mem_tangentConeAt hy with ⟨ι, l, hl, c, d, hd₀, hd, hcd⟩
+  suffices ∀ᶠ n in l, c n • (f (a + d n) - f a) ≤ 0 from
+    le_of_tendsto (hf.lim hd₀ hd hcd) this
+  replace hd : Tendsto (fun n => a + d n) l (𝓝[s] (a + 0)) :=
+    tendsto_nhdsWithin_iff.2 ⟨tendsto_const_nhds.add hd₀, hd⟩
   rw [add_zero] at hd
-  filter_upwards [hd.eventually h, hc.eventually_ge_atTop 0] with n hfn hcn
-  exact mul_nonpos_of_nonneg_of_nonpos hcn (sub_nonpos.2 hfn)
+  refine hd.eventually h |>.mono fun n hn ↦ ?_
+  exact mul_nonpos_of_nonneg_of_nonpos (c n).coe_nonneg (sub_nonpos.2 hn)
 
 /-- If `f` has a local max on `s` at `a` and `y` belongs to the positive tangent cone
 of `s` at `a`, then `f' y ≤ 0`. -/
@@ -234,14 +214,14 @@ variable {f : ℝ → ℝ} {f' : ℝ} {s : Set ℝ} {a b : ℝ}
 lemma one_mem_posTangentConeAt_iff_mem_closure :
     1 ∈ posTangentConeAt s a ↔ a ∈ closure (Ioi a ∩ s) := by
   constructor
-  · rintro ⟨c, d, hs, hc, hcd⟩
-    have : Tendsto (a + d ·) atTop (𝓝 a) := by
-      simpa only [add_zero] using tendsto_const_nhds.add
-        (tangentConeAt.lim_zero _ (tendsto_abs_atTop_atTop.comp hc) hcd)
+  · intro h
+    rcases exists_fun_of_mem_tangentConeAt h with ⟨ι, l, hl, c, d, hd₀, hd, hcd⟩
+    have : Tendsto (a + d ·) l (𝓝 a) := by
+      simpa only [add_zero] using tendsto_const_nhds.add hd₀
     apply mem_closure_of_tendsto this
-    filter_upwards [hc.eventually_gt_atTop 0, hcd.eventually (lt_mem_nhds one_pos), hs]
-      with n hcn hcdn hdn
-    simp_all
+    filter_upwards [hcd.eventually_const_lt one_pos, hd] with n hcdn hdn
+    refine ⟨?_, hdn⟩
+    simpa using pos_of_mul_pos_right hcdn
   · intro h
     apply mem_posTangentConeAt_of_frequently_mem
     rw [mem_closure_iff_frequently, ← map_add_left_nhds_zero, frequently_map] at h
