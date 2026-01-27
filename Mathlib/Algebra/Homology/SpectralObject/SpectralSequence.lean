@@ -13,6 +13,25 @@ public import Mathlib.Order.WithBotTop
 /-!
 # The spectral sequence of a spectral object
 
+The main definition in this file is `Abelian.SpectralObject.spectralSequence`.
+Assume that `X` is a spectral object indexed by `ι` in an abelian category `C`,
+and that we have `data : SpectralSequenceMkData ι c r₀` a family
+of complexes shapes `c : ℤ → ComplexShape κ` for a type `κ` and `r₀ : ℤ`.
+Then, under the assumption `X.HasSpectralSequence data` (see the file
+`Mathlib/Algebra/Homology/SpectralObject/HasSpectralSequence.lean`),
+we obtain `X.spectralSequence data` which is a spectral sequence starting
+on page `r₀`, such that the `r`th page (for `r₀ ≤ r`) is a homological
+complex of shape `c r`.
+
+In particular, when `X` is a spectral object indexed by the extended
+integers `EInt`, we obtain the `E₂`-cohomological spectral sequence
+`X.E₂SpectralSequence` where the objects of each page are indexed by
+`ℤ × ℤ` (the condition `HasSpectralSequence` is automatically satisfied).
+Under the `X.IsFirstQuadrant` assumption, we obtain
+`X.E₂SpectralSequenceNat` which is a first quadrant `E₂`-spectral
+sequence (the objects in the pages are indexed by `ℕ × ℕ` instead
+of `ℤ × ℤ`).
+
 -/
 
 @[expose] public section
@@ -190,17 +209,17 @@ lemma kf_w :
     erw [EMap_fourδ₁Toδ₀_d_assoc, zero_comp]
   · rw [HomologicalComplex.shape _ _ _ h, comp_zero]
 
-@[simp]
-noncomputable def kf : KernelFork ((page X data r hr).d pq' pq'') :=
+noncomputable abbrev kf :
+    KernelFork ((page X data r hr).d pq' pq'') :=
   KernelFork.ofι _ (kf_w X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃)
 
 @[simps!]
-noncomputable def ksSc : ShortComplex C :=
+noncomputable def kfSc : ShortComplex C :=
   ShortComplex.mk _ _ (kf_w X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃)
 
-instance : Mono (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+instance : Mono (kfSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).f := by
   dsimp
   infer_instance
@@ -220,7 +239,7 @@ lemma isIso_EMapFourδ₁Toδ₀' (h : ¬ (c r).Rel pq' pq'') :
 
 variable [X.HasSpectralSequence data] in
 include hpq' in
-lemma ksSc_exact : (ksSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+lemma kfSc_exact : (kfSc X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).Exact := by
   by_cases h : (c r).Rel pq' pq''
   · refine ShortComplex.exact_of_iso (Iso.symm ?_)
@@ -253,7 +272,7 @@ variable [X.HasSpectralSequence data] in
 noncomputable def hkf :
     IsLimit (kf X data r r' hrr' hr pq' pq'' n₀ n₁ n₂ hn₁ hn₂ hn₁'
       i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃) :=
-  (ksSc_exact X data r r' hrr' hr pq' pq'' hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
+  (kfSc_exact X data r r' hrr' hr pq' pq'' hpq' n₀ n₁ n₂ hn₁ hn₂ hn₁'
     i₀' i₀ i₁ i₂ i₃ hi₀' hi₀ hi₁ hi₂ hi₃).fIsKernel
 
 lemma cc_w :
@@ -273,8 +292,8 @@ lemma cc_w :
     rw [comp_zero]
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
 
-@[simp]
-noncomputable def cc : CokernelCofork ((page X data r hr).d pq pq') :=
+noncomputable abbrev cc :
+    CokernelCofork ((page X data r hr).d pq pq') :=
   CokernelCofork.ofπ _
     (cc_w X data r r' hrr' hr pq pq' n₀ n₁ n₂ hn₁ hn₂ hn₁' i₀ i₁ i₂ i₃ i₃' hi₀ hi₁ hi₂ hi₃ hi₃')
 
