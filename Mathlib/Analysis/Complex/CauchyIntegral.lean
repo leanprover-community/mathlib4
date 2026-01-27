@@ -706,17 +706,6 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 open AnalyticAt
 
-lemma foo {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {n : ℕ} (x : E) (hn : (n : 𝕜) ≠ 0) (hx : x ≠ 0) : n • x ≠ 0 := by
-  intro h
-  apply hx
-  have : x = (1 / (n : 𝕜)) • ((n : 𝕜) • x) := by
-    rw [← smul_assoc]
-    aesop
-  norm_cast at this
-  rw [this, h]
-  simp
-
 lemma analyticOrderAt_deriv_of_pos {𝕜 : Type*} {E : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] {f : 𝕜 → E} {z₀ : 𝕜}
   (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} (horder : analyticOrderAt f z₀ = n) (hn : n ≠ 0)
