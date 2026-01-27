@@ -205,8 +205,7 @@ lemma kf_w :
       (homOfLE (by simpa only [hi₀', data.i₀_prev r r' _ _ h] using data.le₀₁ r pq''))
       (homOfLE (data.le₀'₀ hrr' hr pq' hi₀' hi₀)) _ _ _ hn₁'
       rfl (by rw [hi₀', data.i₀_prev r r' pq' pq'' h]) hi₀ hi₁ hi₂ hi₃,
-      Category.assoc, Iso.inv_hom_id_assoc]
-    erw [EMap_fourδ₁Toδ₀_d_assoc, zero_comp]
+      Category.assoc, Iso.inv_hom_id_assoc, EMap_fourδ₁Toδ₀_d_assoc, zero_comp]
   · rw [HomologicalComplex.shape _ _ _ h, comp_zero]
 
 noncomputable abbrev kf :
@@ -287,9 +286,7 @@ lemma cc_w :
       (homOfLE (by simpa only [hi₃', data.i₃_next r r' _ _ h] using data.le₂₃ r pq))
       (by have := data.hc r pq pq' h; lia) hi₀ hi₁ (by rw [hi₂, data.hc₀₂ r _ _ h])
       (by rw [hi₃, data.hc₁₃ r _ _ h]) (by rw [hi₃', data.i₃_next r r' _ _ h]) rfl,
-      Category.assoc, Category.assoc, Iso.inv_hom_id_assoc]
-    erw [d_EMap_fourδ₄Toδ₃]
-    rw [comp_zero]
+      Category.assoc, Category.assoc, Iso.inv_hom_id_assoc, d_EMap_fourδ₄Toδ₃, comp_zero]
   · rw [HomologicalComplex.shape _ _ _ h, zero_comp]
 
 noncomputable abbrev cc :
