@@ -320,7 +320,6 @@ instance {X' Y' : C} (f' : X' ⟶ Y') [HasKernel f'] (p : X ⟶ X') (q : Y ⟶ Y
   ⟨kernel.lift _ (kernel.ι f' ≫ inv p) (by simp [← cancel_mono q, w]),
     by cat_disch, by cat_disch⟩
 
-
 /-- Given a commutative diagram
 ```
     X --f--> Y --g--> Z
