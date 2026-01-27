@@ -68,7 +68,7 @@ open Classical in
 /-- If `s` is measurable then `preVariation s f` is the supremum over subpartitions
 (`IsSubpartition`) `P` of `s` of the quantity `∑ p ∈ P, f p`. If `s` is not measurable then it is
 set to `0`. -/
-noncomputable def preVariation (s : Set X) :=
+noncomputable def preVariation (s : Set X) : ℝ≥0∞ :=
   if (MeasurableSet s) then ⨆ (P : Finset (Set X)) (_ : IsSubpartition s P), ∑ p ∈ P, f p else 0
 
 end
@@ -123,7 +123,7 @@ lemma sum_le {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
 
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
-def IsSubadditive (f : Set X → ℝ≥0∞) := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
+def IsSubadditive (f : Set X → ℝ≥0∞) : Prop := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
   Pairwise (Disjoint on s) → f (⋃ (i : ℕ), s i) ≤ ∑' (i : ℕ), f (s i)
 
 /-- Given a subpartition `Q`, `∑ q ∈ Q, f q` is bounded by the sum of the `∑ q ∈ (P i), f q` where
@@ -279,7 +279,8 @@ noncomputable def ennrealVariation (μ : VectorMeasure X V) : VectorMeasure X �
   m_iUnion' := iUnion (‖μ ·‖ₑ) (isSubadditive_enorm_vectorMeasure μ) (by simp)
 
 /-- The variation of a `VectorMeasure` as a `Measure`. -/
-noncomputable def variation (μ : VectorMeasure X V) := (ennrealVariation μ).ennrealToMeasure
+noncomputable def variation (μ : VectorMeasure X V) : Measure X
+  := (ennrealVariation μ).ennrealToMeasure
 
 end VectorMeasure
 
