@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.Trace
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Trace for (finite) ring extensions.
@@ -40,6 +42,8 @@ For now, the definitions assume `S` is commutative, so the choice doesn't matter
 * https://en.wikipedia.org/wiki/Field_trace
 
 -/
+
+@[expose] public section
 
 
 universe w
@@ -146,7 +150,6 @@ theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
 @[simp]
 theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T]
     (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd := by
-  nontriviality R
   let f := (lmul R S).toLinearMap.prodMap (lmul R T).toLinearMap
   have : (lmul R (S × T)).toLinearMap = (prodMapLinear R S T S T R).comp f :=
     LinearMap.ext₂ Prod.mul_def

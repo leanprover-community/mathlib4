@@ -3,9 +3,11 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Compactness.SigmaCompact
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Compactness.SigmaCompact
 
 /-!
 # Lindelöf sets and Lindelöf spaces
@@ -31,6 +33,8 @@ We define the following properties for sets in a topological space:
 * This API is mainly based on the API for IsCompact and follows notation and style as much
   as possible.
 -/
+
+@[expose] public section
 open Set Filter Topology TopologicalSpace
 
 
@@ -341,7 +345,7 @@ theorem Finset.isLindelof_biUnion (s : Finset ι) {f : ι → Set X} (hf : ∀ i
   s.finite_toSet.isLindelof_biUnion hf
 
 theorem isLindelof_accumulate {K : ℕ → Set X} (hK : ∀ n, IsLindelof (K n)) (n : ℕ) :
-    IsLindelof (Accumulate K n) :=
+    IsLindelof (accumulate K n) :=
   (finite_le_nat n).isLindelof_biUnion fun k _ => hK k
 
 theorem Set.Countable.isLindelof_sUnion {S : Set (Set X)} (hf : S.Countable)
@@ -353,7 +357,7 @@ theorem Set.Finite.isLindelof_sUnion {S : Set (Set X)} (hf : S.Finite)
   rw [sUnion_eq_biUnion]; exact hf.isLindelof_biUnion hc
 
 theorem isLindelof_iUnion {ι : Sort*} {f : ι → Set X} [Countable ι] (h : ∀ i, IsLindelof (f i)) :
-    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion  <| forall_mem_range.2 h
+    IsLindelof (⋃ i, f i) := (countable_range f).isLindelof_sUnion <| forall_mem_range.2 h
 
 theorem Set.Countable.isLindelof (hs : s.Countable) : IsLindelof s :=
   biUnion_of_singleton s ▸ hs.isLindelof_biUnion fun _ _ => isLindelof_singleton
@@ -522,11 +526,11 @@ theorem IsSigmaCompact.isLindelof (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isCompact_univ.isLindelof}
+  { isLindelof_univ := isCompact_univ.isLindelof }
 
 /-- A sigma-compact space `X` is Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] : LindelofSpace X :=
-  { isLindelof_univ := isSigmaCompact_univ.isLindelof}
+  { isLindelof_univ := isSigmaCompact_univ.isLindelof }
 
 /-- `X` is a non-Lindelöf topological space if it is not a Lindelöf space. -/
 class NonLindelofSpace (X : Type*) [TopologicalSpace X] : Prop where
@@ -645,6 +649,9 @@ theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.
   countable_coe_iff.mp
   (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
 
+theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
+    s.Countable := hs.countable hs'.to_subtype
+
 protected theorem Topology.IsClosedEmbedding.nonLindelofSpace [NonLindelofSpace X] {f : X → Y}
     (hf : IsClosedEmbedding f) : NonLindelofSpace Y :=
   nonLindelofSpace_of_neBot hf.tendsto_coLindelof.neBot
@@ -720,7 +727,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
-    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i∈t, U i = ⋃ i, U i := by
+    (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
   rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc

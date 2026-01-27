@@ -3,11 +3,15 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Circular
+module
+
+public import Mathlib.Algebra.Group.ModEq
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Circular
+import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # Reducing to an interval modulo its length
@@ -25,6 +29,8 @@ interval.
   subtracted from `b`, is in `Ioc a (a + p)`.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -47,9 +53,10 @@ def toIcoDiv (a b : α) : ℤ :=
 theorem sub_toIcoDiv_zsmul_mem_Ico (a b : α) : b - toIcoDiv hp a b • p ∈ Set.Ico a (a + p) :=
   (existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec.1
 
-theorem toIcoDiv_eq_of_sub_zsmul_mem_Ico (h : b - n • p ∈ Set.Ico a (a + p)) :
-    toIcoDiv hp a b = n :=
-  ((existsUnique_sub_zsmul_mem_Ico hp b a).choose_spec.2 _ h).symm
+theorem toIcoDiv_eq_iff : toIcoDiv hp a b = n ↔ b - n • p ∈ Set.Ico a (a + p) :=
+  (existsUnique_sub_zsmul_mem_Ico hp b a).choose_eq_iff
+
+alias ⟨_, toIcoDiv_eq_of_sub_zsmul_mem_Ico⟩ := toIcoDiv_eq_iff
 
 /--
 The unique integer such that this multiple of `p`, subtracted from `b`, is in `Ioc a (a + p)`. -/
@@ -59,9 +66,10 @@ def toIocDiv (a b : α) : ℤ :=
 theorem sub_toIocDiv_zsmul_mem_Ioc (a b : α) : b - toIocDiv hp a b • p ∈ Set.Ioc a (a + p) :=
   (existsUnique_sub_zsmul_mem_Ioc hp b a).choose_spec.1
 
-theorem toIocDiv_eq_of_sub_zsmul_mem_Ioc (h : b - n • p ∈ Set.Ioc a (a + p)) :
-    toIocDiv hp a b = n :=
-  ((existsUnique_sub_zsmul_mem_Ioc hp b a).choose_spec.2 _ h).symm
+theorem toIocDiv_eq_iff : toIocDiv hp a b = n ↔ b - n • p ∈ Set.Ioc a (a + p) :=
+  (existsUnique_sub_zsmul_mem_Ioc hp b a).choose_eq_iff
+
+alias ⟨_, toIocDiv_eq_of_sub_zsmul_mem_Ioc⟩ := toIocDiv_eq_iff
 
 /-- Reduce `b` to the interval `Ico a (a + p)`. -/
 def toIcoMod (a b : α) : α :=
@@ -197,6 +205,10 @@ theorem toIcoDiv_add_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b + m • p) = 
     simpa only [add_smul, add_sub_add_right_eq_sub] using sub_toIcoDiv_zsmul_mem_Ico hp a b
 
 @[simp]
+theorem toIcoDiv_add_nsmul (a b : α) (m : ℕ) : toIcoDiv hp a (b + m • p) = toIcoDiv hp a b + m :=
+  mod_cast toIcoDiv_add_zsmul hp a b m
+
+@[simp]
 theorem toIcoDiv_add_zsmul' (a b : α) (m : ℤ) :
     toIcoDiv hp (a + m • p) b = toIcoDiv hp a b - m := by
   refine toIcoDiv_eq_of_sub_zsmul_mem_Ico _ ?_
@@ -204,9 +216,17 @@ theorem toIcoDiv_add_zsmul' (a b : α) (m : ℤ) :
   simpa using sub_toIcoDiv_zsmul_mem_Ico hp a b
 
 @[simp]
+theorem toIcoDiv_add_nsmul' (a b : α) (m : ℕ) : toIcoDiv hp (a + m • p) b = toIcoDiv hp a b - m :=
+  mod_cast toIcoDiv_add_zsmul' hp a b m
+
+@[simp]
 theorem toIocDiv_add_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b + m • p) = toIocDiv hp a b + m :=
   toIocDiv_eq_of_sub_zsmul_mem_Ioc hp <| by
     simpa only [add_smul, add_sub_add_right_eq_sub] using sub_toIocDiv_zsmul_mem_Ioc hp a b
+
+@[simp]
+theorem toIocDiv_add_nsmul (a b : α) (m : ℕ) : toIocDiv hp a (b + m • p) = toIocDiv hp a b + m :=
+  mod_cast toIocDiv_add_zsmul hp a b m
 
 @[simp]
 theorem toIocDiv_add_zsmul' (a b : α) (m : ℤ) :
@@ -216,8 +236,16 @@ theorem toIocDiv_add_zsmul' (a b : α) (m : ℤ) :
   simpa using sub_toIocDiv_zsmul_mem_Ioc hp a b
 
 @[simp]
+theorem toIocDiv_add_nsmul' (a b : α) (m : ℕ) : toIocDiv hp (a + m • p) b = toIocDiv hp a b - m :=
+  mod_cast toIocDiv_add_zsmul' hp a b m
+
+@[simp]
 theorem toIcoDiv_zsmul_add (a b : α) (m : ℤ) : toIcoDiv hp a (m • p + b) = m + toIcoDiv hp a b := by
   rw [add_comm, toIcoDiv_add_zsmul, add_comm]
+
+@[simp]
+theorem toIcoDiv_nsmul_add (a b : α) (m : ℕ) : toIcoDiv hp a (m • p + b) = m + toIcoDiv hp a b :=
+  mod_cast toIcoDiv_zsmul_add hp a b m
 
 /-! Note we omit `toIcoDiv_zsmul_add'` as `-m + toIcoDiv hp a b` is not very convenient. -/
 
@@ -225,6 +253,10 @@ theorem toIcoDiv_zsmul_add (a b : α) (m : ℤ) : toIcoDiv hp a (m • p + b) = 
 @[simp]
 theorem toIocDiv_zsmul_add (a b : α) (m : ℤ) : toIocDiv hp a (m • p + b) = m + toIocDiv hp a b := by
   rw [add_comm, toIocDiv_add_zsmul, add_comm]
+
+@[simp]
+theorem toIocDiv_nsmul_add (a b : α) (m : ℕ) : toIocDiv hp a (m • p + b) = m + toIocDiv hp a b :=
+  mod_cast toIocDiv_zsmul_add hp a b m
 
 /-! Note we omit `toIocDiv_zsmul_add'` as `-m + toIocDiv hp a b` is not very convenient. -/
 
@@ -234,18 +266,34 @@ theorem toIcoDiv_sub_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b - m • p) = 
   rw [sub_eq_add_neg, ← neg_smul, toIcoDiv_add_zsmul, sub_eq_add_neg]
 
 @[simp]
+theorem toIcoDiv_sub_nsmul (a b : α) (m : ℕ) : toIcoDiv hp a (b - m • p) = toIcoDiv hp a b - m :=
+  mod_cast toIcoDiv_sub_zsmul hp a b m
+
+@[simp]
 theorem toIcoDiv_sub_zsmul' (a b : α) (m : ℤ) :
     toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m := by
   rw [sub_eq_add_neg, ← neg_smul, toIcoDiv_add_zsmul', sub_neg_eq_add]
+
+@[simp]
+theorem toIcoDiv_sub_nsmul' (a b : α) (m : ℕ) : toIcoDiv hp (a - m • p) b = toIcoDiv hp a b + m :=
+  mod_cast toIcoDiv_sub_zsmul' hp a b m
 
 @[simp]
 theorem toIocDiv_sub_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b - m • p) = toIocDiv hp a b - m := by
   rw [sub_eq_add_neg, ← neg_smul, toIocDiv_add_zsmul, sub_eq_add_neg]
 
 @[simp]
+theorem toIocDiv_sub_nsmul (a b : α) (m : ℕ) : toIocDiv hp a (b - m • p) = toIocDiv hp a b - m :=
+  mod_cast toIocDiv_sub_zsmul hp a b m
+
+@[simp]
 theorem toIocDiv_sub_zsmul' (a b : α) (m : ℤ) :
     toIocDiv hp (a - m • p) b = toIocDiv hp a b + m := by
   rw [sub_eq_add_neg, ← neg_smul, toIocDiv_add_zsmul', sub_neg_eq_add]
+
+@[simp]
+theorem toIocDiv_sub_nsmul' (a b : α) (m : ℕ) : toIocDiv hp (a - m • p) b = toIocDiv hp a b + m :=
+  mod_cast toIocDiv_sub_zsmul' hp a b m
 
 @[simp]
 theorem toIcoDiv_add_right (a b : α) : toIcoDiv hp a (b + p) = toIcoDiv hp a b + 1 := by
@@ -341,9 +389,18 @@ theorem toIcoMod_add_zsmul (a b : α) (m : ℤ) : toIcoMod hp a (b + m • p) = 
   abel
 
 @[simp]
+theorem toIcoMod_add_nsmul (a b : α) (m : ℕ) : toIcoMod hp a (b + m • p) = toIcoMod hp a b :=
+  mod_cast toIcoMod_add_zsmul hp a b m
+
+@[simp]
 theorem toIcoMod_add_zsmul' (a b : α) (m : ℤ) :
     toIcoMod hp (a + m • p) b = toIcoMod hp a b + m • p := by
   simp only [toIcoMod, toIcoDiv_add_zsmul', sub_smul, sub_add]
+
+@[simp]
+theorem toIcoMod_add_nsmul' (a b : α) (m : ℕ) :
+    toIcoMod hp (a + m • p) b = toIcoMod hp a b + m • p :=
+  mod_cast toIcoMod_add_zsmul' hp a b m
 
 @[simp]
 theorem toIocMod_add_zsmul (a b : α) (m : ℤ) : toIocMod hp a (b + m • p) = toIocMod hp a b := by
@@ -351,13 +408,26 @@ theorem toIocMod_add_zsmul (a b : α) (m : ℤ) : toIocMod hp a (b + m • p) = 
   abel
 
 @[simp]
+theorem toIocMod_add_nsmul (a b : α) (m : ℕ) : toIocMod hp a (b + m • p) = toIocMod hp a b :=
+  mod_cast toIocMod_add_zsmul hp a b m
+
+@[simp]
 theorem toIocMod_add_zsmul' (a b : α) (m : ℤ) :
     toIocMod hp (a + m • p) b = toIocMod hp a b + m • p := by
   simp only [toIocMod, toIocDiv_add_zsmul', sub_smul, sub_add]
 
 @[simp]
+theorem toIocMod_add_nsmul' (a b : α) (m : ℕ) :
+    toIocMod hp (a + m • p) b = toIocMod hp a b + m • p :=
+  mod_cast toIocMod_add_zsmul' hp a b m
+
+@[simp]
 theorem toIcoMod_zsmul_add (a b : α) (m : ℤ) : toIcoMod hp a (m • p + b) = toIcoMod hp a b := by
   rw [add_comm, toIcoMod_add_zsmul]
+
+@[simp]
+theorem toIcoMod_nsmul_add (a b : α) (m : ℕ) : toIcoMod hp a (m • p + b) = toIcoMod hp a b :=
+  mod_cast toIcoMod_zsmul_add hp a b m
 
 @[simp]
 theorem toIcoMod_zsmul_add' (a b : α) (m : ℤ) :
@@ -365,8 +435,17 @@ theorem toIcoMod_zsmul_add' (a b : α) (m : ℤ) :
   rw [add_comm, toIcoMod_add_zsmul', add_comm]
 
 @[simp]
+theorem toIcoMod_nsmul_add' (a b : α) (m : ℕ) :
+    toIcoMod hp (m • p + a) b = m • p + toIcoMod hp a b :=
+  mod_cast toIcoMod_zsmul_add' hp a b m
+
+@[simp]
 theorem toIocMod_zsmul_add (a b : α) (m : ℤ) : toIocMod hp a (m • p + b) = toIocMod hp a b := by
   rw [add_comm, toIocMod_add_zsmul]
+
+@[simp]
+theorem toIocMod_nsmul_add (a b : α) (m : ℕ) : toIocMod hp a (m • p + b) = toIocMod hp a b :=
+  mod_cast toIocMod_zsmul_add hp a b m
 
 @[simp]
 theorem toIocMod_zsmul_add' (a b : α) (m : ℤ) :
@@ -374,8 +453,17 @@ theorem toIocMod_zsmul_add' (a b : α) (m : ℤ) :
   rw [add_comm, toIocMod_add_zsmul', add_comm]
 
 @[simp]
+theorem toIocMod_nsmul_add' (a b : α) (m : ℕ) :
+    toIocMod hp (m • p + a) b = m • p + toIocMod hp a b :=
+  mod_cast toIocMod_zsmul_add' hp a b m
+
+@[simp]
 theorem toIcoMod_sub_zsmul (a b : α) (m : ℤ) : toIcoMod hp a (b - m • p) = toIcoMod hp a b := by
   rw [sub_eq_add_neg, ← neg_smul, toIcoMod_add_zsmul]
+
+@[simp]
+theorem toIcoMod_sub_nsmul (a b : α) (m : ℕ) : toIcoMod hp a (b - m • p) = toIcoMod hp a b :=
+  mod_cast toIcoMod_sub_zsmul hp a b m
 
 @[simp]
 theorem toIcoMod_sub_zsmul' (a b : α) (m : ℤ) :
@@ -383,13 +471,27 @@ theorem toIcoMod_sub_zsmul' (a b : α) (m : ℤ) :
   simp_rw [sub_eq_add_neg, ← neg_smul, toIcoMod_add_zsmul']
 
 @[simp]
+theorem toIcoMod_sub_nsmul' (a b : α) (m : ℕ) :
+    toIcoMod hp (a - m • p) b = toIcoMod hp a b - m • p :=
+  mod_cast toIcoMod_sub_zsmul' hp a b m
+
+@[simp]
 theorem toIocMod_sub_zsmul (a b : α) (m : ℤ) : toIocMod hp a (b - m • p) = toIocMod hp a b := by
   rw [sub_eq_add_neg, ← neg_smul, toIocMod_add_zsmul]
+
+@[simp]
+theorem toIocMod_sub_nsmul (a b : α) (m : ℕ) : toIocMod hp a (b - m • p) = toIocMod hp a b :=
+  mod_cast toIocMod_sub_zsmul hp a b m
 
 @[simp]
 theorem toIocMod_sub_zsmul' (a b : α) (m : ℤ) :
     toIocMod hp (a - m • p) b = toIocMod hp a b - m • p := by
   simp_rw [sub_eq_add_neg, ← neg_smul, toIocMod_add_zsmul']
+
+@[simp]
+theorem toIocMod_sub_nsmul' (a b : α) (m : ℕ) :
+    toIocMod hp (a - m • p) b = toIocMod hp a b - m • p :=
+  mod_cast toIocMod_sub_zsmul' hp a b m
 
 @[simp]
 theorem toIcoMod_add_right (a b : α) : toIcoMod hp a (b + p) = toIcoMod hp a b := by
@@ -543,9 +645,6 @@ theorem modEq_iff_forall_notMem_Ioo_mod :
     a ≡ b [PMOD p] ↔ ∀ z : ℤ, b - z • p ∉ Set.Ioo a (a + p) :=
   (tfae_modEq hp a b).out 0 1
 
-@[deprecated (since := "2025-05-23")]
-alias modEq_iff_not_forall_mem_Ioo_mod := modEq_iff_forall_notMem_Ioo_mod
-
 theorem modEq_iff_toIcoMod_ne_toIocMod : a ≡ b [PMOD p] ↔ toIcoMod hp a b ≠ toIocMod hp a b :=
   (tfae_modEq hp a b).out 0 2
 
@@ -572,8 +671,8 @@ open AddCommGroup
 
 /-- If `a` and `b` fall within the same cycle w.r.t. `c`, then they are congruent modulo `p`. -/
 @[simp]
-theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
-  toIcoMod_eq_toIcoMod _
+theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] := by
+  rw [toIcoMod_eq_toIcoMod, AddCommGroup.modEq_iff_zsmul']
 
 alias ⟨_, AddCommGroup.ModEq.toIcoMod_eq_toIcoMod⟩ := toIcoMod_inj
 
@@ -737,7 +836,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
     obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     simpa [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
   rcases le_or_gt x₃' (x₁ + p) with h₃₁ | h₁₃
-  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
+  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
@@ -766,9 +865,8 @@ private theorem toIxxMod_total' (a b c : α) :
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
   rw [toIxxMod_iff, toIxxMod_iff]
-  refine this.imp (le_trans <| add_le_add_left ?_ _) (le_trans <| add_le_add_left ?_ _)
-  · apply toIcoMod_le_toIocMod
-  · apply toIcoMod_le_toIocMod
+  grw [← toIcoMod_le_toIocMod, ← toIcoMod_le_toIocMod] at this
+  exact this
 
 private theorem toIxxMod_total (a b c : α) :
     toIcoMod hp a b ≤ toIocMod hp a c ∨ toIcoMod hp c b ≤ toIocMod hp c a :=
@@ -849,6 +947,399 @@ end QuotientAddGroup
 end Circular
 
 end LinearOrderedAddCommGroup
+
+/-!
+### `simp` confluence lemmas for rings
+
+In rings, we simplify `(m : ℤ) • x` to `↑m * x`, so we need to restate some lemmas
+using `↑m * x` instead of `m • x`. In some lemmas, `m` is a variable,
+in other lemmas `m = toIcoDiv _ _ _` or `m = `toIocDiv _ _ _`.
+-/
+
+section Ring
+
+variable {R : Type*} [NonAssocRing R] [LinearOrder R] [IsOrderedAddMonoid R] [Archimedean R] {p : R}
+  (hp : 0 < p)
+
+@[simp]
+theorem self_sub_toIcoDiv_mul (a b : R) : b - toIcoDiv hp a b * p = toIcoMod hp a b := by
+  simpa using self_sub_toIcoDiv_zsmul hp a b
+
+@[simp]
+theorem self_sub_toIocDiv_mul (a b : R) : b - toIocDiv hp a b * p = toIocMod hp a b := by
+  simpa using self_sub_toIocDiv_zsmul hp a b
+
+@[simp]
+theorem toIcoDiv_mul_sub_self (a b : R) : toIcoDiv hp a b * p - b = -toIcoMod hp a b := by
+  simpa using toIcoDiv_zsmul_sub_self hp a b
+
+@[simp]
+theorem toIocDiv_mul_sub_self (a b : R) : toIocDiv hp a b * p - b = -toIocMod hp a b := by
+  simpa using toIocDiv_zsmul_sub_self hp a b
+
+theorem toIcoMod_sub_self_eq_mul (a b : R) : toIcoMod hp a b - b = -toIcoDiv hp a b * p := by
+  simp
+
+theorem toIocMod_sub_self_eq_mul (a b : R) : toIocMod hp a b - b = -toIocDiv hp a b * p := by
+  simp
+
+theorem self_sub_toIcoMod_eq_mul (a b : R) : b - toIcoMod hp a b = toIcoDiv hp a b * p := by
+  simp
+
+theorem self_sub_toIocMod_eq_mul (a b : R) : b - toIocMod hp a b = toIocDiv hp a b * p := by
+  simp
+
+@[simp]
+theorem toIcoMod_add_toIcoDiv_mul (a b : R) : toIcoMod hp a b + toIcoDiv hp a b * p = b := by
+  simpa using toIcoMod_add_toIcoDiv_zsmul hp a b
+
+@[simp]
+theorem toIocMod_add_toIocDiv_mul (a b : R) : toIocMod hp a b + toIocDiv hp a b * p = b := by
+  simpa using toIocMod_add_toIocDiv_zsmul hp a b
+
+@[simp]
+theorem toIcoDiv_mul_sub_toIcoMod (a b : R) : toIcoDiv hp a b * p + toIcoMod hp a b = b := by
+  rw [add_comm, toIcoMod_add_toIcoDiv_mul]
+
+@[simp]
+theorem toIocDiv_mul_sub_toIocMod (a b : R) : toIocDiv hp a b * p + toIocMod hp a b = b := by
+  rw [add_comm, toIocMod_add_toIocDiv_mul]
+
+@[simp]
+theorem toIcoDiv_add_intCast_mul (a b : R) (m : ℤ) :
+    toIcoDiv hp a (b + m * p) = toIcoDiv hp a b + m := by
+  simpa using toIcoDiv_add_zsmul hp a b m
+
+@[simp]
+theorem toIcoDiv_add_natCast_mul (a b : R) (m : ℕ) :
+    toIcoDiv hp a (b + m * p) = toIcoDiv hp a b + m :=
+  mod_cast toIcoDiv_add_intCast_mul hp a b m
+
+@[simp]
+theorem toIcoDiv_add_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoDiv hp a (b + ofNat(m) * p) = toIcoDiv hp a b + ofNat(m) :=
+  toIcoDiv_add_natCast_mul hp a b m
+
+@[simp]
+theorem toIcoDiv_add_intCast_mul' (a b : R) (m : ℤ) :
+    toIcoDiv hp (a + m * p) b = toIcoDiv hp a b - m := by
+  simpa using toIcoDiv_add_zsmul' hp a b m
+
+@[simp]
+theorem toIcoDiv_add_natCast_mul' (a b : R) (m : ℕ) :
+    toIcoDiv hp (a + m * p) b = toIcoDiv hp a b - m :=
+  mod_cast toIcoDiv_add_intCast_mul' hp a b m
+
+@[simp]
+theorem toIcoDiv_add_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoDiv hp (a + ofNat(m) * p) b = toIcoDiv hp a b - ofNat(m) :=
+  toIcoDiv_add_natCast_mul' hp a b m
+
+@[simp]
+theorem toIocDiv_add_intCast_mul (a b : R) (m : ℤ) :
+    toIocDiv hp a (b + m * p) = toIocDiv hp a b + m := by
+  simpa using toIocDiv_add_zsmul hp a b m
+
+@[simp]
+theorem toIocDiv_add_natCast_mul (a b : R) (m : ℕ) :
+    toIocDiv hp a (b + m * p) = toIocDiv hp a b + m :=
+  mod_cast toIocDiv_add_intCast_mul hp a b m
+
+@[simp]
+theorem toIocDiv_add_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocDiv hp a (b + ofNat(m) * p) = toIocDiv hp a b + ofNat(m) :=
+  toIocDiv_add_natCast_mul hp a b m
+
+@[simp]
+theorem toIocDiv_add_intCast_mul' (a b : R) (m : ℤ) :
+    toIocDiv hp (a + m * p) b = toIocDiv hp a b - m := by
+  simpa using toIocDiv_add_zsmul' hp a b m
+
+@[simp]
+theorem toIocDiv_add_natCast_mul' (a b : R) (m : ℕ) :
+    toIocDiv hp (a + m * p) b = toIocDiv hp a b - m :=
+  mod_cast toIocDiv_add_intCast_mul' hp a b m
+
+@[simp]
+theorem toIocDiv_add_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocDiv hp (a + ofNat(m) * p) b = toIocDiv hp a b - ofNat(m) :=
+  toIocDiv_add_natCast_mul' hp a b m
+
+@[simp]
+theorem toIcoDiv_intCast_mul_add (a b : R) (m : ℤ) :
+    toIcoDiv hp a (m * p + b) = m + toIcoDiv hp a b := by
+  simpa using toIcoDiv_zsmul_add hp a b m
+
+@[simp]
+theorem toIcoDiv_natCast_mul_add (a b : R) (m : ℕ) :
+    toIcoDiv hp a (m * p + b) = m + toIcoDiv hp a b :=
+  mod_cast toIcoDiv_intCast_mul_add hp a b m
+
+@[simp]
+theorem toIcoDiv_ofNat_mul_add (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoDiv hp a (ofNat(m) * p + b) = ofNat(m) + toIcoDiv hp a b :=
+  toIcoDiv_natCast_mul_add hp a b m
+
+/-! Note we omit `toIcoDiv_intCast_mul_add'` as `-m + toIcoDiv hp a b` is not very convenient. -/
+
+@[simp]
+theorem toIocDiv_intCast_mul_add (a b : R) (m : ℤ) :
+    toIocDiv hp a (m * p + b) = m + toIocDiv hp a b := by
+  simpa using toIocDiv_zsmul_add hp a b m
+
+@[simp]
+theorem toIocDiv_natCast_mul_add (a b : R) (m : ℕ) :
+    toIocDiv hp a (m * p + b) = m + toIocDiv hp a b :=
+  mod_cast toIocDiv_intCast_mul_add hp a b m
+
+@[simp]
+theorem toIocDiv_ofNat_mul_add (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocDiv hp a (ofNat(m) * p + b) = ofNat(m) + toIocDiv hp a b :=
+  toIocDiv_natCast_mul_add hp a b m
+
+/-! Note we omit `toIocDiv_intCast_mul_add'` as `-m + toIocDiv hp a b` is not very convenient. -/
+
+@[simp]
+theorem toIcoDiv_sub_intCast_mul (a b : R) (m : ℤ) :
+    toIcoDiv hp a (b - m * p) = toIcoDiv hp a b - m := by
+  simpa using toIcoDiv_sub_zsmul hp a b m
+
+@[simp]
+theorem toIcoDiv_sub_natCast_mul (a b : R) (m : ℕ) :
+    toIcoDiv hp a (b - m * p) = toIcoDiv hp a b - m :=
+  mod_cast toIcoDiv_sub_intCast_mul hp a b m
+
+@[simp]
+theorem toIcoDiv_sub_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoDiv hp a (b - ofNat(m) * p) = toIcoDiv hp a b - ofNat(m) :=
+  toIcoDiv_sub_natCast_mul hp a b m
+
+@[simp]
+theorem toIcoDiv_sub_intCast_mul' (a b : R) (m : ℤ) :
+    toIcoDiv hp (a - m * p) b = toIcoDiv hp a b + m := by
+  simpa using toIcoDiv_sub_zsmul' hp a b m
+
+@[simp]
+theorem toIcoDiv_sub_natCast_mul' (a b : R) (m : ℕ) :
+    toIcoDiv hp (a - m * p) b = toIcoDiv hp a b + m :=
+  mod_cast toIcoDiv_sub_intCast_mul' hp a b m
+
+@[simp]
+theorem toIcoDiv_sub_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoDiv hp (a - ofNat(m) * p) b = toIcoDiv hp a b + ofNat(m) :=
+  toIcoDiv_sub_natCast_mul' hp a b m
+
+@[simp]
+theorem toIocDiv_sub_intCast_mul (a b : R) (m : ℤ) :
+    toIocDiv hp a (b - m * p) = toIocDiv hp a b - m := by
+  simpa using toIocDiv_sub_zsmul hp a b m
+
+@[simp]
+theorem toIocDiv_sub_natCast_mul (a b : R) (m : ℕ) :
+    toIocDiv hp a (b - m * p) = toIocDiv hp a b - m :=
+  mod_cast toIocDiv_sub_intCast_mul hp a b m
+
+@[simp]
+theorem toIocDiv_sub_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocDiv hp a (b - ofNat(m) * p) = toIocDiv hp a b - ofNat(m) :=
+  toIocDiv_sub_natCast_mul hp a b m
+
+@[simp]
+theorem toIocDiv_sub_intCast_mul' (a b : R) (m : ℤ) :
+    toIocDiv hp (a - m * p) b = toIocDiv hp a b + m := by
+  simpa using toIocDiv_sub_zsmul' hp a b m
+
+@[simp]
+theorem toIocDiv_sub_natCast_mul' (a b : R) (m : ℕ) :
+    toIocDiv hp (a - m * p) b = toIocDiv hp a b + m :=
+  mod_cast toIocDiv_sub_intCast_mul' hp a b m
+
+@[simp]
+theorem toIocDiv_sub_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocDiv hp (a - ofNat(m) * p) b = toIocDiv hp a b + ofNat(m) :=
+  toIocDiv_sub_natCast_mul' hp a b m
+
+@[simp]
+theorem toIcoMod_add_intCast_mul (a b : R) (m : ℤ) :
+    toIcoMod hp a (b + m * p) = toIcoMod hp a b := by
+  simpa using toIcoMod_add_zsmul hp a b m
+
+@[simp]
+theorem toIcoMod_add_natCast_mul (a b : R) (m : ℕ) :
+    toIcoMod hp a (b + m * p) = toIcoMod hp a b :=
+  mod_cast toIcoMod_add_intCast_mul hp a b m
+
+@[simp]
+theorem toIcoMod_add_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp a (b + ofNat(m) * p) = toIcoMod hp a b :=
+  mod_cast toIcoMod_add_intCast_mul hp a b m
+
+@[simp]
+theorem toIcoMod_add_intCast_mul' (a b : R) (m : ℤ) :
+    toIcoMod hp (a + m * p) b = toIcoMod hp a b + m * p := by
+  simpa using toIcoMod_add_zsmul' hp a b m
+
+@[simp]
+theorem toIcoMod_add_natCast_mul' (a b : R) (m : ℕ) :
+    toIcoMod hp (a + m * p) b = toIcoMod hp a b + m * p :=
+  mod_cast toIcoMod_add_intCast_mul' hp a b m
+
+@[simp]
+theorem toIcoMod_add_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp (a + ofNat(m) * p) b = toIcoMod hp a b + ofNat(m) * p :=
+  toIcoMod_add_natCast_mul' hp a b m
+
+@[simp]
+theorem toIocMod_add_intCast_mul (a b : R) (m : ℤ) :
+    toIocMod hp a (b + m * p) = toIocMod hp a b := by
+  simpa using toIocMod_add_zsmul hp a b m
+
+@[simp]
+theorem toIocMod_add_natCast_mul (a b : R) (m : ℕ) :
+    toIocMod hp a (b + m * p) = toIocMod hp a b :=
+  mod_cast toIocMod_add_intCast_mul hp a b m
+
+@[simp]
+theorem toIocMod_add_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp a (b + ofNat(m) * p) = toIocMod hp a b :=
+  toIocMod_add_natCast_mul hp a b m
+
+@[simp]
+theorem toIocMod_add_intCast_mul' (a b : R) (m : ℤ) :
+    toIocMod hp (a + m * p) b = toIocMod hp a b + m * p := by
+  simpa using toIocMod_add_zsmul' hp a b m
+
+@[simp]
+theorem toIocMod_add_natCast_mul' (a b : R) (m : ℕ) :
+    toIocMod hp (a + m * p) b = toIocMod hp a b + m * p :=
+  mod_cast toIocMod_add_intCast_mul' hp a b m
+
+@[simp]
+theorem toIocMod_add_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp (a + ofNat(m) * p) b = toIocMod hp a b + ofNat(m) * p :=
+  toIocMod_add_natCast_mul' hp a b m
+
+@[simp]
+theorem toIcoMod_intCast_mul_add (a b : R) (m : ℤ) :
+    toIcoMod hp a (m * p + b) = toIcoMod hp a b := by
+  simpa using toIcoMod_zsmul_add hp a b m
+
+@[simp]
+theorem toIcoMod_natCast_mul_add (a b : R) (m : ℕ) :
+    toIcoMod hp a (m * p + b) = toIcoMod hp a b :=
+  mod_cast toIcoMod_intCast_mul_add hp a b m
+
+@[simp]
+theorem toIcoMod_ofNat_mul_add (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp a (ofNat(m) * p + b) = toIcoMod hp a b :=
+  toIcoMod_natCast_mul_add hp a b m
+
+@[simp]
+theorem toIcoMod_intCast_mul_add' (a b : R) (m : ℤ) :
+    toIcoMod hp (m * p + a) b = m * p + toIcoMod hp a b := by
+  rw [add_comm, toIcoMod_add_intCast_mul', add_comm]
+
+@[simp]
+theorem toIcoMod_natCast_mul_add' (a b : R) (m : ℕ) :
+    toIcoMod hp (m * p + a) b = m * p + toIcoMod hp a b :=
+  mod_cast toIcoMod_intCast_mul_add' hp a b m
+
+@[simp]
+theorem toIcoMod_ofNat_mul_add' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp (ofNat(m) * p + a) b = ofNat(m) * p + toIcoMod hp a b :=
+  toIcoMod_natCast_mul_add' hp a b m
+
+@[simp]
+theorem toIocMod_intCast_mul_add (a b : R) (m : ℤ) :
+    toIocMod hp a (m * p + b) = toIocMod hp a b := by
+  rw [add_comm, toIocMod_add_intCast_mul]
+
+@[simp]
+theorem toIocMod_natCast_mul_add (a b : R) (m : ℕ) :
+    toIocMod hp a (m * p + b) = toIocMod hp a b :=
+  mod_cast toIocMod_intCast_mul_add hp a b m
+
+@[simp]
+theorem toIocMod_ofNat_mul_add (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp a (ofNat(m) * p + b) = toIocMod hp a b :=
+  toIocMod_natCast_mul_add hp a b m
+
+@[simp]
+theorem toIocMod_intCast_mul_add' (a b : R) (m : ℤ) :
+    toIocMod hp (m * p + a) b = m * p + toIocMod hp a b := by
+  rw [add_comm, toIocMod_add_intCast_mul', add_comm]
+
+@[simp]
+theorem toIocMod_natCast_mul_add' (a b : R) (m : ℕ) :
+    toIocMod hp (m * p + a) b = m * p + toIocMod hp a b :=
+  mod_cast toIocMod_intCast_mul_add' hp a b m
+
+@[simp]
+theorem toIocMod_ofNat_mul_add' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp (ofNat(m) * p + a) b = ofNat(m) * p + toIocMod hp a b :=
+  toIocMod_natCast_mul_add' hp a b m
+
+@[simp]
+theorem toIcoMod_sub_intCast_mul (a b : R) (m : ℤ) :
+    toIcoMod hp a (b - m * p) = toIcoMod hp a b := by
+  simpa using toIcoMod_sub_zsmul hp a b m
+
+@[simp]
+theorem toIcoMod_sub_natCast_mul (a b : R) (m : ℕ) :
+    toIcoMod hp a (b - m * p) = toIcoMod hp a b :=
+  mod_cast toIcoMod_sub_intCast_mul hp a b m
+
+@[simp]
+theorem toIcoMod_sub_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp a (b - ofNat(m) * p) = toIcoMod hp a b :=
+  toIcoMod_sub_natCast_mul hp a b m
+
+@[simp]
+theorem toIcoMod_sub_intCast_mul' (a b : R) (m : ℤ) :
+    toIcoMod hp (a - m * p) b = toIcoMod hp a b - m * p := by
+  simpa using toIcoMod_sub_zsmul' hp a b m
+
+@[simp]
+theorem toIcoMod_sub_natCast_mul' (a b : R) (m : ℕ) :
+    toIcoMod hp (a - m * p) b = toIcoMod hp a b - m * p :=
+  mod_cast toIcoMod_sub_intCast_mul' hp a b m
+
+@[simp]
+theorem toIcoMod_sub_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIcoMod hp (a - ofNat(m) * p) b = toIcoMod hp a b - ofNat(m) * p :=
+  toIcoMod_sub_natCast_mul' hp a b m
+
+@[simp]
+theorem toIocMod_sub_intCast_mul (a b : R) (m : ℤ) :
+    toIocMod hp a (b - m * p) = toIocMod hp a b := by
+  simpa using toIocMod_sub_zsmul hp a b m
+
+@[simp]
+theorem toIocMod_sub_natCast_mul (a b : R) (m : ℕ) :
+    toIocMod hp a (b - m * p) = toIocMod hp a b :=
+  mod_cast toIocMod_sub_intCast_mul hp a b m
+
+@[simp]
+theorem toIocMod_sub_ofNat_mul (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp a (b - ofNat(m) * p) = toIocMod hp a b :=
+  toIocMod_sub_natCast_mul hp a b m
+
+@[simp]
+theorem toIocMod_sub_intCast_mul' (a b : R) (m : ℤ) :
+    toIocMod hp (a - m * p) b = toIocMod hp a b - m * p := by
+  simpa using toIocMod_sub_zsmul' hp a b m
+
+@[simp]
+theorem toIocMod_sub_natCast_mul' (a b : R) (m : ℕ) :
+    toIocMod hp (a - m * p) b = toIocMod hp a b - m * p :=
+  mod_cast toIocMod_sub_intCast_mul' hp a b m
+
+@[simp]
+theorem toIocMod_sub_ofNat_mul' (a b : R) (m : ℕ) [m.AtLeastTwo] :
+    toIocMod hp (a - ofNat(m) * p) b = toIocMod hp a b - ofNat(m) * p :=
+  toIocMod_sub_natCast_mul' hp a b m
+
+end Ring
 
 /-!
 ### Connections to `Int.floor` and `Int.fract`

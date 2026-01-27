@@ -15,7 +15,7 @@ Let f : ℝ → ℝ be a function that satisfies
 
 for all x and y. Prove that f(x) = 0 for all x ≤ 0.
 
-# Solution
+## Solution
 
 Direct translation of the solution found in https://www.imo-official.org/problems/IMO2011SL.pdf
 -/

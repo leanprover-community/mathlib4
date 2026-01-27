@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Limits.Shapes.End
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.End
 
 /-! # Internal homs for day convolution
 
@@ -21,6 +23,8 @@ the Day convolution monoidal structure.
 * When `LawfulDayConvolutionMonoidalStruct` (https://github.com/leanprover-community/mathlib4/issues/26820) lands, transport the
   constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -42,13 +46,13 @@ this definition. -/
 def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
     (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
   obj G :=
-    { obj c := Functor.whiskeringLeft₂ _|>.obj F.op|>.obj
-        (tensorRight c ⋙ G)|>.obj MonoidalClosed.internalHom
-      map {c c'} f := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
-        (Functor.whiskerRight (curriedTensor C|>.flip.map f) G)|>.app
+    { obj c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.obj
+        (tensorRight c ⋙ G) |>.obj MonoidalClosed.internalHom
+      map {c c'} f := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
+        (Functor.whiskerRight (curriedTensor C |>.flip.map f) G) |>.app
           MonoidalClosed.internalHom }
   map {G G'} η :=
-    { app c := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
+    { app c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
         (Functor.whiskerLeft _ η) |>.app MonoidalClosed.internalHom
       naturality {c c'} f := by
         ext j k
@@ -73,7 +77,7 @@ structure DayConvolutionInternalHom (F : C ⥤ V) (G : C ⥤ V) (H : C ⥤ V) wh
   an end of `internalHomDiagramFunctor F G|>.obj c`. -/
   isLimitWedge (c : C) :
     IsLimit <| Wedge.mk
-      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj G|>.obj c)
+      (F := dayConvolutionInternalHomDiagramFunctor F |>.obj G |>.obj c)
       (H.obj c) (π c) (hπ c)
   /-- The functoriality of `H.obj G` identifies (through
   `Wedge.IsLimit.hom_ext`) with the functoriality on ends induced by
@@ -99,11 +103,11 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
   app c := Wedge.IsLimit.lift (ℌ'.isLimitWedge c)
     (fun j ↦ (ℌ.π c j) ≫
       (dayConvolutionInternalHomDiagramFunctor
-        F|>.map f|>.app c|>.app (op j)|>.app j))
+        F |>.map f |>.app c |>.app (op j) |>.app j))
     (fun ⦃j j'⦄ φ ↦ by
       have := congrArg (fun t ↦ t.app j') <|
         dayConvolutionInternalHomDiagramFunctor
-          F|>.map f|>.app c|>.naturality φ.op
+          F |>.map f |>.app c |>.naturality φ.op
       dsimp at this ⊢
       rw [Category.assoc, ← (ihom (F.obj j)).map_comp, ← f.naturality,
         Functor.map_comp, reassoc_of% ℌ.hπ]
@@ -114,13 +118,13 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     dsimp
     simp only [Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
       Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c'),
-      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c) ]
+      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c)]
     simp [← Functor.map_comp]
 
 @[reassoc (attr := simp)]
@@ -131,7 +135,7 @@ lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
     ℌ.π c j ≫ (ihom <| F.obj j).map (f.app <| j ⊗ c) := by
   dsimp [map]
   rw [← Wedge.mk_ι
-      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+      (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
       (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
     Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c)]
 
@@ -144,7 +148,7 @@ as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "evaluation" natural morphism
 `F ⊛ [F, _] ⟶ 𝟭`. -/
 def ev_app : F ⊛ H ⟶ G :=
-  DayConvolution.corepresentableBy F H|>.homEquiv.symm <|
+  DayConvolution.corepresentableBy F H |>.homEquiv.symm <|
     { app x := MonoidalClosed.uncurry <| ℌ.π x.2 x.1
       naturality {x y} f := by
         have := congrArg (fun t ↦ F.obj x.1 ◁ t) <| ℌ.hπ x.2 f.1
@@ -171,7 +175,7 @@ lemma unit_app_ev_app_app (x y : C) :
 lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G' H')
     [DayConvolution F H'] (η : G ⟶ G') :
     DayConvolution.map (𝟙 F) (ℌ.map η ℌ') ≫ ℌ'.ev_app = ℌ.ev_app ≫ η := by
-  apply DayConvolution.corepresentableBy F H|>.homEquiv.injective
+  apply DayConvolution.corepresentableBy F H |>.homEquiv.injective
   dsimp
   ext ⟨x, y⟩
   simp [MonoidalClosed.uncurry_eq, ← whiskerLeft_comp_assoc]
@@ -208,10 +212,10 @@ def coev_app : G ⟶ H where
       dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj, Multifork.ofι_pt,
       Wedge.mk_ι, Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H.obj c') (ℌ.π c') (ℌ.hπ c'),
       Wedge.IsLimit.lift_ι_assoc, Wedge.IsLimit.lift_ι]
     have := DayConvolution.unit_naturality F G (𝟙 j) f
@@ -227,7 +231,7 @@ lemma coev_app_π (c j : C) :
     MonoidalClosed.curry ((DayConvolution.unit F G).app (j, c)) := by
   dsimp [coev_app]
   rw [← Wedge.mk_ι
-      (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+      (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Wedge.IsLimit.lift_ι]
 
@@ -252,7 +256,7 @@ end coev
 theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H) [DayConvolution F H] :
     DayConvolution.map (𝟙 F) ℌ.coev_app ≫ ℌ.ev_app = 𝟙 (F ⊛ G) := by
-  apply DayConvolution.corepresentableBy F G|>.homEquiv.injective
+  apply DayConvolution.corepresentableBy F G |>.homEquiv.injective
   dsimp
   ext ⟨x, y⟩
   apply MonoidalClosed.curry_injective

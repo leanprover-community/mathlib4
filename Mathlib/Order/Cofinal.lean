@@ -3,9 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.GaloisConnection.Basic
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.WellFounded
 
 /-!
 # Cofinal sets
@@ -20,6 +22,8 @@ For the cofinality of a set as a cardinal, see `Mathlib/SetTheory/Cardinal/Cofin
 - Define `Order.cof` in terms of `Cofinal`.
 - Deprecate `Order.Cofinal` in favor of this predicate.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

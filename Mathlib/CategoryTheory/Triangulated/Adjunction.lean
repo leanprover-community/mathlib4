@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Sophie Morel
 -/
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Adjunction.Additive
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Adjunction.Additive
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 /-!
 # The adjoint functor is triangulated
@@ -31,13 +33,15 @@ if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
 
 open Category Limits Preadditive Pretriangulated Adjunction
 
-variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
+variable {C D : Type*} [Category* C] [Category* D] [HasZeroObject C] [HasZeroObject D]
   [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C] [Pretriangulated D]
@@ -78,7 +82,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
-      have eq := DFunLike.congr_arg (adj.homEquiv _ _ ) hα
+      have eq := DFunLike.congr_arg (adj.homEquiv _ _) hα
       simp only [homEquiv_counit, homEquiv_unit, comp_id,
         Functor.map_comp, unit_naturality_assoc, right_triangle_components] at eq
       have eq' := comp_distTriang_mor_zero₁₂ _ mem
@@ -161,7 +165,7 @@ lemma mk'' [G.IsTriangulated] : adj.IsTriangulated where
 -/
 instance id : (Adjunction.id (C := C)).IsTriangulated where
 
-variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
+variable {E : Type*} [Category* E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
   [Preadditive E] [HasShift E ℤ] [∀ (n : ℤ), (shiftFunctor E n).Additive] [Pretriangulated E]
   [F'.CommShift ℤ] [G'.CommShift ℤ] [adj'.CommShift ℤ]
 
@@ -212,7 +216,7 @@ instance refl : (Equivalence.refl (C := C)).IsTriangulated := by
 -/
 instance symm [E.IsTriangulated] : E.symm.IsTriangulated where
 
-variable {D' : Type*} [Category D'] [HasZeroObject D'] [Preadditive D'] [HasShift D' ℤ]
+variable {D' : Type*} [Category* D'] [HasZeroObject D'] [Preadditive D'] [HasShift D' ℤ]
   [∀ (n : ℤ), (shiftFunctor D' n).Additive] [Pretriangulated D'] {E' : D ≌ D'}
   [E'.functor.CommShift ℤ] [E'.inverse.CommShift ℤ] [E'.CommShift ℤ]
 

@@ -3,11 +3,12 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.GetD
 
 /-!
 
@@ -33,6 +34,8 @@ bounds of a list. For concretely defined lists that are made up of elements of d
 this holds. More work will be needed to support lists over non-dec-eq types like `ℝ`, where the
 elements are beyond the dec-eq terms of casted values from `ℕ, ℤ, ℚ`.
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -94,11 +97,11 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
-    cutsat
+    lia
   | inr h =>
     rcases Nat.exists_eq_add_of_le h with ⟨k, rfl⟩
     rw [getD_append_right _ _ _ _ h, Nat.add_sub_cancel_left, getD_eq_default _ _ h, zero_add]
-    exact Eq.symm (Finsupp.embDomain_apply _ _ _)
+    exact Eq.symm (Finsupp.embDomain_apply_self _ _ _)
 
 theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
@@ -126,6 +129,6 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]
 
 end List

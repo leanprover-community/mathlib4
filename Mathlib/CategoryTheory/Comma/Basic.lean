@@ -3,10 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Products.Unitor
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
 # Comma categories
@@ -43,6 +45,8 @@ respectively.
 
 comma, slice, coslice, over, under, arrow
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -176,12 +180,12 @@ instance [IsIso e] : IsIso e.left :=
 instance [IsIso e] : IsIso e.right :=
   (Comma.snd L R).map_isIso e
 
-@[simp]
+@[simp, push ←]
 lemma inv_left [IsIso e] : (inv e).left = inv e.left := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← Comma.comp_left, IsIso.hom_inv_id, id_left]
 
-@[simp]
+@[simp, push ←]
 lemma inv_right [IsIso e] : (inv e).right = inv e.right := by
   apply IsIso.eq_inv_of_hom_inv_id
   rw [← Comma.comp_right, IsIso.hom_inv_id, id_right]

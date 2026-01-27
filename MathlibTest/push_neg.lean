@@ -165,9 +165,15 @@ def inductive_proof : True := by
   trivial
 
 section use_distrib
+
+example (h : ¬ p ∨ ¬ q) : ¬ (p ∧ q) := by
+  push_neg +distrib
+  guard_target = ¬p ∨ ¬q
+  exact h
+
 set_option push_neg.use_distrib true
 
-example (h : ¬ p ∨ ¬ q): ¬ (p ∧ q) := by
+example (h : ¬ p ∨ ¬ q) : ¬ (p ∧ q) := by
   push_neg
   guard_target = ¬p ∨ ¬q
   exact h
@@ -224,3 +230,8 @@ example {p q : Nat} : ¬ g.Adj p q := by
   exact test_sorry
 
 end no_proj
+
+-- test that binder names are preserved by `push_neg`
+/-- info: ∀ (a b : ℕ), ∃ c d, a + b ≠ c + d -/
+#guard_msgs in
+#push_neg ¬ ∃ a b : Nat, ∀ c d : Nat, a + b = c + d

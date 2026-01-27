@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.Truncated
-import Mathlib.RingTheory.WittVector.Identities
-import Mathlib.NumberTheory.Padics.RingHoms
+module
+
+public import Mathlib.RingTheory.WittVector.Truncated
+public import Mathlib.RingTheory.WittVector.Identities
+public import Mathlib.NumberTheory.Padics.RingHoms
 
 /-!
 
@@ -27,6 +29,8 @@ of the inverse limit of `ZMod (p^n)`.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -43,7 +47,7 @@ theorem eq_of_le_of_cast_pow_eq_zero [CharP R p] (i : ℕ) (hin : i ≤ n)
   contrapose! hpi
   replace hin := lt_of_le_of_ne hin hpi; clear hpi
   have : (p : TruncatedWittVector p n R) ^ i = WittVector.truncate n ((p : 𝕎 R) ^ i) := by
-    rw [RingHom.map_pow, map_natCast]
+    rw [map_pow, map_natCast]
   rw [this, ne_eq, TruncatedWittVector.ext_iff, not_forall]; clear this
   use ⟨i, hin⟩
   rw [WittVector.coeff_truncate, coeff_zero, Fin.val_mk, WittVector.coeff_p_pow]
@@ -197,7 +201,7 @@ def equiv : 𝕎 (ZMod p) ≃+* ℤ_[p] where
   invFun := fromPadicInt p
   left_inv := fromPadicInt_comp_toPadicInt_ext _
   right_inv := toPadicInt_comp_fromPadicInt_ext _
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 end WittVector

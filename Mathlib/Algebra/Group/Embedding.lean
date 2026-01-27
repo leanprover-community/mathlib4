@@ -3,12 +3,16 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -19,8 +23,7 @@ section LeftOrRightCancelSemigroup
 /-- If left-multiplication by any element is cancellative, left-multiplication by `g` is an
 embedding. -/
 @[to_additive (attr := simps (attr := grind =))
-      /-- If left-addition by any element is cancellative, left-addition by `g` is an
-        embedding. -/]
+/-- If left-addition by any element is cancellative, left-addition by `g` is an embedding. -/]
 def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
   toFun h := g * h
   inj' := mul_right_injective g
@@ -28,8 +31,7 @@ def mulLeftEmbedding [Mul G] [IsLeftCancelMul G] (g : G) : G ↪ G where
 /-- If right-multiplication by any element is cancellative, right-multiplication by `g` is an
 embedding. -/
 @[to_additive (attr := simps (attr := grind =))
-      /-- If right-addition by any element is cancellative, right-addition by `g` is an
-        embedding. -/]
+/-- If right-addition by any element is cancellative, right-addition by `g` is an embedding. -/]
 def mulRightEmbedding [Mul G] [IsRightCancelMul G] (g : G) : G ↪ G where
   toFun h := h * g
   inj' := mul_left_injective g

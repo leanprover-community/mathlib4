@@ -3,10 +3,12 @@ Copyright (c) 2019 Abhimanyu Pallavi Sudhir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abhimanyu Pallavi Sudhir, Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Order.Filter.Ring
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Order.Filter.Ring
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts
@@ -19,6 +21,8 @@ ultrafilter. Definitions and properties that work for any filter should go to `O
 
 ultrafilter, ultraproduct
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -90,10 +94,10 @@ noncomputable instance instLinearOrder [LinearOrder β] : LinearOrder β* :=
 
 instance instIsStrictOrderedRing [Semiring β] [PartialOrder β] [IsStrictOrderedRing β] :
     IsStrictOrderedRing β* where
-  mul_lt_mul_of_pos_left x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
-    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_left
-  mul_lt_mul_of_pos_right x y z := inductionOn₃ x y z fun _f _g _h hfg hh ↦
-    coe_lt.2 <| (coe_lt.1 hh).mp <| (coe_lt.1 hfg).mono fun _a ↦ mul_lt_mul_of_pos_right
+  mul_lt_mul_of_pos_left x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
+    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_left
+  mul_lt_mul_of_pos_right x := inductionOn x fun _f hf y z ↦ inductionOn₂ y z fun _g _h hgh ↦
+    coe_lt.2 <| (coe_lt.1 hf).mp <| (coe_lt.1 hgh).mono fun _a ↦ mul_lt_mul_of_pos_right
 
 theorem max_def [LinearOrder β] (x y : β*) : max x y = map₂ max x y :=
   inductionOn₂ x y fun a b => by

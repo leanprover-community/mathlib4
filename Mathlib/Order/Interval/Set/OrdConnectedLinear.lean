@@ -3,10 +3,12 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta, Oliver Nash
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Int.ConditionallyCompleteOrder
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Int.ConditionallyCompleteOrder
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.SuccPred
 
 /-!
 # Order-connected subsets of linear orders
@@ -25,6 +27,8 @@ some convenience lemmas for characterising closed intervals in certain concrete 
 * `Set.Nonempty.eq_Icc_iff_nat`: characterisation of closed intervals for `ℕ`.
 * `Set.Nonempty.eq_Icc_iff_int`: characterisation of closed intervals for `ℤ`.
 -/
+
+public section
 
 variable {α : Type*} {I : Set α}
 

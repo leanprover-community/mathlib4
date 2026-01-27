@@ -3,7 +3,9 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Mathlib.Tactic.CC.Addition
+module
+
+public import Mathlib.Tactic.CC.Addition
 
 /-!
 # Congruence closure
@@ -49,6 +51,8 @@ derives `a = b` from `Nat.succ a = Nat.succ b`, and `Nat.succ a != Nat.zero` for
   (de Moura, Selsam IJCAR 2016).
 -/
 
+public meta section
+
 universe u
 
 open Lean Meta Elab Tactic Std
@@ -59,7 +63,7 @@ namespace CCState
 
 open CCM
 
-/-- Make an new `CCState` from the given `config`. -/
+/-- Make a new `CCState` from the given `config`. -/
 def mkCore (config : CCConfig) : CCState :=
   let s : CCState := { config with }
   s.mkEntryCore (.const ``True []) true false |>.mkEntryCore (.const ``False []) true false

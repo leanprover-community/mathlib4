@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jujian Zhang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.CategoryTheory.Preadditive.LeftExact
-import Mathlib.CategoryTheory.Abelian.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.CategoryTheory.Preadditive.LeftExact
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Exact functors
@@ -51,6 +53,8 @@ If we further assume that `C` and `D` are abelian categories, then we have:
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open Limits ZeroObject ShortComplex
@@ -59,7 +63,7 @@ namespace Functor
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
@@ -86,7 +90,7 @@ end
 
 section
 
-variable {C D : Type*} [Category C] [Category D] [Abelian C] [Abelian D]
+variable {C D : Type*} [Category* C] [Category* D] [Abelian C] [Abelian D]
 variable (F : C ⥤ D) [F.Additive]
 
 /--

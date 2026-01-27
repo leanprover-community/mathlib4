@@ -3,9 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Sets.Closeds
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Algebra.HierarchyDesign
+module
+
+public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Sober spaces
@@ -23,6 +24,8 @@ stated via `[QuasiSober α] [T0Space α]`.
 * `genericPoints` : The set of generic points of irreducible components.
 
 -/
+
+@[expose] public section
 
 
 open Set

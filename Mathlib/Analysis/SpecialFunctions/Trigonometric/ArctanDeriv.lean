@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
 /-!
 # Derivatives of the `tan` and `arctan` functions.
 
 Continuity and derivatives of the tangent and arctangent functions.
 -/
+
+public section
 
 
 noncomputable section

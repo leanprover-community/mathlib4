@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder
@@ -23,6 +25,8 @@ we instead show that the homsets are subsingleton.
 
 small complete, preorder, Freyd
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

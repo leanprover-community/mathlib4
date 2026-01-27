@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets
@@ -24,6 +26,8 @@ TODO: simplify with a tactic and `Data.Multiset.Lattice`
 
 multiset, gcd
 -/
+
+@[expose] public section
 
 namespace Multiset
 
@@ -205,13 +209,12 @@ theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α)
 theorem extract_gcd (s : Multiset α) (hs : s ≠ 0) :
     ∃ t : Multiset α, s = t.map (s.gcd * ·) ∧ t.gcd = 1 := by
   classical
-    by_cases h : ∀ x ∈ s, x = (0 : α)
+    by_cases! h : ∀ x ∈ s, x = (0 : α)
     · use replicate (card s) 1
       rw [map_replicate, eq_replicate, mul_one, s.gcd_eq_zero_iff.2 h, ← nsmul_singleton,
     ← gcd_dedup, dedup_nsmul (card_pos.2 hs).ne', dedup_singleton, gcd_singleton]
       exact ⟨⟨rfl, h⟩, normalize_one⟩
     · choose f hf using @gcd_dvd _ _ _ s
-      push_neg at h
       refine ⟨s.pmap @f fun _ ↦ id, ?_, extract_gcd' s _ h ?_⟩ <;>
       · rw [map_pmap]
         conv_lhs => rw [← s.map_id, ← s.pmap_eq_map _ _ fun _ ↦ id]

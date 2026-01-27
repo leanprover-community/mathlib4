@@ -3,8 +3,10 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Analysis.Asymptotics.LinearGrowth
-import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
+module
+
+public import Mathlib.Analysis.Asymptotics.LinearGrowth
+public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
 /-!
 # Exponential growth
@@ -22,6 +24,8 @@ as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 asymptotics, exponential
 -/
+
+@[expose] public section
 
 namespace ExpGrowth
 

@@ -3,13 +3,17 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # The convolution monoid.
 
 When `M : Comon C` and `N : Mon C`, the morphisms `M.X ⟶ N.X` form a monoid (in Type).
 -/
+
+@[expose] public section
 
 universe v₁ u₁
 namespace CategoryTheory
@@ -18,7 +22,7 @@ open MonObj ComonObj
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 
 /--
-The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally has a
+The morphisms in `C` between the underlying objects of a pair of bimonoids in `C` naturally have a
 (set-theoretic) monoid structure. -/
 def Conv (M N : C) : Type v₁ := M ⟶ N
 

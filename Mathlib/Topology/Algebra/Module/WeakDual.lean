@@ -3,9 +3,11 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Module.WeakBilin
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!
 # Weak dual topology
@@ -42,6 +44,8 @@ with the respective topology instances on it.
 weak-star, weak dual, duality
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -149,6 +153,9 @@ instance instModule' [CommSemiring 𝕝] [Module 𝕝 E] : Module 𝕝 (WeakSpac
 instance instIsScalarTower [CommSemiring 𝕝] [Module 𝕝 𝕜] [Module 𝕝 E] [IsScalarTower 𝕝 𝕜 E] :
     IsScalarTower 𝕝 𝕜 (WeakSpace 𝕜 E) :=
   WeakBilin.instIsScalarTower (topDualPairing 𝕜 E).flip
+
+instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (WeakSpace 𝕜 E) :=
+  WeakBilin.instContinuousSMul _
 
 variable [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F]
 

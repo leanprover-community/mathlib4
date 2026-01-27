@@ -3,11 +3,12 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -24,6 +25,8 @@ be an intermediate typeclass for uniform spaces, but the algebraic hierarchy the
 `IsUniformGroup`) is structured differently.
 
 -/
+
+@[expose] public section
 
 
 open NNReal
@@ -117,8 +120,6 @@ class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
 
-@[deprecated (since := "2025-03-10")] alias BoundedSMul := IsBoundedSMul
-
 variable {α β}
 variable [IsBoundedSMul α β]
 
@@ -128,27 +129,29 @@ theorem dist_smul_pair (x : α) (y₁ y₂ : β) : dist (x • y₁) (x • y₂
 theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0 :=
   IsBoundedSMul.dist_pair_smul' x₁ x₂ y
 
+theorem Bornology.IsBounded.uniformContinuousOn_smul {s : Set (α × β)} (hs : IsBounded s) :
+    UniformContinuousOn (· • ·).uncurry s := by
+  rcases hs.subset_ball_lt 0 0 with ⟨C, hC₀, hC⟩
+  rw [Metric.uniformContinuousOn_iff_le]
+  intro ε hε
+  refine ⟨ε / (2 * C), by positivity, fun ⟨a, b⟩ hab ⟨x, y⟩ hxy h ↦ ?_⟩
+  grw [hC, Metric.mem_ball, Prod.dist_eq, max_lt_iff] at hab hxy
+  rw [Prod.dist_eq, max_le_iff] at h
+  dsimp at hab hxy h ⊢
+  grw [dist_triangle _ (a • y), dist_pair_smul, dist_smul_pair, hab.1, hxy.2, h.2, h.1]
+  field_simp
+  norm_num1
+
 -- see Note [lower instance priority]
 /-- The typeclass `IsBoundedSMul` on a metric-space scalar action implies continuity of the
 action. -/
 instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β where
   continuous_smul := by
-    rw [Metric.continuous_iff]
-    rintro ⟨a, b⟩ ε ε0
-    obtain ⟨δ, δ0, hδε⟩ : ∃ δ > 0, δ * (δ + dist b 0) + dist a 0 * δ < ε := by
-      have : Continuous fun δ ↦ δ * (δ + dist b 0) + dist a 0 * δ := by fun_prop
-      refine ((this.tendsto' _ _ ?_).eventually (gt_mem_nhds ε0)).exists_gt
-      simp
-    refine ⟨δ, δ0, fun (a', b') hab' => ?_⟩
-    obtain ⟨ha, hb⟩ := max_lt_iff.1 hab'
-    calc dist (a' • b') (a • b)
-        ≤ dist (a' • b') (a • b') + dist (a • b') (a • b) := dist_triangle ..
-      _ ≤ dist a' a * dist b' 0 + dist a 0 * dist b' b :=
-        add_le_add (dist_pair_smul _ _ _) (dist_smul_pair _ _ _)
-      _ ≤ δ * (δ + dist b 0) + dist a 0 * δ := by
-          have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
-          gcongr
-      _ < ε := hδε
+    rw [continuous_iff_continuousAt]
+    intro x
+    refine Metric.isBounded_ball (x := 0) (r := dist x 0 + 1) |>.uniformContinuousOn_smul
+      |>.continuousOn |>.continuousAt ?_
+    exact Metric.isOpen_ball.mem_nhds (by simp)
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=

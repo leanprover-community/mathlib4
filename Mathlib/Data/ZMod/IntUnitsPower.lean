@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # The power operator on `ℤˣ` by `ZMod 2`, `ℕ`, and `ℤ`
@@ -22,6 +24,8 @@ In future, we could consider a `LawfulPower M R` typeclass; but we can save ours
 by using `Module R (Additive M)` in its place, especially since this already has instances for
 `R = ℕ` and `R = ℤ`.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 
@@ -53,7 +57,7 @@ variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
-In lemma names, this operations is called `uzpow` to match `zpow`.
+In lemma names, this operation is called `uzpow` to match `zpow`.
 
 Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where

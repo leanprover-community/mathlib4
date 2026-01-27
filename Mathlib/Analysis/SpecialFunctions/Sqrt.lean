@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.Deriv.Pow
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Smoothness of `Real.sqrt`
@@ -17,6 +19,8 @@ dot-notation lemmas.
 sqrt, differentiable
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -26,7 +30,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := (√·)
   source := Ioi 0

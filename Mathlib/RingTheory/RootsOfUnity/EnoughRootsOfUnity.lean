@@ -3,7 +3,9 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Commutative monoids with enough roots of unity
@@ -14,6 +16,8 @@ and that the group of `n`th roots of unity in `M` is cyclic. Such monoids are su
 targets for homomorphisms from groups of exponent (dividing) `n`; for example,
 the homomorphisms can then be used to separate elements of the source group.
 -/
+
+@[expose] public section
 
 /-- This is a type class recording that a commutative monoid `M` contains primitive `n`th
 roots of unity and such that the group of `n`th roots of unity is cyclic.
@@ -68,8 +72,8 @@ lemma natCard_rootsOfUnity (M : Type*) [CommMonoid M] (n : ℕ) [NeZero n]
   refine dvd_antisymm ?_ ?_
   · exact Monoid.exponent_dvd_of_forall_pow_eq_one fun g ↦ OneMemClass.coe_eq_one.mp g.prop
   · nth_rewrite 1 [h.eq_orderOf]
-    rw [← (h.isUnit <| NeZero.pos n).unit_spec, orderOf_units]
-    let ζ' : rootsOfUnity n M := ⟨(h.isUnit <| NeZero.pos n).unit, ?_⟩
+    rw [← (h.isUnit NeZero.out).unit_spec, orderOf_units]
+    let ζ' : rootsOfUnity n M := ⟨(h.isUnit NeZero.out).unit, ?_⟩
     · rw [← Subgroup.orderOf_mk]
       exact Monoid.order_dvd_exponent ζ'
     simp only [mem_rootsOfUnity]

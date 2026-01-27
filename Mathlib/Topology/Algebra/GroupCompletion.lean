@@ -3,14 +3,14 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Completion of topological groups:
 
-This files endows the completion of a topological abelian group with a group structure.
+This file endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
 Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
@@ -27,6 +27,8 @@ the main constructions deal with continuous group morphisms.
   from `G` to `H` into a continuous group morphism
   from `Completion G` to `Completion H`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -256,6 +258,7 @@ theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) 
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
 
+@[simp]
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a

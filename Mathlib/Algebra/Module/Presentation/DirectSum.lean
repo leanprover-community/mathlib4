@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Presentation of a direct sum
@@ -16,6 +18,8 @@ In particular, from a presentation of an `A`-module `M`, we get
 a presentation of `ι →₀ M`.
 
 -/
+
+@[expose] public section
 
 universe w' w₀ w₁ w v u
 

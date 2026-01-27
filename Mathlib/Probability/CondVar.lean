@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.Probability.Moments.Variance
 
 /-!
 # Conditional variance
@@ -16,8 +18,10 @@ This file defines the variance of a real-valued random variable conditional to a
 
 Define the Lebesgue conditional variance. See
 [GibbsMeasure](https://github.com/james18lpc/GibbsMeasure) for a definition of the Lebesgue
-conditional expectation).
+conditional expectation.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal

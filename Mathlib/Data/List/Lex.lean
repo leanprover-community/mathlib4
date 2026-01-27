@@ -3,8 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
@@ -17,12 +20,14 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
 * `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -35,7 +40,7 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
@@ -44,13 +49,9 @@ theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r []
   | [] => Or.inr rfl
   | _ :: _ => .inl .nil
 
-@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
-
 @[simp]
 theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | .rel h => h, .rel⟩
-
-@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
 
 namespace Lex
 
@@ -82,12 +83,12 @@ instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
       · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
       · exact Or.inr (Or.inr (rel ab))
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where
     aux
-    | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
-    | _, _, Lex.rel h₁, Lex.cons _ => asymm h₁ h₁
-    | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
+    | _, _, Lex.rel h₁, Lex.rel h₂ => _root_.asymm h₁ h₂
+    | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
+    | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)

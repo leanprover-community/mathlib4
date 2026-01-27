@@ -3,16 +3,18 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Galois objects in Galois categories
 
-We define when a connected object of a Galois category `C` is Galois in a fiber functor independent
+We define when a connected object of a Galois category `C` is Galois in a fiber-functor-independent
 way and show equivalent characterisations.
 
 ## Main definitions
@@ -25,6 +27,8 @@ way and show equivalent characterisations.
                                acts transitively on `F.obj X` for a fiber functor `F`.
 
 -/
+
+@[expose] public section
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -143,7 +147,7 @@ lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : A
     simp
   · intro τ hτ
     apply evaluation_aut_injective_of_isConnected F B (F.map f a)
-    simpa using congr_fun (F.congr_map hτ) a
+    simpa using DFunLike.congr_fun (F.congr_map hτ) a
 
 /-- A morphism from a connected object to a Galois object induces a map on automorphism
 groups. This is a group homomorphism (see `autMapHom`). -/
@@ -160,7 +164,7 @@ lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut
 lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
     (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
     F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
-  simpa [-comp_autMap] using congrFun (F.congr_map (comp_autMap f σ)) a
+  simpa [-comp_autMap] using DFunLike.congr_fun (F.congr_map (comp_autMap f σ)) a
 
 /-- `autMap` is uniquely characterized by making the canonical diagram commute. -/
 lemma autMap_unique {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)

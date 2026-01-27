@@ -3,14 +3,18 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Tactic.Bound.Attribute
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Tactic.Bound.Attribute
 
 /-!
 # Basic lemmas about ordered rings
 -/
+
+@[expose] public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton
@@ -30,20 +34,6 @@ lemma not_isSquare_of_neg [Semiring R] [LinearOrder R]
     [ExistsAddOfLE R] [PosMulMono R] [AddLeftMono R]
     {x : R} (h : x < 0) : ¬ IsSquare x :=
   (h.not_ge ·.nonneg)
-
-namespace MonoidHom
-
-variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
-
-theorem map_neg_one : f (-1) = 1 :=
-  (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
-
-@[simp]
-theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-
-theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
-
-end MonoidHom
 
 section OrderedSemiring
 
@@ -120,7 +110,7 @@ lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
   calc
     (a + b) ^ 2 = a ^ 2 + b ^ 2 + (a * b + b * a) := by
         simp_rw [pow_succ', pow_zero, mul_one, add_mul, mul_add, add_comm (b * a), add_add_add_comm]
-    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_left ?_ _
+    _ ≤ a ^ 2 + b ^ 2 + (a * a + b * b) := add_le_add_right ?_ _
     _ = _ := by simp_rw [pow_succ', pow_zero, mul_one, two_mul]
   cases le_total a b
   · exact mul_add_mul_le_mul_add_mul ‹_› ‹_›
@@ -138,12 +128,13 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       _ = 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * b + b ^ (n + 1) * a)) := by
           rw [mul_assoc, mul_add, add_mul, add_mul, ← pow_succ, ← pow_succ, add_comm _ (b ^ _),
             add_add_add_comm, add_comm (_ * a)]
-      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
-          mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) <| pow_nonneg (zero_le_two (α := R)) _
+      _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) := by
+        gcongr _ * (_ + _ + ?_)
+        · exact pow_nonneg zero_le_two _
+        obtain hab | hba := le_total a b
+        · exact mul_add_mul_le_mul_add_mul (by gcongr; exact ha) hab
+        · exact mul_add_mul_le_mul_add_mul' (by gcongr; exact hb) hba
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
-    · obtain hab | hba := le_total a b
-      · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left₀ ha hab _) hab
-      · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left₀ hb hba _) hba
 
 protected lemma Even.add_pow_le (hn : Even n) :
     (a + b) ^ n ≤ 2 ^ (n - 1) * (a ^ n + b ^ n) := by

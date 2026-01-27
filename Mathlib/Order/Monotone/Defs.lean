@@ -3,11 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Coe
+public import Mathlib.Util.AssertExists
 
 /-!
 # Monotonicity
@@ -41,6 +43,8 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Order.20dia
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instLinearOrder Int.instLinearOrder
 
@@ -314,17 +318,21 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
-theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
+theorem Function.Injective.of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
-  intro x y hf
-  rcases lt_trichotomy x y with (hxy | rfl | hxy)
-  · exact absurd hf <| h _ _ hxy
-  · rfl
-  · exact absurd hf.symm <| h _ _ hxy
+  grind [Injective]
 
+@[deprecated (since := "2025-12-23")]
+alias injective_of_lt_imp_ne := Function.Injective.of_lt_imp_ne
+
+theorem Function.Injective.of_eq_imp_le [PartialOrder α] {f : α → β}
+    (h : ∀ {x y}, f x = f y → x ≤ y) : f.Injective :=
+  fun _ _ hxy ↦ h hxy |>.antisymm <| h hxy.symm
+
+@[deprecated Injective.of_eq_imp_le (since := "2025-12-23")]
 theorem injective_of_le_imp_le [PartialOrder α] [Preorder β] (f : α → β)
     (h : ∀ {x y}, f x ≤ f y → x ≤ y) : Injective f :=
-  fun _ _ hxy ↦ (h hxy.le).antisymm (h hxy.ge)
+  .of_eq_imp_le (h ·.le)
 
 /-! ### Monotonicity under composition -/
 
@@ -392,6 +400,20 @@ protected theorem StrictAnti.comp_strictAntiOn (hg : StrictAnti g) (hf : StrictA
 theorem StrictAnti.comp_strictMonoOn (hg : StrictAnti g) (hf : StrictMonoOn f s) :
     StrictAntiOn (g ∘ f) s :=
   fun _ ha _ hb h ↦ hg (hf ha hb h)
+
+lemma MonotoneOn.comp (hg : MonotoneOn g t) (hf : MonotoneOn f s) (hs : Set.MapsTo f s t) :
+    MonotoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
+
+lemma MonotoneOn.comp_AntitoneOn (hg : MonotoneOn g t) (hf : AntitoneOn f s)
+    (hs : Set.MapsTo f s t) : AntitoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma AntitoneOn.comp (hg : AntitoneOn g t) (hf : AntitoneOn f s) (hs : Set.MapsTo f s t) :
+    MonotoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hy) (hs hx) <| hf hx hy hxy
+
+lemma AntitoneOn.comp_MonotoneOn (hg : AntitoneOn g t) (hf : MonotoneOn f s)
+    (hs : Set.MapsTo f s t) : AntitoneOn (g ∘ f) s := fun _x hx _y hy hxy ↦
+  hg (hs hx) (hs hy) <| hf hx hy hxy
 
 lemma StrictMonoOn.comp (hg : StrictMonoOn g t) (hf : StrictMonoOn f s) (hs : Set.MapsTo f s t) :
     StrictMonoOn (g ∘ f) s := fun _x hx _y hy hxy ↦ hg (hs hx) (hs hy) <| hf hx hy hxy
@@ -466,14 +488,8 @@ theorem Monotone.prodMk {f : γ → α} {g : γ → β} (hf : Monotone f) (hg : 
 theorem Monotone.prodMap (hf : Monotone f) (hg : Monotone g) : Monotone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
 
-@[deprecated (since := "2025-04-18")]
-alias Monotone.prod_map := Monotone.prodMap
-
 theorem Antitone.prodMap (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.map f g) :=
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
-
-@[deprecated (since := "2025-04-18")]
-alias Antitone.prod_map := Antitone.prodMap
 
 lemma monotone_prod_iff {h : α × β → γ} :
     Monotone h ↔ (∀ a, Monotone (fun b => h (a, b))) ∧ (∀ b, Monotone (fun a => h (a, b))) where
@@ -498,16 +514,10 @@ theorem StrictMono.prodMap (hf : StrictMono f) (hg : StrictMono g) : StrictMono 
   simp only [Prod.lt_iff]
   exact Or.imp (And.imp hf.imp hg.monotone.imp) (And.imp hf.monotone.imp hg.imp)
 
-@[deprecated (since := "2025-04-18")]
-alias StrictMono.prod_map := StrictMono.prodMap
-
 theorem StrictAnti.prodMap (hf : StrictAnti f) (hg : StrictAnti g) : StrictAnti (Prod.map f g) :=
   fun a b ↦ by
   simp only [Prod.lt_iff]
   exact Or.imp (And.imp hf.imp hg.antitone.imp) (And.imp hf.antitone.imp hg.imp)
-
-@[deprecated (since := "2025-04-18")]
-alias StrictAnti.prod_map := StrictAnti.prodMap
 
 end PartialOrder
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # An additional lemma about coprime ideals
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Ideal.Operations
 This lemma generalises `exists_sum_eq_one_iff_pairwise_coprime` to the case of non-principal ideals.
 It is on a separate file due to import requirements.
 -/
+
+public section
 
 
 namespace Ideal

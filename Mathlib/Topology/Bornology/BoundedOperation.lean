@@ -3,9 +3,11 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Bounded operations
@@ -22,6 +24,8 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
 
 -/
+
+@[expose] public section
 
 open scoped NNReal
 
@@ -65,7 +69,6 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
     simp
 
 end bounded_sub
-
 
 section bounded_mul
 /-!
@@ -158,6 +161,46 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
 
+open Filter Pointwise Bornology
+
+/-
+TODO:
+* Generalize the following to bornologies and `BoundedFoo` classes.
+* Add `BoundedNeg`, `BoundedInv` and `BoundedDiv` in the process.
+-/
+
+@[simp]
+lemma tendsto_add_const_cobounded (x : R) :
+    Tendsto (· + x) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  ext y
+  simp [sub_eq_iff_eq_add]
+
+@[simp]
+lemma tendsto_const_add_cobounded (x : R) :
+    Tendsto (x + ·) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  ext y
+  simp
+
+@[simp]
+theorem tendsto_sub_const_cobounded (x : R) :
+    Tendsto (· - x) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using tendsto_add_const_cobounded (-x)
+
+@[simp]
+theorem tendsto_const_sub_cobounded (x : R) :
+    Tendsto (x - ·) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
+
 end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
@@ -167,6 +210,7 @@ section NonUnitalSeminormedRing
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : BoundedMul R where
   isBounded_mul {s t} hs ht := by
     obtain ⟨Af, hAf⟩ := (Metric.isBounded_iff_subset_closedBall 0).mp hs
@@ -184,9 +228,9 @@ instance : BoundedMul R where
       · exact mem_closedBall_zero_iff.mp (hAf x_in_s)
       · exact mem_closedBall_zero_iff.mp (hAg y_in_t)
     calc ‖x₁ * y₁ - x₂ * y₂‖
-     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖        := norm_sub_le _ _
-     _ ≤ Af * Ag + Af * Ag            := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
-     _ = 2 * Af * Ag                  := by simp [← two_mul, mul_assoc]
+     _ ≤ ‖x₁ * y₁‖ + ‖x₂ * y₂‖ := norm_sub_le _ _
+     _ ≤ Af * Ag + Af * Ag     := add_le_add (aux hx₁ hy₁) (aux hx₂ hy₂)
+     _ = 2 * Af * Ag           := by simp [← two_mul, mul_assoc]
 
 end NonUnitalSeminormedRing
 

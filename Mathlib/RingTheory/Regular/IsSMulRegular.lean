@@ -3,16 +3,18 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.QuotSMulTop
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 # Lemmas about the `IsSMulRegular` Predicate
 
 For modules over a ring the proposition `IsSMulRegular r M` is equivalent to
-`r` being a *non zero-divisor*, i.e. `r • x = 0` only if `x = 0` for `x ∈ M`.
+`r` being a *non-zero-divisor*, i.e. `r • x = 0` only if `x = 0` for `x ∈ M`.
 This specific result is `isSMulRegular_iff_smul_eq_zero_imp_eq_zero`.
 Lots of results starting from this, especially ones about quotients (which
 don't make sense without some algebraic assumptions), are in this file.
@@ -23,6 +25,8 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 
 module, regular element, commutative algebra
 -/
+
+public section
 
 section Congr
 
@@ -63,11 +67,6 @@ lemma IsSMulRegular.rTensor : IsSMulRegular (M' ⊗[R] M) r :=
   h1.subst (Module.Flat.rTensor_preserves_injective_linearMap _ h)
 
 end TensorProduct
-
-lemma isSMulRegular_algebraMap_iff [CommSemiring R] [Semiring S] [Algebra R S]
-    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M] (r : R) :
-    IsSMulRegular M (algebraMap R S r) ↔ IsSMulRegular M r :=
-  (Equiv.refl M).isSMulRegular_congr (algebraMap_smul S r)
 
 section Ring
 

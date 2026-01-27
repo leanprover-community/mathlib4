@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-!
 # Integration by parts and by substitution
@@ -22,6 +24,8 @@ can be found in `Mathlib/MeasureTheory/Function/JacobianOneDim.lean`
 
 integration by parts, change of variables in integrals
 -/
+
+public section
 
 open MeasureTheory Set
 

@@ -3,13 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.RingTheory.Congruence.Opposite
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -38,6 +40,8 @@ This file defines operations on two-sided ideals of a ring `R`.
   `fromIdeal : Ideal R → TwoSidedIdeal R` is defined as the smallest two-sided ideal containing an
   ideal and `asIdeal : TwoSidedIdeal R → Ideal R` the inclusion map.
 -/
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Results on bases of tensor products
@@ -21,6 +23,8 @@ and deduce that `Module.Free` is stable under base change.
 - `Algebra.TensorProduct.instFree`: if `M` is free, then so is `A ⊗[R] M`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -44,7 +48,7 @@ variable (A) in
 /-- Given an `R`-algebra `A` and an `R`-basis of `M`, this is an `R`-linear isomorphism
 `A ⊗[R] M ≃ (ι →₀ A)` (which is in fact `A`-linear). -/
 noncomputable def basisAux : A ⊗[R] M ≃ₗ[R] ι →₀ A :=
-  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι+1}).symm b.repr ≪≫ₗ
+  _root_.TensorProduct.congr (Finsupp.LinearEquiv.finsuppUnique R A PUnit.{uι + 1}).symm b.repr ≪≫ₗ
     (finsuppTensorFinsupp R R A R PUnit ι).trans
       (Finsupp.lcongr (Equiv.uniqueProd ι PUnit) (_root_.TensorProduct.rid R A))
 
@@ -59,7 +63,7 @@ theorem basisAux_map_smul (a : A) (x : A ⊗[R] M) : basisAux A b (a • x) = a 
     fun x y hx hy => by simp [hx, hy]
 
 variable (A) in
-/-- Given a `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by a `R`-basis of `M`. -/
+/-- Given an `R`-algebra `A`, this is the `A`-basis of `A ⊗[R] M` induced by an `R`-basis of `M`. -/
 noncomputable def basis : Basis ι A (A ⊗[R] M) where
   repr := { basisAux A b with map_smul' := basisAux_map_smul b }
 

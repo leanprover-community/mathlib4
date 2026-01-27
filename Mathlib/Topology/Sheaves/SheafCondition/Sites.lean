@@ -3,9 +3,11 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.CategoryTheory.Sites.Spaces
-import Mathlib.Topology.Sheaves.Sheaf
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Spaces
+public import Mathlib.Topology.Sheaves.Sheaf
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ functor from a topological basis to `TopologicalSpace.Opens` is cover dense, tha
 induce cover-preserving functors, and that open embeddings induce continuous functors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -119,7 +123,7 @@ namespace TopCat.Opens
 
 variable {X : TopCat} {ι : Type*}
 
-theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
+theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor
@@ -129,7 +133,7 @@ theorem coverDense_iff_isBasis [Category ι] (B : ι ⥤ Opens X) :
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
 
 theorem coverDense_inducedFunctor {B : ι → Opens X} (h : Opens.IsBasis (Set.range B)) :
-    (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X)  :=
+    (inducedFunctor B).IsCoverDense (Opens.grothendieckTopology X) :=
   (coverDense_iff_isBasis _).2 h
 
 end TopCat.Opens
@@ -243,3 +247,15 @@ theorem hom_ext (h : Opens.IsBasis (Set.range B))
   exact he i.unop
 
 end TopCat.Sheaf
+
+namespace TopologicalSpace.Opens
+
+instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
+    [Functor.IsContinuous.{w} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
+    [Functor.IsContinuous.{w} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
+    Functor.IsContinuous.{w} (F ⋙ G) (Opens.grothendieckTopology _)
+      (Opens.grothendieckTopology _) :=
+  Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
+
+end TopologicalSpace.Opens

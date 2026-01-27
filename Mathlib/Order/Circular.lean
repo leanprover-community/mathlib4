@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Order
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy
@@ -84,6 +86,8 @@ and the circular order of months. Is `α →c β` a good notation?
 
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -373,9 +377,6 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
       | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_ge]
-    have h1 := le_trans a b c
-    have h2 := le_trans b c a
-    have h3 := le_trans c a b
     grind
 
 /-- The circular partial order obtained from "looping around" a partial order.

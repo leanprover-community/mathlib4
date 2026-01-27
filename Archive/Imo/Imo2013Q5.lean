@@ -22,7 +22,7 @@ the conditions
 for all `x, y ∈ ℚ>₀`. Given that `f(a) = a` for some rational `a > 1`, prove that `f(x) = x` for
 all `x ∈ ℚ>₀`.
 
-# Solution
+## Solution
 
 We provide a direct translation of the solution found in
 https://www.imo-official.org/problems/IMO2013SL.pdf
@@ -55,7 +55,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
   have hNp : 0 < N := mod_cast (one_div_pos.mpr hxmy).trans hN
   have :=
     calc
-      1 = (x - y) * (1 / (x - y)) := by field_simp
+      1 = (x - y) * (1 / (x - y)) := by field
       _ < (x - y) * N := by gcongr
       _ ≤ x ^ N - y ^ N := hn N hNp
   linarith [h N hNp]
@@ -178,7 +178,7 @@ theorem imo2013_q5 (f : ℚ → ℝ) (H1 : ∀ x y, 0 < x → 0 < y → f (x * y
       calc
         ↑(pn + 2) * f x = (↑pn + 1 + 1) * f x := by norm_cast
         _ = (↑pn + 1) * f x + f x := by ring
-        _ ≤ f (↑pn.succ * x) + f x := mod_cast add_le_add_right (hpn pn.succ_pos) (f x)
+        _ ≤ f (↑pn.succ * x) + f x := by norm_cast; grw [hpn pn.succ_pos]
         _ ≤ f ((↑pn + 1) * x + x) := by exact_mod_cast H2 _ _ (mul_pos pn.cast_add_one_pos hx) hx
         _ = f ((↑pn + 1 + 1) * x) := by ring_nf
         _ = f (↑(pn + 2) * x) := by norm_cast

@@ -3,8 +3,10 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -42,6 +44,8 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 norm, seminorm
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -250,8 +254,50 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+open Classical in
+@[to_additive]
+noncomputable instance : SupSet (GroupSeminorm E) where
+  sSup s :=
+    if h : BddAbove s then
+      { toFun x := ⨆ p : s, p.1 x
+        map_one' := by simp
+        mul_le' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_mul_le_add p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        inv' x := by simp }
+    else 0
+
+@[to_additive]
+lemma sSup_of_not_bddAbove {s : Set (GroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+@[to_additive]
+lemma coe_sSup_apply {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : GroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
+  rfl
+
+@[to_additive]
+lemma coe_sSup_apply' {s : Set (GroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
+
+@[to_additive]
+lemma coe_iSup_apply {ι : Type*} (f : ι → GroupSeminorm E) (h : BddAbove (range f)) {x : E} :
+    ⇑(⨆ i, f i) x = ⨆ i, (f i : GroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+
 @[to_additive]
 instance : Max (GroupSeminorm E) :=
   ⟨fun p q =>
@@ -484,8 +530,45 @@ theorem zero_apply (x : E) : (0 : NonarchAddGroupSeminorm E) x = 0 :=
 instance : Inhabited (NonarchAddGroupSeminorm E) :=
   ⟨0⟩
 
--- TODO: define `SupSet` too, from the skeleton at
--- https://github.com/leanprover-community/mathlib/pull/11329#issuecomment-1008915345
+open Classical in
+noncomputable instance : SupSet (NonarchAddGroupSeminorm E) where
+  sSup s :=
+    if h : BddAbove s then
+      { toFun x := ⨆ p : s, p.1 x
+        map_zero' := by simp
+        add_le_max' x y := by
+          obtain (rfl | hs) := eq_empty_or_nonempty s
+          · simp
+          · have : Nonempty s := hs.to_subtype
+            refine ciSup_le fun p ↦ (map_add_le_max p.1 x y).trans ?_
+            gcongr
+            all_goals
+              apply le_ciSup (f := (DFunLike.coe · _) ∘ Subtype.val) ?_ p
+              simpa [Set.range_comp] using Monotone.map_bddAbove (fun _ _ h' ↦ by exact h' _) h
+        neg' := by simp }
+    else 0
+
+lemma sSup_of_not_bddAbove {s : Set (NonarchAddGroupSeminorm E)} (hs : ¬BddAbove s) :
+    sSup s = 0 := by
+  simp [SupSet.sSup, hs]
+
+lemma coe_sSup_apply {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = ⨆ p : s, (p : NonarchAddGroupSeminorm E) x := by
+  simp [SupSet.sSup, hs]
+  rfl
+
+lemma coe_sSup_apply' {s : Set (NonarchAddGroupSeminorm E)} (hs : BddAbove s) {x : E} :
+    ⇑(sSup s) x = sSup ((· x) '' s) := by
+  rw [coe_sSup_apply hs, ← sSup_range]
+  congr
+  ext
+  simp
+
+lemma coe_iSup_apply {ι : Type*} (f : ι → NonarchAddGroupSeminorm E) (h : BddAbove (range f))
+    {x : E} : ⇑(⨆ i, f i) x = ⨆ i, (f i : NonarchAddGroupSeminorm E) x := by
+  rw [← sSup_range, coe_sSup_apply h]
+  exact (Set.rangeFactorization_surjective.iSup_congr _ (by simp)) |>.symm
+
 instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
@@ -694,7 +777,9 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
--- TODO: define `SupSet`
+-- Note: To define an instance SupSet (GroupNorm E) requires a canonical "bottom" norm for sSup ∅.
+-- The zero function fails definiteness; the discrete norm needs complex proofs.
+-- See https://github.com/leanprover-community/mathlib/pull/11329 for context.
 @[to_additive]
 instance : Max (GroupNorm E) :=
   ⟨fun p q =>

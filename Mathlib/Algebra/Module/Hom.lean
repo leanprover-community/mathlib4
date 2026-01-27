@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.GroupWithZero.Action.Hom
-import Mathlib.Algebra.Module.End
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.Hom
+public import Mathlib.Algebra.Module.End
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Bundled Hom instances for module and multiplicative actions
@@ -21,6 +23,8 @@ functions.
 We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
 `AddMonoidHom.smul`, respectively.
 -/
+
+@[expose] public section
 
 variable {R S M A B : Type*}
 
@@ -108,7 +112,9 @@ end AddMonoid.End
 
 namespace AddMonoidHom
 
-/-- Scalar multiplication on the left as an additive monoid homomorphism. -/
+/-- Scalar multiplication on the left as an additive monoid homomorphism.
+
+See also the linear map version of this `Module.End.smulLeft`. -/
 @[simps! -fullyApplied]
 protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
   DistribMulAction.toAddMonoidHom _ c

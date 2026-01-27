@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Submonoid
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Construct ordered groups from groups with a specified positive cone.
@@ -17,6 +19,8 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in groups and the corresponding ordered groups.
 -/
+
+@[expose] public section
 
 /-- `AddGroupConeClass S G` says that `S` is a type of cones in `G`. -/
 class AddGroupConeClass (S : Type*) (G : outParam Type*) [AddCommGroup G] [SetLike S G] : Prop
