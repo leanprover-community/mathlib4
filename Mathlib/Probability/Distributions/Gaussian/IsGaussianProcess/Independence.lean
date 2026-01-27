@@ -15,7 +15,7 @@ import Mathlib.Probability.Independence.Process
 /-!
 # Independence of Gaussian processes
 
-This file prove properties about indepence of Gaussian processes. More precisely, we prove
+This file contains properties about indepence of Gaussian processes. More precisely, we prove
 different versions of the following statement: if some stochastic processes are jointly Gaussian,
 then they are independent if their marginals are uncorrelated.
 
@@ -41,7 +41,7 @@ pairs `Sigma`.
 
 ## Tags
 
-Gaussian process
+Gaussian process, independence
 -/
 
 public section
