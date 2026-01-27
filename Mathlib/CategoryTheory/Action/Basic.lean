@@ -68,7 +68,7 @@ variable (G : Type*) [Monoid G]
 
 section
 
-/-- The action defined by sending every group element to the identity. -/
+/-- The action defined by sending every monoid element to the identity. -/
 @[simps]
 def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 
@@ -297,7 +297,7 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
-/-- Actions/representations of the trivial group are just objects in the ambient category. -/
+/-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPunitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
@@ -312,7 +312,7 @@ def actionPunitEquivalence : Action V PUnit ≌ V where
 
 variable (V)
 
-/-- The "restriction" functor along a monoid homomorphism `f : G ⟶ H`,
+/-- The "restriction" functor along a monoid homomorphism `f : G →* H`,
 taking actions of `H` to actions of `G`.
 
 (This makes sense for any homomorphism, but the name is natural when `f` is a monomorphism.)
@@ -362,14 +362,15 @@ def resEquiv {G H : Type*} [Monoid G] [Monoid H] (f : G ≃* H) :
 
 variable {G H : Type*} [Monoid G] [Monoid H] (f : G →* H)
 
-/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is faithful. -/
+/-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
+`f : G →* H` is faithful. -/
 instance : (res V f).Faithful where
   map_injective {X} {Y} g₁ g₂ h := by
     ext
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
-/-- The functor from `Action V H` to `Action V G` induced by a morphism `f : G → H` is full
-if `f` is surjective. -/
+/-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
+`f : G →* H` is full if `f` is surjective. -/
 lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
   map_surjective {X} {Y} g := by
     use ⟨g.hom, fun h ↦ ?_⟩
