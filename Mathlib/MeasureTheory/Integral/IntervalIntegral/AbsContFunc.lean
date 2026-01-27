@@ -28,7 +28,7 @@ absolutely continuous, fundamental theorem of calculus, integration by parts
 
 @[expose] public section
 
-open AbsolutelyContinuousOnInterval Filter Fin.NatCast Function MeasureTheory Set
+open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
 
@@ -84,7 +84,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → ℝ} {d b η 
       · exact hδ₂ (by grind) (by simp [abs_eq_self.mpr hε₁.le, hε₃])
       · simp
   obtain ⟨u, ⟨hu₁, hu₂, hu₃, hu₄⟩⟩ := this
-  simp only [t, Set.subset_def, mem_setOf_eq] at hu₁
+  simp only [t, subset_def, mem_setOf_eq] at hu₁
   refine ⟨u, ⟨hu₁, hu₃, ?_⟩⟩
   have : Countable u := by simp [hu₂]
   have : Pairwise (Disjoint on fun (z : u) ↦ Icc z.val.1 z.val.2) :=
@@ -168,7 +168,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
 
 /-- If `f` is absolutely continuous on `uIcc a b` and `f' x = 0` for a.e. `x ∈ uIcc a b`, then `f`
 is constant on `uIcc a b`. -/
-theorem AbsolutelyContinuousOnInterval.ae_deriv_zero_const {f : ℝ → ℝ} {a b : ℝ}
+theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hf₀ : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt f 0 x) :
     ∃ C, ∀ x ∈ uIcc a b, f x = C := by
   -- Proof idea : Assume wlog `a < b`. We need to show that `f d = f b` for any `d ∈ [a, b]`.
@@ -235,7 +235,7 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
       with x hx1 hx2 hx3
     convert (hx1 hx3).hasDerivAt.sub (hx2 hx3 a (by simp))
     abel
-  obtain ⟨C, hC⟩ := g_ac.ae_deriv_zero_const g_ae_deriv_zero
+  obtain ⟨C, hC⟩ := g_ac.const_of_ae_hasDerivAt_zero g_ae_deriv_zero
   have : f a = g a := by simp [g]
   have := hC a (by simp)
   have := hC b (by simp)
