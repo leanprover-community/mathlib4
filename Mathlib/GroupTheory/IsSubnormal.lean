@@ -15,7 +15,7 @@ We also prove a few basic facts.
 
 * The definition is equivalent to the existence of a finite chain of inclusions of
   subgroups, each normal in the successor, starting at the subgroup itself and
-  ending with the whole group (`IsSubnormal_iff`).
+  ending with the whole group (`isSubnormal_iff`).
 * The relation of being `IsSubnormal` is transitive (`IsSubnormal.trans`).
 -/
 
@@ -119,7 +119,7 @@ the following one.
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
 -- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
-lemma IsSubnormal_iff : H.IsSubnormal ↔
+lemma isSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
     (∀ i, f i ≤ f (i + 1)) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
       f 0 = H ∧ f n = ⊤ where
@@ -144,7 +144,7 @@ lemma IsSubnormal_iff : H.IsSubnormal ↔
       · exact ih ⟨fun n ↦ F (n + 1), by grind only⟩
       · grind only
 
-alias ⟨exists_chain, _⟩ := IsSubnormal_iff
+alias ⟨exists_chain, _⟩ := isSubnormal_iff
 
 /--
 Subnormality is transitive.
