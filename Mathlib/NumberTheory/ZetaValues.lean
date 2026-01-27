@@ -227,7 +227,7 @@ theorem bernoulliFourierCoeff_recurrence (k : ℕ) {n : ℤ} (hn : n ≠ 0) :
   rw [fourierCoeffOn_of_hasDerivAt zero_lt_one hn
       (fun x _ => (hasDerivAt_bernoulliFun k x).ofReal_comp)
       ((continuous_ofReal.comp <|
-            continuous_const.mul <| Polynomial.continuous _).intervalIntegrable
+          Continuous.const.mul <| Polynomial.continuous _).intervalIntegrable
         _ _)]
   simp_rw [ofReal_one, ofReal_zero, sub_zero, one_mul]
   rw [QuotientAddGroup.mk_zero, fourier_eval_zero, one_mul, ← ofReal_sub, bernoulliFun_eval_one,

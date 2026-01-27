@@ -302,7 +302,7 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
     it also vanishes at `x`.-/
     have : AnalyticAt 𝕜 (fun _ ↦ (0 : E)) x := analyticAt_const
     apply this.congr
-    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE continuousAt_const h']
+    rw [← ContinuousAt.eventuallyEq_nhds_iff_eventuallyEq_nhdsNE .const h']
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 ho] with y hy using by simp [hy]
   | coe n =>
     /- If the order is finite, then the order has to be nonnegative, as otherwise the norm of `f`

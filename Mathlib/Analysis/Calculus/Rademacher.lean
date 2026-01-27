@@ -236,8 +236,7 @@ theorem ae_lineDeriv_sum_eq
   let L : StrongDual ℝ E → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact ((g_smooth.continuous_fderiv (by simp)).clm_apply continuous_const).mul
-      hf.continuous
+  · exact ((g_smooth.continuous_fderiv (by simp)).clm_apply .const).mul hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!

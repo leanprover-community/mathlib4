@@ -207,7 +207,7 @@ theorem continuous_cfcHomSuperset_left
   induction f using ContinuousMap.induction_on_of_compact with
   | const r =>
     have : ContinuousMap.const s r = algebraMap 𝕜 C(s, 𝕜) r := rfl
-    simpa only [this, AlgHomClass.commutes] using continuous_const
+    simpa only [this, AlgHomClass.commutes] using Continuous.const
   | id =>
     simp only [cfcHomSuperset_id]
     fun_prop

@@ -256,7 +256,7 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
   · -- `(π / b) ^ (1 / 2 : ℂ)` is continuous
     refine
       continuousOn_of_forall_continuousAt fun b hb =>
-        (continuousAt_cpow_const (Or.inl ?_)).comp (continuousAt_const.div continuousAt_id (nv hb))
+        (continuousAt_cpow_const (Or.inl ?_)).comp (ContinuousAt.const.div continuousAt_id (nv hb))
     rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
   · -- equality at 1

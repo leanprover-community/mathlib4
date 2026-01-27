@@ -73,9 +73,7 @@ def polarCoord : OpenPartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       rw [Complex.norm_def, Complex.normSq_add_mul_I]
     simp [A]
   open_target := isOpen_Ioi.prod isOpen_Ioo
-  open_source :=
-    (isOpen_lt continuous_const continuous_fst).union
-      (isOpen_ne_fun continuous_snd continuous_const)
+  open_source := (isOpen_lt .const continuous_fst).union (isOpen_ne_fun continuous_snd .const)
   continuousOn_invFun := by fun_prop
   continuousOn_toFun := by
     refine .prodMk (by fun_prop) ?_

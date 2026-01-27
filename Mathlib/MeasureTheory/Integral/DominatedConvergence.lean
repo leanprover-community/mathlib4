@@ -602,7 +602,7 @@ theorem continuous_parametric_primitive_of_continuous
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
       gcongr with x hx x hx
       · exact (hf.uncurry_left _).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
         _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
@@ -616,7 +616,7 @@ theorem continuous_parametric_primitive_of_continuous
             · exact le_of_lt (hv _ hp _ (h'δ hx))
         _ ≤ M + 1 := by linarith
       · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-      · exact continuous_const.integrableOn_Icc
+      · exact Continuous.const.integrableOn_Icc
       · exact nullMeasurableSet_Icc
       · exact le_of_lt (hv _ hp _ hx)
   _ = (M + 1) * μ.real (Icc (b₀ - δ) (b₀ + δ)) + δ * μ.real (Icc a b) := by simp [mul_comm]
