@@ -27,17 +27,6 @@ theorem isInt_negOfNat_eq {a : A} {lit : ℕ} (h : IsInt a (Int.negOfNat lit)) :
     a = algebraMap R A (Int.rawCast (Int.negOfNat lit) + 0 : R) + 0 := by
   simp [h.out]
 
-
--- /- eval -/
--- theorem eval_neg {a a' b : A} (ha : a = a') (hb : -a' = b) :
---     -a = b := by
---   grind
-
--- /- eval -/
--- theorem eval_sub {a b a' b' c : A} (ha : a = a') (hb : b = b') (hc : a' - b' = c) :
---     a - b = c := by
---   grind
-
 end ring
 
 section semifield

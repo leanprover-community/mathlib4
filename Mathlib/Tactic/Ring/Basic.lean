@@ -386,7 +386,9 @@ theorem Nat.smul_eq_mul {n : ℕ} {r : R} (hr : n = r) {a : R} : n • a = r * a
   subst_vars
   simp only [nsmul_eq_mul]
 
-theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} : n • a = r * a := by
+omit [CommSemiring R] in
+theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} :
+    n • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]
 
@@ -417,7 +419,7 @@ def ringCompute :
     let ⟨c, pc⟩ := res.toRawEq
     return ⟨q($c), ⟨qc, hc⟩, pc⟩
   evalCast v β sβ smul x rx := do
-    let ⟨x', vx, px⟩ ← rx.get
+    let ⟨x', vx, px⟩ ← rx
     if (← isDefEq sα sβ) then
       have : u =QL v := ⟨⟩
       have : $α =Q $β := ⟨⟩
@@ -561,8 +563,8 @@ where
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     let c ← Common.mkCache sα
     profileitM Exception "ring" (← getOptions) do
-      let ⟨a, va, pa⟩ ← Common.eval (fun _ _ ↦ ringCompute) rcℕ (ringCompute sα) c e₁
-      let ⟨b, vb, pb⟩ ← Common.eval (fun _ _ ↦ ringCompute) rcℕ (ringCompute sα) c e₂
+      let ⟨a, va, pa⟩ ← Common.eval ringCompute rcℕ (ringCompute sα) c e₁
+      let ⟨b, vb, pb⟩ ← Common.eval ringCompute rcℕ (ringCompute sα) c e₂
       unless va.eq rcℕ (ringCompute sα) vb do
         let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
         throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
