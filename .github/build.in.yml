@@ -541,7 +541,7 @@ jobs:
         shell: bash
         run: |
           echo "Checking for runLinter processes..."
-          if ps -eo pid,lstart,command | grep -F runLinter | grep -v grep; then
+          if pgrep -af runLinter; then
             echo "Killing runLinter processes..."
             pkill -f runLinter || true
           else
