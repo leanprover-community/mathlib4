@@ -128,6 +128,12 @@ section NNReal
 instance : MetricSpace ℝ≥0 :=
   Subtype.metricSpace
 
+theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
+  isUniformEmbedding_subtype_val
+
+theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
+  isUniformEmbedding_coe.isEmbedding
+
 end NNReal
 
 instance [MetricSpace β] : MetricSpace (ULift β) :=
