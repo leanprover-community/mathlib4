@@ -316,7 +316,7 @@ end PartialOrder
 
 section LinearOrder
 /- The following set of theorems only require `≤` to be a total order. However, `LinearOrder` is the
-minimal structure that satisfies this requirement as of now.-/
+minimal structure that satisfies this requirement as of now. -/
 
 variable [LinearOrder α]
 
