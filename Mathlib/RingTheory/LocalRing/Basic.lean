@@ -114,14 +114,13 @@ end CommRing
 
 end IsLocalRing
 
-namespace Field
+namespace DivisionSemiring
 
-variable (K : Type*) [Field K]
+variable (K : Type*) [DivisionSemiring K]
 
 -- see Note [lower instance priority]
-instance (priority := 100) : IsLocalRing K := by
-  classical exact IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a =>
-    if h : a = 0 then Or.inr (by rw [h, sub_zero]; exact isUnit_one)
-    else Or.inl <| IsUnit.mk0 a h
+instance (priority := 100) : IsLocalRing K where
+  isUnit_or_isUnit_of_add_one {a b} eq := by
+    obtain rfl | ha := eq_or_ne a 0 <;> aesop
 
-end Field
+end DivisionSemiring

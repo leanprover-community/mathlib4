@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Regular.Basic
 
 /-!
 # Submonoids: `CompleteLattice` structure
@@ -352,17 +353,16 @@ section IsUnit
 @[to_additive /-- The additive submonoid consisting of the additive units of an additive monoid -/]
 def IsUnit.submonoid (M : Type*) [Monoid M] : Submonoid M where
   carrier := setOf IsUnit
-  one_mem' := by simp only [isUnit_one, Set.mem_setOf_eq]
-  mul_mem' := by
-    intro a b ha hb
-    rw [Set.mem_setOf_eq] at *
-    exact IsUnit.mul ha hb
+  one_mem' := isUnit_one
+  mul_mem' := IsUnit.mul
 
 @[to_additive]
 theorem IsUnit.mem_submonoid_iff {M : Type*} [Monoid M] (a : M) :
-    a ∈ IsUnit.submonoid M ↔ IsUnit a := by
-  change a ∈ setOf IsUnit ↔ IsUnit a
-  rw [Set.mem_setOf_eq]
+    a ∈ IsUnit.submonoid M ↔ IsUnit a := .rfl
+
+variable (M) in
+@[to_additive] lemma isUnit_le_regulars : IsUnit.submonoid M ≤ .regulars M :=
+  fun _ h ↦ Submonoid.mem_regulars_iff.mpr h.isRegular
 
 end IsUnit
 

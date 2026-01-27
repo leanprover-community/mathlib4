@@ -503,4 +503,41 @@ lemma subtype_injective (s : Submonoid M) :
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=
   rfl
 
+section Regular
+
+variable (M : Type*) [Monoid M] {x : M}
+
+/-- The left regular elements in a monoid form a submonoid. -/
+@[to_additive /-- The left regular elements in an additive monoid form a submonoid. -/]
+def leftRegulars : Submonoid M where
+  carrier := {x | IsLeftRegular x}
+  one_mem' _ _ eq := by simpa only [one_mul] using eq
+  mul_mem' hx hy _ _ eq := hy <| hx <| by simpa only [mul_assoc] using eq
+
+/-- The right regular elements in a monoid form a submonoid. -/
+@[to_additive /-- The right regular elements in an additive monoid form a submonoid. -/]
+def rightRegulars : Submonoid M where
+  carrier := {x | IsRightRegular x}
+  one_mem' _ _ eq := by simpa only [mul_one] using eq
+  mul_mem' hx hy _ _ eq := hx <| hy <| by simpa only [mul_assoc] using eq
+
+/-- The regular elements in a monoid form a submonoid. -/
+@[to_additive /-- The regular elements in an additive monoid form a submonoid. -/]
+def regulars : Submonoid M where
+  carrier := {x | IsRegular x}
+  one_mem' := isRegular_iff.mpr ⟨one_mem (leftRegulars M), one_mem (rightRegulars M)⟩
+  mul_mem' hx hy := isRegular_iff.mpr
+    ⟨(leftRegulars M).mul_mem hx.1 hy.1, (rightRegulars M).mul_mem hx.2 hy.2⟩
+
+variable {M}
+
+@[to_additive] lemma mem_leftRegulars_iff : x ∈ leftRegulars M ↔ IsLeftRegular x := .rfl
+@[to_additive] lemma mem_rightRegulars_iff : x ∈ rightRegulars M ↔ IsRightRegular x := .rfl
+@[to_additive] lemma mem_regulars_iff : x ∈ regulars M ↔ IsRegular x := .rfl
+
+@[to_additive] lemma regulars_eq_inf : regulars M = leftRegulars M ⊓ rightRegulars M :=
+  Submonoid.ext fun _ ↦ isRegular_iff
+
+end Regular
+
 end Submonoid

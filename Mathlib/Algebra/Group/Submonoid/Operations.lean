@@ -613,6 +613,32 @@ lemma closure_one_prod (t : Set N) : closure (({1} : Set M) ×ˢ t) = .prod ⊥ 
 
 end Submonoid
 
+namespace MulEquivClass
+
+variable {M N F : Type*} [Monoid M] [Monoid N] [EquivLike F M N] [MulEquivClass F M N] (f : F)
+variable {m : M}
+
+@[to_additive] lemma isLeftRegular_iff : IsLeftRegular (f m) ↔ IsLeftRegular m where
+  mp := .of_injective (EquivLike.injective f)
+  mpr h := .of_injective (f : M ≃* N).symm.injective (by simpa)
+
+@[to_additive] lemma isRightRegular_iff : IsRightRegular (f m) ↔ IsRightRegular m where
+  mp := .of_injective (EquivLike.injective f)
+  mpr h := .of_injective (f : M ≃* N).symm.injective (by simpa)
+
+@[to_additive] lemma isRegular_iff : IsRegular (f m) ↔ IsRegular m where
+  mp := .of_injective (EquivLike.injective f)
+  mpr h := .of_injective (f : M ≃* N).symm.injective (by simpa)
+
+@[to_additive] lemma comap_regulars : (Submonoid.regulars N).comap f = .regulars M :=
+  Submonoid.ext fun _ ↦ isRegular_iff f
+
+@[to_additive] lemma map_regulars : (Submonoid.regulars M).map f = .regulars N := by
+  change Submonoid.map (f : M ≃* N) _ = _
+  rw [Submonoid.map_equiv_eq_comap_symm, comap_regulars]
+
+end MulEquivClass
+
 namespace MonoidHom
 
 variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]

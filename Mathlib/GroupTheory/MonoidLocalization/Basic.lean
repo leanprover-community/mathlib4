@@ -1464,15 +1464,14 @@ namespace Submonoid.LocalizationMap
 
 variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
 
-@[to_additive] theorem injective_iff (f : LocalizationMap S N) :
-    Injective f ↔ ∀ ⦃x⦄, x ∈ S → IsRegular x := by
-  simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
-    Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
+@[to_additive] theorem injective_iff (f : LocalizationMap S N) : Injective f ↔ S ≤ regulars M := by
+  simp_rw [SetLike.le_def, Submonoid.mem_regulars_iff, Commute.isRegular_iff (Commute.all _),
+    IsLeftRegular, Injective, LocalizationMap.eq_iff_exists, exists_imp, Subtype.forall]
   exact forall₂_swap
 
 @[to_additive] theorem top_injective_iff (f : (⊤ : Submonoid M).LocalizationMap N) :
     Injective f ↔ IsCancelMul M := by
-  simp [injective_iff, isCancelMul_iff_forall_isRegular]
+  simp [injective_iff, SetLike.le_def, regulars, isCancelMul_iff_forall_isRegular]
 
 @[to_additive] theorem map_isRegular (f : LocalizationMap S N) {m : M}
     (hm : IsRegular m) : IsRegular (f m) := by
@@ -1486,6 +1485,19 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   simp_rw [← map_mul, eq_iff_exists] at eq ⊢
   simp_rw [mul_left_comm _ m] at eq
   exact eq.imp fun _ ↦ (hm.1 ·)
+
+@[to_additive] theorem map_isRegular_iff (f : LocalizationMap S N) (inj : Injective f) {m : M} :
+    IsRegular (f m) ↔ IsRegular m := by
+  refine ⟨fun h ↦ isLeftRegular_iff_isRegular.mp fun m₁ m₂ eq ↦ inj (h.1 ?_), f.map_isRegular⟩
+  simpa using congr(f $eq)
+
+@[to_additive] theorem regulars_eq_isUnit (f : LocalizationMap (regulars M) N) :
+    regulars N = IsUnit.submonoid N := by
+  refine le_antisymm (fun x hx ↦ ?_) (isUnit_le_regulars N)
+  have ⟨m, eq⟩ := f.surj x
+  let m' : regulars M := ⟨m.1, (f.map_isRegular_iff (f.injective_iff.mpr le_rfl)).mp <|
+    eq ▸ .mul hx (f.map_units _).isRegular⟩
+  exact isUnit_of_mul_isUnit_left <| eq ▸ f.map_units m'
 
 @[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),

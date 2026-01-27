@@ -81,6 +81,9 @@ variable [NeZero (2 : K)]
 
 @[simp] lemma add_halves (a : K) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
 
+-- see Note [lower instance priority]
+instance (priority := 100) DivisionSemring.isDomain : IsDomain K where
+
 end DivisionSemiring
 
 section DivisionRing
@@ -120,8 +123,7 @@ theorem one_div_mul_sub_mul_one_div_eq_one_div_add_one_div (ha : a ≠ 0) (hb : 
   simpa only [one_div] using (inv_sub_inv' ha hb).symm
 
 -- see Note [lower instance priority]
-instance (priority := 100) DivisionRing.isDomain : IsDomain K :=
-  NoZeroDivisors.to_isDomain _
+instance (priority := 100) DivisionRing.isDomain : IsDomain K := inferInstance
 
 protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (hb : b ≠ 0)
     (hd : d ≠ 0) : a / b - c / d = (a * d - b * c) / (b * d) := by
@@ -186,8 +188,7 @@ theorem div_sub' {a b c : K} (hc : c ≠ 0) : a / c - b = (a - c * b) / c := by
   simpa using div_sub_div a b hc one_ne_zero
 
 -- see Note [lower instance priority]
-instance (priority := 100) Field.isDomain : IsDomain K :=
-  { DivisionRing.isDomain with }
+instance (priority := 100) Field.isDomain : IsDomain K := inferInstance
 
 end Field
 
