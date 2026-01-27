@@ -20,7 +20,7 @@ false.
 
 Although comparability and incomparability are negations of each other, both relations are
 convenient in different contexts, and as such, it's useful to keep them distinct. To move from one
-to the other, use `not_symmGen_iff` and `not_incompRel_iff`.
+to the other, use `not_symmGen_iff` and `not_incompRel_iff_symmGen`.
 
 ## Main declarations
 
