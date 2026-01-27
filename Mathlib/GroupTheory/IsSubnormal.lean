@@ -42,7 +42,7 @@ Equivalently, `H.IsSubnormal` means that there is a finite chain of subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
 * `H = H₀`,
 * `G = Hₙ`,
-* for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hₙ₋₁`.
+* for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₋₁`.
 See `IsSubnormal_iff` for this characterisation.
 -/
 inductive IsSubnormal : Subgroup G → Prop where
