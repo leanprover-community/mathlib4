@@ -43,13 +43,14 @@ Description of Latin Squares
 
 -/
 
-section LatinSquare
-
 universe u u' v
 
 variable {m m' : Type u} [Fintype m] [Fintype m'] --[DecidableEq α]
 variable {n n' : Type u'} [Fintype n] [Fintype n']--[DecidableEq α]
 variable {α β : Type v} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]
+
+section LatinSquare
+
 
 -- abbrev symbols (M : Fin m → Fin n → α) : Finset α :=
 --   (Finset.image fun (x,y) ↦ M x y) Finset.univ
@@ -94,11 +95,6 @@ instance {m n : Nat} {α : Type u} [DecidableEq α] [Fintype α] [ToString α] :
 abbrev once_per_column (M : Matrix m n α) : Prop :=
   -- ∀ j : n, ∀ x : α, ∃! i : m, M i j = x
   ∀ j, Function.Bijective (M.col j)
-
-lemma latin_square_row_implies_latin_rectangle_row
-  (M : Matrix n n α)
-  (h₂ : once_per_row M) :
-  (∀ (x : n), ∀ (y₁ y₂ : n), y₁ ≠ y₂ → ((M x y₁) ≠ (M x y₂))) := by sorry
 
 lemma latin_square_col_implies_latin_rectangle_col
   (M : Matrix n n α)
@@ -149,14 +145,23 @@ def lr_to_ls : (LatinRectangle n n α) → (LatinSquare n α)
         unfold once_per_column 
         have h := A.distinct_col_entries
         unfold distinct_col_entries at h
-        sorry
+        intro j
+        specialize h j
+        rw [Fintype.bijective_iff_injective_and_card]
+        refine ⟨h, ?_⟩
+        exact A.exactly_n_symbols.symm
       }
 
 instance : Coe (LatinRectangle n n α) (LatinSquare n α) where 
   coe := lr_to_ls
 
 theorem lr_as_ls_as_lr_is_eq (A : LatinRectangle n n α) :
-  ((A : LatinSquare n α ) : LatinRectangle n n α) = A := by sorry
+  ((A : LatinSquare n α ) : LatinRectangle n n α) = A := by 
+     simp[LatinSquare.toLatinRectangle, lr_to_ls]
+     
+theorem ls_as_lr_as_ls_is_eq (A : LatinSquare n α) :
+  ((A : LatinRectangle n n α) : LatinSquare n α) = A := by
+      simp[lr_to_ls, LatinSquare.toLatinRectangle]
 
 instance {n : Nat} {α : Type v} [DecidableEq α] [Fintype α] [ToString α] :
   Repr (LatinSquare (Fin n) α) where
@@ -170,30 +175,14 @@ def group_to_cayley_table (G : Type*) [DecidableEq G] [Group G] [Fintype G] :
     M := fun i j ↦ i * j,
     exactly_n_symbols := by rfl,
     once_per_row := by
-      simp [once_per_row]
-      intro i y
-      set j := i⁻¹ * y
-      use j
-      simp [j]
-      intro z hz
-      rw [← mul_right_inj i⁻¹ (b := i*z) (c := y)] at hz
-      simp at hz
-      exact hz,
+      simp only [once_per_row, Matrix.row] 
+      exact Group.mulLeft_bijective (G := G),
     once_per_column := by
-      simp [once_per_column]
-      intro j x
-      set i := x*j⁻¹
-      use i
-      simp [i]
-      intro y hy
-      rw [← mul_left_inj j⁻¹ (b := y*j) (c := x)] at hy
-      simp at hy
-      exact hy
+      simp only [once_per_column, Matrix.col]
+      exact Group.mulRight_bijective (G := G)
    }
-   
 
 #check col (addGroup_to_cayley_table (ZMod 5) : LatinRectangle (ZMod 5) (ZMod 5) (ZMod 5))
-
 
 def latin_rectangle_isomorphism
   (f : m ≃ m')
@@ -208,42 +197,39 @@ def latin_rectangle_isomorphism
     have k' := A.exactly_n_symbols
     omega,
   once_per_row := by 
+    simp only [once_per_row, Matrix.row]
     have h' := A.once_per_row
-    unfold once_per_row at h'
-    unfold once_per_row
-    intro i' b' 
-    specialize h' (f.symm i') (h.symm b')
-    obtain ⟨j, hj⟩ := h'
-    refine ⟨g j, ?_, ?_⟩
-    · have hj1 := hj.1
-      apply Equiv.congr_arg (f := h) at hj1
-      simp [hj1]
-    · intro y
-      have hj2 := hj.2
-      specialize hj2 (g.symm y) 
-      intro hy
-      apply Equiv.congr_arg (f := h.symm) at hy
-      simp only [Equiv.symm_apply_apply] at hy
-      have h2 := hj2 hy
-      apply Equiv.congr_arg (f := g) at h2
-      simp only [Equiv.apply_symm_apply] at h2
-      exact h2,
+    simp only [once_per_row, Matrix.row] at h'
+    intro i'
+    specialize h' (f.symm i') --(h.symm b')
+    have h_comp : 
+      (fun j' ↦ h (LatinRectangle.M (f.symm i') (g.symm j'))) = 
+      h ∘ (LatinRectangle.M (f.symm i')) ∘ g.symm := by 
+      ext
+      simp
+    rw [h_comp]
+    apply Function.Bijective.comp
+    · exact Equiv.bijective h
+    · apply Function.Bijective.comp
+      · exact h'
+      · exact Equiv.bijective g.symm,
   distinct_col_entries := by 
+    simp only [distinct_col_entries, Matrix.col]
     have h' := A.distinct_col_entries 
-    unfold distinct_col_entries at h'
-    unfold distinct_col_entries
-    intro y i j hx
-    simp
-    specialize h' (g.symm y) (f.symm i) (f.symm j)
-    have h_neq : f.symm i ≠ f.symm j := by 
-      have h_inj := Equiv.injective f.symm
-      unfold Function.Injective at h_inj
-      conv at h_inj =>
-        ext
-        ext
-        rw [<- not_imp_not]
-      exact h_inj hx
-    exact h' h_neq,
+    simp only [distinct_col_entries, Matrix.col] at h'
+    intro j'
+    specialize h' (g.symm j')
+    have h_comp : 
+      (Matrix.transpose (fun i' j' ↦ h (LatinRectangle.M (f.symm i') (g.symm j'))) j') = 
+      h ∘ (LatinRectangle.M.transpose (g.symm j')) ∘ f.symm := by 
+      ext
+      simp
+    rw [h_comp]
+    apply Function.Injective.comp
+    · exact (Equiv.bijective h).1
+    · apply Function.Injective.comp
+      · exact h'
+      · exact (Equiv.bijective f.symm).1,
   m_le_n := by 
     have ineq := A.m_le_n
     have f' : Fintype.card m = Fintype.card m' := Fintype.card_congr f
@@ -251,13 +237,12 @@ def latin_rectangle_isomorphism
     omega
   }
   
-def latin_square_isomorphisms
+def latin_square_isomorphism
   (f : n ≃ n')
   (g : n ≃ n')
   (h : α ≃ β)
   (A : LatinSquare n α) : 
-  LatinSquare n' β := {
-  M := fun i' j' ↦ h (A.M (f.symm i') (g.symm j')),
+  LatinSquare n' β := latin_rectangle_isomorphism f g h (A : LatinRectangle n n α)
 
 -- Cyclic Example
 -- We construct an infinite family of Latin Squares from the infinite family of Cyclic Groups
@@ -272,22 +257,19 @@ instance nonempty {n : Nat} [NeZero n] : LatinSquare (ZMod n) (ZMod n) :=
 section Isotopy
 
 structure LatinSquareIsotopy
-  {α : Type u} [DecidableEq α] [Nonempty α]
-  {β : Type u} [DecidableEq β] [Nonempty β]
-  {n : Nat}
   (L₁ : LatinSquare n α)
-  (L₂ : LatinSquare n β)
+  (L₂ : LatinSquare n' β)
   where
-    symbol_map : α → β
-    reindex_row : Fin n ≃ Fin n
-    reindex_col : Fin n ≃ Fin n
+    symbol_map : α ≃ β
+    reindex_row : n' ≃ n
+    reindex_col : n' ≃ n
     intertwine : ∀ i, ∀ j, symbol_map (L₁.M (reindex_row i) (reindex_col j)) = L₂.M i j
 
-def reflLatinSquareIsotopy {n : Nat} {α : Type u} [DecidableEq α] [Nonempty α]
+def reflLatinSquareIsotopy
   (L : LatinSquare n α) : LatinSquareIsotopy L L := {
     symbol_map := Equiv.refl α,
-    reindex_row := Equiv.refl (Fin n),
-    reindex_col := Equiv.refl (Fin n),
+    reindex_row := Equiv.refl n,
+    reindex_col := Equiv.refl n,
     intertwine := by simp
   }
 
@@ -295,38 +277,35 @@ end Isotopy
 
 section Completion
 
-def is_subrect {m n m' n' : Nat}
+variable {n : Type u'} [Fintype n] [Nonempty n]
+variable {k : Type u} [Fintype k] [Nonempty k]
+
+def is_subrect
   (A : LatinRectangle m n α)
   (B : LatinRectangle m' n' α)
-  (h₁ : m ≤ m' := by omega)
-  (h₂ : n ≤ n' := by omega) :=
-  ∀ (i : Fin m), ∀ (j : Fin n), A.M i j = B.M ⟨i, by omega⟩ ⟨j, by omega⟩
+  (i₁ : m ↪ m')
+  (i₂ : n ↪ n') :=
+  ∀ (i : m), ∀ (j : n), A.M i j = B.M (i₁ i) (i₂ j)
 
-def col_map {k n : Nat} [NeZero k] [NeZero n]
- (A : LatinRectangle k n α) (j : Fin n) :=
- fun i => A.M i j
 
 def symbols_in
-{k n : Nat} [NeZero k] [NeZero n]
- (A : LatinRectangle k n α) (j : Fin n) :=
-  let D := Finset.image (col_map A j) Finset.univ
+ (A : LatinRectangle k n α) (j : n) :=
+  let D := Finset.image (col A j) Finset.univ
   D
 
 def symbols_not_in
-{k n : Nat} [NeZero k] [NeZero n]
- (A : LatinRectangle k n α) (j : Fin n) :=
-  let D := Finset.image (col_map A j) Finset.univ
-  (symbols A.M) \ D
+ (A : LatinRectangle k n α) (j : n) :=
+  let D := Finset.image (col A j) Finset.univ
+  Finset.univ \ D
   
-lemma symbols_in_count 
-{k n : Nat} [NeZero k] [NeZero n]
- (A : LatinRectangle k n α) (j : Fin n) : 
- Finset.card (symbols_in A j) = k := by sorry
+-- lemma symbols_in_count
+--  (A : LatinRectangle k n α) (j : n) : 
+--    Nonempty (symbols_in A j ≃ k) := by sorry
  
-lemma symbols_in_and_not_in_disjoint 
-{k n : Nat} [NeZero k] [NeZero n]
- (A : LatinRectangle k n α) (j : Fin n) : 
- (symbols_in A j) ∩ (symbols_not_in A j) = ∅ := by sorry
+-- lemma symbols_in_and_not_in_disjoint 
+-- {k n : Nat} [NeZero k] [NeZero n]
+--  (A : LatinRectangle k n α) (j : Fin n) : 
+--  (symbols_in A j) ∩ (symbols_not_in A j) = ∅ := by sorry
 
 lemma count_by_group_or_element_indicator
   {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -586,7 +565,8 @@ lemma row_entry_to_column_entry
       specialize hrow hx
       rw [ forall_existsUnique_iff] at hrow
       exact hrow
-     
+
+-- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
   {k n : Nat} [NeZero k] [NeZero n]
     (A : LatinRectangle k n α)
