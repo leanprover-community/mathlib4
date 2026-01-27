@@ -350,10 +350,6 @@ noncomputable abbrev InjectivePresentation.shortComplex
 
 theorem InjectivePresentation.shortExact_shortComplex {X : C}
     (ip : InjectivePresentation X) : ip.shortComplex.ShortExact :=
-  { exact := ShortComplex.exact_cokernel ip.3
-    mono_f := ip.4
-    epi_g := Limits.coequalizer.π_epi }
-
-instance {X : C} (ip : InjectivePresentation X) : Injective ip.shortComplex.X₂ := ip.2
+  { exact := ShortComplex.exact_cokernel ip.3 }
 
 end CategoryTheory
