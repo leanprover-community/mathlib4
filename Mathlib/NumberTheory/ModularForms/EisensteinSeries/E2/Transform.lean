@@ -87,7 +87,7 @@ private lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
 @[simp]
 private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 
-lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
+private lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
   filter_upwards [eventually_cofinite_ne ![0, 0], eventually_cofinite_ne ![0, -1]] with x hx hx'
   simp_all [δ]
 
