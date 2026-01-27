@@ -160,6 +160,12 @@ instance {P : MorphismProperty Scheme.{u}} [P.ContainsIdentities] [P.RespectsIso
     QuasiCompactCover (Scheme.coverOfIsIso (P := P) f).toPreZeroHypercover :=
   of_isOpenMap (fun _ ↦ f.homeomorph.isOpenMap)
 
+instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCover (𝒰.sum 𝒱) :=
+  .of_hom (PreZeroHypercover.sumInl _ _)
+
+instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
+  .of_hom (PreZeroHypercover.sumInr _ _)
+
 end QuasiCompactCover
 
 namespace Scheme
