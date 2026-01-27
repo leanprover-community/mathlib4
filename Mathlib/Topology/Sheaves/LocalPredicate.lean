@@ -68,7 +68,7 @@ structure PrelocalPredicate where
   /-- The underlying predicate should be invariant under restriction -/
   res : ∀ {U V : Opens X} (i : U ⟶ V) (f : Π x : V, T x), pred f → pred fun x : U ↦ f (i x)
 
-section Sheafify
+namespace Predicate
 
 variable {T} (P : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop)
 
@@ -82,14 +82,14 @@ lemma le_sheafify : P ≤ Sheafify P := fun U _f hf x ↦ ⟨U, x.2, 𝟙 U, hf�
 def IsLocal := Sheafify P ≤ P
 
 lemma sheafify_eq_iff : Sheafify P = P ↔ IsLocal P := by
-  simp_rw [IsLocal, le_antisymm_iff, le_sheafify, and_true]
+  simp [IsLocal, le_antisymm_iff, le_sheafify]
 
 lemma isLocal_sheafify : IsLocal (Sheafify P) := fun _U _f h x ↦
   have ⟨_V, m, i, p⟩ := h x
   have ⟨V, m', i', p'⟩ := p ⟨x, m⟩
   ⟨V, m', i' ≫ i, p'⟩
 
-end Sheafify
+end Predicate
 
 variable (X)
 
@@ -119,7 +119,7 @@ a `P : LocalPredicate T` consists of:
 structure LocalPredicate extends PrelocalPredicate T where
   /-- A local predicate must be local --- provided that it is locally satisfied, it is also globally
   satisfied -/
-  locality : IsLocal pred
+  locality : Predicate.IsLocal pred
 
 section Pullback
 
@@ -140,7 +140,7 @@ def LocalPredicate.pullback (P : LocalPredicate S) : LocalPredicate T where
 
 end Pullback
 
-section Properties
+section Predicate
 
 variable {B : TopCat} {F : B → Type*} (P : Π ⦃U : Opens B⦄, (Π b : U, F b) → Prop) (b : B)
 
@@ -323,7 +323,9 @@ lemma preimage_snd_comp_equiv (i : ι) :
 
 end TrivializationOn
 
-end Properties
+end Predicate
+
+open Predicate
 
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/
@@ -350,8 +352,8 @@ def PrelocalPredicate.and (P Q : PrelocalPredicate T) : PrelocalPredicate T wher
   pred _ f := P.pred f ∧ Q.pred f
   res i f h := ⟨P.res i f h.1, Q.res i f h.2⟩
 
-lemma IsLocal.inf {P Q : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop} (hP : IsLocal P) (hQ : IsLocal Q) :
-    IsLocal (P ⊓ Q) := fun U f w ↦ by
+lemma Predicate.IsLocal.inf {P Q : Π ⦃U : Opens X⦄, (Π x : U, T x) → Prop}
+    (hP : IsLocal P) (hQ : IsLocal Q) : IsLocal (P ⊓ Q) := fun U f w ↦ by
   refine ⟨hP U f ?_, hQ U f ?_⟩ <;> (intro x; have ⟨V, hV, i, h⟩ := w x; use V, hV, i)
   exacts [h.1, h.2]
 
