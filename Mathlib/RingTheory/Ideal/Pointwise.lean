@@ -103,9 +103,6 @@ theorem pointwise_smul_toAddSubgroup {R : Type*} [Ring R] [MulSemiringAction M R
   ext
   exact Ideal.mem_map_iff_of_surjective _ <| by exact ha
 
-@[deprecated (since := "2025-07-08")]
-alias pointwise_smul_toAddSubGroup := pointwise_smul_toAddSubgroup
-
 end Monoid
 
 section Group

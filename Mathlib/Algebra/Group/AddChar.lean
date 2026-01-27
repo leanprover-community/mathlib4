@@ -10,7 +10,6 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Group.Units.Equiv
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -357,7 +356,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul] }
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
 instance : AddCommGroup (AddChar A M) := Additive.addCommGroup

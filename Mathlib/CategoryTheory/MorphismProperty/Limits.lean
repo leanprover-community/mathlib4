@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # Relation of morphism properties with limits
@@ -528,7 +529,7 @@ lemma colimitsOfShape.of_isColimit
       naturality _ _ _ := by
         dsimp
         rw [Category.id_comp, ← Functor.map_comp]
-        rfl} h _ (by simp)
+        rfl } h _ (by simp)
 
 /-- The property that a morphism property `W` is stable under colimits
 indexed by a category `J`. -/

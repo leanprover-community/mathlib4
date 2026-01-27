@@ -113,7 +113,7 @@ instance [Std.Asymm r] [∀ i, Std.Antisymm (s i)] : Std.Antisymm (Lex r s) :=
     · exact (irrefl _ hji).elim
     · exact congr_arg (Sigma.mk _ ·) <| antisymm hab hba⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
+instance [IsTrichotomous ι r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j

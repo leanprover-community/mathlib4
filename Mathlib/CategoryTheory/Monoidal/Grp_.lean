@@ -6,8 +6,8 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # The category of groups in a Cartesian monoidal category

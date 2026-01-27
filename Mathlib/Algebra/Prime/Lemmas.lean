@@ -64,7 +64,11 @@ end Map
 
 end Prime
 
-theorem Prime.left_dvd_or_dvd_right_of_dvd_mul [CancelCommMonoidWithZero M] {p : M} (hp : Prime p)
+section IsCancelMulZero
+
+variable [CommMonoidWithZero M] [IsCancelMulZero M]
+
+theorem Prime.left_dvd_or_dvd_right_of_dvd_mul {p : M} (hp : Prime p)
     {a b : M} : a ∣ p * b → p ∣ a ∨ a ∣ b := by
   rintro ⟨c, hc⟩
   rcases hp.2.2 a c (hc ▸ dvd_mul_right _ _) with (h | ⟨x, rfl⟩)
@@ -72,7 +76,7 @@ theorem Prime.left_dvd_or_dvd_right_of_dvd_mul [CancelCommMonoidWithZero M] {p :
   · rw [mul_left_comm, mul_right_inj' hp.ne_zero] at hc
     exact Or.inr (hc.symm ▸ dvd_mul_right _ _)
 
-theorem Prime.pow_dvd_of_dvd_mul_left [CancelCommMonoidWithZero M] {p a b : M} (hp : Prime p)
+theorem Prime.pow_dvd_of_dvd_mul_left {p a b : M} (hp : Prime p)
     (n : ℕ) (h : ¬p ∣ a) (h' : p ^ n ∣ a * b) : p ^ n ∣ b := by
   induction n with
   | zero =>
@@ -84,12 +88,12 @@ theorem Prime.pow_dvd_of_dvd_mul_left [CancelCommMonoidWithZero M] {p a b : M} (
     apply mul_dvd_mul_left _ ((hp.dvd_or_dvd _).resolve_left h)
     rwa [← mul_dvd_mul_iff_left (pow_ne_zero n hp.ne_zero), ← pow_succ, mul_left_comm]
 
-theorem Prime.pow_dvd_of_dvd_mul_right [CancelCommMonoidWithZero M] {p a b : M} (hp : Prime p)
+theorem Prime.pow_dvd_of_dvd_mul_right {p a b : M} (hp : Prime p)
     (n : ℕ) (h : ¬p ∣ b) (h' : p ^ n ∣ a * b) : p ^ n ∣ a := by
   rw [mul_comm] at h'
   exact hp.pow_dvd_of_dvd_mul_left n h h'
 
-theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWithZero M] {p a b : M}
+theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd {p a b : M}
     {n : ℕ} (hp : Prime p) (hpow : p ^ n.succ ∣ a ^ n.succ * b ^ n) (hb : ¬p ^ 2 ∣ b) : p ∣ a := by
   -- Suppose `p ∣ b`, write `b = p * x` and `hy : a ^ n.succ * b ^ n = p ^ n.succ * y`.
   rcases hp.dvd_or_dvd ((dvd_pow_self p (Nat.succ_ne_zero n)).trans hpow) with H | hbdiv
@@ -107,14 +111,12 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   rw [pow_two, ← mul_assoc]
   exact dvd_mul_right _ _
 
-theorem prime_pow_succ_dvd_mul {M : Type*} [CancelCommMonoidWithZero M] {p x y : M} (h : Prime p)
+theorem prime_pow_succ_dvd_mul {p x y : M} (h : Prime p)
     {i : ℕ} (hxy : p ^ (i + 1) ∣ x * y) : p ^ (i + 1) ∣ x ∨ p ∣ y := by
   rw [or_iff_not_imp_right]
   exact fun a ↦ Prime.pow_dvd_of_dvd_mul_right h (i + 1) a hxy
 
-section CancelCommMonoidWithZero
-
-variable [CancelCommMonoidWithZero M] {a p : M}
+variable {a p : M}
 
 theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l : ℕ} :
     p ^ k ∣ a → p ^ l ∣ b → p ^ (k + l + 1) ∣ a * b → p ^ (k + 1) ∣ a ∨ p ^ (l + 1) ∣ b :=
@@ -123,6 +125,8 @@ theorem succ_dvd_or_succ_dvd_of_succ_sum_dvd_mul (hp : Prime p) {a b : M} {k l :
     simpa [mul_comm, pow_add, hx, hy, mul_assoc, mul_left_comm] using hz
   have hp0 : p ^ (k + l) ≠ 0 := pow_ne_zero _ hp.ne_zero
   have hpd : p ∣ x * y := ⟨z, by rwa [mul_right_inj' hp0] at h⟩
+  #adaptation_note /-- https://github.com/leanprover/lean4/issues/12136
+  `mul_comm, mul_left_comm` removed from simp arguments due to simp perm lemma handling change -/
   (hp.dvd_or_dvd hpd).elim
     (fun ⟨d, hd⟩ => Or.inl ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩)
     fun ⟨d, hd⟩ => Or.inr ⟨d, by simp [*, pow_succ, mul_comm, mul_left_comm, mul_assoc]⟩
@@ -135,7 +139,7 @@ theorem IsSquare.not_prime (ha : IsSquare a) : ¬Prime a := fun h => h.not_isSqu
 theorem not_prime_pow {n : ℕ} (hn : n ≠ 1) : ¬Prime (a ^ n) := fun hp =>
   not_irreducible_pow hn hp.irreducible
 
-end CancelCommMonoidWithZero
+end IsCancelMulZero
 
 section CommMonoidWithZero
 
@@ -156,18 +160,20 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-theorem DvdNotUnit.ne [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) : p ≠ q := by
+variable [CommMonoidWithZero M] [IsCancelMulZero M]
+
+theorem DvdNotUnit.ne {p q : M} (h : DvdNotUnit p q) : p ≠ q := by
   by_contra hcontra
   obtain ⟨hp, x, hx', hx''⟩ := h
   simp_all
 
-theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
+theorem pow_injective_of_not_isUnit {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) : Function.Injective fun n : ℕ => q ^ n := by
   refine .of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
 
-theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
+theorem pow_inj_of_not_isUnit {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=
   (pow_injective_of_not_isUnit hq hq').eq_iff
 
