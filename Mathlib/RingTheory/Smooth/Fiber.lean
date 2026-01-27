@@ -94,7 +94,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (KaehlerDifferential.tensorKaehlerEquiv R 𝓀[R] P Pp).symm
   have : Module.Free Pp Ω[Pp⁄𝓀[R]] := .of_equiv e₀.symm
   have : Module.Finite Pp Ω[Pp⁄𝓀[R]] := .of_surjective e₀.symm.toLinearMap e₀.symm.surjective
-  let e₁ : RingHom.ker φ ≃ₗ[Pp] Pp ⊗[P] (RingHom.ker (algebraMap P S)) :=
+  let e₁ : RingHom.ker φ ≃ₗ[Pp] Pp ⊗[P] RingHom.ker (algebraMap P S) :=
     kerTensorProductMapIdToAlgHomEquiv _ _ _ _ h₁
   have h₁' : Function.Surjective φ := LinearMap.lTensor_surjective _ h₁
   have h₂' : (RingHom.ker φ).FG := by
@@ -121,7 +121,7 @@ private lemma FormallySmooth.of_formallySmooth_residueField_tensor_aux
     (AlgebraTensorModule.congr (.refl 𝓀[S] _) e₀).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] Ω[P⁄R]).restrictScalars S
   -- and `K ⊗[k ⊗ᵣ S] (k ⊗ᵣ I) = K ⊗[k ⊗ᵣ P] ((k ⊗ᵣ P) ⊗[P] S) = K ⊗[P] S`.
-  let eₗ : 𝓀[S] ⊗[Pp] (RingHom.ker φ) ≃ₗ[S] 𝓀[S] ⊗[P] (RingHom.ker (algebraMap P S)) :=
+  let eₗ : 𝓀[S] ⊗[Pp] RingHom.ker φ ≃ₗ[S] 𝓀[S] ⊗[P] RingHom.ker (algebraMap P S) :=
     (AlgebraTensorModule.congr (.refl 𝓀[S] 𝓀[S]) e₁).restrictScalars S ≪≫ₗ
       (AlgebraTensorModule.cancelBaseChange P Pp Sp 𝓀[S] _).restrictScalars S
   -- It remains to check that the two maps are equal under the identifications above.
@@ -142,7 +142,7 @@ Let `(R, m, k)` be a local ring, `S` be a local `R`-algebra that is flat,
 essentially of finite presentation, and `k ⊗[R] S` is `k`-formally smooth.
 Then `S` is `R`-formally smooth.
 
-Since we don't have an "essentially of finite presentation" type class yet, we explicitly requre a
+Since we don't have an "essentially of finite presentation" type class yet, we explicitly require a
 `P` that is of finite presentation over `R` and that `S` is a localization of it.
 -/
 lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
@@ -178,8 +178,7 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
     obtain ⟨a, rfl⟩ := hf₀ a
     rw [IsLocalization.mk'_mem_map_algebraMap_iff]
     exact ⟨a, ha, by simpa⟩
-  let := fP.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' fP.comp_algebraMap.symm
+  algebraize [fP.toRingHom]
   have : FormallyEtale (MvPolynomial (Fin n) R) P' := .of_isLocalization M'
   have : FormallySmooth R P' := .comp _ (MvPolynomial (Fin n) R) _
   have : Module.Free P' Ω[P'⁄R] :=
@@ -200,8 +199,7 @@ lemma mem_smoothLocus_of_formallySmooth_fiber
       rintro ⟨_, x, hx, rfl⟩
       simpa using IsLocalization.map_units (M := q.asIdeal.primeCompl) Sq ⟨algebraMap _ _ x,
         by simp_all [q.asIdeal.over_def p]⟩)
-  let := f.toAlgebra
-  have := IsScalarTower.of_algebraMap_eq' f.comp_algebraMap.symm
+  algebraize [f.toRingHom]
   have : IsScalarTower R Sp Sq := .to₁₃₄ _ S _ _
   have : IsScalarTower Rp Sp Sq := .of_algebraMap_eq' <| by
     apply IsLocalization.ringHom_ext p.primeCompl

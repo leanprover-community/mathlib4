@@ -21,7 +21,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
     If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
 - `Algebra.FormallyEtale.iff_formallyUnramified_of_field`:
     If `A` is (essentially) of finite type over `K`,
-    then `A/K` is étale iff `A/K` is unramified.
+    then `A/K` is formally étale iff `A/K` is formally unramified.
 - `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
     If `A` is (essentially) of finite type over `K`,
     then `A/K` is étale iff `A` is a finite product of separable field extensions.

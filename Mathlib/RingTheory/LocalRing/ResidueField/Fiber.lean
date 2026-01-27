@@ -31,7 +31,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.
 open IsLocalRing in
 instance [IsLocalRing R] [IsLocalRing S] [IsLocalHom (algebraMap R S)] :
     IsLocalRing (ResidueField R ⊗[R] S) :=
-  let eSp : (ResidueField R ⊗[R] S) ≃ₐ[R] S ⧸ (maximalIdeal R).map (algebraMap R S) :=
+  let eSp : ResidueField R ⊗[R] S ≃ₐ[R] S ⧸ (maximalIdeal R).map (algebraMap R S) :=
     (Algebra.TensorProduct.comm _ _ _).trans
       ((TensorProduct.quotIdealMapEquivTensorQuot _ _).symm.restrictScalars _)
   have : Nontrivial (IsLocalRing.ResidueField R ⊗[R] S) := by
