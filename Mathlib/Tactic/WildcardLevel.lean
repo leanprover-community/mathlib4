@@ -123,12 +123,6 @@ def elabWildcardUniverses {m : Type → Type} [Monad m] [MonadExceptOf Exception
     | _ => throwUnsupportedSyntax
 
 /--
-Extracts all universe parameter names appearing in a level expression.
--/
-def Lean.Level.getParams (l : Level) : Array Name :=
-  (Lean.CollectLevelParams.visitLevel l {}).params
-
-/--
 Reorganizes universe parameter names to ensure proper dependency ordering.
 This is used in the implementation of `elabAppWithWildcards`.
 -/
@@ -139,7 +133,7 @@ def reorganizeUniverseParams
   let mut result := levelNames
   for ((wildcardKind, elaboratedLevel), idx) in (levels.zip constLevels).zipIdx do
     -- Only process param wildcards that elaborated to param levels
-    unless wildcardKind matches some (.param _) do continue
+    unless wildcardKind matches (.param _) do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
     let dependencies :=
@@ -168,7 +162,7 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
     -- Parse and elaborate wildcard universes
     let us : Array Syntax := #[u] ++ (← mkWildcardLevelStx us)
     let mut levels : Array LevelWildcardKind ← elabWildcardUniverses us constInfo.levelParams
-    let constLevels : Array Level ← levels.mapM fun
+    let mut constLevels : Array Level ← levels.mapM fun
       | .param baseName => mkFreshLevelParam baseName
       | .explicit l => elabLevel l
     while levels.size < constInfo.levelParams.length do
@@ -183,7 +177,7 @@ public def elabAppWithWildcards : TermElab := fun stx expectedType? => withoutEr
       (explicit := expl.isSome) (ellipsis := ellipsis)
 
     -- Instantiate level mvars and reorganize
-    let constLevels ← constLevels.mapM instantiateLevelMVars
+    constLevels ← constLevels.mapM instantiateLevelMVars
     setLevelNames <| reorganizeUniverseParams levels constLevels (← getLevelNames)
 
     return expr
