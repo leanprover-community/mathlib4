@@ -640,14 +640,17 @@ theorem Subtype.isLindelof_iff {p : X → Prop} {s : Set { x // p x }} :
 theorem isLindelof_iff_isLindelof_univ : IsLindelof s ↔ IsLindelof (univ : Set s) := by
   rw [Subtype.isLindelof_iff, image_univ, Subtype.range_coe]
 
-theorem isLindelof_iff_LindelofSpace : IsLindelof s ↔ LindelofSpace s :=
+theorem isLindelof_iff_lindelofSpace : IsLindelof s ↔ LindelofSpace s :=
   isLindelof_iff_isLindelof_univ.trans isLindelof_univ_iff
 
-lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_LindelofSpace.mpr ‹_›
+@[deprecated (since := "2026-01-12")]
+alias isLindelof_iff_LindelofSpace := isLindelof_iff_lindelofSpace
+
+lemma IsLindelof.of_coe [LindelofSpace s] : IsLindelof s := isLindelof_iff_lindelofSpace.mpr ‹_›
 
 theorem IsLindelof.countable (hs : IsLindelof s) (hs' : DiscreteTopology s) : s.Countable :=
   countable_coe_iff.mp
-  (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_LindelofSpace.mp hs) hs')
+  (@countable_of_Lindelof_of_discrete _ _ (isLindelof_iff_lindelofSpace.mp hs) hs')
 
 theorem IsLindelof.countable_of_isDiscrete (hs : IsLindelof s) (hs' : IsDiscrete s) :
     s.Countable := hs.countable hs'.to_subtype
@@ -676,13 +679,19 @@ instance {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)] [∀ 
     rw [Sigma.univ]
     exact isLindelof_iUnion fun i => isLindelof_range continuous_sigmaMk
 
-instance Quot.LindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
+instance Quot.lindelofSpace {r : X → X → Prop} [LindelofSpace X] : LindelofSpace (Quot r) where
   isLindelof_univ := by
     rw [← range_quot_mk]
     exact isLindelof_range continuous_quot_mk
 
-instance Quotient.LindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
-  Quot.LindelofSpace
+@[deprecated (since := "2026-01-12")]
+alias Quot.LindelofSpace := Quot.lindelofSpace
+
+instance Quotient.lindelofSpace {s : Setoid X} [LindelofSpace X] : LindelofSpace (Quotient s) :=
+  Quot.lindelofSpace
+
+@[deprecated (since := "2026-01-12")]
+alias Quotient.LindelofSpace := Quotient.lindelofSpace
 
 /-- A continuous image of a Lindelöf set is a Lindelöf set within the codomain. -/
 theorem LindelofSpace.of_continuous_surjective {f : X → Y} [LindelofSpace X] (hf : Continuous f)
@@ -711,10 +720,20 @@ instance (priority := 100) HereditarilyLindelof.to_Lindelof [HereditarilyLindelo
     LindelofSpace X where
   isLindelof_univ := HereditarilyLindelofSpace.isHereditarilyLindelof_univ.isLindelof
 
-theorem HereditarilyLindelof_LindelofSets [HereditarilyLindelofSpace X] (s : Set X) :
+theorem HereditarilyLindelofSpace.isLindelof [HereditarilyLindelofSpace X] (s : Set X) :
     IsLindelof s := by
   apply HereditarilyLindelofSpace.isHereditarilyLindelof_univ
   exact subset_univ s
+
+@[deprecated (since := "2026-01-12")]
+alias HereditarilyLindelof_LindelofSets := HereditarilyLindelofSpace.isLindelof
+
+theorem HereditarilyLindelofSpace.of_forall_isOpen (H : ∀ s : Set X, IsOpen s → IsLindelof s) :
+    HereditarilyLindelofSpace X := by
+  refine ⟨fun s _ ↦ isLindelof_of_countable_subcover fun U U_open hU ↦ ?_⟩
+  obtain ⟨t, t_count, ht⟩ := H (⋃ i, U i) (isOpen_iUnion U_open)
+    |>.elim_countable_subcover U U_open subset_rfl
+  exact ⟨t, t_count, hU.trans ht⟩
 
 instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     [SecondCountableTopology X] : HereditarilyLindelofSpace X where
@@ -726,16 +745,37 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
-lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type u} (U : ι → Set X)
+lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type*} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
-  have : IsLindelof (⋃ i, U i) := HereditarilyLindelof_LindelofSets (⋃ i, U i)
-  rcases isLindelof_iff_countable_subcover.mp this U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
+  have : IsLindelof (⋃ i, U i) := HereditarilyLindelofSpace.isLindelof (⋃ i, U i)
+  rcases this.elim_countable_subcover U h (Eq.subset rfl) with ⟨t, ⟨htc, htu⟩⟩
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
 
+lemma eq_open_union_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (U : ι → Set X)
+    (h : ∀ i, IsOpen (U i)) : ∃ k : ℕ → ι, ⋃ n, U (k n) = ⋃ i, U i := by
+  obtain ⟨t, htc, htu⟩ := eq_open_union_countable U h
+  rcases eq_empty_or_nonempty t with rfl | t_ne
+  · simp_rw [mem_empty_iff_false, iUnion_false, iUnion_empty, eq_comm (a := ∅), iUnion_eq_empty]
+      at htu
+    simp [htu]
+  · obtain ⟨k, rfl⟩ := htc.exists_eq_range t_ne
+    use k
+    rwa [biUnion_range] at htu
+
+lemma eq_closed_inter_countable [HereditarilyLindelofSpace X] {ι : Type*} (C : ι → Set X)
+    (h : ∀ i, IsClosed (C i)) : ∃ t : Set ι, t.Countable ∧ ⋂ i ∈ t, C i = ⋂ i, C i := by
+  conv in _ = _ => rw [← compl_inj_iff]; simp
+  exact eq_open_union_countable (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
+
+lemma eq_closed_inter_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (C : ι → Set X)
+    (h : ∀ i, IsClosed (C i)) : ∃ k : ℕ → ι, ⋂ n, C (k n) = ⋂ i, C i := by
+  conv in _ = _ => rw [← compl_inj_iff]; simp
+  exact eq_open_union_nat (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
+
 instance HereditarilyLindelof.lindelofSpace_subtype [HereditarilyLindelofSpace X] (p : X → Prop) :
     LindelofSpace {x // p x} := by
-  apply isLindelof_iff_LindelofSpace.mp
-  exact HereditarilyLindelof_LindelofSets fun x ↦ p x
+  apply isLindelof_iff_lindelofSpace.mp
+  exact HereditarilyLindelofSpace.isLindelof fun x ↦ p x
 
 end Lindelof

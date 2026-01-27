@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Cross products
@@ -61,21 +62,6 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 
 @[inherit_doc] scoped[Matrix] infixl:74 " ⨯₃ " => crossProduct
-
-namespace Matrix
-/-- A deprecated notation for `⨯₃`. -/
-@[deprecated «term_⨯₃_» (since := "2025-07-11")]
-scoped syntax:74 (name := _root_.«term_×₃_») term:74 " ×₃ " term:75 : term
-end Matrix
-
-open Lean Elab Meta.Tactic Term in
-@[term_elab Matrix._root_.«term_×₃_», inherit_doc «term_×₃_»]
-meta def elabDeprecatedCross : TermElab
-| `($x ×₃%$tk $y) => fun ty? => do
-  logWarningAt tk <| .tagged ``Linter.deprecatedAttr <| m!"The ×₃ notation has been deprecated"
-  TryThis.addSuggestion tk { suggestion := "⨯₃" }
-  elabTerm (← `($x ⨯₃ $y)) ty?
-| _ => fun _ => throwUnsupportedSyntax
 
 theorem cross_apply (a b : Fin 3 → R) :
     a ⨯₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl

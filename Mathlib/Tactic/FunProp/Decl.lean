@@ -51,7 +51,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with decls := d.decls.insertCore e.path e}
+      {d with decls := d.decls.insertKeyValue e.path e}
   }
 
 /-- Register new function property. -/
@@ -111,7 +111,7 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
-/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
+/-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x ↦ f x y z` -/
 def isFunPropGoal (e : Expr) : MetaM Bool := do
   forallTelescope e fun _ b =>
   return (← getFunProp? b).isSome

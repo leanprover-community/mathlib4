@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Logic.Nontrivial.Defs
 public import Mathlib.Logic.Basic
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -39,13 +40,16 @@ class MulZeroClass (M₀ : Type u) extends Mul M₀, Zero M₀ where
   /-- Zero is a right absorbing element for multiplication -/
   mul_zero : ∀ a : M₀, a * 0 = 0
 
+export MulZeroClass (zero_mul mul_zero)
+attribute [simp] zero_mul mul_zero
+
 /-- A mixin for left cancellative multiplication by nonzero elements. -/
 @[mk_iff] class IsLeftCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop where
   /-- Multiplication by a nonzero element is left cancellative. -/
   protected mul_left_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsLeftRegular a
 
 section IsLeftCancelMulZero
-
+section Mul
 variable [Mul M₀] [Zero M₀] [IsLeftCancelMulZero M₀] {a b c : M₀}
 
 theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
@@ -53,6 +57,15 @@ theorem mul_left_cancel₀ (ha : a ≠ 0) (h : a * b = a * c) : b = c :=
 
 theorem mul_right_injective₀ (ha : a ≠ 0) : Function.Injective (a * ·) :=
   fun _ _ => mul_left_cancel₀ ha
+
+lemma mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c := (mul_right_injective₀ ha).eq_iff
+
+end Mul
+
+variable [MulZeroClass M₀] [IsLeftCancelMulZero M₀] {a b c : M₀}
+
+@[simp] lemma mul_eq_mul_left_iff : a * b = a * c ↔ b = c ∨ a = 0 := by
+  by_cases ha : a = 0 <;> [simp only [ha, zero_mul, or_true]; simp [mul_right_inj', ha]]
 
 end IsLeftCancelMulZero
 
@@ -62,7 +75,7 @@ end IsLeftCancelMulZero
   protected mul_right_cancel_of_ne_zero : ∀ {a : M₀}, a ≠ 0 → IsRightRegular a
 
 section IsRightCancelMulZero
-
+section Mul
 variable [Mul M₀] [Zero M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
 
 theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
@@ -71,14 +84,20 @@ theorem mul_right_cancel₀ (hb : b ≠ 0) (h : a * b = c * b) : a = c :=
 theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b :=
   fun _ _ => mul_right_cancel₀ hb
 
+lemma mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b := (mul_left_injective₀ hc).eq_iff
+
+end Mul
+
+variable [MulZeroClass M₀] [IsRightCancelMulZero M₀] {a b c : M₀}
+
+@[simp] lemma mul_eq_mul_right_iff : a * c = b * c ↔ a = b ∨ c = 0 := by
+  by_cases hc : c = 0 <;> [simp only [hc, mul_zero, or_true]; simp [mul_left_inj', hc]]
+
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
 @[mk_iff] class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
   extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
-
-export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
 
 theorem isCancelMulZero_iff_forall_isRegular {M₀} [Mul M₀] [Zero M₀] :
     IsCancelMulZero M₀ ↔ ∀ {a : M₀}, a ≠ 0 → IsRegular a := by
@@ -120,37 +139,44 @@ end MonoidWithZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
-class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
+@[deprecated "Use `[MonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
+structure CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀
 
 /-- A type `M` is a commutative “monoid with zero” if it is a commutative monoid with zero
 element, and `0` is left and right absorbing. -/
 class CommMonoidWithZero (M₀ : Type*) extends CommMonoid M₀, MonoidWithZero M₀
 
-section CancelMonoidWithZero
+section MulZeroClass
 
-variable [CancelMonoidWithZero M₀] {a b c : M₀}
+variable (M₀) [MulZeroClass M₀]
 
-theorem mul_left_inj' (hc : c ≠ 0) : a * c = b * c ↔ a = b :=
-  (mul_left_injective₀ hc).eq_iff
+-- see Note [lower instance priority]
+instance (priority := 10) IsLeftCancelMulZero.to_noZeroDivisors [IsLeftCancelMulZero M₀] :
+    NoZeroDivisors M₀ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
+    or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
 
-theorem mul_right_inj' (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
-  (mul_right_injective₀ ha).eq_iff
+-- see Note [lower instance priority]
+instance (priority := 10) IsRightCancelMulZero.to_noZeroDivisors [IsRightCancelMulZero M₀] :
+    NoZeroDivisors M₀ where
+  eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
+    or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
 
-end CancelMonoidWithZero
+end MulZeroClass
 
-section CommSemigroup
+section CommMagma
 
-variable [CommSemigroup M₀] [Zero M₀]
+variable [CommMagma M₀] [Zero M₀]
 
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
-    IsRightCancelMulZero M₀ :=
-{ mul_right_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    IsRightCancelMulZero M₀ where
+  mul_right_cancel_of_ne_zero :=
+    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
-    IsLeftCancelMulZero M₀ :=
-{ mul_left_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _)) }
+    IsLeftCancelMulZero M₀ where
+  mul_left_cancel_of_ne_zero :=
+    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
@@ -160,19 +186,14 @@ lemma IsRightCancelMulZero.to_isCancelMulZero [IsRightCancelMulZero M₀] :
     IsCancelMulZero M₀ :=
 { IsRightCancelMulZero.to_isLeftCancelMulZero with }
 
-end CommSemigroup
+end CommMagma
 
 /-- A type `M` is a `CancelCommMonoidWithZero` if it is a commutative monoid with zero element,
 `0` is left and right absorbing,
 and left/right multiplication by a non-zero element is injective. -/
-class CancelCommMonoidWithZero (M₀ : Type*) extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
-
--- See note [lower cancel priority]
-attribute [instance 75] CancelCommMonoidWithZero.toCommMonoidWithZero
-
-instance (priority := 100) CancelCommMonoidWithZero.toCancelMonoidWithZero
-    [CancelCommMonoidWithZero M₀] : CancelMonoidWithZero M₀ :=
-{ IsLeftCancelMulZero.to_isCancelMulZero (M₀ := M₀) with }
+@[deprecated "Use `[CommMonoidWithZero M₀] [IsCancelMulZero M₀].`" (since := "2026-01-11")]
+structure CancelCommMonoidWithZero (M₀ : Type*)
+    extends CommMonoidWithZero M₀, IsLeftCancelMulZero M₀
 
 /-- Prop-valued mixin for a monoid with zero to be equipped with a cancelling division.
 
@@ -229,13 +250,10 @@ such that every nonzero element is invertible.
 The type is required to come with an “inverse” function, and the inverse of `0` must be `0`. -/
 class CommGroupWithZero (G₀ : Type*) extends CommMonoidWithZero G₀, GroupWithZero G₀
 
-section
-variable [CancelMonoidWithZero M₀] {x : M₀}
-
-lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
+lemma eq_zero_or_one_of_sq_eq_self [MonoidWithZero M₀] [IsRightCancelMulZero M₀]
+    {x : M₀} (hx : x ^ 2 = x) :
+    x = 0 ∨ x = 1 :=
   or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
-
-end
 
 section GroupWithZero
 
