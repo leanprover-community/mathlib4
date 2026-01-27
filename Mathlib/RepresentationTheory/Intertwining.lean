@@ -50,6 +50,8 @@ instance : FunLike (IntertwiningMap ρ σ) V W where
   coe f := f.toFun
   coe_injective' := toFun_injective ρ σ
 
+@[simp] theorem coe_mk (f : V →ₗ[A] W) (h) : ⇑(⟨f, h⟩ : IntertwiningMap ρ σ) = f := rfl
+
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
     f (ρ g v) = σ g (f v) := f.isIntertwining' g v
 
@@ -116,13 +118,23 @@ def id : IntertwiningMap ρ ρ where
   toLinearMap := LinearMap.id
   isIntertwining' := by simp
 
-@[simp] lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
+/-- Composition of intertwining maps. -/
+def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] IntertwiningMap ρ τ where
+  toFun f :=
+    { toFun g :=
+      { toLinearMap := f.toLinearMap.comp g.toLinearMap
+        isIntertwining' := by simp [f.isIntertwining, g.isIntertwining] }
+      map_add' _ _ := by ext; simp [map_add]
+      map_smul' _ _ := by ext; simp }
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
 
 variable {ρ σ τ} in
-/-- Composition of intertwining maps. -/
-def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ where
-  toLinearMap := LinearMap.comp f.toLinearMap g.toLinearMap
-  isIntertwining' γ v := by simp [f.isIntertwining, g.isIntertwining]
+/-- Composition of intertwining maps.
+
+A convenience variant of `IntertwiningMap.llcomp` for use in dot notation. -/
+def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ :=
+  llcomp _ _ _ f g
 
 instance : Mul (IntertwiningMap ρ ρ) where
   mul := comp
