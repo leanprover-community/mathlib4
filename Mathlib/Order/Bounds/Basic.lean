@@ -699,7 +699,7 @@ end
 
 section Minimal
 
-variable [PartialOrder α] {s : Set α} {a b : α}
+variable [Preorder α] {s : Set α} {a b : α}
 
 theorem DirectedOn.le_of_minimal (h : DirectedOn (fun x y ↦ y ≤ x) s) (hMin : Minimal (· ∈ s) a)
     (hb : b ∈ s) : a ≤ b := by
