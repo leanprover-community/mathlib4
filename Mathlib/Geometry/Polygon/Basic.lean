@@ -5,8 +5,9 @@ Authors: A. M. Berns
 -/
 module
 
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Polygons
