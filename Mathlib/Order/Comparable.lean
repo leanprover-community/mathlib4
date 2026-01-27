@@ -27,8 +27,6 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 * `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
   either direction by `r`. This is deprecated in favor of `Relation.SymmGen`, with naming chosen for
   consistency with `Relation.TransGen` in core and other definitions in `Mathlib.Logic.Relation`.
-  While it is inconsistent with `IncompRel`, this definition was not used downstream and caused
-  awkwardness for imports.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
