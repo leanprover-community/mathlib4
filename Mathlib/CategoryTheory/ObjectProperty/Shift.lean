@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
@@ -107,11 +106,6 @@ instance commShiftι : P.ι.CommShift A :=
 
 -- these definitions are made irreducible to prevent any abuse of defeq
 attribute [irreducible] hasShift commShiftι
-
-instance [Preadditive C] (n : A) [(shiftFunctor C n).Additive] :
-    (shiftFunctor P.FullSubcategory n).Additive := by
-  have := Functor.additive_of_iso (P.ι.commShiftIso n).symm
-  apply Functor.additive_of_comp_faithful _ P.ι
 
 section
 

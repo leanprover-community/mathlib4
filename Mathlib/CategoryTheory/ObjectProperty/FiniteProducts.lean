@@ -78,7 +78,7 @@ lemma IsClosedUnderFiniteProducts.mk' [HasFiniteProducts C]
   | of_equiv e =>
     exact IsClosedUnderLimitsOfShape.of_equivalence (Discrete.equivalence e)
   | h_empty => infer_instance
-  | @h_option α =>
+  | h_option =>
     constructor
     rintro X ⟨p⟩
     have hc : IsLimit
