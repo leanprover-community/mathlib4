@@ -17,11 +17,6 @@ We also prove a few basic facts.
   subgroups, each normal in the successor, starting at the subgroup itself and
   ending with the whole group (`IsSubnormal_iff`).
 * The relation of being `IsSubnormal` is transitive (`IsSubnormal.trans`).
-* The image of a subnormal subgroup under a surjective group homomorphism is subnormal (`map`).
-* The quotient of a subnormal subgroup is a subnormal subgroup (`quotient` --
-  this is a convenient specialisation of `map`).
-* The inverse image of a subnormal group is subnormal (`comap`, as well as the specialization
-  `subgroupOf` for the case in which the `comap` is `subgroupOf`).
 -/
 
 variable {G : Type*} [Group G] {H K : Subgroup G}
