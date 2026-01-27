@@ -73,18 +73,18 @@ def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 /-- We define that the free group on one element as isomorphic to ℤ. -/
 def FreeGroup.freeGroupUnitMulEquivInt :
     FreeGroup Unit ≃* Multiplicative ℤ where
-    { toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-      invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
-      left_inv := by
-        intro x
-        simp
-      right_inv := by
-        intro z
-        simp
-      map_mul' := by
-        intro x y
-        ext
-        simp [FreeGroup.freeGroupUnitEquivInt] }
+    toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
+    invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
+    left_inv := by
+      intro x
+      simp
+    right_inv := by
+      intro z
+      simp
+    map_mul' := by
+      intro x y
+      ext
+      simp [FreeGroup.freeGroupUnitEquivInt]
 
 /-- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
 FreeGroup.map is also surjective. -/
