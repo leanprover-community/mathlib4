@@ -66,7 +66,7 @@ lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
 /-- We define that the free group on no generators as isomorphic to the trivial group. -/
 def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 { toEquiv := FreeGroup.freeGroupEmptyEquivUnit
-  map_mul' := by intro x y; rfl }
+  map_mul' _ _ := rfl }
 
 -- TODO review this
 
