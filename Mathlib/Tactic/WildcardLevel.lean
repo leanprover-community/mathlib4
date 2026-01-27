@@ -128,12 +128,6 @@ def elabWildcardUniverses {m : Type → Type} [Monad m] [MonadExceptOf Exception
     | _ => throwUnsupportedSyntax
 
 /--
-Extracts all universe parameter names appearing in a level expression.
--/
-def Lean.Level.getParams (l : Level) : Array Name :=
-  (Lean.CollectLevelParams.visitLevel l {}).params
-
-/--
 Reorganizes universe parameter names to ensure proper dependency ordering.
 
 Algorithm:
@@ -164,8 +158,8 @@ def reorganizeUniverseParams
     unless wildcardKind matches .param _ do continue
     let .param newParamName := elaboratedLevel | continue
     -- Collect dependencies: params from later universe arguments
-    let laterLevels := constLevels.extract (idx + 1) constLevels.size
-    let dependencies := laterLevels.flatMap (·.getParams) |>.filter (· != newParamName)
+    let dependencies := 
+      constLevels.foldr (stop := idx + 1) CollectLevelParams.visitLevel {} |>.params
     -- Remove newParamName from list (if it already exists)
     let currentNames := result.filter (· != newParamName)
     -- Find position after last dependency
