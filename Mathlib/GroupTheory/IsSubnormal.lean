@@ -107,7 +107,7 @@ lemma exists_normal_and_ne_top_of_ne (hN : H.IsSubnormal) (ne_top : H ≠ ⊤) :
 /--
 A subnormal subgroup is either the whole group or it is contained in a proper normal subgroup.
 -/
-lemma le_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K < ⊤ ∧ K.Normal ∧ H ≤ K := by
+lemma le_normal (hN : H.IsSubnormal) : H = ⊤ ∨ ∃ K, K.Normal ∧ H ≤ K ∧ K < ⊤ := by
   obtain rfl | H_ne := eq_or_ne H ⊤
   · simp
   · grind only [iff_eq_top_or_exists, exists_normal_and_ne_top_of_ne]
