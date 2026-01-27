@@ -154,15 +154,9 @@ abbrev slBasisIndex (i0 : n) := OffDiag n ⊕ { i : n // i ≠ i0 }
 
 /-- The basis function for `sl n R` relative to `i₀`: off-diagonal indices map to single-entry
 matrices, and diagonal indices `i ≠ i₀` map to `E_ii - E_{i₀i₀}`. -/
-noncomputable def slBasisFun (i0 : n) : slBasisIndex (n := n) i0 → sl n R := by
-  classical
-  intro x
-  cases x with
-  | inl ij =>
-      rcases ij with ⟨⟨i, j⟩, hij⟩
-      exact single i j hij 1
-  | inr i =>
-      exact singleSubSingle i.1 i0 1
+def slBasisFun (i0 : n) : slBasisIndex (n := n) i0 → sl n R
+  | .inl ⟨⟨i, j⟩, hij⟩ => single i j hij 1
+  | .inr i => singleSubSingle i.1 i0 1
 
 /-- The linear map from coordinate functions to `sl n R`, given by linear combination
 of basis elements. -/
