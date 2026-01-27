@@ -30,12 +30,12 @@ lemma associatedPrimes_eq_minimalPrimes_of_isUnmixed [IsNoetherianRing R] {I : I
     (unmix : I.IsUnmixed) : associatedPrimes R (R ⧸ I) = I.minimalPrimes := by
   apply le_antisymm
   · intro p hp
-    have := IsAssociatedPrime.isPrime hp
+    let _ := hp.1
     apply Ideal.mem_minimalPrimes_of_height_eq _ (le_of_eq (unmix.1 hp))
     rw [← Ideal.annihilator_quotient (I := I), ← Submodule.annihilator_top]
     exact IsAssociatedPrime.annihilator_le hp
-  · convert minimalPrimes_annihilator_subset_associatedPrimes R (R ⧸ I)
-    exact Ideal.annihilator_quotient.symm
+  · nth_rw 1 [← Ideal.annihilator_quotient (I := I)]
+    exact minimalPrimes_annihilator_subset_associatedPrimes R (R ⧸ I)
 
 lemma Ideal.ofList_isUnmixed_of_associatedPrimes_eq_minimalPrimes [IsNoetherianRing R] (l : List R)
     (h : (Ideal.ofList l).height = l.length)
@@ -80,10 +80,10 @@ lemma isCohenMacaulayRing_of_unmixed
         by_contra! h
         obtain ⟨q, qass, le⟩ : ∃ q ∈ associatedPrimes R (R ⧸ Ideal.ofList rs), p ≤ q := by
           rcases associatedPrimes.nonempty R (R ⧸ Ideal.ofList rs) with ⟨Ia, hIa⟩
-          apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R _) Ia Ia _).mp
-          · rw [biUnion_associatedPrimes_eq_compl_regular R (R ⧸ Ideal.ofList rs)]
-            exact fun r hr ↦ h r hr
-          · exact fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin
+          apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R _) Ia Ia
+            (fun I hin _ _ ↦ IsAssociatedPrime.isPrime hin)).mp
+          rw [biUnion_associatedPrimes_eq_compl_regular R (R ⧸ Ideal.ofList rs)]
+          exact fun r hr ↦ h r hr
         have := Ideal.height_mono le
         rw [(unmix rs ht).1 qass, ht, len] at this
         exact this.not_gt lt
@@ -133,7 +133,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     simp [eq] at ht
   let _ := hp.1
   have le : Ideal.ofList l ≤ p := by
-    convert IsAssociatedPrime.annihilator_le hp
+    apply le_of_eq_of_le _ (IsAssociatedPrime.annihilator_le hp)
     rw [Submodule.annihilator_top, Ideal.annihilator_quotient]
   have ht_eq : (maximalIdeal (Localization.AtPrime p)).height = p.height := by
     rw [← IsLocalization.height_comap p.primeCompl, Localization.AtPrime.comap_maximalIdeal]
@@ -149,8 +149,7 @@ theorem isCohenMacaulayRing_iff_unmixed : IsCohenMacaulayRing R ↔
     simpa only [List.length_map, ← ht, ← Ideal.map_ofList]
       using IsLocalization.height_le_height_map p.primeCompl _
   let _ := cm p hp.1
-  have reg :=
-    isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing _ mem ht_eq_len
+  have reg := isRegular_of_ofList_height_eq_length_of_isCohenMacaulayLocalRing _ mem ht_eq_len
   have CM := (quotient_regular_isCohenMacaulay_iff_isCohenMacaulay
     (ModuleCat.of (Localization.AtPrime p) (Localization.AtPrime p))
     (l.map (algebraMap R (Localization.AtPrime p))) reg).mp
