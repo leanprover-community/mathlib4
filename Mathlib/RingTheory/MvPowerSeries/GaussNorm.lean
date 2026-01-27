@@ -59,7 +59,7 @@ lemma le_gaussNormC (hbd : HasGaussNorm v c f) (t : σ →₀ ℕ) :
 theorem gaussNormC_nonneg [NonnegHomClass F R ℝ] : 0 ≤ gaussNormC v c f := by
   rw [gaussNormC]
   by_cases h : HasGaussNorm v c f
-  · trans v (constantCoeff f) 
+  · trans v (constantCoeff f)
     · simp
     · convert (le_gaussNormC v c f h 0)
       simp
