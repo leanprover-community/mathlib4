@@ -101,7 +101,7 @@ attribute [instance] RootedConnected.nonempty_path
 
 section GeodesicSubtree
 
-variable {V : Type u} [Quiver.{v + 1} V] (r : V) [RootedConnected r]
+variable {V : Type u} [Quiver.{v} V] (r : V) [RootedConnected r]
 
 /-- A path from `r` of minimal length. -/
 noncomputable def shortestPath (b : V) : Path r b :=
