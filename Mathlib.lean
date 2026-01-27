@@ -1065,6 +1065,7 @@ public import Mathlib.Algebra.Polynomial.Coeff
 public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.CoeffMem
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
 public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
