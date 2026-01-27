@@ -270,19 +270,14 @@ lemma Q_rank_one {P : ℕ → X →L[𝕜] X}
   exact Nat.add_right_cancel this.symm
 
 /-- Constructs a Schauder basis from a sequence of projections. -/
-theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 0)
+def basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} {e : ℕ → X} (h0 : P 0 = 0)
     (hdim : ∀ n, Module.finrank 𝕜 (LinearMap.range (P n).toLinearMap) = n)
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
-    (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x)) :
-    ∃ e : ℕ → X, Nonempty (SchauderBasis 𝕜 e) := by
+    (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x))
+    (he_in_range : ∀ n, e n ∈ LinearMap.range (Q P n).toLinearMap) (he_ne : ∀ n, e n ≠ 0) :
+    SchauderBasis 𝕜 e :=
   let Q := Q P
   have hrankQ := Q_rank_one h0 hdim hcomp
-  have (n : ℕ) :  ∃ v, v ∈ LinearMap.range (Q n).toLinearMap ∧ v ≠ 0 := by
-    refine exists_mem_ne_zero_of_rank_pos ?_
-    apply Module.lt_rank_of_lt_finrank
-    rw [hrankQ n]
-    exact Nat.zero_lt_one
-  choose e he_in_range he_ne using this
   have h_range_eq_span (n : ℕ) : LinearMap.range (Q n).toLinearMap = Submodule.span 𝕜 {e n} := by
     symm
     have : FiniteDimensional 𝕜 ↥(LinearMap.range (Q n).toLinearMap) := by
@@ -334,7 +329,6 @@ theorem basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} (h0 : P 0 = 
     dsimp only [mkContinuous_apply, IsLinearMap.mk'_apply]
     simp_rw [← hQf, Q]
     simp only [← Q_sum P h0 n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
-  use e
-  exact ⟨SchauderBasis.mk f ortho lim⟩
+  SchauderBasis.mk f ortho lim
 
 end SchauderBasis
