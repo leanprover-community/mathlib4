@@ -48,7 +48,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → ℝ} {d b η 
   · use ∅
     simp [hdb]
   replace hf : ∀ᵐ x, x ∈ Ioo d b → HasDerivAt f (f' x) x := by
-    filter_upwards [hf] with x hx1 hx2 using hx1 (Ioo_subset_Icc_self hx2)
+    filter_upwards [hf] with x hx₁ hx₂ using hx₁ (Ioo_subset_Icc_self hx₂)
   let t := {z : ℝ × ℝ | (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η}
   let s := {x ∈ Ioo d b | HasDerivAt f (f' x) x}
   have : ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2) ∧
@@ -193,7 +193,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   rcases eq_or_lt_of_le hd.right with hdb | hdb
   · simp [hdb, hr.le]
   replace hf₀ : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f 0 x := by
-    filter_upwards [hf₀] with x hx1 hx2
+    filter_upwards [hf₀] with x _ _
     grind
   have hfdb': 0 < r / (b - d) := by apply div_pos <;> linarith
   have ⟨u, hu₁, hu₂, hu₃⟩ :=
@@ -232,8 +232,8 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
   have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac)
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
     filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
-      with x hx1 hx2 hx3
-    convert (hx1 hx3).hasDerivAt.sub (hx2 hx3 a (by simp))
+      with x hx₁ hx₂ hx₃
+    convert (hx₁ hx₃).hasDerivAt.sub (hx₂ hx₃ a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.const_of_ae_hasDerivAt_zero g_ae_deriv_zero
   have : f a = g a := by simp [g]
