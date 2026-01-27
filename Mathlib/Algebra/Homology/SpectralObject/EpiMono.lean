@@ -246,13 +246,9 @@ noncomputable abbrev EMapFourδ₂Toδ₁' :=
 lemma isIso_EMapFourδ₂Toδ₁'
     (h₁ : IsIso ((X'.H n₁).map (twoδ₁Toδ₀' i₁ i₂ i₃ hi₁₂ hi₂₃)))
     (h₂ : IsIso ((X'.H n₂).map (twoδ₂Toδ₁' i₀ i₁ i₂ hi₀₁ hi₁₂))) :
-    IsIso (X'.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) := by
-  apply X'.isIso_EMap
-  · dsimp
-    erw [Functor.map_id]
-    infer_instance
-  · exact h₁
-  · exact h₂
+    IsIso (X'.EMapFourδ₂Toδ₁' n₀ n₁ n₂ hn₁ hn₂ i₀ i₁ i₂ i₃ i₄ hi₀₁ hi₁₂ hi₂₃ hi₃₄) :=
+  X'.isIso_EMap _ _ _ _ _ _ _ _ _ _ _ _
+    (inferInstanceAs (IsIso ((X'.H n₀).map (𝟙 _)))) h₁ h₂
 
 end
 
