@@ -25,7 +25,7 @@ to the other, use `not_compRel_iff` and `not_incompRel_iff`.
 ## Main declarations
 
 * `CompRel`: The comparability relation. `CompRel r a b` means that `a` and `b` is related in
-  either direction by `r`.
+  either direction by `r`. This is deprecated in favor of `Relation.SymmGen`.
 * `IncompRel`: The incomparability relation. `IncompRel r a b` means that `a` and `b` are related in
   neither direction by `r`.
 
