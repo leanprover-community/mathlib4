@@ -21,7 +21,7 @@ variable {R R₂ S S₂ M N P : Type*} [Ring R] [Ring R₂] [Ring S] [Ring S₂]
     [AddCommGroup M] [AddCommGroup N] [AddCommGroup P] [Module R M] [Module S N] [Module R₂ P]
     [Module S₂ P] [SMulCommClass R₂ S₂ P] {ρ : R →+* R₂} {σ : S →+* S₂}
 
-attribute [local instance] SMulCommClass.symm -- should this be global?
+attribute [local instance] SMulCommClass.symm
 
 /-- Lift a bilinear form from `M × N → P` to `(M ⧸ M') × (N ⧸ N') → P`. -/
 def liftQ₂ (M' : Submodule R M) (N' : Submodule S N) (f : M →ₛₗ[ρ] N →ₛₗ[σ] P)
