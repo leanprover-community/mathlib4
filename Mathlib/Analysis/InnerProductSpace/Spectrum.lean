@@ -206,7 +206,7 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
     hT.orthogonalFamily_eigenspaces').val
 
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
-  {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
+    {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
   let (eq := hx) x : Eigenvalues T := ⟨μ, hμ⟩
   obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
     hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
