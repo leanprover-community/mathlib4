@@ -333,12 +333,8 @@ theorem maximal_iff_maximal_of_imp_of_forall (hPQ : ∀ ⦃x⦄, Q x → P x)
 end PartialOrder
 
 section LinearOrder
-/- The following set of theorems only require `≤` to be a total order. However, `LinearOrder` is the
-minimal structure that satisfies this requirement as of now. -/
 
-variable [LinearOrder α]
-
-variable {i j : ι} {Q : ι → Prop} {f : ι → α}
+variable [LinearOrder α] {i j : ι} {Q : ι → Prop} {f : ι → α}
 
 theorem Minimal.le (h : Minimal P x) (hy : P y) : x ≤ y :=
   le_of_not_gt (h.not_lt hy)
