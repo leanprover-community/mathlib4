@@ -34,10 +34,7 @@ namespace LinearIsometryEquiv
 variable (f : E ≃ₗᵢ[ℝ] F)
 
 /-- Every linear isometry equivalence is a measurable equivalence. -/
-def toMeasurableEquiv : E ≃ᵐ F where
-  toEquiv := f
-  measurable_toFun := f.continuous.measurable
-  measurable_invFun := f.symm.continuous.measurable
+def toMeasurableEquiv : E ≃ᵐ F := f.toHomeomorph.toMeasurableEquiv
 
 @[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
 
