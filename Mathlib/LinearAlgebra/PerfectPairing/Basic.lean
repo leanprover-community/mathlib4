@@ -106,6 +106,10 @@ lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] 
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
 
+instance [inst : p.IsPerfPair] : Fact p.Nondegenerate := ⟨by
+  simpa only [Nondegenerate, ← flip_separatingLeft, separatingLeft_iff_ker_eq_bot, ker_eq_bot]
+    using ⟨inst.bijective_left.injective, inst.bijective_right.injective⟩⟩
+
 end CommRing
 
 section Field

@@ -8,7 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.Algebra.Module.Projective
 
+-- public import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
@@ -714,21 +716,21 @@ def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
 def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   SeparatingLeft B ∧ SeparatingRight B
 
+variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
+
 @[simp]
-theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingRight ↔ B.SeparatingLeft :=
+theorem flip_separatingRight : B.flip.SeparatingRight ↔ B.SeparatingLeft :=
   ⟨fun hB x hy ↦ hB x hy, fun hB x hy ↦ hB x hy⟩
 
 @[simp]
-theorem flip_separatingLeft {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.flip.SeparatingLeft ↔ SeparatingRight B := by rw [← flip_separatingRight, flip_flip]
+theorem flip_separatingLeft : B.flip.SeparatingLeft ↔ SeparatingRight B := by
+  rw [← flip_separatingRight, flip_flip]
 
 @[simp]
-theorem flip_nondegenerate {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} : B.flip.Nondegenerate ↔ B.Nondegenerate :=
+theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
   Iff.trans and_comm (and_congr flip_separatingRight flip_separatingLeft)
 
-theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
+theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
   · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
@@ -737,19 +739,68 @@ theorem separatingLeft_iff_linear_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →�
     exact hB _
   exact h x h'
 
-theorem separatingRight_iff_linear_flip_nontrivial {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
+theorem separatingRight_iff_linear_flip_nontrivial :
     B.SeparatingRight ↔ ∀ y : M₂, B.flip y = 0 → y = 0 := by
   rw [← flip_separatingLeft, separatingLeft_iff_linear_nontrivial]
 
 /-- A bilinear map is left-separating if and only if it has a trivial kernel. -/
-theorem separatingLeft_iff_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
+theorem separatingLeft_iff_ker_eq_bot : B.SeparatingLeft ↔ LinearMap.ker B = ⊥ :=
   Iff.trans separatingLeft_iff_linear_nontrivial LinearMap.ker_eq_bot'.symm
 
 /-- A bilinear map is right-separating if and only if its flip has a trivial kernel. -/
-theorem separatingRight_iff_flip_ker_eq_bot {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :
-    B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
+theorem separatingRight_iff_flip_ker_eq_bot : B.SeparatingRight ↔ LinearMap.ker B.flip = ⊥ := by
   rw [← flip_separatingLeft, separatingLeft_iff_ker_eq_bot]
+
+/-- If a bilinear map is left-separating then it has a trivial kernel. -/
+@[simp]
+theorem SeparatingLeft.ker_eq_bot [inst : Fact B.SeparatingLeft] : ker B = ⊥ := by
+  simpa [separatingLeft_iff_ker_eq_bot] using inst.elim
+
+instance [inst : Fact B.Nondegenerate] : Fact B.SeparatingLeft := ⟨inst.elim.1⟩
+
+instance [inst : Fact B.Nondegenerate] : Fact B.SeparatingRight := ⟨inst.elim.2⟩
+
+instance [inst : Fact B.SeparatingLeft] : Fact B.flip.SeparatingRight :=
+  ⟨flip_separatingLeft.mp inst.elim⟩
+
+instance [inst : Fact B.SeparatingRight] : Fact B.flip.SeparatingLeft :=
+  ⟨flip_separatingRight.mp inst.elim⟩
+
+/-- The identitiy pairing is left-separating. -/
+theorem SeparatingLeft.id : (.id : (M₁ →ₛₗ[I₁] M) →ₛₗ[_] _).SeparatingLeft :=
+  fun _ hx => by ext y; exact hx y
+
+/-- The identitiy pairing is right-separating. -/
+theorem SeparatingRight.id [Module.Projective R M] : (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight :=
+  fun _ hx => by simpa using (Module.forall_dual_apply_eq_zero_iff R _).mp hx
+
+/-- The identitiy pairing is non-degenerate. -/
+theorem Nondegenerate.id [Module.Projective R M] :
+    (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id, .id⟩
+
+instance : Fact (.id : (M₂ →ₛₗ[I₂] M) →ₛₗ[_] _).SeparatingLeft := ⟨.id⟩
+
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).SeparatingRight := ⟨.id⟩
+
+instance [Module.Projective R M] : Fact (.id : (M →ₗ[R] R) →ₛₗ[_] _).Nondegenerate := ⟨.id⟩
+
+/-- The pairing `Dual.eval` is left-separating. -/
+theorem SeparatingLeft.eval [Module.Projective R M] : (Dual.eval R M).SeparatingLeft := by
+  simp only [Dual.eval, flip_separatingLeft, SeparatingRight.id]
+
+/-- The pairing `Dual.eval` is right-separating. -/
+theorem SeparatingRight.eval : (Dual.eval R M).SeparatingRight := by
+  simp only [Dual.eval, flip_separatingRight, SeparatingLeft.id]
+
+/-- The pairing `Dual.eval` is non-degenerate. -/
+theorem Nondegenerate.eval [Module.Projective R M] : (Dual.eval R M).Nondegenerate :=
+  ⟨.eval, .eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).SeparatingLeft := ⟨.eval⟩
+
+instance : Fact (Dual.eval R M).SeparatingRight := ⟨.eval⟩
+
+instance [Module.Projective R M] : Fact (Dual.eval R M).Nondegenerate := ⟨.eval⟩
 
 end CommSemiring
 
