@@ -438,13 +438,6 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
 
 end disjointOfUnion
 
-/-- Finite disjoint unions of elements of a set of sets. -/
-def _root_.Set.finiteUnions (C : Set (Set α)) : Set (Set α) :=
-  {s | ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J}
-
-lemma _root_.Set.self_subset_finiteUnions (C : Set (Set α)) : C ⊆ C.finiteUnions :=
-  fun s hs ↦ ⟨{s}, by simp [hs], by simp, by simp⟩
-
 lemma _root_.Set.Ioc_mem_setOf_Ioc_le {α : Type*} [LinearOrder α] (u v : α) :
     Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} := by
   rcases le_or_gt u v with h | h
@@ -566,58 +559,5 @@ theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i 
   | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
 
 end IsSetRing
-
-lemma IsSetSemiring.diff_mem_finiteUnions
-    (hC : IsSetSemiring C) {s t : Set α} (hs : s ∈ C.finiteUnions) (ht : t ∈ C.finiteUnions) :
-    s \ t ∈ C.finiteUnions := by
-  classical
-  rcases hs with ⟨I, IC, Idisj, rfl⟩
-  rcases ht with ⟨J, JC, Jdisj, rfl⟩
-  have A (i) (hi : i ∈ I) : ∃ J' : Finset (Set α), ↑J' ⊆ C ∧
-      PairwiseDisjoint (J' : Set (Set α)) id ∧ i \ ⋃₀ J = ⋃₀ J' :=
-    hC.exists_disjoint_finset_diff_eq (IC hi) JC
-  choose! J' hJ'C hJ'disj hiJ' using A
-  have H {a i} (hi : i ∈ I) (ha : a ∈ J' i) : a ⊆ i \ ⋃₀ ↑J := by
-    rw [hiJ' i hi]
-    simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-    exact Set.subset_biUnion_of_mem (u := id) ha
-  refine ⟨I.biUnion J', ?_, ?_, ?_⟩
-  · simpa using hJ'C
-  · intro s hs t ht hst
-    simp only [coe_biUnion, SetLike.mem_coe, mem_iUnion, exists_prop] at hs ht
-    rcases hs with ⟨i, iI, hi⟩
-    rcases ht with ⟨j, jI, hj⟩
-    rcases eq_or_ne i j with rfl | hij
-    · exact hJ'disj i iI hi hj hst
-    · exact (Idisj iI jI hij).mono ((H iI hi).trans diff_subset)
-        ((H jI hj).trans diff_subset)
-  · simp only [sUnion_eq_biUnion, SetLike.mem_coe, iUnion_diff, coe_biUnion, mem_iUnion,
-      exists_prop, iUnion_exists, biUnion_and']
-    apply iUnion_congr (fun i ↦ iUnion_congr (fun hi ↦ ?_))
-    simpa [sUnion_eq_biUnion] using hiJ' i hi
-
-/-- Given a semi-ring of sets, finite unions of these form a ring of sets. -/
-lemma IsSetSemiring.isSetRing_finiteUnions (hC : IsSetSemiring C) :
-    IsSetRing C.finiteUnions where
-  empty_mem := ⟨∅, by simp⟩
-  diff_mem s t := hC.diff_mem_finiteUnions
-  union_mem s t hs ht := by
-    classical
-    wlog! H : Disjoint s t generalizing s
-    · rw [← diff_union_self]
-      exact this _ (hC.diff_mem_finiteUnions hs ht) disjoint_sdiff_left
-    rcases hs with ⟨I, IC, Idisj, rfl⟩
-    rcases ht with ⟨J, JC, Jdisj, rfl⟩
-    refine ⟨I ∪ J, by grind, ?_, by grind⟩
-    have K {a b} (ha : a ∈ I) (hb : b ∈ J) : Disjoint a b :=
-      H.mono (subset_sUnion_of_mem ha) (subset_sUnion_of_mem hb)
-    intro i hi j hj hij
-    simp only [Function.onFun, id_eq]
-    simp only [coe_union, Set.mem_union, SetLike.mem_coe] at hi hj
-    rcases hi with hi | hi <;> rcases hj with hj | hj
-    · exact Idisj hi hj hij
-    · exact K hi hj
-    · exact (K hj hi).symm
-    · exact Jdisj hi hj hij
 
 end MeasureTheory
