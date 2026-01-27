@@ -10,8 +10,8 @@ public import Mathlib.Order.Hom.Basic
 /-!
 # Order types
 
-Order types are defined as the quotient of linear orders under order isomorphism. They are preordered
-by order embeddings.
+Order types are defined as the quotient of linear orders under order isomorphism.
+They are preordered by order embeddings.
 
 ## Main definitions
 
