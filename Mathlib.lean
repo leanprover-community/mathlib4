@@ -66,6 +66,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Finsupp.Fin
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Gaps
 public import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
@@ -157,6 +158,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -1065,6 +1067,7 @@ public import Mathlib.Algebra.Polynomial.CoeffList
 public import Mathlib.Algebra.Polynomial.CoeffMem
 public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
 public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
@@ -1350,6 +1353,7 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
+public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Representability
 public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.AlgebraicGeometry.Sites.SmallAffineZariski
@@ -5596,6 +5600,7 @@ public import Mathlib.Order.Interval.Finset.Box
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Interval.Finset.DenselyOrdered
 public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Gaps
 public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.Interval.Finset.SuccPred
 public import Mathlib.Order.Interval.Lex
@@ -5734,6 +5739,8 @@ public import Mathlib.Probability.Distributions.Gamma
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Distributions.Gaussian.CharFun
 public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
+public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.Distributions.Geometric
 public import Mathlib.Probability.Distributions.Pareto
@@ -7494,7 +7501,6 @@ public import Mathlib.Topology.VectorBundle.Hom
 public import Mathlib.Topology.VectorBundle.Riemannian
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Util.AliasIn
-public import Mathlib.Util.AssertExists
 public import Mathlib.Util.AssertExistsExt
 public import Mathlib.Util.AssertNoSorry
 public import Mathlib.Util.AtLocation
