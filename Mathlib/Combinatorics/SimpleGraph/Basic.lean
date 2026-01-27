@@ -508,8 +508,11 @@ theorem edgeSet_top : (⊤ : SimpleGraph V).edgeSet = Sym2.diagSetᶜ :=
   Sym2.diagSet_compl_eq_fromRel_ne.symm
 
 @[simp]
-theorem edgeSet_subset_setOf_not_isDiag : G.edgeSet ⊆ Sym2.diagSetᶜ :=
-  Sym2.irreflexive_iff_fromRel_subset_diagSet_compl G.symm |>.mp G.loopless
+theorem edgeSet_subset_compl_diagSet : G.edgeSet ⊆ Sym2.diagSetᶜ := by
+  simpa [Set.subset_compl_iff_disjoint_left, edgeSet, edgeSetEmbedding] using G.loopless
+
+@[deprecated (since := "2025-12-10")]
+alias edgeSet_subset_setOf_not_isDiag := edgeSet_subset_compl_diagSet
 
 @[simp]
 theorem edgeSet_sup : (G₁ ⊔ G₂).edgeSet = G₁.edgeSet ∪ G₂.edgeSet := by
@@ -542,7 +545,7 @@ allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
 @[simp]
 theorem edgeSet_sdiff_sdiff_isDiag (G : SimpleGraph V) (s : Set (Sym2 V)) :
     G.edgeSet \ (s \ Sym2.diagSet) = G.edgeSet \ s := by
-  grind [Sym2.mem_diagSet_iff_isDiag, not_isDiag_of_mem_edgeSet]
+  grind [Sym2.mem_diagSet, not_isDiag_of_mem_edgeSet]
 
 /-- Two vertices are adjacent iff there is an edge between them. The
 condition `v ≠ w` ensures they are different endpoints of the edge,
@@ -666,7 +669,7 @@ theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ 
 @[simp] lemma disjoint_fromEdgeSet : Disjoint G (fromEdgeSet s) ↔ Disjoint G.edgeSet s := by
   conv_rhs => rw [← Set.diff_union_inter s Sym2.diagSet]
   rw [← disjoint_edgeSet, edgeSet_fromEdgeSet]
-  grind [edgeSet_subset_setOf_not_isDiag]
+  grind [edgeSet_subset_compl_diagSet]
 
 @[simp] lemma fromEdgeSet_disjoint : Disjoint (fromEdgeSet s) G ↔ Disjoint s G.edgeSet := by
   rw [disjoint_comm, disjoint_fromEdgeSet, disjoint_comm]
