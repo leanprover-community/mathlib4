@@ -93,7 +93,7 @@ theorem pow_idealOfVars (n : ℕ) :
 theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     .span ((monomial · 1) '' (degree ⁻¹' {n})) := by
   rw [idealOfVars, Ideal.span, Submodule.span_pow, ← Set.image_univ,
-    image_pow_eq_image_finsupp_prod]
+    image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
