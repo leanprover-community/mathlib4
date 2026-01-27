@@ -426,7 +426,7 @@ instance isTriangulated_lift (F : E ⥤ C) (hF : ∀ (X : E), P (F.obj X))
 
 instance {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
     [HasShift D ℤ] [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
-    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] [F.Faithful] :
+    (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     (P.map F).IsTriangulated := by
   rw [← F.essImage_ι_comp]
   infer_instance
