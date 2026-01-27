@@ -46,9 +46,9 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
 
 @[to_additive]
 lemma prod_Ico_int_div (b : ℕ) {α : Type*} [CommGroup α] (f : ℤ → α) :
-    ∏ n ∈ Ico (-b : ℤ) b, (f n / f (n + 1)) = f (-b) / f b := by
+    ∏ n ∈ Ico (-b : ℤ) b, f n / f (n + 1) = f (-b) / f b := by
   induction b with
-  | zero => aesop
+  | zero => simp
   | succ b ihb =>
     simp only [Nat.cast_add_one, Ico_succ_succ]
     rw [prod_union (by aesop), prod_insert (by grind), prod_singleton, ihb, ← mul_assoc, mul_div]

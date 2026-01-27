@@ -122,8 +122,8 @@ private lemma one_div_linear_sub_one_div_linear_eq (a b m : ℤ) (hm : m ≠ 0 �
     1 / ((m : ℂ) * z + a) - 1 / (m * z + b) = (b - a) * (1 / ((m * z + a) * (m * z + b))) := by
   rw [← one_div_mul_sub_mul_one_div_eq_one_div_add_one_div]
   · grind [one_div, add_sub_add_left_eq_sub, mul_inv_rev]
-  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, a]) (by aesop)
-  · simpa using UpperHalfPlane.linear_ne_zero z (cd := ![m, b]) (by aesop)
+  · simpa using linear_ne_zero z (cd := ![m, a]) (by aesop)
+  · simpa using linear_ne_zero z (cd := ![m, b]) (by aesop)
 
 lemma summable_left_one_div_linear_sub_one_div_linear (a b : ℤ) :
     Summable fun m : ℤ ↦ 1 / (m * (z : ℂ) + a) - 1 / (m * z + b) := by
@@ -149,7 +149,7 @@ private lemma aux_sum_Ico_S_identity (N : ℕ) :
   rw [Summable.tsum_finsetSum (fun i hi ↦ by apply linear_left_summable (ne_zero z) i le_rfl)]
   apply sum_congr rfl fun n hn ↦ ?_
   rw [← tsum_mul_left, ← tsum_comp_neg]
-  apply tsum_congr fun d ↦ by grind [ne_zero z]
+  apply tsum_congr (by grind [ne_zero z])
 
 lemma tendsto_double_sum_S_act :
     Tendsto (fun N : ℕ ↦ (∑' (n : ℤ), ∑ m ∈ Ico (-N : ℤ) N, (1 / ((n : ℂ) * z + m) ^ 2))) atTop
@@ -204,7 +204,7 @@ private lemma aux_tsum_identity_2 (d : ℕ+) :
     ∑' m : ℕ+, (1 / ((m : ℂ) * z - d) + 1 / (-m * z + -d) - (1 / (m * z + d)) -
     1 / (-m * z + d)) = 2 / z * ∑' m : ℕ+, (1 / (-(d : ℂ) / z - m) + 1 / (-d / z + m)) := by
   rw [← Summable.tsum_mul_left]
-  · apply tsum_congr (fun m ↦ by grind [sub_eq_add_neg, ← div_neg, ne_zero z])
+  · apply tsum_congr (by grind [sub_eq_add_neg, ← div_neg, ne_zero z])
   · have := summable_cotTerm (by simpa using z.int_div_mem_integerComplement (n := -d) (by aesop))
     simp only [cotTerm, one_div] at *
     simp only [← Nat.cast_add_one] at this
@@ -221,19 +221,17 @@ private lemma aux_tendsto_tsum_cexp_pnat :
 to use the cotangent series to write this as a sum of exponentials.-/
 private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
     ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m))) atTop (𝓝 (-2 * π * I / z)) := by
-  suffices Tendsto (fun n : ℕ+ ↦ (2 / (z : ℂ) * ∑' (m : ℕ+),
-      (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) atTop (𝓝 (-2 * π * I / z)) by
-    rwa [← PNat.tendsto_comp_val_iff]
+  rw [← PNat.tendsto_comp_val_iff]
   have H0 : (fun n : ℕ+ ↦ (2 / z * ∑' (m : ℕ+), (1 / (-(n : ℂ) / z - m) + 1 / (-n / z + m)))) =
       (fun n : ℕ+ ↦ (-2 * π * I / z) - (2 / z * (2 * π * I)) *
       (∑' m : ℕ+, cexp (2 * π * I * (-n / z)) ^ (m : ℕ)) + 2 / n) := by
     ext N
     have h2 := cot_series_rep (UpperHalfPlane.coe_mem_integerComplement
-      (⟨-N / z, im_pnat_div_pos N z⟩))
+      ⟨-N / z, im_pnat_div_pos N z⟩)
     rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
       ← tsum_zero_pnat_eq_tsum_nat
       (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)] at *
-    grind [ne_zero z]
+    field [ne_zero z]
   rw [H0]
   nth_rw 2 [show -2 * π * I / z = (-2 * π * I / z) - (2 / z * (2 * π * I)) * 0 + 2 * 0 by ring]
   refine aux_tendsto_tsum_cexp_pnat z |>.const_mul _ |>.const_sub _ |>.add (.const_mul _ ?_)
@@ -245,19 +243,18 @@ order of the sum it tends to `0` instead. -/
 lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
-  have : (fun N : ℕ+ ↦ ∑ n ∈ (Ico (-N : ℤ) N),
-      ∑' m : ℤ , (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) = (fun N : ℕ+ ↦
-      ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) := by
-    ext n
+  have (N : ℕ+) : 
+      ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ , (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
+      = ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
     apply (summable_left_one_div_linear_sub_one_div_linear z i (i + 1)).congr
     grind
-  simp only [telescope_aux z, aux_tsum_identity_1 z] at this
-  rw [this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
+  simp only [telescope_aux, aux_tsum_identity_1] at this
+  rw [funext this, show -2 * π * I / z = 0 + -2 * π * I / z by ring]
   apply Tendsto.add
-  · exact PNat.tendsto_comp_val_iff.mpr <|
-      by simpa using (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
-  · simpa only [aux_tsum_identity_2] using PNat.tendsto_comp_val_iff.mpr (aux_tendsto_tsum z)
+  · simpa [← PNat.tendsto_comp_val_iff] using 
+      (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℂ)).const_mul (-2)
+  · simpa only [aux_tsum_identity_2, ← PNat.tendsto_comp_val_iff] using aux_tendsto_tsum z
 
 /- These are the two key lemmas, which show that swapping the order of summation gives
 results differing by the term `-2 * π * I / z`. -/
@@ -265,12 +262,8 @@ lemma tsum_symmetricIco_tsum_sub_eq :
     ∑'[symmetricIco ℤ] n : ℤ, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) =
     -2 * π * I / z := by
   apply HasSum.tsum_eq
-  simp only [one_div, neg_mul, HasSum, symmetricIco, ← Nat.map_cast_int_atTop, Filter.map_map,
-    tendsto_map'_iff] at *
-  suffices H : Tendsto (fun N : ℕ ↦ ∑ n ∈ Ico (-N : ℤ) N,
-      ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) by
-    simpa using H.congr (by simp)
-  exact PNat.tendsto_comp_val_iff.mp (tendsto_tsum_one_div_linear_sub_succ_eq z)
+  simpa [HasSum, ← Nat.map_cast_int_atTop, ← PNat.tendsto_comp_val_iff] 
+    using tendsto_tsum_one_div_linear_sub_succ_eq z
 
 lemma tsum_tsum_symmetricIco_sub_eq :
     ∑' m : ℤ, ∑'[symmetricIco ℤ] n : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) = 0 := by

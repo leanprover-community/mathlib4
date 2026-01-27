@@ -100,6 +100,7 @@ def piFinTwoSwap {α : Type*} : Equiv.Perm (Fin 2 → α) where
 
 @[simp]
 lemma piFinTwoSwap_apply {α : Type*} (b : Fin 2 → α) : piFinTwoSwap b = ![b 1, b 0] := rfl
+
 section transform
 
 lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by
@@ -132,11 +133,10 @@ private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ 
         have hn1 : (n : ℂ) + 1 ≠ 0 := by norm_cast; grind
         simp [δ, h, hb, hn]
         grind
-    · simp only [δ, Matrix.vecCons_inj, hb]
-      have h0 : ((b : ℂ) * z + n + 1) ≠ 0 := by
+    · have h0 : (b : ℂ) * z + n + 1 ≠ 0 := by
         simpa [add_assoc] using linear_ne_zero (cd := ![b, n + 1]) z (by aesop)
-      have h1 : ((b : ℂ) * z + n) ≠ 0 := by
-        simpa using linear_ne_zero (cd := ![b, n]) z (by aesop)
+      have h1 : (b : ℂ) * z + n ≠ 0 := linear_ne_zero (cd := ![b, n]) z (by aesop)
+      simp [δ]
       grind
 
 /-- This shows `G2` can be defined as a certain absolutely convergent double sum. -/
@@ -178,7 +178,7 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
     rw [hasSum_symmetricIco_int_iff, ← tendsto_comp_val_Ioi_atTop]
     exact tendsto_tsum_one_div_linear_sub_succ_eq z
   · have := G2Term_summable z
-    rw [← piFinTwoSwap.summable_iff, ← (finTwoArrowEquiv _).symm.summable_iff] at this
+    rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
     exact this.prod
 
 private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
