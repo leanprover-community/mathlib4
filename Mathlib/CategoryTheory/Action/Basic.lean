@@ -370,8 +370,7 @@ instance : (res V f).Faithful where
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
 /-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
-`f : G →* H` is full
-if `f` is surjective. -/
+`f : G →* H` is full if `f` is surjective. -/
 lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
   map_surjective {X} {Y} g := by
     use ⟨g.hom, fun h ↦ ?_⟩
