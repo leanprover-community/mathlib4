@@ -25,7 +25,7 @@ This file defines k-edge-connectivity for simple graphs.
 
 namespace SimpleGraph
 
-variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x y : V}
+variable {V : Type*} {G H : SimpleGraph V} {k l : ℕ} {u v w x : V}
 
 variable (G k u v) in
 /-- Two vertices are `k`-edge-reachable if they remain reachable after removing strictly fewer than
@@ -135,13 +135,13 @@ variable {w : G.Walk u v}
 /-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
 endpoints. -/
 lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
-    (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u y) : y ∉ w.support := by
+    (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support := by
   classical
   obtain ⟨e, he⟩ := by simpa [isEdgeReachable_two] using huy
-  have he' : ¬ (G.deleteEdges {e}).Reachable v y := fun hvy ↦
+  have he' : ¬ (G.deleteEdges {e}).Reachable v x := fun hvy ↦
     he <| (isEdgeReachable_two.1 huv _).trans hvy
   exact fun hy ↦ hw.disjoint_edges_takeUntil_dropUntil hy
-    ((w.takeUntil y _).mem_edges_of_not_reachable_deleteEdges he)
-    (by simpa using (w.dropUntil y _).reverse.mem_edges_of_not_reachable_deleteEdges he')
+    ((w.takeUntil x _).mem_edges_of_not_reachable_deleteEdges he)
+    (by simpa using (w.dropUntil x _).reverse.mem_edges_of_not_reachable_deleteEdges he')
 
 end SimpleGraph.Walk
