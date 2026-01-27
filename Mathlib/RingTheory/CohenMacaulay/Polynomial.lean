@@ -59,9 +59,6 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     rw [IsLocalization.AtPrime.comap_maximalIdeal (Localization.AtPrime p) p, ← Ideal.mem_comap,
       Polynomial.algebraMap_eq, max]
     exact mem r hr
-  let _ : Module.Free R R[X] :=
-    let _ : Module.Free R (AddMonoidAlgebra R ℕ) := Module.Free.finsupp R R ℕ
-    Module.Free.of_equiv (Polynomial.toFinsuppIsoLinear R).symm
   let _ : Module.Flat R (Localization.AtPrime p) := Module.Flat.trans R R[X] _
   rw [IsLocalization.AtPrime.ringKrullDim_eq_height p, WithBot.coe_le_coe]
   by_cases eq0 : p.map (Polynomial.mapRingHom (IsLocalRing.residue R)) = ⊥
