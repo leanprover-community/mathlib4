@@ -36,9 +36,15 @@ lemma finite_real_spectrum [DecidableEq n] : (spectrum ℝ A).Finite := by
 
 instance [DecidableEq n] : Finite (spectrum ℝ A) := A.finite_real_spectrum
 
+/-- The spectrum of a matrix `A` coincides with the spectrum of `toLpLin p p A`. -/
+theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
+    spectrum 𝕜 (toLpLin p p A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun p 𝕜 n)) _
+
 /-- The spectrum of a matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
+@[deprecated spectrum_toLpLin (since := "2026-01-21")]
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
-  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
+  spectrum_toLpLin 2
 
 @[deprecated (since := "2025-08-13")] alias IsHermitian.spectrum_toEuclideanLin :=
   spectrum_toEuclideanLin
@@ -69,7 +75,7 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
 
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
-  simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toEuclideanLin_apply,
+  simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toLpLin_apply,
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
@@ -77,7 +83,7 @@ lemma mulVec_eigenvectorBasis (j : n) :
 /-- Eigenvalues of a Hermitian matrix A are in the ℝ spectrum of A. -/
 theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
   apply spectrum.of_algebraMap_mem 𝕜
-  rw [← Matrix.spectrum_toEuclideanLin]
+  rw [← Matrix.spectrum_toLpLin 2]
   exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
@@ -123,7 +129,7 @@ theorem conjStarAlgAut_star_eigenvectorUnitary :
     conjStarAlgAut 𝕜 _ (star hA.eigenvectorUnitary) A =
       diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
   apply Matrix.toEuclideanLin.injective <| (EuclideanSpace.basisFun n 𝕜).toBasis.ext fun i ↦ ?_
-  simp only [conjStarAlgAut_star_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
+  simp only [conjStarAlgAut_star_apply, toLpLin_apply, OrthonormalBasis.coe_toBasis,
     EuclideanSpace.basisFun_apply, EuclideanSpace.ofLp_single, ← mulVec_mulVec,
     eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
     Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
