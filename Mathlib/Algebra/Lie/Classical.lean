@@ -142,15 +142,12 @@ section Basis
 
 variable {n} [Fintype n]
 
-/-- Off-diagonal index pairs `(i, j)` with `i ≠ j`. -/
-abbrev OffDiag (n : Type*) := { p : n × n // p.1 ≠ p.2 }
-
 variable {R}
 
 /-- The index type for the standard basis of `sl n R` relative to a chosen diagonal index `i₀`:
 off-diagonal pairs plus diagonal indices excluding `i₀`. The diagonal entry at `i₀` is determined
 by the trace-zero condition. -/
-abbrev slBasisIndex (i0 : n) := OffDiag n ⊕ { i : n // i ≠ i0 }
+abbrev slBasisIndex (i0 : n) := { p : n × n // p.1 ≠ p.2 } ⊕ { i : n // i ≠ i0 }
 
 /-- The basis function for `sl n R` relative to `i₀`: off-diagonal indices map to single-entry
 matrices, and diagonal indices `i ≠ i₀` map to `E_ii - E_{i₀i₀}`. -/
@@ -223,13 +220,13 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
   cases x with
   | inl ij =>
       rcases ij with ⟨⟨i, j⟩, hij⟩
-      let a : OffDiag n := ⟨(i, j), hij⟩
+      let a : { p : n × n // p.1 ≠ p.2 } := ⟨(i, j), hij⟩
       have hsum_off' :
-          (∑ x : OffDiag n, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
         classical
         simpa [a] using
           (Fintype.sum_eq_single
-            (f := fun x : OffDiag n => (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j)
+            (f := fun x : { p : n × n // p.1 ≠ p.2 } => (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j)
             (a := a)
             (fun b hb => by
               have : ¬(b.1.1 = i ∧ b.1.2 = j) := by
@@ -237,21 +234,21 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
                 exact hb (Subtype.ext (Prod.ext h.1 h.2))
               simp [this]))
       have hsum_off :
-          ((∑ x : OffDiag n, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
-        let A : OffDiag n → Matrix n n R :=
+          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i j) = g (Sum.inl a) := by
+        let A : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (g (Sum.inl x))
-        have hrow : ((∑ x : OffDiag n, A x) i) = ∑ x : OffDiag n, (A x) i :=
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i :=
           (Fintype.sum_apply (g := A) (a := i))
-        have hrow' : ((∑ x : OffDiag n, A x) i) j = (∑ x : OffDiag n, (A x) i) j :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j :=
           congrArg (fun f : n → R => f j) hrow
-        have hcol : (∑ x : OffDiag n, (A x) i) j = ∑ x : OffDiag n, (A x) i j :=
-          (Fintype.sum_apply (g := fun x : OffDiag n => (A x) i) (a := j))
-        have hsum_off'' : (∑ x : OffDiag n, (A x) i j) = g (Sum.inl a) := by
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j :=
+          (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (A x) i) (a := j))
+        have hsum_off'' : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j) = g (Sum.inl a) := by
           simpa [A] using hsum_off'
         calc
-          (∑ x : OffDiag n, A x) i j = ((∑ x : OffDiag n, A x) i) j := rfl
-          _ = (∑ x : OffDiag n, (A x) i) j := hrow'
-          _ = ∑ x : OffDiag n, (A x) i j := hcol
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i j = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) j := rfl
+          _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) j := hrow'
+          _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i j := hcol
           _ = g (Sum.inl a) := hsum_off''
       have hsum_diag' :
           (∑ x : { k : n // k ≠ i0 },
@@ -297,9 +294,9 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
       rcases ii with ⟨i, hi⟩
       let a : { k : n // k ≠ i0 } := ⟨i, hi⟩
       have hsum_off' :
-          (∑ x : OffDiag n, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
         classical
-        refine Fintype.sum_eq_zero (f := fun x : OffDiag n =>
+        refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } =>
           (Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) ?_
         intro x
         have : ¬(x.1.1 = i ∧ x.1.2 = i) := by
@@ -307,21 +304,21 @@ theorem slBasisCoord_slBasisRepr (i0 : n) :
           exact x.2 (h.1.trans h.2.symm)
         simp [this]
       have hsum_off :
-          ((∑ x : OffDiag n, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
-        let A : OffDiag n → Matrix n n R :=
+          ((∑ x : { p : n × n // p.1 ≠ p.2 }, Matrix.single x.1.1 x.1.2 (g (Sum.inl x))) i i) = 0 := by
+        let A : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (g (Sum.inl x))
-        have hrow : ((∑ x : OffDiag n, A x) i) = ∑ x : OffDiag n, (A x) i :=
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i :=
           (Fintype.sum_apply (g := A) (a := i))
-        have hrow' : ((∑ x : OffDiag n, A x) i) i = (∑ x : OffDiag n, (A x) i) i :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i :=
           congrArg (fun f : n → R => f i) hrow
-        have hcol : (∑ x : OffDiag n, (A x) i) i = ∑ x : OffDiag n, (A x) i i :=
-          (Fintype.sum_apply (g := fun x : OffDiag n => (A x) i) (a := i))
-        have hsum_off'' : (∑ x : OffDiag n, (A x) i i) = 0 := by
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i :=
+          (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (A x) i) (a := i))
+        have hsum_off'' : (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i) = 0 := by
           simpa [A] using hsum_off'
         calc
-          (∑ x : OffDiag n, A x) i i = ((∑ x : OffDiag n, A x) i) i := rfl
-          _ = (∑ x : OffDiag n, (A x) i) i := hrow'
-          _ = ∑ x : OffDiag n, (A x) i i := hcol
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i i = ((∑ x : { p : n × n // p.1 ≠ p.2 }, A x) i) i := rfl
+          _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i) i := hrow'
+          _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (A x) i i := hcol
           _ = 0 := hsum_off''
       have hsum_diag' :
           (∑ x : { k : n // k ≠ i0 },
@@ -386,29 +383,29 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
       -- Off-diagonal sum vanishes, diagonal sum uses trace-zero condition
       classical
       have hsum_off :
-          ((∑ x : OffDiag n,
+          ((∑ x : { p : n × n // p.1 ≠ p.2 },
                 Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)) ii ii) = 0 := by
         classical
-        let f : OffDiag n → Matrix n n R :=
+        let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
-        have hoff : ((∑ x : OffDiag n, f x) ii ii) = 0 := by
-          have hrow : ((∑ x : OffDiag n, f x) ii) = ∑ x : OffDiag n, (f x) ii :=
+        have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii) = 0 := by
+          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
             (Fintype.sum_apply (g := f) (a := ii))
-          have hrow' : ((∑ x : OffDiag n, f x) ii) ii = (∑ x : OffDiag n, (f x) ii) ii :=
+          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii :=
             congrArg (fun g : n → R => g ii) hrow
-          have hcol : (∑ x : OffDiag n, (f x) ii) ii = ∑ x : OffDiag n, (f x) ii ii :=
-            (Fintype.sum_apply (g := fun x : OffDiag n => (f x) ii) (a := ii))
-          have hsum : (∑ x : OffDiag n, (f x) ii ii) = 0 := by
-            refine Fintype.sum_eq_zero (f := fun x : OffDiag n => (f x) ii ii) ?_
+          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii :=
+            (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := ii))
+          have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii) = 0 := by
+            refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii ii) ?_
             intro x
             have : ¬(x.1.1 = ii ∧ x.1.2 = ii) := by
               intro h
               exact x.2 (h.1.trans h.2.symm)
             simp [f, this]
           calc
-            (∑ x : OffDiag n, f x) ii ii = ((∑ x : OffDiag n, f x) ii) ii := rfl
-            _ = (∑ x : OffDiag n, (f x) ii) ii := hrow'
-            _ = ∑ x : OffDiag n, (f x) ii ii := hcol
+            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
+            _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii := hrow'
+            _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii := hcol
             _ = 0 := hsum
         simpa [f] using hoff
       have hsum_diag :
@@ -463,29 +460,29 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
       -- Off-diagonal sum vanishes, diagonal sum picks out ii term
       classical
       have hsum_off :
-          ((∑ x : OffDiag n,
+          ((∑ x : { p : n × n // p.1 ≠ p.2 },
                 Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)) ii ii) = 0 := by
         classical
-        let f : OffDiag n → Matrix n n R :=
+        let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
           fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
-        have hoff : ((∑ x : OffDiag n, f x) ii ii) = 0 := by
-          have hrow : ((∑ x : OffDiag n, f x) ii) = ∑ x : OffDiag n, (f x) ii :=
+        have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii) = 0 := by
+          have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
             (Fintype.sum_apply (g := f) (a := ii))
-          have hrow' : ((∑ x : OffDiag n, f x) ii) ii = (∑ x : OffDiag n, (f x) ii) ii :=
+          have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii :=
             congrArg (fun g : n → R => g ii) hrow
-          have hcol : (∑ x : OffDiag n, (f x) ii) ii = ∑ x : OffDiag n, (f x) ii ii :=
-            (Fintype.sum_apply (g := fun x : OffDiag n => (f x) ii) (a := ii))
-          have hsum : (∑ x : OffDiag n, (f x) ii ii) = 0 := by
-            refine Fintype.sum_eq_zero (f := fun x : OffDiag n => (f x) ii ii) ?_
+          have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii :=
+            (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := ii))
+          have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii) = 0 := by
+            refine Fintype.sum_eq_zero (f := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii ii) ?_
             intro x
             have : ¬(x.1.1 = ii ∧ x.1.2 = ii) := by
               intro h
               exact x.2 (h.1.trans h.2.symm)
             simp [f, this]
           calc
-            (∑ x : OffDiag n, f x) ii ii = ((∑ x : OffDiag n, f x) ii) ii := rfl
-            _ = (∑ x : OffDiag n, (f x) ii) ii := hrow'
-            _ = ∑ x : OffDiag n, (f x) ii ii := hcol
+            (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii ii = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) ii := rfl
+            _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) ii := hrow'
+            _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii ii := hcol
             _ = 0 := hsum
         simpa [f] using hoff
       have hsum_diag :
@@ -540,24 +537,24 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
   · -- Case: ii ≠ jj (off-diagonal)
     -- Off-diagonal sum picks out (ii,jj) term, diagonal sum vanishes
     classical
-    let a : OffDiag n := ⟨(ii, jj), hij⟩
+    let a : { p : n × n // p.1 ≠ p.2 } := ⟨(ii, jj), hij⟩
     have hsum_off :
-        ((∑ x : OffDiag n,
+        ((∑ x : { p : n × n // p.1 ≠ p.2 },
               Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)) ii jj) = A.val ii jj := by
       classical
-      let f : OffDiag n → Matrix n n R :=
+      let f : { p : n × n // p.1 ≠ p.2 } → Matrix n n R :=
         fun x => Matrix.single x.1.1 x.1.2 (A.val x.1.1 x.1.2)
-      have hoff : ((∑ x : OffDiag n, f x) ii jj) = A.val ii jj := by
-        have hrow : ((∑ x : OffDiag n, f x) ii) = ∑ x : OffDiag n, (f x) ii :=
+      have hoff : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii jj) = A.val ii jj := by
+        have hrow : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii :=
           (Fintype.sum_apply (g := f) (a := ii))
-        have hrow' : ((∑ x : OffDiag n, f x) ii) jj = (∑ x : OffDiag n, (f x) ii) jj :=
+        have hrow' : ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj :=
           congrArg (fun g : n → R => g jj) hrow
-        have hcol : (∑ x : OffDiag n, (f x) ii) jj = ∑ x : OffDiag n, (f x) ii jj :=
-          (Fintype.sum_apply (g := fun x : OffDiag n => (f x) ii) (a := jj))
-        have hsum : (∑ x : OffDiag n, (f x) ii jj) = A.val ii jj := by
+        have hcol : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj :=
+          (Fintype.sum_apply (g := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii) (a := jj))
+        have hsum : (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj) = A.val ii jj := by
           simpa [a, f] using
             (Fintype.sum_eq_single
-              (f := fun x : OffDiag n => (f x) ii jj)
+              (f := fun x : { p : n × n // p.1 ≠ p.2 } => (f x) ii jj)
               (a := a)
               (fun b hb => by
                 have : ¬(b.1.1 = ii ∧ b.1.2 = jj) := by
@@ -565,9 +562,9 @@ theorem slBasisRepr_slBasisCoord (i0 : n) :
                   exact hb (Subtype.ext (Prod.ext h.1 h.2))
                 simp [f, this]))
         calc
-          (∑ x : OffDiag n, f x) ii jj = ((∑ x : OffDiag n, f x) ii) jj := rfl
-          _ = (∑ x : OffDiag n, (f x) ii) jj := hrow'
-          _ = ∑ x : OffDiag n, (f x) ii jj := hcol
+          (∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii jj = ((∑ x : { p : n × n // p.1 ≠ p.2 }, f x) ii) jj := rfl
+          _ = (∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii) jj := hrow'
+          _ = ∑ x : { p : n × n // p.1 ≠ p.2 }, (f x) ii jj := hcol
           _ = A.val ii jj := hsum
       simpa [f] using hoff
     have hsum_diag :
