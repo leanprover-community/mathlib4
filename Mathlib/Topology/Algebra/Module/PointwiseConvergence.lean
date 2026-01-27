@@ -135,7 +135,7 @@ convergence topology. -/
 def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] (L : E →SL[σ] F) :
     (F →SLₚₜ[τ] G) →L[𝕜₃] E →SLₚₜ[ρ] G where
   toFun f := f.comp L
-  __ := ContinuousLinearMap.precomp_uniformConvergenceCLM G {(S : Set E) | Finite S}
+  __ := precompUniformConvergenceCLM G {(S : Set E) | Finite S}
     {(S : Set F) | Finite S} L (fun S hS ↦ letI : Finite S := hS; Finite.Set.finite_image _ _)
 
 variable (E) in
