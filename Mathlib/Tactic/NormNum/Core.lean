@@ -33,6 +33,15 @@ that it will fire on expressions matching the form `e`. Use holes in `e` to indi
 subexpressions, for example `@[norm_num _ + _]` will match any addition.
 
 * `@[norm_num e1, e2, ...]` will match either `e1` or `e2` or ...
+
+Example:
+```lean
+@[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
+  let .app (f : Q($α → $α)) (a : Q($α)) ← whnfR e | failure
+  let ra ← derive a
+  let rα ← inferRing α
+  ra.neg
+```
 -/
 syntax (name := norm_num) "norm_num " term,+ : attr
 
@@ -285,6 +294,12 @@ extending `norm_num`.
   exclusively want to normalize numerical expressions.
 * `norm_num (config := cfg)` uses `cfg` as configuration for `simp` calls (see the `simp` tactic for
   further details).
+
+Examples:
+```lean
+example : 43 ≤ 74 + (33 : ℤ) := by norm_num
+example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num
+```
 -/
 elab (name := normNum)
     "norm_num" cfg:optConfig only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
@@ -298,12 +313,18 @@ By default, it supports the operations `+` `-` `*` `/` `⁻¹` `^` and `%` over 
 an `AddMonoidWithOne` instance, such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ`. If the goal has the form `A = B`,
 `A ≠ B`, `A < B` or `A ≤ B`, where `A` and `B` are numerical expressions, `norm_num1` will try to
 close it. It also has a relatively simple primality prover.
-
+:e
 This tactic is extensible. Extensions can allow `norm_num1` to evaluate more kinds of expressions,
 or to prove more kinds of propositions. See the `@[norm_num]` attribute for further information on
 extending `norm_num1`.
 
 * `norm_num1 at l` normalizes at location(s) `l`.
+
+Examples:
+```lean
+example : 43 ≤ 74 + (33 : ℤ) := by norm_num1
+example : ¬ (7-2)/(2*3) ≥ (1:ℝ) + 2/(3^2) := by norm_num1
+```
 -/
 elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
   elabNormNum mkNullNode mkNullNode loc (simpOnly := true) (useSimp := false)
