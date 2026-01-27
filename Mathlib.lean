@@ -5027,6 +5027,7 @@ public import Mathlib.MeasureTheory.MeasurableSpace.NCard
 public import Mathlib.MeasureTheory.MeasurableSpace.Pi
 public import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
 public import Mathlib.MeasureTheory.MeasurableSpace.Prod
+public import Mathlib.MeasureTheory.MeasurableSpace.Subpartition
 public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
