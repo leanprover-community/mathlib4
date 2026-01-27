@@ -467,3 +467,5 @@ instance : IsFinitelyPresented (Multiplicative ℤ) := by
 variable {G H : Type*} [Group G] [Group H]
 
 end IsFinitelyPresented
+
+#min_imports
