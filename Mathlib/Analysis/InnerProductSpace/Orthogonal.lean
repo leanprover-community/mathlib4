@@ -120,11 +120,23 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
 
-lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map (f : E →ₗ[𝕜] F) = (K.map (f : E →ₗ[𝕜] F))ᗮ := by
+lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
+    Kᗮ.map f.toLinearMap = (K.map f.toLinearMap)ᗮ ⊓ f.range := by
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, ContinuousLinearMap.coe_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_toContinuousLinearEquiv, LinearIsometryEquiv.inner_map_eq_flip]
-  exact fun x ↦ ⟨fun ⟨y, hy⟩ z hz ↦ by simp [← hy.2, hy.1 _ hz], fun h ↦ ⟨_, h, by simp⟩⟩
+    forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range,
+    LinearIsometry.coe_toLinearMap]
+  refine fun x ↦ ⟨?_, ?_⟩
+  · rintro ⟨x, hx, rfl⟩
+    refine ⟨by simpa using hx, x, rfl⟩
+  · rintro ⟨hx, x, rfl⟩
+    refine ⟨x, by simpa using hx, rfl⟩
+
+lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
+    Kᗮ.map (f.toLinearEquiv : E →ₗ[𝕜] F) = (K.map (f.toLinearEquiv : E →ₗ[𝕜] F))ᗮ := by
+  refine (map_orthogonal K f.toLinearIsometry).trans ?_
+  have : f.toLinearIsometry.range = ⊤ := f.range
+  rw [this, inf_top_eq]
+  rfl
 
 variable (𝕜 E)
 

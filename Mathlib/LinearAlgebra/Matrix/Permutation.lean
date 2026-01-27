@@ -31,7 +31,7 @@ This file defines the matrix associated with a permutation
 
 open Equiv
 
-variable {n R : Type*} [DecidableEq n] (σ : Perm n)
+variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
 /-- the permutation matrix associated with an `Equiv.Perm` -/
@@ -39,6 +39,13 @@ abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 
 namespace Matrix
+
+@[simp] lemma permMatrix_refl [Zero R] [One R] : Equiv.Perm.permMatrix R (.refl n) = 1 := by
+  simp [← Matrix.ext_iff, Matrix.one_apply]
+
+@[simp]
+lemma permMatrix_one [Zero R] [One R] : (1 : Equiv.Perm n).permMatrix R = 1 :=
+  permMatrix_refl
 
 @[simp]
 lemma transpose_permMatrix [Zero R] [One R] : (σ.permMatrix R).transpose = (σ⁻¹).permMatrix R := by
@@ -73,6 +80,18 @@ lemma vecMul_permMatrix {v : n → R} [CommRing R] :
     v ᵥ* σ.permMatrix R = v ∘ σ.symm := by
   ext j
   simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
+
+@[simp]
+lemma permMatrix_mul [NonAssocSemiring R] :
+    (σ * τ).permMatrix R = τ.permMatrix R * σ.permMatrix R := by
+  rw [Perm.permMatrix, Perm.mul_def, toPEquiv_trans, PEquiv.toMatrix_trans]
+
+/-- `permMatrix` as a homomorphism. -/
+@[simps]
+def permMatrixHom [NonAssocSemiring R] : Perm n →* Matrix n n R where
+  toFun σ := σ⁻¹.permMatrix R
+  map_one' := permMatrix_one
+  map_mul' σ τ := by rw [_root_.mul_inv_rev, permMatrix_mul]
 
 open scoped Matrix.Norms.L2Operator
 
