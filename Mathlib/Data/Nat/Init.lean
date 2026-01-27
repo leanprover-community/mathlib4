@@ -434,6 +434,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
 
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
+
 /-! ### `Nat.AtLeastTwo` -/
 
 /-- A type class for natural numbers which are greater than or equal to `2`.
