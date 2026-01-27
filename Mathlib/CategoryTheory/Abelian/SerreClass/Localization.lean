@@ -20,47 +20,13 @@ universe v' u' v u
 
 namespace CategoryTheory
 
-open Category Limits ZeroObject
-
-variable {C : Type u} [Category.{v} C]
-  {D : Type u'} [Category.{v'} D]
-
--- to be moved
-def NormalMono.ofArrowIso [HasZeroMorphisms C] {X Y : C} {f : X ⟶ Y}
-    (hf : NormalMono f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
-    NormalMono f' where
-  Z := hf.Z
-  g := e.inv.right ≫ hf.g
-  w := by
-    have := Arrow.w e.inv
-    dsimp at this
-    rw [← reassoc_of% this, hf.w, comp_zero]
-  isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
-    · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
-        (by cat_disch) (by cat_disch)
-    · exact Fork.ext (Arrow.leftFunc.mapIso e)
-
-def NormalEpi.ofArrowIso [HasZeroMorphisms C] {X Y : C} {f : X ⟶ Y}
-    (hf : NormalEpi f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
-    NormalEpi f' where
-  W := hf.W
-  g := hf.g ≫ e.hom.left
-  w := by
-    have := Arrow.w e.hom
-    dsimp at this
-    rw [assoc, this, reassoc_of% hf.w, zero_comp]
-  isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
-    · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
-        (by cat_disch) (by cat_disch)
-    · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
-
-variable [Abelian C]
+open Limits ZeroObject
 
 namespace ObjectProperty
 
-variable (L : C ⥤ D) (P : ObjectProperty C) [P.IsSerreClass]
+variable {C : Type u} [Category.{v} C] [Abelian C]
+  {D : Type u'} [Category.{v'} D]
+  (L : C ⥤ D) (P : ObjectProperty C) [P.IsSerreClass]
 
 lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.epiModSerre s), s ≫ f = 0) ↔
@@ -157,7 +123,7 @@ lemma isZero_obj_iff (X : C) :
     IsZero (L.obj X) ↔ P X := by
   simp only [IsZero.iff_id_eq_zero, ← L.map_id, ← L.map_zero,
     MorphismProperty.map_eq_iff_precomp L P.isoModSerre,
-    comp_id, comp_zero, exists_prop, exists_eq_right]
+    Category.comp_id, comp_zero, exists_prop, exists_eq_right]
   refine ⟨?_, fun _ ↦ ⟨X, by simpa⟩⟩
   rintro ⟨Y, h⟩
   simpa using h.2
@@ -196,7 +162,7 @@ lemma mono_map_iff {X Y : C} (f : X ⟶ Y) :
         MorphismProperty.RightFraction.map_s_comp_map]
       apply this φ.f
       have : L.map φ.s ≫ (L.objObjPreimageIso W).hom ≫ z = L.map φ.f := by cat_disch
-      rw [← this, assoc, assoc, hz, comp_zero, comp_zero]
+      rw [← this, Category.assoc, Category.assoc, hz, comp_zero, comp_zero]
     intro Z z hz
     rw [← L.map_comp] at hz
     rw [map_eq_zero_iff L P, ← exists_comp_monoModSerre_eq_zero_iff P] at hz ⊢
@@ -312,16 +278,17 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
     rw [← cancel_epi (L.map φ.s),
       MorphismProperty.RightFraction.map_s_comp_map] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by
-      rw [← hφ, assoc, assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
+      rw [← hφ, Category.assoc, Category.assoc, hw, comp_zero, comp_zero]) ⟨_, rfl, by simp⟩
     exact ⟨(L.objObjPreimageIso W).inv ≫ inv (L.map φ.s) ≫ l, by simp [hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, id_comp, ← L.map_comp] at hw
+  simp only [eqToHom_refl, Category.id_comp, ← L.map_comp] at hw
   rw [map_eq_zero_iff L P, ← exists_isoModSerre_comp_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
   have := Localization.inverts L P.isoModSerre t ht
-  rw [← assoc] at fac
+  rw [← Category.assoc] at fac
   refine ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), ?_⟩
-  simp only [assoc, eqToHom_refl, id_comp, IsIso.inv_comp_eq, ← L.map_comp, kernel.lift_ι]
+  simp only [Category.assoc, eqToHom_refl, Category.id_comp, IsIso.inv_comp_eq,
+    ← L.map_comp, kernel.lift_ι]
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
@@ -341,15 +308,15 @@ lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
   · obtain ⟨φ, hφ⟩ := Localization.exists_leftFraction L P.isoModSerre
       (w ≫ (L.objObjPreimageIso W).inv)
     have _ := Localization.inverts L P.isoModSerre φ.s φ.hs
-    rw [← cancel_mono (L.map φ.s), assoc,
+    rw [← cancel_mono (L.map φ.s), Category.assoc,
       MorphismProperty.LeftFraction.map_comp_map_s] at hφ
     obtain ⟨l, hl⟩ := this _ (L.map φ.f) (by rw [← hφ, reassoc_of% hw, zero_comp]) ⟨_, rfl, by simp⟩
     exact ⟨l ≫ inv (L.map φ.s) ≫ (L.objObjPreimageIso W).hom, by simp [reassoc_of% hl, ← hφ]⟩
   obtain ⟨Z, rfl, z, rfl⟩ := hw'
-  simp only [eqToHom_refl, comp_id, ← L.map_comp] at hw
+  simp only [eqToHom_refl, Category.comp_id, ← L.map_comp] at hw
   rw [map_eq_zero_iff L P, ← exists_comp_isoModSerre_eq_zero_iff P] at hw
   obtain ⟨Z', t, ht, fac⟩ := hw
-  rw [assoc] at fac
+  rw [Category.assoc] at fac
   have := Localization.inverts L P.isoModSerre t ht
   exact ⟨L.map (cokernel.desc _ _ fac) ≫ inv (L.map t), by simp [← L.map_comp_assoc]⟩
 
@@ -406,13 +373,13 @@ lemma isNormalMonoCategory : IsNormalMonoCategory D where
     rw [mono_iff L P] at hf
     obtain ⟨X', Y', f', _, ⟨e⟩⟩ := hf
     let hf' := normalMonoOfMono f'
+    have := preservesKernel L P hf'.g
     refine ⟨NormalMono.ofArrowIso ?_ e⟩
     exact {
       Z := L.obj hf'.Z
       g := L.map hf'.g
       w := by rw [← L.map_comp]; simp [hf'.w]
       isLimit :=
-        have := preservesKernel L P hf'.g
         (KernelFork.isLimitMapConeEquiv _ L).1
           (isLimitOfPreserves L hf'.isLimit) }
 
@@ -421,13 +388,13 @@ lemma isNormalEpiCategory : IsNormalEpiCategory D where
     rw [epi_iff L P] at hf
     obtain ⟨X', Y', f', _, ⟨e⟩⟩ := hf
     let hf' := normalEpiOfEpi f'
+    have := preservesCokernel L P hf'.g
     refine ⟨NormalEpi.ofArrowIso ?_ e⟩
     exact {
       W := L.obj hf'.W
       g := L.map hf'.g
       w := by rw [← L.map_comp]; simp [hf'.w]
       isColimit :=
-        have := preservesCokernel L P hf'.g
         (CokernelCofork.isColimitMapCoconeEquiv _ L).1
           (isColimitOfPreserves L hf'.isColimit) }
 
