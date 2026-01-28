@@ -201,6 +201,10 @@ theorem hom_ext (h : IsLimit t) {W : C} {f f' : W ⟶ t.pt}
     f = f' := by
   rw [h.hom_lift f, h.hom_lift f']; congr; exact funext w
 
+lemma nonempty_isLimit_iff_isIso_lift {s t : Cone F} (hs : IsLimit s) :
+    Nonempty (IsLimit t) ↔ IsIso (hs.lift t) :=
+  ⟨fun ⟨ht⟩ ↦ ⟨ht.lift s, ht.hom_ext (by simp), hs.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
+
 /-- Given a right adjoint functor between categories of cones,
 the image of a limit cone is a limit cone.
 -/
@@ -670,6 +674,10 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
 theorem hom_ext (h : IsColimit t) {W : C} {f f' : t.pt ⟶ W}
     (w : ∀ j, t.ι.app j ≫ f = t.ι.app j ≫ f') : f = f' := by
   rw [h.hom_desc f, h.hom_desc f']; congr; exact funext w
+
+lemma nonempty_isColimit_iff_isIso_desc {s t : Cocone F} (hs : IsColimit s) :
+    Nonempty (IsColimit t) ↔ IsIso (hs.desc t) :=
+  ⟨fun ⟨ht⟩ ↦ ⟨ht.desc s, hs.hom_ext (by simp), ht.hom_ext (by simp)⟩, fun h ↦ ⟨hs.ofPointIso⟩⟩
 
 /-- Given a left adjoint functor between categories of cocones,
 the image of a colimit cocone is a colimit cocone.
