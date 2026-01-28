@@ -13,6 +13,8 @@ public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
 
+public import Batteries.Tactic.Lint.Basic
+
 /-!
 ## Style linters
 
@@ -520,14 +522,29 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
           Linter.logLint linter.style.nameCheck id
             m!"The declaration `{id}` contains '__', which does not follow the mathlib naming \
               conventions. Consider using single underscores instead."
-        -- Also check if a name is capitalized after an underscore: this is often wrong.
-        let parts := declName.toString.splitOn "_" |>.drop 1
-        let bad := parts.filter (isWronglyCased ·)
-        for badComponent in bad do
-          Linter.logLint linter.style.nameCheck id
-            m!"The component `{bad}` of `{id}` starts in uppercase, but is not an acronym. \
-            Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
-            depending on the item you're referring to."
+        -- TODO: once the above environment linter is free of exceptions, enable this check instead.
+        -- -- Also check if a name is capitalized after an underscore: this is often wrong.
+        -- let parts := declName.toString.splitOn "_" |>.drop 1
+        -- let bad := parts.filter (isWronglyCased ·)
+        -- for badComponent in bad do
+        --   Linter.logLint linter.style.nameCheck id
+        --     m!"The component `{bad}` of `{id}` starts in uppercase, but is not an acronym. \
+        --     Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
+        --     depending on the item you're referring to."
+
+/-- Linter that checks for declarations with definitely wrong casing. -/
+@[env_linter] public def wrongCasing : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no declarations with Uppercase middle components found."
+  errorsFound := "FOUND declarations with underscores with an uppercase middle component."
+  test declName := do
+    -- Also check if a name is capitalized after an underscore: this is often wrong.
+    let parts := declName.toString.splitOn "_" |>.drop 1
+    let bad := parts.filter (isWronglyCased ·)
+    if bad.isEmpty then return none
+    let aux := ", ".intercalate bad
+    return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
+        Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
+        depending on the item you're referring to."
 
 initialize addLinter doubleUnderscore
 
