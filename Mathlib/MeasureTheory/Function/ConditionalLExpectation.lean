@@ -120,7 +120,7 @@ theorem measurable_condLExp (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) 
   simp [condLExp_of_not_le hm, measurable_zero]
 
 @[fun_prop]
-theorem measurable_condLExp₀ (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
+theorem measurable_condLExp' (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) (X : Ω → ℝ≥0∞) :
     Measurable[mΩ₀] P⁻[X|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
   · exact (measurable_condLExp _ _ _).mono  hm (le_refl _)
