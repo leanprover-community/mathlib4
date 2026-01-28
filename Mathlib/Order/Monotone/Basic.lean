@@ -267,6 +267,23 @@ lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : 
     rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le_iff]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
+protected theorem Monotone.ite' (hf : Monotone f) (hg : Monotone g) {p : α → Prop}
+    [DecidablePred p]
+    (hp : ∀ ⦃x y⦄, x ≤ y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x ≤ y → f x ≤ g y) :
+    Monotone fun x ↦ if p x then f x else g x := by
+  intro x y h
+  by_cases hy : p y
+  · have hx : p x := hp h hy
+    simpa [hx, hy] using hf h
+  by_cases hx : p x
+  · simpa [hx, hy] using hfg hx hy h
+  · simpa [hx, hy] using hg h
+
+protected theorem Monotone.ite (hf : Monotone f) (hg : Monotone g) {p : α → Prop}
+    [DecidablePred p] (hp : ∀ ⦃x y⦄, x ≤ y → p y → p x) (hfg : ∀ x, f x ≤ g x) :
+    Monotone fun x ↦ if p x then f x else g x :=
+  (hf.ite' hg hp) fun _ y _ _ h ↦ le_trans (hf h) (hfg y)
+
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :

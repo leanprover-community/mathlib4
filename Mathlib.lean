@@ -3912,6 +3912,7 @@ public import Mathlib.Data.Opposite
 public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Option.Defs
 public import Mathlib.Data.Option.NAry
+public import Mathlib.Data.Option.Order
 public import Mathlib.Data.Ordering.Basic
 public import Mathlib.Data.Ordering.Lemmas
 public import Mathlib.Data.Ordmap.Invariants
