@@ -42,11 +42,6 @@ lemma isRegularLocalRing_def [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ (maximalIdeal R).spanFinrank = ringKrullDim R :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] [IsNoetherianRing R] :
-    ringKrullDim R ≤ (maximalIdeal R).spanFinrank :=
-  le_of_eq_of_le IsLocalRing.maximalIdeal_height_eq_ringKrullDim.symm
-    (WithBot.coe_le_coe.mpr (Ideal.height_le_spanFinrank (maximalIdeal R) Ideal.IsPrime.ne_top'))
-
 namespace IsRegularLocalRing
 
 lemma of_spanFinrank_maximalIdeal_le [IsLocalRing R] [IsNoetherianRing R]
