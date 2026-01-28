@@ -23,7 +23,10 @@ elab "#check_title " title:str : command => do
 #check_title "my short PR title"
 
 /--
-info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "refactor", "style", "fix", "doc", "test"'
+info: Message: 'error: the PR title should be of the form
+  abbrev: main title
+or
+  abbrev(scope): main title'
 -/
 #guard_msgs in
 #check_title "fsdfs: bad title"
@@ -40,3 +43,27 @@ info: Message: 'error: the PR type should be one of "feat", "chore", "perf", "re
 -- Acronyms are valid PR titles, in any case.
 #guard_msgs in
 #check_title "feat: RPC acronyms are fine"
+
+/--
+info: Message: 'error: the PR title contains multiple consecutive spaces; please add just one'
+---
+info: Message: 'error: the PR title should not end with a full stop'
+-/
+#guard_msgs in
+#check_title "chore: bad   Title."
+
+/-- info: Message: 'error: the PR title starts with a space' -/
+#guard_msgs in
+#check_title " feat: bad title"
+
+-- Brackets in the PR title are allowed.
+#guard_msgs in
+#check_title "feat: (confusing) but legal title"
+
+/-- info: Message: 'error: the PR title does not contain a colon' -/
+#guard_msgs in
+#check_title "feat(test) (confusing) bad title"
+
+-- TODO: should this error?
+#guard_msgs in
+#check_title "feat(confusing) (forbidden): title"

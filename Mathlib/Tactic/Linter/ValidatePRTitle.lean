@@ -96,6 +96,6 @@ public def validateTitle (title : String) : Array String := Id.run do
     if title.contains "  " then
       errors := errors.push
         "error: the PR title contains multiple consecutive spaces; please add just one"
-    else if title.endsWith "." then
+    if title.endsWith "." then
       errors := errors.push "error: the PR title should not end with a full stop"
     return errors
