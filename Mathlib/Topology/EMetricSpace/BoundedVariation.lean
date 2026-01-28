@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Semicontinuity.Defs
+public import Mathlib.Tactic.Bound
 
 /-!
 # Functions of bounded variation

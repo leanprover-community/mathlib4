@@ -19,7 +19,6 @@ public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Translate.GuessName
-public meta import Mathlib.Util.MemoFix
 
 /-!
 # The translation attribute.
