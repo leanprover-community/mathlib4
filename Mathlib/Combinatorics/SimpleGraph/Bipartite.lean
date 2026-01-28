@@ -417,10 +417,12 @@ lemma neighborFinset_subset_between_union (hv : v ∈ s) :
     G.neighborFinset v ⊆ (G.between s sᶜ).neighborFinset v ∪ s := by
   simpa [neighborFinset_def] using neighborSet_subset_between_union hv
 
+omit [DecidableEq V] [DecidableRel G.Adj] in
 /-- The degree of `v ∈ s` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
 vertices from `s`. -/
 theorem degree_le_between_add (hv : v ∈ s) :
     G.degree v ≤ (G.between s sᶜ).degree v + s.card := by
+  classical
   have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
     simpa using between_isBipartiteWith disjoint_compl_right
   simp_rw [← card_neighborFinset_eq_degree,
@@ -433,10 +435,12 @@ lemma neighborFinset_subset_between_union_compl (hw : w ∈ sᶜ) :
     G.neighborFinset w ⊆ (G.between s sᶜ).neighborFinset w ∪ sᶜ := by
   simpa [neighborFinset_def] using G.neighborSet_subset_between_union_compl (by simpa using hw)
 
+omit [DecidableRel G.Adj] in
 /-- The degree of `w ∈ sᶜ` in `G` is at most the degree in `G.between s sᶜ` plus the excluded
 vertices from `sᶜ`. -/
 theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
     G.degree w ≤ (G.between s sᶜ).degree w + sᶜ.card := by
+  classical
   have h_bipartite : (G.between s sᶜ).IsBipartiteWith s ↑(sᶜ) := by
     simpa using between_isBipartiteWith disjoint_compl_right
   simp_rw [← card_neighborFinset_eq_degree,

@@ -89,7 +89,8 @@ include hG in
   We use it to show that nonadjacent vertices have equal degrees. -/
 theorem adjMatrix_pow_three_of_not_adj {v w : V} (non_adj : ¬G.Adj v w) :
     (G.adjMatrix R ^ 3 : Matrix V V R) v w = degree G v := by
-  rw [pow_succ', adjMatrix_mul_apply, degree, card_eq_sum_ones, Nat.cast_sum]
+  rw [pow_succ', adjMatrix_mul_apply, ← card_neighborFinset_eq_degree, card_eq_sum_ones,
+    Nat.cast_sum]
   apply sum_congr rfl
   intro x hx
   rw [adjMatrix_sq_of_ne _ hG, Nat.cast_one]
@@ -123,7 +124,7 @@ include hG in
 theorem adjMatrix_sq_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R ^ 2 = of fun v w => if v = w then (d : R) else (1 : R) := by
   ext (v w); by_cases h : v = w
-  · rw [h, sq, adjMatrix_mul_self_apply_self, hd]; simp
+  · rw [h, sq, adjMatrix_mul_self_apply_self, hd.degree_eq]; simp
   · rw [adjMatrix_sq_of_ne R hG h, of_apply, if_neg h]
 
 open scoped Classical in
@@ -147,6 +148,9 @@ theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
   have v := Classical.arbitrary V
   use G.degree v
   intro x
+  rw [← show G.degree x = G.edegree x from
+    ENat.coe_toNat <| Set.encard_ne_top_iff.mpr <| Set.toFinite _]
+  congr 1
   by_cases hvx : G.Adj v x; swap; · exact (degree_eq_of_not_adj hG hvx).symm
   dsimp only [Theorems100.ExistsPolitician] at hG'
   push_neg at hG'
@@ -187,7 +191,7 @@ theorem card_of_regular (hd : G.IsRegularOfDegree d) : d + (Fintype.card V - 1) 
     intro x hx; simp [(ne_of_mem_erase hx).symm]
   · rw [sq, ← mulVec_mulVec]
     simp only [adjMatrix_mulVec_const_apply_of_regular hd, neighborFinset,
-      card_neighborSet_eq_degree, hd v, Function.const_def, adjMatrix_mulVec_apply _ _ (mulVec _ _),
+      card_neighborSet_eq_degree, hd.degree_eq v, Function.const_def, adjMatrix_mulVec_apply,
       mul_one, sum_const, Set.toFinset_card, smul_eq_mul, Nat.cast_id]
 
 open scoped Classical in
@@ -208,8 +212,8 @@ open scoped Classical in
 theorem adjMatrix_sq_mul_const_one_of_regular (hd : G.IsRegularOfDegree d) :
     G.adjMatrix R * of (fun _ _ => 1) = of (fun _ _ => (d : R)) := by
   ext x
-  simp only [← hd x, degree, adjMatrix_mul_apply, sum_const, Nat.smul_one_eq_cast,
-    of_apply]
+  simp only [← hd.degree_eq x, ← card_neighborFinset_eq_degree, adjMatrix_mul_apply, sum_const,
+    Nat.smul_one_eq_cast, of_apply]
 
 open scoped Classical in
 theorem adjMatrix_mul_const_one_mod_p_of_regular {p : ℕ} (dmod : (d : ZMod p) = 1)
@@ -303,8 +307,7 @@ theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) 
     · have hfr := card_of_regular hG hd
       lia
     · exact Finset.card_erase_of_mem (Finset.mem_univ _)
-  · dsimp only [IsRegularOfDegree, degree] at hd
-    rw [hd]
+  · rw [card_neighborFinset_eq_degree, hd.degree_eq]
 
 open scoped Classical in
 include hG in

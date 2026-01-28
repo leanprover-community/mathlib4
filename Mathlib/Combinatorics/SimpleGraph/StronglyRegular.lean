@@ -58,7 +58,7 @@ variable {G} {n k ℓ μ : ℕ}
 for empty graphs, since there are no pairs of adjacent vertices. -/
 theorem bot_strongly_regular : (⊥ : SimpleGraph V).IsSRGWith (Fintype.card V) 0 ℓ 0 where
   card := rfl
-  regular := bot_degree
+  regular := .bot
   of_adj _ _ h := h.elim
   of_not_adj v w _ := by
     simp only [card_eq_zero, Fintype.card_ofFinset, forall_true_left, not_false_iff, bot_adj]
@@ -78,7 +78,7 @@ theorem IsSRGWith.top :
     (⊤ : SimpleGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
   card := rfl
   regular := IsRegularOfDegree.top
-  of_adj _ _ := card_commonNeighbors_top
+  of_adj _ _ h := card_commonNeighbors_top h
   of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
@@ -115,6 +115,7 @@ theorem sdiff_compl_neighborFinset_inter_eq {v w : V} (h : G.Adj v w) :
       (G.neighborFinset v)ᶜ ∩ (G.neighborFinset w)ᶜ := by
   simpa using ⟨(adj_symm _ h), h⟩
 
+omit [DecidableEq V] in
 theorem IsSRGWith.compl_is_regular (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsRegularOfDegree (n - k - 1) := by
   rw [← h.card, Nat.sub_sub, add_comm, ← Nat.sub_sub]
@@ -163,8 +164,8 @@ theorem IsSRGWith.param_eq
   rw [← h.card, Fintype.card_pos_iff] at hn
   obtain ⟨v⟩ := hn
   convert card_mul_eq_card_mul G.Adj (s := G.neighborFinset v) (t := Gᶜ.neighborFinset v) _ _
-  · simp [h.regular v]
-  · simp [h.compl.regular v]
+  · simp [h.regular.degree_eq v]
+  · simp [h.compl.regular.degree_eq v]
   · intro w hw
     rw [mem_neighborFinset] at hw
     simp_rw [bipartiteAbove, ← mem_neighborFinset, filter_mem_eq_inter]
@@ -175,7 +176,7 @@ theorem IsSRGWith.param_eq
       card_sdiff_of_subset s, card_singleton, ← sdiff_inter_self_left,
       card_sdiff_of_subset inter_subset_left]
     congr
-    · simp [h.regular w]
+    · simp [h.regular.degree_eq w]
     · simp_rw [inter_comm, neighborFinset_def, ← Set.toFinset_inter, ← h.of_adj v w hw,
         ← Set.toFinset_card]
       congr!
@@ -199,7 +200,7 @@ theorem IsSRGWith.matrix_eq {α : Type*} [Semiring α] (h : G.IsSRGWith n k ℓ 
   rw [Fintype.card_congr (G.walkLengthTwoEquivCommonNeighbors v w)]
   obtain rfl | hn := eq_or_ne v w
   · rw [← Set.toFinset_card]
-    simp [commonNeighbors, ← neighborFinset_def, h.regular v]
+    simp [commonNeighbors, ← neighborFinset_def, h.regular.degree_eq v]
   · simp only [Matrix.one_apply_ne' hn.symm, ne_eq, hn]
     by_cases ha : G.Adj v w <;>
       simp only [ha, ite_true, ite_false, add_zero, zero_add, nsmul_eq_mul, smul_zero, mul_one,
