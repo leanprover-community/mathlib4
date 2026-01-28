@@ -95,7 +95,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
   choose V iVU m h_unit using fun x : U => X.isUnit_res_of_isUnit_germ U f x x.2 (h x.1 x.2)
   have hcover : U ≤ iSup V := by
     intro x hxU
-    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe, Subtype.exists]
+    simp only [Opens.mem_iSup]
     tauto
   -- Let `g x` denote the inverse of `f` in `U x`.
   choose g hg using fun x : U => IsUnit.exists_right_inv (h_unit x)
@@ -209,7 +209,7 @@ theorem basicOpen_of_isUnit {U : Opens X} {f : X.presheaf.obj (op U)} (hf : IsUn
   apply le_antisymm
   · exact X.basicOpen_le f
   intro x hx
-  rw [SetLike.mem_coe, X.mem_basicOpen f x hx]
+  rw [X.mem_basicOpen f x hx]
   exact RingHom.isUnit_map _ hf
 
 /--

@@ -74,6 +74,8 @@ instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
     cases q
     congr ⟩
 
+instance : PartialOrder (T.CompleteType α) := .ofSetLike (T.CompleteType α) (L[[α]].Sentence)
+
 theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
   p.isMaximal'
 

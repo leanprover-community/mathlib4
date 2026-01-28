@@ -128,6 +128,8 @@ instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : PartialOrder (NonUnitalSubring R) := .ofSetLike (NonUnitalSubring R) R
+
 /-- The actual `NonUnitalSubring` obtained from an element of a `NonUnitalSubringClass`. -/
 @[simps]
 def ofClass {S R : Type*} [NonUnitalNonAssocRing R] [SetLike S R] [NonUnitalSubringClass S R]

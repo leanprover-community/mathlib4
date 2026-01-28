@@ -185,6 +185,8 @@ instance : SetLike ZFSet.{u} ZFSet.{u} where
   coe x := {y | y ∈ x}
   coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
 
+instance : PartialOrder ZFSet.{u} := .ofSetLike ZFSet.{u} ZFSet.{u}
+
 /-- Convert a ZFC set into a `Set` of ZFC sets -/
 @[deprecated SetLike.coe (since := "2025-11-05")]
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=

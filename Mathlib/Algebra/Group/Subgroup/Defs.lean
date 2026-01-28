@@ -177,9 +177,10 @@ namespace SubgroupClass
 -- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
 -- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
 @[to_additive]
-theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
-  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
-  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
+theorem subset_union [LE S] [IsConcreteLE S G] {H K L : S} :
+    (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (mem_of_le_of_mem · xH) (mem_of_le_of_mem · xH)⟩
+  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists, ← SetLike.coe_subset_coe]
   exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
     ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
     (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
@@ -253,35 +254,40 @@ theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive
 /-- The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`. -/]
-def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _ => rfl
+def inclusion [LE S] [IsConcreteLE S G] {H K : S} (h : H ≤ K) : H →* K :=
+  MonoidHom.mk' (fun x => ⟨x, mem_of_le_of_mem h x.prop⟩) fun _ _ => rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
+theorem inclusion_self [Preorder S] [IsConcreteLE S G] (x : H) : inclusion le_rfl x = x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk {h : H ≤ K} (x : G) (hx : x ∈ H) : inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
+theorem inclusion_mk [LE S] [IsConcreteLE S G] {h : H ≤ K} (x : G) (hx : x ∈ H) :
+    inclusion h ⟨x, hx⟩ = ⟨x, mem_of_le_of_mem h hx⟩ :=
   rfl
 
 @[to_additive]
-theorem inclusion_right (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) : inclusion h ⟨x, hx⟩ = x := by
+theorem inclusion_right [LE S] [IsConcreteLE S G] (h : H ≤ K) (x : K) (hx : (x : G) ∈ H) :
+    inclusion h ⟨x, hx⟩ = x := by
   cases x
   rfl
 
 @[simp]
-theorem inclusion_inclusion {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
+theorem inclusion_inclusion [Preorder S] [IsConcreteLE S G]
+    {L : S} (hHK : H ≤ K) (hKL : K ≤ L) (x : H) :
     inclusion hKL (inclusion hHK x) = inclusion (hHK.trans hKL) x := by
   cases x
   rfl
 
 @[to_additive (attr := simp)]
-theorem coe_inclusion {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
-  Set.coe_inclusion h a
+theorem coe_inclusion [LE S] [IsConcreteLE S G]
+    {H K : S} (h : H ≤ K) (a : H) : (inclusion h a : G) = a :=
+  Set.coe_inclusion (SetLike.GCongr.coe_subset_coe h) a
 
 @[to_additive (attr := simp)]
-theorem subtype_comp_inclusion {H K : S} (h : H ≤ K) :
+theorem subtype_comp_inclusion [LE S] [IsConcreteLE S G]
+    {H K : S} (h : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion h) = SubgroupClass.subtype H :=
   rfl
 
@@ -318,6 +324,8 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hp, _⟩, _⟩, _⟩ := p
     obtain ⟨⟨⟨hq, _⟩, _⟩, _⟩ := q
     congr
+
+@[to_additive] instance : PartialOrder (Subgroup G) := .ofSetLike (Subgroup G) G
 
 initialize_simps_projections Subgroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubgroup (carrier → coe, as_prefix coe)

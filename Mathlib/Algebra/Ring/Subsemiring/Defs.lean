@@ -138,6 +138,8 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
+
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
 /-- The actual `Subsemiring` obtained from an element of a `SubsemiringClass`. -/

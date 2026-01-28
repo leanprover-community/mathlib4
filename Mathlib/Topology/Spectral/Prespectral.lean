@@ -119,7 +119,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
       exact fun _ ↦ id
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
-      simp only [Opens.mem_iSup, SetLike.mem_coe]
+      simp only [Opens.mem_iSup]
       exact ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
   right_inv I := by
     ext U

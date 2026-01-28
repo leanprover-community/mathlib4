@@ -70,6 +70,8 @@ instance : SetLike (SubObj X) X where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
 
+instance : PartialOrder (SubObj X) := .ofSetLike (SubObj X) X
+
 -- Note: this easily works because the last argument of `SubObj` is a type.
 def SubObj.prod (s : SubObj X) (t : SubObj Y) : SubObj (X × Y) where
   carrier := s ×ˢ' t
@@ -81,6 +83,8 @@ structure DecSubObj (X : Type _) [DecidableEq X] where
 instance [DecidableEq X] : SetLike (DecSubObj X) X where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr
+
+instance [DecidableEq X] : PartialOrder (DecSubObj X) := .ofSetLike (DecSubObj X) X
 
 -- Note: this is testing instance arguments after the type.
 def DecSubObj.prod [DecidableEq X] [DecidableEq Y] (s : DecSubObj X) (t : DecSubObj Y) :
