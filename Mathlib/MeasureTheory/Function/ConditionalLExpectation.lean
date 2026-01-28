@@ -27,6 +27,11 @@ expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for 
 * `ae_eq_condLExp` : the conditional (Lebesgue) expectation is characterized by its (Lebesgue)
   integral on `mΩ` sets up to `P`-ae equality.
 
+## Notation
+
+For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, we define the notation
+* `P⁻[X|mΩ] = condLExp mΩ P X`
+
 ## Design decisions
 
 `P⁻[X|mΩ]` is assigned the junk value `0` when either `¬ mΩ ≤ mΩ₀` (`mΩ` is not a sub-σ-algebra)
@@ -37,11 +42,6 @@ should be considered "the" measurable function which satisfies `setLIntegral_con
 is just used to show existence. However for (potential) convenience the actual definition assigns
 `P⁻[X|mΩ] := X` in the case when `X` is `mΩ`-measurable (which can be invoked using
 `condLExp_eq_self`).
-
-## Notation
-
-For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, we define the notation
-* `P⁻[X|mΩ] = condLExp mΩ P X`
 
 ## To do
 
@@ -171,7 +171,7 @@ theorem condLExp_const (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] 
     P⁻[fun _ : Ω ↦ c|mΩ] = fun _ ↦ c := condLExp_eq_self _ _ (measurable_const)
 
 @[gcongr]
-theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
+theorem condLExp_congr_ae {P : Measure[mΩ₀] Ω}
     {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) : P⁻[X|mΩ] =ᵐ[P] P⁻[Y|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀
   · by_cases hσ : SigmaFinite (P.trim hm)
@@ -183,10 +183,10 @@ theorem condLExp_congr_ae (P : Measure[mΩ₀] Ω)
   simp [condLExp_of_not_le hm]
 
 @[gcongr]
-theorem condLExp_congr_ae_trim (P : Measure[mΩ₀] Ω) {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) :
+theorem condLExp_congr_ae_trim {P : Measure[mΩ₀] Ω} {X Y : Ω → ℝ≥0∞} (hXY : X =ᵐ[P] Y) :
     P⁻[X|mΩ] =ᵐ[P.trim hm] P⁻[Y|mΩ] := by
   apply ae_eq_trim_of_measurable hm (measurable_condLExp _ _ X) (measurable_condLExp _ _ Y)
-  exact condLExp_congr_ae P hXY
+  exact condLExp_congr_ae hXY
 
 theorem condLExp_bot' (P : Measure[mΩ₀] Ω) [NeZero P] (X : Ω → ℝ≥0∞) :
     P⁻[X|⊥] = fun _ => (P .univ)⁻¹ • ∫⁻ ω, X ω ∂P := by
@@ -195,7 +195,7 @@ theorem condLExp_bot' (P : Measure[mΩ₀] Ω) [NeZero P] (X : Ω → ℝ≥0∞
     rw [not_isFiniteMeasure_iff] at hP
     rw [condLExp_of_not_sigmaFinite bot_le hσ]
     simpa [hP] using (by rfl)
-  obtain ⟨c, h_eq⟩ := MeasurableSpace.eq_const_of_measurable_bot (measurable_condLExp ⊥ P X)
+  obtain ⟨c, h_eq⟩ := eq_const_of_measurable_bot (measurable_condLExp ⊥ P X)
   ext _
   rw [← lintegral_condLExp bot_le]
   simp [h_eq, mul_comm, mul_assoc, ENNReal.mul_inv_cancel
