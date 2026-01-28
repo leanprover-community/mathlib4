@@ -6,6 +6,9 @@ Authors: Amelia Livingston
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Divisibility.Units
+public import Mathlib.Algebra.Group.Irreducible.Defs
 public import Mathlib.Algebra.Group.Submonoid.Operations
 public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.GroupTheory.Congruence.Hom
@@ -1487,12 +1490,28 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   simp_rw [mul_left_comm _ m] at eq
   exact eq.imp fun _ ↦ (hm.1 ·)
 
+theorem map_isUnit_iff (f : LocalizationMap S N) {m : M} : IsUnit (f m) ↔ ∃ s ∈ S, m ∣ s := by
+  refine ⟨fun h ↦ ?_, fun ⟨m, hm, dvd⟩ ↦ isUnit_of_dvd_unit (map_dvd _ dvd) (f.map_units ⟨m, hm⟩)⟩
+  have ⟨s, hxs⟩ := isUnit_iff_dvd_one.mp h
+  have ⟨⟨r, s⟩, hrs⟩ := f.surj s
+  replace hrs := congr(f m * $hrs)
+  rw [← mul_assoc, ← hxs, one_mul, ← map_mul] at hrs
+  have ⟨s', eq⟩ := f.eq_iff_exists.mp hrs
+  exact ⟨s' * s, mul_mem s'.2 s.2, _, mul_left_comm _ m _ ▸ eq⟩
+
 @[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n
   have ⟨ms, eq⟩ := f.surj n
   exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
+
+/-- Any localization of a cancellative commutative monoid is cancellative. -/
+@[to_additive
+/-- Any localization of a cancellative commutative additive monoid is cancellative. -/]
+abbrev cancelCommMonoid {M N} [CancelCommMonoid M] {S : Submonoid M}
+    [CommMonoid N] (f : S.LocalizationMap N) : CancelCommMonoid N where
+  mul_left_cancel := f.isCancelMul.mul_left_cancel
 
 @[to_additive] instance [IsCancelMul M] : IsCancelMul (Localization S) :=
   (Localization.monoidOf S).isCancelMul
@@ -1509,6 +1528,16 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
 
 instance [Subsingleton M] : Subsingleton (Localization S) :=
   (Localization.monoidOf S).subsingleton_of_subsingleton
+
+theorem map_dvd_map (f : LocalizationMap S N) {m₁ m₂ : M} : f m₁ ∣ f m₂ ↔ ∃ s ∈ S, m₁ ∣ s * m₂ where
+  mp := fun ⟨n, eq⟩ ↦ by
+    have ⟨⟨m, s⟩, hn⟩ := f.surj n
+    replace hn := congr(f m₁ * $hn)
+    rw [← mul_assoc, ← eq, ← map_mul, ← map_mul] at hn
+    have ⟨s', hs'⟩ := f.eq_iff_exists.mp hn
+    refine ⟨_, mul_mem s'.2 s.2, s' * m, ?_⟩
+    rwa [mul_left_comm, mul_assoc, mul_comm s.1]
+  mpr := fun ⟨s, hs, dvd⟩ ↦ (f.map_units ⟨s, hs⟩).dvd_mul_left.mp (map_mul f .. ▸ map_dvd f dvd)
 
 end Submonoid.LocalizationMap
 
