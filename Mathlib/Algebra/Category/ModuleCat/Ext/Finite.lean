@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 
-# Ext Between Finitely Generated Module over Noetherian Ring is Finitely Generated
+# `Ext`-modules between finitely generated modules over Noetherian rings are finitely generated
 
 -/
 
@@ -28,10 +28,10 @@ open CategoryTheory Abelian
 
 instance ModuleCat.finite_ext [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext N M i) := by
-  induction i generalizing N
-  · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
-  · rename_i n ih _
-    rcases Module.exists_finite_presentation R N with ⟨N, _, _, _, _, f, surjf⟩
+  induction i generalizing N with
+  | zero => exact Module.Finite.equiv (Ext.linearEquiv₀.trans ModuleCat.homLinearEquiv).symm
+  | succ n ih =>
+    obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R N
     let exac := LinearMap.shortExact_shortComplexKer surjf
     exact Module.Finite.of_surjective (exac.extClass.precompOfLinear R M (add_comm 1 n))
       (precomp_extClass_surjective_of_projective_X₂ M exac n)

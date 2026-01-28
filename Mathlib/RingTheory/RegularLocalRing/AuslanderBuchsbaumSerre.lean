@@ -41,9 +41,6 @@ lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal 
   apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
   exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
-local instance small_quotient_ideal' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
-  small_of_surjective Ideal.Quotient.mk_surjective
-
 local instance finite_QuotSMulTop (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M]
     (x : R) : Module.Finite (R ⧸ Ideal.span {x}) (QuotSMulTop x M) := by
   let f : M →ₛₗ[Ideal.Quotient.mk (Ideal.span {x})] (QuotSMulTop x M) := {
@@ -191,6 +188,16 @@ lemma QuotSMulTop_map_exact {f : M →ₗ[R] N} {g : N →ₗ[R] L} (exact : Fun
 
 end
 
+variable {R} in
+lemma IsSMulRegular.of_free {x : R} (reg : IsSMulRegular R x) (M : Type*) [AddCommGroup M]
+    [Module R M] [free : Module.Free R M] : IsSMulRegular M x := by
+  rcases free with ⟨⟨I, ⟨e⟩⟩⟩
+  rw [e.isSMulRegular_congr]
+  apply IsSMulRegular.of_right_eq_zero_of_smul (fun y hy ↦ ?_)
+  ext i
+  apply reg.right_eq_zero_of_smul
+  rw [← Finsupp.smul_apply, hy, Finsupp.zero_apply]
+
 open Ideal in
 lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetherianRing R]
     (M : ModuleCat.{v} R) [Module.Finite R M] (x : R)
@@ -215,39 +222,19 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         have := (free_iff_quotSMulTop_free R M mem reg2).mp Module.free_of_flat_of_isLocalRing
         exact Module.Projective.of_free
     · rename_i n ih _
-      rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
-      let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-        (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
-      have surjf : Function.Surjective f := by simpa [f] using hf'
-      let S : ShortComplex (ModuleCat.{v} R) := {
-        f := ModuleCat.ofHom.{v} (LinearMap.ker f).subtype
-        g := ModuleCat.ofHom.{v} f
-        zero := by
-          ext x
-          simp }
+      obtain ⟨N, _, _, _, _, f, surjf⟩ := Module.exists_finite_presentation R M
+      let S := f.shortComplexKer
       have S_exact' : Function.Exact (LinearMap.ker f).subtype f := by
         intro x
         simp
-      have S_exact : S.ShortExact := {
-        exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact S).mpr S_exact'
-        mono_f := (ModuleCat.mono_iff_injective S.f).mpr (LinearMap.ker f).injective_subtype
-        epi_g := (ModuleCat.epi_iff_surjective S.g).mpr surjf}
-      let _ : Module.Finite R S.X₂ := by
-        simp [S, Module.Finite.equiv (Shrink.linearEquiv R R).symm, Finite.of_fintype (Fin m)]
-      let free : Module.Free R S.X₂ := Module.Free.finsupp R (Shrink.{v, u} R) _
+      have S_exact := LinearMap.shortExact_shortComplexKer surjf
       have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
-      have reg2'' : IsSMulRegular (Fin m →₀ Shrink.{v, u} R) x := by
-        apply IsSMulRegular.of_right_eq_zero_of_smul (fun y hy ↦ ?_)
-        ext i
-        simp only [Finsupp.coe_zero, Pi.zero_apply, equivShrink_symm_zero]
-        apply IsSMulRegular.right_eq_zero_of_smul reg1
-        rw [← equivShrink_symm_smul, ← Finsupp.smul_apply, hy]
-        exact equivShrink_symm_zero
+      have reg2'' : IsSMulRegular S.X₂ x := reg1.of_free S.X₂
       have reg2' : IsSMulRegular S.X₁ x := reg2''.submodule _ _
       have Sx_exact' := QuotSMulTop_map_exact x S_exact' surjf
       let Sx : ShortComplex (ModuleCat.{v} (R ⧸ Ideal.span {x})) := {
-        f := ModuleCat.ofHom.{v} (QuotSMulTop_map x (LinearMap.ker f).subtype)
-        g := ModuleCat.ofHom.{v} (QuotSMulTop_map x f)
+        f := ModuleCat.ofHom (QuotSMulTop_map x (LinearMap.ker f).subtype)
+        g := ModuleCat.ofHom (QuotSMulTop_map x f)
         zero := by
           rw [← ModuleCat.ofHom_comp, Sx_exact'.linearMap_comp_eq_zero]
           rfl }
@@ -263,31 +250,29 @@ lemma projectiveDimension_eq_quotient [Small.{v} R] [IsLocalRing R] [IsNoetheria
         rw [← hz, LinearMap.mem_ker, map_smul] at this
         simp only [← hy', Submodule.Quotient.mk_eq_zero, Submodule.mem_smul_pointwise_iff_exists,
           Submodule.mem_top, true_and, Subtype.exists, SetLike.mk_smul_mk, LinearMap.mem_ker]
-        use z, IsSMulRegular.right_eq_zero_of_smul reg2 this
+        use z, reg2.right_eq_zero_of_smul this
         exact Subtype.val_inj.mp hz
       have Sx_exact : Sx.ShortExact := {
         exact := (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact Sx).mpr Sx_exact'
         mono_f := (ModuleCat.mono_iff_injective Sx.f).mpr inj
         epi_g := (ModuleCat.epi_iff_surjective Sx.g).mpr (QuotSMulTop_map_surjective x surjf)}
-      let _ := (free_iff_quotSMulTop_free R (Fin m →₀ Shrink.{v, u} R) mem reg2'').mpr free
+      let _ := (free_iff_quotSMulTop_free R N mem reg2'').mpr inferInstance
       have proj' := ModuleCat.projective_of_categoryTheory_projective Sx.X₂
       exact ((S_exact.hasProjectiveDimensionLT_X₃_iff n proj).trans (ih S.X₁ reg2')).trans
         (Sx_exact.hasProjectiveDimensionLT_X₃_iff n proj').symm
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
-  by_cases eqbot : N = ⊥
-  · simp only [eqbot, le_bot_iff, projectiveDimension_eq_bot_iff,
+  induction N with
+  | bot =>
+    simp only [le_bot_iff, projectiveDimension_eq_bot_iff,
       projectiveDimension_eq_bot_iff, ModuleCat.isZero_iff_subsingleton]
     refine ⟨fun h ↦ (Submodule.Quotient.mk_surjective _).subsingleton, fun h ↦ ?_⟩
     by_contra ntr
     have : Nontrivial M := not_subsingleton_iff_nontrivial.mp ntr
     exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial' R mem M)) h
-  · by_cases eqtop : N.unbot eqbot = ⊤
-    · have : N = ⊤ := (WithBot.coe_unbot _ eqbot).symm.trans (WithBot.coe_inj.mpr eqtop)
-      simp [this]
-    · let n := (N.unbot eqbot).toNat
-      have : N = n := (WithBot.coe_unbot _ eqbot).symm.trans
-        (WithBot.coe_inj.mpr (ENat.coe_toNat eqtop).symm)
-      simpa only [this] using aux n
+  | coe N =>
+    induction N with
+    | top => simp
+    | coe n => exact aux n
 
 variable {R}
 
@@ -337,8 +322,8 @@ lemma exist_isSMulRegular_of_exist_hasProjectiveDimensionLE_aux [IsLocalRing R] 
     simpa [← WithBot.coe_zero, ← eq0, ← eq] using WithBot.le_self_add WithBot.coe_ne_bot _
   let _ := (projective_iff_hasProjectiveDimensionLT_one _).mpr
     ((projectiveDimension_le_iff _ _).mp this)
-  let _ : Module.Projective R (Shrink.{v, u} (R ⧸ maximalIdeal R)) :=
-    ModuleCat.projective_of_module_projective (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R)))
+  let _ : Module.Projective R (Shrink.{v} (R ⧸ maximalIdeal R)) :=
+    ModuleCat.projective_of_module_projective (ModuleCat.of R (Shrink.{v} (R ⧸ maximalIdeal R)))
   have : Module.Projective R (R ⧸ maximalIdeal R) :=
     Module.Projective.of_equiv (Shrink.linearEquiv.{v} R (R ⧸ maximalIdeal R))
   have : Module.Free R (R ⧸ maximalIdeal R) := Module.free_of_flat_of_isLocalRing
@@ -558,9 +543,9 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
       ((Submodule.quotEquivOfEq _ _ (by simp [e1', LinearMap.ker_comp, kerf])).trans
       (LinearMap.quotKerEquivOfSurjective _ surje1')).symm
     let e2 := LinearMap.quotientInfEquivSupQuotient (J'.comap g) (Submodule.span R {⟨x, mem⟩})
-    let i3 : (↥(J'.comap g) ⧸ (J'.comap g).comap (J'.comap g).subtype  ⊓
+    let i3 : ((J'.comap g) ⧸ (J'.comap g).comap (J'.comap g).subtype  ⊓
       Submodule.comap (J'.comap g).subtype (Submodule.span R {⟨x, mem⟩})) →ₗ[R]
-      QuotSMulTop x (Shrink.{v, u} (maximalIdeal R)) :=
+      QuotSMulTop x (Shrink.{v} (maximalIdeal R)) :=
       Submodule.mapQ _ _ ((Shrink.linearEquiv.{v} R (maximalIdeal R)).symm.toLinearMap.comp
         (J'.comap g).subtype) (by
           rw [← Submodule.comap_inf, Submodule.comap_comp]
@@ -568,8 +553,8 @@ theorem generate_by_regular_aux [IsLocalRing R] [IsNoetherianRing R] [Small.{v} 
           rcases (Submodule.mem_smul_pointwise_iff_exists _ _ _).mp hy with ⟨z, _, hz⟩
           simp only [Submodule.mem_comap, ← hz, map_smul]
           exact Submodule.smul_mem_pointwise_smul _ x ⊤ trivial)
-    let i' : Shrink.{v, u} (maximalIdeal R') →ₗ[R]
-      QuotSMulTop x (Shrink.{v, u} (maximalIdeal R)) := i3.comp (e1.trans e2.symm).toLinearMap
+    let i' : Shrink.{v} (maximalIdeal R') →ₗ[R] QuotSMulTop x (Shrink.{v} (maximalIdeal R)) :=
+      i3.comp (e1.trans e2.symm).toLinearMap
     let r' : QuotSMulTop x (Shrink.{v} (maximalIdeal R)) →ₗ[R] Shrink.{v} (maximalIdeal R') :=
       Submodule.liftQ _ ((Shrink.linearEquiv.{v} R (maximalIdeal R')).symm.toLinearMap.comp
       (f.comp (Shrink.linearEquiv.{v} R (maximalIdeal R)).toLinearMap)) (fun y hy ↦ by
@@ -649,18 +634,20 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     IsRegularLocalRing R := by
   classical
   rcases generate_by_regular h with ⟨rs, reg, span⟩
-  apply of_span_eq R (rs.toFinset : Set R) rs.toFinset.finite_toSet
-    (by simpa only [List.coe_toFinset] using span)
+  apply of_spanFinrank_maximalIdeal_le
+  have spaneq : Ideal.span (rs.toFinset : Set R) = maximalIdeal R := by simp [← span]
+  nth_rw 1 [← spaneq]
+  apply le_trans (Nat.cast_le.mpr
+    (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet))
   rw [Set.ncard_coe_finset rs.toFinset]
   apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
-  apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R (Shrink.{v, u} R)))
+  apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R R))
   have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
   rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
   apply le_sSup
-  use rs, ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mpr reg
+  use rs, reg
   simp only [← span, exists_prop, and_true]
-  intro r hr
-  exact Ideal.subset_span hr
+  exact fun r hr ↦ Ideal.subset_span hr
 
 theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
