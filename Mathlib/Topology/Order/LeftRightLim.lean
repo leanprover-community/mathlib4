@@ -100,7 +100,7 @@ theorem rightLim_eq_of_not_tendsto
 theorem leftLim_eq_of_isBot {f : α → β} {a : α} (ha : IsBot a) :
     leftLim f a = f a := by
   let A : TopologicalSpace α := Preorder.topology α
-  have : OrderTopology α :=  ⟨rfl⟩
+  have : OrderTopology α := ⟨rfl⟩
   apply leftLim_eq_of_eq_bot
   have : Iio a = ∅ := by simp; grind [IsBot, IsMin]
   simp [this]
@@ -165,7 +165,7 @@ theorem continuousWithinAt_leftLim_Iic [TopologicalSpace α] [OrderTopology α] 
   rcases eq_or_neBot (𝓝[<] a) with h' | h'
   · simp [h']
   obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
-  obtain ⟨u, au, hu⟩ :  ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
+  obtain ⟨u, au, hu⟩ : ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
     have := (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.1 h s ⟨s_mem, s_closed⟩
     simpa using (mem_nhdsLT_iff_exists_Ioo_subset' hb).1 this
   filter_upwards [Ioo_mem_nhdsLT au] with c hc
@@ -198,7 +198,7 @@ theorem leftLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
   apply leftLim_eq_of_tendsto (neBot_iff.mp h')
   apply (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.2
   rintro s ⟨s_mem, s_closed⟩
-  obtain ⟨u, au, hu⟩ :  ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
+  obtain ⟨u, au, hu⟩ : ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
     have := (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.1 h s ⟨s_mem, s_closed⟩
     simpa using (mem_nhdsLT_iff_exists_Ioo_subset' hb).1 this
   filter_upwards [Ioo_mem_nhdsLT au] with c hc
