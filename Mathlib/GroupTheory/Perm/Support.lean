@@ -509,15 +509,9 @@ theorem mem_support_swap_mul_imp_mem_support_ne {x y : α} (hy : y ∈ support (
   grind
 
 omit [Fintype α] in
-theorem disjoint_swap_swap [Finite α] {x y z t : α} (h : [x, y, z, t].Nodup) :
+theorem disjoint_swap_swap {x y z t : α} (h : [x, y, z, t].Nodup) :
     Disjoint (swap x y) (swap z t) := by
-  have : Fintype α := Fintype.ofFinite α
-  rw [Equiv.Perm.disjoint_iff_disjoint_support,
-    (support_swap_iff x y).mpr (by grind),
-    (support_swap_iff z t).mpr (by grind)]
-  simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, not_or,
-    Finset.disjoint_singleton_right]
-  grind
+  intro; grind
 
 theorem Disjoint.mem_imp (h : Disjoint f g) {x : α} (hx : x ∈ f.support) : x ∉ g.support :=
   disjoint_left.mp h.disjoint_support hx
