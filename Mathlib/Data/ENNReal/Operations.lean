@@ -195,9 +195,15 @@ theorem mul_top' : a * ∞ = if a = 0 then 0 else ∞ := by convert WithTop.mul_
 
 @[simp] theorem mul_top (h : a ≠ 0) : a * ∞ = ∞ := WithTop.mul_top h
 
+@[simp] theorem mul_top_of_pos (h : 0 < a) : a * ∞ = ∞ :=
+  mul_top (pos_iff_ne_zero.mp h)
+
 theorem top_mul' : ∞ * a = if a = 0 then 0 else ∞ := by convert WithTop.top_mul' a
 
 @[simp] theorem top_mul (h : a ≠ 0) : ∞ * a = ∞ := WithTop.top_mul h
+
+@[simp] theorem top_mul_of_pos (h : 0 < a) : ∞ * a = ∞ :=
+  top_mul (pos_iff_ne_zero.mp h)
 
 theorem top_mul_top : ∞ * ∞ = ∞ := WithTop.top_mul_top
 
