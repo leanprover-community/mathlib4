@@ -26,7 +26,7 @@ declare_config_elab elabApplyConfig ApplyConfig
 /--
 * `apply (config := cfg) e` allows for additional configuration (see `Lean.Meta.ApplyConfig`):
   * `newGoals` controls which new goals are added by `apply`, in which order.
-  * `-synthAssignedInstances` will not synthesize instance implicit arguments even if they have been
+  * `-synthAssignedInstances` will not synthesize instance implicit arguments if they have been
     assigned by `isDefEq`.
   * `+allowSynthFailures` will create new goals when instance synthesis fails, rather than erroring.
   * `+approx` enables `isDefEq` approximations (see `Lean.Meta.approxDefEq`).
