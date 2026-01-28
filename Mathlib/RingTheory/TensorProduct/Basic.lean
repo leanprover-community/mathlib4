@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -528,6 +529,18 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
         (Subring.subset_closure (.inr ⟨_, rfl⟩))
   | add x y _ _ => exact add_mem ‹_› ‹_›
+
+/-- If `s` generates `T` as an `R`-algebra,
+then `{ 1 ⊗ x | x ∈ s }` generates `S ⊗[R] T` as an `S`-algebra. -/
+lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
+    [Semiring B] [Algebra R A] [Algebra R B]
+    (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
+  convert congr(adjoin A (($hs).map (includeRight : B →ₐ[R] A ⊗[R] B)).carrier) using 1
+  · rw [AlgHom.map_adjoin]; simp [-adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+  rw [eq_comm, ← top_le_iff, Algebra.map_top]
+  change ⊤ ≤ (adjoin A includeRight.range.carrier).toSubmodule
+  rw [← Submodule.baseChange_top, Submodule.baseChange_eq_span, Submodule.map_top]
+  exact span_le_adjoin _ _
 
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
