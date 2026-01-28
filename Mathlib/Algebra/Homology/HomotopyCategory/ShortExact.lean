@@ -148,7 +148,7 @@ lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
       all_goals dsimp [φ]; infer_instance
     apply IsIso.of_isIso_comp_left ((homologyFunctorFactors C (up ℤ) n).hom.app (mappingCone S.f))
 
-lemma descShortComplex_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
+lemma descShortComplex_naturality {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
     (f : S₁ ⟶ S₂) : CochainComplex.mappingCone.descShortComplex S₁ ≫ f.τ₃ =
     CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫
     CochainComplex.mappingCone.descShortComplex S₂ := by
@@ -157,6 +157,20 @@ lemma descShortComplex_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
   · simp [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
   · have : (S₁.g ≫ f.τ₃).f n = (f.τ₂ ≫ S₂.g).f n := by rw [f.comm₂₃]
     simpa [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
+
+universe u' v'
+
+variable {D : Type u'} [Category.{v'} D] [Abelian D]
+
+lemma descShortComplex_mapHomologicalComplex (F : C ⥤ D) [F.Additive]
+    (S : ShortComplex (CochainComplex C ℤ)) :
+    (F.mapHomologicalComplex (ComplexShape.up ℤ)).map (descShortComplex S) =
+    (mapHomologicalComplexIso S.f F).hom ≫
+    descShortComplex (S.map (F.mapHomologicalComplex (ComplexShape.up ℤ))) := by
+  ext n
+  simp [mapHomologicalComplexIso, descShortComplex, mapHomologicalComplexXIso,
+    mapHomologicalComplexXIso'_hom, Functor.mapHomologicalComplex_map_f,
+    desc_f _ _ _ _ n (n + 1) rfl]
 
 end mappingCone
 
