@@ -39,6 +39,10 @@ This file defines the following linters:
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
 - the `show` linter checks for `show`s that change the goal and should be replaced by `change`
+- the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
+  by containing a double underscore. The `defsWithUnderscore` environment linter checks for
+  definitions whose name contains an underscore: that is also very likely to be a violation of
+  mathlib's naming convention.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -502,6 +506,7 @@ this violates the naming convention. -/
   test declName := do
     unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
     let s := declName.toString
+    -- TODO: is there a more elegant way to check for the first condition?
     if s.contains "«term_" || s.startsWith "LibraryNote." then return none
     if declName.toString.contains "_" then
       return m!"The definition `{declName}` contains an underscore. \
