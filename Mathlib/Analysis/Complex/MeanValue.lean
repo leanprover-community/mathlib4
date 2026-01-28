@@ -62,14 +62,9 @@ theorem circleAverage_of_differentiable_on_off_countable₁ (hs : s.Countable)
     (h₁f : ContinuousOn f (closedBall c |R|)) (h₂f : ∀ z ∈ ball c |R| \ s, DifferentiableAt ℂ f z)
     (hw : w ∈ ball c |R|) (hR : R ≠ 0) :
     circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R = f w := by
-  rcases lt_trichotomy 0 R with h | rfl | h
-  · rw [← abs_of_pos h]
-    exact circleAverage_of_differentiable_on_off_countable_posRadius (abs_pos_of_pos h)
-       hs h₁f h₂f hw
-  · tauto
-  · rw [← circleAverage_neg_radius, ← abs_of_neg h]
-    exact circleAverage_of_differentiable_on_off_countable_posRadius (abs_pos_of_neg h)
-      hs h₁f h₂f hw
+  rw [← circleAverage_abs_radius]
+  exact circleAverage_of_differentiable_on_off_countable_posRadius (by simpa)
+    hs h₁f h₂f hw
 
 /--
 The **Generalized Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is
