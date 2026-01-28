@@ -319,4 +319,24 @@ lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
     exact le_trans (Set.ncard_image_le fin) (Set.ncard_le_ncard_of_injOn Subtype.val (by simp [G])
       Set.injOn_subtype_val fg'.finite_generators)
 
+lemma spanFinrank_le_of_surjective {R : Type*} [CommRing R] [IsNoetherianRing R]
+    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
+    (f : R →+* R') (surj : Function.Surjective f) :
+    (maximalIdeal R').spanFinrank ≤ (maximalIdeal R).spanFinrank := by
+  let fin := Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing
+  have hspan : Ideal.span (f '' (maximalIdeal R).generators) = maximalIdeal R' := by
+    have : Ideal.span (maximalIdeal R).generators = _ := (maximalIdeal R).span_generators
+    simpa [← Ideal.map_span, this, ((local_hom_TFAE f).out 0 4).mp (surj.isLocalHom f)] using
+      (Ideal.map_comap_of_surjective f surj (maximalIdeal R'))
+  have hle : (maximalIdeal R').spanFinrank ≤ (f '' (maximalIdeal R).generators).ncard := by
+    simpa [← hspan] using (Submodule.spanFinrank_span_le_ncard_of_finite (fin.image _))
+  apply le_trans hle (le_of_le_of_eq (Set.ncard_image_le fin)
+    (Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing))
+
+lemma spanFinrank_eq_of_ringEquiv {R : Type*} [CommRing R] [IsNoetherianRing R]
+    [IsLocalRing R] {R' : Type*} [CommRing R'] [IsNoetherianRing R'] [IsLocalRing R']
+    (e : R ≃+* R') : (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank :=
+  le_antisymm (spanFinrank_le_of_surjective e.symm.toRingHom e.symm.surjective)
+    (spanFinrank_le_of_surjective e.toRingHom e.surjective)
+
 end IsLocalRing
