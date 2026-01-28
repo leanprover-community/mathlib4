@@ -142,6 +142,8 @@ instance : Mul (IntertwiningMap ρ ρ) where
 @[simp] lemma coe_mul (f g : IntertwiningMap ρ ρ) :
     (f * g).toLinearMap = f.toLinearMap * g.toLinearMap := rfl
 
+@[simp] lemma mul_apply (f g : IntertwiningMap ρ ρ) (v : V) : (f * g) v = f (g v) := rfl
+
 instance : One (IntertwiningMap ρ ρ) := ⟨id ρ⟩
 
 @[simp] lemma coe_one : ((1 : IntertwiningMap ρ ρ) : V → V) = (_root_.id : V → V) := rfl
@@ -152,15 +154,13 @@ instance : Semigroup (IntertwiningMap ρ ρ) :=
 
 instance : Pow (IntertwiningMap ρ ρ) ℕ := ⟨fun f n => npowRecAuto n f⟩
 
-@[simp] lemma pow_succ (f : IntertwiningMap ρ ρ) (n : ℕ) : f ^ (n + 1) = f ^ n * f := rfl
-
 instance : Monoid (IntertwiningMap ρ ρ) :=
   Function.Injective.monoid (fun f : IntertwiningMap ρ ρ => f.toLinearMap)
     (toLinearMap_injective ρ ρ) rfl (fun _ _ => rfl)
     (fun f n => by
       induction n with
       | zero => rfl
-      | succ n ih => simp only [pow_succ, coe_mul] at *; rw [ih]; rfl)
+      | succ n ih => simp only [pow_succ, coe_mul, show f ^ (n + 1) = f ^ n * f from rfl, ih] at *)
 
 instance : NatCast (IntertwiningMap ρ ρ) where
   natCast n := n • (1 : IntertwiningMap ρ ρ)
@@ -173,25 +173,19 @@ instance instSemiring : Semiring (IntertwiningMap ρ ρ) :=
       intro f n
       induction n with
       | zero => rfl
-      | succ n ih => simp [ih, _root_.pow_succ])
+      | succ n ih => simp [ih, pow_succ])
     (fun _ => rfl)
 
 instance : Algebra A (IntertwiningMap ρ ρ) :=
-  Algebra.ofModule
-    (fun a f g => by
-      ext v
-      rfl)
-    (fun a f g => by
-      ext v
-      simp [map_smul]
-      rfl
-      )
+  Algebra.ofModule (fun a f g => rfl) (fun a f g => by ext; simp)
+
+@[simp] lemma algebraMap_apply (a : A) : algebraMap A (IntertwiningMap ρ ρ) a = a • 1 := rfl
 
 /-- Intertwining maps from `ρ` to itself are the same as `A[G]`-linear endomorphisms. -/
 def equivAlgEnd :
     IntertwiningMap ρ ρ ≃ₐ[A] Module.End A[G] ρ.asModule :=
   AlgEquiv.ofLinearEquiv
-    (equivLinearMapAsModule (ρ:=ρ) (σ:=ρ))
+    (equivLinearMapAsModule ρ ρ)
     (by rfl)
     (by intro f g; rfl)
 
