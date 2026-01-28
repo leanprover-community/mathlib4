@@ -5,8 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
-public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 /-!
 # Structure groupoids

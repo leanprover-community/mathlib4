@@ -290,6 +290,12 @@ def sumRingEquiv : MvPolynomial (S₁ ⊕ S₂) R ≃+* MvPolynomial S₁ (MvPol
   · ext1; simp only [RingHom.comp_apply, sumToIter_C, iterToSum_C_C]
   · rintro ⟨⟩ <;> simp only [sumToIter_Xl, iterToSum_X, sumToIter_Xr, iterToSum_C_X]
 
+@[simp] lemma iterToSum_sumToIter (p) :
+    iterToSum R S₁ S₂ (sumToIter R S₁ S₂ p) = p := (sumRingEquiv _ _ _).symm_apply_apply _
+
+@[simp] lemma sumToIter_iterToSum (p) :
+    sumToIter R S₁ S₂ (iterToSum R S₁ S₂ p) = p := (sumRingEquiv _ _ _).apply_symm_apply _
+
 /-- The algebra isomorphism between multivariable polynomials in a sum of two types,
 and multivariable polynomials in one of the types,
 with coefficients in multivariable polynomials in the other type.

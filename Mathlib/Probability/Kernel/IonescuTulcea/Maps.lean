@@ -107,7 +107,6 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
     by_cases h : x ≤ a
     · simpa [h] using measurable_fst.eval
     · simpa [h] using measurable_snd.eval
-  measurable_invFun := by dsimp; fun_prop
 
 lemma coe_IicProdIoc {a b : ι} (hab : a ≤ b) :
     ⇑(IicProdIoc (X := X) hab) = _root_.IicProdIoc a b := rfl
@@ -134,7 +133,6 @@ def IicProdIoi (a : ι) :
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
     · exact measurable_fst.eval
     · exact measurable_snd.eval
-  measurable_invFun := Measurable.prodMk (measurable_restrict _) (Set.measurable_restrict _)
 
 end MeasurableEquiv
 
@@ -154,7 +152,6 @@ def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1
     simp_rw [eqRec_eq_cast]
     refine measurable_pi_lambda _ (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)
     cases Nat.mem_Ioc_succ' i; rfl
-  measurable_invFun := measurable_pi_apply _
 
 end Nat
 

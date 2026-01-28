@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Associated
 public import Mathlib.Algebra.Ring.Idempotent
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.RingTheory.Ideal.Lattice
 public import Mathlib.Tactic.Ring
