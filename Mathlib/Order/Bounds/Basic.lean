@@ -340,14 +340,17 @@ theorem bddAbove_Iic : BddAbove (Iic a) :=
 theorem bddAbove_Iio : BddAbove (Iio a) :=
   ⟨a, fun _ hx => le_of_lt hx⟩
 
-@[to_dual le_glb_Ioi]
-theorem lub_Iio_le (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
+@[to_dual]
+theorem le_of_isLUB_Iio (a : α) (hb : IsLUB (Iio a) b) : b ≤ a :=
   (isLUB_le_iff hb).mpr fun _ hk => le_of_lt hk
+
+@[deprecated (since := "2026-01-17")] alias lub_Iio_le := le_of_isLUB_Iio
+@[deprecated (since := "2026-01-17")] alias le_glb_Ioi := le_of_isGLB_Ioi
 
 @[to_dual]
 theorem lub_Iio_eq_self_or_Iio_eq_Iic [PartialOrder γ] {j : γ} (i : γ) (hj : IsLUB (Iio i) j) :
     j = i ∨ Iio i = Iic j := by
-  rcases eq_or_lt_of_le (lub_Iio_le i hj) with hj_eq_i | hj_lt_i
+  rcases eq_or_lt_of_le (le_of_isLUB_Iio i hj) with hj_eq_i | hj_lt_i
   · exact Or.inl hj_eq_i
   · right
     exact Set.ext fun k => ⟨fun hk_lt => hj.1 hk_lt, fun hk_le_j => lt_of_le_of_lt hk_le_j hj_lt_i⟩

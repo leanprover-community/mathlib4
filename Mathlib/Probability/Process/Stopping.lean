@@ -226,7 +226,7 @@ theorem IsStoppingTime.measurableSet_lt (hτ : IsStoppingTime f τ) (i : ι) :
     have h_Iio_eq_Iic' : Set.Iio (i : WithTop ι) = Set.Iic (i' : WithTop ι) := by
       rw [← image_coe_Iio, ← image_coe_Iic, h_Iio_eq_Iic]
     rw [h_lt_eq_preimage, h_Iio_eq_Iic']
-    exact f.mono (lub_Iio_le i hi'_lub) _ (hτ.measurableSet_le i')
+    exact f.mono (le_of_isLUB_Iio i hi'_lub) _ (hτ.measurableSet_le i')
 
 theorem IsStoppingTime.measurableSet_ge (hτ : IsStoppingTime f τ) (i : ι) :
     MeasurableSet[f i] {ω | i ≤ τ ω} := by
