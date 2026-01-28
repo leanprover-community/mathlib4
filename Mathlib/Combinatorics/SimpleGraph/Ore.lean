@@ -218,7 +218,7 @@ lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} [G.LocallyFi
   · obtain h := SimpleGraph.Walk.getVert_length_takeUntil h
     rw [SimpleGraph.Walk.getVert_eq_support_getElem] at h
     conv at h =>
-      right ;
+      right;
       rw [← l1]
     · rw [List.Nodup.getElem_inj_iff] at h
       · exact h
@@ -3209,7 +3209,7 @@ lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fin
     unfold J
     rw [← SimpleGraph.card_neighborSet_eq_degree G b]
     apply Finset.card_eq_of_equiv_fintype
-    have h1 : ({i | G.Adj (p.support.get ⟨i , by rw [h_vertices_length] ; omega⟩) b} :
+    have h1 : ({i | G.Adj (p.support.get ⟨i, by rw [h_vertices_length]; omega⟩) b} :
       Finset (Fin (Fintype.card V - 1) ) ) = J := by
       ext i
       simp only [get_eq_getElem, Finset.mem_filter, mem_univ, true_and, J]
