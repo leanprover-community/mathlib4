@@ -22,7 +22,7 @@ open Lean Meta Elab Tactic Term
 namespace Mathlib.Tactic
 
 /--
-`apply t at i` will use forward reasoning with `t` at the hypothesis `i`.
+`apply t at i` uses forward reasoning with `t` at the hypothesis `i`.
 Explicitly, if `t : α₁ → ⋯ → αᵢ → ⋯ → αₙ` and `i` has type `αᵢ`, then this tactic will add
 metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
 then replace the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
