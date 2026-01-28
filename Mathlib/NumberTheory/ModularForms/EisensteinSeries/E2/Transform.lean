@@ -64,12 +64,9 @@ The proof of `G2_S_transform` is the heart of this file. The strategy is:
 
 -/
 
-@[expose] public section
-
 open UpperHalfPlane hiding I
 
-open ModularForm ModularGroup Filter Complex MatrixGroups
- Set SummationFilter
+open ModularForm ModularGroup Filter Complex MatrixGroups Set SummationFilter
 
 open scoped Real Topology
 
@@ -79,23 +76,21 @@ namespace EisensteinSeries
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
 nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
-def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
+private def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
-private lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
+lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
 
 @[simp]
-private lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
+lemma δ_eq_two : δ ![0, -1] = 2 := by simp [δ]
 
-private lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
+lemma δ_eventually_cofinite : δ =ᶠ[cofinite] 0 := by
   filter_upwards [eventually_cofinite_ne ![0, 0], eventually_cofinite_ne ![0, -1]] with x hx hx'
   simp_all [δ]
 
 /-- This term gives an alternative infinite sum for G2 which is absolutely convergent. -/
 abbrev G2Term (z : ℍ) (m : Fin 2 → ℤ) : ℂ :=
     (((m 0 : ℂ) * z + m 1) ^ 2 * (m 0 * z + m 1 + 1))⁻¹ + δ m
-
-section transform
 
 lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by
   have H : Summable fun m ↦ G2Term z m - δ m := by
@@ -109,7 +104,7 @@ lemma G2Term_summable (z : ℍ) : Summable (G2Term z) := by
 lemma G2Term_prod_summable (z : ℍ) : Summable (fun p : ℤ × ℤ ↦ G2Term z ![p.1, p.2]) := by
   apply (finTwoArrowEquiv _).symm.summable_iff.mpr (G2Term_summable z)
 
-private lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ) * z + n) ^ 2)⁻¹ +
+lemma aux_identity (z : ℍ) (b n : ℤ) : ((b : ℂ) * z + n + 1)⁻¹ * (((b : ℂ) * z + n) ^ 2)⁻¹ +
     (δ ![b, n]) + (((b : ℂ) * z + n)⁻¹ - ((b : ℂ) * z + n + 1)⁻¹) = (((b : ℂ) * z + n) ^ 2)⁻¹ := by
   by_cases h : b = 0 ∧ n = 0
   · simp [h.1, h.2]
@@ -145,7 +140,7 @@ lemma G2_eq_tsum_G2Term (z : ℍ) : G2 z = ∑' m, ∑' n, G2Term z ![m, n] := b
   · exact summable_zero.congr
       fun b ↦ by simp [← tsum_symmetricIco_linear_sub_linear_add_one_eq_zero z b]
 
-private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
+lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z =
     ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
   rw [← tsum_symmetricIco_tsum_sub_eq z, ← tsum_symmetricIco_tsum_eq_S_act z,
     ← tsum_eq_of_summable_unconditional (L := symmetricIco ℤ), ← Summable.tsum_sub]
@@ -170,12 +165,12 @@ private lemma G2_S_action_eq_tsum_G2Term (z : ℍ) : ((z : ℂ) ^ 2)⁻¹ * G2 (
     rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at this
     exact this.prod
 
-private lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
+lemma tsum_G2Term_eq_tsum (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     ∑' m : ℤ, ∑' n : ℤ, G2Term z ![m, n] := by
   rw [← (finTwoArrowEquiv _).symm.tsum_eq]
   exact Summable.tsum_prod' (G2Term_prod_summable z) ((G2Term_prod_summable z).prod_factor)
 
-private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
+lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term z m =
     ∑' n : ℤ, ∑' m : ℤ, G2Term z ![m, n] := by
   rw [Summable.tsum_comm', tsum_G2Term_eq_tsum]
   · exact G2Term_prod_summable z
@@ -183,6 +178,11 @@ private lemma tsum_G2Term_eq_tsum' (z : ℍ) : ∑' (m : Fin 2 → ℤ), G2Term 
   · have H := G2Term_summable z
     rw [← ((finTwoArrowEquiv _).trans (.prodComm ..)).symm.summable_iff] at H
     exact H.prod_factor
+
+
+@[expose] public section
+
+section transform
 
 /-- This is the key identity for how `G2` transforms under the slash action by `S`. -/
 lemma G2_S_transform (z : ℍ) : G2 z = ((z : ℂ) ^ 2)⁻¹ * G2 (S • z) - -2 * π * I / z := by
@@ -226,5 +226,7 @@ lemma E2_slash_action (γ : SL(2, ℤ)) : E2 ∣[(2 : ℤ)] γ = E2 - (1 / (2 * 
   simp [E2, SL_smul_slash, G2_slash_action γ, mul_sub]
 
 end transform
+
+end
 
 end EisensteinSeries
