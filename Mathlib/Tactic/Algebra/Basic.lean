@@ -165,7 +165,7 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
 
 namespace RingCompute
 
-def add (cR : Algebra.Cache sR) (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
+def add (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let ⟨r, vr⟩ := za
   let ⟨s, vs⟩ := zb
@@ -230,7 +230,7 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
   | none =>
     return none
 
-def derive' (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
+def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
     MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
   let res ← NormNum.derive x
   return ← evalCast sAlg cR cA res
@@ -250,13 +250,13 @@ end RingCompute
 open RingCompute in
 def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
     Common.RingCompute (BaseType sAlg) sA where
-  add := add sAlg cR
+  add := add sAlg
   mul := mul sAlg
   cast := cast sAlg cR
   neg := neg sAlg cR
   pow := pow sAlg
   inv := inv sAlg cR
-  derive := derive' sAlg cR cA
+  derive := derive sAlg cR cA
   eq := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.eq rcℕ (Ring.ringCompute sR) vy
   compare := fun ⟨_, vx⟩ ⟨_, vy⟩ => vx.cmp rcℕ (Ring.ringCompute sR) vy
   isOne := isOne sAlg
@@ -364,20 +364,17 @@ def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
   let ⟨u2, R2⟩ := r2
   if ← withReducible <| isDefEq R1 R2 then
     return r1
-  -- Try to show R2 is an R1-algebra (meaning R1 is smaller, so return R2)
   try
     let _i1 ← synthInstanceQ q(CommSemiring $R1)
     let _i2 ← synthInstanceQ q(Semiring $R2)
     let _i3 ← synthInstanceQ q(Algebra $R1 $R2)
     return r2
   catch _ => try
-    -- Try to show R1 is an R2-algebra (meaning R2 is smaller, so return R1)
     let _i1 ← synthInstanceQ q(CommSemiring $R2)
     let _i2 ← synthInstanceQ q(Semiring $R1)
     let _i3 ← synthInstanceQ q(Algebra $R2 $R1)
     return r1
   catch _ =>
-    -- If neither works, return the first ring
     return r1
 
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
