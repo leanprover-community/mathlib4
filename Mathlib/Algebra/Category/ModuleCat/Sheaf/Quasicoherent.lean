@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Quasicoherent sheaves
@@ -166,6 +168,8 @@ theorem Presentation.map_π_eq :
 
 end
 
+section
+
 variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
   [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
   [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
@@ -243,5 +247,39 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
 noncomputable def quasicoherentDataOfIsFinitePresentation
     (M : SheafOfModules.{u} R) [M.IsFinitePresentation] : M.QuasicoherentData :=
   (IsFinitePresentation.exists_quasicoherentData M).choose
+
+end
+
+noncomputable section
+
+open CategoryTheory Limits
+
+variable {C : Type u'} [SmallCategory C] [HasBinaryProducts C] {J : GrothendieckTopology C}
+  {R : Sheaf J RingCat} [HasSheafify J AddCommGrpCat] [J.WEqualsLocallyBijective AddCommGrpCat]
+  [J.HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+
+variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat AddCommGrpCat)]
+  [∀ X, HasSheafify (J.over X) AddCommGrpCat]
+  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat]
+
+/-- Given a sheaf of `R`-modules `M` and a `Presentation M`, we may construct the quasi-coherent
+data on the trivial cover. -/
+@[simps]
+def Presentation.QuasicoherentData {M : SheafOfModules R} (P : Presentation M) :
+    QuasicoherentData M where
+  I := C
+  X := id
+  coversTop := fun x ↦ GrothendieckTopology.covering_of_eq_top J <| by
+    rw [Sieve.ext_iff]
+    intro _ f
+    simpa [Sieve.top_apply, iff_true] using ⟨x, Nonempty.intro f⟩
+  presentation := fun x => P.map (pushforward (𝟙 (R.over x))) (by rfl)
+
+/-- If a sheaf of `R`-modules `M` has a presentation, then `M` is quasi-coherent. -/
+theorem Presentation.isQuasicoherent {M : SheafOfModules.{u'} R} (P : Presentation M) :
+    IsQuasicoherent M where
+  nonempty_quasicoherentData := Nonempty.intro (Presentation.QuasicoherentData P)
+
+end
 
 end SheafOfModules
