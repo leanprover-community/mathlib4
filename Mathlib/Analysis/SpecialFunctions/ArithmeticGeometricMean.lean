@@ -33,6 +33,19 @@ lemma sqrt_mul_le_half_add (x y : ℝ≥0) : sqrt (x * y) ≤ (x + y) / 2 := by
   norm_num
   exact four_mul_le_sq_add ..
 
+/-- The strict AM–GM inequality for two `NNReal`s, with means in canonical form. -/
+lemma sqrt_mul_lt_half_add_of_ne {x y : ℝ≥0} (h : x ≠ y) : sqrt (x * y) < (x + y) / 2 := by
+  wlog hl : y < x generalizing x y
+  · specialize this h.symm (h.gt_or_lt.resolve_left hl)
+    rwa [mul_comm, add_comm]
+  have key : 0 < (x - y) ^ 2 := sq_pos_iff.mpr (by rwa [← zero_lt_iff, tsub_pos_iff_lt])
+  rw [sq, tsub_mul, mul_tsub, mul_tsub, tsub_tsub_eq_add_tsub_of_le (by gcongr),
+    tsub_add_eq_add_tsub (by gcongr), tsub_tsub, show x * y + y * x = 2 * x * y by ring,
+    tsub_pos_iff_lt, ← sq, ← sq] at key
+  rw [← sqrt_sq (_ / 2), sqrt_lt_sqrt, div_pow, lt_div_iff₀' (by positivity),
+    show (2 : ℝ≥0) ^ 2 * (x * y) = 2 * x * y + 2 * x * y by ring, add_sq, add_right_comm]
+  gcongr
+
 open Function Filter Topology
 
 /-- `agmSequences x y` is the sequence of (geometric, arithmetic) means
@@ -108,7 +121,20 @@ lemma agmSequences_fst_le_snd (n m : ℕ) : (agmSequences x y n).1 ≤ (agmSeque
   intro k
   induction k generalizing x y with
   | zero => exact sqrt_mul_le_half_add ..
-  | succ n ih => exact ih ..
+  | succ n ih => exact ih
+
+lemma agmSequences_fst_lt_snd_of_ne (h : x ≠ y) (n m : ℕ) :
+    (agmSequences x y n).1 < (agmSequences x y m).2 := by
+  suffices ∀ {k}, (agmSequences x y k).1 < (agmSequences x y k).2 by
+    obtain h | h := le_total n m
+    · exact (agmSequences_fst_monotone h).trans_lt this
+    · exact this.trans_le (agmSequences_snd_antitone h)
+  intro k
+  induction k generalizing x y with
+  | zero => exact sqrt_mul_lt_half_add_of_ne h
+  | succ n ih =>
+    rw [agmSequences_succ']
+    exact sqrt_mul_lt_half_add_of_ne (ih h).ne
 
 lemma agmSequences_min_max : agmSequences (min x y) (max x y) = agmSequences x y := by
   obtain h | h := le_total x y
@@ -225,26 +251,43 @@ lemma agm_eq_agm_agmSequences_fst_agmSequences_snd (n : ℕ) :
 lemma agm_eq_agm_gm_am : agm x y = agm (sqrt (x * y)) ((x + y) / 2) := by
   simpa using agm_eq_agm_agmSequences_fst_agmSequences_snd 0
 
-lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y < agm x y := by
-  wlog hl : x < y generalizing x y
-  · replace hl : y < x := by grind
-    specialize this hy hx hn.symm hl
-    rwa [agm_comm, min_comm]
-  rw [min_eq_left hl.le]
-  refine (?_ : x < sqrt (x * y)).trans_le (agmSequences_fst_le_agm 0)
-  nth_rw 1 [← mul_self_sqrt x, sqrt_mul]
+lemma agmSequences_fst_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) (n : ℕ) :
+    (agmSequences x y n).1 < agm x y := by
+  rw [agm_eq_agm_agmSequences_fst_agmSequences_snd n]
+  set p := (agmSequences x y n).1
+  set q := (agmSequences x y n).2
+  apply (?_ : p < sqrt (p * q)).trans_le (agmSequences_fst_le_agm 0)
+  have ppos : 0 < p :=
+    (show 0 < sqrt (x * y) by positivity).trans_le (agmSequences_fst_monotone (zero_le n))
+  have plq : p < q := agmSequences_fst_lt_snd_of_ne hn ..
+  nth_rw 1 [← mul_self_sqrt p, sqrt_mul]
   gcongr
 
-lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
-  wlog hl : x < y generalizing x y
-  · replace hl : y < x := by grind
-    specialize this hn.symm hl
-    rwa [agm_comm, max_comm]
-  rw [max_eq_right hl.le]
-  refine (agm_le_agmSequences_snd 0).trans_lt (?_ : (x + y) / 2 < y)
-  nth_rw 2 [← add_halves y]
+lemma agm_lt_agmSequences_snd_of_ne (hn : x ≠ y) (n : ℕ) : agm x y < (agmSequences x y n).2 := by
+  rw [agm_eq_agm_agmSequences_fst_agmSequences_snd n]
+  set p := (agmSequences x y n).1
+  set q := (agmSequences x y n).2
+  apply (agm_le_agmSequences_snd 0).trans_lt (?_ : (p + q) / 2 < q)
+  have plq : p < q := agmSequences_fst_lt_snd_of_ne hn ..
+  nth_rw 2 [← add_halves q]
   rw [add_div]
   gcongr
+
+lemma min_lt_agm_of_pos_of_ne (hx : 0 < x) (hy : 0 < y) (hn : x ≠ y) : min x y < agm x y := by
+  wlog h : x < y generalizing x y
+  · simpa [agm_comm, min_comm] using this hy hx hn.symm (hn.gt_or_lt.resolve_right h)
+  rw [min_eq_left h.le]
+  refine lt_of_le_of_lt ?_ (agmSequences_fst_lt_agm_of_pos_of_ne hx hy hn 0)
+  rw [agmSequences_zero]
+  exact (le_gm_and_am_le h.le).1
+
+lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
+  wlog h : x < y generalizing x y
+  · simpa [agm_comm, max_comm] using this hn.symm (hn.gt_or_lt.resolve_right h)
+  rw [max_eq_right h.le]
+  apply (agm_lt_agmSequences_snd_of_ne hn 0).trans_le
+  rw [agmSequences_zero]
+  exact (le_gm_and_am_le h.le).2
 
 /-- The AGM distributes over multiplication. -/
 lemma agm_mul_distrib {k : ℝ≥0} : agm (k * x) (k * y) = k * agm x y := by
