@@ -108,11 +108,15 @@ ring subexpressions of type `ℤ`.
 -/
 def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
+/--
+The data used by `ring` to represent the coefficients. `e` is a raw rat cast.
+-/
 structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
     (sα : Q(CommSemiring $α)) (e : Q($α)) where
+  /- The value represented by `e`. Should not be zero. -/
   value : ℚ
+  /- If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   hyp : Option Expr
-  -- isNat? : Option (Σ n : Q(ℕ), Q(IsNat $e $n))
 deriving Inhabited
 
 def btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
@@ -121,9 +125,34 @@ instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
 
 universe u v
 
+/-!
+## The ExNat types
+
+The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ`. `ExProdNat` is only
+used to represent exponents in `ExProd`. Before we added `BaseType` as a parameter, the `mul`
+constructor of `ExProd` took the exponent as `ExProd sℕ q($e)` and `ExProdNat` did not exist.
+Removing `ExProdNat` again would require passing `BaseType` as an argument to each constructor,
+raising the universe level of `ExProd` from `Type` to `Type 1`, effectively making it noncomputable.
+
+That is,
+
+```
+inductive ExProd : ∀ {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
+    (sα : Q(CommSemiring $α)) (e : Q($α)), Type
+  | const {u : Lean.Level} {α : Q(Type u)} {BaseType} {sα} {e : Q($α)} (value : BaseType e) :
+      ExProd BaseType sα e
+  | mul {u : Lean.Level} {α : Q(Type u)} {BaseType} {sα} {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
+    ExBase BaseType sα x → ExProd btℕ sℕ e → ExProd BaseType sα b →
+      ExProd BaseType sα q($x ^ $e * $b)
+```
+would fail to compile because `ExProd` lives in `Type 1`. -/
+
 mutual
 
-/-- The base `e` of a normalized exponent expression. -/
+
+/-- The base `e` of a normalized exponent expression in ℕ.
+  Used to represent normalized natural number expressions in exponents.
+  `ExBaseNat q($e)` is equivalent to `ExBase btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExBaseNat : (e : Q(ℕ)) → Type
   /--
   An atomic expression `e` with id `id`.
@@ -141,21 +170,24 @@ inductive ExBaseNat : (e : Q(ℕ)) → Type
   /-- A sum of monomials. -/
   | sum {e} (_ : ExSumNat e) : ExBaseNat e
 
-/--
-A monomial, which is a product of powers of `ExBase` expressions,
-terminated by a (nonzero) constant coefficient.
+/-- A monomial, which is a product of powers of `ExBaseNat` expressions in ℕ,
+  terminated by a (nonzero) constant coefficient.
+  Used to represent normalized natural number expressions in exponents.
+  `ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two.
 -/
 inductive ExProdNat : (e : Q(ℕ)) → Type
-  /-- A coefficient `value`, which must not be `0`. `e` is a raw rat cast.
-  If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
+  /-- A coefficient `value`, holding the data that `ring` uses to represent rational coefficients.
+  In this case these happen to always be natural numbers. -/
   | const {e : Q(ℕ)} (value : btℕ e) : ExProdNat e
-  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
-  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
+  /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBaseNat`
+  and `e` is an `ExProdNat` representing a monomial expression in `ℕ` (it is a monomial instead of
   a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
   | mul {x : Q(ℕ)} {e : Q(ℕ)} {b : Q(ℕ)} :
     ExBaseNat x → ExProdNat e → ExProdNat b → ExProdNat q($x ^ $e * $b)
 
-/-- A polynomial expression, which is a sum of monomials. -/
+/-- A polynomial expression, which is a sum of monomials.
+Used to represent normalized natural number expressions in exponents.
+`ExProdNat q($e)` is equivalent to `ExProd btℕ sℕ q($e)`, and one can cast between the two. -/
 inductive ExSumNat : (e : Q(ℕ)) → Type
   /-- Zero is a polynomial. `e` is the expression `0`. -/
   | zero : ExSumNat q(0)
@@ -172,7 +204,7 @@ inductive ExBase {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   /--
   An atomic expression `e` with id `id`.
 
-  Atomic expressions are those which `ring` cannot parse any further.
+  Atomic expressions are those which a `ring`-like tactic cannot parse any further.
   For instance, `a + (a % b)` has `a` and `(a % b)` as atoms.
   The `ring1` tactic does not normalize the subexpressions in atoms, but `ring_nf` does.
 
@@ -196,8 +228,9 @@ inductive ExProd {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   | const {e : Q($α)} (value : BaseType e) : ExProd BaseType sα e
   /-- A product `x ^ e * b` is a monomial if `b` is a monomial. Here `x` is an `ExBase`
-  and `e` is an `ExProd` representing a monomial expression in `ℕ` (it is a monomial instead of
-  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.) -/
+  and `e` is an `ExProdNat` representing a monomial expression in `ℕ` (it is a monomial instead of
+  a polynomial because we eagerly normalize `x ^ (a + b) = x ^ a * x ^ b`.)
+  -/
   | mul {x : Q($α)} {e : Q(ℕ)} {b : Q($α)} :
     ExBase BaseType sα x → ExProdNat e → ExProd BaseType sα b → ExProd BaseType sα q($x ^ $e * $b)
 
@@ -215,7 +248,7 @@ variable {u : Lean.Level}
 
 /--
 The result of evaluating an (unnormalized) expression `e` into the type family `E`
-(one of `ExSum`, `ExProd`, `ExBase`) is a (normalized) element `e'`
+(typically one of `ExSum`, `ExProd`, `ExBase` or `BaseType`) is a (normalized) element `e'`
 and a representation `E e'` for it, and a proof of `e = e'`.
 -/
 structure Result {α : Q(Type u)} (E : Q($α) → Type*) (e : Q($α)) where
@@ -230,29 +263,46 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
     Inhabited (Result E e) :=
   let ⟨e', v⟩ : Σ e, E e := default; ⟨e', v, default⟩
 
+/-- Stores all of the normalization
+
+`ring` implements these using `norm_num`
+`algebra` implements these using `ring` -/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) where
+  /-- Evaluate the sum of two coefficents. -/
   add (sα) : ∀ x y : Q($α), BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
+  /-- Evaluate the product of two coefficents. -/
   mul (sα) : ∀ x y : Q($α), BaseType x → BaseType y → MetaM (Result BaseType q($x * $y))
+  /-- Given a ring `β` with a scalar multiplication action on `α` and a `x : β`, cast `x` to `α`
+  such that the scalar multiplication turns in to normal multiplication. Typically one can think of
+  `α` as being an algebra over `β`, but this file does not know about `Algebra`s. -/
   cast  (sα) : ∀ (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
       (_ : Q(HSMul $β $α $α)) (x : Q($β)),
       (AtomM <| Result (ExSum (Ring.BaseType sβ) q($sβ)) q($x)) →
-    /- We require the latter proof because we don't have any facts about
-    Algebra imported in this file.-/
     AtomM (Σ y : Q($α), ExSum BaseType sα q($y) × Q(∀ a : $α, $x • a = $y * a))
+  /-- Evaluate the negation of a coefficient. -/
   neg (sα) : ∀ x : Q($α), (rα : Q(CommRing $α)) → BaseType x → MetaM (Result BaseType q(-$x))
+  /-- Raise a coefficient to some natural power.
+  The exponent may not be a natural literal. If the tactic can only raise coefficients to the power
+  of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
   pow (sα) : ∀ x : Q($α), BaseType x → (b : Q(ℕ)) → (vb : ExProd btℕ sℕ q($b)) →
     OptionT MetaM (Result BaseType q($x ^ $b))
   -- TODO: Do we want this to run in AtomM or in MetaM & handle atoms on failure?
+  /-- Evaluate the inverse of a coefficient. -/
   inv : ∀ {x : Q($α)}, (czα : Option Q(CharZero $α)) → (fα : Q(Semifield $α)) → BaseType x →
     AtomM (Option <| Result BaseType q($x⁻¹))
+  /-- Evaluate an expression as a potential coefficient. -/
   derive (sα) : ∀ x : Q($α), MetaM (Result (ExSum BaseType sα) q($x))
+  /-- Returns whether two coefficients are equal -/
   eq (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Bool
+  /-- Returns whether `x` is less than, equal to or greater than `y`. -/
   compare (sα) : ∀ {x y : Q($α)}, BaseType x → BaseType y → Ordering
+  /-- Decides whether a coefficient is 1 and returns a proof if so. -/
   isOne (sα) : ∀ {x : Q($α)}, BaseType x → Option Q(NormNum.IsNat $x 1)
+  /-- The number 1 represented as a BaseType. -/
   one (sα) : Result BaseType q((nat_lit 1).rawCast)
-  -- Used only for debugging.
+  /-- Print the coefficient as a string. Only used for debugging. -/
   toString : ∀ {x : Q($α)}, BaseType x → String
 
 
@@ -272,14 +322,17 @@ variable (rc : RingCompute bt sα) (rcℕ : RingCompute btℕ sℕ)
 
 mutual
 
+/-- Cast `ExBaseNat` to `ExBase btℕ sℕ`. -/
 partial def ExBaseNat.toExBase (e : Q(ℕ)) : ExBaseNat e → Σ e', ExBase btℕ sℕ e' := fun
   | .atom id => ⟨_, .atom (e := e) id⟩
   | .sum v => ⟨_, .sum v.toExSum.2⟩
 
+/-- Cast `ExProdNat` to `ExProd btℕ sℕ`. -/
 partial def ExProdNat.toExProd (e : Q(ℕ)) : ExProdNat e → Σ e', ExProd btℕ sℕ e' := fun
   | .const value => ⟨_, .const value⟩
   | .mul vx ve vt => ⟨_, .mul vx.toExBase.2 ve vt.toExProd.2⟩
 
+/-- Cast `ExSumNat` to `ExSum btℕ sℕ`. -/
 partial def ExSumNat.toExSum (e : Q(ℕ)) : ExSumNat e → Σ e', ExSum btℕ sℕ e' := fun
   | .zero => ⟨_, .zero (BaseType := btℕ) (sα := sℕ)⟩
   | .add va vb => ⟨_, .add va.toExProd.2 vb.toExSum.2⟩
@@ -288,14 +341,17 @@ end
 
 mutual
 
+/-- Cast `ExBase btℕ sℕ` to `ExBaseNat`. -/
 partial def ExBase.toExBaseNat (e : Q(ℕ)) : ExBase btℕ sℕ e → Σ e', ExBaseNat e' := fun
   | .atom id => ⟨_, .atom (e := e) id⟩
   | .sum v => ⟨_, .sum v.toExSumNat.2⟩
 
+/-- Cast `ExProd btℕ sℕ` to `ExProdNat`. -/
 partial def ExProd.toExProdNat (e : Q(ℕ)) : ExProd btℕ sℕ e → Σ e', ExProdNat e' := fun
   | .const value => ⟨_, .const value⟩
   | .mul vx ve vt => ⟨_, .mul vx.toExBaseNat.2 ve vt.toExProdNat.2⟩
 
+/-- Cast `ExSum btℕ sℕ` to `ExSumNat`. -/
 partial def ExSum.toExSumNat (e : Q(ℕ)) : ExSum btℕ sℕ e → Σ e', ExSumNat e' := fun
   | .zero => ⟨_, .zero⟩
   | .add va vb => ⟨_, .add va.toExProdNat.2 vb.toExSumNat.2⟩
@@ -1139,7 +1195,7 @@ theorem inv_congr {R} [Semifield R] {a a' b : R} (_ : a = a')
 theorem div_congr {R} [Semifield R] {a a' b b' c : R} (_ : a = a') (_ : b = b')
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
-theorem hsmul_congr {R α : Type*} [CommSemiring R] [CommSemiring α] [HSMul R α α]
+theorem hsmul_congr {R α : Type*} [CommSemiring α] [HSMul R α α]
     {r s : R} {a b t c : α}
     (_ : r = s) (_ : a = b) (_ : ∀ (x : α), s • x = t * x) (_ : t * b = c) :
     r • a = c := by
@@ -1277,3 +1333,5 @@ partial def eval  {u : Lean.Level}
 
 end Ring.Common
 end Mathlib.Tactic
+
+#lint

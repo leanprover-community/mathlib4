@@ -394,14 +394,19 @@ theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} :
   subst_vars
   simp only [zsmul_eq_mul]
 
+def BaseType.toResult {a : Q($α)} : BaseType sα a → NormNum.Result a
+| ⟨q, h⟩ => Result.ofRawRat q a h
+
+def BaseType.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (BaseType sα) a := do
+  let ⟨qc, hc⟩ ← res.toRatNZ
+  let ⟨c, pc⟩ := res.toRawEq
+  return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+
 namespace RingCompute
 
 def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
-  let ⟨qa, ha⟩ := za
-  let ⟨qb, hb⟩ := zb
-  let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
-  let res ← ra.add rb
+  let res ← za.toResult.add zb.toResult
   let isZero : Option Q(IsNat ($a + $b) 0) := match res with
   | Result.isNat inst lit pf =>
     if lit.natLit! == 0 then
@@ -410,19 +415,13 @@ def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     else
       none
   | _ => none
-  let ⟨qc, hc⟩ ← res.toRatNZ
-  let ⟨c, pc⟩ := res.toRawEq
-  return ⟨⟨q($c), ⟨qc, hc⟩, q($pc)⟩, isZero⟩
+  let r ← BaseType.ofResult sα res
+  return ⟨r, isZero⟩
 
 def mul (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a * $b)) := do
-  let ⟨qa, ha⟩ := za
-  let ⟨qb, hb⟩ := zb
-  let ra := Result.ofRawRat qa a ha; let rb := Result.ofRawRat qb b hb
-  let res ← ra.mul rb
-  let ⟨qc, hc⟩ ← res.toRatNZ
-  let ⟨c, pc⟩ := res.toRawEq
-  return ⟨q($c), ⟨qc, hc⟩, pc⟩
+  let res ← za.toResult.mul zb.toResult
+  return ← BaseType.ofResult sα res
 
 def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     (_smul : Q(HSMul $β $α $α)) (_x : Q($β))
@@ -453,12 +452,10 @@ def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
 
 def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
     MetaM (Result (BaseType sα) q(-$a)) := do
-  let ⟨qa, ha⟩ := za
-  let ra := Result.ofRawRat qa a ha
-  let res ← ra.neg q(inferInstance)
-  let ⟨qc, hc⟩ ← res.toRatNZ
-  let ⟨c, pc⟩ := res.toRawEq
-  return ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+  let res ← za.toResult.neg q(inferInstance)
+  -- We have to unpack this result due to instance issues.
+  let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+  return ⟨_, vc, q($pc)⟩
 
 def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
@@ -467,29 +464,22 @@ def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
   | .const _ =>
     -- TODO: Decide if this is the best way to extract the exponent as a Nat.
     have lit : Q(ℕ) := b.appArg!
-    let ⟨qa, ha⟩ := za
-    let ra := Result.ofRawRat qa a ha
     let res ← (NormNum.evalPow.core q($a ^ $lit) q(HPow.hPow) q($a) lit lit
-      q(IsNat.raw_refl $lit) q(inferInstance) ra).run
+      q(IsNat.raw_refl $lit) q(inferInstance) za.toResult).run
     match res with
     | none => OptionT.fail
     | some res =>
-      let ⟨qc, hc⟩ ← res.toRatNZ
-      let ⟨c, pc⟩ := res.toRawEq
       have : $b =Q $lit := ⟨⟩
-      assumeInstancesCommute
-      return ⟨c, ⟨qc, hc⟩, q($pc)⟩
+      let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+      return ⟨_, vc, q($pc)⟩
   | _ => OptionT.fail
 
 def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
     (za : BaseType sα a) : AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
-  let ⟨qa, ha⟩ := za
-  let ra := Result.ofRawRat qa a ha
-  match (← (Lean.observing? <| ra.inv _ czα :)) with
+  match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
   | some res =>
-    let ⟨qc, hc⟩ ← res.toRatNZ
-    let ⟨c, pc⟩ := res.toRawEq
-    return some ⟨q($c), ⟨qc, hc⟩, q($pc)⟩
+    let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
+    return some ⟨_, vc, q($pc)⟩
   | none => return none
 
 def derive (x : Q($α)) : MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do

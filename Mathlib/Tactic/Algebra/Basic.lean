@@ -72,6 +72,10 @@ section BaseType
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
+/-- The type used to store the coefficients of the algebra tactic, which are expressions in `R`
+  kept in ring normal form and mapped into `A` by the algebraMap.
+
+  Note that these are sums, not products! -/
 inductive BaseType : (a : Q($A)) → Type
   | mk (r : Q($R)) (_ : Ring.ExSum q($sR) r) : BaseType q(algebraMap $R $A $r)
 
@@ -185,9 +189,12 @@ def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
   let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute sR) rcℕ vr vs
   return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
 
+/-- -/
+/- We include the CharZero argument to match the type signature of the ringCompute entry. -/
+@[nolint unusedArguments]
 def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSemiring $R'))
     (_smul : Q(HSMul $R' $A $A)) (r' : Q($R'))
-    (_rx : AtomM (Common.Result (Common.ExSum (Ring.BaseType sR') q($sR')) q($r'))) :
+    (_ : AtomM (Common.Result (Common.ExSum (Ring.BaseType sR') q($sR')) q($r'))) :
     AtomM ((y : Q($A)) × Common.ExSum (BaseType sAlg) sA q($y) ×
       Q(∀ (a : $A), $r' • a = $y * a)) := do
   let ⟨r, pf_smul⟩ ← evalSMulCast q($sAlg) q($_smul) r'
@@ -219,6 +226,11 @@ def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
   let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
   return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
+/--
+
+ -/
+/- We include the CharZero argument to match the type signature of the ringCompute entry. -/
+@[nolint unusedArguments]
 def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(Semifield $A))
     (za : BaseType sAlg a) : AtomM (Option (Common.Result (BaseType sAlg) q($a⁻¹))) := do
   match cR.dsα with
@@ -461,3 +473,5 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
 end Mathlib.Tactic.Algebra
+
+#lint
