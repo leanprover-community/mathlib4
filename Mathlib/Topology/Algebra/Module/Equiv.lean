@@ -50,7 +50,9 @@ notation:50 M " ≃L[" R "] " M₂ => ContinuousLinearEquiv (RingHom.id R) M M�
 where `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
 homomorphism `σ : R →+* S` is semilinear if it satisfies the two properties `f (x + y) = f x + f y`
 and `f (c • x) = (σ c) • f x`. -/
-class ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
+@[deprecated "Use `[SemilinearEquivClass F σ M M₂] [HomeomorphClass F M M₂]` instead."
+  (since := "2026-01-01")]
+structure ContinuousSemilinearEquivClass (F : Type*) {R : outParam Type*} {S : outParam Type*}
     [Semiring R] [Semiring S] (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R}
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -62,9 +64,12 @@ attribute [inherit_doc ContinuousSemilinearEquivClass]
 ContinuousSemilinearEquivClass.map_continuous
 ContinuousSemilinearEquivClass.inv_continuous
 
+set_option linter.deprecated false in
 /-- `ContinuousLinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `R`-linear equivs `M → M₂`. This is an abbreviation for
 `ContinuousSemilinearEquivClass F (RingHom.id R) M M₂`. -/
+@[deprecated "Use `[LinearEquivClass F R M M₂] [HomeomorphClass F M M₂]` instead."
+  (since := "2026-01-01")]
 abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
     (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : outParam Type*)
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [EquivLike F M M₂] :=
@@ -77,15 +82,6 @@ variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R �
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
   (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
   [Module R M] [Module S M₂]
-
--- `σ'` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
-    [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
-  { s with }
-
-instance (priority := 100) [EquivLike F M M₂]
-    [s : ContinuousSemilinearEquivClass F σ M M₂] : HomeomorphClass F M M₂ :=
-  { s with }
 
 end ContinuousSemilinearEquivClass
 
@@ -155,10 +151,13 @@ instance equivLike :
   left_inv f := f.left_inv
   right_inv f := f.right_inv
 
-instance continuousSemilinearEquivClass :
-    ContinuousSemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
+instance semilinearEquivClass :
+    SemilinearEquivClass (M₁ ≃SL[σ₁₂] M₂) σ₁₂ M₁ M₂ where
   map_add f := f.map_add'
   map_smulₛₗ f := f.map_smul'
+
+instance homeomorphClass :
+    HomeomorphClass (M₁ ≃SL[σ₁₂] M₂) M₁ M₂ where
   map_continuous := continuous_toFun
   inv_continuous := continuous_invFun
 
