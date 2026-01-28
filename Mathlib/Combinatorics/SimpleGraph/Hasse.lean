@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.Prod
 public import Mathlib.Data.Fin.SuccPredOrder
-public import Mathlib.Data.Nat.SuccPred
 public import Mathlib.Order.SuccPred.Relation
 public import Mathlib.Tactic.FinCases
 
@@ -112,5 +113,47 @@ theorem pathGraph_connected (n : ℕ) : (pathGraph (n + 1)).Connected :=
 theorem pathGraph_two_eq_top : pathGraph 2 = ⊤ := by
   ext u v
   fin_cases u <;> fin_cases v <;> simp [pathGraph, ← Fin.coe_covBy_iff, covBy_iff_add_one_eq]
+
+namespace Walk
+
+variable {V : Type*} [DecidableEq V] {G : SimpleGraph V} {u v : V} (w : G.Walk u v)
+
+/-- The subgraph of a walk contains the path graph with the same number of vertices -/
+def pathGraphHomToSubgraph : pathGraph w.support.length →g w.toSubgraph.coe where
+  toFun n := ⟨w.support[n], w.mem_verts_toSubgraph.mpr <| List.getElem_mem _⟩
+  map_rel' {a b} h := by
+    grind [support_getElem_eq_getVert, Subgraph.coe_adj, pathGraph_adj, toSubgraph_adj_getVert,
+      Subgraph.Adj.symm]
+
+/-- A walk induces a homomorphism from a path graph to the graph -/
+def pathGraphHom : pathGraph w.support.length →g G :=
+  w.toSubgraph.hom.comp w.pathGraphHomToSubgraph
+
+variable {w} in
+/-- The subgraph of a path is isomorphic to the path graph with the same number of vertices -/
+def IsPath.pathGraphIsoToSubgraph (hw : w.IsPath) :
+    pathGraph w.support.length ≃g w.toSubgraph.coe where
+  toFun := w.pathGraphHomToSubgraph
+  invFun v :=
+    ⟨w.support.idxOf v.val, List.idxOf_lt_length_of_mem <| w.mem_verts_toSubgraph.mp v.prop⟩
+  left_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup]
+  right_inv := by grind [pathGraphHomToSubgraph, RelHom.coeFn_mk]
+  map_rel_iff' := by
+    refine ⟨fun hadj ↦ ?_, w.pathGraphHomToSubgraph.map_rel'⟩
+    grind [w.toSubgraph_adj_iff.mp hadj, pathGraph_adj, getVert_eq_getD_support,
+      pathGraphHomToSubgraph, RelHom.coeFn_mk, hw.support_nodup.getElem_inj_iff]
+
+variable {w} in
+/-- A path induces a homomorphism from a path graph to the graph -/
+def IsPath.pathGraphCopy (hw : w.IsPath) : Copy (pathGraph w.support.length) G :=
+  w.toSubgraph.coeCopy.comp hw.pathGraphIsoToSubgraph.toCopy
+
+variable {w} in
+omit [DecidableEq V] in
+theorem IsPath.isContained_pathGraph (hw : w.IsPath) : pathGraph w.support.length ⊑ G := by
+  classical
+  exact ⟨hw.pathGraphCopy⟩
+
+end Walk
 
 end SimpleGraph
