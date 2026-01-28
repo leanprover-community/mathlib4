@@ -173,7 +173,7 @@ this.
 -/
 public theorem injective_theorem
   : Function.Injective T
-    ↔ 0 ∉ Finset.image T.singularValues (Finset.range (Module.finrank 𝕜 (range T))) := by
+    ↔ 0 ∉ Finset.image T.singularValues (Finset.range (Module.finrank 𝕜 E)) := by
   rw [←injective_adjoint_comp_self_iff]
   rw [←ker_eq_bot]
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
@@ -181,7 +181,16 @@ public theorem injective_theorem
   rw [not_iff_not]
   constructor <;> intro h
   · -- Plan: If 0 is an eigenvalue, then it equals (T*T).eigenvalues i for some i
-    sorry
+    /-obtain ⟨⟨i, hi₁⟩, hi₂⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
+    rw [Finset.mem_image]
+    use i, Finset.mem_range.mpr hi₁-/
+    obtain ⟨i, hi₂⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
+    rw [RCLike.ofReal_eq_zero] at hi₂
+    rw [Finset.mem_image]
+    use i, Finset.mem_range.mpr i.isLt
+    rw [T.singularValues_fin rfl]
+    rw [hi₂]
+    simp
   · sorry
 
 public theorem singularValues_lt_rank {n : ℕ}
