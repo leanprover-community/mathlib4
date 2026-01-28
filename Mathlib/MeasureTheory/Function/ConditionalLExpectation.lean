@@ -33,7 +33,7 @@ expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for 
 or `h : mΩ ≤ mΩ₀` but `¬ SigmaFinite (P.trim hm)` (the latter always holds when `P` is a
 probability measure). When both these hold, in some sense the "user definition" of `P⁻[X|mΩ]`
 should be considered "the" measurable function which satisfies `setLIntegral_condLExp`
-(which is proven unique up to `P`-ae measurable equality in `eq_condLExp`). The actual definition
+(which is proven unique up to `P`-ae measurable equality in `ae_eq_condLExp`). The actual definition
 is just used to show existence. However for (potential) convenience the actual definition assigns
 `P⁻[X|mΩ] := X` in the case when `X` is `mΩ`-measurable (which can be invoked using
 `condLExp_eq_self`).
