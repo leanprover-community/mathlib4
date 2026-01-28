@@ -119,6 +119,9 @@ theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colo
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
 
+theorem Coloring.isIndepSet_colorClass (c : α) : G.IsIndepSet <| C.colorClass c :=
+  C.color_classes_independent c
+
 -- TODO make this computable
 noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
   classical
