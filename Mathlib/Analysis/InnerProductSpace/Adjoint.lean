@@ -5,8 +5,12 @@ Authors: Frédéric Dupuis, Heather Macbeth
 -/
 module
 
+public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.LocallyConvex.SeparatingDual
+
+import Mathlib.Algebra.Central.Basic
 
 /-!
 # Adjoint of operators on Hilbert spaces
@@ -709,11 +713,33 @@ theorem inner_map_map_of_mem_unitary {u : H →L[𝕜] H} (hu : u ∈ unitary (H
 
 end ContinuousLinearMap
 
+-- TODO: move to earlier file
+open ContinuousLinearMap in
+public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
+    {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]
+    [TopologicalSpace V] [TopologicalSpace W] [IsTopologicalRing R] [Module R V] [Module R W]
+    [SeparatingDual R V] [IsTopologicalAddGroup V] [IsTopologicalAddGroup W]
+    [ContinuousSMul R V] [ContinuousSMul R W] (f g : V ≃L[R] W) :
+    f.conjContinuousAlgEquiv = g.conjContinuousAlgEquiv ↔ ∃ α : Rˣ, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [ContinuousAlgEquiv.ext_iff, funext_iff, conjContinuousAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, eq_comp_toContinuousLinearMap_symm,
+    comp_assoc, ← comp_assoc _ f.toContinuousLinearMap, comp_coe, ← mul_def,
+    ← Subalgebra.mem_center_iff (R := R), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one, ContinuousLinearEquiv.ext_iff]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : R), by ext; simp [h]⟩⟩
+  if hy : y = 0 then exact ⟨1, funext fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
+  else exact ⟨.mk0 y hy, funext fun x ↦ by simp [by simpa [eq_symm_apply] using congr($h x)]⟩
+
 namespace LinearIsometryEquiv
 
 open ContinuousLinearMap ContinuousLinearEquiv in
 /-- An isometric linear equivalence of two Hilbert spaces induces an equivalence of
-⋆-algebras of their endomorphisms. -/
+⋆-algebras of their endomorphisms.
+
+When `H = K`, this is exactly `Unitary.conjStarAlgAut`
+(see `Unitary.conjStarAlgEquiv_unitaryLinearIsometryEquiv` and
+`Unitary.conjStarAlgAut_symm_unitaryLinearIsometryEquiv`). -/
 def conjStarAlgEquiv (e : H ≃ₗᵢ[𝕜] K) : (H →L[𝕜] H) ≃⋆ₐ[𝕜] (K →L[𝕜] K) :=
   .ofAlgEquiv e.toContinuousLinearEquiv.conjContinuousAlgEquiv fun x ↦ by
     simp [star_eq_adjoint, conjContinuousAlgEquiv_apply, ← toContinuousLinearEquiv_symm, comp_assoc]
@@ -735,6 +761,69 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 theorem conjStarAlgEquiv_trans {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
+
+section smul
+-- TODO: move to earlier file
+
+variable {V W G : Type*} [SeminormedAddCommGroup V] [Module 𝕜 V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+/-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
+as a linear isometric equivalence. -/
+instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
+  { __ := Unitary.toUnits α • e.toLinearEquiv
+    norm_map' _ := by simp [norm_smul] }
+
+@[simp] theorem smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : V) :
+    (α • e) x = (α : 𝕜) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : 𝕜) • e.symm x := rfl
+
+@[simp] theorem symm_units_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).symm = α⁻¹ • e.symm := by ext; simp [symm_smul_apply]
+
+@[simp] theorem toLinearEquiv_smul (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toLinearEquiv = Unitary.toUnits α • e.toLinearEquiv := rfl
+
+@[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
+
+theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp
+
+theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end smul
+
+open ContinuousLinearEquiv ContinuousLinearMap in
+theorem conjStarAlgEquiv_ext_iff (f g : H ≃ₗᵢ[𝕜] K) :
+    f.conjStarAlgEquiv = g.conjStarAlgEquiv ↔ ∃ α : unitary 𝕜, f = α • g := by
+  conv_lhs => rw [eq_comm]
+  simp_rw [StarAlgEquiv.ext_iff, LinearIsometryEquiv.ext_iff, conjStarAlgEquiv_apply,
+    ← eq_toContinuousLinearMap_symm_comp, ← comp_assoc, toContinuousLinearEquiv_symm,
+    eq_comp_toContinuousLinearMap_symm,
+    comp_assoc, ← comp_assoc _ (f : H →L[𝕜] K), comp_coe, ← ContinuousLinearMap.mul_def,
+    ← Subalgebra.mem_center_iff (R := 𝕜), Algebra.IsCentral.center_eq_bot, ← comp_coe,
+    Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one]
+  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : 𝕜), by ext; simp [h]⟩⟩
+  by_cases! hy : y = 0
+  · exact ⟨1, fun x ↦ by simp [by simpa [hy] using congr($h x).symm]⟩
+  have hfg : (f : H →L[𝕜] K) = y • g := by ext; simpa using congr(g ($h _)).symm
+  have hgf : (g : H →L[𝕜] K) = star y • f := by
+    ext x
+    have := by simpa [map_smulₛₗ, ← ContinuousLinearEquiv.comp_coe, ← toContinuousLinearEquiv_symm,
+      ← adjoint_eq_symm, ContinuousLinearMap.one_def] using congr(f (adjoint $h x)).symm
+    simpa
+  have : (g : H →L[𝕜] K) = (starRingEnd 𝕜 y * y) • g := by
+    simp [← smul_smul, ← hfg, ← star_def, ← hgf]
+  nth_rw 1 [← one_smul 𝕜 (g : H →L[𝕜] K)] at this
+  rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero, eq_comm] at this
+  obtain (this | this) := this
+  · exact ⟨⟨y, by simp [Unitary.mem_iff, this, mul_comm y]⟩, fun x ↦ congr($hfg x)⟩
+  · exact ⟨1, fun x ↦ by simp [by simpa using congr($this x)]⟩
 
 end LinearIsometryEquiv
 end linearIsometryEquiv
@@ -784,6 +873,13 @@ lemma coe_symm_linearIsometryEquiv_apply (e : H ≃ₗᵢ[𝕜] H) :
 
 @[deprecated (since := "2025-12-16")] alias linearIsometryEquiv_coe_symm_apply :=
   coe_symm_linearIsometryEquiv_apply
+
+theorem conjStarAlgEquiv_unitaryLinearIsometryEquiv (u : unitary (H →L[𝕜] H)) :
+    (linearIsometryEquiv u).conjStarAlgEquiv = conjStarAlgAut 𝕜 _ u := rfl
+
+theorem conjStarAlgAut_symm_unitaryLinearIsometryEquiv (u : H ≃ₗᵢ[𝕜] H) :
+    conjStarAlgAut 𝕜 _ (linearIsometryEquiv.symm u) = u.conjStarAlgEquiv := by
+  simp [← conjStarAlgEquiv_unitaryLinearIsometryEquiv]
 
 end Unitary
 

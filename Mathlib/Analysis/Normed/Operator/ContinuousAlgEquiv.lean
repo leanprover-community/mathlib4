@@ -30,10 +30,13 @@ The proof follows the same idea as the non-continuous version.
 
 open ContinuousLinearMap ContinuousLinearEquiv
 
+section
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+  [SeparatingDual 𝕜 W]
+
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
-public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv {𝕜 V W : Type*}
-    [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-    [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V] [SeparatingDual 𝕜 W]
+public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
     (f : (V →L[𝕜] V) ≃A[𝕜] (W →L[𝕜] W)) :
     ∃ U : V ≃L[𝕜] W, f = U.conjContinuousAlgEquiv := by
   /- The proof goes as follows:
@@ -86,6 +89,13 @@ public theorem ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv
       suffices T'.toLinearMap = Tₗ.symm from this ▸ T'.continuous
       simp [LinearMap.ext_iff, ← Tₗ.injective.eq_iff, T', this, hT, hd, Tₗ] }
   exact ⟨TL, fun A ↦ (ContinuousLinearMap.ext <| this A).symm⟩
+
+variable (𝕜 V W) in
+public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
+    Function.Surjective (conjContinuousAlgEquiv (𝕜 := 𝕜) (G := V) (H := W)) :=
+  fun f ↦ f.eq_continuousLinearEquivConjContinuousAlgEquiv.imp fun _ h ↦ h.symm
+
+end
 
 variable {𝕜 V W : Type*} [RCLike 𝕜] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
   [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
