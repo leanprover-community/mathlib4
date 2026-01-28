@@ -79,13 +79,6 @@ lemma of_equivalence {J' : Type u'} [Category.{v'} J'] (e : J ≌ J') :
     IsCardinalFiltered J' κ where
   nonempty_cocone F hA := ⟨e.inverse.mapCoconeInv (cocone (F ⋙ e.inverse) hA)⟩
 
-include κ in variable (J κ) in
-lemma nonempty : Nonempty J := by
-  obtain ⟨c⟩ := IsCardinalFiltered.nonempty_cocone (J := J) (κ := κ)
-    (Functor.empty _) <| hasCardinalLT_of_finite _ _
-    (Cardinal.IsRegular.aleph0_le Fact.out)
-  exact ⟨c.pt⟩
-
 section max
 
 variable {K : Type u'} (S : K → J) (hS : HasCardinalLT K κ)
@@ -160,6 +153,11 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
 
 @[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
   isFiltered_of_isCardinalFiltered
+
+lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
+  have := isFiltered_of_isCardinalFiltered J κ
+  IsFiltered.nonempty
 
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
