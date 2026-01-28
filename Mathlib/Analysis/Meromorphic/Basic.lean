@@ -657,6 +657,21 @@ lemma iterated_deriv [CompleteSpace E] {n : ℕ} (hf : Meromorphic f) :
     Meromorphic (deriv^[n] f) := fun x ↦ (hf x).iterated_deriv
 
 /--
+If `f` is meromorphic, if `g` agrees with `f` on a codiscrete set, then `g` is also meromorphic.
+-/
+theorem congr_codiscrete (hf : Meromorphic f) (h₁ : f =ᶠ[codiscrete 𝕜] g) :
+    Meromorphic g := by
+  rw [← meromorphicOn_univ] at *
+  exact hf.congr_codiscreteWithin (eventuallyEq_of_mem h₁ fun ⦃x⦄ a ↦ a) isOpen_univ
+
+/--
+If two functions differ only on a discrete set, then one is meromorphic iff so is the other.
+-/
+theorem _root_.meromorphic_congr_codiscrete (h₁ : f =ᶠ[codiscrete 𝕜] g) :
+    Meromorphic f ↔ Meromorphic g :=
+  ⟨(·.congr_codiscrete h₁), (·.congr_codiscrete h₁.symm)⟩
+
+/--
 The singular set of a meromorphic function is countable.
 -/
 theorem countable_compl_analyticAt [SecondCountableTopology 𝕜] [CompleteSpace E]
