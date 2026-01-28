@@ -628,6 +628,7 @@ open Nat
 
 variable (g : Perm α)
 
+-- TODO rename
 -- Should one parenthesize the product ?
 /-- Cardinality of the centralizer in `Equiv.Perm α` of a permutation given `cycleType` -/
 theorem nat_card_centralizer : -- TODO rename
