@@ -108,14 +108,12 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
     (h_dis : PairwiseDisjoint ↑a f) (h_mem : ⋃ i ∈ a, f i ∈ C) :
     m (⋃ i ∈ a, f i) = ∑ i ∈ a, m (f i) := by
   classical
-  let b : Finset (Set α) := Finset.image f a
-  have A : ⋃ i ∈ a, f i = ⋃₀ b := by simp [b]
+  have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
-  · simp [b]; grind
+  · grind
   · rw [Finset.coe_image]
     exact h_dis.image
   · rwa [← A]
-  simp only [b]
   rw [sum_image_of_pairwise_eq_zero]
   intro i hi j hj hij h'ij
   have : Disjoint (f i) (f j) := h_dis hi hj hij
