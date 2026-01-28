@@ -29,7 +29,7 @@ namespace Subgroup
 -- are normal.  In particular, the two trivial subgroups `⊥` and `⊤` are normal.
 attribute [local simp] normal_of_characteristic
 
-/-- A subgroup `H` of a group satisfies `IsSubnormal` if
+/-- A subgroup `H` of a group `G` satisfies `IsSubnormal` if
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
@@ -40,7 +40,7 @@ Equivalently, `H.IsSubnormal` means that there is a chain of subgroups
 * `G = Hₙ`,
 * for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₊₁`.
 
-See `IsSubnormal_iff` for this characterisation.
+See `isSubnormal_iff` for this characterisation.
 -/
 inductive IsSubnormal : Subgroup G → Prop where
   /-- The whole subgroup `G` is subnormal in itself. -/
