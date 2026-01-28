@@ -257,7 +257,7 @@ instance [CommSemiring R] [IsCancelAdd R] [IsCancelMulZero R] :
   inferInstanceAs (IsCancelMulZero (AddMonoidAlgebra ..))
 
 /-- The multivariate polynomial ring over an integral domain is an integral domain. -/
-instance [CommSemiring R] [IsCancelAdd R] [IsDomain R] : IsDomain (MvPolynomial σ R) where
+instance [CommSemiring R] [IsDomain R] [IsCancelAdd R] : IsDomain (MvPolynomial σ R) where
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
   induction n <;> simp [*]

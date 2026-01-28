@@ -205,7 +205,7 @@ instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) :=
 end
 
 /-- Any free, nontrivial `R`-module is flat. -/
-instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
+instance [Module.Free R M] [Nontrivial M] : FaithfullyFlat R M :=
   of_linearEquiv _ _ (Free.chooseBasis R M).repr
 
 section
