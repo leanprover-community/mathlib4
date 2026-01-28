@@ -6,7 +6,7 @@ Authors: Mario Carneiro, David Renshaw
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
-/- Tests for ℝ -/
+/- Tests for `Real.rpow` -/
 
 example : (2 : ℝ) ^ (3 : ℝ) = 8 := by norm_num1
 example : (1 : ℝ) ^ (20 : ℝ) = 1 := by norm_num1
@@ -37,7 +37,7 @@ error: unsolved goals
 example : (-8 : ℝ) ^ (1 / 3 : ℝ) = -2 := by
   norm_num1
 
-/- Tests for ℝ≥0 -/
+/- Tests for `NNReal.rpow` -/
 
 open NNReal
 
