@@ -1190,14 +1190,62 @@ open TopologicalSpace
 variable {s : Opens M} {t : Opens E} {u : Opens M'}
 
 variable {f : s → M'} in
+set_option trace.Elab.DiffGeo.MDiff true in
 /--
 error: Could not find a model with corners for `↥s`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+---
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↥s`
+[Elab.DiffGeo.MDiff] ❌️ TotalSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a `Bundle.TotalSpace`.
+[Elab.DiffGeo.MDiff] ❌️ TangentBundle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a `TangentBundle`
+[Elab.DiffGeo.MDiff] ❌️ NormedSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `NormedSpace` structure on `↥s` among local instances.
+[Elab.DiffGeo.MDiff] ❌️ Manifold
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
+  [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H' M'`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ChartedSpace` structure on `↥s` among local instances, and `↥s` is not the charted space of some type in the local context either.
+[Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a space of continuous linear maps
+[Elab.DiffGeo.MDiff] ❌️ RealInterval
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a Euclidean space, half-space or quadrant
+[Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a set of units, in particular not of a complete normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↥s` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ NormedField
+  [Elab.DiffGeo.MDiff] Failed with error:
+      failed to synthesize instance of type class
+        NontriviallyNormedField ↥s
+      ⏎
+      Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+[Elab.DiffGeo.MDiff] ❌️ InnerProductSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find an `InnerProductSpace` structure on `↥s` among local instances.
 -/
 #guard_msgs in
 #check MDiff f
 
+#exit
 variable {f : s → u} in
 /--
 error: Could not find a model with corners for `↥s`.

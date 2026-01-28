@@ -695,13 +695,17 @@ Hint: failures to find a model with corners can be debugged with the command \
   return u
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
+    dbg_trace "go started"
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
+    dbg_trace "go recursing"
+    dbg_trace "e is `{e}`"
     -- Otherwise, we recurse into the expression,
     -- depending whether we have an open subset of a space,
     -- a product, or a direct sum of spaces.
     match_expr e with
     | TopologicalSpace.Opens M _ =>
+      dbg_trace "opens arm"
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
       -- (In practice, `M` is not an `Opens`, as `Opens X` is (currently?) not a topological space.
       go M baseInfo
@@ -724,7 +728,7 @@ where
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
         We assume the models match, and only look into the first summand"
       return ← go E baseInfo
-    | _ => return none
+    | _ => dbg_trace "none arm"; return none
     pure none
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
