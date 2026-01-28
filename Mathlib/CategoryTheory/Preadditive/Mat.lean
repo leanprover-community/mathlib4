@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Elias Judin
 -/
 module
 
@@ -32,9 +32,11 @@ There is a functor `Mat_.embedding : C ⥤ Mat_ C` sending morphisms to one-by-o
 
 We show that this construction is the "additive envelope" of `C`,
 in the sense that any additive functor `F : C ⥤ D` to a category `D` with biproducts
-lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`,
+lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`.
 Moreover, this functor is unique (up to natural isomorphisms) amongst functors `L : Mat_ C ⥤ D`
 such that `embedding C ⋙ L ≅ F`.
+We also show that natural transformations and natural isomorphisms between additive functors
+`Mat_ C ⥤ D` are determined by their components on objects coming from `C` via `embedding C`.
 (As we don't have 2-category theory, we can't explicitly state that `Mat_ C` is
 the initial object in the 2-category of categories under `C` which have biproducts.)
 
@@ -110,12 +112,12 @@ instance : Category.{v₁} (Mat_ C) where
     simp +unfoldPartialApp [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
-    intros
+    intro i k
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
     rw [Finset.sum_comm]
 
 @[ext]
-theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
+theorem hom_ext {M N : Mat_ C} {f g : M ⟶ N} (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
 open scoped Classical in
@@ -200,7 +202,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
               · substs h h'
-                simp only [CategoryTheory.eqToHom_refl, CategoryTheory.Mat_.id_apply_self]
+                simp only [eqToHom_refl, Mat_.id_apply_self]
               · subst h
                 rw [eqToHom_refl, id_apply_of_ne _ _ _ h']
               · rfl }
@@ -212,8 +214,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
             dsimp
             rw [Finset.sum_eq_single i]; rotate_left
             · intro b _ hb
-              apply Finset.sum_eq_zero
-              intro x _
+              refine Finset.sum_eq_zero (fun _ _ => ?_)
               rw [dif_neg hb.symm, zero_comp]
             · intro hi
               simp at hi
@@ -319,9 +320,8 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     · intro b _ hb
       dsimp
       rw [Fintype.univ_ofSubsingleton, Finset.sum_singleton, dif_neg hb.symm, zero_comp]
-    · intro h
-      simp at h
-    simp
+    · simp
+    · simp
   inv_hom_id := by
     apply biproduct.hom_ext
     intro i
@@ -358,6 +358,25 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   rw [biproduct.lift_π, Category.assoc]
   erw [biproduct.lift_π, ← F.map_comp]
   simp
+
+/-- A natural transformation between functors `Mat_ C ⥤ D` is determined by its
+components on objects coming from `C` via `embedding C`. -/
+@[ext]
+theorem natTrans_ext
+    {F G : Mat_ C ⥤ D} [Functor.Additive G]
+    {η θ : F ⟶ G}
+    (h : ∀ X : C, η.app ((embedding C).obj X) = θ.app ((embedding C).obj X)) :
+    η = θ := by
+  ext M
+  rw [← cancel_mono (additiveObjIsoBiproduct G M).hom]
+  ext i
+  let p : M ⟶ (embedding C).obj (M.X i) :=
+    M.isoBiproductEmbedding.hom ≫
+      biproduct.π (fun j : M.ι => (embedding C).obj (M.X j)) i
+  simp only [Category.assoc, additiveObjIsoBiproduct_hom_π]
+  change η.app M ≫ G.map p = θ.app M ≫ G.map p
+  rw [← η.naturality p, ← θ.naturality p]
+  simpa using congrArg (fun t => F.map p ≫ t) (h (M.X i))
 
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
@@ -429,19 +448,30 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
           (biproduct.mapIso fun i => (embeddingLiftIso F).symm.app (M.X i)) ≪≫
             (additiveObjIsoBiproduct (lift F) M).symm)
     fun f => by
-      dsimp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom]
-      simp only [additiveObjIsoBiproduct_naturality_assoc]
-      simp only [biproduct.matrix_map_assoc, Category.assoc]
-      simp only [additiveObjIsoBiproduct_naturality']
-      simp only [biproduct.map_matrix_assoc]
+      simp only [Iso.trans_hom, Iso.symm_hom, biproduct.mapIso_hom,
+        additiveObjIsoBiproduct_naturality_assoc, biproduct.matrix_map_assoc,
+        Category.assoc, additiveObjIsoBiproduct_naturality', biproduct.map_matrix_assoc]
       congr 3
       ext j k
       apply biproduct.hom_ext
       rintro ⟨⟩
-      dsimp
       simpa using α.hom.naturality (f j k)
 
--- TODO is there some uniqueness statement for the natural isomorphism in `liftUnique`?
+variable (F : C ⥤ D) [Functor.Additive F]
+variable (L : Mat_ C ⥤ D)
+
+/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`,
+their components at `(embedding C).obj X` become equal after composing with
+`(embeddingLiftIso F).hom.app X`. -/
+theorem liftIso_ext_comp_embeddingLiftIso
+    {β γ : L ≅ lift F}
+    (h : ∀ X : C,
+      β.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X =
+        γ.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X) :
+    β = γ := by
+  ext X
+  simpa only [← cancel_mono ((embeddingLiftIso F).hom.app X)] using h X
+
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
 def ext {F G : Mat_ C ⥤ D} [Functor.Additive F] [Functor.Additive G]
