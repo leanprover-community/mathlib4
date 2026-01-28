@@ -130,7 +130,7 @@ lemma mulEquivHaarChar_symm {φ : G ≃ₜ* G} :
   symm
   apply inv_eq_of_mul_eq_one_right
   simp [← mulEquivHaarChar_trans]
-  
+
 open TopologicalSpace Set in
 @[to_additive addEquivAddHaarChar_eq_one_of_compactSpace]
 lemma mulEquivHaarChar_eq_one_of_compactSpace [CompactSpace G] (φ : G ≃ₜ* G) :
