@@ -159,9 +159,8 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
     nontriviality V
     obtain ⟨x, hx⟩ := exists_ne (0 : V)
     obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
-    simp only [Subalgebra.mem_center_iff, ContinuousLinearMap.ext_iff] at hf ⊢
-    have := fun y ↦ by simpa [hg] using hf (g.smulRight y) x
-    exact ⟨g (f x), by simp [this, mul_comm]⟩
+    have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
+    exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
 
 end algebra
 
