@@ -33,6 +33,7 @@ Does not require context - works with context-free trees.
 partial def collectTryThisSuggestions (trees : PersistentArray InfoTree) : Array Suggestion :=
   trees.toList.flatMap go |>.toArray
 where
+  /-- Traverses an `InfoTree` to collect `TryThisInfo` suggestions. -/
   go : InfoTree → List Suggestion
     | .context _ t => go t
     | .node i children =>
