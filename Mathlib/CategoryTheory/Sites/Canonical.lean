@@ -147,7 +147,7 @@ def finestTopologySingle (P : Cᵒᵖ ⥤ Type v) : GrothendieckTopology C where
   sieves X S := ∀ (Y) (f : Y ⟶ X), Presieve.IsSheafFor P (S.pullback f : Presieve Y)
   top_mem' X Y f := by
     rw [Sieve.pullback_top]
-    exact Presieve.isSheafFor_top_sieve P
+    exact Presieve.isSheafFor_top P
   pullback_stable' X Y S f hS Z g := by
     rw [← pullback_comp]
     apply hS
