@@ -84,6 +84,12 @@ lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
 lemma indicator_one_inj (h : indicator s (1 : ι → M₀) = indicator t 1) : s = t := by
   ext; simp_rw [← indicator_eq_one_iff_mem M₀, h]
 
+omit [Nontrivial M₀] in
+@[simp]
+lemma indicator.mul_indicator_eq (f : ι → M₀) (a : ι) :
+    f a * s.indicator 1 a = s.indicator f a := by
+  simp only [Set.indicator, mul_ite, Pi.one_apply, mul_one, mul_zero]
+
 end MulZeroOneClass
 end Set
 
