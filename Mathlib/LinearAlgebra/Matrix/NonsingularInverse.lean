@@ -194,6 +194,12 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
+instance : LawfulInv (Matrix n n α) where
+  inv_unit A := by simp
+  inv_of_not_isUnit A hA := by
+    rw [A.isUnit_iff_isUnit_det] at hA
+    exact nonsing_inv_apply_not_isUnit A hA
+
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 
@@ -431,9 +437,7 @@ theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
 theorem isUnit_nonsing_inv_det_iff {A : Matrix n n α} : IsUnit A⁻¹.det ↔ IsUnit A.det := by
   rw [Matrix.det_nonsing_inv, isUnit_ringInverse]
 
-@[simp]
-theorem isUnit_nonsing_inv_iff {A : Matrix n n α} : IsUnit A⁻¹ ↔ IsUnit A := by
-  simp_rw [isUnit_iff_isUnit_det, isUnit_nonsing_inv_det_iff]
+@[deprecated (since := "2025-12-31")] alias isUnit_nonsing_inv_iff := isUnit_inv_iff
 
 -- `IsUnit.invertible` lifts the proposition `IsUnit A` to a constructive inverse of `A`.
 /-- A version of `Matrix.invertibleOfDetInvertible` with the inverse defeq to `A⁻¹` that is
@@ -488,16 +492,7 @@ end InvEqInv
 
 variable (A)
 
-@[simp]
-theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
-  rcases subsingleton_or_nontrivial α with ht | ht
-  · simp [eq_iff_true_of_subsingleton]
-  rcases (Fintype.card n).zero_le.eq_or_lt with hc | hc
-  · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
-    subsingleton
-  · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
-    refine nonsing_inv_apply_not_isUnit _ ?_
-    simp [det]
+@[deprecated (since := "2025-12-31")] alias inv_zero := MonoidWithZero.inv_zero
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
@@ -617,11 +612,8 @@ theorem add_mul_mul_inv_eq_sub' (hA : IsUnit A) (h : IsUnit (C + C * V * A⁻¹ 
 
 end Woodbury
 
-@[simp]
-theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := by
-  by_cases h : IsUnit A.det
-  · rw [nonsing_inv_nonsing_inv _ h]
-  · simp [nonsing_inv_apply_not_isUnit _ h]
+@[deprecated inv_inv_inv₀ (since := "2026-01-17")]
+theorem inv_inv_inv (A : Matrix n n α) : A⁻¹⁻¹⁻¹ = A⁻¹ := inv_inv_inv₀
 
 /-- The `Matrix` version of `inv_add_inv'` -/
 theorem inv_add_inv {A B : Matrix n n α} (h : IsUnit A ↔ IsUnit B) :
