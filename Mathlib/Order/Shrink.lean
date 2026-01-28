@@ -48,7 +48,7 @@ instance [PartialOrder α] : PartialOrder (Shrink.{u} α) where
   le_antisymm _ _ h₁ h₂ := (equivShrink _).symm.injective (le_antisymm h₁ h₂)
 
 noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) where
-  le_total _ _ := le_total _ _
+  le_total _ _ := le_total (α := α) _ _
   toDecidableLE _ _ := LinearOrder.toDecidableLE _ _
 
 @[to_dual]

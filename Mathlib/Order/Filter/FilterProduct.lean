@@ -83,7 +83,7 @@ theorem lt_def [Preorder β] : ((· < ·) : β* → β* → Prop) = LiftRel (· 
   ext ⟨f⟩ ⟨g⟩
   exact coe_lt
 
-instance total [LE β] [@Std.Total β (· ≤ ·)] : @Std.Total β* (· ≤ ·) :=
+instance total [LE β] [IsTotalLE β] : IsTotalLE β* :=
   ⟨fun f g =>
     inductionOn₂ f g fun _f _g => eventually_or.1 <| Eventually.of_forall fun _x => total_of _ _ _⟩
 

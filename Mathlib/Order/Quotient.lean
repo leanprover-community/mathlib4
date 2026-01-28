@@ -51,11 +51,11 @@ instance : IsTrans (Quotient s) (· ≤ ·) where
     induction z using Quotient.inductionOn with | h z
     exact Relation.TransGen.trans h₁ h₂
 
-instance [@Std.Total α (· ≤ ·)] : @Std.Total (Quotient s) (· ≤ ·) where
+instance [IsTotalLE α] : IsTotalLE (Quotient s) where
   total x y := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y
-    obtain h | h := total_of (· ≤ ·) x y
+    obtain h | h := le_total x y
     · exact .inl <| .single <| .inl h
     · exact .inr <| .single <| .inl h
 

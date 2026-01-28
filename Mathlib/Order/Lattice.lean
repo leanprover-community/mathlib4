@@ -579,8 +579,7 @@ variable [LinearOrder α] {a b c d : α}
 
 @[to_dual]
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
-  (Std.Total.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by
-  rwa [sup_eq_left.2 h]
+  (le_total a b).elim (fun h ↦ by rwa [sup_eq_right.2 h]) (fun h ↦ by rwa [sup_eq_left.2 h])
 
 @[to_dual (attr := simp) inf_le_iff]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
@@ -603,14 +602,14 @@ theorem max_max_max_comm : max (max a b) (max c d) = max (max a c) (max b d) :=
 
 end LinearOrder
 
-theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableLE α] [@Std.Total α (· ≤ ·)] :
+theorem sup_eq_maxDefault [SemilatticeSup α] [DecidableLE α] [IsTotalLE α] :
     (· ⊔ ·) = (maxDefault : α → α → α) := by
   ext x y
   unfold maxDefault
   split_ifs with h'
   exacts [sup_of_le_right h', sup_of_le_left <| (total_of (· ≤ ·) x y).resolve_left h']
 
-theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (· ≤ ·)] :
+theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [IsTotalLE α] :
     (· ⊓ ·) = (minDefault : α → α → α) := by
   ext x y
   unfold minDefault
@@ -621,7 +620,7 @@ theorem inf_eq_minDefault [SemilatticeInf α] [DecidableLE α] [@Std.Total α (�
 
 See note [reducible non-instances]. -/
 abbrev Lattice.toLinearOrder (α : Type u) [Lattice α] [DecidableEq α]
-    [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] : LinearOrder α where
+    [DecidableLE α] [DecidableLT α] [IsTotalLE α] : LinearOrder α where
   toDecidableLE := ‹_›
   toDecidableEq := ‹_›
   toDecidableLT := ‹_›
@@ -783,8 +782,9 @@ variable [LinearOrder α]
 
 theorem map_sup [SemilatticeSup β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊔ y) = f x ⊔ f y :=
-  (Std.Total.total x y).elim (fun h : x ≤ y => by simp only [h, hf h, sup_of_le_right]) fun h => by
-    simp only [h, hf h, sup_of_le_left]
+  (le_total x y).elim
+    (fun h ↦ by simp only [h, hf h, sup_of_le_right])
+    (fun h ↦ by simp only [h, hf h, sup_of_le_left])
 
 theorem map_inf [SemilatticeInf β] {f : α → β} (hf : Monotone f) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y :=

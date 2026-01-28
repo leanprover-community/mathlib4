@@ -689,19 +689,18 @@ instance instAntisymmLe [PartialOrder α] : @Std.Antisymm α (· ≤ ·) :=
 @[to_dual instIsPartialOrderGe]
 instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-@[to_dual total']
-instance LE.total [LinearOrder α] : @Std.Total α (· ≤ ·) :=
-  ⟨le_total⟩
-
-@[to_dual instIsLinearOrderGe]
-instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
+instance instIsLinearOrderLe [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
+@[to_dual existing instIsLinearOrderLe]
+instance instIsLinearOrderGe [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
 
 @[to_dual instIsTrichotomousGt]
 instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
   ⟨lt_trichotomy⟩
 
-@[to_dual instIsTrichotomousGe]
-instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
+instance instIsTrichotomousLe [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
+  Std.Total.isTrichotomous _
+@[to_dual existing instIsTrichotomousLe]
+instance instIsTrichotomousGe [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
   Std.Total.isTrichotomous _
 
 @[to_dual instIsStrictTotalOrderGt]
@@ -715,8 +714,7 @@ theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
 theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
   transitive_of_trans _
 
-@[to_dual total_ge]
-instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
+instance OrderDual.total_le [LE α] [h : IsTotalLE α] : IsTotalLE αᵒᵈ :=
   @Std.Total.swap α _ h
 
 instance : WellFoundedLT ℕ :=

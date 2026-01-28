@@ -39,6 +39,16 @@ def maxDefault [LE α] [DecidableLE α] (a b : α) :=
 def minDefault [LE α] [DecidableLE α] (a b : α) :=
   if a ≤ b then a else b
 
+/-- A typeclass for types with a total `≤` relation. -/
+abbrev IsTotalLE (α : Type*) [LE α] : Prop := @Std.Total α (· ≤ ·)
+
+@[to_dual self]
+lemma le_total {α : Type*} [LE α] [IsTotalLE α] : ∀ a b : α, a ≤ b ∨ b ≤ a :=
+  Std.Total.total
+
+instance (α : Type*) [LE α] [IsTotalLE α] : @Std.Total α (· ≥ ·) where
+  total a b := le_total b a
+
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
 introducing the arguments and trying the following approaches in order:
 
@@ -83,6 +93,9 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
+instance LE.total [LinearOrder α] : IsTotalLE α :=
+  ⟨LinearOrder.le_total⟩
+
 @[to_dual existing toDecidableLT, inherit_doc toDecidableLT]
 def LinearOrder.toDecidableLT' : DecidableLT' α := fun a b => toDecidableLT b a
 
@@ -91,8 +104,6 @@ def LinearOrder.toDecidableLE' : DecidableLE' α := fun a b => toDecidableLE b a
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
-
-@[to_dual self] lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
 @[to_dual self] lemma le_of_not_ge : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
 @[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
