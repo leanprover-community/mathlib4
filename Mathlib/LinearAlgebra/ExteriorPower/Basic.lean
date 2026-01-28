@@ -66,12 +66,8 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
     (s : {s : Finset I // Finset.card s = n}) : ⋀[R]^n M :=
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
-@[simp]
-lemma ιMulti_family_coe {I : Type*} [LinearOrder I] (v : I → M) :
-    ExteriorAlgebra.ιMulti_family R n v = (Submodule.subtype _) ∘ (ιMulti_family R n v) := by
-  ext s
-  unfold ιMulti_family
-  simp only [Submodule.coe_subtype, Finset.coe_orderIsoOfFin_apply, comp_apply, ιMulti_apply_coe]
+lemma ιMulti_family_eq_coe_comp {I : Type*} [LinearOrder I] (v : I → M) :
+    ExteriorAlgebra.ιMulti_family R n v = (↑) ∘ ιMulti_family R n v :=
   rfl
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
@@ -85,27 +81,23 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-lemma ιMulti_span_fixedDegree_of_span {s : Set M} (hs : Submodule.span R s = ⊤) :
-    Submodule.span R ((ExteriorAlgebra.ιMulti R n) '' {a : Fin n → M | Set.range a ⊆ s}) =
-    ⋀[R]^n M := by
+open Set Submodule in
+/-- If a set `s` spans the module `M`, then the set of all elements of the form `x₁ ∧ ⋯ ∧ xₙ`
+where `xᵢ ∈ s` spans `⋀ⁿ M`. -/
+lemma ιMulti_span_fixedDegree_of_span_eq_top {s : Set M} (hs : span R s = ⊤) :
+    span R (ExteriorAlgebra.ιMulti R n '' {a | range a ⊆ s}) = ⋀[R]^n M := by
   apply le_antisymm
-  · rw [Submodule.span_le]
-    rintro x ⟨y, ⟨y_mem, rfl⟩⟩
+  · rw [span_le]
+    rintro - ⟨y, ⟨y_mem, rfl⟩⟩
     apply ExteriorAlgebra.ιMulti_range R n
-    simp only [Set.mem_range, exists_apply_eq_apply]
-  · rw [ExteriorAlgebra.exteriorPower, LinearMap.range_eq_map, ← hs, Submodule.map_span,
-    Submodule.span_pow, Submodule.span_le]
+    simp
+  · rw [ExteriorAlgebra.exteriorPower, LinearMap.range_eq_map, ← hs, map_span, span_pow, span_le]
     rintro x hx
     obtain ⟨f, rfl⟩ := Set.mem_pow.mp hx
-    rw [SetLike.mem_coe]
-    apply Submodule.mem_span_of_mem
-    use ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f
-    refine ⟨?_, ?_⟩
+    refine mem_span_of_mem ⟨ExteriorAlgebra.ιInv ∘ Subtype.val ∘ f, ?_, ?_⟩
     · rw [Set.mem_setOf_eq, Set.range_comp, Set.image_subset_iff]
-      apply Set.Subset.trans ?_
-        (Set.image_subset_preimage_of_inverse (ExteriorAlgebra.ι_leftInverse (R := R) (M := M)) s)
-      rintro x ⟨i, rfl⟩
-      exact (f i).2
+      apply Subset.trans ?_ (s.image_subset_preimage_of_inverse ExteriorAlgebra.ι_leftInverse)
+      grind
     · rw [ExteriorAlgebra.ιMulti_apply]
       apply congrArg (List.prod ∘ List.ofFn)
       ext i
@@ -121,13 +113,12 @@ lemma ιMulti_span :
     Submodule.range_subtype]
   exact ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
-lemma ιMulti_span_of_span {s : Set M} (hs : Submodule.span R s = ⊤) :
-    Submodule.span R ((ιMulti R n) '' {a : Fin n → M | Set.range a ⊆ s}) = ⊤ := by
-  apply LinearMap.map_injective (Submodule.ker_subtype (⋀[R]^n M))
-  rw [LinearMap.map_span, Set.image_image]
-  simp only [Submodule.coe_subtype, ιMulti_apply_coe, Submodule.map_top,
-    Submodule.range_subtype]
-  exact ιMulti_span_fixedDegree_of_span R n M hs
+open Set Submodule in
+/-- A version of `ιMulti_span_fixedDegree_of_span` that works in the exterior power. -/
+lemma ιMulti_span_of_span {s : Set M} (hs : span R s = ⊤) :
+    span R (ιMulti R n '' {a | range a ⊆ s}) = ⊤ := by
+  apply LinearMap.map_injective (ker_subtype (⋀[R]^n M))
+  simpa [LinearMap.map_span, Set.image_image] using ιMulti_span_fixedDegree_of_span_eq_top R n M hs
 
 namespace presentation
 
@@ -335,13 +326,17 @@ section ιMulti_family
 
 variable (R)
 
-/-- If `f = v ∘ α` for some injective function `α`, then `ιMulti R n f` belongs to the span
-of the range of `ιMulti_family`. -/
-lemma mem_span_of_injective_aux {I : Type*} [LinearOrder I] {v : I → M} {f : Fin n → M}
-    {α : Fin n → I} (hα : f = v ∘ α) (α_inj : Function.Injective α) :
-    ExteriorAlgebra.ιMulti R n f ∈
-      Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) := by
-  suffices ∃ σ : Equiv.Perm (Fin n), (ExteriorAlgebra.ιMulti R n (f ∘ σ)) ∈
+open Submodule Set in
+/-- Given an ordered family of vectors `i ↦ v i` ranging over `i ∈ I`, and indexes
+`α₁, α₂, …, αₙ ∈ I` (not necessarily in order) the wedge product `v (α 1) ∧ ⋯ ∧ v (α n)` belongs to
+the span of `n`-fold _ordered_ wedge products of elements of the `v i`. -/
+private lemma ιMulti_family_span_fixedDegree_aux
+    {I : Type*} [LinearOrder I] (v : I → M) (α : Fin n → I) :
+    ExteriorAlgebra.ιMulti R n (v ∘ α) ∈ span R (range (ExteriorAlgebra.ιMulti_family R n v)) := by
+  by_cases α_inj : Injective α; swap
+  · suffices ExteriorAlgebra.ιMulti R n (v ∘ α) = 0 by simp [this]
+    exact AlternatingMap.map_eq_zero_of_not_injective _ _ <| fun h ↦ α_inj (Injective.of_comp h)
+  suffices ∃ σ : Equiv.Perm (Fin n), (ExteriorAlgebra.ιMulti R n ((v ∘ α) ∘ σ)) ∈
       Submodule.span R (Set.range (ExteriorAlgebra.ιMulti_family R n v)) by
     obtain ⟨σ, hσ⟩ := this
     rw [AlternatingMap.map_perm] at hσ
@@ -356,7 +351,7 @@ lemma mem_span_of_injective_aux {I : Type*} [LinearOrder I] {v : I → M} {f : F
     ((Equiv.setCongr Fintype.coe_image_univ).trans (Equiv.ofInjective α α_inj).symm)
   apply Submodule.mem_span_of_mem
   use ⟨(Finset.image α Finset.univ), α_card⟩
-  rw [hα, ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
+  rw [ExteriorAlgebra.ιMulti_family, Function.comp_assoc]
   congr
   ext i
   simp [Equiv.apply_ofInjective_symm]
@@ -371,40 +366,31 @@ lemma ιMulti_family_span_fixedDegree_of_span {I : Type*} [LinearOrder I] {v : I
   apply le_antisymm
   · rw [Submodule.span_le, Set.range_subset_iff]
     intro
-    rw [SetLike.mem_coe, ιMulti_family_coe, Submodule.coe_subtype, Function.comp_apply]
+    rw [SetLike.mem_coe, ιMulti_family_eq_coe_comp, comp_apply]
     exact Submodule.coe_mem _
-  · rw [← ιMulti_span_fixedDegree_of_span R n M hv, Submodule.span_le]
-    rintro u ⟨f, ⟨f_range, rfl⟩⟩
+  · rw [← ιMulti_span_fixedDegree_of_span_eq_top R n M hv, Submodule.span_le]
+    rintro - ⟨f, ⟨f_range, rfl⟩⟩
     rw [Set.mem_setOf] at f_range
-    obtain ⟨α, hα⟩ := Set.range_subset_range_iff_exists_comp.mp f_range
-    by_cases α_inj : Function.Injective α
-    · exact mem_span_of_injective_aux R hα α_inj
-    · suffices ExteriorAlgebra.ιMulti R n f = 0 by
-        simp only [this, SetLike.mem_coe, zero_mem]
-      apply AlternatingMap.map_eq_zero_of_not_injective
-      rw [Function.not_injective_iff] at *
-      obtain ⟨i, j, αi_eq_αj, i_ne_j⟩ := α_inj
-      exact ⟨i, j, by simp [hα, αi_eq_αj], i_ne_j⟩
+    obtain ⟨α, rfl⟩ := Set.range_subset_range_iff_exists_comp.mp f_range
+    exact ιMulti_family_span_fixedDegree_aux R v α
 
 /-- If a family of vectors spans `M`, then the family of its `n`-fold exterior products spans
-`⋀[R]^n M`. This is a variant of `exteriorPower.ιMulti_family_span_fixedDegree_of_span` where we
+`⋀[R]^n M`. This is a variant of `ιMulti_family_span_fixedDegree_of_span` where we
 work in the exterior power and not the exterior algebra. -/
 lemma ιMulti_family_span_of_span {I : Type*} [LinearOrder I]
     {v : I → M} (hv : Submodule.span R (Set.range v) = ⊤) :
     Submodule.span R (Set.range (ιMulti_family R n v)) = ⊤ := by
   apply LinearMap.map_injective (Submodule.ker_subtype (⋀[R]^n M))
   rw [LinearMap.map_span, ← Set.image_univ, Set.image_image]
-  simp only [Submodule.coe_subtype, ιMulti_family_apply_coe, Set.image_univ, Submodule.map_top,
-    Submodule.range_subtype]
-  exact ιMulti_family_span_fixedDegree_of_span R hv
+  simpa using ιMulti_family_span_fixedDegree_of_span R hv
 
+open Set Submodule in
 /-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
 range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
 the span of `v` into `M`. -/
 lemma ιMulti_family_span {I : Type*} [LinearOrder I] (v : I → M) :
-    LinearMap.range (map n (Submodule.subtype (Submodule.span R (Set.range v)))) =
-    Submodule.span R (Set.range (ιMulti_family R n v)) := by
+    (map n (span R (range v)).subtype).range = span R (range (ιMulti_family R n v)) := by
   have ⟨f, hf⟩ : ∃ f : I → Submodule.span R (Set.range v), Submodule.subtype _ ∘ f = v :=
     ⟨fun i ↦ ⟨v i, Submodule.subset_span (Set.mem_range_self i)⟩, rfl⟩
   have htop : Submodule.span R (Set.range f) = ⊤ := by

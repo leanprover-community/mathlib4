@@ -324,7 +324,8 @@ lemma ιMulti_range (n : ℕ) :
   exact ⟨fun i => ⟨ι R (v i), LinearMap.mem_range_self _ _⟩, rfl⟩
 
 /-- The image of `ExteriorAlgebra.ιMulti R n` spans the `n`th exterior power, as a submodule
-of the exterior algebra. -/
+of the exterior algebra. See `exteriorPower.ιMulti_span_fixedDegree_of_span_eq_top` for a version
+where we restrict to elements of the form `x₁ ∧ ⋯ ∧ xₙ` where the `xᵢ` belong to a spanning set. -/
 lemma ιMulti_span_fixedDegree (n : ℕ) :
     Submodule.span R (Set.range (ιMulti R n)) = ⋀[R]^n M := by
   refine le_antisymm (Submodule.span_le.2 (ιMulti_range R n)) ?_
