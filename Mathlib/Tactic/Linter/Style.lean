@@ -12,6 +12,7 @@ public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
+public import Batteries.Tactic.Lint.Basic
 
 /-!
 ## Style linters
@@ -491,6 +492,19 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
               conventions. Consider using single underscores instead."
 
 initialize addLinter doubleUnderscore
+
+open Batteries.Tactic.Lint in
+/-- Linter that checks for definitions whose name contains an underscore:
+this violates the naming convention. -/
+@[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no definitions with an underscore in their name found."
+  errorsFound := "FOUND definitions with an underscore in their name."
+  test declName := do
+    unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
+    if declName.toString.contains "_" then
+      return m!"The definition `{declName}` contains an underscore. \
+        This almost surely violates mathlib's naming convention; use UpperCamelCase instead."
+    else return none
 
 end Style.nameCheck
 
