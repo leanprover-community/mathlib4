@@ -472,6 +472,12 @@ variable [WellFoundedLT α]
 theorem ciInf_mem [Nonempty ι] (f : ι → α) : iInf f ∈ range f :=
   csInf_mem (range_nonempty f)
 
+lemma iInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
+    ⨅ i, (f i) = n ↔ (∃ i, f i = n) ∧ ∀ i, n ≤ f i := by
+  have : OrderBot α := WellFoundedLT.toOrderBot
+  refine ⟨(· ▸ ⟨ciInf_mem f, ciInf_le (OrderBot.bddBelow ..)⟩), fun ⟨⟨i, hi⟩, h⟩ ↦ ?_⟩
+  exact le_antisymm (hi ▸ ciInf_le (OrderBot.bddBelow ..) _) (le_ciInf h)
+
 end ConditionallyCompleteLinearOrder
 
 /-!
