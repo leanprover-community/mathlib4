@@ -157,4 +157,14 @@ def isLimitConePost [IsCofilteredOrEmpty J] {F : J ⥤ C} {c : Cone F} (i : J) (
   isLimitOfReflects (Over.forget _)
     ((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc)
 
-end CategoryTheory.Over
+end Over
+
+instance {B : D} [IsConnected J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
+    [PreservesLimitsOfShape J K] :
+    PreservesLimitsOfShape J (CostructuredArrow.toOver K B) where
+  preservesLimit {D} := by
+    have : PreservesLimit D (CostructuredArrow.toOver K B ⋙ Over.forget B) :=
+      inferInstanceAs <| PreservesLimit D (CostructuredArrow.proj K B ⋙ K)
+    exact Limits.preservesLimit_of_reflects_of_preserves _ (Over.forget B)
+
+end CategoryTheory
