@@ -284,8 +284,7 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
 theorem map_injective (hf : MeasurableEmbedding f) : Function.Injective (Measure.map f) := by
   intro μ ν h
   ext s hs
-  rw [← Set.preimage_image_eq s hf.injective]
-  rw [← hf.map_apply, ← hf.map_apply]
+  rw [← Set.preimage_image_eq s hf.injective, ← hf.map_apply, ← hf.map_apply]
   congr
 
 end MeasurableEmbedding
