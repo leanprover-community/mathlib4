@@ -501,6 +501,8 @@ this violates the naming convention. -/
   errorsFound := "FOUND definitions with an underscore in their name."
   test declName := do
     unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
+    let s := declName.toString
+    if s.contains "«term_" || s.startsWith "LibraryNote." then return none
     if declName.toString.contains "_" then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates mathlib's naming convention; use UpperCamelCase instead."
