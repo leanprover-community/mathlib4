@@ -264,6 +264,22 @@ theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedCo
   fun y h =>
   (isConnected_range h.somePath.continuous).subset_connectedComponent ⟨0, by simp⟩ ⟨1, by simp⟩
 
+/-- Every connected component is a union of path connected components -/
+theorem biUnion_connectedComponent_pathComponent_eq (x : X) :
+    (⋃ y ∈ connectedComponent x, pathComponent y) = connectedComponent x := by
+  ext z
+  refine ⟨fun h ↦ ?_, fun hz ↦ mem_iUnion₂.mpr ⟨z, hz, mem_pathComponent_self z⟩⟩
+  have ⟨y, hy, hz⟩ := mem_iUnion₂.mp h
+  exact connectedComponent_eq hy ▸ pathComponent_subset_component _ hz
+
+/-- There are at least as many path connected components as there are connected components -/
+theorem exists_zerothHomotopy_to_connectedComponents_surjective :
+    ∃ (f : ZerothHomotopy X → ConnectedComponents X), f.Surjective := by
+  refine ⟨.lift (⟦·⟧) ?_, ?_⟩
+  · exact fun _ _ h ↦ Quotient.sound <| connectedComponent_eq <| pathComponent_subset_component _ h
+  rintro ⟨x⟩
+  exact ⟨⟦x⟧, rfl⟩
+
 /-- The path component of `x` in `F` is the set of points that can be joined to `x` in `F`. -/
 def pathComponentIn (F : Set X) (x : X) :=
   { y | JoinedIn F x y }

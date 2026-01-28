@@ -109,6 +109,23 @@ theorem pathComponent_eq_connectedComponent (x : X) : pathComponent x = connecte
   (pathComponent_subset_component x).antisymm <|
     (IsClopen.pathComponent x).connectedComponent_subset (mem_pathComponent_self _)
 
+theorem connectedComponent_eq_iff_joined (x y : X) :
+    connectedComponent x = connectedComponent y ↔ Joined x y := by
+  rw [← mem_pathComponent_iff, pathComponent_eq_connectedComponent, eq_comm]
+  exact connectedComponent_eq_iff_mem
+
+theorem connectedComponentSetoid_eq_pathSetoid : connectedComponentSetoid X = pathSetoid X :=
+  Setoid.ext connectedComponent_eq_iff_joined
+
+/-- In a locally path-connected space, connected components and path-connected components align -/
+def connectedComponentsEquivZerothHomotopy : ConnectedComponents X ≃ ZerothHomotopy X where
+  toFun := Quotient.lift Quotient.mk''
+    (Quotient.sound <| connectedComponent_eq_iff_joined · · |>.mp ·)
+  invFun := Quotient.lift Quotient.mk''
+    (Quotient.sound <| connectedComponent_eq_iff_joined · · |>.mpr ·)
+  left_inv := Quot.ind <| congrFun rfl
+  right_inv := Quot.ind <| congrFun rfl
+
 theorem pathConnected_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
     (𝓝 x).HasBasis (fun s : Set X => s ∈ 𝓝 x ∧ IsPathConnected s ∧ s ⊆ U) id :=
   (path_connected_basis x).hasBasis_self_subset (IsOpen.mem_nhds h hx)
