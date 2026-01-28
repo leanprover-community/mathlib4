@@ -5,7 +5,6 @@ Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Span.Defs
 
@@ -300,16 +299,9 @@ instance _root_.MulOpposite.instModuleIsReflexive : IsReflexive R (MulOpposite M
   equiv <| MulOpposite.opLinearEquiv _
 
 -- see Note [lower instance priority]
-instance (priority := 100) [IsDomain R] : NoZeroSMulDivisors R M := by
-  refine (noZeroSMulDivisors_iff R M).mpr ?_
-  intro r m hrm
-  rw [or_iff_not_imp_left]
-  intro hr
-  suffices Dual.eval R M m = Dual.eval R M 0 from (bijective_dual_eval R M).injective this
-  ext n
-  simp only [Dual.eval_apply, map_zero, LinearMap.zero_apply]
-  suffices r • n m = 0 from eq_zero_of_ne_zero_of_mul_left_eq_zero hr this
-  rw [← LinearMap.map_smul_of_tower, hrm, map_zero]
+instance (priority := 100) IsReflexive.to_isTorsionFree : IsTorsionFree R M where
+  isSMulRegular r hr m₁ m₂ hm :=
+    (bijective_dual_eval R M).injective <| by ext n; simpa [hr.1.eq_iff] using congr(n $hm)
 
 end IsReflexive
 

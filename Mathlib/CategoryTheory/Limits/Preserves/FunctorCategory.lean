@@ -74,7 +74,7 @@ lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits 
             · intro G
               apply asIso (prodComparison ((evaluation C D).obj k) F G)
             · intro G G'
-              apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F)⟩ } ) }
+              apply prodComparison_natural ((evaluation C D).obj k) (𝟙 F)⟩ }) }
 
 end
 

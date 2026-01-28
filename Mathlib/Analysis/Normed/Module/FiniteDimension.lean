@@ -18,6 +18,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.LinearAlgebra.Dimension.LinearMap
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 
 /-!
@@ -148,6 +149,14 @@ theorem AffineEquiv.coe_toHomeomorphOfFiniteDimensional_symm (f : PE ≃ᵃ[𝕜
     ⇑f.toHomeomorphOfFiniteDimensional.symm = f.symm :=
   rfl
 
+/-- An affine map from a finite-dimensional space is automatically Lipschitz. -/
+theorem AffineMap.lipschitzWith_of_finiteDimensional (f : PE →ᵃ[𝕜] PF) :
+    ∃ K : ℝ≥0, LipschitzWith K f := by
+  let fL : E →L[𝕜] F := f.linear.toContinuousLinearMap
+  refine ⟨‖fL‖₊, LipschitzWith.of_dist_le_mul fun x y ↦ ?_⟩
+  rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', ← f.linearMap_vsub]
+  exact fL.le_opNorm _
+
 end Affine
 
 theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E => f.det := by
@@ -224,6 +233,16 @@ theorem LinearMap.injective_iff_antilipschitz [FiniteDimensional 𝕜 E] (f : E 
     exact f.exists_antilipschitzWith
   · rintro ⟨K, -, H⟩
     exact H.injective
+
+/-- An injective affine map from a finite-dimensional space is automatically anti-Lipschitz. -/
+theorem AffineMap.antilipschitzWith_of_finiteDimensional {PE PF : Type*} [MetricSpace PE]
+    [NormedAddTorsor E PE] [MetricSpace PF] [NormedAddTorsor F PF] [FiniteDimensional 𝕜 E]
+    {f : PE →ᵃ[𝕜] PF} (hf : Function.Injective f) :
+    ∃ K : ℝ≥0, AntilipschitzWith K f := by
+  obtain ⟨K, -, hK⟩ := f.linear.injective_iff_antilipschitz.mp (f.linear_injective_iff.mpr hf)
+  refine ⟨K, AntilipschitzWith.of_le_mul_dist fun x y ↦ ?_⟩
+  rw [dist_eq_norm_vsub E, dist_eq_norm_vsub F, ← f.linearMap_vsub]
+  exact ZeroHomClass.bound_of_antilipschitz f.linear hK (x -ᵥ y)
 
 open Function in
 /-- The set of injective continuous linear maps `E → F` is open,
@@ -390,17 +409,16 @@ with norm at most `R` which is at distance at least `1` of all these points. -/
 theorem exists_norm_le_le_norm_sub_of_finset {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R)
     (h : ¬FiniteDimensional 𝕜 E) (s : Finset E) : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y ∈ s, 1 ≤ ‖y - x‖ := by
   let F := Submodule.span 𝕜 (s : Set E)
-  haveI : FiniteDimensional 𝕜 F :=
-    Module.finite_def.2
-      ((Submodule.fg_top _).2 (Submodule.fg_def.2 ⟨s, Finset.finite_toSet _, rfl⟩))
+  have hF : F.FG := ⟨s, rfl⟩
+  haveI : FiniteDimensional 𝕜 F := .of_fg hF
   have Fclosed : IsClosed (F : Set E) := Submodule.closed_of_finiteDimensional _
   have : ∃ x, x ∉ F := by
     contrapose! h
     have : (⊤ : Submodule 𝕜 E) = F := by
       ext x
       simp [h]
-    have : FiniteDimensional 𝕜 (⊤ : Submodule 𝕜 E) := by rwa [this]
-    exact Module.finite_def.2 ((Submodule.fg_top _).1 (Module.finite_def.1 this))
+    rw [← this] at hF
+    exact .of_fg_top hF
   obtain ⟨x, xR, hx⟩ : ∃ x : E, ‖x‖ ≤ R ∧ ∀ y : E, y ∈ F → 1 ≤ ‖x - y‖ :=
     riesz_lemma_of_norm_lt hc hR Fclosed this
   have hx' : ∀ y : E, y ∈ F → 1 ≤ ‖y - x‖ := by

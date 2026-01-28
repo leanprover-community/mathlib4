@@ -62,7 +62,7 @@ else
   git diff origin/master...HEAD
 fi |
   ## purge `@[...]`, to attempt to catch declaration names
-  sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==' |
+  sed 's=@\[[^]]*\] ==; s=noncomputable ==; s=nonrec ==; s=protected ==; s=private ==' |
   ## this sed "splits" `[+-]alias ⟨d1, d2⟩ := d` into
   ## `[+-]alias d1 := d` and `[+-]alias d2 := d`
   sed 's=^\([+-]\)alias ⟨\([^,]*\), *\([^⟩]*\)⟩\(.*\)=\1alias \2\4\n\1alias \3\4=' |
@@ -192,5 +192,6 @@ def testingLongDiff2 im a def
 def testingLongDiff3 im a def
 @[trying to fool you] instance. the messing dot
 alias ⟨d1, d2⟩ := d  check the "split an iff alias"
-abbrev a_new_one := I was not here before
+private abbrev a_new_one := I was not here before, but I was not private
+private abbrev made_it_private := should be accounted for
 ReferenceTest

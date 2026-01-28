@@ -18,7 +18,7 @@ Some simple translation lemmas between the different definitions of functions de
 `Algebra.ContinuedFractions.Basic`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract

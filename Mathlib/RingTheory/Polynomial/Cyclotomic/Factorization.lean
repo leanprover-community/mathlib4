@@ -24,7 +24,7 @@ field of characteristic `p`, where `p` and `n` are coprime.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

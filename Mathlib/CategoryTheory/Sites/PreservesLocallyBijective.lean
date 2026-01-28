@@ -16,7 +16,7 @@ surjectivity of morphisms of presheaves, and that precomposition with a cover-pr
 cover-dense functor reflects the same properties.
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Functor
 

@@ -17,7 +17,7 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 variable {n : ℕ}

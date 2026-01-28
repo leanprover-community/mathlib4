@@ -340,10 +340,8 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (m : Basis ι R M)
-    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ N) := Finsupp.instAddCommGroup
-  exact of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulLeftMap N m) = ⊥) : M.LinearDisjoint N :=
+  of_basis_left' M N m (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
@@ -361,10 +359,8 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (n : Basis ι R N)
-    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N := by
-  -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
-  letI : AddCommGroup (ι →₀ M) := Finsupp.instAddCommGroup
-  exact of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
+    (H : LinearMap.ker (mulRightMap M n) = ⊥) : M.LinearDisjoint N :=
+  of_basis_right' M N n (LinearMap.ker_eq_bot.1 H)
 
 variable {M N} in
 /-- If `M` and `N` are linearly disjoint, if `M` is flat, then for any family of
