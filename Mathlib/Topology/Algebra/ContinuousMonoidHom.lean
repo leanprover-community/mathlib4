@@ -240,15 +240,11 @@ instance : CommMonoid (A →ₜ* E) where
   mul_one f := ext fun x => mul_one (f x)
 
 @[to_additive (attr := simp)]
-theorem mul_apply {A B : Type*} [Monoid A] [CommMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [ContinuousMul B]
-    (f g : ContinuousMonoidHom A B) (a : A) : (f * g) a = f a * g a := by
+theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
   rfl
 
 @[to_additive (attr := simp)]
-theorem pow_apply {A B : Type*} [Monoid A] [CommMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [ContinuousMul B]
-    (f : ContinuousMonoidHom A B) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
   induction n
   case zero => rw [pow_zero, pow_zero, one_toFun]
   case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
