@@ -124,4 +124,11 @@ lemma mulEquivHaarChar_trans {φ ψ : G ≃ₜ* G} :
   rw [MeasureTheory.Measure.haarScalarFactor_eq_mul haar (haar.map ψ),
     ← mulEquivHaarChar_eq (haar.map ψ)]
 
+@[to_additive]
+lemma mulEquivHaarChar_symm {φ : G ≃ₜ* G} :
+    mulEquivHaarChar φ.symm = (mulEquivHaarChar φ)⁻¹ := by
+  symm
+  apply inv_eq_of_mul_eq_one_right
+  simp [← mulEquivHaarChar_trans]
+
 end MeasureTheory

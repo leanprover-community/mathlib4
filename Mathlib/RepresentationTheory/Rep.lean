@@ -428,7 +428,7 @@ variable (k G) in
 abbrev free : Rep k G :=
   Rep.of (V := (α →₀ G →₀ k)) (Representation.free k G α)
 
-variable {α} [DecidableEq α]
+variable {α}
 
 /-- Given `f : α → A`, the natural representation morphism `(α →₀ k[G]) ⟶ A` sending
 `single a (single g r) ↦ r • A.ρ g (f a)`. -/
@@ -462,7 +462,6 @@ def freeLiftLEquiv :
 
 variable {A}
 
-omit [DecidableEq α] in
 @[ext]
 lemma free_ext (f g : free k G α ⟶ A)
     (h : ∀ i : α, f.hom (single i (single 1 1)) = g.hom (single i (single 1 1))) : f = g := by
@@ -482,7 +481,7 @@ open ModuleCat.MonoidalCategory
 @[simps! hom_hom inv_hom]
 def finsuppTensorLeft :
     A.finsupp α ⊗ B ≅ (A ⊗ B).finsupp α :=
-  Action.mkIso (TensorProduct.finsuppLeft k A B α).toModuleIso
+  Action.mkIso (TensorProduct.finsuppLeft k _ A B α).toModuleIso
     fun _ => ModuleCat.hom_ext <| TensorProduct.ext <| lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppLeft_apply_tmul,
@@ -493,7 +492,7 @@ def finsuppTensorLeft :
 @[simps! hom_hom inv_hom]
 def finsuppTensorRight :
     A ⊗ B.finsupp α ≅ (A ⊗ B).finsupp α :=
-  Action.mkIso (TensorProduct.finsuppRight k A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
+  Action.mkIso (TensorProduct.finsuppRight k _ A B α).toModuleIso fun _ => ModuleCat.hom_ext <|
       TensorProduct.ext <| LinearMap.ext fun _ => lhom_ext fun _ _ => by
       ext
       simp [Action_ρ_eq_ρ, TensorProduct.finsuppRight_apply_tmul, ModuleCat.endRingEquiv,
@@ -511,6 +510,8 @@ def leftRegularTensorTrivialIsoFree :
         simp [Action_ρ_eq_ρ, tensorObj_carrier, ModuleCat.endRingEquiv]
 
 variable {α}
+
+omit [DecidableEq α]
 
 @[simp]
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
@@ -584,8 +585,6 @@ theorem diagonalSuccIsoTensorTrivial_inv_hom_single_right (g : G →₀ k) (f : 
   · intro a b x _ _ hx
     simpa [-Action.tensorObj_V, map_add, hx, TensorProduct.add_tmul] using
       diagonalSuccIsoTensorTrivial_inv_hom_single_single ..
-
-variable [DecidableEq (Fin n → G)]
 
 variable (k G n) in
 /-- Representation isomorphism `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])`, where the right-hand representation is
@@ -714,12 +713,12 @@ variable {A B C}
 instance : MonoidalClosed (Rep k G) where
   closed A :=
     { rightAdj := Rep.ihom A
-      adj := Adjunction.mkOfHomEquiv (
-      { homEquiv := Rep.homEquiv A
+      adj := Adjunction.mkOfHomEquiv ({
+        homEquiv := Rep.homEquiv A
         homEquiv_naturality_left_symm := fun _ _ => Action.Hom.ext
           (ModuleCat.hom_ext (TensorProduct.ext' fun _ _ => rfl))
         homEquiv_naturality_right := fun _ _ => Action.Hom.ext (ModuleCat.hom_ext (LinearMap.ext
-          fun _ => LinearMap.ext fun _ => rfl)) })}
+          fun _ => LinearMap.ext fun _ => rfl)) }) }
 
 @[simp]
 theorem ihom_obj_ρ_def (A B : Rep k G) : ((ihom A).obj B).ρ = ((Rep.ihom A).obj B).ρ :=

@@ -183,6 +183,19 @@ lemma Reachable.of_subsingleton {G : SimpleGraph V} [Subsingleton V] {u v : V} :
     G.Reachable u v := by
   rw [Subsingleton.allEq u v]
 
+lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
+  rintro ⟨_ | @⟨u, x, v, hadj, w'⟩⟩
+  · contradiction
+  · have : 0 < G.degree u := (G.degree_pos_iff_exists_adj u).mpr ⟨x, hadj⟩
+    rw [hu] at this
+    contradiction
+
+lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
+    (huv : u ≠ v) (hu : G.degree v = 0) : ¬G.Reachable u v := by
+  rw [reachable_comm]
+  exact not_reachable_of_left_degree_zero huv.symm hu
+
 /-- The equivalence relation on vertices given by `SimpleGraph.Reachable`. -/
 def reachableSetoid : Setoid V := Setoid.mk _ G.reachable_is_equivalence
 
@@ -365,6 +378,7 @@ instance isEmpty [IsEmpty V] : IsEmpty G.ConnectedComponent := Quot.instIsEmpty
 instance [Subsingleton V] : Subsingleton G.ConnectedComponent := Quot.Subsingleton
 instance [Unique V] : Unique G.ConnectedComponent := Quot.instUnique
 instance [Nonempty V] : Nonempty G.ConnectedComponent := Nonempty.map G.connectedComponentMk ‹_›
+instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
 
 @[elab_as_elim]
 protected theorem ind {β : G.ConnectedComponent → Prop}
@@ -817,17 +831,6 @@ end BridgeEdges
 ### 2-reachability
 
 In this section, we prove results about 2-connected components of a graph, but without naming them.
-
-#### TODO
-
-Should we explicitly have
-```
-def IsEdgeReachable (k : ℕ) (u v : V) : Prop :=
-  ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
-```
-? `G.IsEdgeReachable 2 u v` would then be equivalent to the less idiomatic condition
-`∃ x, ¬ (G.deleteEdges {s(x, y)}).Reachable u y` we use below.
-See https://github.com/leanprover-community/mathlib4/issues/31691.
 -/
 
 namespace Walk
