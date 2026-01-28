@@ -134,6 +134,27 @@ noncomputable def self [Projective Z] : ProjectiveResolution Z where
       apply HomologicalComplex.isZero_single_obj_X
       simp
 
+variable {Z} {Z' : C} (P' : ProjectiveResolution Z')
+
+/-- Given injective resolutions `P` and `P'` of two objects `Z` and `Z'`,
+and a morphism `f : Z ⟶ Z'`, this structure contains the data of a morphism
+`P.complex ⟶ P'.complex` which is compatible with `f` -/
+structure Hom (f : Z ⟶ Z') where
+  /-- A morphism between the cocomplexes -/
+  hom : P.complex ⟶ P'.complex
+  hom_f_zero_comp_π_f_zero : hom.f 0 ≫ P'.π.f 0 = P.π.f 0 ≫ ((single₀ C).map f).f 0
+
+namespace Hom
+
+attribute [reassoc (attr := simp)] hom_f_zero_comp_π_f_zero
+
+variable {I I'} in
+@[reassoc (attr := simp)]
+lemma hom_comp_π {f : Z ⟶ Z'} (φ : Hom P P' f) :
+    φ.hom ≫ P'.π = P.π ≫ (single₀ C).map f := by cat_disch
+
+end Hom
+
 end ProjectiveResolution
 
 namespace Functor

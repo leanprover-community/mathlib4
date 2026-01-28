@@ -5,7 +5,6 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
@@ -14,6 +13,8 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 public import Mathlib.CategoryTheory.Limits.VanKampen
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 
 /-!
 
@@ -37,11 +38,6 @@ public import Mathlib.CategoryTheory.Limits.VanKampen
   has all pullbacks and is extensive.
 - `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`: Finite coproducts in a
   finitary extensive category are van Kampen.
-## TODO
-
-Show that the following are finitary extensive:
-- `Scheme`
-- `AffineScheme` (`CommRingᵒᵖ`)
 
 ## References
 - https://ncatlab.org/nlab/show/extensive+category
@@ -179,11 +175,9 @@ theorem FinitaryExtensive.mono_inl_of_isColimit [FinitaryExtensive C] {c : Binar
     (hc : IsColimit c) : Mono c.inl :=
   FinitaryExtensive.mono_inr_of_isColimit (BinaryCofan.isColimitFlip hc)
 
-instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inl : X ⟶ X ⨿ Y) :=
-  (FinitaryExtensive.mono_inl_of_isColimit (coprodIsCoprod X Y) :)
-
-instance [FinitaryExtensive C] (X Y : C) : Mono (coprod.inr : Y ⟶ X ⨿ Y) :=
-  (FinitaryExtensive.mono_inr_of_isColimit (coprodIsCoprod X Y) :)
+instance (priority := low) [FinitaryExtensive C] : MonoCoprod C where
+  binaryCofan_inl _ _ _ hc := BinaryCofan.mono_inr_of_isVanKampen
+    (FinitaryExtensive.vanKampen _ (BinaryCofan.isColimitFlip hc))
 
 theorem FinitaryExtensive.isPullback_initial_to_binaryCofan [FinitaryExtensive C]
     {c : BinaryCofan X Y} (hc : IsColimit c) :
@@ -529,6 +523,14 @@ lemma FinitaryExtensive.isPullback_initial_to_sigma_ι [FinitaryExtensive C] {ι
   FinitaryExtensive.isPullback_initial_to (coproductIsCoproduct _) ⟨i⟩ ⟨j⟩
     (ne_of_apply_ne Discrete.as e)
 
+-- TODO: generalize to arbitrary `ι` if `HasCoproductsOfShape ι C`.
+instance (priority := low) [FinitaryExtensive C] {ι : Type*} [Finite ι] :
+    CoproductsOfShapeDisjoint C ι where
+  coproductDisjoint X := by
+    refine ⟨fun {c} hc i j e s hs ↦ ?_, fun hc i ↦ FinitaryExtensive.mono_ι hc ⟨i⟩⟩
+    exact ⟨initialIsInitial.ofIso ((FinitaryExtensive.isPullback_initial_to hc ⟨i⟩ ⟨j⟩
+      (by simpa)).isoIsPullback _ _ (IsPullback.of_isLimit hs))⟩
+
 instance FinitaryPreExtensive.hasPullbacks_of_inclusions [FinitaryPreExtensive C] {X Z : C}
     {α : Type*} (f : X ⟶ Z) {Y : (a : α) → C} (i : (a : α) → Y a ⟶ Z) [Finite α]
     [hi : IsIso (Sigma.desc i)] (a : α) : HasPullback f (i a) := by
@@ -539,9 +541,9 @@ lemma FinitaryPreExtensive.isIso_sigmaDesc_fst [FinitaryPreExtensive C] {α : Ty
     {X : C} {Z : α → C} (π : (a : α) → Z a ⟶ X) {Y : C} (f : Y ⟶ X) (hπ : IsIso (Sigma.desc π)) :
     IsIso (Sigma.desc ((fun _ ↦ pullback.fst _ _) : (a : α) → pullback f (π a) ⟶ _)) := by
   let c := (Cofan.mk _ ((fun _ ↦ pullback.fst _ _) : (a : α) → pullback f (π a) ⟶ _))
-  apply c.isColimit_iff_isIso_sigmaDesc.mpr
+  apply c.nonempty_isColimit_iff_isIso_sigmaDesc.mp
   have hau : IsUniversalColimit (Cofan.mk X π) := FinitaryPreExtensive.isUniversal_finiteCoproducts
-    ((Cofan.isColimit_iff_isIso_sigmaDesc _).mp hπ).some
+    ((Cofan.nonempty_isColimit_iff_isIso_sigmaDesc _).mpr hπ).some
   refine hau.nonempty_isColimit_of_pullbackCone_left _ (𝟙 _) _ _ (fun i ↦ ?_)
     (PullbackCone.mk (𝟙 _) f (by simp)) (IsPullback.id_horiz f).isLimit _ (Iso.refl _)
     (by simp) (by simp [c]) (by simp [pullback.condition, c])
@@ -559,7 +561,7 @@ instance FinitaryPreExtensive.isIso_sigmaDesc_map [HasPullbacks C] [FinitaryPreE
   let c : Cofan _ := Cofan.mk _ <| fun (p : ι × ι') ↦
       pullback.map (f p.1) (g p.2) (Sigma.desc f) (Sigma.desc g) (Sigma.ι _ p.1)
         (Sigma.ι _ p.2) (𝟙 S) (by simp) (by simp)
-  apply c.isColimit_iff_isIso_sigmaDesc.mpr
+  apply c.nonempty_isColimit_iff_isIso_sigmaDesc.mp
   refine IsUniversalColimit.nonempty_isColimit_prod_of_pullbackCone
       (a := Cofan.mk _ <| fun i ↦ Sigma.ι _ i) (b := Cofan.mk _ <| fun i ↦ Sigma.ι _ i)
       ?_ ?_ f g (Sigma.desc f) (Sigma.desc g) (fun i j ↦ (pullback.cone (f i) (g j)))

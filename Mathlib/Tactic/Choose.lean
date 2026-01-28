@@ -5,8 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Mario Carneiro, Reid Barton, Johan C
 -/
 module
 
-public import Batteries.Lean.Expr
-public meta import Batteries.Lean.Expr
 public import Mathlib.Logic.Function.Basic
 public meta import Mathlib.Tactic.Basic
 
@@ -69,6 +67,40 @@ def ElimStatus.merge : ElimStatus → ElimStatus → ElimStatus
 and `orig` otherwise. -/
 def mkFreshNameFrom (orig base : Name) : CoreM Name :=
   if orig = `_ then mkFreshUserName base else pure orig
+
+/-- Parsed information from a `choose` argument, which may include a type annotation. -/
+structure ChooseArg where
+  /-- The syntax reference for the identifier (for hover info) -/
+  ref : Syntax
+  /-- The name to use for the introduced variable -/
+  name : Name
+  /-- Optional expected type annotation -/
+  expectedType? : Option Term
+  deriving Inhabited
+
+/-- A `choose` argument is either a bare identifier or a parenthesized extended binder -/
+syntax chooseBinder := binderIdent <|> Batteries.ExtendedBinder.extBinderParenthesized
+
+open Batteries.ExtendedBinder in
+/-- Parse a `choose` argument from `chooseBinder` syntax. Accepts:
+- `x` - plain identifier
+- `_` - anonymous
+- `(x : T)` - identifier with type annotation
+- `(_ : T)` - anonymous with type annotation -/
+def parseChooseArg (stx : TSyntax ``chooseBinder) : MetaM ChooseArg := do
+  match stx with
+  | `(chooseBinder| $id:binderIdent) => return parseBinderIdent id
+  | `(chooseBinder| ($id:binderIdent : $ty:term)) =>
+    return { parseBinderIdent id with expectedType? := some ty }
+  | `(chooseBinder| ($_id:binderIdent $bp:binderPred)) =>
+    throwErrorAt bp "binder predicates like '< n' are not supported by choose; \
+      use a type annotation like '(h : x < n)' instead"
+  | _ => return ⟨stx, `_, none⟩
+where
+  parseBinderIdent (id : TSyntax ``Lean.binderIdent) : ChooseArg :=
+    match id with
+    | `(binderIdent| $h:ident) => ⟨h, h.getId, none⟩
+    | _ => ⟨id, `_, none⟩
 
 /-- Changes `(h : ∀ xs, ∃ a:α, p a) ⊢ g` to `(d : ∀ xs, a) ⊢ (s : ∀ xs, p (d xs)) → g` and
 `(h : ∀ xs, p xs ∧ q xs) ⊢ g` to `(d : ∀ xs, p xs) ⊢ (s : ∀ xs, q xs) → g`.
@@ -147,19 +179,30 @@ def choose1 (g : MVarId) (nondep : Bool) (h : Option Expr) (data : Name) :
       -- TODO: support Σ, ×, or even any inductive type with 1 constructor ?
       | _, _ => throwError "expected a term of the shape `∀ xs, ∃ a, p xs a` or `∀ xs, p xs ∧ q xs`"
 
-/-- A wrapper around `choose1` that parses identifiers and adds variable info to new variables. -/
-def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (data : TSyntax ``binderIdent) :
-    MetaM (ElimStatus × MVarId) := do
-  let n := if let `(binderIdent| $n:ident) := data then n.getId else `_
-  let (status, fvar, g) ← choose1 g nondep h n
-  g.withContext <| fvar.addLocalVarInfoForBinderIdent data
+/-- A wrapper around `choose1` that parses identifiers, adds variable info to new variables,
+and optionally checks the type annotation. -/
+def choose1WithInfo (g : MVarId) (nondep : Bool) (h : Option Expr) (arg : ChooseArg) :
+    TermElabM (ElimStatus × MVarId) := do
+  let (status, fvar, g) ← choose1 g nondep h arg.name
+  let g ← g.withContext do
+    Term.addLocalVarInfo arg.ref fvar
+    -- Check type annotation if provided, and use the user-specified type
+    if let some expectedTypeStx := arg.expectedType? then
+      let actualType ← inferType fvar
+      let expectedType ← Term.elabType expectedTypeStx
+      unless ← isDefEq actualType expectedType do
+        throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
+          {← mkHasTypeButIsExpectedMsg actualType expectedType}"
+      -- Change the local declaration to use the user-specified type
+      return ← g.changeLocalDecl fvar.fvarId! expectedType
+    return g
   pure (status, g)
 
 /-- A loop around `choose1`. The main entry point for the `choose` tactic. -/
 def elabChoose (nondep : Bool) (h : Option Expr) :
-    List (TSyntax ``binderIdent) → ElimStatus → MVarId → MetaM MVarId
+    List ChooseArg → ElimStatus → MVarId → TermElabM MVarId
   | [], _, _ => throwError "expect list of variables"
-  | [n], status, g =>
+  | [arg], status, g =>
     match nondep, status with
     | true, .failure tys => do -- We expected some elimination, but it didn't happen.
       let mut msg := m!"choose!: failed to synthesize any nonempty instances"
@@ -167,14 +210,22 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
         msg := msg ++ m!"{(← mkFreshExprMVar ty).mvarId!}"
       throwError msg
     | _, _ => do
-      let (fvar, g) ← match n with
-      | `(binderIdent| $n:ident) => g.intro n.getId
-      | _ => g.intro1
-      g.withContext <| (Expr.fvar fvar).addLocalVarInfoForBinderIdent n
-      return g
-  | n::ns, status, g => do
-    let (status', g) ← choose1WithInfo g nondep h n
-    elabChoose nondep none ns (status.merge status') g
+      let (fvar, g) ← if arg.name == `_ then g.intro1 else g.intro arg.name
+      g.withContext do
+        Term.addLocalVarInfo arg.ref (.fvar fvar)
+        -- Check type annotation if provided, and use the user-specified type
+        if let some expectedTypeStx := arg.expectedType? then
+          let actualType ← inferType (.fvar fvar)
+          let expectedType ← Term.elabType expectedTypeStx
+          unless ← isDefEq actualType expectedType do
+            throwErrorAt arg.ref m!"type mismatch for '{arg.name}'\n\
+              {← mkHasTypeButIsExpectedMsg actualType expectedType}"
+          -- Change the local declaration to use the user-specified type
+          return ← g.changeLocalDecl fvar expectedType
+        return g
+  | arg::args, status, g => do
+    let (status', g) ← choose1WithInfo g nondep h arg
+    elabChoose nondep none args (status.merge status') g
 
 /--
 * `choose a b h h' using hyp` takes a hypothesis `hyp` of the form
@@ -193,6 +244,15 @@ def elabChoose (nondep : Bool) (h : Option Expr) :
 
 The `using hyp` part can be omitted,
 which will effectively cause `choose` to start with an `intro hyp`.
+
+Like `intro`, the `choose` tactic supports type annotations to specify the expected type
+of the introduced variables. This is useful for documentation and for catching mistakes early:
+```
+example (h : ∃ n : ℕ, n > 0) : True := by
+  choose (n : ℕ) (hn : n > 0) using h
+  trivial
+```
+If the provided type does not match the actual type, an error is raised.
 
 Examples:
 
@@ -214,16 +274,21 @@ example (h : ∀ i : ℕ, i < 7 → ∃ j, i < j ∧ j < i+i) : True := by
   trivial
 ```
 -/
-syntax (name := choose) "choose" "!"? (ppSpace colGt binderIdent)+ (" using " term)? : tactic
-elab_rules : tactic
-| `(tactic| choose $[!%$b]? $[$ids]* $[using $h]?) => withMainContext do
-  let h ← h.mapM (Elab.Tactic.elabTerm · none)
-  let g ← elabChoose b.isSome h ids.toList (.failure []) (← getMainGoal)
-  replaceMainGoal [g]
+syntax (name := choose) "choose" "!"? (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
 
-@[inherit_doc choose]
-syntax "choose!" (ppSpace colGt binderIdent)+ (" using " term)? : tactic
+elab_rules : tactic
+| `(tactic| choose $[!%$b]? $[$ids:chooseBinder]* $[using $h]?) => withMainContext do
+  let h ← h.mapM (Elab.Tactic.elabTerm · none)
+  let args ← ids.toList.mapM (liftM <| parseChooseArg ·)
+  Term.withoutErrToSorry do
+    let g ← elabChoose b.isSome h args (.failure []) (← getMainGoal)
+    replaceMainGoal [g]
+
+@[tactic_alt choose]
+syntax "choose!" (ppSpace colGt chooseBinder)+ (" using " term)? : tactic
+
 macro_rules
-  | `(tactic| choose! $[$ids]* $[using $h]?) => `(tactic| choose ! $[$ids]* $[using $h]?)
+  | `(tactic| choose! $[$ids:chooseBinder]* $[using $h]?) =>
+    `(tactic| choose ! $[$ids]* $[using $h]?)
 
 end Mathlib.Tactic.Choose

@@ -187,21 +187,25 @@ theorem exists_aeval_eq_zero {R : Type*} [CommSemiring R] [IsAlgClosed k] [Algeb
     [FaithfulSMul R k] (p : R[X]) (hp : p.degree ≠ 0) : ∃ x : k, p.aeval x = 0 :=
   exists_aeval_eq_zero_of_injective _ (FaithfulSMul.algebraMap_injective ..) _ hp
 
-
 /--
 If every nonconstant polynomial over `k` has a root, then `k` is algebraically closed.
 -/
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
-  intro q hq _
-  have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
-    classical
-    rw [← coe_normUnit_of_ne_zero hq.ne_zero]
-    exact (associated_normalize _).irreducible hq
-  obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) this
-  exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root this hx
+  replace H (p : k[X]) (hp : Irreducible p) : ∃ x, p.eval x = 0 := by
+    obtain ⟨x, hx⟩ := H (p * C (leadingCoeff p)⁻¹) (monic_mul_leadingCoeff_inv hp.ne_zero)
+      (irreducible_mul_leadingCoeff_inv.mpr hp)
+    exact ⟨x, by simpa [hp.ne_zero] using hx⟩
+  refine ⟨fun p ↦ ?_⟩
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hp0
+  rw [← hu]
+  refine (Splits.multisetProd fun f hf ↦ ?_).mul u.isUnit.splits
+  let h := UniqueFactorizationMonoid.irreducible_of_factor f hf
+  obtain ⟨x, hx⟩ := H f h
+  exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
 theorem of_ringEquiv (k' : Type u) [Field k'] (e : k ≃+* k')
     [IsAlgClosed k] : IsAlgClosed k' := by
@@ -308,6 +312,13 @@ namespace IsAlgClosed
 
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsAlgClosed M]
+
+theorem eval_surjective {p : M[X]} (hp : p.natDegree ≠ 0) : Function.Surjective p.eval :=
+  fun x ↦ by
+    rw [← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos] at hp
+    have ⟨y, hy⟩ := (IsAlgClosed.splits (p - C x)).exists_eval_eq_zero <| by
+      simpa only [degree_sub_C hp] using hp.ne'
+    exact ⟨y, by simpa [eval_sub, sub_eq_zero] using hy⟩
 
 /-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
   closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.

@@ -505,17 +505,21 @@ jobs:
       #   run: |
       #     cd pr-branch
       #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
-
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        timeout-minutes: 30
+        timeout-minutes: 40
         run: |
           cd pr-branch
+          set -o pipefail
           # Try running with --trace; if it fails due to argument parsing, the PR needs to merge master
           # We use .lake/ for the output file because landrun restricts /tmp access
-          if ! env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee .lake/lint_output.txt; then
-            if grep -q "cannot parse arguments" .lake/lint_output.txt; then
+          for attempt in 1 2; do
+            if timeout 10m env LEAN_ABORT_ON_PANIC=1 stdbuf -oL lake exe runLinter --trace Mathlib 2>&1 | tee ".lake/lint_output_attempt_${attempt}.txt"; then
+              break
+            fi
+            status=${PIPESTATUS[0]}
+            if grep -q "cannot parse arguments" ".lake/lint_output_attempt_${attempt}.txt"; then
               echo ""
               echo "=============================================================================="
               echo "ERROR: Your branch uses an older version of runLinter that doesn't support"
@@ -528,8 +532,30 @@ jobs:
               echo "  git push"
               echo "=============================================================================="
               echo ""
+              exit 1
             fi
-            exit 1
+            if [ "$status" -eq 124 ]; then
+              echo "runLinter timed out (attempt $attempt)."
+              if [ "$attempt" -lt 2 ]; then
+                echo "Retrying runLinter after timeout..."
+                continue
+              fi
+            fi
+            exit $status
+          done
+
+      # We need to separate this step from the previous script because it needs to run outside of landrun
+      - name: kill stray runLinter processes
+        if: ${{ steps.lint.outcome == 'failure' }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          echo "Checking for runLinter processes..."
+          if pgrep -af runLinter; then
+            echo "Killing runLinter processes..."
+            pkill -f runLinter || true
+          else
+            echo "No stray runLinter processes found."
           fi
 
       - name: end gh-problem-match-wrap for shake and lint steps

@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 public import Mathlib.Analysis.Distribution.DerivNotation
+public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 
 /-!
 # The Laplacian
@@ -175,8 +175,7 @@ theorem laplacian_eq_iteratedFDeriv_orthonormalBasis {ι : Type*} [Fintype ι]
     (v : OrthonormalBasis ι ℝ E) :
     Δ f = fun x ↦ ∑ i, iteratedFDeriv ℝ 2 f x ![v i, v i] := by
   ext x
-  simp [laplacian, canonicalCovariantTensor_eq_sum E v,
-    tensorIteratedFDerivTwo_eq_iteratedFDeriv]
+  simp [laplacian, canonicalCovariantTensor_eq_sum E v, tensorIteratedFDerivTwo_eq_iteratedFDeriv]
 
 variable (f) in
 /--
