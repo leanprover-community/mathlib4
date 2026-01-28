@@ -5,8 +5,13 @@ Authors: Jingting Wang, Wanyi He, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.RingTheory.QuotSMulTop
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
 # Categorical constructions for `IsSMulRegular`
@@ -18,13 +23,12 @@ universe u v w
 
 variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)
 
-open CategoryTheory Ideal Pointwise
+open CategoryTheory Abelian Pointwise
 
 lemma LinearMap.exact_smul_id_smul_top_mkQ (M : Type v) [AddCommGroup M] [Module R M] (r : R) :
     Function.Exact (r • LinearMap.id : M →ₗ[R] M) (r • (⊤ : Submodule R M)).mkQ := by
   intro x
-  simp [Submodule.mem_smul_pointwise_iff_exists,
-    Submodule.mem_smul_pointwise_iff_exists]
+  simp [Submodule.mem_smul_pointwise_iff_exists, Submodule.mem_smul_pointwise_iff_exists]
 
 namespace ModuleCat
 
@@ -55,3 +59,21 @@ lemma IsSMulRegular.smulShortComplex_shortExact {r : R} (reg : IsSMulRegular M r
     (ModuleCat.smulShortComplex M r).ShortExact where
   exact := ModuleCat.smulShortComplex_exact M r
   mono_f := by simpa [ModuleCat.smulShortComplex, ModuleCat.mono_iff_injective] using reg
+
+lemma Submodule.smul_top_eq_comap_smul_top_of_surjective {R M M₂ : Type*} [CommSemiring R]
+    [AddCommGroup M] [AddCommGroup M₂] [Module R M] [Module R M₂] (I : Ideal R) (f : M →ₗ[R] M₂)
+    (h : Function.Surjective f) : I • ⊤ ⊔ (LinearMap.ker f) = comap f (I • ⊤) := by
+  refine le_antisymm (sup_le (smul_top_le_comap_smul_top I f) (LinearMap.ker_le_comap f)) ?_
+  rw [← Submodule.comap_map_eq f (I • (⊤ : Submodule R M)),
+    Submodule.comap_le_comap_iff_of_surjective h,
+    Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr h]
+
+variable {R : Type u} [CommRing R] [Small.{v} R] {M N : ModuleCat.{v} R} {n : ℕ}
+
+lemma smul_id_postcomp_eq_zero_of_mem_ann {r : R} (mem_ann : r ∈ Module.annihilator R N) (n : ℕ) :
+    AddCommGrpCat.ofHom (((Ext.mk₀ (r • (𝟙 M)))).postcomp N (add_zero n)) = 0 := by
+  ext h
+  have eq0 : r • (𝟙 N) = 0 := ModuleCat.hom_ext
+    (LinearMap.ext (fun x ↦ Module.mem_annihilator.mp mem_ann _))
+  have : r • h = (Ext.mk₀ (r • (𝟙 N))).comp h (zero_add n) := by simp [Ext.mk₀_smul]
+  simp [Ext.mk₀_smul, this, eq0]
