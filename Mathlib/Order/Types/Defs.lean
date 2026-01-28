@@ -233,4 +233,8 @@ def omega0 : OrderType := type <| ULift ℕ
 scoped notation "ω" => OrderType.omega0
 recommended_spelling "omega0" for "ω" in [omega0, «termω»]
 
+@[simp]
+theorem type_nat_eq : type ℕ = omega0 := type_congr ⟨Equiv.ulift.symm, @fun _ _ ↦ by
+  simp only [ulift_symm_apply, ULift.up_le]⟩
+
 end OrderType
