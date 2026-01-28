@@ -244,7 +244,7 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 end
 
 -- Inferring a model with corners on a space of continuous linear maps between normed spaces
-section
+section ContinuousLinearMap
 
 variable {f : M → E →L[𝕜] E'} in
 /-- info: MDifferentiable I 𝓘(𝕜, E →L[𝕜] E') f : Prop -/
@@ -354,9 +354,29 @@ variable {f : M → E'' →SL[id'] E'''} in
 #guard_msgs in
 #check CMDiff 2 f
 
-end
+-- Testing the case of a map that is not the identity: we infer a model with corners, but
+-- it will not match the desired type exactly.
+-- TODO: the error message could be more helpful.
+variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E''''] (σ : ℝ →+* ℝ) [RingHomIsometric σ]
+
+variable {f : M → E'' →SL[σ] E''''} in
+/--
+error: Application type mismatch: The argument
+  𝓘(ℝ, E'' →SL[σ] E'''')
+has type
+  ModelWithCorners.{0, max u_11 u_13, max u_11 u_13} ℝ (E'' →SL[σ] E'''') (E'' →SL[σ] E'''')
+but is expected to have type
+  ModelWithCorners.{u_1, ?u.235761, ?u.235762} 𝕜 ?E' ?H'
+in the application
+  @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴
+    𝓘(ℝ, E'' →SL[σ] E'''')
+-/
+#guard_msgs in
+#check CMDiff 2 f
 
 end
+
+end ContinuousLinearMap
 
 /-! Inferring a model with corners on a real interval -/
 section RealInterval
