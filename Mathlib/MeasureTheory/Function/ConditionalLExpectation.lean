@@ -270,7 +270,7 @@ theorem condLExp_smul (X : Ω → ℝ≥0∞) (hX : AEMeasurable[mΩ₀] X P) (c
   all_goals fun_prop
 
 theorem condLExp_smul_le (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} :
-     c • P⁻[X|mΩ] ≤ᵐ[P] P⁻[c • X|mΩ] := by
+    c • P⁻[X|mΩ] ≤ᵐ[P] P⁻[c • X|mΩ] := by
   by_cases hm : mΩ ≤ mΩ₀; swap
   · simp_rw [condLExp_of_not_le hm]; filter_upwards; simp
   by_cases hσ : SigmaFinite (P.trim hm); swap
