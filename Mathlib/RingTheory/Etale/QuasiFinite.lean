@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 public import Mathlib.RingTheory.QuasiFinite.Basic
+public import Mathlib.RingTheory.Localization.InvSubmonoid
 
 /-!
 # Etale local structure of finite maps
@@ -78,7 +79,8 @@ section
 
 universe u v
 
-variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+variable {R : Type u} {S : Type v} {T : Type*}
+  [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
 open Polynomial in
 /--
@@ -154,5 +156,60 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq [Module.Finite R 
     mul_comm, ← (Ideal.ResidueField.mapₐ P P'' (Algebra.ofId _ _) (P''.over_def P)).comp_algebraMap,
     ← Polynomial.map_map, ← ha']
   simp
+
+/-- Suppose `f : S →ₐ[R] T` is an `R`-algebra homomorphism with `S` integral and `T` of finite type,
+such that the induced map `S[1/g] → T[1/g]` is surjective for some `g : S`.
+Then for any prime `p` of `R` such that `1 ⊗ₜ g` is invertible in `κ(p) ⊗ S`,
+there exists `r ∉ p` such that `T[1/r]` is finite over `R[1/r]`. -/
+@[stacks 00UI]
+lemma Localization.exists_finite_awayMapₐ_of_surjective_awayMapₐ
+    [Algebra.FiniteType R T] [Algebra.IsIntegral R S] (f : S →ₐ[R] T) (g : S)
+    (hg : Function.Surjective (Localization.awayMapₐ f g)) (p : Ideal R) [p.IsPrime]
+    (hgp : IsUnit (M := p.Fiber S) (1 ⊗ₜ g)) :
+    ∃ r ∉ p, (Localization.awayMapₐ (Algebra.ofId R T) r).Finite := by
+  have := PrimeSpectrum.isClosedMap_comap_of_isIntegral (algebraMap R S)
+    (algebraMap_isIntegral_iff.mpr ‹_›) _ (PrimeSpectrum.isClosed_zeroLocus {g})
+  obtain ⟨_, ⟨_, ⟨r, rfl⟩, rfl⟩, hpr, hrg⟩ := PrimeSpectrum.isBasis_basic_opens
+    |>.exists_subset_of_mem_open (a := ⟨p, ‹_›⟩) (ou := this.isOpen_compl) <| by
+    rintro ⟨q, hq, e⟩
+    have : q.asIdeal.LiesOver p := ⟨congr(($e).1).symm⟩
+    have : 1 ⊗ₜ g ∉ (PrimeSpectrum.preimageEquivFiber R S ⟨p, ‹_›⟩ ⟨q, e⟩).asIdeal :=
+      fun h ↦ Ideal.IsPrime.ne_top' (Ideal.eq_top_of_isUnit_mem _ h hgp)
+    rw [PrimeSpectrum.preimageEquivFiber_apply_asIdeal] at this
+    simp_all
+  refine ⟨r, hpr, RingHom.finite_iff_isIntegral_and_finiteType.mpr ⟨?_, ?_⟩⟩
+  · have : IsLocalization.Away (f.toRingHom (algebraMap R S r))
+        (Localization.Away (algebraMap R T r)) := by
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.commutes]; infer_instance
+    have h₁ : (Localization.awayMap (algebraMap R S) r).IsIntegral := isIntegral_localization
+    have h₂ : Function.Surjective (IsLocalization.Away.map (Localization.Away (algebraMap R S r))
+        (Localization.Away (algebraMap R T r)) f.toRingHom (algebraMap R S r)) := by
+      intro x
+      obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.exists_mk'_eq (.powers (algebraMap R T r)) x
+      suffices ∃ a k l, algebraMap R T r ^ (l + n) * f a =
+          algebraMap R T r ^ (l + k) * x by
+        simpa [(IsLocalization.mk'_surjective (.powers (algebraMap R S r))).exists,
+          IsLocalization.Away.map, IsLocalization.map_mk', IsLocalization.mk'_eq_iff_eq,
+          ← map_pow, Submonoid.mem_powers_iff, IsLocalization.Away.map, IsLocalization.map_mk',
+          IsLocalization.mk'_eq_iff_eq, ← map_mul, ← mul_assoc, ← pow_add,
+          IsLocalization.eq_iff_exists (.powers (algebraMap R T r))]
+      have : PrimeSpectrum.basicOpen (algebraMap R S r) ≤ PrimeSpectrum.basicOpen g := by
+        simpa [← SetLike.coe_subset_coe] using hrg
+      simp only [PrimeSpectrum.basicOpen_le_basicOpen_iff, Ideal.mem_radical_iff,
+        Ideal.mem_span_singleton] at this
+      obtain ⟨m', s, hs⟩ := this
+      obtain ⟨b, m, e : f b = f g ^ m * x⟩ := Localization.awayMap_surjective_iff.mp hg x
+      have : f (s ^ m * b) = f (g * s) ^ m * x := by simp [e, mul_pow, mul_assoc, mul_left_comm]
+      simp_rw [← hs, map_pow, AlgHom.commutes, ← pow_mul] at this
+      refine ⟨s ^ m * b, (n + m' * m), 0, this ▸ ?_⟩
+      simp [pow_add, mul_assoc]
+    convert h₁.trans _ _ (RingHom.IsIntegral.of_finite (.of_surjective _ h₂)) using 1
+    refine IsLocalization.ringHom_ext (.powers r) (RingHom.ext fun x ↦ ?_)
+    simp [Localization.awayMap, IsLocalization.Away.map, ← IsScalarTower.algebraMap_apply R T]
+  · algebraize [(Localization.awayMapₐ (Algebra.ofId R T) r).toRingHom]
+    have := IsScalarTower.of_algebraMap_eq'
+      (Localization.awayMapₐ (Algebra.ofId R T) r).comp_algebraMap.symm
+    refine RingHom.finiteType_algebraMap.mpr ?_
+    exact .of_restrictScalars_finiteType R _ _
 
 end
