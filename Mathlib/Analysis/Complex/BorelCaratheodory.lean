@@ -63,7 +63,7 @@ lemma norm_lt_norm_two_mul_sub (_ : 0 < M) (_ : z.re < M) : ‖z‖ < ‖2 * M -
 /-- Application of the Schwarz lemma to the transformed function. If `f` is differentiable on
 the ball, maps into `{z | z.re < M}`, and satisfies `f 0 = 0`, then the Schwarz transform
 satisfies the bound from the Schwarz lemma. -/
-private lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
+lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
     (hf₁ : Set.MapsTo f (ball 0 R) {z | z.re < M}) (hz : z ∈ ball 0 R) (hf₂ : f 0 = 0) :
     ‖f z / (2 * M - f z)‖ ≤ (1 / R) * ‖z‖ := by
   rw [← dist_zero_right, ← dist_zero_right]
