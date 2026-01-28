@@ -67,37 +67,42 @@ variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
 
     In other words, every vector in X can be uniquely represented as a convergent series of basis
     vectors, with coefficients given by the coordinate functionals. -/
-structure SchauderBasis (𝕜 : Type*) {X : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup X] [NormedSpace 𝕜 X] (e : ℕ → X) where
+structure SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup X] [NormedSpace 𝕜 X] where
+  /-- The basis vectors. -/
+  toFun : ℕ → X
   /-- Coordinate functionals -/
   coord : ℕ → StrongDual 𝕜 X
   /-- Biorthogonality -/
-  ortho : ∀ i j, coord i (e j) = (Pi.single j (1 : 𝕜) : ℕ → 𝕜) i
+  ortho : ∀ i j, coord i (toFun j) = (Pi.single j (1 : 𝕜) : ℕ → 𝕜) i
   /-- Convergence of partial sums -/
-  basis_expansion : ∀ x : X, HasSum (fun i ↦ (coord i) x • e i) x (SummationFilter.conditional ℕ)
+  expansion : ∀ x : X, HasSum (fun i ↦ (coord i) x • toFun i) x (SummationFilter.conditional ℕ)
+
+instance : CoeFun (SchauderBasis 𝕜 X) (fun _ ↦ ℕ → X) where
+  coe b := b.toFun
 
 namespace SchauderBasis
 
-variable {e : ℕ → X} (b : SchauderBasis 𝕜 e)
+variable (b : SchauderBasis 𝕜 X)
 
 /-- The basis vectors are linearly independent. -/
-theorem linearIndependent (h : SchauderBasis 𝕜 e) : LinearIndependent 𝕜 e := by
+theorem linearIndependent (b : SchauderBasis 𝕜 X) : LinearIndependent 𝕜 b := by
   rw [linearIndependent_iff]
   intro l hl
   ext i
-  have hsum : ∑ i ∈ l.support, l i • e i = 0 := hl
+  have hsum : ∑ i ∈ l.support, l i • b i = 0 := hl
   -- Apply the i-th coordinate functional to the linear combination
-  have happ : h.coord i (∑ j ∈ l.support, l j • e j) = 0 := by rw [hsum, map_zero]
+  have happ : b.coord i (∑ j ∈ l.support, l j • b j) = 0 := by rw [hsum, map_zero]
   rw [map_sum] at happ
   simp_rw [ContinuousLinearMap.map_smul] at happ
-  rw [Finset.sum_eq_single i, h.ortho i i] at happ
+  rw [Finset.sum_eq_single i, b.ortho i i] at happ
   · simpa using happ
-  · intro j _ hji; rw [h.ortho i j, Pi.single_apply, if_neg hji.symm, smul_eq_mul, mul_zero]
+  · intro j _ hji; rw [b.ortho i j, Pi.single_apply, if_neg hji.symm, smul_eq_mul, mul_zero]
   · intro hi; simp only [Finsupp.notMem_support_iff.mp hi, smul_eq_mul, zero_mul]
 
 /-- A canonical projection P_n associated to a Schauder basis given by coordinate functionals f_i:
     P_n x = ∑_{i < n} f_i(x) e_i -/
-def proj (n : ℕ) : X →L[𝕜] X := ∑ i ∈ Finset.range n, (b.coord i).smulRight (e i)
+def proj (n : ℕ) : X →L[𝕜] X := ∑ i ∈ Finset.range n, (b.coord i).smulRight (b i)
 
 /-- The canonical projection at 0 is the zero map. -/
 @[simp]
@@ -106,11 +111,11 @@ theorem proj_zero : b.proj 0 = 0 := by
 
 /-- The action of the canonical projection on a vector x. -/
 @[simp]
-theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.coord i x • e i := by
+theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.coord i x • b i := by
   simp only [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
 
 /-- The action of the canonical projection on a basis element e i. -/
-theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else 0 := by
+theorem proj_basis_element (n i : ℕ) : b.proj n (b i) = if i < n then b i else 0 := by
   rw [proj_apply]
   by_cases hin : i < n
   · rw [Finset.sum_eq_single_of_mem i (Finset.mem_range.mpr hin)]
@@ -124,7 +129,7 @@ theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else
 
 /-- The range of the canonical projection is the span of the first n basis elements. -/
 theorem range_proj (n : ℕ) : LinearMap.range (b.proj n).toLinearMap =
-    Submodule.span 𝕜 (Set.range (fun i : Fin n => e i)) := by
+    Submodule.span 𝕜 (Set.range (fun i : Fin n => b i)) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
     rw [ContinuousLinearMap.coe_coe, proj_apply b]
@@ -135,7 +140,7 @@ theorem range_proj (n : ℕ) : LinearMap.range (b.proj n).toLinearMap =
     exact ⟨⟨i, Finset.mem_range.mp hi⟩, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩
-    use e i
+    use b i
     rw [ContinuousLinearMap.coe_coe, proj_basis_element , if_pos i.is_lt]
 
 /-- The dimension of the range of the canonical projection `P n` is `n`. -/
@@ -148,14 +153,14 @@ theorem dim_range_proj (n : ℕ) :
 /-- The canonical projections converge pointwise to the identity map. -/
 theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) := by
   simp only [proj_apply]
-  have := b.basis_expansion x
+  have := b.expansion x
   rw [HasSum, SummationFilter.conditional_filter_eq_map_range] at this
   exact this
 
 /-- Composition of canonical projections: `proj n (proj m x) = proj (min n m) x`. -/
 theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m) x := by
   simp only [proj_apply, map_sum, map_smul]
-  have h_ortho : ∀ i j, (b.coord i) (e j) = if i = j then 1 else 0 := by
+  have h_ortho : ∀ i j, (b.coord i) (b j) = if i = j then 1 else 0 := by
     intro i j
     rw [b.ortho i j, Pi.single_apply]
   simp_rw [h_ortho]
@@ -287,7 +292,7 @@ def basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} {e : ℕ → X} 
     (hcomp : ∀ n m, ∀ x : X, P n (P m x) = P (min n m) x)
     (hlim : ∀ x, Tendsto (fun n ↦ P n x) atTop (𝓝 x))
     (he_in_range : ∀ n, e n ∈ LinearMap.range (Q P n).toLinearMap) (he_ne : ∀ n, e n ≠ 0) :
-    SchauderBasis 𝕜 e :=
+    SchauderBasis 𝕜 X :=
   let Q := Q P
   have hrankQ := Q_rank_one h0 hdim hcomp
   have h_range_eq_span (n : ℕ) : LinearMap.range (Q n).toLinearMap = Submodule.span 𝕜 {e n} := by
@@ -341,6 +346,6 @@ def basis_of_canonical_projections {P : ℕ → X →L[𝕜] X} {e : ℕ → X} 
     dsimp only [mkContinuous_apply, IsLinearMap.mk'_apply]
     simp_rw [← hQf, Q]
     simp only [← Q_sum P h0 n, ContinuousLinearMap.coe_sum', Finset.sum_apply]
-  SchauderBasis.mk f ortho lim
+  SchauderBasis.mk e f ortho lim
 
 end SchauderBasis
