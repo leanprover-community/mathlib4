@@ -220,6 +220,8 @@ lemma transcendental_X : Transcendental K (X : RatFunc K) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
   exact Polynomial.transcendental_X K
 
+instance transcendental : Algebra.Transcendental K (RatFunc K) := ⟨X, transcendental_X⟩
+
 end Algebra
 
 end RatFunc
