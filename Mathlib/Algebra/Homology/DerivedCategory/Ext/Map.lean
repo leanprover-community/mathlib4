@@ -155,7 +155,7 @@ lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCateg
     comm₁₂ := (NatTrans.naturality _ S.f).symm
     comm₂₃ := (NatTrans.naturality _ S.g).symm }
   change _ ≫ triangleOfSESδ h1 ≫ (shiftFunctor (DerivedCategory D) 1).map (Q.map f.τ₁) = _
-  rw [triangleOfSESδ_hom h1 h2 f]
+  rw [triangleOfSESδ_naturality h1 h2 f]
   change Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).inv ≫
     Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).hom ≫ _ = _
   rw [← Category.assoc, ← Q.map_comp]
