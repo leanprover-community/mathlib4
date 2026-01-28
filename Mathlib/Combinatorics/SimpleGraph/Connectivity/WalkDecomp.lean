@@ -237,6 +237,15 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
+lemma length_dropUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huv : u ≠ v) :
+    (p.dropUntil u h).length < p.length := by
+  cases p with
+  | nil => simp [huv] at h
+  | cons =>
+    simp only [support_cons, List.mem_cons, huv, false_or] at h
+    simpa [dropUntil, huv.symm] using Nat.lt_succ_of_le <| length_le_of_isSubwalk
+      <| isSubwalk_dropUntil _ h
+
 lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by

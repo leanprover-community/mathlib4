@@ -529,6 +529,16 @@ lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
+lemma take_of_length_le {u v n} {p : G.Walk u v} (h : p.length ≤ n) :
+    p.take n = p.copy rfl (p.getVert_of_length_le h).symm := by
+  induction n generalizing p u with
+  | zero => cases p <;> simp [take] at h ⊢
+  | succ n ih =>
+    cases p
+    · simp [take]
+    rw [length_cons, Nat.add_le_add_iff_right] at h
+    simp [take, ih h]
+
 @[simp]
 lemma penultimate_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).penultimate = v := by simp [concat_eq_append, getVert_append]
