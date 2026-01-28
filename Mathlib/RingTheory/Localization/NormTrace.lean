@@ -36,7 +36,7 @@ field norm, algebra norm, localization
 
 -/
 
-@[expose] public section
+public section
 
 open Module
 open scoped nonZeroDivisors

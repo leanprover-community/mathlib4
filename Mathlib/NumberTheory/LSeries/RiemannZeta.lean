@@ -209,7 +209,8 @@ lemma two_mul_riemannZeta_eq_tsum_int_inv_pow_of_even {k : ℕ} (hk : 2 ≤ k) (
     norm_cast
     simp [h0, zeta_eq_tsum_one_div_nat_add_one_cpow (s := k) (by simp [hkk]),
       tsum_pnat_eq_tsum_succ (f := fun n => ((n : ℂ) ^ k)⁻¹)]
-  · simp [Even.neg_pow hk2]
+  · intro n
+    simp [Even.neg_pow hk2]
   · exact (Summable.of_nat_of_neg (by simp [hkk]) (by simp [hkk])).of_norm
 
 /-- The residue of `ζ(s)` at `s = 1` is equal to 1. -/

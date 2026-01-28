@@ -222,9 +222,6 @@ theorem lmarginal_update_of_notMem {i : δ}
     have hii' : i ≠ i' := mt (by rintro rfl; exact mem_insert_self i s) hi
     simp_rw [update_comm hii', ih (mt Finset.mem_insert_of_mem hi)]
 
-@[deprecated (since := "2025-05-23")]
-alias lmarginal_update_of_not_mem := lmarginal_update_of_notMem
-
 theorem lmarginal_eq_of_subset {f g : (∀ i, X i) → ℝ≥0∞} (hst : s ⊆ t)
     (hf : Measurable f) (hg : Measurable g) (hfg : ∫⋯∫⁻_s, f ∂μ = ∫⋯∫⁻_s, g ∂μ) :
     ∫⋯∫⁻_t, f ∂μ = ∫⋯∫⁻_t, g ∂μ := by

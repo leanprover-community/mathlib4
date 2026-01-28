@@ -23,7 +23,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * subtraction of two functions
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Asymptotics ContinuousLinearMap
@@ -43,7 +43,8 @@ variable {L : Filter E}
 
 section ConstSMul
 
-variable {R : Type*} [Semiring R] [Module R F] [SMulCommClass 𝕜 R F] [ContinuousConstSMul R F]
+variable {R : Type*} [Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]
+  [ContinuousConstSMul R F]
 
 /-! ### Derivative of a function multiplied by a constant -/
 
@@ -109,24 +110,11 @@ theorem fderivWithin_const_smul_of_invertible (c : R) [Invertible c]
     fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
   by_cases h : DifferentiableWithinAt 𝕜 f s x
   · exact (h.hasFDerivWithinAt.const_smul c).fderivWithin hs
-  · obtain (rfl | hc) := eq_or_ne c 0
-    · simp
-    have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
+  · have : ¬DifferentiableWithinAt 𝕜 (c • f) s x := by
       contrapose! h
       exact (differentiableWithinAt_smul_iff c).mp h
     simp [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt this]
-
-/-- Special case of `fderivWithin_const_smul_of_invertible` over a field: any constant is allowed -/
-lemma fderivWithin_const_smul_of_field (c : 𝕜) (hs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
-  obtain (rfl | ha) := eq_or_ne c 0
-  · simp
-  · have : Invertible c := invertibleOfNonzero ha
-    ext x
-    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
-
-@[deprecated (since := "2025-06-14")] alias fderivWithin_const_smul' := fderivWithin_const_smul
 
 theorem fderiv_fun_const_smul (h : DifferentiableAt 𝕜 f x) (c : R) :
     fderiv 𝕜 (fun y => c • f y) x = c • fderiv 𝕜 f x :=
@@ -147,15 +135,42 @@ theorem fderiv_const_smul_of_invertible (c : R) [Invertible c] :
     fderiv 𝕜 (c • f) x = c • fderiv 𝕜 f x := by
   simp [← fderivWithin_univ, fderivWithin_const_smul_of_invertible c uniqueDiffWithinAt_univ]
 
-/-- Special case of `fderiv_const_smul_of_invertible` over a field: any constant is allowed -/
-lemma fderiv_const_smul_of_field (c : 𝕜) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
+end ConstSMul
+
+section ConstSMulDivisionRing
+
+variable {R : Type*} [DivisionSemiring R] [Module R F] [SMulCommClass 𝕜 R F]
+  [ContinuousConstSMul R F]
+
+/-- Special case of `fderivWithin_const_smul_of_invertible` over a division semiring: any constant
+is allowed.
+
+TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
+typeclass. -/
+lemma fderivWithin_const_smul_field (c : R) (hs : UniqueDiffWithinAt 𝕜 s x) :
+    fderivWithin 𝕜 (c • f) s x = c • fderivWithin 𝕜 f s x := by
+  obtain (rfl | ha) := eq_or_ne c 0
+  · simp
+  · have : Invertible c := invertibleOfNonzero ha
+    ext x
+    simp [fderivWithin_const_smul_of_invertible c (f := f) hs]
+
+@[deprecated (since := "2026-01-11")] alias fderivWithin_const_smul_of_field :=
+  fderivWithin_const_smul_field
+
+/-- Special case of `fderiv_const_smul_of_invertible` over a division semiring: any constant is
+allowed.
+
+TODO: This would work for scalars in a `GroupWithZero` if we had a `DistribMulActionWithZero`
+typeclass. -/
+lemma fderiv_const_smul_field (c : R) : fderiv 𝕜 (c • f) = c • fderiv 𝕜 f := by
   simp_rw [← fderivWithin_univ]
   ext x
-  simp [fderivWithin_const_smul_of_field c uniqueDiffWithinAt_univ]
+  simp [fderivWithin_const_smul_field c uniqueDiffWithinAt_univ]
 
-@[deprecated (since := "2025-06-14")] alias fderiv_const_smul' := fderiv_const_smul
+@[deprecated (since := "2026-01-11")] alias fderiv_const_smul_of_field := fderiv_const_smul_field
 
-end ConstSMul
+end ConstSMulDivisionRing
 
 section Add
 
@@ -213,8 +228,6 @@ theorem fderivWithin_fun_add (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Different
     fderivWithin 𝕜 (fun y => f y + g y) s x = fderivWithin 𝕜 f s x + fderivWithin 𝕜 g s x :=
   fderivWithin_add hxs hf hg
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_add' := fderivWithin_add
-
 -- TODO: `@[to_fun]` gives incorrect lemma name
 theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (f + g) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
@@ -223,8 +236,6 @@ theorem fderiv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 
 theorem fderiv_fun_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y + g y) x = fderiv 𝕜 f x + fderiv 𝕜 g x :=
   fderiv_add hf hg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_add' := fderiv_add
 
 @[simp]
 theorem hasFDerivAtFilter_add_const_iff (c : F) :
@@ -570,8 +581,6 @@ theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
     fderivWithin 𝕜 (-f) s x = -fderivWithin 𝕜 f s x :=
   fderivWithin_fun_neg hxs
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_neg' := fderivWithin_neg
-
 @[simp]
 theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
   simp only [← fderivWithin_univ, fderivWithin_fun_neg uniqueDiffWithinAt_univ]
@@ -579,8 +588,6 @@ theorem fderiv_fun_neg : fderiv 𝕜 (fun y => -f y) x = -fderiv 𝕜 f x := by
 /-- Version of `fderiv_neg` where the function is written `-f` instead of `fun y ↦ - f y`. -/
 theorem fderiv_neg : fderiv 𝕜 (-f) x = -fderiv 𝕜 f x :=
   fderiv_fun_neg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_neg' := fderiv_neg
 
 end Neg
 
@@ -700,8 +707,6 @@ theorem fderivWithin_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (hf : Differentiabl
     fderivWithin 𝕜 (f - g) s x = fderivWithin 𝕜 f s x - fderivWithin 𝕜 g s x :=
   fderivWithin_fun_sub hxs hf hg
 
-@[deprecated (since := "2025-06-14")] alias fderivWithin_sub' := fderivWithin_sub
-
 theorem fderiv_fun_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (fun y => f y - g y) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   (hf.hasFDerivAt.sub hg.hasFDerivAt).fderiv
@@ -709,8 +714,6 @@ theorem fderiv_fun_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt �
 theorem fderiv_sub (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g x) :
     fderiv 𝕜 (f - g) x = fderiv 𝕜 f x - fderiv 𝕜 g x :=
   fderiv_fun_sub hf hg
-
-@[deprecated (since := "2025-06-14")] alias fderiv_sub' := fderiv_sub
 
 @[simp]
 theorem hasFDerivAtFilter_sub_const_iff (c : F) :

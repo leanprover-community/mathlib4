@@ -7,7 +7,9 @@ module
 
 public meta import Lean.Elab.Command
 public meta import Lean.Elab.ParseImportsFast
-public meta import Mathlib.Tactic.Linter.DirectoryDependency
+public meta import Init
+public import Lean.Parser.Module
+public import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 # The "header" linter
@@ -323,7 +325,7 @@ partial def collectAtoms (s : Syntax) : Array String :=
     (s.getArgs.map collectAtoms).flatten
 
 /-- Extracts the module name and modifiers from an import syntax node.
-Returns (module_id, isPublic, isMeta, isAll) -/
+Returns `(module_id, isPublic, isMeta, isAll)`. -/
 def importInfo (importStx : Syntax) : Option (Syntax × Bool × Bool × Bool) := do
   guard (importStx.isOfKind `Lean.Parser.Module.import)
   let args := importStx.getArgs
@@ -349,6 +351,13 @@ def duplicateImportsCheck (imports : Array Syntax)  : CommandElabM Unit := do
       else
         importsSoFar := importsSoFar.push info
 
+/--
+The set of files outside the `Mathlib` package to run the header style linter on,
+because they are files that test the linter.
+-/
+def headerTestFiles : NameSet := .ofList
+  [`MathlibTest.Header, `MathlibTest.HeaderFail, `MathlibTest.VersoHeader, `MathlibTest.DirectoryDependencyLinter.Test]
+
 @[inherit_doc Mathlib.Linter.linter.style.header]
 def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mainModule ← getMainModule
@@ -362,8 +371,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return val
   -- The linter skips files not imported in `Mathlib.lean`, to avoid linting "scratch files".
   -- It is however active in the test files for the linter itself.
-  unless inMathlib? ||
-    mainModule == `MathlibTest.Header || mainModule == `MathlibTest.DirectoryDependencyLinter.Test do return
+  unless inMathlib? || headerTestFiles.contains mainModule do return
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
@@ -372,11 +380,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Since that file is imports-only, we can simply skip linting it.
   if mainModule == `Mathlib then return
   let fm ← getFileMap
-  let md := (getMainModuleDoc (← getEnv)).toArray
+  let mdDocs := (getMainModuleDoc (← getEnv)).toArray
+  let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
   -- The end of the first module doc-string, or the end of the file if there is none.
-  let firstDocModPos := match md[0]? with
-                          | none     => fm.positions.back!
-                          | some doc => fm.ofPosition doc.declarationRange.endPos
+  -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
+  -- so we get the end pos for both types of docstrings and take their minimum as the first.
+  let firstMDDocModPos := match mdDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstVersoDocModPos := match versoDocs[0]? with
+  | none     => fm.positions.back!
+  | some doc => fm.ofPosition doc.declarationRange.endPos
+  let firstDocModPos := min firstMDDocModPos firstVersoDocModPos
   unless stx.getTailPos?.getD default ≤ firstDocModPos do
     return
   -- We try to parse the file up to `firstDocModPos`.

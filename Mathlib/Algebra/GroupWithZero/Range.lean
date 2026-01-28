@@ -75,7 +75,7 @@ variable [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
 /-- For a morphism of monoids with zero `f`, this is a smallest submonoid of the invertible
 elements in the codomain containing the range of `f`. -/
 def valueMonoid : Submonoid Bˣ where
-  carrier := (↑)⁻¹' (range f)
+  carrier := (↑) ⁻¹' (range f)
   mul_mem' hb hb' := by
     obtain ⟨y, hy⟩ := hb
     obtain ⟨y', hy'⟩ := hb'
@@ -192,12 +192,3 @@ instance : CommGroupWithZero (ValueGroup₀ f) where
 end CommGroupWithZero
 
 end MonoidWithZeroHom
-
-namespace MonoidHomWithZero
-
-@[deprecated (since := "2025-07-02")] alias valueMonoid := MonoidWithZeroHom.valueMonoid
-@[deprecated (since := "2025-07-02")] alias valueGroup := MonoidWithZeroHom.valueGroup
-@[deprecated (since := "2025-07-02")] alias valueMonoid₀ := MonoidWithZeroHom.ValueMonoid₀
-@[deprecated (since := "2025-07-02")] alias valueGroup₀ := MonoidWithZeroHom.ValueGroup₀
-
-end MonoidHomWithZero

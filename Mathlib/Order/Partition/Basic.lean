@@ -50,8 +50,6 @@ structure Partition [CompleteLattice α] (s : α) where
 
 namespace Partition
 
-@[deprecated (since := "2025-05-23")] alias bot_not_mem' := bot_notMem'
-
 section Basic
 
 variable [CompleteLattice α] {P : Partition s}
@@ -99,8 +97,6 @@ lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty 
 @[simp]
 lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=
   P.bot_notMem'
-
-@[deprecated (since := "2025-05-23")] alias bot_not_mem := bot_notMem
 
 lemma ne_bot_of_mem (hx : x ∈ P) : x ≠ ⊥ :=
   fun h ↦ P.bot_notMem <| h ▸ hx

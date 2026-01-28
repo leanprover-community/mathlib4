@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Util.AssertExists
 
 /-! # getD and getI
 
@@ -122,8 +121,12 @@ theorem getI_append_right (l l' : List α) (n : ℕ) (h : l.length ≤ n) :
     (l ++ l').getI n = l'.getI (n - l.length) :=
   getD_append_right _ _ _ _ h
 
-theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.iget := by
-  rw [← getD_default_eq_getI, getD_eq_getElem?_getD, Option.getD_default_eq_iget]
+theorem getI_eq_getElem?_getD (n : ℕ) : l.getI n = (l[n]?).getD default := by
+  rw [← getD_default_eq_getI, getD_eq_getElem?_getD]
+
+@[deprecated getI_eq_getElem?_getD (since := "2026-01-05")]
+theorem getI_eq_iget_getElem? (n : ℕ) : l.getI n = l[n]?.getD default :=
+  getI_eq_getElem?_getD (l := l) n
 
 theorem getI_zero_eq_headI : l.getI 0 = l.headI := by cases l <;> rfl
 

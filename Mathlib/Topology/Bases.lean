@@ -761,8 +761,6 @@ instance encodableCountableBasis [SecondCountableTopology α] : Encodable (count
 theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
 
-@[deprecated (since := "2025-05-24")] alias empty_nmem_countableBasis := empty_notMem_countableBasis
-
 theorem isBasis_countableBasis [SecondCountableTopology α] :
     IsTopologicalBasis (countableBasis α) :=
   (exists_countable_basis α).choose_spec.2.2

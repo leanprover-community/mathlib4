@@ -8,6 +8,7 @@ module
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+
 /-!
 
 # Quadratic Algebra
@@ -455,9 +456,9 @@ instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
     Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
-  algebraMap.map_mul' x y:= by ext <;> simp
+  algebraMap.map_mul' x y := by ext <;> simp
   algebraMap.map_zero' := by ext <;> simp
-  algebraMap.map_add' x y:= by ext <;> simp
+  algebraMap.map_add' x y := by ext <;> simp
   commutes' s z := by ext <;> simp [Algebra.commutes]
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
@@ -477,9 +478,9 @@ theorem algebraMap_re : (algebraMap R (QuadraticAlgebra R a b) r).re = r := rfl
 @[simp]
 theorem algebraMap_im : (algebraMap R (QuadraticAlgebra R a b) r).im = 0 := rfl
 
-instance [Zero S] [SMulWithZero S R] [NoZeroSMulDivisors S R] :
-    NoZeroSMulDivisors S (QuadraticAlgebra R a b) :=
-  ⟨by simp [QuadraticAlgebra.ext_iff, or_and_left]⟩
+instance [Semiring S] [Module S R] [Module.IsTorsionFree S R] :
+    Module.IsTorsionFree S (QuadraticAlgebra R a b) :=
+  (linearEquivTuple ..).injective.moduleIsTorsionFree _ (by simp)
 
 @[simp]
 theorem C_pow (n : ℕ) (r : R) : (.C (r ^ n : R) : QuadraticAlgebra R a b) = (.C r) ^ n :=

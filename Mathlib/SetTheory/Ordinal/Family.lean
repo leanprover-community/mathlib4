@@ -270,9 +270,6 @@ theorem IsNormal.apply_of_isSuccLimit {f : Ordinal.{u} → Ordinal.{v}} (H : Ord
     {o : Ordinal} (ho : IsSuccLimit o) : f o = ⨆ a : Iio o, f a :=
   Order.IsNormal.apply_of_isSuccLimit H ho
 
-@[deprecated (since := "2025-07-08")]
-alias IsNormal.apply_of_isLimit := Order.IsNormal.apply_of_isSuccLimit
-
 theorem sSup_ord (s : Set Cardinal) : (sSup s).ord = sSup (ord '' s) := by
   obtain rfl | hn := s.eq_empty_or_nonempty
   · simp
@@ -557,8 +554,6 @@ theorem lsub_sum {α : Type u} {β : Type v} (f : α ⊕ β → Ordinal) :
 theorem lsub_notMem_range {ι} (f : ι → Ordinal) :
     lsub f ∉ Set.range f := fun ⟨i, h⟩ =>
   h.not_lt (lt_lsub f i)
-
-@[deprecated (since := "2025-05-23")] alias lsub_not_mem_range := lsub_notMem_range
 
 theorem nonempty_compl_range {ι : Type u} (f : ι → Ordinal.{max u v}) : (Set.range f)ᶜ.Nonempty :=
   ⟨_, lsub_notMem_range f⟩

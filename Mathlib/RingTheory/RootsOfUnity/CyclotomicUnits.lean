@@ -31,7 +31,7 @@ Often, `Associated a b` is everything one needs, and it is more convenient to us
 other version for completeness.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial Finset Nat
 

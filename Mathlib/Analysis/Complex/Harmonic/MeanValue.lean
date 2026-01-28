@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Complex.MeanValue
 # The Mean Value Property of Harmonic Functions on the Complex Plane
 -/
 
-@[expose] public section
+public section
 
 open InnerProductSpace Metric Real
 

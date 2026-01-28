@@ -17,7 +17,7 @@ convex spaces.
 
 -/
 
-@[expose] public section
+public section
 
 
 open Finset Metric

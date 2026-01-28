@@ -19,7 +19,7 @@ stronger statements: one may find a separating hyperplane, instead of merely a c
 complement is convex.
 -/
 
-@[expose] public section
+public section
 
 
 open Set

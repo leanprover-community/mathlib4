@@ -37,11 +37,6 @@ lemma mulSupport_eq_preimage (f : ι → M) : mulSupport f = f ⁻¹' {1}ᶜ := 
 @[to_additive]
 lemma notMem_mulSupport : x ∉ mulSupport f ↔ f x = 1 := not_not
 
-@[deprecated (since := "2025-05-24")] alias nmem_support := notMem_support
-
-@[to_additive existing, deprecated (since := "2025-05-24")]
-alias nmem_mulSupport := notMem_mulSupport
-
 @[to_additive]
 lemma compl_mulSupport : (mulSupport f)ᶜ = {x | f x = 1} := ext fun _ ↦ notMem_mulSupport
 
@@ -115,6 +110,10 @@ lemma mulSupport_eq_empty_iff : mulSupport f = ∅ ↔ f = 1 := by
 @[to_additive (attr := simp)]
 lemma mulSupport_nonempty_iff : (mulSupport f).Nonempty ↔ f ≠ 1 := by
   rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
+
+@[to_additive]
+theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulSupport f = ∅ :=
+  mulSupport_eq_empty_iff.mpr <| Subsingleton.elim f 1
 
 @[to_additive]
 lemma range_subset_insert_image_mulSupport (f : ι → M) :
