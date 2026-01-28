@@ -17,7 +17,7 @@ Given a measure `P : Measure[mΩ₀] Ω` and a sub-σ-algebra `mΩ` of `mΩ₀` 
 and a function `X : Ω → ℝ≥0∞`, if `P.trim hm` is σ-finite, then the conditional (Lebesgue)
 expectation `P⁻[X|mΩ]` of `X` is the `mΩ`-measurable function such that for all
 `mΩ`-measurable sets `s`, `∫⁻ ω in s, P⁻[X|mΩ] ω ∂P = ∫⁻ ω in s, X ω ∂P`
-(see `setLIntegral_condLExp`). This is unique up to `P`-ae equality (see `eq_condLExp`).
+(see `setLIntegral_condLExp`). This is unique up to `P`-ae equality (see `ae_eq_condLExp`).
 
 ## Main definitions
 
