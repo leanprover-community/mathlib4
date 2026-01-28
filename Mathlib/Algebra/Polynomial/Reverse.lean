@@ -123,7 +123,6 @@ theorem reflect_C_mul (f : R[X]) (r : R) (N : ℕ) : reflect N (C r * f) = C r *
   simp only [coeff_reflect, coeff_C_mul]
 
 theorem reflect_C_mul_X_pow (N n : ℕ) {c : R} : reflect N (C c * X ^ n) = C c * X ^ revAt N n := by
-  ext
   grind
 
 @[simp]
