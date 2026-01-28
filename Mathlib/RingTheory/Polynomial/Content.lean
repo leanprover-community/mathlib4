@@ -142,14 +142,26 @@ theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
 @[simp]
 theorem content_X : content (X : R[X]) = 1 := by rw [← mul_one X, content_X_mul, content_one]
 
-theorem content_C_mul (r : R) (p : R[X]) : (C r * p).content = normalize r * p.content := by
+theorem content_C_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] (r : R) (p : R[X]) :
+    (C r * p).content = normalize r * p.content := by
   by_cases h0 : r = 0; · simp [h0]
-  rw [content]; rw [content]; rw [← Finset.gcd_mul_left]
+  rw [content, content, ← Finset.gcd_mul_left]
   refine congr (congr rfl ?_) ?_ <;> ext <;> simp [h0, mem_support_iff]
+
+theorem associated_content_C_mul (r : R) (p : R[X]) :
+    Associated (C r * p).content (r * p.content) := by
+  by_cases h0 : r = 0; · simp [h0]
+  refine .trans (.of_eq ?_) (Finset.gcd_mul_left' _ _ _)
+  rw [content]; refine congr (congr rfl ?_) ?_ <;> ext <;> simp [h0, mem_support_iff]
+
+-- `simp`-normal form is `normUnit_content`
+theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
+  Finset.normalize_gcd
 
 @[simp]
 theorem content_monomial {r : R} {k : ℕ} : content (monomial k r) = normalize r := by
-  rw [← C_mul_X_pow_eq_monomial, content_C_mul, content_X_pow, mul_one]
+  rw [← C_mul_X_pow_eq_monomial, ← normalize_content, normalize_eq_normalize_iff_associated]
+  grw [associated_content_C_mul, content_X_pow, mul_one]
 
 theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
   rw [content, Finset.gcd_eq_zero_iff]
@@ -162,10 +174,6 @@ theorem content_eq_zero_iff {p : R[X]} : content p = 0 ↔ p = 0 := by
       simp [h0]
   · intro x
     simp [h]
-
--- `simp`-normal form is `normUnit_content`
-theorem normalize_content {p : R[X]} : normalize p.content = p.content :=
-  Finset.normalize_gcd
 
 @[simp]
 theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
@@ -193,7 +201,7 @@ theorem content_eq_gcd_range_succ (p : R[X]) :
   content_eq_gcd_range_of_lt _ _ (Nat.lt_succ_self _)
 
 theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
-    p.content = GCDMonoid.gcd p.leadingCoeff (eraseLead p).content := by
+    p.content = gcd p.leadingCoeff (eraseLead p).content := by
   by_cases h : p = 0
   · simp [h]
   rw [← leadingCoeff_eq_zero, leadingCoeff, ← Ne, ← mem_support_iff] at h
@@ -243,9 +251,10 @@ theorem primPart_zero : primPart (0 : R[X]) = 1 :=
 theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
   by_cases h : p = 0; · simp [h]
   rw [← content_eq_zero_iff] at h
-  rw [isPrimitive_iff_content_eq_one]
-  apply mul_left_cancel₀ h
-  conv_rhs => rw [p.eq_C_content_mul_primPart, mul_one, content_C_mul, normalize_content]
+  rw [isPrimitive_iff_content_eq_one, ← normalize_content, normalize_eq_one]
+  refine isUnit_of_associated_mul (.symm ?_) h
+  conv_lhs => rw [p.eq_C_content_mul_primPart]
+  apply associated_content_C_mul
 
 theorem content_primPart (p : R[X]) : p.primPart.content = 1 :=
   p.isPrimitive_primPart.content_eq_one
@@ -301,7 +310,7 @@ theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : 
 end PrimPart
 
 theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
-    GCDMonoid.gcd a p.content = GCDMonoid.gcd a q.content := by
+    gcd a p.content = gcd a q.content := by
   rw [content_eq_gcd_range_of_lt p (max p.natDegree q.natDegree).succ
       (lt_of_le_of_lt (le_max_left _ _) (Nat.lt_succ_self _))]
   rw [content_eq_gcd_range_of_lt q (max p.natDegree q.natDegree).succ
@@ -313,8 +322,8 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
   rw [← coeff_sub, hw, coeff_C_mul]
 
 theorem content_mul_aux {p q : R[X]} :
-    GCDMonoid.gcd (p * q).eraseLead.content p.leadingCoeff =
-      GCDMonoid.gcd (p.eraseLead * q).content p.leadingCoeff := by
+    gcd (p * q).eraseLead.content p.leadingCoeff =
+      gcd (p.eraseLead * q).content p.leadingCoeff := by
   rw [gcd_comm (content _) _, gcd_comm (content _) _]
   apply gcd_content_eq_of_dvd_sub
   rw [← self_sub_C_mul_X_pow, ← self_sub_C_mul_X_pow, sub_mul, sub_sub, add_comm, sub_add,
@@ -322,11 +331,13 @@ theorem content_mul_aux {p q : R[X]} :
   apply dvd_sub (Dvd.intro _ rfl) (Dvd.intro _ rfl)
 
 @[simp]
-theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
+theorem associated_content_mul (p q : R[X]) :
+    Associated ((p * q).content) (p.content * q.content) := by
+  rw [Associated] -- to remove
   nontriviality R
   classical
-    suffices h :
-        ∀ (n : ℕ) (p q : R[X]), (p * q).degree < n → (p * q).content = p.content * q.content by
+    suffices h : ∀ (n : ℕ) (p q : R[X]),
+        (p * q).degree < n → Associated ((p * q).content) (p.content * q.content) by
       apply h
       apply lt_of_le_of_lt degree_le_natDegree (WithBot.coe_lt_coe.2 (Nat.lt_succ_self _))
     intro n p q hpq
@@ -349,15 +360,16 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       ← degree_eq_natDegree q.primPart_ne_zero] at heq
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     suffices h : (q.primPart * p.primPart).content = 1 by
-      rw [mul_assoc, content_C_mul, content_C_mul, mul_comm p.primPart, mul_assoc, content_C_mul,
-        content_C_mul, h, mul_one, content_primPart, content_primPart, mul_one, mul_one]
+      grw [mul_assoc, associated_content_C_mul, associated_content_C_mul, mul_comm p.primPart,
+        mul_assoc, associated_content_C_mul, associated_content_C_mul, h, mul_one,
+        content_primPart, content_primPart, mul_one, mul_one]
     rw [← normalize_content, normalize_eq_one, isUnit_iff_dvd_one,
       content_eq_gcd_leadingCoeff_content_eraseLead, leadingCoeff_mul, gcd_comm]
     apply (gcd_mul_dvd_mul_gcd _ _ _).trans
-    rw [content_mul_aux, ih, content_primPart, mul_one, gcd_comm, ←
+    rw [content_mul_aux, (ih ..).gcd_eq_left, content_primPart, mul_one, gcd_comm, ←
       content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart, one_mul,
-      mul_comm q.primPart, content_mul_aux, ih, content_primPart, mul_one, gcd_comm, ←
-      content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart]
+      mul_comm q.primPart, content_mul_aux, (ih ..).gcd_eq_left, content_primPart, mul_one,
+      gcd_comm, ← content_eq_gcd_leadingCoeff_content_eraseLead, content_primPart]
     · rw [← heq, degree_mul, WithBot.add_lt_add_iff_right]
       · apply degree_erase_lt p.primPart_ne_zero
       · rw [Ne, degree_eq_bot]
@@ -367,12 +379,28 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
       · rw [Ne, degree_eq_bot]
         apply p.primPart_ne_zero
 
+@[simp]
+theorem content_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} :
+    (p * q).content = p.content * q.content :=
+  (associated_content_mul ..).eq_of_normalized normalize_content <| by simp [normalize_content]
+
 theorem IsPrimitive.mul {p q : R[X]} (hp : p.IsPrimitive) (hq : q.IsPrimitive) :
     (p * q).IsPrimitive := by
-  rw [isPrimitive_iff_content_eq_one, content_mul, hp.content_eq_one, hq.content_eq_one, mul_one]
+  rw [isPrimitive_iff_content_eq_one, ← normalize_content, normalize_eq_one]
+  refine (associated_content_mul p q).symm.isUnit ?_
+  simp_rw [hp.content_eq_one, hq.content_eq_one, mul_one, isUnit_one]
+
+theorem associated_primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
+    Associated (p * q).primPart (p.primPart * q.primPart) := by
+  rw [Ne, ← content_eq_zero_iff, ← C_eq_zero] at h0
+  refine .of_mul_left ?_ .rfl h0
+  conv_lhs => rw [← (p * q).eq_C_content_mul_primPart,
+    p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart, mul_mul_mul_comm, ← C_mul]
+  gcongr
+  exact (associated_content_mul ..).symm.map _
 
 @[simp]
-theorem primPart_mul {p q : R[X]} (h0 : p * q ≠ 0) :
+theorem primPart_mul {R} [CommRing R] [StrongNormalizedGCDMonoid R] {p q : R[X]} (h0 : p * q ≠ 0) :
     (p * q).primPart = p.primPart * q.primPart := by
   rw [Ne, ← content_eq_zero_iff, ← C_eq_zero] at h0
   apply mul_left_cancel₀ h0
@@ -386,8 +414,7 @@ theorem IsPrimitive.dvd_primPart_iff_dvd {p q : R[X]} (hp : p.IsPrimitive) (hq :
     p ∣ q.primPart ↔ p ∣ q := by
   refine ⟨fun h => h.trans (Dvd.intro_left _ q.eq_C_content_mul_primPart.symm), fun h => ?_⟩
   rcases h with ⟨r, rfl⟩
-  apply Dvd.intro _
-  rw [primPart_mul hq, hp.primPart_eq]
+  exact .trans (by simp [hp.primPart_eq]) (associated_primPart_mul hq).symm.dvd
 
 theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (hq : q.IsPrimitive) :
     ∃ r : R[X], r.IsPrimitive ∧ ∀ s : R[X], p ∣ s ∧ q ∣ s ↔ r ∣ s := by
@@ -428,38 +455,45 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     have hC0 := rprim.ne_zero
     rw [Ne, ← leadingCoeff_eq_zero, ← C_eq_zero] at hC0
     rw [sub_add_cancel, ← rprim.dvd_primPart_iff_dvd (mul_ne_zero hC0 s0)] at h
-    rcases isUnit_primPart_C r.leadingCoeff with ⟨u, hu⟩
-    apply h.trans (Associated.symm ⟨u, _⟩).dvd
-    rw [primPart_mul (mul_ne_zero hC0 s0), hu, mul_comm]
+    refine h.trans (Associated.dvd ?_)
+    grw [associated_primPart_mul (mul_ne_zero hC0 s0)]
+    exact associated_unit_mul_left _ _ (isUnit_primPart_C _)
 
 theorem dvd_iff_content_dvd_content_and_primPart_dvd_primPart {p q : R[X]} (hq : q ≠ 0) :
     p ∣ q ↔ p.content ∣ q.content ∧ p.primPart ∣ q.primPart := by
   constructor
   · rintro ⟨r, rfl⟩
-    rw [content_mul, p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
+    rw [(associated_content_mul ..).dvd_iff_dvd_right,
+      p.isPrimitive_primPart.dvd_primPart_iff_dvd hq]
     exact ⟨dvd_mul_right .., dvd_mul_of_dvd_left p.primPart_dvd _⟩
   · rintro ⟨h₁, h₂⟩
     rw [p.eq_C_content_mul_primPart, q.eq_C_content_mul_primPart]
     gcongr
 
-noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
+-- TODO: make this private
+lemma exists_lcm {R} [CommRing R] [IsGCDMonoid R] (p q : R[X]) :
+    ∃ c, ∀ (d : R[X]), p ∣ d ∧ q ∣ d ↔ c ∣ d := by
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
+  rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
+      q.isPrimitive_primPart with
+    ⟨r, rprim, hr⟩
+  refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
+  by_cases hs : s = 0
+  · simp [hs]
+  by_cases hpq : C (lcm p.content q.content) = 0
+  · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
+    rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
+  iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
+  nontriviality R
+  rw [(associated_content_mul ..).dvd_iff_dvd_left, rprim.content_eq_one, mul_one, content_C,
+    (associated_primPart_mul (mul_ne_zero hpq rprim.ne_zero)).dvd_iff_dvd_left, rprim.primPart_eq,
+    normalize_lcm, lcm_dvd_iff,
+    (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
+  tauto
+
+noncomputable instance normalizedGcdMonoid : NormalizedGCDMonoid R[X] :=
   letI := Classical.decEq R
-  normalizedGCDMonoidOfExistsLCM fun p q => by
-    rcases exists_primitive_lcm_of_isPrimitive p.isPrimitive_primPart
-        q.isPrimitive_primPart with
-      ⟨r, rprim, hr⟩
-    refine ⟨C (lcm p.content q.content) * r, fun s => ?_⟩
-    by_cases hs : s = 0
-    · simp [hs]
-    by_cases hpq : C (lcm p.content q.content) = 0
-    · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
-      rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
-    iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
-    nontriviality R
-    rw [content_mul, rprim.content_eq_one, mul_one, content_C, normalize_lcm, lcm_dvd_iff,
-      primPart_mul (mul_ne_zero hpq rprim.ne_zero), rprim.primPart_eq,
-      (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]
-    tauto
+  normalizedGCDMonoidOfExistsLCM exists_lcm
 
 theorem degree_gcd_le_left {p : R[X]} (hp : p ≠ 0) (q) : (gcd p q).degree ≤ p.degree := by
   have := natDegree_le_iff_degree_le.mp (natDegree_le_of_dvd (gcd_dvd_left p q) hp)
@@ -470,5 +504,15 @@ theorem degree_gcd_le_right (p) {q : R[X]} (hq : q ≠ 0) : (gcd p q).degree ≤
   exact degree_gcd_le_left hq p
 
 end NormalizedGCDMonoid
+
+noncomputable instance [StrongNormalizedGCDMonoid R] :
+    StrongNormalizedGCDMonoid R[X] where
+  __ := inferInstanceAs (NormalizedGCDMonoid R[X])
+  __ := inferInstanceAs (StrongNormalizationMonoid R[X])
+
+-- We do not add a `GCDMonoid R[X]` instance due to diamond
+instance [IsGCDMonoid R] : IsGCDMonoid R[X] := by
+  have := IsGCDMonoid.isCancelMulZero R
+  classical exact ⟨gcdMonoidOfExistsLCM exists_lcm⟩
 
 end Polynomial

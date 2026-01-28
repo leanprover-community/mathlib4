@@ -233,7 +233,7 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
   · apply h0 con
   · apply Units.ne_zero _ con
 
-variable [Nonempty (NormalizedGCDMonoid R)]
+variable [IsGCDMonoid R]
 
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
@@ -256,10 +256,9 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   obtain ⟨u, hu⟩ :
     Associated (c * d)
       (content (integerNormalization R⁰ a) * content (integerNormalization R⁰ b)) := by
-    rw [← dvd_dvd_iff_associated, ← normalize_eq_normalize_iff, normalize.map_mul,
-      normalize.map_mul, normalize_content, normalize_content, ←
-      mul_one (normalize c * normalize d), ← hp.content_eq_one, ← content_C, ← content_C, ←
-      content_mul, ← content_mul, ← content_mul, h1]
+    grw [← associated_content_mul, ← h1, associated_content_mul, ← C_mul, content_C,
+      hp.content_eq_one, mul_one]
+    apply associated_normalize
   rw [← map_mul, eq_comm, (integerNormalization R⁰ a).eq_C_content_mul_primPart,
     (integerNormalization R⁰ b).eq_C_content_mul_primPart, mul_assoc, mul_comm _ (C _ * _), ←
     mul_assoc, ← mul_assoc, ← map_mul, ← hu, map_mul, mul_assoc, mul_assoc, ←
@@ -289,7 +288,8 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
     rw [Polynomial.map_mul, Polynomial.map_mul, hs, hr, mul_assoc, mul_comm r]
     simp
   have := Classical.arbitrary (NormalizedGCDMonoid R)
-  rw [← hp.dvd_primPart_iff_dvd, primPart_mul, hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
+  grw [← hp.dvd_primPart_iff_dvd, (associated_primPart_mul ..).dvd_iff_dvd_right,
+    hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
   · exact h
   · symm
     rcases isUnit_primPart_C s with ⟨u, hu⟩
