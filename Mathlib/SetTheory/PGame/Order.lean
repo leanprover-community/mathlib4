@@ -48,7 +48,7 @@ universe u
 If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`.
 See `PGame.le_iff_sub_nonneg`. -/
 instance le : LE PGame :=
-  ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
+  ⟨Sym2.GameAdd.recursion wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
@@ -84,7 +84,7 @@ theorem le_iff_forall_lf {x y : PGame} :
     x ≤ y ↔ (∀ i, x.moveLeft i ⧏ y) ∧ ∀ j, x ⧏ y.moveRight j := by
   unfold LE.le le
   simp only
-  rw [Sym2.GameAdd.fix_eq]
+  rw [Sym2.GameAdd.recursion_eq]
   rfl
 
 /-- Definition of `x ≤ y` on pre-games built using the constructor. -/
