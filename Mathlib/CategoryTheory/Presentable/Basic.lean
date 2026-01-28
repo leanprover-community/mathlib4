@@ -121,7 +121,7 @@ lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegula
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
-instance {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
+local instance {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
     Fact (κ₁ ⊔ κ₂).IsRegular where
   out := iteInduction (fun _ ↦ Fact.out) (fun _ ↦ Fact.out)
 
