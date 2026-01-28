@@ -272,13 +272,10 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
     have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
       simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
     rw [this, m.supClosureFun_apply hC (J := K) (by simpa [K] using hJC) _ rfl]; swap
-    · intro a ha b hb hab
-      simp only [coe_biUnion, SetLike.mem_coe, mem_iUnion, exists_prop, K] at ha hb
-      rcases ha with ⟨i, iI, hi⟩
-      rcases hb with ⟨j, jI, hj⟩
-      rcases eq_or_ne i j with rfl | hij
-      · exact hJdisj i iI hi hj hab
-      · exact (h'I iI jI hij).mono (H iI hi) (H jI hj)
+    · simp only [K, coe_biUnion]
+      refine (h'I.mono_on ?_).biUnion hJdisj
+      simp
+      grind
     simp only [K]
     rw [sum_biUnion_of_pairwise_eq_zero]; swap
     · intro i hi j hj hij k hk
