@@ -111,7 +111,6 @@ theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.
   simp only [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
 
 /-- The action of the canonical projection on a basis element e i. -/
-@[simp]
 theorem proj_basis_element (n i : ℕ) : b.proj n (e i) = if i < n then e i else 0 := by
   rw [proj_apply]
   by_cases hin : i < n
