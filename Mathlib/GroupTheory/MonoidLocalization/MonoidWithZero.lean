@@ -165,6 +165,14 @@ alias leftCancelMulZero_of_le_isLeftRegular := LocalizationMap.isCancelMulZero
 
 end LocalizationWithZeroMap
 
+theorem IsLocalizationMap.of_groupWithZero {G} [CommGroupWithZero G] {S : Submonoid M} {f : M → G}
+    (hS : 0 ∉ S) (hf : f 0 = 0) (inj : f.Injective) (surj : ∀ g : G, ∃ x, ∃ y ∈ S, g = f x / f y) :
+    S.IsLocalizationMap f :=
+  have : ∀ x ∈ S, f x ≠ 0 := fun x hx ↦ fun h ↦ hS (by rwa [inj (hf.trans h.symm)])
+{ map_units x := .mk0 _ <| this x x.2
+  surj z := have ⟨x, y, hy, eq⟩ := surj z; ⟨⟨x, y, hy⟩, (eq_div_iff_mul_eq <| this y hy).mp eq⟩
+  exists_of_eq eq := ⟨1, by simpa using inj eq⟩ }
+
 end Submonoid
 
 end CommMonoidWithZero

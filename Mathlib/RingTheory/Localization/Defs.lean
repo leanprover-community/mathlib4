@@ -843,6 +843,9 @@ instance isLocalization : IsLocalization M (Localization M) :=
 
 instance [NoZeroDivisors R] : NoZeroDivisors (Localization M) := IsLocalization.noZeroDivisors M
 
+instance [IsCancelMulZero R] : IsCancelMulZero (Localization M) :=
+  (Localization.monoidOf M).isCancelMulZero
+
 end
 
 @[simp]
@@ -877,7 +880,7 @@ theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R
     exact (hM c.2).1 x hc
   · rw [h, map_zero]
 
-protected theorem injectiveₛ (hM : ∀ m ∈ M, IsRegular m) : Injective (algebraMap R S) :=
+protected theorem injectiveₛ (hM : M ≤ .regulars R) : Injective (algebraMap R S) :=
   (toLocalizationMap M S).injective_iff.mpr hM
 
 protected theorem to_map_ne_zero_of_mem_nonZeroDivisors [Nontrivial R] (hM : M ≤ nonZeroDivisors R)
