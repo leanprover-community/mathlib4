@@ -299,7 +299,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"Sphere"              fromSphere         then return m
   if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return m
   if let some m ← tryStrategy m!"InnerProductSpace"   fromInnerProductSpace then return m
-  if (← getOptions).get `trace.Elab.DiffGeo false || (← getOptions).get `trace.Elab.DiffGeo.MDiff false then
+  if ← isTracingEnabledFor `Elab.DiffGeo.MDiff then
     throwError m!"Could not find a model with corners for `{e}`."
   else
   throwError m!"Could not find a model with corners for `{e}`.
