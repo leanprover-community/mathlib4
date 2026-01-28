@@ -99,9 +99,8 @@ theorem circleAverage_of_differentiable_on_off_countable (hs : s.Countable)
   by_cases hR : R = 0
   · simp [hR]
   · rw [← circleAverage_of_differentiable_on_off_countable₁ hs h₁f h₂f (by aesop) hR]
-    apply circleAverage_congr_sphere
-    intro z hz
-    have : z - c ≠ 0 := by grind only [ne_of_mem_sphere, = abs.eq_1, = max_def]
+    apply circleAverage_congr_sphere fun z hz ↦ ?_
+    have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
 
 /--
@@ -114,7 +113,6 @@ theorem circleAverage_of_differentiable_on (hf : ∀ z ∈ closedBall c |R|, Dif
   by_cases hR : R = 0
   · simp [hR]
   · rw [← circleAverage_of_differentiable_on₁ hf (by aesop) hR]
-    apply circleAverage_congr_sphere
-    intro z hz
-    have : z - c ≠ 0 := by grind only [ne_of_mem_sphere, = abs.eq_1, = max_def]
+    apply circleAverage_congr_sphere fun z hz ↦ ?_
+    have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
