@@ -261,6 +261,18 @@ lemma SeparatedNhds.of_isCompact_isClosed {s t : Set X}
   simpa only [separatedNhds_iff_disjoint, hs.disjoint_nhdsSet_left, disjoint_nhds_nhdsSet,
     ht.closure_eq, disjoint_left] using hst
 
+/-- Any function `f : X → Y` with `Y` regular and `s : Set X` a set is continuous on the set of all
+`x ∈ closure s` for which `f` is continuous at `x` within `s`. -/
+lemma continuousOn_closure_inter_setOf {X Y : Type*} [TopologicalSpace X]
+    [TopologicalSpace Y] [RegularSpace Y] {f : X → Y} {s : Set X} :
+    ContinuousOn f (closure s ∩ {x | ContinuousWithinAt f s x}) := by
+  intro x ⟨hx, hfx⟩
+  refine (closed_nhds_basis _).tendsto_right_iff.2 fun t ht ↦ ?_
+  have ⟨u, hu, hxu, hut⟩ := mem_nhdsWithin.1 <| tendsto_def.1 hfx t ht.1
+  exact eventually_of_mem (inter_mem_nhdsWithin _ <| hu.mem_nhds hxu) fun x' ⟨⟨hx', hfx'⟩, hxu'⟩ ↦
+    (closure_mono <| image_subset_iff.2 hut).trans ht.2.closure_subset <|
+      (hfx'.mono inter_subset_right).mem_closure_image <| hu.inter_closure ⟨hxu', hx'⟩
+
 end
 
 /-- This technique to witness `HasSeparatingCover` in regular Lindelöf topological spaces

@@ -175,6 +175,54 @@ theorem tendsto_integral_filter_of_norm_le_const {ι} {l : Filter ι} [l.IsCount
 
 end MeasureTheory
 
+lemma continuousWithinAt_parametric_integral {X : Type*} [TopologicalSpace X]
+    [FirstCountableTopology X] {α : Type*} [TopologicalSpace α] [MeasurableSpace α] {μ : Measure α}
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : Set X} {x₀ : X} {k : Set α}
+    (hk : IsCompact k) (hk' : MeasurableSet k) (hk'' : μ k < ⊤) {f : X → α → E}
+    (hf_meas : ∀ᶠ x in nhdsWithin x₀ s, AEStronglyMeasurable (f x) (μ.restrict k))
+    (hf : ∀ a ∈ k, ContinuousWithinAt f.uncurry (s ×ˢ k) (x₀, a)) :
+    ContinuousWithinAt (fun x ↦ ∫ a in k, f x a ∂μ) s x₀ := by
+  replace hf : ∀ x ∈ {x₀} ×ˢ k, ContinuousWithinAt f.uncurry (s ×ˢ k) x := by grind
+  wlog hx₀ : x₀ ∈ closure s
+  · exact continuousWithinAt_of_notMem_closure hx₀
+  have hf' : ContinuousOn (fun x ↦ f.uncurry x) ({x₀} ×ˢ k) := by
+    refine (continuousOn_closure_inter_setOf).mono <| subset_inter ?_ hf
+    simp [closure_prod_eq, prod_subset_prod_iff, hx₀, subset_closure]
+  let ⟨B, hB⟩ := (isCompact_singleton.prod hk).bddAbove_image (f := fun x ↦ ‖f.uncurry x‖) <|
+    continuous_norm.comp_continuousOn hf'
+  refine tendsto_integral_filter_of_dominated_convergence (fun _ ↦ B + 1) ?_ ?_ ?_ ?_
+  · exact hf_meas
+  · have ⟨v, hv, hv'⟩ := generalized_tube_lemma_left (s := {x₀}) isCompact_singleton
+      hk (s' := s) (n := (fun x ↦ ‖f.uncurry x‖) ⁻¹' Iio (B + 1)) (by
+        refine mem_nhdsSetWithin_iff_forall.2 fun x hx ↦ ?_
+        refine (continuous_norm.continuousAt.comp_continuousWithinAt <|
+          hf x hx).preimage_mem_nhdsWithin <| isOpen_Iio.mem_nhds ?_
+        simp [(mem_upperBounds.1 hB _ <| mem_image_of_mem _ hx).trans_lt <| lt_add_one _])
+    rw [nhdsSetWithin_singleton] at hv
+    refine eventually_of_mem hv fun x hxv ↦ ae_restrict_of_forall_mem hk' fun a ha ↦ ?_
+    simpa using (@hv' (x, a) ⟨hxv, ha⟩).le
+  · have := isFiniteMeasure_restrict.2 <| ne_top_of_lt hk''
+    exact integrable_const _
+  · refine ae_restrict_of_forall_mem hk' fun a ha ↦ ?_
+    exact (hf (x₀, a) ⟨by simp, ha⟩).comp (f := fun x ↦ (x, a)) (by fun_prop) fun x hx ↦ ⟨hx, ha⟩
+
+lemma ContinuousOn.parametric_integral {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] {μ : Measure α}
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {u : Set X} {k : Set α} (hk : IsCompact k)
+    (hk' : MeasurableSet k) (hk'' : μ k < ⊤) {f : X → α → E}
+    (hf : ContinuousOn f.uncurry (u ×ˢ k)) : ContinuousOn (fun x ↦ ∫ a in k, f x a ∂μ) u := by
+  refine fun x hx ↦ continuousWithinAt_parametric_integral hk hk' hk'' ?_ fun _ ha ↦ hf _ ⟨hx, ha⟩
+  refine eventually_nhdsWithin_of_forall fun x hx ↦
+    ContinuousOn.aestronglyMeasurable_of_isCompact ?_ hk hk'
+  exact hf.comp (f := fun a ↦ (x, a)) (by fun_prop) fun a ha ↦ ⟨hx, ha⟩
+
+lemma Continuous.parametric_integral {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] {μ : Measure α}
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {k : Set α} (hk : IsCompact k)
+    (hk' : MeasurableSet k) (hk'' : μ k < ⊤) {f : X → α → E} (hf : Continuous f.uncurry) :
+    Continuous (fun x ↦ ∫ a in k, f x a ∂μ) :=
+  continuousOn_univ.1 <| hf.continuousOn.parametric_integral hk hk' hk''
+
 section TendstoMono
 
 variable {α E : Type*} [MeasurableSpace α]
@@ -632,6 +680,20 @@ theorem continuous_parametric_intervalIntegral_of_continuous {a₀ : ℝ}
 theorem continuous_parametric_intervalIntegral_of_continuous'
     (hf : Continuous f.uncurry) (a₀ b₀ : ℝ) :
     Continuous fun x ↦ ∫ t in a₀..b₀, f x t ∂μ := by fun_prop
+
+lemma _root_.ContinuousOn.parametric_intervalIntegral {u : Set X}
+    {a₀ b₀ : ℝ} (hf : ContinuousOn f.uncurry (u ×ˢ [[a₀, b₀]])) :
+    ContinuousOn (fun x ↦ ∫ t in a₀..b₀, f x t ∂μ) u := by
+  wlog hab : a₀ ≤ b₀ with h
+  · simp_rw [intervalIntegral.integral_symm b₀ a₀]
+    exact (h (Set.uIcc_comm a₀ b₀ ▸ hf) (le_of_not_ge hab)).neg
+  rw [Set.uIcc_of_le hab] at hf
+  rw [continuousOn_iff_continuous_restrict] at hf ⊢
+  replace hf : Continuous (fun (x : u) (t : ℝ) ↦ f x (Set.projIcc _ _ hab t)).uncurry :=
+    hf.comp (f := (Homeomorph.Set.prod u _).symm ∘ Prod.map id (Set.projIcc _ _ hab)) (by fun_prop)
+  refine (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' hf a₀ b₀).congr
+    fun x ↦ intervalIntegral.integral_congr fun t ht ↦ ?_
+  simp [Set.projIcc_of_mem hab <| Set.uIcc_of_le hab ▸ ht]
 
 end ContinuousPrimitive
 

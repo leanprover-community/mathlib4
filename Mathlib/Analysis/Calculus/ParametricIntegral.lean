@@ -5,10 +5,10 @@ Authors: Patrick Massot
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
-public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
 /-!
 # Derivatives of integrals depending on parameters
@@ -38,18 +38,29 @@ variable.
     with a Lipschitz bound which is integrable with respect to `a`.
 
   A subtle point is that the "near x₀" in the last condition has to be uniform in `a`. This is
-  controlled by a positive number `ε`.
+  controlled by a fixed neighborhood `s` of `x₀`.
 
 * `hasFDerivAt_integral_of_dominated_of_fderiv_le`: this version assumes `fun x ↦ F x a` has
   derivative `F' x a` for `x` near `x₀` and `F' x` is bounded by an integrable function independent
   from `x` near `x₀`.
 
+* `hasFDerivAt_integral_of_continuousOn_fderiv`: this version assumes that `F : H → α → E` is
+  continuously differentiable in the first argument near `x₀` in the sense that:
+  - `F.uncurry : H × α → E` is continuous on `u ×ˢ k` for a neighbourhood `u` of `x₀`,
+  - `fun x ↦ F x a` is differentiable on `u` for each parameter `a ∈ k`,
+  - `fun (x, a) ↦ fderiv 𝕜 (fun y ↦ F y a) x` is continuous on `u ×ˢ k`.
+
+  Here `k : Set α` is the domain of integration and is required to be compact, regarding some
+  sufficiently compatible topology on `α`.
+
+* `ContDiffOn.parametric_integral` : If `f.uncurry : H × H' → E` is `Cⁿ` on `u ×ˢ k` for an open
+  set `u` and a compact set `k`, then given any subset `s₀` of `k` the parametric
+  integral `fun x ↦ ∫ a in s₀, f x a ∂μ` is `Cⁿ` on `u` too.
+
 `hasDerivAt_integral_of_dominated_loc_of_lip` and
 `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are versions of the above two results that
 assume `H = ℝ` or `H = ℂ` and use the high-school derivative `deriv` instead of Fréchet derivative
 `fderiv`.
-
-We also provide versions of these theorems for set integrals.
 
 ## Tags
 integral, derivative
@@ -60,13 +71,16 @@ public section
 
 noncomputable section
 
-open TopologicalSpace MeasureTheory Filter Metric
+open TopologicalSpace MeasureTheory Filter Metric Set
 
 open scoped Topology Filter
 
-variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [RCLike 𝕜] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] {H : Type*}
-  [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
+  {𝕜 : Type*} [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  {H' : Type*} [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H']
+  [OpensMeasurableSpace H']
 
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {s : Set H}
 
@@ -121,7 +135,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
     apply mem_of_superset (ball_mem_nhds _ ε_pos)
     intro x x_in; simp only
-    rw [Set.mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
+    rw [mem_setOf_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub, integral_sub,
       ← ContinuousLinearMap.integral_apply hF'_int]
     exacts [hF_int' x x_in, hF_int, (hF_int' x x_in).sub hF_int,
       hF'_int.apply_continuousLinearMap _]
@@ -251,6 +265,314 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
           bound_integrable.1 h_diff.1).sub
       (hasFDerivAt_integral_of_dominated_of_fderiv_le hs hF_meas.2 hF_int.2 hF'_meas.2 h_bound.2
         bound_integrable.2 h_diff.2)
+
+/-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
+if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
+is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
+of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
+`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
+    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set α}
+    (hk : IsCompact k) (hs : MeasurableSet s) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
+    (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
+    (hF₂ : ∀ a ∈ k, DifferentiableOn 𝕜 (fun x ↦ F x a) u)
+    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in s, F x a ∂μ)
+      (∫ a in s, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
+  -- wlog shrink u to an open neighbourhood
+  wlog hu' : IsOpen u with h
+  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hs hs' hsk (hF₁.mono <| prod_mono_left hu'.1)
+      (fun a ha ↦ (hF₂ a ha).mono hu'.1) (hF₃.mono <| prod_mono_left hu'.1) hu'.2.1
+  have hxu := mem_of_mem_nhds hu
+  let F' := fun x : H × α ↦ ‖fderiv 𝕜 (fun y ↦ F y x.2) x.1‖
+  have hF' : ContinuousOn F' _ := continuous_norm.comp_continuousOn hF₃
+  -- via a compactness argument, find an `ε > 0` such that `F'` is bounded on `ball x₀ ε × k`
+  let ⟨ε, hε, hε', B, hB⟩ :
+      ∃ ε > 0, ball x₀ ε ⊆ u ∧ ∃ B, ∀ x ∈ ball x₀ ε ×ˢ k, F' x < B := by
+    let ⟨B, hB⟩ := (isCompact_singleton.prod hk).bddAbove_image <|
+      hF'.mono <| prod_mono_left <| singleton_subset_iff.2 hxu
+    have ⟨v, hv, hv'⟩ := generalized_tube_lemma_left (s := {x₀}) isCompact_singleton
+      hk (s' := u) (n := F' ⁻¹' (Iio (B + 1))) (by
+        refine nhdsSetWithin_mono_left ?_ <| hF'.preimage_mem_nhdsSetWithin_of_mem_nhdsSet
+          (t := Iic B) (u := Iio (B + 1)) <| isOpen_Iio.mem_nhdsSet.2 (by simp)
+        intro x hx
+        exact ⟨prod_mono_left (by simp [hxu]) hx, mem_upperBounds.1 hB _ <| mem_image_of_mem _ hx⟩)
+    rw [nhdsSetWithin_singleton, hu'.nhdsWithin_eq hxu] at hv
+    have ⟨ε, hε, hε'⟩ := Metric.mem_nhds_iff.1 (Filter.inter_mem hv (hu))
+    exact ⟨ε, hε, hε'.trans inter_subset_right, B + 1,
+      fun x hx ↦ hv' <| prod_mono_left (hε'.trans inter_subset_left) hx⟩
+  -- now apply `hasFDerivAt_integral_of_dominated_of_fderiv_le` with the obtained `ε` and bound
+  apply hasFDerivAt_integral_of_dominated_of_fderiv_le (bound := fun _ ↦ B)
+    (F' := fun x a ↦ fderiv 𝕜 (fun x ↦ F x a) x) (ball_mem_nhds x₀ hε)
+  · refine eventually_nhds_iff.2 ⟨u, fun x hx ↦ ?_, hu', hxu⟩
+    apply (hF₁.uncurry_left _ hx).aestronglyMeasurable_of_subset_isCompact hk hs hsk
+  · apply (hF₁.uncurry_left _ hxu).integrableOn_of_subset_isCompact hk hs hsk hs'
+  · apply (hF₃.uncurry_left _ hxu).aestronglyMeasurable_of_subset_isCompact hk hs hsk
+  · filter_upwards [ae_restrict_mem hs] with a ha x hx using (hB (x, a) ⟨hx, hsk ha⟩).le
+  · apply integrableOn_const hs'
+  · filter_upwards [ae_restrict_mem hs] with a ha x hx
+    apply DifferentiableAt.hasFDerivAt
+    exact (hF₂ a (hsk ha) x (hε' hx)).differentiableAt (hu'.mem_nhds (hε' hx))
+
+/-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
+if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
+is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
+of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
+`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace α] [T2Space α]
+    [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set α}
+    (hk : IsCompact k) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
+    (hF₁ : ContinuousOn F.uncurry (u ×ˢ k))
+    (hF₂ : ∀ a ∈ k, DifferentiableOn 𝕜 (fun x ↦ F x a) u)
+    (hF₃ : ContinuousOn (fun x ↦ fderiv 𝕜 (fun y ↦ F y x.2) x.1) (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in s, F x a ∂μ)
+      (∫ a in s, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ) x₀ := by
+  have : μ.restrict (k ∩ toMeasurable μ s) = μ.restrict s :=
+    Measure.restrict_inter_toMeasurable hs' hk.measurableSet hsk
+  simp only [← this]
+  apply hasFDerivAt_integral_of_continuousOn_fderiv hu hk
+    (hk.measurableSet.inter (measurableSet_toMeasurable _ _)) ?_ inter_subset_left hF₁ hF₂ hF₃
+  apply ((measure_mono inter_subset_right).trans_lt ?_).ne
+  rw [measure_toMeasurable]
+  exact hs'.lt_top
+
+/-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
+if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
+of `x₀` and a nice compact set `k`, then a derivative of `fun x => ∫ a in k, f x a ∂μ` in `x₀` can
+be computed as `∫ a in k, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ`. -/
+theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E} {x₀ : H}
+    {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set H'}
+    (hk : IsCompact k) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
+    (hF : ContDiffOn 𝕜 1 f.uncurry (u ×ˢ k)) :
+    HasFDerivAt (fun x => ∫ a in s, f x a ∂μ) (∫ a in s, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ) x₀ := by
+  wlog hu' : IsOpen u with h
+  · have ⟨u', hu'⟩ := _root_.mem_nhds_iff.1 hu
+    exact h (hu'.2.1.mem_nhds hu'.2.2) hk hs' hsk (hF.mono <| prod_mono_left hu'.1) hu'.2.1
+  refine hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space hu hk hs' hsk hF.continuousOn
+    (fun a ha ↦ hF.differentiableOn_one.comp (by fun_prop)
+      fun x hx ↦ (⟨hx, ha⟩ : (x, a) ∈ _ ×ˢ _)) ?_
+  intro x hx
+  rcases contDiffWithinAt_nat.1 (hF x hx) with ⟨w, hw, p, hp⟩
+  rw [insert_eq_of_mem hx] at hw
+  obtain ⟨o, o', o_open, xoo', oo'w, hoo'w⟩ :
+      ∃ o p, IsOpen o ∧ x ∈ o ×ˢ p ∧ o ×ˢ p ⊆ w ∧ o ×ˢ p ∈ 𝓝[u ×ˢ k] x := by
+    obtain ⟨w', w'_open, xw', hw'⟩ : ∃ w', IsOpen w' ∧ x ∈ w' ∧ w' ∩ u ×ˢ k ⊆ w :=
+      mem_nhdsWithin.1 hw
+    obtain ⟨o, p, o_open, p_open, xo, xp, opw'⟩ : ∃ o p, IsOpen o ∧ IsOpen p ∧ x.1 ∈ o ∧ x.2 ∈ p
+      ∧ o ×ˢ p ⊆ w' :=  isOpen_prod_iff.1 w'_open x.1 x.2 xw'
+    refine ⟨o ∩ u, p ∩ k, o_open.inter hu', by grind, by grind, ?_⟩
+    exact mem_nhdsWithin.2 ⟨o ×ˢ p, o_open.prod p_open, ⟨xo, xp⟩, by grind⟩
+  apply ContinuousWithinAt.mono_of_mem_nhdsWithin _ hoo'w
+  have : EqOn (fun (x : H × H') ↦ fderiv 𝕜 (fun y ↦ f y x.2) x.1)
+      (fun x ↦ (continuousMultilinearCurryFin1 𝕜 (H × H') E (p x 1)) ∘L (.inl 𝕜 H H'))
+      (o ×ˢ o') := by
+    intro y hy
+    apply (HasFDerivWithinAt.hasFDerivAt ?_ (o_open.mem_nhds hy.1)).fderiv
+    change HasFDerivWithinAt (f.uncurry ∘ (fun z ↦ (z, y.2))) _ _ _
+    apply (hp.hasFDerivWithinAt (x := y) one_ne_zero (oo'w hy)).comp
+    · exact (hasFDerivAt_prodMk_left y.1 y.2).hasFDerivWithinAt
+    · intro z hz
+      exact oo'w ⟨hz, hy.2⟩
+  apply ContinuousWithinAt.congr_of_mem ?_ this xoo'
+  have := (hp.cont 1 le_rfl).mono oo'w x xoo'
+  fun_prop
+
+/-- Iterated differentiation under integral of `x ↦ ∫ F x a` on an open set `s`, assuming that each
+function `x ↦ F x a` has a Taylor series of order `n`, with uniform integrability conditions on
+the successive derivatives. -/
+theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : ℕ → α → ℝ}
+    {p : H → α → FormalMultilinearSeries 𝕜 H E} (hs : IsOpen s)
+    (hF_meas : ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → AEStronglyMeasurable (p x · i) μ)
+    (h_bound : ∀ᵐ a ∂μ, ∀ x ∈ s, ∀ (i : ℕ), i ≤ n → ‖p x a i‖ ≤ bound i a)
+    (bound_integrable : ∀ (i : ℕ), i ≤ n → Integrable (bound i) μ)
+    (h_diff : ∀ᵐ a ∂μ, HasFTaylorSeriesUpToOn n (F · a) (p · a) s) :
+    HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a, F x a ∂μ) (fun x i ↦ ∫ a, p x a i ∂μ) s := by
+  constructor
+  · intro x hx
+    simp only [ContinuousMultilinearMap.curry0_apply, Matrix.zero_empty]
+    rw [ContinuousMultilinearMap.integral_apply]
+    · apply integral_congr_ae
+      filter_upwards [h_diff] with a ha
+      simp [← ha.zero_eq x hx]
+    · apply Integrable.mono' (bound_integrable 0 (by simp)) (hF_meas x hx 0 (by simp))
+      filter_upwards [h_bound] with a ha using ha x hx 0 (by simp)
+  · intro i hi x hx
+    have h'i : (i + 1 : ℕ) ≤ n := ENat.add_one_natCast_le_withTop_of_lt hi
+    apply HasFDerivAt.hasFDerivWithinAt
+    change HasFDerivAt (fun x ↦ ∫ a, p x a i ∂μ)
+      ((continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E).toContinuousLinearEquiv
+        (∫ a, p x a i.succ ∂μ)) x
+    -- next line should not be necessary...
+    let A : NormedSpace ℝ (H →L[𝕜] (H [×i]→L[𝕜] E)) := ContinuousLinearMap.toNormedSpace
+    rw [← ContinuousLinearEquiv.integral_comp_comm]
+    let G : H → α → (H [×i]→L[𝕜] E) := fun x a ↦ p x a i
+    let G' : H → α → H →L[𝕜] (H [×i]→L[𝕜] E) := fun x a ↦
+      (continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E) (p x a i.succ)
+    change HasFDerivAt (fun x ↦ ∫ a, G x a ∂μ) (∫ a, G' x a ∂μ) x
+    have s_mem : s ∈ 𝓝 x := hs.mem_nhds hx
+    apply hasFDerivAt_integral_of_dominated_of_fderiv_le (s := s) (bound := bound (i + 1)) s_mem
+    · filter_upwards [s_mem] with y hy using hF_meas _ hy _ hi.le
+    · apply Integrable.mono' (bound_integrable i hi.le) (hF_meas _ hx _ hi.le)
+      filter_upwards [h_bound] with a ha using ha x hx i hi.le
+    · apply Continuous.comp_aestronglyMeasurable (by fun_prop)
+      exact hF_meas x hx i.succ h'i
+    · filter_upwards [h_bound] with a ha y hy
+      simp only [Nat.succ_eq_add_one, LinearIsometryEquiv.norm_map, G']
+      apply ha _ hy _ h'i
+    · apply bound_integrable _ h'i
+    · filter_upwards [h_diff] with a ha y hy
+      exact (ha.fderivWithin i hi y hy).hasFDerivAt (hs.mem_nhds hy)
+  · intro i hi
+    apply continuousOn_of_dominated (bound := bound i)
+    · intro y hy
+      exact hF_meas y hy i hi
+    · intro y hy
+      filter_upwards [h_bound] with a ha using ha y hy i hi
+    · apply bound_integrable i hi
+    · filter_upwards [h_diff] with a ha using ha.cont i hi
+
+open ContinuousMultilinearMap in
+theorem hasFTaylorSeriesOn_setIntegral_of_le_const
+    {n : WithTop ℕ∞} {C : ℕ → ℝ} {μ : Measure H'}
+    {p : H × H' → FormalMultilinearSeries 𝕜 (H × H') E} (hs : IsOpen s)
+    {t : Set H'} {F : H → H' → E} (ht : IsSeparable t) (tmeas : MeasurableSet t) (hmut : μ t ≠ ⊤)
+    (hF : HasFTaylorSeriesUpToOn n F.uncurry p (s ×ˢ t))
+    (h_bound : ∀ x ∈ s, ∀ a ∈ t, ∀ (i : ℕ), i ≤ n → ‖p (x, a) i‖ ≤ C i) :
+    HasFTaylorSeriesUpToOn n (fun x ↦ ∫ a in t, F x a ∂μ)
+      (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
+        (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) s := by
+  apply hasFTaylorSeriesOn_integral_of_le_bound hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
+  · intro x hx i hi
+    apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas ht
+    change ContinuousOn
+      (fun y ↦ compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i)) t
+    apply Continuous.comp_continuousOn (by fun_prop)
+    apply (hF.cont i hi).comp (by fun_prop)
+    intro w hw
+    exact ⟨hx, hw⟩
+  · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+    intro x hx i hi
+    apply (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _).trans
+    have : ‖p (x, w) i‖ ≤ C i := h_bound x hx w hw i hi
+    gcongr
+    · exact le_trans (by positivity) this
+    · exact ContinuousLinearMap.norm_inl_le_one 𝕜 H H'
+  · intro i hi
+    exact integrableOn_const hmut
+  · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
+    let g : H →ᴬ[𝕜] H × H' :=
+    { toFun := fun x ↦ (x, w)
+      linear := LinearMap.inl 𝕜 H H'
+      map_vadd' p v := by simp
+      cont := by fun_prop }
+    apply (hF.comp_continuousAffineMap g).mono
+    simp only [ContinuousAffineMap.coe_mk, AffineMap.coe_mk, g]
+    grind
+
+open ContinuousMultilinearMap in
+/-- If `f.uncurry : H × H' → E` is `Cⁿ` on `u ×ˢ k` for an open set `u` and a compact set `k`, then
+given any subset `s₀` of `k` the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
+is `Cⁿ` on `u` too. -/
+lemma ContDiffOn.parametric_integral
+    {μ : Measure H'} {f : H → H' → E} {u : Set H} (hu : IsOpen u)
+    {s₀ k : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
+    (hf : ContDiffOn 𝕜 n f.uncurry (u ×ˢ k)) (mus₀ : μ s₀ ≠ ⊤) :
+    ContDiffOn 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) u := by
+  /- Locally, this is already proved in `hasFTaylorSeriesOn_setIntegral_of_le_const` (which moreover
+  gives a formula for the successive derivatives). To globalize, one covers the compact set `k`
+  with finitely many sets on which the local property golds. Technically, this is more conveniently
+  done using the induction principle `IsCompact.induction_on` in which one only needs to check
+  the property locally, and invariance under binary union. -/
+  intro x hx
+  apply contDiffWithinAt_iff_forall_nat_le.2 (fun m hm ↦ ?_)
+  suffices ∃ s, k ∩ k ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t → μ t ≠ ⊤ →
+      ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x by
+    rcases this with ⟨s, ks, sk, -, hs⟩
+    rw [show s = k by grind] at hs
+    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in k ∩ toMeasurable μ s₀, f x a ∂μ) u x := by
+      apply hs _ inter_subset_left (hk.measurableSet.inter (measurableSet_toMeasurable _ _))
+      apply ((measure_mono inter_subset_right).trans_lt ?_).ne
+      rw [measure_toMeasurable]
+      exact mus₀.lt_top
+    convert this using 3
+    exact (Measure.restrict_inter_toMeasurable mus₀ hk.measurableSet hs₀).symm
+  apply IsCompact.induction_on (s := k)
+    (p := fun s₀ ↦ ∃ s, k ∩ s₀ ⊆ s ∧ s ⊆ k ∧ MeasurableSet s ∧ ∀ t ⊆ s, MeasurableSet t →
+      μ t ≠ ⊤ → ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in t, f x a ∂μ) u x) hk
+  · simp only [inter_empty, empty_subset, true_and]
+    exact ⟨∅, by simpa using contDiffWithinAt_const⟩
+  · grind
+  · -- check invariance of the property under binary union
+    rintro s s' ⟨t, kt, tk, tmeas, ht⟩ ⟨t', kt', t'k, t'meas, ht'⟩
+    refine ⟨t ∪ t', by grind, by grind, tmeas.union t'meas, fun v hv vmeas muv ↦ ?_⟩
+    let v₁ := v ∩ t
+    let v₂ := v \ v₁
+    have v₁meas : MeasurableSet v₁ := vmeas.inter tmeas
+    have v₂meas : MeasurableSet v₂ := vmeas.diff v₁meas
+    have muv₁ : μ v₁ ≠ ⊤ := ((measure_mono inter_subset_left).trans_lt muv.lt_top).ne
+    have muv₂ : μ v₂ ≠ ⊤ := ((measure_mono diff_subset).trans_lt muv.lt_top).ne
+    have : ContDiffWithinAt 𝕜 m (fun x ↦ ∫ a in v₁, f x a ∂μ + ∫ a in v₂, f x a ∂μ) u x :=
+      (ht v₁ inter_subset_right v₁meas muv₁).add (ht' v₂ (by grind) v₂meas muv₂)
+    apply this.congr_of_mem (fun y hy ↦ ?_) hx
+    rw [show v = v₁ ∪ v₂ by grind, setIntegral_union disjoint_sdiff_left.symm v₂meas]
+    · exact (hf.continuousOn.uncurry_left _ hy).integrableOn_of_subset_isCompact
+        hk v₁meas (inter_subset_right.trans tk) muv₁
+    · exact (hf.continuousOn.uncurry_left _ hy).integrableOn_of_subset_isCompact
+        hk v₂meas (by grind only [= subset_def, = mem_diff, = mem_union]) muv₂
+  -- check the property locally using `hasFTaylorSeriesOn_setIntegral_of_le_const`
+  intro y hy
+  obtain ⟨v, v_mem, p, hp⟩ : ∃ v ∈ 𝓝[insert (x, y) (u ×ˢ k)] (x, y), ∃ p,
+    HasFTaylorSeriesUpToOn m (Function.uncurry f) p v := hf (x, y) ⟨hx, hy⟩ m hm
+  obtain ⟨u', u'_mem, k', k'_mem, u'_open,  k'meas, k'k, hk'v, hk'_bound⟩ :
+      ∃ u' ∈ 𝓝 x, ∃ k' ∈ 𝓝[k] y, IsOpen u' ∧ MeasurableSet k' ∧ k' ⊆ k ∧ u' ×ˢ k' ⊆ v
+      ∧ ∀ N ≤ m, ∀ z ∈ u' ×ˢ k', ‖p z N‖ < 1 + ‖p (x, y) N‖ := by
+    rw [show insert (x, y) (u ×ˢ k) = u ×ˢ k from insert_eq_of_mem (by exact ⟨hx, hy⟩)] at v_mem
+    let v'' := ⋂ N ∈ Finset.Iic m, {z | ‖p z N‖ < 1 + ‖p (x, y) N‖}
+    have : v'' ∈ 𝓝[u ×ˢ k] (x, y) := by
+      apply (Filter.biInter_finset_mem _).2 (fun i hi ↦ ?_)
+      apply nhdsWithin_le_of_mem v_mem
+      have xyv : (x, y) ∈ v := mem_of_mem_nhdsWithin (by exact ⟨hx, hy⟩) v_mem
+      have : ContinuousWithinAt (fun z ↦ ‖p z i‖) v (x, y) :=
+        (hp.cont i (by simpa using hi) (x, y) xyv).norm
+      exact this.preimage_mem_nhdsWithin (Iio_mem_nhds (by linarith))
+    have v'_mem : v ∩ v'' ∈ 𝓝[u ×ˢ k] (x, y) := by
+      apply Filter.inter_mem v_mem this
+    rw [nhdsWithin_prod_eq, Filter.mem_prod_iff, IsOpen.nhdsWithin_eq hu hx] at v'_mem
+    rcases v'_mem with ⟨u', u'_mem, t', t'_mem, ht'⟩
+    rw [mem_nhdsWithin] at t'_mem
+    rcases t'_mem with ⟨t'', t''_open, t''_mem, ht''⟩
+    rcases _root_.mem_nhds_iff.1 u'_mem with ⟨u'', hu'', u''_open, xu''⟩
+    refine ⟨u'', u''_open.mem_nhds xu'', t'' ∩ k, ?_, u''_open,
+      t''_open.measurableSet.inter hk.measurableSet, inter_subset_right, ?_, ?_⟩
+    · rw [inter_comm]
+      exact inter_mem_nhdsWithin _ (t''_open.mem_nhds t''_mem)
+    · exact Subset.trans (by gcongr) (ht'.trans inter_subset_left)
+    · intro i hi z z_mem
+      have : z ∈ v'' := by
+        have : u'' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
+        exact this z_mem
+      simp only [Finset.mem_Iic, mem_iInter, mem_setOf_eq, v''] at this
+      exact this i hi
+  refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas hmut ↦ ?_⟩
+  have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)
+      (fun x i ↦ ∫ a in t, (p (x, a) i).compContinuousLinearMap
+        (fun _ ↦ ContinuousLinearMap.inl 𝕜 H H') ∂μ) u' := by
+    apply hasFTaylorSeriesOn_setIntegral_of_le_const u'_open (hk.isSeparable.mono (tk'.trans k'k))
+      tmeas hmut (hp.mono (by grind)) (C := fun i ↦ 1 + ‖p (x, y) i‖)
+    intro x' hx' a ha i hi
+    exact (hk'_bound i (mod_cast hi) (x', a) ⟨hx', tk' ha⟩).le
+  apply ContDiffWithinAt.mono_of_mem_nhdsWithin ?_ (nhdsWithin_le_nhds u'_mem)
+  exact contDiffWithinAt_nat.2 ⟨u', nhdsWithin_le_nhds u'_mem, _, this⟩
+
+/-- If `f.uncurry : H × H' → E` is `Cⁿ`, the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
+over a set `s₀` contained in a compact set `k` is `Cⁿ` too. -/
+lemma ContDiff.parametric_integral {H' : Type*}
+    [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
+    {μ : Measure H'} {f : H → H' → E} {k s₀ : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
+    (hf : ContDiff 𝕜 n f.uncurry) (mus₀ : μ s₀ ≠ ⊤) :
+    ContDiff 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) :=
+  contDiffOn_univ.1 <| hf.contDiffOn.parametric_integral isOpen_univ hk hs₀ mus₀
 
 section
 
