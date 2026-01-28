@@ -213,7 +213,7 @@ lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : P
     · exact hd.subset (by simp)
     · grind
     · simp only [disjoint_iUnion_right]
-      exact fun i hi ↦  hd (by simp) (by simp [hi]) (by grind)
+      exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
     · apply hm _ (by simp)
     · apply Finset.measurableSet_biUnion _ (by grind)
 
