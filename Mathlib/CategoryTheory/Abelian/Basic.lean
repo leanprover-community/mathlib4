@@ -22,7 +22,7 @@ A category is called abelian if it is preadditive,
 has finite products, kernels, and cokernels,
 and if every monomorphism and epimorphism is normal.
 
-It should be noted that if we also assume coproducts, then preadditivity is
+It should be noted that if we also assume finite coproducts, then preadditivity is
 actually a consequence of the other properties, as we show in
 `Mathlib/CategoryTheory/Abelian/NonPreadditive.lean`. However, this fact is of little practical
 relevance, since essentially all interesting abelian categories come with a

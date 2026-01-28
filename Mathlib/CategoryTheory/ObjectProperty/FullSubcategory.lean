@@ -83,9 +83,9 @@ def homMk {X Y : P.FullSubcategory} (f : X.obj ⟶ Y.obj) : X ⟶ Y where
   hom := f
 
 variable {P} in
-lemma homMk_surjective {X Y : P.FullSubcategory} (f : X ⟶ Y) :
-    ∃ (g : X.obj ⟶ Y.obj), homMk g = f :=
-  ⟨f.hom, rfl⟩
+lemma homMk_surjective {X Y : P.FullSubcategory} :
+    Function.Surjective (homMk : (X.obj ⟶ Y.obj) → _) :=
+  fun f ↦ ⟨f.hom, rfl⟩
 
 /-- The inclusion of a full subcategory is fully faithful. -/
 abbrev fullyFaithfulι :

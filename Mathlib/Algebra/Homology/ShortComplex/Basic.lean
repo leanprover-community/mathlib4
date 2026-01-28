@@ -224,12 +224,9 @@ lemma isIso_of_isIso (f : S₁ ⟶ S₂) [IsIso f.τ₁] [IsIso f.τ₂] [IsIso 
 
 lemma isIso_iff (f : S₁ ⟶ S₂) :
     IsIso f ↔ IsIso f.τ₁ ∧ IsIso f.τ₂ ∧ IsIso f.τ₃ := by
-  constructor
-  · intro
-    refine ⟨?_, ?_, ?_⟩
-    all_goals infer_instance
-  · rintro ⟨_, _, _⟩
-    apply isIso_of_isIso
+  refine ⟨fun _ ↦ ⟨inferInstance, inferInstance, inferInstance⟩, ?_⟩
+  rintro ⟨_, _, _⟩
+  apply isIso_of_isIso
 
 /-- The first map of a short complex, as a functor. -/
 @[simps] def fFunctor : ShortComplex C ⥤ Arrow C where

@@ -40,7 +40,7 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Function MeromorphicOn Metric Real Set
+open Filter Function MeromorphicOn Metric Real Set
 
 /-!
 ## Supporting Notation
@@ -305,16 +305,15 @@ The logarithmic counting function is even.
 theorem logCounting_even {f : 𝕜 → E} {e : WithTop E} :
     (logCounting f e).Even := by
   intro r
-  by_cases h : e = ⊤
-  all_goals simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
+  by_cases h : e = ⊤ <;> simp [logCounting, h, locallyFinsuppWithin.logCounting_even _ r]
 
 /--
 The logarithmic counting function is monotonous.
 -/
 theorem logCounting_monotoneOn {f : 𝕜 → E} {e : WithTop E} :
     MonotoneOn (logCounting f e) (Ioi 0) := by
-  by_cases h : e = ⊤
-  all_goals simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
+  by_cases h : e = ⊤ <;>
+    simpa [logCounting, h] using locallyFinsuppWithin.logCounting_mono (by positivity)
 
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
@@ -337,6 +336,22 @@ theorem logCounting_eventually_nonneg {f : 𝕜 → E} {e : WithTop E} :
 /-!
 ## Elementary Properties of the Logarithmic Counting Function
 -/
+
+/--
+If two functions differ only on a discrete set, then their logarithmic counting
+functions agree.
+-/
+theorem logCounting_congr_codiscrete [NormedSpace ℂ E] {f g : ℂ → E} (hfg : f =ᶠ[codiscrete ℂ] g) :
+    logCounting f = logCounting g := by
+  ext a : 1
+  by_cases h : a = ⊤
+  · simp only [logCounting, h, ↓reduceDIte]
+    congr 2
+    exact divisor_congr_codiscreteWithin hfg isOpen_univ
+  · simp only [logCounting, h, ↓reduceDIte]
+    congr 2
+    apply divisor_congr_codiscreteWithin _ isOpen_univ
+    filter_upwards [hfg] using by simp
 
 /--
 Relation between the logarithmic counting functions of `f` and of `f⁻¹`.

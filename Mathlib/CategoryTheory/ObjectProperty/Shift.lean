@@ -24,7 +24,7 @@ open CategoryTheory Category
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] (P Q : ObjectProperty C)
+variable {C : Type*} [Category* C] (P Q : ObjectProperty C)
   {A : Type*} [AddMonoid A] [HasShift C A]
 
 namespace ObjectProperty
