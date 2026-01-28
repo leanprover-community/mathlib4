@@ -159,6 +159,32 @@ lemma IsStrictOrderedRing.of_mul_pos [Ring R] [PartialOrder R] [IsOrderedAddMono
   mul_lt_mul_of_pos_right a ha b c hbc := by
     simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 hbc) ha
 
+lemma IsOrderedRing.of_mul_nonneg_linearOrder [Ring R] [LinearOrder R] [AddLeftMono R]
+    (mul_nonneg : ∀ a b : R, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
+    IsOrderedRing R :=
+  have : ZeroLEOneClass R := {
+    zero_le_one := by
+      rcases le_total (0 : R) 1 with h | h
+      · exact h
+      · rw [← mul_one 1, ← neg_mul_neg]
+        exact mul_nonneg _ _ (neg_nonneg.mpr h) (neg_nonneg.mpr h) }
+  have : IsOrderedAddMonoid R := {
+    add_le_add_left _ _ h c := add_le_add_left h c }
+  IsOrderedRing.of_mul_nonneg mul_nonneg
+
+lemma IsStrictOrderedRing.of_mul_pos_linearOrder [Ring R] [LinearOrder R] [AddLeftMono R]
+    [Nontrivial R] (mul_pos : ∀ a b : R, 0 < a → 0 < b → 0 < a * b) :
+    IsStrictOrderedRing R :=
+  have : ZeroLEOneClass R := {
+    zero_le_one := by
+      rcases le_or_gt (0 : R) 1 with h | h
+      · exact h
+      · rw [← mul_one 1, ← neg_mul_neg]
+        exact le_of_lt <| mul_pos _ _ (neg_pos.mpr h) (neg_pos.mpr h) }
+  have : IsOrderedAddMonoid R := {
+    add_le_add_left _ _ h c := add_le_add_left h c }
+  IsStrictOrderedRing.of_mul_pos mul_pos
+
 -- see Note [lower instance priority]
 /-- Turn an ordered domain into a strict ordered ring. -/
 instance (priority := 50) IsOrderedRing.toIsStrictOrderedRing (R : Type*)
