@@ -12,7 +12,6 @@ public meta import Lean.Server.InfoUtils
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Lean.Parser.Command
 public import Mathlib.Tactic.DeclarationNames
-
 public import Batteries.Tactic.Lint.Basic
 
 /-!
@@ -40,6 +39,11 @@ This file defines the following linters:
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
 - the `show` linter checks for `show`s that change the goal and should be replaced by `change`
+- the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
+  by containing a double underscore.
+  The `badNamingUppercaseMiddleComponent` environment linter checks for declarations whose names
+  contains an underscore, with an uppercase middle component: this is violation mathlib's naming
+  convention.
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -483,6 +487,7 @@ def allowed : Array String.Slice := #[
   "IicProdIoc", "IocProdIoc", -- TODO: should these be allowed?
 ]
 
+/-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
 def isWronglyCased (s : String) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
   -- and (after removing any trailing primes) is not an allowed exception.
