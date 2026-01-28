@@ -67,7 +67,7 @@ Q164262:
 
 Q172298:
   title: Lasker–Noether theorem
-  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
+  decl: Submodule.isPrimary_decomposition_pairwise_ne_radical
 
 Q174955:
   title: Mihăilescu's theorem
