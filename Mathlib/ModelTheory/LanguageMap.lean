@@ -510,25 +510,18 @@ def Embedding.withConstantsStructure : L[[A]].Structure N :=
 def Embedding.liftWithConstants :
     @Embedding (L[[A]]) M N _ (f.withConstantsStructure A) := by
   letI : L[[A]].Structure N := f.withConstantsStructure A
-  refine ⟨f.toEmbedding,?_,?_⟩
+  refine ⟨f.toEmbedding, ?_, ?_⟩
   · intro n g x
     cases g with
-    | inl g =>
-      simp only [withConstants_funMap_sumInl]
-      exact f.map_fun' g x
+    | inl g => exact f.map_fun' g x
     | inr c =>
       cases n with
+      | zero => rfl
       | succ n => exact isEmptyElim c
-      | zero =>
-        simp only [withConstants_funMap_sumInr, constantMap]
-        rfl
   · intro n R x
     cases R with
-    | inl R =>
-      simp only [withConstants_relMap_sumInl]
-      exact f.map_rel' R x
-    | inr r =>
-      exact isEmptyElim r
+    | inl R => exact f.map_rel' R x
+    | inr r => exact isEmptyElim r
 
 end WithConstants
 
