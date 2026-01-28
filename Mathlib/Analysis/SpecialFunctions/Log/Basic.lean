@@ -90,13 +90,7 @@ theorem two_mul_le_exp {x : ℝ} : 2 * x ≤ exp x := by
     have := Real.add_one_le_exp 1
     rwa [one_add_one_eq_two] at this
 
-lemma log_1000_lt_10 : log 1000 < 10 := by
-  rw [log_lt_iff_lt_exp (by norm_num)]
-  calc (1000 : ℝ) < (2 : ℝ) ^ 10 := by norm_num
-    _ ≤ (exp 1) ^ 10 := pow_le_pow_left (by norm_num) two_le_exp_one 10
-    _ = exp 10 := by rw [←exp_nat_mul]; norm_num
 
-theorem surjOn_log : SurjOn log (Ioi 0) univ := fun x _ => ⟨exp x, exp_pos x, log_exp x⟩
 
 theorem log_surjective : Surjective log := fun x => ⟨exp x, log_exp x⟩
 

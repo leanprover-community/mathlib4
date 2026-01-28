@@ -43,7 +43,6 @@ private lemma log_1000_lt_10_local : log 1000 < 10 := by
 
 /--
   Main theorem: `n^k < e^n` for `n ≥ 1000`, `k ≤ 99`.
-
   Proof uses the Mean Value Theorem on `f(x) = x - k * ln(x)` to show it is increasing
   and positive for `x ≥ 1000`.
 -/

@@ -152,7 +152,6 @@ theorem p_neq_np_conditional : (n_dim E > 1000) → ¬ Hypothesis_PolyGap E := b
   intro h_dim h_p_np
   -- 1. Get the Hard Instance
   rcases (SAT_Topology h_dim) with ⟨f_hard, h_multi⟩
-
   -- 2. Physics says: Gap is Exponentially Small
   have h_phys := Witten_Helffer_Sjostrand_Tunneling h_dim f_hard (0 : E) h_multi -- (0:E) is dummy anchor
 
@@ -169,12 +168,12 @@ theorem p_neq_np_conditional : (n_dim E > 1000) → ¬ Hypothesis_PolyGap E := b
     large_n_poly_vs_exponential (n_dim E) k (le_of_lt h_dim) h_k_bound
 
   have h_math_contradiction : ¬ ((1 : ℝ) / (n_dim E ^ k : ℝ) ≤ exp (-n_dim E)) := by
-    intro h_impossible
+intro h_impossible
     -- Rigorous inequality inversion
     rw [exp_neg, inv_eq_one_div] at h_impossible
     -- e^n > n^k => 1/e^n < 1/n^k
     have h_inv_strict : 1 / exp (n_dim E) < 1 / (n_dim E ^ k : ℝ) := by
-       apply one_div_lt_one_div_of_lt
+apply one_div_lt_one_div_of_lt
        · apply pow_pos; linarith
        · exact h_math_fact
 
