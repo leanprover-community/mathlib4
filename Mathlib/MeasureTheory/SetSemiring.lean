@@ -9,6 +9,8 @@ public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Pairwise.Lattice
 public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Order.SupClosed
 
 /-! # Semirings and rings of sets
 
@@ -66,9 +68,82 @@ structure IsSetSemiring (C : Set (Set α)) : Prop where
   diff_eq_sUnion' : ∀ s ∈ C, ∀ t ∈ C,
     ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧ s \ t = ⋃₀ I
 
+/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
+It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
+structure IsSetRing (C : Set (Set α)) : Prop where
+  empty_mem : ∅ ∈ C
+  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
+  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+
 namespace IsSetSemiring
 
 lemma isPiSystem (hC : IsSetSemiring C) : IsPiSystem C := fun s hs t ht _ ↦ hC.inter_mem s hs t ht
+
+theorem exists_finpartition_diff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    ∃ P : Finpartition (s \ t), ↑P.parts ⊆ C := by
+  classical
+  obtain ⟨I, hIC, hI, hst⟩ := hC.diff_eq_sUnion' s hs t ht
+  refine ⟨.ofErase I (supIndep_iff_pairwiseDisjoint.mpr hI) ?_, ?_⟩
+  · rw [sup_id_eq_sSup, sSup_eq_sUnion, hst]
+  · grw [Finpartition.ofErase_parts, Finset.erase_subset, hIC]
+
+theorem mem_supClosure_iff (hC : IsSetSemiring C) :
+    s ∈ supClosure C ↔ ∃ P : Finpartition s, ↑P.parts ⊆ C where
+  mp := by
+    classical
+    rintro ⟨S, hS, hSC, rfl⟩
+    rw [sup'_eq_sup]
+    clear hS
+    induction S using Finset.induction with
+    | empty =>
+      rw [sup_empty]
+      exact ⟨.empty _, hSC⟩
+    | insert s S _ ih =>
+      rw [coe_insert, insert_subset_iff] at hSC
+      obtain ⟨hsC, hSC⟩ := hSC
+      obtain ⟨P, hP⟩ := ih hSC
+      rw [sup_insert, sup_comm, id]
+      rcases eq_or_ne s ⊥ with rfl | hs
+      · rw [sup_bot_eq]; exact ⟨P, hP⟩
+      choose Q hQ using show ∀ t ∈ (P.avoid s).parts, ∃ Q : Finpartition t, ↑Q.parts ⊆ C by
+        simp_rw [Finpartition.mem_avoid]
+        rintro _ ⟨t, ht, -, rfl⟩
+        exact hC.exists_finpartition_diff (hP ht) hsC
+      exists P.avoid s |>.bind Q |>.extend hs disjoint_sdiff_left (sdiff_sup_self _ _)
+      rw [Finpartition.extend_parts, coe_insert, insert_subset_iff, Finpartition.bind_parts,
+        coe_biUnion, iUnion₂_subset_iff, Subtype.forall]
+      exact ⟨hsC, fun t ht _ => hQ t ht⟩
+  mpr := by
+    intro ⟨P, hP⟩
+    rw [← P.sup_parts, sup_id_set_eq_sUnion]
+    exact supClosed_supClosure.sSup_mem
+      (Finset.finite_toSet _)
+      (subset_supClosure hC.empty_mem)
+      (hP.trans subset_supClosure)
+
+theorem diff_mem_supClosure (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
+    s \ t ∈ supClosure C :=
+  hC.mem_supClosure_iff.mpr <| hC.exists_finpartition_diff hs ht
+
+theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) where
+  empty_mem := subset_supClosure hC.empty_mem
+  union_mem _ _ h₁ h₂ := supClosed_supClosure h₁ h₂
+  diff_mem := by
+    classical
+    rintro s _ hs ⟨T, hT, hTC, rfl⟩
+    rw [sup'_eq_sup]
+    clear hT
+    induction T using Finset.induction generalizing s with
+    | empty => simpa
+    | insert t T _ ih =>
+      simp_rw [sup_insert, id, sup_eq_union, ← diff_diff]
+      rw [coe_insert, insert_subset_iff] at hTC
+      obtain ⟨htC, hTC⟩ := hTC
+      refine ih ?_ hTC
+      obtain ⟨S, hS, hSC, rfl⟩ := hs
+      rw [sup'_eq_sup, ← Finset.sup_sdiff_right]
+      refine supClosed_supClosure.finsetSup_mem hS fun s hs => ?_
+      exact hC.diff_mem_supClosure (hSC hs) htC
 
 section disjointOfDiff
 
@@ -438,14 +513,42 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
 
 end disjointOfUnion
 
-end IsSetSemiring
+private lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
+    Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
+  ⟨u, max u v, by grind, by grind⟩
 
-/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
-It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
-structure IsSetRing (C : Set (Set α)) : Prop where
-  empty_mem : ∅ ∈ C
-  union_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t : Set α⦄ : s ∈ C → t ∈ C → s \ t ∈ C
+/-- The set of open-closed intervals is a semi-ring of sets. -/
+protected lemma Ioc [LinearOrder α] [Nonempty α] :
+    IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  empty_mem := by
+    inhabit α
+    exact ⟨default, default, le_rfl, by simp⟩
+  inter_mem := by
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rw [Set.Ioc_inter_Ioc]
+    apply Ioc_mem_setOf_Ioc_le
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rcases le_or_gt u' u with hu | hu
+    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc (max u v') v := by
+        ext; simp; grind
+      rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      rw [this, heq]
+      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
+    rcases le_or_gt v v' with hv | hv
+    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u (min u' v) := by
+        ext; simp; grind
+      rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      rw [this, heq]
+      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by ext; simp; grind]
+    refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
+    intro a ha b hb hab
+    simp [Function.onFun]
+    grind
+
+end IsSetSemiring
 
 namespace IsSetRing
 

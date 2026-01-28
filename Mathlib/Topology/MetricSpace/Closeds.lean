@@ -226,7 +226,10 @@ namespace NonemptyCompacts
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
 instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
-  __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
+  /- Since the topology on `NonemptyCompacts` is not defeq to the one induced by
+  `UniformSpace.hausdorff`, we replace the uniformity by `NonemptyCompacts.uniformSpace`, which has
+  the right topology. -/
+  __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
@@ -278,13 +281,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts 
   (completeSpace_iff_isComplete_range
         isometry_toCloseds.isUniformInducing).2 <|
     isClosed_in_closeds.isComplete
-
-/-- In a compact space, the type of nonempty compact subsets is compact. This follows from
-the same statement for closed subsets -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
-  ⟨by
-    rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
-    exact isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
 instance instSecondCountableTopology [SecondCountableTopology α] :

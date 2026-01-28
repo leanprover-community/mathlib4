@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.Nakayama
 
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 

@@ -6,8 +6,10 @@ Authors: Vincent Beffara
 module
 
 public import Mathlib.Analysis.Analytic.IsolatedZeros
-public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
@@ -169,3 +171,47 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
+
+theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) :
+    (∃ w, ∀ z, g z = w) ∨ IsOpenMap g :=
+  (hg.is_constant_or_isOpen PreconnectedSpace.isPreconnected_univ).imp
+    (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
+
+theorem Polynomial.C_eq_or_isOpenQuotientMap_eval (p : Polynomial ℂ) :
+    (∃ x, C x = p) ∨ IsOpenQuotientMap p.eval := by
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
+  obtain ⟨x, eq⟩ | hp := (AnalyticOnNhd.eval_polynomial p).is_constant_or_isOpenMap
+  · exact (h ⟨x, funext <| by simpa [eq_comm (a := x)]⟩).elim
+  · exact ⟨IsAlgClosed.eval_surjective <| natDegree_eq_zero.not.mpr h, p.continuous_aeval, hp⟩
+
+theorem Polynomial.isOpenQuotientMap_eval (p : Polynomial ℂ) (hp : p.natDegree ≠ 0) :
+    IsOpenQuotientMap p.eval :=
+  p.C_eq_or_isOpenQuotientMap_eval.resolve_left <| natDegree_eq_zero.not.mp hp
+
+namespace Complex
+
+theorem isOpenQuotientMap_pow (n : ℕ) [NeZero n] : IsOpenQuotientMap (· ^ n : ℂ → ℂ) := by
+  convert Polynomial.isOpenQuotientMap_eval (.X ^ n) _
+  · simp
+  · simpa using NeZero.ne n
+
+theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
+    IsOpenQuotientMap
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) where
+  surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
+    ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
+  continuous := by fun_prop
+  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr <|
+    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.1.isOpenMap_subtype_val
+
+theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
+    IsOpenQuotientMap
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
+  · have : NeZero n := ⟨Nat.cast_ne_zero.mp (NeZero.ne (n : ℤ))⟩
+    exact isOpenQuotientMap_pow_compl_zero n
+  · have : NeZero n := ⟨Nat.cast_ne_zero.mp <| neg_ne_zero.mp (NeZero.ne (-n : ℤ))⟩
+    convert (isOpenQuotientMap_pow_compl_zero n).comp (Homeomorph.inv₀ ℂ).isOpenQuotientMap
+    simp [Homeomorph.inv₀]
+
+end Complex
