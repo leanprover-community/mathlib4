@@ -659,6 +659,7 @@ where
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
 
+set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
 TODO not yet: This supports all `ModelWithCorners`
@@ -687,7 +688,10 @@ This implementation is not maximally robust yet.
 partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
   let some (u, _) := ← go e baseInfo
-    | throwError "Could not find a model with corners for `{e}`"
+    | throwError "Could not find a model with corners for `{e}`.
+
+Hint: failures to find a model with corners can be debugged with the command \
+`set_option trace.Elab.DiffGeo.MDiff true`."
   return u
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do

@@ -1190,29 +1190,49 @@ open TopologicalSpace
 variable {s : Opens M} {t : Opens E} {u : Opens M'}
 
 variable {f : s → M'} in
-/-- error: Could not find a model with corners for `↥s` -/
+/--
+error: Could not find a model with corners for `↥s`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {f : s → u} in
-/-- error: Could not find a model with corners for `↥s` -/
+/--
+error: Could not find a model with corners for `↥s`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {f : u → M × E} in
-/-- error: Could not find a model with corners for `↥u` -/
+/--
+error: Could not find a model with corners for `↥u`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {s : Opens (M × E)} {f : s → M × E} in
-/-- error: Could not find a model with corners for `↥s` -/
+/--
+error: Could not find a model with corners for `↥s`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 -- too advanced: variable {s : Opens (M ⊕ M)} {f : s → (M × E) ⊕ (M × E)} in
 
 variable {s : Opens (M ⊕ M)} {f : s → 𝕜 × E}
-/-- error: Could not find a model with corners for `↥s` -/
+/--
+error: Could not find a model with corners for `↥s`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
