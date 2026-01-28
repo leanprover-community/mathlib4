@@ -58,11 +58,11 @@ instance Obj.inhabited [Inhabited P.A] [Inhabited α] : Inhabited (P α) :=
 instance : Functor P.Obj where map := @map P
 
 /-- We prefer `PFunctor.map` to `Functor.map` because it is universe-polymorphic. -/
-@[simp]
+@[simp, grind =]
 theorem map_eq_map {α β : Type v} (f : α → β) (x : P α) : f <$> x = P.map f x :=
   rfl
 
-@[simp]
+@[simp, grind =]
 protected theorem map_eq (f : α → β) (a : P.A) (g : P.B a → α) :
     P.map f ⟨a, g⟩ = ⟨a, f ∘ g⟩ :=
   rfl
@@ -194,16 +194,8 @@ theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by
   constructor
   · rintro ⟨u, xeq, yeq⟩
-    rcases h : u with ⟨a, f⟩
-    use a, fun i => (f i).val.fst, fun i => (f i).val.snd
-    constructor
-    · rw [← xeq, h]
-      rfl
-    constructor
-    · rw [← yeq, h]
-      rfl
-    intro i
-    exact (f i).property
+    rcases h : u
+    grind
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use ⟨a, fun i => ⟨(f₀ i, f₁ i), h i⟩⟩
   constructor
