@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.Monoid
 
 /-!
 # Topological properties of units
@@ -43,3 +44,24 @@ def ContinuousMulEquiv.piUnits {ι : Type*}
   continuous_invFun := Units.continuous_iff.mpr
     ⟨continuous_pi fun _ ↦ Units.continuous_val.comp <| continuous_apply _,
       continuous_pi fun _ ↦ Units.continuous_coe_inv.comp <| continuous_apply _⟩
+
+namespace Units
+
+variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
+
+/-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
+@[simps! apply]
+def mapContinuousMulEquiv (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
+  { __ := Units.mapEquiv f
+    continuous_toFun := f.continuous.units_map _
+    continuous_invFun := f.symm.continuous.units_map _ }
+
+@[simp]
+theorem symm_mapContinuousMulEquiv (f : M ≃ₜ* N) :
+    (mapContinuousMulEquiv f).symm = mapContinuousMulEquiv f.symm := rfl
+
+@[simp]
+theorem toMulEquiv_mapContinuousMulEquiv (f : M ≃ₜ* N) :
+    (mapContinuousMulEquiv f : Mˣ ≃* Nˣ) = mapEquiv f := rfl
+
+end Units
