@@ -336,7 +336,7 @@ theorem abs_iterate_derivative_T_real_le (n k : ℕ) {x : ℝ} (hx : |x| ≤ 1) 
     case i_surj => aesop
     grind
   replace hf (y : ℝ) :
-    ∑ m ∈ Finset.Icc 0 (n - k), g m * (T ℝ m).eval y = (derivative^[k] (T ℝ n)).eval y := by
+      ∑ m ∈ Finset.Icc 0 (n - k), g m * (T ℝ m).eval y = (derivative^[k] (T ℝ n)).eval y := by
     rw [← hf, ← this, eval_finset_sum]; congr; simp
   rw [← hf x, ← hf 1]
   grw [Finset.abs_sum_le_sum_abs]
