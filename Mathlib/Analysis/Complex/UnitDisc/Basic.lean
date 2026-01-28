@@ -242,6 +242,9 @@ theorem re_neg (z : 𝔻) : (-z).re = -z.re :=
 theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
   rfl
 
+@[simp] theorem re_zero : re 0 = 0 := rfl
+@[simp] theorem im_zero : im 0 = 0 := rfl
+
 /-- Conjugate point of the unit disc. -/
 instance : Star 𝔻 where
   star z := mk (conj z) <| (norm_conj z).symm ▸ z.norm_lt_one

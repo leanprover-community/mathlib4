@@ -19,6 +19,8 @@ We show:
 
 * When `V` has (co)limits so does `Action V G`.
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
+* The forgetful functor `Action V G ⥤ V` preserves any (co)limit whose image in `V` exists,
+  and reflects all (co)limits.
 -/
 
 @[expose] public section
