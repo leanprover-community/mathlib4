@@ -358,3 +358,11 @@ theorem iteratedDerivWithin_const {n : ℕ} {c : F} {s : Set 𝕜} {x : 𝕜} :
   induction n generalizing c with
   | zero => simp
   | succ n h => simp [iteratedDerivWithin_succ', Pi.zero_def, h]
+
+@[simp]
+lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) := by
+  simpa using @iteratedDeriv_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
+  simp [Pi.zero_def]
