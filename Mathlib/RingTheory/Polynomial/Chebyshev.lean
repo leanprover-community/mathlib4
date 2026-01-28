@@ -496,7 +496,7 @@ theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n :
 theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
   linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
-theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 n} := by
+theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ (T R m '' Set.Icc 0 n) := by
   induction n using Nat.twoStepInduction
   case zero => simp
   case one =>
