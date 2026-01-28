@@ -23,7 +23,7 @@ theorem.
 
 universe u v w
 
-variable {R E F : Type*}
+variable {ι R E F : Type*}
 
 /--
 The notation typeclass for the Fourier transform.
@@ -122,6 +122,42 @@ attribute [simp] fourierInv_smul
 attribute [fun_prop] continuous_fourier
 attribute [fun_prop] continuous_fourierInv
 
+section fourier
+
+variable [AddCommGroup E] [AddCommGroup F] [FourierTransform E F] [FourierAdd E F]
+
+@[simp]
+theorem fourier_zero : 𝓕 (0 : E) = 0 :=
+  map_zero (AddMonoidHom.mk' 𝓕 fourier_add)
+
+@[simp]
+theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
+  map_neg (AddMonoidHom.mk' 𝓕 fourier_add) f
+
+@[simp]
+theorem fourier_sum (f : ι → E) (s : Finset ι) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
+  map_sum (AddMonoidHom.mk' 𝓕 fourier_add) f s
+
+end fourier
+
+section fourierInv
+
+variable [AddCommGroup E] [AddCommGroup F] [FourierTransformInv E F] [FourierInvAdd E F]
+
+@[simp]
+theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
+  map_zero (AddMonoidHom.mk' 𝓕⁻ fourierInv_add)
+
+@[simp]
+theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
+  map_neg (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f
+
+@[simp]
+theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕⁻ (f i) :=
+  map_sum (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f s
+
+end fourierInv
+
 variable [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
 
 section fourierCLM
@@ -137,11 +173,6 @@ def fourierₗ : E →ₗ[R] F where
 
 @[simp]
 lemma fourierₗ_apply (f : E) : fourierₗ R E f = 𝓕 f := rfl
-
-include R in
-variable (R) in
-lemma fourier_zero : 𝓕 (0 : E) = 0 :=
-  (fourierₗ R E).map_zero
 
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourier E F]
 
@@ -169,11 +200,6 @@ def fourierInvₗ : E →ₗ[R] F where
 
 @[simp]
 lemma fourierInvₗ_apply (f : E) : fourierInvₗ R E f = 𝓕⁻ f := rfl
-
-include R in
-variable (R) in
-lemma fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
-  (fourierInvₗ R E).map_zero
 
 variable [TopologicalSpace E] [TopologicalSpace F] [ContinuousFourierInv E F]
 
