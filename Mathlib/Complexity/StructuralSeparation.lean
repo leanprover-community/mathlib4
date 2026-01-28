@@ -64,7 +64,10 @@ theorem large_n_poly_vs_exponential (n : ℝ) (k : ℕ)
 
   rw [← log_lt_iff_lt_exp (pow_pos (by linarith) k)]
   rw [log_pow]
-  apply mul_lt_of_lt_div (by norm_num) h_log
+  -- We want n * log n < n => log n < n/k.
+  -- Use field_simp or div_lt_iff
+  have k_pos : (k : ℝ) > 0 := by norm_num
+  rwa [lt_div_iff k_pos, mul_comm] at h_log
 
 -- =========================================================================
 -- PART 2: THE WITNESS (Frustrated Potential)
@@ -168,14 +171,14 @@ theorem p_neq_np_conditional : (n_dim E > 1000) → ¬ Hypothesis_PolyGap E := b
     large_n_poly_vs_exponential (n_dim E) k (le_of_lt h_dim) h_k_bound
 
   have h_math_contradiction : ¬ ((1 : ℝ) / (n_dim E ^ k : ℝ) ≤ exp (-n_dim E)) := by
-intro h_impossible
+    intro h_impossible
     -- Rigorous inequality inversion
     rw [exp_neg, inv_eq_one_div] at h_impossible
     -- e^n > n^k => 1/e^n < 1/n^k
     have h_inv_strict : 1 / exp (n_dim E) < 1 / (n_dim E ^ k : ℝ) := by
-apply one_div_lt_one_div_of_lt
-       · apply pow_pos; linarith
-       · exact h_math_fact
+      apply one_div_lt_one_div_of_lt
+      · apply pow_pos; linarith
+      · exact h_math_fact
 
     -- h_impossible says 1/n^k <= 1/e^n
     linarith
@@ -183,3 +186,4 @@ apply one_div_lt_one_div_of_lt
   exact h_math_contradiction h_collision
 
 end Mathlib.Complexity.Separation
+```
