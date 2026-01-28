@@ -53,12 +53,9 @@ open Function (Injective Surjective)
 
 variable {M N G H α β γ δ : Type*}
 
-attribute [to_additive Add.toVAdd /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
-
--- see Note [lower instance priority]
 /-- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
-@[deprecated instSMulOfMul (since := "2025-10-18")]
-def Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
+@[to_additive /-- See also `AddMonoid.toAddAction` -/]
+instance (priority := 1100) Mul.toSMul (α : Type*) [Mul α] : SMul α α := ⟨(· * ·)⟩
 
 /-- Like `Mul.toSMul`, but multiplies on the right.
 
