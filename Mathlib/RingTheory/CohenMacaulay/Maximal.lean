@@ -60,7 +60,7 @@ lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
     IsCohenMacaulayLocalRing R := by
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
   rw [depth_eq_sSup_length_regular]
-  let fg' : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
+  let fg' : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   let _ : Fintype (maximalIdeal R).generators := (Submodule.FG.finite_generators fg').fintype
   have : ringKrullDim R = ((maximalIdeal R).generators.toFinset.card : ℕ∞) := by
     rw [← (isRegularLocalRing_def R).mp ‹_›, ← Set.ncard_eq_toFinset_card',
@@ -82,7 +82,7 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot]
   have := (isRegularLocalRing_def R).mp ‹_›
   simp only [h, Nat.cast_eq_zero] at this
-  have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
+  have fg : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using this
 
 local instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (x : R) :
