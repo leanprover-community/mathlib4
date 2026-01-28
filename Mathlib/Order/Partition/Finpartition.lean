@@ -277,17 +277,34 @@ instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
     · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
     · simp [P.supIndep, P.sup_parts, P.bot_notMem, -bot_eq_empty]
 
+theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b ∈ Q.parts) :
+    ∃ c ∈ P.parts, c ≤ b := by
+  classical
+  by_contra H
+  refine Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) ?_)
+  have : ∀ p ∈ P.parts, ∃ q ∈ Q.parts.erase b, p ≤ q := by grind [h _]
+  have : P.parts.sup id ≤ (Q.parts.erase b).sup id := by grind [Finset.le_sup, Finset.sup_le_iff]
+  grw [← P.sup_parts, this]
+  exact Q.supIndep (erase_subset _ _) hb (notMem_erase _ _)
+
+theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #P.parts := by
+  classical
+  have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
+  choose f hP hf using this
+  rw [← card_attach]
+  refine card_le_card_of_injOn (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
+  exact
+    Subtype.coe_injective
+      (Q.disjoint.elim b.2 c.2 fun H ↦
+        P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
+
 end Order
 
 end Lattice
 
-section DistribLattice
-
-variable [DistribLattice α] [OrderBot α]
-
 section Inf
 
-variable [DecidableEq α] {a b c : α}
+variable [DistribLattice α] [OrderBot α] [DecidableEq α] {a b c : α}
 
 instance : Min (Finpartition a) :=
   ⟨fun P Q ↦
@@ -336,30 +353,9 @@ instance : SemilatticeInf (Finpartition a) :=
 
 end Inf
 
-theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b ∈ Q.parts) :
-    ∃ c ∈ P.parts, c ≤ b := by
-  by_contra H
-  refine Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) ?_)
-  rw [← P.sup_parts, Finset.disjoint_sup_right]
-  rintro c hc
-  obtain ⟨d, hd, hcd⟩ := h hc
-  refine (Q.disjoint hb hd ?_).mono_right hcd
-  rintro rfl
-  simp only [not_exists, not_and] at H
-  exact H _ hc hcd
+section IsModularLattice
 
-theorem card_mono {a : α} {P Q : Finpartition a} (h : P ≤ Q) : #Q.parts ≤ #P.parts := by
-  classical
-    have : ∀ b ∈ Q.parts, ∃ c ∈ P.parts, c ≤ b := fun b ↦ exists_le_of_le h
-    choose f hP hf using this
-    rw [← card_attach]
-    refine card_le_card_of_injOn (fun b ↦ f _ b.2) (fun b _ ↦ hP _ b.2) fun b _ c _ h ↦ ?_
-    exact
-      Subtype.coe_injective
-        (Q.disjoint.elim b.2 c.2 fun H ↦
-          P.ne_bot (hP _ b.2) <| disjoint_self.1 <| H.mono (hf _ b.2) <| h.le.trans <| hf _ c.2)
-
-variable [DecidableEq α] {a b c : α}
+variable [Lattice α] [OrderBot α] [IsModularLattice α] [DecidableEq α] {a b c : α}
 
 section Bind
 
@@ -371,14 +367,16 @@ finpartition of `a` obtained by juxtaposing all the subpartitions. -/
 def bind (P : Finpartition a) (Q : ∀ i ∈ P.parts, Finpartition i) : Finpartition a where
   parts := P.parts.attach.biUnion fun i ↦ (Q i.1 i.2).parts
   supIndep := by
-    rw [supIndep_iff_pairwiseDisjoint]
-    rintro a ha b hb h
-    rw [Finset.mem_coe, Finset.mem_biUnion] at ha hb
-    obtain ⟨⟨A, hA⟩, -, ha⟩ := ha
-    obtain ⟨⟨B, hB⟩, -, hb⟩ := hb
-    obtain rfl | hAB := eq_or_ne A B
-    · exact (Q A hA).disjoint ha hb h
-    · exact (P.disjoint hA hB hAB).mono ((Q A hA).le ha) ((Q B hB).le hb)
+    intro s hs x hx hxs
+    obtain ⟨t, ht, hxt⟩ := mem_biUnion.mp hx
+    grw [show s ⊆ (Q t t.prop).parts.erase x ∪ s \ (Q t t.prop).parts by grind, sup_union]
+    refine .disjoint_sup_right_of_disjoint_sup_left
+      ((Q t t.prop).supIndep (erase_subset _ _) hxt <| by grind) ?_
+    rw [← sup_insert, insert_erase hxt, sup_parts]
+    grw [show s \ (Q ↑t t.prop).parts ⊆ (P.parts.attach.erase t).biUnion
+      (fun i ↦ (Q i i.prop).parts) by grind]
+    simp_rw +singlePass [sup_biUnion, sup_parts, ← id_comp Subtype.val, ← sup_image]
+    apply P.supIndep <;> grind
   sup_parts := by
     simp_rw [sup_biUnion]
     trans (sup P.parts id)
@@ -418,8 +416,14 @@ def extend (P : Finpartition a) (hb : b ≠ ⊥) (hab : Disjoint a b) (hc : a �
     Finpartition c where
   parts := insert b P.parts
   supIndep := by
-    rw [supIndep_iff_pairwiseDisjoint, coe_insert]
-    exact P.disjoint.insert fun d hd _ ↦ hab.symm.mono_right <| P.le hd
+    intro s hs x hx hxs
+    rcases mem_insert.mp hx with rfl | hx
+    · grw [(subset_insert_iff_of_notMem hxs).mp hs, P.sup_parts]
+      exact hab.symm
+    · grw [show s ⊆ insert b (P.parts.erase x) by grind, sup_insert, sup_comm]
+      refine .disjoint_sup_right_of_disjoint_sup_left
+        (P.supIndep (erase_subset _ _) hx (notMem_erase _ _)) ?_
+      rwa [← sup_insert, insert_erase hx, P.sup_parts]
   sup_parts := by rwa [sup_insert, P.sup_parts, id, _root_.sup_comm]
   bot_notMem h := (mem_insert.1 h).elim hb.symm P.bot_notMem
 
@@ -427,7 +431,7 @@ theorem card_extend (P : Finpartition a) (b c : α) {hb : b ≠ ⊥} {hab : Disj
     {hc : a ⊔ b = c} : #(P.extend hb hab hc).parts = #P.parts + 1 :=
   card_insert_of_notMem fun h ↦ hb <| hab.symm.eq_bot_of_le <| P.le h
 
-end DistribLattice
+end IsModularLattice
 
 section GeneralizedBooleanAlgebra
 
