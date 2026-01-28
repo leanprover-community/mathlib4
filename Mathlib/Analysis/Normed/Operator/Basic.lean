@@ -319,14 +319,22 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   (f + g).opNorm_le_bound (add_nonneg f.opNorm_nonneg g.opNorm_nonneg) fun x =>
     (norm_add_le_of_le (f.le_opNorm x) (g.le_opNorm x)).trans_eq (add_mul _ _ _).symm
 
+/-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+theorem norm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
+  le_antisymm norm_id_le <| by
+    let ⟨x, hx⟩ := exists_norm_ne_zero E
+    have := (ContinuousLinearMap.id 𝕜 E).ratio_le_opNorm x
+    rwa [id_apply, div_self hx] at this
+
+instance normOneClass [NontrivialTopology E] : NormOneClass (E →L[𝕜] E) :=
+  ⟨norm_id⟩
 
 /-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
 (Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
+@[deprecated norm_id (since := "2025-09-03")]
 theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖ContinuousLinearMap.id 𝕜 E‖ = 1 :=
-  le_antisymm norm_id_le <| by
-    let ⟨x, hx⟩ := h
-    have := (ContinuousLinearMap.id 𝕜 E).ratio_le_opNorm x
-    rwa [id_apply, div_self hx] at this
+  letI : NontrivialTopology E := .of_exists_norm_ne_zero h
+  norm_id
 
 theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
     [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
@@ -378,6 +386,11 @@ instance toPseudoMetricSpace : PseudoMetricSpace (E →SL[σ₁₂] F) := .repla
 /-- Continuous linear maps themselves form a seminormed space with respect to the operator norm. -/
 instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F) where
 
+/-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
+  NNReal.eq norm_id
+
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
   ⟨opNorm_smul_le⟩
@@ -410,6 +423,15 @@ lemma le_opNorm_enorm (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   rw [← ENNReal.ofReal_mul (by positivity)]
   gcongr
   exact f.le_opNorm x
+
+variable {f} in
+theorem homothety_norm [NontrivialTopology E] (f : E →SL[σ₁₂] F) {a : ℝ}
+    (hf : ∀ x, ‖f x‖ = a * ‖x‖) : ‖f‖ = a := by
+  obtain ⟨x, hx⟩ := exists_norm_ne_zero E
+  replace hx : 0 < ‖x‖ := lt_of_le_of_ne' (norm_nonneg _) hx
+  have ha : 0 ≤ a := by simpa only [hf, hx, mul_nonneg_iff_of_pos_right] using norm_nonneg (f x)
+  apply le_antisymm (f.opNorm_le_bound ha fun y => le_of_eq (hf y))
+  simpa only [hf, hx, mul_le_mul_iff_left₀] using f.le_opNorm x
 
 end OpNorm
 
