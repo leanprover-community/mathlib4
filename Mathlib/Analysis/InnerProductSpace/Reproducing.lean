@@ -257,7 +257,7 @@ instance instKernelToRKHS : RKHS 𝕜 X V (kernelToRKHS hK) where
       fun ff ↦ ?_
     have : ff = ff.sum fun xv z ↦ .single xv z := by simp
     rw [this, ← SeparationQuotient.mkCLM_apply 𝕜, ← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
-    simp only [map_finsuppSum, Finsupp.sum_inner']
+    simp only [map_finsuppSum, Finsupp.sum_inner]
     have (i : X × V) (a : 𝕜): ⟪UniformSpace.Completion.toComplL (𝕜 := 𝕜)
         ((SeparationQuotient.mkCLM 𝕜 (H₀ hK)) (Finsupp.single i a)), f⟫_𝕜 = 0 := by
       have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
