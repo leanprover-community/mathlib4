@@ -108,9 +108,9 @@ theorem natDegree_num_le_natDegree_minpolyX : f.num.natDegree ≤ f.minpolyX.nat
   simp only [Polynomial.coeff_sub, Polynomial.coeff_map, Polynomial.coeff_natDegree,
     Polynomial.coeff_C_mul, AddSubgroupClass.coe_sub, SubalgebraClass.coe_algebraMap,
     algebraMap_eq_C, MulMemClass.coe_mul, AdjoinSimple.coe_gen, ZeroMemClass.coe_zero] at H
-  rw [sub_eq_zero, ← mul_right_inj' (inv_ne_zero f_ne_zero), ←mul_assoc, inv_mul_cancel₀ f_ne_zero,
+  rw [sub_eq_zero, ← mul_right_inj' (inv_ne_zero f_ne_zero), ← mul_assoc, inv_mul_cancel₀ f_ne_zero,
     one_mul, ← eq_div_iff <| (map_ne_zero C).mpr <| Polynomial.leadingCoeff_ne_zero.mpr
-    (num_ne_zero f_ne_zero), ←inv_inj, inv_inv, ←map_div₀, ←map_inv₀] at H
+    (num_ne_zero f_ne_zero), ← inv_inj, inv_inv, ← map_div₀, ← map_inv₀] at H
   exact hf ⟨_, H⟩
 
 omit hf in
@@ -137,7 +137,7 @@ theorem transcendental_of_ne_C : Transcendental K f := by
 
 theorem transcendental_of_ne_C' :
     Transcendental K (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]):= by
-  rw [←transcendental_algebraMap_iff
+  rw [← transcendental_algebraMap_iff
       (FaithfulSMul.algebraMap_injective (Algebra.adjoin K {f}) (RatFunc K))]
   exact f.transcendental_of_ne_C hf
 
@@ -146,7 +146,7 @@ be non-constant. -/
 noncomputable def adjoinSimpleEquiv : K[X] ≃ₐ[K] K[f] :=
   AlgEquiv.ofBijective (Polynomial.aeval ⟨f, Algebra.self_mem_adjoin_singleton K f⟩) <| by
     refine ⟨transcendental_iff_injective.mp (f.transcendental_of_ne_C' hf), ?_⟩
-    rw [←AlgHom.range_eq_top, eq_top_iff]
+    rw [← AlgHom.range_eq_top, eq_top_iff]
     rintro ⟨g, g_mem⟩ _
     obtain ⟨r, rfl⟩ := Algebra.adjoin_mem_exists_aeval _ _ g_mem
     exact ⟨r, by ext; simp⟩
@@ -172,17 +172,17 @@ theorem irreducible_minpolyX : Irreducible f.minpolyX := by
     have φ_map : φ.map (algebraMap ..) = f.minpolyX := by
       simp only [φ, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_C]
       congr 1
-      · rw [Polynomial.map_map, ←IsScalarTower.algebraMap_eq]
-      · rw [Polynomial.map_map, ←IsScalarTower.algebraMap_eq]
+      · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+      · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
         simp only [mul_eq_mul_right_iff, Polynomial.C_inj]
         exact .inl rfl
-    rw [←φ_map, ←Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
+    rw [← φ_map, ← Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
     · exact this
     · apply this.isPrimitive
       intro H
       have := Polynomial.natDegree_map_le (f := algebraMap K[f] K⟮f⟯) (p := φ)
       rw [φ_map, H, nonpos_iff_eq_zero, f.natDegree_minpolyX, Nat.max_eq_zero_iff,
-        ←f.eq_C_iff] at this
+        ← f.eq_C_iff] at this
       exact hf this
   let φ' : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
@@ -191,7 +191,7 @@ theorem irreducible_minpolyX : Irreducible f.minpolyX := by
       AlgEquiv.toRingEquiv_toRingHom, adjoinSimpleEquiv_coe, Polynomial.map_sub, Polynomial.map_map,
       Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe, Polynomial.aeval_X]
     congr 2 <;> ext <;> simp
-  rw [←φ'_map, MulEquiv.irreducible_iff]
+  rw [← φ'_map, MulEquiv.irreducible_iff]
   have : φ' = Polynomial.Bivariate.swap
       (Polynomial.C f.num - Polynomial.X * Polynomial.C f.denom) := by
     simp only [Polynomial.X_mul_C, Polynomial.Bivariate.swap_apply, AlgHom.coe_comp,
