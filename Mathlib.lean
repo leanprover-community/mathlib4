@@ -1977,6 +1977,7 @@ public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.Normed.Lp.LpEquiv
+public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.ProdLp
@@ -7080,6 +7081,7 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Extend
+public import Mathlib.Topology.Category.LightProfinite.Injective
 public import Mathlib.Topology.Category.LightProfinite.Limits
 public import Mathlib.Topology.Category.LightProfinite.Sequence
 public import Mathlib.Topology.Category.Locale
