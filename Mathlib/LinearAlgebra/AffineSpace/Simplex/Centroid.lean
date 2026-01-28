@@ -32,6 +32,8 @@ simplex.
 
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
 
+* `medial` is the simplex formed by all `faceOppositeCentroid`.
+
 ## References
 
 * https://en.wikipedia.org/wiki/Median_(geometry)
@@ -531,6 +533,63 @@ theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 
   exact Submodule.disjoint_def.1 h_disjoint _ (h_span i) (h_span j)
 
 end median
+
+/-- The medial is the simplex formed by centroids on all faces. -/
+def medial [CharZero k] (s : Simplex k P n) : Simplex k P n where
+  points i := s.faceOppositeCentroid i
+  independent := by
+    obtain h := s.independent
+    rw [affineIndependent_iff_linearIndependent_vsub k _ 0] at h ⊢
+    simp_rw [faceOppositeCentroid_vsub_faceOppositeCentroid]
+    convert h.units_smul fun _ ↦ Units.mk0 (-n)⁻¹ (by simpa using NeZero.ne n) with i
+    simp [← smul_neg]
+
+theorem medial_points [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.medial.points i = s.faceOppositeCentroid i := rfl
+
+theorem medial_reindex {m n : ℕ} [NeZero m] [NeZero n]
+    [CharZero k] (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).medial = s.medial.reindex e := by
+  ext i
+  simp [medial_points]
+
+theorem medial_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂] [CharZero k]
+    {n : ℕ} [NeZero n] (s : Simplex k P n)
+    (f : P →ᵃ[k] P₂) (hf : Function.Injective f) :
+    (s.map f hf).medial = s.medial.map f hf := by
+  ext i
+  simp [medial_points]
+
+open Pointwise in
+@[simp]
+theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
+    affineSpan k (Set.range (s.medial.points)) = affineSpan k (Set.range (s.points)) := by
+  have hmem1 : s.medial.points 0 ∈ affineSpan k (Set.range s.medial.points) :=
+    mem_affineSpan _ (by simp)
+  have hmem2 : s.medial.points 0 ∈ affineSpan k (Set.range s.points) := by
+    apply Set.mem_of_mem_of_subset (s.faceOppositeCentroid_mem_affineSpan_face 0)
+    exact affineSpan_mono k (by simp)
+  rw [eq_iff_direction_eq_of_mem hmem1 hmem2]
+  simp_rw [direction_affineSpan, vectorSpan_def]
+  suffices Set.range s.medial.points -ᵥ Set.range s.medial.points
+    = (-n : k)⁻¹ • (Set.range s.points -ᵥ Set.range s.points) by
+    rw [this, Submodule.span_smul_eq_of_isUnit]
+    simpa using NeZero.ne n
+  ext v
+  suffices (∃ a b, (n : k)⁻¹ • (s.points b -ᵥ s.points a) = v) ↔
+    ∃ a b, -((n : k)⁻¹ • (s.points a -ᵥ s.points b)) = v by
+    simpa [Set.mem_vsub, Set.mem_smul_set, medial_points,
+      faceOppositeCentroid_vsub_faceOppositeCentroid]
+  congrm ∃ a b, ?_ = v
+  simp [← smul_neg]
+
+theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P)
+    (hS : affineSpan k (Set.range s.points) ≤ S) :
+    haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.restrict S hS).medial = s.medial.restrict S (s.affineSpan_range_medial ▸ hS) := by
+  haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+  ext i
+  simp [medial_points]
 
 end Simplex
 

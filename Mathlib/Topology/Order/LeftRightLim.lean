@@ -140,8 +140,7 @@ theorem mapClusterPt_leftLim [TopologicalSpace α] [OrderTopology α]
     refine inf_neBot_iff.mpr (fun s hs s' hs' ↦ ?_)
     refine ⟨f a, mem_of_mem_nhds hs, ?_⟩
     simp only [mem_map] at hs'
-    have : a ∈ f ⁻¹' s' := by apply mem_of_mem_nhdsWithin ?_ hs'; exact le_rfl
-    exact this
+    apply mem_of_mem_nhdsWithin self_mem_Iic hs'
   rcases eq_or_neBot (𝓝[<] a) with h' | h'
   · simp only [MapClusterPt, ClusterPt, h', leftLim_eq_of_eq_bot, A]
   by_cases! H : ¬ ∃ y, Tendsto f (𝓝[<] a) (𝓝 y)
@@ -153,15 +152,19 @@ theorem mapClusterPt_rightLim [TopologicalSpace α] [OrderTopology α]
     (f : α → β) (a : α) : MapClusterPt (f.rightLim a) (𝓝[≥] a) f :=
   mapClusterPt_leftLim (α := αᵒᵈ) _ _
 
-theorem leftLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
+theorem continuousWithinAt_leftLim_Iic [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
-    f.leftLim.leftLim a = f.leftLim a := by
-  rcases eq_or_neBot (𝓝[<] a) with h' | h'
-  · simp [h', leftLim_eq_of_eq_bot]
-  obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
-  apply leftLim_eq_of_tendsto (neBot_iff.mp h')
+    ContinuousWithinAt f.leftLim (Iic a) a := by
+  have : 𝓝[≤] a = 𝓝[<] a ⊔ pure a := by
+    rw [← Iio_union_Icc_eq_Iic le_rfl, nhdsWithin_union]
+    simp
+  rw [ContinuousWithinAt, this, tendsto_sup]
+  simp only [tendsto_pure_nhds, and_true]
   apply (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.2
   rintro s ⟨s_mem, s_closed⟩
+  rcases eq_or_neBot (𝓝[<] a) with h' | h'
+  · simp [h']
+  obtain ⟨b, hb⟩ : (Iio a).Nonempty := Filter.nonempty_of_mem (self_mem_nhdsWithin (a := a))
   obtain ⟨u, au, hu⟩ :  ∃ u, u < a ∧ Ioo u a ⊆ {x | f x ∈ s} := by
     have := (closed_nhds_basis (f.leftLim a)).tendsto_right_iff.1 h s ⟨s_mem, s_closed⟩
     simpa using (mem_nhdsLT_iff_exists_Ioo_subset' hb).1 this
@@ -172,6 +175,16 @@ theorem leftLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
   · simpa [leftLim_eq_of_not_tendsto _ h''c] using hu hc
   apply s_closed.mem_of_tendsto (tendsto_leftLim_of_tendsto h''c)
   filter_upwards [Ioo_mem_nhdsLT_of_mem ⟨hc.1, hc.2.le⟩] with d hd using hu hd
+
+theorem leftLim_leftLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[<] a) (𝓝 (f.leftLim a))) :
+    f.leftLim.leftLim a = f.leftLim a :=
+  (continuousWithinAt_leftLim_Iic h).leftLim_eq
+
+theorem continuousWithinAt_rightLim_Ici [TopologicalSpace α] [OrderTopology α] [T3Space β]
+    {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) :
+    ContinuousWithinAt f.rightLim (Ici a) a :=
+  continuousWithinAt_leftLim_Iic (α := αᵒᵈ) h
 
 theorem rightLim_rightLim [TopologicalSpace α] [OrderTopology α] [T3Space β]
     {f : α → β} {a : α} (h : Tendsto f (𝓝[>] a) (𝓝 (f.rightLim a))) :

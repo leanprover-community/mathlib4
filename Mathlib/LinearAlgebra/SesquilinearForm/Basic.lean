@@ -678,6 +678,16 @@ variable {M₁ M₂ I₁ I₂}
 theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
     (h : B.SeparatingLeft) : B ≠ 0 := fun h0 ↦ not_separatingLeft_zero M₁ M₂ I₁ I₂ <| h0 ▸ h
 
+/-- A bilinear map is called right-separating if
+the only element that is right-orthogonal to every other element is `0`; i.e.,
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
+def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
+
+/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
+def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
+  SeparatingLeft B ∧ SeparatingRight B
+
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
@@ -695,6 +705,14 @@ theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
     LinearEquiv.map_eq_zero_iff] at hx
   exact hx
 
+theorem SeparatingRight.congr (h : B.SeparatingRight) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingRight :=
+  SeparatingLeft.congr (B := B.flip) e₂ e₁ h
+
+theorem Nondegenerate.congr (h : B.Nondegenerate) :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate :=
+  ⟨h.1.congr e₁ e₂, h.2.congr e₁ e₂⟩
+
 @[simp]
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
@@ -704,17 +722,18 @@ theorem separatingLeft_congr_iff :
     simp,
    SeparatingLeft.congr e₁ e₂⟩
 
+@[simp]
+theorem separatingRight_congr_iff : (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M))
+      B).SeparatingRight ↔ B.SeparatingRight :=
+  separatingLeft_congr_iff (B := B.flip) e₂ e₁
+
+@[simp]
+theorem nondegenerate_congr_iff :
+    (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).Nondegenerate ↔ B.Nondegenerate :=
+  ⟨fun h ↦ ⟨separatingLeft_congr_iff e₁ e₂ |>.mp h.1, separatingRight_congr_iff e₁ e₂ |>.mp h.2⟩,
+    .congr e₁ e₂⟩
+
 end Linear
-
-/-- A bilinear map is called right-separating if
-the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
-def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
-
-/-- A bilinear map is called non-degenerate if it is left-separating and right-separating. -/
-def Nondegenerate (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
-  SeparatingLeft B ∧ SeparatingRight B
 
 @[simp]
 theorem flip_separatingRight {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} :

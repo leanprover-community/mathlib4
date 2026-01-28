@@ -54,7 +54,6 @@ noncomputable def homeomorphSphereProd (E : Type*) [NormedAddCommGroup E] [Norme
   continuous_toFun := by
     simp only
     fun_prop (disch := simp)
-  continuous_invFun := by fun_prop
 
 /-- The natural homeomorphism between nonzero elements of a normed space `E`
 and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
