@@ -80,8 +80,8 @@ theorem conjStarAlgAut_ext_iff {S : Type*} [CommSemiring S] [Algebra S R] [Algeb
     mul_one, eq_comm]
 
 theorem conjStarAlgAut_ext_iff' {R S : Type*} [Ring R] [StarMul R] [CommRing S] [StarMul S]
-    [Algebra S R] [StarModule S R] [Algebra.IsCentral S R] [NoZeroSMulDivisors S R]
-    (u v : unitary R) :
+    [Algebra S R] [StarModule S R] [Algebra.IsCentral S R] [IsCancelMulZero S]
+    [Module.IsTorsionFree S R] (u v : unitary R) :
     conjStarAlgAut S R u = conjStarAlgAut S R v ↔ ∃ α : unitary S, u = α • v := by
   conv_lhs => rw [eq_comm]
   simp_rw [StarAlgEquiv.ext_iff, conjStarAlgAut_apply, ← coe_star, star_eq_inv,

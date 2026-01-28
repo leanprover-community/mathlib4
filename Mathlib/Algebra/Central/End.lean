@@ -43,7 +43,7 @@ end Algebra.IsCentral
 open LinearMap in
 public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂]
     [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
-    (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
+    {f g : M ≃ₗ[R] M₂} : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : S, ⇑f = α • g := by
   conv_lhs => rw [eq_comm]
   simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
     eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
@@ -53,17 +53,17 @@ public theorem LinearEquiv.conjAlgEquiv_ext_iff {M₂ : Type*} [AddCommMonoid M�
     LinearMap.smul_apply, End.one_apply, Pi.smul_apply, LinearMapClass.map_smul_of_tower g]
 
 open LinearMap in
-public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [Semifield S] [Module S M]
-    [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddCommMonoid M₂] [Module R M₂]
-    [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂] [Algebra.IsCentral S R]
+public theorem LinearEquiv.conjAlgEquiv_ext_iff' {S M₂ : Type*} [CommRing S] [IsCancelMulZero S]
+    [Module S M] [SMulCommClass R S M] [Algebra S R] [IsScalarTower S R M] [AddCommGroup M₂]
+    [Module R M₂] [Module S M₂] [SMulCommClass R S M₂] [IsScalarTower S R M₂]
+    [Algebra.IsCentral S R] [IsTorsionFree S M₂]
     (f g : M ≃ₗ[R] M₂) : f.conjAlgEquiv S = g.conjAlgEquiv S ↔ ∃ α : Sˣ, f = α • g := by
-  conv_lhs => rw [eq_comm]
-  simp_rw [AlgEquiv.ext_iff, conjAlgEquiv_apply, ← eq_toLinearMap_symm_comp, ← comp_assoc,
-    eq_comp_toLinearMap_symm, comp_assoc, ← comp_assoc _ _ g.symm.toLinearMap, comp_coe,
-    ← End.mul_eq_comp, ← Subalgebra.mem_center_iff (R := S), Algebra.IsCentral.center_eq_bot,
-    ← comp_coe, Algebra.mem_bot, Set.mem_range, Algebra.algebraMap_eq_smul_one,
-    eq_toLinearMap_symm_comp, eq_comm, LinearMap.ext_iff, LinearEquiv.ext_iff, comp_apply, coe_coe,
-    LinearEquiv.smul_apply, LinearMap.smul_apply, End.one_apply, LinearMapClass.map_smul_of_tower g]
-  refine ⟨fun ⟨y, h⟩ ↦ ?_, fun ⟨y, h⟩ ↦ ⟨(y : S), by simp [h]⟩⟩
-  if hy : y = 0 then exact ⟨1, fun x ↦ by simp [by simpa [hy] using congr($(h x))]⟩
-  else exact ⟨.mk0 y hy, fun x ↦ h _⟩
+  refine ⟨fun h ↦ ?_, fun ⟨y, h⟩ ↦ conjAlgEquiv_ext_iff.mpr ⟨(y : S), congr($h)⟩⟩
+  by_cases! Subsingleton M
+  · exact ⟨1, by ext; simp [Subsingleton.eq_zero]⟩
+  obtain ⟨α, hα⟩ := conjAlgEquiv_ext_iff.mp h
+  obtain ⟨β, hβ⟩ := conjAlgEquiv_ext_iff.mp h.symm
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  have : (1 : S) • f x = (α * β) • f x := by simpa [hβ, smul_smul] using congr($hα x)
+  rw [smul_left_inj (by simpa)] at this
+  exact ⟨.mk α β this.symm (mul_comm α β ▸ this.symm), ext fun _ ↦ by simpa using congr($hα _)⟩
