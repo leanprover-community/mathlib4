@@ -50,7 +50,7 @@ namespace Units
 variable {M N : Type*} [TopologicalSpace M] [TopologicalSpace N] [Monoid M] [Monoid N]
 
 /-- Any `ContinuousMulEquiv` induces a `ContinuousMulEquiv` on units. -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def mapContinuousMulEquiv (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
   { __ := Units.mapEquiv f
     continuous_toFun := f.continuous.units_map _
