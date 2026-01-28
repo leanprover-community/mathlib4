@@ -135,6 +135,10 @@ public theorem singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) (i 
   subst hn
   exact Finsupp.embDomain_apply_self _ _ i
 
+public theorem singularValues_of_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
+    : T.singularValues i = Real.toNNReal √(T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩)
+    := T.singularValues_fin hn ⟨i, hi⟩
+
 public theorem singularValues_of_finrank_le {i : ℕ}
   (hi : Module.finrank 𝕜 E ≤ i) : T.singularValues i = 0 := by
   apply Finsupp.embDomain_notin_range
@@ -144,7 +148,7 @@ public theorem sq_singularValues_fin {n : ℕ} (hn : Module.finrank 𝕜 E = n) 
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn i := by
   simp [T.singularValues_fin hn, T.eigenvalues_adjoint_comp_self_nonneg hn]
 
-public theorem sq_singularValues_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
+public theorem sq_singularValues_of_lt {n : ℕ} (hn : Module.finrank 𝕜 E = n) {i : ℕ} (hi : i < n)
   : T.singularValues i ^ 2 = T.isSymmetric_adjoint_comp_self.eigenvalues hn ⟨i, hi⟩ := by
   exact T.sq_singularValues_fin hn ⟨i, hi⟩
 
@@ -179,19 +183,20 @@ public theorem injective_theorem
   have := (adjoint T ∘ₗ T).not_hasEigenvalue_zero_tfae.out 0 4
   rw [←this]
   rw [not_iff_not]
-  constructor <;> intro h
-  · -- Plan: If 0 is an eigenvalue, then it equals (T*T).eigenvalues i for some i
-    /-obtain ⟨⟨i, hi₁⟩, hi₂⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
-    rw [Finset.mem_image]
-    use i, Finset.mem_range.mpr hi₁-/
-    obtain ⟨i, hi₂⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
-    rw [RCLike.ofReal_eq_zero] at hi₂
-    rw [Finset.mem_image]
+  rw [Finset.mem_image]
+  constructor
+  · intro h
+    obtain ⟨i, hi⟩ := T.isSymmetric_adjoint_comp_self.exists_eigenvalues_eq rfl h
+    rw [RCLike.ofReal_eq_zero] at hi
     use i, Finset.mem_range.mpr i.isLt
     rw [T.singularValues_fin rfl]
-    rw [hi₂]
+    rw [hi]
     simp
-  · sorry
+  · intro ⟨i, hi₁, hi₂⟩
+    --rw [←sq_eq_zero_iff] at hi₂
+    --rw [T.sq_singularValues_of_lt rfl (Finset.mem_range.mp hi₁)] at hi₂
+    --rw [RCLike.ofReal_eq_zero] at hi₂
+    sorry
 
 public theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
