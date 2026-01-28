@@ -653,6 +653,17 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.Algebra.Homology.SpectralObject.Cycles
+public import Mathlib.Algebra.Homology.SpectralObject.Differentials
+public import Mathlib.Algebra.Homology.SpectralObject.EpiMono
+public import Mathlib.Algebra.Homology.SpectralObject.FirstPage
+public import Mathlib.Algebra.Homology.SpectralObject.HasSpectralSequence
+public import Mathlib.Algebra.Homology.SpectralObject.Homology
+public import Mathlib.Algebra.Homology.SpectralObject.Page
+public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
+public import Mathlib.Algebra.Homology.SpectralSequence.Basic
+public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.Square
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Algebra.Homology.TotalComplexShift
@@ -2949,6 +2960,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
@@ -2961,6 +2973,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
+public import Mathlib.CategoryTheory.ObjectProperty.ShiftAdditive
 public import Mathlib.CategoryTheory.ObjectProperty.SiteLocal
 public import Mathlib.CategoryTheory.ObjectProperty.Small
 public import Mathlib.CategoryTheory.Opposites
@@ -3193,6 +3206,10 @@ public import Mathlib.CategoryTheory.Triangulated.Rotate
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
+public import Mathlib.CategoryTheory.Triangulated.TStructure.SpectralObject
+public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.CategoryTheory.Triangulated.TriangleShift
 public import Mathlib.CategoryTheory.Triangulated.Triangulated
@@ -5732,6 +5749,7 @@ public import Mathlib.Order.WellFounded
 public import Mathlib.Order.WellFoundedSet
 public import Mathlib.Order.WellQuasiOrder
 public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBotTop
 public import Mathlib.Order.Zorn
 public import Mathlib.Order.ZornAtoms
 public import Mathlib.Probability.BorelCantelli
