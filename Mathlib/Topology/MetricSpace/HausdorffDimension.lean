@@ -474,7 +474,7 @@ theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH
   dimH_of_mem_nhds (mem_interior_iff_mem_nhds.1 hx)
 
 /- The Hausdorff dimension of a nonempty convex set equals the dimension of its affine span. -/
-theorem Convex.dimH_eq_finrank_vectorSpan' {s : Set E} (hcvx : Convex ℝ s) (hne : s.Nonempty) :
+theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne : s.Nonempty) :
     dimH s = finrank ℝ (vectorSpan ℝ s) := by
   haveI := hne.to_subtype
   let φ := AffineIsometryEquiv.constVSub ℝ
