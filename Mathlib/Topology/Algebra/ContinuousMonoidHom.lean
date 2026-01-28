@@ -239,6 +239,20 @@ instance : CommMonoid (A →ₜ* E) where
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
 
+@[to_additive (attr := simp)]
+theorem mul_apply {A B : Type*} [Monoid A] [CommMonoid B]
+    [TopologicalSpace A] [TopologicalSpace B] [ContinuousMul B]
+    (f g : ContinuousMonoidHom A B) (a : A) : (f * g) a = f a * g a := by
+  rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply {A B : Type*} [Monoid A] [CommMonoid B]
+    [TopologicalSpace A] [TopologicalSpace B] [ContinuousMul B]
+    (f : ContinuousMonoidHom A B) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+  induction n
+  case zero => rw [pow_zero, pow_zero, one_toFun]
+  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
+
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
 def coprod (f : ContinuousMonoidHom A E) (g : ContinuousMonoidHom B E) :
