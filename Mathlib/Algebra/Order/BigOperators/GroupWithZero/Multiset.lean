@@ -38,11 +38,19 @@ theorem prod_map_le_prod_map₀ {ι : Type*} {s : Multiset ι} (f : ι → R) (g
   simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
   apply List.prod_map_le_prod_map₀ f g h0 h
 
-theorem prod_map_le_pow_card {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : Multiset L}
+theorem prod_map_le_pow_card₀ {ι : Type*} {f : ι → R} {r : R} {t : Multiset ι}
     (hf0 : ∀ x ∈ t, 0 ≤ f x) (hf : ∀ x ∈ t, f x ≤ r) :
     (map f t).prod ≤ r ^ card t := by
-  induction t using Quotient.inductionOn
-  simp_all [List.prod_map_le_pow_length₀]
+  convert prod_map_le_prod_map₀ f (Function.const ι r) hf0 hf
+  simp
+
+@[deprecated (since := "2026-01-18")] alias prod_map_le_pow_card := prod_map_le_pow_card₀
+
+lemma prod_le_pow_card₀ (s : Multiset R) (n : R) (hf0 : ∀ (x : R), x ∈ s → 0 ≤ x)
+    (hf : ∀ (x : R), x ∈ s → x ≤ n) :
+    s.prod ≤ n ^ s.card := by
+  convert prod_map_le_pow_card₀ (f := @id R) hf0 hf
+  simp
 
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
