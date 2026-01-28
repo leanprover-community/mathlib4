@@ -26,21 +26,14 @@ variable {ι α β : Type*}
 
 namespace Multiset
 section OrderedCommMonoid
-variable [CommMonoid α] [PartialOrder α] {s t : Multiset α} {a : α}
 
-@[to_additive sum_nonneg]
-lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
-  Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
+section
+
+variable [CommMonoid α] [PartialOrder α] {s t : Multiset α} {a : α}
 
 @[to_additive]
 lemma single_le_prod [IsOrderedMonoid α] : (∀ x ∈ s, (1 : α) ≤ x) → ∀ x ∈ s, x ≤ s.prod :=
   Quotient.inductionOn s fun l hl x hx => by simpa using List.single_le_prod hl x hx
-
-@[to_additive sum_le_card_nsmul]
-lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
-    s.prod ≤ n ^ card s := by
-  induction s using Quotient.inductionOn
-  simpa using List.prod_le_pow_card _ _ h
 
 @[to_additive all_zero_of_le_zero_le_of_sum_eq_zero]
 lemma all_one_of_le_one_le_of_prod_eq_one [IsOrderedMonoid α] :
@@ -48,6 +41,20 @@ lemma all_one_of_le_one_le_of_prod_eq_one [IsOrderedMonoid α] :
   Quotient.inductionOn s (by
     simp only [quot_mk_to_coe, prod_coe, mem_coe]
     exact fun l => List.all_one_of_le_one_le_of_prod_eq_one)
+
+end
+
+variable [CommMonoid α] [Preorder α] {s t : Multiset α} {a : α}
+
+@[to_additive sum_nonneg]
+lemma one_le_prod_of_one_le [MulLeftMono α] : (∀ x ∈ s, (1 : α) ≤ x) → 1 ≤ s.prod :=
+  Quotient.inductionOn s fun l hl => by simpa using List.one_le_prod_of_one_le hl
+
+@[to_additive sum_le_card_nsmul]
+lemma prod_le_pow_card [MulLeftMono α] (s : Multiset α) (n : α) (h : ∀ x ∈ s, x ≤ n) :
+    s.prod ≤ n ^ card s := by
+  induction s using Quotient.inductionOn
+  simpa using List.prod_le_pow_card _ _ h
 
 @[to_additive]
 lemma prod_le_prod_of_rel_le [MulLeftMono α] (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
@@ -80,7 +87,7 @@ lemma pow_card_le_prod [MulLeftMono α] (h : ∀ x ∈ s, a ≤ x) : a ^ card s 
 end OrderedCommMonoid
 
 section
-variable [CommMonoid α] [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β]
+variable [CommMonoid α] [CommMonoid β] [Preorder β] [MulLeftMono β]
 
 @[to_additive le_sum_of_subadditive_on_pred]
 lemma le_prod_of_submultiplicative_on_pred (f : α → β)
@@ -114,7 +121,8 @@ lemma le_prod_nonempty_of_submultiplicative (f : α → β) (h_mul : ∀ a b, f 
 end
 
 section OrderedCancelCommMonoid
-variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Multiset ι} {f g : ι → α}
+variable [CommMonoid α] [Preorder α] [MulLeftMono α] [MulLeftStrictMono α]
+  {s : Multiset ι} {f g : ι → α}
 
 @[to_additive sum_lt_sum]
 lemma prod_lt_prod' (hle : ∀ i ∈ s, f i ≤ g i) (hlt : ∃ i ∈ s, f i < g i) :
@@ -132,12 +140,14 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 end OrderedCancelCommMonoid
 
 section CanonicallyOrderedMul
-variable [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] {m : Multiset α} {a : α}
+variable [CommMonoid α] {m : Multiset α} {a : α}
 
-@[to_additive] lemma prod_eq_one_iff [IsOrderedMonoid α] : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
+@[to_additive] lemma prod_eq_one_iff [PartialOrder α] [CanonicallyOrderedMul α]
+    [IsOrderedMonoid α] : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
 
-@[to_additive] lemma le_prod_of_mem (ha : a ∈ m) : a ≤ m.prod := by
+@[to_additive] lemma le_prod_of_mem [Preorder α] [CanonicallyOrderedMul α]
+    (ha : a ∈ m) : a ≤ m.prod := by
   obtain ⟨t, rfl⟩ := exists_cons_of_mem ha
   rw [prod_cons]
   exact _root_.le_mul_right (le_refl a)
