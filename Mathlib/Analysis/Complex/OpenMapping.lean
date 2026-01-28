@@ -177,7 +177,7 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
 Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
 constant.
 -/
-theorem AnalyticOnNhd.constant_if_re_constant {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+theorem AnalyticOnNhd.eq_const_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
     (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
@@ -189,7 +189,7 @@ theorem AnalyticOnNhd.constant_if_re_constant {U : Set ℂ} {c₀ : ℝ} (h₁f 
 Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
 constant.
 -/
-theorem AnalyticOnNhd.constant_if_re_constant₁ {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+theorem AnalyticOnNhd.eq_const_add_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
     (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
     ∃ (c : ℝ), ∀ x ∈ U, f x = c₀ + c * I := by
   obtain ⟨cc, hcc⟩ := constant_if_re_constant h₁f h₂f h₁U h₂U
