@@ -66,8 +66,8 @@ lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
     H.Normal := by
   induction hN with
   | top => simp
-  | step H K h_le hSubn hN ih =>
-    obtain rfl | rfl := Normal.eq_bot_or_eq_top ih
+  | step H K h_le hSubn hN Knorm =>
+    obtain rfl | rfl := Knorm.eq_bot_or_eq_top
     · grind
     · grind [!normal_subgroupOf_iff_le_normalizer_inf, inf_of_le_left, normalizer_eq_top_iff]
 
@@ -89,7 +89,7 @@ lemma iff_eq_top_or_exists :
       right
       obtain rfl | hH := eq_or_ne H K
       · use K'
-      · exact ⟨K, by simpa [*] using lt_of_le_of_ne HK hH⟩
+      · exact ⟨K, by simpa [*] using HK.lt_of_ne hH⟩
   mpr h := by
     obtain rfl | ⟨K, HK, Ksn, h⟩ := h
     · exact top
@@ -141,17 +141,14 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
     | zero => simp_all
     | succ n ih =>
       rintro J ⟨F, hF, H_le, rfl, ih1⟩
-      apply step
-      · apply hF 0
-      · exact ih ⟨fun n ↦ F (n + 1), by grind only⟩
-      · grind only
+      exact step _ _ (hF 0) (ih ⟨fun n ↦ F (n + 1), by simp [*]⟩) (H_le _)
 
 alias ⟨exists_chain, _⟩ := isSubnormal_iff
 
 /--
 Subnormality is transitive.
 
-This version involves an explicit `subtype`, which the version `IsSubnormal.trans` does not.
+This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not.
 -/
 protected
 lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
