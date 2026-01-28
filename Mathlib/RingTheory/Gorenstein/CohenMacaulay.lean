@@ -1039,9 +1039,8 @@ lemma ext_isPrincipal_of_injectiveDimension_eq_ringKrullDim [IsNoetherianRing R]
     (ne_top_of_le_ne_top (Ideal.IsPrime.ne_top') (Ideal.span_le.mpr mem))
   rw [← Nat.cast_inj.mp len, ext_isPrincipal_iff rs reg mem, linearMap_isPrincipal_iff _ netop]
   have h2' : ringKrullDim (R ⧸ Ideal.ofList rs) = 0 := by
-    apply (WithBot.add_natCast_cancel _ _ rs.length).mp
-    rw [ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg]
-    simp [Nat.cast_inj.mp len, h2]
+    rw [← WithBot.add_natCast_cancel (c := rs.length), zero_add,
+      ringKrullDim_add_length_eq_ringKrullDim_of_isRegular rs reg, Nat.cast_inj.mp len, h2]
   have h1' : injectiveDimension (ModuleCat.of (R ⧸ Ideal.ofList rs) (R ⧸ Ideal.ofList rs)) = 0 := by
     rw [injectiveDimension_eq_ringKrullDim_of_isGorensteinLocalRing, h2']
   exact hom_isPrincipal_of_injectiveDimension_eq_ringKrullDim_eq_zero h1' h2'
