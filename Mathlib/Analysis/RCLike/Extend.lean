@@ -67,15 +67,31 @@ theorem extendRCLike_apply (fr : Dual ℝ F) (x : F) :
     fr.extendRCLike x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
 @[simp]
-theorem extendRCLike_apply_re (fr : Dual ℝ F) (x : F) : re (fr.extendRCLike x : 𝕜) = fr x := by
+theorem re_extendRCLike_apply (fr : Dual ℝ F) (x : F) : re (fr.extendRCLike x : 𝕜) = fr x := by
   simp only [extendRCLike_apply, map_sub, zero_mul, mul_zero, sub_zero, rclike_simps]
+
+@[simp]
+lemma im_extendRCLike_apply (g : Dual ℝ F) (x : F) :
+    im ((extendRCLike g) x : 𝕜) = - g ((I : 𝕜) • x) := by
+  obtain (h | h) := RCLike.I_eq_zero_or_im_I_eq_one (K := 𝕜)
+  all_goals simp [h, extendRCLike_apply]
 
 theorem norm_extendRCLike_apply_sq (fr : Dual ℝ F) (x : F) :
     ‖(fr.extendRCLike x : 𝕜)‖ ^ 2 = fr (conj (fr.extendRCLike x : 𝕜) • x) := calc
   ‖(fr.extendRCLike x : 𝕜)‖ ^ 2 = re (conj (fr.extendRCLike x) * fr.extendRCLike x : 𝕜) := by
     rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
   _ = fr (conj (fr.extendRCLike x : 𝕜) • x) := by
-    rw [← smul_eq_mul, ← map_smul, extendRCLike_apply_re]
+    rw [← smul_eq_mul, ← map_smul, re_extendRCLike_apply]
+
+/-- The extension `Module.Dual.extendRCLike` as a linear equivalence between the algebraic duals. -/
+@[simps -isSimp apply symm_apply]
+noncomputable def extendRCLikeₗ : Dual ℝ F ≃ₗ[ℝ] Dual 𝕜 F where
+  toFun := extendRCLike (𝕜 := 𝕜)
+  invFun f := RCLike.reLm.comp (f.restrictScalars ℝ)
+  left_inv f := by ext; simp
+  right_inv f := by ext; apply RCLike.ext <;> simp
+  map_add' := by intros; ext; simp [extendRCLike_apply]; ring
+  map_smul' := by intros; ext; simp [extendRCLike_apply, real_smul_eq_coe_mul]; ring
 
 end Module.Dual
 
@@ -98,6 +114,33 @@ noncomputable def extendRCLike (fr : StrongDual ℝ F) : StrongDual 𝕜 F where
 theorem extendRCLike_apply (fr : StrongDual ℝ F) (x : F) :
     fr.extendRCLike x = (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) := rfl
 
+@[simp]
+lemma re_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
+    re ((extendRCLike g) x : 𝕜) = g x := by
+  simp [extendRCLike_apply]
+
+@[deprecated (since := "2026-01-28")] alias _root_.RCLike.re_extendTo𝕜ₗ := re_extendRCLike_apply
+
+@[simp]
+lemma im_extendRCLike_apply (g : StrongDual ℝ F) (x : F) :
+    re ((extendRCLike g) x : 𝕜) = g x := by
+  simp [extendRCLike_apply]
+
+/-- The extension `StrongDual.extendRCLike` as a linear equivalence between the algebraic duals.
+
+When `F` is a normed space, this can be upgraded to an *isometric* linear equivalence, see
+`StrondDual.extendRCLikeₗᵢ`. -/
+@[simps -isSimp apply symm_apply]
+noncomputable def extendRCLikeₗ : StrongDual ℝ F ≃ₗ[ℝ] StrongDual 𝕜 F where
+  toFun := StrongDual.extendRCLike (𝕜 := 𝕜)
+  invFun f := RCLike.reCLM.comp (f.restrictScalars ℝ)
+  left_inv f := by ext; simp
+  right_inv f := by ext; apply RCLike.ext <;> simp [extendRCLike_apply]
+  map_add' := by intros; ext; simp [extendRCLike_apply]; ring
+  map_smul' := by intros; ext; simp [extendRCLike_apply, real_smul_eq_coe_mul]; ring
+
+@[deprecated (since := "2026-01-28")] alias _root_.RCLike.extendTo𝕜ₗ := extendRCLikeₗ
+
 end StrongDual
 
 namespace LinearMap
@@ -106,7 +149,7 @@ open Module.Dual
 
 @[deprecated (since := "2026-01-28")] alias extendTo𝕜' := extendRCLike
 @[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply := extendRCLike_apply
-@[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply_re := extendRCLike_apply_re
+@[deprecated (since := "2026-01-28")] alias extendTo𝕜'_apply_re := re_extendRCLike_apply
 @[deprecated (since := "2026-01-28")] alias norm_extendTo𝕜'_apply_sq := norm_extendRCLike_apply_sq
 @[deprecated (since := "2026-01-28")] alias extendTo𝕜 := extendRCLike
 @[deprecated (since := "2026-01-28")] alias extendTo𝕜_apply := extendRCLike_apply

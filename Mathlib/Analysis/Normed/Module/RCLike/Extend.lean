@@ -40,14 +40,18 @@ theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 
 @[simp]
-theorem norm_extendRCLike (fr : StrongDual ℝ F) :‖(fr.extendRCLike : StrongDual 𝕜 F)‖ = ‖fr‖ :=
+theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ = ‖fr‖ :=
   le_antisymm (ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fr.norm_extendRCLike_bound) <|
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
-        ‖fr x‖ = ‖re (fr.extendRCLike x : 𝕜)‖ :=
-          congr(‖$(Module.Dual.extendRCLike_apply_re _ x)‖).symm
+        ‖fr x‖ = ‖re (fr.extendRCLike x : 𝕜)‖ := by simp
         _ ≤ ‖(fr.extendRCLike x : 𝕜)‖ := abs_re_le_norm _
         _ ≤ ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
+
+/-- `StrongDual.extendRCLike` bundled into a linear isometry equivalence. -/
+noncomputable def extendRCLikeₗᵢ : StrongDual ℝ F ≃ₗᵢ[ℝ] StrongDual 𝕜 F where
+  toLinearEquiv := StrongDual.extendRCLikeₗ
+  norm_map' := norm_extendRCLike
 
 end StrongDual
 

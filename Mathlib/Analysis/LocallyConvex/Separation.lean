@@ -207,40 +207,9 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   exact ((hxy.trans_lt (hlA y hy)).trans hl).not_ge le_rfl
 end
 
-section RCLike
-
-variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
-
-namespace StrongDual
-
-open RCLike
-variable [ContinuousConstSMul 𝕜 E]
-
-/-- Real linear extension of continuous extension of `LinearMap.extendTo𝕜'` -/
-noncomputable def extendRCLikeₗ : StrongDual ℝ E →ₗ[ℝ] StrongDual 𝕜 E :=
-  letI to𝕜 (fr : StrongDual ℝ E) : StrongDual 𝕜 E :=
-    { toLinearMap := fr.extendRCLike (𝕜 := 𝕜)
-      cont := show Continuous fun x ↦ (fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜) by fun_prop }
-  have h fr x : to𝕜 fr x = ((fr x : 𝕜) - (I : 𝕜) * (fr ((I : 𝕜) • x) : 𝕜)) := rfl
-  { toFun := to𝕜
-    map_add' := by intros; ext; simp [h]; ring
-    map_smul' := by intros; ext; simp [h, real_smul_eq_coe_mul]; ring }
-
-@[deprecated (since := "2026-01-28")] alias _root_.RCLike.extendTo𝕜ₗ := extendRCLikeₗ
-
-@[simp]
-lemma re_extendRCLikeₗ (g : StrongDual ℝ E) (x : E) :
-    re ((extendRCLikeₗ g) x : 𝕜) = g x := by
-  have h g (x : E) : extendRCLikeₗ g x = ((g x : 𝕜) - (I : 𝕜) * (g ((I : 𝕜) • x) : 𝕜)) := rfl
-  simp only [h, map_sub, ofReal_re, mul_re, I_re, zero_mul, ofReal_im, mul_zero,
-    sub_self, sub_zero]
-
-@[deprecated (since := "2026-01-28")] alias _root_.RCLike.re_extendTo𝕜ₗ := re_extendRCLikeₗ
-
-end StrongDual
-
 namespace RCLike
 
+variable [RCLike 𝕜] [Module 𝕜 E] [IsScalarTower ℝ 𝕜 E]
 variable [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem separate_convex_open_set {s : Set E}
@@ -249,8 +218,7 @@ theorem separate_convex_open_set {s : Set E}
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, hg⟩ := _root_.separate_convex_open_set hs₀ hs₁ hs₂ hx₀
   use g.extendRCLikeₗ
-  simp only [g.re_extendRCLikeₗ]
-  exact hg
+  simpa [g.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht : Convex ℝ t)
     (disj : Disjoint s t) : ∃ (f : StrongDual 𝕜 E) (u : ℝ), (∀ a ∈ s, re (f a) < u) ∧
@@ -258,16 +226,14 @@ theorem geometric_hahn_banach_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (ht
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open hs₁ hs₂ ht disj
   use f.extendRCLikeₗ
-  simp only [f.re_extendRCLikeₗ]
-  exact Exists.intro u h
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 theorem geometric_hahn_banach_open_point (hs₁ : Convex ℝ s) (hs₂ : IsOpen s) (disj : x ∉ s) :
     ∃ f : StrongDual 𝕜 E, ∀ a ∈ s, re (f a) < re (f x) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, h⟩ := _root_.geometric_hahn_banach_open_point hs₁ hs₂ disj
   use f.extendRCLikeₗ
-  simp only [f.re_extendRCLikeₗ]
-  exact fun a a_1 ↦ h a a_1
+  simpa [f.extendRCLikeₗ_apply]
 
 theorem geometric_hahn_banach_point_open (ht₁ : Convex ℝ t) (ht₂ : IsOpen t) (disj : x ∉ t) :
     ∃ f : StrongDual 𝕜 E, ∀ b ∈ t, re (f x) < re (f b) :=
@@ -280,8 +246,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
   use f.extendRCLikeₗ
-  simp only [f.re_extendRCLikeₗ]
-  exact Exists.intro u h
+  simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
 variable [LocallyConvexSpace ℝ E]
 
@@ -291,8 +256,7 @@ theorem geometric_hahn_banach_compact_closed (hs₁ : Convex ℝ s) (hs₂ : IsC
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨g, u, v, h1⟩ := _root_.geometric_hahn_banach_compact_closed hs₁ hs₂ ht₁ ht₂ disj
   use g.extendRCLikeₗ
-  simp only [g.re_extendRCLikeₗ, exists_and_left]
-  exact ⟨u, h1.1, v, h1.2⟩
+  simpa [g.extendRCLikeₗ_apply, exists_and_left] using ⟨u, h1.1, v, h1.2⟩
 
 theorem geometric_hahn_banach_closed_compact (hs₁ : Convex ℝ s) (hs₂ : IsClosed s)
     (ht₁ : Convex ℝ t) (ht₂ : IsCompact t) (disj : Disjoint s t) :
@@ -329,4 +293,5 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
+
 end RCLike
