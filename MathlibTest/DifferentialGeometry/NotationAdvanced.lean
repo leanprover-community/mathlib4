@@ -277,8 +277,6 @@ set_option trace.Elab.DiffGeo.MDiff true in
 variable {f : M → E'' →SL[id'] E'''} in
 /--
 error: Could not find a model with corners for `E'' →SL[id'] E'''`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -527,8 +525,6 @@ noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
 set_option trace.Elab.DiffGeo.MDiff true in
 /--
 error: Could not find a model with corners for `↑(Set.Icc x y)`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
