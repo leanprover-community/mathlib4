@@ -6,7 +6,6 @@ Authors: Michał Świętek
 module
 
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
-public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -156,16 +155,12 @@ theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) 
 /-- Composition of canonical projections: `proj n (proj m x) = proj (min n m) x`. -/
 theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m) x := by
   simp only [proj_apply, map_sum, map_smul]
-  -- Now LHS is ∑ j < m, c_j • ∑ i < n, (coord i)(e_j) • e_i
-  -- Use biorthogonality to simplify (coord i)(e_j)
   have h_ortho : ∀ i j, (b.coord i) (e j) = if i = j then 1 else 0 := by
     intro i j
     rw [b.ortho i j, Pi.single_apply]
   simp_rw [h_ortho]
-  -- Now inner sum is ∑ i < n, (if i = j then 1 else 0) • e_i = if j < n then e_j else 0
   simp only [ite_smul, one_smul, zero_smul]
   simp_rw [Finset.sum_ite_eq', Finset.mem_range]
-  -- Now LHS is ∑ j < m, c_j • (if j < n then e_j else 0)
   simp only [smul_ite, smul_zero]
   rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
   congr 1
