@@ -56,4 +56,12 @@ def mapContinuousMulEquiv (f : M ≃ₜ* N) : Mˣ ≃ₜ* Nˣ :=
     continuous_toFun := f.continuous.units_map _
     continuous_invFun := f.symm.continuous.units_map _ }
 
+@[simp]
+theorem symm_mapContinuousMulEquiv (f : M ≃ₜ* N) :
+    (mapContinuousMulEquiv f).symm = mapContinuousMulEquiv f.symm := rfl
+
+@[simp]
+theorem toMulEquiv_mapContinuousMulEquiv (f : M ≃ₜ* N) :
+    (mapContinuousMulEquiv f : Mˣ ≃* Nˣ) = mapEquiv f := rfl
+
 end Units
