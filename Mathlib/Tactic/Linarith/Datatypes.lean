@@ -5,9 +5,9 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Tactic.Linarith.Lemmas
-public meta import Mathlib.Tactic.NormNum.Basic
-public meta import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Tactic.Linarith.Lemmas
+public import Mathlib.Tactic.NormNum.Basic
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # Datatypes for `linarith`

@@ -11,6 +11,7 @@ public import Mathlib.Logic.IsEmpty
 public import Mathlib.Logic.Relator
 public import Mathlib.Util.CompileInductive
 public import Aesop
+public import Batteries.Tactic.Lint.Simp
 
 /-!
 # Option of a type
@@ -71,11 +72,6 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _ => mem_unique
 
 theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
-
-/-- `Option.map f` is injective if `f` is injective. -/
-theorem map_injective {f : α → β} (Hf : Function.Injective f) : Function.Injective (Option.map f)
-  | none, none, _ => rfl
-  | some a₁, some a₂, H => by rw [Hf (Option.some.inj H)]
 
 @[simp]
 theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=

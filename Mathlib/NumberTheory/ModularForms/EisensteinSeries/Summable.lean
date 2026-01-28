@@ -166,6 +166,11 @@ lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
   simpa [-Int.cofinite_eq] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real
 
+@[deprecated linear_isTheta_right_add (since := "2025-12-27")]
+lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  simpa using linear_isTheta_right_add c 0 z
+
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
   apply IsTheta.add_isLittleO
@@ -249,13 +254,13 @@ lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
       (linear_inv_isBigO_right c₁ z).comp_neg_int
 
 lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
     (linear_inv_isBigO_right_add c₁ 1 z)
 
 lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹  := by
+    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
   simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)

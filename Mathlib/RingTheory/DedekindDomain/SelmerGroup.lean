@@ -175,7 +175,7 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
-  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
+  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K / n)
   map_one' := funext fun _ => map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 

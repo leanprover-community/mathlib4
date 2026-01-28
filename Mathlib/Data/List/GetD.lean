@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Util.AssertExists
 
 /-! # getD and getI
 

@@ -34,7 +34,7 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 @[expose] public section
 
 
-library_note2 «category theory universes»
+library_note «category theory universes»
 /--
 The typeclass `Category C` describes morphisms associated to objects of type `C : Type u`.
 
@@ -86,7 +86,7 @@ namespace CategoryTheory
 /-- A preliminary structure on the way to defining a category,
 containing the data, but none of the axioms. -/
 @[pp_with_univ]
-class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v + 1} obj where
+class CategoryStruct (obj : Type u) : Type max u (v + 1) extends Quiver.{v} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
   /-- Composition of morphisms in a category, written `f ≫ g`. -/

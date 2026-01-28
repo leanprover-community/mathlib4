@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.CharP.Defs
 public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Data.Int.Interval
-public import Mathlib.Tactic.Zify
 
 /-!
 # Sums/products over integer intervals
@@ -44,5 +43,15 @@ lemma prod_Icc_succ_eq_mul_endpoints {R : Type*} [CommGroup R] (f : ℤ → R) {
     grind
   · rw [Icc_succ_succ, prod_union (by simp)]
     grind
+
+@[to_additive]
+lemma prod_Ico_int_div (b : ℕ) {α : Type*} [CommGroup α] (f : ℤ → α) :
+    ∏ n ∈ Ico (-b : ℤ) b, f n / f (n + 1) = f (-b) / f b := by
+  induction b with
+  | zero => simp
+  | succ b ihb =>
+    simp only [Nat.cast_add_one, Ico_succ_succ]
+    rw [prod_union (by aesop), prod_insert (by grind), prod_singleton, ihb, ← mul_assoc, mul_div]
+    simp [mul_comm, mul_div, ← mul_assoc]
 
 end Finset
