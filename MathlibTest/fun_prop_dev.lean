@@ -448,7 +448,7 @@ def f3 (a : α) := a
 
 @[fun_prop]
 theorem f3_lin : Lin (fun x : α => f3 x) := by
-  unfold f3; fun_prop (maxTransitionDepth := 0) (maxSteps := 10)
+  fun_prop (maxTransitionDepth := 0) (maxSteps := 10) [f3]
 
 example : Con (fun x : α => f3 x) := by fun_prop
 

@@ -120,7 +120,9 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 
 @[continuity, fun_prop]
-theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by unfold sqrt; fun_prop
+theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by
+  -- TODO: why does this fail? fun_prop [sqrt]
+  unfold sqrt; fun_prop
 
 @[simp]
 lemma map_sqrt_atTop : map (√·) atTop = atTop := by
