@@ -251,14 +251,7 @@ theorem pathComponent_symm : x ∈ pathComponent y ↔ y ∈ pathComponent x :=
   ⟨fun h => mem_pathComponent_of_mem h, fun h => mem_pathComponent_of_mem h⟩
 
 theorem pathComponent_congr (h : x ∈ pathComponent y) : pathComponent x = pathComponent y := by
-  ext z
-  constructor
-  · intro h'
-    rw [pathComponent_symm]
-    exact (h.trans h').symm
-  · intro h'
-    rw [pathComponent_symm] at h' ⊢
-    exact h'.trans h
+  grind [pathComponent_symm, mem_pathComponent_iff, Joined.trans]
 
 theorem pathComponent_subset_component (x : X) : pathComponent x ⊆ connectedComponent x :=
   fun y h =>

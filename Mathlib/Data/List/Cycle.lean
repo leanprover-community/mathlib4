@@ -490,11 +490,11 @@ def Mem (s : Cycle α) (a : α) : Prop :=
 instance : Membership α (Cycle α) :=
   ⟨Mem⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l :=
   Iff.rfl
 
-@[simp]
+@[simp, grind .]
 theorem notMem_nil (a : α) : a ∉ nil :=
   List.not_mem_nil
 
@@ -838,7 +838,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
 @[simp]
 theorem Chain.nil (r : α → α → Prop) : Cycle.Chain r (@nil α) := by trivial
 
-@[simp]
+@[simp, grind =]
 theorem chain_coe_cons (r : α → α → Prop) (a : α) (l : List α) :
     Chain r (a :: l) ↔ List.IsChain r (a :: (l ++ [a])) :=
   Iff.rfl
@@ -902,20 +902,7 @@ theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := b
     exact hs b (Hl hb) a Ha
 
 theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈ s, r a b :=
-  ⟨by
-    induction s with
-    | nil => exact fun _ b hb ↦ (notMem_nil _ hb).elim
-    | cons a l => ?_
-    intro hs b hb c hc
-    rw [Cycle.chain_coe_cons, List.isChain_iff_pairwise] at hs
-    simp only [pairwise_append, pairwise_cons, mem_append, mem_singleton, List.not_mem_nil,
-      IsEmpty.forall_iff, imp_true_iff, Pairwise.nil, forall_eq, true_and] at hs
-    simp only [mem_coe_iff, mem_cons] at hb hc
-    rcases hb with (rfl | hb) <;> rcases hc with (rfl | hc)
-    · exact hs.1 c (Or.inr rfl)
-    · exact hs.1 c (Or.inl hc)
-    · exact hs.2.2 b hb
-    · exact _root_.trans (hs.2.2 b hb) (hs.1 c (Or.inl hc)), Cycle.chain_of_pairwise⟩
+  ⟨by induction s with grind +splitIndPred, Cycle.chain_of_pairwise⟩
 
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [Std.Irrefl r] (h : Chain r s) : s = Cycle.nil := by
   induction s with

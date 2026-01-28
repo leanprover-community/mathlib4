@@ -133,14 +133,7 @@ theorem eqId_iff_eq : A.EqId ↔ A.1 = Δ := by
     exact eq_id_of_epi f
 
 theorem eqId_iff_len_eq : A.EqId ↔ A.1.unop.len = Δ.unop.len := by
-  rw [eqId_iff_eq]
-  constructor
-  · intro h
-    rw [h]
-  · intro h
-    rw [← unop_inj_iff]
-    ext
-    exact h
+  grind [SimplexCategory.ext_iff, eqId_iff_eq]
 
 theorem eqId_iff_len_le : A.EqId ↔ Δ.unop.len ≤ A.1.unop.len := by
   rw [eqId_iff_len_eq]
