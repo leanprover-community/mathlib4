@@ -496,7 +496,7 @@ theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n :
 theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
   linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
-theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ (T R m '' Set.Icc 0 n) := by
+theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 n) := by
   induction n using Nat.twoStepInduction
   case zero => simp
   case one =>
@@ -505,7 +505,8 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ (T R m '' Set.Icc 
   case more n h₀ _ =>
     push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
-    · exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
+    · exact Submodule.smul_of_tower_mem _ 2
+        (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
 /-- `T` defines an injection from `ℕ` to `R[X]` given by `T R n` -/
 noncomputable def Tnat [IsDomain R] [NeZero (2 : R)] : ℕ ↪ R[X] :=
@@ -870,15 +871,15 @@ theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
       -ih2 + 2 * (X : R[X]) * ih1 + h₁ + 2 * h₃ + (n + 1) * h₂
 
 theorem T_derivative_mem_span_T (n : ℕ) :
-    derivative (T R n) ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - 1)} := by
+    derivative (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - 1)) := by
   by_cases! hn : n = 0
   · simp [hn]
   rw [T_derivative_eq_U, ← smul_eq_mul]; norm_cast
   refine Submodule.smul_of_tower_mem _ n ?_
-  convert U_mem_span_T R (n - 1) using 2; grind
+  convert U_mem_span_T R (n - 1) using 2; lia
 
 theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
-    derivative^[k] (T R n) ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - k)} := by
+    derivative^[k] (T R n) ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - k)) := by
   induction k
   case zero =>
     rw [Function.iterate_zero_apply]
@@ -888,16 +889,15 @@ theorem T_iterate_derivative_mem_span_T (n k : ℕ) :
     let derivative' : R[X] →ₗ[ℕ] R[X] :=
     { toFun := derivative, map_add' := derivative.map_add'
       map_smul' m P := by induction m <;> simp }
-    suffices Submodule.span ℕ {derivative (T R m) | m ∈ Finset.Icc 0 (n - k)} ≤
-      Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 (n - (k + 1))} by
+    suffices Submodule.span ℕ ((fun m : ℕ => derivative (T R m)) '' Set.Icc 0 (n - k)) ≤
+      Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 (n - (k + 1))) by
       apply this
       convert Submodule.apply_mem_span_image_of_mem_span derivative' ih using 2
       simp [Set.image, derivative']
     refine Submodule.span_le.mpr (fun x hx => ?_)
-    rw [Set.mem_setOf_eq] at hx
     obtain ⟨m, hm, rfl⟩ := hx
     refine (Submodule.span_mono ?_) (T_derivative_mem_span_T (R := R) m)
-    grw [show m - 1 ≤ n - (k + 1) by grw [(Finset.mem_Icc.mp hm).2]; lia]
+    grw [show m - 1 ≤ n - (k + 1) by grw [(Set.mem_Icc.mp hm).2]; lia]
 
 theorem one_sub_X_sq_mul_derivative_T_eq_poly_in_T (n : ℤ) :
     (1 - X ^ 2) * derivative (T R (n + 1)) = (n + 1 : R[X]) * (T R n - X * T R (n + 1)) := by
