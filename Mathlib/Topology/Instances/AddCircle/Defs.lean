@@ -12,7 +12,6 @@ public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
-import Mathlib.Topology.Order.T5
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
