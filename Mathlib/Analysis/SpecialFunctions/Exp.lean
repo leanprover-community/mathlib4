@@ -200,6 +200,10 @@ namespace Real
 
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
+lemma two_le_exp_one : 2 ≤ exp 1 := by
+  rw [← one_add_one_eq_two]
+  exact add_one_le_exp 1
+
 theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_eq_sq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 
