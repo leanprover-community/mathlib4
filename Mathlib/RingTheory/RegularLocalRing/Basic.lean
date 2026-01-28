@@ -19,7 +19,7 @@ In this file, we prove that regular local ring is domain
 
 # Main definition and results
 
-* `isDomain_of_isRegularLocalRing` : a regular locla ring is domain
+* `isDomain_of_isRegularLocalRing` : a regular local ring is domain
 
 * `isRegular_of_span_eq_maximalIdeal` : for a regular local ring `R`, if a list of length equal to
   its dimension generates `maximalIdeal R`, it form a regular sequence.
@@ -162,8 +162,8 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
     have : ringKrullDim (R ⧸ Ideal.span (S : Set R)) + S.card ≤
       (Submodule.spanFinrank (maximalIdeal (R ⧸ Ideal.span (S : Set R)))) + S.card :=
       add_le_add_left (ringKrullDim_le_spanFinrank_maximalIdeal _) _
-    exact ⟨(WithBot.add_natCast_cancel _ _ S.card).mp
-      (le_antisymm (ge.trans le) this), le_antisymm (this.trans ge) le⟩
+    exact ⟨WithBot.add_natCast_cancel.mp (le_antisymm (ge.trans le) this),
+      le_antisymm (this.trans ge) le⟩
   tfae_have 3 → 1 := by
     classical
     rintro ⟨reg, dim⟩
@@ -245,7 +245,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
       SetLike.mem_coe, Set.mem_iUnion, exists_prop, not_or, not_exists, not_and] at xnmem
     obtain ⟨reg, dim⟩ := quotient_span_singleton R xmem xnmem.1
     simp only [hn, Nat.cast_add, Nat.cast_one] at dim
-    have ih' := ih (R ⧸ Ideal.span {x}) ((WithBot.add_natCast_cancel _ _ 1).mp dim)
+    have ih' := ih (R ⧸ Ideal.span {x}) (WithBot.add_one_cancel.mp dim)
     have : (Ideal.span {x}).IsPrime := (Ideal.Quotient.isDomain_iff_prime _).mp ih'
     obtain ⟨p, min, hp⟩ := Ideal.exists_minimalPrimes_le (bot_le (a := Ideal.span {x}))
     let _ : p.IsPrime := Ideal.minimalPrimes_isPrime min
