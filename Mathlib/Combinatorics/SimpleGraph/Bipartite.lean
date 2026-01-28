@@ -58,10 +58,6 @@ This file proves results about bipartite simple graphs, including several double
 For the formulation of double-counting arguments where a bipartite graph is considered as a
 relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/DoubleCounting.lean`.
 
-## TODO
-
-* Prove that `G.IsBipartite` iff `G` does not contain an odd cycle.
-  I.e., `G.IsBipartite ↔ ∀ n, (cycleGraph (2*n+1)).Free G`.
 -/
 
 @[expose] public section
