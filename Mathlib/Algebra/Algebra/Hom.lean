@@ -348,12 +348,34 @@ instance End : Monoid (A →ₐ[R] A) where
   one_mul _ := rfl
   mul_one _ := rfl
 
+theorem one_def : (1 : A →ₐ[R] A) = .id R A :=
+  rfl
+
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
   rfl
 
 @[simp]
+theorem coe_one : ⇑(1 : A →ₐ[R] A) = id :=
+  rfl
+
+@[simp]
+theorem toMonoidHom_one : ((1 : A →ₐ[R] A) : A →* A) = MonoidHom.id A :=
+  rfl
+
+theorem mul_def (φ ψ : A →ₐ[R] A) : φ * ψ = φ.comp ψ :=
+  rfl
+
+@[simp]
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
+  rfl
+
+@[simp]
+theorem coe_mul (φ ψ : A →ₐ[R] A) : ⇑(φ * ψ) = φ ∘ ψ :=
+  rfl
+
+@[simp]
+theorem toMonoidHom_mul (φ ψ : A →ₐ[R] A) : (φ * ψ : A →* A) = (φ : A →* A).comp ψ :=
   rfl
 
 @[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
