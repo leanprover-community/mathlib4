@@ -217,7 +217,6 @@ section OrderedCommRing
 variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R]
   (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
-@[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
   by_cases ha : a = 0; · simp [ha]
   refine
@@ -235,6 +234,11 @@ protected theorem le_add (a b : R) : abv a - abv b ≤ abv (a + b) := by
 @[bound]
 lemma sub_le_add (a b : R) : abv (a - b) ≤ abv a + abv b := by
   simpa only [← sub_eq_add_neg, AbsoluteValue.map_neg] using abv.add_le a (-b)
+
+instance addGroupSeminormClass : AddGroupSeminormClass (AbsoluteValue R S) R S :=
+  { AbsoluteValue.subadditiveHomClass with
+    map_zero := AbsoluteValue.map_zero
+    map_neg_eq_map f a := AbsoluteValue.map_neg f a}
 
 instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.subadditiveHomClass,
