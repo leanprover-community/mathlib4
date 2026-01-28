@@ -1,7 +1,8 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
+Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee, Julien Michel,
+Andrew Yang
 -/
 module
 
@@ -36,6 +37,8 @@ with integral coefficients.
 * `Polynomial.Chebyshev.T_mul`, the `(m * n)`-th Chebyshev polynomial of the first kind is the
   composition of the `m`-th and `n`-th Chebyshev polynomials of the first kind. There is a similar
   statement `Polynomial.Chebyshev.C_mul` for the `C` polynomials.
+* `Polynomial.Chebyshev.T_eq_sum_of_nat`, an explicit formula for the `n`-th Chebyshev polynomial of
+  the first kind.
 
 ## Implementation details
 
@@ -1091,5 +1094,52 @@ theorem C_mul (m n : ℤ) : C R (m * n) = (C R m).comp (C R n) := by
     have h₂ := congr_arg (comp · (C R n)) <| C_add_two R (-m - 1)
     simp only [sub_comp, mul_comp, X_comp] at h₂
     linear_combination (norm := ring_nf) -ih2 - h₂ - h₁ + C R n * ih1
+
+open Finset in
+theorem T_eq_sum_of_nat (n : ℕ) : T R n = ∑ k ∈ Icc 0 (n / 2),
+    (n.choose (2 * k) : R[X]) * ((X ^ 2 - 1) ^ k * X ^ (n - 2 * k)) := by
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one => simp
+  | more n ih0 ih1 =>
+    -- The key is `2 X T(n + 1) - T(n + 2) = T(n)`.
+    -- We shall verify that the summation also satisfies this recurrence relation.
+    dsimp at ih1 ⊢
+    rw [T_add_two, ih0, ih1, sub_eq_iff_eq_add, ← sub_eq_iff_eq_add']
+    -- Using the fact that `2 ₙ₊₁C₂ₖ - ₙ₊₂C₂ₖ = ₙC₂ₖ - ₙC₂ₖ₋₂`,
+    -- the LHS expands to `∑ₖ (ₙC₂ₖ - ₙC₂ₖ₋₂) (X²-1)ᵏ Xⁿ⁺²⁻²ᵏ`.
+    -- (the extra `+ X ^ (n + 2)` is just to remedy the fact that `ₙC₋₂` is `1` in mathlib)
+    trans (∑ k ∈ Icc 1 ((n + 2) / 2), (n.choose (2 * k) - n.choose (2 * (k - 1)) : R[X]) *
+      ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k))) + X ^ (n + 2)
+    · rw [sum_subset (Icc_subset_Icc (b₂ := (n + 2) / 2) le_rfl (by lia))
+        (by intros; rw [Nat.choose_eq_zero_of_lt] <;> grind), mul_sum, ← sum_sub_distrib,
+        ← sum_sdiff <| show {0} ⊆ Icc 0 ((n + 2) / 2) by simp]
+      congr! 2 with k hk; swap; · simp; ring
+      have : ((n + 2).choose (2 * k) : R[X]) =
+          2 * (n + 1).choose (2 * k) - (n.choose (2 * k) - n.choose (2 * (k - 1))) := by
+        rw [(n + 1).choose_succ_left (2 * k), n.choose_succ_left (2 * k - 1),
+          n.choose_succ_left (2 * k)] <;> grind
+      by_cases hn : n + 2 = 2 * k
+      · simp [← hn, Nat.choose_eq_zero_of_lt, show n = (2 * (k - 1)) by lia]
+      · rw [this, show n + 2 - 2 * k = (n + 1 - 2 * k) + 1 by simp_all; lia]
+        ring_nf
+    -- Shifting the index of second term in the summand by one,
+    -- the LHS is equal to `∑ₖ ₙC₂ₖ ((X²-1)ᵏ Xⁿ⁺²⁻²ᵏ - (X²-1)ᵏ⁺¹ Xⁿ⁻²ᵏ)`,
+    trans ∑ k ∈ Icc 0 (n / 2), (n.choose (2 * k) : R[X]) * ((X ^ 2 - 1) ^ k * X ^ (n + 2 - 2 * k) -
+        (X ^ 2 - 1) ^ (k + 1) * X ^ (n - 2 * k))
+    · simp_rw [sub_mul, mul_sub, sum_sub_distrib, sub_add_eq_add_sub]
+      congr 1
+      · rw [← sum_subset (Icc_subset_Icc (b₁ := n / 2) le_rfl (by lia))
+          (by intros; rw [Nat.choose_eq_zero_of_lt] <;> grind),
+          ← sum_sdiff <| show {0} ⊆ Icc 0 (n / 2) by simp]
+        congr 1
+        simp
+      · rw [show Icc 1 ((n + 2) / 2) = (Finset.Icc 0 (n / 2)).image (· + 1) by simp,
+          Finset.sum_image (add_left_injective _).injOn]
+        simp [mul_add]
+    -- ... which is then equal to `∑ₖ ₙC₂ₖ (X²-1)ᵏ Xⁿ⁻²ᵏ` as intended.
+    · congr! 2 with k hk
+      rw [show n + 2 - 2 * k = n - 2 * k + 2 by simp_all; lia]
+      ring_nf
 
 end Polynomial.Chebyshev
