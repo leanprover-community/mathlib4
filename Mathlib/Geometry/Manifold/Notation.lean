@@ -48,7 +48,7 @@ This will need to be updated as new instances are added.
 For products of manifolds, we explicitly track if the resulting space is a product of normed spaces:
 that case is ambiguous, and the elaborators would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
-`F`). If we encounter such an ambiguity, we warna about and do not infer a model with corners.
+`F`). If we encounter such an ambiguity, we warn about it and do not infer a model with corners.
 
 ## `T%`
 
@@ -76,7 +76,7 @@ These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 ## TODO
 
 * try an opinionated strategy on products of normed spaces:
-  is one guess correct more often than others?
+  is one guess correct more often than the other?
 * alternatively, can the elaborator generate two `Try this` suggestions, corresponding to the
   possible options?
 * add delaborators for these elaborators
