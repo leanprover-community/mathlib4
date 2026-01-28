@@ -313,6 +313,13 @@ namespace IsAlgClosed
 variable {K : Type u} [Field K] {L : Type v} {M : Type w} [Field L] [Algebra K L] [Field M]
   [Algebra K M] [IsAlgClosed M]
 
+theorem eval_surjective {p : M[X]} (hp : p.natDegree ≠ 0) : Function.Surjective p.eval :=
+  fun x ↦ by
+    rw [← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos] at hp
+    have ⟨y, hy⟩ := (IsAlgClosed.splits (p - C x)).exists_eval_eq_zero <| by
+      simpa only [degree_sub_C hp] using hp.ne'
+    exact ⟨y, by simpa [eval_sub, sub_eq_zero] using hy⟩
+
 /-- If E/L/K is a tower of field extensions with E/L algebraic, and if M is an algebraically
   closed extension of K, then any embedding of L/K into M/K extends to an embedding of E/K.
   Known as the extension lemma in https://math.stackexchange.com/a/687914. -/
