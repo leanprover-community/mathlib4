@@ -807,12 +807,12 @@ Optionally, this command accepts three optional arguments:
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
     (rules : Array ProjectionRule := #[]) (trc := false) :
     CoreM (List Name × Array ProjectionData) := do
-  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
+  withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   let env ← getEnv
   if let some data := (structureExt.getState env).find? str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    withOptions (·.updateBool `trace.simps.verbose (traceIfExists || ·)) do
+    withOptions (fun o => if traceIfExists then o.set `trace.simps.verbose true else o) do
       trace[simps.verbose]
         projectionsInfo data.2.toList "The projections for this structure have already been \
         initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
@@ -1200,7 +1200,7 @@ If `shortNm` is true, the generated names will only use the last projection name
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
-  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
+  withOptions (fun o => if trc then o.set `trace.simps.verbose true else o) do
   -- We need access to theorem bodies
   let env ← withoutExporting getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
