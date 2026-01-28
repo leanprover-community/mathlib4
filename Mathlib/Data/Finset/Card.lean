@@ -62,6 +62,8 @@ theorem card_mk {m nodup} : #(⟨m, nodup⟩ : Finset α) = Multiset.card m :=
 theorem card_empty : #(∅ : Finset α) = 0 :=
   rfl
 
+grind_pattern Finset.card_empty => (∅ : Finset α)
+
 @[gcongr]
 theorem card_le_card : s ⊆ t → #s ≤ #t :=
   Multiset.card_le_card ∘ val_le_iff.mpr
@@ -89,6 +91,8 @@ grind_pattern card_ne_zero_of_mem => a ∈ s, #s
 @[simp, grind =]
 theorem card_singleton (a : α) : #{a} = 1 :=
   Multiset.card_singleton _
+
+grind_pattern Finset.card_singleton => ({a} : Finset α)
 
 theorem card_singleton_inter [DecidableEq α] : #({a} ∩ s) ≤ 1 := by grind
 
