@@ -9,6 +9,7 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Tactic.Module
 
 /-!
 # (Local) homeomorphism between a normed space and a ball
