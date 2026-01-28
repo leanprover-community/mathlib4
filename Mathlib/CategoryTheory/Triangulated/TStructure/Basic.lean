@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Shift
 public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
@@ -28,6 +29,7 @@ use depending on the context.
 
 ## TODO
 
+
 * define functors `t.truncLE n : C ⥤ C`, `t.truncGE n : C ⥤ C` and the
   associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
@@ -48,10 +50,10 @@ namespace CategoryTheory
 
 open Limits
 
-namespace Triangulated
-
-variable (C : Type _) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [Preadditive C] [HasZeroObject C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
+
+namespace Triangulated
 
 open Pretriangulated
 
@@ -236,6 +238,41 @@ lemma isZero (X : C) (n₀ n₁ : ℤ) (h : n₀ < n₁ := by lia)
     [t.IsLE X n₀] [t.IsGE X n₁] : IsZero X := by
   rw [IsZero.iff_id_eq_zero]
   exact t.zero _ n₀ n₁ h
+
+/-- The full subcategory consisting of `t`-bounded above objects. -/
+def minus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsLE X n
+
+/-- The full subcategory consisting of `t`-bounded below objects. -/
+def plus : ObjectProperty C := fun X ↦ ∃ (n : ℤ), t.IsGE X n
+
+/-- The full subcategory consisting of `t`-bounded objects. -/
+def bounded : ObjectProperty C := t.plus ⊓ t.minus
+
+instance : t.minus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isLE_of_iso e n⟩
+
+instance : t.minus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isLE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.plus.IsClosedUnderIsomorphisms where
+  of_iso e := by rintro ⟨n, _⟩; exact ⟨_, t.isGE_of_iso e n⟩
+
+instance : t.plus.IsStableUnderShift ℤ where
+  isStableUnderShiftBy n :=
+    { le_shift := by
+        rintro X ⟨i, _⟩
+        exact ⟨i - n, t.isGE_shift _ i _ _ (by omega)⟩ }
+
+instance : t.bounded.IsClosedUnderIsomorphisms := by
+  dsimp [bounded]
+  infer_instance
+
+instance : t.bounded.IsStableUnderShift ℤ := by
+  dsimp [bounded]
+  infer_instance
 
 end TStructure
 
