@@ -93,4 +93,9 @@ public def validateTitle (title : String) : Array String := Id.run do
       errors := errors.push s!"error: the PR title should be of the form \
         \"kind: main title\" or \"kind(scope): main title\"\n
         Known PR title kinds are {knownKinds}"
+    if title.contains "  " then
+      errors := errors.push
+        "error: the PR title contains multiple consecutive spaces; please add just one"
+    else if title.endsWith "." then
+      errors := errors.push "error: the PR title should not end with a full stop"
     return errors
