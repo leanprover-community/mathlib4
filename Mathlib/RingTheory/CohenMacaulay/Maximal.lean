@@ -60,7 +60,7 @@ lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
     IsCohenMacaulayLocalRing R := by
   apply isCohenMacaulayLocalRing_of_ringKrullDim_le_depth
   rw [depth_eq_sSup_length_regular]
-  let fg' : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
+  let fg' : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   let _ : Fintype (maximalIdeal R).generators := (Submodule.FG.finite_generators fg').fintype
   have : ringKrullDim R = ((maximalIdeal R).generators.toFinset.card : ℕ∞) := by
     rw [← (isRegularLocalRing_def R).mp ‹_›, ← Set.ncard_eq_toFinset_card',
@@ -82,7 +82,7 @@ lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot]
   have := (isRegularLocalRing_def R).mp ‹_›
   simp only [h, Nat.cast_eq_zero] at this
-  have fg : (maximalIdeal R).FG := (isNoetherianRing_iff_ideal_fg R).mp inferInstance _
+  have fg : (maximalIdeal R).FG := (maximalIdeal R).fg_of_isNoetherianRing
   simpa [Submodule.fg_iff_spanRank_eq_spanFinrank.mpr fg] using this
 
 local instance (M : Type*) [AddCommGroup M] [Module R M] [Module.Finite R M] (x : R) :
@@ -163,7 +163,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
       have dim : ringKrullDim (R ⧸ Ideal.span {x}) = n := by
         have := (quotient_span_singleton R xmem xnmem).2
         simp only [hn, Nat.cast_add, Nat.cast_one] at this
-        exact (WithBot.add_natCast_cancel _ _ 1).mp this
+        exact WithBot.add_one_cancel.mp this
       have reg : IsSMulRegular M x := by
         by_contra h
         have := (Set.ext_iff.mp (biUnion_associatedPrimes_eq_compl_regular R M) x).mpr h
@@ -178,7 +178,7 @@ theorem free_of_isMaximalCohenMacaulay_of_isRegularLocalRing [IsRegularLocalRing
         rw [hn, dim, Nat.cast_le] at this
         exact (Nat.not_succ_le_self n) this
       have max : (ModuleCat.of (R ⧸ Ideal.span {x}) (QuotSMulTop x ↑M)).IsMaximalCohenMacaulay := by
-        rw [isMaximalCohenMacaulay_def, ← WithBot.add_natCast_cancel _ _ 1, Nat.cast_one,
+        rw [isMaximalCohenMacaulay_def, ← WithBot.add_natCast_cancel, Nat.cast_one,
           (quotient_span_singleton R xmem xnmem).2, ← WithBot.coe_one, ← WithBot.coe_add,
           ← (isMaximalCohenMacaulay_def M).mp ‹_›, WithBot.coe_inj,
           ← depth_quotSMulTop_succ_eq_moduleDepth M x reg xmem]
