@@ -228,6 +228,14 @@ instance [F.IsTriangulated] [G.IsTriangulated] : (F ⋙ G).IsTriangulated where
 
 end IsTriangulated
 
+lemma map_distinguished_iff [F.IsTriangulated] [Full F] [Faithful F] (T : Triangle C) :
+    (F.mapTriangle.obj T ∈ distTriang D) ↔ T ∈ distTriang C := by
+  refine ⟨fun hT ↦ ?_, F.map_distinguished T⟩
+  obtain ⟨Z, g, h, mem⟩ := distinguished_cocone_triangle T.mor₁
+  refine isomorphic_distinguished _ mem _ (F.mapTriangle.preimageIso ?_)
+  exact isoTriangleOfIso₁₂ _ _ hT (F.map_distinguished _ mem)
+    (Iso.refl _) (Iso.refl _) (by simp)
+
 lemma isTriangulated_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ] [F₂.CommShift ℤ]
     [NatTrans.CommShift e.hom ℤ] [F₁.IsTriangulated] : F₂.IsTriangulated where
   map_distinguished T hT :=
@@ -241,6 +249,16 @@ lemma isTriangulated_iff_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.
   · intro
     have : NatTrans.CommShift e.symm.hom ℤ := inferInstanceAs (NatTrans.CommShift e.inv ℤ)
     exact isTriangulated_of_iso e.symm
+
+lemma isTriangulated_iff_comp_right {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
+    [F.CommShift ℤ] [G.CommShift ℤ] [H.CommShift ℤ] [NatTrans.CommShift e.hom ℤ]
+    [G.IsTriangulated] [G.Full] [G.Faithful] :
+    F.IsTriangulated ↔ H.IsTriangulated := by
+  rw [← isTriangulated_iff_of_iso e]
+  refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun T hT ↦ ?_⟩⟩
+  rw [← G.map_distinguished_iff]
+  exact isomorphic_distinguished _ ((F ⋙ G).map_distinguished T hT) _
+    ((mapTriangleCompIso F G).symm.app T)
 
 lemma mem_mapTriangle_essImage_of_distinguished
     [F.IsTriangulated] [F.mapArrow.EssSurj] (T : Triangle D) (hT : T ∈ distTriang D) :
@@ -324,5 +342,25 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
     (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
+
+lemma IsTriangulated.of_fully_faithful_triangulated_functor
+    (F : C ⥤ D) [F.CommShift ℤ]
+    [F.IsTriangulated] [F.Full] [F.Faithful] [IsTriangulated D] :
+    IsTriangulated C where
+  octahedron_axiom {X₁ X₂ X₃ Z₁₂ Z₂₃ Z₁₃ u₁₂ u₂₃ u₁₃} comm
+    {v₁₂ w₁₂} h₁₂ {v₂₃ w₂₃} h₂₃ {v₁₃ w₁₃} h₁₃ := by
+    have comm' : F.map u₁₂ ≫ F.map u₂₃ = F.map u₁₃ := by rw [← comm, F.map_comp]
+    let H := Triangulated.someOctahedron comm' (F.map_distinguished _ h₁₂)
+      (F.map_distinguished _ h₂₃) (F.map_distinguished _ h₁₃)
+    exact
+      ⟨{m₁ := F.preimage H.m₁
+        m₃ := F.preimage H.m₃
+        comm₁ := F.map_injective (by simpa using H.comm₁)
+        comm₂ := F.map_injective (by
+          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₁)] using H.comm₂)
+        comm₃ := F.map_injective (by simpa using H.comm₃)
+        comm₄ := F.map_injective (by
+          simpa [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app X₂)] using H.comm₄)
+        mem := by simpa [← F.map_distinguished_iff] using H.mem }⟩
 
 end CategoryTheory

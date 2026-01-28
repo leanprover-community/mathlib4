@@ -384,7 +384,7 @@ theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor
   · intro h
-    refine ((tendsto_of_monotone ?_).resolve_right h).comp ?_
+    refine ((tendsto_atTop_of_monotone ?_).resolve_right h).comp ?_
     exacts [Finset.sum_mono_set _, tendsto_finset_range]
   · rintro hnat ⟨r, hr⟩
     exact not_tendsto_nhds_of_tendsto_atTop hnat _ (hasSum_iff_tendsto_nat.1 hr)
