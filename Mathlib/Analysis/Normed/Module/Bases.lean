@@ -6,7 +6,9 @@ Authors: Michał Świętek
 module
 
 public import Mathlib.Analysis.Normed.Operator.BanachSteinhaus
+public import Mathlib.Analysis.Normed.Operator.Extend
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Schauder bases in normed spaces
@@ -54,7 +56,7 @@ Based on Chapter 1. from Albiac, F., & Kalton, N. J. (2016). Topics in Banach Sp
 
 noncomputable section
 
-open Filter Topology LinearMap Set
+open Filter Topology LinearMap Set ENNReal
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X]
@@ -98,7 +100,13 @@ theorem linearIndependent (h : SchauderBasis 𝕜 e) : LinearIndependent 𝕜 e 
     P_n x = ∑_{i < n} f_i(x) e_i -/
 def proj (n : ℕ) : X →L[𝕜] X := ∑ i ∈ Finset.range n, (b.coord i).smulRight (e i)
 
+/-- The canonical projection at 0 is the zero map. -/
+@[simp]
+theorem proj_zero : b.proj 0 = 0 := by
+  simp only [proj, Finset.range_zero, Finset.sum_empty]
+
 /-- The action of the canonical projection on a vector x. -/
+@[simp]
 theorem proj_apply (n : ℕ) (x : X) : b.proj n x = ∑ i ∈ Finset.range n, b.coord i x • e i := by
   simp only [proj, ContinuousLinearMap.sum_apply, ContinuousLinearMap.smulRight_apply]
 
@@ -139,7 +147,6 @@ theorem dim_range_proj (n : ℕ) :
   · exact Fintype.card_fin n
   · exact b.linearIndependent.comp (fun (i : Fin n) => (i : ℕ)) Fin.val_injective
 
-
 /-- The canonical projections converge pointwise to the identity map. -/
 theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) := by
   simp only [proj_apply]
@@ -147,6 +154,25 @@ theorem proj_tendsto_id (x : X) : Tendsto (fun n ↦ b.proj n x) atTop (𝓝 x) 
   rw [HasSum, SummationFilter.conditional_filter_eq_map_range] at this
   exact this
 
+/-- Composition of canonical projections: `proj n (proj m x) = proj (min n m) x`. -/
+theorem proj_comp (n m : ℕ) (x : X) : b.proj n (b.proj m x) = b.proj (min n m) x := by
+  simp only [proj_apply, map_sum, map_smul]
+  -- Now LHS is ∑ j < m, c_j • ∑ i < n, (coord i)(e_j) • e_i
+  -- Use biorthogonality to simplify (coord i)(e_j)
+  have h_ortho : ∀ i j, (b.coord i) (e j) = if i = j then 1 else 0 := by
+    intro i j
+    rw [b.ortho i j, Pi.single_apply]
+  simp_rw [h_ortho]
+  -- Now inner sum is ∑ i < n, (if i = j then 1 else 0) • e_i = if j < n then e_j else 0
+  simp only [ite_smul, one_smul, zero_smul]
+  simp_rw [Finset.sum_ite_eq', Finset.mem_range]
+  -- Now LHS is ∑ j < m, c_j • (if j < n then e_j else 0)
+  simp only [smul_ite, smul_zero]
+  rw [Finset.sum_ite, Finset.sum_const_zero, add_zero]
+  congr 1
+  ext i
+  simp only [Finset.mem_filter, Finset.mem_range, and_comm]
+  exact Nat.lt_min.symm
 
 /-- The canonical projections are uniformly bounded (Banach-Steinhaus). -/
 theorem proj_uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.proj n‖ ≤ C := by
@@ -160,32 +186,24 @@ theorem proj_uniform_bound [CompleteSpace X] : ∃ C : ℝ, ∀ n : ℕ, ‖b.pr
   use M
 
 /-- The basis constant is the supremum of the norms of the canonical projections. -/
-def basisConstant : ℝ := ⨆ n, ‖b.proj n‖
+def basisConstant : ℝ≥0∞ := ⨆ n, (‖b.proj n‖₊ : ℝ≥0∞)
 
-/-- The basis constant is finite. -/
-theorem basisConstant_is_finite [CompleteSpace X] : ∃ C : ℝ, b.basisConstant ≤ C := by
-  rcases b.proj_uniform_bound with ⟨C, hC⟩
-  use C
-  exact ciSup_le hC
-
-/-- The norm of any canonical projection is less than or equal to the basis constant. -/
-theorem norm_proj_le_basisConstant [CompleteSpace X] (n : ℕ) : ‖b.proj n‖ ≤ b.basisConstant :=
-  have : BddAbove (Set.range fun n => ‖b.proj n‖) := by
-    rcases b.proj_uniform_bound with ⟨C, hC⟩
-    use C
-    rintro _ ⟨n, rfl⟩
+-- /-- The basis constant is finite. -/
+theorem basisConstant_lt_top_for_complete [CompleteSpace X] : b.basisConstant < ⊤ := by
+  rw [basisConstant, ENNReal.iSup_coe_lt_top, bddAbove_iff_exists_ge (0 : NNReal)]
+  obtain ⟨C, hC⟩ := b.proj_uniform_bound
+  have hCpos : 0 ≤ C := by simpa [proj_zero] using hC 0
+  use C.toNNReal
+  constructor
+  · exact zero_le _
+  · rintro _ ⟨n, rfl⟩
+    rw [← NNReal.coe_le_coe, Real.coe_toNNReal C hCpos, coe_nnnorm]
     exact hC n
-  le_ciSup this n
 
-/-- The basis constant is at least 1 in a non-trivial space. -/
-theorem one_le_basisConstant [CompleteSpace X] [Nontrivial X] : 1 ≤ b.basisConstant := by
-  rcases exists_ne (0 : X) with ⟨x, hx⟩
-  have h_bound n : ‖b.proj n x‖ ≤ b.basisConstant * ‖x‖ := (b.proj n).le_opNorm x |>.trans
-    (mul_le_mul_of_nonneg_right (b.norm_proj_le_basisConstant n) (norm_nonneg x))
-  have : ‖x‖ ≤ b.basisConstant * ‖x‖ := le_of_tendsto (b.proj_tendsto_id x).norm
-    (eventually_atTop.mpr ⟨0, fun n _ ↦ h_bound n⟩)
-  nth_rw 1 [← one_mul ‖x‖] at this
-  exact (le_of_mul_le_mul_right this (norm_pos_iff.mpr hx))
+/-- The norm of any projection is bounded by the basis constant (as a real number). -/
+theorem norm_proj_le_basisConstant (n : ℕ) : (‖b.proj n‖₊ : ℝ≥0∞) ≤ b.basisConstant := by
+  rw [basisConstant]
+  exact le_iSup (fun i ↦ (‖b.proj i‖₊ : ℝ≥0∞)) n
 
 /-- `Q_n = P_{n+1} - P_n`. -/
 def Q (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
