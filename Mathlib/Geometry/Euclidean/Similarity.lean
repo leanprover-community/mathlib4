@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Chu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chu Zheng
+Authors: Chu Zheng, Wang Ying
 -/
 module
 
@@ -143,3 +143,160 @@ theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :
   ⟨h.angle_eq, h.comm_left.comm_right.angle_eq, h.comm_right.comm_left.angle_eq⟩
 
 end EuclideanGeometry
+
+namespace Orientation
+open Module EuclideanGeometry
+variable {ι V₁ V₂ P₁ P₂ : Type*}
+  [NormedAddCommGroup V₁] [NormedAddCommGroup V₂]
+  [InnerProductSpace ℝ V₁] [InnerProductSpace ℝ V₂]
+  [MetricSpace P₁] [MetricSpace P₂]
+  [NormedAddTorsor V₁ P₁] [NormedAddTorsor V₂ P₂]
+  [Fact (finrank ℝ V₁ = 2)] [Fact (finrank ℝ V₂ = 2)]
+  [Oriented ℝ V₁ (Fin 2)] [Oriented ℝ V₂ (Fin 2)]
+  {v₁ : ι → P₁} {v₂ : ι → P₂}
+  {a b c : P₁} {a' b' c' : P₂}
+
+/-- If two triangles have two pairs equal oangles, then the triangles are similar. -/
+theorem similar_of_oangle_oangle (h_not_col : ¬ Collinear ℝ {a, b, c}) (h₁ : ∡ a b c = ∡ a' b' c')
+    (h₂ : ∡ b c a = ∡ b' c' a') : ![a, b, c] ∼ ![a', b', c'] := by
+  have h_not_col2: ¬ Collinear ℝ ({a', b', c'} : Set P₂) := by
+    rwa [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h₁, oangle_eq_zero_or_eq_pi_iff_collinear]
+  apply similar_of_angle_angle h_not_col
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+      (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+      (ne₁₂_of_not_collinear h_not_col2) (ne₂₃_of_not_collinear h_not_col2).symm, h₁]
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₂₃_of_not_collinear h_not_col)
+      (ne₁₃_of_not_collinear h_not_col), EuclideanGeometry.angle_eq_abs_oangle_toReal
+      (ne₂₃_of_not_collinear h_not_col2) (ne₁₃_of_not_collinear h_not_col2), h₂]
+
+/-- If two triangles have two pairs contrary oangles, then the triangles are similar. -/
+theorem similar_of_oangle_oangle_neg (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h₁ : ∡ a b c = -∡ a' b' c') (h₂ : ∡ b c a = -∡ b' c' a') : ![a, b, c] ∼ ![a', b', c'] := by
+  rw [← neg_eq_iff_eq_neg] at h₁ h₂
+  have h_not_col2: ¬ Collinear ℝ ({a', b', c'} : Set P₂) := by
+    rwa [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h₁, ← EuclideanGeometry.oangle_rev,
+      EuclideanGeometry.oangle_eq_zero_iff_oangle_rev_eq_zero,
+      EuclideanGeometry.oangle_eq_pi_iff_oangle_rev_eq_pi, oangle_eq_zero_or_eq_pi_iff_collinear]
+  apply similar_of_angle_angle h_not_col
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+      (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+      (ne₁₂_of_not_collinear h_not_col2) (ne₂₃_of_not_collinear h_not_col2).symm, ← h₁]
+    simp only [Real.Angle.abs_toReal_neg]
+  · rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₂₃_of_not_collinear h_not_col)
+      (ne₁₃_of_not_collinear h_not_col), EuclideanGeometry.angle_eq_abs_oangle_toReal
+      (ne₂₃_of_not_collinear h_not_col2) (ne₁₃_of_not_collinear h_not_col2), ← h₂]
+    simp only [Real.Angle.abs_toReal_neg]
+
+/-- If two triangles have proportional adjacent sides and an equal included oangle, then the
+triangles are similar. -/
+theorem similar_of_side_oangle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h : ∡ a b c = ∡ a' b' c') (hd : dist a b * dist b' c' = dist b c * dist a' b') :
+    ![a, b, c] ∼ ![a', b', c'] := by
+  have h_not_col' : ¬ Collinear ℝ {a', b', c'} := by
+    rwa [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h, oangle_eq_zero_or_eq_pi_iff_collinear]
+  refine similar_of_side_angle_side h_not_col h_not_col' ?_ hd
+  rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+    (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+    (ne₁₂_of_not_collinear h_not_col') (ne₂₃_of_not_collinear h_not_col').symm, h]
+
+/-- If two triangles have proportional adjacent sides and an contrary included oangle, then the
+triangles are similar. -/
+theorem similar_of_side_oangle_neg_side (h_not_col : ¬ Collinear ℝ {a, b, c})
+    (h : ∡ a b c = -∡ a' b' c') (hd : dist a b * dist b' c' = dist b c * dist a' b') :
+    ![a, b, c] ∼ ![a', b', c'] := by
+  have h_not_col' : ¬ Collinear ℝ {a', b', c'} := by
+    rw [← neg_eq_iff_eq_neg] at h
+    rwa [← oangle_eq_zero_or_eq_pi_iff_collinear, ← h, ← EuclideanGeometry.oangle_rev,
+      EuclideanGeometry.oangle_eq_zero_iff_oangle_rev_eq_zero,
+      EuclideanGeometry.oangle_eq_pi_iff_oangle_rev_eq_pi, oangle_eq_zero_or_eq_pi_iff_collinear]
+  refine similar_of_side_angle_side h_not_col h_not_col' ?_ hd
+  rw [EuclideanGeometry.angle_eq_abs_oangle_toReal (ne₁₂_of_not_collinear h_not_col)
+    (ne₂₃_of_not_collinear h_not_col).symm, EuclideanGeometry.angle_eq_abs_oangle_toReal
+    (ne₁₂_of_not_collinear h_not_col') (ne₂₃_of_not_collinear h_not_col').symm, h,
+    Real.Angle.abs_toReal_neg]
+
+/-- For two similar triangles, the corresponding oangles are equal or contrary. -/
+theorem _root_.Similar.oangle_eq_or_neg (h : ![a, b, c] ∼ ![a', b', c'])
+    (h_not_col : ¬ Collinear ℝ {a, b, c}) (h_not_col' : ¬ Collinear ℝ {a', b', c'}) :
+    ∡ a b c = ∡ a' b' c' ∨ ∡ a b c = -∡ a' b' c' := by
+  have h1 := h.angle_eq
+  have h_1 := EuclideanGeometry.oangle_eq_angle_or_eq_neg_angle (ne₁₂_of_not_collinear h_not_col)
+    (ne₂₃_of_not_collinear h_not_col).symm
+  have h_2 := EuclideanGeometry.oangle_eq_angle_or_eq_neg_angle (ne₁₂_of_not_collinear h_not_col')
+    (ne₂₃_of_not_collinear h_not_col').symm
+  rcases h_1 with h₁ | h₁ <;> rcases h_2 with h₂ | h₂
+  · left; rw [h₁, h₂, h1]
+  · right; rw [h₁, h₂, h1, neg_neg]
+  · right; rw [h₁, h₂, h1]
+  · left; rw [h₁, h₂, h1]
+
+/-- In two similar triangles, all three corresponding oangles are equal if the signs are equal. -/
+theorem _root_.Similar.oangle_eq_all_if_sign_eq (h : ![a, b, c] ∼ ![a', b', c'])
+    (h_not_col : ¬ Collinear ℝ {a, b, c}) (h_not_col' : ¬ Collinear ℝ {a', b', c'})
+    (h₁ : (∡ a b c).sign = (∡ a' b' c').sign) :
+    ∡ a b c = ∡ a' b' c' ∧ ∡ b c a = ∡ b' c' a' ∧ ∡ c a b = ∡ c' a' b' := by
+  have h_ab := ne₁₂_of_not_collinear h_not_col
+  have h_bc := ne₂₃_of_not_collinear h_not_col
+  have h_ac := ne₁₃_of_not_collinear h_not_col
+  have h_ab' := ne₁₂_of_not_collinear h_not_col'
+  have h_bc' := ne₂₃_of_not_collinear h_not_col'
+  have h_ac' := ne₁₃_of_not_collinear h_not_col'
+  have h_sum := oangle_add_oangle_add_oangle_eq_pi h_ab.symm h_bc.symm h_ac
+  have h_sum' := oangle_add_oangle_add_oangle_eq_pi h_ab'.symm h_bc'.symm h_ac'
+  have h_bca : ¬ Collinear ℝ {b, c, a} := by rwa [Set.insert_comm, Set.pair_comm] at h_not_col
+  have h_bca' : ¬ Collinear ℝ {b', c', a'} := by rwa [Set.insert_comm, Set.pair_comm] at h_not_col'
+  have h1 : ∡ a b c = ∡ a' b' c' := by
+    have h_eq_or_neg := h.oangle_eq_or_neg h_not_col h_not_col'
+    rcases h_eq_or_neg with h_eq | h_eq_neg
+    · exact h_eq
+    · simp only [h_eq_neg, Real.Angle.sign_neg, SignType.neg_eq_self_iff,
+        oangle_sign_eq_zero_iff_collinear, h_not_col'] at h₁
+  have h₂ : (∡ b c a).sign = (∡ b' c' a').sign := by
+    nth_rw 2 [oangle_rotate_sign]
+    rwa [oangle_rotate_sign]
+  have h2 : ∡ b c a = ∡ b' c' a' := by
+    have h_eq_or_neg := h.comm_left.comm_right.oangle_eq_or_neg h_bca h_bca'
+    rcases h_eq_or_neg with h_eq | h_eq_neg
+    · exact h_eq
+    · simp only [h_eq_neg, Real.Angle.sign_neg, SignType.neg_eq_self_iff,
+        oangle_sign_eq_zero_iff_collinear, h_bca'] at h₂
+  have h3 : ∡ c a b = ∡ c' a' b' := by grind only
+  refine ⟨h1, h2, h3⟩
+
+/-- In two similar triangles, all three corresponding oangles are contrary if the signs are
+contrary. -/
+theorem _root_.Similar.oangle_neg_all_if_sign_neg (h : ![a, b, c] ∼ ![a', b', c'])
+    (h_not_col : ¬ Collinear ℝ {a, b, c}) (h_not_col' : ¬ Collinear ℝ {a', b', c'})
+    (h₁ : (∡ a b c).sign = -(∡ a' b' c').sign) :
+    ∡ a b c = -∡ a' b' c' ∧ ∡ b c a = -∡ b' c' a' ∧ ∡ c a b = -∡ c' a' b' := by
+  have h_ab := ne₁₂_of_not_collinear h_not_col
+  have h_bc := ne₂₃_of_not_collinear h_not_col
+  have h_ac := ne₁₃_of_not_collinear h_not_col
+  have h_ab' := ne₁₂_of_not_collinear h_not_col'
+  have h_bc' := ne₂₃_of_not_collinear h_not_col'
+  have h_ac' := ne₁₃_of_not_collinear h_not_col'
+  have h_sum := oangle_add_oangle_add_oangle_eq_pi h_ab.symm h_bc.symm h_ac
+  have h_sum' := oangle_add_oangle_add_oangle_eq_pi h_ab'.symm h_bc'.symm h_ac'
+  have h_bca : ¬ Collinear ℝ {b, c, a} := by rwa [Set.insert_comm, Set.pair_comm] at h_not_col
+  have h_bca' : ¬ Collinear ℝ {b', c', a'} := by rwa [Set.insert_comm, Set.pair_comm] at h_not_col'
+  have h1 : ∡ a b c = -∡ a' b' c' := by
+    have h_eq_or_neg := h.oangle_eq_or_neg h_not_col h_not_col'
+    rcases h_eq_or_neg with h_eq | h_eq_neg
+    · simp only [h_eq] at h₁
+      symm at h₁
+      simp only [SignType.neg_eq_self_iff, oangle_sign_eq_zero_iff_collinear, h_not_col'] at h₁
+    · exact h_eq_neg
+  have h₂ : (∡ b c a).sign = -(∡ b' c' a').sign := by
+    nth_rw 2 [oangle_rotate_sign]
+    rwa [oangle_rotate_sign]
+  have h2 : ∡ b c a = -∡ b' c' a' := by
+    have h_eq_or_neg := h.comm_left.comm_right.oangle_eq_or_neg h_bca h_bca'
+    rcases h_eq_or_neg with h_eq | h_eq_neg
+    · simp only [h_eq] at h₂
+      symm at h₂
+      simp only [SignType.neg_eq_self_iff, oangle_sign_eq_zero_iff_collinear, h_bca'] at h₂
+    · exact h_eq_neg
+  have h3 : ∡ c a b = -∡ c' a' b' := by grind only [= Real.Angle.coe_pi_add_coe_pi]
+  refine ⟨h1, h2, h3⟩
+
+end Orientation
