@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Exp
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Add 
+import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.MeanValue
 
@@ -30,9 +30,9 @@ private lemma log_1000_lt_10_local : log 1000 < 10 := by
   -- Ideally this uses the lemma from Log/Basic.lean if available
   rw [log_lt_iff_lt_exp (by norm_num)]
   calc (1000 : ℝ) < (2 : ℝ) ^ 10 := by norm_num
-    _ ≤ (exp 1) ^ 10 := by 
+    _ ≤ (exp 1) ^ 10 := by
       gcongr
-      -- This relies on 2 <= exp 1 which we added to Exp.lean. 
+      -- This relies on 2 <= exp 1 which we added to Exp.lean.
       -- If that PR isn't merged, we can reprovet it locally or assume it's there.
       -- For safety in this file, let's use the standard proof if needed or just the lemma.
       -- Re-proving locally for self-containment in this "Tao-Tier" file:
@@ -41,10 +41,10 @@ private lemma log_1000_lt_10_local : log 1000 < 10 := by
     _ = exp 10 := by rw [←exp_nat_mul]; norm_num
 
 
-/-- 
-  Main theorem: `n^k < e^n` for `n ≥ 1000`, `k ≤ 99`. 
-  
-  Proof uses the Mean Value Theorem on `f(x) = x - k * ln(x)` to show it is increasing 
+/--
+  Main theorem: `n^k < e^n` for `n ≥ 1000`, `k ≤ 99`.
+
+  Proof uses the Mean Value Theorem on `f(x) = x - k * ln(x)` to show it is increasing
   and positive for `x ≥ 1000`.
 -/
 theorem large_n_poly_vs_exponential (n : ℝ) (k : ℕ)
@@ -85,7 +85,7 @@ theorem large_n_poly_vs_exponential (n : ℝ) (k : ℕ)
         have hx_pos : 0 < x := by linarith [hx.1]
         exact ne_of_gt hx_pos
 
-    have h_mvt := exists_deriv_eq_slope f h_strict h_diff_on.continuousOn 
+    have h_mvt := exists_deriv_eq_slope f h_strict h_diff_on.continuousOn
                   (h_diff_on.mono Set.Ioo_subset_Icc_self)
     rcases h_mvt with ⟨c, hc, h_slope⟩
 
@@ -105,14 +105,14 @@ theorem large_n_poly_vs_exponential (n : ℝ) (k : ℕ)
           apply hasDerivAt_log
           -- Explicit inequality proof
           exact ne_of_gt (by linarith [hc.1])
-      
+
       rw [h_has_deriv.deriv]
       rw [sub_pos] -- 1 - k/c > 0 <-> k/c < 1
-      
+
       have hc_pos : 0 < c := by linarith [hc.1]
       -- Explicit iff application
-      apply (div_lt_one hc_pos).mpr 
-      
+      apply (div_lt_one hc_pos).mpr
+
       -- goal: k < c
       calc (k : ℝ) ≤ 99 := Nat.cast_le.mpr hk
         _ < 1000 := by norm_num
@@ -122,8 +122,8 @@ theorem large_n_poly_vs_exponential (n : ℝ) (k : ℕ)
     have f_n_pos : 0 < f n := by
       -- Goal: 0 < f n
       -- Use h_eqn to rewrite f n
-      rw [eq_add_of_sub_eq h_eqn] 
-      
+      rw [eq_add_of_sub_eq h_eqn]
+
       -- Exact Proof Term Construction
       -- Arguments swapped: deriv is term 'a', f 1000 is term 'b'
       exact add_pos (mul_pos h_deriv_pos (sub_pos.mpr h_strict)) f_1000_pos
