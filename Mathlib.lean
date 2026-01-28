@@ -1180,6 +1180,7 @@ public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Algebra.Ring.Int.Parity
 public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Algebra.Ring.IsFormallyReal
 public import Mathlib.Algebra.Ring.MinimalAxioms
 public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Ring.NegOnePow
