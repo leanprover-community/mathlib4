@@ -369,15 +369,17 @@ open Classical in
 /-- The order of a nonzero Hahn series `x` is a minimal element of `Γ` where `x` has a
   nonzero coefficient, the order of 0 is 0. -/
 def order (x : R⟦Γ⟧) : Γ :=
-  if h : x = 0 then 0 else x.isWF_support.min (support_nonempty_iff.2 h)
+  x.orderTop.untopD 0
+
+theorem order_def (x : R⟦Γ⟧) : order x = (orderTop x).untopD 0 := rfl
 
 @[simp]
-theorem order_zero : order (0 : R⟦Γ⟧) = 0 :=
-  dif_pos rfl
+theorem order_zero : order (0 : R⟦Γ⟧) = 0 := by
+  simp [order]
 
 theorem order_of_ne {x : R⟦Γ⟧} (hx : x ≠ 0) :
-    order x = x.isWF_support.min (support_nonempty_iff.2 hx) :=
-  dif_neg hx
+    order x = x.isWF_support.min (support_nonempty_iff.2 hx) := by
+  rw [order, orderTop_of_ne_zero hx, WithTop.untopD_coe]
 
 theorem order_eq_orderTop_of_ne_zero (hx : x ≠ 0) : order x = orderTop x := by
   rw [order_of_ne hx, orderTop_of_ne_zero hx]
@@ -606,7 +608,7 @@ theorem coeff_ofSuppBddBelow {f : Γ → R} {hf} : (ofSuppBddBelow f hf).coeff =
 set_option linter.deprecated false in
 @[deprecated le_order_iff_forall (since := "2026-01-02")]
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀ (m : Γ), m < n → f m = 0) :
+    (hn : ∀ m, m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   rw [le_order_iff_forall]
   · exact hn
