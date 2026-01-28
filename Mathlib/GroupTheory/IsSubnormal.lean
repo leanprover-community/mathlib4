@@ -163,8 +163,8 @@ lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
     exact le_trans (map_mono hN) (le_normalizer_map _)
 
 /--
-If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`, then
-`H` is a subnormal subgroup of `G`.
+If `H` is a subnormal subgroup of `K` and `K` is a subnormal subgroup of `G`,
+then `H` is a subnormal subgroup of `G`.
 -/
 protected
 lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnormal K) :
