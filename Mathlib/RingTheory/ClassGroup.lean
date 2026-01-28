@@ -300,6 +300,17 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
         (IsFractionRing.injective R (FractionRing R)).eq_iff] at hx
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 
+/-- A fractional ideal is a unit iff its integral numerator `num` is a unit. -/
+theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
+    IsUnit (I.num : FractionalIdeal R⁰ (FractionRing R)) ↔ IsUnit I := by
+  have hden0 : algebraMap R (FractionRing R) I.den ≠ 0 :=
+    IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors I.den.prop
+  let u : (FractionRing R)ˣ := Units.mk0 (algebraMap R (FractionRing R) I.den) hden0
+  have hdenUnit : IsUnit (spanSingleton R⁰ (algebraMap R (FractionRing R) I.den)) :=
+    ⟨toPrincipalIdeal R (FractionRing R) u, by simp [u]⟩
+  obtain ⟨c, hc⟩ := hdenUnit
+  rw [← den_mul_self_eq_num', ← hc, Units.isUnit_units_mul]
+
 /-- Maps a nonzero fractional ideal to an integral representative in the class group. -/
 noncomputable def ClassGroup.integralRep (I : FractionalIdeal R⁰ (FractionRing R)) :
     Ideal R := I.num
