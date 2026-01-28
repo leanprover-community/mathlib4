@@ -111,7 +111,10 @@ def app (f : Expr) (arg : Arg) : Expr :=
   | some coe => (coe.app f).app arg.expr
 
 
-/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism. -/
+/-- Given `e = f a₁ a₂ ... aₙ`, returns `k f #[a₁, ..., aₙ]` where `f` can be bundled morphism.
+
+`e = ∀ (x : α), p x` is represented as `_Forall α fun x => p x` internally where `_Forall` is a
+dummy constant. -/
 partial def withApp {α} (e : Expr) (k : Expr → Array Arg → MetaM α) : MetaM α :=
   go e #[]
 where
@@ -132,6 +135,10 @@ where
 
       go (.app (.app c f) x) as
     | .app f a, as => go f (as.push { expr := a })
+    | .forallE x t b bi, _ => do
+      let u ← getLevel t
+      let v ← withLocalDecl x bi t fun x => getLevel (b.instantiate1 x)
+      k (.const `_Forall [u, v]) #[{ expr := t }, { expr := .lam x t b bi }]
     | f, as => k f as.reverse
 
 
@@ -156,6 +163,10 @@ def getAppArgs (e : Expr) : MetaM (Array Arg) := withApp e fun _ xs => return xs
 
 /-- `mkAppN f #[a₀, ..., aₙ]` ==> `f a₀ a₁ .. aₙ` where `f` can be bundled morphism. -/
 def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
+  let f :=
+    if f.isConstOf `_Forall then
+      Expr.mkLambdaForall f.constLevels![0]! f.constLevels![1]!
+    else f
   xs.foldl (init := f) (fun f x =>
     match x with
     | ⟨x, .none⟩ => (f.app x)
