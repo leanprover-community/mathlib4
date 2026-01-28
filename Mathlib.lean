@@ -159,6 +159,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
+public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.Ext.HasExt
 public import Mathlib.Algebra.Category.ModuleCat.ExteriorPower
 public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -7081,6 +7082,7 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 public import Mathlib.Topology.Category.LightProfinite.Cartesian
 public import Mathlib.Topology.Category.LightProfinite.EffectiveEpi
 public import Mathlib.Topology.Category.LightProfinite.Extend
+public import Mathlib.Topology.Category.LightProfinite.Injective
 public import Mathlib.Topology.Category.LightProfinite.Limits
 public import Mathlib.Topology.Category.LightProfinite.Sequence
 public import Mathlib.Topology.Category.Locale
