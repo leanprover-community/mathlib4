@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Abelian.NonPreadditive
 
 /-!
@@ -789,6 +790,12 @@ theorem mono_inl_of_factor_thru_epi_mono_factorization (f : X ⟶ Y) (g : X ⟶ 
   apply mono_inl_of_isColimit _ _ (PushoutCocone.isColimitOfFactors _ _ _ _ _ hf hg t ht)
 
 end MonoPushout
+
+instance : (MorphismProperty.monomorphisms C).IsStableUnderCobaseChange :=
+  .mk' (fun _ _ _ _ _ _ (_ : Mono _) ↦ inferInstanceAs (Mono _))
+
+instance : (MorphismProperty.epimorphisms C).IsStableUnderBaseChange :=
+  .mk' (fun _ _ _ _ _ _ (_ : Epi _) ↦ inferInstanceAs (Epi _))
 
 end CategoryTheory.Abelian
 
