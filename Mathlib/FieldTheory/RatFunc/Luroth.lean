@@ -6,6 +6,7 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 module
 
 public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.Algebra.Polynomial.Bivariate
 
 /-!
 # Lüroth's theorem
@@ -30,22 +31,6 @@ References:
 
 @[expose] public section
 
-namespace Polynomial
-
-variable {R : Type*} [CommSemiring R]
-
-noncomputable def swap : R[X][X] ≃+* R[X][X] :=
-  .ofRingHom (eval₂RingHom (mapRingHom C) (C X)) (eval₂RingHom (mapRingHom C) (C X))
-    (by ext <;> simp) (by ext <;> simp)
-
-@[simp]
-theorem swap_coe : swap (R := R) = eval₂RingHom (R := R[X]) (mapRingHom C) (C X) := rfl
-
-@[simp]
-theorem swap_apply (f : R[X][X]) : swap f = eval₂RingHom (R := R[X]) (mapRingHom C) (C X) f := rfl
-
-end Polynomial
-
 namespace RatFunc
 
 open IntermediateField algebraAdjoinAdjoin
@@ -57,17 +42,20 @@ theorem adjoin_X : K⟮(X : RatFunc K)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
 theorem adjoin_adjoin_X : K⟮f⟯⟮(X : RatFunc K)⟯ = ⊤ := by
-  rw [←restrictScalars_eq_top_iff (K := K), adjoin_simple_adjoin_simple, eq_top_iff]
+  rw [← restrictScalars_eq_top_iff (K := K), adjoin_simple_adjoin_simple, eq_top_iff]
   exact le_trans (le_of_eq adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
+/-- The equivalence between `K⟮f⟯⟮X⟯` and `RatFunc K` as `K⟮f⟯`-algebras. -/
 noncomputable def adjoinAdjoinXEquiv : K⟮f⟯⟮(X : RatFunc K)⟯ ≃ₐ[K⟮f⟯] RatFunc K :=
   (IntermediateField.equivOfEq (adjoin_adjoin_X f)).trans IntermediateField.topEquiv
 
-/-- The minimal polynomial of `X` over `K⟮f⟯`. -/
+/-- The minimal polynomial of `X` over `K⟮f⟯`. It is defined as `f.num - f * f.denom`, viewed
+as a polynomial with coefficients in `K⟮f⟯`. -/
 noncomputable abbrev minpolyX : K⟮f⟯[X] :=
   f.num.map (algebraMap K K⟮f⟯) -
   Polynomial.C (AdjoinSimple.gen K f) * f.denom.map (algebraMap K K⟮f⟯)
 
+@[simp]
 theorem C_minpolyX (x : K) : minpolyX (C x) = 0 := by
   rw [minpolyX, num_C, Polynomial.map_C, denom_C, Polynomial.map_one, mul_one, sub_eq_zero,
     Polynomial.C_inj, Subtype.ext_iff, AdjoinSimple.coe_gen, SubalgebraClass.coe_algebraMap,
@@ -76,7 +64,7 @@ theorem C_minpolyX (x : K) : minpolyX (C x) = 0 := by
 theorem minpolyX_aeval_X : f.minpolyX.aeval (X : RatFunc K) = 0 := by
   simp only [Polynomial.aeval_sub, Polynomial.aeval_map_algebraMap, aeval_X_left_eq_algebraMap,
     map_mul, Polynomial.aeval_C, IntermediateField.algebraMap_apply, AdjoinSimple.coe_gen]
-  nth_rw 2 [←num_div_denom f]
+  nth_rw 2 [← num_div_denom f]
   rw [div_mul_cancel₀ _ (algebraMap_ne_zero f.denom_ne_zero)]
   exact sub_self _
 
@@ -87,17 +75,15 @@ theorem eq_C_of_minpolyX_coeff_eq_zero
     (Polynomial.leadingCoeff_ne_zero.mpr f.denom_ne_zero)), eq_comm]
   simpa [sub_eq_zero] using hf
 
-theorem minpolyX_eq_zero_iff : f.minpolyX = 0 ↔ ∃ c, f = C c := by
-  refine ⟨fun h ↦ f.eq_C_of_minpolyX_coeff_eq_zero (by simp [h]), ?_⟩
-  rintro ⟨c, rfl⟩
-  exact C_minpolyX c
+theorem minpolyX_eq_zero_iff : f.minpolyX = 0 ↔ ∃ c, f = C c :=
+  ⟨fun h ↦ f.eq_C_of_minpolyX_coeff_eq_zero (by simp [h]), by rintro ⟨c, rfl⟩; simp⟩
 
 theorem isAlgebraic_adjoin_simple_X (hf : ¬∃ c, f = C c) : IsAlgebraic K⟮f⟯ (X : RatFunc K) :=
    ⟨f.minpolyX, fun H ↦ hf (f.minpolyX_eq_zero_iff.mp H), f.minpolyX_aeval_X⟩
 
 theorem isAlgebraic_adjoin_simple_X' (hf : ¬∃ c, f = C c) :
     Algebra.IsAlgebraic K⟮f⟯ (RatFunc K) := by
-  have P: Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮(X : RatFunc K)⟯ :=
+  have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮(X : RatFunc K)⟯ :=
     isAlgebraic_adjoin_simple <| isAlgebraic_iff_isIntegral.mp <| f.isAlgebraic_adjoin_simple_X hf
   exact f.adjoinAdjoinXEquiv.isAlgebraic
 
@@ -135,7 +121,7 @@ theorem natDegree_minpolyX : f.minpolyX.natDegree = max f.num.natDegree f.denom.
   · exact max_le (natDegree_num_le_natDegree_minpolyX f hf) <| Polynomial.le_natDegree_of_ne_zero
       fun H ↦ hf (f.eq_C_of_minpolyX_coeff_eq_zero (congr_arg Subtype.val H))
 
-theorem transcendental_of_not_constant (hf : ¬∃ c, f = C c) : Transcendental K f := by
+theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := by
   intro H
   have := IntermediateField.isAlgebraic_adjoin_simple H.isIntegral
   have tr : Algebra.Transcendental K (RatFunc K) := by infer_instance
@@ -148,8 +134,10 @@ theorem transcendental_of_not_constant' (hf : ¬∃ c, f = C c) :
     Transcendental K (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]):= by
   rw [←transcendental_algebraMap_iff
       (FaithfulSMul.algebraMap_injective (Algebra.adjoin K {f}) (RatFunc K))]
-  exact f.transcendental_of_not_constant hf
+  exact f.transcendental_of_ne_C hf
 
+/-- The equivalence between `K[X]` and `K[f]` as `K`-algebras. Here, `f` is required to
+be non-constant. -/
 noncomputable def adjoinSimpleEquiv (hf : ¬∃ c, f = C c) : K[X] ≃ₐ[K] K[f] :=
   AlgEquiv.ofBijective (Polynomial.aeval ⟨f, Algebra.self_mem_adjoin_singleton K f⟩) <| by
     refine ⟨transcendental_iff_injective.mp (f.transcendental_of_not_constant' hf), ?_⟩
@@ -199,8 +187,15 @@ theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible f.minpolyX :=
       Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe, Polynomial.aeval_X]
     congr 2 <;> ext <;> simp
   rw [←φ'_map, MulEquiv.irreducible_iff]
-  have : φ' = Polynomial.swap (Polynomial.C f.num - Polynomial.X * Polynomial.C f.denom) :=
-    by simpa [φ'] using mul_comm _ _
+  have : φ' = Polynomial.Bivariate.swap
+      (Polynomial.C f.num - Polynomial.X * Polynomial.C f.denom) := by
+    simp only [Polynomial.X_mul_C, Polynomial.Bivariate.swap_apply, AlgHom.coe_comp,
+      AlgHom.coe_restrictScalars', Polynomial.coe_aeval_eq_eval, Function.comp_apply,
+      Polynomial.aeval_sub, Polynomial.aeval_C, Polynomial.algebraMap_def,
+      Polynomial.coe_mapRingHom, map_mul, Polynomial.aeval_X, Polynomial.eval_sub,
+      Polynomial.eval_map_algebraMap, Polynomial.eval_mul, Polynomial.eval_C]
+    rw [mul_comm]
+    rfl
   rw [this, MulEquiv.irreducible_iff]
   convert Polynomial.irreducible_C_mul_X_add_C (neg_ne_zero.mpr f.denom_ne_zero)
     ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
@@ -215,9 +210,9 @@ theorem finrank_eq_max_natDegree :
       Module.finrank_of_not_finite fun H ↦  Algebra.transcendental_iff_not_isAlgebraic.mp
       transcendental <| Algebra.IsAlgebraic.of_finite K (RatFunc K)]
     simp
-  rw [←(adjoinAdjoinXEquiv f).toLinearEquiv.finrank_eq,
+  rw [← (adjoinAdjoinXEquiv f).toLinearEquiv.finrank_eq,
     adjoin.finrank (f.isAlgebraic_adjoin_simple_X hf).isIntegral,
-    ←minpoly.eq_of_irreducible (f.irreducible_minpolyX hf) f.minpolyX_aeval_X, mul_comm,
+    ← minpoly.eq_of_irreducible (f.irreducible_minpolyX hf) f.minpolyX_aeval_X, mul_comm,
     Polynomial.natDegree_C_mul <| inv_ne_zero <| Polynomial.leadingCoeff_ne_zero.mpr fun H ↦
     hf ((minpolyX_eq_zero_iff f).mp H), natDegree_minpolyX]
 
