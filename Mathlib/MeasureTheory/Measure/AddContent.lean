@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.SetSemiring
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Additive Contents
@@ -120,26 +121,23 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   simp only [← h'ij, disjoint_self, Set.bot_eq_empty] at this
   simp [this]
 
+lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
+    (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
+    m (⋃ i, f i) = ∑ i, m (f i) := by
+  convert addContent_biUnion (a := Finset.univ) (f := f) (m := m) ?_ ?_ ?_ using 1
+  · simp
+  · simpa
+  · simpa [Set.PairwiseDisjoint, Set.pairwise_univ] using h_dis
+  · simpa
+
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
     m (s ∪ t) = m s + m t := by
-  by_cases hs_empty : s = ∅
-  · simp only [hs_empty, Set.empty_union, addContent_empty, zero_add]
-  classical
-  have h := addContent_sUnion (m := m) (I := {s, t}) ?_ ?_ ?_
-  rotate_left
-  · simp only [coe_pair, Set.insert_subset_iff, hs, ht, Set.singleton_subset_iff, and_self_iff]
-  · simp only [coe_pair, Set.pairwiseDisjoint_insert, pairwiseDisjoint_singleton,
-      mem_singleton_iff, Ne, id, forall_eq, true_and]
-    exact fun _ => h_dis
-  · simp only [coe_pair, sUnion_insert, sUnion_singleton]
-    exact hst
-  convert h
-  · simp only [coe_pair, sUnion_insert, sUnion_singleton]
-  · rw [sum_insert, sum_singleton]
-    simp only [Finset.mem_singleton]
-    refine fun hs_eq_t => hs_empty ?_
-    rw [← hs_eq_t] at h_dis
-    exact Disjoint.eq_bot_of_self h_dis
+  have A : s ∪ t = ⋃ i, ![s, t] i := by ext; simp
+  convert addContent_iUnion (f := ![s, t]) (m := m) (fun i ↦ ?_) (fun i j hij ↦ ?_) ?_ using 2
+  · simp [Fin.univ_castSuccEmb, add_comm]
+  · fin_cases i <;> simpa
+  · fin_cases i <;> fin_cases j <;> grind
+  · rwa [← A]
 
 /-- An additive content with values in `ℝ≥0∞` is said to be sigma-sub-additive if for any sequence
 of sets `f` in `C` such that `⋃ i, f i ∈ C`, we have `m (⋃ i, f i) ≤ ∑' i, m (f i)`. -/
