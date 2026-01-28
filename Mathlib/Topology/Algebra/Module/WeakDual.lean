@@ -56,7 +56,7 @@ open Topology
 
 variable {α 𝕜 𝕝 E F : Type*}
 
-/-- The weak star topology is the topology coarsest topology on `E →L[𝕜] 𝕜` such that all
+/-- The weak star topology is the coarsest topology on `E →L[𝕜] 𝕜` such that all
 functionals `fun v => v x` are continuous. -/
 def WeakDual (𝕜 E : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
@@ -132,7 +132,7 @@ end Ring
 
 end WeakDual
 
-/-- The weak topology is the topology coarsest topology on `E` such that all functionals
+/-- The weak topology is the coarsest topology on `E` such that all functionals
 `fun x => v x` are continuous. -/
 def WeakSpace (𝕜 E) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E] :=
