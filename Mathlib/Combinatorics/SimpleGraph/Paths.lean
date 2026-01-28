@@ -248,6 +248,26 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
+lemma take_isPath_of_take {u v n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
+    (p.take n).IsPath := by
+  rw [Walk.isPath_def] at h ⊢
+  exact (isSubwalk_iff_support_isInfix.mp (p.take_isSubwalk_take hle)).nodup h
+
+lemma drop_isPath_of_drop {u v n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : k ≤ n) :
+    (p.drop n).IsPath := by
+  rw [Walk.isPath_def] at h ⊢
+  exact (isSubwalk_iff_support_isInfix.mp (p.drop_isSubwalk_drop hle)).nodup h
+
+lemma IsPath.take_isPath {u v} {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.take n).IsPath := by
+  cases le_or_gt n p.length with
+  | inl hp => exact take_isPath_of_take (by simpa [take_of_length_le rfl.le]) hp
+  | inr hp => simpa [take_of_length_le hp.le]
+
+lemma IsPath.drop_isPath {u v} {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.drop n).IsPath :=
+  drop_isPath_of_drop (by rwa [Walk.drop_zero, isPath_copy]) n.zero_le
+
 lemma IsPath.mem_support_iff_exists_append {p : G.Walk u v} (hp : p.IsPath) :
     w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), q.IsPath ∧ r.IsPath ∧ p = q.append r := by
   refine ⟨fun hw ↦ ?_, fun ⟨q, r, hq, hr, hqr⟩ ↦ p.mem_support_iff_exists_append.mpr ⟨q, r, hqr⟩⟩
