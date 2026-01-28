@@ -378,6 +378,9 @@ def ofNat : ℕ → PSet
 def omega : PSet :=
   ⟨ULift ℕ, fun n => ofNat n.down⟩
 
+theorem mem_omega {x : PSet.{u}} : x ∈ omega ↔ ∃ n, Equiv x (ofNat n : PSet.{u}) := by
+  simp [omega, mem_def]
+
 /-- The pre-set separation operation `{x ∈ a | p x}` -/
 protected def sep (p : PSet → Prop) (x : PSet) : PSet :=
   ⟨{ a // p (x.Func a) }, fun y => x.Func y.1⟩

@@ -381,22 +381,53 @@ theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y
   rw [eq_comm, pair_eq_singleton_iff]
   simp_rw [eq_comm]
 
+instance : NatCast ZFSet := ⟨(mk <| PSet.ofNat ·)⟩
+
+@[simp]
+theorem natCast_zero : ((0 : ℕ) : ZFSet) = ∅ := rfl
+
+@[simp]
+theorem natCast_succ {n : ℕ} : ((n + 1 : ℕ) : ZFSet) = insert (n : ZFSet) (n : ZFSet) := rfl
+
 /-- `omega` is the first infinite von Neumann ordinal -/
 def omega : ZFSet :=
   mk PSet.omega
 
-@[simp]
-theorem omega_zero : ∅ ∈ omega :=
-  ⟨⟨0⟩, Equiv.rfl⟩
+theorem mem_omega : x ∈ omega ↔ ∃ n : ℕ, x = n := by
+  induction x using Quotient.inductionOn
+  simp [omega, PSet.mem_omega, Nat.cast, NatCast.natCast, eq]
+
+theorem coe_omega : (omega : Set ZFSet) = Set.range ((↑) : ℕ → ZFSet) := by
+  ext
+  simpa [mem_omega] using exists_congr fun _ => Eq.comm
 
 @[simp]
-theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
-  Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
-    ⟨⟨n + 1⟩,
-      ZFSet.exact <|
-        show insert (mk x) (mk x) = insert (mk <| ofNat n) (mk <| ofNat n) by
-          rw [ZFSet.sound h]
-          rfl⟩
+theorem natCast_mem_omega (n : ℕ) : ↑n ∈ omega := by
+  simp [mem_omega]
+
+@[simp]
+theorem omega_zero : ∅ ∈ omega := by
+  simp [← natCast_zero]
+
+theorem omega_succ : x ∈ omega → insert x x ∈ omega := by
+  simp only [mem_omega, forall_exists_index]
+  rintro n rfl
+  exact ⟨n + 1, by simp⟩
+
+@[elab_as_elim]
+theorem omega_induction_on {motive : ∀ x ∈ omega, Prop} (hx : x ∈ omega)
+    (omega_zero : motive ∅ omega_zero)
+    (omega_succ : ∀ {x} (hx : x ∈ omega), motive x hx → motive (insert x x) (omega_succ hx)) :
+    motive x hx := by
+  rcases mem_omega.1 hx with ⟨n, rfl⟩
+  induction n with simp [*]
+
+/-- `omega` is the smallest inductive set. -/
+theorem isLeast_inductive_omega : IsLeast {x | ∅ ∈ x ∧ ∀ y ∈ x, insert y y ∈ x} omega :=
+  ⟨by simp +contextual [omega_succ], by
+    simp only [mem_lowerBounds, Set.mem_setOf_eq, le_def, and_imp]
+    intro _ _ _ _ h
+    induction h using omega_induction_on with simp [*]⟩
 
 /-- `{x ∈ a | p x}` is the set of elements in `a` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) : ZFSet → ZFSet :=

@@ -358,6 +358,15 @@ theorem toZFSet_zero : toZFSet 0 = ∅ := by
 theorem toZFSet_succ (o : Ordinal) : toZFSet (Order.succ o) = insert (toZFSet o) (toZFSet o) := by
   aesop (add simp [mem_toZFSet_iff, le_iff_eq_or_lt])
 
+@[simp]
+theorem toZFSet_natCast {n : ℕ} : toZFSet n = n := by
+  induction n with simp [*]
+
+@[simp]
+theorem toZFSet_omega0 : toZFSet ω = ZFSet.omega := by
+  ext
+  simpa [mem_omega, mem_toZFSet_iff, lt_omega0] using exists_congr fun _ => Eq.comm
+
 end Ordinal
 
 namespace ZFSet
@@ -391,5 +400,21 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
   left_inv o := rank_toZFSet o
   right_inv := fun ⟨x, hx⟩ ↦ by simpa using hx.toZFSet_rank_eq
   map_rel_iff' {a b} := by simp
+
+@[simp]
+theorem rank_natCast {n : ℕ} : rank n = n := by
+  rw [← toZFSet_natCast, rank_toZFSet]
+
+theorem isOrdinal_natCast {n : ℕ} : IsOrdinal n := by
+  rw [← toZFSet_natCast]
+  exact isOrdinal_toZFSet n
+
+@[simp]
+theorem rank_omega : rank omega = ω := by
+  rw [← toZFSet_omega0, rank_toZFSet]
+
+theorem isOrdinal_omega : IsOrdinal omega := by
+  rw [← toZFSet_omega0]
+  exact isOrdinal_toZFSet ω
 
 end ZFSet
