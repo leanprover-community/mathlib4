@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang
+Authors: Andrew Yang, Jack McKoen
 -/
 module
 
@@ -141,29 +141,29 @@ lemma IsPushout.isVanKampen_iff' {H : IsPushout f g h i} :
           refine IsPullback.paste_horiz (IsPullback.of_hasPullback αX f) hh
     · intro ⟨W', f', g', αW, hf, hg, H'⟩
       rwa [← hvk f' g' h' i' αW αX αY αZ hf hg sq_h sq_i H'.toCommSq]
-  · intro hvk W' X' Y' Z' f' g' h' i' αW αX αY αZ hf hg hcₕ hcᵢ cs
+  · intro hvk W' X' Y' Z' f' g' h' i' αW αX αY αZ hf hg sq_h sq_i cs
     letI : HasPullback αX f := hf.hasPullback
     constructor
     · intro H'
-      rw [hvk h' i' αX αY αZ hcₕ hcᵢ]
+      rw [hvk h' i' αX αY αZ sq_h sq_i]
       refine ⟨W', f', g', αW, hf, hg, H'⟩
     · intro ⟨hh, hi⟩
-      obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (hvk h' i' αX αY αZ hcₕ hcᵢ).1 ⟨hh, hi⟩
+      obtain ⟨W'', f'', g'', αW', hf', hg', hP⟩ := (hvk h' i' αX αY αZ sq_h sq_i).1 ⟨hh, hi⟩
       refine hP.of_iso (IsPullback.isoIsPullback _ _ hf' hf)
         (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) ?_ (by simp) (by simp)
       · apply hi.hom_ext
         · simp [← cs.w, hP.w]
         · simp [hg.w, hg'.w]
 
-lemma IsPushout.VanKampen_isPullback_isPullback_hom_ext
+lemma IsPushout.isVanKampen_isPullback_isPullback_hom_ext
     {H : IsPushout f g h i} (H' : H.IsVanKampen)
-    {X' Y' Z' W : C} {h' : X' ⟶ Z'} {i' : Y' ⟶ Z'}
-    {αX : X' ⟶ X} [HasPullback αX f] {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z} {f₁ f₂ : Z' ⟶ W}
-    (h₁ : IsPullback h' αX αZ h) (h₂ : IsPullback i' αY αZ i)
-    (h'_eq : h' ≫ f₁ = h' ≫ f₂) (i'_eq : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
+    {X' Y' Z' : C} {h' : X' ⟶ Z'} {i' : Y' ⟶ Z'}
+    {αX : X' ⟶ X} [HasPullback αX f] {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z} {W : C} {f₁ f₂ : Z' ⟶ W}
+    (hh : IsPullback h' αX αZ h) (hi : IsPullback i' αY αZ i)
+    (h'_w : h' ≫ f₁ = h' ≫ f₂) (i'_w : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ := by
   rw [isVanKampen_iff'] at H'
-  obtain ⟨W, f', g', αW, h₃, h₄, h₅⟩ := (H' h' i' αX αY αZ h₁.toCommSq h₂.toCommSq).1 ⟨h₁, h₂⟩
-  exact h₅.hom_ext h'_eq i'_eq
+  obtain ⟨W', f', g', αW, _, _, H''⟩ := (H' h' i' αX αY αZ hh.toCommSq hi.toCommSq).1 ⟨hh, hi⟩
+  exact H''.hom_ext h'_w i'_w
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
     {iY : Y ⟶ YE} {fE : c.pt ⟶ YE} (H : CommSq f c.inl iY fE) :
@@ -299,74 +299,65 @@ theorem Adhesive.mono_of_isPushout_of_mono_right [Adhesive C] (H : IsPushout f g
     Mono h :=
   (Adhesive.van_kampen' H).mono_of_mono_right
 
-lemma Adhesive.isPullback_isPullback_hom_ext [Adhesive C] [Mono f] (H : IsPushout f g h i)
-    {X' Y' Z' W : C} {h' : X' ⟶ Z'} {i' : Y' ⟶ Z'}
+lemma Adhesive.isPushout_isPullback_isPullback_hom_ext [Adhesive C] [Mono f] (H : IsPushout f g h i)
+    {X' Y' Z' : C} {h' : X' ⟶ Z'} {i' : Y' ⟶ Z'}
     {αX : X' ⟶ X} {αY : Y' ⟶ Y} {αZ : Z' ⟶ Z}
-    {f₁ f₂ : Z' ⟶ W}
-    (h₁ : IsPullback h' αX αZ h) (h₂ : IsPullback i' αY αZ i)
-    (h'_eq : h' ≫ f₁ = h' ≫ f₂) (i'_eq : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ :=
-  IsPushout.VanKampen_isPullback_isPullback_hom_ext (Adhesive.van_kampen H) h₁ h₂ h'_eq i'_eq
+    {W : C} {f₁ f₂ : Z' ⟶ W}
+    (hh : IsPullback h' αX αZ h) (hi : IsPullback i' αY αZ i)
+    (h'_w : h' ≫ f₁ = h' ≫ f₂) (i'_w : i' ≫ f₁ = i' ≫ f₂) : f₁ = f₂ :=
+  IsPushout.isVanKampen_isPullback_isPullback_hom_ext (Adhesive.van_kampen H) hh hi h'_w i'_w
 
-open Adhesive IsPullback IsPushout in
-instance [Adhesive C] {Z A B : C} {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
+open IsPullback IsPushout pullback pushout in
+instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
+    {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where
-  right_cancellation {K} f g eq := by
-    let u := pushout.inl (pullback.fst a b) (pullback.snd a b)
-    let v := pushout.inr (pullback.fst a b) (pullback.snd a b)
-    letI : Mono u :=
-      mono_of_isPushout_of_mono_right (of_hasPushout (pullback.fst a b) (pullback.snd a b))
-    letI : Mono v :=
-      mono_of_isPushout_of_mono_left (of_hasPushout (pullback.fst a b) (pullback.snd a b))
-    let f_sq_left := of_hasPullback f u
-    let f_sq_right := of_hasPullback f v
-    let g_sq_left := of_hasPullback g u
-    let g_sq_right := of_hasPullback g v
-    let l₁ := pullback.fst f u
-    let f₁ := pullback.snd f u
-    let l₂ := pullback.fst f v
-    let f₂ := pullback.snd f v
-    let m₁ := pullback.fst g u
-    let g₁ := pullback.snd g u
-    let m₂ := pullback.fst g v
-    let g₂ := pullback.snd g v
-    letI : HasPullback (pullback.snd f u) (pullback.fst a b) := hasPullback_symmetry _ _
-    obtain ⟨_, f', _, _, p₁, p₂, h₁⟩ := (isVanKampen_iff'.1 (van_kampen (of_hasPushout _ _))
-      _ _ _ _ _ f_sq_left.toCommSq f_sq_right.toCommSq).1 ⟨f_sq_left, f_sq_right⟩
+  right_cancellation f g w := by
+    letI : Mono (inl (fst a b) (snd a b)) := mono_of_isPushout_of_mono_right (of_hasPushout ..)
+    letI : Mono (inr (fst a b) (snd a b)) := mono_of_isPushout_of_mono_left (of_hasPushout ..)
+    letI : Mono (inl (fst a b) (snd a b) ≫ desc a b pullback.condition) := by
+      rwa [pushout.inl_desc]
+    letI : Mono (inr (fst a b) (snd a b) ≫ desc a b pullback.condition) := by
+      rwa [pushout.inr_desc]
+    obtain ⟨_, f', _, _, p₁, p₂, h₁⟩ := (isVanKampen_iff'.1 (van_kampen (of_hasPushout ..))
+      _ _ _ _ _ (of_hasPullback ..).toCommSq (of_hasPullback ..).toCommSq).1
+        ⟨(of_hasPullback ..), (of_hasPullback f (inr ..))⟩
     letI : Mono f' := by
       rw [← p₁.isoPullback_hom_fst]
       infer_instance
-    apply isPullback_isPullback_hom_ext (of_hasPushout _ _) g_sq_left g_sq_right
-    · let sq₁₁ := of_hasPullback m₁ l₁
-      let sq₁₂ := of_hasPullback m₁ l₂
-      apply isPullback_isPullback_hom_ext h₁ sq₁₁ sq₁₂
-      · rw [pullback.condition_assoc, f_sq_left.w, g_sq_left.w, ← Category.assoc, ← Category.assoc]
-        refine ?_ =≫ u
-        letI : Mono (pushout.inl (pullback.fst a b) (pullback.snd a b) ≫
-            pushout.desc a b pullback.condition) := by
-          rwa [pushout.inl_desc]
-        rw [← cancel_mono (pushout.inl _ _ ≫ pushout.desc a b pullback.condition), Category.assoc,
-          ← f_sq_left.w_assoc, eq, ← pullback.condition_assoc, Category.assoc, ← g_sq_left.w_assoc]
-      · have : (pullback.fst m₁ l₂ ≫ g₁) ≫ a = (pullback.snd m₁ l₂ ≫ f₂) ≫ b := by
-          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← g_sq_left.w_assoc,
-            sq₁₂.w_assoc, ← eq, Category.assoc, pullback.condition_assoc, pushout.inr_desc]
-        rw [sq₁₂.w_assoc, f_sq_right.w, ← Category.assoc, ← pullback.lift_snd_assoc _ _ this,
-          ← pushout.condition, pullback.lift_fst_assoc _ _ this, Category.assoc, g_sq_left.w]
-    · let sq₂₁ := of_hasPullback m₂ l₁
-      let sq₂₂ := of_hasPullback m₂ l₂
-      apply isPullback_isPullback_hom_ext h₁ sq₂₁ sq₂₂
-      · have : (pullback.snd m₂ l₁ ≫ f₁) ≫ a = (pullback.fst m₂ l₁ ≫ g₂) ≫ b := by
-          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← f_sq_left.w_assoc,
-            eq, ← sq₂₁.w_assoc, Category.assoc, g_sq_right.w_assoc, pushout.inr_desc]
-        rw [sq₂₁.w_assoc, f_sq_left.w, ← Category.assoc, ← pullback.lift_fst_assoc _ _ this,
-          pushout.condition, pullback.lift_snd_assoc _ _ this, g_sq_right.w, Category.assoc]
-      · rw [sq₂₂.w_assoc, f_sq_right.w, g_sq_right.w, ← Category.assoc, ← Category.assoc]
-        refine ?_ =≫ v
-        letI : Mono (pushout.inr (pullback.fst a b) (pullback.snd a b) ≫
-            pushout.desc a b pullback.condition) := by
-          rwa [pushout.inr_desc]
-        rw [← cancel_mono (pushout.inr _ _ ≫ pushout.desc a b pullback.condition), Category.assoc,
-          ← f_sq_right.w_assoc, eq, ← pullback.condition_assoc, Category.assoc,
-          ← g_sq_right.w_assoc]
+    apply isPushout_isPullback_isPullback_hom_ext (of_hasPushout ..)
+        (of_hasPullback g (inl ..)) (of_hasPullback ..)
+    · apply isPushout_isPullback_isPullback_hom_ext h₁
+        (of_hasPullback (fst g (inl ..)) _) (of_hasPullback ..)
+      · rw [pullback.condition_assoc, (of_hasPullback ..).w, (of_hasPullback ..).w,
+          ← Category.assoc, ← Category.assoc]
+        refine ?_ =≫ inl ..
+        rw [← cancel_mono (inl .. ≫ desc a b pullback.condition), Category.assoc,
+          ← (of_hasPullback ..).w_assoc, w, ← pullback.condition_assoc, Category.assoc,
+          ← (of_hasPullback ..).w_assoc]
+      · have : (fst (fst g (inl ..)) (fst f (inr ..)) ≫ (snd g (inl ..))) ≫ a =
+            (snd (fst g (inl ..)) (fst f (inr ..)) ≫ (snd f (inr ..))) ≫ b := by
+          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc,
+          ← (of_hasPullback ..).w_assoc, (of_hasPullback ..).w_assoc, ← w, Category.assoc,
+          pullback.condition_assoc, pushout.inr_desc]
+        rw [(of_hasPullback ..).w_assoc, (of_hasPullback ..).w, ← Category.assoc,
+          ← lift_snd_assoc _ _ this, ← pushout.condition, lift_fst_assoc _ _ this, Category.assoc,
+          (of_hasPullback ..).w]
+    · apply isPushout_isPullback_isPullback_hom_ext h₁
+        (of_hasPullback (fst g (inr ..)) ..) (of_hasPullback ..)
+      · have : (snd (fst g (inr ..)) (fst f (inl ..)) ≫ (snd f (inl ..))) ≫ a =
+            (fst (fst g (inr ..)) (fst f (inl ..)) ≫ (snd g (inr ..))) ≫ b := by
+          rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc,
+            ← (of_hasPullback ..).w_assoc, w, ← (of_hasPullback ..).w_assoc, Category.assoc,
+            (of_hasPullback g (inr ..)).w_assoc, pushout.inr_desc]
+        rw [(of_hasPullback ..).w_assoc, (of_hasPullback f (inl ..)).w, ← Category.assoc,
+          ← lift_fst_assoc _ _ this, pushout.condition, lift_snd_assoc _ _ this,
+          (of_hasPullback ..).w, Category.assoc]
+      · rw [(of_hasPullback ..).w_assoc, (of_hasPullback ..).w, (of_hasPullback ..).w,
+          ← Category.assoc, ← Category.assoc]
+        refine ?_ =≫ inr ..
+        rw [← cancel_mono (inr .. ≫ pushout.desc a b pullback.condition), Category.assoc,
+          ← (of_hasPullback ..).w_assoc, w, ← pullback.condition_assoc, Category.assoc,
+          ← (of_hasPullback ..).w_assoc]
 
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
