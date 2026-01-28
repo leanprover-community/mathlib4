@@ -384,6 +384,7 @@ lemma ιMulti_family_span_of_span {I : Type*} [LinearOrder I]
   rw [LinearMap.map_span, ← Set.image_univ, Set.image_image]
   simpa using ιMulti_family_span_fixedDegree_of_span R hv
 
+open Set Submodule in
 /-- If `v` is a family of vectors of `M` indexed by a linearly ordered type, then the span of the
 range of `exteriorPower.ιMulti_family R n v`, i.e., of the family of `n`-fold exterior products
 of elements of `v`, is the image of the map of exterior powers induced by the inclusion of
