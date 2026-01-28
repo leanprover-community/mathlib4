@@ -20,6 +20,7 @@ public meta section
 namespace Mathlib.Tactic
 open Lean Parser Meta Elab Tactic Term
 
+/-- Elaborator for the configuration in `apply (config := cfg)` syntax. -/
 declare_config_elab elabApplyConfig ApplyConfig
 
 /--
