@@ -5,7 +5,9 @@ Authors: Christopher Hoskin
 -/
 module
 
+import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Tactic.FunProp.Attr
 
 /-!
 # Scott continuity
@@ -33,10 +35,10 @@ in this file, and ωScott Continuity on chains later in
 
 open Set
 
-variable {α β : Type*}
+variable {α β γ : Type*}
 
 section ScottContinuous
-variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)}
+variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
   {f : α → β}
 
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
@@ -50,6 +52,7 @@ The dual notion
 
 does not appear to play a significant role in the literature, so is omitted here.
 -/
+@[fun_prop]
 def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
@@ -65,11 +68,70 @@ protected theorem ScottContinuousOn.monotone (D : Set (Set α)) (hD : ∀ a b : 
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]
   exact isLeast_Ici
 
-@[simp] lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
+@[simp, fun_prop]
+lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [ScottContinuousOn]
 
-variable {g : α → β}
+@[simp, fun_prop]
+lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α x) := by
+  rintro s _ ⟨a⟩ _ _ _
+  simp only [
+    IsLUB, IsLeast, upperBounds, Function.const_apply, mem_image, exists_and_right,
+    and_imp, forall_exists_index, forall_apply_eq_imp_iff₂, mem_setOf_eq, le_refl,
+    implies_true, lowerBounds, true_and]
+  grind
 
-lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+@[simp, fun_prop]
+lemma ScottContinuousOn.const' (x : β) : ScottContinuousOn D (fun _ : α ↦ x) :=
+  ScottContinuousOn.const x
+
+theorem ScottContinuousOn.comp
+    {g : β → γ} {D'}
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (hD' : Set.MapsTo (f '' ·) D D')
+    (hg : ScottContinuousOn D' g)
+    (hf : ScottContinuousOn D f)
+    : ScottContinuousOn D (g ∘ f) := by
+  intro d hd₁ hd₂ hd₃ a ha
+  have hd₁' : f '' d ∈ D' := hD' hd₁
+  have hd₂' : (f '' d).Nonempty := ⟨f hd₂.choose, by grind⟩
+  have hd₃' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
+    have := hf.monotone
+    simp only [
+      Monotone, DirectedOn, mem_image, exists_exists_and_eq_and,
+      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at ⊢ this hd₃
+    grind
+  rw [Set.image_comp]
+  refine hg hd₁' hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
+
+theorem ScottContinuousOn.image_comp
+    {g : β → γ}
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (hg : ScottContinuousOn ((f '' ·) '' D) g)
+    (hf : ScottContinuousOn D f)
+    : ScottContinuousOn D (g ∘ f) :=
+  ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
+
+@[fun_prop]
+theorem ScottContinuousOn.comp'
+    {g : β → γ} {D'}
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (hD' : ∀ d ∈ D, f '' d ∈ D')
+    (hg : ScottContinuousOn D' g)
+    (hf : ScottContinuousOn D f)
+    : ScottContinuousOn D (fun x ↦ g (f x)) :=
+  ScottContinuousOn.comp hD hD' hg hf
+
+@[fun_prop]
+theorem ScottContinuousOn.image_comp'
+    {g : β → γ}
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
+    (hg : ScottContinuousOn ((f '' ·) '' D) g)
+    (hf : ScottContinuousOn D f)
+    : ScottContinuousOn D (fun x ↦ g (f x)) :=
+  ScottContinuousOn.image_comp hD hg hf
+
+@[fun_prop]
+lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
     (hf : ScottContinuousOn D f) (hg : ScottContinuousOn D g) :
     ScottContinuousOn D fun x => (f x, g x) := fun d hd₁ hd₂ hd₃ a hda => by
   rw [IsLUB, IsLeast, upperBounds]
@@ -91,10 +153,23 @@ lemma ScottContinuousOn.prodMk (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
       intro _ hb
       exact (hp _ hb).2
 
+@[simp, fun_prop]
+lemma ScottContinuousOn.fst {D} : ScottContinuousOn D (Prod.fst : α × β → α) := by
+  intro d hd₁ hd₂ hd₃ a ha
+  simp only [isLUB_prod] at ha
+  exact ha.1
+
+@[simp, fun_prop]
+lemma ScottContinuousOn.snd {D} : ScottContinuousOn D (Prod.snd : α × β → β) := by
+  intro d hd₁ hd₂ hd₃ a ha
+  simp only [isLUB_prod] at ha
+  exact ha.2
+
 /-- A function between preorders is said to be Scott continuous if it preserves `IsLUB` on directed
 sets. It can be shown that a function is Scott continuous if and only if it is continuous w.r.t. the
 Scott topology.
 -/
+@[fun_prop]
 def ScottContinuous (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
@@ -107,7 +182,50 @@ lemma ScottContinuous.scottContinuousOn {D : Set (Set α)} :
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f :=
   h.scottContinuousOn.monotone univ (fun _ _ _ ↦ mem_univ _)
 
-@[simp] lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
+@[simp, fun_prop]
+lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottContinuous]
+
+@[simp, fun_prop]
+lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := by
+  simp only [← scottContinuousOn_univ, ScottContinuousOn.const]
+
+@[simp, fun_prop]
+lemma ScottContinuous.const' (x : β) : ScottContinuous (fun _ : α ↦ x) := by
+  simp only [← scottContinuousOn_univ, ScottContinuousOn.const']
+
+lemma ScottContinuous.comp {g : β → γ}
+    (hf : ScottContinuous f) (hg : ScottContinuous g)
+    : ScottContinuous (g ∘ f) := by
+  intro d hd₁ hd₂ a ha
+  have hd₁' : (f '' d).Nonempty := ⟨f hd₁.choose, by grind⟩
+  have hd₂' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
+    have := hf.monotone
+    simp only [Monotone, DirectedOn] at ⊢ this hd₂
+    grind
+  rw [Set.image_comp]
+  exact hg hd₁' hd₂' (hf hd₁ hd₂ ha)
+
+@[fun_prop]
+lemma ScottContinuous.comp' {g : β → γ}
+    (hf : ScottContinuous f) (hg : ScottContinuous g)
+    : ScottContinuous (fun x ↦ g (f x)) :=
+  ScottContinuous.comp hf hg
+
+@[fun_prop]
+lemma ScottContinuous.prodMk {g : α → γ}
+    (hf : ScottContinuous f) (hg : ScottContinuous g) :
+    ScottContinuous fun x => (f x, g x) := by
+  simp only [← scottContinuousOn_univ] at ⊢ hf hg
+  apply ScottContinuousOn.prodMk ?_ hf hg
+  grind
+
+@[simp, fun_prop]
+lemma ScottContinuous.fst : ScottContinuous (Prod.fst : α × β → α) := by
+  simp only [← scottContinuousOn_univ, ScottContinuousOn.fst]
+
+@[simp, fun_prop]
+lemma ScottContinuous.snd : ScottContinuous (Prod.snd : α × β → β) := by
+  simp only [← scottContinuousOn_univ, ScottContinuousOn.snd]
 
 end ScottContinuous
 
@@ -116,6 +234,7 @@ section SemilatticeSup
 variable [SemilatticeSup β]
 
 /-- The join operation is Scott continuous -/
+@[fun_prop]
 lemma ScottContinuous.sup₂ :
     ScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_setOf_eq, Prod.mk_le_mk] at hdp
@@ -128,6 +247,7 @@ lemma ScottContinuous.sup₂ :
   · rw [sup_le_iff]
     exact e1 _ _ fun b₁ b₂ hb' => sup_le_iff.mp (hb b₁ b₂ hb' rfl)
 
+@[fun_prop]
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) :=
   ScottContinuous.sup₂.scottContinuousOn
