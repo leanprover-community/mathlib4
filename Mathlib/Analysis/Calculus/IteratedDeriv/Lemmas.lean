@@ -245,6 +245,16 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜
     iteratedDerivWithin_const_smul (Set.mem_univ x) uniqueDiffOn_univ
       c (contDiffWithinAt_univ.mpr h)
 
+lemma iteratedDeriv_fun_const_smul {E : Type*} [NontriviallyNormedField E] [NormedAlgebra 𝕜 E]
+    (a : E) (f : 𝕜 → E) (m : ℕ) : iteratedDeriv m (a • f) = a • iteratedDeriv m f := by
+  induction m with
+  | zero => simp
+  | succ m hm =>
+    rw [iteratedDeriv_succ, iteratedDeriv_succ, hm]
+    ext x
+    rw [@Pi.smul_def]
+    exact deriv_const_smul' a ..
+
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
     iteratedDeriv n (fun z => c * f z) x = c * iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
