@@ -13,7 +13,7 @@ variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [SeminormedAddCommGroup E] [No
 
 theorem exists_dual_vector_of_seminormed (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
   by_cases hx : 0 < ‖x‖
-  · have hnz : x ≠ 0 := by aesop
+  · have hnz : x ≠ 0 := fun _ ↦ by simp_all
     have hhom := LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x hnz
     let coord := (ofHomothety _ _ hx hhom).symm.toContinuousLinearMap
     obtain ⟨g, hg⟩ := exists_extension_norm_eq (𝕜 ∙ x) ((‖x‖ : 𝕜) • coord)
@@ -27,18 +27,26 @@ theorem exists_dual_vector_of_seminormed (x : E) : ∃ g : StrongDual 𝕜 E, �
 
 variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+/-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
+element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector_new (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   obtain ⟨g, hg⟩ := exists_dual_vector_of_seminormed 𝕜 x
-  refine ⟨g,  g.opNorm_eq_of_bounds zero_le_one (g.le_of_opNorm_le hg.1) (fun _ _ hx =>
-    one_le_of_le_mul_right₀ (norm_pos_iff.mpr h) (by simpa [hg.2] using hx x)), hg.2⟩
+  refine ⟨g, le_antisymm hg.1 ?_, hg.2⟩
+  have := g.le_opNorm x
+  simp_all
 
 theorem exists_dual_vector'_new [Nontrivial E] (x : E) :
     ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+  obtain ⟨y, hy⟩ := exists_ne (0 : E)
   by_cases hx : x = 0
   · obtain ⟨y, hy⟩ := exists_ne (0 : E)
     obtain ⟨g, hg⟩ := exists_dual_vector_new 𝕜 y hy
     exact ⟨g, hg.left, by simp [hx]⟩
   · exact exists_dual_vector_new 𝕜 x hx
+
+section NormedGroup
+
+end NormedGroup
 
 end HahnBanach.lean
 
