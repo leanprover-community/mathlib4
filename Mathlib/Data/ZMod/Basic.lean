@@ -815,6 +815,11 @@ lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
   rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
   exact Nat.gcd_rec n m
 
+lemma coprime_of_cast_of_val_iff_coprime (m n : ℕ) : (m : ZMod n).val.Coprime n ↔ m.Coprime n := by
+  simp only [Nat.Coprime, val_natCast]
+  suffices (m % n).gcd n = m.gcd n by grind
+  exact Nat.ModEq.gcd_eq (by simp [Nat.ModEq])
+
 lemma isUnit_prime_iff_not_dvd {n p : ℕ} (hp : p.Prime) : IsUnit (p : ZMod n) ↔ ¬p ∣ n := by
   rw [isUnit_iff_coprime, Nat.Prime.coprime_iff_not_dvd hp]
 
