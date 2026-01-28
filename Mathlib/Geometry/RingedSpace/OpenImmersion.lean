@@ -275,7 +275,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
       exact (Set.image_preimage_eq _ ((TopCat.epi_iff_surjective _).mp h')).symm
     convert H.c_iso (Opens.map f.base |>.obj <| unop U)
   have : IsIso f.c := NatIso.isIso_of_isIso_app _
-  apply (config := { allowSynthFailures := true }) isIso_of_components
+  apply +allowSynthFailures isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
       invFun := fun x =>
@@ -735,8 +735,7 @@ theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding 
     [H : ∀ x : X.1, IsIso (f.hom.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
     c_iso := fun U => by
-      apply (config := { allowSynthFailures := true })
-        TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
+      apply +allowSynthFailures TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.hom.base).obj X.sheaf from ⟨f.hom.c⟩)
       rintro ⟨_, y, hy, rfl⟩
       specialize H y
@@ -1049,18 +1048,12 @@ instance forgetToTop_preservesPullback_of_left :
   change PreservesLimit _ <|
     (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) ⋙
     PresheafedSpace.forget _
-  -- Porting note: was `apply (config := { instances := False }) ...`
-  -- See https://github.com/leanprover/lean4/issues/2273
-  have : PreservesLimit
-      (cospan ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
-        WalkingCospan.Hom.inl)
-      ((cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map
-        WalkingCospan.Hom.inr)) (PresheafedSpace.forget CommRingCat) := by
-    dsimp; infer_instance
-  have : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
-      (PresheafedSpace.forget CommRingCat) := by
-    apply preservesLimit_of_iso_diagram _ (diagramIsoCospan _).symm
-  apply Limits.comp_preservesLimit
+  apply +allowSynthFailures Limits.comp_preservesLimit
+  dsimp
+  apply +allowSynthFailures preservesLimit_of_iso_diagram
+  · exact (diagramIsoCospan _).symm
+  dsimp
+  infer_instance
 
 instance forget_reflectsPullback_of_left :
     ReflectsLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
@@ -1091,9 +1084,9 @@ instance forgetToPresheafedSpace_reflectsPullback_of_right :
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
-  apply (config := { allowSynthFailures := true }) Functor.ReflectsIsomorphisms.reflects
+  apply +allowSynthFailures Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
-  apply (config := { allowSynthFailures := true }) Functor.ReflectsIsomorphisms.reflects
+  apply +allowSynthFailures Functor.ReflectsIsomorphisms.reflects
     (F := SheafedSpace.forgetToPresheafedSpace)
   erw [← PreservesPullback.iso_hom_snd
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) f g]

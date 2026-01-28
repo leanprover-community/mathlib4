@@ -105,7 +105,7 @@ instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
-  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_isIso_stalkMap
+  apply +allowSynthFailures IsOpenImmersion.of_isIso_stalkMap
   · exact .of_isEmpty (X := X) _
   · intro (i : X); exact isEmptyElim i
 
