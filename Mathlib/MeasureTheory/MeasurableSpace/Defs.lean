@@ -525,6 +525,7 @@ protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
     Measurable fun _ : β => a := fun s _ => .const (a ∈ s)
 
+@[fun_prop]
 theorem Measurable.le {α} {m m0 : MeasurableSpace α} {_ : MeasurableSpace β} (hm : m ≤ m0)
     {f : α → β} (hf : Measurable[m] f) : Measurable[m0] f := fun _ hs => hm _ (hf hs)
 
