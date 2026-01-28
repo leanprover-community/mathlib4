@@ -232,7 +232,7 @@ section nontriviality
 /-- A topological space is indiscrete if the only open sets are the empty set and the whole space,
 that is that its topology equals the indiscrete topology `⊤`.
 
-This can also go by the name of the "trivial topology" or the "codiscrete topology". -/
+This can also go by the name "trivial topology" or "codiscrete topology". -/
 @[mk_iff]
 class IndiscreteTopology (α) [TopologicalSpace α] where
   eq_top (α) : ‹TopologicalSpace α› = ⊤
@@ -249,12 +249,12 @@ theorem TopologicalSpace.indiscrete_or_nontrivial (α) [TopologicalSpace α] :
     IndiscreteTopology α ∨ NontrivialTopology α :=
   (eq_or_ne ‹TopologicalSpace α› ⊤).imp .mk .mk
 
-@[simp]
+@[simp, push]
 theorem TopologicalSpace.not_indiscrete_iff [TopologicalSpace α] :
     ¬IndiscreteTopology α ↔ NontrivialTopology α :=
   ⟨fun h => ⟨fun x => h ⟨x⟩⟩, fun h x => h.ne_top x.eq_top⟩
 
-@[simp]
+@[simp, push]
 theorem TopologicalSpace.not_nontrivial_iff [TopologicalSpace α] :
     ¬NontrivialTopology α ↔ IndiscreteTopology α :=
   TopologicalSpace.not_indiscrete_iff.not_right.symm
