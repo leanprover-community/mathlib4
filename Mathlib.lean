@@ -2151,6 +2151,7 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
 public import Mathlib.Analysis.SpecialFunctions.Elliptic.Weierstrass
 public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.ExpBounds
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
@@ -3373,6 +3374,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
 public import Mathlib.Combinatorics.Tiling.Tile
 public import Mathlib.Combinatorics.Young.SemistandardTableau
 public import Mathlib.Combinatorics.Young.YoungDiagram
+public import Mathlib.Complexity.StructuralSeparation
 public import Mathlib.Computability.Ackermann
 public import Mathlib.Computability.AkraBazzi.AkraBazzi
 public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
