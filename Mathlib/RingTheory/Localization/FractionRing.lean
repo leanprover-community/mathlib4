@@ -111,6 +111,15 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
 
 variable {R K}
 
+section CommSemiring
+
+theorem of_equiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+    {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
+    (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
+    IsFractionRing R K := IsLocalization.of_equiv_left e (MulEquivClass.map_nonZeroDivisors e) h
+
+end CommSemiring
+
 section CommRing
 
 variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
