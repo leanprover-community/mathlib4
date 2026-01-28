@@ -69,16 +69,15 @@ lemma iIndepFun_of_covariance_strongDual [NormedSpace ℝ E]
       cov[L₁ ∘ X t₁ s₁, L₂ ∘ X t₂ s₂; P] = 0) :
     iIndepFun (fun t ω s ↦ X t s ω) P := by
   have := hX.isProbabilityMeasure
+  classical
   refine iIndepFun.iIndepFun_process mX fun I J ↦
     HasGaussianLaw.iIndepFun_of_covariance_strongDual ?_ fun i j hij L₁ L₂ ↦ ?_
-  · classical
-    let L : (I.sigma (fun i ↦ if hi : i ∈ I then J ⟨i, hi⟩ else ∅) → E) →L[ℝ] (i : I) → J i → E :=
+  · let L : (I.sigma (fun i ↦ if hi : i ∈ I then J ⟨i, hi⟩ else ∅) → E) →L[ℝ] (i : I) → J i → E :=
       { toFun x i j := x ⟨⟨i, j⟩, by simp⟩
         map_add' x y := by ext; simp
         map_smul' c x := by ext; simp
         cont := by fun_prop }
     exact (hX.hasGaussianLaw _).map L
-  classical
   have h1 : L₁ ∘ (fun ω k ↦ X i k ω) = ∑ k : J i, (L₁ ∘L .single ℝ _ k) ∘ X i k := by
     ext; simp [-ContinuousLinearMap.coe_comp', ← L₁.sum_comp_single]
   have h2 : L₂ ∘ (fun ω k ↦ X j k ω) = ∑ k : J j, (L₂ ∘L .single ℝ _ k) ∘ X j k := by
