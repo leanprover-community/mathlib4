@@ -170,7 +170,7 @@ theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
-theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+instance liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).LiesOver I :=
   (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
 
@@ -236,10 +236,12 @@ noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : 
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
 
+@[simp]
 theorem localRingHom_to_map (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     (x : R) : localRingHom I J f hIJ (algebraMap _ _ x) = algebraMap _ _ (f x) :=
   map_eq _ _
 
+@[simp]
 theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
