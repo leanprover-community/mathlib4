@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 
-# Ext Between Finitely Generated Module over Noetherian Ring is Finitely Generated
+# `Ext`-modules between finitely generated modules over Noetherian rings are finitely generated
 
 -/
 
