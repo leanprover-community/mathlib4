@@ -65,12 +65,12 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
 theorem mk_right_injective {α β : Type*} (a : α) : (mk a : β → α × β).Injective := by
-  intro
-  grind
+  intro b₁ b₂ h
+  simpa only [true_and, Prod.mk_inj, eq_self_iff_true] using h
 
 theorem mk_left_injective {α β : Type*} (b : β) : (fun a ↦ mk a b : α → α × β).Injective := by
-  intro
-  grind
+  intro b₁ b₂ h
+  simpa only [and_true, eq_self_iff_true, mk_inj] using h
 
 lemma mk_right_inj {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ :=
     (mk_right_injective _).eq_iff
