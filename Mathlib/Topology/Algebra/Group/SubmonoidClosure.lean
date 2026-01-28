@@ -20,7 +20,7 @@ The proof is based on the following observation, see `mapClusterPt_self_zpow_atT
 each `x^m`, `m : ℤ` is a limit point (`MapClusterPt`) of the sequence `x^n`, `n : ℕ`, as `n → ∞`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set
 open scoped Topology

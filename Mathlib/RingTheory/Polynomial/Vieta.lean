@@ -24,7 +24,7 @@ we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between th
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
 
-@[expose] public section
+public section
 
 open Finset Polynomial
 

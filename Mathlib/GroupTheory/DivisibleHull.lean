@@ -54,6 +54,8 @@ namespace DivisibleHull
 /-- Create an element `m / s`. -/
 def mk (m : M) (s : ℕ+) : DivisibleHull M := LocalizedModule.mk m (↑ⁿ s)
 
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
+
 /-- Define coercion as `m ↦ m / 1`. -/
 @[coe]
 abbrev coe (m : M) := mk m 1
@@ -218,7 +220,7 @@ instance : Module ℚ (DivisibleHull M) where
     simp_rw [qsmul_mk, mk_add_mk, mk_eq_mk]
     use 1
     suffices ((a + b).num * a.den * b.den * (s * s)) • m =
-        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m  by
+        ((a.num * b.den + b.num * a.den) * (a + b).den * (s * s)) • m by
       convert this using 1
       all_goals
       simp [← natCast_zsmul, smul_smul, ← add_smul]

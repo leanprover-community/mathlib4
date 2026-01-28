@@ -20,7 +20,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 * application of continuous (multi)linear maps to a constant
 -/
 
-@[expose] public section
+public section
 
 
 open Asymptotics ContinuousLinearMap Topology

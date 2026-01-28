@@ -62,7 +62,7 @@ elements from any set in `𝒜`. -/
 def shadow (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
   𝒜.sup fun s => s.image (erase s)
 
-@[inherit_doc] scoped[FinsetFamily] notation:max "∂ " => Finset.shadow
+@[inherit_doc] scoped[FinsetFamily] notation:max "∂" => Finset.shadow
 
 open FinsetFamily
 

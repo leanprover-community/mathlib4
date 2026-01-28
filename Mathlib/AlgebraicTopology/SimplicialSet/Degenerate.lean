@@ -56,15 +56,9 @@ variable {n : ℕ}
 lemma mem_nonDegenerate_iff_notMem_degenerate (x : X _⦋n⦌) :
     x ∈ X.nonDegenerate n ↔ x ∉ X.degenerate n := Iff.rfl
 
-@[deprecated (since := "2025-05-23")]
-alias mem_nonDegenerate_iff_not_mem_degenerate := mem_nonDegenerate_iff_notMem_degenerate
-
 lemma mem_degenerate_iff_notMem_nonDegenerate (x : X _⦋n⦌) :
     x ∈ X.degenerate n ↔ x ∉ X.nonDegenerate n := by
   simp [nonDegenerate]
-
-@[deprecated (since := "2025-05-23")]
-alias mem_degenerate_iff_not_mem_nonDegenerate := mem_degenerate_iff_notMem_nonDegenerate
 
 lemma σ_mem_degenerate (i : Fin (n + 1)) (x : X _⦋n⦌) :
     X.σ i x ∈ X.degenerate (n + 1) :=
@@ -120,8 +114,8 @@ lemma isIso_of_nonDegenerate (x : X.nonDegenerate n)
   obtain ⟨x, hx⟩ := x
   induction m using SimplexCategory.rec with | _ m
   rw [mem_nonDegenerate_iff_notMem_degenerate] at hx
-  by_contra!
-  refine hx ⟨_, not_le.1 (fun h ↦ this ?_), f, y, hy⟩
+  by_contra hf
+  refine hx ⟨_, not_le.1 (fun h ↦ hf ?_), f, y, hy⟩
   rw [SimplexCategory.isIso_iff_of_epi]
   exact le_antisymm h (SimplexCategory.len_le_of_epi f)
 

@@ -133,10 +133,6 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
   · rintro ⟨u, huf, hPu, hQu⟩
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 
-@[deprecated forall_swap (since := "2025-06-10")]
-theorem forall_in_swap {β : Type*} {p : Set α → β → Prop} :
-    (∀ a ∈ f, ∀ (b), p a b) ↔ ∀ (b), ∀ a ∈ f, p a b := by tauto
-
 end Filter
 
 
@@ -392,15 +388,11 @@ theorem NeBot.nonempty_of_mem {f : Filter α} (hf : NeBot f) {s : Set α} (hs : 
 @[simp]
 theorem empty_notMem (f : Filter α) [NeBot f] : ∅ ∉ f := fun h => (nonempty_of_mem h).ne_empty rfl
 
-@[deprecated (since := "2025-05-23")] alias empty_not_mem := empty_notMem
-
 theorem nonempty_of_neBot (f : Filter α) [NeBot f] : Nonempty α :=
   Exists.nonempty <| nonempty_of_mem (univ_mem : univ ∈ f)
 
 theorem compl_notMem {f : Filter α} {s : Set α} [NeBot f] (h : s ∈ f) : sᶜ ∉ f := fun hsc =>
   (nonempty_of_mem (inter_mem h hsc)).ne_empty <| inter_compl_self s
-
-@[deprecated (since := "2025-05-23")] alias compl_not_mem := compl_notMem
 
 theorem filter_eq_bot_of_isEmpty [IsEmpty α] (f : Filter α) : f = ⊥ :=
   empty_mem_iff_bot.mp <| univ_mem' isEmptyElim
@@ -1003,6 +995,7 @@ theorem EventuallyEq.comp₂ {δ} {f f' : α → β} {g g' : α → γ} {l} (Hf 
     (Hg : g =ᶠ[l] g') : (fun x => h (f x) (g x)) =ᶠ[l] fun x => h (f' x) (g' x) :=
   (Hf.prodMk Hg).fun_comp (uncurry h)
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := gcongr)]
 theorem EventuallyEq.mul [Mul β] {f f' g g' : α → β} {l : Filter α} (h : f =ᶠ[l] g)
     (h' : f' =ᶠ[l] g') : f * f' =ᶠ[l] g * g' :=
@@ -1021,6 +1014,7 @@ lemma EventuallyEq.mul_left [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ
 lemma EventuallyEq.mul_right [Mul β] {f₁ f₂ f₃ : α → β} (h : f₁ =ᶠ[l] f₂) :
     f₁ * f₃ =ᶠ[l] f₂ * f₃ := EventuallyEq.mul h (by rfl)
 
+-- TODO: can't use `to_additive` and `to_fun` simultaneously?
 @[to_additive (attr := gcongr, to_additive) const_smul]
 theorem EventuallyEq.pow_const {γ} [Pow β γ] {f g : α → β} {l : Filter α} (h : f =ᶠ[l] g) (c : γ) :
     f ^ c =ᶠ[l] g ^ c :=
@@ -1201,8 +1195,6 @@ theorem eventuallyLE_antisymm_iff [PartialOrder β] {l : Filter α} {f g : α �
 theorem EventuallyLE.ge_iff_eq' [PartialOrder β] {l : Filter α} {f g : α → β} (h : f ≤ᶠ[l] g) :
     g ≤ᶠ[l] f ↔ g =ᶠ[l] f :=
   ⟨fun h' => h'.antisymm h, EventuallyEq.le⟩
-
-@[deprecated (since := "2025-07-10")] alias EventuallyLE.le_iff_eq := EventuallyLE.ge_iff_eq'
 
 theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h : ∀ᶠ x in l, f x < g x) :
     ∀ᶠ x in l, f x ≠ g x :=

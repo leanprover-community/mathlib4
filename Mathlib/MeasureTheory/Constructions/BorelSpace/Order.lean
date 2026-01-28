@@ -288,7 +288,7 @@ theorem Dense.borel_eq_generateFrom_Icc_mem_aux {α : Type*} [TopologicalSpace �
   by_cases! ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u < a), Icc l u)
     · ext y
-      simp only [mem_iUnion, mem_Iio, mem_Icc]
+      push _ ∈ _
       constructor
       · intro hy
         rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) y with ⟨l, hlt, hly⟩
@@ -349,7 +349,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   by_cases! ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
     · ext y
-      simp only [mem_iUnion, mem_Iio, mem_Ico]
+      push _ ∈ _
       constructor
       · intro hy
         rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) y with ⟨l, hlt, hly⟩
@@ -539,7 +539,7 @@ theorem ext_of_Icc' {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
 /-- Two measures which are finite on closed intervals are equal if they agree on all
 closed intervals. -/
 theorem ext_of_Icc {α : Type*} [TopologicalSpace α] {_m : MeasurableSpace α}
-    [SecondCountableTopology α] [ConditionallyCompleteLinearOrder α] [OrderTopology α]
+    [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [CompactIccSpace α]
     [BorelSpace α] (μ ν : Measure α) [IsLocallyFiniteMeasure μ]
     (h : ∀ ⦃a b⦄, a ≤ b → μ (Icc a b) = ν (Icc a b)) : μ = ν :=
   μ.ext_of_Icc' ν (fun _ _ _ => measure_Icc_lt_top.ne) h
@@ -797,7 +797,7 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
-  rcases isEmpty_or_nonempty α with hα|hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · have : ∀ b, range (fun i ↦ f i b) = ∅ := fun b ↦ eq_empty_of_isEmpty _
     simp [this]
   have A : ∀ (i : ι) (c : α), MeasurableSet {x | f i x ≤ c} := by
@@ -855,7 +855,7 @@ variable [ConditionallyCompleteLinearOrder α] [OrderTopology α] [SecondCountab
 @[fun_prop]
 protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     Measurable (fun b ↦ ⨆ i, f i b) := by
-  rcases isEmpty_or_nonempty ι with hι|hι
+  rcases isEmpty_or_nonempty ι with hι | hι
   · simp [iSup_of_empty']
   have A : MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} :=
     measurableSet_bddAbove_range hf
@@ -953,7 +953,7 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   valid in general, is given in `Filter.HasBasis.liminf_eq_ite`. This expression, built from
   `if ... then ... else` and infs and sups, can be readily checked to be measurable. -/
   have : Countable (Subtype p) := hv.countable
-  rcases isEmpty_or_nonempty (Subtype p) with hp|hp
+  rcases isEmpty_or_nonempty (Subtype p) with hp | hp
   · simp [hv.liminf_eq_sSup_iUnion_iInter]
   by_cases H : ∃ (j : Subtype p), s j = ∅
   · simp_rw [hv.liminf_eq_ite, if_pos H, measurable_const]
@@ -1014,9 +1014,6 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
   .limsup' hf atTop_countable_basis fun _ => to_countable _
 
 end ConditionallyCompleteLinearOrder
-
-@[deprecated (since := "2025-05-30")]
-alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
 
 end BorelSpace
 

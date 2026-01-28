@@ -213,8 +213,6 @@ theorem mk_pow {x : α} (hx : 0 ≤ x) (n : ℕ) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) ^ n = ⟨x ^ n, pow_nonneg hx n⟩ :=
   rfl
 
-@[deprecated (since := "2025-05-19")] alias pow_nonneg := _root_.pow_nonneg
-
 end Pow
 
 section Semiring

@@ -17,7 +17,7 @@ the values `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂μ`, for
 `f : (i : ι) → X i → ℝ` and `g : (j : κ) → Y j → ℝ`
 any families of bounded continuous functions.
 
-In particular, If `μ` and `ν` and two finite measures over `Π i, X i` and `Π j, Y j` respectively,
+In particular, if `μ` and `ν` are two finite measures over `Π i, X i` and `Π j, Y j` respectively,
 then their product is the only finite measure `ξ` over `(Π i, X i) × (Π j, Y j)`
 such that for any two families bounded continuous functions
 `f : (i : ι) → X i → ℝ` and `g : (j : κ) → Y j → ℝ` we have
@@ -53,7 +53,7 @@ We specialize these results to the cases where one of the families contains only
 bounded continuous function, product measure
 -/
 
-@[expose] public section
+public section
 
 open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal

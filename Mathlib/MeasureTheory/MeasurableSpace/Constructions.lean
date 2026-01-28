@@ -572,6 +572,10 @@ theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Meas
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
 
+theorem MeasurableSpace.comap_le_comap_pi {g : (a : δ) → β → X a} (a : δ) :
+    .comap (g a) inferInstance ≤ pi.comap (fun b c ↦ g c b) := by
+  simpa only [pi, comap_iSup] using le_iSup_of_le a <| by measurability
+
 theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
@@ -911,15 +915,11 @@ lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := mea
 lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
 
-@[deprecated (since := "2025-05-23")] alias measurable_set_not_mem := measurable_set_notMem
-
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
   measurableSet_setOf.2 <| measurable_set_mem _
 
 lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
   measurableSet_setOf.2 <| measurable_set_notMem _
-
-@[deprecated (since := "2025-05-23")] alias measurableSet_not_mem := measurableSet_notMem
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
   measurable_set_iff.2 fun _ ↦ measurable_set_notMem _

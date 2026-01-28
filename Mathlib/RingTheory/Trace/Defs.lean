@@ -150,7 +150,6 @@ theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
 @[simp]
 theorem trace_prod_apply [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Module.Finite R T]
     (x : S × T) : trace R (S × T) x = trace R S x.fst + trace R T x.snd := by
-  nontriviality R
   let f := (lmul R S).toLinearMap.prodMap (lmul R T).toLinearMap
   have : (lmul R (S × T)).toLinearMap = (prodMapLinear R S T S T R).comp f :=
     LinearMap.ext₂ Prod.mul_def
@@ -164,7 +163,7 @@ theorem trace_prod [Module.Free R S] [Module.Free R T] [Module.Finite R S] [Modu
 section TraceForm
 
 variable (R S)
-
+open LinearMap
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 @[stacks 0BIK "Trace pairing"]
@@ -182,8 +181,8 @@ theorem traceForm_isSymm : (traceForm R S).IsSymm :=
   ⟨fun _ _ => congr_arg (trace R S) (mul_comm _ _)⟩
 
 theorem traceForm_toMatrix [DecidableEq ι] (b : Basis ι R S) (i j) :
-    BilinForm.toMatrix b (traceForm R S) i j = trace R S (b i * b j) := by
-  rw [BilinForm.toMatrix_apply, traceForm_apply]
+    (traceForm R S).toMatrix b i j = trace R S (b i * b j) := by
+  rw [LinearMap.BilinForm.toMatrix_apply, traceForm_apply]
 
 end TraceForm
 
