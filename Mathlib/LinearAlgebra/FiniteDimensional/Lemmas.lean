@@ -138,6 +138,11 @@ theorem finrank_range_add_finrank_ker [FiniteDimensional K V] (f : V →ₗ[K] V
   rw [← f.quotKerEquivRange.finrank_eq]
   exact Submodule.finrank_quotient_add_finrank _
 
+theorem finrank_ker_of_surjective [FiniteDimensional K V] {f : V →ₗ[K] V₂}
+    (hf : Function.Surjective f) : finrank K f.ker = finrank K V - finrank K V₂ := by
+  rw [← f.finrank_range_add_finrank_ker, f.range_eq_top_of_surjective hf]
+  simp
+
 lemma ker_ne_bot_of_finrank_lt [FiniteDimensional K V] [FiniteDimensional K V₂] {f : V →ₗ[K] V₂}
     (h : finrank K V₂ < finrank K V) :
     LinearMap.ker f ≠ ⊥ := by
