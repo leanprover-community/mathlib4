@@ -76,6 +76,68 @@ theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   rw [← powerset_empty]
   exact ⟨isClosed_empty.powerset_vietoris, isOpen_empty.powerset_vietoris⟩
 
+/-- The Vietoris topology has a basis consisting of sets of the form
+`{s | s ⊆ U₁ ∪ … ∪ Uₙ, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets. -/
+theorem isTopologicalBasis :
+    IsTopologicalBasis <|
+      (fun u => {s ⊆ ⋃₀ u | ∀ U ∈ u, (s ∩ U).Nonempty}) ''
+      {u : Set (Set α) | u.Finite ∧ (∀ U ∈ u, IsOpen U)} := by
+  refine isTopologicalBasis_of_subbasis rfl |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;>
+    rw [forall_mem_image]
+  · intro u ⟨hu₁, hu₂⟩
+    simp_rw [setOf_and, setOf_forall]
+    exact (isOpen_sUnion hu₂).powerset_vietoris.inter <|
+      hu₁.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen (hu₂ U hU)
+  · intro t ⟨ht₁, ht₂⟩ s hs
+    rw [exists_mem_image]
+    rcases eq_empty_or_nonempty s with rfl | _
+    · exists ∅; simpa
+    obtain ⟨u, v, hu, hv, rfl⟩ : ∃ u v, u ⊆ powerset '' {U | IsOpen U} ∧
+        v ⊆ (fun V => {s | (s ∩ V).Nonempty}) '' {U | IsOpen U} ∧ u ∪ v = t := by
+      rw [← inter_eq_left, inter_union_distrib_left] at ht₂
+      exact ⟨_, _, inter_subset_right, inter_subset_right, ht₂⟩
+    rw [finite_union] at ht₁
+    obtain ⟨u, hu₁, hu₂, rfl⟩ := exists_subset_image_finite_and.mp ⟨u, hu, ht₁.1, rfl⟩
+    obtain ⟨v, hv₁, hv₂, rfl⟩ := exists_subset_image_finite_and.mp ⟨v, hv, ht₁.2, rfl⟩
+    let U := ⋂₀ u
+    have hU : IsOpen U := hu₂.isOpen_sInter hu₁
+    simp_rw [sInter_union, show ⋂₀ (powerset '' u) = U.powerset by ext; simp [U], sInter_image]
+      at hs ⊢
+    rw [mem_inter_iff, mem_powerset_iff, mem_iInter₂] at hs
+    exists insert U ((U ∩ ·) '' v)
+    simp_rw [show ⋃₀ (insert U ((U ∩ ·) '' v)) = U by simp, mem_setOf, finite_insert,
+      forall_mem_insert, forall_mem_image, ← inter_assoc, inter_eq_left.mpr hs.1]
+    refine ⟨⟨hv₂.image _, hU, fun V hV => hU.inter (hv₁ hV)⟩, by grind,
+      fun t ⟨htU, _, ht⟩ => ⟨htU, mem_iInter₂_of_mem ?_⟩⟩
+    simpa only [inter_eq_left.mpr htU] using ht
+
+/-- Given a basis `B` on the underlying topological space, the Vietoris topology has a basis
+consisting of sets of the form `{s | s ⊆ V, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ ∈ B` are
+subsets of some open set `V`. -/
+theorem _root_.TopologicalSpace.IsTopologicalBasis.vietoris
+    {B : Set (Set α)} (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis <|
+      (fun p => {s ⊆ p.1 | ∀ U ∈ p.2, (s ∩ U).Nonempty}) ''
+      {p : Set α × Set (Set α) | IsOpen p.1 ∧ p.2.Finite ∧ p.2 ⊆ B ∧ (∀ U ∈ p.2, U ⊆ p.1)} := by
+  refine isTopologicalBasis.isTopologicalBasis_of_exists_subset ?_ ?_ <;>
+    rw [forall_mem_image]
+  · intro ⟨V, u⟩ ⟨hV, hu, huB, _⟩
+    simp_rw [setOf_and, setOf_forall]
+    exact hV.powerset_vietoris.inter <|
+      hu.isOpen_biInter fun V hV => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hV
+  · intro u ⟨hu₁, hu₂⟩ s ⟨hs₁, hs₂⟩
+    choose! f hfB hfU hfs using show ∀ U ∈ u, ∃ W ∈ B, W ⊆ U ∧ (s ∩ W).Nonempty by
+      intro U hU
+      obtain ⟨x, hxs, hxU⟩ := hs₂ U hU
+      obtain ⟨W, hWB, hxW, hW⟩ := hB.exists_subset_of_mem_open hxU <| hu₂ U hU
+      exact ⟨W, hWB, hW, x, hxs, hxW⟩
+    rw [exists_mem_image]
+    refine ⟨⟨⋃₀ u, f '' u⟩, ⟨isOpen_sUnion hu₂, hu₁.image _, by grind⟩, by grind,
+      fun t ⟨ht₁, ht₂⟩ => ⟨ht₁, fun U hU => ?_⟩⟩
+    rw [forall_mem_image] at ht₂
+    grw [← hfU U hU]
+    exact ht₂ hU
+
 private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
     {s : Set (Set α)} (hsK : s ⊆ K.powerset) (hs : ∀ L ∈ s, IsCompact L) :
     IsCompact {t ⊆ K | ∀ L ∈ s, (t ∩ L).Nonempty} := by
@@ -164,6 +226,51 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
+
+/-- Given a basis `B` on a topological space `α`, the topology of `Compacts α` has a basis
+consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
+`U₁, …, Uₙ ∈ B`. -/
+theorem _root_.TopologicalSpace.IsTopologicalBasis.compacts
+    {B : Set (Set α)} (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis <|
+      (fun u => {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
+      {u | u.Finite ∧ u ⊆ B} := by
+  refine hB.vietoris.isInducing isEmbedding_coe.isInducing
+    |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
+  · intro u ⟨hu, huB⟩
+    simp_rw [setOf_and, setOf_forall]
+    exact .inter
+      (isOpen_subsets_of_isOpen <| isOpen_sUnion fun U hU => hB.isOpen <| huB hU)
+      (hu.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hU)
+  · intro ⟨V, u⟩ ⟨hV, hu, huB, huV⟩ K ⟨hKV, hKu⟩
+    dsimp only at *
+    obtain ⟨w, hwB, hwV⟩ := hB.open_eq_sUnion hV
+    rw [hwV] at hKV
+    replace hwV := hwV.symm.subset
+    wlog hwK : ∀ W ∈ w, ((K : Set α) ∩ W).Nonempty generalizing w
+    · refine this {W ∈ w | (↑K ∩ W).Nonempty} (fun x hx => ?_) (by grind) (by grind) (by grind)
+      obtain ⟨W, hWw, hxW⟩ := mem_sUnion.mp (hKV hx)
+      exact mem_sUnion_of_mem hxW ⟨hWw, x, hx, hxW⟩
+    wlog hw : w.Finite generalizing w
+    · rw [sUnion_eq_biUnion] at hKV
+      obtain ⟨w', _⟩ := K.isCompact.elim_finite_subcover_image (fun W hW => hB.isOpen (hwB hW)) hKV
+      apply this w' <;> grind [sUnion_eq_biUnion]
+    wlog huw : u ⊆ w generalizing w
+    · apply this (u ∪ w) <;> grind [sUnion_union, Finite.union]
+    rw [exists_mem_image]
+    exists w
+    grind
+
+/-- The topology of `Compacts α` has a basis consisting of sets of the form
+`{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets.
+
+See also `TopologicalSpace.IsTopologicalBasis.compacts` for a variant where the sets `Uᵢ`
+are chosen from some basis. -/
+theorem isTopologicalBasis :
+    IsTopologicalBasis <|
+      (fun u => {K : Compacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
+      {u : Set (Set α) | u.Finite ∧ ∀ U ∈ u, IsOpen U} :=
+  isTopologicalBasis_opens.compacts
 
 theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
     IsCompact {L : Compacts α | ↑L ⊆ K} := by
@@ -260,6 +367,38 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
+
+/-- Given a basis `B` on a topological space `α`, the topology of `NonemptyCompacts α` has a basis
+consisting of sets of the form `{K | K ⊆ U₁ ∪ … ∪ Uₙ, K ∩ U₁ ≠ ∅, …, K ∩ Uₙ ≠ ∅}`, where
+`U₁, …, Uₙ ∈ B` and `n > 0`. -/
+theorem _root_.TopologicalSpace.IsTopologicalBasis.nonemptyCompacts
+    {B : Set (Set α)} (hB : IsTopologicalBasis B) :
+    IsTopologicalBasis <|
+      (fun u => {K : NonemptyCompacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
+      {u | u.Finite ∧ u.Nonempty ∧ u ⊆ B} := by
+  refine hB.compacts.isInducing isEmbedding_toCompacts.isInducing
+    |>.isTopologicalBasis_of_exists_subset ?_ ?_ <;> simp_rw [forall_mem_image]
+  · rintro u ⟨hu, -, huB⟩
+    simp_rw [setOf_and, setOf_forall]
+    exact .inter
+      (isOpen_subsets_of_isOpen <| isOpen_sUnion fun U hU => hB.isOpen <| huB hU)
+      (hu.isOpen_biInter fun U hU => isOpen_inter_nonempty_of_isOpen <| hB.isOpen <| huB hU)
+  · intro u ⟨hu, huB⟩ K ⟨hK₁, hK₂⟩
+    rcases eq_empty_or_nonempty u with rfl | hu'
+    · absurd K.nonempty.mono hK₁; simp
+    rw [exists_mem_image]
+    exists u
+
+/-- The topology of `NonemptyCompacts α` has a basis consisting of sets of the form
+`{s | s ⊆ U₁ ∪ … ∪ Uₙ, s ∩ U₁ ≠ ∅, …, s ∩ Uₙ ≠ ∅}`, where `U₁, …, Uₙ` are open sets and `n > 0`.
+
+See also `TopologicalSpace.IsTopologicalBasis.nonemptyCompacts` for a variant where the sets `Uᵢ`
+are chosen from some basis. -/
+theorem isTopologicalBasis :
+    IsTopologicalBasis <|
+      (fun u => {K : NonemptyCompacts α | ↑K ⊆ ⋃₀ u ∧ ∀ U ∈ u, (↑K ∩ U).Nonempty}) ''
+      {u : Set (Set α) | u.Finite ∧ u.Nonempty ∧ ∀ U ∈ u, IsOpen U} :=
+  isTopologicalBasis_opens.nonemptyCompacts
 
 instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   isClosedEmbedding_toCompacts.compactSpace
