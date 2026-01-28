@@ -141,6 +141,12 @@ theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j 
   rw [← ((h.isUnit (Nat.ne_zero_of_lt hi)).pow i).mul_left_inj, ← pow_add,
     tsub_add_cancel_of_le hij, H, one_mul]
 
+theorem pow_of_mod_eq ⦃i j : ℕ⦄ (h : IsPrimitiveRoot ζ k) (he : i ≡ j [MOD k]) : ζ ^ i = ζ ^ j := by
+  wlog hlog : i ≤ j generalizing i j
+  · exact (this (Nat.ModEq.symm he) (by lia)).symm
+  obtain ⟨ l , hl ⟩ := (Nat.modEq_iff_exists_eq_add hlog).mp he
+  rwa [hl, pow_add, pow_mul, pow_eq_one (k := k), one_pow, mul_one]
+
 theorem one : IsPrimitiveRoot (1 : M) 1 :=
   { pow_eq_one := pow_one _
     dvd_of_pow_eq_one := fun _ _ ↦ one_dvd _ }
