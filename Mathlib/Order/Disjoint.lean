@@ -299,6 +299,7 @@ section DistribLattice
 
 variable [DistribLattice α] [BoundedOrder α] {a b c : α}
 
+@[to_dual]
 theorem Disjoint.le_of_codisjoint (hab : Disjoint a b) (hbc : Codisjoint b c) : a ≤ c := by
   rw [← @inf_top_eq _ _ _ a, ← @bot_sup_eq _ _ _ c, ← hab.eq_bot, ← hbc.eq_top, sup_inf_right]
   exact inf_le_inf_right _ le_sup_left
