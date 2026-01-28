@@ -154,6 +154,11 @@ lemma isFiltered_of_isCardinalFiltered (J : Type u) [Category.{v} J]
 @[deprecated (since := "2025-10-07")] alias isFiltered_of_isCardinalDirected :=
   isFiltered_of_isCardinalFiltered
 
+lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
+    (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] [IsCardinalFiltered J κ] : Nonempty J :=
+  have := isFiltered_of_isCardinalFiltered J κ
+  IsFiltered.nonempty
+
 attribute [local instance] Cardinal.fact_isRegular_aleph0
 
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
