@@ -180,20 +180,8 @@ theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Set α)
 theorem isClosedEmbedding_singleton [T0Space α] :
     Topology.IsClosedEmbedding ({·} : α → Set α) where
   __ := isUniformEmbedding_singleton.isEmbedding
-  isClosed_range := by
-    rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-    intro s hs
-    rcases Set.eq_empty_or_nonempty s with rfl | h
-    · rwa [(isOpen_singleton_iff_nhds_eq_pure _).mp isClopen_singleton_empty.isOpen,
-        Filter.mem_pure]
-    rcases h.exists_eq_singleton_or_nontrivial with ⟨x, rfl⟩ | ⟨x, hx, y, hy, hxy⟩
-    · cases hs <| Set.mem_range_self x
-    obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := t2_separation hxy
-    filter_upwards [(isOpen_inter_nonempty_of_isOpen hU).inter (isOpen_inter_nonempty_of_isOpen hV)
-      |>.mem_nhds ⟨⟨x, hx, hxU⟩, ⟨y, hy, hyV⟩⟩]
-    rintro _ ⟨hzU, hzV⟩ ⟨z, rfl⟩
-    rw [Set.mem_setOf, Set.singleton_inter_nonempty] at hzU hzV
-    exact hUV.notMem_of_mem_left hzU hzV
+  isClosed_range :=
+    isClosed_range_singleton_aux isClopen_singleton_empty.isOpen isOpen_inter_nonempty_of_isOpen
 
 theorem uniformContinuous_union : UniformContinuous (fun x : Set α × Set α => x.1 ∪ x.2) := by
   refine Filter.tendsto_lift'.mpr fun U hU => ?_
