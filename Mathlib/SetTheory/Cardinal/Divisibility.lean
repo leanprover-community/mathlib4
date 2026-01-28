@@ -95,7 +95,7 @@ theorem not_irreducible_of_aleph0_le (ha : ℵ₀ ≤ a) : ¬Irreducible a := by
 theorem nat_coe_dvd_iff : (n : Cardinal) ∣ m ↔ n ∣ m := by
   refine ⟨?_, fun ⟨h, ht⟩ => ⟨h, mod_cast ht⟩⟩
   rintro ⟨k, hk⟩
-  have : ↑m < ℵ₀ := nat_lt_aleph0 m
+  have : ↑m < ℵ₀ := natCast_lt_aleph0
   rw [hk, mul_lt_aleph0_iff] at this
   rcases this with (h | h | ⟨-, hk'⟩)
   iterate 2 simp only [h, mul_zero, zero_mul, Nat.cast_eq_zero] at hk; simp [hk]
@@ -125,7 +125,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   apply (this h c b _ _ hc hb hℵ₀.symm hn (hℵ₀.resolve_left hℵ₀b)).symm <;> try assumption
   · rwa [mul_comm] at hbc
   · rwa [mul_comm] at h'
-  · exact Or.inl (dvd_of_le_of_aleph0_le hn ((nat_lt_aleph0 n).le.trans hℵ₀b) hℵ₀b)
+  · exact Or.inl (dvd_of_le_of_aleph0_le hn (natCast_lt_aleph0.le.trans hℵ₀b) hℵ₀b)
 
 theorem is_prime_iff {a : Cardinal} : Prime a ↔ ℵ₀ ≤ a ∨ ∃ p : ℕ, a = p ∧ p.Prime := by
   rcases le_or_gt ℵ₀ a with h | h
@@ -146,7 +146,7 @@ theorem isPrimePow_iff {a : Cardinal} : IsPrimePow a ↔ ℵ₀ ≤ a ∨ ∃ n 
   have key : p ^ (1 : Cardinal) ≤ ↑a := by
     rw [← hpk]; apply power_le_power_left hp.ne_zero; exact mod_cast hk
   rw [power_one] at key
-  lift p to ℕ using key.trans_lt (nat_lt_aleph0 a)
+  lift p to ℕ using key.trans_lt natCast_lt_aleph0
   exact ⟨a, rfl, p, k, nat_is_prime_iff.mp hp, hk, mod_cast hpk⟩
 
 end Cardinal
