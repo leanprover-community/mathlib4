@@ -93,6 +93,18 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
+instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
+  preservesColimitOfShape J _ hJ := { preservesColimit := { preserves hc := ⟨{
+    desc s := s.ι.app (IsCardinalFiltered.nonempty J κ).some
+    fac s j := by
+      rw [isCardinalFiltered_iff] at hJ
+      obtain ⟨k, hk⟩ := @hJ.1 ({(IsCardinalFiltered.nonempty J κ).some, j} : Set J) Subtype.val
+        (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
+      have := s.ι.naturality (hk ⟨(IsCardinalFiltered.nonempty J κ).some, by simp⟩).some
+      have := s.ι.naturality (hk ⟨j, by simp⟩).some
+      simp_all
+    uniq s m h := by simpa using h (IsCardinalFiltered.nonempty J κ).some }⟩ } }
+
 end
 
 section
@@ -108,6 +120,22 @@ class IsAccessible : Prop where
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+instance {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] :
+    Fact (κ₁ ⊔ κ₂).IsRegular where
+  out := iteInduction (fun _ ↦ Fact.out) (fun _ ↦ Fact.out)
+
+instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F]
+    [IsAccessible.{w} G] : IsAccessible.{w} (F ⋙ G) := by
+  obtain ⟨κF, _, _⟩ := IsAccessible.exists_cardinal (F := F)
+  obtain ⟨κG, _, _⟩ := IsAccessible.exists_cardinal (F := G)
+  have := isCardinalAccessible_of_le F (by simp : κF ≤ κF ⊔ κG)
+  have := isCardinalAccessible_of_le G (by simp : κG ≤ κF ⊔ κG)
+  exact isAccessible_of_isCardinalAccessible (F ⋙ G) (κF ⊔ κG)
+
+instance (A : C) : IsAccessible.{w} ((Functor.const C).obj A) := by
+  have : Fact Cardinal.aleph0.IsRegular := Cardinal.fact_isRegular_aleph0
+  exact ⟨Cardinal.aleph0, inferInstance, inferInstance⟩
 
 end
 
