@@ -388,6 +388,26 @@ lemma haarScalarFactor_eq_mul (μ' μ ν : Measure G)
     (haarScalarFactor μ' μ * haarScalarFactor μ ν : ℝ≥0) * ∫ (x : G), g x ∂ν at Z
   simpa only [mul_eq_mul_right_iff (M₀ := ℝ), int_g_pos.ne', or_false, ← NNReal.eq_iff] using Z
 
+@[to_additive]
+lemma haarScalarFactor_map (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ'] (φ : G ≃ₜ* G) :
+    (map φ μ').haarScalarFactor (map φ μ) = μ'.haarScalarFactor μ := by
+  -- The group has to be locally compact, otherwise the scalar factor is 1 by definition.
+  by_cases hG : LocallyCompactSpace G; swap
+  · simp [haarScalarFactor, hG]
+  obtain ⟨⟨f, f_cont⟩, f_comp, f_nonneg, f_one⟩ :
+    ∃ f : C(G, ℝ), HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0 := exists_continuous_nonneg_pos 1
+  have int_f_ne_zero : ∫ (x : G), f x ∂(map φ μ) ≠ 0 :=
+    ne_of_gt (f_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
+  have hφ : AEMeasurable φ μ := φ.continuous.aemeasurable
+  rw [← NNReal.coe_inj, haarScalarFactor_eq_integral_div _ _ f_cont f_comp int_f_ne_zero,
+    haarScalarFactor_eq_integral_div μ' μ (f_cont.comp φ.continuous),
+    integral_map hφ f_cont.aestronglyMeasurable, integral_map ?_ f_cont.aestronglyMeasurable]
+  · rfl
+  · exact φ.continuous.aemeasurable
+  · exact f_comp.comp_homeomorph φ.toHomeomorph
+  · change ∫ x, f (φ x) ∂μ ≠ 0
+    rwa [← integral_map hφ f_cont.aestronglyMeasurable]
+
 /-- The scalar factor between two left-invariant measures is non-zero when both measures are
 positive on open sets. -/
 @[to_additive]
