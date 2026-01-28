@@ -67,17 +67,17 @@ noncomputable def LocalizedModule.equivTensorProduct :
 
 @[simp]
 lemma LocalizedModule.equivTensorProduct_symm_apply_tmul (x : M) (r : R) (s : S) :
-    (equivTensorProduct S M).symm (Localization.mk r s ⊗ₜ[R] x) = r • mk x s := by
-  simp [equivTensorProduct, IsBaseChange.equiv_tmul, mk_smul_mk, smul'_mk]
+    (equivTensorProduct S M).symm (Localization.mk r s ⊗ₜ[R] x) = r • x /ₒ s := by
+  simp [equivTensorProduct, IsBaseChange.equiv_tmul, mk_smul_mk]
 
 @[simp]
 lemma LocalizedModule.equivTensorProduct_symm_apply_tmul_one (x : M) :
-    (equivTensorProduct S M).symm (1 ⊗ₜ[R] x) = mk x 1 := by
+    (equivTensorProduct S M).symm (1 ⊗ₜ[R] x) = x /ₒ 1 := by
   simp [← Localization.mk_one]
 
 @[simp]
 lemma LocalizedModule.equivTensorProduct_apply_mk (x : M) (s : S) :
-    equivTensorProduct S M (mk x s) = Localization.mk 1 s ⊗ₜ[R] x := by
+    equivTensorProduct S M (x /ₒ s) = Localization.mk 1 s ⊗ₜ[R] x := by
   apply (equivTensorProduct S M).symm.injective
   simp
 
