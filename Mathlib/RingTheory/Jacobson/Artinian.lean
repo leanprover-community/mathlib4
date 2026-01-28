@@ -24,10 +24,8 @@ variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteTy
 attribute [local instance] IsArtinianRing.fieldOfSubtypeIsMaximal in
 lemma Module.finite_of_isSemisimpleRing [IsJacobsonRing R] [IsSemisimpleRing A] :
     Module.Finite R A :=
-  (Finite.equiv_iff <|
-    (AlgEquiv.ofRingEquiv (f := IsArtinianRing.equivPi A) fun _ ↦ rfl).toLinearEquiv).mpr <|
   have (I : MaximalSpectrum A) := finite_of_finite_type_of_isJacobsonRing R (A ⧸ I.asIdeal)
-  Finite.pi
+  .equiv ((IsArtinianRing.equivPi A).restrictScalars R).toLinearEquiv.symm
 
 /-- If `A` is a finite type algebra over `R`, then `A` is an Artinian ring and `R` is Jacobson
 implies `A` is finite over `R`. -/
