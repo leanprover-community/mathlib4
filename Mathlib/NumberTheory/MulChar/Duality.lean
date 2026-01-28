@@ -6,7 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.GroupTheory.FiniteAbelian.Duality
-public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.NumberTheory.MulChar.Lemmas
 
 /-!
 # Duality for multiplicative characters
@@ -14,11 +14,21 @@ public import Mathlib.NumberTheory.MulChar.Basic
 Let `M` be a finite commutative monoid and `R` a ring that has enough `n`th roots of unity,
 where `n` is the exponent of `M`. Then the main results of this file are as follows.
 
+## Main results
+
 * `MulChar.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: multiplicative characters
   `M → R` separate elements of `Mˣ`.
 
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
   (noncanonically) isomorphic to `Mˣ`.
+
+* `MulChar.mulCharEquiv`: the `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M`
+  and `Mˣ` where `R` is a domain with enough roots of unity.
+
+* `MulChar.subgroupOrderIsoSubgroupMulChar`: The order reversing bijection that sends a
+  subgroup of `Mˣ` to its dual subgroup in `MulChar M R` where `R` is a domain with enough
+  roots of unity.
+
 -/
 
 @[expose] public section
@@ -27,18 +37,7 @@ namespace MulChar
 
 variable {M R : Type*} [CommMonoid M] [CommRing R]
 
-instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := by
-  have : Finite (Mˣ →* Rˣ) := by
-    have : Fintype Mˣ := .ofFinite _
-    let S := rootsOfUnity (Fintype.card Mˣ) R
-    let F := Mˣ →* S
-    have fF : Finite F := .of_injective _ DFunLike.coe_injective
-    refine .of_surjective (fun f : F ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
-    have H a : f a ∈ S := by simp only [mem_rootsOfUnity, ← map_pow, pow_card_eq_one, map_one, S]
-    refine ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ ?_⟩
-    simp only [MonoidHom.coe_comp, Subgroup.coe_subtype, Function.comp_apply,
-      MonoidHom.codRestrict_apply]
-  exact .of_equiv _ MulChar.equivToUnitHom.symm
+instance finite [Finite Mˣ] [IsDomain R] : Finite (MulChar M R) := .of_equiv _ equivToUnitHom.symm
 
 lemma exists_apply_ne_one_iff_exists_monoidHom (a : Mˣ) :
     (∃ χ : MulChar M R, χ a ≠ 1) ↔ ∃ φ : Mˣ →* Rˣ, φ a ≠ 1 := by
@@ -75,5 +74,77 @@ monoid `M` is the same as that of its unit group `Mˣ` when `R` is a ring that h
 of unity. -/
 lemma card_eq_card_units_of_hasEnoughRootsOfUnity : Nat.card (MulChar M R) = Nat.card Mˣ :=
   Nat.card_congr (mulEquiv_units M R).some.toEquiv
+
+noncomputable section IsDomain
+
+variable [IsDomain R]
+
+/--
+Let `N` be a submonoid of `M` group and let R` be a domain that has enough roots of unity.
+Then any `R`-value multiplicative character of `T` can be extented to a multiplicative
+character of `M`.
+-/
+theorem restrictHom_surjective (N : Submonoid M) :
+    Function.Surjective (MulChar.restrictHom N R) := by
+  intro χ
+  obtain ⟨ψ, hψ⟩ := (χ.toUnitHom.comp N.unitsEquivUnitsType).restrict_surjective R N.units
+  refine ⟨MulChar.ofUnitHom ψ, ?_⟩
+  ext
+  rw [MonoidHom.restrictHom_apply] at hψ
+  rw [restrictHom_apply, restrict_ofUnitHom, hψ]
+  simp
+
+/-- The `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M` and `Mˣ` where `R` is a
+domain with enough roots of unity.
+The image `m` of `η : MulChar (MulChar M R) R` is such that, for all `R`-valued multiplicative
+character `χ` of `M`, we have `χ m = η χ`, see `MulChar.apply_mulCharEquiv`.
+-/
+def mulCharEquiv : MulChar (MulChar M R) R ≃* Mˣ :=
+  mulEquivToUnitHom.trans <| toUnits.monoidHomCongrLeft.symm.trans <|
+    mulEquivToUnitHom.monoidHomCongrLeft.trans <| CommGroup.monoidHomMonoidHomEquiv Mˣ R
+
+variable {M R}
+
+@[simp]
+theorem mulCharEquiv_symm_apply_apply (m : Mˣ) (χ : MulChar M R) :
+    (mulCharEquiv M R).symm m χ = χ m := by
+  classical
+  rw [show ((mulCharEquiv M R).symm m) χ =
+    if IsUnit χ then ↑(mulEquivToUnitHom χ m) else (0 : R) by rfl, if_pos (Group.isUnit χ),
+    mulEquivToUnitHom_apply, coe_equivToUnitHom]
+
+@[simp]
+theorem apply_mulCharEquiv (χ : MulChar M R) (η : MulChar (MulChar M R) R) :
+    χ (mulCharEquiv M R η) = η χ := by
+  rw [← mulCharEquiv_symm_apply_apply (mulCharEquiv M R η) χ, MulEquiv.symm_apply_apply]
+
+variable (M R) in
+/--
+The order reversing bijection that sends a subgroup of `Mˣ` to its dual subgroup in
+`MulChar M R` where `M` is a finite commutative monoid and `R` is a domain with enough
+roots of unity.
+-/
+def subgroupOrderIsoSubgroupMulChar : Subgroup Mˣ ≃o (Subgroup (MulChar M R))ᵒᵈ :=
+  (CommGroup.subgroupOrderIsoSubgroupMonoidHom Mˣ R).trans mulEquivToUnitHom.symm.mapSubgroup.dual
+
+@[simp]
+theorem mem_subgroupOrderIsoSubgroupMulChar_iff {H : Subgroup Mˣ} {χ : MulChar M R} :
+    χ ∈ (subgroupOrderIsoSubgroupMulChar M R H).ofDual ↔ ∀ m ∈ H, χ m = 1 := by
+  simp only [subgroupOrderIsoSubgroupMulChar, OrderIso.trans_apply, OrderIso.dual_apply,
+    MulEquiv.coe_mapSubgroup, OrderDual.ofDual_toDual, Subgroup.mem_map_equiv, MulEquiv.symm_symm,
+    mulEquivToUnitHom_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_iff, Units.ext_iff,
+    coe_equivToUnitHom, Units.val_one]
+
+@[simp]
+theorem mem_subgroupOrderIsoSubgroupMulChar_symm_iff {X : Subgroup (MulChar M R)} {m : Mˣ} :
+    m ∈ (subgroupOrderIsoSubgroupMulChar M R).symm (OrderDual.toDual X) ↔ ∀ χ ∈ X, χ m = 1 := by
+  simp only [subgroupOrderIsoSubgroupMulChar, OrderIso.symm_trans_apply, OrderIso.dual_symm_apply,
+    MulEquiv.symm_mapSubgroup, MulEquiv.symm_symm, OrderDual.ofDual_toDual,
+    MulEquiv.mapSubgroup_apply, CommGroup.mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff,
+    Subgroup.mem_map, MonoidHom.coe_coe, mulEquivToUnitHom_apply, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  simp [Units.ext_iff]
+
+end IsDomain
 
 end MulChar

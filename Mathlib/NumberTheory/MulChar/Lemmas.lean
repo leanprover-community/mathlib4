@@ -24,6 +24,27 @@ lemma eq_iff {R R' : Type*} [CommMonoid R] [CommMonoidWithZero R'] {g : Rˣ}
   rw [← Equiv.apply_eq_iff_eq equivToUnitHom, MonoidHom.eq_iff_eq_on_generator hg,
     ← coe_equivToUnitHom, ← coe_equivToUnitHom, Units.ext_iff]
 
+theorem restrict_ofUnitHom {R : Type*} [CommMonoid R] {R' : Type*} [CommMonoidWithZero R']
+    (f : Rˣ →* R'ˣ) (S : Submonoid R) :
+    restrict S (ofUnitHom f) =
+      ofUnitHom ((f.restrict S.units).comp S.unitsEquivUnitsType.symm) := by
+  ext x
+  simp only [ofUnitHom_eq, restrict_apply, Units.isUnit, reduceIte, equivToUnitHom_symm_coe,
+    MonoidHom.coe_comp, MonoidHom.coe_coe, Function.comp_apply, MonoidHom.restrict_apply]
+  rw [← Submonoid.val_unitsEquivUnitsType_symm_apply_coe S x, equivToUnitHom_symm_coe]
+
+/--
+The restriction of a `MulChar` to a submonoid as an homomorphism.
+-/
+@[simps]
+noncomputable def restrictHom {R : Type*} {S : Type*} [CommMonoid R] [SetLike S R]
+    [SubmonoidClass S R] (T : S) (R' : Type*) [CommMonoidWithZero R'] :
+    MulChar R R' →* MulChar T R' where
+  toFun χ := χ.restrict T
+  map_one' := by
+    ext x
+    rw [restrict_apply, if_pos x.isUnit, MulChar.one_apply x.isUnit.coe, one_apply_coe]
+  map_mul' _ _ := by ext; simp
 
 section Ring
 
