@@ -171,6 +171,14 @@ theorem le_log_iff_exp_le (hy : 0 < y) : x ≤ log y ↔ exp x ≤ y := by rw [�
 
 theorem lt_log_iff_exp_lt (hy : 0 < y) : x < log y ↔ exp x < y := by rw [← exp_lt_exp, exp_log hy]
 
+lemma log_1000_lt_10 : log 1000 < 10 := by
+  rw [log_lt_iff_lt_exp (by norm_num)]
+  calc (1000 : ℝ) < (2 : ℝ) ^ 10 := by norm_num
+    _ ≤ (exp 1) ^ 10 := by
+      gcongr
+      exact two_le_exp_one
+    _ = exp 10 := by rw [←exp_nat_mul]; norm_num
+
 theorem log_pos_iff (hx : 0 ≤ x) : 0 < log x ↔ 1 < x := by
   rcases hx.eq_or_lt with (rfl | hx)
   · simp [zero_le_one]
