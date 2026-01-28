@@ -1197,12 +1197,9 @@ meta def proveIsNatNNRealRPowIsNNRat
   have hcd : Q($c = $d) := (q(Eq.refl $c) : Expr)
   return (r, ⟨er, q(IsNat.nnreal_rpow_isNNRat $pa $pb $c $pc $d $pd $hcd)⟩)
 
-/-- Evaluates expressions of the form `a ^ b` when `a` and `b` are both reals.
-Works if `a`, `b`, and `a ^ b` are in fact rational numbers,
-except for the case `a < 0`, `b` isn't integer.
-
-TODO: simplify terms like  `(-a : ℝ) ^ (b / 3 : ℝ)` and `(-a : ℝ) ^ (b / 2 : ℝ)` too,
-possibly after first considering changing the junk value. -/
+/-- Evaluates expressions of the form `a ^ b` when `a : ℝ≥0` and `b : ℝ`.
+Works if `a`, `b`, and `a ^ b` are in fact rational numbers.
+-/
 @[norm_num (_ : ℝ≥0) ^ (_ : ℝ)]
 meta def evalNNRealRPow : NormNumExt where eval {u αR} e := do
   match u, αR, e with
