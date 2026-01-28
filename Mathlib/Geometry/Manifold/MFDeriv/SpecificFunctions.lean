@@ -883,6 +883,21 @@ theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : �
       (s • mfderiv I 𝓘(𝕜, E') f z : TangentSpace I z →L[𝕜] E') :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
+lemma mfderiv_const_smul {x : M} (a : 𝕜) (v : TangentSpace I x) :
+    mfderiv I 𝓘(𝕜, E') (a • f) x v = a • mfderiv I 𝓘(𝕜, E') f x v := by
+  by_cases hs : MDifferentiableAt I 𝓘(𝕜, E') f x
+  · rw [const_smul_mfderiv hs]; rfl
+  · by_cases ha : a = 0
+    · have : a • f = 0 := by ext; simp [ha]
+      have aux : (fun _ ↦ 0 : M → E') = 0 := by rfl
+      rw [this, ha, ← aux]
+      simp
+    have hs' : ¬ MDifferentiableAt I 𝓘(𝕜, E') (a • f) x :=
+      fun h ↦ hs (by simpa [ha] using h.const_smul a⁻¹)
+    rw [mfderiv_zero_of_not_mdifferentiableAt hs, mfderiv_zero_of_not_mdifferentiableAt hs']
+    simp
+    rfl
+
 theorem HasMFDerivWithinAt.neg {s : Set M} (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f') :
     HasMFDerivWithinAt I 𝓘(𝕜, E') (-f) s z (-f') :=
   ⟨hf.1.neg, hf.2.neg⟩
