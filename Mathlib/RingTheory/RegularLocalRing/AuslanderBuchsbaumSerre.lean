@@ -649,18 +649,20 @@ theorem IsRegularLocalRing.of_maximalIdeal_hasProjectiveDimensionLE
     IsRegularLocalRing R := by
   classical
   rcases generate_by_regular h with ⟨rs, reg, span⟩
-  apply of_span_eq R (rs.toFinset : Set R) rs.toFinset.finite_toSet
-    (by simpa only [List.coe_toFinset] using span)
+  apply of_spanFinrank_maximalIdeal_le
+  have spaneq : Ideal.span (rs.toFinset : Set R) = maximalIdeal R := by simp [← span]
+  nth_rw 1 [← spaneq]
+  apply le_trans (Nat.cast_le.mpr
+    (Submodule.spanFinrank_span_le_ncard_of_finite rs.toFinset.finite_toSet))
   rw [Set.ncard_coe_finset rs.toFinset]
   apply le_trans (Nat.cast_le.mpr rs.toFinset_card_le)
-  apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R (Shrink.{v, u} R)))
+  apply le_trans _ (depth_le_ringKrullDim (ModuleCat.of R R))
   have : (rs.length : WithBot ℕ∞) = (rs.length : ℕ∞) := rfl
   rw [IsLocalRing.depth_eq_sSup_length_regular, this, WithBot.coe_le_coe]
   apply le_sSup
-  use rs, ((Shrink.linearEquiv.{v} R R).isRegular_congr rs).mpr reg
+  use rs, reg
   simp only [← span, exists_prop, and_true]
-  intro r hr
-  exact Ideal.subset_span hr
+  exact fun r hr ↦ Ideal.subset_span hr
 
 theorem IsRegularLocalRing.of_globalDimension_lt_top [IsLocalRing R] [IsNoetherianRing R]
     [Small.{v} R] (h : globalDimension.{v} R < ⊤) : IsRegularLocalRing R := by
