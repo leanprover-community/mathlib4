@@ -109,11 +109,8 @@ instance : AddMonoid (Completion α) :=
     add_assoc := fun a b c ↦
       Completion.induction_on₃ a b c
         (isClosed_eq
-          (continuous_map₂ (continuous_map₂ continuous_fst (continuous_fst.comp continuous_snd))
-            (continuous_snd.comp continuous_snd))
-          (continuous_map₂ continuous_fst
-            (continuous_map₂ (continuous_fst.comp continuous_snd)
-              (continuous_snd.comp continuous_snd))))
+          (continuous_map₂ (continuous_map₂ continuous_fst (by fun_prop)) (by fun_prop))
+          (continuous_map₂ continuous_fst (continuous_map₂ (by fun_prop) (by fun_prop))))
         fun a b c ↦
         show (a : Completion α) + b + c = a + (b + c) by repeat' rw_mod_cast [add_assoc]
     nsmul := (· • ·)

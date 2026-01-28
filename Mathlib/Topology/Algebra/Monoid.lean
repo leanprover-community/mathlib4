@@ -44,11 +44,7 @@ instance : ContinuousMul Mᵒᵈ :=
   ‹ContinuousMul M›
 
 @[to_additive]
-instance : ContinuousMul (ULift.{u} M) := by
-  constructor
-  apply continuous_uliftUp.comp
-  exact continuous_mul.comp₂ (continuous_uliftDown.comp continuous_fst)
-    (continuous_uliftDown.comp continuous_snd)
+instance : ContinuousMul (ULift.{u} M) := ⟨continuous_uliftUp.comp (by fun_prop)⟩
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
@@ -57,8 +53,7 @@ instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=
 @[to_additive]
 instance ContinuousMul.to_continuousSMul_op : ContinuousSMul Mᵐᵒᵖ M :=
   ⟨show Continuous ((fun p : M × M => p.1 * p.2) ∘ Prod.swap ∘ Prod.map MulOpposite.unop id) from
-      continuous_mul.comp <|
-        continuous_swap.comp <| Continuous.prodMap MulOpposite.continuous_unop continuous_id⟩
+    by fun_prop⟩
 
 @[to_additive]
 theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F α β] [Mul α]
