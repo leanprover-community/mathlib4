@@ -79,7 +79,6 @@ theorem circleAverage_of_differentiable_on₁ (hf : ∀ z ∈ closedBall c |R|, 
     (fun x hx ↦ (hf x hx).continuousAt.continuousWithinAt)
     (fun z hz ↦ hf z (by simp_all [le_of_lt])) hw hR
 
-
 /-!
 ## Classic Mean Value Properties
 
