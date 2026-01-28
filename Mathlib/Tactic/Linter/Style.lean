@@ -539,6 +539,8 @@ violates mathlib's naming convention. -/
   errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component.\
     These are very likely violations of mathlib's naming convention."
   test declName := do
+    -- TODO: need more robust test!
+    if declName.toString.startsWith "_aux_" || declName.toString.startsWith "_private" then return none
     let parts := declName.toString.splitOn "_" |>.drop 1
     let bad := parts.filter (isWronglyCased ·)
     if bad.isEmpty then return none
