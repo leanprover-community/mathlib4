@@ -387,7 +387,7 @@ instance conjugateEquiv_symm_iso (α : R₁ ⟶ R₂) [IsIso α] :
       ⟨conjugateEquiv_symm_comm _ _ (by simp), conjugateEquiv_symm_comm _ _ (by simp)⟩⟩⟩
 
 /-- If `α` is a natural transformation between left adjoints whose conjugate natural transformation
-is an isomorphism, then `α` is an isomorphism. The converse is given in `Conjugate_iso`.
+is an isomorphism, then `α` is an isomorphism. The converse is given in `conjugateEquiv_iso`.
 -/
 theorem conjugateEquiv_of_iso (α : L₂ ⟶ L₁) [IsIso (conjugateEquiv adj₁ adj₂ α)] :
     IsIso α := by

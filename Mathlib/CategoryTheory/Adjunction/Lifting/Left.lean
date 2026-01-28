@@ -97,7 +97,7 @@ def counitCoequalises (h : ∀ X : B, RegularEpi (adj₁.counit.app X)) (X : B) 
 /-- (Implementation)
 To construct the left adjoint, we use the coequalizer of `F' U ε_Y` with the composite
 
-`F' U F U X ⟶ F' U F U R F U' X ⟶ F' U R F' U X ⟶ F' U X`
+`F' U F U X ⟶ F' U F U R F' U X ⟶ F' U R F' U X ⟶ F' U X`
 
 where the first morphism is `F' U F ι_UX`, the second is `F' U ε_RF'UX`, and the third is `δ_F'UX`.
 We will show that this coequalizer exists and that it forms the object map for a left adjoint to
