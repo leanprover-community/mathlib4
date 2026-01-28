@@ -29,8 +29,16 @@ variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [Normed
 
 theorem exists_dual_vector_new (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
   obtain ⟨g, hg⟩ := exists_dual_vector_of_seminormed 𝕜 x
-  refine ⟨g,  g.opNorm_eq_of_bounds (by simp) (g.le_of_opNorm_le hg.1) (fun _ _ hx =>
+  refine ⟨g,  g.opNorm_eq_of_bounds zero_le_one (g.le_of_opNorm_le hg.1) (fun _ _ hx =>
     one_le_of_le_mul_right₀ (norm_pos_iff.mpr h) (by simpa [hg.2] using hx x)), hg.2⟩
+
+theorem exists_dual_vector'_new [Nontrivial E] (x : E) :
+    ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+  by_cases hx : x = 0
+  · obtain ⟨y, hy⟩ := exists_ne (0 : E)
+    obtain ⟨g, hg⟩ := exists_dual_vector_new 𝕜 y hy
+    exact ⟨g, hg.left, by simp [hx]⟩
+  · exact exists_dual_vector_new 𝕜 x hx
 
 end HahnBanach.lean
 
