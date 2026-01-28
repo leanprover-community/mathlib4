@@ -5,12 +5,12 @@ Authors: Salvatore Mercuri
 -/
 module
 
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 public import Mathlib.Topology.UniformSpace.Completion
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 public import Mathlib.NumberTheory.NumberField.Basic
-public import Mathlib.Algebra.Algebra.TransferInstance
-public import Mathlib.Algebra.Field.TransferInstance
 
 /-!
 # Ring topologised by a valuation
