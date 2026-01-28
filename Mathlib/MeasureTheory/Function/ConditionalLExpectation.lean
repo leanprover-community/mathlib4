@@ -50,7 +50,7 @@ For a measure `P : Measure[mΩ₀] Ω`, and another `mΩ : MeasurableSpace Ω`, 
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Measure
 
