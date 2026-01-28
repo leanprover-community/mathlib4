@@ -76,7 +76,7 @@ namespace EisensteinSeries
 
 /-- This is an auxiliary correction term for proving how E2 transforms. It allows us to work with
 nicer indexing sets for our infinite sums. The key is the `aux_identity` below. -/
-private def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
+def δ (x : Fin 2 → ℤ) : ℂ := if x = ![0,0] then 1 else if x = ![0, -1] then 2 else 0
 
 @[simp]
 lemma δ_eq : δ ![0,0] = 1 := by simp [δ]
