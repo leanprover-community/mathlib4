@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.Additive
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-! # THe category of homological complexes is abelian
@@ -72,3 +73,36 @@ lemma shortExact_iff_degreewise_shortExact :
   · exact shortExact_of_degreewise_shortExact S
 
 end HomologicalComplex
+
+universe u v u' v'
+
+namespace CategoryTheory
+
+open Limits Abelian
+
+variable {C : Type u} [Category.{v} C] [Abelian C]
+variable {D : Type u'} [Category.{v'} D] [Abelian D]
+
+variable (F : C ⥤ D) [F.Additive]
+
+variable [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+
+lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
+    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
+    (S.map (F.mapHomologicalComplex c)).Exact := by
+  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
+  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
+    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
+  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
+  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
+
+instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).1
+
+instance {ι : Type*} (c : ComplexShape ι) :
+    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).2
+
+end CategoryTheory
