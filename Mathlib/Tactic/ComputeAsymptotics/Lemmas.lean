@@ -69,42 +69,27 @@ theorem tendsto_nhdsNE_zero_of_tendsto_atTop (h_pos : Tendsto (fun x ↦ f x⁻�
   · exact tendsto_nhdsLT_zero_of_tendsto_atTop _ h_neg
   · exact tendsto_nhdsGT_zero_of_tendsto_atTop _ h_pos
 
-/-- Subtraction by a constant as a homeomorphism. -/
-private def subHomeomorph {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
-    [TopologicalSpace 𝕜] [OrderTopology 𝕜] (c : 𝕜) : 𝕜 ≃ₜ 𝕜 where
-  toFun x := x - c
-  invFun x := x + c
-  left_inv := by grind
-  right_inv := by grind
-
 variable (c : 𝕜)
 
 theorem tendsto_nhdsGT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c + x⁻¹)) atTop l) :
     Tendsto f (𝓝[>] c) l := by
-  have : Tendsto (fun x ↦ x - c) (𝓝[>] c) (𝓝[>] 0) := by
-    simp only [Tendsto]
-    convert le_refl _
-    rw [IsEmbedding.map_nhdsWithin_eq]
-    · simp
-    · exact (subHomeomorph c).isEmbedding
-  convert Tendsto.comp (g := fun x ↦ f (c + x)) (tendsto_nhdsGT_zero_of_tendsto_atTop _ h) this
-  · ext x
-    simp
+  have : map (· - c) (𝓝[>] c) = (𝓝[>] 0) := by
+    convert (Homeomorph.addRight (-c)).isEmbedding.map_nhdsWithin_eq .. using 2
+    all_goals simp [sub_eq_add_neg]
+  convert tendsto_nhdsGT_zero_of_tendsto_atTop (fun x ↦ f (c + x)) h |>.comp this.le
+  funext
+  simp
 
 theorem tendsto_nhdsLT_of_tendsto_atTop (h : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l) :
     Tendsto f (𝓝[<] c) l := by
-  have : Tendsto (fun x ↦ x - c) (𝓝[<] c) (𝓝[<] 0) := by
-    simp only [Tendsto]
-    convert le_refl _
-    rw [IsEmbedding.map_nhdsWithin_eq]
-    · simp
-    · exact (subHomeomorph c).isEmbedding
-  convert Tendsto.comp (g := fun x ↦ f (c + x)) _ this
-  · ext x
+  have : map (· - c) (𝓝[<] c) = (𝓝[<] 0) := by
+    convert (Homeomorph.addRight (-c)).isEmbedding.map_nhdsWithin_eq .. using 2
+    all_goals simp [sub_eq_add_neg]
+  convert (tendsto_nhdsLT_zero_of_tendsto_atTop (fun x ↦ f (c + x)) _).comp this.le
+  · funext
     simp
-  apply tendsto_nhdsLT_zero_of_tendsto_atTop
-  convert h using 3
-  ring
+  · convert h using 2
+    grind
 
 theorem tendsto_nhdsNE_of_tendsto_atTop
     (h_neg : Tendsto (fun x ↦ f (c - x⁻¹)) atTop l)
@@ -118,8 +103,10 @@ theorem tendsto_nhdsNE_of_tendsto_atTop
       congr
       rw [Set.image_compl_eq]
       · simp
-      exact (subHomeomorph c).bijective
-    · exact (subHomeomorph c).isEmbedding
+      convert (Homeomorph.addRight (-c)).bijective using 2
+      grind [Homeomorph.coe_addRight]
+    · convert (Homeomorph.addRight (-c)).isEmbedding using 2
+      grind [Homeomorph.coe_addRight]
   convert Tendsto.comp (g := fun x ↦ f (c + x)) _ this
   · ext x
     simp

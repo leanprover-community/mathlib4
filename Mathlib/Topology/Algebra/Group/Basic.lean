@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Order.Filter.Bases.Finite
 public import Mathlib.Topology.Algebra.Group.Defs
 public import Mathlib.Topology.Algebra.Monoid
@@ -134,6 +135,23 @@ theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpe
 theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
     DiscreteTopology G :=
   discreteTopology_iff_isOpen_singleton_one.mpr h
+
+theorem Filter.map_mul_right_nhdsGT {G : Type} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (· * c) (𝓝[>] a) = (𝓝[>] (a * c)) := by
+  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+  ext x
+  simp
+
+
+theorem Filter.map_add_right_nhdsGT {G : Type} [AddCommGroup G] [PartialOrder G]
+    [IsOrderedAddMonoid G] [TopologicalSpace G] [ContinuousAdd G]
+    {c a : G} :
+    map (· + c) (𝓝[>] a) = (𝓝[>] (a + c)) := by
+  convert (Homeomorph.addRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp only [Homeomorph.coe_addRight, image_add_right, preimage_add_const_Ioi, sub_neg_eq_add]
 
 end ContinuousMulGroup
 
