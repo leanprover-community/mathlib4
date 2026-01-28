@@ -227,12 +227,12 @@ theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Se
 open scoped Classical in
 /-- Extend a content over `C` to the finite unions of elements of `C` by additivity.
 Use instead `AddContent.supClosure` which is the same function bundled as an `AddContent`. -/
-noncomputable def AddContent.supClosureFun (m : AddContent G C) (s : Set α) : G :=
+private noncomputable def AddContent.supClosureFun (m : AddContent G C) (s : Set α) : G :=
   if h : ∃ (J : Finset (Set α)), ↑J ⊆ C ∧ (PairwiseDisjoint (J : Set (Set α)) id) ∧ s = ⋃₀ ↑J
     then ∑ s ∈ h.choose, m s
   else 0
 
-lemma AddContent.supClosureFun_apply (hC : IsSetSemiring C)
+private lemma AddContent.supClosureFun_apply (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
     (hJ : ↑J ⊆ C) (h'J : PairwiseDisjoint (J : Set (Set α)) id) (hs : s = ⋃₀ ↑J) :
     m.supClosureFun s = ∑ s ∈ J, m s := by
@@ -243,7 +243,7 @@ lemma AddContent.supClosureFun_apply (hC : IsSetSemiring C)
   rw [← hs]
   exact h.choose_spec.2.2.symm
 
-lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
+private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} (hs : s ∈ C) :
     m.supClosureFun s = m s := by
   have : m.supClosureFun s = ∑ t ∈ {s}, m t :=
@@ -251,7 +251,7 @@ lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
   simp [this]
 
 /-- Extend a content over `C` to the finite unions of elements of `C` by additivity. -/
-noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring C) :
+@[no_expose] noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring C) :
     AddContent G (supClosure C) where
   toFun := m.supClosureFun
   empty' := by rw [m.supClosureFun_apply_of_mem hC hC.empty_mem, addContent_empty]
@@ -290,8 +290,8 @@ noncomputable def AddContent.supClosure (m : AddContent G C) (hC : IsSetSemiring
         exact this.mono (H hi hk.1) (H hj hk.2)
       simp only [disjoint_self, Set.bot_eq_empty] at this
       simp [this]
-    apply Finset.sum_congr rfl (fun i hi ↦ ?_)
-    exact (m.supClosureFun_apply hC (hJC i hi) (hJdisj i hi) (hJs i hi)).symm
+    apply Finset.sum_congr rfl (fun i hi ↦ Eq.symm ?_)
+    exact m.supClosureFun_apply hC (hJC i hi) (hJdisj i hi) (hJs i hi)
 
 lemma AddContent.supClosure_apply (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finset (Set α)}
