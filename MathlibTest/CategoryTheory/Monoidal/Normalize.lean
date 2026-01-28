@@ -1,3 +1,5 @@
+module
+public import Lean.Elab
 import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 open CategoryTheory Mathlib.Tactic BicategoryLike
@@ -11,11 +13,16 @@ namespace CategoryTheory.MonoidalCategory
 2. each `ηᵢ` is a non-structural 2-morphism of the form `f₁ ◁ ... ◁ fₘ ◁ θ`, and
 3. `θ` is of the form `ι ▷ g₁ ▷ ... ▷ gₗ`
 -/
-elab "normalize% " t:term:51 : term => do
-  let e ← Lean.Elab.Term.elabTerm t none
-  let ctx : Monoidal.Context ← BicategoryLike.mkContext e
-  CoherenceM.run (ctx := ctx) do
-    return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e.e
+local syntax (name := normalizeSyntax) "normalize% " term:51 : term
+
+@[local term_elab normalizeSyntax]
+meta def elabNormalize : Lean.Elab.Term.TermElab
+  | `(normalize% $t), _ => do
+    let e ← Lean.Elab.Term.elabTerm t none
+    let ctx : Monoidal.Context ← BicategoryLike.mkContext e
+    CoherenceM.run (ctx := ctx) do
+      return (← BicategoryLike.eval `monoidal (← MkMor₂.ofExpr e)).expr.e.e
+  | _, _ => Lean.Elab.throwUnsupportedSyntax
 
 universe v u
 

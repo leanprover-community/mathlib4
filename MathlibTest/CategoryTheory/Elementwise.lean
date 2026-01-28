@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Algebra.Category.MonCat.Basic
 
@@ -8,7 +9,7 @@ open CategoryTheory
 
 namespace HasForget
 
-attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
+attribute [local simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 attribute [local instance] HasForget.instFunLike HasForget.hasCoeToSort
 
