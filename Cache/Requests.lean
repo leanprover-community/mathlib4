@@ -374,10 +374,10 @@ def monitorCurl (args : Array String) (size : Nat)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
+Return `false` if any files failed to download, otherwise `true`. -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Bool := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
@@ -405,8 +405,9 @@ def downloadFiles
       pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
     if failed > 0 then
       IO.println s!"{failed} download(s) failed"
-      IO.Process.exit 1
+      return false
   else IO.println "No files to download"
+  return true
 
 /-- Check if the project's `lean-toolchain` file matches mathlib's.
 Print and error and exit the process with error code 1 otherwise. -/
@@ -481,7 +482,7 @@ def getFiles
   getProofWidgets (← read).proofWidgetsBuildDir
 
   if let some repo := repo? then
-    downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+    let _ := downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
   else
     let repoInfo ← getRemoteRepo (← read).mathlibDepPath
 
@@ -494,9 +495,12 @@ def getFiles
       else
         [MATHLIBREPO, repoInfo.repo]
 
+    let mut failed := false
     for h : i in [0:repos.length] do
-      downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)
-
+      failed := failed || !(← (downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)))
+    if failed then
+      IO.println "Downloading some files failed"
+      IO.Process.exit 1
   if decompress then
     IO.unpackCache hashMap forceUnpack
   else
