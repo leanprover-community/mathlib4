@@ -29,25 +29,9 @@ open Limits Abelian
 variable {C : Type u} [Category.{v} C] [Abelian C]
 variable {D : Type u'} [Category.{v'} D] [Abelian D]
 
-variable (F : C ⥤ D) [F.Additive] [PreservesFiniteLimits F] [PreservesFiniteColimits F]
+variable (F : C ⥤ D) [F.Additive]
 
-lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
-    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
-    (S.map (F.mapHomologicalComplex c)).Exact := by
-  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
-  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
-    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
-  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
-  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
-
-instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).1
-
-instance {ι : Type*} (c : ComplexShape ι) :
-    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).2
+variable [PreservesFiniteLimits F] [PreservesFiniteColimits F]
 
 section
 
@@ -97,14 +81,8 @@ lemma Functor.mapTriangleOfSESδ [HasDerivedCategory.{t} C] [HasDerivedCategory.
   rw [Iso.cancel_iso_hom_left, ← Q.map_comp, CochainComplex.mappingCone.map_δ, ← Category.assoc,
     Q.map_comp]
   congr 1
-  rw [IsIso.eq_comp_inv, ← Q.map_comp]
-  congr 1
-  ext n
-  simp [CochainComplex.mappingCone.mapHomologicalComplexIso,
-    CochainComplex.mappingCone.descShortComplex,
-    CochainComplex.mappingCone.mapHomologicalComplexXIso,
-    CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom,
-    mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
+  rw [IsIso.eq_comp_inv, ← Q.map_comp,
+    CochainComplex.mappingCone.descShortComplex_mapHomologicalComplex]
 
 lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
     {S : ShortComplex C} (hS : S.ShortExact) :
@@ -155,7 +133,7 @@ lemma Functor.mapShiftedHom_singleδ [HasDerivedCategory.{t} C] [HasDerivedCateg
     comm₁₂ := (NatTrans.naturality _ S.f).symm
     comm₂₃ := (NatTrans.naturality _ S.g).symm }
   change _ ≫ triangleOfSESδ h1 ≫ (shiftFunctor (DerivedCategory D) 1).map (Q.map f.τ₁) = _
-  rw [triangleOfSESδ_hom h1 h2 f]
+  rw [triangleOfSESδ_naturality h1 h2 f]
   change Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).inv ≫
     Q.map ((F.mapCochainComplexSingleFunctor 0).app S.X₃).hom ≫ _ = _
   rw [← Category.assoc, ← Q.map_comp]
