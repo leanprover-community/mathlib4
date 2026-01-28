@@ -66,10 +66,16 @@ theorem image_implicitFunction
     ∀ᶠ x in 𝓝 u.1, f (x, cdf.implicitFunction pn if₂ x) = f u :=
   (cdf.hasStrictFDerivAt pn).image_implicitFunctionOfProdDomain if₂
 
-theorem eventually_implicitFunction_apply_eq
+theorem image_eq_iff_implicitFunction
     (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     ∀ᶠ v in 𝓝 u, f v = f u ↔ cdf.implicitFunction pn if₂ v.1 = v.2 :=
   (cdf.hasStrictFDerivAt pn).image_eq_iff_implicitFunctionOfProdDomain if₂
+
+theorem hasStrictFDerivAt_implicitFunction
+    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
+    HasStrictFDerivAt (cdf.implicitFunction pn if₂)
+      (-(fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).inverse ∘L (fderiv 𝕜 f u ∘L .inl 𝕜 E₁ E₂)) u.1 :=
+  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
 
 /-- If the implicit equation `f` is $C^n$ at `(u₁, u₂)`, then its implicit function `ψ` around `u₁`
 is also $C^n$ at `u₁`. -/
@@ -80,12 +86,6 @@ theorem contDiffAt_implicitFunction
     |>.contDiff_implicitFunction cdf contDiffAt_fst pn
   unfold implicitFunction HasStrictFDerivAt.implicitFunctionOfProdDomain
   fun_prop
-
-theorem hasStrictFDerivAt_implicitFunction
-    (cdf : ContDiffAt 𝕜 n f u) (pn : n ≠ 0) (if₂ : (fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
-    HasStrictFDerivAt (cdf.implicitFunction pn if₂)
-      (-(fderiv 𝕜 f u ∘L .inr 𝕜 E₁ E₂).inverse ∘L (fderiv 𝕜 f u ∘L .inl 𝕜 E₁ E₂)) u.1 :=
-  (cdf.hasStrictFDerivAt pn).hasStrictFDerivAt_implicitFunctionOfProdDomain if₂
 
 end ContDiffAt
 
@@ -108,7 +108,7 @@ alias implicitFunction := ContDiffAt.implicitFunction
 alias apply_implicitFunction := ContDiffAt.image_implicitFunction
 
 @[deprecated (since := "2026-01-27")]
-alias eventually_implicitFunction_apply_eq := ContDiffAt.eventually_implicitFunction_apply_eq
+alias eventually_implicitFunction_apply_eq := ContDiffAt.image_eq_iff_implicitFunction
 
 @[deprecated (since := "2026-01-27")]
 alias contDiffAt_implicitFunction := ContDiffAt.contDiffAt_implicitFunction
