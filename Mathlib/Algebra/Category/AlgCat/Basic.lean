@@ -200,7 +200,7 @@ instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 end AlgCat
 
 variable {R}
-variable {X₁ X₂ : Type u}
+variable {X₁ X₂ : Type v}
 
 /-- Build an isomorphism in the category `AlgCat R` from an `AlgEquiv` between `Algebra`s. -/
 @[simps]
@@ -225,13 +225,18 @@ end CategoryTheory.Iso
 /-- Algebra equivalences between `Algebra`s are the same as (isomorphic to) isomorphisms in
 `AlgCat`. -/
 @[simps]
-def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
+def algEquivIsoAlgebraIso {X Y : Type v} [Ring X] [Ring Y] [Algebra R X] [Algebra R Y] :
     (X ≃ₐ[R] Y) ≅ AlgCat.of R X ≅ AlgCat.of R Y where
   hom e := e.toAlgebraIso
   inv i := i.toAlgEquiv
 
-instance AlgCat.forget_reflects_isos : (forget (AlgCat.{u} R)).ReflectsIsomorphisms where
+instance AlgCat.forget_reflects_isos : (forget (AlgCat.{v} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
-    let i := asIso ((forget (AlgCat.{u} R)).map f)
+    let i := asIso ((forget (AlgCat.{v} R)).map f)
     let e : X ≃ₐ[R] Y := { f.hom, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
+
+instance : (forget₂ (AlgCat.{v} R) (ModuleCat R)).ReflectsIsomorphisms :=
+  have : (forget₂ (AlgCat R) (ModuleCat R) ⋙ forget (ModuleCat R)).ReflectsIsomorphisms :=
+    inferInstanceAs (forget _).ReflectsIsomorphisms
+  reflectsIsomorphisms_of_comp _ (forget _)

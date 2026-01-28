@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Christian Merten, Michał Mrugała, Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.AlgCat.Limits
 public import Mathlib.Algebra.Category.Ring.Under.Basic
 public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.CategoryTheory.WithTerminal.Cone
@@ -148,6 +148,14 @@ instance hasForgetToAlgCat : HasForget₂ (CommAlgCat.{v} R) (AlgCat.{v} R) wher
 @[simp] lemma forget₂_algCat_map (f : A ⟶ B) :
     (forget₂ (CommAlgCat.{v} R) (AlgCat.{v} R)).map f = AlgCat.ofHom f.hom := rfl
 
+/-- The forgetful functor from commutative algebras to algebras is fully faithful -/
+@[simps] def fullyFaithful_forget₂_algCat :
+    (forget₂ (CommAlgCat R) (AlgCat R)).FullyFaithful where
+  preimage f := CommAlgCat.ofHom f.hom
+
+instance : (forget₂ (CommAlgCat R) (AlgCat R)).Full     := fullyFaithful_forget₂_algCat.full
+instance : (forget₂ (CommAlgCat R) (AlgCat R)).Faithful := fullyFaithful_forget₂_algCat.faithful
+
 /-- Build an isomorphism in the category `CommAlgCat R` from an `AlgEquiv` between commutative
 `Algebra`s. -/
 @[simps]
@@ -219,3 +227,14 @@ instance : HasColimits (CommAlgCat.{u} R) :=
 -- TODO: Generalize to `UnivLE.{u, v}` once `commAlgCatEquivUnder` is generalized.
 instance : HasLimits (CommAlgCat.{u} R) :=
   Adjunction.has_limits_of_equivalence (commAlgCatEquivUnder (.of R)).functor
+
+instance : PreservesLimits (forget (CommAlgCat.{u} R)) :=
+  inferInstanceAs (PreservesLimits <| (commAlgCatEquivUnder (.of R)).functor ⋙
+    Under.forget _ ⋙ forget _)
+
+instance : ReflectsLimits (forget (CommAlgCat.{u} R)) := reflectsLimits_of_reflectsIsomorphisms
+
+instance : PreservesLimits (forget₂ (CommAlgCat.{u} R) (AlgCat.{u} R)) :=
+  have : PreservesLimits (forget₂ (CommAlgCat R) (AlgCat R) ⋙ forget (AlgCat R)) :=
+    inferInstanceAs (PreservesLimits (forget _))
+  preservesLimits_of_reflects_of_preserves (F := forget₂ (CommAlgCat R) (AlgCat R)) (G := forget _)
