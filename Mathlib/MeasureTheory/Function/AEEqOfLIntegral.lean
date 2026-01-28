@@ -77,6 +77,30 @@ lemma ae_le_const_iff_forall_gt_measure_zero {β} [LinearOrder β] [TopologicalS
     (∀ᵐ x ∂μ, f x ≤ c) ↔ ∀ b, c < b → μ {x | b ≤ f x} = 0 :=
   ae_const_le_iff_forall_lt_measure_zero (β := βᵒᵈ) _ _
 
+lemma ae_le_const_iff_forall_gt_imp_ae_lt {β} [LinearOrder β] [TopologicalSpace β]
+    [OrderTopology β] [FirstCountableTopology β] {μ : Measure α} (f : α → β) (c : β) :
+    (∀ᵐ x ∂μ, f x ≤ c) ↔ ∀ b, c < b → (∀ᵐ x ∂μ, f x < b) := by
+  simp_rw [ae_le_const_iff_forall_gt_measure_zero, ae_iff, not_lt]
+
+lemma ae_const_le_iff_forall_lt_imp_ae_gt {β} [LinearOrder β] [TopologicalSpace β]
+    [OrderTopology β] [FirstCountableTopology β] {μ : Measure α} (f : α → β) (c : β) :
+    (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b, b < c → (∀ᵐ x ∂μ, b < f x) :=
+  ae_le_const_iff_forall_gt_imp_ae_lt (β := βᵒᵈ) _ _
+
+lemma ae_le_const_iff_forall_gt_imp_ae_le {β} [LinearOrder β] [DenselyOrdered β]
+    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {μ : Measure α}
+    (f : α → β) (c : β) : (∀ᵐ x ∂μ, f x ≤ c) ↔ ∀ b, c < b → (∀ᵐ x ∂μ, f x ≤ b) := by
+  refine ⟨fun h _ hbc ↦ h.mono fun _ hx ↦ le_trans hx <| le_of_lt hbc,?_⟩
+  rw [ae_le_const_iff_forall_gt_imp_ae_lt]
+  intro h b hbc
+  rcases exists_between hbc with ⟨d,hcd,hdb⟩
+  exact (h d hcd).mono (fun _ hx ↦ lt_of_le_of_lt hx hdb)
+
+lemma ae_const_le_iff_forall_lt_imp_ae_ge {β} [LinearOrder β] [DenselyOrdered β]
+    [TopologicalSpace β] [OrderTopology β] [FirstCountableTopology β] {μ : Measure α}
+    (f : α → β) (c : β) : (∀ᵐ x ∂μ, c ≤ f x) ↔ ∀ b, b < c → (∀ᵐ x ∂μ, b ≤ f x) :=
+  ae_le_const_iff_forall_gt_imp_ae_le (β := βᵒᵈ) _ _
+
 theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
     {f g : α → ℝ≥0∞} (hf : AEMeasurable f μ)
     (h : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≤ ∫⁻ x in s, g x ∂μ) :
