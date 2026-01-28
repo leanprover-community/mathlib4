@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Group.QuotientSeminorm
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -92,6 +93,10 @@ uniform structure induces the correct topological structure by construction, but
 is compatible with the norm is not obvious; this is where the mathematical content explained in
 the previous paragraph kicks in.
 
+## TODO
+
+* Use the general API about `AddGroupSeminorm.map` and `AddGroupSeminorm.quotient`
+
 -/
 
 @[expose] public section
@@ -112,20 +117,8 @@ private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Q
 @[to_additive
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x + S`. -/]
-noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) where
-  toFun x := infDist 1 {m : M | (m : M ⧸ S) = x}
-  map_one' := infDist_zero_of_mem (by simp)
-  mul_le' x y := by
-    simp only [infDist_eq_iInf]
-    have := (norm_aux x).to_subtype
-    have := (norm_aux y).to_subtype
-    refine le_ciInf_add_ciInf ?_
-    rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-    refine ciInf_le_of_le ⟨0, forall_mem_range.2 fun _ ↦ dist_nonneg⟩ ⟨a * b, rfl⟩ ?_
-    simpa using norm_mul_le' _ _
-  inv' x := eq_of_forall_le_iff fun r ↦ by
-    simp only [le_infDist (norm_aux _)]
-    exact (Equiv.inv _).forall_congr (by simp [← inv_eq_iff_eq_inv])
+noncomputable def groupSeminorm : GroupSeminorm (M ⧸ S) :=
+  normGroupSeminorm M |>.quotient S
 
 /-- The norm of `x` on the quotient by a subgroup `S` is defined as the infimum of the norm on
 `x * S`. -/
@@ -138,22 +131,25 @@ noncomputable instance instNorm : Norm (M ⧸ S) where norm := groupSeminorm
 lemma norm_eq_groupSeminorm (x : M ⧸ S) : ‖x‖ = groupSeminorm x := rfl
 
 @[to_additive]
-lemma norm_eq_infDist (x : M ⧸ S) : ‖x‖ = infDist 1 {m : M | (m : M ⧸ S) = x} := rfl
+lemma le_norm_iff : r ≤ ‖x‖ ↔ ∀ m : M, ↑m = x → r ≤ ‖m‖ :=
+  GroupSeminorm.le_quotient_iff
 
 @[to_additive]
-lemma le_norm_iff : r ≤ ‖x‖ ↔ ∀ m : M, ↑m = x → r ≤ ‖m‖ := by
-  simp [norm_eq_infDist, le_infDist (norm_aux _)]
+lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r :=
+  GroupSeminorm.quotient_lt_iff
 
 @[to_additive]
-lemma norm_lt_iff : ‖x‖ < r ↔ ∃ m : M, ↑m = x ∧ ‖m‖ < r := by
-  simp [norm_eq_infDist, infDist_lt_iff (norm_aux _)]
+lemma norm_eq_infDist (x : M ⧸ S) : ‖x‖ = infDist 1 {m : M | (m : M ⧸ S) = x} := by
+  refine eq_of_forall_le_iff fun c ↦ ?_
+  simp [norm_eq_groupSeminorm, groupSeminorm, GroupSeminorm.le_quotient_iff,
+    Metric.le_infDist (norm_aux x)]
 
 @[to_additive]
 lemma nhds_one_hasBasis : (𝓝 (1 : M ⧸ S)).HasBasis (fun ε ↦ 0 < ε) fun ε ↦ {x | ‖x‖ < ε} := by
   have : ∀ ε : ℝ, mk '' ball (1 : M) ε = {x : M ⧸ S | ‖x‖ < ε} := by
-    refine fun ε ↦ Set.ext <| forall_mk.2 fun x ↦ ?_
-    rw [ball_one_eq, mem_setOf_eq, norm_lt_iff, mem_image]
-    exact exists_congr fun _ ↦ and_comm
+    intro ε
+    ext x
+    simp [norm_lt_iff, and_comm]
   rw [← mk_one, nhds_eq, ← funext this]
   exact .map _ Metric.nhds_basis_ball
 
@@ -163,15 +159,15 @@ equal to the distance from `x` to `S`. -/
 /-- An alternative definition of the norm on the quotient group: the norm of `((x : M) : M ⧸ S)` is
 equal to the distance from `x` to `S`. -/]
 lemma norm_mk (x : M) : ‖(x : M ⧸ S)‖ = infDist x S := by
-  rw [norm_eq_infDist, ← infDist_image (IsometryEquiv.divLeft x).isometry,
-    ← IsometryEquiv.preimage_symm]
-  simp
+  refine eq_of_forall_le_iff fun c ↦ ?_
+  simp [norm_eq_groupSeminorm, groupSeminorm, le_isGLB_iff (GroupSeminorm.isGLB_quotient_div S x),
+    mem_lowerBounds, ← dist_eq_norm_div, Metric.le_infDist S.coe_nonempty]
 
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/
 @[to_additive
 /-- The norm of the projection is smaller or equal to the norm of the original element. -/]
 lemma norm_mk_le_norm : ‖(m : M ⧸ S)‖ ≤ ‖m‖ :=
-  (infDist_le_dist_of_mem (by simp)).trans_eq (dist_one_left _)
+  GroupSeminorm.quotient_coe_le _
 
 /-- The norm of the image of `m : M` in the quotient by `S` is zero if and only if `m` belongs
 to the closure of `S`. -/

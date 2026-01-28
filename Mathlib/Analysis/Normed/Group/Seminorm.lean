@@ -254,6 +254,24 @@ theorem coe_add : ⇑(p + q) = p + q :=
 theorem add_apply (x : E) : (p + q) x = p x + q x :=
   rfl
 
+-- Note: specified to `ℕ` otherwise `@[to_additive]` won't work...
+@[to_additive]
+instance : SMul ℕ (GroupSeminorm E) :=
+  ⟨fun r p =>
+    { toFun := fun x => r • p x
+      map_one' := by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
+          mul_zero]
+      mul_le' := fun _ _ => by
+        simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
+        gcongr
+        apply map_mul_le_add
+      inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
+
+@[to_additive]
+instance : AddCommMonoid (GroupSeminorm E) := fast_instance%
+  DFunLike.coe_injective.addCommMonoid _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
 open Classical in
 @[to_additive]
 noncomputable instance : SupSet (GroupSeminorm E) where
