@@ -54,7 +54,9 @@ lemma triangleOfSESδ_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (hS�
   let g := CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm
   simp only [Functor.comp_obj, Functor.comp_map, CochainComplex.mappingCone.descShortComplex_hom f,
     Functor.map_comp, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
-  rw [← Q.map_comp, ← Q.map_comp, CochainComplex.mappingCone.triangle_mor₃_hom]
+  rw [← Q.map_comp, ← Q.map_comp]
+  congr 1
+  exact (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm).comm₃
 
 /-- The distinguished triangle in the derived category associated to a short
 exact sequence of cochain complexes. -/
