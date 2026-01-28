@@ -5,6 +5,7 @@ Authors: John Talbot, Lian Bremner Tattersall
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Coloring
 public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
@@ -57,20 +58,50 @@ open Finset Fintype
 
 universe u
 namespace SimpleGraph
-variable {α : Type u}
+variable {α : Type u} {ι : Type*}
+
+/-- `G.IsCompleteMultipartiteWith f` iff adjacency in `G`
+    is determined by inequality of `f`-values. -/
+def IsCompleteMultipartiteWith (G : SimpleGraph α) (f : α → ι) : Prop :=
+  ∀ u v, G.Adj u v ↔ f u ≠ f v
+
+namespace IsCompleteMultipartiteWith
+
+variable {G : SimpleGraph α} {f : α → ι} {C : G.IsCompleteMultipartiteWith f}
+include C
+
+/-- For a complete multipartite graph labelled via `f`, `u` and `v` are adjacent iff `f u ≠ f v`. -/
+lemma adj_iff_ne ⦃u v : α⦄ : G.Adj u v ↔ f u ≠ f v := C u v
+
+/-- The neighbors of `v` are vertices which do not match on `f`. -/
+lemma neighborSet_eq (v : α) : G.neighborSet v = {u | f v ≠ f u} := Set.ext <| C v
+
+section finite
+
+variable (v : α) [Fintype (G.neighborSet v)] [Fintype {u | f v ≠ f u}]
+
+/-- The neighbors of `v` are vertices which do not match on `f`. -/
+lemma neighborFinset_eq : G.neighborFinset v = {u | f v ≠ f u}.toFinset :=
+  Set.toFinset_inj.mpr <| C.neighborSet_eq v
+
+end finite
+
+end IsCompleteMultipartiteWith
 
 /-- `G` is `IsCompleteMultipartite` iff non-adjacency is transitive -/
 def IsCompleteMultipartite (G : SimpleGraph α) : Prop := Transitive (¬ G.Adj · ·)
 
+/-- An empty graph is complete multipartite. -/
 theorem bot_isCompleteMultipartite : (⊥ : SimpleGraph α).IsCompleteMultipartite := by
   simp [IsCompleteMultipartite, Transitive]
 
 variable {G : SimpleGraph α}
+
 /-- The setoid given by non-adjacency -/
 def IsCompleteMultipartite.setoid (h : G.IsCompleteMultipartite) : Setoid α :=
     ⟨(¬ G.Adj · ·), ⟨G.loopless, fun h' ↦ by rwa [adj_comm] at h', fun h1 h2 ↦ h h1 h2⟩⟩
 
-lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → Type*) :
+lemma completeMultipartiteGraph.isCompleteMultipartite (V : ι → Type*) :
     (completeMultipartiteGraph V).IsCompleteMultipartite := by
   intro
   simp_all
@@ -88,6 +119,14 @@ def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     change ¬¬ G.Adj _ _ ↔ _
     rw [not_not]
 
+theorem IsCompleteMultipartiteWith.isCompleteMultipartite
+    {f : α → ι} (h : G.IsCompleteMultipartiteWith f) :
+    G.IsCompleteMultipartite := fun _ ↦ by grind [= IsCompleteMultipartiteWith]
+
+theorem isCompleteMultipartiteWith_of_isCompleteMultipartite (h : G.IsCompleteMultipartite) :
+    G.IsCompleteMultipartiteWith (Quotient.mk h.setoid) := fun _ _ ↦ by
+  grind only [Quotient.eq, IsCompleteMultipartite.setoid.eq_def, Setoid.bot_def]
+
 lemma isCompleteMultipartite_iff : G.IsCompleteMultipartite ↔ ∃ (ι : Type u) (V : ι → Type u)
     (_ : ∀ i, Nonempty (V i)), Nonempty (G ≃g completeMultipartiteGraph V) := by
   constructor <;> intro h
@@ -101,6 +140,49 @@ lemma IsCompleteMultipartite.colorable_of_cliqueFree {n : ℕ} (h : G.IsComplete
     (hc : G.CliqueFree n) : G.Colorable (n - 1) :=
   (completeMultipartiteGraph.colorable_of_cliqueFree _ (fun _ ↦ ⟨_, h.setoid.refl _⟩) <|
     hc.comap h.iso.symm.toEmbedding).of_hom h.iso
+
+/-- `G.IsCompleteBipartiteWith left` iff `G` is complete bipartite
+    with respect to the partition `left`, `leftᶜ`. -/
+def IsCompleteBipartiteWith (left : Set α) : Prop := G.IsCompleteMultipartiteWith (· ∈ left)
+
+namespace IsCompleteBipartiteWith
+
+variable {u v : α} {left : Set α} (C : G.IsCompleteBipartiteWith left)
+include C
+
+lemma isCompleteMultipartiteWith : G.IsCompleteMultipartiteWith (· ∈ left) := C
+
+lemma adj_iff_not_mem (hv : v ∈ left) : G.Adj v u ↔ u ∉ left := by
+  simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
+
+lemma adj_iff_mem (hv : v ∉ left) : G.Adj v u ↔ u ∈ left := by
+  simp [C.isCompleteMultipartiteWith.adj_iff_ne, hv]
+
+lemma neighborSet_eq_of_mem_left (hv : v ∈ left) : G.neighborSet v = leftᶜ := by
+  grind [C.isCompleteMultipartiteWith.neighborSet_eq]
+
+lemma neighborSet_eq_of_not_mem_left (hv : v ∉ left) : G.neighborSet v = left := by
+  grind [C.isCompleteMultipartiteWith.neighborSet_eq]
+
+lemma bipartite : G.IsBipartiteWith left leftᶜ := by
+  refine ⟨disjoint_compl_right, fun v u hadj ↦ ?_⟩
+  grind [C.isCompleteMultipartiteWith.adj_iff_ne.mp hadj]
+
+section finite
+
+variable [Fintype ↑left] [Fintype ↑(G.neighborSet v)]
+
+lemma neighborFinset_eq_of_mem_left [Fintype ↑leftᶜ] (hv : v ∈ left.toFinset) :
+    G.neighborFinset v = leftᶜ.toFinset := by
+  grind [neighborFinset_def, neighborSet_eq_of_mem_left]
+
+lemma neighborFinset_eq_of_not_mem_left (hv : v ∉ left.toFinset) :
+    G.neighborFinset v = left.toFinset := by
+  grind [neighborFinset_def, neighborSet_eq_of_not_mem_left]
+
+end finite
+
+end IsCompleteBipartiteWith
 
 variable (G) in
 /--
