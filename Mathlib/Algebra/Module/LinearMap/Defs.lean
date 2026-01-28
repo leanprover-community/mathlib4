@@ -318,9 +318,11 @@ protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
 
 variable (fₗ f g)
 
+@[simp high]
 protected theorem map_add (x y : M) : f (x + y) = f x + f y :=
   map_add f x y
 
+@[simp high]
 protected theorem map_zero : f 0 = 0 :=
   map_zero f
 
