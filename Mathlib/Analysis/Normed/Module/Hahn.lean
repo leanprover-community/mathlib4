@@ -25,6 +25,13 @@ theorem exists_dual_vector_of_seminormed (x : E) : ∃ g : StrongDual 𝕜 E, �
       simp [-algebraMap_smul, hgx, ↓hg.1, hc]
   · exact ⟨0, by simp, by simp [le_antisymm (not_lt.mp hx) (norm_nonneg x)]⟩
 
+variable (𝕜 : Type*) [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+theorem exists_dual_vector_new (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
+  obtain ⟨g, hg⟩ := exists_dual_vector_of_seminormed 𝕜 x
+  refine ⟨g,  g.opNorm_eq_of_bounds (by simp) (g.le_of_opNorm_le hg.1) (fun _ _ hx =>
+    one_le_of_le_mul_right₀ (norm_pos_iff.mpr h) (by simpa [hg.2] using hx x)), hg.2⟩
+
 end HahnBanach.lean
 
 
