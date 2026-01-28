@@ -191,6 +191,9 @@ def objEquiv : C ≃ W.Localization where
     rintro ⟨⟨X⟩⟩
     rfl
 
+instance : W.Q.EssSurj where
+  mem_essImage Y := ⟨(objEquiv W).symm Y, ⟨Iso.refl _⟩⟩
+
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, the inverses of the morphisms
