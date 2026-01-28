@@ -61,7 +61,7 @@ countably many points of its interior, then for every point `w` in the disk, the
 theorem circleAverage_of_differentiable_on_off_countable₁ (hs : s.Countable)
     (h₁f : ContinuousOn f (closedBall c |R|)) (h₂f : ∀ z ∈ ball c |R| \ s, DifferentiableAt ℂ f z)
     (hw : w ∈ ball c |R|) (hR : R ≠ 0) :
-    circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R = f w := by
+    circleAverage (fun z ↦ ((z - c) / (z - w)) • f z) c R = f w := by
   rw [← circleAverage_abs_radius]
   exact circleAverage_of_differentiable_on_off_countable_posRadius (by simpa)
     hs h₁f h₂f hw
@@ -74,7 +74,7 @@ equals `f w`.
 -/
 theorem circleAverage_of_differentiable_on₁ (hf : ∀ z ∈ closedBall c |R|, DifferentiableAt ℂ f z)
     (hw : w ∈ ball c |R|) (hR : R ≠ 0) :
-    circleAverage (fun z ↦ ((z - c) * (z - w)⁻¹) • f z) c R = f w :=
+    circleAverage (fun z ↦ ((z - c) / (z - w)) • f z) c R = f w :=
   circleAverage_of_differentiable_on_off_countable₁ countable_empty
     (fun x hx ↦ (hf x hx).continuousAt.continuousWithinAt)
     (fun z hz ↦ hf z (by simp_all [le_of_lt])) hw hR
