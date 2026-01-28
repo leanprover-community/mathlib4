@@ -125,7 +125,7 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
   simp only [evalFrom_append, evalFrom_cons, evalFrom_nil]
 
 variable (M) in
-@[simp]
+@[simp, grind =]
 theorem evalFrom_union (S T : Set σ) (x : List α) :
     M.evalFrom (S ∪ T) x = M.evalFrom S x ∪ M.evalFrom T x := by
   induction x generalizing S T with

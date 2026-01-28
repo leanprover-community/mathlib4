@@ -150,21 +150,7 @@ def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) 
 theorem mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β)
     (x : Sigma γ) :
     x ∈ sigmaLift f a b ↔ ∃ (ha : a.1 = x.1) (hb : b.1 = x.1), x.2 ∈ f (ha ▸ a.2) (hb ▸ b.2) := by
-  obtain ⟨⟨i, a⟩, j, b⟩ := a, b
-  obtain rfl | h := Decidable.eq_or_ne i j
-  · constructor
-    · simp_rw [sigmaLift]
-      simp only [dite_eq_ite, ite_true, mem_map, Embedding.sigmaMk_apply, forall_exists_index,
-        and_imp]
-      rintro x hx rfl
-      exact ⟨rfl, rfl, hx⟩
-    · rintro ⟨⟨⟩, ⟨⟩, hx⟩
-      rw [sigmaLift, dif_pos rfl, mem_map]
-      exact ⟨_, hx, by simp⟩
-  · rw [sigmaLift, dif_neg h]
-    refine iff_of_false (notMem_empty _) ?_
-    rintro ⟨⟨⟩, ⟨⟩, _⟩
-    exact h rfl
+  grind [sigmaLift]
 
 theorem mk_mem_sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (i : ι) (a : α i) (b : β i)
     (x : γ i) : (⟨i, x⟩ : Sigma γ) ∈ sigmaLift f ⟨i, a⟩ ⟨i, b⟩ ↔ x ∈ f a b := by

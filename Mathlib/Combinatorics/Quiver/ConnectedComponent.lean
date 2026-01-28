@@ -166,18 +166,7 @@ lemma exists_path_of_stronglyConnectedComponent_eq {a b : V}
 lemma stronglyConnectedComponent_singleton_iff (v : V) :
     (∀ w : V, (w : StronglyConnectedComponent V) = v → w = v) ↔
     (∀ w : V, w ≠ v → ¬(Nonempty (Path v w) ∧ Nonempty (Path w v))) := by
-  constructor
-  · intro h_singleton w hw_ne h_bidir
-    obtain ⟨hab, hba⟩ := h_bidir
-    have h_same_scc : (w : StronglyConnectedComponent V) = v :=
-      stronglyConnectedComponent_eq_of_path (a := w) (b := v) hba hab
-    obtain ⟨rfl⟩ := h_singleton w h_same_scc
-    contradiction
-  · intro h_no_bidir w h_same_scc
-    by_contra hw_ne
-    obtain ⟨hab, hba⟩ :=
-      exists_path_of_stronglyConnectedComponent_eq (a := w) (b := v) h_same_scc
-    exact (h_no_bidir w hw_ne) ⟨hba, hab⟩
+  grind [exists_path_of_stronglyConnectedComponent_eq, StronglyConnectedComponent.eq]
 
 lemma IsStronglyConnected.isStronglyConnected_symmetrify (h : IsStronglyConnected V) :
     IsStronglyConnected (Symmetrify V) := by
