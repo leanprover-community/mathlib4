@@ -175,6 +175,15 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
 
+theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) :
+    (∃ w, ∀ z, g z = w) ∨ IsOpenMap g :=
+  (hg.is_constant_or_isOpen PreconnectedSpace.isPreconnected_univ).imp
+    (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
+
+/-!
+## Holomorphic Functions with Constant Real or Imaginary Part
+-/
+
 /--
 Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
 constant.
@@ -224,10 +233,10 @@ theorem AnalyticOnNhd.eq_const_add_im_mul_I_of_re_eq_const {U : Set ℂ} {c₀ :
   use cc.re
   simp_rw [Complex.ext_iff]
   aesop
-theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) :
-    (∃ w, ∀ z, g z = w) ∨ IsOpenMap g :=
-  (hg.is_constant_or_isOpen PreconnectedSpace.isPreconnected_univ).imp
-    (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
+
+/-!
+## Holomorphic Functions as Open Quotient Maps
+-/
 
 theorem Polynomial.C_eq_or_isOpenQuotientMap_eval (p : Polynomial ℂ) :
     (∃ x, C x = p) ∨ IsOpenQuotientMap p.eval := by
