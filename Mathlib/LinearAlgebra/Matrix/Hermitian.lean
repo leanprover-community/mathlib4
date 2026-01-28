@@ -93,6 +93,55 @@ theorem isHermitian_submatrix_equiv {A : Matrix n n α} (e : m ≃ n) :
 
 end Star
 
+section SkewHermitian
+
+variable [Star α] [Neg α]
+
+/-! ### Skew-Hermitian matrices -/
+
+/-- A matrix is skew-Hermitian if it is equal to the negation of its conjugate transpose. -/
+def IsSkewHermitian (A : Matrix n n α) : Prop := Aᴴ = -A
+
+theorem IsSkewHermitian.eq {A : Matrix n n α} (h : A.IsSkewHermitian) : Aᴴ = -A := h
+
+theorem IsSkewHermitian.ext {A : Matrix n n α} (h : ∀ i j, star (A j i) = -A i j) :
+    A.IsSkewHermitian := Matrix.ext h
+
+theorem IsSkewHermitian.apply {A : Matrix n n α} (h : A.IsSkewHermitian) (i j : n) :
+    star (A j i) = -A i j :=
+  congr_fun (congr_fun h.eq _) _
+
+theorem IsSkewHermitian.ext_iff {A : Matrix n n α} :
+    A.IsSkewHermitian ↔ ∀ i j, star (A j i) = -A i j :=
+  ⟨IsSkewHermitian.apply, IsSkewHermitian.ext⟩
+
+theorem IsSkewHermitian.transpose {A : Matrix n n α} (h : A.IsSkewHermitian) :
+    Aᵀ.IsSkewHermitian := by
+  simp [IsSkewHermitian, show Aᵀᴴ = Aᴴᵀ by rfl, h.eq]
+
+@[simp]
+theorem isSkewHermitian_transpose_iff (A : Matrix n n α) :
+    Aᵀ.IsSkewHermitian ↔ A.IsSkewHermitian :=
+  ⟨IsSkewHermitian.transpose, IsSkewHermitian.transpose⟩
+
+end SkewHermitian
+
+section SubtractionMonoid
+
+variable [SubtractionMonoid α] [StarAddMonoid α]
+
+@[simp]
+theorem isSkewHermitian_diagonal_iff [DecidableEq n] (d : n → α) :
+    (diagonal d).IsSkewHermitian ↔ star d = -d := by
+  simp [IsSkewHermitian, funext_iff]
+
+theorem IsSkewHermitian.star_diag {A : Matrix n n α} (hA : A.IsSkewHermitian) :
+    star (diag A) = -(diag A) := by
+  classical
+  simp_all [← isSkewHermitian_diagonal_iff, IsSkewHermitian, ← conjTranspose_apply]
+
+end SubtractionMonoid
+
 section InvolutiveStar
 
 variable [InvolutiveStar α]
@@ -166,9 +215,24 @@ theorem isHermitian_transpose_add_self (A : Matrix n n α) : (Aᴴ + A).IsHermit
 
 end AddCommMonoid
 
+section SubtractionCommMonoid
+
+variable [SubtractionCommMonoid α] [StarAddMonoid α]
+
+@[simp]
+theorem IsSkewHermitian.add {A B : Matrix n n α} (hA : A.IsSkewHermitian) (hB : B.IsSkewHermitian) :
+    (A + B).IsSkewHermitian := by
+  simp [IsSkewHermitian, ← Matrix.ext_iff, hA.eq, hB.eq, add_comm]
+
+end SubtractionCommMonoid
+
 section AddGroup
 
 variable [AddGroup α] [StarAddMonoid α]
+
+@[simp]
+theorem IsSkewHermitian.neg {A : Matrix n n α} (h : A.IsSkewHermitian) : (-A).IsSkewHermitian := by
+  rw [IsSkewHermitian, conjTranspose_neg, h.eq, neg_neg]
 
 @[simp]
 theorem IsHermitian.neg {A : Matrix n n α} (h : A.IsHermitian) : (-A).IsHermitian :=
@@ -240,6 +304,12 @@ variable [Ring α] [StarRing α]
 @[simp]
 theorem isHermitian_intCast [DecidableEq n] (d : ℤ) : (d : Matrix n n α).IsHermitian :=
   conjTranspose_intCast _
+
+@[simp]
+theorem IsSkewHermitian.sub {A B : Matrix n n α} (hA : A.IsSkewHermitian) (hB : B.IsSkewHermitian) :
+    (A - B).IsSkewHermitian := by
+  rw [sub_eq_add_neg]
+  exact hA.add hB.neg
 
 end Ring
 
