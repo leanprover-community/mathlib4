@@ -6,4 +6,6 @@ Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis
 module
 
 public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Lean.Expr.ReplaceRec
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module (since := "2026-01-27")
