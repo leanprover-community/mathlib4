@@ -911,6 +911,19 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 
+/-- The multiplicative equivalence between the free group on a singleton and `Multiplicative ℤ`. -/
+def freeGroupUnitEquivMulInt : FreeGroup Unit ≃* Multiplicative ℤ where
+  toFun x := Multiplicative.ofAdd (freeGroupUnitEquivInt x)
+  invFun n := freeGroupUnitEquivInt.symm n.toAdd
+  left_inv x := by simp
+  right_inv n := by simp
+  map_mul' x y := by
+    rw [← ofAdd_add]
+    congr 1
+    change ((map fun _ => (1 : ℤ)) (x * y)).sum =
+      ((map fun _ => (1 : ℤ)) x).sum + ((map fun _ => (1 : ℤ)) y).sum
+    rw [(map fun _ => (1 : ℤ)).map_mul, sum.map_mul]
+
 section Category
 
 variable {β : Type u}

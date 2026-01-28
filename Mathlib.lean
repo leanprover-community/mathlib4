@@ -4344,6 +4344,8 @@ public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.Abelianization.Finite
 public import Mathlib.GroupTheory.Archimedean
 public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.GroupTheory.Artin.Basic
+public import Mathlib.GroupTheory.Artin.Braid
 public import Mathlib.GroupTheory.ClassEquation
 public import Mathlib.GroupTheory.Commensurable
 public import Mathlib.GroupTheory.Commutator.Basic
@@ -4365,6 +4367,7 @@ public import Mathlib.GroupTheory.Coxeter.Basic
 public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
+public import Mathlib.GroupTheory.Coxeter.Perm
 public import Mathlib.GroupTheory.DedekindFinite
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.GroupTheory.DivisibleHull
