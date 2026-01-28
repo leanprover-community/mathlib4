@@ -433,22 +433,11 @@ theorem norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
     (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
   (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
-/-- Composition of a continuous alternating map and a continuous linear map
-as a bundled continuous linear map. -/
-def compContinuousLinearMapCLM (f : E →L[𝕜] F) :
-    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
-  LinearMap.mkContinuous
-    (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
-      (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
-
-@[simp]
-lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[𝕜] G) :
-    compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
-  rfl
-
-theorem continuous_compContinuousLinearMapCLM :
+omit [Fintype ι] in
+theorem continuous_compContinuousLinearMapCLM [Finite ι] :
     Continuous
       (compContinuousLinearMapCLM : (E →L[𝕜] F) → (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G)) := by
+  rcases nonempty_fintype ι
   refine UniformConvergenceCLM.isUniformInducing_postcomp (.id 𝕜)
     (toContinuousMultilinearMapCLM 𝕜 : (E [⋀^ι]→L[𝕜] G) →L[𝕜] _)
     isUniformEmbedding_toContinuousMultilinearMap.isUniformInducing _ |>.isInducing
