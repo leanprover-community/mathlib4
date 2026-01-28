@@ -55,9 +55,8 @@ def inclusionInDoubleDualLi_seminormed : E →ₗᵢ[𝕜] StrongDual 𝕜 (Stro
 
 theorem norm_le_dual_bound_seminormed (x : E) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ f : StrongDual 𝕜 E, ‖f x‖ ≤ M * ‖f‖) : ‖x‖ ≤ M := by
-  let g := inclusionInDoubleDualLi_seminormed 𝕜 x
   rw [← (inclusionInDoubleDualLi_seminormed 𝕜).norm_map x]
-  exact g.opNorm_le_bound hMp hM
+  exact ContinuousLinearMap.opNorm_le_bound _ hMp hM
 
 end BidualIsometry
 
