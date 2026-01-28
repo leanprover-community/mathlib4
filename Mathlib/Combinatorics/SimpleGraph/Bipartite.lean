@@ -445,4 +445,56 @@ theorem degree_le_between_add_compl (hw : w ∈ sᶜ) :
 
 end Between
 
+section completeBipartiteGraph
+
+variable {W₁ W₂ : Type*}
+
+theorem completeBipartiteGraph_edgeSet : (completeBipartiteGraph W₁ W₂).edgeSet =
+    Set.range (fun x : W₁ × W₂ ↦ s(.inl x.1, .inr x.2)) := by
+  refine Set.ext <| Sym2.ind fun u v ↦ ⟨fun h ↦ ?_, fun ⟨⟨a, b⟩, z⟩ ↦ ?_⟩
+  · cases u <;> cases v <;> simp_all
+  · grind [completeBipartiteGraph_adj, mem_edgeSet]
+
+theorem completeBipartiteGraph_edgeSet_encard :
+    (completeBipartiteGraph W₁ W₂).edgeSet.encard = ENat.card W₁ * ENat.card W₂ := by
+  rw [completeBipartiteGraph_edgeSet, ← ENat.card_prod, ← Set.encard_univ, ← Set.image_univ]
+  exact Function.Injective.encard_image (by grind [Function.Injective]) Set.univ
+
+theorem IsBipartiteWith.nonempty_embedding_completeBipartiteGraph_edgeSet
+    (hG : G.IsBipartiteWith s t) :
+    Nonempty (G.edgeSet ↪ (completeBipartiteGraph s t).edgeSet) := by
+  refine ⟨⟨fun ⟨x, hx⟩ ↦ ?_, fun _ _ _ ↦ ?_⟩⟩
+  · by_cases! h : x.out.1 ∈ s
+    · refine ⟨s(.inl ⟨x.out.1, h⟩, .inr ⟨x.out.2, ?_⟩), by simp⟩
+      grind [hG.disjoint, hG.mem_of_adj, mem_edgeSet, Sym2.eq_out]
+    · refine ⟨s(.inr ⟨x.out.1, ?_⟩, .inl ⟨x.out.2, ?_⟩), by simp⟩
+      · grind [hG.mem_of_adj <| G.mem_edgeSet.mpr <| x.eq_out ▸ hx]
+      · grind [hG.disjoint, hG.mem_of_adj, mem_edgeSet, Sym2.eq_out]
+  · grind [Sym2.eq_out]
+
+end completeBipartiteGraph
+
+section
+
+/-- The cardinality of the edge set of a bipartite graph is upper bounded by the product
+of the cardinality of the two partitions. -/
+theorem IsBipartiteWith.encard_edgeSet_le (hG : G.IsBipartiteWith s t) :
+    G.edgeSet.encard ≤ s.encard * t.encard := by
+  grw [hG.nonempty_embedding_completeBipartiteGraph_edgeSet.some.encard_le]
+  simp [completeBipartiteGraph_edgeSet_encard]
+
+/-- Four times the cardinality of the edge set of a bipartite graph is upper bounded by
+the square of cardinality of the vertex set. -/
+theorem IsBipartite.four_mul_encard_edgeSet_le (h : G.IsBipartite) :
+    4 * G.edgeSet.encard ≤ ENat.card V ^ 2 := by
+  refine finite_or_infinite V |>.elim (fun hv ↦ ?_) (fun _ ↦ by simp)
+  have ⟨s, t, h⟩ := h.exists_isBipartiteWith
+  grw [h.encard_edgeSet_le]
+  have := Set.encard_union_eq h.disjoint ▸ Set.encard_le_card
+  rw [ENat.card_eq_coe_natCard, ← s.toFinite.cast_ncard_eq, ← t.toFinite.cast_ncard_eq] at this ⊢
+  norm_cast at this ⊢
+  grind [Nat.pow_le_pow_left this 2, four_mul_le_sq_add s.ncard t.ncard]
+
+end
+
 end SimpleGraph
