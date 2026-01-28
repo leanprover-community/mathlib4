@@ -430,10 +430,8 @@ theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.
   rfl
 
 lemma valuedAdicCompletion_surjective :
-    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) := by
-  refine Valued.valuedCompletion_surjective_iff.mpr ?_
-  change Function.Surjective ((v.valuation K).comap _)
-  exact Function.Surjective.of_comp (v.valuation_surjective K)
+    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
+  Valued.valuedCompletion_surjective_iff.mpr <| .of_comp (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
