@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Dimension.Basic
 # Dimension of trivial modules
 -/
 
-@[expose] public section
+public section
 
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 

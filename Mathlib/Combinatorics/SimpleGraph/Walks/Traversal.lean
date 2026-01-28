@@ -104,9 +104,6 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
     some (p.getVert n) = p.support[n]? := by
   rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
 
-@[deprecated (since := "2025-06-10")]
-alias getVert_eq_support_get? := getVert_eq_support_getElem?
-
 lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
     p.getVert n = p.support.getD n v := by
   by_cases h : n ≤ p.length

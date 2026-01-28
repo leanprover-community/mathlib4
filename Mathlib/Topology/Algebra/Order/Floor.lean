@@ -6,7 +6,6 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Algebra.Order.Floor.Ring
-public import Mathlib.Algebra.Order.Round
 public import Mathlib.Order.Filter.AtTopBot.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 
@@ -27,7 +26,7 @@ This file proves statements about limits and continuity of functions involving `
   `Int.fract` yields another continuous function.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Function Int Set Topology

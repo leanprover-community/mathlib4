@@ -25,7 +25,7 @@ This file provides lemmas about the interaction between infinite sums and multip
 * `tprod_one_add`: expanding `∏' i : ι, (1 + f i)` as infinite sum.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset Function
 

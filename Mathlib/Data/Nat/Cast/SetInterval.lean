@@ -18,7 +18,7 @@ In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast 
 is the corresponding interval in `ℤ`.
 -/
 
-@[expose] public section
+public section
 
 open Set
 

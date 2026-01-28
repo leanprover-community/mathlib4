@@ -19,6 +19,8 @@ We show:
 
 * When `V` has (co)limits so does `Action V G`.
 * When `V` is preadditive, linear, or abelian so is `Action V G`.
+* The forgetful functor `Action V G ⥤ V` preserves any (co)limit whose image in `V` exists,
+  and reflects all (co)limits.
 -/
 
 @[expose] public section
@@ -82,7 +84,7 @@ private lemma SingleObj.preservesLimit (F : C ⥤ SingleObj G ⥤ V)
   exact h
 
 /-- `F : C ⥤ Action V G` preserves the limit of some `K : J ⥤ C` if
-if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 lemma preservesLimit_of_preserves (F : C ⥤ Action V G) {J : Type*}
     [Category* J] (K : J ⥤ C)
     (h : PreservesLimit K (F ⋙ Action.forget V G)) : PreservesLimit K F := by
@@ -121,7 +123,7 @@ private lemma SingleObj.preservesColimit (F : C ⥤ SingleObj G ⥤ V)
   exact h
 
 /-- `F : C ⥤ Action V G` preserves the colimit of some `K : J ⥤ C` if
-if it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
+it does after postcomposing with the forgetful functor `Action V G ⥤ V`. -/
 lemma preservesColimit_of_preserves (F : C ⥤ Action V G) {J : Type*}
     [Category* J] (K : J ⥤ C)
     (h : PreservesColimit K (F ⋙ Action.forget V G)) : PreservesColimit K F := by

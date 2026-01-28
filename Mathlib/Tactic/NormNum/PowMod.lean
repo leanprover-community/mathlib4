@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Pow
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.

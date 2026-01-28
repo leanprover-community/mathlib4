@@ -222,7 +222,7 @@ theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
-  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).expand_char p, map_expand, map_map,
+  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).map_frobenius_expand p, map_expand, map_map,
     frobenius_comp_frobeniusEquiv_symm, map_id]
 
 @[simp]

@@ -19,7 +19,7 @@ public import Mathlib.Data.Finite.Vector
 finite sets
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 

@@ -92,10 +92,6 @@ theorem attachFin_Iic : attachFin (Iic a) (fun _x hx ↦ (mem_Iic.mp hx).trans_l
 theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a.2) = Iio a := by
   ext; simp
 
-section deprecated
-
-end deprecated
-
 section val
 
 /-!
@@ -915,14 +911,12 @@ lemma Iio_add_one_eq_Iic {n : ℕ} {b : Fin n} (hb : b + 1 < n) :
 lemma Iic_sub_one_eq_Iio {n : ℕ} {b : Fin n} :
     haveI := b.neZero
     (hb : 0 < b) → Iic (b - 1) = Iio b := by
-  haveI := b.neZero
-  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_sub_one_of_ne_zero]
+  grind [= Fin.val_sub_one_of_ne_zero]
 
 lemma Ici_add_one_eq_Ioi {n : ℕ} {a : Fin n} (ha : a + 1 < n) :
     haveI := a.neZero
     Ici (a + 1) = Ioi a := by
-  haveI := a.neZero
-  grind [= Fin.lt_def, = Fin.le_def, = Fin.val_add_one_of_lt']
+  grind [= Fin.le_def, = Fin.val_add_one_of_lt']
 
 lemma Ioi_sub_one_eq_Ici {n : ℕ} {a : Fin n} :
     haveI := a.neZero
