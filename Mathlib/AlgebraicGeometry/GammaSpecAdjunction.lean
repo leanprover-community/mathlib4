@@ -409,7 +409,7 @@ instance isIso_locallyRingedSpaceAdjunction_counit :
   (NatIso.op SpecΓIdentity).isIso_inv
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
-  apply (config := { allowSynthFailures := true }) NatIso.isIso_of_isIso_app
+  apply +allowSynthFailures NatIso.isIso_of_isIso_app
   intro R
   rw [adjunction_counit_app]
   infer_instance
