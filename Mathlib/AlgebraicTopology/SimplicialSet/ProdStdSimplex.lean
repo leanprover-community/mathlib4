@@ -28,6 +28,49 @@ universe u
 
 open CategoryTheory Simplicial MonoidalCategory
 
+lemma Fin.orderHom_ext_of_injective_aux {α : Type*} [PartialOrder α] [DecidableEq α]
+    {n : ℕ} {f g : Fin n →o α}
+    (hg : Function.Injective g)
+    (h : Finset.image f ⊤ = Finset.image g ⊤) (i : Fin n)
+    (h' : ∀ (j : Fin n), j < i → f j = g j) :
+    f i ≤ g i := by
+  have : g i ∈ Finset.image f ⊤ := by rw [h]; simp
+  simp only [Finset.top_eq_univ, Finset.mem_image, Finset.mem_univ, true_and] at this
+  obtain ⟨j, hj⟩ := this
+  rw [← hj]
+  apply f.monotone
+  by_contra!
+  rw [h' j this] at hj
+  lia
+
+-- to be moved
+lemma Fin.orderHom_ext_of_injective {α : Type*} [PartialOrder α] [DecidableEq α]
+    {n : ℕ} {f g : Fin n →o α}
+    (hf : Function.Injective f) (hg : Function.Injective g)
+    (h : Finset.image f ⊤ = Finset.image g ⊤) :
+    f = g := by
+  let P (i : ℕ) := ∀ (j : ℕ) (hij : j < i) (hj : j < n), f ⟨j, by lia⟩ = g ⟨j, by lia⟩
+  suffices ∀ i, P i by ext i; exact this (i.1 + 1) i.1 (by lia) (by lia)
+  suffices ∀ i, P i → P (i + 1) from fun i ↦ by
+    induction i with
+    | zero => lia
+    | succ i hi => exact fun j hij hj ↦ this _ hi j hij hj
+  intro i hi j hij hj
+  obtain hij | rfl := (Nat.le_of_lt_succ hij).lt_or_eq
+  · exact hi j hij hj
+  · apply le_antisymm
+    · exact orderHom_ext_of_injective_aux hg h _
+        (fun k hk ↦ hi k hk (by lia))
+    · exact orderHom_ext_of_injective_aux hf h.symm _
+        (fun k hk ↦ (hi k hk (by lia)).symm)
+
+-- to be moved
+lemma Fin.eq_id_of_strictMono {n : ℕ} (f : Fin (n + 1) →o Fin (n + 1)) (hf : StrictMono f) :
+    f = .id := by
+  refine orderHom_ext_of_injective hf.injective (fun _ _ h ↦ h) ?_
+  simp only [Finset.top_eq_univ, OrderHom.id_coe, Finset.image_id]
+  exact Finset.image_univ_of_surjective (Finite.surjective_of_injective hf.injective)
+
 namespace SSet
 
 namespace prodStdSimplex
@@ -120,6 +163,11 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
   simp only [Fin.strictMono_iff_lt_succ]
   exact forall_congr' (fun i ↦ (this _ _ ((objEquiv x).monotone i.castSucc_le_succ)).symm)
 
+lemma strictMono_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
+    (hm : p + q = m) :
+    StrictMono (orderHomOfSimplex x.1 hm) := by
+  simpa only [strictMono_orderHomOfSimplex_iff, ← nonDegenerate_iff_strictMono_objEquiv] using x.2
+
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
   degenerate_eq_top n hn := by
     ext x
@@ -134,6 +182,46 @@ instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
 
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).Finite :=
   finite_of_hasDimensionLT _ (p + q + 1) inferInstance
+
+lemma le_orderHomOfSimplex {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n) {m : ℕ}
+    (hm : p + q = m) (i : Fin (n + 1)) : i.1 ≤ orderHomOfSimplex x.1 hm i := by
+  obtain ⟨i, hi⟩ := i
+  induction i with
+  | zero => simp
+  | succ i hi' =>
+      have h : (⟨i, by lia⟩ : Fin (n + 1)) < ⟨i + 1, hi⟩ := by simp
+      simpa only [Nat.succ_le_iff] using
+        lt_of_le_of_lt (hi' (by lia)) (strictMono_orderHomOfSimplex x hm h)
+
+lemma nonDegenerate_max_dim_iff {n : ℕ} (z : (Δ[p] ⊗ Δ[q] : SSet.{u}) _⦋n⦌) (hn : p + q = n) :
+    z ∈ (Δ[p] ⊗ Δ[q]).nonDegenerate n ↔ orderHomOfSimplex z hn = .id := by
+  constructor
+  · intro h
+    exact Fin.eq_id_of_strictMono _ (strictMono_orderHomOfSimplex ⟨z, h⟩ hn)
+  · rw [nonDegenerate_iff_injective_objEquiv]
+    intro h a b hab
+    simp only [DFunLike.ext_iff, orderHomOfSimplex_coe, OrderHom.id_coe, id_eq] at h
+    rw [← h a, ← h b, Fin.ext_iff]
+    change ((objEquiv z a).1 : ℕ) + (objEquiv z a).2 = (objEquiv z b).1 + (objEquiv z b).2
+    simp only [hab]
+
+lemma nonDegenerate_ext₁ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
+    (hn : p + q = n) (h : z₁.1.1 = z₂.1.1) :
+    z₁ = z₂ := by
+  ext
+  apply objEquiv.injective
+  ext i : 3
+  · exact DFunLike.congr_fun h i
+  · have h₁ := z₁.2
+    have h₂ := z₂.2
+    rw [nonDegenerate_max_dim_iff _ hn] at h₁ h₂
+    simpa only [orderHomOfSimplex_coe, h, Fin.ext_iff, add_right_inj]
+      using DFunLike.congr_fun (h₁.trans h₂.symm) i
+
+lemma nonDegenerate_ext₂ {n : ℕ} {z₁ z₂ : (Δ[p] ⊗ Δ[q] : SSet.{u}).nonDegenerate n}
+    (hn : p + q = n) (h : z₁.1.2 = z₂.1.2) :
+    z₁ = z₂ :=
+  (nonDegenerateEquivOfIso (β_ _ _)).injective (nonDegenerate_ext₁ (by lia) h)
 
 end prodStdSimplex
 
