@@ -837,7 +837,7 @@ def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) 
     right_inv := fun x =>
       Subtype.ext <| by
         let ⟨x', hx'⟩ := RingHom.mem_rangeS.mp x.prop
-        simp [← hx', h x'] }
+        simp [← hx', h x', -RingHom.coe_rangeS] }
 
 @[simp]
 theorem ofLeftInverseS_apply {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) (x : R) :

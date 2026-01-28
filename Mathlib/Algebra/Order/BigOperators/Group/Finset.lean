@@ -339,28 +339,28 @@ variable [DecidableEq α] {s : Finset α} {B : Finset (Finset α)} {n : ℕ}
 
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
-theorem sum_card_inter_le (h : ∀ a ∈ s, #{b ∈ B | a ∈ b} ≤ n) : (∑ t ∈ B, #(s ∩ t)) ≤ #s * n := by
+theorem sum_card_inter_le (h : ∀ a ∈ s, #{b ∈ B | a ∈ ↑b} ≤ n) : (∑ t ∈ B, #(s ∩ t)) ≤ #s * n := by
   refine le_trans ?_ (s.sum_le_card_nsmul _ _ h)
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
   exact sum_comm.le
 
 /-- If every element belongs to at most `n` Finsets, then the sum of their sizes is at most `n`
 times how many they are. -/
-lemma sum_card_le [Fintype α] (h : ∀ a, #{b ∈ B | a ∈ b} ≤ n) : ∑ s ∈ B, #s ≤ Fintype.card α * n :=
+lemma sum_card_le [Fintype α] (h : ∀ a, #{b ∈ B | a ∈ ↑b} ≤ n) : ∑ s ∈ B, #s ≤ Fintype.card α * n :=
   calc
     ∑ s ∈ B, #s = ∑ s ∈ B, #(univ ∩ s) := by simp_rw [univ_inter]
     _ ≤ Fintype.card α * n := sum_card_inter_le fun a _ ↦ h a
 
 /-- If every element belongs to at least `n` Finsets, then the sum of their sizes is at least `n`
 times how many they are. -/
-theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ #{b ∈ B | a ∈ b}) : #s * n ≤ ∑ t ∈ B, #(s ∩ t) := by
+theorem le_sum_card_inter (h : ∀ a ∈ s, n ≤ #{b ∈ B | a ∈ ↑b}) : #s * n ≤ ∑ t ∈ B, #(s ∩ t) := by
   apply (s.card_nsmul_le_sum _ _ h).trans
   simp_rw [← filter_mem_eq_inter, card_eq_sum_ones, sum_filter]
   exact sum_comm.le
 
 /-- If every element belongs to at least `n` Finsets, then the sum of their sizes is at least `n`
 times how many they are. -/
-theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ #{b ∈ B | a ∈ b}) :
+theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ #{b ∈ B | a ∈ ↑b}) :
     Fintype.card α * n ≤ ∑ s ∈ B, #s :=
   calc
     Fintype.card α * n ≤ ∑ s ∈ B, #(univ ∩ s) := le_sum_card_inter fun a _ ↦ h a
@@ -368,13 +368,13 @@ theorem le_sum_card [Fintype α] (h : ∀ a, n ≤ #{b ∈ B | a ∈ b}) :
 
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
-theorem sum_card_inter (h : ∀ a ∈ s, #{b ∈ B | a ∈ b} = n) :
+theorem sum_card_inter (h : ∀ a ∈ s, #{b ∈ B | a ∈ ↑b} = n) :
     (∑ t ∈ B, #(s ∩ t)) = #s * n :=
   (sum_card_inter_le fun a ha ↦ (h a ha).le).antisymm (le_sum_card_inter fun a ha ↦ (h a ha).ge)
 
 /-- If every element belongs to exactly `n` Finsets, then the sum of their sizes is `n` times how
 many they are. -/
-theorem sum_card [Fintype α] (h : ∀ a, #{b ∈ B | a ∈ b} = n) :
+theorem sum_card [Fintype α] (h : ∀ a, #{b ∈ B | a ∈ ↑b} = n) :
     ∑ s ∈ B, #s = Fintype.card α * n := by
   simp_rw [Fintype.card, ← sum_card_inter fun a _ ↦ h a, univ_inter]
 

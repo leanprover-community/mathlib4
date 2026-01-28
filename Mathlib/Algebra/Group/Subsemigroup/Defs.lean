@@ -226,7 +226,7 @@ theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingle
 instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
   ⟨⟨⊥, ⊤, fun h => by
       obtain ⟨x⟩ := id hn
-      refine absurd (?_ : x ∈ ⊥) notMem_bot
+      refine absurd (?_ : x ∈ (⊥ : Subsemigroup M)) notMem_bot
       simp [h]⟩⟩
 
 end Subsemigroup

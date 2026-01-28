@@ -124,9 +124,11 @@ end minimal
 
 section Lattice
 
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem iSup_coe [SupSet β] (f : α → β) (s : Finset α) : ⨆ x ∈ (↑s : Set α), f x = ⨆ x ∈ s, f x :=
   rfl
 
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem iInf_coe [InfSet β] (f : α → β) (s : Finset α) : ⨅ x ∈ (↑s : Set α), f x = ⨅ x ∈ s, f x :=
   rfl
 
@@ -184,9 +186,11 @@ theorem iInf_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → β) :
 
 end Lattice
 
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem set_biUnion_coe (s : Finset α) (t : α → Set β) : ⋃ x ∈ (↑s : Set α), t x = ⋃ x ∈ s, t x :=
   rfl
 
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem set_biInter_coe (s : Finset α) (t : α → Set β) : ⋂ x ∈ (↑s : Set α), t x = ⋂ x ∈ s, t x :=
   rfl
 

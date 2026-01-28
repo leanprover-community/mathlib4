@@ -104,14 +104,43 @@ class SetLike (A : Type*) (B : outParam Type*) where
   protected coe_injective' : Function.Injective coe
 
 attribute [coe] SetLike.coe
+
+/-- The notation `a ∈ ↑s` is essentially impossible for the elaborator to deal with, because
+the `Membership` instance needs to be determined using the type of `↑s`, but this type can be
+anything thanks to the coercion. Therefore, we replace `↑s` with `SetLike.coe s`. -/
+macro_rules
+| `(Membership.mem ↑$s $a) => `(Membership.mem (SetLike.coe $s) $a)
+
+open Lean Meta Elab Term Qq in
+/-- When elaborating `a ∈ s`, first try to interpret this as `a ∈ ↑s` using a `SetLike` coercion.
+Otherwise, fall back to the usual `Membership.mem` interpretation. -/
+@[term_elab app]
+meta def Mathlib.Tactic.elabMembership : TermElab := fun stx _ ↦ do
+  match stx with
+  | `(Membership.mem $s $a) =>
+    let v ← mkFreshLevelMVar
+    let γ : Q(Type $v) ← mkFreshExprMVarQ q(Type $v) -- FIXME: why is the `Q()` annotation needed?
+    let s ← elabTermEnsuringTypeQ s γ
+    let B ← mkFreshExprMVarQ q(Type $(← mkFreshLevelMVar))
+    -- If the `SetLike` synthesis gets stuck, we discard this option.
+    if let .some _inst ← trySynthInstanceQ q(SetLike $γ $B) then
+      let a ← elabTermEnsuringTypeQ a q($B)
+      return q($a ∈ SetLike.coe $s)
+    else
+      let α ← mkFreshExprMVarQ q(Type $(← mkFreshLevelMVar))
+      -- `mkInstMVar` is used in order to support delaying this type class synthesis.
+      let inst : Q(Membership $α $γ) ← mkInstMVar q(Membership $α $γ)
+      let a ← elabTermEnsuringTypeQ a α
+      let app := q($a ∈ $s)
+      registerMVarErrorImplicitArgInfo inst.mvarId! stx app
+      return app
+  | _ => throwUnsupportedSyntax
+
 namespace SetLike
 
 variable {A : Type*} {B : Type*} [i : SetLike A B]
 
 instance : CoeTC A (Set B) where coe := SetLike.coe
-
-instance (priority := 100) instMembership : Membership B A :=
-  ⟨fun p x => x ∈ (p : Set B)⟩
 
 instance (priority := 100) : CoeSort A (Type _) :=
   ⟨fun p => { x : B // x ∈ p }⟩
@@ -124,11 +153,10 @@ rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
 @[app_delab Subtype]
 meta def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
-  let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
-  guard <| body.isAppOf ``Membership.mem
-  let #[_, _, inst, _, .bvar 0] := body.getAppArgs | failure
-  guard <| inst.isAppOfArity ``instMembership 3
-  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 delab
+  let .app _ (.lam n _ (.app body (.bvar 0)) _) ← getExpr | failure
+  let_expr Membership.mem _ _ _ body := body | failure
+  guard <| body.isAppOfArity ``SetLike.coe 4
+  let S ← withAppArg <| withBindingBody n <| withNaryArg 3 <| withNaryArg 3 <| delab
   `(↥$S)
 
 end Delab
@@ -164,12 +192,12 @@ theorem ext'_iff : p = q ↔ (p : Set B) = q :=
 
 /-- Note: implementers of `SetLike` must copy this lemma in order to tag it with `@[ext]`. -/
 theorem ext (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
-  coe_injective <| Set.ext h
+  ext' <| Set.ext h
 
 theorem ext_iff : p = q ↔ ∀ x, x ∈ p ↔ x ∈ q :=
-  coe_injective.eq_iff.symm.trans Set.ext_iff
+  ext'_iff.trans Set.ext_iff
 
-@[simp, push]
+@[deprecated "this now a syntactic equality" (since := "2026-01-26")]
 theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
   Iff.rfl
 
@@ -187,7 +215,8 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 @[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
-@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
+@[deprecated Set.setOf_mem_eq (since := "2026-01-26")]
+lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
@@ -199,8 +228,6 @@ theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
 @[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
 @[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
 
-@[gcongr low] -- lower priority than `Set.mem_of_subset_of_mem`
-protected alias ⟨GCongr.mem_of_le_of_mem, _⟩ := le_def
 @[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
 @[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
 

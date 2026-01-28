@@ -676,7 +676,7 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
     exact
-      ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
+      ⟨a, (by grind [mem_singleton_self]), by
         rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
@@ -737,14 +737,14 @@ lemma exists_of_one_lt_card_pi {ι : Type*} {α : ι → Type*} [∀ i, Decidabl
   exacts [⟨a1, h1, hne⟩, ⟨a2, h2, hne⟩]
 
 theorem card_eq_succ_iff_cons :
-    #s = n + 1 ↔ ∃ a t, ∃ (h : a ∉ t), cons a t h = s ∧ #t = n :=
+    #s = n + 1 ↔ ∃ a t, ∃ (h : a ∉ ↑t), cons a t h = s ∧ #t = n :=
   ⟨cons_induction_on s (by simp) fun a s _ _ _ => ⟨a, s, by simp_all⟩,
    fun ⟨a, t, _, hs, _⟩ => by simpa [← hs]⟩
 
 section DecidableEq
 variable [DecidableEq α]
 
-theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ t ∧ insert a t = s ∧ #t = n :=
+theorem card_eq_succ : #s = n + 1 ↔ ∃ a t, a ∉ ↑t ∧ insert a t = s ∧ #t = n :=
   ⟨fun h =>
     let ⟨a, has⟩ := card_pos.mp (h.symm ▸ Nat.zero_lt_succ _ : 0 < #s)
     ⟨a, s.erase a, s.notMem_erase a, insert_erase has, by
@@ -832,7 +832,7 @@ theorem strongInductionOn_eq {p : Finset α → Sort*} (s : Finset α)
 
 @[elab_as_elim]
 theorem case_strong_induction_on [DecidableEq α] {p : Finset α → Prop} (s : Finset α) (h₀ : p ∅)
-    (h₁ : ∀ a s, a ∉ s → (∀ t ⊆ s, p t) → p (insert a s)) : p s :=
+    (h₁ : ∀ a s, a ∉ ↑s → (∀ t ⊆ s, p t) → p (insert a s)) : p s :=
   Finset.strongInductionOn s fun s =>
     Finset.induction_on s (fun _ => h₀) fun a s n _ ih =>
       (h₁ a s n) fun t ss => ih _ (lt_of_le_of_lt ss (ssubset_insert n) : t < _)

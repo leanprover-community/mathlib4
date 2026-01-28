@@ -177,7 +177,7 @@ theorem prod_add (f g : ι → R) (s : Finset ι) :
       sum_bij'
         (fun f _ ↦ {a ∈ s | ∃ h : a ∈ s, f a h})
         (fun t _ a _ => a ∈ t)
-        (by simp)
+        (by grind)
         (by simp [Classical.em])
         (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)

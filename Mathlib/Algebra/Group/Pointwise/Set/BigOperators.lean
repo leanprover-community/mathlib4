@@ -159,7 +159,7 @@ theorem finset_prod_singleton {M ι : Type*} [CommMonoid M] (s : Finset ι) (I :
 theorem image_finset_prod_pi (l : Finset ι) (S : ι → Set α) :
     (fun f : ι → α => ∏ i ∈ l, f i) '' (l : Set ι).pi S = ∏ i ∈ l, S i := by
   ext
-  simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop, Finset.mem_coe]
+  simp_rw [mem_finset_prod, mem_image, mem_pi, exists_prop]
 
 /-- A special case of `Set.image_finset_prod_pi` for `Finset.univ`. -/
 @[to_additive /-- A special case of `Set.image_finset_sum_pi` for `Finset.univ`. -/]

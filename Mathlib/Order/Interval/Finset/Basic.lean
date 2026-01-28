@@ -569,16 +569,20 @@ section DecidableEq
 variable [DecidableEq α]
 
 @[simp]
-theorem Icc_erase_left (a b : α) : (Icc a b).erase a = Ioc a b := by simp [← coe_inj]
+theorem Icc_erase_left (a b : α) : (Icc a b).erase a = Ioc a b := by
+  rw [← coe_inj, coe_erase]; simp
 
 @[simp]
-theorem Icc_erase_right (a b : α) : (Icc a b).erase b = Ico a b := by simp [← coe_inj]
+theorem Icc_erase_right (a b : α) : (Icc a b).erase b = Ico a b := by
+  rw [← coe_inj, coe_erase]; simp
 
 @[simp]
-theorem Ico_erase_left (a b : α) : (Ico a b).erase a = Ioo a b := by simp [← coe_inj]
+theorem Ico_erase_left (a b : α) : (Ico a b).erase a = Ioo a b := by
+  rw [← coe_inj, coe_erase]; simp
 
 @[simp]
-theorem Ioc_erase_right (a b : α) : (Ioc a b).erase b = Ioo a b := by simp [← coe_inj]
+theorem Ioc_erase_right (a b : α) : (Ioc a b).erase b = Ioo a b := by
+  rw [← coe_inj, coe_erase]; simp
 
 @[simp]
 theorem Icc_diff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← coe_inj]

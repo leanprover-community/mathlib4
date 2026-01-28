@@ -367,7 +367,7 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     simp only [mem_support_iff, Ne]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
     · exact hx_h_left
-    · simp_rw [mem_coe, mem_support_iff, Ne]
+    · simp_rw [mem_support_iff, Ne]
       exact hx_h_left
     · exact Subset.refl _
 

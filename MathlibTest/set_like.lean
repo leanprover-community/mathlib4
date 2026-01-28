@@ -14,7 +14,7 @@ variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 /-- info: ↥S : Type u -/
 #guard_msgs in #check {x // x ∈ S}
 
-/-- info: { x // 1 * x ∈ S } : Type u -/
+/-- info: { x // 1 * x ∈ ↑S } : Type u -/
 #guard_msgs in #check {x // 1 * x ∈ S}
 
 end Delab

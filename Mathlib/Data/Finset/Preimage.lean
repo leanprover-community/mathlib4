@@ -101,7 +101,7 @@ theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, 
     (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = {x ∈ s | x ∈ Set.range f} :=
   Finset.coe_inj.1 <| by
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
-      ← Set.sep_mem_eq]; rfl
+      ← Set.sep_mem_eq]
 
 theorem image_preimage_of_bij [DecidableEq β] (f : α → β) (s : Finset β)
     (hf : Set.BijOn f (f ⁻¹' ↑s) ↑s) : image f (preimage s f hf.injOn) = s :=
