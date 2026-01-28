@@ -24,7 +24,7 @@ open Lean Parser Meta Elab Tactic Term
 declare_config_elab elabApplyConfig ApplyConfig
 
 /--
-* `apply (config := cfg) e` allows for additional confiugration (see `Lean.Meta.ApplyConfig`):
+* `apply (config := cfg) e` allows for additional configuration (see `Lean.Meta.ApplyConfig`):
   * `newGoals` controls which new goals are added by `apply`, in which order.
   * `-synthAssignedInstances` will not synthesize instance implicit arguments even if they have been
     assigned by `isDefEq`.
