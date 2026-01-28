@@ -8,6 +8,10 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+
+import Mathlib.Algebra.GroupWithZero.Idempotent
+import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
 # Adjacency Matrices
@@ -86,6 +90,13 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
   infer_instance
 
 end IsAdjMatrix
+
+theorem isAdjMatrix_iff_hadamard [DecidableEq V] [MonoidWithZero α]
+    [IsLeftCancelMulZero α] {A : Matrix V V α} :
+    A.IsAdjMatrix ↔ (A ⊙ A = A ∧ A.IsSymm ∧ 1 ⊙ A = 0) := by
+  simp only [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one,
+    one_hadamard_eq_zero_iff, funext_iff, diag]
+  exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
 
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
 the complement graph of the graph induced by `A.adjMatrix`. -/
@@ -225,6 +236,13 @@ theorem trace_adjMatrix [AddCommMonoid α] [One α] : Matrix.trace (G.adjMatrix 
 theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
     (G.adjMatrix α * G.adjMatrix α) i i = degree G i := by simp [filter_true_of_mem]
 
+variable (R) in
+/-- The number of all edges in a simple finite graph is equal to the dot product of
+`G.adjMatrix α *ᵥ 1` and `1`. -/
+theorem coe_card_dart_eq_dotProduct [NonAssocSemiring α] :
+    Fintype.card G.Dart = adjMatrix α G *ᵥ 1 ⬝ᵥ 1 := by
+  simp [G.dart_card_eq_sum_degrees, dotProduct_one]
+
 variable {G}
 
 theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
@@ -258,6 +276,42 @@ theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (x y : V → α) :
     x ⬝ᵥ G.adjMatrix α *ᵥ y = ∑ i : V, ∑ j : V, if G.Adj i j then x i * y j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
     mul_zero]
+
+section
+variable (α : Type*) [MulZeroOneClass α]
+  {V : Type*} [DecidableEq V] (G : SimpleGraph V) [DecidableRel G.Adj]
+
+open Matrix
+
+@[simp] theorem adjMatrix_hadamard_diagonal (d : V → α) :
+    G.adjMatrix α ⊙ diagonal d = 0 := by ext; simp_all [diagonal]
+
+@[simp] theorem diagonal_hadamard_adjMatrix (d : V → α) :
+    diagonal d ⊙ G.adjMatrix α = 0 := by aesop (add simp diagonal)
+
+@[simp] theorem adjMatrix_hadamard_natCast [NatCast α] (a : ℕ) :
+    G.adjMatrix α ⊙ a.cast = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem natCast_hadamard_adjMatrix [NatCast α] (a : ℕ) :
+    a.cast ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+@[simp] theorem adjMatrix_hadamard_ofNat [NatCast α] (a : ℕ) [a.AtLeastTwo] :
+    G.adjMatrix α ⊙ ofNat(a) = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem ofNat_hadamard_adjMatrix [NatCast α] (a : ℕ) [a.AtLeastTwo] :
+    ofNat(a) ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+@[simp] theorem adjMatrix_hadamard_one :
+    G.adjMatrix α ⊙ 1 = 0 := adjMatrix_hadamard_diagonal _ _ _
+
+@[simp] theorem one_hadamard_adjMatrix :
+    1 ⊙ G.adjMatrix α = 0 := diagonal_hadamard_adjMatrix _ _ _
+
+end
+
+theorem completeGraph_eq_of_one_sub_one (α V) [AddGroup α] [One α] [DecidableEq V] :
+    (completeGraph V).adjMatrix α = (of fun _ _ ↦ (1 : α)) - (1 : Matrix V V α) := by
+  ext; simp [one_apply, sub_ite]
 
 end SimpleGraph
 

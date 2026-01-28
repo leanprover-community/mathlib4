@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.TensorProduct
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
@@ -177,6 +178,13 @@ iff all its elements are self-adjoint. -/
 theorem IntrinsicStar.isSelfAdjoint_toLin'_iff (A : Matrix n m R) :
     IsSelfAdjoint A.toLin' ↔ ∀ i j, IsSelfAdjoint (A i j) := by
   simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
+
+/-- A matrix is symmetric if the intrinsic star of its linear map is equal to the
+conjugate transpose. -/
+theorem isSymm_iff_intrinsicStar_toLin' {A : Matrix m m R} :
+    A.IsSymm ↔ star A.toLin' = (star A).toLin' := by
+  rw [intrinsicStar_toLin', toLin'.injective.eq_iff, ← transpose_conjTranspose,
+    star_eq_conjTranspose, conjTranspose_inj, IsSymm]
 
 end Matrix
 end matrix

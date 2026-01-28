@@ -111,7 +111,30 @@ theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
   ext i j
   by_cases h : i = j <;> simp [h]
 
+theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 := by
+  simp [← ext_iff, funext_iff, Matrix.one_apply]
+
+theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 := by
+  simp [← ext_iff, funext_iff, Matrix.one_apply]
+
+theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 := by
+  simp_rw [one_hadamard, ← diagonal_one, diagonal_eq_diagonal_iff]
+  simp [funext_iff, diag_apply]
+
+theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1 := by
+  simp_rw [hadamard_one, ← diagonal_one, diagonal_eq_diagonal_iff]
+  simp [funext_iff, diag_apply]
+
 end One
+
+@[simp] theorem hadamard_of_one {m n} [MulOneClass α] (A : Matrix m n α) :
+    A ⊙ (.of fun _ _ ↦ 1) = A := by ext; simp
+
+@[simp] theorem of_one_hadamard {m n} [MulOneClass α] (A : Matrix m n α) :
+    (.of fun _ _ ↦ 1) ⊙ A = A := by ext; simp
+
+theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
+    A ⊙ A = A ↔ ∀ i j, IsIdempotentElem (A i j) := ext_iff.symm
 
 section single
 
