@@ -412,12 +412,13 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 
+@[simp]
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
-@[simp]
+@[deprecated adicValued_apply (since := "2026-01-28")]
 theorem adicValued_apply' (x : WithVal (v.valuation K)) :
-    v.adicValued.v x = v.valuation K (WithVal.equiv _ x) :=
+    v.adicValued.v (WithVal.equiv _ x) = v.valuation K (WithVal.equiv _ x) :=
   rfl
 
 variable (K)
@@ -429,8 +430,10 @@ theorem valuedAdicCompletion_def {x : v.adicCompletion K} : Valued.v x = Valued.
   rfl
 
 lemma valuedAdicCompletion_surjective :
-    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) :=
-  Valued.valuedCompletion_surjective_iff.mpr (v.valuation_surjective K)
+    Function.Surjective (Valued.v : (v.adicCompletion K) → ℤᵐ⁰) := by
+  refine Valued.valuedCompletion_surjective_iff.mpr ?_
+  change Function.Surjective ((v.valuation K).comap _)
+  exact Function.Surjective.of_comp (v.valuation_surjective K)
 
 /-- The ring of integers of `adicCompletion`. -/
 def adicCompletionIntegers : ValuationSubring (v.adicCompletion K) :=
@@ -462,9 +465,10 @@ variable [Algebra S K]
 instance adicValued.uniformContinuousConstSMul :
     UniformContinuousConstSMul S (WithVal <| v.valuation K) := by
   refine ⟨fun l ↦ ?_⟩
-  simp_rw [Algebra.smul_def]
+  simp_rw [WithVal.smul_right_def, Algebra.smul_def]
   exact (Ring.uniformContinuousConstSMul (WithVal <| v.valuation K)).uniformContinuous_const_smul _
 
+example : Algebra S (WithVal (v.valuation K)) := WithVal.instAlgebraRight (R := S) (v.valuation K)
 open UniformSpace in
 instance : Algebra S (v.adicCompletion K) where
   toSMul := Completion.instSMul _ _
@@ -477,7 +481,7 @@ instance : Algebra S (v.adicCompletion K) where
     induction x using Completion.induction_on with
     | hp => exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
-      simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_apply,
+      simp [Algebra.smul_def, Completion.algebraMap_def, WithVal.algebraMap_right_apply,
         Completion.coeRingHom]
 
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :

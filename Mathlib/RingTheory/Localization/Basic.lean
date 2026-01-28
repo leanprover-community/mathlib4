@@ -591,6 +591,20 @@ instance : IsLocalization (Algebra.algebraMapSubmonoid R M) Rₘ := by
 
 end Algebra
 
+theorem IsLocalization.of_equiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring K]
+    [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
+    (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
+    IsLocalization M₂ K where
+  map_units r := by simpa [h] using IsLocalization.map_units (M := M₁) K ⟨e r, by simp [← hM]⟩
+  surj z := by
+    simp only [h]
+    obtain ⟨⟨r, s⟩, h⟩ := IsLocalization.surj M₁ z
+    exact ⟨⟨e.symm r, e.symm s, by aesop⟩, by simpa⟩
+  exists_of_eq hxy := by
+    simp only [h] at hxy
+    obtain ⟨c, hc⟩ := IsLocalization.exists_of_eq (M := M₁) hxy
+    exact ⟨⟨e.symm c, by aesop⟩, by apply_fun e using e.injective; aesop⟩
+
 end CommSemiring
 
 section CommRing
