@@ -3,24 +3,24 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+
 module
 
 public import Mathlib.Data.Nat.Lattice
-public import Mathlib.Data.Set.Lattice
 public import Mathlib.Order.PartialSups
 
 /-!
 # Accumulate
 
-The function `accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
+The function `accumulate` takes `s : α → Set β` with `LE α` and returns `⋃ y ≤ x, s y`.
+It is related to `dissipate s := ⋂ y ≤ x, s y`.
 
-This is closely related to the function `partialSups`, although these two functions have
+`accumulate` is closely related to the function `partialSups`, although these two functions have
 slightly different typeclass assumptions and API. `partialSups_eq_accumulate` shows
 that they coincide on `ℕ`.
 -/
 
 @[expose] public section
-
 
 variable {α β : Type*} {s : α → Set β}
 
@@ -52,11 +52,13 @@ theorem accumulate_subset_accumulate [Preorder α] {x y} (h : x ≤ y) :
     accumulate s x ⊆ accumulate s y :=
   monotone_accumulate h
 
+@[simp]
 theorem biUnion_accumulate [Preorder α] (x : α) : ⋃ y ≤ x, accumulate s y = ⋃ y ≤ x, s y := by
   apply Subset.antisymm
   · exact iUnion₂_subset fun y hy => monotone_accumulate hy
   · exact iUnion₂_mono fun y _ => subset_accumulate
 
+@[simp]
 theorem iUnion_accumulate [Preorder α] : ⋃ x, accumulate s x = ⋃ x, s x := by
   apply Subset.antisymm
   · simp only [subset_def, mem_iUnion, exists_imp, mem_accumulate]
