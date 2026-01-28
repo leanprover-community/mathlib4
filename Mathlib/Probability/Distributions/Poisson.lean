@@ -41,8 +41,8 @@ lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 
   unfold poissonPMFReal
   apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
   simp only [mul_one]
-  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / ↑(Nat.factorial i))) =
-      fun i ↦ r ^ i / ↑(Nat.factorial i) := by
+  have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / Nat.factorial i)) =
+      fun i ↦ r ^ i / i.factorial := by
     ext n
     rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
   rw [this, exp_eq_exp_ℝ]
@@ -64,6 +64,10 @@ def poissonPMF (r : ℝ≥0) : PMF ℕ := by
   apply ENNReal.hasSum_coe.mpr
   rw [← toNNReal_one]
   exact (poissonPMFRealSum r).toNNReal (fun n ↦ poissonPMFReal_nonneg)
+
+lemma poissonPMFReal_ofReal_eq_poissonPMF (r : ℝ≥0) (n : ℕ) :
+    ENNReal.ofReal (poissonPMFReal r n) = poissonPMF r n := by
+  simpa only [poissonPMF] using by rfl
 
 /-- The Poisson pmf is measurable. -/
 @[fun_prop]
