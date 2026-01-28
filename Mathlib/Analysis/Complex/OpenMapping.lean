@@ -189,10 +189,11 @@ theorem AnalyticOnNhd.eq_const_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f 
 Corollary to the open mapping theorem: A holomorphic function whose real part is constant is itself
 constant.
 -/
-theorem AnalyticOnNhd.eq_const_add_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
-    (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+theorem AnalyticOnNhd.eq_re_add_const_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ}
+    (h₁f : AnalyticOnNhd ℂ f U) (h₂f : ∀ x ∈ U, (f x).re = c₀) (h₁U : IsOpen U)
+    (h₂U : IsConnected U) :
     ∃ (c : ℝ), ∀ x ∈ U, f x = c₀ + c * I := by
-  obtain ⟨cc, hcc⟩ := constant_if_re_constant h₁f h₂f h₁U h₂U
+  obtain ⟨cc, hcc⟩ := eq_const_of_re_eq_const h₁f h₂f h₁U h₂U
   use cc.im
   simp_rw [Complex.ext_iff]
   aesop
@@ -201,7 +202,7 @@ theorem AnalyticOnNhd.eq_const_add_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : �
 Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
 itself constant.
 -/
-theorem AnalyticOnNhd.constant_if_im_constant {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
+theorem AnalyticOnNhd.eq_const_of_im_eq_const {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
     (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
     ∃ c, ∀ x ∈ U, f x = c := by
   obtain ⟨z₀, _⟩ := h₂U.nonempty
@@ -213,10 +214,11 @@ theorem AnalyticOnNhd.constant_if_im_constant {U : Set ℂ} {c₀ : ℝ} (h₁f 
 Corollary to the open mapping theorem: A holomorphic function whose imaginary part is constant is
 itself constant.
 -/
-theorem AnalyticOnNhd.constant_if_im_constant₁ {U : Set ℂ} {c₀ : ℝ} (h₁f : AnalyticOnNhd ℂ f U)
-    (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U) (h₂U : IsConnected U) :
+theorem AnalyticOnNhd.eq_const_add_im_mul_I_of_re_eq_const {U : Set ℂ} {c₀ : ℝ}
+    (h₁f : AnalyticOnNhd ℂ f U) (h₂f : ∀ x ∈ U, (f x).im = c₀) (h₁U : IsOpen U)
+    (h₂U : IsConnected U) :
     ∃ (c : ℝ), ∀ x ∈ U, f x = c + c₀ * I := by
-  obtain ⟨cc, hcc⟩ := constant_if_im_constant h₁f h₂f h₁U h₂U
+  obtain ⟨cc, hcc⟩ := AnalyticOnNhd.eq_const_of_im_eq_const h₁f h₂f h₁U h₂U
   use cc.re
   simp_rw [Complex.ext_iff]
   aesop
