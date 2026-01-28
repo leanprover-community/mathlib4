@@ -493,8 +493,8 @@ theorem T_eq_X_mul_U_sub_U (n : ℤ) : T R (n + 2) = X * U R (n + 1) - U R n := 
 theorem two_mul_T_eq_U_sub_U (n : ℤ) : 2 * T R (n + 2) = U R (n + 2) - U R n := by
   linear_combination (norm := ring_nf) (T_eq_U_sub_X_mul_U R (n + 2)) + (T_eq_X_mul_U_sub_U R n)
 
-theorem U_eq_twice_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
-  linear_combination (norm := ring_nf) - (twice_T_eq_U_sub_U R n)
+theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n := by
+  linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
 theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ {T R m | m ∈ Finset.Icc 0 n} := by
   induction n using Nat.twoStepInduction
@@ -503,7 +503,7 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ {T R m | m ∈ Fin
     rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
   case more n h₀ _ =>
-    push_cast; rw [U_eq_twice_T_add_U, ← smul_eq_mul]; norm_cast
+    push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     · exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
