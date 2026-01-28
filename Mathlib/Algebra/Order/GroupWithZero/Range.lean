@@ -3,10 +3,13 @@ Copyright (c) 2025 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.Hom.MonoidWithZero
-import Mathlib.Algebra.Order.Monoid.Basic
+
+module
+
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.GroupWithZero.WithZero
+public import Mathlib.Algebra.Order.Hom.MonoidWithZero
+public import Mathlib.Algebra.Order.Monoid.Basic
 
 /-! # The range of a MonoidWithZeroHom
 
@@ -15,6 +18,8 @@ we provide some order properties of the `MonoidWithZeroHom.ValueGroup₀` as def
 `Mathlib.Algebra.GroupWithZero.Range`.
 
 -/
+
+@[expose] public section
 
 namespace MonoidWithZeroHom
 
