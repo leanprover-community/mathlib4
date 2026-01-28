@@ -941,8 +941,6 @@ lemma exists_a_apply_add_eq : ∃ b c, 0 < c ∧ ∀ n, b < n →
     rcases hc.even_p (by lia) (hs n) with ⟨_, ht⟩
     simp [ht, ← two_mul]
 
-variable {a N}
-
 end Condition
 
 theorem result {a : ℕ → ℕ} {N : ℕ} (h : Condition a N) :

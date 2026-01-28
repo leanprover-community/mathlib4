@@ -679,6 +679,7 @@ lemma iInf_coe_lt_top : ⨅ i, (f i : ℝ≥0∞) < ⊤ ↔ Nonempty ι := WithT
 end CompleteLattice
 
 section Bit
+set_option linter.globalSyntax true -- Prevents the flagging of the enclosing `section`/`end` pair.
 
 -- TODO: add lemmas about `OfNat.ofNat`
 
