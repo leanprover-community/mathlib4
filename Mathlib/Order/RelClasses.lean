@@ -227,10 +227,6 @@ theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : Wel
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Asymm r :=
   ⟨IsWellFounded.wf.asymmetric⟩
 
--- see Note [lower instance priority]
-instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Irrefl r :=
-  inferInstance
-
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
@@ -258,22 +254,6 @@ class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Irrefl r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Asymm r := by
-  infer_instance
 
 namespace WellFoundedLT
 
