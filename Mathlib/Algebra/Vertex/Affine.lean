@@ -35,11 +35,18 @@ Write defs and proofs.  First, write something in the loop Lie algebra file.
 
 @[expose] public section
 
+variable {R L M : Type*}
+
 section LoopAlgebra
 
---def central extension (do elsewhere)
---def central character of an irreducible representation of a central extension (need alg. closed?)
---def positive-energy representation (do in loop file)
+/-
+/-- A representation has positive energy if the energy spectrum is non-negative. -/
+class positiveEnergy [CommRing R] [IsAddTorsionFree R] [LieRing L] [LieAlgebra R L] [AddCommGroup M]
+    [Module R M] (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ)
+    [LieRingModule (LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).L M] where
+  locally_finite_rank : ∀m : M, Module.rank R
+-/
 
 --def affineVertexOperator (x : g) (V : positiveEnergy) : VertexOperator R V :=
 --  of_coeff R fun n v => x t^n • v

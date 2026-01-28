@@ -6,9 +6,10 @@ Authors: Scott Carnahan
 module
 
 public import Mathlib.Algebra.Group.EvenFunction
-public import Mathlib.Algebra.Lie.InvariantForm
-public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Lie.Cochain
+public import Mathlib.Algebra.Lie.Extension
+public import Mathlib.Algebra.Lie.InvariantForm
 public import Mathlib.Data.Set.MulAntidiagonal
 
 /-!
@@ -60,7 +61,21 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L]
 /-- A loop algebra is the base change of a Lie algebra `L` over `R` by `R[z,z^{-1}]`. -/
 abbrev loopAlgebra := AddMonoidAlgebra R A ⊗[R] L
 
-namespace loopAlgebra
+namespace LoopAlgebra
+
+/-- The Lie algebra homomorphism induced by an additive map of character groups. -/
+@[simps!]
+def mapMonomialLieHom {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A') :
+    loopAlgebra R A L →ₗ⁅R⁆ loopAlgebra R A' L :=
+  LieAlgebra.ExtendScalars.lieHom R L (AddMonoidAlgebra.mapDomainAlgHom R R f)
+
+/-
+lemma mapMonomialLieHom_single {A} {A' : Type*} [AddCommMonoid A] [AddCommMonoid A'] (f : A →+ A')
+    (a : A) (x : L) :
+    mapMonomialLieHom R L f (AddMonoidAlgebra.single a (1 :R) ⊗ₜ x) =
+      AddMonoidAlgebra.single (f a) (1 :R) ⊗ₜ x := by
+  simp
+ -/
 
 /-- The linear map taking `x` to `T ^ n ⊗ x`. -/
 def monomial {A} (a : A) : L →ₗ[R] loopAlgebra R A L :=
@@ -404,7 +419,7 @@ def twoCocycle_of_Bilinear [CommRing A] [IsAddTorsionFree R] [Algebra A R]
         Finsupp.single_eq_of_ne (a := b + c) (a' := -a) (by grind)]
 
 /-- We endow the trivial Lie module with a Lie ring structure with zero bracket. -/
-local instance {R : Type*} [CommRing R] :
+instance {R : Type*} [CommRing R] :
     LieRing (TrivialLieModule R L R) where
   bracket _ _ := 0
   add_lie _ _ _ := by simp
@@ -413,12 +428,12 @@ local instance {R : Type*} [CommRing R] :
   leibniz_lie _ _ _ := by simp
 
 /-- We endow the trivial Lie module with an abelian Lie ring structure. -/
-local instance {R : Type*} [CommRing R] :
+instance {R : Type*} [CommRing R] :
     IsLieAbelian (TrivialLieModule R L R) where
   trivial _ _ := rfl
 
 /-- We endow the trivial Lie module with a trivial Lie algebra structure. -/
-local instance {R : Type*} [CommRing R] :
+instance {R : Type*} [CommRing R] :
     LieAlgebra R (TrivialLieModule R L R) where
   lie_smul _ _ _ := by simp
 
@@ -429,14 +444,38 @@ def extension [CommRing A] [IsAddTorsionFree R] [Algebra A R]
     LieAlgebra.Extension R (TrivialLieModule R (loopAlgebra R A L) R) (loopAlgebra R A L) :=
   Extension.ofTwoCocycle (twoCocycle_of_Bilinear R A L Φ hΦ hΦs)
 
--- define central extensions given by invariant bilinear forms
+end CentralExt
+
+section PositiveEnergy
+
+/-
+lemma twoCocycle_apply_apply_zero [IsAddTorsionFree R] (Φ : LinearMap.BilinForm R L)
+    (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) (c : R) (p q : loopAlgebra R ℕ L) :
+  ((LieAlgebra.LoopAlgebra.extension R ℤ L Φ hΦ hΦs).twoCocycleOf
+    (LieAlgebra.Extension.section_proj_leftInverse c)).1 (LieAlgebra.ExtendScalars.lieHom R L p)
+    (LieAlgebra.ExtendScalars.lieHom R L q) = 0 : by
+
+
+
+Need a class for graded representations.
+Need a class for "has central charge"
+
+What is a positive-energy representation? Energy grading is bounded below.
+Also, energy is governed by the grading on the central extension.
+Maybe make a class?
+
+def vacuum_rep [IsAddTorsionFree R]
+    (Φ : LinearMap.BilinForm R L) (hΦ : LinearMap.BilinForm.lieInvariant L Φ)
+    (hΦs : LinearMap.BilinForm.IsSymm Φ) : LieRingModule (extension R ℤ L Φ hΦ hΦs).L
+-/
 -- extend central characters to reps of positive part
 -- induce positive part reps to centrally extended loop algebra
 -- monomial basis of induced rep (needs PBW)
 -- define positive energy reps (positive part `U+` acts locally nilpotently - `U+ • v` fin dim.)
 
-end CentralExt
+end PositiveEnergy
 
-end loopAlgebra
+end LoopAlgebra
 
 end LieAlgebra
