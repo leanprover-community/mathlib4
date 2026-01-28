@@ -306,27 +306,123 @@ def downloadFile (repo : String) (hash : UInt64) : IO Bool := do
     IO.FS.removeFile partPath
     pure false
 
+/-- Parse a hex digit character to its numeric value -/
+def hexDigitToNat (c : Char) : Option Nat :=
+  if '0' ≤ c && c ≤ '9' then some (c.toNat - '0'.toNat)
+  else if 'a' ≤ c && c ≤ 'f' then some (c.toNat - 'a'.toNat + 10)
+  else if 'A' ≤ c && c ≤ 'F' then some (c.toNat - 'A'.toNat + 10)
+  else none
+
+/-- Parse a hex string to a Nat -/
+def parseHexString (s : String) : Option Nat :=
+  s.foldl (init := some 0) fun acc c => do
+    let prev ← acc
+    let digit ← hexDigitToNat c
+    some (prev * 16 + digit)
+
+/-- Extract hash from filename (e.g., "/path/to/.cache/00012345.ltar" → 0x12345) -/
+def hashFromFileName (fn : String) : Option UInt64 := do
+  -- Get the filename without path
+  let some name := fn.splitOn "/" |>.getLast? | .none
+  -- Remove .ltar extension (or .ltar.part for partial files)
+  let stem := name.dropSuffix ".part"
+  let stem := stem.dropSuffix ".ltar"
+  -- Parse hex string as UInt64
+  parseHexString stem.toString |>.map UInt64.ofNat
+
+/-- Decompress a batch of files using a single leantar invocation -/
+def decompressBatch (files : Array (FilePath × Lean.Name))
+    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : String)
+    : IO Unit := do
+  if files.isEmpty then return
+
+  -- Build JSON config for all files in batch (similar to unpackCache logic)
+  let config := files.map fun (path, mod) =>
+    if isMathlibRoot || !IO.isFromMathlib mod then
+      .str path.toString
+    else
+      .mkObj [("file", path.toString), ("base", mathlibDepPath)]
+
+  -- Spawn leantar for this batch
+  let args := (if force then #["-f"] else #[]) ++
+              #["-x", "--delete-corrupted", "-j", "-"]
+  let child ← IO.Process.spawn {
+    cmd := ← IO.getLeanTar,
+    args,
+    stdin := .piped
+  }
+  -- Write JSON to stdin, then drop handle
+  let child ← do
+    let (stdin, child) ← child.takeStdin
+    stdin.putStr <| Lean.Json.compress <| .arr config
+    pure child
+  -- stdin handle is now dropped, leantar will receive EOF and process the files
+  let exitCode ← child.wait
+  if exitCode != 0 then
+    let fileList := files.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+    let firstFew := if files.size ≤ 3 then fileList else
+      let preview := files.extract 0 3 |>.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
+      s!"{preview}, ... and {files.size - 3} more"
+    throw <| IO.userError s!"leantar exited with code {exitCode} on batch of {files.size} files: {firstFew}"
+
+/-- Configuration for decompression during download -/
+structure DecompConfig where
+  hashToMod : Std.HashMap UInt64 Lean.Name  -- filename hash → module name
+  force : Bool
+  isMathlibRoot : Bool
+  mathlibDepPath : String
+
 private structure TransferState where
   last : Nat
   success : Nat
   failed : Nat
   done : Nat
   speed : Nat
+  -- Decompression state (only used when decompConfig is set)
+  pending : Array (FilePath × Lean.Name)           -- files waiting to be decompressed
+  currentTask : Option (Task (Except IO.Error Unit))  -- current leantar task
+  lastBatchSize : Nat                              -- size of the last dispatched batch
+  decompressed : Nat                               -- total files decompressed
+  decompFailed : Nat                               -- total decompression failures
+
+/-- Harvest the result of a completed decompression task, updating counters -/
+def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
+    (decompressed decompFailed : Nat) : Nat × Nat :=
+  match task.get with
+  | .ok () => (decompressed + batchSize, decompFailed)
+  | .error _ => (decompressed, decompFailed + batchSize)
+
+/-- Dispatch a new decompression batch if there are pending files -/
+def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : DecompConfig)
+    : IO (Option (Task (Except IO.Error Unit))) := do
+  if pending.isEmpty then return none
+  let task ← IO.asTask (decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath)
+  return some task
 
 def monitorCurl (args : Array String) (size : Nat)
-    (caption : String) (speedVar : String) (removeOnError := false) : IO TransferState := do
-  let mkStatus success failed done speed := Id.run do
-    let speed :=
-      if speed != 0 then
-        s!", {speed / 1000} KB/s"
+    (caption : String) (speedVar : String) (removeOnError := false)
+    (decompConfig : Option DecompConfig := none) : IO TransferState := do
+  let useAnsi := (← IO.getEnv "TERM").isSome
+  let mkStatus (s : TransferState) : String := Id.run do
+    let speedStr :=
+      if s.speed != 0 then
+        s!", {s.speed / 1000} KB/s"
       else ""
-    let mut msg := s!"\r{caption}: {success} file(s) [attempted {done}/{size} = {100*done/size}%{speed}]"
-    if failed != 0 then
-      msg := msg ++ s!", {failed} failed"
+    let mut msg := s!"\r{caption}: {s.success} file(s) [attempted {s.done}/{size} = {100*s.done/size}%{speedStr}]"
+    -- Add decompression progress if enabled
+    if decompConfig.isSome then
+      msg := msg ++ s!", Decompressed: {s.decompressed}"
+      if s.decompFailed != 0 then
+        msg := msg ++ s!" ({s.decompFailed} failed)"
+    if s.failed != 0 then
+      msg := msg ++ s!", {s.failed} download failed"
+    -- Clear to end of line to avoid remnants from longer previous messages
+    if useAnsi then
+      msg := msg ++ "\x1b[K"
     return msg
-  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0⟩
-  let s@{success, failed, done, speed, ..} ← IO.runCurlStreaming args init fun a line => do
-    let mut {last, success, failed, done, speed} := a
+  let init : TransferState := ⟨← IO.monoMsNow, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+  let s ← IO.runCurlStreaming args init fun a line => do
+    let mut {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed} := a
     -- output errors other than 404 and remove corresponding partial downloads
     let line := line.trimAscii
     if !line.isEmpty then
@@ -336,7 +432,33 @@ def monitorCurl (args : Array String) (size : Nat)
         | .ok 200 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
-              IO.FS.rename fn (fn.dropEnd 5).copy
+              let finalPath := (fn.dropEnd 5).copy
+              IO.FS.rename fn finalPath
+              -- Add to decompression queue if enabled
+              if let some config := decompConfig then
+                match hashFromFileName fn with
+                | some hash =>
+                  match config.hashToMod[hash]? with
+                  | some mod =>
+                    pending := pending.push (finalPath, mod)
+                    -- Check if we should dispatch a batch
+                    match currentTask with
+                    | some task =>
+                      if (← IO.hasFinished task) then
+                        -- Harvest completed task
+                        (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                        -- Dispatch new batch with all pending files
+                        lastBatchSize := pending.size
+                        currentTask ← dispatchDecompBatch pending config
+                        pending := #[]
+                      -- else: task still running, just accumulate
+                    | none =>
+                      -- No task running, dispatch immediately
+                      lastBatchSize := pending.size
+                      currentTask ← dispatchDecompBatch pending config
+                      pending := #[]
+                  | none => IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
+                | none => IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
@@ -363,48 +485,85 @@ def monitorCurl (args : Array String) (size : Nat)
         if now - last ≥ 100 then -- max 10/s update rate
           speed := match result.getObjValAs? Nat speedVar with
             | .ok speed => speed | .error _ => speed
-          IO.eprint (mkStatus success failed done speed)
+          IO.eprint (mkStatus {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed})
           last := now
        | .error e =>
         IO.println s!"Non-JSON output from curl:\n  {line}\n{e}"
-    pure {last, success, failed, done, speed}
-  if done > 0 then
+    pure {last, success, failed, done, speed, pending, currentTask, lastBatchSize, decompressed, decompFailed}
+  if s.done > 0 then
     -- to avoid confusingly moving on without finishing the count
-    IO.eprintln (mkStatus success failed done speed)
+    IO.eprintln (mkStatus s)
   return s
 
 /-- Call `curl` to download files from the server to `CACHEDIR` (`.cache`).
-Exit the process with exit code 1 if any files failed to download. -/
+Exit the process with exit code 1 if any files failed to download.
+If `decompress` is true, decompresses files as they're downloaded (pipelined). -/
 def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
-    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool): IO Unit := do
+    (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
+    (decompress : Bool := false) (forceUnpack : Bool := false)
+    (isMathlibRoot : Bool) (mathlibDepPath : String): IO Unit := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   let size := hashMap.size
   if size > 0 then
     IO.FS.createDirAll IO.CACHEDIR
     IO.println s!"Attempting to download {size} file(s) from {repo} cache"
-    let failed ← if parallel then
+
+    -- Set up decompression config if enabled
+    let decompConfig ← if decompress then
+      -- Build hash → module name mapping
+      let hashToMod : Std.HashMap UInt64 Lean.Name := hashMap.fold (init := ∅) fun acc mod hash =>
+        acc.insert hash mod
+      pure (some { hashToMod, force := forceUnpack, isMathlibRoot, mathlibDepPath : DecompConfig })
+    else
+      pure none
+
+    let (downloadFailed, finalState) ← if parallel then
       IO.FS.writeFile IO.CURLCFG (← mkGetConfigContent repo hashMap)
       let args := #["--request", "GET", "--parallel",
           -- commented as this creates a big slowdown on curl 8.13.0: "--fail",
           "--silent",
           "--retry", "5", -- there seem to be some intermittent failures
           "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-      let {success, failed, done, ..} ←
-        monitorCurl args size "Downloaded" "speed_download" (removeOnError := true)
+      let s ← monitorCurl args size "Downloaded" "speed_download" (removeOnError := true) decompConfig
       IO.FS.removeFile IO.CURLCFG
-      if warnOnMissing && success + failed < done then
+      if warnOnMissing && s.success + s.failed < s.done then
         IO.eprintln "Warning: some files were not found in the cache."
         IO.eprintln "This usually means that your local checkout of mathlib4 has diverged from upstream."
         IO.eprintln "If you push your commits to a branch of the mathlib4 repository, CI will build the oleans and they will be available later."
         IO.eprintln "Alternatively, if you already have pushed your commits to a branch, this may mean the CI build has failed part-way through building."
-      pure failed
+      pure (s.failed, s)
     else
       let r ← hashMap.foldM (init := []) fun acc _ hash => do
         pure <| (← IO.asTask do downloadFile repo hash) :: acc
-      pure <| r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
-    if failed > 0 then
-      IO.println s!"{failed} download(s) failed"
+      let failed := r.foldl (init := 0) fun f t => if let .ok true := t.get then f else f + 1
+      -- Non-parallel mode doesn't support pipelined decompression
+      let emptyState : TransferState := ⟨0, 0, 0, 0, 0, #[], none, 0, 0, 0⟩
+      pure (failed, emptyState)
+
+    -- Finalize decompression: wait for current task and process any remaining files
+    if let some config := decompConfig then
+      let mut {pending, currentTask, lastBatchSize, decompressed, decompFailed, ..} := finalState
+
+      -- Wait for current task to complete if any
+      if let some task := currentTask then
+        (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+
+      -- Process any remaining pending files
+      if !pending.isEmpty then
+        try
+          decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
+          decompressed := decompressed + pending.size
+        catch _ =>
+          decompFailed := decompFailed + pending.size
+
+      IO.println s!"Decompressed {decompressed} file(s)"
+      if decompFailed > 0 then
+        IO.println s!"{decompFailed} decompression(s) failed"
+        IO.Process.exit 1
+
+    if downloadFailed > 0 then
+      IO.println s!"{downloadFailed} download(s) failed"
       IO.Process.exit 1
   else IO.println "No files to download"
 
@@ -480,8 +639,12 @@ def getFiles
   unless isMathlibRoot do checkForToolchainMismatch
   getProofWidgets (← read).proofWidgetsBuildDir
 
+  let mathlibDepPath := (← read).mathlibDepPath.toString
+
   if let some repo := repo? then
     downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
+      (decompress := decompress) (forceUnpack := forceUnpack)
+      isMathlibRoot mathlibDepPath
   else
     let repoInfo ← getRemoteRepo (← read).mathlibDepPath
 
@@ -496,10 +659,11 @@ def getFiles
 
     for h : i in [0:repos.length] do
       downloadFiles repos[i] hashMap forceDownload parallel (warnOnMissing := i = repos.length - 1)
+        (decompress := decompress) (forceUnpack := forceUnpack)
+        isMathlibRoot mathlibDepPath
 
-  if decompress then
-    IO.unpackCache hashMap forceUnpack
-  else
+  -- When decompress=true, decompression happens inside downloadFiles
+  unless decompress do
     IO.println "Downloaded all files successfully!"
 
 end Get
@@ -545,7 +709,7 @@ def putFiles
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
       "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
-    discard <| monitorCurl args size "Uploaded" "speed_upload"
+    discard <| monitorCurl args size "Uploaded" "speed_upload" (removeOnError := false) (decompConfig := none)
     IO.FS.removeFile IO.CURLCFG
   else IO.println "No files to upload"
 
