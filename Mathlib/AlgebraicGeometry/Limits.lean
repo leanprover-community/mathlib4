@@ -11,7 +11,11 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 public import Mathlib.Tactic.SuppressCompilation
-public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+-- The following import introduces the instance
+-- `CategoryTheory.Limits.hasBinaryCoproduct_zero_left`, which is not actually ever applied but
+-- whose application failure appears to be necessary to solve a universe unification in
+-- `coprodMk_inl` in the desired way; something appears to be brittle here.
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects  -- shake: keep
 
 
 /-!

@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Tactic.Bound
 
 /-!
 # Infinite sums in extended nonnegative reals

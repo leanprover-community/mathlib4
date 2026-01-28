@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Geometry.Manifold.SmoothApprox
+import Mathlib.Geometry.Manifold.SmoothApprox
 public import Mathlib.MeasureTheory.Function.ContinuousMapDense
 
 /-!

@@ -7,7 +7,6 @@ Amelia Livingston, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Action.Faithful
-public import Mathlib.Algebra.Group.Nat.Defs
 public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.Submonoid.Basic
