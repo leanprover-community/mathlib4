@@ -513,9 +513,6 @@ noncomputable def Tnat [IsDomain R] [NeZero (2 : R)] : ℕ ↪ R[X] where
   toFun m := T R m
   inj' m₁ m₂ hm := by convert congrArg Polynomial.degree hm; simp [degree_T]
 
-theorem setOf_T_eq_map [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
-    {T R m | m ∈ Finset.Icc 0 n} = (Finset.Icc 0 n).map (Tnat (R := R)) := by grind
-
 /-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
 polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
 noncomputable def C : ℤ → R[X]

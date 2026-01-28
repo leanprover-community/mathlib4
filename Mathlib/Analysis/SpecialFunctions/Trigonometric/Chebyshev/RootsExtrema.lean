@@ -326,22 +326,17 @@ theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoo
 theorem abs_iterate_derivative_T_real_le (n k : ℕ) {x : ℝ} (hx : |x| ≤ 1) :
     |(derivative^[k] (T ℝ n)).eval x| ≤ (derivative^[k] (T ℝ n)).eval 1 := by
   have := T_iterate_derivative_mem_span_T (R := ℝ) n k
-  rw [setOf_T_eq_map] at this
-  obtain ⟨f, hf⟩ := Submodule.mem_span_finset'.mp this
-  let g (m : ℕ) := if hm : m ∈ Finset.Icc 0 (n - k) then f ⟨(T ℝ m), by simp [Tnat, hm]⟩ else 0
-  have : ∑ m ∈ Finset.Icc 0 (n - k), g m • (T ℝ m) = ∑ a, f a • a.val := by
-    rw [Finset.univ_eq_attach]
-    apply Finset.sum_bij (fun m hm => ⟨T ℝ m, by simp [Tnat, hm]⟩) (by simp)
-    case i_inj => intros; grind
-    case i_surj => aesop
-    grind
-  replace hf (y : ℝ) :
-      ∑ m ∈ Finset.Icc 0 (n - k), g m * (T ℝ m).eval y = (derivative^[k] (T ℝ n)).eval y := by
-    rw [← hf, ← this, eval_finset_sum]; congr; simp
+  obtain ⟨f, hfsupp, hfderiv⟩ := Submodule.mem_span_set.mp this
+  replace hfderiv : ∑ p ∈ f.support, f p • p = derivative^[k] (T ℝ n) := by rw [← hfderiv]; rfl
+  have hf (y : ℝ) :
+      ∑ p ∈ f.support, f p • p.eval y = (derivative^[k] (T ℝ n)).eval y := by
+    rw [← hfderiv, Polynomial.eval_finset_sum]
+    simp_rw [Polynomial.eval_smul]
   rw [← hf x, ← hf 1]
   grw [Finset.abs_sum_le_sum_abs]
-  refine Finset.sum_le_sum (fun i _ => ?_)
-  grw [abs_mul, abs_eval_T_real_le_one i hx]
+  refine Finset.sum_le_sum (fun i hi => ?_)
+  obtain ⟨m, hm, hi⟩ := (Set.mem_image ..).mp (hfsupp hi)
+  grw [abs_nsmul, ← hi, abs_eval_T_real_le_one m hx]
   simp
 
 end Polynomial.Chebyshev
