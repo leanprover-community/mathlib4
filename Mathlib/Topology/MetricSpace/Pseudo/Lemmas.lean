@@ -58,11 +58,9 @@ lemma eventually_ball_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) : ∀ᶠ 
 namespace Metric
 variable {x y z : α} {ε ε₁ ε₂ : ℝ} {s : Set α}
 
-lemma isClosed_closedBall : IsClosed (closedBall x ε) :=
-  isClosed_le (continuous_id.dist continuous_const) continuous_const
+lemma isClosed_closedBall : IsClosed (closedBall x ε) := isClosed_le (by fun_prop) continuous_const
 
-lemma isClosed_sphere : IsClosed (sphere x ε) :=
-  isClosed_eq (continuous_id.dist continuous_const) continuous_const
+lemma isClosed_sphere : IsClosed (sphere x ε) := isClosed_eq (by fun_prop) continuous_const
 
 @[simp]
 lemma closure_closedBall : closure (closedBall x ε) = closedBall x ε :=
@@ -76,10 +74,10 @@ lemma closure_ball_subset_closedBall : closure (ball x ε) ⊆ closedBall x ε :
   closure_minimal ball_subset_closedBall isClosed_closedBall
 
 lemma frontier_ball_subset_sphere : frontier (ball x ε) ⊆ sphere x ε :=
-  frontier_lt_subset_eq (continuous_id.dist continuous_const) continuous_const
+  frontier_lt_subset_eq (by fun_prop) continuous_const
 
 lemma frontier_closedBall_subset_sphere : frontier (closedBall x ε) ⊆ sphere x ε :=
-  frontier_le_subset_eq (continuous_id.dist continuous_const) continuous_const
+  frontier_le_subset_eq (by fun_prop) continuous_const
 
 lemma closedBall_zero' (x : α) : closedBall x 0 = closure {x} :=
   Subset.antisymm

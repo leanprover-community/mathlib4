@@ -74,7 +74,7 @@ theorem continuous_circleTransform {R : ℝ} (hR : 0 < R) {f : ℂ → E} {z w :
     Continuous (circleTransform R z w f) := by
   apply_rules [Continuous.smul, continuous_const]
   · rw [funext <| deriv_circleMap _ _]
-    apply_rules [Continuous.mul, continuous_circleMap 0 R, continuous_const]
+    fun_prop
   · exact continuous_circleMap_inv hw
   · apply ContinuousOn.comp_continuous hf (continuous_circleMap z R)
     exact fun _ => (circleMap_mem_sphere _ hR.le) _

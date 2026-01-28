@@ -151,8 +151,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
       exact (lt_add_iff_pos_right _).2 hr
     exact hx
   intro x hx
-  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 :=
-    continuousWithinAt_const.add (continuousWithinAt_id.mul continuousWithinAt_const)
+  have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
   convert continuousWithinAt_const.closure_le _ this (Hr x hx) using 1 <;> simp
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.

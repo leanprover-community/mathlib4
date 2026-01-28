@@ -162,7 +162,7 @@ theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCirc
   cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
-  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
+  continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| by fun_prop)
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h

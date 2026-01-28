@@ -60,8 +60,8 @@ section
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
     [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
-  measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
+  measurable_const_smul g := by fun_prop
+  measurable_smul_const _ := by fun_prop
 
 end
 

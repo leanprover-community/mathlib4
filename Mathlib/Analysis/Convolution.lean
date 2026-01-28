@@ -142,7 +142,7 @@ theorem _root_.HasCompactSupport.convolution_integrand_bound_right (hcg : HasCom
 
 theorem _root_.Continuous.convolution_integrand_fst [ContinuousSub G] (hg : Continuous g) (t : G) :
     Continuous fun x => L (f t) (g (x - t)) :=
-  L.continuous₂.comp₂ continuous_const <| hg.comp <| continuous_id.sub continuous_const
+  L.continuous₂.comp₂ continuous_const <| by fun_prop
 
 theorem _root_.HasCompactSupport.convolution_integrand_bound_left (hcf : HasCompactSupport f)
     (hf : Continuous f) {x t : G} {s : Set G} (hx : x ∈ s) :
@@ -622,8 +622,7 @@ theorem _root_.BddAbove.continuous_convolution_right_of_integrable
   · exact Eventually.of_forall fun x =>
       hf.aestronglyMeasurable.convolution_integrand_snd' L hg.aestronglyMeasurable
   · exact (hf.norm.const_mul _).mul_const _
-  · exact Eventually.of_forall fun t => (L.continuous₂.comp₂ continuous_const <|
-      hg.comp <| continuous_id.sub continuous_const).continuousAt
+  · exact Eventually.of_forall fun t => by fun_prop
 
 end Group
 

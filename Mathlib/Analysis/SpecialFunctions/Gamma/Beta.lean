@@ -70,11 +70,9 @@ theorem betaIntegral_convergent_left {u : ℂ} (hu : 0 < re u) (v : ℂ) :
   · apply continuousOn_of_forall_continuousAt
     intro x hx
     rw [uIcc_of_le (by positivity : (0 : ℝ) ≤ 1 / 2)] at hx
-    apply ContinuousAt.cpow
-    · exact (continuous_const.sub continuous_ofReal).continuousAt
-    · exact continuousAt_const
-    · norm_cast
-      exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
+    apply ContinuousAt.cpow (by fun_prop) (by fun_prop)
+    norm_cast
+    exact ofReal_mem_slitPlane.2 <| by linarith only [hx.2]
 
 /-- The Beta integral is convergent for all `u, v` of positive real part. -/
 theorem betaIntegral_convergent {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
@@ -154,8 +152,7 @@ theorem betaIntegral_recurrence {u v : ℂ} (hu : 0 < re u) (hv : 0 < re v) :
         (continuousOn_of_forall_continuousAt fun x hx => ?_)
     · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hu).comp continuous_ofReal.continuousAt
       rw [ofReal_re]; exact hx.1
-    · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp
-        (continuous_const.sub continuous_ofReal).continuousAt
+    · refine (continuousAt_cpow_const_of_re_pos (Or.inl ?_) hv).comp (by fun_prop)
       rw [sub_re, one_re, ofReal_re, sub_nonneg]
       exact hx.2
   have hder : ∀ x : ℝ, x ∈ Ioo (0 : ℝ) 1 →

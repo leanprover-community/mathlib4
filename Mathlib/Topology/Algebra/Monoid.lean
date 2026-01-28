@@ -70,12 +70,10 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
   fun_prop
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
-  continuous_const.mul continuous_id
+theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b := by fun_prop
 
 @[to_additive (attr := continuity)]
-theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
-  continuous_id.mul continuous_const
+theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a := by fun_prop
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -759,7 +757,7 @@ instance (priority := 100) IsScalarTower.continuousConstSMul {R A : Type*} [Mono
     [IsScalarTower R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp +singlePass only [← smul_one_mul q (_ : A)]
-    exact continuous_const.mul continuous_id
+    fun_prop
 
 /-- If the action of `R` on `A` commutes with left-multiplication, then continuous multiplication
 implies continuous scalar multiplication by constants.
@@ -773,7 +771,7 @@ instance (priority := 100) SMulCommClass.continuousConstSMul {R A : Type*} [Mono
     [SMulCommClass R A A] [TopologicalSpace A] [ContinuousMul A] : ContinuousConstSMul R A where
   continuous_const_smul q := by
     simp +singlePass only [← mul_smul_one q (_ : A)]
-    exact continuous_id.mul continuous_const
+    fun_prop
 
 end ContinuousMul
 

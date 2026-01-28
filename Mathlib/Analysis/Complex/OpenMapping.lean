@@ -154,8 +154,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
     rw [show gray z 0 = g z₀ by simp [gray, ray], ← map_compose] at h7
     refine h7.trans (map_mono ?_)
-    have h10 : Continuous fun t : ℂ => z₀ + t • z :=
-      continuous_const.add (continuous_id'.smul continuous_const)
+    have h10 : Continuous fun t : ℂ => z₀ + t • z := by fun_prop
     simpa using h10.tendsto 0
 
 /-- The *open mapping theorem* for holomorphic functions, global version: if a function `g : E → ℂ`

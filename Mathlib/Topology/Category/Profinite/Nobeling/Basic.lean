@@ -93,9 +93,7 @@ theorem continuous_proj :
   dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
-  split
-  · apply continuous_apply
-  · apply continuous_const
+  split <;> fun_prop
 
 /-- The image of `Proj π J` -/
 def π : Set (I → Bool) := (Proj J) '' C

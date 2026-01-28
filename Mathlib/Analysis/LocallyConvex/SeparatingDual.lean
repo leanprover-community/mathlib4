@@ -191,9 +191,8 @@ theorem exists_continuousLinearEquiv_apply_eq
       rw [mul_comm _ (G y), ← mul_assoc, mul_inv_cancel₀ Gy]
       simp only [smul_sub, one_mul, add_sub_cancel]
       abel
-    continuous_toFun := continuous_id.add (G.continuous.smul continuous_const)
-    continuous_invFun :=
-      continuous_id.add ((continuous_const.mul G.continuous).smul continuous_const) }
+    continuous_toFun := by fun_prop
+    continuous_invFun := by fun_prop }
   exact ⟨A, show x + G x • (y - x) = y by simp [Gx]⟩
 
 end Field
