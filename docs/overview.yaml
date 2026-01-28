@@ -329,6 +329,7 @@ Analysis:
     inverse trigonometric functions: 'Real.arcsin'
     hyperbolic trigonometric functions: 'Real.sinh'
     inverse hyperbolic trigonometric functions: 'Real.arsinh'
+    error function: 'Real.erf'
 
   Measures and integral calculus:
     sigma-algebra: 'MeasurableSpace'
