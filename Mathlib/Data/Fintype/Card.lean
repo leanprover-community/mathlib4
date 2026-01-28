@@ -130,6 +130,7 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
     #(univ \ s) = Fintype.card α - #s := by grind
 
+@[grind =]
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s
 
@@ -484,7 +485,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
 
 section Fin
 
-@[simp]
+@[simp, grind =]
 theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
   List.length_finRange
 
