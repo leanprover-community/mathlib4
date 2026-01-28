@@ -53,7 +53,11 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 #guard_msgs in
 #check ContMDiff I (𝓡 n) 2 g
 
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+/--
+error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check CMDiff 2 g
 
@@ -173,7 +177,9 @@ variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in
 set_option trace.Elab.DiffGeo true in
 variable [Fact (Module.finrank ℝ E = 3)] in
 /--
-error: Could not find a model with corners for `↑(Metric.sphere 0 1)`
+error: Could not find a model with corners for `↑(Metric.sphere 0 1)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Metric.sphere 0 1)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace

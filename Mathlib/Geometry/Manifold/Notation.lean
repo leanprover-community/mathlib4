@@ -251,6 +251,7 @@ def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × 
         throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
     | _ => return none
 
+set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -300,7 +301,8 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if let some m ← tryStrategy m!"InnerProductSpace"   fromInnerProductSpace then return m
   throwError "Could not find a model with corners for `{e}`.
 
-  Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`."
+Hint: failures to find a model with corners can be debugged with the command \
+`set_option trace.Elab.DiffGeo.MDiff true`."
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/

@@ -91,7 +91,11 @@ variable {s : ι → ι → (x : M) → V x} {i : ι} in
 variable {X : ι → Π x : M, TangentSpace I x} {i : ι}
 
 -- Error message is okay, but not great.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt (T% X) x
 
@@ -780,7 +784,11 @@ Hint: you can use the `T%` elaborator to convert a dependent function to a non-d
 
 -- This error message is not great: this is missing *both* a T% elaborator
 -- and an argument i.
-/-- error: Could not find a model with corners for `ι` -/
+/--
+error: Could not find a model with corners for `ι`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiffAt X' x
 
@@ -920,7 +928,9 @@ set_option trace.Elab.DiffGeo true
 variable {f : Unit → Unit}
 
 /--
-error: Could not find a model with corners for `Unit`
+error: Could not find a model with corners for `Unit`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: Unit
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace

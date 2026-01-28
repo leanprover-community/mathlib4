@@ -276,7 +276,9 @@ def id' : ℝ →+* RealCopy := RingHom.id ℝ
 set_option trace.Elab.DiffGeo.MDiff true in
 variable {f : M → E'' →SL[id'] E'''} in
 /--
-error: Could not find a model with corners for `E'' →SL[id'] E'''`
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -345,12 +347,20 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
 #check MDiff f
 
 variable {f : (E'' →SL[id'] E''') → E''} in
-/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
+/--
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff f
 
 variable {f : M → E'' →SL[id'] E'''} in
-/-- error: Could not find a model with corners for `E'' →SL[id'] E'''` -/
+/--
+error: Could not find a model with corners for `E'' →SL[id'] E'''`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check CMDiff 2 f
 
@@ -463,7 +473,11 @@ Hint: Type class instance resolution failures can be inspected with the `set_opt
 variable {α : Type*} {x' y' : α} {k : Set.Icc x' y' → ℝ} in
 #check MDiff k
 
-/-- error: Could not find a model with corners for `↑(Set.Icc x' y')` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x' y')`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 variable {α : Type*} [Preorder α] {x' y' : α} {k : ℝ → Set.Icc x' y'} in
 #check CMDiff 2 k
@@ -510,7 +524,9 @@ noncomputable instance : ChartedSpace (EuclideanHalfSpace 1) ↑(Set.Icc x y) :=
 
 set_option trace.Elab.DiffGeo.MDiff true in
 /--
-error: Could not find a model with corners for `↑(Set.Icc x y)`
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
@@ -563,10 +579,18 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 -/
 #guard_msgs in
 #check MDiffAt g
-/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check MDiff h
-/-- error: Could not find a model with corners for `↑(Set.Icc x y)` -/
+/--
+error: Could not find a model with corners for `↑(Set.Icc x y)`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 #check CMDiff 2 k
 
@@ -686,7 +710,11 @@ variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
 
 variable {α : Type*} [Monoid α] [Ring α]
 
-/-- error: Could not find a model with corners for `αˣ` -/
+/--
+error: Could not find a model with corners for `αˣ`.
+
+Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
+-/
 #guard_msgs in
 variable {f : αˣ → 𝕜} in
 #check MDiff f
