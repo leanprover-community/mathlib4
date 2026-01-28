@@ -416,9 +416,14 @@ def orthogonal : ClosedSubmodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
+lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
-lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
+
+@[simp]
+lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+
+@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
@@ -443,9 +448,7 @@ variable (K)
 theorem inf_orthogonal_eq_bot : K ⊓ Kᗮ = ⊥ := by
   rw [eq_bot_iff]
   intro x
-  simp only [toSubmodule_inf, orthogonal_toSubmodule_eq, Submodule.mem_inf, toSubmodule_bot,
-    Submodule.mem_bot, and_imp]
-  exact fun hx ho => inner_self_eq_zero.1 (ho x hx)
+  simpa using fun hx ho => inner_self_eq_zero.1 (ho x hx)
 
 /-- `K` and `Kᗮ` have trivial intersection. -/
 theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_orthogonal_eq_bot]
@@ -454,7 +457,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
-  simpa using mem_orthogonal_iff _ _
+  simp
 
 variable (𝕜 E)
 

@@ -30,7 +30,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
