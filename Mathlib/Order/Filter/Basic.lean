@@ -1087,6 +1087,9 @@ theorem EventuallyEq.compl {s t : Set α} {l : Filter α} (h : s =ᶠ[l] t) :
     (sᶜ : Set α) =ᶠ[l] (tᶜ : Set α) :=
   h.fun_comp Not
 
+lemma compl_eventuallyEq_iff {s t : Set α} {l : Filter α} : sᶜ =ᶠ[l] tᶜ ↔ s =ᶠ[l] t :=
+  ⟨fun h ↦ by simpa using h.compl, fun _ ↦ by gcongr⟩
+
 @[gcongr]
 theorem EventuallyEq.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠ[l] t) (h' : s' =ᶠ[l] t') :
     (s \ s' : Set α) =ᶠ[l] (t \ t' : Set α) :=
