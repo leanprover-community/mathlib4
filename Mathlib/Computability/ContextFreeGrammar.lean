@@ -335,3 +335,167 @@ theorem Language.IsContextFree.reverse (L : Language T) :
     L.IsContextFree → L.reverse.IsContextFree := by rintro ⟨g, rfl⟩; exact ⟨g.reverse, by simp⟩
 
 end closure_reversal
+
+section embed_project
+
+/-! This section contains only auxiliary constructions that will shorten upcoming proofs of
+closure properties. When combining several grammars together, we usually want to take a sum type of
+their nonterminal types and embed respective nonterminals to this sum type.
+We subsequently show that the resulting grammar preserves derivations of those strings that may
+contain any terminal symbols but only the proper nonterminal symbols.
+The embedding operation must be injective.
+The projection operation must be injective on those symbols where it is defined. -/
+
+/-- Mapping `Symbol` when it is a nonterminal. -/
+def Symbol.map {N₀ N : Type*} (f : N₀ → N) : Symbol T N₀ → Symbol T N
+  | .terminal t => .terminal t
+  | .nonterminal n => .nonterminal (f n)
+
+/-- Mapping `Symbol` when it is a nonterminal; may return `none`. -/
+def Symbol.filterMap {N₀ N : Type*} (f : N → Option N₀) : Symbol T N → Option (Symbol T N₀)
+  | terminal t => some (terminal t)
+  | nonterminal n => .map nonterminal (f n)
+
+/-- Map the type of nonterminal symbols of a `ContextFreeRule` . -/
+def ContextFreeRule.map {N₀ N : Type*} (r : ContextFreeRule T N₀) (f : N₀ → N) :
+    ContextFreeRule T N :=
+  ⟨f r.input, r.output.map (.map f)⟩
+
+/-- An embedding from a context-free grammar `g₀` to a context-free grammar `g` is an embedding
+`embedNT` of the nonterminal symbols from the former to the latter along with a one-sided inverse
+`projectNT` such that all rewrite rules of `g` that end in `embedNT n₀` for some `n₀` come from some
+rule in `g₀`. -/
+structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
+  /-- Mapping nonterminals from the smaller type to the bigger type. -/
+  embedNT : g₀.NT → g.NT
+  /-- Mapping nonterminals from the bigger type to the smaller type. -/
+  projectNT : g.NT → Option g₀.NT
+  /-- The two mappings are essentially inverses. -/
+  projectNT_embedNT (n₀ : g₀.NT): projectNT (embedNT n₀) = some n₀
+  /-- Each rule of the smaller grammar has a corresponding rule in the bigger grammar. -/
+  embed_mem_rules (r : ContextFreeRule T g₀.NT): r ∈ g₀.rules → r.map embedNT ∈ g.rules
+  /-- Each rule of the bigger grammar whose input nonterminal is recognized by the smaller grammar
+  has a corresponding rule in the smaller grammar. -/
+  preimage_of_rules (r : ContextFreeRule T g.NT) :
+    r ∈ g.rules → ∀ n₀ : g₀.NT,
+      embedNT n₀ = r.input → ∃ r₀ ∈ g₀.rules, r₀.map embedNT = r
+
+namespace ContextFreeGrammar.Embedding
+variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
+
+/-- Production by `g₀` can be mirrored by production by `g`. -/
+lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
+    (hG : g₀.Produces w₁ w₂) :
+    g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
+  rcases hG with ⟨r, rin, hr⟩
+  rcases hr.exists_parts with ⟨u, v, bef, aft⟩
+  refine ⟨r.map G.embedNT, G.embed_mem_rules r rin, ?_⟩
+  rw [ContextFreeRule.rewrites_iff]
+  refine ⟨u.map (.map G.embedNT), v.map (.map G.embedNT), ?_, ?_⟩
+  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
+  · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
+
+/-- Derivation by `g₀` can be mirrored by derivation by `g`. -/
+lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
+    (hG : g₀.Derives w₁ w₂) :
+    g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
+  induction hG with
+  | refl => rfl
+  | tail _ orig ih => exact ih.trans_produces (produces_map orig)
+
+/-- A `Symbol` stems from the embedding or is a terminal iff it is one of those nonterminals that
+result from projecting or it is any terminal. -/
+inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
+  | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
+  | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
+
+/-- A string is from the embedding or terminals iff every `Symbol` in it is. -/
+def FromEmbeddingOrTerminalString (G : g₀.Embedding g) (s : List (Symbol T g.NT)) : Prop :=
+  ∀ ⦃a : Symbol T g.NT⦄, a ∈ s → FromEmbeddingOrTerminal G a
+
+lemma fromEmbeddingOrTerminalString_singleton {s : Symbol T g.NT}
+    (hs : G.FromEmbeddingOrTerminal s) : G.FromEmbeddingOrTerminalString [s] := by
+  simpa [FromEmbeddingOrTerminalString] using hs
+
+/-- Production by `g` can be mirrored by `g₀` production if the first word does not contain any
+nonterminals that `g₀` lacks. -/
+lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Produces w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    g₀.Produces
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
+    G.FromEmbeddingOrTerminalString w₂ := by
+  rcases hG with ⟨r, rin, hr⟩
+  rcases hr.exists_parts with ⟨u, v, bef, aft⟩
+  rw [bef] at hw₁
+  have from_embedding_or_terminal_input :
+      G.FromEmbeddingOrTerminal (Symbol.nonterminal r.input) := by
+    apply hw₁
+    simp
+  revert from_embedding_or_terminal_input
+  generalize hr_eq : r.input = n
+  intro from_embedding_or_terminal_input
+  cases from_embedding_or_terminal_input with
+  | nonterminal n₀ =>
+    rcases G.preimage_of_rules r rin n₀ hr_eq.symm with ⟨r₀, hr₀, hrr₀⟩
+    constructor
+    · refine ⟨r₀, hr₀, ?_⟩
+      rw [ContextFreeRule.rewrites_iff]
+      use u.filterMap (Symbol.filterMap G.projectNT), v.filterMap (Symbol.filterMap G.projectNT)
+      have correct_inverse : Symbol.filterMap (T := T) G.projectNT ∘ Symbol.map G.embedNT =
+          Option.some := by
+        ext1 x
+        cases x
+        · rfl
+        rw [Function.comp_apply]
+        simp only [Symbol.filterMap, Symbol.map]
+        rw [G.projectNT_embedNT]
+        rfl
+      constructor
+      · have middle :
+          List.filterMap (Symbol.filterMap (T := T) G.projectNT)
+            [Symbol.nonterminal (G.embedNT r₀.input)] =
+            [Symbol.nonterminal r₀.input] := by
+          simp [List.filterMap, Symbol.filterMap, G.projectNT_embedNT]
+        simpa only [List.filterMap_append, ContextFreeRule.map, ← hrr₀, middle]
+          using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) bef
+      · simpa only [List.filterMap_append, ContextFreeRule.map,
+            List.filterMap_map, List.filterMap_some, ← hrr₀, correct_inverse]
+          using congr_arg (List.filterMap (Symbol.filterMap G.projectNT)) aft
+    · rw [aft, ← hrr₀]
+      simp only [FromEmbeddingOrTerminalString, List.forall_mem_append] at hw₁ ⊢
+      refine ⟨⟨hw₁.left.left, ?_⟩, hw₁.right⟩
+      intro a ha
+      cases a
+      · constructor
+      dsimp only [ContextFreeRule.map] at ha
+      rw [List.mem_map] at ha
+      rcases ha with ⟨s, -, hs⟩
+      rw [← hs]
+      cases s with
+      | terminal t => simp [Symbol.map] at hs
+      | nonterminal s' => exact FromEmbeddingOrTerminal.nonterminal s'
+
+private lemma derives_filterMap_aux {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    g₀.Derives
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) ∧
+    G.FromEmbeddingOrTerminalString w₂ := by
+  induction hG with
+  | refl => exact ⟨by rfl, hw₁⟩
+  | tail _ orig ih =>
+    have both := produces_filterMap orig ih.right
+    exact ⟨ContextFreeGrammar.Derives.trans_produces ih.left both.left, both.right⟩
+
+/-- Derivation by `g` can be mirrored by `g₀` derivation if the starting word does not contain
+any nonterminals that `g₀` lacks. -/
+lemma derives_filterMap {w₁ w₂ : List (Symbol T g.NT)}
+    (hG : g.Derives w₁ w₂) (hw₁ : G.FromEmbeddingOrTerminalString w₁) :
+    g₀.Derives
+      (w₁.filterMap (Symbol.filterMap G.projectNT))
+      (w₂.filterMap (Symbol.filterMap G.projectNT)) :=
+  (derives_filterMap_aux hG hw₁).left
+
+end ContextFreeGrammar.Embedding
+end embed_project
