@@ -374,7 +374,7 @@ instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) wh
     · rwa [leadingCoeff_nonneg_iff]
     · simpa
 
-instance [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
+instance [IsDomain R] [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
 
 end OrderedRing
 
