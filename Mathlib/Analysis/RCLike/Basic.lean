@@ -48,7 +48,7 @@ A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.le
 @[expose] public section
 
 open Fintype
-open scoped BigOperators ComplexConjugate
+open scoped ComplexConjugate
 
 section
 

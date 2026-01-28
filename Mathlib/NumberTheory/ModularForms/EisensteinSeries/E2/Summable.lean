@@ -43,7 +43,7 @@ open UpperHalfPlane hiding I σ
 
 open Filter Complex Finset SummationFilter
 
-open scoped Interval Real Topology BigOperators Nat ArithmeticFunction.sigma
+open scoped Interval Real Topology Nat ArithmeticFunction.sigma
 
 @[expose] public noncomputable section
 

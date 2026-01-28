@@ -35,7 +35,7 @@ noncomputable section
 open Circle Finset Function Module Multiplicative
 open Fintype (card)
 open Real hiding exp
-open scoped BigOperators DirectSum
+open scoped DirectSum
 
 variable {α : Type*} [AddCommGroup α] {n : ℕ} {a b : α}
 

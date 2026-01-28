@@ -30,7 +30,7 @@ shifted Legendre polynomials, derivative
 
 @[expose] public section
 
-open Nat BigOperators Finset
+open Nat Finset
 
 namespace Polynomial
 

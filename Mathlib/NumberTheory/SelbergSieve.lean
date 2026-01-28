@@ -34,7 +34,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 noncomputable section
 
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 
 open Finset Real Nat
 

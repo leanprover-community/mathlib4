@@ -21,7 +21,7 @@ public section
 open Finset hiding card
 open Fintype (card)
 open Function RCLike
-open scoped BigOperators ComplexConjugate DirectSum
+open scoped ComplexConjugate DirectSum
 
 variable {G H R : Type*}
 
