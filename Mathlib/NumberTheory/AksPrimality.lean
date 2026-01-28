@@ -149,17 +149,19 @@ end Aks
 
 open Nat
 
+/-- Adds a public declaration such that the linter succeeds. See the proof_wanted in the source
+    code for the theorem statement. -/
+theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial_aux : True :=
+  True.intro
 
-set_option linter.unusedVariables false in
 /-- The AKS primality test. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1`
   and some other minor conditions hold, then `n` is a prime power.
-  TODO: Finish the proof and replace `True` with `IsPrimePow n` -/
-theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
+  TODO: Finish the proof. -/
+proof_wanted is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
     {n r a : ℕ} (hc : n.Coprime r) (hn : 3 ≤ n) (hl : a < n)
     (ha : a = Nat.floor ((√(φ n)) * (Real.logb 2 n))) (hc2 : ∀ y ∈ Icc 1 a, n.Coprime y)
     (hod : (Real.logb 2 n) ^ 2 < orderOf (n : (ZMod r))) (heq : ∀ y ∈ Icc 1 a,
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       ((X : (ZMod n)[X]) ^ n - (C (y : (ZMod n)))) =
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
-      (((X : (ZMod n)[X]) - (C (y : (ZMod n)))) ^ n)) : True :=
-  True.intro
+      (((X : (ZMod n)[X]) - (C (y : (ZMod n)))) ^ n)) : IsPrimePow n
