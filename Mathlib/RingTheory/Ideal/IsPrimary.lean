@@ -46,11 +46,7 @@ theorem IsPrime.isPrimary {I : Ideal R} (hi : IsPrime I) : I.IsPrimary :=
   ⟨hi.1, fun {_ _} hxy => (hi.mem_or_mem hxy).imp id fun hyi => le_radical hyi⟩
 
 theorem isPrime_radical {I : Ideal R} (hi : I.IsPrimary) : IsPrime (radical I) :=
-  ⟨mt radical_eq_top.1 hi.1,
-   fun {x y} ⟨m, hxy⟩ => by
-    rw [mul_pow] at hxy; rcases (isPrimary_iff.mp hi).2 hxy with h | h
-    · exact Or.inl ⟨m, h⟩
-    · exact Or.inr (mem_radical_of_pow_mem h)⟩
+  I.colon_univ ▸ hi.isPrime_radical_colon
 
 theorem isPrimary_of_isMaximal_radical {I : Ideal R} (hi : IsMaximal (radical I)) :
     I.IsPrimary := by
