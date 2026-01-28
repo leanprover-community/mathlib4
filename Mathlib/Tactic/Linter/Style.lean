@@ -474,13 +474,13 @@ namespace Style.nameCheck
 
 /-- Is `s` a string consisting only of digits, uppercase letters and primes? -/
 def isAcronymLike (s : String) : Bool :=
-  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || c = '\'')
+  s.chars.all (fun c ↦ c.isDigit || (c.isAlpha && c.isUpper) || "'₀₁₂₃₄₅₆₇₈₉".contains c)
 
 /-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
 def allowed : Array String.Slice := #[
   "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
-  "IsBigO", "Lp", "Lq", -- TODO: should Lp and Lq be used in names? should it be `isBigO` instead?
-  "Gamma", "Gammaℝ", "Gammaℂ", -- TODO: want to remove this, probably!
+  "Lp", "Lq", -- TODO: should Lp and Lq be used in names?
+  "IicProdIoc", "IocProdIoc", -- TODO: should these be allowed?
 ]
 
 def isWronglyCased (s : String) : Bool :=
@@ -502,6 +502,8 @@ def isWronglyCased (s : String) : Bool :=
 #guard !isWronglyCased "L1"
 #guard !isWronglyCased "L1H'"
 #guard !isWronglyCased "L1"
+#guard !isWronglyCased "L₁"
+#guard !isWronglyCased "I₀'"
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
