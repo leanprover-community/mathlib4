@@ -47,6 +47,10 @@ theorem hausdorffEntourage_mono {U V : SetRel α α} (h : U ⊆ V) :
 theorem monotone_hausdorffEntourage : Monotone (hausdorffEntourage (α := α)) :=
   fun _ _ => hausdorffEntourage_mono
 
+@[simp]
+theorem hausdorffEntourage_id : hausdorffEntourage (.id : SetRel α α) = .id := by
+  simp_rw [hausdorffEntourage, preimage_id, image_id, ← subset_antisymm_iff, SetRel.id]
+
 instance isRefl_hausdorffEntourage (U : SetRel α α) [U.IsRefl] :
     (hausdorffEntourage U).IsRefl :=
   ⟨fun _ => ⟨U.self_subset_preimage _, U.self_subset_image _⟩⟩
@@ -226,6 +230,11 @@ theorem isUniformInducing_closure : IsUniformInducing (closure (X := α)) := by
 theorem nhds_closure (s : Set α) : 𝓝 (closure s) = 𝓝 s := by
   simp_rw +singlePass [isUniformInducing_closure.isInducing.nhds_eq_comap, closure_closure]
 
+instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
+  rw [discreteUniformity_iff_setRelId_mem_uniformity]
+  convert Filter.mem_lift' (DiscreteUniformity.relId_mem_uniformity α)
+  rw [hausdorffEntourage_id]
+
 end UniformSpace.hausdorff
 
 /-- When `Set` is equipped with the Hausdorff uniformity, taking the image under a uniformly
@@ -337,6 +346,9 @@ theorem totallyBounded_subsets_of_totallyBounded {t : Set α} (ht : TotallyBound
     TotallyBounded {F : Closeds α | ↑F ⊆ t} :=
   totallyBounded_preimage isUniformEmbedding_coe.isUniformInducing ht.powerset_hausdorff
 
+instance [DiscreteUniformity α] : DiscreteUniformity (Closeds α) :=
+  isUniformEmbedding_coe.discreteUniformity
+
 section T0Space
 
 variable [T0Space α]
@@ -362,6 +374,10 @@ theorem isClosedEmbedding_singleton : Topology.IsClosedEmbedding ({·} : α → 
     rw [← SetLike.coe_injective.preimage_image (s := Set.range ({·})), ← Set.range_comp]
     exact UniformSpace.hausdorff.isClosedEmbedding_singleton.isClosed_range.preimage
       uniformContinuous_coe.continuous
+
+@[simp]
+theorem discreteUniformity_iff : DiscreteUniformity (Closeds α) ↔ DiscreteUniformity α :=
+  ⟨fun _ => isUniformEmbedding_singleton.discreteUniformity, fun _ => inferInstance⟩
 
 end T0Space
 
@@ -474,6 +490,13 @@ theorem _root_.IsUniformEmbedding.compacts_map {f : α → β} (hf : IsUniformEm
   __ := hf.isUniformInducing.compacts_map
   injective := map_injective hf.uniformContinuous.continuous hf.injective
 
+instance [DiscreteUniformity α] : DiscreteUniformity (Compacts α) :=
+  isUniformEmbedding_coe.discreteUniformity
+
+@[simp]
+theorem discreteUniformity_iff : DiscreteUniformity (Compacts α) ↔ DiscreteUniformity α :=
+  ⟨fun _ => isUniformEmbedding_singleton.discreteUniformity, fun _ => inferInstance⟩
+
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.NonemptyCompacts
@@ -555,5 +578,12 @@ theorem _root_.IsUniformEmbedding.nonemptyCompacts_map {f : α → β} (hf : IsU
     IsUniformEmbedding (NonemptyCompacts.map f hf.uniformContinuous.continuous) where
   __ := hf.isUniformInducing.nonemptyCompacts_map
   injective := map_injective hf.uniformContinuous.continuous hf.injective
+
+instance [DiscreteUniformity α] : DiscreteUniformity (NonemptyCompacts α) :=
+  isUniformEmbedding_coe.discreteUniformity
+
+@[simp]
+theorem discreteUniformity_iff : DiscreteUniformity (NonemptyCompacts α) ↔ DiscreteUniformity α :=
+  ⟨fun _ => isUniformEmbedding_singleton.discreteUniformity, fun _ => inferInstance⟩
 
 end TopologicalSpace.NonemptyCompacts

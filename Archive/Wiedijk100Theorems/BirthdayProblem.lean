@@ -54,10 +54,6 @@ We define this to be the conditional counting measure. -/
 noncomputable instance measureSpace : MeasureSpace (Fin n → Fin m) :=
   ⟨uniformOn Set.univ⟩
 
--- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
-instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
-  uniformOn_isProbabilityMeasure Set.finite_univ Set.univ_nonempty
-
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
   rw [volume, measureSpace, uniformOn_univ, Measure.count_apply_finite]
