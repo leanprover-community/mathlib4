@@ -532,6 +532,7 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
         --     Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
         --     depending on the item you're referring to."
 
+open Batteries.Tactic.Lint in
 /-- Linter that checks for declarations with uppercase middle components: such naming definitely
 violates mathlib's naming convention. -/
 @[env_linter] public def badNamingUppercaseMiddleComponent : Batteries.Tactic.Lint.Linter where
@@ -539,8 +540,7 @@ violates mathlib's naming convention. -/
   errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component.\
     These are very likely violations of mathlib's naming convention."
   test declName := do
-    -- TODO: need more robust test!
-    if declName.toString.startsWith "_aux_" || declName.toString.startsWith "_private" then return none
+    if (← isAutoDecl declName) then return none
     let parts := declName.toString.splitOn "_" |>.drop 1
     let bad := parts.filter (isWronglyCased ·)
     if bad.isEmpty then return none
@@ -548,17 +548,6 @@ violates mathlib's naming convention. -/
     return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
         Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
         depending on the item you're referring to."
-
-/-- Linter that checks for definitions whose name contains an underscore:
-this violates the naming convention. -/
-@[env_linter] public def defsWithUnderscore : Batteries.Tactic.Lint.Linter where
-  noErrorsFound := "no definitions with an underscore in their name found."
-  errorsFound := "FOUND definitions with an underscore in their name."
-  test declName := do
-    if (← getEnv).isSafeDefinition declName && declName.toString.contains "_" then
-      return m!"The definition `{declName}` contains an underscore. \
-        This almost surely violates mathlib's naming convention; use UpperCamelCase instead."
-    else return none
 
 initialize addLinter doubleUnderscore
 

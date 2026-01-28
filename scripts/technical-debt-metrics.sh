@@ -119,7 +119,6 @@ printf '%s|disabled deprecation lints\n' "$(( deprecs - doubleDeprecs ))"
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
 printf '%s|%s\n' "$(grep -c 'badNamingUppercaseMiddleComponent' scripts/nolints.json)" "misnamed declarations: an uppercased middle component"
-printf '%s|%s\n' "$(grep -c 'defsWithUnderscore' scripts/nolints.json)" "misnamed declarations: an uppercased middle component"
 printf '%s|%s\n' "$(grep -c 'tacticDocs' scripts/nolints.json)" "undocumented tactics"
 # We count the number of large files, making sure to avoid counting the test file `MathlibTest/Lint.lean`.
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
