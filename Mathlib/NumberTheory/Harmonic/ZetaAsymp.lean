@@ -266,8 +266,8 @@ lemma continuousOn_term (n : ℕ) :
     exact_mod_cast term_welldef (by lia : 0 < (n + 1)) zero_lt_one
   · rw [ae_restrict_iff' measurableSet_Ioc]
     filter_upwards with x hx
-    refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ continuousAt_const.div ?_ ?_)
-    · exact continuousAt_const.rpow (continuousAt_id.add continuousAt_const) (Or.inr (by linarith))
+    refine continuousOn_of_forall_continuousAt (fun s (hs : 1 ≤ s) ↦ ContinuousAt.const.div ?_ ?_)
+    · exact ContinuousAt.const.rpow (by fun_prop) (Or.inr (by linarith))
     · exact (rpow_pos_of_pos ((Nat.cast_pos.mpr (by simp)).trans hx.1) _).ne'
 
 lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by

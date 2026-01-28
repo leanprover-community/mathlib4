@@ -412,7 +412,7 @@ lemma LSeries_vonMangoldt_eq_deriv_riemannZeta_div {s : ℂ} (hs : 1 < s.re) :
   suffices deriv (L 1) s = deriv riemannZeta s by
     rw [LSeries_vonMangoldt_eq hs, ← LSeries_one_eq_riemannZeta hs, this]
   refine Filter.EventuallyEq.deriv_eq <| Filter.eventuallyEq_iff_exists_mem.mpr ?_
-  exact ⟨{z | 1 < z.re}, (isOpen_lt continuous_const continuous_re).mem_nhds hs,
+  exact ⟨{z | 1 < z.re}, (isOpen_lt .const continuous_re).mem_nhds hs,
     fun _ ↦ LSeries_one_eq_riemannZeta⟩
 
 end ArithmeticFunction
