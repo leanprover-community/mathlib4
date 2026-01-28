@@ -52,6 +52,8 @@ example (a n s : ℕ) : a * (n - s) = (n - s) * a := by ring
 example {α} [CommRing α] (x : α) : (2 : ℕ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (2 : ℤ) • x = x + x := by ring
 example {α} [CommRing α] (x : α) : (-2 : ℤ) • x = -x - x := by ring
+example (x y : ℕ) : x • y = y • x := by ring
+example (x y : ℤ) : x • y = y • x := by ring
 
 section Rat
 
@@ -225,6 +227,18 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   trivial
 
 end
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℕ) (r : ℝ) : n • r = n * r := by
+  ring_nf
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring
+
+example (n : ℤ) (r : ℝ) : n • r = n * r := by
+  ring_nf
 
 -- new behaviour as of https://github.com/leanprover-community/mathlib4/issues/27562
 -- (Previously, because of a metavariable instantiation issue, the tactic succeeded as a no-op.)
