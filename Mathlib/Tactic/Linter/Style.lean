@@ -507,7 +507,7 @@ this violates the naming convention. -/
     unless (((← getEnv).find? declName).get!).isDefinition && !(← isAutoDecl declName) do return none
     let s := declName.toString
     -- TODO: is there a more elegant way to check for the first condition?
-    if s.contains "«term_" || s.startsWith "LibraryNote." then return none
+    if s.contains "«term" || s.startsWith "LibraryNote." then return none
     if declName.toString.contains "_" then
       return m!"The definition `{declName}` contains an underscore. \
         This almost surely violates mathlib's naming convention; use UpperCamelCase instead."
