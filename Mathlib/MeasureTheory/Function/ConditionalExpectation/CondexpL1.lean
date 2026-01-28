@@ -503,7 +503,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [OrderClosedTopology E] [IsOrderedAddMonoid E]
+    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

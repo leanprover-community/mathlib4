@@ -142,3 +142,17 @@ info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => 
 run_meta
   Lean.logInfo (← Lean.getConstInfo ``lt_le_trans).value!
   Lean.logInfo (← Lean.getConstInfo ``le_refl').value!
+
+-- Test that we do not translate the order on `Prop`
+instance Prop.le : LE Prop :=
+  ⟨(· → ·)⟩
+
+@[to_dual le_of_imp']
+theorem Prop.le_of_imp (_h : a ≤ b) {p q : Prop} : (p → q) → p ≤ q := id
+
+-- Dualize `a ≤ b` but not `p ≤ q`
+/--
+info: «Prop».le_of_imp' {α : Type} [PartialOrder α] (a b : α) (_h : b ≤ a) {p q : Prop} : (p → q) → p ≤ q
+-/
+#guard_msgs in
+#check Prop.le_of_imp'
