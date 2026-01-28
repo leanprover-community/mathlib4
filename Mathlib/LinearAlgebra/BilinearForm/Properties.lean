@@ -273,21 +273,20 @@ end BilinForm
 namespace BilinForm
 
 
--- TODO: This originally involved only left-separating, and was changed to be symmetric to match
--- `LinearMap.Nondegenerate`. Eventually it should be removed; but we cannot use the usual
--- deprecation mechanism for this since the two declarations involved have the same name
--- (but are in different namespaces).
-
+-- Note: This originally involved only left-separating, and was changed (January 2026, PR #34110)
+-- to be symmetric to match `LinearMap.Nondegenerate`. See discussion at this Zulip thread:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Nondegenerate.20bilinear.20.2F.20quadratic.20forms/with/568863325
+-- TODO: Should it be removed entirely?
 /--
 A nondegenerate bilinear form is a bilinear form that is both left-separating and
 right-separating, i.e. if `B x y = 0` for all `y` then `x = 0`, and if `B x y = 0` for all `x` then
 `y = 0`.
 
-(Note that these conditions are independent of each other in general, but in the common case of
+Note that these conditions are independent of each other in general, but in the common case of
 finite-dimensional vector spaces (or, more generally, finite free modules over an integral
 domain), either of these conditions implies the other; see
 `LinearMap.BilinForm.Nondegenerate.ofSeparatingLeft` and
-`LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot`, proved in a later file.)
+`LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot`, proved in a later file.
 -/
 abbrev Nondegenerate (B : BilinForm R M) : Prop :=
   LinearMap.Nondegenerate B
