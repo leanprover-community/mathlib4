@@ -34,8 +34,8 @@ private partial def getStructureDataProjections (e : Expr) (acc : Array (List Na
   if let some structIdx? := (← get).get? structName then
     if let some structIdx := structIdx? then -- `structName` may not have actually been a structure
       if let some parentIdx := parentIdx? then
-        /- `e` has already been recorded, but is being encountered as the child of a new parent at
-        `parentIdx`. Add this parent index to `e`'s original parent indices. -/
+        -- `e` has already been recorded, but is being encountered as the child of a new parent at
+        -- `parentIdx`. Add this parent index to `e`'s original parent indices.
         return acc.modify structIdx fun (parents, struct) => (parentIdx :: parents, struct)
     return acc
   if let some info := getStructureInfo? (← getEnv) structName then
@@ -85,10 +85,11 @@ def Overlaps.containsOverlapOn (fvar₁ fvar₂ : Expr) (cls : Expr) (overlaps :
 /-- Find data-carrying overlaps between the current local instances of the `MetaM` context. -/
 def findOverlappingDataInstances : MetaM Overlaps := do
   let mut overlaps : Overlaps := {}
-  /- Associates all (data-carrying) typeclasses encountered to the first fvar that had a projection
-  into this given typeclass. Since it records all typeclasses indiscriminately, it is distinct from
-  `overlaps`. The `Bool` indicates whether the given class key is exactly the type of the
-  associated `fvar` value. We use this for error reporting. -/
+  /- Associates all (data-carrying) typeclasses encountered to the first fvar that has a projection
+  into this given typeclass, allowing us to detect when a projection has been seen before.
+
+  The `Bool` indicates whether the given class key is exactly the type of the associated fvar
+  value. We use this for error reporting. -/
   let mut insts : Std.HashMap Expr (Expr × Bool) := {}
   for { fvar := fvar₁, .. } in ← getLocalInstances do
     unless (← fvar₁.fvarId!.getBinderInfo).isInstImplicit do continue
@@ -106,6 +107,8 @@ def findOverlappingDataInstances : MetaM Overlaps := do
           ((idx < parentIdx) && insts[parentClass]?.isEqSome (fvar₂, false))
           -- If `fvar₁` and `fvar₂` already overlap on a parent, ignore this redundant overlap.
             || overlaps.containsOverlapOn fvar₁ fvar₂ parentClass
+        -- See if any parent of the current projection, starting with the immediate `parentIdxs`,
+        -- imply it is redundant.
         unless hasParentP! projClasses shouldIgnoreCurrent parentIdxs do
           overlaps := overlaps.insert cls (fvar₁, parentIdxs.isEmpty) (fvar₂, isTypeOfFVar₂)
       else
