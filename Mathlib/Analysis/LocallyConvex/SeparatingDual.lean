@@ -148,23 +148,20 @@ section algebra
 variable {S : Type*} [CommSemiring S] [Module S V] [SMulCommClass R S V] [Algebra S R]
   [IsScalarTower S R V] [ContinuousConstSMul S V]
 
-private theorem _root_.ContinuousLinearMap.mem_subalgebraCenter_iff {f : V →L[R] V} :
-    f ∈ Subalgebra.center S (V →L[R] V) ↔ ∃ α ∈ Subalgebra.center S R, f = α • .id R V := by
-  simp only [Subalgebra.mem_center_iff, ContinuousLinearMap.ext_iff, ContinuousLinearMap.mul_apply]
-  refine ⟨fun h ↦ ?_, by simp_all⟩
-  by_cases! Subsingleton V
-  · exact ⟨0, by simp, fun _ ↦ Subsingleton.allEq _ _⟩
-  obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
-  have := fun y ↦ by simpa [hg] using h (g.smulRight y) x
-  exact ⟨g (f x), by simp [this, mul_comm]⟩
-
 /-- The center of continuous linear maps on a topological vector space
 with separating dual is trivial, in other words, it is a central algebra. -/
 instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R] :
-    Algebra.IsCentral S (V →L[R] V) where out T hT :=
-  have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ T.mem_subalgebraCenter_iff.mp hT
-  ⟨y, by aesop⟩
+    Algebra.IsCentral S (V →L[R] V) where
+  out f hf := by
+    suffices ∃ α ∈ Subalgebra.center S R, f = α • .id R V from
+      have ⟨_, ⟨y, _⟩, _⟩ := Algebra.IsCentral.center_eq_bot S R ▸ this
+      ⟨y, by aesop⟩
+    nontriviality V
+    obtain ⟨x, hx⟩ := exists_ne (0 : V)
+    obtain ⟨g, hg⟩ := exists_eq_one (R := R) hx
+    simp only [Subalgebra.mem_center_iff, ContinuousLinearMap.ext_iff] at hf ⊢
+    have := fun y ↦ by simpa [hg] using hf (g.smulRight y) x
+    exact ⟨g (f x), by simp [this, mul_comm]⟩
 
 end algebra
 
