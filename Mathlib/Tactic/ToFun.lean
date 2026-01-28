@@ -31,19 +31,25 @@ theorem Differentiable.mul (hf : Differentiable 𝕜 f) (hg : Differentiable �
 will generate a new lemma `Differentiable.fun_mul` with conclusion
 `Differentiable 𝕜 fun x => f x * g x`.
 
-Use the `to_fun (attr := ...)` syntax to add the same attribute to both declarations.
+You can specify the name of the new declaration manually, as in `@[to_fun Differentiable.fun_mul]`.
+
+Use the `to_fun (attr := ...)` (or `to_fun (attr := ...) new_name`) syntax
+to add the same attribute to both declarations.
 -/
-syntax (name := to_fun) "to_fun" optAttrArg : attr
+syntax (name := to_fun) "to_fun" optAttrArg (ppSpace ident)? : attr
 
 initialize registerBuiltinAttribute {
   name := `to_fun
   descr := "generate a copy of a lemma where point-free functions are expanded to their `fun` form"
   applicationTime := .afterCompilation
   add := fun src ref kind => match ref with
-  | `(attr| to_fun $optAttr) => MetaM.run' do
+  | `(attr| to_fun $optAttr $[$id]?) => MetaM.run' do
+    let name := match id with
+    | some name => name.getId
+    | none => src.appendBefore "fun_"
     if (kind != AttributeKind.global) then
       throwError "`to_fun` can only be used as a global attribute"
-    addRelatedDecl src (src.appendBefore "fun_") ref optAttr
+    addRelatedDecl src name ref optAttr
       (docstringPrefix? := s!"Eta-expanded form of `{src}`") (hoverInfo := true)
       fun value levels => do
       let type ← inferType value
