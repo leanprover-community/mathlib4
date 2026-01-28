@@ -41,7 +41,7 @@ This file defines the following linters:
 - the `show` linter checks for `show`s that change the goal and should be replaced by `change`
 - the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
   by containing a double underscore.
-  The `badNamingUppercaseMiddleComponent` environment linter checks for declarations whose names
+  The `badNamingUppercaseComponent` environment linter checks for declarations whose names
   contains an underscore, with an uppercase middle component: this is violation mathlib's naming
   convention.
 
@@ -537,15 +537,15 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
         --   Linter.logLint linter.style.nameCheck id
         --     m!"The component `{bad}` of `{id}` starts in uppercase, but is not an acronym. \
         --     Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
-        --     depending on the item you're referring to."
+        --     depending on the type of this declaration."
 
 open Batteries.Tactic.Lint in
-/-- Linter that checks for declarations with uppercase middle components: such naming definitely
-violates mathlib's naming convention. -/
-@[env_linter] public def badNamingUppercaseMiddleComponent : Batteries.Tactic.Lint.Linter where
-  noErrorsFound := "no declarations with bad uppercase middle components found."
+/-- Linter that checks for declarations with uppercase middle components: such naming violates
+rule 5 of mathlib's naming convention. -/
+@[env_linter] public def badNamingUppercaseComponent : Batteries.Tactic.Lint.Linter where
+  noErrorsFound := "no declarations with uppercase middle components found."
   errorsFound := "FOUND declaration(s) with underscores with an uppercase middle component.\
-    These are very likely violations of mathlib's naming convention."
+    These names violate rule 5 of mathlib's naming convention."
   test declName := do
     if (← isAutoDecl declName) then return none
     let parts := declName.toString.splitOn "_" |>.drop 1
@@ -554,7 +554,7 @@ violates mathlib's naming convention. -/
     let aux := ", ".intercalate bad
     return m!"The component(s) `{aux}` of `{declName}` start(s) in uppercase, but is not an acronym. \
         Please follow the mathlib naming convention; use lowerCamelCase or snake_case \
-        depending on the item you're referring to."
+        depending on the type of this declaration."
 
 initialize addLinter doubleUnderscore
 
