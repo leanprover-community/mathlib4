@@ -68,24 +68,21 @@ variable {R R' m n : Type*} [CommSemiring R] [CommRing R'] [Fintype n] [Decidabl
 @[simp] theorem Matrix.toLin'_hadamard_eq_convMul (A B : Matrix m n R) :
     (A ⊙ B).toLin' = A.toLin' * B.toLin' := by simp [← toMatrix'.injective.eq_iff]
 
-theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff {f : (n → R) →ₗ[R] m → R} :
+theorem LinearMap.ConvolutionProduct.isIdempotentElem_iff_toMatrix' {f : (n → R) →ₗ[R] m → R} :
     IsIdempotentElem f ↔ ∀ i j, IsIdempotentElem (f.toMatrix' i j) := by
   simp [IsIdempotentElem, ← toMatrix'.injective.eq_iff, hadamard_self_eq_self_iff]
-
-theorem Matrix.ConvolutionProduct.isIdempotentElem_toLin'_iff {A : Matrix m n R} :
-    IsIdempotentElem A.toLin' ↔ ∀ i j, IsIdempotentElem (A i j) := by
-  simp only [ConvolutionProduct.isIdempotentElem_iff, toMatrix'_toLin']
 
 variable (K) in
 /-- A simple finite graph is idempotent with respect to the convolutive product. -/
 @[simp] theorem SimpleGraph.convolutionProduct_isIdempotentElem_toLin'_adjMatrix
     [IsLeftCancelMulZero R] : IsIdempotentElem (G.adjMatrix R).toLin' := by
-  grind [ConvolutionProduct.isIdempotentElem_toLin'_iff, adjMatrix_apply,
-    IsIdempotentElem.iff_eq_zero_or_one]
+  aesop (add simp [IsIdempotentElem, hadamard_self_eq_self_iff])
 
 /-- The matrix of the convolutive unit is all `1`s. -/
 @[simp] theorem LinearMap.toMatrix'_convOne :
     (1 : (n → R) →ₗ[R] m → R).toMatrix' = .of fun _ _  ↦ 1 := by simp [counit, ← ext_iff]
+
+@[simp] theorem Matrix.toLin'_of_one : (of fun _ _ ↦ 1 : Matrix m n R).toLin' = 1 := by aesop
 
 variable (n R') in
 /-- The matrix of `1 - id` is exactly the adjacency matrix of `SimpleGraph.completeGraph`. -/
@@ -111,7 +108,8 @@ theorem LinearMap.ConvolutionProduct.IsIdempotentElem.intrinsicStar_isSelfAdjoin
     [IsLeftCancelMulZero R] [StarRing R]
     {f : (n → R) →ₗ[R] m → R} (hf : IsIdempotentElem f) : IsSelfAdjoint f := by
   classical
-  simp_rw [ConvolutionProduct.isIdempotentElem_iff, IsIdempotentElem.iff_eq_zero_or_one] at hf
+  simp_rw [ConvolutionProduct.isIdempotentElem_iff_toMatrix',
+    IsIdempotentElem.iff_eq_zero_or_one] at hf
   rw [IsSelfAdjoint, ← toMatrix'.injective.eq_iff]
   ext i j
   obtain (h | h) := hf i j <;> simp_all
@@ -129,7 +127,7 @@ theorem Matrix.isAdjMatrix_iff_toLin' [IsLeftCancelMulZero R] {A : Matrix n n R}
     A.IsAdjMatrix ↔ IsIdempotentElem A.toLin' ∧
       star A.toLin' = (star A).toLin' ∧ .id * A.toLin' = 0 := by
   rw [isAdjMatrix_iff_hadamard, ← isSymm_iff_intrinsicStar_toLin',
-    ConvolutionProduct.isIdempotentElem_iff, ← toMatrix'.injective.eq_iff]
+    ConvolutionProduct.isIdempotentElem_iff_toMatrix', ← toMatrix'.injective.eq_iff]
   simp [hadamard_self_eq_self_iff, one_hadamard_eq_zero_iff]
 
 end
