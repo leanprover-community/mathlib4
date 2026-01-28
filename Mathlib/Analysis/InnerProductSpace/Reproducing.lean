@@ -130,9 +130,9 @@ theorem kernelPossemiDef : (kernel H).PosSemidef := by
   refine ⟨isHermitian_kernel H, fun s ↦ (ContinuousLinearMap.isPositive_iff' _).mpr ⟨?_,fun v ↦ ?_⟩⟩
   · rw [IsSelfAdjoint, sub_zero, star_finsuppSum, Finsupp.sum_comm]
     simp [← mul_assoc, Matrix.IsHermitian.apply (isHermitian_kernel H)]
-  · simp [Finsupp.sum_apply'', Finsupp.sum_inner', star, adjoint_inner_left,
+  · simp [Finsupp.sum_apply'', Finsupp.sum_inner, star, adjoint_inner_left,
       kernel_inner, -inner_kerFun, -kerFun_inner]
-    simp only [← Finsupp.sum_inner', ← Finsupp.inner_sum',
+    simp only [← Finsupp.sum_inner, ← Finsupp.inner_sum,
       inner_self_eq_norm_sq_to_K, RCLike.ofReal_nonneg, norm_nonneg, pow_succ_nonneg]
 
 end RKHS
@@ -165,7 +165,7 @@ theorem PosSemidef_iff : K.PosSemidef ↔ K.IsHermitian ∧
   simp +contextual only [Matrix.PosSemidef, nonneg_iff_isPositive, isPositive_def',
     reApplyInnerSelf_apply, and_congr_right_iff, Hermitian_IsSelfAdjoint_Finsupp_sum, true_and]
   simp only [star_eq_adjoint, zero_apply, add_apply, implies_true, Finsupp.sum_apply'', coe_mul,
-    Function.comp_apply, Finsupp.sum_inner', this]
+    Function.comp_apply, Finsupp.sum_inner, this]
   congr!
   refine (subsingleton_or_nontrivial V).elim (fun h ↦ ?_) (fun _ ↦ ?_) --nontriviality?
   · have : ∀ v : V, v = 0 := fun v ↦ Subsingleton.elim v 0
