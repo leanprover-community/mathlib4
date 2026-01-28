@@ -155,22 +155,14 @@ variable {A : Set M}
 /-- The closure of a set with the Tarski-Vaught property equals to itself. -/
 theorem closure_eq_self (hA : L.TarskiVaught A) :
     closure L A = A := by
-  refine Eq.symm (Subset.antisymm ?_ ?_)
-  · exact subset_closure
-  · intro x hx
-    simp only [SetLike.mem_coe, mem_closure_iff_exists_term] at hx
-    obtain ⟨t,ht⟩ := hx
-    let D : Set M := {x}
-    have : A.Definable₁ L D := by
-      simp only [Definable₁, Definable]
-      exists (Term.var 0).equal (t.relabel Sum.inl).varsToConstants
-      ext v
-      simp only [Fin.isValue, mem_singleton_iff, mem_setOf_eq, Formula.realize_equal,
-        Term.realize_var, D, ←ht]
-      refine Eq.congr_right ?_
-      simp only [Term.realize_varsToConstants, coe_con, Term.realize_relabel, Sum.elim_comp_inl]
-    specialize hA D (singleton_nonempty x) this
-    exact singleton_inter_nonempty.mp hA
+  refine Subset.antisymm ?_ subset_closure
+  rw [coe_closure_eq_range_term_realize]
+  intro x hx
+  have : A.Definable₁ L {x} := by
+    obtain ⟨t, rfl⟩ := hx
+    use (Term.var 0).equal (t.relabel Sum.inl).varsToConstants
+    simp [Set.ext_iff]
+  exact singleton_inter_nonempty.mp <| hA _ (singleton_nonempty x) this
 
 /-- The closure of a set with the Tarski-Vaught property is an elementary substructure. -/
 theorem isElementary_closure (hA : L.TarskiVaught A) :
