@@ -497,23 +497,21 @@ theorem U_eq_two_mul_T_add_U (n : ℤ) : U R (n + 2) = 2 * T R (n + 2) + U R n :
   linear_combination (norm := ring_nf) - (two_mul_T_eq_U_sub_U R n)
 
 theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T R m) '' Set.Icc 0 n) := by
-  induction n using Nat.twoStepInduction
-  case zero => simp
-  case one =>
+  induction n using Nat.twoStepInduction with
+  | zero => simp
+  | one =>
     rw [show U R (1 : ℕ) = 2 * T R 1 by simp, ← smul_eq_mul]; norm_cast
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨1, by simp⟩)
-  case more n h₀ _ =>
+  | more n h₀ _ =>
     push_cast; rw [U_eq_two_mul_T_add_U, ← smul_eq_mul]; norm_cast
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     · exact Submodule.smul_of_tower_mem _ 2
         (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
 /-- `T` defines an injection from `ℕ` to `R[X]` given by `T R n` -/
-noncomputable def Tnat [IsDomain R] [NeZero (2 : R)] : ℕ ↪ R[X] :=
-{
+noncomputable def Tnat [IsDomain R] [NeZero (2 : R)] : ℕ ↪ R[X] where
   toFun m := T R m
   inj' m₁ m₂ hm := by convert congrArg Polynomial.degree hm; simp [degree_T]
-}
 
 theorem setOf_T_eq_map [IsDomain R] [NeZero (2 : R)] (n : ℕ) :
     {T R m | m ∈ Finset.Icc 0 n} = (Finset.Icc 0 n).map (Tnat (R := R)) := by grind
