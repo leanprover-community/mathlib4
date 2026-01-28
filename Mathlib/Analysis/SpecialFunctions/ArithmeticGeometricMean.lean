@@ -248,18 +248,12 @@ lemma agm_lt_max_of_ne (hn : x ≠ y) : agm x y < max x y := by
 
 /-- The AGM distributes over multiplication. -/
 lemma agm_mul_distrib {k : ℝ≥0} : agm (k * x) (k * y) = k * agm x y := by
-  simp_rw [agm, agmSequences, mul_iInf]
+  simp_rw [agm, mul_iInf]
   congr! with n
-  suffices (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (k * x, k * y) =
-      k • (fun p ↦ (sqrt (p.1 * p.2), (p.1 + p.2) / 2))^[n + 1] (x, y) by
-    simpa using congr_arg Prod.snd this
-  set m := n + 1
-  induction m with
-  | zero => simp
-  | succ m ih =>
-    simp_rw [iterate_succ', comp_apply, ih, Prod.smul_mk, Prod.smul_fst, Prod.smul_snd, smul_eq_mul]
-    congr
-    · rw [mul_mul_mul_comm, sqrt_mul, sqrt_mul_self]
-    · rw [← mul_add, mul_div_assoc]
+  induction n generalizing x y with
+  | zero => simp [← mul_div_assoc, mul_add]
+  | succ n ih =>
+    rw [agmSequences_succ, ← mul_add, mul_div_assoc, mul_mul_mul_comm,
+      ← sq, sqrt_mul, sqrt_sq, ih, agmSequences_succ]
 
 end NNReal
