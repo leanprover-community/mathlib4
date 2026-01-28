@@ -3,10 +3,11 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Tactic.Attr.Register
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Lint
+module
+
+public import Mathlib.Tactic.Attr.Register
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Functors
@@ -25,6 +26,8 @@ This module provides additional lemmas, definitions, and instances for `Functor`
 
 functor, applicative
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -53,12 +56,6 @@ theorem Functor.ext {F} :
     exact E1.trans E2.symm
 
 end Functor
-
-/-- Introduce `id` as a quasi-functor. (Note that where a lawful `Monad` or
-`Applicative` or `Functor` is needed, `Id` is the correct definition). -/
-@[deprecated "Use `pure : α → Id α` instead." (since := "2025-05-21")]
-def id.mk {α : Sort u} : α → id α :=
-  id
 
 namespace Functor
 

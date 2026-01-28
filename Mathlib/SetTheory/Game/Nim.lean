@@ -3,10 +3,12 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Markus Himmel
 -/
-import Mathlib.SetTheory.Game.Birthday
-import Mathlib.SetTheory.Game.Impartial
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Birthday
+public import Mathlib.SetTheory.Game.Impartial
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Specific.Nim` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -28,10 +30,12 @@ The pen-and-paper definition of nim defines the possible moves of `nim o` to be 
 However, this definition does not work for us because it would make the type of nim
 `Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
 Sprague-Grundy theorem, since that requires the type of `nim` to be
-`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.toType` for the possible
+`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.ToType` for the possible
 moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert an ordinal less than
 `o` into a left or right move of `nim o`, and vice versa.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -48,32 +52,28 @@ namespace PGame
 /-- The definition of single-heap nim, which can be viewed as a pile of stones where each player can
   take a positive number of stones from it on their turn. -/
 noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
-  ⟨o.toType, o.toType,
-    fun x => nim ((enumIsoToType o).symm x).val,
-    fun x => nim ((enumIsoToType o).symm x).val⟩
+  ⟨o.ToType, o.ToType,
+    fun x => nim x,
+    fun x => nim x⟩
 termination_by o
-decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
+decreasing_by all_goals exact x.toOrd.prop
 
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
+theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.ToType := by rw [nim]; rfl
+theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.ToType := by rw [nim]; rfl
 
 theorem moveLeft_nim_heq (o : Ordinal) :
-    (nim o).moveLeft ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
-
-@[deprecated (since := "2025-07-05")] alias moveLeft_nim_hEq := moveLeft_nim_heq
+    (nim o).moveLeft ≍ fun i : o.ToType => nim i := by rw [nim]; rfl
 
 theorem moveRight_nim_heq (o : Ordinal) :
-    (nim o).moveRight ≍ fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
-
-@[deprecated (since := "2025-07-05")] alias moveRight_nim_hEq := moveRight_nim_heq
+    (nim o).moveRight ≍ fun i : o.ToType => nim i := by rw [nim]; rfl
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
+  ToType.mk.toEquiv.trans (Equiv.cast (leftMoves_nim o).symm)
 
 /-- Turns an ordinal less than `o` into a right move for `nim o` and vice versa. -/
 noncomputable def toRightMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).RightMoves :=
-  (enumIsoToType o).toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
+  ToType.mk.toEquiv.trans (Equiv.cast (rightMoves_nim o).symm)
 
 @[simp]
 theorem toLeftMovesNim_symm_lt {o : Ordinal} (i : (nim o).LeftMoves) :
@@ -163,7 +163,7 @@ def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
-  all_goals simpa [enumIsoToType] using nimZeroRelabelling
+  all_goals simpa [ToType.toOrd, ToType.mk] using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=
   nimOneRelabelling.equiv
@@ -189,7 +189,7 @@ instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
 
 theorem nim_fuzzy_zero_of_ne_zero {o : Ordinal} (ho : o ≠ 0) : nim o ‖ 0 := by
   rw [Impartial.fuzzy_zero_iff_lf, lf_zero_le]
-  use toRightMovesNim ⟨0, Ordinal.pos_iff_ne_zero.2 ho⟩
+  use toRightMovesNim ⟨0, pos_iff_ne_zero.2 ho⟩
   simp
 
 @[simp]

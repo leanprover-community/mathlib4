@@ -3,10 +3,13 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Yury Kudryashov
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.Lift
-import Mathlib.Topology.Defs.Basic
+module
+
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Tactic.Continuity
+public import Mathlib.Tactic.Lift
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Continuous bundled maps
@@ -16,6 +19,8 @@ In this file we define the type `ContinuousMap` of continuous bundled maps.
 We use the `DFunLike` design, so each type of morphisms has a companion typeclass
 which is meant to be satisfied by itself and all stricter types.
 -/
+
+@[expose] public section
 
 open Function
 open scoped Topology

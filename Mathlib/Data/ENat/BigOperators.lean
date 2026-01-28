@@ -3,12 +3,16 @@ Copyright (c) 2024 Joachim Breitner, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Sum of suprema in `ENat`
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -25,7 +29,7 @@ lemma sum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℕ∞}
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-lemma sum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+lemma sum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirectedOrder ι] {s : Finset α}
     {f : α → ι → ℕ∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   sum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 

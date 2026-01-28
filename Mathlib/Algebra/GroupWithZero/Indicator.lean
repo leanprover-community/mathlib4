@@ -3,14 +3,18 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Notation.Indicator
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Algebra.Notation.Indicator
 
 /-!
 # Indicator functions and support of a function in groups with zero
 -/
+
+public section
 
 assert_not_exists Ring
 
@@ -73,9 +77,6 @@ variable (M₀) [Nontrivial M₀]
 
 lemma indicator_eq_zero_iff_notMem : indicator s 1 i = (0 : M₀) ↔ i ∉ s := by
   classical simp [indicator_apply, imp_false]
-
-@[deprecated (since := "2025-05-23")]
-alias indicator_eq_zero_iff_not_mem := indicator_eq_zero_iff_notMem
 
 lemma indicator_eq_one_iff_mem : indicator s 1 i = (1 : M₀) ↔ i ∈ s := by
   classical simp [indicator_apply, imp_false]

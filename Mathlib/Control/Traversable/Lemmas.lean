@@ -3,8 +3,10 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
+module
+
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
 
 /-!
 # Traversing collections
@@ -16,6 +18,8 @@ This file proves basic properties of traversable and applicative functors and de
 
 Inspired by [The Essence of the Iterator Pattern][gibbons2009].
 -/
+
+@[expose] public section
 
 
 universe u

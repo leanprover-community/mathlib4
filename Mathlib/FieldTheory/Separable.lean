@@ -3,14 +3,16 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -28,6 +30,8 @@ properties about separable polynomials here.
   over `K`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -334,7 +338,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
       separable_prod'
         (fun x _hx y _hy hxy =>
           @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.eq <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
+            (fun x y hxy => Subtype.ext <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
         fun _ _ => separable_X_sub_C⟩
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :
@@ -431,34 +435,40 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
     Separable (X ^ n - C a) :=
   separable_X_pow_sub_C a (by rwa [← CharP.cast_eq_zero_iff F p n] at hn) ha
 
+/-- In a field `F`, for any `t ∈ F` and `n > 0`, the polynomial `X ^ n - t` is separable
+iff `↑n ≠ 0`. The assumption `n > 0` is needed, since for `n = 0` the polynomial `X ^ n - t`
+is separable iff `t ≠ 1`. -/
+theorem X_pow_sub_C_separable_iff {n : ℕ} {x : F} (hn : 0 < n) (hx : x ≠ 0) :
+    (X ^ n - C x : F[X]).Separable ↔ (n : F) ≠ 0 := by
+  refine ⟨fun h hn' ↦ ?_, fun h => separable_X_pow_sub_C x h hx⟩
+  exact not_isUnit_of_natDegree_pos (X ^ n - C x) (by simp [hn]) <| by
+    simpa [separable_def, derivative_X_pow, hn', isCoprime_zero_right] using h
+
 -- this can possibly be strengthened to making `separable_X_pow_sub_C_unit` a
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
-  rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
-  -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
-  rintro (h : IsCoprime _ _) hn'
-  rw [hn', C_0, zero_mul, isCoprime_zero_right] at h
-  exact not_isUnit_X_pow_sub_one F n h
+  rcases (Nat.eq_zero_or_pos n) with (hz | hpos)
+  · simp_all [not_separable_zero]
+  · exact X_pow_sub_C_separable_iff hpos one_ne_zero
 
 section Splits
 
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
-    (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
+    (hsplit : Splits (p.map (algebraMap F K))) : Fintype.card (p.rootSet K) = p.natDegree := by
   classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
-  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
+  rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← hsplit.natDegree_eq_card_roots,
+    natDegree_map]
 
 /-- If a non-zero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
-theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
     f.roots.Nodup ↔ f.Separable := by
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
-  obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf h (gcd_dvd_left f _)) hnsep
+  obtain ⟨x, hx⟩ := Splits.exists_eval_eq_zero (Splits.of_dvd h hf (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -466,25 +476,27 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 if and only if it is separable. -/
 @[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
-    (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
-  rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
+    (h : (f.map (algebraMap F K)).Splits) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
-    (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+    (h : (f.map (algebraMap F K)).Splits) :
+    Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
   classical
-  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
+  simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe,
+    ← natDegree_map (algebraMap F K), h.natDegree_eq_card_roots,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
 
 variable {i : F →+* K}
 
 theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separable)
-    (h_root : h.eval x = 0) (h_splits : Splits i h) (h_roots : ∀ y ∈ (h.map i).roots, y = i x) :
-    h = C (leadingCoeff h) * (X - C x) := by
+    (h_root : h.eval x = 0) (h_splits : Splits (h.map i))
+    (h_roots : ∀ y ∈ (h.map i).roots, y = i x) : h = C (leadingCoeff h) * (X - C x) := by
   have h_ne_zero : h ≠ 0 := by
     rintro rfl
     exact not_separable_zero h_sep
-  apply Polynomial.eq_X_sub_C_of_splits_of_single_root i h_splits
+  suffices (map i h).roots = {i x} from
+    map_injective i i.injective (by simpa using h_splits.eq_X_sub_C_of_single_root this)
   apply Finset.mk.inj
   · change _ = {i x}
     rw [Finset.eq_singleton_iff_unique_mem]
@@ -492,16 +504,17 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
         rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
-        exact RingHom.map_zero i
+        exact map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
 
-theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
+theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
+    (sp : Splits (f.map i)) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   classical
-  obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
+  obtain ⟨s, h⟩ := splits_iff_exists_multiset.1 sp
   use s.toFinset
-  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq]
+  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq, leadingCoeff_map]
   apply nodup_of_separable_prod
   apply Separable.of_mul_right
   rw [← h]
@@ -580,12 +593,22 @@ theorem Algebra.isSeparable_iff :
   ⟨fun _ x => ⟨Algebra.IsSeparable.isIntegral F x, Algebra.IsSeparable.isSeparable F x⟩,
     fun h => ⟨fun x => (h x).2⟩⟩
 
-variable {L} in
-lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
-    (H : IsSeparable F x) : IsSeparable F (f x) := by
-  rwa [IsSeparable, minpoly.algHom_eq _ hf]
+variable {L}
 
-variable {E : Type*}
+lemma isSeparable_map_iff [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L)
+    (hf : Function.Injective f) : IsSeparable F (f x) ↔ IsSeparable F x := by
+  simp_rw [IsSeparable, minpoly.algHom_eq _ hf]
+
+lemma IsSeparable.map [Ring L] [Algebra F L] {x : K} (f : K →ₐ[F] L) (hf : Function.Injective f)
+    (H : IsSeparable F x) : IsSeparable F (f x) :=
+  (isSeparable_map_iff f hf).mpr H
+
+lemma Subalgebra.isSeparable_iff [Ring L] [Algebra F L] {S : Subalgebra F L} :
+    Algebra.IsSeparable F S ↔ ∀ x ∈ S, IsSeparable F x := by
+  simp_rw [Algebra.isSeparable_def, Subtype.forall,
+    ← isSeparable_map_iff S.val Subtype.val_injective, coe_val]
+
+variable (L) {E : Type*}
 
 section AlgEquiv
 
@@ -652,7 +675,7 @@ theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
 
 -- See note [lower instance priority]
 variable (K) in
-/-- A integral field extension in characteristic 0 is separable. -/
+/-- An integral field extension in characteristic 0 is separable. -/
 protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
   ⟨_root_.IsSeparable.of_integral _⟩
 
@@ -750,15 +773,16 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
-    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     Nat.card (S →ₐ[K] L) = pb.dim := by
   classical
   rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
-    ← pb.natDegree_minpoly, natDegree_eq_card_roots h_splits, Multiset.toFinset_card_of_nodup]
+    ← pb.natDegree_minpoly, ← natDegree_map (algebraMap K L), h_splits.natDegree_eq_card_roots,
+    Multiset.toFinset_card_of_nodup]
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
-    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
   rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]

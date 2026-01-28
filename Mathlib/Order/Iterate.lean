@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Monotone.Basic
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Monotone.Basic
 
 /-!
 # Inequalities on iterates
@@ -15,6 +17,8 @@ two self-maps that commute with each other.
 Current selection of inequalities is motivated by formalization of the rotation number of
 a circle homeomorphism.
 -/
+
+public section
 
 open Function
 
@@ -37,6 +41,7 @@ lemmas in this section formalize this fact for different inequalities made stric
 -/
 
 
+@[to_dual self (reorder := x y, hx hy)]
 theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k < n, x (k + 1) ≤ f (x k))
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
   induction n with
@@ -86,23 +91,16 @@ variable {β : Type*} {g : β → β} {h : β → α}
 
 open Function
 
+@[to_dual iterate_comp_le_of_le]
 theorem le_iterate_comp_of_le (hf : Monotone f) (H : h ∘ g ≤ f ∘ h) (n : ℕ) :
     h ∘ g^[n] ≤ f^[n] ∘ h := fun x => by
-  apply hf.seq_le_seq n <;> intros <;>
-    simp [iterate_succ', -iterate_succ, comp_apply, id_eq, le_refl]
-  case hx => exact H _
-
-theorem iterate_comp_le_of_le (hf : Monotone f) (H : f ∘ h ≤ h ∘ g) (n : ℕ) :
-    f^[n] ∘ h ≤ h ∘ g^[n] :=
-  hf.dual.le_iterate_comp_of_le H n
+  apply hf.seq_le_seq n <;>
+    aesop (add simp [iterate_succ']) (erase simp [iterate_succ])
 
 /-- If `f ≤ g` and `f` is monotone, then `f^[n] ≤ g^[n]`. -/
+@[to_dual le_iterate_of_le /-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/]
 theorem iterate_le_of_le {g : α → α} (hf : Monotone f) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
   hf.iterate_comp_le_of_le h n
-
-/-- If `f ≤ g` and `g` is monotone, then `f^[n] ≤ g^[n]`. -/
-theorem le_iterate_of_le {g : α → α} (hg : Monotone g) (h : f ≤ g) (n : ℕ) : f^[n] ≤ g^[n] :=
-  hg.dual.iterate_le_of_le h n
 
 end Monotone
 
@@ -122,11 +120,9 @@ variable {α : Type*} [Preorder α] {f : α → α}
 
 /-- If $x ≤ f x$ for all $x$ (we write this as `id ≤ f`), then the same is true for any iterate
 `f^[n]` of `f`. -/
+@[to_dual iterate_le_id_of_le_id]
 theorem id_le_iterate_of_id_le (h : id ≤ f) (n : ℕ) : id ≤ f^[n] := by
   simpa only [iterate_id] using monotone_id.iterate_le_of_le h n
-
-theorem iterate_le_id_of_le_id (h : f ≤ id) (n : ℕ) : f^[n] ≤ id :=
-  @id_le_iterate_of_id_le αᵒᵈ _ f h n
 
 theorem monotone_iterate_of_id_le (h : id ≤ f) : Monotone fun m => f^[m] :=
   monotone_nat_of_le_succ fun n x => by

@@ -3,17 +3,21 @@ Copyright (c) 2016 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Control.AlternativeMonad
-import Mathlib.Control.Basic
-import Mathlib.Data.Set.Defs
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.Set.Notation
+module
+
+public import Batteries.Control.AlternativeMonad
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.Set.Notation
 
 /-!
 # Functoriality of `Set`
 
 This file defines the functor structure of `Set`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -139,7 +143,7 @@ as was defined in `Data.Set.Notation`. -/
 attribute [local instance] Set.monad in
 /-- The coercion from `Set.monad` as an instance is equal to the coercion in `Data.Set.Notation`. -/
 theorem coe_eq_image_val (t : Set s) :
-    @Lean.Internal.coeM Set s α _ _ t = (t : Set α) := by
+    @Lean.Internal.coeM Set s α _ _ t = Subtype.val '' t := by
   change ⋃ (x ∈ t), {x.1} = _
   ext
   simp

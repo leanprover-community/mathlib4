@@ -3,10 +3,11 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 
 /-!
 # Dedekind eta function
@@ -21,6 +22,8 @@ differentiable on the upper half-plane.
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
+
+@[expose] public section
 
 open TopologicalSpace Set MeasureTheory intervalIntegral
  Metric Filter Function Complex
@@ -61,7 +64,7 @@ theorem summable_eta_q (z : ℍ) : Summable fun n ↦ ‖-eta_q n z‖ := by
   simp [eta_q, eta_q_eq_pow, summable_nat_add_iff 1, norm_exp_two_pi_I_lt_one z]
 
 lemma multipliableLocallyUniformlyOn_eta :
-    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ:= by
+    MultipliableLocallyUniformlyOn (fun n a ↦ 1 - eta_q n a) ℍₒ := by
   use fun z ↦ ∏' n, (1 - eta_q n z)
   simp_rw [sub_eq_add_neg]
   apply hasProdLocallyUniformlyOn_of_forall_compact isOpen_upperHalfPlaneSet
@@ -80,7 +83,7 @@ lemma multipliableLocallyUniformlyOn_eta :
 /-- Eta is non-vanishing on the upper half plane. -/
 lemma eta_ne_zero {z : ℂ} (hz : z ∈ ℍₒ) : η z ≠ 0 := by
   apply mul_ne_zero (Periodic.qParam_ne_zero z)
-  refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z)  ?_ ?_
+  refine tprod_one_add_ne_zero_of_summable (f := fun n ↦ -eta_q n z) ?_ ?_
   · exact fun i ↦ by simpa using one_sub_eta_q_ne_zero i hz
   · simpa [eta_q, ← summable_norm_iff] using summable_eta_q ⟨z, hz⟩
 

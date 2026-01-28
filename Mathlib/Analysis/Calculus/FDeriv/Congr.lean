@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The Fréchet derivative: congruence properties
@@ -15,6 +17,8 @@ Lemmas about congruence properties of the Fréchet derivative under change of fu
 derivative, differentiable, Fréchet, calculus
 
 -/
+
+public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
@@ -217,9 +221,6 @@ protected theorem Filter.EventuallyEq.fderivWithin (hs : f₁ =ᶠ[𝓝[s] x] f)
 theorem Filter.EventuallyEq.fderivWithin_eq_of_nhds (h : f₁ =ᶠ[𝓝 x] f) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
   (h.filter_mono nhdsWithin_le_nhds).fderivWithin_eq h.self_of_nhds
-
-@[deprecated (since := "2025-05-20")]
-alias Filter.EventuallyEq.fderivWithin_eq_nhds := Filter.EventuallyEq.fderivWithin_eq_of_nhds
 
 theorem fderivWithin_congr (hs : EqOn f₁ f s) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=

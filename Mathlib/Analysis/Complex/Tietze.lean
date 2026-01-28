@@ -3,11 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Topology.TietzeExtension
-import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Topology.TietzeExtension
+public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 /-!
 # Finite-dimensional topological vector spaces over `ℝ` satisfy the Tietze extension property
 
@@ -20,6 +22,8 @@ There are two main results here:
   bounded continuous function it extends.
 
 -/
+
+@[expose] public section
 
 universe u u₁ v w
 
@@ -77,7 +81,7 @@ theorem Metric.instTietzeExtensionBall {𝕜 : Type v} [RCLike 𝕜] {E : Type w
     TietzeExtension.{u, w} (Metric.ball (0 : E) r) :=
   have : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   .of_homeo <| show (Metric.ball (0 : E) r) ≃ₜ (Metric.ball (0 : E) 1) from
-    PartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
+    OpenPartialHomeomorph.unitBallBall (0 : E) r hr |>.toHomeomorphSourceTarget.symm
 
 theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : Type w}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] (y : E) {r : ℝ} (hr : 0 < r) :
@@ -91,6 +95,10 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
       DilationEquiv.smulTorsor_apply, vadd_eq_add, dist_add_self_left, norm_smul,
       RCLike.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
+
+instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
+  rw [unitInterval.eq_closedBall]
+  exact Metric.instTietzeExtensionClosedBall ℝ _ (by norm_num)
 
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]

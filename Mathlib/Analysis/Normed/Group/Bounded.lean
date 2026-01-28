@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Order.Filter.Pointwise
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Order.Filter.Pointwise
 
 /-!
 # Boundedness in normed groups
@@ -16,6 +18,8 @@ This file rephrases metric boundedness in terms of norms.
 
 normed group
 -/
+
+public section
 
 open Filter Metric Bornology
 open scoped Pointwise Topology

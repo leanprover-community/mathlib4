@@ -3,9 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Tactic.Rify
+public import Mathlib.Tactic.Qify
 
 /-!
 # The Ruzsa-Szemerédi problem
@@ -24,6 +27,8 @@ original set.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
   `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
+
+@[expose] public section
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
 open Fintype (card)
@@ -59,7 +64,7 @@ lemma ruzsaSzemerediNumber_spec :
       #(G.cliqueFinset 3) = m ∧ G.LocallyLinear) _ _ (Nat.zero_le _)
     ⟨⊥, inferInstance, by simp, locallyLinear_bot⟩
 
-variable {n : ℕ}
+variable {m n : ℕ}
 
 lemma SimpleGraph.LocallyLinear.le_ruzsaSzemerediNumber [DecidableRel G.Adj]
     (hG : G.LocallyLinear) : #(G.cliqueFinset 3) ≤ ruzsaSzemerediNumber α := by
@@ -88,6 +93,7 @@ noncomputable def ruzsaSzemerediNumberNat (n : ℕ) : ℕ := ruzsaSzemerediNumbe
 lemma ruzsaSzemerediNumberNat_card : ruzsaSzemerediNumberNat (card α) = ruzsaSzemerediNumber α :=
   ruzsaSzemerediNumber_congr (Fintype.equivFin _).symm
 
+@[gcongr]
 lemma ruzsaSzemerediNumberNat_mono : Monotone ruzsaSzemerediNumberNat := fun _m _n h =>
   ruzsaSzemerediNumber_mono (Fin.castLEEmb h)
 
@@ -205,8 +211,7 @@ theorem rothNumberNat_le_ruzsaSzemerediNumberNat' :
       _ ≤ (↑(2 * (n / 6) + 1) : ℝ) * rothNumberNat (n / 6) :=
         mul_le_mul_of_nonneg_right ?_ (Nat.cast_nonneg _)
       _ ≤ (ruzsaSzemerediNumberNat (6 * (n / 6) + 3) : ℝ) := ?_
-      _ ≤ _ :=
-        Nat.cast_le.2 (ruzsaSzemerediNumberNat_mono <| add_le_add_right (Nat.mul_div_le _ _) _)
+      _ ≤ _ := by grw [Nat.mul_div_le]
     · norm_num
       rw [← div_add_one (three_ne_zero' ℝ), ← le_sub_iff_add_le, div_le_iff₀ (zero_lt_three' ℝ),
         add_assoc, add_sub_assoc, add_mul, mul_right_comm]
@@ -253,7 +258,7 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
     · rw [IsBigO_def]
       refine ⟨12, ?_⟩
       simp only [IsBigOWith, norm_natCast, eventually_atTop]
-      exact ⟨15, fun x hx ↦ by norm_cast; cutsat⟩
+      exact ⟨15, fun x hx ↦ by norm_cast; lia⟩
     · rw [isBigO_exp_comp_exp_comp]
       refine ⟨0, ?_⟩
       simp only [neg_mul, eventually_map, Pi.sub_apply, sub_neg_eq_add, neg_add_le_iff_le_add,
@@ -261,8 +266,8 @@ theorem ruzsaSzemerediNumberNat_asymptotic_lower_bound :
       refine ⟨9, fun x hx ↦ ?_⟩
       gcongr
       · simp
-        cutsat
-      · cutsat
+        lia
+      · lia
   · refine .of_norm_eventuallyLE ?_
     filter_upwards [eventually_ge_atTop 6] with n hn
     have : (0 : ℝ) ≤ n / 3 - 2 := by rify at hn; linarith

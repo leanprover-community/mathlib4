@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-import Mathlib.Analysis.Seminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.Seminorm
 
 /-!
 # Algebra norms
@@ -21,6 +23,8 @@ We define algebra norms and multiplicative algebra norms.
 
 norm, algebra norm
 -/
+
+@[expose] public section
 
 /-- An algebra norm on an `R`-algebra `S` is a ring norm on `S` compatible with the
 action of `R`. -/
@@ -62,6 +66,7 @@ instance : FunLike (AlgebraNorm R S) S ℝ where
     erw [h]
     rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance algebraNormClass : AlgebraNormClass (AlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
@@ -84,6 +89,7 @@ theorem extends_norm' (hf1 : f 1 = 1) (a : R) : f (a • (1 : S)) = ‖a‖ := b
 theorem extends_norm (hf1 : f 1 = 1) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' hf1 _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm to a subalgebra. -/
 def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A where
   toFun x     := f x.val
@@ -95,6 +101,7 @@ def restriction (A : Subalgebra R S) (f : AlgebraNorm R S) : AlgebraNorm R A whe
     rw [← ZeroMemClass.coe_eq_zero]; exact eq_zero_of_map_eq_zero f hx
   smul' r x := map_smul_eq_mul _ _ _
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The restriction of an algebra norm in a scalar tower. -/
 def isScalarTower_restriction {A : Type*} [CommRing A] [Algebra R A] [Algebra A S]
     [IsScalarTower R A S] (hinj : Function.Injective (algebraMap A S)) (f : AlgebraNorm R S) :
@@ -143,10 +150,11 @@ variable {R S : outParam <| Type*} [SeminormedCommRing R] [Ring S] [Algebra R S]
 
 instance : FunLike (MulAlgebraNorm R S) S ℝ where
   coe f := f.toFun
-  coe_injective' f f' h:= by
+  coe_injective' f f' h := by
     simp only [AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe, DFunLike.coe_fn_eq] at h
     obtain ⟨⟨_, _⟩, _⟩ := f; obtain ⟨⟨_, _⟩, _⟩ := f'; congr
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance mulAlgebraNormClass : MulAlgebraNormClass (MulAlgebraNorm R S) R S where
   map_zero f        := f.map_zero'
   map_add_le_add f  := f.add_le'
@@ -176,6 +184,7 @@ namespace MulRingNorm
 
 variable {R : Type*} [NonAssocRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The ring norm underlying a multiplicative ring norm. -/
 def toRingNorm (f : MulRingNorm R) : RingNorm R where
   toFun       := f
@@ -188,7 +197,7 @@ def toRingNorm (f : MulRingNorm R) : RingNorm R where
 /-- A multiplicative ring norm is power-multiplicative. -/
 theorem isPowMul {A : Type*} [Ring A] (f : MulRingNorm A) : IsPowMul f := fun x n hn => by
   cases n
-  · cutsat
+  · lia
   · rw [map_pow]
 
 end MulRingNorm

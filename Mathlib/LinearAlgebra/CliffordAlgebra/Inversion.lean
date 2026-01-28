@@ -3,13 +3,17 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
 
 /-! # Results about inverses in Clifford algebras
 
 This contains some basic results about the inversion of vectors, related to the fact that
 $ι(m)^{-1} = \frac{ι(m)}{Q(m)}$.
 -/
+
+@[expose] public section
 
 variable {R M : Type*}
 variable [CommRing R] [AddCommGroup M] [Module R M] {Q : QuadraticForm R M}

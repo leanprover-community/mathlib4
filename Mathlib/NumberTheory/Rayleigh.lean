@@ -3,8 +3,10 @@ Copyright (c) 2023 Jason Yuen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jason Yuen
 -/
-import Mathlib.Data.Real.ConjExponents
-import Mathlib.Data.Real.Irrational
+module
+
+public import Mathlib.Data.Real.ConjExponents
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # Rayleigh's theorem on Beatty sequences
@@ -44,6 +46,8 @@ The main statements are:
 
 beatty, sequence, rayleigh, irrational, floor, positive
 -/
+
+@[expose] public section
 
 /-- In the Beatty sequence for real number `r`, the `k`th term is `⌊k * r⌋`. -/
 noncomputable def beattySeq (r : ℝ) : ℤ → ℤ :=

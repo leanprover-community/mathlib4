@@ -3,8 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.MeasureTheory.Measure.Hausdorff
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.Analysis.Convex.Intrinsic
+public import Mathlib.MeasureTheory.Measure.Hausdorff
 
 /-!
 # Hausdorff dimension
@@ -80,6 +83,8 @@ We use the following notation localized in `MeasureTheory`. It is defined in
 
 Hausdorff measure, Hausdorff dimension, dimension
 -/
+
+@[expose] public section
 
 
 open scoped MeasureTheory ENNReal NNReal Topology
@@ -467,6 +472,19 @@ theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finra
 theorem dimH_of_nonempty_interior {s : Set E} (h : (interior s).Nonempty) : dimH s = finrank ℝ E :=
   let ⟨_, hx⟩ := h
   dimH_of_mem_nhds (mem_interior_iff_mem_nhds.1 hx)
+
+/- The Hausdorff dimension of a nonempty convex set equals the dimension of its affine span. -/
+theorem Convex.dimH_eq_finrank_vectorSpan {s : Set E} (hcvx : Convex ℝ s) (hne : s.Nonempty) :
+    dimH s = finrank ℝ (vectorSpan ℝ s) := by
+  haveI := hne.to_subtype
+  let φ := AffineIsometryEquiv.constVSub ℝ
+    (⟨hne.some, subset_affineSpan ℝ s hne.some_mem⟩ : affineSpan ℝ s)
+  have hs_eq : s = (↑) '' ((↑) ⁻¹' s : Set (affineSpan ℝ s)) :=
+    (image_preimage_eq_of_subset <| (subset_affineSpan ℝ s).trans Subtype.range_coe.superset).symm
+  rw [hs_eq, isometry_subtype_coe.dimH_image, ← φ.isometry.dimH_image,
+      Real.dimH_of_nonempty_interior, direction_affineSpan ℝ s, ← hs_eq]
+  simp_rw [← AffineIsometryEquiv.coe_toHomeomorph, ← φ.toHomeomorph.image_interior, image_nonempty]
+  simpa [intrinsicInterior] using (intrinsicInterior_nonempty hcvx).mpr hne
 
 variable (E)
 

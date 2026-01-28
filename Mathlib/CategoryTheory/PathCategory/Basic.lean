@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # The category paths on a quiver.
@@ -17,6 +19,8 @@ We provide `path_composition : paths C ⥤ C`.
 We check that the quotient of the path category of a category by the canonical relation
 (paths are related if they compose to the same path) is equivalent to the original category.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -30,8 +34,10 @@ section
 def Paths (V : Type u₁) : Type u₁ := V
 
 instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)⟩
+instance (V : Type u₁) [Unique V] : Unique (Paths V) where
+  uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
@@ -101,7 +107,7 @@ lemma induction' (P : ∀ {a b : Paths V}, (a ⟶ b) → Prop)
 attribute [local ext (iff := false)] Functor.ext
 
 /-- Any prefunctor from `V` lifts to a functor from `paths V` -/
-def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
+def lift {C} [Category* C] (φ : V ⥤q C) : Paths V ⥤ C where
   obj := φ.obj
   map {X} {Y} f :=
     @Quiver.Path.rec V _ X (fun Y _ => φ.obj X ⟶ φ.obj Y) (𝟙 <| φ.obj X)
@@ -119,20 +125,20 @@ def lift {C} [Category C] (φ : V ⥤q C) : Paths V ⥤ C where
       rw [ih, Category.assoc]
 
 @[simp]
-theorem lift_nil {C} [Category C] (φ : V ⥤q C) (X : V) :
+theorem lift_nil {C} [Category* C] (φ : V ⥤q C) (X : V) :
     (lift φ).map Quiver.Path.nil = 𝟙 (φ.obj X) := rfl
 
 @[simp]
-theorem lift_cons {C} [Category C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
+theorem lift_cons {C} [Category* C] (φ : V ⥤q C) {X Y Z : V} (p : Quiver.Path X Y) (f : Y ⟶ Z) :
     (lift φ).map (p.cons f) = (lift φ).map p ≫ φ.map f := rfl
 
 @[simp]
-theorem lift_toPath {C} [Category C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
+theorem lift_toPath {C} [Category* C] (φ : V ⥤q C) {X Y : V} (f : X ⟶ Y) :
     (lift φ).map f.toPath = φ.map f := by
   dsimp [Quiver.Hom.toPath, lift]
   simp
 
-theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
+theorem lift_spec {C} [Category* C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefunctor = φ := by
   fapply Prefunctor.ext
   · rintro X
     rfl
@@ -141,7 +147,7 @@ theorem lift_spec {C} [Category C] (φ : V ⥤q C) : of V ⋙q (lift φ).toPrefu
     dsimp [lift, Quiver.Hom.toPath]
     simp
 
-theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
+theorem lift_unique {C} [Category* C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
     (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   subst_vars
   fapply Functor.ext
@@ -163,7 +169,7 @@ theorem lift_unique {C} [Category C] (φ : V ⥤q C) (Φ : Paths V ⥤ C)
 
 /-- Two functors out of a path category are equal when they agree on singleton paths. -/
 @[ext (iff := false)]
-theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
+theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.obj)
     (h : ∀ (a b : V) (e : a ⟶ b), F.map e.toPath =
         eqToHom (congr_fun h_obj a) ≫ G.map e.toPath ≫ eqToHom (congr_fun h_obj.symm b)) :
     F = G := by
@@ -179,7 +185,7 @@ theorem ext_functor {C} [Category C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.ob
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
@@ -250,8 +256,8 @@ def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
-  map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
-  map_comp f g := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
+  map_id X := Quot.sound (HomRel.CompClosure.of (by simp))
+  map_comp f g := Quot.sound (HomRel.CompClosure.of (by simp))
 
 /-- The functor from the canonical quotient of a path category of a category
 to the original category. -/
@@ -267,10 +273,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
-        apply Quot.sound
-        apply Quotient.CompClosure.of
-        simp [Category.comp_id, Category.id_comp, pathsHomRel])
+      (Quot.ind fun f => by exact Quot.sound (HomRel.CompClosure.of (by simp)))
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X

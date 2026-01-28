@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Bool.Set
-import Mathlib.Data.Nat.Set
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.Data.Bool.Set
+public import Mathlib.Data.Nat.Set
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Theory of complete lattices
@@ -31,6 +33,8 @@ In lemma names,
 * `⨆ i, f i` : `iSup f`, the supremum of the range of `f`;
 * `⨅ i, f i` : `iInf f`, the infimum of the range of `f`.
 -/
+
+@[expose] public section
 
 open Function OrderDual Set
 
@@ -153,11 +157,7 @@ theorem disjoint_sSup_right {a : Set α} {b : α} (d : Disjoint b (sSup a)) {i} 
 
 lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a)
     (ht : ∀ e ∈ d, e ≤ b) (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
-  rw [disjoint_iff_forall_ne]
-  intro x hx y hy
-  rw [Disjoint.ne_iff]
-  · aesop
-  · exact Disjoint.mono (hs x hx) (ht y hy) hd
+  grind
 
 lemma disjoint_of_sSup_disjoint {a b : Set α} (hd : Disjoint (sSup a) (sSup b))
     (he : ⊥ ∉ a ∨ ⊥ ∉ b) : Disjoint a b :=

@@ -3,10 +3,14 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Riccardo Brasca
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Quotients of seminormed groups
@@ -82,7 +86,7 @@ includes a uniform space structure which includes a topological space structure,
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
 using the provided norm, and then trivially build a proof that the norm and uniform structure are
-compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.toUniformSpace`
+compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.rightUniformSpace`
 which uses the topological structure and the group structure to build the uniform structure. This
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
@@ -90,13 +94,15 @@ the previous paragraph kicks in.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open Metric Set Topology NNReal
 
 namespace QuotientGroup
-variable {M : Type*} [SeminormedCommGroup M] {S : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
+variable {M : Type*} [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
@@ -201,7 +207,7 @@ variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
-  toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalGroup.rightUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]
@@ -222,6 +228,34 @@ example :
 
 example [IsClosed (S : Set M)] :
     (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
+
+/-- An isometric version of `Subgroup.quotientEquivOfEq`. -/
+@[to_additive /-- An isometric version of `AddSubgroup.quotientEquivOfEq`. -/]
+def _root_.Subgroup.quotientIsometryEquivOfEq (h : S = T) : M ⧸ S ≃ᵢ M ⧸ T where
+  __ := Subgroup.quotientEquivOfEq h
+  isometry_toFun := by subst h; rintro ⟨_⟩ ⟨_⟩; rfl
+
+/-- An isometric version of `QuotientGroup.quotientBot`. -/
+@[to_additive /-- An isometric version of `QuotientAddGroup.quotientBot`. -/]
+def quotientBotIsometryEquiv : M ⧸ (⊥ : Subgroup M) ≃ᵢ M where
+  __ := quotientBot
+  isometry_toFun : Isometry quotientBot := by
+    rw [MonoidHomClass.isometry_iff_norm]
+    rintro ⟨x⟩
+    change ‖x‖ = ‖QuotientGroup.mk x‖
+    simp [norm_mk]
+
+/-- An isometric version of `QuotientGroup.quotientQuotientEquivQuotient`. -/
+@[to_additive /-- An isometric version of `QuotientAddGroup.quotientQuotientEquivQuotient`. -/]
+def quotientQuotientIsometryEquivQuotient (h : S ≤ T) : (M ⧸ S) ⧸ T.map (mk' S) ≃ᵢ M ⧸ T where
+  __ := quotientQuotientEquivQuotient S T h
+  isometry_toFun : Isometry (quotientQuotientEquivQuotient S T h) := by
+    rw [MonoidHomClass.isometry_iff_norm]
+    refine fun x => eq_of_forall_le_iff fun r => ?_
+    simp only [le_norm_iff]
+    exact ⟨
+      fun h₁ y h₂ z h₃ => h₁ z <| by subst_vars; rfl,
+      fun h₁ y h₂ => h₁ y ((quotientQuotientEquivQuotient S T h).injective h₂) y rfl⟩
 
 end QuotientGroup
 
@@ -387,7 +421,7 @@ have quotients of rings by two-sided ideals, hence the commutativity hypotheses 
 
 section Submodule
 
-variable {R : Type*} [Ring R] [Module R M] (S : Submodule R M)
+variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   QuotientAddGroup.instSeminormedAddCommGroup S.toAddSubgroup
@@ -428,6 +462,23 @@ instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
 instance Submodule.Quotient.normedSpace (𝕜 : Type*) [NormedField 𝕜] [NormedSpace 𝕜 M] [SMul 𝕜 R]
     [IsScalarTower 𝕜 R M] : NormedSpace 𝕜 (M ⧸ S) where
   norm_smul_le := norm_smul_le
+
+/-- An isometric version of `Submodule.quotEquivOfEq`. -/
+def Submodule.quotLIEOfEq (h : S = T) : M ⧸ S ≃ₗᵢ[R] M ⧸ T where
+  __ := Submodule.quotEquivOfEq S T h
+  norm_map' := by subst h; rintro ⟨_⟩; rfl
+
+/-- An isometric version of `Submodule.quotientQuotientEquivQuotient`. -/
+def Submodule.quotientQuotientLIEQuotient (h : S ≤ T) : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ T where
+  __ := Submodule.quotientQuotientEquivQuotient S T h
+  norm_map' :=
+    (AddMonoidHomClass.isometry_iff_norm _).mp
+      (QuotientAddGroup.quotientQuotientIsometryEquivQuotient
+        ((Submodule.toAddSubgroup_le S T).mpr h)).isometry
+
+/-- An isometric version of `Submodule.quotientQuotientEquivQuotientSup`. -/
+def Submodule.quotientQuotientLIEQuotientSup : (M ⧸ S) ⧸ map S.mkQ T ≃ₗᵢ[R] M ⧸ (S ⊔ T) :=
+  (quotLIEOfEq _ _ (by simp)).trans (quotientQuotientLIEQuotient _ _ le_sup_left)
 
 end Submodule
 
