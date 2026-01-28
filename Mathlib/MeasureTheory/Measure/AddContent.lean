@@ -112,11 +112,8 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ b := by simp [b]
   rw [A, addContent_sUnion]; rotate_left
   · simp [b]; grind
-  · intro s hs t ht hst
-    simp only [coe_image, Set.mem_image, SetLike.mem_coe, b] at hs ht
-    rcases hs with ⟨i, hi, rfl⟩
-    rcases ht with ⟨j, hj, rfl⟩
-    exact h_dis hi hj (by grind)
+  · rw [Finset.coe_image]
+    exact h_dis.image
   · rwa [← A]
   simp only [b]
   rw [sum_image_of_pairwise_eq_zero]
