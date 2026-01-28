@@ -133,12 +133,10 @@ theorem _root_.Function.Commute.finset_map {f g : α ↪ α} (h : Function.Commu
     Function.Commute (map f) (map g) :=
   Function.Semiconj.finset_map h
 
-@[simp]
+@[simp, gcongr]
 theorem map_subset_map {s₁ s₂ : Finset α} : s₁.map f ⊆ s₂.map f ↔ s₁ ⊆ s₂ :=
   ⟨fun h _ xs => (mem_map' _).1 <| h <| (mem_map' f).2 xs,
    fun h => by simp [subset_def, Multiset.map_subset_map h]⟩
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_subset⟩ := map_subset_map
 
 /-- The `Finset` version of `Equiv.subset_symm_image`. -/
 theorem subset_map_symm {t : Finset β} {f : α ≃ β} : s ⊆ t.map f.symm ↔ s.map f ⊆ t := by
@@ -164,10 +162,8 @@ theorem map_inj {s₁ s₂ : Finset α} : s₁.map f = s₂.map f ↔ s₁ = s�
 theorem map_injective (f : α ↪ β) : Injective (map f) :=
   (mapEmbedding f).injective
 
-@[simp]
+@[simp, gcongr]
 theorem map_ssubset_map {s t : Finset α} : s.map f ⊂ t.map f ↔ s ⊂ t := (mapEmbedding f).lt_iff_lt
-
-@[gcongr] alias ⟨_, _root_.GCongr.finsetMap_ssubset⟩ := map_ssubset_map
 
 @[simp]
 theorem mapEmbedding_apply : mapEmbedding f s = map f s :=
