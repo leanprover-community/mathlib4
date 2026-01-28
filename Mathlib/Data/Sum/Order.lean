@@ -159,7 +159,7 @@ theorem not_inr_lt_inl [LT α] [LT β] {a : α} {b : β} : ¬inr b < inl a :=
 
 section Preorder
 
-variable [Preorder α] [Preorder β]
+variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
@@ -181,6 +181,31 @@ theorem inr_mono : Monotone (inr : β → α ⊕ β) := fun _ _ => LiftRel.inr
 theorem inl_strictMono : StrictMono (inl : α → α ⊕ β) := fun _ _ => LiftRel.inl
 
 theorem inr_strictMono : StrictMono (inr : β → α ⊕ β) := fun _ _ => LiftRel.inr
+
+theorem elim_mono {δ : Type*} [Preorder δ]
+    {f : α → β → γ} (hf : Monotone fun x : α × β ↦ f x.1 x.2)
+    {g : α → δ → γ} (hg : Monotone fun x : α × δ ↦ g x.1 x.2)
+    {h : α → β ⊕ δ} (hh : Monotone h)
+    : Monotone (fun x ↦ Sum.elim (f x) (g x) (h x)) := by
+  intro x₁ x₂ hx
+  have hhx := hh hx
+  cases hhx₁ : h x₁ with
+  | inl y₁ =>
+    cases hhx₂ : h x₂ with
+    | inl y₂ =>
+      simp only [hhx₁, hhx₂, inl_le_inl_iff, elim_inl, ge_iff_le] at ⊢ hhx
+      exact hf (⟨hx, hhx⟩ : (x₁, y₁) ≤ (x₂, y₂))
+    | inr y₂ => simp only [hhx₁, hhx₂, not_inl_le_inr] at hhx
+  | inr y₁ =>
+    cases hhx₂ : h x₂ with
+    | inl y₂ => simp only [hhx₁, hhx₂, not_inr_le_inl] at hhx
+    | inr y₂ =>
+      simp only [hhx₁, hhx₂, inr_le_inr_iff, elim_inr, ge_iff_le] at ⊢ hhx
+      exact hg (⟨hx, hhx⟩ : (x₁, y₁) ≤ (x₂, y₂))
+
+theorem swap_mono : Monotone (Sum.swap : α ⊕ β → β ⊕ α) := by
+  intro _ _ hx
+  cases hx <;> simp_all only [inl_le_inl_iff, swap_inl, inr_le_inr_iff, swap_inr]
 
 end Preorder
 
