@@ -493,10 +493,9 @@ instance : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valua
 
 lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤᵐ⁰) = (PowerSeries.idealX K).valuation _ := rfl
 
-@[simp]
 lemma valuation_coe_ratFunc (f : RatFunc K) :
     Valued.v (f : K⸨X⸩) = Valued.v f := by
-  simp [valuation_def, ← valuation_eq_LaurentSeries_valuation]
+  simp [← valuation_eq_LaurentSeries_valuation]
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = exp (-(s : ℤ)) := by
@@ -953,7 +952,7 @@ instance : TopologicalSpace (LaurentSeriesPkg K).space :=
 
 @[simp]
 theorem LaurentSeries_coe (x : RatFunc K) :
-    (LaurentSeriesPkg K).coe ((WithVal.equiv _).symm x) = (x : K⸨X⸩) :=
+    (LaurentSeriesPkg K).coe (WithVal.toVal _ x) = (x : K⸨X⸩) := by
   rfl
 
 /-- Reinterpret the extension of `coe : WithVal ((idealX K).valuation _) → K⸨X⸩` as a ring

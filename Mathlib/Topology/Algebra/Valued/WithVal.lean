@@ -247,12 +247,13 @@ instance instModuleRight [Semiring S] [Module S R] : Module S (WithVal v) := (eq
 variable [Ring S] [Module R S] (v : Valuation S Γ₀)
 
 variable (R) in
+/-- The canonical `R`-linear isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
 def linearEquiv : WithVal v ≃ₗ[R] S := (equiv v).linearEquiv R
 
 @[simp] theorem linearEquiv_apply (x : WithVal v) : linearEquiv R v x = x.ofVal := rfl
 @[simp] theorem linearEquiv_symm_apply (x : S) : (linearEquiv R v).symm x = toVal v x := rfl
 
-instance instFiniteRight [Semiring S] [Module R S] [Module.Finite R S] :
+instance instFiniteRight [Module R S] [Module.Finite R S] :
     Module.Finite R (WithVal v) := .equiv (linearEquiv R v).symm
 
 end Module
@@ -295,6 +296,7 @@ end right
 variable [CommSemiring R] [Ring S] [Algebra R S] (v : Valuation S Γ₀)
 
 variable (R) in
+/-- The canonical `R`-algeba isomorphism between `WithVal v` and `S`, when `v : Valuation S Γ₀`. -/
 def algEquiv : WithVal v ≃ₐ[R] S := (equiv v).algEquiv R
 
 @[simp] theorem algEquiv_apply (x : WithVal v) : algEquiv R v x = x.ofVal := rfl
