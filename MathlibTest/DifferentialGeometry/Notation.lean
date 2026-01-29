@@ -1254,8 +1254,6 @@ variable {f : Unit → Unit}
 
 /--
 error: Could not find a model with corners for `Unit`.
-
-Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
 trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `Unit`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace

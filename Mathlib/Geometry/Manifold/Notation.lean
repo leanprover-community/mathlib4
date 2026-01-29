@@ -687,11 +687,15 @@ This implementation is not maximally robust yet.
 -- I'm only recursing into subexpressions (at least, after match_expr), right?
 partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
-  let some (u, _) := ← go e baseInfo
-    | throwError "Could not find a model with corners for `{e}`.
+  let error := if ← isTracingEnabledFor `Elab.DiffGeo.MDiff then
+    s!"Could not find a model with corners for `{e}`."
+  else
+    s!"Could not find a model with corners for `{e}`.
 
 Hint: failures to find a model with corners can be debugged with the command \
 `set_option trace.Elab.DiffGeo.MDiff true`."
+  let some (u, _) := ← go e baseInfo
+    | throwError error
   return u
 where
   go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
