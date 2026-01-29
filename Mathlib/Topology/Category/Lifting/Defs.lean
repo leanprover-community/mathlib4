@@ -181,6 +181,11 @@ lemma «exists» {p : Codiscrete2 → Prop} :
 
 lemma ne : Codiscrete2.zero ≠ Codiscrete2.one := by simp [ULift.ext_iff, Codiscrete2]
 
+/-- Construct a continuous map into `Codiscrete2` from an arbitrary set. -/
+@[simps]
+def hom {X} [TopologicalSpace X] (s : Set X) [DecidablePred (· ∈ s)] : C(X, Codiscrete2) where
+  toFun x := if x ∈ s then .one else .zero
+
 /-- For any continuous map `f : C(Codiscrete2, X)`, the points `f .zero` and `f .one` are
 inseparable. (For the definition witnessing that this condition is sufficient to construct a
 continuous map, see `Codiscrete2.homOfInseparable`.) -/
@@ -189,6 +194,7 @@ lemma inseparable {X : TopCat} (f : C(Codiscrete2, X)) : Inseparable (f .zero) (
 
 /-- A continuous map out of `Codiscrete2` can be made from any pair of inseparable points.
 (For the fact that any such map is of this form, see `Codiscrete2.inseparable`.) -/
+@[simps]
 def homOfInseparable {X : TopCat} {x y : X} (hxy : Inseparable x y) : C(Codiscrete2, X) where
   toFun | .zero => x | .one => y
   continuous_toFun := by

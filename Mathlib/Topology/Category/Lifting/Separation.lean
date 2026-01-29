@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.Lifting.Defs
 public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.SeparatedMap
 
 import Mathlib.Tactic.TautoSet
 
@@ -253,6 +254,7 @@ theorem of_extend (extend : (f : of Discrete2 ⟶ X) → [Mono f] → X ⟶ of O
       simp
     · apply Disjoint.preimage; simp
 
+
 /-- A space `X` is `T2` iff every mono from `Discrete2` to `X` has the left lifting property
 against `terminal.from O2C1`.
 
@@ -270,7 +272,6 @@ def llp : T2Space X ↔ ∀ (χ : of Discrete2.{u} ⟶ X) [Mono χ], χ ⧄ term
                 ((isoOfHomeo Discrete2.swap).inv ≫ χ) (terminal.from (of O2C1.{u})) τ := by
             constructor; exact terminal.hom_ext _ _
           specialize this _ (mono_comp _ χ) sq' (by simpa using h₀) (by simp [h₀₁])
-          let l := sq'.lift
           apply CommSq.HasLift.mk'; use sq'.lift
           · apply IsIso.epi_of_iso (isoOfHomeo Discrete2.swap).inv |>.left_cancellation
             rw [← Category.assoc, sq'.fac_left]
@@ -323,6 +324,69 @@ def llp : T2Space X ↔ ∀ (χ : of Discrete2.{u} ⟶ X) [Mono χ], χ ⧄ term
 instance [T2Space X] (χ : of Discrete2.{u} ⟶ X) [Mono χ] :
     HasLiftingProperty χ (terminal.from (of O2C1.{u})) :=
   llp.mp ‹_› χ
+
+open Function in
+open scoped Classical in
+/-- Alternate characterization: a space `X` is `T2` iff `ContinuousMap.diagonal X`
+lifts against `Codiscrete2.hom { N2C1.left }`. -/
+theorem llp' : T2Space X ↔
+    ofHom (.diagonal X) ⧄ ofHom (Codiscrete2.hom { N2C1.left }) where
+  mp _ :=
+  { sq_hasLift {ι τ} sq := by
+      apply CommSq.HasLift.mk';
+      fconstructor
+      · refine
+          ofHom ⟨extend (ContinuousMap.diagonal X) ι (if τ · = .zero then .right else .left), ?_ ⟩
+        rw [N2C1.basis.continuous_iff]
+        rintro _ (rfl | rfl)
+        · simp
+        · have zero_compl : ({N2C1.left, N2C1.right}ᶜ : Set N2C1) = {N2C1.zero} := by
+            ext ⟨⟩ <;> simp
+          rw [← isClosed_compl_iff, ← preimage_compl, zero_compl,
+          IsClosedEmbedding.diagonal.isClosed_iff_preimage_isClosed, ← preimage_comp,
+          extend_comp ContinuousMap.diagonal_injective]
+          · exact N2C1.isClosed_zero.preimage ι.hom.continuous
+          · intro (x, y) h
+            contrapose! h
+            replace h : ¬∃ z, (ContinuousMap.diagonal X z) = (x, y) := by simpa using h
+            simp [extend_apply' _ _ _ h]
+            grind
+      · rw [← ofHom_comp, ContinuousMap.comp]
+        simp [extend_comp ContinuousMap.diagonal_injective]
+        rfl
+      · ext ⟨x, y⟩
+        rcases em (x = y) with (rfl | hxy)
+        · rw [show (x, x) = ContinuousMap.diagonal X x by rfl]
+          have := (elementwise_of% sq.w) x
+          simp at this
+          simp [-ContinuousMap.diagonal_apply, ContinuousMap.diagonal_injective.extend_apply]
+          simp [this]
+        · replace hxy : ¬∃ z, (ContinuousMap.diagonal X z) = (x, y) := by simpa using hxy
+          have {z} : ¬z = Codiscrete2.zero ↔ Codiscrete2.one = z := by cases z <;> grind
+          simp only [TopCat.hom_comp, hom_ofHom, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+            extend_apply' _ _ _ hxy, Codiscrete2.hom_apply, ite_eq_right_iff,
+            reduceCtorEq, imp_false, mem_singleton_iff, ULift.down_inj]
+          split_ifs with h₀ <;> first | rwa [this] at h₀ | simp_all }
+  mpr h := by
+    have hsq := h.sq_hasLift (f := ofHom <| .const X N2C1.zero)
+      (g := ofHom <| Codiscrete2.hom (diagonal X)ᶜ) ⟨by ext; simp⟩
+    let χ := CommSq.lift (hsq := hsq)
+    rw [t2_iff_isClosed_diagonal]
+    convert N2C1.isClosed_zero.preimage χ.hom.continuous
+    ext ⟨x, y⟩
+    constructor
+    · rintro ⟨⟩
+      unfold χ
+      have := (elementwise_of% CommSq.fac_left (hsq := hsq)) x
+      rw [show (x, x) = ContinuousMap.diagonal X x by rfl]
+      simp at this; simp [this]
+    · rw [mem_preimage, mem_singleton_iff]
+      intro hχ
+      have := (elementwise_of% CommSq.fac_right (hsq := hsq)) (x, y)
+      apply_fun ofHom (Codiscrete2.hom {N2C1.left}) at hχ
+      simp_rw [χ, this] at hχ
+      simp [Codiscrete2.ne.symm] at hχ; simp [hχ]
+
 
 /-- A `T2` space `X` extends every mono from `Discrete2` into one to `O2C1`. -/
 noncomputable def extend [T2Space X] (χ : of Discrete2 ⟶ X) [Mono χ] : X ⟶ of O2C1 :=

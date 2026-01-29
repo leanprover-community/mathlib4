@@ -5,8 +5,8 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Topology.Connected.Basic
-public import Mathlib.Topology.Separation.Hausdorff
 public import Mathlib.Topology.Connected.Clopen
 /-!
 # Separated maps and locally injective maps out of a topological space.
@@ -101,6 +101,16 @@ theorem isSeparatedMap_iff_isClosedMap {f : X → Y} :
   isSeparatedMap_iff_isClosedEmbedding.trans
     ⟨IsClosedEmbedding.isClosedMap, .of_continuous_injective_isClosedMap
       (IsEmbedding.toPullbackDiag f).continuous (injective_toPullbackDiag f)⟩
+
+lemma _root_.Topology.IsClosedEmbedding.diagonal [T2Space X] :
+    IsClosedEmbedding (ContinuousMap.diagonal X) := by
+  let τ : C(X, Unit) := .const X ()
+  let η : X × X ≃ₜ Function.Pullback ⇑τ ⇑τ :=
+  { toFun | (x, y) => ⟨(x, y), rfl⟩
+    invFun := Subtype.val }
+  rw [← η.isClosedEmbedding.of_comp_iff]
+  convert isSeparatedMap_iff_isClosedEmbedding.mp (T2Space.isSeparatedMap _)
+  infer_instance
 
 open Function.Pullback in
 theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A → Y) :

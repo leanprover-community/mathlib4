@@ -207,6 +207,14 @@ theorem prod_eval (f : C(α, β₁)) (g : C(α, β₂)) (a : α) : (prodMk f g) 
 @[simps!]
 def prodSwap : C(α × β, β × α) := .prodMk .snd .fst
 
+/-- The diagonal map `x ↦ (x, x)` as a bundled continuous map. -/
+@[simps]
+def diagonal X [TopologicalSpace X] : C(X, X × X) where
+  toFun x := (x, x)
+
+lemma diagonal_injective {X} [TopologicalSpace X] : Function.Injective (diagonal X) := by
+  intro x y h; simpa using h
+
 end Prod
 
 section Sigma
