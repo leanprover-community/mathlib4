@@ -419,20 +419,16 @@ theorem image_const_div_Ioo : (fun x => a / x) '' Ioo b c = Ioo (a / c) (a / b) 
 -/
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ici :
-    (fun x => x / a) '' Ici b = Ici (b / a) := by simp [div_eq_mul_inv]
+theorem image_div_const_Ici : (fun x => x / a) '' Ici b = Ici (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Iic :
-    (fun x => x / a) '' Iic b = Iic (b / a) := by simp [div_eq_mul_inv]
+theorem image_div_const_Iic : (fun x => x / a) '' Iic b = Iic (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ioi :
-    (fun x => x / a) '' Ioi b = Ioi (b / a) := by simp [div_eq_mul_inv]
+theorem image_div_const_Ioi : (fun x => x / a) '' Ioi b = Ioi (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Iio :
-    (fun x => x / a) '' Iio b = Iio (b / a) := by simp [div_eq_mul_inv]
+theorem image_div_const_Iio : (fun x => x / a) '' Iio b = Iio (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
 theorem image_div_const_Icc : (fun x => x / a) '' Icc b c = Icc (b / a) (c / a) := by
