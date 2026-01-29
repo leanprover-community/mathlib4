@@ -132,6 +132,8 @@ public import Mathlib.Tactic.InferParam
 public import Mathlib.Tactic.Inhabit
 public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
+public import Mathlib.Tactic.LieAlgebra.Basic
+public import Mathlib.Tactic.LieAlgebra.LieRingNF
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Linarith
