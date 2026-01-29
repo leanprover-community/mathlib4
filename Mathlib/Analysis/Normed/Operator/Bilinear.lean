@@ -403,7 +403,7 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
   NNReal.eq <| c.norm_smulRight_apply f
 
 @[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
-  simp [← smulRight_id, norm_id_of_nontrivial_seminorm ⟨(1 : 𝕜), by simp⟩]
+  simp [← smulRight_id, norm_id]
 
 @[simp] theorem nnnorm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_toSpanSingleton _
