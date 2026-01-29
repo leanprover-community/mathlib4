@@ -235,6 +235,7 @@ variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
   {σ : R →+* S} [RingHomSurjective σ]
 
 -- TODO: remove RingHomSurjective
+@[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
     Module.Finite S P :=
   ⟨by
