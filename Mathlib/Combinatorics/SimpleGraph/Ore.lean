@@ -17,7 +17,6 @@ public import Mathlib.Data.List.GetD
 
 
 
-
 /-!
 
 # Simple graphs
@@ -60,7 +59,7 @@ def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
 /--
 Between any two points, there must exist a longest path.
 -/
-lemma exists_maximal_path [Fintype V] {G : SimpleGraph V} [G.LocallyFinite] (hG : G.Connected) :
+lemma exists_maximal_path [Fintype V] {G : SimpleGraph V} (hG : G.Connected) :
   ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
   intro a b
   by_cases h : a ≠ b
@@ -231,7 +230,7 @@ lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p
 For a path `G.Walk a b` in graph `G`, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not adjacent.
 -/
-lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
   ¬ G.Adj a b := by
   rcases hv_not_in_p with ⟨v, hv_not_in_p⟩
   intro H_adj
@@ -755,7 +754,7 @@ lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) 
 The longest path `G.Walk a b` in a graph, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not equal.
 -/
-lemma endpoint_ne [Fintype V] {G : SimpleGraph V} [G.LocallyFinite] {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+lemma endpoint_ne [Fintype V] {G : SimpleGraph V} {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
   a ≠ b := by
   unfold Walk.IsMaxlongPath at hp
   obtain ⟨hp_path, hp_max⟩ := hp
@@ -794,7 +793,7 @@ lemma endpoint_ne [Fintype V] {G : SimpleGraph V} [G.LocallyFinite] {hG : G.Conn
 /--
 The length of path p take to a certain vertex with "takeUntil".
 -/
-lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
+lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V]
     {a b : V} (p : G.Walk a b) {i : ℕ} {hp : p.IsPath} {hn : i ≤ p.length} {hi : p.getVert i ∈ p.support} :
   (p.takeUntil _ hi).length = i := by
   rw [length_takeUntil_eq_index]
@@ -831,7 +830,7 @@ If there exists a vertex v outside the longest simple path p that is not on path
 then there exists a simple path s starting from v with its endpoint being the first
 point where it connects to path p , and p and s intersect only at the point.
 -/
-lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
+lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V]
     {hG : G.Connected} {a b : V} (p : G.Walk a b) {i : Fin (p.support.length - 1)} (hp : Walk.IsMaxlongPath p) :
     ∀ (v : V), ∃ (j : ℕ), G.Reachable v (p.getVert j) ∧ ∃ (s : G.Walk v (p.getVert j)), s.IsPath ∧ s.support ∩ p.support = {p.getVert j} := by
   intro v
