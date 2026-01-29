@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.RingTheory.Localization.Additive
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
@@ -667,3 +668,34 @@ lemma IsPushout.cancelBaseChange_symm_tmul (s : S) (m : M) :
 end Algebra
 
 end IsBaseChange
+
+namespace AddSubmonoid
+
+variable {M G : Type*} [AddCommMonoid M] [AddCommGroup G]
+
+theorem isLocalizationMap_iff_isTensorProduct (f : M →ₗ[ℕ] G) :
+    IsLocalizationMap ⊤ f ↔ IsTensorProduct (zmultiplesHom _ f).toNatLinearMap where
+  mp h := (⟨f.toAddHom, h⟩ : LocalizationMap ⊤ G).addMonoidHomTensor.symm.bijective
+  mpr h := by
+    convert (isLocalizationMap_tensorProductMk M).addEquiv_comp h.equiv.toAddEquiv
+    ext; simp
+
+theorem isLocalizationMap_iff_isBaseChange (f : M →ₗ[ℕ] G) :
+    IsLocalizationMap ⊤ f ↔ IsBaseChange ℤ f := isLocalizationMap_iff_isTensorProduct f
+
+theorem isLocalizationMap_iff_isPushout {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] :
+    IsLocalizationMap ⊤ (algebraMap R S) ↔ Algebra.IsPushout ℕ ℤ R S :=
+  (isLocalizationMap_iff_isBaseChange (algebraMap R S).toNatLinearMap).trans
+    (Algebra.isPushout_iff ..).symm
+
+end AddSubmonoid
+
+namespace Algebra.GrothendieckAddGroup
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ ℤ R (GrothendieckAddGroup R) :=
+  AddSubmonoid.isLocalizationMap_iff_isPushout.mp (AddLocalization.addMonoidOf _).isLocalizationMap
+
+instance (R) [CommSemiring R] : Algebra.IsPushout ℕ R ℤ (GrothendieckAddGroup R) :=
+  .symm inferInstance
+
+end Algebra.GrothendieckAddGroup

@@ -95,7 +95,7 @@ structure IsLocalizationMap (S : AddSubmonoid M) (f : M → N) where
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
 structure LocalizationMap extends M →ₙ+ N where
-  isLocalizationMap : IsLocalizationMap S toFun
+  isLocalizationMap' : IsLocalizationMap S toFun
 
 /-- The additive homomorphism underlying a `LocalizationMap` of `AddCommMonoid`s. -/
 add_decl_doc LocalizationMap.toAddHom
@@ -122,7 +122,7 @@ structure IsLocalizationMap (S : Submonoid M) (f : M → N) where
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
 @[to_additive] structure LocalizationMap extends M →ₙ* N where
-  isLocalizationMap : IsLocalizationMap S toFun
+  isLocalizationMap' : IsLocalizationMap S toFun
 
 /-- The multiplicative homomorphism underlying a `LocalizationMap`. -/
 add_decl_doc LocalizationMap.toMulHom
@@ -382,7 +382,7 @@ def toLocalizationMap (f : M →* N) (H1 : ∀ y : S, IsUnit (f y))
     (H2 : ∀ z, ∃ x : M × S, z * f x.2 = f x.1) (H3 : ∀ x y, f x = f y → ∃ c : S, ↑c * x = ↑c * y) :
     Submonoid.LocalizationMap S N where
   __ := f
-  isLocalizationMap :=
+  isLocalizationMap' :=
   { map_units := H1
     surj := H2
     exists_of_eq := H3 _ _ }
@@ -416,7 +416,7 @@ is a monoid homomorphism. -/
 therefore is an additive monoid homomorphism. -/]
 abbrev toMonoidHom (f : LocalizationMap S N) : M →* N where
   __ := f
-  map_one' := f.isLocalizationMap.map_one (f := f.toMulHom)
+  map_one' := f.isLocalizationMap'.map_one (f := f.toMulHom)
 
 /-- Short for `toMonoidHom`; used to apply a localization map as a function. -/
 @[to_additive /-- Short for `toAddMonoidHom`; used to apply a localization map as a function. -/]
@@ -445,6 +445,9 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : LocalizationMap S N →
 
 @[to_additive (attr := ext)]
 theorem ext {f g : LocalizationMap S N} (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
+
+@[to_additive] theorem isLocalizationMap (f : LocalizationMap S N) : S.IsLocalizationMap f :=
+  f.isLocalizationMap'
 
 @[to_additive]
 theorem map_units (f : LocalizationMap S N) (y : S) : IsUnit (f y) :=
@@ -1292,7 +1295,7 @@ def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
   { (r S).mk'.comp <| MonoidHom.inl M S with
     toFun := fun x ↦ mk x 1
     map_mul' := fun x y ↦ by rw [mk_mul, mul_one]
-    isLocalizationMap :=
+    isLocalizationMap' :=
     { map_units y :=
         isUnit_iff_exists_inv.2 ⟨mk 1 y, by rw [mk_mul, mul_one, one_mul, mk_self]⟩
       surj z := induction_on z fun x ↦
