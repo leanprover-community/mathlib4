@@ -60,7 +60,7 @@ private def introspective (f : K[X]) (n : ℕ) (r : ℕ) [NeZero r] : Prop :=
 variable {r : ℕ} [NeZero r]
 
 private theorem introspective_eq {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
-    (hi : introspective f n r) : f.eval (μ ^ n) = (f.eval μ) ^ n := by
+    (hi : introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
   have _ : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
 
