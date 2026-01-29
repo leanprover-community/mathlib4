@@ -109,4 +109,47 @@ instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyQuasiFinite f] :
     LocallyQuasiFinite (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
 
+def Scheme.Hom.quasiFiniteLocus : Set X := { x : X | (f.stalkMap x).hom.QuasiFinite }
+
+lemma Scheme.Hom.quasiFiniteAt_of_memQuasiFiniteLocus
+    (x : X) (hx : x ∈ f.quasiFiniteLocus) (V : X.affineOpens) (U : Y.affineOpens)
+    (hVU : V ≤ f ⁻¹ᵁ U.1) (hxV : x ∈ V.1) :
+    letI := (f.appLE U V hVU).hom.toAlgebra
+    Algebra.QuasiFiniteAt Γ(Y, U) (V.2.primeIdealOf ⟨x, hxV⟩).asIdeal := by
+  letI := (f.appLE U V hVU).hom.toAlgebra
+  have H : (Y.presheaf.germ U.1 _ (hVU hxV)).hom.QuasiFinite := by
+    let := (Y.presheaf.germ U.1 _ (hVU hxV)).hom.toAlgebra
+    have := U.2.isLocalization_stalk ⟨f x, (hVU hxV)⟩
+    rw [← (Y.presheaf.germ U.1 _ (hVU hxV)).hom.algebraMap_toAlgebra,
+      RingHom.quasiFinite_algebraMap]
+    exact .of_isLocalization (U.2.primeIdealOf ⟨_, hVU hxV⟩).asIdeal.primeCompl
+  let := (X.presheaf.germ V.1 x hxV).hom.toAlgebra
+  have := V.2.isLocalization_stalk ⟨x, hxV⟩
+  let e := IsLocalization.algEquiv (V.2.primeIdealOf ⟨x, hxV⟩).asIdeal.primeCompl
+    (X.presheaf.stalk (⟨x, hxV⟩ : V.1)) (Localization.AtPrime (V.2.primeIdealOf ⟨x, hxV⟩).asIdeal)
+  rw [Algebra.QuasiFiniteAt, ← RingHom.quasiFinite_algebraMap]
+  convert (RingHom.QuasiFinite.of_finite e.finite).comp (hx.comp H)
+  rw [← CommRingCat.hom_comp, f.germ_stalkMap, ← X.presheaf.germ_res (homOfLE hVU) _ hxV,
+    Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map_assoc, CommRingCat.hom_comp, ← RingHom.comp_assoc,
+    IsScalarTower.algebraMap_eq Γ(Y, U) Γ(X, V)]
+  congr 1
+  exact e.toAlgHom.comp_algebraMap.symm
+
+lemma Scheme.Hom.quasiFiniteLocus_eq_univ [LocallyQuasiFinite f] :
+    f.quasiFiniteLocus = .univ := by
+  refine Set.eq_univ_iff_forall.mpr (HasRingHomProperty.stalkMap ?_ ‹_›)
+  introv hf
+  algebraize [f]
+  refine .of_comp (g := algebraMap R _) ?_
+  convert RingHom.quasiFinite_algebraMap.mpr (inferInstanceAs
+    (Algebra.QuasiFinite R (Localization.AtPrime J)))
+  ext; simp; rfl
+
+instance [IsFinite f] : LocallyQuasiFinite f := by
+  rw [HasAffineProperty.eq_targetAffineLocally @IsFinite] at ‹IsFinite f›
+  rw [HasRingHomProperty.eq_affineLocally @LocallyQuasiFinite]
+  refine ((targetAffineLocally_affineAnd_eq_affineLocally
+    RingHom.QuasiFinite.propertyIsLocal).le f ?_).2
+  exact targetAffineLocally_affineAnd_le (fun hf ↦ .of_finite hf) f ‹_›
+
 end AlgebraicGeometry
