@@ -62,9 +62,7 @@ the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
 the sum over `s`, as long as `a` is in `s` or `f a = 0`. -/]
 theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
-  by_cases hm : a ∈ s
-  · simp_rw [insert_eq_of_mem hm]
-  · rw [prod_insert hm, h hm, one_mul]
+  by_cases a ∈ s <;> grind
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
@@ -1072,6 +1070,14 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
 @[deprecated Multiset.mem_sum (since := "2025-08-24")]
 theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
     (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
+
+@[to_additive]
+lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
+    (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih => simp [Finset.prod_insert ha, prod_map_mul, ih]
 
 variable [DecidableEq ι]
 
