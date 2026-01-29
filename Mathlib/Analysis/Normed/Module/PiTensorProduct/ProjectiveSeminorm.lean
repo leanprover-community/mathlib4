@@ -403,7 +403,7 @@ theorem projectiveSeminorm_dual_characterization (x : ⨂[𝕜] i, E i) : IsGrea
 open NormedSpace in
 /-- If `x` imbeds isometrically into the bidual, the projective seminorm is equal
 to the operator norm `‖toDualContinuousMultilinearMapL 𝕜 x‖`. -/
-theorem projectiveSeminorm_eq_opNorm_of_bidual_iso (x : ⨂[𝕜] i, E i)
+theorem opNorm_eq_projectiveSeminorm_of_bidual_iso (x : ⨂[𝕜] i, E i)
     (h_iso : ‖inclusionInDoubleDual 𝕜 _ x‖ = ‖x‖) :
     ‖toDualContinuousMultilinearMapL 𝕜 x‖ = ‖x‖ := by
   refine le_antisymm (norm_toDualContinuousMultilinearMapL_apply_le x) ?_
@@ -458,9 +458,9 @@ variable {E : ι → Type*} [∀ i, SeminormedAddCommGroup (E i)] [∀ i, Normed
 theorem projectiveSeminorm_tprod (m : Π i, E i) : ‖⨂ₜ[𝕜] i, m i‖ = ∏ i, ‖m i‖ :=
   projectiveSeminorm_tprod_of_bidual_iso m (fun i ↦ (inclusionInDoubleDualLi 𝕜).norm_map (m i))
 
-theorem projectiveSeminorm_eq_opNorm (x : ⨂[𝕜] i, E i) :
+theorem opNorm_eq_projectiveSeminorm (x : ⨂[𝕜] i, E i) :
     ‖toDualContinuousMultilinearMapL 𝕜 x‖ = ‖x‖ :=
-  projectiveSeminorm_eq_opNorm_of_bidual_iso x ((inclusionInDoubleDualLi 𝕜).norm_map x)
+  opNorm_eq_projectiveSeminorm_of_bidual_iso x ((inclusionInDoubleDualLi 𝕜).norm_map x)
 
 variable {E' : ι → Type*}
 variable [∀ i, NormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
