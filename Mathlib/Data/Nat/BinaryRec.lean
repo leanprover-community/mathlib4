@@ -172,9 +172,9 @@ theorem binaryRec_eq {zero : motive 0} {bit : ∀ b n, motive n → motive (bit 
     unfold binaryRec
     exact h.symm
   case neg =>
-    rw [binaryRec_eq_of_ne_zero h']
-    change (n.bit b).bit_testBit_zero_shiftRight_one ▸ bit _ _ _ = _
-    generalize (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
+    rw [binaryRec, dif_neg h']
+    change congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one ▸ bit _ _ _ = _
+    generalize congrArg motive (n.bit b).bit_testBit_zero_shiftRight_one = e; revert e
     rw [testBit_bit_zero, bit_shiftRight_one]
     intros; rfl
 
