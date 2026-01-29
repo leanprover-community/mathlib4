@@ -12,7 +12,7 @@ public import Mathlib.NumberTheory.Divisors
 # Results about divisors and factorizations
 -/
 
-@[expose] public section
+public section
 
 open Finsupp
 
