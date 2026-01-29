@@ -185,8 +185,8 @@ theorem bounded_stdSimplex : IsBounded (stdSimplex ℝ ι) :=
 /-- `stdSimplex ℝ ι` is closed. -/
 theorem isClosed_stdSimplex : IsClosed (stdSimplex ℝ ι) :=
   (stdSimplex_eq_inter ℝ ι).symm ▸
-    IsClosed.inter (isClosed_iInter fun i => isClosed_le continuous_const (continuous_apply i))
-      (isClosed_eq (continuous_finset_sum _ fun x _ => continuous_apply x) continuous_const)
+    IsClosed.inter (isClosed_iInter fun i ↦ isClosed_le continuous_const (continuous_apply i))
+      (isClosed_eq (by fun_prop) continuous_const)
 
 /-- `stdSimplex ℝ ι` is compact. -/
 theorem isCompact_stdSimplex : IsCompact (stdSimplex ℝ ι) :=

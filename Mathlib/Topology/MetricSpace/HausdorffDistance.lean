@@ -229,7 +229,7 @@ theorem _root_.IsOpen.exists_iUnion_isClosed {U : Set α} (hU : IsOpen U) :
 
 theorem _root_.IsCompact.exists_infEDist_eq_edist (hs : IsCompact s) (hne : s.Nonempty) (x : α) :
     ∃ y ∈ s, infEDist x s = edist x y := by
-  have A : Continuous fun y => edist x y := continuous_const.edist continuous_id
+  have A : Continuous fun y => edist x y := by fun_prop
   obtain ⟨y, ys, hy⟩ := hs.exists_isMinOn hne A.continuousOn
   exact ⟨y, ys, le_antisymm (infEDist_le_edist_of_mem ys) (by rwa [le_infEDist])⟩
 

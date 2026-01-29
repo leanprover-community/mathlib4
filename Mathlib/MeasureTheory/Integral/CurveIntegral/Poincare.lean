@@ -214,8 +214,8 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
     · exact zero_le_one
     · exact s'
     · exact hs'c
-    · exact hηc.clm_apply continuousOn_const
-    · exact hηc.clm_apply continuousOn_const |>.neg
+    · fun_prop
+    · fun_prop
     · exact hf'
     · exact hg'
     · rw [integrableOn_congr_fun_ae hf'g']
