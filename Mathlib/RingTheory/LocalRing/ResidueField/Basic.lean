@@ -207,9 +207,6 @@ end FiniteDimensional
 
 end ResidueField
 
-@[deprecated (since := "2025-10-06")]
-  alias isLocalHom_residue := instIsLocalHomResidueFieldRingHomResidue
-
 end
 
 end IsLocalRing

@@ -965,7 +965,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [PresheafedSpace.stalkMap.comp, PresheafedSpace.stalkMap.comp] at this
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
-    dsimp
+    dsimp only [CommRingCat.hom_comp]
     infer_instance
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)

@@ -117,6 +117,15 @@ theorem isLocalHomValStalkMap {X Y : LocallyRingedSpace.{u}} (f : Hom X Y) (x : 
     IsLocalHom (f.stalkMap x).hom :=
   f.2 x
 
+-- The `Type`-valued arguments are not indexed because some reducibility issues when coercing
+-- locally ringed spaces (and other spaces) to types will let lean fail to recognize this lemma.
+-- The `f.toHom.stalkMap` part is still indexed.
+@[instance]
+theorem isLocalHom_stalkMap_toHom {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y) (x : X) :
+    @IsLocalHom (no_index _) (no_index _) _ _
+      (@DFunLike.coe (no_index _) _ _ _ (f.toHom.stalkMap x).hom) :=
+  f.2 x
+
 /-- The identity morphism on a locally ringed space. -/
 def id (X : LocallyRingedSpace.{u}) : Hom X X :=
   ⟨𝟙 X.toPresheafedSpace, fun x => by dsimp; erw [PresheafedSpace.stalkMap.id]; infer_instance⟩

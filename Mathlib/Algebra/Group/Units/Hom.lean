@@ -248,11 +248,11 @@ variable [Monoid R] [Monoid S] [Monoid T] [FunLike F R S]
   whenever `f a` is a unit. See `IsLocalRing.local_hom_TFAE` for other equivalent
   definitions in the local ring case - from where this concept originates, but it is useful in
   other contexts, so we allow this generalisation in mathlib. -/
-class IsLocalHom (f : F) : Prop where
+class IsLocalHom (f : R → S) : Prop where
   /-- A local homomorphism `f : R ⟶ S` will send nonunits of `R` to nonunits of `S`. -/
   map_nonunit : ∀ a, IsUnit (f a) → IsUnit a
 
-theorem IsUnit.of_map (f : F) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
+theorem IsUnit.of_map (f : R → S) [IsLocalHom f] (a : R) (h : IsUnit (f a)) : IsUnit a :=
   IsLocalHom.map_nonunit a h
 
 -- TODO : remove alias, change the parenthesis of `f` and `a`
@@ -268,10 +268,13 @@ theorem isLocalHom_of_leftInverse [FunLike G S R] [MonoidHomClass G S R]
     {f : F} (g : G) (hfg : Function.LeftInverse g f) : IsLocalHom f where
   map_nonunit a ha := by rwa [isUnit_map_of_leftInverse g hfg] at ha
 
+instance IsLocalHom.comp (g : S → T) (f : R → S) [IsLocalHom g] [IsLocalHom f] :
+    IsLocalHom (g ∘ f) where
+  map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+
 @[instance]
 theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
-    [IsLocalHom f] : IsLocalHom (g.comp f) where
-  map_nonunit a := IsLocalHom.map_nonunit a ∘ IsLocalHom.map_nonunit (f := g) (f a)
+    [IsLocalHom f] : IsLocalHom (g.comp f) := IsLocalHom.comp g f
 
 -- see note [lower instance priority]
 @[instance 100]
