@@ -237,6 +237,37 @@ theorem continuousAlternatingMap_trivializationAt (x₀ : B) :
     trivializationAt (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) x₀ =
     (trivializationAt F₁ E₁ x₀).continuousAlternatingMap 𝕜 ι (trivializationAt F₂ E₂ x₀) := rfl
 
+/-
+{E₁ : B → Type*} [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
+[TopologicalSpace (TotalSpace F₁ E₁)] {F₂ : Type*}
+[NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂] {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)]
+[∀ x, Module 𝕜 (E₂ x)]
+[TopologicalSpace (TotalSpace F₂ E₂)] [TopologicalSpace B] {e₁ : Trivialization F₁ (π F₁ E₁)}
+(e₁' : Trivialization F₁ (π F₁ E₁)) {e₂ : Trivialization F₂ (π F₂ E₂)}
+(e₂' : Trivialization F₂ (π F₂ E₂)) [Fintype ι]
+[∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+[∀ x : B, TopologicalSpace (E₂ x)]
+[FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂] [∀ x, IsTopologicalAddGroup (E₂ x)]
+[∀ x, ContinuousSMul 𝕜 (E₂ x)]
+[he₁ : MemTrivializationAtlas e₁] [he₂ : MemTrivializationAtlas e₂]
+-/
+
+variable {𝕜 ι} (F₁ E₁ F₂ E₂) in
+def ContinuousAlternatingMap.inCoordinates := _
+
+/-
+info: ContinuousLinearMap.inCoordinates.{u_2, u_3, u_4, u_5, u_6, u_7, u_8, u_9} {B : Type u_2} (F : Type u_3)
+  (E : B → Type u_4) [(x : B) → AddCommMonoid (E x)] [NormedAddCommGroup F] [TopologicalSpace B]
+  [(x : B) → TopologicalSpace (E x)] {𝕜₁ : Type u_5} {𝕜₂ : Type u_6} [NontriviallyNormedField 𝕜₁]
+  [NontriviallyNormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂} {B' : Type u_7} [TopologicalSpace B'] [NormedSpace 𝕜₁ F]
+  [(x : B) → Module 𝕜₁ (E x)] [TopologicalSpace (TotalSpace F E)] (F' : Type u_8) [NormedAddCommGroup F']
+  [NormedSpace 𝕜₂ F'] (E' : B' → Type u_9) [(x : B') → AddCommMonoid (E' x)] [(x : B') → Module 𝕜₂ (E' x)]
+  [TopologicalSpace (TotalSpace F' E')] [FiberBundle F E] [VectorBundle 𝕜₁ F E] [(x : B') → TopologicalSpace (E' x)]
+  [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E'] (x₀ x : B) (y₀ y : B') (ϕ : E x →SL[σ] E' y) : F →SL[σ] F'
+-/
+
+
+
 theorem continuousAlternatingMap_trivializationAt_apply (x₀ : B)
     (x : TotalSpace (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x)) :
     trivializationAt (F₁ [⋀^ι]→L[𝕜] F₂) (fun x ↦ E₁ x [⋀^ι]→L[𝕜] E₂ x) x₀ x =
