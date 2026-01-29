@@ -111,7 +111,6 @@ theorem Filter.map_mul_left_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
   convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp [mul_comm]
 
-
 @[to_additive (attr := simp)]
 theorem Filter.map_mul_left_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
     [TopologicalSpace G] [ContinuousMul G] {c a : G} :
