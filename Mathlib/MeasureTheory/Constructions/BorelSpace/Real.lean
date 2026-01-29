@@ -153,6 +153,9 @@ theorem AEMeasurable.real_toNNReal {f : α → ℝ} {μ : Measure α} (hf : AEMe
     AEMeasurable (fun x => Real.toNNReal (f x)) μ :=
   measurable_real_toNNReal.comp_aemeasurable hf
 
+lemma measurableEmbedding_natCast : MeasurableEmbedding (Nat.cast : ℕ → ℝ) :=
+  Nat.isClosedEmbedding_coe_real.measurableEmbedding
+
 theorem measurable_coe_nnreal_real : Measurable ((↑) : ℝ≥0 → ℝ) :=
   NNReal.continuous_coe.measurable
 
