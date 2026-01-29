@@ -5439,6 +5439,7 @@ public import Mathlib.NumberTheory.VonMangoldt
 public import Mathlib.NumberTheory.WellApproximable
 public import Mathlib.NumberTheory.Wilson
 public import Mathlib.NumberTheory.ZetaValues
+public import Mathlib.NumberTheory.Zsigmondy
 public import Mathlib.NumberTheory.Zsqrtd.Basic
 public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
