@@ -2067,6 +2067,7 @@ public import Mathlib.Analysis.NormedSpace.RieszLemma
 public import Mathlib.Analysis.NormedSpace.SphereNormEquiv
 public import Mathlib.Analysis.ODE.Gronwall
 public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Analysis.ODE.SmoothFlow
 public import Mathlib.Analysis.Oscillation
 public import Mathlib.Analysis.PSeries
 public import Mathlib.Analysis.PSeriesComplex
