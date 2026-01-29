@@ -23,7 +23,7 @@ maximal elements from being predecessor limits. As such, we also provide `Order.
 @[expose] public section
 
 
-variable {α : Type*} {a b : α}
+variable {α β : Type*} {a b : α}
 
 namespace Order
 
@@ -139,6 +139,21 @@ theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
 @[to_dual]
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
+
+@[simp]
+theorem isSuccPrelimit_map_iff {E} [Preorder β] [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    IsSuccPrelimit (e a) ↔ IsSuccPrelimit a := by
+  rw [Order.IsSuccPrelimit, ← (EquivLike.toEquiv e).forall_congr_right, Order.IsSuccPrelimit]
+  simp
+
+alias ⟨_, isSuccPrelimit_map⟩ := isSuccPrelimit_map_iff
+
+@[simp]
+theorem isSuccLimit_map_iff {E} [Preorder β] [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    IsSuccLimit (e a) ↔ IsSuccLimit a := by
+  rw [IsSuccLimit, IsSuccLimit, isMin_map_iff, isSuccPrelimit_map_iff]
+
+alias ⟨_, isSuccLimit_map⟩ := isSuccLimit_map_iff
 
 variable [SuccOrder α]
 
@@ -419,6 +434,21 @@ theorem IsPredLimit.nonempty_Ioi (h : IsPredLimit a) : (Set.Ioi a).Nonempty :=
 
 theorem not_isPredLimit_of_not_isPredPrelimit (h : ¬ IsPredPrelimit a) : ¬ IsPredLimit a :=
   not_isPredLimit_iff.2 (Or.inr h)
+
+@[simp]
+theorem _root_.OrderIso.isPredPrelimit_apply [Preorder β] (e : α ≃o β) :
+    IsPredPrelimit (e a) ↔ IsPredPrelimit a := by
+  rw [Order.IsPredPrelimit, ← e.forall_congr_right, Order.IsPredPrelimit]
+  simp
+
+alias ⟨_, _root_.OrderIso.map_isPredPrelimit⟩ := OrderIso.isPredPrelimit_apply
+
+@[simp]
+theorem _root_.OrderIso.isPredLimit_apply [Preorder β] (e : α ≃o β) :
+    IsPredLimit (e a) ↔ IsPredLimit a := by
+  rw [IsPredLimit, IsPredLimit, e.isMax_apply, e.isPredPrelimit_apply]
+
+alias ⟨_, _root_.OrderIso.map_isPredLimit⟩ := OrderIso.isPredLimit_apply
 
 variable [PredOrder α]
 

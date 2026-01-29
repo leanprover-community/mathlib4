@@ -1160,11 +1160,21 @@ theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 
 @[to_dual]
+theorem isMax_map_iff {E} [Preorder α] [Preorder β] [EquivLike E α β] [OrderIsoClass E α β]
+    (f : E) {x : α} : IsMax (f x) ↔ IsMax x := by
+  refine ⟨(OrderIsoClass.toOrderIso f).strictMono.isMax_of_apply, ?_⟩
+  conv_lhs => rw [← (EquivLike.toEquiv f).symm_apply_apply x]
+  exact (OrderIsoClass.toOrderIso f).symm.strictMono.isMax_of_apply
+
+@[to_dual] alias ⟨_, isMax_map⟩ := isMax_map_iff
+
+@[to_dual]
 theorem OrderIso.isMax_apply {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β) {x : α} :
-    IsMax (f x) ↔ IsMax x := by
-  refine ⟨f.strictMono.isMax_of_apply, ?_⟩
-  conv_lhs => rw [← f.symm_apply_apply x]
-  exact f.symm.strictMono.isMax_of_apply
+    IsMax (f x) ↔ IsMax x :=
+  isMax_map_iff f
+
+attribute [deprecated isMax_map_iff (since := "2026-01-23")] OrderIso.isMax_apply
+attribute [deprecated isMin_map_iff (since := "2026-01-23")] OrderIso.isMin_apply
 
 /-- Note that this goal could also be stated `(Disjoint on f) a b` -/
 theorem Disjoint.map_orderIso [SemilatticeInf α] [OrderBot α] [SemilatticeInf β] [OrderBot β]
