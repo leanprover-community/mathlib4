@@ -113,8 +113,7 @@ theorem factors_unique {f g : Multiset α} (hf : ∀ x ∈ f, Irreducible x)
 theorem _root_.Associated.card_factors_eq {a b : α} (h : Associated a b) :
     (factors a).card = (factors b).card := by
   by_cases hb : b = 0
-  · rw [hb, associated_zero_iff_eq_zero] at h
-    rw [h, hb]
+  · simp_all
   have ha : a ≠ 0 := h.ne_zero_iff.mpr hb
   by_cases hb : b = 0
   · simp [hb, ha] at h
