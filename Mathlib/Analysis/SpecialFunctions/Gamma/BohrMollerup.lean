@@ -420,7 +420,7 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
   · convert
       convexOn_log_Gamma.comp_affineMap (DistribSMul.toLinearMap ℝ ℝ (1 / 2 : ℝ)).toAffineMap
       using 1
-    · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
+    · simpa only [zero_div] using (preimage_const_mul_Ioi₀ (0 : ℝ) one_half_pos).symm
     · ext1 x
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribSMul.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
@@ -431,7 +431,7 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
           AffineMap.const ℝ ℝ (1 / 2 : ℝ)) using 1
     · change Ioi (-1 : ℝ) = ((fun x : ℝ => x + 1 / 2) ∘ fun x : ℝ => (1 / 2 : ℝ) * x) ⁻¹' Ioi 0
       rw [preimage_comp, preimage_add_const_Ioi, zero_sub,
-        preimage_const_mul_Ioi (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']
+        preimage_const_mul_Ioi₀ (_ : ℝ) one_half_pos, neg_div, div_self (@one_half_pos ℝ _).ne']
     · ext1 x
       change log (Gamma (x / 2 + 1 / 2)) = log (Gamma ((1 / 2 : ℝ) • x + 1 / 2))
       rw [smul_eq_mul, mul_comm, mul_one_div]

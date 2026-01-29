@@ -95,8 +95,9 @@ theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
 
 /-- A recursor for `WithLower`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithLower α → Sort*} (h : ∀ a, β (toLower a)) : ∀ a, β a := fun a =>
-  h (ofLower a)
+protected def rec {motive : WithLower α → Sort*} (toLower : ∀ a, motive (toLower a)) :
+    ∀ a, motive a := fun a =>
+  toLower (ofLower a)
 
 instance [Nonempty α] : Nonempty (WithLower α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithLower α) := ‹Inhabited α›
@@ -148,8 +149,9 @@ lemma ofUpper_inj {a b : WithUpper α} : ofUpper a = ofUpper b ↔ a = b := Iff.
 
 /-- A recursor for `WithUpper`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
-protected def rec {β : WithUpper α → Sort*} (h : ∀ a, β (toUpper a)) : ∀ a, β a := fun a =>
-  h (ofUpper a)
+protected def rec {motive : WithUpper α → Sort*} (toUpper : ∀ a, motive (toUpper a)) :
+    ∀ a, motive a := fun a =>
+  toUpper (ofUpper a)
 
 instance [Nonempty α] : Nonempty (WithUpper α) := ‹Nonempty α›
 instance [Inhabited α] : Inhabited (WithUpper α) := ‹Inhabited α›

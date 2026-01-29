@@ -155,6 +155,19 @@ theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
+theorem nontrivial_iff_nontrivialTopology {α} [EMetricSpace α] :
+    Nontrivial α ↔ NontrivialTopology α := by
+  simp_rw [nontrivial_iff, TopologicalSpace.nontrivial_iff_exists_not_inseparable,
+    EMetric.inseparable_iff, edist_eq_zero]
+
+theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
+    Subsingleton α ↔ IndiscreteTopology α := by
+  simpa [not_nontrivial_iff_subsingleton] using nontrivial_iff_nontrivialTopology (α := α).not
+
+/-- In an (e)metric space, every nontrivial type has a nontrivial topology. -/
+instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
+  nontrivial_iff_nontrivialTopology.1 ‹_›
+
 -- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
