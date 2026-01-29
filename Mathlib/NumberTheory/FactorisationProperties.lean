@@ -65,14 +65,17 @@ deriving Decidable
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
 def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
+deriving Decidable
 
 /-- A positive natural number `n` is _pseudoperfect_ if there exists a subset of the proper
   divisors of `n` such that the sum of that subset is equal to `n`. -/
 def Pseudoperfect (n : ℕ) : Prop :=
   0 < n ∧ ∃ s ⊆ properDivisors n, ∑ i ∈ s, i = n
+deriving Decidable
 
 /-- `n : ℕ` is a _weird_ number if and only if it is abundant but not pseudoperfect. -/
 def Weird (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
+deriving Decidable
 
 /-- `abundancyIndex n` is the sum of the divisors of `n` divided by `n`. -/
 def abundancyIndex (n : ℕ) : ℚ := (∑ i ∈ n.divisors, i) / (n : ℚ)
@@ -81,9 +84,14 @@ theorem not_pseudoperfect_iff_forall :
     ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ s ⊆ properDivisors n, ∑ i ∈ s, i ≠ n := by
   grind [Pseudoperfect]
 
-theorem deficient_one : Deficient 1 := zero_lt_one
-theorem deficient_two : Deficient 2 := one_lt_two
-theorem deficient_three : Deficient 3 := by norm_num [Deficient]
+theorem deficient_one : Deficient 1 := by
+  decide
+
+theorem deficient_two : Deficient 2 := by
+  decide
+
+theorem deficient_three : Deficient 3 :=  by
+  decide
 
 theorem not_abundant_zero : ¬ Abundant 0 := by
   decide
@@ -92,8 +100,6 @@ theorem abundant_twelve : Abundant 12 := by
   decide
 
 theorem weird_seventy : Weird 70 := by
-  rw [Weird, Abundant, not_pseudoperfect_iff_forall,
-    show properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} by rfl]
   decide +kernel
 
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
