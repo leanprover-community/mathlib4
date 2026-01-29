@@ -86,20 +86,15 @@ theorem deficient_two : Deficient 2 := one_lt_two
 theorem deficient_three : Deficient 3 := by norm_num [Deficient]
 
 theorem not_abundant_zero : ¬ Abundant 0 := by
-  simp [Abundant]
+  decide
 
 theorem abundant_twelve : Abundant 12 := by
-  simp [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
+  decide
 
 theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall,
     show properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} by rfl]
-  constructor
-  · simp
-  · right
-    intro s hs
-    have hs' := mem_powerset.mpr hs
-    fin_cases hs' <;> decide
+  decide +kernel
 
 lemma deficient_iff_not_abundant_and_not_perfect (hn : n ≠ 0) :
     Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
