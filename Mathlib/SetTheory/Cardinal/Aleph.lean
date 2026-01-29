@@ -328,6 +328,12 @@ theorem preAleph_pos {o : Ordinal} : 0 < preAleph o ↔ 0 < o := by
 theorem aleph0_le_preAleph {o : Ordinal} : ℵ₀ ≤ preAleph o ↔ ω ≤ o := by
   rw [← preAleph_omega0, preAleph_le_preAleph]
 
+theorem _root_.Ordinal.card_le_preAleph (o : Ordinal) : o.card ≤ preAleph o :=
+  o.card_preOmega.trans_ge <| card_le_card <| o.le_preOmega_self
+
+theorem le_preAleph_ord (c : Cardinal) : c ≤ preAleph c.ord := by
+  simpa using c.ord.card_le_preAleph
+
 @[simp]
 theorem lift_preAleph (o : Ordinal.{u}) : lift.{v} (preAleph o) = preAleph (Ordinal.lift.{v} o) :=
   (preAleph.toInitialSeg.trans liftInitialSeg).eq
@@ -423,6 +429,12 @@ theorem aleph0_le_aleph (o : Ordinal) : ℵ₀ ≤ ℵ_ o := by
 
 theorem aleph_pos (o : Ordinal) : 0 < ℵ_ o :=
   aleph0_pos.trans_le (aleph0_le_aleph o)
+
+theorem _root_.Ordinal.card_le_aleph (o : Ordinal) : o.card ≤ ℵ_ o :=
+  o.card_le_preAleph.trans (preAleph_le_aleph o)
+
+theorem le_aleph_ord (c : Cardinal) : c ≤ ℵ_ c.ord := by
+  simpa using c.ord.card_le_aleph
 
 @[simp]
 theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
@@ -586,6 +598,12 @@ theorem preBeth_omega : preBeth ω = ℵ₀ := by
 theorem preBeth_pos {o : Ordinal} : 0 < preBeth o ↔ 0 < o := by
   simpa using preBeth_lt_preBeth (o₁ := 0)
 
+theorem _root_.Ordinal.card_le_preBeth (o : Ordinal) : o.card ≤ preBeth o :=
+  o.card_le_preAleph.trans (preAleph_le_preBeth o)
+
+theorem le_preBeth_ord (c : Cardinal) : c ≤ preBeth c.ord := by
+  simpa using c.ord.card_le_preBeth
+
 @[simp]
 theorem preBeth_eq_zero {o : Ordinal} : preBeth o = 0 ↔ o = 0 := by
   simpa using preBeth_inj (o₂ := 0)
@@ -678,6 +696,12 @@ theorem beth_pos (o : Ordinal) : 0 < ℶ_ o :=
 
 theorem beth_ne_zero (o : Ordinal) : ℶ_ o ≠ 0 :=
   (beth_pos o).ne'
+
+theorem _root_.Ordinal.card_le_beth (o : Ordinal) : o.card ≤ ℶ_ o :=
+  o.card_le_aleph.trans (aleph_le_beth o)
+
+theorem le_beth_ord (c : Cardinal) : c ≤ ℶ_ c.ord := by
+  simpa using c.ord.card_le_beth
 
 theorem isStrongLimit_beth {o : Ordinal} : IsStrongLimit (ℶ_ o) ↔ IsSuccPrelimit o := by
   rw [beth_eq_preBeth, isStrongLimit_preBeth, isSuccLimit_add_iff_of_isSuccLimit isSuccLimit_omega0]
