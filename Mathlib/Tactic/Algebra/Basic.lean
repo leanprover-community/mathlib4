@@ -20,15 +20,13 @@ Based largely on the implementation of `ring`. The `algebra` normal form mirrors
 except that the constants are expressions in the base ring that are kept in ring normal form.
 
 ## Organization
-The structure of this file closely matches that of `Ring.Basic`.
+This tactic is implemented using the machinery of `Ring.Common`
 
-* Normalized expressions are stored as an `ExSum`, a type which is part of the inductive family of
-types `ExSum`, `ExProd` and `ExBase`.
-* We implement evaluation functions (`evalAdd`, `evalMul`, etc.) for all of the operations we
-support, which take normalized expressions and return a new normalized expression together with
-a proof that the new expression equals the operation applied to the input expressions.
+* Normalized expressions are stored as an `Common.ExSum`, with a custom type for
+representing coefficients in `R`.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
 coefficients as experssions in the base ring `R`, normalized by `ring`.
+* These coefficients are sums, not products. The normal form of `a • x + b • x` is `(a + b) • x`.
 
 This tactic is used internally to implement the `polynomial` tactic.
 
@@ -45,7 +43,6 @@ open Meta Elab Qq Mathlib.Tactic Mathlib.Meta AtomM
 public meta section
 
 namespace Mathlib.Tactic.Algebra
-
 
 attribute [local instance] monadLiftOptionMetaM
 
@@ -125,8 +122,6 @@ def evalCast (cR : Algebra.Cache q($sR)) (cA : Algebra.Cache q($sA)):
     have : $r =Q (Rat.rawCast (.negOfNat $n) $d : $R) := ⟨⟩
     pure ⟨_, (Common.ExProd.const ⟨_, vr.toSum⟩).toSum, (q(isRat_eq_rawCast (a := $a) $p))⟩
   | _ => none
-
-
 
 /-- Push `algebraMap`s into sums and products and convert `algebraMap`s from `ℕ`, `ℤ` and `ℚ`
 into casts. -/
@@ -456,12 +451,21 @@ where
       -- let pb : Q($e₂ = $a) := pb
       return q($pb ▸ $pa)
 
-/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
-goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
-expressions are the same. The R-coefficients are put into ring normal form.
+/-- `algebra` solves equalities in the language of algebras: ring operations and scalar
+multiplications.
 
-The scalar ring R is inferred automatically by looking for scalar multiplications and algebraMaps
-present in the expressions.
+Given a goal which is an equality in a commutative `R`-algebra `A`, `algebra` parses the LHS and
+RHS of the goal as polynomial expressions of `A`-atoms with coefficients in some semiring `R`, and
+closes the goal if the two expressions are the same. The `R`-coefficients are put into ring normal
+form.
+
+By default, the scalar ring `R` is inferred automatically by looking for scalar multiplications and
+`algebraMap`s present in the expressions. The inference procedure assumes that any two rings `R`
+and `S` that appear are comparable, in the sense that either `R` is an `S`-algebra or `S` is an
+`R`-algebra.
+
+* `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
+automatically.
  -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do
@@ -469,9 +473,7 @@ elab (name := algebra) "algebra":tactic =>
     let g ← getMainGoal
     AtomM.run .default (proveEq none g)
 
-/-- Given a goal which is an equality in a commutative R-algebra A, parse the LHS and RHS of the
-goal as linear combinations of A-atoms over some semiring R, and close the goal if the two
-expressions are the same. The R-coefficients are put into ring normal form. -/
+@[tactic_alt algebra]
 elab (name := algebraWith) "algebra" " with " R:term : tactic =>
   withMainContext do
     liftMetaTactic' preprocess
