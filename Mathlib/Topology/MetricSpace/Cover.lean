@@ -68,9 +68,12 @@ lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
   fun _ h_mem ↦ ⟨x, by simp, (edist_le_ediam_of_mem h_mem hx).trans hA⟩
 
-lemma isCover_iff_subset_iUnion_emetricClosedBall :
-    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
+lemma isCover_iff_subset_iUnion_closedEBall :
+    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, Metric.closedEBall y ε := by
   simp [IsCover, SetRel.IsCover, subset_def]
+
+alias isCover_iff_subset_iUnion_emetricClosedBall :=
+  isCover_iff_subset_iUnion_closedEBall
 
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
@@ -83,11 +86,11 @@ nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧
 lemma exists_finite_isCover_of_totallyBounded (hε : ε ≠ 0) (hs : TotallyBounded s) :
     ∃ N ⊆ s, N.Finite ∧ IsCover ε s N := by
   rw [EMetric.totallyBounded_iff'] at hs
-  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (mod_cast hε.bot_lt)
-  simp only [isCover_iff_subset_iUnion_emetricClosedBall]
+  obtain ⟨N, hNA, hN_finite, hN⟩ := hs ε (by positivity)
+  simp only [isCover_iff_subset_iUnion_closedEBall]
   refine ⟨N, by simpa, by simpa, ?_⟩
   · refine hN.trans fun x hx ↦ ?_
-    simp only [Set.mem_iUnion, EMetric.mem_ball, exists_prop, EMetric.mem_closedBall] at hx ⊢
+    simp only [Set.mem_iUnion, Metric.mem_eball, exists_prop, Metric.mem_closedEBall] at hx ⊢
     obtain ⟨y, hyN, hy⟩ := hx
     exact ⟨y, hyN, hy.le⟩
 
@@ -135,7 +138,7 @@ section EMetricSpace
 variable [EMetricSpace X] {ε : ℝ≥0} {s N : Set X} {x : X}
 
 @[simp] lemma isCover_zero : IsCover 0 s N ↔ s ⊆ N := by
-  simp [isCover_iff_subset_iUnion_emetricClosedBall]
+  simp [isCover_iff_subset_iUnion_closedEBall]
 
 end EMetricSpace
 
