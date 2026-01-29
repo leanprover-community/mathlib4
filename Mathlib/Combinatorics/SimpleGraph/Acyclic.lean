@@ -156,23 +156,37 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
   have : _ = _ := p.adj_penultimate <| nil_iff_eq_nil.not.mpr hp.ne_nil
   grind [Sym2.eq_iff, IsCycle.snd_ne_penultimate]
 
-theorem isAcyclic_iff_forall_adj_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
-  constructor
-  · intro ha v w hvw
-    apply And.intro hvw
-    intro u p hp
-    cases ha p hp
-  · rintro hb v (_ | ⟨ha, p⟩) hp
-    · exact hp.not_of_nil
-    · apply (hb ha).2 _ hp
-      rw [Walk.edges_cons]
-      apply List.mem_cons_self
+-- theorem isAcyclic_iff_forall_isBridge :
+--     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.IsBridge s(v, w) := by
+  -- simp_rw [h, isBridge_iff_forall_cycle_notMem]
+  -- constructor
+  -- · intro ha v w hvw
+  --   apply And.intro hvw
+  --   intro u p hp
+  --   cases ha p hp
+  -- · rintro hb v (_ | ⟨ha, p⟩) hp
+  --   · exact hp.not_of_nil
+  --   · apply (hb ha).2 _ hp
+  --     rw [Walk.edges_cons]
+  --     apply List.mem_cons_self
 
-theorem isAcyclic_iff_forall_edge_isBridge :
-    G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
-  simp [isAcyclic_iff_forall_adj_isBridge, Sym2.forall]
+theorem isAcyclic_iff_forall_isBridge :
+    G.IsAcyclic ↔ ∀ ⦃e⦄, G.IsBridge e :=
+    have h₁ : G.IsAcyclic → ∀ ⦃e⦄, G.IsBridge e := by
+      intro ha e
+      have hene : (e ∈ G.edgeSet) ∨ ¬(e ∈ G.edgeSet) :=
+        Classical.em (e ∈ G.edgeSet)
+      cases hene with
+      | inl he =>
+        rw [isBridge_iff_forall_cycle_notMem];
+        · intro hu hp hc;
+          have hnc : ¬hp.IsCycle := ha hp;
+          have h : False := (False.elim (hnc hc))
+          contradiction
+        · case inl => exact he
+      | inr => sorry
+    have h₂ : (∀ ⦃e⦄, G.IsBridge e) → G.IsAcyclic := sorry
+    Iff.intro h₁ h₂
 
 theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p q : G.Path v w) :
     p = q := by
@@ -186,8 +200,8 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
   | cons ph p ih =>
     rw [isAcyclic_iff_forall_adj_isBridge] at h
     specialize h ph
-    rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
-    replace h := h.2 (q.append p.reverse)
+    rw [isBridge_iff_forall_walk_mem_edges] at h
+    replace h := h (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     rcases h with h | h
     · cases q with
