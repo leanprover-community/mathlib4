@@ -5,6 +5,7 @@ Authors: Shao Yu
 -/
 
 
+
 module
 
 
@@ -15,11 +16,10 @@ public import Mathlib.Tactic.Linarith
 public import Mathlib.Data.List.GetD
 
 
-set_option linter.style.longLine false
-set_option linter.style.longFile 0
-set_option linter.unusedFintypeInType false
+
 
 /-!
+
 # Simple graphs
 
 We proved Ore's theorem in graph theory:
@@ -34,7 +34,7 @@ We proved Ore's theorem in graph theory:
 -/
 @[expose] public section
 
-open SimpleGraph Finset Walk Function List Mathlib.Tactic.Linarith
+open SimpleGraph Finset Walk Function List
 
 
 
@@ -45,14 +45,14 @@ variable {V : Type*} {e : Sym2 V}
 /--
 Define a simple path of fixed maximum length between two points.
 -/
-def Walk.IsMaximalPath {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) : Prop :=
+def Walk.IsMaximalPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
   p.IsPath ∧ ∀ (q : G.Walk a b), q.IsPath → q.length ≤ p.length
 
 
 /--
 Defines the longest simple path in a graph.
 -/
-def Walk.IsMaxlongPath {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) : Prop :=
+def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
   p.IsPath ∧ ∀ (c d : V), ∀ (q : G.Walk c d),  q.IsPath → q.length ≤ p.length
 
 
@@ -197,7 +197,7 @@ lemma exists_maxilongmal_path [Fintype V] {G : SimpleGraph V} (hG : G.Connected)
 /--
 The length of a path `p` truncated to a certain vertex equals the length of the vertex list.
 -/
-lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) (u : V) (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length) (hp_path : p.IsPath) :
+lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (u : V) (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length) (hp_path : p.IsPath) :
   (p.takeUntil _ h).length = p.support.idxOf u := by
   have l : (p.takeUntil u h).length < p.support.length := by
     calc
@@ -810,7 +810,7 @@ lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
 /--
 The length of the reverse of path p take to a certain vertex with "takeUntil".
 -/
-lemma len_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite] {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.reverse.support} :
+lemma len_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.reverse.support} :
   (p.reverse.takeUntil _ hi).length = p.length - i := by
   obtain H := SimpleGraph.Walk.getVert_length_takeUntil hi
   rw [SimpleGraph.Walk.getVert_eq_support_getElem] at H
@@ -978,7 +978,7 @@ lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFini
       mem_inter_iff, and_self, singleton_subset_iff, mem_inter, mem_toFinset]
 
 
-lemma getVert_congr {G : SimpleGraph V} [G.LocallyFinite]
+lemma getVert_congr {G : SimpleGraph V}
     {a b : V} {i j : ℕ} (p : G.Walk a b) {hp : p.IsPath} {h : p.getVert i = p.getVert j}
     {hn1 : i ≤ p.length} {hn2 : j ≤ p.length} :
     i = j := by
@@ -1003,7 +1003,7 @@ lemma len_dropUntil {G : SimpleGraph V} [DecidableEq V]
     omega
   rw [this, len_takeUntil (hp := hp) (hn := hn)]
 
-lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
+lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
     {a b : V} {i j : ℕ} (p : G.Walk a b) {hp : p.IsPath} {hj : p.getVert j ∈ p.support} {hi : p.getVert i ∈ (p.takeUntil _ hj).reverse.support} {hn1 : j ≤ p.length} {hn2 : i ≤ j}
     : ((p.takeUntil _ hj).reverse.takeUntil _ hi).length = j - i := by
   have len_take_i : (p.takeUntil (p.getVert j) hj).length = j := by
@@ -1051,7 +1051,7 @@ lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [Fintype V] [Decidable
 /--
 The tail of a simple path is also a simple path.
 -/
-lemma tail_Ispath {G : SimpleGraph V} [G.LocallyFinite]
+lemma tail_Ispath {G : SimpleGraph V}
     {a b : V} (p : G.Walk a b) {hp : p.IsPath} {h : ¬p.Nil} : p.support.tail.Nodup := by
     rw [← SimpleGraph.Walk.support_tail_of_not_nil]
     · rw [← SimpleGraph.Walk.isPath_def]
@@ -1063,7 +1063,7 @@ lemma tail_Ispath {G : SimpleGraph V} [G.LocallyFinite]
 /--
 The start point of path p is not in the tail of the path.
 -/
-lemma end_not_exsit_tail {G : SimpleGraph V} [G.LocallyFinite]
+lemma end_not_exsit_tail {G : SimpleGraph V}
     {u v : V} (p : G.Walk u v) {hp : p.IsPath} {h : ¬p.Nil} :
     u ∉ p.support.tail := by
   classical
@@ -1173,7 +1173,7 @@ lemma h_indices_trans_1 [DecidableEq V] {G : SimpleGraph V} {a b x : V} (p : G.W
     · apply SimpleGraph.Walk.length_takeUntil_le
   · exact hj
 
-lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [DecidableEq V]
+lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [DecidableEq V]
   {a b x : V} (p : G.Walk a b) {i : ℕ} {hp : p.IsPath} {h : p.getVert i ∈ p.support}
   {hx : x ∈ (p.takeUntil _ h).support} {len : i ≤ p.length}
 : ∃ k, p.getVert k = x ∧ k ≤ i := by
@@ -1195,7 +1195,7 @@ lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [Decid
 
 
 
-lemma h_indices_trans_3 {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
+lemma h_indices_trans_3 {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
   {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ} {hi : p.getVert i ∈ p.support} {hn : p.getVert j ∈ (p.takeUntil _ hi).reverse.support}
   {hx : x ∈ ((p.takeUntil _ hi).reverse.takeUntil _ hn).support} {len : i ≤ p.length} {hl : j ≤ i}
 : ∃ k, p.getVert (i - k) = x ∧ k ≤ i - j:= by
@@ -2998,7 +2998,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
 
 
 
-lemma Walk.edge_get_verts {G : SimpleGraph V} [G.LocallyFinite] {u w : V} (p : G.Walk u w) (hp : p.IsPath) :
+lemma Walk.edge_get_verts {G : SimpleGraph V} {u w : V} (p : G.Walk u w) (hp : p.IsPath) :
     ∀ (i :ℕ) (hi : i < p.edges.length), p.edges.get ⟨i, hi⟩ = s(p.getVert i, p.getVert (i + 1)) := by
   induction p with
   | nil =>
