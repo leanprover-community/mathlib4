@@ -295,6 +295,9 @@ protected def Quotient (x₀ x₁ : X) :=
 
 attribute [local instance] Homotopic.setoid
 
+instance (x₀ x₁ : X) : TopologicalSpace (Path.Homotopic.Quotient x₀ x₁) :=
+  inferInstanceAs (TopologicalSpace (Quotient (Homotopic.setoid x₀ x₁)))
+
 instance : Inhabited (Homotopic.Quotient () ()) :=
   ⟨Quotient.mk' <| Path.refl ()⟩
 
@@ -457,3 +460,156 @@ theorem pathExtend_evalAt {f g : C(X, Y)} (H : f.Homotopy g) (x : X) :
     (H.evalAt x).extend = (fun t ↦ H.extend t x) := rfl
 
 end ContinuousMap.Homotopy
+
+namespace Path
+
+/-! ### Path restriction to subintervals -/
+
+open Set.Icc
+
+variable {X : Type*} [TopologicalSpace X] {x y : X}
+
+/-- Extract a subpath from γ on the interval [a, b] ⊆ [0, 1].
+This is γ reparametrized via the affine map t ↦ a + t(b - a). -/
+def subpathOn (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) : Path (γ a) (γ b) where
+  toFun t := γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
+    constructor
+    · apply add_nonneg a.2.1
+      apply mul_nonneg t.2.1
+      linarith [show (a : ℝ) ≤ b from hab]
+    · calc (a : ℝ) + t * ((b : ℝ) - a)
+          ≤ a + 1 * ((b : ℝ) - a) := by
+            apply add_le_add_right
+            apply mul_le_mul_of_nonneg_right t.2.2
+            linarith [show (a : ℝ) ≤ b from hab]
+        _ = b := by ring
+        _ ≤ 1 := b.2.2⟩
+  source' := by simp
+  target' := by simp
+
+@[simp]
+theorem subpathOn_apply (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) (t : unitInterval) :
+    (γ.subpathOn a b hab) t = γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
+      constructor
+      · apply add_nonneg a.2.1
+        apply mul_nonneg t.2.1
+        linarith [show (a : ℝ) ≤ b from hab]
+      · calc (a : ℝ) + t * ((b : ℝ) - a)
+            ≤ a + 1 * ((b : ℝ) - a) := by
+              apply add_le_add_right
+              apply mul_le_mul_of_nonneg_right t.2.2
+              linarith [show (a : ℝ) ≤ b from hab]
+          _ = b := by ring
+          _ ≤ 1 := b.2.2⟩ := rfl
+
+/-- Splitting a sub-path in halves rejoining them gives the original path. -/
+theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) :
+    ((γ.subpathOn a (Set.Icc.convexCombo a b unitInterval.half)
+      (Set.Icc.le_convexCombo hab _)).trans
+      (γ.subpathOn (Set.Icc.convexCombo a b unitInterval.half) b
+      (Set.Icc.convexCombo_le hab _))) =
+    (γ.subpathOn a b hab) := by
+  ext t
+  simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_convexCombo, coe_mk',
+    ContinuousMap.coe_mk, Function.comp_apply, Set.projIcc]
+  split_ifs with h <;> (congr 1; ext; simp only [half, one_div, add_right_inj]; norm_num)
+  · have := t.2.1; have := t.2.2
+    rw [min_eq_right (by linarith : 2 * (t : ℝ) ≤ 1),
+        max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]; ring
+  · have := t.2.1; have := t.2.2
+    rw [min_eq_right (by linarith : 2 * (t : ℝ) - 1 ≤ 1),
+        max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ) - 1)]; ring
+
+/--
+Splitting a sub-path into pieces and rejoining them is independent, up to homotopy,
+of the splitting point.
+-/
+theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (hab : a ≤ b)
+    (s t : unitInterval) :
+    Path.Homotopic
+      ((γ.subpathOn a (convexCombo a b s) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b s) b (convexCombo_le hab _)))
+      ((γ.subpathOn a (convexCombo a b t) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b t) b (convexCombo_le hab _))) := by
+  -- Construct explicit homotopy: at parameter u, split at convexCombo(a, b, convexCombo(s, t, u))
+  refine ⟨{
+    toFun := fun ⟨u, v⟩ =>
+      ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
+        (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
+    continuous_toFun := by
+      simp only [trans_apply, one_div, subpathOn_apply, coe_convexCombo]
+      simp only [← extend_apply, dite_eq_ite]
+      apply continuous_if_le (hfg := by grind) <;> fun_prop
+    map_zero_left v := by simp [Path.trans_apply]
+    map_one_left v := by simp [Path.trans_apply]
+    prop' u x hx := by
+      rcases hx with rfl | rfl
+      · simp [Path.trans]
+      · simp [Path.trans]
+        norm_num
+  }⟩
+
+/--
+A subpath from a to b composed with a subpath from b to c is homotopic to
+the subpath from a to c.
+-/
+theorem subpathOn_trans
+    (γ : Path x y) (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
+    Path.Homotopic
+      ((γ.subpathOn a b hab).trans (γ.subpathOn b c hbc))
+      (γ.subpathOn a c (hab.trans hbc)) := by
+  -- This is an easy combination of `eq_convexCombo` and the two auxiliary lemmas above.
+  suffices ∀ s : unitInterval,
+    Path.Homotopic
+      ((γ.subpathOn a (Set.Icc.convexCombo a c s) (Set.Icc.le_convexCombo (hab.trans hbc) _)).trans
+        (γ.subpathOn (Set.Icc.convexCombo a c s) c (Set.Icc.convexCombo_le (hab.trans hbc) _)))
+      (γ.subpathOn a c (hab.trans hbc)) by
+    have hb := Set.Icc.eq_convexCombo hab hbc
+    convert this ?_ <;> exact hb
+  intro s
+  rw [← Path.subpathOn_trans_aux₁ γ a c]
+  apply Path.subpathOn_trans_aux₂ γ a c (hab.trans hbc) s
+
+/-- A subpath from a point to itself is homotopic to the constant path. -/
+theorem subpathOn_self (γ : Path x y) (a : unitInterval) :
+    Homotopic (γ.subpathOn a a (le_refl a)) (Path.refl (γ a)) := by
+  convert Homotopic.refl _
+  ext t
+  simp [Path.refl, Path.subpathOn]
+
+/-- The subpath from 0 to 1 is homotopic to the original path (up to casting endpoints). -/
+theorem subpathOn_zero_one (γ : Path x y) :
+    Homotopic
+      ((γ.subpathOn 0 1 (zero_le_one)).cast (by simp [γ.source]) (by simp [γ.target])) γ := by
+  convert Homotopic.refl _
+  ext t
+  simp [Path.cast, Path.subpathOn]
+
+namespace Homotopic.Quotient
+
+@[simp]
+theorem subpathOn_trans {x y : X} (p : Path x y)
+    (a b c : unitInterval) (hab : a ≤ b) (hbc : b ≤ c) :
+    trans (mk (p.subpathOn a b hab)) (mk (p.subpathOn b c hbc)) =
+      mk (p.subpathOn a c (hab.trans hbc)) := by
+  simp only [← mk_trans, eq]
+  exact Path.subpathOn_trans p a b c hab hbc
+
+@[simp]
+theorem subpathOn_self {x y : X} (p : Path x y) (a : unitInterval) :
+    mk (p.subpathOn a a (le_refl a)) = refl (p a) := by
+  simp only [← mk_refl, eq]
+  exact Path.subpathOn_self p a
+
+@[simp]
+theorem subpathOn_zero_one {x y : X} (p : Path x y) (s t : unitInterval)
+    (hs : s = 0) (ht : t = 1) :
+    mk (p.subpathOn s t (by grind [zero_le_one])) =
+      (mk p).cast (by grind) (by grind) := by
+  subst hs ht
+  simp only [← mk_cast, eq]
+  exact Path.subpathOn_zero_one p
+
+end Homotopic.Quotient
+
+end Path
