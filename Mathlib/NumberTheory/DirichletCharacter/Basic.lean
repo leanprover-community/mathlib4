@@ -162,15 +162,15 @@ theorem FactorsThrough_gcd {m : ℕ} [NeZero n] (ψ : DirichletCharacter R m)
       · rwa [← ZMod.natCast_eq_natCast_iff, Nat.cast_one] at hz₂
     rwa [MonoidHom.mem_ker, Units.ext_iff, ZMod.unitsMap_val, ← ZMod.natCast_val,
       Units.val_one, ← Nat.cast_one, ZMod.natCast_eq_natCast_iff] at hx
-  have hz₀ : z.gcd (m * n) = 1 := by
+  have hz₀ : z.gcd (n * m) = 1 := by
     refine Nat.Coprime.mul_right ?_ ?_
-    · exact (ZMod.isUnit_iff_coprime _ _).mp <| hz₂ ▸ isUnit_one
     · exact (ZMod.isUnit_iff_coprime _ _).mp <| hz₁ ▸ x.isUnit
-  have := changeLevel_eq_cast_of_dvd χ (n.dvd_mul_left m) (ZMod.unitOfCoprime z hz₀)
-  simp only [ZMod.coe_unitOfCoprime, dvd_mul_left, ZMod.cast_natCast] at this
-  rw [← hz₁, ← this, h]
-  have := changeLevel_eq_cast_of_dvd ψ (m.dvd_mul_right n) (ZMod.unitOfCoprime z hz₀)
+    · exact (ZMod.isUnit_iff_coprime _ _).mp <| hz₂ ▸ isUnit_one
+  have := changeLevel_eq_cast_of_dvd χ (n.dvd_mul_right m) (ZMod.unitOfCoprime z hz₀)
   simp only [ZMod.coe_unitOfCoprime, dvd_mul_right, ZMod.cast_natCast] at this
+  rw [← hz₁, ← this, h]
+  have := changeLevel_eq_cast_of_dvd ψ (m.dvd_mul_left n) (ZMod.unitOfCoprime z hz₀)
+  simp only [ZMod.coe_unitOfCoprime, dvd_mul_left, ZMod.cast_natCast] at this
   rw [this, hz₂, map_one]
 
 /-!
