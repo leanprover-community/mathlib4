@@ -83,7 +83,7 @@ theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * 
 theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
 
-theorem _root_.Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
+theorem Associated.squarefree_iff [Monoid R] {x y : R} (h : Associated x y) :
     Squarefree x ↔ Squarefree y :=
   ⟨fun hx ↦ hx.squarefree_of_dvd h.dvd', fun hy ↦ hy.squarefree_of_dvd h.dvd⟩
 
