@@ -5,11 +5,10 @@ Authors: Sophie Morel, Daniel Morrison
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.LinearAlgebra.ExteriorPower.BasisIndex
+public import Mathlib.LinearAlgebra.ExteriorPower.Pairing
 public import Mathlib.Order.Extension.Well
 public import Mathlib.RingTheory.Finiteness.Subalgebra
-public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Constructs a basis for exterior powers
@@ -87,13 +86,11 @@ the linear form on `⋀[R]^n M` defined by `b` and `s` to the exterior product o
 lemma ιMulti_dual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
     (s t : {a : Finset I // a.card = n}) (hst : s ≠ t) :
     ιMulti_dual R n b s (ιMulti_family R n b t) = 0 := by
-  simp only [ιMulti_family]
-  rw [ιMulti_dual_apply_ιMulti]
-  obtain ⟨j, hi⟩ := ιMulti_apply_nondiag_aux n s t hst
-  apply Matrix.det_eq_zero_of_column_eq_zero j
-  intro j
-  rw [Matrix.of_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_eq_of_ne]
-  exact hi j
+  rw [ιMulti_family, ιMulti_dual_apply_ιMulti]
+  obtain ⟨i, hi⟩ := ιMulti_apply_nondiag_aux n s t hst
+  apply Matrix.det_eq_zero_of_column_eq_zero i
+  simp_rw [Matrix.of_apply, Basis.coord_apply, Basis.repr_self]
+  exact fun _ ↦ Finsupp.single_eq_of_ne (hi _)
 
 /-- If `b` is a basis of `M` (indexed by a linearly ordered type), then the family
 `exteriorPower.ιMulti R n b` of the `n`-fold exterior products of its elements is linearly
@@ -116,7 +113,6 @@ lemma coe_basis {I : Type*} [LinearOrder I] (b : Basis I R M) :
     DFunLike.coe (Basis.exteriorPower R n b) = ιMulti_family R n b :=
   Basis.coe_mk _ _
 
-@[simp]
 lemma basis_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (s : basisIndex I n) :
     Basis.exteriorPower R n b s = ιMulti_family R n b s := by
   rw [coe_basis]
@@ -130,31 +126,25 @@ lemma basis_coord {I : Type*} [LinearOrder I] (b : Basis I R M) (s : basisIndex 
   apply LinearMap.ext_on (ιMulti_family_span_of_span R (Basis.span_eq b))
   rintro x ⟨t, rfl⟩
   rw [Basis.coord_apply]
-  by_cases heq : s = t
-  · rw [heq, ιMulti_dual_apply_diag, ← basis_apply, Basis.repr_self, Finsupp.single_eq_same]
-  · rw [ιMulti_dual_apply_nondiag R n b s t heq, ← basis_apply,
-      Basis.repr_self, Finsupp.single_eq_of_ne (by rw [ne_eq]; exact heq)]
+  by_cases! hst : s = t
+  · rw [hst, ιMulti_dual_apply_diag, ← basis_apply, Basis.repr_self, Finsupp.single_eq_same]
+  · rw [ιMulti_dual_apply_nondiag R n b s t hst, ← basis_apply, Basis.repr_self,
+      Finsupp.single_eq_of_ne hst]
 
 lemma basis_repr_apply {I : Type*} [LinearOrder I] (b : Basis I R M) (x : ⋀[R]^n M)
-    (s : basisIndex I n) :
-    Basis.repr (Basis.exteriorPower R n b) x s = ιMulti_dual R n b s x := by
-  rw [← Basis.coord_apply]
-  congr
-  exact basis_coord R n b s
+    (s : basisIndex I n) : Basis.repr (Basis.exteriorPower R n b) x s = ιMulti_dual R n b s x := by
+  simpa [← Basis.coord_apply] using LinearMap.congr_fun (basis_coord R n b s) x
 
 @[simp]
-lemma basis_repr_self {I : Type*} [LinearOrder I] (b : Basis I R M)
-    (s : basisIndex I n) :
+lemma basis_repr_self {I : Type*} [LinearOrder I] (b : Basis I R M) (s : basisIndex I n) :
     Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) s = 1 := by
-  rw [basis_repr_apply]
-  exact ιMulti_dual_apply_diag R n b s
+  simpa [basis_repr_apply] using ιMulti_dual_apply_diag R n b s
 
 @[simp]
 lemma basis_repr_ne {I : Type*} [LinearOrder I] (b : Basis I R M)
     {s t : basisIndex I n} (hst : s ≠ t) :
     Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) t = 0 := by
-  rw [basis_repr_apply]
-  exact ιMulti_dual_apply_nondiag R n b t s (id (Ne.symm hst))
+  simpa [basis_repr_apply] using ιMulti_dual_apply_nondiag R n b t s hst.symm
 
 lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : basisIndex I n) :
     Basis.repr (Basis.exteriorPower R n b) (ιMulti_family R n b s) = Finsupp.single s 1 := by
@@ -188,27 +178,17 @@ then the family of its `n`-fold exterior products is also linearly independent. 
 lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I → E}
     (hv : LinearIndependent K v) : LinearIndependent K (ιMulti_family K n v) := by
   let W := Submodule.span K (Set.range v)
-  let v' : I → W := fun i ↦ ⟨v i, Submodule.subset_span <| exists_apply_eq_apply _ _⟩
-  have h : v = W.subtype ∘ v' := by
-    ext x
-    simp only [Submodule.coe_subtype, Function.comp_apply]
-    rw [Subtype.val]
-  rw [h, ← map_comp_ιMulti_family]
-  refine LinearIndependent.map' ?_ (map n W.subtype)
-    (LinearMap.ker_eq_bot.mpr (map_injective_field (Submodule.subtype_injective _)))
-  have hv'span : ⊤ ≤ Submodule.span K (Set.range v') := by
-    rintro x -
-    rw [← Submodule.apply_mem_span_image_iff_mem_span (Submodule.injective_subtype W),
-      ← Set.range_comp, ← h, Submodule.coe_subtype]
-    exact SetLike.coe_mem _
-  have heq : ιMulti_family K n v' =
-      Basis.exteriorPower K n (Basis.mk (.of_comp W.subtype (h ▸ hv)) hv'span) := by
-    rw [coe_basis, Basis.coe_mk]
-  rw [heq]
-  apply Basis.linearIndependent
+  suffices ∃ b : Basis I K W, v = W.subtype ∘ b by
+    obtain ⟨b, hb⟩ := this
+    rw [hb, ← map_comp_ιMulti_family]
+    exact LinearIndependent.map' (coe_basis K n b ▸ (Basis.exteriorPower K n b).linearIndependent)
+      _ (LinearMap.ker_eq_bot.mpr (map_injective_field (Submodule.subtype_injective _)))
+  use Module.Basis.span hv
+  ext i
+  rw [Submodule.coe_subtype, Function.comp_apply, Basis.span_apply]
 
 instance instNonempty {I : Type*} [LinearOrder I] [Nonempty {v : I → E // LinearIndependent K v}] :
-    Nonempty {v : {s : Finset I // Finset.card s = n} → (⋀[K]^n) E // LinearIndependent K v} :=
+    Nonempty {v : (basisIndex I n) → (⋀[K]^n) E // LinearIndependent K v} :=
   Nonempty.map (fun v : {v : I → E // LinearIndependent K v} ↦
     ⟨ιMulti_family K n v, ιMulti_family_linearIndependent_field n v.2⟩) ‹_›
 
