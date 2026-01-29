@@ -321,7 +321,7 @@ theorem mk_eq_iff (x y : ℕ × K) :
     mk K p x = mk K p y ↔ ∃ z, (frobenius K p)^[y.1 + z] x.2 = (frobenius K p)^[x.1 + z] y.2 := by
   constructor
   · intro H
-    replace H := Quot.eqvGen_exact H
+    replace H := Quot.eqvGen_exact _ _ H
     induction H with
     | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, rfl⟩
     | refl H => exact ⟨0, rfl⟩

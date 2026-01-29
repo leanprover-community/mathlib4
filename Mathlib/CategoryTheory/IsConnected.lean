@@ -330,7 +330,7 @@ instance : Trans (α := J) (Zigzag · ·) (Zigzag · ·) (Zigzag · ·) where
   trans := Zigzag.trans
 
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=
-  Relation.ReflTransGen.single h
+  Relation.ReflTransGen.single _ _ h
 
 theorem Zigzag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zigzag j₁ j₂ :=
   of_zag (Zag.of_hom f)
@@ -374,7 +374,7 @@ def Zigzag.setoid (J : Type u₂) [Category.{v₁} J] : Setoid J where
 -/
 theorem zigzag_prefunctor_obj_of_zigzag (F : J ⥤q K) {j₁ j₂ : J} (h : Zigzag j₁ j₂) :
     Zigzag (F.obj j₁) (F.obj j₂) :=
-  h.lift _ fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
+  h.lift F.obj fun _ _ => Or.imp (Nonempty.map fun f => F.map f) (Nonempty.map fun f => F.map f)
 
 /-- If there is a zigzag from `j₁` to `j₂`, then there is a zigzag from `F j₁` to
 `F j₂` as long as `F` is a functor.
@@ -410,7 +410,7 @@ theorem equiv_relation [IsPreconnected J] (r : J → J → Prop) (hr : _root_.Eq
 /-- In a connected category, any two objects are related by `Zigzag`. -/
 theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j₂ :=
   equiv_relation _ zigzag_equivalence
-    (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
+    (fun f => Relation.ReflTransGen.single _ _ (Or.inl (Nonempty.intro f))) _ _
 
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by

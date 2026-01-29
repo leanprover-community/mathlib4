@@ -132,10 +132,10 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
-          (Relation.ReflTransGen.single
+          (Relation.ReflTransGen.single _ _
             (show Zag f u from
               Or.inr ⟨StructuredArrow.homMk ((adj.homEquiv c f.right).symm f.hom) (by simp [u])⟩))
-          (Relation.ReflTransGen.single
+          (Relation.ReflTransGen.single _ _
             (show Zag u g from
               Or.inl ⟨StructuredArrow.homMk ((adj.homEquiv c g.right).symm g.hom) (by simp [u])⟩)) }
 
@@ -145,10 +145,10 @@ theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Init
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
-          (Relation.ReflTransGen.single
+          (Relation.ReflTransGen.single _ _
             (show Zag f u from
               Or.inl ⟨CostructuredArrow.homMk (adj.homEquiv f.left d f.hom) (by simp [u])⟩))
-          (Relation.ReflTransGen.single
+          (Relation.ReflTransGen.single _ _
             (show Zag u g from
               Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp [u])⟩)) }
 

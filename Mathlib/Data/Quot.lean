@@ -274,7 +274,7 @@ end Quotient
 
 theorem Quot.eq {α : Type*} {r : α → α → Prop} {x y : α} :
     Quot.mk r x = Quot.mk r y ↔ Relation.EqvGen r x y :=
-  ⟨Quot.eqvGen_exact, Quot.eqvGen_sound⟩
+  ⟨Quot.eqvGen_exact _ _, Quot.eqvGen_sound _ _⟩
 
 -- This should not be a `@[simp]` lemma,
 -- as this prevents us from using `simp` reliably in the quotient,

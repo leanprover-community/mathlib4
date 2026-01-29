@@ -103,7 +103,7 @@ theorem reachable_iff_reflTransGen (u v : V) :
   · rintro ⟨h⟩
     induction h with
     | nil => rfl
-    | cons h' _ ih => exact (Relation.ReflTransGen.single h').trans ih
+    | cons h' _ ih => exact (Relation.ReflTransGen.single _ _ h').trans ih
   · intro h
     induction h with
     | refl => rfl
