@@ -28,7 +28,7 @@ variable {H : Subgroup G} [H.Normal]
 instance : MulAction (G ⧸ H) (fixedPoints H A) :=
   ofEndHom <|
     QuotientGroup.lift H (toEndHom : G →* Function.End (fixedPoints H A))
-    (fun g hg ↦ by funext a; ext; simpa using a.prop ⟨g, hg⟩)
+    (fun g hg ↦ by funext a; ext; exact a.2 ⟨g, hg⟩)
 
 @[simp]
 lemma coe_quotient_smul_fixedPoints
