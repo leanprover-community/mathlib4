@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Module.Complemented
 /-!
 # Implicit function theorem
 
-We prove three versions of the implicit function theorem. First we define a structure
+We prove a few different versions of the implicit function theorem. First we define a structure
 `ImplicitFunctionData` that holds arguments for the most general version of the implicit function
 theorem, see `ImplicitFunctionData.implicitFunction` and
 `ImplicitFunctionData.implicitFunction_hasStrictFDerivAt`. This version allows a user to choose a
@@ -23,7 +23,7 @@ Then we define `HasStrictFDerivAt.implicitFunctionDataOfComplemented`: implicit 
 `f (g z y) = z`, where `f : E → F` is a function strictly differentiable at `a` such that its
 derivative `f'` is surjective and has a `complemented` kernel.
 
-Finally, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
+Third, if the codomain of `f` is a finite-dimensional space, then we can automatically prove
 that the kernel of `f'` is complemented, hence the only assumptions are `HasStrictFDerivAt`
 and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`.
 
@@ -206,6 +206,21 @@ theorem implicitFunction_apply_image :
     ∀ᶠ x in 𝓝 φ.pt, φ.implicitFunction (φ.leftFun x) (φ.rightFun x) = x :=
   φ.hasStrictFDerivAt.eventually_left_inverse
 
+theorem leftFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.leftFun φ.pt := by
+  have := φ.left_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+  rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
+
+theorem rightFun_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.rightFun (φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x)) = φ.rightFun x := by
+  have := φ.right_map_implicitFunction.curry_nhds.self_of_nhds.prod_inr_nhds (φ.leftFun φ.pt)
+  rwa [← prodFun_apply, ← φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, eventually_map] at this
+
+theorem leftFun_eq_iff_implicitFunction : ∀ᶠ x in 𝓝 φ.pt,
+    φ.leftFun x = φ.leftFun φ.pt ↔ φ.implicitFunction (φ.leftFun φ.pt) (φ.rightFun x) = x := by
+  filter_upwards [φ.implicitFunction_apply_image, φ.leftFun_implicitFunction] with x hx₁ hx₂
+  constructor <;> exact fun h => by rwa [← h]
+
 theorem map_nhds_eq : map φ.leftFun (𝓝 φ.pt) = 𝓝 (φ.leftFun φ.pt) :=
   show map (Prod.fst ∘ φ.prodFun) (𝓝 φ.pt) = 𝓝 (φ.prodFun φ.pt).1 by
     rw [← map_map, φ.hasStrictFDerivAt.map_nhds_eq_of_equiv, map_fst_nhds]
@@ -243,7 +258,7 @@ theorem rightDeriv_fderiv_implicitFunction (φ : ImplicitFunctionData 𝕜 E F G
     φ.rightDeriv (fderiv 𝕜 (φ.implicitFunction (φ.leftFun φ.pt)) (φ.rightFun φ.pt) x) = x := by
   exact φ.fderiv_implicitFunction_apply_eq_iff.mp rfl |>.right
 
-theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
+theorem hasStrictFDerivAt_implicitFunction (g'inv : G →L[𝕜] E)
     (hg'inv : φ.rightDeriv.comp g'inv = ContinuousLinearMap.id 𝕜 G)
     (hg'invf : φ.leftDeriv.comp g'inv = 0) :
     HasStrictFDerivAt (φ.implicitFunction (φ.leftFun φ.pt)) g'inv (φ.rightFun φ.pt) := by
@@ -427,7 +442,7 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (hker : f'.ker.ClosedComplemented) :
     HasStrictFDerivAt (hf.implicitFunctionOfComplemented f f' hf' hker (f a))
       f'.ker.subtypeL 0 := by
-  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).implicitFunction_hasStrictFDerivAt
+  convert (implicitFunctionDataOfComplemented f f' hf hf' hker).hasStrictFDerivAt_implicitFunction
     f'.ker.subtypeL _ _
   swap
   · ext
@@ -566,3 +581,5 @@ theorem to_implicitFunction (hf : HasStrictFDerivAt f f' a) (hf' : f'.range = �
 end FiniteDimensional
 
 end HasStrictFDerivAt
+
+end
