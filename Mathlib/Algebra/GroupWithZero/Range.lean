@@ -68,7 +68,7 @@ end mrange
 
 variable {A B F : Type*} [FunLike F A B] (f : F)
 
-section MonoidWithZero
+section MonoidWithZeroHom
 
 variable [MonoidWithZero A] [MonoidWithZero B] [MonoidWithZeroHomClass F A B]
 
@@ -120,7 +120,47 @@ lemma mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b ∈ valueGroup f := by
 lemma inv_mem_valueGroup {b : Bˣ} (hb : b.1 ∈ range f) : b⁻¹ ∈ valueGroup f :=
   Subgroup.inv_mem _ (mem_valueGroup f hb)
 
-end MonoidWithZero
+end MonoidWithZeroHom
+
+noncomputable section Restrict
+
+variable [MonoidWithZero A] [GroupWithZero B] [MonoidWithZeroHomClass F A B] {f}
+  [DecidablePred fun b : B ↦ b = 0]
+
+/-- The inclusion of `valueGroup₀ f` into `B` as a multiplicative homomorphism. -/
+@[simps!]
+def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
+  MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
+    <| WithZero.map' (valueGroup f).subtype
+
+variable (f) in
+/-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
+@[simps!]
+def ValueGroup₀.restrict₀ : A →*₀ ValueGroup₀ f where
+  toFun a :=
+    if h : f a = 0 then 0 else (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f)
+  map_one' := by simp; rfl
+  map_mul' := by
+    intro a b
+    simp only [map_mul, Units.mk0_mul, dite_mul, zero_mul]
+    split_ifs with h hb ha
+    any_goals rfl
+    all_goals rw [mul_eq_zero] at h; tauto
+  map_zero' := by simp
+
+open ValueGroup₀
+
+lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
+    restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by simp [h]
+
+lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp
+
+lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
+  simp only [restrict₀_apply, embedding_apply]
+  split_ifs <;>
+  simp_all
+
+end Restrict
 
 noncomputable section GroupWithZero
 
