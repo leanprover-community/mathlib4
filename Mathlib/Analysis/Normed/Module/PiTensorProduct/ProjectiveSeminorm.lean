@@ -370,7 +370,7 @@ variable (F) in
 `x` in `⨂[𝕜] i, Eᵢ` to the map `f ↦ f.lift x`. -/
 noncomputable def toDualContinuousMultilinearMapL :
     (⨂[𝕜] i, E i) →L[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] F :=
-  ContinuousLinearMap.flip (liftIsometry 𝕜 E F).toLinearIsometry.toContinuousLinearMap
+  (liftIsometry 𝕜 E F).toLinearIsometry.toContinuousLinearMap.flip
 
 @[simp]
 theorem toDualContinuousMultilinearMapL_apply_apply
@@ -396,7 +396,7 @@ theorem projectiveSeminorm_dual_characterization (x : ⨂[𝕜] i, E i) : IsGrea
   simp only [Set.mem_setOf_eq]
   use (⨂[𝕜] i, E i), inferInstance, inferInstance
   refine le_antisymm ?_ (norm_toDualContinuousMultilinearMapL_apply_le x)
-  have := ContinuousLinearMap.le_opNorm ((toDualContinuousMultilinearMapL _) x) (tprodL 𝕜)
+  have := ((toDualContinuousMultilinearMapL _) x).le_opNorm (tprodL 𝕜)
   grw [opNorm_tprodL_eq_id, ContinuousLinearMap.norm_id_le, mul_one] at this
   simpa
 
