@@ -216,12 +216,10 @@ lemma posRootForm_posForm_anisotropic :
 
 lemma posRootForm_posForm_nondegenerate :
     (P.posRootForm S).posForm.Nondegenerate := by
-  refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| LinearMap.ker_eq_bot'.mpr ?_
-  intro x hx
-  contrapose! hx
-  rw [DFunLike.ne_iff]
-  use x
-  exact (posRootForm_posForm_pos_of_ne_zero P S hx).ne'
+  constructor <;>
+  · intro x
+    contrapose!
+    exact fun hx ↦ ⟨x, (posRootForm_posForm_pos_of_ne_zero P S hx).ne'⟩
 
 end LinearOrderedCommRingAlg
 
@@ -260,9 +258,9 @@ lemma disjoint_corootSpan_ker_corootForm :
   P.flip.disjoint_rootSpan_ker_rootForm
 
 lemma rootForm_nondegenerate [P.IsRootSystem] :
-    P.RootForm.Nondegenerate :=
-  LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr <| by
-    simpa using P.disjoint_rootSpan_ker_rootForm
+    P.RootForm.Nondegenerate := by
+  simpa [(rootForm_symmetric P).isRefl.nondegenerate_iff_separatingLeft,
+    LinearMap.separatingLeft_iff_ker_eq_bot] using P.disjoint_rootSpan_ker_rootForm
 
 @[deprecated (since := "2025-12-14")]
 alias _root_.RootSystem.rootForm_nondegenerate := rootForm_nondegenerate
