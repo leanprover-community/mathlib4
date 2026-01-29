@@ -136,6 +136,12 @@ theorem mk_eq_of_doubleCoset_eq {H K : Subgroup G} {a b : G}
   rw [eq]
   exact mem_doubleCoset.mp (h.symm ▸ mem_doubleCoset_self H K b)
 
+theorem mem_quotToDoubleCoset_iff {H K : Subgroup G} (i : Quotient (H : Set G) K) (a : G) :
+    a ∈ quotToDoubleCoset H K i ↔ mk H K a = i := by
+  refine ⟨fun hg ↦ by simp [mk_eq_of_doubleCoset_eq (doubleCoset_eq_of_mem hg)], fun hg ↦ ?_⟩
+  rw [← out_eq' _ _ i] at hg
+  exact mem_doubleCoset.mpr ((eq _ _ _ a).mp hg.symm)
+
 theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
     a ≠ b → Disjoint (doubleCoset a.out H K) (doubleCoset b.out (H : Set G) K) := by
   contrapose!
@@ -189,5 +195,87 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
+
+theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
+    (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ) ↔
+    Finite (Quotient (H : Set G) K) := by
+  constructor
+  · intro ⟨I, hI⟩
+    suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
+      rw [← Set.finite_univ_iff, ← this]
+      exact I.finite_toSet
+    rw [Set.eq_univ_iff_forall] at hI ⊢
+    rintro ⟨g⟩
+    obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
+    rw [mem_quotToDoubleCoset_iff] at hT
+    simpa [← hT] using hi
+  · intro _
+    cases nonempty_fintype (Quotient (H : Set G) K)
+    use Finset.univ
+    simpa using union_quotToDoubleCoset H K
+
+private theorem union_image_mk {H K : Subgroup G} :
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+  constructor
+  all_goals
+  have cover := union_quotToDoubleCoset H K
+  apply Set.Subset.antisymm_iff.mpr
+  simp only [Set.subset_univ, true_and]
+  intro x hx
+  simp only [Set.mem_iUnion, Set.mem_image]
+  obtain ⟨y, hy⟩ := Quot.exists_rep x
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (Quotient.out i) H K  := by
+    contrapose cover
+    refine (Set.ne_univ_iff_exists_notMem _).mpr ?_
+    exact ⟨y, by simpa using cover⟩
+  exact ⟨i, y, hi, hy⟩
+
+theorem union_image_mk_leftRel (H K : Subgroup G) :
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).1
+
+theorem union_image_mk_rightRel (H K : Subgroup G) :
+    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
+      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).2
+
+theorem union_finset_leftRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
+    (ht : Set.univ ⊆
+      ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.leftRel K) '' doubleCoset (Quotient.out i) H K) :
+    ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
+  contrapose ht
+  simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
+  obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem _).mp ht
+  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (⇑(QuotientGroup.leftRel K)) x, ?_⟩
+  simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
+  intro y hy q hq
+  contrapose! hx
+  simp only [Set.mem_iUnion, exists_prop]
+  refine ⟨y, hy, ?_⟩
+  rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
+  obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
+  exact ⟨1, one_mem H, (MulOpposite.unop a'⁻¹), Subgroup.mem_op.mp (by simp), by simpa
+    using (eq_mul_inv_of_mul_eq ha')⟩
+
+theorem union_finset_rightRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
+    (ht : Set.univ ⊆
+      ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
+    H K) : ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
+  contrapose ht
+  simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
+  obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem _).mp ht
+  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (⇑(QuotientGroup.rightRel H)) x, ?_⟩
+  simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
+  intro y hy q hq
+  contrapose! hx
+  simp only [Set.mem_iUnion, exists_prop]
+  refine ⟨y, hy, ?_⟩
+  rw [← doubleCoset_eq_of_mem hq, mem_doubleCoset]
+  obtain ⟨a, ha⟩ : ∃ a : H, x = a * q := by
+    obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := Quotient.eq.mp hx
+    exact ⟨⟨a⁻¹, by simp⟩, eq_inv_mul_of_mul_eq ha⟩
+  exact ⟨a.1, a.2, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
 
 end DoubleCoset
