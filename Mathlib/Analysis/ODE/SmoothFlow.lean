@@ -507,6 +507,72 @@ lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (
     _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
       gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
 
+/-- The `k`-th iterated derivative of `g : E → E [×n]→L[ℝ] E`, with uncurrying applied at each step
+to preserve the continuous multilinear map structure.
+- `iteratedFDerivUncurry g 0 = g`
+- `iteratedFDerivUncurry g (k + 1) x = (fderiv ℝ (iteratedFDerivUncurry g k) x).uncurryLeft`
+
+This yields `iteratedFDerivUncurry g k : E → E [×(n + k)]→L[ℝ] E`. -/
+noncomputable def iteratedFDerivUncurry {n : ℕ} (g : E → E [×n]→L[ℝ] E) (k : ℕ) :
+    E → E [×(n + k)]→L[ℝ] E :=
+  k.recOn g fun _ rec x ↦ (fderiv ℝ rec x).uncurryLeft
+
+omit [CompleteSpace E] in
+@[simp]
+lemma iteratedFDerivUncurry_zero {n : ℕ} (g : E → E [×n]→L[ℝ] E) :
+    iteratedFDerivUncurry g 0 = g := rfl
+
+omit [CompleteSpace E] in
+@[simp]
+lemma iteratedFDerivUncurry_succ {n : ℕ} (g : E → E [×n]→L[ℝ] E) (k : ℕ) :
+    iteratedFDerivUncurry g (k + 1) =
+      fun x ↦ (fderiv ℝ (iteratedFDerivUncurry g k) x).uncurryLeft := rfl
+
+omit [CompleteSpace E] in
+/-- If `g` is `C^(m + k)` on `u`, then `iteratedFDerivUncurry g k` is `C^m` on `u`. -/
+lemma contDiffOn_iteratedFDerivUncurry {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hu : IsOpen u) (k : ℕ) {m : ℕ∞} (hg : ContDiffOn ℝ (m + k) g u) :
+    ContDiffOn ℝ m (iteratedFDerivUncurry g k) u := by
+  induction k generalizing m with
+  | zero => simp only [Nat.cast_zero, add_zero] at hg ⊢; exact hg
+  | succ k ih =>
+    simp only [iteratedFDerivUncurry_succ]
+    have hg' : ContDiffOn ℝ (↑(m + 1) + ↑k) g u := by
+      convert hg using 1
+      simp only [Nat.cast_add, Nat.cast_one, WithTop.coe_add, WithTop.coe_one, add_comm,
+        add_assoc]
+    have h1 : ContDiffOn ℝ ↑(m + 1) (iteratedFDerivUncurry g k) u := ih hg'
+    have h2 : ContDiffOn ℝ m (fderiv ℝ (iteratedFDerivUncurry g k)) u := by
+      have : (↑(m + 1) : WithTop ℕ∞) = ↑m + 1 := by simp
+      rw [this] at h1
+      exact h1.fderiv_of_isOpen hu le_rfl
+    exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryLeftEquiv ℝ
+      (fun _ : Fin (n + k).succ ↦ E) E).symm).comp_contDiffOn h2
+
+/-- The `k`-th iterated derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
+`integralCMLM (iteratedFDerivUncurry g k) u t₀`. This generalizes `fderiv_integralCMLM`, which is
+the `k = 1` case. -/
+lemma iteratedFDerivUncurry_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) (k : ℕ) (hg : ContDiffOn ℝ k g u) :
+    iteratedFDerivUncurry (integralCMLM g u t₀) k α =
+      integralCMLM (iteratedFDerivUncurry g k) u t₀ α := by
+  induction k generalizing α with
+  | zero => simp
+  | succ k ih =>
+    simp only [iteratedFDerivUncurry_succ]
+    -- The IH gives equality on {β | range β ⊆ u}, which is a neighborhood of α
+    have heq : iteratedFDerivUncurry (integralCMLM g u t₀) k =ᶠ[𝓝 α]
+        integralCMLM (iteratedFDerivUncurry g k) u t₀ := by
+      have hopen : IsOpen {β : C(Icc tmin tmax, E) | range β ⊆ u} := by
+        simp_rw [← Set.mapsTo_univ_iff_range_subset]
+        exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
+      exact hopen.eventually_mem hα |>.mono fun β hβ ↦ ih hβ hg.of_succ
+    have hsmooth : ContDiffOn ℝ 1 (iteratedFDerivUncurry g k) u := by
+      have hg' : ContDiffOn ℝ (1 + k) g u := by simpa [add_comm] using hg
+      exact contDiffOn_iteratedFDerivUncurry hu k hg'
+    rw [heq.fderiv_eq, fderiv_integralCMLM hsmooth hu t₀ hα]
+
 end
 
 end SmoothFlow
