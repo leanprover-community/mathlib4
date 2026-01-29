@@ -94,9 +94,21 @@ theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f'
   h.hasFDerivWithinAt.eventually_ne
     ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
 
+theorem HasDerivWithinAt.eventually_notMem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
+    ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t :=
+  h.hasFDerivWithinAt.eventually_notMem_discrete ht ht'
+    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
+
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasDerivWithinAt_univ.2 h).eventually_ne hf'
+
+theorem HasDerivAt.eventually_notMem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
+    ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
+  simpa only [compl_eq_univ_diff] using
+    (hasDerivWithinAt_univ.2 h).eventually_notMem_discrete ht ht' hf'
 
 theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     Tendsto f (𝓝[≠] x) (𝓝[≠] f x) :=
@@ -113,11 +125,30 @@ theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] 
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 
+/-- If a function is valued in a discrete set at a set of points that accumulates to `x` in `s`,
+then its derivative within `s` at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem derivWithin_zero_of_frequently_mem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y ∈ t) :
+    derivWithin f s x = 0 := by
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · contrapose! h
+    exact hf.hasDerivWithinAt.eventually_notMem_discrete ht ht' h
+  · exact derivWithin_zero_of_not_differentiableWithinAt hf
+
 /-- If a function is equal to a constant at a set of points that accumulates to `x`,
 then its derivative at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem deriv_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[≠] x, f y = c) : deriv f x = 0 := by
   rw [← derivWithin_univ, derivWithin_zero_of_frequently_const]
+  rwa [← compl_eq_univ_diff]
+
+/-- If a function is equal to a constant at a set of points that accumulates to `x`,
+then its derivative at `x` equals zero,
+either because it has derivative zero or because it isn't differentiable at this point. -/
+theorem deriv_zero_of_frequently_mem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : ∃ᶠ y in 𝓝[≠] x, f y ∈ t) : deriv f x = 0 := by
+  rw [← derivWithin_univ, derivWithin_zero_of_frequently_mem_discrete ht ht']
   rwa [← compl_eq_univ_diff]
 
 theorem not_differentiableWithinAt_of_local_left_inverse_hasDerivWithinAt_zero {f g : 𝕜 → 𝕜} {a : 𝕜}

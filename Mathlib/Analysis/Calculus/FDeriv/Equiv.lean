@@ -414,9 +414,29 @@ theorem HasFDerivWithinAt.eventually_ne (h : HasFDerivWithinAt f f' s x)
     simpa [not_imp_not, sub_eq_zero] using (A.trans this.isBigO_symm).eq_zero_imp
   · exact (h.continuousWithinAt.eventually_ne hc).filter_mono <| by gcongr; apply diff_subset
 
+theorem HasFDerivWithinAt.eventually_notMem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasFDerivWithinAt f f' s x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[s \ {x}] x, f z ∉ t := by
+  apply (h.eventually_ne (c := f x) hf').mp
+  apply Eventually.filter_mono
+    (nhdsWithin_le_of_mem (mem_of_superset self_mem_nhdsWithin diff_subset))
+  simp_rw [not_imp_not, ← mem_preimage, ← eventually_inf_principal,
+    ← eventually_map (m := f) (P := fun y ↦ y = f x), map_inf_principal_preimage]
+  apply Eventually.filter_mono (inf_le_inf_right _ h.continuousWithinAt)
+  by_cases hf : f x ∈ t
+  · rw [← nhdsWithin, ht.nhdsWithin (f x) hf, eventually_pure]
+  · rw [← nhdsWithin, not_neBot.mp (mt ht'.mem_of_nhdsWithin_neBot hf)]
+    exact eventually_bot
+
 theorem HasFDerivAt.eventually_ne (h : HasFDerivAt f f' x) (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
   simpa only [compl_eq_univ_diff] using (hasFDerivWithinAt_univ.2 h).eventually_ne hf'
+
+theorem HasFDerivAt.eventually_notMem_discrete {t : Set F}
+    (ht : IsDiscrete t) (ht' : IsClosed t) (h : HasFDerivAt f f' x)
+    (hf' : ∃ C, ∀ z, ‖z‖ ≤ C * ‖f' z‖) : ∀ᶠ z in 𝓝[≠] x, f z ∉ t := by
+  simpa only [compl_eq_univ_diff] using
+    (hasFDerivWithinAt_univ.2 h).eventually_notMem_discrete ht ht' hf'
 
 end
 
