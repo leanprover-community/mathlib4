@@ -120,20 +120,22 @@ the following one.
 
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
--- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
 lemma isSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
-    (∀ i, f i ≤ f (i + 1)) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
+    (Monotone f) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
       f 0 = H ∧ f n = ⊤ where
   mp h := by
     induction h with
     | top =>
-      use 0, fun _ ↦ ⊤
-      simp
+      use 0, fun _ ↦ ⊤, ?_, (by simp)
+      exact monotone_nat_of_le_succ fun _ ↦ le_top
     | step H K h_le hSubn hN ih =>
       obtain ⟨n, f, hf, f0, fn⟩ := ih
-      use n + 1, fun | 0 => H | n + 1 => f n
-      grind
+      use n + 1, fun | 0 => H | n + 1 => f n, ?_, ?_
+      · grind
+      · refine monotone_nat_of_le_succ ?_
+        grind only [monotone_iff_forall_lt]
+      · grind
   mpr := by
     rintro ⟨n, hyps⟩
     revert H
@@ -141,7 +143,9 @@ lemma isSubnormal_iff : H.IsSubnormal ↔
     | zero => simp_all
     | succ n ih =>
       rintro J ⟨F, hF, H_le, rfl, ih1⟩
-      exact step _ _ (hF 0) (ih ⟨fun n ↦ F (n + 1), by simp [*]⟩) (H_le _)
+      refine step _ _ (hF <| Nat.le_add_right 0 1) ?_ (H_le _)
+      refine ih ⟨fun n ↦ F (n + 1), ?_⟩
+      grind only [Monotone, monotone_iff_forall_lt]
 
 alias ⟨exists_chain, _⟩ := isSubnormal_iff
 
