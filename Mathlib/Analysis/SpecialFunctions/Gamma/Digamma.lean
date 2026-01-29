@@ -46,7 +46,7 @@ theorem digamma_one : digamma 1 = - Real.eulerMascheroniConstant := by
   rw [digamma_def, logDeriv_apply, hasDerivAt_Gamma_one.deriv, Gamma_one, div_one]
 
 theorem digamma_one_half : digamma (1 / 2) = - 2 * log 2 - Real.eulerMascheroniConstant := by
-  rw [digamma_def, logDeriv_apply, (hasDerivAt_Gamma_one_half).deriv, add_comm, Gamma_one_half_eq,
+  rw [digamma_def, logDeriv_apply, hasDerivAt_Gamma_one_half.deriv, add_comm, Gamma_one_half_eq,
     neg_mul, ← mul_neg, neg_add',  Real.sqrt_eq_rpow, ofReal_cpow Real.pi_nonneg]
   simp
 
