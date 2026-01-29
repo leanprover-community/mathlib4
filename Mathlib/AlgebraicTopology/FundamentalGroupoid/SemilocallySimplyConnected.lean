@@ -58,8 +58,8 @@ theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected
 theorem semilocallySimplyConnected_iff :
     SemilocallySimplyConnected X ↔
     ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
-      ∀ {u : U} (γ : Path u.val u.val) (_ : Set.range γ ⊆ U),
-        Path.Homotopic γ (Path.refl u.val) := by
+      ∀ {u : X} (γ : Path u u) (_ : Set.range γ ⊆ U),
+        Path.Homotopic γ (Path.refl u) := by
   constructor
   · -- Forward direction: SemilocallySimplyConnected implies small loops are null
     intro h x
@@ -67,19 +67,18 @@ theorem semilocallySimplyConnected_iff :
     obtain ⟨V, hVU, hV_open, hx_in_V⟩ := mem_nhds_iff.mp hU_nhd
     refine ⟨V, hV_open, hx_in_V, ?_⟩
     intro u γ hγ_range
-    -- Convert u : V to u' : U using V ⊆ U
-    let u' : U := ⟨u.val, hVU u.property⟩
-    -- Since u'.val = u.val, γ is also a path from u'.val to u'.val
-    let γ' : Path u'.val u'.val := γ
-    -- Restrict γ' to a path in the subspace U
-    have hγ_mem : ∀ t, γ' t ∈ U := fun t => hVU (hγ_range ⟨t, rfl⟩)
-    let γ_U := γ'.codRestrict hγ_mem
-    -- The map from π₁(U, u') to π₁(X, u'.val) has trivial range
+    -- Since range γ ⊆ V ⊆ U, γ takes values in U
+    have hγ_mem : ∀ t, γ t ∈ U := fun t => hVU (hγ_range ⟨t, rfl⟩)
+    -- Restrict γ to a path in the subspace U
+    let γ_U : Path (⟨u, γ.source ▸ hγ_mem 0⟩ : U) ⟨u, γ.target ▸ hγ_mem 1⟩ := γ.codRestrict hγ_mem
+    -- The basepoint u' : U
+    let u' : U := ⟨u, γ.source ▸ hγ_mem 0⟩
+    -- The map from π₁(U, u') to π₁(X, u) has trivial range
     have h_range := hU_loops u'
     rw [MonoidHom.range_eq_bot_iff] at h_range
     have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦Path.refl u'.val⟧ := by
+           FundamentalGroup.fromPath ⟦Path.refl u⟧ := by
       rw [h_range]; rfl
     rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
