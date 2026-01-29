@@ -147,6 +147,9 @@ noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
     MvPowerSeries τ S :=
   MvPowerSeries.subst (fun _ ↦ a) f
 
+lemma subst_def (a : MvPowerSeries τ S) (f : PowerSeries R) :
+    subst a f = MvPowerSeries.subst (fun _ ↦ a) f := rfl
+
 variable {a : MvPowerSeries τ S} {b : S⟦X⟧}
 
 /-- Substitution of power series into a power series, as an `AlgHom`. -/
@@ -338,10 +341,47 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSer
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst ha hb) f
 
-theorem _root_.MvPowerSeries.rescaleUnit (a : R) (f : R⟦X⟧) :
-    MvPowerSeries.rescale (Function.const _ a) f = rescale a f := by
-  ext d
+lemma rescale_eq (r : R) (f : PowerSeries R) :
+    rescale r f = MvPowerSeries.rescale (fun _ ↦ r) f := by
+  ext n
   rw [coeff_rescale, coeff, MvPowerSeries.coeff_rescale]
-  simp
+  simp [pow_zero, Finsupp.prod_single_index]
+
+lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
+    PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by
+  rw [rescale_eq, MvPowerSeries.rescale_eq_subst, X, subst, Pi.smul_def']
+
+/-- Rescale power series, as an `AlgHom` -/
+noncomputable abbrev rescaleAlgHom (r : R) : R⟦X⟧ →ₐ[R] R⟦X⟧ :=
+  MvPowerSeries.rescaleAlgHom (fun _ ↦ r)
+
+lemma rescaleAlgHom_def (r : R) (f : PowerSeries R) :
+    rescaleAlgHom r f = MvPowerSeries.rescaleAlgHom (fun _ ↦ r) f := by
+  simp only [rescaleAlgHom]
+
+theorem rescaleAlgHom_apply (r : R) : rescaleAlgHom r = rescale r := by
+  ext f
+  rw [rescale_eq, RingHom.coe_coe, rescaleAlgHom_def, MvPowerSeries.rescaleAlgHom_apply]
+
+/-- When `p` is linear, substitution of `p` and then a scalar homothety is substitution of
+the homothety then `p`. -/
+lemma subst_linear_subst_scalar_comm (a : R) {σ : Type*} (p : MvPowerSeries σ R)
+    (hp_lin : ∀ d ∈ Function.support p, d.degree = 1) (f : PowerSeries R) :
+    subst p (rescale a f) = MvPowerSeries.rescale (Function.const σ a) (subst p f) := by
+  have hp : PowerSeries.HasSubst p := by
+    apply HasSubst.of_constantCoeff_zero
+    rw [← MvPowerSeries.coeff_zero_eq_constantCoeff_apply, MvPowerSeries.coeff_apply]
+    have : (p 0 ≠ 0) → (0 : σ →₀ ℕ).degree = 1 := hp_lin 0
+    have : Finsupp.degree (0 : σ →₀ ℕ) = 0 := Finsupp.degree_zero
+    grind
+  rw [rescale_eq_subst, MvPowerSeries.rescale_eq_subst,
+    subst_comp_subst_apply (HasSubst.smul_X' a) hp]
+  nth_rewrite 3 [subst]
+  rw [MvPowerSeries.subst_comp_subst_apply hp.const (MvPowerSeries.HasSubst.smul_X _),
+    funext_iff]
+  intro _
+  rw [subst_smul hp, ← Polynomial.coe_X, subst_coe hp, Polynomial.aeval_X,
+    ← MvPowerSeries.rescale_eq_subst, MvPowerSeries.rescale_homogeneous_eq_smul hp_lin,
+    subst, pow_one]
 
 end PowerSeries
