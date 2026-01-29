@@ -56,8 +56,7 @@ def completePartialOrderOfLubOfDirected (α : Type*) [H1 : PartialOrder α] [H2 
     CompletePartialOrder α where
   __ := H1; __ := H2
   bot := sSup ∅
-  bot_le := (isLUB_empty_iff.mp (lub_of_directed (∅ : Set α) (by simp only [DirectedOn,
-    Set.mem_empty_iff_false, false_and, exists_const, imp_self, implies_true])))
+  bot_le := isLUB_empty_iff.mp <| lub_of_directed ∅ IsChain.empty.directedOn
   lubOfDirected := lub_of_directed
 
 variable [CompletePartialOrder α] [Preorder β] {f : ι → α} {d : Set α} {a : α}
