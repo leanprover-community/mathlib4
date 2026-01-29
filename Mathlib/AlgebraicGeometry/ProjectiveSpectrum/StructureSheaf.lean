@@ -80,7 +80,7 @@ The predicate `IsFraction` is "prelocal", in the sense that if it holds on `U` i
 subset `V` of `U`.
 -/
 def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x where
-  pred f := IsFraction f
+  pred U := IsFraction
   res := by rintro V U i f ⟨j, r, s, h, w⟩; exact ⟨j, r, s, (h <| i ·), (w <| i ·)⟩
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
