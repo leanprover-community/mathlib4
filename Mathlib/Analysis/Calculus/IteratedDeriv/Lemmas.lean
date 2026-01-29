@@ -131,17 +131,16 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
       hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     have h₂ : DifferentiableWithinAt 𝕜 (fun x => iteratedDerivWithin n f s (c * x)) s x := by
       rw [← Function.comp_def]
-      apply DifferentiableWithinAt.comp
-      · exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
-      · exact differentiableWithinAt_id'.const_mul _
-      · exact hs
+      apply DifferentiableWithinAt.comp _ ?_ (by fun_prop) hs
+      exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
     rw [iteratedDerivWithin_succ, derivWithin_congr h₀ (ih hx hf.of_succ),
       derivWithin_fun_const_smul (c ^ n) h₂, iteratedDerivWithin_succ,
       ← Function.comp_def,
-      derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs,
-      derivWithin_const_mul _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
+      derivWithin.scomp x h₁ (differentiableWithinAt_id.const_mul _) hs,
+      derivWithin_const_mul _ differentiableWithinAt_id, derivWithin_id' _ _ (h _ hx),
       smul_smul, mul_one, pow_succ]
 
+@[to_fun iteratedDerivWithin_fun_id]
 lemma iteratedDerivWithin_id :
     iteratedDerivWithin n id s x = if n = 0 then x else if n = 1 then 1 else 0 := by
   obtain (_ | n) := n
@@ -149,10 +148,6 @@ lemma iteratedDerivWithin_id :
   · rw [iteratedDerivWithin_succ', iteratedDerivWithin_congr (g := fun _ ↦ 1) _ hx]
     · simp [iteratedDerivWithin_const]
     · exact fun y hy ↦ derivWithin_id _ _ (h.uniqueDiffWithinAt hy)
-
-lemma iteratedDerivWithin_fun_id :
-    iteratedDerivWithin n (·) s x = if n = 0 then x else if n = 1 then 1 else 0 :=
-  iteratedDerivWithin_id hx h
 
 -- TODO: `𝕜'` could be generalized to normed algebras not necessarily fields.
 lemma iteratedDerivWithin_smul {f : 𝕜 → 𝕜'} {g : 𝕜 → F}
@@ -204,15 +199,11 @@ theorem iteratedDerivWithin_pow (m : ℕ) (k : ℕ) :
 
 end
 
+@[to_fun iteratedDeriv_fun_add]
 lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
-
--- TODO: `@[to_fun]` generates the wrong name. Same for the various lemmas below.
-lemma iteratedDeriv_fun_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
-    iteratedDeriv n (fun z ↦ f z + g z) x = iteratedDeriv n f x + iteratedDeriv n g x :=
-  iteratedDeriv_add hf hg
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
@@ -222,22 +213,16 @@ theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_const_sub hn c
 
-lemma iteratedDeriv_fun_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
-    iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
-  simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f
-
+@[to_fun iteratedDeriv_fun_neg]
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (-f) a = -(iteratedDeriv n f a) := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f
 
+@[to_fun iteratedDeriv_fun_sub]
 lemma iteratedDeriv_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f - g) x = iteratedDeriv n f x - iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
     iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ hf hg
-
-lemma iteratedDeriv_fun_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
-    iteratedDeriv n (fun z ↦ f z - g z) x = iteratedDeriv n f x - iteratedDeriv n g x :=
-  iteratedDeriv_sub hf hg
 
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
     iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by
@@ -273,19 +258,17 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_fun_const_smul_field,
       neg_smul]
 
+@[to_fun iteratedDeriv_fun_id]
 lemma iteratedDeriv_id {n : ℕ} {x : 𝕜} :
     iteratedDeriv n id x = if n = 0 then x else if n = 1 then 1 else 0 := by
   obtain (_ | _ | n) := n <;>
     simp [iteratedDeriv_succ', iteratedDeriv_const]
 
-lemma iteratedDeriv_fun_id {n : ℕ} {x : 𝕜} :
-    iteratedDeriv n (fun a ↦ a) x = if n = 0 then x else if n = 1 then 1 else 0 :=
-  iteratedDeriv_id
-
 lemma iteratedDeriv_fun_id_zero :
     iteratedDeriv n (fun a ↦ a) (0 : 𝕜) = if n = 1 then 1 else 0 := by
   simp +contextual [iteratedDeriv_fun_id]
 
+@[to_fun iteratedDeriv_fun_mul]
 lemma iteratedDeriv_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f * g) x = ∑ i ∈ .range (n + 1),
       n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x := by
@@ -296,11 +279,6 @@ lemma iteratedDeriv_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hg 
 theorem iteratedDeriv_pow (m : ℕ) (k : ℕ) :
     iteratedDeriv k (· ^ m) x = m.descFactorial k * x ^ (m - k) := by
   simpa using iteratedDerivWithin_pow (Set.mem_univ x) uniqueDiffOn_univ m k
-
-lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
-    iteratedDeriv n (fun x ↦ f x * g x) x = ∑ i ∈ .range (n + 1),
-      n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
-  iteratedDeriv_mul hf hg
 
 lemma iteratedDeriv_fun_pow_zero {n m : ℕ} :
     iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by

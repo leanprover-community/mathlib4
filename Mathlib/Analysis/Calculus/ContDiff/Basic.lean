@@ -158,32 +158,20 @@ theorem LinearIsometryEquiv.contDiff (f : E ≃ₗᵢ[𝕜] F) : ContDiff 𝕜 n
   (f : E →L[𝕜] F).contDiff
 
 /-- The identity is `C^n`. -/
+@[to_fun (attr := fun_prop) contDiff_fun_id]
 theorem contDiff_id : ContDiff 𝕜 n (id : E → E) :=
   IsBoundedLinearMap.id.contDiff
 
-@[fun_prop]
-theorem contDiff_fun_id : ContDiff 𝕜 n (fun x : E => x) :=
-  IsBoundedLinearMap.id.contDiff
-
+@[to_fun (attr := fun_prop) contDiffWithinAt_fun_id]
 theorem contDiffWithinAt_id {s x} : ContDiffWithinAt 𝕜 n (id : E → E) s x :=
   contDiff_id.contDiffWithinAt
 
-@[fun_prop]
-theorem contDiffWithinAt_fun_id {s x} : ContDiffWithinAt 𝕜 n (fun x : E => x) s x :=
-  contDiff_id.contDiffWithinAt
-
+@[to_fun (attr := fun_prop) contDiffAt_fun_id]
 theorem contDiffAt_id {x} : ContDiffAt 𝕜 n (id : E → E) x :=
   contDiff_id.contDiffAt
 
-@[fun_prop]
-theorem contDiffAt_fun_id {x} : ContDiffAt 𝕜 n (fun x : E => x) x :=
-  contDiff_id.contDiffAt
-
+@[to_fun (attr := fun_prop) contDiffOn_fun_id]
 theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
-  contDiff_id.contDiffOn
-
-@[fun_prop]
-theorem contDiffOn_fun_id {s} : ContDiffOn 𝕜 n (fun x : E => x) s :=
   contDiff_id.contDiffOn
 
 /-- Bilinear functions are `C^n`. -/
