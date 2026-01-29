@@ -45,14 +45,8 @@ private instance instTwoPiPos : Fact (0 < 2 * Real.pi) := Fact.mk Real.two_pi_po
 
 /-- Linear map from ℂ[X] to C(AddCircle (2 * π), ℂ) that evaluates polynomials on the unit circle.
 For a polynomial p, this maps it to the function θ ↦ p(exp(iθ)). -/
-noncomputable def toAddCircle : ℂ[X] →ₗ[ℂ] C(AddCircle (2 * Real.pi), ℂ) where
-  toFun p := {
-    toFun := fun θ => p.eval (toCircle θ)
-    continuous_toFun := p.continuous.comp
-      (continuous_subtype_val.comp AddCircle.continuous_toCircle)
-  }
-  map_add' p q := by ext; simp [Polynomial.eval_add]
-  map_smul' c p := by ext; simp [Polynomial.eval_smul, smul_eq_mul]
+noncomputable def toAddCircle : ℂ[X] →ₐ[ℂ] C(AddCircle (2 * Real.pi), ℂ) :=
+  Polynomial.aeval { toFun c := c.toCircle }
 
 lemma toAddCircle.integrable :
     Integrable p.toAddCircle (@haarAddCircle _ (Fact.mk Real.two_pi_pos)) := by

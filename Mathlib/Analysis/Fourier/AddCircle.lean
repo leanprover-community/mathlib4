@@ -311,15 +311,15 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
 
 theorem MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
     (hf : Integrable f haarAddCircle) (n : ℤ) :
-    Integrable (fun t ↦ (fourier (-n)) t • (f t)) haarAddCircle := by
+    Integrable (fun t ↦ fourier (-n) t • f t) haarAddCircle := by
   apply hf.bdd_smul 1
   · exact (map_continuous (fourier (-n))).aestronglyMeasurable
   · apply ae_of_all; intro t
     rw [fourier_apply, Circle.norm_coe]
 
 theorem fourierCoeff.add {f g : AddCircle T → E} (hf : Integrable f haarAddCircle)
-    (hg : Integrable g haarAddCircle) : fourierCoeff (f + g) =
-    fourierCoeff f + fourierCoeff g := by
+    (hg : Integrable g haarAddCircle) :
+    fourierCoeff (f + g) = fourierCoeff f + fourierCoeff g := by
   unfold fourierCoeff
   simp_rw [Pi.add_apply, smul_add, integral_add (hf.fourier_smul _) (hg.fourier_smul _)]
   rfl
