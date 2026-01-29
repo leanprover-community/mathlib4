@@ -77,7 +77,7 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
     refine ⟨V, hV_open, hx_in_V, ?_⟩
     intro u γ hγ_range
     -- Since range γ ⊆ V ⊆ U, γ takes values in U
-    have hγ_mem : ∀ t, γ t ∈ U := fun t => hVU (hγ_range ⟨t, rfl⟩)
+    have hγ_mem : ∀ t, γ t ∈ U := Path.range_subset_iff.mp (hγ_range.trans hVU)
     -- Restrict γ to a path in the subspace U
     let γ_U : Path (⟨u, γ.source ▸ hγ_mem 0⟩ : U) ⟨u, γ.target ▸ hγ_mem 1⟩ := γ.codRestrict hγ_mem
     -- The basepoint u' : U
@@ -89,25 +89,17 @@ theorem semilocallySimplyConnectedAt_iff {x : X} :
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
            FundamentalGroup.fromPath ⟦Path.refl u⟧ := by
       rw [h_range]; rfl
-    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
-            (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ from rfl,
-        Path.map_codRestrict] at h_map
+    rw [FundamentalGroup.map_fromPath, Path.map_codRestrict] at h_map
     exact Quotient.eq.mp h_map
   · -- Backward direction: small loops null implies SemilocallySimplyConnectedAt
     intro ⟨U, hU_open, hx_in_U, hU_loops_null⟩
     refine ⟨U, hU_open.mem_nhds hx_in_U, ?_⟩; intro base
     simp only [MonoidHom.range_eq_bot_iff]; ext p
     obtain ⟨γ', rfl⟩ := Quotient.exists_rep (FundamentalGroup.toPath p)
-    have hrange : range (γ'.map continuous_subtype_val) ⊆ U := by
-      rintro _ ⟨t, rfl⟩
-      exact (γ' t).property
+    have hrange : range (γ'.map continuous_subtype_val) ⊆ U :=
+      Path.range_subset_iff.mpr fun t => (γ' t).property
     have hhom := hU_loops_null (γ'.map continuous_subtype_val) hrange
-    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ base
-            (FundamentalGroup.fromPath ⟦γ'⟧) =
-           FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ from rfl,
-        Quotient.sound hhom]
-    rfl
+    rw [FundamentalGroup.map_fromPath, Quotient.sound hhom]; rfl
 
 /-- Characterization of semilocally simply connected at a point: any two paths in U between
 the same endpoints are homotopic. -/
@@ -116,25 +108,8 @@ theorem semilocallySimplyConnectedAt_iff_paths {x : X} :
     ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
       ∀ {u u' : X} (γ γ' : Path u u'),
         range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' := by
-  rw [semilocallySimplyConnectedAt_iff]
-  constructor
-  · intro ⟨U, hU_open, hx_in_U, hU_loops⟩
-    refine ⟨U, hU_open, hx_in_U, ?_⟩
-    intro u u' γ γ' hγ hγ'
-    -- γ.trans γ'.symm is a loop in U, hence nullhomotopic
-    have hloop : range (γ.trans γ'.symm) ⊆ U := by
-      intro y hy
-      simp only [Path.trans_range, Path.symm_range] at hy
-      exact hy.elim (fun h => hγ h) (fun h => hγ' h)
-    have hnull := hU_loops (γ.trans γ'.symm) hloop
-    exact Path.Homotopic.eq_of_trans_symm hnull
-  · intro ⟨U, hU_open, hx_in_U, hU_paths⟩
-    refine ⟨U, hU_open, hx_in_U, ?_⟩
-    intro u γ hγ
-    have hrefl : range (Path.refl u) ⊆ U := by
-      simp only [Path.refl_range, singleton_subset_iff]
-      exact hγ ⟨0, γ.source⟩
-    exact hU_paths γ (Path.refl u) hγ hrefl
+  simp only [semilocallySimplyConnectedAt_iff,
+    Path.Homotopic.paths_homotopic_iff_loops_nullhomotopic]
 
 /-! ### SemilocallySimplyConnectedOn -/
 

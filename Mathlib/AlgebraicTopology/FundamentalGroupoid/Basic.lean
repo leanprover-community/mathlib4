@@ -198,6 +198,23 @@ theorem eq_of_trans_symm {γ γ' : Path x₀ x₁}
   (hcomp h (.refl γ')) |>.trans <|
   refl_trans γ'
 
+/-- All pairs of paths between the same endpoints with ranges in `U` are homotopic iff all loops
+in `U` are nullhomotopic. This is useful for characterizing semilocally simply connected spaces. -/
+theorem paths_homotopic_iff_loops_nullhomotopic {X : Type*} [TopologicalSpace X] (U : Set X) :
+    (∀ {u v : X} (γ γ' : Path u v), Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ') ↔
+    (∀ {u : X} (γ : Path u u), Set.range γ ⊆ U → γ.Homotopic (Path.refl u)) := by
+  constructor
+  · intro hpaths u γ hγ
+    have hrefl : Set.range (Path.refl u) ⊆ U := by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact hγ ⟨0, γ.source⟩
+    exact hpaths γ (Path.refl u) hγ hrefl
+  · intro hloops u v γ γ' hγ hγ'
+    have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
+      simp only [Path.trans_range, Path.symm_range, Set.union_subset_iff]
+      exact ⟨hγ, hγ'⟩
+    exact eq_of_trans_symm (hloops (γ.trans γ'.symm) hloop)
+
 namespace Quotient
 
 @[simp, grind =]

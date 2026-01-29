@@ -128,6 +128,10 @@ lemma source_mem_range (γ : Path x y) : x ∈ range ⇑γ :=
 lemma target_mem_range (γ : Path x y) : y ∈ range ⇑γ :=
   ⟨1, Path.target γ⟩
 
+/-- A path's range is contained in a set iff all values are in that set. -/
+theorem range_subset_iff {γ : Path x y} {s : Set X} : range γ ⊆ s ↔ ∀ t, γ t ∈ s :=
+  ⟨fun h t => h ⟨t, rfl⟩, fun h _ ⟨t, ht⟩ => ht ▸ h t⟩
+
 /-- The path 0 ⟶ 1 in `I` -/
 @[simps!]
 protected def id : Path (0 : I) 1 where
