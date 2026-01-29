@@ -2139,7 +2139,6 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
-public import Mathlib.Analysis.SpecialFunctions.Complex.Digamma
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
@@ -2162,6 +2161,7 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 public import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Digamma
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
