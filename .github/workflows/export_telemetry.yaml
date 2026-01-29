@@ -25,3 +25,12 @@ jobs:
           otlpHeaders: ${{ secrets.OTLP_HEADERS }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           runId: ${{ github.event.workflow_run.id }}
+
+      - name: Export workflow telemetry (alt endpoint)
+        uses: corentinmusard/otel-cicd-action@769ccb38830ff3d1600ffb2f35ba9da6724e6b3e # v2.2.4
+        with:
+          otlpEndpoint: ${{ secrets.OTLP_ENDPOINT_ALT }}
+          otlpHeaders: ${{ secrets.OTLP_HEADERS_ALT }}
+          otelServiceName: "mathlib-ci"
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          runId: ${{ github.event.workflow_run.id }}
