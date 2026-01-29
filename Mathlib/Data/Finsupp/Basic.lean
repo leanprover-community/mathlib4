@@ -1331,4 +1331,31 @@ theorem embDomain_comp {α β γ M : Type*} [AddCommMonoid M] {v : α →₀ M}
   simp only [embDomain_eq_mapDomain, ← mapDomain_comp]
   rfl
 
+open Classical in
+theorem mapDomain_support_of_subsingletonAddUnits {M σ τ : Type*} [AddCommMonoid M]
+    {f : σ → τ} [Subsingleton (AddUnits M)] {x : σ →₀ M} :
+    (x.mapDomain f).support = x.support.image f := by
+  ext t
+  rw [mem_support_iff, ne_eq, Finset.mem_image]
+  refine ⟨?_, fun ⟨i, i_in, hi⟩ ↦ ?_⟩
+  · contrapose!
+    simp only [mem_support_iff, ne_eq, mapDomain, sum, coe_finset_sum, Finset.sum_apply,
+      single_apply, Finset.sum_eq_zero_iff, ite_eq_right_iff]
+    grind only
+  simpa [mapDomain, sum, ← hi, single_apply] using ⟨i, by simp [mem_support_iff.mp i_in]⟩
+
+open Classical in
+theorem mapDomain_apply_eq_sum {M σ τ : Type*} [AddCommMonoid M] {f : σ → τ} {x : σ →₀ M}
+    {a : σ} : (x.mapDomain f) (f a) = ∑ i ∈ x.support with f i = f a, x i := by
+  simp [mapDomain, sum, single_apply, Finset.sum_ite]
+
+theorem mapDomain_apply_eq_zero_iff {M σ τ : Type*} [AddCommMonoid M] {f : σ → τ}
+    [Subsingleton (AddUnits M)] {x : σ →₀ M} : mapDomain (M := M) f x = 0 ↔ x = 0 := by
+  refine ⟨fun h ↦ Finsupp.ext (fun i ↦ ?_), fun h ↦ by rw [h, mapDomain_zero]⟩
+  simp only [Finsupp.ext_iff, coe_zero, Pi.zero_apply] at h
+  specialize h (f i)
+  simp only [mapDomain_apply_eq_sum, Finset.sum_eq_zero_iff, Finset.mem_filter, mem_support_iff,
+    ne_eq, and_imp] at h
+  grind
+
 end Finsupp
