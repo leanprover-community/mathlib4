@@ -281,6 +281,8 @@ lemma integralCMLM_apply_if_neg {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
     integralCMLM g u t₀ α dα = 0 := by
   rw [integralCMLM, dif_neg hg, zero_apply]
 
+/-- Composition of a function `g : E → F` continuous on `u` with a continuous curve `α : C(I, E)`
+whose range is contained in `u`, yielding a continuous curve `C(I, F)`. -/
 def gComp (I : Type*) {F : Type*} [TopologicalSpace I] [TopologicalSpace F] {g : E → F} {u : Set E}
     (hg : ContinuousOn g u) (α : {α : C(I, E) | range α ⊆ u}) : C(I, F) :=
   ⟨g ∘ α, hg.comp_continuous α.1.continuous_toFun (fun _ ↦ α.2 (mem_range_self _))⟩
