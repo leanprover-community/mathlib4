@@ -68,7 +68,7 @@ namespace CompleteType
 
 attribute [coe] CompleteType.toTheory
 
-instance Sentence.instSetLike : SetLike (T.CompleteType α) (L[[α]].Sentence) :=
+instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
   ⟨fun p => p.toTheory, fun p q h => by
     cases p
     cases q
@@ -82,6 +82,11 @@ theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆
 
 theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
   p.isMaximal.mem_or_not_mem φ
+
+lemma false_of_mem_of_not_mem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) :
+    False :=
+  have ⟨M⟩ := hT
+  (M.is_model.realize_of_mem _ hφ') (M.is_model.realize_of_mem _ hφ)
 
 theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     (h : (L.lhomWithConstants α).onTheory T ⊨ᵇ φ) : φ ∈ p :=
@@ -111,7 +116,7 @@ theorem setOf_subset_eq_empty_iff (S : L[[α]].Theory) :
   refine
     ⟨fun h =>
       ⟨⟨L[[α]].completeTheory h.some, (subset_union_left (t := S)).trans completeTheory.subset,
-          completeTheory.isMaximal (L[[α]]) h.some⟩,
+          completeTheory.isMaximal L[[α]] h.some⟩,
         (((L.lhomWithConstants α).onTheory T).subset_union_right).trans completeTheory.subset⟩,
       ?_⟩
   rintro ⟨p, hp⟩
@@ -148,7 +153,7 @@ theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 
-theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset (L[[α]]).Sentence} :
+theorem toList_foldr_inf_mem {p : T.CompleteType α} {t : Finset L[[α]].Sentence} :
     t.toList.foldr (· ⊓ ·) ⊤ ∈ p ↔ (t : L[[α]].Theory) ⊆ ↑p := by
   simp_rw [subset_def, ← SetLike.mem_coe, p.isMaximal.mem_iff_models, models_sentence_iff,
     Sentence.Realize, Formula.Realize, BoundedFormula.realize_foldr_inf, Finset.mem_toList]
@@ -177,6 +182,30 @@ theorem mem_typeOf {φ : L[[α]].Sentence} :
 
 theorem formula_mem_typeOf {φ : L.Formula α} :
     Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v := by simp
+
+/-- The clopen set of complete types which contain a formula. -/
+def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p}
+
+@[simp]
+lemma mem_typesWith_iff (φ : L[[α]].Sentence) (p : CompleteType T α) : p ∈ typesWith φ ↔ φ ∈ p := by
+  simp [typesWith]
+
+lemma typesWith_inf (φ ψ : L[[α]].Sentence) :
+    typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
+  ext p
+  simp only [mem_typesWith_iff, mem_inter_iff, ← SetLike.mem_coe, p.isMaximal.mem_iff_models,
+    ModelsBoundedFormula, ← forall_and]
+  exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
+
+lemma typesWith_eq_univ_of_mem_onTheory_lhomWithConstants {φ}
+  (hφ : φ ∈ (L.lhomWithConstants α).onTheory T) : typesWith (T := T) φ = Set.univ
+  := univ_subset_iff.mp fun p _ ↦ p.subset hφ
+
+lemma typesWith_top : typesWith (T := T) (α := α) ⊤ = Set.univ
+  := univ_subset_iff.mp fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun _ _ _ a ↦ a)
+
+lemma typesWith_not (φ : L[[α]].Sentence) : typesWith ∼φ = (typesWith (T := T) φ)ᶜ := by
+  simp [typesWith]
 
 end CompleteType
 

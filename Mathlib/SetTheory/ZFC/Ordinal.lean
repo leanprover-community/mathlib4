@@ -6,8 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.Order.GameAdd
-public import Mathlib.Order.RelIso.Set
-public import Mathlib.SetTheory.Ordinal.Arithmetic
+public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
@@ -366,6 +365,10 @@ theorem toZFSet_natCast {n : ℕ} : toZFSet n = n := by
 theorem toZFSet_omega0 : toZFSet ω = ZFSet.omega := by
   ext
   simpa [mem_omega, mem_toZFSet_iff, lt_omega0] using exists_congr fun _ => Eq.comm
+
+theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
+  simpa [← coe_toZFSet, cardinalMk_coe_sort, mk_Iio_ordinal, ← lift_card] using
+    Cardinal.mk_image_eq (s := Iio o) toZFSet_injective
 
 end Ordinal
 

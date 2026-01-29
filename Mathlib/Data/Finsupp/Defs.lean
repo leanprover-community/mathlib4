@@ -255,9 +255,7 @@ theorem support_onFinset [DecidableEq M] {s : Finset α} {f : α → M}
 @[simp]
 theorem support_onFinset_subset {s : Finset α} {f : α → M} {hf} :
     (onFinset s f hf).support ⊆ s := by
-  classical
-  rw [support_onFinset]
-  exact filter_subset (f · ≠ 0) s
+  grind
 
 grind_pattern support_onFinset_subset => onFinset s f hf
 

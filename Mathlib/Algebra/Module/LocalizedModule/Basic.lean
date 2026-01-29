@@ -1308,6 +1308,13 @@ lemma subsingleton_iff (S : Submonoid R) (g : M →ₗ[R] M')
   simp_rw [subsingleton_iff_ker_eq_top S g, ← top_le_iff, SetLike.le_def,
     mem_ker_iff S, Submodule.mem_top, true_implies]
 
+lemma subsingleton_of_subsingleton (S : Submonoid R) (g : M →ₗ[R] M') [IsLocalizedModule S g]
+    [Subsingleton M] : Subsingleton M' := by
+  rw [subsingleton_iff S g]
+  intro m
+  use 1
+  simp [one_mem, Subsingleton.elim m 0]
+
 end Subsingleton
 
 end IsLocalizedModule
@@ -1367,24 +1374,5 @@ lemma isTorsionFree [IsDomain R] [IsTorsionFree R M] (S : Submonoid R)
 instance [IsDomain R] (S : Submonoid R) [IsTorsionFree R M] :
     IsTorsionFree (Localization S) (LocalizedModule S M) :=
   isTorsionFree (LocalizedModule.mkLinearMap S M) S
-
-theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocalization S A]
-    [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
-  rw [noZeroSMulDivisors_iff]
-  intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
-  obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
-  rw [Function.uncurry_apply_pair] at hcx ⊢
-  rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
-  obtain ⟨u, hl⟩ := hcx
-  rw [← smul_assoc] at hl
-  obtain (hua | rfl) := NoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hl
-  · rw [IsLocalization.mk'_eq_zero_iff]
-    exact Or.inl ⟨u, hua⟩
-  · simp
-
-instance (S : Submonoid R) [NoZeroSMulDivisors R M] :
-    NoZeroSMulDivisors (Localization S) (LocalizedModule S M) :=
-  noZeroSMulDivisors (LocalizedModule.mkLinearMap S M) S
 
 end IsLocalizedModule
