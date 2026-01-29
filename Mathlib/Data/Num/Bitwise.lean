@@ -208,6 +208,7 @@ def oneBits : Num → List Nat
 
 end Num
 
+set_option linter.style.whitespace false in -- linter false positive
 /-- This is a nonzero (and "non minus one") version of `SNum`.
 See the documentation of `SNum` for more details. -/
 inductive NzsNum : Type

@@ -139,6 +139,7 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x:100 " ⊗ₜ[" R "] " y:101 => tmul R x y
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 /-- Produces an arbitrary representation of the form `mₒ ⊗ₜ n₀ + ...`. -/
 unsafe instance [Repr M] [Repr N] : Repr (M ⊗[R] N) where
   reprPrec mn p :=

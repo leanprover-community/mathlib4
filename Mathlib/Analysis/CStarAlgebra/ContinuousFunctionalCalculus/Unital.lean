@@ -807,6 +807,7 @@ section ContinuousOnInvSpectrum
 variable {R A : Type*} [Semifield R] [Ring A] [TopologicalSpace R] [ContinuousInv₀ R]
 variable [Algebra R A]
 
+set_option linter.style.whitespace false in -- unclear if the linter's behaviour is useful here
 @[fun_prop]
 lemma Units.continuousOn_inv₀_spectrum (a : Aˣ) : ContinuousOn (· ⁻¹) (spectrum R (a : A)) :=
   continuousOn_inv₀.mono <| by

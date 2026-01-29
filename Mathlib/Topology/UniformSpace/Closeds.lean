@@ -421,7 +421,7 @@ end TopologicalSpace.Closeds
 namespace TopologicalSpace.Compacts
 
 instance uniformSpace : UniformSpace (Compacts α) :=
-  .replaceTopology (.comap (↑) (.hausdorff α)) <| ext_nhds fun K =>  by
+  .replaceTopology (.comap (↑) (.hausdorff α)) <| ext_nhds fun K ↦ by
     simp_rw [nhds_induced, K.isCompact.nhds_hausdorff_eq_nhds_vietoris]
 
 theorem uniformity_def :
@@ -502,7 +502,7 @@ end TopologicalSpace.Compacts
 namespace TopologicalSpace.NonemptyCompacts
 
 instance uniformSpace : UniformSpace (NonemptyCompacts α) :=
-  .replaceTopology (.comap (↑) (.hausdorff α)) <| ext_nhds fun K =>  by
+  .replaceTopology (.comap (↑) (.hausdorff α)) <| ext_nhds fun K ↦ by
     simp_rw [nhds_induced, K.isCompact.nhds_hausdorff_eq_nhds_vietoris]
 
 theorem uniformity_def :

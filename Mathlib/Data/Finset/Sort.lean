@@ -180,6 +180,7 @@ theorem sorted_last_eq_max' {s : Finset α}
       s.max' (by rw [length_sort] at h; exact card_pos.1 (lt_of_le_of_lt bot_le h)) :=
   sorted_last_eq_max'_aux _ h _
 
+set_option linter.style.whitespace false in -- linter false positive
 theorem max'_eq_sorted_last {s : Finset α} {h : s.Nonempty} :
     s.max' h =
       s.sort[s.sort.length - 1]'

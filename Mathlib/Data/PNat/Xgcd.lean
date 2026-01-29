@@ -67,6 +67,7 @@ variable (u : XgcdType)
 instance : SizeOf XgcdType :=
   ⟨fun u => u.bp⟩
 
+set_option linter.style.whitespace false in -- linter false positive around message data
 /-- The `Repr` instance converts terms to strings in a way that
 reflects the matrix/vector interpretation as above. -/
 instance : Repr XgcdType where

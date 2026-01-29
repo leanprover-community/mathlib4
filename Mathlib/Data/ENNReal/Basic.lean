@@ -713,6 +713,7 @@ end OrdConnected
 
 end Set
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 /-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
 unsafe instance : Repr ℝ≥0∞ where
   reprPrec

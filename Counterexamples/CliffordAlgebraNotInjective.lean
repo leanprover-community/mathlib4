@@ -35,6 +35,7 @@ noncomputable section
 open LinearMap (BilinForm)
 open LinearMap (BilinMap)
 
+set_option linter.style.whitespace false in -- TODO: the pretty-printer prefers «Z» here; why?
 name_poly_vars X, Y, Z over ZMod 2
 
 namespace Q60596

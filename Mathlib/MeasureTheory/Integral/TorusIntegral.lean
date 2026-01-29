@@ -186,6 +186,9 @@ theorem norm_torusIntegral_le_of_norm_le_const {C : ℝ} (hf : ∀ θ, ‖f (tor
       simp only [Pi.zero_def, Real.volume_Icc_pi_toReal fun _ => Real.two_pi_pos.le, sub_zero,
         Fin.prod_const, mul_assoc, mul_comm ((2 * π) ^ (n : ℕ))]
 
+set_option linter.style.whitespace false -- the local notation above confuses the linter
+-- As this is only local notation, disable it for now.
+
 @[simp]
 theorem torusIntegral_dim0 [CompleteSpace E]
     (f : ℂ⁰ → E) (c : ℂ⁰) (R : ℝ⁰) : (∯ x in T(c, R), f x) = f c := by

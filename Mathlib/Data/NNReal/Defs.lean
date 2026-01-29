@@ -980,6 +980,7 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
 
 end StrictMono
 
+set_option linter.style.whitespace false in -- linter false positive around f!, TODO fix properly
 /-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
 unsafe instance : Repr ℝ≥0 where
   reprPrec r _ := f!"({repr r.val}).toNNReal"
