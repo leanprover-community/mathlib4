@@ -376,6 +376,10 @@ theorem indep_of_indep_of_le_right (h_indep : Indep m₁ m₂ μ) (h32 : m₃ �
     Indep m₁ m₃ μ :=
   Kernel.indep_of_indep_of_le_right h_indep h32
 
+theorem iIndep_of_iIndep_of_le {m₁ m₂ : ι → MeasurableSpace Ω} (h_indep : iIndep m₂ μ)
+    (h_le : ∀ i, m₁ i ≤ m₂ i) : iIndep m₁ μ :=
+  Kernel.iIndep_of_iIndep_of_le h_indep h_le
+
 theorem IndepSets.union {s₁ s₂ s' : Set (Set Ω)} (h₁ : IndepSets s₁ s' μ) (h₂ : IndepSets s₂ s' μ) :
     IndepSets (s₁ ∪ s₂) s' μ :=
   Kernel.IndepSets.union h₁ h₂
