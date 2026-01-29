@@ -338,6 +338,13 @@ theorem trans_range {a b c : X} (γ₁ : Path a b) (γ₂ : Path b c) :
   norm_num [image_mul_left_Ici, image_mul_left_Iic,
     image_extend_of_subset, Icc_subset_Iic_self, Icc_subset_Ici_self]
 
+/-- If both paths have values in a set, so does their composition. -/
+theorem trans_range_subset {a b c : X} {γ₁ : Path a b} {γ₂ : Path b c} {s : Set X}
+    (h₁ : ∀ t, γ₁ t ∈ s) (h₂ : ∀ t, γ₂ t ∈ s) : ∀ t, (γ₁.trans γ₂) t ∈ s := by
+  rw [← range_subset_iff] at h₁ h₂ ⊢
+  rw [trans_range]
+  exact union_subset h₁ h₂
+
 /-- Image of a path from `x` to `y` by a map which is continuous on the path. -/
 def map' (γ : Path x y) {f : X → Y} (h : ContinuousOn f (range γ)) : Path (f x) (f y) where
   toFun := f ∘ γ
@@ -393,6 +400,22 @@ theorem codRestrict_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : �
 
 theorem map_codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
     (γ.codRestrict hmem).map continuous_subtype_val = γ := rfl
+
+@[simp]
+theorem codRestrict_refl {s : Set X} (x : s) :
+    (Path.refl x.val).codRestrict (fun _ => x.property) = Path.refl x := rfl
+
+theorem codRestrict_symm {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    γ.symm.codRestrict (fun t => hmem (σ t)) = (γ.codRestrict hmem).symm := rfl
+
+theorem codRestrict_trans {s : Set X} {x y z : s}
+    (γ : Path x.val y.val) (γ' : Path y.val z.val)
+    (hγ : ∀ t, γ t ∈ s) (hγ' : ∀ t, γ' t ∈ s) :
+    (γ.trans γ').codRestrict (Path.trans_range_subset hγ hγ') =
+      (γ.codRestrict hγ).trans (γ'.codRestrict hγ') := by
+  ext t
+  simp only [codRestrict_coe, trans_apply]
+  split_ifs <;> rfl
 
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/
 def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
