@@ -35,7 +35,7 @@ To talk about the joint process of two processes `X : S → Ω → E` and `Y : T
 we consider the process `Sum.elim X Y : S ⊕ T → Ω → E`, where `S ⊕ T` is
 the disjoint union of `S` and `T`, `Sum S T`.
 
-Similarly, the joint process of a family of stochastic processes `X : (t : T) → (s : S t) → E`
+Similarly, the joint process of a family of stochastic processes `X : (t : T) → (s : S t) → Ω → E`
 is the process `(p : (t : T) × S t) ↦ X p.1 p.2`, where `(t : T) × S t` is the type of dependent
 pairs `Sigma`.
 
