@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
@@ -919,6 +920,12 @@ theorem card_roots_map_le_degree {A B : Type*} [Semiring A] [CommRing B] [IsDoma
 theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsDomain B]
     {f : A →+* B} (p : A[X]) : (p.map f).roots.card ≤ p.natDegree :=
   card_roots' _ |>.trans natDegree_map_le
+
+theorem ncard_rootSet_le (p : A[X]) (B : Type*) [CommRing B] [IsDomain B] [Algebra A B] :
+    Set.ncard (p.rootSet B) ≤ p.natDegree := by
+  classical
+  grw [rootSet, Set.ncard_coe_finset, Multiset.toFinset_card_le]
+  exact p.card_roots_map_le_natDegree
 
 theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
     [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)

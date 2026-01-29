@@ -174,9 +174,8 @@ theorem card_subtype_not_diag [Fintype α] :
   obtain ⟨a, ha⟩ := Quot.exists_rep x
   exact and_iff_right ⟨a, mem_univ _, ha⟩
 
-theorem card_diagSet_compl [Fintype α] :
-    Fintype.card ((@Sym2.diagSet α)ᶜ : Set _) = (card α).choose 2 := by
-  simp only [← card_subtype_not_diag, Sym2.diagSet_compl_eq_setOf_not_isDiag, Set.coe_setOf]
+lemma card_diagSet_compl [Fintype α] : card (diagSetᶜ : Set (Sym2 α)) = (card α).choose 2 :=
+  card_subtype_not_diag
 
 /-- Type **stars and bars** for the case `n = 2`. -/
 protected theorem card {α} [Fintype α] : card (Sym2 α) = Nat.choose (card α + 1) 2 :=

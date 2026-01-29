@@ -14,7 +14,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
-import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # The spectrum of elements in a complete normed algebra

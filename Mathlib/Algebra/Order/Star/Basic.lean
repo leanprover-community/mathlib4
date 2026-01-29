@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
