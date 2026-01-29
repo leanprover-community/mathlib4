@@ -398,6 +398,15 @@ theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p�
     ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
   simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
 
+lemma angle_pointReflection_right {p₁ p₂ p₃ : P} :
+    ∠ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) = π - ∠ p₁ p₂ p₃ := by
+  by_cases! h₃₂ : p₃ = p₂
+  · simp [h₃₂]
+    field
+  rw [eq_sub_iff_add_eq]
+  apply EuclideanGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
+  exact Sbtw.angle₁₂₃_eq_pi <| (sbtw_pointReflection_of_ne ℝ h₃₂.symm).symm
+
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :
