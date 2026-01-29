@@ -366,3 +366,13 @@ lemma iteratedDeriv_fun_const_zero : iteratedDeriv n (fun _ ↦ 0) x = (0 : F) :
 @[simp]
 lemma iteratedDeriv_const_zero : iteratedDeriv n (0 : 𝕜 → F) x = (0 : F) := by
   simp [Pi.zero_def]
+
+@[simp]
+lemma iteratedDerivWithin_fun_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (fun _ ↦ 0) s x = (0 : F) := by
+  simpa using @iteratedDerivWithin_const 𝕜 _ F _ _ n 0
+
+@[simp]
+lemma iteratedDerivWithin_const_zero {s : Set 𝕜} :
+    iteratedDerivWithin n (0 : 𝕜 → F) s x = (0 : F) := by
+  simp [Pi.zero_def]

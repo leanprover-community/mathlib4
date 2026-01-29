@@ -798,8 +798,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius :
     FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
-lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
+lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
   formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)

@@ -467,21 +467,31 @@ section sums
 ### Iterated derivatives of sums
 -/
 open Finset
-variable {ι : Type*} {n : ℕ} {x : 𝕜} {f : ι → 𝕜 → F} {s : Finset ι}
+variable {ι : Type*} {n : ℕ} {x : 𝕜} {f : ι → 𝕜 → F} {I : Finset ι}
 
-lemma iteratedDeriv_sum {ι : Type*} {n : ℕ} {x : 𝕜} {f : ι → 𝕜 → F}
-    {s : Finset ι} (hf : ∀ i ∈ s, ContDiffAt 𝕜 n (f i) x) :
-    iteratedDeriv n (∑ i ∈ s, f i) x = ∑ i ∈ s, iteratedDeriv n (f i) x := by
+lemma iteratedDerivWithin_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn 𝕜 s)
+    (hf : ∀ i ∈ I, ContDiffWithinAt 𝕜 n (f i) s x) :
+    iteratedDerivWithin n (∑ i ∈ I, f i) s x =
+      ∑ i ∈ I, iteratedDerivWithin n (f i) s x := by
   classical
-  induction s using Finset.induction_on with
+  induction I using Finset.induction_on with
   | empty => simp
   | insert i t hi IH =>
     rw [forall_mem_insert] at hf
     simp only [sum_insert hi, sum_fn] at IH ⊢
-    rw [iteratedDeriv_add hf.1 (.sum hf.2), IH hf.2]
+    rw [iteratedDerivWithin_add hx hs hf.1 (.sum hf.2), IH hf.2]
 
-lemma iteratedDeriv_fun_sum (hf : ∀ i ∈ s, ContDiffAt 𝕜 n (f i) x) :
-    iteratedDeriv n (fun z ↦ ∑ i ∈ s, f i z) x = ∑ i ∈ s, iteratedDeriv n (f i) x :=
+lemma iteratedDerivWithin_fun_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn 𝕜 s)
+    (hf : ∀ i ∈ I, ContDiffWithinAt 𝕜 n (f i) s x) :
+    iteratedDerivWithin n (∑ i ∈ I, f i ·) s x = ∑ i ∈ I, iteratedDerivWithin n (f i) s x :=
+  by simpa [sum_fn] using iteratedDerivWithin_sum hx hs hf
+
+lemma iteratedDeriv_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
+    iteratedDeriv n (∑ i ∈ I, f i) x = ∑ i ∈ I, iteratedDeriv n (f i) x := by
+  simpa using iteratedDerivWithin_sum (Set.mem_univ x) uniqueDiffOn_univ hf
+
+lemma iteratedDeriv_fun_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
+    iteratedDeriv n (fun z ↦ ∑ i ∈ I, f i z) x = ∑ i ∈ I, iteratedDeriv n (f i) x :=
   by simpa [sum_fn] using iteratedDeriv_sum hf
 
 end sums
