@@ -527,9 +527,16 @@ theorem Summable.alternating {α} [Ring α]
 
 end IsUniformGroup
 
+theorem tsum_int_eq_tsum_neg {α : Type*} [AddCommMonoid α] [TopologicalSpace α] (f : ℤ → α) :
+    ∑' d, f (-d) = ∑' d, f d := by
+  rw [show (fun d => f (-d)) = (fun d => f d) ∘ (Equiv.neg ℤ) by ext; simp]
+  apply (Equiv.neg ℤ).tsum_eq
+
 end Int
 
 section PNat
+
+variable {R : Type*} {α : Type*} [AddMonoidWithOne R] [TopologicalSpace α] [CommMonoid α]
 
 @[to_additive]
 theorem multipliable_pnat_iff_multipliable_succ {f : ℕ → M} :
