@@ -3002,6 +3002,7 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Dense
@@ -3014,6 +3015,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Retracts
+public import Mathlib.CategoryTheory.Presentable.SharplyLT
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Products.Associator

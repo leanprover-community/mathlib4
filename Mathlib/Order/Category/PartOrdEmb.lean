@@ -161,6 +161,24 @@ def Iso.mk {α β : PartOrdEmb.{u}} (e : α ≃o β) : α ≅ β where
   hom := ofHom e
   inv := ofHom e.symm
 
+/-- The order isomorphism induced by an isomorphism in `PartOrdEmb`. -/
+@[simps]
+def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
+    α ≃o β where
+  toFun := e.hom
+  invFun := e.inv
+  left_inv := ConcreteCategory.congr_hom e.hom_inv_id
+  right_inv := ConcreteCategory.congr_hom e.inv_hom_id
+  map_rel_iff' := Hom.le_iff_le _ _ _
+
+instance : (forget PartOrdEmb.{u}).ReflectsIsomorphisms where
+  reflects {α β} f hf := by
+    rw [CategoryTheory.isIso_iff_bijective] at hf
+    let e : α ≃o β :=
+      { toEquiv := Equiv.ofBijective _ hf
+        map_rel_iff' := by simp }
+    exact (Iso.mk e).isIso_hom
+
 /-- `OrderDual` as a functor. -/
 @[simps map]
 def dual : PartOrdEmb ⥤ PartOrdEmb where
@@ -311,6 +329,9 @@ instance : PreservesColimit F (forget _) :=
 instance : HasColimitsOfShape J PartOrdEmb.{u} where
 
 instance : PreservesColimitsOfShape J (forget PartOrdEmb.{u}) where
+
+instance : ReflectsColimitsOfShape J (forget PartOrdEmb.{u}) :=
+  reflectsColimitsOfShape_of_reflectsIsomorphisms
 
 instance : HasFilteredColimitsOfSize.{u, u} PartOrdEmb.{u} where
   HasColimitsOfShape _ := inferInstance
