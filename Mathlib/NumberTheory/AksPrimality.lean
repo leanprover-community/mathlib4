@@ -22,7 +22,7 @@ deterministic and unconditionally correct primality test.
 - The primality test is general as it works for any number given, unlike specialized tests
   that work for only a subset of numbers (e.g Mersenne numbers or Fermat numbers).
 - The algorithm runtime complexity is polynomially bounded by the number of digits.
-- The runtime is deterministic, as opposed probablisitic tests such as Miller-Rabin.
+- The runtime is deterministic, as opposed probabilistic tests such as Miller-Rabin.
   If the algorithm returns prime, the number is prime.
   If the algorithm returns composite, the number is composite.
 - The algorithm is unconditionally correct as it does not depend on any unproven hypotheses.
