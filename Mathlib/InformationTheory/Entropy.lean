@@ -14,7 +14,6 @@ public import Mathlib.Probability.ProbabilityMassFunction.Monad
 public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import Mathlib.Probability.Distributions.Uniform
-public import Mathlib.Topology.Algebra.InfiniteSum.Basic
 
 /-!
 # Shannon Entropy for Discrete Random Variables
@@ -46,11 +45,13 @@ as probability mass functions (PMFs).
 entropy, Shannon, information theory, discrete random variable, PMF
 -/
 
+public section
+
 open scoped Finset MeasureTheory NNReal ENNReal
 
 namespace InformationTheory
 
-variable {α : Type*}
+variable {α β : Type*}
 
 /-! ### Basic Definitions -/
 
@@ -63,6 +64,9 @@ The entropy is defined as `H(X) = ∑_{x ∈ 𝒳} p(x) · log(p(x))` where the 
 is over all possible outcomes and we use the convention `0 · log(0) = 0`. -/
 noncomputable def entropy (p : PMF α) : ℝ :=
   ∑' a : α, Real.negMulLog (ENNReal.toReal (p a))
+
+@[simp] lemma entropy_def (p : PMF α) :
+    entropy p = ∑' a : α, Real.negMulLog (ENNReal.toReal (p a)) := by simp only [entropy]
 
 /-- Entropy computed over a finset (useful for finite distributions). -/
 @[pp_nodot] noncomputable def entropyFinset [DecidableEq α]
@@ -84,7 +88,13 @@ noncomputable def entropy (p : PMF α) : ℝ :=
   rw [h]
   simp [tsum_zero]
 
-lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
+/-- Entropy of a deterministic distribution is zero. -/
+example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
+/-- Entropy of another deterministic distribution is zero. -/
+example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
+
+/-- Entropy of a PMF is non negative. -/
+@[simp] lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
   simp only [entropy]
   refine tsum_nonneg fun a => ?_
   refine Real.negMulLog_nonneg ?_ ?_
@@ -93,16 +103,124 @@ lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
     · exact zero_le_one' ℝ
     · simp_all only [ENNReal.ofReal_one]
       exact PMF.coe_le_one p a
+ 
+/- lemma entropy_eq_zero_iff' (p : PMF α) [Fintype α] : -/
+/-   entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by -/
+/-   classical -/
+/-   constructor -/
+/-   · intro hE -/
+/-     by_contra h -/
+/-     -- When p is not pure, the support has at least two elements -/
+/-     obtain ⟨a0, ha0⟩ := p.support_nonempty -/
+/-     have h_supp : Set.Nontrivial p.support := by -/
+/-       rw [Set.nontrivial_iff_ne_singleton ha0] -/
+/-       intro heq -/
+/-       have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq -/
+/-       have : p = pure a0 := PMF.ext fun x => by -/
+/-         by_cases hx : x = a0 <;> simp [pure] -/
+/-         simp_all only [not_exists, Set.mem_singleton_iff, ↓reduceIte] -/
+/-         simp_all -/
+/-         refine (PMF.apply_eq_zero_iff p x).mpr ?_ -/
+/-         simp_all only [Set.mem_singleton_iff, not_false_eq_true] -/
+/-         /- exact (p.apply_eq_zero_iff x).2 (fun h' => hx (Set.mem_singleton_iff.1 (heq.symm h'))) -/ -/
+/-       exact h ⟨a0, this⟩ -/
+/-     obtain ⟨a, ha, a', ha', haa'⟩ := h_supp -/
+/-     sorry -/
+  /- · rintro ⟨a, rfl⟩ -/
+  /-   simp only [entropy_pure] -/
 
-lemma entropy_eq_zero_iff (p : PMF α) : entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
-  constructor
-  · sorry
-  · sorry
+/- lemma entropy_eq_zero_iff (p : PMF α) [Fintype α] : -/
+/-   entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by -/
+/-   classical -/
+/-   constructor -/
+/-   · intro hE -/
+/-     by_contra h -/
+/-     -- When p is not pure, the support has at least two elements -/
+/-     obtain ⟨a0, ha0⟩ := p.support_nonempty -/
+/-     have h_supp : Set.Nontrivial p.support := by -/
+/-       rw [Set.nontrivial_iff_ne_singleton ha0] -/
+/-       intro heq -/
+/-       have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq -/
+/-       have : p = pure a0 := PMF.ext fun x => by -/
+/-         by_cases hx : x = a0 <;> simp [pure] -/
+/-         simp_all only [not_exists, Set.mem_singleton_iff, ↓reduceIte] -/
+/-         simp_all -/
+/-         refine (PMF.apply_eq_zero_iff p x).mpr ?_ -/
+/-         simp_all only [Set.mem_singleton_iff, not_false_eq_true] -/
+/-         /- exact (p.apply_eq_zero_iff x).2 (fun h' => hx (Set.mem_singleton_iff.1 (heq.symm h'))) -/ -/
+/-       exact h ⟨a0, this⟩ -/
+/-     obtain ⟨a, ha, a', ha', haa'⟩ := h_supp -/
+/-     have ha_pos : 0 < (p a).toReal := -/
+/-       ENNReal.toReal_pos ((p.mem_support_iff a).1 ha) (p.apply_ne_top a) -/
+/-     have ha'_pos : 0 < (p a').toReal := -/
+/-       ENNReal.toReal_pos ((p.mem_support_iff a').1 ha') (p.apply_ne_top a') -/
+/-     have ha_lt_one : (p a).toReal < 1 := by -/
+/-       by_contra h_not -/
+/-       push_neg at h_not -/
+/-       have h1 : (p a).toReal = 1 := le_antisymm (by aesop?) h_not -/
+/-       have h2 : p a = 1 := ENNReal.toReal_eq_one_iff.1 h1 -/
+/-       /- have h2 : p a' = 1 := (ENNReal.toReal_eq_one_iff (p a)).mp h1 -/ -/
+/-       have : p.support = {a} := (p.apply_eq_one_iff a).1 h2 -/
+/-       have : p = pure a := PMF.ext fun x => by -/
+/-         by_cases hx : x = a <;> simp_all only [not_exists, Set.mem_singleton_iff, ne_eq, not_true_eq_false] -/
+/-       exact h ⟨a, this⟩ -/
+/-     have ha'_lt_one : (p a').toReal < 1 := by -/
+/-       by_contra h_not -/
+/-       push_neg at h_not -/
+/-       /- have h1 : (p a').toReal = 1 := le_antisymm ENNReal.toReal_le_one h_not -/ -/
+/-       have h1 : (p a').toReal = 1 := by  -/
+/-         /- refine (ENNReal.toReal_eq_one_iff (p a')).mpr ?_ -/ -/
+/-         /- refine (ENNReal.toReal_eq_one_iff (p a')).mpr ?_ -/ -/
+/-         refine (ENNReal.toReal_eq_one_iff (p a')).mpr ?_ -/
+/-         refine (PMF.apply_eq_one_iff p a').mpr ?_ -/
+/-         sorry -/
+/-       /- have h2 : p a' = 1 := by exact ENNReal.toReal_eq_one_iff h1 -/ -/
+/-       have h2 : p a' = 1 := by exact (ENNReal.toReal_eq_one_iff (p a')).mp h1 -/
+/-       have : p.support = {a'} := (p.apply_eq_one_iff a').1 h2 -/
+/-       have : p = pure a' := PMF.ext fun x => by -/
+/-         by_cases hx : x = a' <;> aesop -/
+/-       exact h ⟨a', this⟩ -/
+/-     -- For 0 < x < 1, negMulLog x > 0 (x * log x < 0) -/
+/-     have h_neg_pos : ∀ x : ℝ, 0 < x → x < 1 → 0 < Real.negMulLog x := by -/
+/-       intro x hx0 hx1 -/
+/-       rw [Real.negMulLog_eq_neg, neg_pos] -/
+/-       exact mul_neg_of_pos_of_neg hx0 (Real.log_neg hx0 hx1) -/
+/-     have h1 : 0 < Real.negMulLog ((p a).toReal) := h_neg_pos _ ha_pos ha_lt_one -/
+/-     have h2 : 0 < Real.negMulLog ((p a').toReal) := h_neg_pos _ ha'_pos ha'_lt_one -/
+/-     have h_summable : Summable (fun b : α => Real.negMulLog (ENNReal.toReal (p b))) := -/
+/-       Summable.of_finite -/
+/-     have h_rest_summable : Summable (fun b => if b = a then 0 else Real.negMulLog (ENNReal.toReal (p b))) := -/
+/-       Summable.of_finite -/
+/-     have h_sum : Real.negMulLog ((p a').toReal) ≤ ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by -/
+/-       have ha'ne : a' ≠ a := ne_comm.1 haa' -/
+/-       /- simpa only [if_neg ha'ne] using h_rest_summable.le_tsum' a' -/ -/
+/-       simpa only [if_neg ha'ne] using h_rest_summable.le_tsum' (by aesop) -/
+/-     rw [entropy, (h_summable.tsum_eq_add_tsum_ite a)] at hE -/
+/-     linarith [h1, h2, h_sum] -/
+/-   · rintro ⟨a, rfl⟩ -/
+/-     simp only [entropy_pure] -/
+
+
+/- lemma entropy_pos_of_not_pure (p : PMF α) -/
+/-     (hp : ¬ ∃ a : α, p = PMF.pure a) : -/
+/-     0 < entropy p := by -/
+/-   have hnonneg : 0 ≤ entropy p := entropy_nonneg (α := α) p -/
+/-   have hne : entropy p ≠ 0 := by -/
+/-     intro h0 -/
+/-     exact hp ((entropy_eq_zero_iff (α := α) p).1 h0) -/
+/-   -- nonneg + ≠0 gives strict positivity in ℝ -/
+/-   exact lt_of_le_of_ne hnonneg (by simpa [eq_comm] using hne) -/
+
+
+/-     (hp : ∀ a : α, p ≠ PMF.pure a) : -/
+/-     0 < entropy p := by -/
+/-   apply entropy_pos_of_not_pure (α := α) p -/
+/-   intro h -/
+/-   rcases h with ⟨a, rfl⟩ -/
+/-   exact hp a rfl -/
 
 /-! ### Connection to Binary Entropy -/
-
 /-- The entropy of a Bernoulli PMF equals the binary entropy function.
-
 This connects the general entropy definition with the specialized binary entropy
 function defined in `Mathlib.Analysis.SpecialFunctions.BinaryEntropy`. -/
 theorem entropy_bernoulli_eq_binEntropy (p : ℝ≥0) (h : p ≤ 1) :
@@ -114,30 +232,23 @@ theorem entropy_bernoulli_eq_binEntropy (p : ℝ≥0) (h : p ≤ 1) :
 example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ) = Real.log 2 := by
   classical
   simp only [entropy, PMF.uniformOfFinset]
-  -- Uniform distribution assigns probability 1/2 to each element
   -- We compute: - (1/2) * log(1/2) - (1/2) * log(1/2) = - log(1/2) = log 2
   have h1 : Real.negMulLog ((2⁻¹ : ENNReal).toReal) = Real.log 2 / 2 := by
-    simp [ENNReal.toReal_inv, ENNReal.toReal_ofNat]
-    simp [Real.negMulLog]
+    simp only [Real.negMulLog, ENNReal.toReal_inv, ENNReal.toReal_ofNat, 
+               Real.log_inv, mul_neg, neg_mul, neg_neg]
     ring_nf
-  -- The sum only has two nonzero terms: at 0 and at 1, each contributing log 2 / 2
-  have h2 : (fun a : ℕ => Real.negMulLog (ENNReal.toReal (if a = 0 ∨ a = 1 then (2⁻¹ : ENNReal) else 0)))
-      = (fun a : ℕ => (if a = 0 then Real.log 2 / 2 else 0) + (if a = 1 then Real.log 2 / 2 else 0)) := by
+  have h2 : (fun a : ℕ => 
+      Real.negMulLog (ENNReal.toReal (if a = 0 ∨ a = 1 then (2⁻¹ : ENNReal) else 0)))
+      = (fun a : ℕ => (if a = 0 then Real.log 2 / 2 else 0) + 
+                      (if a = 1 then Real.log 2 / 2 else 0)) := by
     funext a
     aesop
   simp [h2]
-  -- Split the sum and use tsum_ite_eq for each part
-  have h3 : ∑' a : ℕ, ((if a = 0 then Real.log 2 / 2 else 0) + (if a = 1 then Real.log 2 / 2 else 0))
-      = (∑' a : ℕ, if a = 0 then Real.log 2 / 2 else 0) + (∑' a : ℕ, if a = 1 then Real.log 2 / 2 else 0) := by
-        simp_all only [ENNReal.toReal_inv, ENNReal.toReal_ofNat, tsum_ite_eq, add_halves]
-        sorry
-
-  simp [h3]
-
-/-- Entropy of a deterministic distribution is zero. -/
-example : entropy (PMF.pure ()) = 0 := by simp [entropy_pure]
-
-/-- Entropy of another deterministic distribution is zero. -/
-example : entropy (PMF.pure true) = 0 := by simp [entropy_pure]
+  have hsumm1 : HasSum (fun (n : ℕ) => (if n = 0 then Real.log 2 / 2 else 0)) (Real.log 2 / 2) := by
+    apply hasSum_ite_eq 0
+  have hsumm2 : HasSum (fun (n : ℕ) => (if n = 1 then Real.log 2 / 2 else 0)) (Real.log 2 / 2) := by
+    apply hasSum_ite_eq 1
+  simp only [Summable.tsum_add (HasSum.summable hsumm1) (HasSum.summable hsumm2), 
+             tsum_ite_eq, add_halves]
 
 end InformationTheory
