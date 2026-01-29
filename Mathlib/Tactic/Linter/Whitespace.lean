@@ -294,7 +294,9 @@ def totalExclusions : ExcludedSyntaxNodeKind where
     -- `inductive`s with docstrings for their constructors have undesirable printing
     ``Parser.Command.inductive,
     -- `name_poly_vars` asks for a space after the last variable name; fixing this is not obvious.
-    `Mathlib.Tactic.namePolyVarsOver
+    `Mathlib.Tactic.namePolyVarsOver,
+    -- The pretty-printing of factorial notation is not desirable.
+    `Nat.term_!,
   ]
   depth := none
 
