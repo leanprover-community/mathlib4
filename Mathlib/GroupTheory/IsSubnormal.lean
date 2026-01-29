@@ -76,7 +76,7 @@ lemma Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
 namespace IsSubnormal
 
 /-- The trivial subgroup is subnormal. -/
-@[simp] lemma bot : IsSubnormal (⊥ : Subgroup G) := (normal_of_characteristic ⊥).isSubnormal
+@[simp] lemma bot : IsSubnormal (⊥ : Subgroup G) := normal_bot.isSubnormal
 
 /-- A subnormal subgroup of a simple group is normal. -/
 lemma normal_of_isSimpleGroup (hG : IsSimpleGroup G) (hN : H.IsSubnormal) :
