@@ -211,7 +211,7 @@ end SetLike
 
 /-- A class to indicate that the canonical injection between `A` and `Set B` is order-preserving.
 
-An instance of this class is automatically available on any partial order defined as `PartialOrder.ofSetLike`. 
+An instance of this class is automatically available on any partial order defined as `PartialOrder.ofSetLike`.
 -/
 class IsConcreteLE (A : Type*) (B : outParam Type*) [SetLike A B] [LE A] where
   /-- The coercion from a `SetLike` type preserves the ordering. -/
