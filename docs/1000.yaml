@@ -188,11 +188,7 @@ Q195133:
 Q200787:
   title: Gödel's incompleteness theorem
   authors: Shogo Saito
-  # TODO: how to display this data nicely? want two URLs, right?
-  # results:
-  #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-  #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
-  url: https://formalizedformallogic.github.io/Book/
+  url: https://formalizedformallogic.github.io/Catalogue/
 
 Q203565:
   title: Solutions of a general cubic equation
@@ -2305,6 +2301,9 @@ Q3180727:
 
 Q3229335:
   title: Borel–Carathéodory theorem
+  decl: Complex.borelCaratheodory
+  authors: Maksym Radziwill
+  date: 2025
 
 Q3229352:
   title: Vitali covering theorem
