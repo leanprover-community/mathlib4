@@ -1,4 +1,3 @@
-
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -109,16 +108,17 @@ ring subexpressions of type `ℤ`.
 def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
 /--
-The data used by `ring` to represent the coefficients. `e` is a raw rat cast.
+The data used by `ring` to represent coefficients. `e` is a raw rat cast.
 -/
 structure _root_.Mathlib.Tactic.Ring.BaseType {u : Lean.Level} {α : Q(Type u)}
     (sα : Q(CommSemiring $α)) (e : Q($α)) where
-  /- The value represented by `e`. Should not be zero. -/
+  /-- The value represented by `e`. Should not be zero. -/
   value : ℚ
-  /- If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
+  /-- If `value` is not an integer, then `hyp` should be a proof of `(value.den : α) ≠ 0`. -/
   hyp : Option Expr
 deriving Inhabited
 
+/-- The data used to represent coefficients in exponents. This is the same data that `ring` uses. -/
 def btℕ (e : Q(ℕ)) : Type := Ring.BaseType sℕ q($e)
 
 instance (e : Expr) : Inhabited <| btℕ e := ⟨⟨0, none⟩⟩
@@ -129,7 +129,7 @@ universe u v
 ## The ExNat types
 
 The `Ex{Base,Prod,Sum}Nat` types are equivalent to `Ex{Base,Prod,Sum} btℕ sℕ`. `ExProdNat` is only
-used to represent exponents in `ExProd`. Before we added `BaseType` as a parameter, the `mul`
+used to represent exponents in `ExProd`s. Before we added `BaseType` as a parameter, the `mul`
 constructor of `ExProd` took the exponent as `ExProd sℕ q($e)` and `ExProdNat` did not exist.
 Removing `ExProdNat` again would require passing `BaseType` as an argument to each constructor,
 raising the universe level of `ExProd` from `Type` to `Type 1`, effectively making it noncomputable.
@@ -269,7 +269,8 @@ instance {α : Q(Type u)} {E : Q($α) → Type} {e : Q($α)} [Inhabited (Σ e, E
 `algebra` implements these using `ring` -/
 structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → Type)
   (sα : Q(CommSemiring $α)) where
-  /-- Evaluate the sum of two coefficents. -/
+  /-- Evaluate the sum of two coefficents.
+  If the result is zero returns a proof of this fact, which is used to remove zero terms. -/
   add (sα) : ∀ x y : Q($α), BaseType x → BaseType y →
     MetaM ((Result BaseType q($x + $y)) × (Option Q(IsNat ($x + $y) 0)))
   /-- Evaluate the product of two coefficents. -/
@@ -363,16 +364,19 @@ mutual
 
 variable (rcℕ : RingCompute btℕ sℕ)
 
+/-- Turn an ExBase into a string. Used only for debugging. -/
 partial def ExBase.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type}
     {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExBase bt sα e → String := fun
   | .atom id => s!"id: {id}"
   | .sum v => s!"{v.toString rc}"
 
+/-- Turn an ExProd into a string. Used only for debugging. -/
 partial def ExProd.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type}
     {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExProd bt sα e → String := fun
   | .const value => s!"({rc.toString (sα := sα) value})"
   | .mul vx ve vt => s!"({vx.toString rc})^({ve.toExProd.2.toString rcℕ}) * {vt.toString rc}"
 
+/-- Turn an ExSum into a string. Used only for debugging. -/
 partial def ExSum.toString {u : Lean.Level} {α : Q(Type u)} {bt : Q($α) → Type}
     {sα : Q(CommSemiring $α)} (rc : RingCompute bt sα) {e : Q($α)} : ExSum bt sα e → String := fun
   | .zero => s!"0"
@@ -430,7 +434,6 @@ partial def ExSum.eq
   | _, _ => false
 end
 
--- Partial because the termination checker failed
 mutual
 
 variable (rcℕ : RingCompute btℕ sℕ)
@@ -467,9 +470,7 @@ partial def ExSum.cmp {u : Lean.Level} {α : Q(Type u)} {bt} {sα : Q(CommSemiri
   | .add .., .zero => .gt
 end
 
--- variable (sα)
 variable {R : Type*} [CommSemiring R]
-
 
 section
 
@@ -480,7 +481,6 @@ def ExProd.coeff {e : Q($α)} :
   | .const q => ⟨_, q⟩
   | .mul _ _ v => v.coeff
 end
-
 
 variable (bt) (sα) in
 /--
@@ -1331,7 +1331,4 @@ partial def eval  {u : Lean.Level}
     | _ => els
   | _, _, _ => els
 
-end Ring.Common
-end Mathlib.Tactic
-
-#lint
+end Mathlib.Tactic.Ring.Common

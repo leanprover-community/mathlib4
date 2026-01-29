@@ -79,11 +79,11 @@ variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring
 inductive BaseType : (a : Q($A)) → Type
   | mk (r : Q($R)) (_ : Ring.ExSum q($sR) r) : BaseType q(algebraMap $R $A $r)
 
-@[expose]
+@[expose, inherit_doc Common.ExBase]
 def ExBase := Common.ExBase (BaseType sAlg) sA
-@[expose]
+@[expose, inherit_doc Common.ExProd]
 def ExProd := Common.ExProd (BaseType sAlg) sA
-@[expose]
+@[expose, inherit_doc Common.ExSum]
 def ExSum := Common.ExSum (BaseType sAlg) sA
 
 set_option linter.unusedVariables false in
@@ -169,6 +169,7 @@ def evalSMulCast {u u' v : Lean.Level} {R : Q(Type u)} {R' : Q(Type u')} {A : Q(
 
 namespace RingCompute
 
+/-- Evaluate the sum of two normalized expressions in `R` using `ring`. -/
 def add (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let ⟨r, vr⟩ := za
@@ -176,12 +177,12 @@ def add (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
   let ⟨t, vt, pt⟩ ← Common.evalAdd (Ring.ringCompute sR) rcℕ vr vs
   match vt with
   | .zero =>
-    -- TODO: Why doesn't the match substitute t?
     have : $t =Q 0 := ⟨⟩
     return  ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, some q(add_algebraMap_isNat_zero $pt)⟩
   | vt =>
     return ⟨⟨_, .mk _ vt, q(add_algebraMap $pt)⟩, none⟩
 
+/-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
     MetaM (Common.Result (BaseType sAlg) q($a * $b)) := do
   let ⟨r, vr⟩ := za
@@ -189,7 +190,8 @@ def mul (a b : Q($A)) (za : BaseType sAlg a) (zb : BaseType sAlg b) :
   let ⟨t, vt, pt⟩ ← Common.evalMul (Ring.ringCompute sR) rcℕ vr vs
   return ⟨_, .mk _ vt, q(by simp [← $pt, map_mul])⟩
 
-/-- -/
+/-- Take an expression `r'` in a ring `R'` such that `R` is an `R'`-algebra and cast `r'` to `R`
+using `algebraMap R' R`, so that the scalar multiplication action on `A` is preserved. -/
 /- We include the CharZero argument to match the type signature of the ringCompute entry. -/
 @[nolint unusedArguments]
 def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSemiring $R'))
@@ -207,6 +209,7 @@ def cast (cR : Algebra.Cache sR) (u' : Level) (R' : Q(Type u')) (sR' : Q(CommSem
   return ⟨_, Common.ExSum.add (Common.ExProd.const (.mk _ vr)) .zero,
     q(cast_smul_eq_mul $pr $pf_smul)⟩
 
+/-- Evaluate the product of two normalized expressions in `R` using `ring`. -/
 def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseType sAlg a) :
     MetaM (Common.Result (BaseType sAlg) q(-$a)) := do
   let ⟨r, vr⟩ := za
@@ -217,6 +220,8 @@ def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseTyp
     return ⟨_, .mk _ vt, q(neg_algebraMap $pt)⟩
   | none => failure
 
+/-- Raise a normalized expression in `R` to the power of a normalized natural number expression
+using `ring`. -/
 def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
     (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
     OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
@@ -226,9 +231,7 @@ def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
   let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
   return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
-/--
-
- -/
+/-- Evaluate the inverse of two normalized expressions in `R` using `ring`. -/
 /- We include the CharZero argument to match the type signature of the ringCompute entry. -/
 @[nolint unusedArguments]
 def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(Semifield $A))
@@ -242,11 +245,13 @@ def inv (cR : Algebra.Cache sR) {a : Q($A)} (_ : Option Q(CharZero $A)) (fA : Q(
   | none =>
     return none
 
+/-- Evaluate constants in `A` using `norm_num`. -/
 def derive (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) (x : Q($A)) :
     MetaM (Common.Result (Common.ExSum (BaseType sAlg) sA) q($x)) := do
   let res ← NormNum.derive x
   return ← evalCast sAlg cR cA res
 
+/-- Decide if a coefficient is 1. -/
 def isOne {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
   let ⟨_, vx⟩ := zx
   match vx with
@@ -260,6 +265,8 @@ def isOne {x : Q($A)} (zx : BaseType sAlg x) : Option Q(IsNat $x 1) :=
 end RingCompute
 
 open RingCompute in
+/-- The data used by the `algebra` tactic to normalize the constant coefficients, which are
+expressions in `R` normalized by `ring`. -/
 def ringCompute (cR : Algebra.Cache sR) (cA : Algebra.Cache sA) :
     Common.RingCompute (BaseType sAlg) sA where
   add := add sAlg
@@ -473,5 +480,3 @@ elab (name := algebraWith) "algebra" " with " R:term : tactic =>
     AtomM.run .default (proveEq (some ⟨u, R⟩) g)
 
 end Mathlib.Tactic.Algebra
-
-#lint

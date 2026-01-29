@@ -116,11 +116,11 @@ def sℤ : Q(CommSemiring ℤ) := q(instCommSemiringInt)
 
 variable {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
 
-@[reducible]
+@[reducible, inherit_doc Common.ExBase]
 def ExBase := Common.ExBase (BaseType sα) sα
-@[reducible]
+@[reducible, inherit_doc Common.ExProd]
 def ExProd := Common.ExProd (BaseType sα) sα
-@[reducible]
+@[reducible, inherit_doc Common.ExSum]
 def ExSum := Common.ExSum (BaseType sα) sα
 
 section
@@ -182,7 +182,14 @@ def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(�
   ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const ⟨q, h⟩⟩
 end
 
+/-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
 
+* `e = 0` if `norm_num` returns `IsNat e 0`
+* `e = Nat.rawCast n + 0` if `norm_num` returns `IsNat e n`
+* `e = Int.rawCast n + 0` if `norm_num` returns `IsInt e n`
+* `e = NNRat.rawCast n d + 0` if `norm_num` returns `IsNNRat e n d`
+* `e = Rat.rawCast n d + 0` if `norm_num` returns `IsRat e n d`
+-/
 def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
     NormNum.Result e → Option (Result (ExSum sα) e)
   | .isNat _ (.lit (.natVal 0)) p => do
@@ -202,7 +209,6 @@ def evalCast {α : Q(Type u)} (sα : Q(CommSemiring $α)) {e : Q($α)} :
   | .isNegNNRat dα q n d p =>
     pure ⟨_, (ExProd.mkNegNNRat sα dα q n d q(IsRat.den_nz $p)).2.toSum, (q(cast_rat $p) : Expr)⟩
   | _ => none
-
 
 section
 
@@ -394,9 +400,11 @@ theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} :
   subst_vars
   simp only [zsmul_eq_mul]
 
+/-- Turn coefficient data into a NormNum.Result. -/
 def BaseType.toResult {a : Q($α)} : BaseType sα a → NormNum.Result a
 | ⟨q, h⟩ => Result.ofRawRat q a h
 
+/-- Turn a NormNum.Result into coefficient data. -/
 def BaseType.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (BaseType sα) a := do
   let ⟨qc, hc⟩ ← res.toRatNZ
   let ⟨c, pc⟩ := res.toRawEq
@@ -404,6 +412,7 @@ def BaseType.ofResult {a : Q($α)} (res : NormNum.Result a) : Option <| Result (
 
 namespace RingCompute
 
+/-- Add two rational number expressions. If the result is zero, returns a proof of this fact. -/
 def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a + $b) × Option Q(IsNat ($a + $b) 0)) := do
   let res ← za.toResult.add zb.toResult
@@ -418,11 +427,13 @@ def add (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
   let r ← BaseType.ofResult sα res
   return ⟨r, isZero⟩
 
+/-- Evaluate the product of two rational number expressions. -/
 def mul (a b : Q($α)) (za : BaseType sα a) (zb : BaseType sα b) :
     MetaM (Result (BaseType sα) q($a * $b)) := do
   let res ← za.toResult.mul zb.toResult
   return ← BaseType.ofResult sα res
 
+/-- Cast ℕ and ℤ normalized expressions ExSums into `α`, used to evaluate scalar multiplications. -/
 def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     (_smul : Q(HSMul $β $α $α)) (_x : Q($β))
     (rx : AtomM (Result (Common.ExSum (BaseType sβ) q($sβ)) q($_x))) :
@@ -450,6 +461,7 @@ def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     return ⟨y, vy, q(fun _ => $px ▸ Int.smul_eq_mul $py)⟩
   | _ => failure
 
+/-- Negate rational number expressions. -/
 def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
     MetaM (Result (BaseType sα) q(-$a)) := do
   let res ← za.toResult.neg q(inferInstance)
@@ -457,6 +469,9 @@ def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
   let ⟨_, vc, pc⟩ ← BaseType.ofResult sα res
   return ⟨_, vc, q($pc)⟩
 
+/-- Raise a rational number expression to the power of a natural number.
+
+Fails if the exponent is not a literal. -/
 def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
     (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
@@ -474,6 +489,7 @@ def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
       return ⟨_, vc, q($pc)⟩
   | _ => OptionT.fail
 
+/-- Evaluate the inverse of a natural number expression. -/
 def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
     (za : BaseType sα a) : AtomM (Option (Result (BaseType sα) q($a⁻¹))) := do
   match (← (Lean.observing? <| za.toResult.inv _ czα :)) with
@@ -482,11 +498,13 @@ def inv {a : Q($α)} (czα : Option Q(CharZero $α)) (_sfα : Q(Semifield $α))
     return some ⟨_, vc, q($pc)⟩
   | none => return none
 
+/-- Try to evaluate an expression as a rational constant using norm_num. -/
 def derive (x : Q($α)) : MetaM (Result (Common.ExSum (BaseType sα) sα) q($x)) := do
   let res ← NormNum.derive x
   let ⟨_, va, pa⟩ ← evalCast sα res
   return ⟨_, va, q($pa)⟩
 
+/-- Decide if `x` is 1 and provide a proof if so. -/
 def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
   let ⟨qx, _hx⟩ := zx
   if qx == 1 then
@@ -499,6 +517,7 @@ def isOne {x : Q($α)} (zx : BaseType sα x) : Option Q(IsNat $x 1) := do
 end RingCompute
 
 open RingCompute in
+/-- The data used by the `ring` tactic to normalize the constant coefficients. -/
 def ringCompute : Common.RingCompute (BaseType sα) sα where
   add := add sα
   mul := mul sα
@@ -513,7 +532,8 @@ def ringCompute : Common.RingCompute (BaseType sα) sα where
   one := ⟨q((nat_lit 1).rawCast), ⟨1, none⟩, q(rfl)⟩
   toString {_} (zx) := s!"{zx.value}"
 
-
+/-- The data used by `ring`-like tactics to normalize constant coefficients of natural number
+expressions. -/
 def rcℕ : Common.RingCompute (u := 0) Common.btℕ Common.sℕ := Ring.ringCompute Common.sℕ
 
 universe u
