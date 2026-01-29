@@ -257,8 +257,6 @@ noncomputable def add (f₁ f₂ : X' ⟶ Y') : X' ⟶ Y' :=
 @[reassoc]
 lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
     add W eX eY f₁ f₂ ≫ g = add W eX eZ (f₁ ≫ g) (f₂ ≫ g) := by
-  obtain ⟨f₁, rfl⟩ := (homEquiv eX eY).symm.surjective f₁
-  obtain ⟨f₂, rfl⟩ := (homEquiv eX eY).symm.surjective f₂
   obtain ⟨g, rfl⟩ := (homEquiv eY eZ).symm.surjective g
   simp [add]
 
@@ -266,8 +264,6 @@ lemma add_comp (f₁ f₂ : X' ⟶ Y') (g : Y' ⟶ Z') :
 lemma comp_add (f : X' ⟶ Y') (g₁ g₂ : Y' ⟶ Z') :
     f ≫ add W eY eZ g₁ g₂ = add W eX eZ (f ≫ g₁) (f ≫ g₂) := by
   obtain ⟨f, rfl⟩ := (homEquiv eX eY).symm.surjective f
-  obtain ⟨g₁, rfl⟩ := (homEquiv eY eZ).symm.surjective g₁
-  obtain ⟨g₂, rfl⟩ := (homEquiv eY eZ).symm.surjective g₂
   simp [add]
 
 lemma add_eq_add {X'' Y'' : C} (eX' : L.obj X'' ≅ X') (eY' : L.obj Y'' ≅ Y')

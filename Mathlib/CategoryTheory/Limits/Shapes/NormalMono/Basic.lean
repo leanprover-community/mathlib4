@@ -195,7 +195,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) : gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by

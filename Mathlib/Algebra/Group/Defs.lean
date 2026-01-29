@@ -13,6 +13,7 @@ public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Tactic.Basic
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -265,7 +266,7 @@ end CommMagma
 @[ext]
 class LeftCancelSemigroup (G : Type u) extends Semigroup G, IsLeftCancelMul G
 
-library_note2 «lower cancel priority» /--
+library_note «lower cancel priority» /--
 We lower the priority of inheriting from cancellative structures.
 This attempts to avoid expensive checks involving bundling and unbundling with the `IsDomain` class.
 since `IsDomain` already depends on `Semiring`, we can synthesize that one first.
@@ -401,7 +402,7 @@ include hn ha
 
 end
 
-library_note2 «forgetful inheritance» /--
+library_note «forgetful inheritance» /--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
 `P`, and that one can deduce the poor structure from the rich structure through a map `F` (called a
 forgetful functor) (think `R = MetricSpace` and `P = TopologicalSpace`). A possible
@@ -591,6 +592,14 @@ theorem npowRec_eq_npowBinRec : @npowRecAuto = @npowBinRecAuto := by
   | 0 => rw [npowRec, npowBinRec.go, Nat.binaryRec_zero]
   | k + 1 => rw [npowBinRec.go_spec, npowRec_eq]
 
+@[to_additive] theorem npowBinRec_zero {M : Type*} [Mul M] [One M] (m : M) :
+    npowBinRec 0 m = 1 := rfl
+
+@[to_additive] theorem npowBinRec_succ {M : Type*} [Semigroup M] [One M] (n : ℕ) (m : M) :
+    npowBinRec (n + 1) m = npowBinRec n m * m := by
+  iterate 2 rw [← npowBinRecAuto, ← npowRec_eq_npowBinRec]
+  rfl
+
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number.
@@ -641,7 +650,7 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
 
-@[to_additive (attr := simp) one_nsmul]
+@[to_additive one_nsmul, simp]
 lemma pow_one (a : M) : a ^ 1 = a := by rw [pow_succ, pow_zero, one_mul]
 
 @[to_additive succ_nsmul'] lemma pow_succ' (a : M) : ∀ n, a ^ (n + 1) = a * a ^ n

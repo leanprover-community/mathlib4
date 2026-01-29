@@ -37,7 +37,7 @@ assert_not_exists MeasureTheory.integral
 
 noncomputable section
 
-open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace
+open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open ENNReal (ofReal)
 
@@ -215,7 +215,7 @@ instance isFiniteMeasure_restrict_Ioc (x y : ℝ) : IsFiniteMeasure (volume.rest
 instance isFiniteMeasure_restrict_Ioo (x y : ℝ) : IsFiniteMeasure (volume.restrict (Ioo x y)) :=
   ⟨by simp⟩
 
-theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
+theorem volume_le_diam (s : Set ℝ) : volume s ≤ ediam s := by
   by_cases hs : Bornology.IsBounded s
   · rw [Real.ediam_eq hs, ← volume_Icc]
     exact volume.mono hs.subset_Icc_sInf_sSup
@@ -281,21 +281,21 @@ nonrec theorem volume_pi_closedBall (a : ι → ℝ) {r : ℝ} (hr : 0 ≤ r) :
   exact (ENNReal.ofReal_pow (mul_nonneg zero_le_two hr) _).symm
 
 theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
-    volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
+    volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
   calc
     volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
     _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
-    _ ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
-      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (EMetric.diam_closure _)
+    _ ≤ ∏ i : ι, ediam (Function.eval i '' s) :=
+      Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (ediam_closure _)
 
-theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam s ^ Fintype.card ι :=
+theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fintype.card ι :=
   calc
-    volume s ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) := volume_pi_le_prod_diam s
-    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * EMetric.diam s :=
+    volume s ≤ ∏ i : ι, ediam (Function.eval i '' s) := volume_pi_le_prod_diam s
+    _ ≤ ∏ _i : ι, (1 : ℝ≥0) * ediam s :=
       (Finset.prod_le_prod' fun i _ => (LipschitzWith.eval i).ediam_image_le s)
-    _ = EMetric.diam s ^ Fintype.card ι := by
+    _ = ediam s ^ Fintype.card ι := by
       simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
 /-!

@@ -704,7 +704,7 @@ end MeasurableSMul
 end Monoid
 
 section GroupWithZero
-variable [GroupWithZero G₀] [MeasurableSpace G₀] [MulAction G₀ β] [MeasurableSMul G₀ β]
+variable [GroupWithZero G₀] [MulAction G₀ β] [MeasurableConstSMul G₀ β]
 
 theorem measurable_const_smul_iff₀ {c : G₀} (hc : c ≠ 0) :
     (Measurable fun x => c • f x) ↔ Measurable f :=

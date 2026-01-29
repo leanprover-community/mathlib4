@@ -459,7 +459,7 @@ theorem mem_affineSpan {p : P} {s : Set P} (hp : p ∈ s) : p ∈ affineSpan k s
 lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpan k s := by
   ext
   simp [mem_add, spanPoints]
-  aesop
+  grind
 
 variable {k}
 

@@ -64,7 +64,7 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
-theorem lex_iff_of_unique [Unique ι] [∀ i, LT (β i)] {r} [IsIrrefl ι r] {x y : ∀ i, β i} :
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (β i)] {r} [Std.Irrefl r] {x y : ∀ i, β i} :
     Pi.Lex r (· < ·) x y ↔ x default < y default := by
   simp [Pi.Lex, Unique.forall_iff, Unique.exists_iff, irrefl]
 

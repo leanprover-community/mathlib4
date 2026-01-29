@@ -30,7 +30,7 @@ open Prod
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 /-- The cartesian product of two bicategories. -/
-@[simps! (notRecursive := [])] -- notRecurvsive to generate simp lemmas like _fst and _snd
+@[simps! (notRecursive := [])] -- notRecursive to generate simp lemmas like _fst and _snd
 instance prod (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C] :
     Bicategory (B × C) where
   homCategory X Y := CategoryTheory.prod' (X.1 ⟶ Y.1) (X.2 ⟶ Y.2)

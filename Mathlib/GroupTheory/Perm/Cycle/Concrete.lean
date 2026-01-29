@@ -497,6 +497,7 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))

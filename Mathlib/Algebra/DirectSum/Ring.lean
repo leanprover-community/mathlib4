@@ -354,7 +354,7 @@ instance ring : Ring (⨁ i, A i) :=
     toIntCast.intCast := fun z => of A 0 <| (GRing.intCast z)
     intCast_ofNat := fun _ => congrArg (of A 0) <| GRing.intCast_ofNat _
     intCast_negSucc := fun _ =>
-      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _}
+      (congrArg (of A 0) <| GRing.intCast_negSucc_ofNat _).trans <| map_neg _ _ }
 
 end Ring
 

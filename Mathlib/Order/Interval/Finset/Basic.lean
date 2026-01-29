@@ -1055,6 +1055,7 @@ section Cover
 
 open Finset Relation
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hxy : x ≤ y) :
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
@@ -1136,7 +1137,7 @@ restricted to pairs satisfying `a ⋖ b`. -/
 lemma monotone_iff_forall_covBy [PartialOrder α] [LocallyFiniteOrder α] [Preorder β]
     (f : α → β) : Monotone f ↔ ∀ a b : α, a ⋖ b → f a ≤ f b := by
   refine ⟨fun hf _ _ h ↦ hf h.le, fun h a b hab ↦ ?_⟩
-  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) IsRefl.reflexive transitive_le]
+  simpa [reflTransGen_eq_self (r := (· ≤ · : β → β → Prop)) Std.Refl.reflexive transitive_le]
     using ReflTransGen.lift f h <| le_iff_reflTransGen_covBy.mp hab
 
 /-- A function from a locally finite preorder is strictly monotone if and only if it is strictly
