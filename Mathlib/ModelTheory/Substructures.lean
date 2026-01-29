@@ -847,6 +847,22 @@ theorem eq_of_eqOn_dense (hs : closure L s = ⊤) {f g : M →[L] N} (h : s.EqOn
 
 end Hom
 
+namespace Substructure
+
+theorem map_comap (S : L.Substructure N) (f : M →[L] N) :
+    (S.comap f).map f = S ⊓ f.range := by
+  rw [le_antisymm_iff]
+  refine ⟨le_inf map_comap_le Hom.map_le_range, ?_⟩
+  intro x ⟨x_in_S, x_in_range⟩
+  rw [mem_map]
+  rw [SetLike.mem_coe, Hom.mem_range] at x_in_range
+  let ⟨y, hy⟩ := x_in_range
+  use y
+  rw [mem_comap, hy]
+  trivial
+
+end Substructure
+
 namespace Embedding
 
 /-- The restriction of a first-order embedding to a substructure `s ⊆ M` gives an embedding `s → N`.
@@ -969,6 +985,52 @@ theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
 @[simp]
 lemma subtype_comp_inclusion {S T : L.Substructure M} (h : S ≤ T) :
     T.subtype.comp (inclusion h) = S.subtype := rfl
+
+namespace Equiv
+
+/-- Equivalence between equal substructures. -/
+def ofEq {S T : L.Substructure M} (h : S = T) : S ≃[L] T :=
+  { Equiv.setCongr (congr_arg _ h) with }
+
+@[simp]
+theorem ofEq_refl (S : L.Substructure M) : (ofEq (Eq.refl S)) = Equiv.refl L S := rfl
+
+@[simp]
+theorem symm_ofEq {S T : L.Substructure M} (h : S = T) :
+    (ofEq h).symm = ofEq h.symm := rfl
+
+@[simp]
+theorem ofEq_comp_ofEq {S T U : L.Substructure M} (h : S = T) (h' : T = U) :
+    (ofEq h').comp (ofEq h) = ofEq (h.trans h') := rfl
+
+@[simp]
+theorem ofEq_apply {S T : L.Substructure M} (h : S = T) {m : M} (hm : m ∈ S) :
+    ofEq h ⟨m, hm⟩ = ⟨m, h ▸ hm⟩ := rfl
+
+@[simp]
+theorem subtype_comp_EquivOfEq {S T : L.Substructure M} (h : S = T) :
+    T.subtype.comp (ofEq h).toEmbedding = S.subtype := rfl
+
+@[simp]
+theorem substructureEquivMap_refl (S : L.Substructure M) :
+    (Embedding.refl L M).substructureEquivMap S = ofEq (map_id S).symm := by
+  ext ⟨⟩
+  simp only [Embedding.refl_toHom]
+  rfl
+
+@[simp]
+theorem substructureEquivMap_comp_substructureEquivMap (f : M ↪[L] N) (g : N ↪[L] P)
+    (S : L.Substructure M) : (g.substructureEquivMap (S.map f.toHom)).comp
+    (f.substructureEquivMap S) = (ofEq (S.map_map ..).symm).comp
+    ((g.comp f).substructureEquivMap S) := by
+  apply Equiv.injective_toEmbedding
+  apply (subtype _).comp_injective
+  simp only [Equiv.comp_toEmbedding, ← Embedding.comp_assoc, Embedding.subtype_substructureEquivMap,
+    subtype_comp_EquivOfEq]
+  ext
+  rfl
+
+end Equiv
 
 end Substructure
 
