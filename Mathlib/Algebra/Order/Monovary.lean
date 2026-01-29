@@ -22,7 +22,7 @@ of functions.
 `Mathlib.Algebra.Order.Rearrangement` for the n-ary rearrangement inequality
 -/
 
-@[expose] public section
+public section
 
 variable {ι α β : Type*}
 

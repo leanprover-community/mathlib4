@@ -118,8 +118,6 @@ instance : Inhabited (Part α) :=
 @[simp]
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
-@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
-
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
@@ -296,7 +294,7 @@ def ofOption : Option α → Part α
 
 @[simp]
 theorem mem_ofOption {a : α} : ∀ {o : Option α}, a ∈ ofOption o ↔ a ∈ o
-  | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion h⟩
+  | Option.none => ⟨fun h => h.fst.elim, fun h => Option.noConfusion rfl (heq_of_eq h)⟩
   | Option.some _ => ⟨fun h => congr_arg Option.some h.snd, fun h => ⟨trivial, Option.some.inj h⟩⟩
 
 @[simp]
@@ -406,7 +404,7 @@ theorem map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
 theorem mem_assert {p : Prop} {f : p → Part α} : ∀ {a} (h : p), a ∈ f h → a ∈ assert p f
   | _, x, ⟨h, rfl⟩ => ⟨⟨x, h⟩, rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔ ∃ h : p, a ∈ f h :=
   ⟨fun ha => match a, ha with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩⟩,
@@ -423,7 +421,7 @@ theorem assert_neg {p : Prop} {f : p → Part α} (h : ¬p) : assert p f = none 
 theorem mem_bind {f : Part α} {g : α → Part β} : ∀ {a b}, a ∈ f → b ∈ g a → b ∈ f.bind g
   | _, _, ⟨h, rfl⟩, ⟨h₂, rfl⟩ => ⟨⟨h, h₂⟩, rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_bind_iff {f : Part α} {g : α → Part β} {b} : b ∈ f.bind g ↔ ∃ a ∈ f, b ∈ g a :=
   ⟨fun hb => match b, hb with
     | _, ⟨⟨_, _⟩, rfl⟩ => ⟨_, ⟨_, rfl⟩, ⟨_, rfl⟩⟩,
@@ -504,7 +502,7 @@ instance : LawfulMonad
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by

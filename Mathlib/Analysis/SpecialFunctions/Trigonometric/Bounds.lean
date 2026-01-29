@@ -31,7 +31,7 @@ Here we prove the following:
 sin, cos, tan, angle
 -/
 
-@[expose] public section
+public section
 
 open Set
 
@@ -97,9 +97,9 @@ lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
   exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
 
 lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
-  wlog hx₀ : 0 < x
+  wlog! hx₀ : 0 < x
   case inr =>
-    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_gt hx₀
+    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le hx₀
   rcases le_or_gt x 1 with hxπ | hxπ
   case inl =>
     exact pow_lt_pow_left₀ (sin_lt hx₀)
@@ -116,7 +116,7 @@ lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq 
 lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
 
 lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
-  have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2)).symm
+  have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2))
   ring_nf at this
   linarith
 

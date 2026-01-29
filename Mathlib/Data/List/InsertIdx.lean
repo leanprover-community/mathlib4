@@ -5,7 +5,9 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Data.List.Basic
+public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+public import Mathlib.Util.CompileInductive
 
 /-!
 # insertIdx
@@ -13,7 +15,7 @@ public import Mathlib.Data.List.Basic
 Proves various lemmas about `List.insertIdx`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Set.range Preorder
 
@@ -102,13 +104,13 @@ theorem get_insertIdx_self (l : List α) (x : α) (n : ℕ) (hn : n ≤ l.length
 
 theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
-      rwa [length_insertIdx_of_le_length (by cutsat), Nat.succ_lt_succ_iff])) :
+      rwa [length_insertIdx_of_le_length (by lia), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x)[n + k + 1] = l[n + k] := by
   grind
 
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
     (hk : n + k + 1 < (l.insertIdx n x).length := (by
-      rwa [length_insertIdx_of_le_length (by cutsat), Nat.succ_lt_succ_iff])) :
+      rwa [length_insertIdx_of_le_length (by lia), Nat.succ_lt_succ_iff])) :
     (l.insertIdx n x).get ⟨n + k + 1, hk⟩ = get l ⟨n + k, hk'⟩ := by
   simp [getElem_insertIdx_add_succ, hk']
 
@@ -116,6 +118,14 @@ theorem insertIdx_injective (n : ℕ) (x : α) :
     Function.Injective (fun l : List α => l.insertIdx n x) := by
   intro l₁ l₂ hl
   simpa using congr($hl |>.eraseIdx n)
+
+theorem take_insertIdx_eq_take_of_le (l : List α) x i j (h : i ≤ j) :
+    (l.insertIdx j x).take i = l.take i :=
+  ext_getElem (by grind) (by grind)
+
+theorem take_eraseIdx_eq_take_of_le (l : List α) i j (h : i ≤ j) :
+    (l.eraseIdx j).take i = l.take i :=
+  ext_getElem (by grind) (by grind)
 
 end InsertIdx
 

@@ -16,7 +16,7 @@ preserve certain (co)limits and vice versa.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe w w' v₁ v₂ u₁ u₂

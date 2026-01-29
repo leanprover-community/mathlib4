@@ -12,6 +12,7 @@ public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -137,8 +138,6 @@ protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f
   obtain rfl := le_bot_iff.1 (ha'' le_rfl h)
   exact ha.1 rfl
 
-@[deprecated (since := "2025-07-11")] alias atom_le_iSup := IsAtom.le_iSup
-
 protected lemma IsAtom.le_sSup (ha : IsAtom a) : a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
   simp [sSup_eq_iSup', ha.le_iSup]
 
@@ -232,8 +231,8 @@ theorem isCoatom_iff [OrderTop A] {K : A} :
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
-  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
-  push_neg
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
+  contrapose!
   rw [lt_iff_le_not_ge, lt_iff_le_and_ne, and_and_and_comm]
   simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
     SetLike.not_le_iff_exists, and_comm, implies_true]
@@ -256,8 +255,6 @@ variable [Coframe α] {f : ι → α} {s : Set α} {a : α}
 
 protected lemma IsCoatom.iInf_le (ha : IsCoatom a) : iInf f ≤ a ↔ ∃ i, f i ≤ a :=
   IsAtom.le_iSup (α := αᵒᵈ) ha
-
-@[deprecated (since := "2025-07-11")] alias iInf_le_coatom := IsCoatom.iInf_le
 
 protected lemma IsCoatom.sInf_le (ha : IsCoatom a) : sInf s ≤ a ↔ ∃ b ∈ s, b ≤ a := by
   simp [sInf_eq_iInf', ha.iInf_le]
@@ -299,16 +296,6 @@ lemma IsAtom.not_le_iff_disjoint (ha : IsAtom a) : ¬ a ≤ b ↔ Disjoint a b :
 lemma IsAtom.disjoint_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b := by
   simp [← ha.not_le_iff_disjoint, hb.le_iff, hab, ha.ne_bot]
 
-@[deprecated disjoint_of_ne (since := "2025-07-11")]
-theorem IsAtom.inf_eq_bot_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
-  hab.not_le_or_not_ge.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
-
-@[deprecated not_le_iff_disjoint (since := "2025-07-11")]
-theorem IsAtom.inf_eq_bot_iff (ha : IsAtom a) : a ⊓ b = ⊥ ↔ ¬ a ≤ b := by
-  by_cases hb : b = ⊥
-  · simpa [hb] using ha.1
-  · exact ⟨fun h ↦ inf_lt_left.mp (h ▸ bot_lt ha), fun h ↦ ha.2 _ (inf_lt_left.mpr h)⟩
-
 end SemilatticeInf
 
 section SemilatticeSup
@@ -326,11 +313,6 @@ lemma IsCoatom.codisjoint_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠
 
 theorem IsCoatom.sup_eq_top_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
   codisjoint_iff.1 <| ha.codisjoint_of_ne hb hab
-
-set_option linter.deprecated false in
-@[deprecated not_le_iff_codisjoint (since := "2025-07-11")]
-theorem IsCoatom.sup_eq_top_iff (ha : IsCoatom a) : a ⊔ b = ⊤ ↔ ¬ b ≤ a :=
-  ha.dual.inf_eq_bot_iff
 
 end SemilatticeSup
 

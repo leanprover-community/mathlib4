@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
         ref: nightly-testing # checkout nightly-testing branch
         fetch-depth: 0 # checkout all branches so that we can push from `nightly-testing` to `nightly-testing-YYYY-MM-DD`
@@ -82,7 +82,7 @@ jobs:
         sudo rm -rf -- *
     # Checkout the Lean repository on 'nightly-with-mathlib'
     - name: Checkout Lean repository
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
         repository: leanprover/lean4
         token: ${{ secrets.LEAN_PR_TESTING }}
@@ -112,12 +112,18 @@ jobs:
         import zulip
         client = zulip.Client(email=os.getenv('ZULIP_EMAIL'), api_key=os.getenv('ZULIP_API_KEY'), site=os.getenv('ZULIP_SITE'))
 
-        # Get the last message in the 'status updates' topic
+        # Get the last message from the bot in the 'status updates' topic.
+        # We narrow by sender to ignore human replies in between.
+        bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
         request = {
           'anchor': 'newest',
           'num_before': 1,
           'num_after': 0,
-          'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib status updates'}],
+          'narrow': [
+            {'operator': 'stream', 'operand': 'nightly-testing'},
+            {'operator': 'topic', 'operand': 'Mathlib status updates'},
+            {'operator': 'sender', 'operand': bot_email}
+          ],
           'apply_markdown': False    # Otherwise the content test below fails.
         }
         response = client.get_messages(request)
@@ -302,7 +308,7 @@ jobs:
       run: |
         sudo rm -rf -- *
     - name: Checkout Mathlib4 repository
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       if: steps.check_branch.outputs.result == 'false'
       with:
         ref: nightly-testing # checkout nightly-testing branch (shouldn't matter which)
@@ -343,6 +349,7 @@ jobs:
       shell: python
       run: |
         import os
+        import re
         import zulip
         client = zulip.Client(config_file="~/.zuliprc")
         current_version = os.getenv('NIGHTLY')
@@ -354,32 +361,49 @@ jobs:
         print(f'Current version: {current_version}, Bump version: {bump_version}, SHA: {sha}')
         if current_version > bump_version:
             print('Lean toolchain in `nightly-testing` is ahead of the bump branch.')
-            # Get the last message in the 'Mathlib bump branch reminders' topic
+            # Get the last message from the bot in the 'Mathlib bump branch reminders' topic.
+            # We narrow by sender to ignore human replies in between.
+            bot_email = 'github-mathlib4-bot@leanprover.zulipchat.com'
             request = {
               'anchor': 'newest',
               'num_before': 1,
               'num_after': 0,
-              'narrow': [{'operator': 'stream', 'operand': 'nightly-testing'}, {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'}],
+              'narrow': [
+                {'operator': 'stream', 'operand': 'nightly-testing'},
+                {'operator': 'topic', 'operand': 'Mathlib bump branch reminders'},
+                {'operator': 'sender', 'operand': bot_email}
+              ],
               'apply_markdown': False    # Otherwise the content test below fails.
             }
             response = client.get_messages(request)
             messages = response['messages']
+            last_bot_message = messages[0] if messages else None
             bump_branch_suffix = bump_branch.replace('bump/', '')
             failed_link = f"https://github.com/{repository}/actions/runs/{current_run_id}"
             payload = f"🛠️: Automatic PR creation [failed]({failed_link}). Please create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
             payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
-            # Only post if the message is different
-            # We compare the first 160 characters, since that includes the date and bump version
-            if not messages or messages[0]['content'][:160] != payload[:160]:
-                # Log messages, because the bot seems to repeat itself...
-                if messages:
-                    print("###### Last message:")
-                    print(messages[0]['content'])
+            # Check if we already posted a message for this nightly date and bump branch.
+            # We extract these fields from the last bot message rather than comparing substrings,
+            # since the message also contains a run ID that differs between workflow runs.
+            should_post = True
+            if last_bot_message:
+                last_content = last_bot_message['content']
+                # Extract nightly date and bump branch from last bot message
+                date_match = re.search(r'bump/nightly-(\d{4}-\d{2}-\d{2})', last_content)
+                branch_match = re.search(r'PR that to (bump/v[\d.]+)', last_content)
+                if date_match and branch_match:
+                    last_date = date_match.group(1)
+                    last_branch = branch_match.group(1)
+                    if last_date == current_version and last_branch == bump_branch:
+                        should_post = False
+                        print(f'Already posted for nightly {current_version} and {bump_branch}')
+            if should_post:
+                if last_bot_message:
+                    print("###### Last bot message:")
+                    print(last_bot_message['content'])
                     print("###### Current message:")
                     print(payload)
-                else:
-                    print('The strings match!')
                 # Post the reminder message
                 request = {
                     'type': 'stream',

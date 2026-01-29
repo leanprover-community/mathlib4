@@ -188,7 +188,7 @@ theorem liftp_iff' {α : Type u} (p : α → Prop) (a : P.A) (f : P.B a → α) 
   · rcases h with ⟨a', f', heq, h'⟩
     cases heq
     assumption
-  repeat' first |constructor|assumption
+  repeat' first | constructor | assumption
 
 theorem liftr_iff {α : Type u} (r : α → α → Prop) (x y : P α) :
     Liftr r x y ↔ ∃ a f₀ f₁, x = ⟨a, f₀⟩ ∧ y = ⟨a, f₁⟩ ∧ ∀ i, r (f₀ i) (f₁ i) := by

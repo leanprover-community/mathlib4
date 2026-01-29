@@ -25,7 +25,7 @@ contraction, dual module, tensor product
 variable {ι : Type*} (R M N P Q : Type*)
 
 -- Enable extensionality of maps out of the tensor product.
--- High priority so it takes precendence over `LinearMap.ext`.
+-- High priority so it takes precedence over `LinearMap.ext`.
 attribute [local ext high] TensorProduct.ext
 
 section Contraction
@@ -75,7 +75,7 @@ theorem transpose_dualTensorHom (f : Module.Dual R M) (m : M) :
     dualTensorHom R _ _ (Dual.eval R M m ⊗ₜ f) := by
   ext f' m'
   simp only [Dual.transpose_apply, coe_comp, Function.comp_apply, dualTensorHom_apply,
-    map_smulₛₗ, RingHom.id_apply, Algebra.id.smul_eq_mul, Dual.eval_apply,
+    map_smulₛₗ, RingHom.id_apply, smul_eq_mul, Dual.eval_apply,
     LinearMap.smul_apply]
   exact mul_comm _ _
 
@@ -111,6 +111,8 @@ theorem comp_dualTensorHom (f : Module.Dual R M) (n : N) (g : Module.Dual R N) (
   simp only [coe_comp, Function.comp_apply, dualTensorHom_apply, map_smul, LinearMap.smul_apply]
   rw [smul_comm]
 
+-- TODO: fix non-terminal simp (acting on two goals, with different simp sets)
+set_option linter.flexible false in
 /-- As a matrix, `dualTensorHom` evaluated on a basis element of `M* ⊗ N` is a matrix with a
 single one and zeros elsewhere -/
 theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [DecidableEq m]

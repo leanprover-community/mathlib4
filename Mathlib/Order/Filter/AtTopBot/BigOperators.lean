@@ -16,7 +16,7 @@ about `Filter.atTop : Filter (Finset _)` and `∏ b ∈ s, f b`.
 These lemmas are useful to build the theory of absolutely convergent series.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset
 

@@ -43,7 +43,7 @@ open Polynomial
 
 namespace FiniteField
 
-/-- Given a finite field `k` of characteristic `p`, we have a non-canoncailly chosen extension
+/-- Given a finite field `k` of characteristic `p`, we have a non-canonically chosen extension
 of any given degree `n > 0`. -/
 def Extension [CharP k p] : Type :=
   letI := ZMod.algebra k p

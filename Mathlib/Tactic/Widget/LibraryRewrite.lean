@@ -6,8 +6,9 @@ Authors: Jovan Gerbscheid, Anand Rao
 module
 
 public meta import Mathlib.Lean.Meta.RefinedDiscrTree
-public meta import Mathlib.Tactic.Widget.InteractiveUnfold
-public meta import ProofWidgets.Component.FilterDetails
+public import Mathlib.Lean.Meta.RefinedDiscrTree
+public import Mathlib.Tactic.Widget.InteractiveUnfold
+public import ProofWidgets.Component.FilterDetails
 
 /-!
 # Point & click library rewriting
@@ -211,13 +212,13 @@ structure Rewrite where
 
 /-- If `thm` can be used to rewrite `e`, return the rewrite. -/
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
-  withTraceNodeBefore `rw?? (return m!
+  withTraceNodeBefore `rw?? (fun _ => return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
     throwError "Expected equation, not {indentExpr eqn}"
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
-  let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
+  let unifies ← withTraceNodeBefore `rw?? (fun _ =>return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
   unless unifies do return none
   -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments

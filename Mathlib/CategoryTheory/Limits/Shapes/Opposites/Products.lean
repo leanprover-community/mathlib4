@@ -216,9 +216,7 @@ noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op :
   refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
     (IsColimit.whiskerEquivalence hf.op (Discrete.opposite α).symm))
     (Cocones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
-  dsimp
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [e, Fan.proj]
 
 /--
 The canonical isomorphism from the opposite of an abstract product to the corresponding coproduct
@@ -275,7 +273,7 @@ theorem opProductIsoCoproduct'_inv_comp_lift {f : Fan Z} {c : Cofan (op <| Z ·)
   rfl
 
 theorem opProductIsoCoproduct_inv_comp_lift [HasProduct Z] {X : C} (π : (a : α) → X ⟶ Z a) :
-    (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op  = Sigma.desc (fun a ↦ (π a).op) := by
+    (opProductIsoCoproduct Z).inv ≫ (Pi.lift π).op = Sigma.desc (fun a ↦ (π a).op) := by
   convert opProductIsoCoproduct'_inv_comp_lift (productIsProduct Z)
     (coproductIsCoproduct (op <| Z ·)) (Fan.mk _ π)
   · simp [Pi.lift, productIsProduct]

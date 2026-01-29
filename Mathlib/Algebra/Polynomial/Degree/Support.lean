@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Polynomial.Degree.Operations
 * `Polynomial.natDegree_mem_support_of_nonzero`: `natDegree p ∈ support p` if `p ≠ 0`
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
