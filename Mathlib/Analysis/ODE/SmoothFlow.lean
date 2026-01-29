@@ -364,13 +364,11 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
       exact mul_lt_mul' (lt_one_add _).le (lt_one_add _) (by positivity) (by positivity)
 
 omit [CompleteSpace E] in
-lemma _root_.ContDiffOn.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv
+lemma _root_.ContDiffOn.continuousOn_fderiv_uncurryLeft
     {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u) (hu : IsOpen u) :
-    ContinuousOn
-      (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u := by
-  simp_rw [← Function.comp_apply (g := fderiv ℝ g)]
-  rw [LinearIsometryEquiv.comp_continuousOn_iff]
-  exact hg.continuousOn_fderiv_of_isOpen hu le_rfl
+    ContinuousOn (fun x ↦ (fderiv ℝ g x).uncurryLeft (Ei := fun _ ↦ E)) u :=
+  (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm.continuous.comp_continuousOn
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl)
 
 /-- If `f` is continuous on an open set `u` containing a compact set `s`, then for any `ε > 0`,
 there exists `δ > 0` such that for any `x ∈ s` and any `y` with `dist x y < δ`, we have `y ∈ u`
@@ -448,27 +446,25 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
         (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ (α' - α) t)‖ ≤
       ε / (1 + |tmax - tmin|) * ‖α' - α‖) :
     ‖integralCMLM g u t₀ α' - integralCMLM g u t₀ α -
-      ((continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))
-        (integralCMLM (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm
-          (fderiv ℝ g x)) u t₀ α)) (α' - α)‖ ≤ ε * ‖α' - α‖ := by
-  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun dα ↦ ?_
+      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft (α' - α)‖ ≤
+      ε * ‖α' - α‖ := by
+  refine opNorm_le_bound (by positivity) fun dα ↦ ?_
   rw [ContinuousMap.norm_le _ (by positivity)]
   intro t
-  have hg' := hg.continuousOn_continuousMultilinearCurryLeftEquiv_fderiv hu
+  have hg' := hg.continuousOn_fderiv_uncurryLeft hu
   have hinteg₁ := intervalIntegrable_integrand hg.continuousOn t₀ hα' dα t₀ t
   have hinteg₂ := intervalIntegrable_integrand hg.continuousOn t₀ hα dα t₀ t
   have hinteg₃ := intervalIntegrable_integrand hg' t₀ hα (Fin.cons (α' - α) dα) t₀ t
-  simp only [sub_apply, continuousMultilinearCurryLeftEquiv_apply,
-    integralCMLM_apply_if_pos hg.continuousOn, integralCMLM_apply_if_pos hg',
-    ContinuousMap.sub_apply, integralCM_apply_if_pos hα', integralCM_apply_if_pos hα,
-    integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
+  simp only [sub_apply, curryLeft_apply, integralCMLM_apply_if_pos hg.continuousOn,
+    integralCMLM_apply_if_pos hg', ContinuousMap.sub_apply, integralCM_apply_if_pos hα',
+    integralCM_apply_if_pos hα, integralFun, ← intervalIntegral.integral_sub hinteg₁ hinteg₂,
     ← intervalIntegral.integral_sub (hinteg₁.sub hinteg₂) hinteg₃]
   set C := ε / (1 + |tmax - tmin|) * ‖α' - α‖ * ∏ i, ‖dα i‖ with hC
   refine (intervalIntegral.norm_integral_le_of_norm_le_const (C := C) ?_).trans ?_
   · intro τ _
-    simp only [continuousMultilinearCurryLeftEquiv_symm_apply, Fin.cons_zero, Fin.tail_def,
-      Fin.cons_succ, ← ContinuousMultilinearMap.sub_apply, hC]
-    refine (ContinuousMultilinearMap.le_opNorm _ _).trans ?_
+    simp only [ContinuousLinearMap.uncurryLeft_apply, Fin.cons_zero, Fin.tail_def, Fin.cons_succ,
+      ← ContinuousMultilinearMap.sub_apply, hC]
+    refine (le_opNorm _ _).trans ?_
     apply mul_le_mul (h τ)
       (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ (dα _).norm_coe_le_norm _)
       (by positivity) (by positivity)
