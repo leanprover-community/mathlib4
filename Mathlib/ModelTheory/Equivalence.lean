@@ -24,7 +24,7 @@ public import Mathlib.ModelTheory.Satisfiability
 
 universe u v w w'
 
-open Cardinal CategoryTheory
+open Cardinal
 
 open FirstOrder
 
