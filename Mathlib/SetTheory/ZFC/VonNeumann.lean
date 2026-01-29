@@ -5,9 +5,8 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.ZFC.Class
-public import Mathlib.SetTheory.ZFC.Ordinal
-public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann hierarchy
@@ -130,5 +129,35 @@ theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
   Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
+
+theorem _root_.Ordinal.toZFSet_subset_vonNeumann (o : Ordinal) : o.toZFSet ⊆ V_ o := by
+  simp [subset_vonNeumann]
+
+lemma _root_.Ordinal.card_le_card_vonNeumann (o : Ordinal) : o.card ≤ card (V_ o) := by
+  simpa using card_mono o.toZFSet_subset_vonNeumann
+
+open Cardinal in
+theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
+  induction o using Ordinal.limitRecOn with
+  | zero =>
+    rw [vonNeumann_zero, card_empty, preBeth_zero]
+  | succ o ih =>
+    rw [vonNeumann_succ, card_powerset, ih, preBeth_succ]
+  | limit o ho ih =>
+    simp_rw [preBeth_limit ho.isSuccPrelimit, ← fun i : Set.Iio o => ih i i.2,
+      vonNeumann_of_isSuccPrelimit ho.isSuccPrelimit]
+    apply iSup_card_le_card_iUnion.antisymm'
+    rw [← lift_le.{u + 1}]
+    apply lift_card_iUnion_le_sum_card.trans
+    refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
+    · rw [Ordinal.mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+      exact Ordinal.omega0_le_of_isSuccLimit ho
+    · rw [Ordinal.mk_Iio_ordinal, lift_lift, lift_le]
+      by_contra! h
+      refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
+        (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_
+      rw [← card_powerset, ← vonNeumann_succ]
+      refine le_ciSup (bddAbove_of_small _) (⟨_, ho.succ_lt ?_⟩ : Set.Iio o)
+      exact (ord_card_le _).trans_lt' (ord_strictMono h)
 
 end ZFSet
