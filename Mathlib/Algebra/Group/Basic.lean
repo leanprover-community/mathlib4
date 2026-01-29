@@ -681,6 +681,18 @@ theorem inv_mul_eq_one : a⁻¹ * b = 1 ↔ a = b := by rw [mul_eq_one_iff_eq_in
 theorem conj_eq_one_iff : a * b * a⁻¹ = 1 ↔ b = 1 := by
   rw [mul_inv_eq_one, mul_eq_left]
 
+@[to_additive (attr := simp)]
+theorem conj_inv_mul {a b c : G} : b⁻¹ * a * b * (b⁻¹ * c * b) = b⁻¹ * (a * c) * b := by
+  simp [mul_assoc]
+
+@[to_additive]
+lemma conj_eq_iff_eq_conj_inv (a b c : G) : a * b * a⁻¹ = c ↔ b = a⁻¹ * c * a := by
+  rw [mul_inv_eq_iff_eq_mul, mul_assoc, eq_inv_mul_iff_mul_eq]
+
+@[to_additive]
+lemma conj_inv_eq_iff_eq_conj (a b c : G) : a⁻¹ * b * a = c ↔ b = a * c * a⁻¹ := by
+  rw [eq_mul_inv_iff_mul_eq, mul_assoc, inv_mul_eq_iff_eq_mul]
+
 @[to_additive]
 theorem div_left_injective : Function.Injective fun a ↦ a / b := by
   -- FIXME this could be by `simpa`, but it fails. This is probably a bug in `simpa`.

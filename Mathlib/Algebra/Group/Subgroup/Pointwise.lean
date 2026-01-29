@@ -320,6 +320,40 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
   suffices y * z * z⁻¹ ∈ A by simpa
   exact mul_mem hyz (inv_mem (h hz))
 
+lemma normalizer_le_normalizer_sup_of_normalizer_le_left {H K : Subgroup G}
+    (hHnK : H.normalizer ≤ K.normalizer) :
+    H.normalizer ≤ (H ⊔ K).normalizer := by
+  have  hK : H ≤ K.normalizer := le_normalizer.trans hHnK
+  intro n hH h
+  have hnK : n ∈ K.normalizer := hHnK hH
+  rw [← SetLike.mem_coe, coe_mul_of_left_le_normalizer_right _ _ hK,
+      ← SetLike.mem_coe, coe_mul_of_left_le_normalizer_right _ _ hK]
+  apply Iff.intro
+  · rintro ⟨h, hh, k, hHnk, rfl⟩
+    dsimp
+    rw [← conj_mul]
+    use n * h * n⁻¹, (hH h).mp hh, n * k * n⁻¹
+    rw [mem_normalizer_iff] at hnK
+    simpa [← hnK]
+  · rintro ⟨h', hh', k, kK, hid⟩
+    rw [← conj_inv_eq_iff_eq_conj] at hid
+    rw [← hid, ← conj_inv_mul]
+    use n⁻¹ * h' * n, ?_, n⁻¹ * k * n
+    · rw [mem_normalizer_iff''] at hnK
+      simpa [← hnK]
+    · apply (hH _).mpr
+      simpa [mul_assoc]
+
+lemma normalizer_le_normalizer_sup_of_normalizer_le_right {H K : Subgroup G}
+    (hHnK : H.normalizer ≤ K.normalizer) :
+    H.normalizer ≤ (K ⊔ H).normalizer := by
+  rw [sup_comm]
+  exact normalizer_le_normalizer_sup_of_normalizer_le_left hHnK
+
+lemma normalizer_le_normalizer_sup_normal {H K : Subgroup G} [hK : K.Normal] :
+    H.normalizer ≤ (H ⊔ K).normalizer :=
+  normalizer_le_normalizer_sup_of_normalizer_le_left le_normalizer_of_normal
+
 @[to_additive]
 instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ K).Normal where
   conj_mem n hmem g := by
@@ -496,6 +530,10 @@ lemma conjAct_pointwise_smul_iff {H : Subgroup G} {g : G} :
 lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normalizer H) :
     ConjAct.toConjAct g • H = H :=
   conjAct_pointwise_smul_iff.2 hg
+
+lemma conjAct_bijective (g : ConjAct G) :
+    Function.Bijective ((MulDistribMulAction.toMonoidEnd (ConjAct G) G) g) :=
+  Function.bijective_iff_has_inverse.mpr ⟨(g⁻¹ • ·), ⟨inv_smul_smul g, smul_inv_smul g⟩⟩
 
 end Group
 end Subgroup

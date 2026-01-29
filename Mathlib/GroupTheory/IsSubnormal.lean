@@ -6,6 +6,8 @@ Authors: Inna Capdeboscq, Damiano Testa
 
 module
 
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-!
@@ -193,5 +195,59 @@ lemma trans (HK : H ≤ K) (Hsn : IsSubnormal (H.subgroupOf K)) (Ksn : IsSubnorm
     IsSubnormal H := by
   have key := Hsn.trans' Ksn
   rwa [map_subgroupOf_eq_of_le HK] at key
+
+/-- The image of a subnormal subgroup under a surjective homomorphism is subnormal. -/
+protected
+lemma map {G'} [Group G'] {f : G →* G'} (hf : Function.Surjective f) (hS : H.IsSubnormal) :
+    IsSubnormal (map f H) := by
+  induction hS with
+  | top =>
+    rw [map_top_of_surjective f hf]
+    apply top
+  | step H K h_le hSubn hN ih =>
+    apply step _ (map f K) (map_mono h_le) ih
+    refine normal_subgroupOf_of_le_normalizer ?_
+    rw [map_le_iff_le_comap, comap_normalizer_eq_of_le_range fun ⦃x⦄ a ↦ hf x, comap_map_eq]
+    trans H.normalizer
+    · exact (normal_subgroupOf_iff_le_normalizer h_le).mp hN
+    · exact normalizer_le_normalizer_sup_normal
+
+/-- The quotient of a subnormal subgroup by a normal subgroup is subnormal. -/
+lemma quotient [K.Normal] (hS : H.IsSubnormal) :
+    IsSubnormal (map (QuotientGroup.mk' K) H) :=
+  hS.map (QuotientGroup.mk'_surjective K)
+
+/-- The inverse image of a subnormal subgroup under a group homomorphism is a subnormal subgroup. -/
+protected
+nonrec
+lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnormal) :
+    (comap f H').IsSubnormal := by
+  induction h with
+  | top => simp
+  | step H K h_le hSubn hN ih =>
+    apply step _ (comap f K) (comap_mono h_le) ih
+    rw [normal_subgroupOf_iff_le_normalizer h_le] at hN
+    rw [@normal_subgroupOf_iff_le_normalizer_inf, ← @comap_inf, inf_of_le_left h_le]
+    refine le_trans ?_ (le_normalizer_comap ..)
+    exact comap_mono hN
+
+@[simp]
+protected
+lemma subgroupOf (hH : H.IsSubnormal) : (H.subgroupOf K).IsSubnormal := hH.comap _
+
+/-- The intersection of two subnormal subgroups is subnormal. -/
+lemma inf (hH : H.IsSubnormal) (hK : K.IsSubnormal) : (H ⊓ K).IsSubnormal :=
+  IsSubnormal.trans inf_le_right (by simp [hH.subgroupOf]) hK
+
+open scoped Pointwise
+
+/-- The conjugate of a subnormal sugroup is subnormal. -/
+lemma conjAct (hS : H.IsSubnormal) (g : ConjAct G) : (g • H).IsSubnormal :=
+  IsSubnormal.map (conjAct_bijective g).surjective hS
+
+/-- If a group `G` is trivial, then all of its subgroups are subnormal. -/
+lemma subsingleton [Subsingleton G] : H.IsSubnormal := by
+  rw [top_unique (le_of_subsingleton (b := H))]
+  exact top
 
 end Subgroup.IsSubnormal
