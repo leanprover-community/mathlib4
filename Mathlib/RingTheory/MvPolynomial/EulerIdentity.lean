@@ -32,7 +32,7 @@ protected lemma IsWeightedHomogeneous.pderiv [AddCancelCommMonoid M] {w : σ →
     (h : φ.IsWeightedHomogeneous w n) (h' : n' + w i = n) :
     (pderiv i φ).IsWeightedHomogeneous w n' := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    Finsupp.supported_eq_span_single] at h
+    AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, pderiv_monomial, one_mul]
@@ -58,7 +58,7 @@ open Finset in
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}
     (h : φ.IsWeightedHomogeneous w n) : ∑ i : σ, w i • (X i * pderiv i φ) = n • φ := by
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    supported_eq_span_single] at h
+    AddMonoidAlgebra.supported_eq_span_single] at h
   refine Submodule.span_induction ?_ ?_ (fun p q _ _ hp hq ↦ ?_) (fun r p _ h ↦ ?_) h
   · rintro _ ⟨m, hm, rfl⟩
     simp_rw [single_eq_monomial, X_mul_pderiv_monomial, smul_smul, ← sum_smul, mul_comm (w _)]

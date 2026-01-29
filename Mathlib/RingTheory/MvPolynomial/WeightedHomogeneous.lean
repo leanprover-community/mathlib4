@@ -154,11 +154,10 @@ theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomia
   `p.support ⊆ {d | weight w d = m}`. While equal, the former has a
   convenient definitional reduction. -/
 theorem weightedHomogeneousSubmodule_eq_finsupp_supported (w : σ → M) (m : M) :
-    weightedHomogeneousSubmodule R w m = Finsupp.supported R R { d | weight w d = m } := by
+    weightedHomogeneousSubmodule R w m = AddMonoidAlgebra.supported R R {d | weight w d = m} := by
   ext x
-  rw [mem_supported, Set.subset_def]
-  simp only [Finsupp.mem_support_iff, mem_coe]
-  rfl
+  simp [IsWeightedHomogeneous]
+  simp [AddMonoidAlgebra.mem_supported, Set.subset_def, MvPolynomial, coeff]
 
 variable {R}
 
@@ -314,13 +313,14 @@ lemma induction_on {w : σ → M} {m : M}
         simp_rw [Algebra.smul_def, algebraMap_eq, ← mul_assoc, ← map_mul]
         apply hx⟩ }
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,
-    Finsupp.supported_eq_span_single] at hp
+    AddMonoidAlgebra.supported_eq_span_single] at hp
   refine (Submodule.span_le (p := A) |>.mpr ?_ hp).2
   rw [Set.image_subset_iff]
   intro d hd
-  simp only [single_eq_monomial, Set.mem_preimage, SetLike.mem_coe]
+  simp only [MvPolynomial, Submodule.coe_set_mk, AddSubmonoid.coe_set_mk,
+    AddSubsemigroup.coe_set_mk, preimage_setOf_eq, mem_setOf_eq, A]
   refine ⟨isWeightedHomogeneous_monomial w d 1 hd, fun a ↦ ?_⟩
-  simp [MvPolynomial.C_mul_monomial, monomial _ _ hd]
+  simpa only [← MvPolynomial.C_mul_monomial] using monomial _ (a * 1) hd
 
 end IsWeightedHomogeneous
 
@@ -338,7 +338,8 @@ lemma WeightedHomogeneousSubmodule.gradedMonoid {w : σ → M} :
   of all its weighted homogeneous components. -/
 def weightedHomogeneousComponent (w : σ → M) (n : M) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   letI := Classical.decEq M
-  (Submodule.subtype _).comp <| Finsupp.restrictDom _ _ { d | weight w d = n }
+  (coeffLinearEquiv _).symm.toLinearMap ∘ₗ Submodule.subtype _ ∘ₗ
+    Finsupp.restrictDom _ _ {d | weight w d = n} ∘ₗ (coeffLinearEquiv _).toLinearMap
 
 section WeightedHomogeneousComponent
 
@@ -346,15 +347,14 @@ variable {w : σ → M} (n : M) (φ ψ : MvPolynomial σ R)
 
 theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
     coeff d (weightedHomogeneousComponent w n φ) =
-      if weight w d = n then coeff d φ else 0 :=
-  letI := Classical.decEq M
-  Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
+      if weight w d = n then coeff d φ else 0 := by
+  simp [weightedHomogeneousComponent, MvPolynomial, coeff, Finsupp.filter_apply]
 
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
-      ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
-  letI := Classical.decEq M
-  Finsupp.filter_eq_sum (fun d : σ →₀ ℕ => weight w d = n) φ |>.trans <| by convert rfl
+      ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) := by
+  simp [weightedHomogeneousComponent, MvPolynomial, coeff, Finsupp.filter_eq_sum, support, monomial]
+  congr
 
 /-- The `n` weighted homogeneous component of a polynomial is weighted homogeneous of
 weighted degree `n`. -/

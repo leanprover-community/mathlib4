@@ -36,21 +36,23 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A]
 
 variable (R A X) in
 @[to_additive (relevant_arg := X)]
-instance instCoalgebra : Coalgebra R A[X] := Finsupp.instCoalgebra R X A
+instance instCoalgebra : Coalgebra R A[X] := coeffEquiv.coalgebra _
 
 @[to_additive (relevant_arg := X)]
-instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := Finsupp.instIsCocomm R X A
+instance instIsCocomm [IsCocomm R A] : IsCocomm R A[X] := coeffEquiv.coalgebraIsCocomm _
 
 @[to_additive (relevant_arg := X) (attr := simp)]
 lemma counit_single (x : X) (a : A) :
     Coalgebra.counit (single x a) = Coalgebra.counit (R := R) a :=
   Finsupp.counit_single _ _ _ _ _
 
-@[to_additive (relevant_arg := X) (attr := simp)]
+@[to_additive (dont_translate := R) (relevant_arg := X) (attr := simp)]
 lemma comul_single (x : X) (a : A) :
     Coalgebra.comul (R := R) (single x a) =
-      TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) :=
-  Finsupp.comul_single _ _ _ _ _
+      TensorProduct.map (lsingle x) (lsingle x) (Coalgebra.comul a) := by
+  simp [instCoalgebra, Equiv.coalgebra, Equiv.coalgebraStruct, Equiv.linearEquiv,
+    TensorProduct.map_map]
+  rfl
 
 end MonoidAlgebra
 

@@ -204,8 +204,7 @@ theorem irreducible_sumSMulXSMulY [IsDomain R]
   let ι : n ↪ ((n ⊕ n) →₀ ℕ) :=
     ⟨fun i ↦ .single (.inl i) 1 + .single (.inr i) 1,
      fun i j ↦ by simp +contextual [Finsupp.ext_iff, Finsupp.single_apply, ite_eq_iff']⟩
-  -- unfortunate defeq abuse... we should have an `.embDomain`-like constructor for MvPolys
-  have aux : sumSMulXSMulY c = c.embDomain ι := by
+  have aux : sumSMulXSMulY c = .ofCoeff (c.embDomain ι) := by
     rw [← Finsupp.sum_single (Finsupp.embDomain _ _)]
     simp [Finsupp.sum_embDomain, sumSMulXSMulY, X, monomial_mul,
       Finsupp.linearCombination_apply, smul_monomial, ι]

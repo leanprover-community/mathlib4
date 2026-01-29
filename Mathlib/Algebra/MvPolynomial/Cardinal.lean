@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.Data.Finsupp.Fintype
-public import Mathlib.SetTheory.Cardinal.Finsupp
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Algebra.MonoidAlgebra.Cardinal
 
 /-!
 # Cardinality of Multivariate Polynomial Ring
@@ -32,9 +34,8 @@ variable {σ : Type u} {R : Type v} [CommSemiring R]
 
 @[simp]
 theorem cardinalMk_eq_max_lift [Nonempty σ] [Nontrivial R] :
-    #(MvPolynomial σ R) = max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ :=
-  (mk_finsupp_lift_of_infinite _ R).trans <| by
-    rw [mk_finsupp_nat, max_assoc, lift_max, lift_aleph0, max_comm]
+    #(MvPolynomial σ R) = max (max (Cardinal.lift.{u} #R) <| Cardinal.lift.{v} #σ) ℵ₀ := by
+  simp [MvPolynomial, AddMonoidAlgebra.cardinalMk_lift_of_infinite, sup_assoc]
 
 @[simp]
 theorem cardinalMk_eq_lift [IsEmpty σ] : #(MvPolynomial σ R) = Cardinal.lift.{u} #R :=
