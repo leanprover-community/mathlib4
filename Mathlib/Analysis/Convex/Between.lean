@@ -1074,6 +1074,17 @@ theorem AffineIndependent.not_wbtw_of_injective {ι} (i j k : ι)
   contrapose! hT
   simp [Set.range_comp, Set.image_insert_eq, hT.symm.collinear]
 
+/-- Affine independence of `a`, `b`, `c` is equivalent to affine independence of `a`, `c`, `d`
+   when `c` is strictly between `b` and `d`. -/
+theorem affineIndependent_iff_affineIndependent_of_sbtw {a b c d : P} (hd : Sbtw R b c d) :
+    AffineIndependent R ![a, b, c] ↔ AffineIndependent R ![a, b, d] := by
+  constructor
+  · intro h
+    exact affineIndependent_of_affineIndependent_collinear_ne h hd.wbtw.collinear hd.left_ne_right
+  · intro h
+    have hcol : Collinear R {b, d, c} := by grind [Collinear.subset _ hd.wbtw.collinear]
+    exact affineIndependent_of_affineIndependent_collinear_ne h hcol hd.left_ne
+
 variable (R)
 
 theorem wbtw_pointReflection (x y : P) : Wbtw R y x (pointReflection R x y) := by
