@@ -52,10 +52,10 @@ namespace AKS
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
-/-- The introspective relation, named by the original authors. It appears that this is
-a definition only used for the proof of the -/
+/-- The introspective relation, named by the original authors, only used for the construction of the
+final theorem. -/
 private def introspective (f : K[X]) (n : ℕ) (r : ℕ) [NeZero r] : Prop :=
-  ∀ μ ∈ (primitiveRoots r K), f.eval μ ^ n = (f.eval μ) ^ n
+  ∀ μ ∈ (primitiveRoots r K), f.eval (μ ^ n) = f.eval μ ^ n
 
 variable {r : ℕ} [NeZero r]
 
