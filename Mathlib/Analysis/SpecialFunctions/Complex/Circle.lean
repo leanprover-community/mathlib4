@@ -161,6 +161,7 @@ theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCirc
 theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
   cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
+@[continuity]
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
 
