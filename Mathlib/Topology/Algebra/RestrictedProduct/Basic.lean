@@ -129,11 +129,21 @@ into `Πʳ i, [R i, A i]_[𝓕]`. -/
 def structureMap (x : Π i, A i) : Πʳ i, [R i, A i]_[𝓕] :=
   ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
 
+@[simp]
+lemma structureMap_apply {x : Π i, A i} (i : ι) :
+    structureMap R A 𝓕 x i = x i :=
+  rfl
+
 /-- If `𝓕 ≤ 𝓖`, the restricted product `Πʳ i, [R i, A i]_[𝓖]` is naturally included in
 `Πʳ i, [R i, A i]_[𝓕]`. This is the corresponding map. -/
 def inclusion (h : 𝓕 ≤ 𝓖) (x : Πʳ i, [R i, A i]_[𝓖]) :
     Πʳ i, [R i, A i]_[𝓕] :=
   ⟨x, x.2.filter_mono h⟩
+
+@[simp]
+lemma inclusion_apply (h : 𝓕 ≤ 𝓖) {x : Πʳ i, [R i, A i]_[𝓖]} (i : ι) :
+    inclusion R A h x i = x i :=
+  rfl
 
 variable (𝓕) in
 lemma inclusion_eq_id : inclusion R A (le_refl 𝓕) = id := rfl
@@ -153,10 +163,24 @@ lemma range_inclusion (h : 𝓕 ≤ 𝓖) :
   subset_antisymm (range_subset_iff.mpr fun x ↦ x.2)
     (fun _ hx ↦ mem_range.mpr <| exists_inclusion_eq_of_eventually R A h hx)
 
+@[simp]
+lemma coe_comp_inclusion (h : 𝓕 ≤ 𝓖) :
+    DFunLike.coe ∘ inclusion R A h = DFunLike.coe :=
+  rfl
+
+lemma image_coe_preimage_inclusion_subset (h : 𝓕 ≤ 𝓖)
+    (U : Set Πʳ i, [R i, A i]_[𝓕]) : (⇑) '' (inclusion R A h ⁻¹' U) ⊆ (⇑) '' U :=
+  fun _ ⟨x, hx, hx'⟩ ↦ ⟨inclusion R A h x, hx, hx'⟩
+
 lemma range_structureMap :
     Set.range (structureMap R A 𝓕) = {f | ∀ i, f.1 i ∈ A i} :=
   subset_antisymm (range_subset_iff.mpr fun x i ↦ (x i).2)
     (fun _ hx ↦ mem_range.mpr <| exists_structureMap_eq_of_forall R A hx)
+
+@[simp]
+lemma coe_comp_structureMap :
+    DFunLike.coe ∘ structureMap R A 𝓕 = fun x i ↦ (x i).val :=
+  rfl
 
 section Algebra
 /-!
