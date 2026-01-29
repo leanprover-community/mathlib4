@@ -12,7 +12,9 @@ public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 /-!
 # Conversion lemmas
 
-This file contains lemmas we use to reduce various asymptotic goals to the case `Tendsto f atTop l`.
+The main procedure of the `compute_asymptotics` tactic is able to compute limits of functions at
+`atTop` filter. This file contains lemmas we use to reduce other asymptotic goals to
+the case `Tendsto f atTop l`.
 
 ## Main theorems
 
