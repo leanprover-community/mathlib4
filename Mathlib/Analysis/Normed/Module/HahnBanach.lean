@@ -146,9 +146,33 @@ end RCLike
 section DualVector
 
 variable (𝕜 : Type v) [RCLike 𝕜]
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open ContinuousLinearEquiv Submodule
+
+section Seminormed
+
+variable {E : Type u} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+
+/-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
+the dual element has norm at most `1` (this cannot be improved for the trivial
+vector space). Valid for semi-normed spaces. -/
+theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
+  by_cases hx : 0 < ‖x‖
+  · have hnz : x ≠ 0 := by intro _; simp_all
+    have hhom := LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x hnz
+    let coord := (ofHomothety _ _ hx hhom).symm.toContinuousLinearMap
+    obtain ⟨g, hg⟩ := exists_extension_norm_eq (𝕜 ∙ x) ((‖x‖ : 𝕜) • coord)
+    refine ⟨g, ?_, ?_⟩
+    · grw [hg.2, algebraMap_smul, norm_smul, norm_norm, coord.opNorm_le_bound (by positivity)
+        (fun x ↦ (homothety_inverse _ hx _ hhom x).le), mul_inv_cancel₀ hx.ne']
+    · have hgx : g x = g (⟨x, by simp⟩ : 𝕜 ∙ x) := by rw [Submodule.coe_mk]
+      have hc : coord ⟨x, by simp⟩ = 1 := LinearEquiv.coord_self 𝕜 E x hnz
+      simp [-algebraMap_smul, hgx, ↓hg.1, hc]
+  · exact ⟨0, by simp, by simp [le_antisymm (not_lt.mp hx) (norm_nonneg x)]⟩
+
+end Seminormed
+
+variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
   simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
@@ -156,15 +180,10 @@ theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
 element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
 theorem exists_dual_vector (x : E) (h : x ≠ 0) : ∃ g : StrongDual 𝕜 E, ‖g‖ = 1 ∧ g x = ‖x‖ := by
-  let p : Submodule 𝕜 E := 𝕜 ∙ x
-  let f := (‖x‖ : 𝕜) • coord 𝕜 x h
-  obtain ⟨g, hg⟩ := exists_extension_norm_eq p f
-  refine ⟨g, ?_, ?_⟩
-  · rw [hg.2, coord_norm']
-  · calc
-      g x = g (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [Submodule.coe_mk]
-      _ = ((‖x‖ : 𝕜) • coord 𝕜 x h) (⟨x, mem_span_singleton_self x⟩ : 𝕜 ∙ x) := by rw [← hg.1]
-      _ = ‖x‖ := by simp [-algebraMap_smul]
+  obtain ⟨g, hg⟩ := exists_dual_vector'' 𝕜 x
+  refine ⟨g, le_antisymm hg.1 ?_, hg.2⟩
+  have := g.le_opNorm x
+  simp_all
 
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, and choosing
 the dual element arbitrarily when `x = 0`. -/
@@ -175,16 +194,5 @@ theorem exists_dual_vector' [Nontrivial E] (x : E) : ∃ g : StrongDual 𝕜 E, 
     refine ⟨g, hg.left, ?_⟩
     simp [hx]
   · exact exists_dual_vector 𝕜 x hx
-
-/-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
-the dual element has norm at most `1` (this cannot be improved for the trivial
-vector space). -/
-theorem exists_dual_vector'' (x : E) : ∃ g : StrongDual 𝕜 E, ‖g‖ ≤ 1 ∧ g x = ‖x‖ := by
-  by_cases hx : x = 0
-  · refine ⟨0, by simp, ?_⟩
-    symm
-    simp [hx]
-  · rcases exists_dual_vector 𝕜 x hx with ⟨g, g_norm, g_eq⟩
-    exact ⟨g, g_norm.le, g_eq⟩
 
 end DualVector
