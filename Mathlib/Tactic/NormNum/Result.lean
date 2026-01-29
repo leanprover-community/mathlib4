@@ -530,7 +530,9 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
   | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
   | .isNat sα lit p => do
+    trace[debug] "entering isNat"
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
+    trace[debug] "isNat {a'}"
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
