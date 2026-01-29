@@ -11,24 +11,6 @@ import Mathlib.Topology.LocallyFinite
 import Mathlib.Topology.Order.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 
-
-/-!
-# Simple polygons (dimension-agnostic)
-
-This file is meant to replicate the “simple polygon” API from `SimpleEuclideanPolygon.lean`,
-but **without** hard-coding `EuclideanSpace ℝ (Fin 2)`.
-
-The guiding outline is:
-
-1. Define the boundary as a function `AddCircle (n : R) → P`.
-2. Show `Set.range boundary = poly.boundary R`.
-3. Define a “simple polygon” as one where this boundary map is injective.
-4. Show this injectivity is equivalent to “edges are disjoint except at common vertices”.
-5. Show continuity of the boundary map under whatever topological hypotheses are required.
-
-Most results are currently **statements only** (`sorry`) to serve as a skeleton for porting.
--/
-
 open Set Topology
 
 namespace Polygon
@@ -61,8 +43,6 @@ lemma boundaryMap_zero_eq_n (poly : Polygon P n) :
   unfold edgePath
   simp
 
-
-section Archimedean
 
 noncomputable def boundaryCircle (poly : Polygon P n) : AddCircle (n : R) → P :=
   have hnR : (0 : R) < (n : R) := by
@@ -154,7 +134,5 @@ lemma boundaryCircle_continuous (poly : Polygon P n) : Continuous poly.boundaryC
   sorry
 
 end Continuity
-
-end Archimedean
 
 end Polygon
