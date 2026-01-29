@@ -475,19 +475,16 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
     linarith [abs_nonneg (tmax - tmin), Icc.abs_sub_le t t₀]
 
 /-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
-`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Currying of multilinear maps is
-needed to ensure the types on both sides of the equation match. -/
+`integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
+is needed to ensure the types on both sides of the equation match. -/
 lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : range α ⊆ u) :
-    (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E)).symm
-        (fderiv ℝ (integralCMLM g u t₀) α) =
-      integralCMLM
-        (fun x ↦ (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ E) E).symm (fderiv ℝ g x)) u t₀
-        α := by
+    (fderiv ℝ (integralCMLM g u t₀) α).uncurryLeft =
+      integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α := by
   -- Express in terms of ε-δ
-  rw [← (continuousMultilinearCurryLeftEquiv ℝ (fun _ ↦ C(Icc tmin tmax, E))
-      C(Icc tmin tmax, E)).map_eq_iff, LinearIsometryEquiv.apply_symm_apply]
+  rw [← uncurry_curryLeft (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α)]
+  congr
   apply HasFDerivAt.fderiv
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
   intro ε hε
