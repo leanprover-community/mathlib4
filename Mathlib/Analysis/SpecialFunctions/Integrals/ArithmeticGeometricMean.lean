@@ -5,7 +5,7 @@ Authors: Jeremy Tan
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.AGM.Basic
+public import Mathlib.Analysis.SpecialFunctions.ArithmeticGeometricMean
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 /-!
