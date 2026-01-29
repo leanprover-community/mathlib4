@@ -4326,7 +4326,6 @@ public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
 public import Mathlib.Geometry.Manifold.WhitneyEmbedding
 public import Mathlib.Geometry.Polygon.Basic
-public import Mathlib.Geometry.Polygon.Simple
 public import Mathlib.Geometry.RingedSpace.Basic
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
