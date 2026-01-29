@@ -504,32 +504,22 @@ lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (
   apply HasFDerivAt.fderiv
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
   intro ε hε
-  have hpos : 0 < ε / (1 + |tmax - tmin|) := by positivity
   obtain ⟨δ, hδ, h⟩ := (isCompact_range α.continuous).exists_mem_open_dist_lt_of_continuousOn
-    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα hpos
+    (hg.continuousOn_fderiv_of_isOpen hu le_rfl) hu hα (by positivity : 0 < ε / (1 + |tmax - tmin|))
   rw [Metric.eventually_nhds_iff]
   refine ⟨δ, hδ, fun α' hdist ↦ ?_⟩
-  have hα' : range α' ⊆ u := by
-    intro x hx
-    obtain ⟨t, rfl⟩ := hx
-    refine (h (α t) (mem_range_self t) _ ?_).1
+  have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ (h (α t) (mem_range_self t) _ (by
     rw [dist_comm, dist_eq_norm]
-    apply (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt
-    rwa [← dist_eq_norm]
-  refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε (fun t ↦ ?_)
-  let x := compProj t₀ α t
-  let y := compProj t₀ α' t
-  calc
-    _ = ‖g y - g x - (fderiv ℝ g x) (y - x)‖ := by
-      simp only [y, x, compProj, ContinuousMap.sub_apply]
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖y - x‖ := by
-      apply norm_image_sub_fderiv_le hg hu _ fun z hz ↦ h x (mem_range_self _) z hz
-      simp only [y, x, compProj]
-      exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
-    _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
-      gcongr
-      simp only [y, x, compProj]
-      exact ContinuousMap.norm_coe_le_norm (α' - α) _
+    exact (ContinuousMap.norm_coe_le_norm (α' - α) t).trans_lt (dist_eq_norm α' α ▸ hdist))).1
+  refine norm_integralCMLM_sub_fderiv_le hg hu t₀ hα hα' hε fun t ↦ ?_
+  calc _ = ‖g (compProj t₀ α' t) - g (compProj t₀ α t) -
+            (fderiv ℝ g (compProj t₀ α t)) (compProj t₀ α' t - compProj t₀ α t)‖ := by
+        simp only [compProj, ContinuousMap.sub_apply]
+       _ ≤ ε / (1 + |tmax - tmin|) * ‖compProj t₀ α' t - compProj t₀ α t‖ := by
+        refine norm_image_sub_fderiv_le hg hu ?_ fun z hz ↦ h _ (mem_range_self _) z hz
+        exact (ContinuousMap.norm_coe_le_norm (α' - α) _).trans_lt (dist_eq_norm α' α ▸ hdist)
+       _ ≤ ε / (1 + |tmax - tmin|) * ‖α' - α‖ := by
+        gcongr; exact ContinuousMap.norm_coe_le_norm (α' - α) _
 
 end
 
