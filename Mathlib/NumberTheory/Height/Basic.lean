@@ -6,7 +6,6 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
-public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Data.Fintype.Order
@@ -341,7 +340,6 @@ open Lean.Meta Qq Height
 meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
-    assertInstancesCommute
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
@@ -355,7 +353,6 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
 meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
-    assertInstancesCommute
     -- Check whether there is a `Finite` instance for `$ι` around.
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
