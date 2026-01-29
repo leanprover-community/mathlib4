@@ -55,12 +55,12 @@ public register_option linter.style.whitespace.verbose : Bool := {
 }
 
 /--
-`CommandStart.endPos stx` returns the position up until the `whitespace` linter checks the
+`Whitespace.endPos stx` returns the position up until the `whitespace` linter checks the
 formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
+def Whitespace.endPos (stx : Syntax) : Option String.Pos.Raw :=
   if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
@@ -305,13 +305,63 @@ public def mkWindow (orig : String.Slice) (start ctx : Nat) : String.Slice :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
+/--
+`gitModifiedRef` is the `IO.Ref` tracking whether the `whitespace` linter should run on the
+current file, *based on the `git diff`*.
+
+`gitModifiedRef` is initially set to `none`.
+Upon first parsing a file, the linter calls `git diff --name-only master...` to see if the current
+file appears in the list.
+If that is the case, then it sets the `IO.Ref` to `some true`.
+Otherwise, it sets it to `some false`.
+
+If, however, the linter finds an error somewhere in the file, then it sets `gitModifiedRef` to
+`some true` anyway, since a file with an error is likely a file being modified and hence a file
+where running this linter is probably expected.
+-/
+-- TODO: if this works well with the `whitespace` linter, switch more linters towards
+-- using `gitModifiedRef`.
+initialize gitModifiedRef : IO.Ref (Option Bool) ← IO.mkRef none
+
+/--
+Checks whether the input `leanFile` corresponds to a file that `git` considers to be modified.
+
+This uses the exit code of the command `git diff --quiet master... -- leanFile`
+which is `0` for any tracked file that has no committed modification.
+
+A file that is tracked, modified, but the changes have not yet been committed yields `false`.
+The linter picks these up anyway, by checking if the file ever had an error.
+
+If the `git` call fails for some reason, then we assume that the file is modified.
+-/
+def isGitModified (leanFile : String) : IO Bool := do
+  -- On the `whitespace` test file we always return `true`, since we want the linter to inspect
+  -- the file.
+  let testFile := (("MathlibTest" / "WhitespaceLinter" : System.FilePath).addExtension "lean").toString
+  if leanFile.endsWith testFile then
+    return true
+  -- The command misses files that only have unstaged changes,
+  -- though these are picked up later by the linter.
+  let gitDiff ← --git diff --quiet master... -- Mathlib/Tactic/Linter/Whitespace.lean
+    IO.Process.output
+      {cmd := "git", args := #["diff", "--quiet", "master...", "--", leanFile]} <|>
+      pure {exitCode := 1, stdout := "Should not be here", stderr := "Should not be here"}
+  return gitDiff.exitCode != 0
+
 @[inherit_doc Mathlib.Linter.linter.style.whitespace]
 def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.whitespace (← getLinterOptions) do
+  unless getLinterValue linter.style.whitespace (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
+    -- If there are errors, then the file is "modified" and we set `gitModifiedRef` to `true`.
+    -- We skip checking the current command, though, until the errors have been fixed.
+    gitModifiedRef.set (some true)
     return
-  if stx.find? (·.isOfKind ``runCmd) |>.isSome then
+  if (← gitModifiedRef.get) == none then
+    gitModifiedRef.set (← isGitModified (← getFileName))
+  unless (← gitModifiedRef.get) == some true do
+    return
+  if stx.find? (#[``runCmd, `Lean.Parser.Command.macro_rules].contains ·.getKind ) |>.isSome then
     return
   -- If a command does not start on the first column, emit a warning.
   if let some pos := stx.getPos? then
@@ -321,9 +371,7 @@ def whitespaceLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"'{stx}' starts on column {colStart}, \
           but all commands should start at the beginning of the line."
   -- We skip `macro_rules`, since they cause parsing issues.
-  if stx.find? (·.isOfKind `Lean.Parser.Command.macro_rules) |>.isSome then
-    return
-  let some upTo := CommandStart.endPos stx | return
+  let some upTo := Whitespace.endPos stx | return
 
   let fmt : Option Format := ←
       try
