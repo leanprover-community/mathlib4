@@ -5,6 +5,7 @@ Authors: Snir Broshi
 -/
 module
 
+public import Mathlib.Data.Finsupp.Interval
 public import Mathlib.Data.Nat.Factorization.Defs
 public import Mathlib.NumberTheory.Divisors
 
@@ -27,6 +28,11 @@ theorem coe_divisors_eq_prod_pow_le_factorization {n : ℕ} (hn : n ≠ 0) :
   · rw [← h, ← factorization_prod_pow_eq_self hn]
     exact prod_dvd_prod_of_subset_of_dvd (support_mono hle) fun p _ ↦ Nat.pow_dvd_pow p <| hle p
 
+theorem divisors_eq_image_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
+    n.divisors = (Finset.Iic n.factorization).image (·.prod (· ^ ·)) := by
+  apply Finset.coe_inj.mp
+  grind [coe_divisors_eq_prod_pow_le_factorization]
+
 theorem coe_properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
     n.properDivisors = { f.prod (· ^ ·) | f < n.factorization } := by
   by_cases hn : n = 0
@@ -45,5 +51,10 @@ theorem coe_properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
     suffices k.factorization = f from (this ▸ hlt.ne <| congrArg _ ·)
     refine h ▸ prod_pow_factorization_eq_self fun _ hp ↦ ?_
     exact prime_of_mem_primeFactors <| support_mono hlt.le hp
+
+theorem properDivisors_eq_image_Iio_factorization_prod_pow {n : ℕ} :
+    n.properDivisors = (Finset.Iio n.factorization).image (·.prod (· ^ ·)) := by
+  apply Finset.coe_inj.mp
+  grind [coe_properDivisors_eq_prod_pow_lt_factorization]
 
 end Nat
