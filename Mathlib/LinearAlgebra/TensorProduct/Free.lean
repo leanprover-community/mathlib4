@@ -10,9 +10,9 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
-# Tensor product with finite free modules.
+# Tensor product with free modules.
 
-This file contains lemmas about tensoring with finite free modules.
+This file contains lemmas about tensoring with free modules.
 -/
 
 @[expose] public section
@@ -24,15 +24,20 @@ The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the ca
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
-noncomputable def LinearEquiv.chooseBasis_piScalarRight (R : Type*) (M : Type*) (V : Type*)
+noncomputable def LinearEquiv.chooseBasis_piScalarRight
+    (R : Type*) (M : Type*) (V : Type*)
     [CommSemiring M] [CommSemiring R] [Algebra R M]
     [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] :
     (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V → M) :=
   (LinearEquiv.baseChange R M _ _ (Module.Free.chooseBasis R V).equivFun) ≪≫ₗ
     TensorProduct.piScalarRight R M M (Module.Free.ChooseBasisIndex R V)
 
+/--
+The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from the canonical
+`ι`-indexed basis of a free `R`-module `V`.
+-/
 @[simps! apply symm_apply]
-noncomputable def LinearEquiv.chooseBasis_piScalarRight' (R : Type*) (M : Type*) (V : Type*)
+noncomputable def LinearEquiv.chooseBasis_finsuppScalarRight (R : Type*) (M : Type*) (V : Type*)
     [CommSemiring M] [CommSemiring R] [Algebra R M]
     [AddCommGroup V] [Module R V] [Module.Free R V] :
     (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V →₀ M) :=
