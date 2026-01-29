@@ -174,8 +174,7 @@ end Seminormed
 
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
-theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+@[deprecated (since := "2026-01-29")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
 
 /-- Corollary of Hahn-Banach. Given a nonzero element `x` of a normed space, there exists an
 element of the dual space, of norm `1`, whose value on `x` is `‖x‖`. -/
