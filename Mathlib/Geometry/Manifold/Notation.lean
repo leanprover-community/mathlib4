@@ -239,12 +239,31 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
+/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
+a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
+codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
+the codomain of the continuous linear maps (otherwise none). -/
+def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
+  match_expr e with
+    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
+      if ← withReducible <| isDefEq k S then
+        -- TODO: check if σ is actually the identity!
+        return some (k, E, F)
+      else
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+    | _ => return none
+
+set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
 - the model with corners on the tangent space of a manifold
 - a model with corners on a manifold, or on its underlying model space
-- a closed interval of real numbers
+- a closed interval of real numbers (including the unit interval)
+- Euclidean space, Euclidean half-space and Euclidean quadrants
+- a metric sphere in a real or complex inner product space
+- the units of a normed algebra
 - the complex upper half plane
 - a space of continuous k-linear maps
 - the trivial model `𝓘(𝕜, E)` on a normed space
@@ -270,15 +289,26 @@ This implementation is not maximally robust yet.
 -- TODO: consider lowering monad to `MetaM`
 def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
   trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"     fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"  fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"    fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"       fromManifold       then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM       then return m
-  if let some m ← tryStrategy m!"RealInterval"   fromRealInterval   then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane" fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"NormedField"    fromNormedField    then return m
-  throwError "Could not find a model with corners for `{e}`"
+  if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return m
+  if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return m
+  if let some m ← tryStrategy m!"NormedSpace"         fromNormedSpace    then return m
+  if let some m ← tryStrategy m!"Manifold"            fromManifold       then return m
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return m
+  if let some m ← tryStrategy m!"RealInterval"        fromRealInterval   then return m
+  if let some m ← tryStrategy m!"EuclideanSpace"      fromEuclideanSpace then return m
+  if let some m ← tryStrategy m!"UpperHalfPlane"      fromUpperHalfPlane then return m
+  if let some m ← tryStrategy m!"Units of algebra"    fromUnitsOfAlgebra then return m
+  if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return m
+  if let some m ← tryStrategy m!"Sphere"              fromSphere         then return m
+  if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return m
+  if let some m ← tryStrategy m!"InnerProductSpace"   fromInnerProductSpace then return m
+  if ← isTracingEnabledFor `Elab.DiffGeo.MDiff then
+    throwError m!"Could not find a model with corners for `{e}`."
+  else
+    throwError m!"Could not find a model with corners for `{e}`.
+
+Hint: failures to find a model with corners can be debugged with the command \
+`set_option trace.Elab.DiffGeo.MDiff true`."
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
@@ -339,6 +369,20 @@ where
       | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
     mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+  /-- Attempt to find the trivial model on an inner product space. -/
+  fromInnerProductSpace : TermElabM Expr := do
+    let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
+      -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
+      match (← instantiateMVars type).cleanupAnnotations with
+        | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
+          if ← withReducible (pureIsDefEq E e) then return some (inst, k)
+          else return none
+        | _ => return none
+      | throwError "Couldn't find an `InnerProductSpace` structure on `{e}` among local instances."
+    trace[Elab.DiffGeo.MDiff] "`{e}` is an inner product space over the field `{K}`"
+    -- Convert the InnerProductSpace to a NormedSpace instance.
+    let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, inst]
+    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -367,29 +411,40 @@ where
   -- Note that (continuous) linear equivalences are not an abelian group, so are not a model with
   -- corners as a normed space. Merely linear maps are not a normed space either.
   fromCLM : TermElabM Expr := do
-    match_expr e with
-    | ContinuousLinearMap k S _ _ _σ _E _ _ _F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous linear maps"
-      -- If `S` were a copy of `k` with a non-standard topology or smooth structure
-      -- (such as, imposed deliberately through a type synonym), we do not want to infer
-      -- the standard model with corners.
-      -- Therefore, we only check definitional equality at reducible transparency.
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        let eK : Term ← Term.exprToSyntax k
-        let eT : Term ← Term.exprToSyntax e
-        let iTerm : Term ← ``(𝓘($eK, $eT))
-        Term.elabTerm iTerm none
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    | _ => throwError "`{e}` is not a space of continuous linear maps"
-  /-- Attempt to find a model with corners on a closed interval of real numbers -/
+    -- If the coefficients of the codomain were a copy of `k` with a non-standard topology or smooth
+    -- structure (such as, imposed deliberately through a type synonym), we do not want to infer
+    -- the standard model with corners.
+    -- Therefore, we only check definitional equality at reducible transparency.
+    let some (k, _E, _F) ← isCLMReduciblyDefeqCoefficients e
+      | throwError "`{e}` is not a space of continuous linear maps"
+    let eK : Term ← Term.exprToSyntax k
+    let eT : Term ← Term.exprToSyntax e
+    let iTerm : Term ← ``(𝓘($eK, $eT))
+    Term.elabTerm iTerm none
+  /-- Attempt to find a model with corners on a Euclidean space, half-space or quadrant -/
+  fromEuclideanSpace : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `EuclideanHalfSpace`.
+    match (← instantiateMVars e).cleanupAnnotations with
+    | mkApp2 (.const `EuclideanSpace _) k _n =>
+      let eK : Term ← Term.exprToSyntax k
+      let eT : Term ← Term.exprToSyntax e
+      Term.elabTerm (← ``(𝓘($eK, $eT))) none
+    | mkApp2 (.const `EuclideanHalfSpace _) n _ =>
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[n, none]
+    | mkApp (.const `EuclideanQuadrant _) n =>
+      mkAppOptM `modelWithCornersEuclideanQuadrant #[n]
+    | _ => throwError "`{e}` is not a Euclidean space, half-space or quadrant"
+  /-- Attempt to find a model with corners on a closed interval of real numbers,
+  or on the unit interval of real numbers -/
   fromRealInterval : TermElabM Expr := do
     let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
       | throwError "`{e}` is not a coercion of a set to a type"
     -- We don't use `match_expr` here to avoid importing `Set.Icc`.
     -- Note that `modelWithCornersEuclideanHalfSpace` is also not imported.
     match e with
+    | Expr.const ``unitInterval [] =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is the real unit interval"
+      mkAppOptM `modelWithCornersEuclideanHalfSpace #[q(1 : ℕ), none]
     | mkApp4 (.const `Set.Icc _) α _ _x _y =>
       -- If `S` were a copy of `k` with a non-standard topology or smooth structure
       -- (such as, imposed deliberately through a type synonym), we do not want to infer
@@ -409,6 +464,149 @@ where
       let c ← Term.exprToSyntax (mkConst `Complex)
       Term.elabTerm (← `(𝓘($c))) none
     else throwError "`{e}` is not the complex upper half plane"
+  /-- Attempt to find a model with corners on the units in a normed algebra -/
+  fromUnitsOfAlgebra : TermElabM Expr := do
+    match_expr e with
+    | Units α _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is the set of units on `{α}`"
+      -- If `α` is a normed `𝕜`-algebra for some `𝕜`, we know a model with corners.
+      -- We need to gather `𝕜` from the context: try to find a `NormedAlgebra` or `NormedSpace`
+      -- instance in the local context.
+      -- Note: this is somewhat brittle, and will need to be updated if other instance are made.
+      -- A more robust solution would involve running typeclass inference,
+      -- hence could potentially be slow.
+      let searchNormedAlgebra ← findSomeLocalInstanceOf? ``NormedAlgebra fun inst type ↦ do
+          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          match_expr type with
+          | NormedAlgebra k R _ _ =>
+            if ← withReducible (pureIsDefEq R α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a normed algebra over `{k}` via `{inst}`"
+              return some (k, R)
+            else
+              trace[Elab.DiffGeo.MDiff] "found a normed `{k}`-algebra structure on `{R}`, which \
+              is not reducibly definitionally equal to `{α}`: continue the search"
+              return none
+          | _ => return none
+      if let some (k, R) := searchNormedAlgebra then
+        trace[Elab.DiffGeo.MDiff] "found a normed algebra: `{α}` is a normed `{k}`-algebra"
+        let eK : Term ← Term.exprToSyntax k
+        let eR : Term ← Term.exprToSyntax R
+        Term.elabTerm (← ``(𝓘($eK, $eR))) none
+      else
+        trace[Elab.DiffGeo.MDiff] "`{α}` is not a normed algebra on the nose: try via a space of \
+          continuous linear maps"
+        -- If `α = V →L[𝕜] V` for a `𝕜`-normed space, we also have a normed algebra structure:
+        -- search for such cases as well.
+        match ← isCLMReduciblyDefeqCoefficients α with
+        | none => throwError "`{α}` is not a space of continuous linear maps either"
+        | some (k, V, W) =>
+          -- If `V` and `W` are not reducibly def-eq, the normed algebra instance should not fire:
+          -- so it suffices to check at reducible transparency.
+          if ← withReducible <| isDefEq V W then
+            trace[Elab.DiffGeo.MDiff] "`{α}` is a space of continuous `{k}`-linear maps on `{V}`"
+            let searchNormedSpace := findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+              trace[Elab.DiffGeo.MDiff] "considering instances of type `{type}`"
+              match_expr type with
+              | NormedSpace k R _ _ =>
+                -- We use reducible transparency to allow using a type synonym: this should not
+                -- be unfolded.
+                if ← withReducible (pureIsDefEq R V) then
+                  trace[Elab.DiffGeo.MDiff] "`{V}` is a normed space over `{k}` via `{inst}`"
+                  return some (k, R)
+                else return none
+              | _ => return none
+            match ← searchNormedSpace with
+            | some (k, _R) =>
+              trace[Elab.DiffGeo.MDiff] "found a normed space: `{V}` is a normed space over `{k}`"
+              let eK : Term ← Term.exprToSyntax k
+              let eα : Term ← Term.exprToSyntax α
+              Term.elabTerm (← ``(𝓘($eK, $eα))) none
+            | _ => throwError  "Found no `NormedSpace` structure on `{V}` among local instances"
+          else
+            -- NB. If further instances of `NormedAlgebra` arise in practice, adding another check
+            -- here is a good thing to do.
+            -- NB. We don't know the field `𝕜` here, thus using typeclass inference to determine
+            -- if `α` is a normed algebra is not a good idea. Searches `NormedAlgebra ?k α` for
+            -- unspecified `k` often loop, and are not a good idea.
+            throwError "{α}` is a space of continuous `{k}`-linear maps, but with domain `{V}` and \
+              co-domain `{W}` being not definitionally equal"
+    | _ => throwError "`{e}` is not a set of units, in particular not of a complete normed algebra"
+  /-- Attempt to find a model with corners on the complex unit circle -/
+  fromCircle : TermElabM Expr := do
+    -- We don't use `match_expr` to avoid importing `Circle`.
+    if (← instantiateMVars e).cleanupAnnotations.isConstOf `Circle then
+      -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
+      let r ← Term.exprToSyntax q(ℝ)
+      let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin 1)]
+      Term.elabTerm (← ``(𝓘($r, $eE))) none
+    else throwError "`{e}` is not the complex unit circle"
+  /-- Attempt to find a model with corners on a metric sphere in a real normed space -/
+  fromSphere : TermElabM Expr := do
+    let some e := (← instantiateMVars e).cleanupAnnotations.coeTypeSet?
+      | throwError "`{e}` is not a coercion of a set to a type"
+    match_expr e with
+    | Metric.sphere α _ _x _r =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a metric sphere in `{α}`"
+      -- Attempt to find a real or complex inner product space instance on `α`.
+      let searchIPSpace := findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
+          trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+          -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
+          match type with
+          | mkApp4 (.const `InnerProductSpace _) k E _ _ =>
+            -- We use reducible transparency to allow using a type synonym: this should not
+            -- be unfolded.
+            if ← withReducible (pureIsDefEq E α) then
+              trace[Elab.DiffGeo.MDiff] "`{α}` is a `{k}`-inner product space via `{inst}`"
+              return some E
+            else
+              trace[Elab.DiffGeo.MDiff] "found an inner product space on `{E}`, which \
+                is not reducibly definitionally equal to `{α}`: continue the search"
+              return none
+          | _ => return none
+      let factFinder (E : Expr) := findSomeLocalInstanceOf? ``Fact fun _inst type ↦ do
+        trace[Elab.DiffGeo.MDiff] "considering instance of type `{type}`"
+        match_expr type with
+        | Fact a =>
+          trace[Elab.DiffGeo.MDiff] "considering fact of kind `{a}`"
+          match_expr a with
+          | Eq _ lhs rhs =>
+            match_expr lhs with
+            | Module.finrank R F _ _ _ =>
+              -- We use reducible transparency to allow using a type synonym: this should not
+              -- be unfolded.
+              if ← withReducible (pureIsDefEq R q(ℝ) <&&> pureIsDefEq E F) then
+                trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E` via `{_inst}`"
+                -- Try to unify the rhs with an expression m + 1, for a natural number m.
+                -- If we find one, that's the dimension of our model with corners.
+                -- Always returning the finrank - 1 would be undesirable, for instance since natural
+                -- number subtraction is badly behaved.
+                have rhs : Q(ℕ) := rhs
+                match rhs with
+                | ~q($n + 1) =>
+                  trace[Elab.DiffGeo.MDiff] "rhs `{rhs}` is `{n}` + 1"
+                  return some n
+                | _ =>
+                  throwError "found a fact about `finrank ℝ E`, but the right hand \
+                    side `{rhs}` is not of the form `m + 1` for some `m`"
+              else
+                trace[Elab.DiffGeo.MDiff] "found a fact about finrank, \
+                  but not about `finrank ℝ E`: continue the search"
+                return none
+            | _ => return none
+          | _ => return none
+        | _ => return none
+      if let some E ← searchIPSpace then
+        -- We found a sphere in the inner product space `E`:
+        -- search for a `Fact (finrank ℝ E) = m + 1`,
+        -- then the sphere is `m`-dimensional, and `modelEuclideanSpace m` is our model.
+        let some nE ← factFinder E
+          | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
+        -- We have not imported `EuclideanSpace` yet, so build an expression by hand.
+        let r ← Term.exprToSyntax q(ℝ)
+        let eE ← Term.exprToSyntax <| ← mkAppM `EuclideanSpace #[q(ℝ), q(Fin $nE)]
+        Term.elabTerm (← ``(𝓘($r, $eE))) none
+      else throwError "found no real normed space instance on `{α}`"
+    | _ => throwError "`{e}` is not a sphere in a real normed space"
   /-- Attempt to find a model with corners from a normed field.
   We attempt to find a global instance here. -/
   fromNormedField : TermElabM Expr := do
