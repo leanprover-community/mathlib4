@@ -1131,7 +1131,7 @@ theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :
   by_cases h : P a
   · refine Eq.trans ?_ (embDomain_apply_self (.subtype P) f (Subtype.mk a h)).symm
     simp [h]
-  · simp [embDomain, h]
+  · simp [h, embDomain_notin_range]
 
 theorem support_extendDomain_subset (f : Subtype P →₀ M) :
     ↑(f.extendDomain).support ⊆ {x | P x} := by

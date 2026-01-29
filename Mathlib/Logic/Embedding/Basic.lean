@@ -106,7 +106,7 @@ instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
   rfl
 
