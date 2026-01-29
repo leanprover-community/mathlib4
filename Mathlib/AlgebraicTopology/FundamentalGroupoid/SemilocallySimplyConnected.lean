@@ -144,6 +144,20 @@ theorem SemilocallySimplyConnectedOn.mono (h : SemilocallySimplyConnectedOn t) (
     SemilocallySimplyConnectedOn s :=
   fun x hx => h x (hst hx)
 
+theorem semilocallySimplyConnectedOn_iff :
+    SemilocallySimplyConnectedOn s ↔
+    ∀ x ∈ s, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
+      ∀ {u : X} (γ : Path u u) (_ : range γ ⊆ U),
+        Path.Homotopic γ (Path.refl u) :=
+  forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff
+
+theorem semilocallySimplyConnectedOn_iff_paths :
+    SemilocallySimplyConnectedOn s ↔
+    ∀ x ∈ s, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
+      ∀ {u u' : X} (γ γ' : Path u u'),
+        range γ ⊆ U → range γ' ⊆ U → γ.Homotopic γ' :=
+  forall₂_congr fun _ _ => semilocallySimplyConnectedAt_iff_paths
+
 /-! ### SemilocallySimplyConnected -/
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
