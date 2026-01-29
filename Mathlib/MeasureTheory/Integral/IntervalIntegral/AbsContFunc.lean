@@ -121,7 +121,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
   -- complements are encoded using `Finset.intervalGapsWithin`.
   -- Their total length tends to `0` as `s` tends to `u` and by absolute continuity of `f`, the sum
   -- of `dist (f x) (f y)` for `[x, y]` in the complement tends to `0` as `s` tends to `u`.
-  -- Finally we use the traingle inequality of `dist` to obtain the result.
+  -- Finally we use the triangle inequality of `dist` to obtain the result.
   let u_coe (s : Finset u) : Finset (ℝ × ℝ) := s.image Subtype.val
   replace hu₁ (s : Finset u) : ∀ ⦃z : ℝ × ℝ⦄, z ∈ u_coe s → d ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b := by
     grind
