@@ -5,7 +5,6 @@ Authors: Shao Yu
 -/
 
 
--- import Mathlib
 module
 
 
@@ -66,7 +65,7 @@ def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
 /--
 Between any two points, there must exist a longest path.
 -/
-lemma exists_maximal_path {G : SimpleGraph V} [Finite V] [G.LocallyFinite] (hG : G.Connected)
+lemma exists_maximal_path {G : SimpleGraph V} [Finite V] (hG : G.Connected)
  : ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
   have : Fintype V := Fintype.ofFinite V
   intro a b
@@ -138,7 +137,7 @@ lemma exists_maximal_path {G : SimpleGraph V} [Finite V] [G.LocallyFinite] (hG :
 /--
 In a connected graph, there must exist a path of maximum length.
 -/
-lemma exists_maxilongmal_path {G : SimpleGraph V} [Finite V] [G.LocallyFinite] (hG : G.Connected)
+lemma exists_maxilongmal_path {G : SimpleGraph V} [Finite V] (hG : G.Connected)
   : ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
   have : Fintype V := Fintype.ofFinite V
   obtain H' := exists_maximal_path hG
@@ -1016,7 +1015,7 @@ lemma len_dropUntil {G : SimpleGraph V} [DecidableEq V]
     omega
   rw [this, len_takeUntil (hp := hp) (hn := hn)]
 
-lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
+lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V]
     {a b : V} {i j : ℕ} (p : G.Walk a b) {hp : p.IsPath} {hj : p.getVert j ∈ p.support} {hi : p.getVert i ∈ (p.takeUntil _ hj).reverse.support} {hn1 : j ≤ p.length} {hn2 : i ≤ j}
     : ((p.takeUntil _ hj).reverse.takeUntil _ hi).length = j - i := by
   have len_take_i : (p.takeUntil (p.getVert j) hj).length = j := by
