@@ -825,6 +825,7 @@ public import Mathlib.Algebra.MvPolynomial.NoZeroDivisors
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.Algebra.MvPolynomial.Polynomial
 public import Mathlib.Algebra.MvPolynomial.Rename
+public import Mathlib.Algebra.MvPolynomial.RestrictedValue
 public import Mathlib.Algebra.MvPolynomial.SchwartzZippel
 public import Mathlib.Algebra.MvPolynomial.Supported
 public import Mathlib.Algebra.MvPolynomial.Variables
