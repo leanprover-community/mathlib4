@@ -127,6 +127,58 @@ instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
   map_zero f := f.map_zero'
   map_add_le_max f := f.map_add_le_max'
 
+section
+
+/-! # Alternate Constructors for Valuation to WithZero -/
+
+open WithZero
+
+/-- An alternative constructor that takes a function `R → Γ` satisfying certain axioms and outputs
+a `Valuation R (WithZero Γ)`. -/
+@[simps!] noncomputable def mk₀ {R Γ : Type*} [Ring R] [IsDomain R]
+    [CommMonoid Γ] [LinearOrder Γ] [IsOrderedMonoid Γ]
+    (v : R → Γ) (one : v 1 = 1)
+    (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x * v y)
+    (add : ∀ {x y}, x ≠ 0 → y ≠ 0 → x + y ≠ 0 → v (x + y) ≤ max (v x) (v y)) :
+    Valuation R (WithZero Γ) where
+  __ := MonoidWithZeroHom.mk₀ v one mul
+  map_add_le_max' x y := by
+    dsimp only [MonoidWithZeroHom.mk₀]
+    by_cases hx0 : x = 0
+    · rw [hx0, zero_add, if_pos rfl, ← bot_eq_zero'', max_bot_left]
+    · by_cases hy0 : y = 0
+      · rw [hy0, add_zero, if_pos rfl, ← bot_eq_zero'', max_bot_right]
+      · by_cases hxy0 : x + y = 0
+        · rw [hxy0, if_pos rfl]; exact zero_le'
+        · rw [if_neg hx0, if_neg hy0, if_neg hxy0, WithZero.le_max_iff]; exact add hx0 hy0 hxy0
+
+/-- An alternative constructor that takes an (additive) function `R → Γ` satisfying certain axioms
+and outputs a `Valuation R Γᵐ⁰`. -/
+@[simps!] noncomputable def mkAdd {R Γ : Type*} [Ring R] [IsDomain R]
+    [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ]
+    (v : R → Γ) (one : v 1 = 0)
+    (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x + v y)
+    (add : ∀ {x y}, x ≠ 0 → y ≠ 0 → x + y ≠ 0 → v (x + y) ≤ max (v x) (v y)) :
+    Valuation R Γᵐ⁰ :=
+  .mk₀ (.ofAdd ∘ v) (by simp [one])
+    (fun hx0 hy0 ↦ by simp [mul hx0 hy0])
+    (fun hx0 hy0 hxy0 ↦ by simpa using add hx0 hy0 hxy0)
+
+/-- An alternative constructor that takes an (additive) function `R → Γ` satisfying certain axioms
+but with `min` instead of `max` in the ultrametric inequality and outputs a `Valuation R Γᵐ⁰`. This
+is useful for constructing a valuation in terms of `multiplicity`. -/
+@[simps!] noncomputable def mkNeg {R Γ : Type*} [Ring R] [IsDomain R]
+    [AddCommGroup Γ] [LinearOrder Γ] [IsOrderedAddMonoid Γ]
+    (v : R → Γ) (one : v 1 = 0)
+    (mul : ∀ {x y}, x ≠ 0 → y ≠ 0 → v (x * y) = v x + v y)
+    (add : ∀ {x y}, x ≠ 0 → y ≠ 0 → x + y ≠ 0 → min (v x) (v y) ≤ v (x + y)) :
+    Valuation R Γᵐ⁰ :=
+  .mkAdd (-v ·) (by simp only [one, neg_zero])
+    (fun hx0 hy0 ↦ by simp only [mul hx0 hy0, neg_add])
+    (fun hx0 hy0 hxy0 ↦ by simpa using add hx0 hy0 hxy0)
+
+end
+
 @[simp]
 theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
