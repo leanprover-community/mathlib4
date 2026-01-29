@@ -369,22 +369,20 @@ Hint: failures to find a model with corners can be debugged with the command `se
 -- TODO: the error message could be more helpful.
 variable {E'''' : Type*} [NormedAddCommGroup E''''] [NormedSpace ℝ E''''] (σ : ℝ →+* ℝ) [RingHomIsometric σ]
 
--- FIXME: the error message is non-deterministic because of different universe levels,
--- normalise this somehow and re-enable this test!
 variable {f : M → E'' →SL[σ] E''''} in
-/-
+/--
 error: Application type mismatch: The argument
   𝓘(ℝ, E'' →SL[σ] E'''')
 has type
   ModelWithCorners.{0, max u_11 u_13, max u_11 u_13} ℝ (E'' →SL[σ] E'''') (E'' →SL[σ] E'''')
 but is expected to have type
-  ModelWithCorners.{u_1, ?u.235761, ?u.235762} 𝕜 ?E' ?H'
+  ModelWithCorners.{u_1, _, _} 𝕜 ?_ ?_
 in the application
-  @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?M ?inst✝ ?inst✝¹ ?E' ?inst✝² ?inst✝³ ?H' ?inst✝⁴
-    𝓘(ℝ, E'' →SL[σ] E'''')
+  @ContMDiff 𝕜 inst✝³⁰ E inst✝²⁹ inst✝²⁸ H inst✝²⁷ I ?_ ?_ ?_ ?_ ?_ ?_ ?_ ?_ 𝓘(ℝ, E'' →SL[σ] E'''')
 -/
---#guard_msgs in
---#check CMDiff 2 f
+#guard_msgs in
+set_option pp.mvars false in
+#check CMDiff 2 f
 
 end
 
