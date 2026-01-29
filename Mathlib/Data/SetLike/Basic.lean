@@ -26,10 +26,11 @@ is injective.
 In general, a type `A` is `SetLike` with elements of type `B` if it
 has an injective map to `Set B`.  This module provides standard
 boilerplate for every `SetLike`: a `coe_sort`, a `coe` to set,
-and various extensionality and simp lemmas. It also provides an order
-`PartialOrder.ofSetlike` induced from set inclusion, and
-an abstract class `IsConcreteLE` for orders equal to this incudes one,
-for better defeqs.
+and various extensionality and simp lemmas. The order induced by set inclusion is
+called `PartialOrder.ofSetlike`: this is not an instance for flexibility in choosing orders.
+The class `IsConcreteLE` abstractly states the order is equal to that induced by set inclusion;
+an instance is automatically available when defining a `PartialOrder` as
+`.ofSetLike (MySubobject X) X`.
 
 A typical subobject should be declared as:
 ```
