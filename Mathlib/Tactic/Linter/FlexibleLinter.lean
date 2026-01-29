@@ -455,9 +455,8 @@ def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
   | _ => return none
 
 /-- The main implementation of the flexible linter. -/
-def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
-    return
+def flexibleLinter : Linter where run := whenLinterActivated linter.flexible fun _stx ↦ do
+  unless (← getInfoState).enabled do return
   if (← MonadState.get).messages.hasErrors then
     return
   let trees ← getInfoTrees
