@@ -900,6 +900,7 @@ public import Mathlib.Algebra.Order.Group.Basic
 public import Mathlib.Algebra.Order.Group.Bounds
 public import Mathlib.Algebra.Order.Group.CompleteLattice
 public import Mathlib.Algebra.Order.Group.Cone
+public import Mathlib.Algebra.Order.Group.Convex
 public import Mathlib.Algebra.Order.Group.Cyclic
 public import Mathlib.Algebra.Order.Group.Defs
 public import Mathlib.Algebra.Order.Group.DenselyOrdered
