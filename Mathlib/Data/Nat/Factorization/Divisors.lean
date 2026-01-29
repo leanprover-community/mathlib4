@@ -18,7 +18,7 @@ open Finsupp
 
 namespace Nat
 
-theorem divisors_eq_prod_pow_le_factorization {n : ℕ} (hn : n ≠ 0) :
+theorem coe_divisors_eq_prod_pow_le_factorization {n : ℕ} (hn : n ≠ 0) :
     n.divisors = { f.prod (· ^ ·) | f ≤ n.factorization } := by
   refine Set.ext fun k ↦ ⟨fun h ↦ ?_, fun ⟨f, hle, h⟩ ↦ mem_divisors.mpr ⟨?_, hn⟩⟩
   · have hdvd := dvd_of_mem_divisors h
@@ -27,7 +27,7 @@ theorem divisors_eq_prod_pow_le_factorization {n : ℕ} (hn : n ≠ 0) :
   · rw [← h, ← factorization_prod_pow_eq_self hn]
     exact prod_dvd_prod_of_subset_of_dvd (support_mono hle) fun p _ ↦ Nat.pow_dvd_pow p <| hle p
 
-theorem properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
+theorem coe_properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
     n.properDivisors = { f.prod (· ^ ·) | f < n.factorization } := by
   by_cases hn : n = 0
   · simp [hn]
