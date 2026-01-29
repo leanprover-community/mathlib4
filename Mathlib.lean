@@ -5052,6 +5052,7 @@ public import Mathlib.MeasureTheory.Integral.IntervalAverage
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DerivIntegrable
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.DistLEIntegral
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.LebesgueDifferentiationThm
