@@ -18,10 +18,11 @@ class Baz (β : Type) where
 class Baq (β : Type) where
   b : β
 
-class Foo (α) (β) extends Bar α, Baz β
+class FooBarBaz (α) extends Bar α, Baz α
 
+class FooBarBaz' (α) extends Bar α, Baz α
 
-class Foo' (α) (β) extends Bar α, Baq β
+class FooBarBaq (α) extends Bar α, Baq α
 
 /--
 error: unsolved goals
@@ -38,53 +39,49 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-warning: The declaration `Lean.foo'` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `Lean.foo₁` has instance hypotheses which overlap on data-carrying components.
 
-`[Bar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
+`[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 -/
 #guard_msgs in
-def foo' [Foo Nat Bool] [Foo' Nat String] : Bool := by
+def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
   exact true
 
-
 /--
-warning: The declaration `Lean.foo''` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `Lean.foo₂` has instance hypotheses which overlap on data-carrying components.
 
-`[Bar Nat]` is provided by `[Foo Nat Bool]` and `[Foo' Nat String]`.
+There are 2 instances of `[FooBarBaz Nat]`.
 
-There are 2 instances of `[Foo Nat Bool]`.
+`[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 -/
 #guard_msgs in
-def foo'' [Foo Nat Bool] [Foo Nat Bool] [Foo' Nat String] : Bool := true
+def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: The declaration `Lean.foo'''` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `Lean.foo₃` has instance hypotheses which overlap on data-carrying components.
 
-There are 2 instances of `[Foo Nat Bool]`.
+There are 2 instances of `[FooBarBaz Nat]`.
 -/
 #guard_msgs in
-def foo''' [Foo Nat Bool] [Foo Nat Bool] : Bool := true
+def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-error: Failed to infer type of definition `foo''''`
----
-warning: The declaration `Lean.foo''''` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `Lean.foo₄` has instance hypotheses which overlap on data-carrying components.
 
-There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[Foo Nat Bool]`.
+There are 2 instances of `[FooBarBaz Nat]`.
 
-There are 2 instances of `[Foo Nat Bool]`.
+There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[FooBarBaz Nat]`.
 -/
 #guard_msgs in
-def foo'''' [Foo Nat Bool] [Foo Nat Bool] [Bar Nat] := sorry
+def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
 
--- Correct? Might not have `Bar Nat` if we can't provide `α`, but might if we can.
--- Only needs `(usedOnly := true)` in `mkForallFVars` to change behavior.
+-- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
-error: unsolved goals
-inst✝¹ : Foo Nat Bool
-inst✝ : (α : Type) → Foo' Nat α
-⊢ Bool
+warning: The declaration `Lean.foo₅` has instance hypotheses which overlap on data-carrying components.
+
+`[Baz Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+
+`[Bar Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
 -/
 #guard_msgs in
-def fooForall [Foo Nat Bool] [∀ α, Foo' Nat α] : Bool := by
-  skip
+def foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : Bool := true
