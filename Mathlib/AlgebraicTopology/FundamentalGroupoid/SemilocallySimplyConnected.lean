@@ -32,15 +32,15 @@ public section
 
 noncomputable section
 
-open CategoryTheory FundamentalGroupoid
+open CategoryTheory Filter FundamentalGroupoid Topology
 
 variable {X : Type*} [TopologicalSpace X]
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
-such that the map from `π₁(U, base)` to `π₁(X, base)` induced by the inclusion is trivial for all basepoints
-in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
+such that the map from `π₁(U, base)` to `π₁(X, base)` induced by the inclusion is trivial for all
+basepoints in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
 def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
-  ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
+  ∀ x : X, ∃ U ∈ 𝓝 x,
     ∀ (base : U),
       (FundamentalGroup.map (⟨Subtype.val, continuous_subtype_val⟩ : C(U, X)) base).range = ⊥
 
@@ -50,7 +50,7 @@ variable {X : Type*} [TopologicalSpace X]
 
 /-- Simply connected spaces are semilocally simply connected. -/
 theorem of_simplyConnected [SimplyConnectedSpace X] : SemilocallySimplyConnected X := fun x =>
-  ⟨Set.univ, isOpen_univ, Set.mem_univ x, fun base => by
+  ⟨Set.univ, univ_mem, fun base => by
     simp only [MonoidHom.range_eq_bot_iff]
     ext
     exact Subsingleton.elim (α := Path.Homotopic.Quotient base.val base.val) _ _⟩
@@ -63,20 +63,25 @@ theorem semilocallySimplyConnected_iff :
   constructor
   · -- Forward direction: SemilocallySimplyConnected implies small loops are null
     intro h x
-    obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := h x
-    use U, hU_open, hx_in_U
+    obtain ⟨U, hU_nhd, hU_loops⟩ := h x
+    obtain ⟨V, hVU, hV_open, hx_in_V⟩ := mem_nhds_iff.mp hU_nhd
+    refine ⟨V, hV_open, hx_in_V, ?_⟩
     intro u γ hγ_range
-    -- Restrict γ to a path in the subspace U
-    have hγ_mem : ∀ t, γ t ∈ U := fun t => hγ_range ⟨t, rfl⟩
-    let γ_U := γ.codRestrict hγ_mem
-    -- The map from π₁(U, u) to π₁(X, u.val) has trivial range
-    have h_range := hU_loops u
+    -- Convert u : V to u' : U using V ⊆ U
+    let u' : U := ⟨u.val, hVU u.property⟩
+    -- Since u'.val = u.val, γ is also a path from u'.val to u'.val
+    let γ' : Path u'.val u'.val := γ
+    -- Restrict γ' to a path in the subspace U
+    have hγ_mem : ∀ t, γ' t ∈ U := fun t => hVU (hγ_range ⟨t, rfl⟩)
+    let γ_U := γ'.codRestrict hγ_mem
+    -- The map from π₁(U, u') to π₁(X, u'.val) has trivial range
+    have h_range := hU_loops u'
     rw [MonoidHom.range_eq_bot_iff] at h_range
-    have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
+    have h_map : FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
-           FundamentalGroup.fromPath ⟦Path.refl u.val⟧ := by
+           FundamentalGroup.fromPath ⟦Path.refl u'.val⟧ := by
       rw [h_range]; rfl
-    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u
+    rw [show FundamentalGroup.map ⟨Subtype.val, continuous_subtype_val⟩ u'
             (FundamentalGroup.fromPath ⟦γ_U⟧) =
            FundamentalGroup.fromPath ⟦γ_U.map continuous_subtype_val⟧ from rfl,
         Path.map_codRestrict] at h_map
@@ -84,7 +89,7 @@ theorem semilocallySimplyConnected_iff :
   · -- Backward direction: small loops null implies SemilocallySimplyConnected
     intro h x
     obtain ⟨U, hU_open, hx_in_U, hU_loops_null⟩ := h x
-    use U, hU_open, hx_in_U; intro base
+    refine ⟨U, hU_open.mem_nhds hx_in_U, ?_⟩; intro base
     simp only [MonoidHom.range_eq_bot_iff]; ext p
     obtain ⟨γ', rfl⟩ := Quotient.exists_rep (FundamentalGroup.toPath p)
     have hrange : Set.range (γ'.map continuous_subtype_val) ⊆ U := by
