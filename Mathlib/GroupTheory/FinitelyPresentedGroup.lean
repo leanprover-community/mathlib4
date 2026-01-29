@@ -50,17 +50,6 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
--- Start of suggested additions to #Monoid.ker
--- TODO not sure if this is the right abstraction / right namespace for this.
-/-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
-the homomorphism mapped by the inverse isomorphism. -/
-@[simp]
-lemma MonoidHom.ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
-  (f : H →* K) (iso : G ≃* H) : (f.comp iso).ker = (Subgroup.map (iso.symm.toMonoidHom) f.ker) := by
-  rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm]
-  rfl
--- End of suggested additions to #Monoid.ker
-
 -- Start of suggested additions to #FreeGroup
 
 /-- We define that the free group on no generators as isomorphic to the trivial group. -/
