@@ -143,7 +143,7 @@ private theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar 
         · exact Nat.Coprime.coprime_div_left hcprm hdiv
     · exact Nat.Coprime.pow_left d hcprm2
 
-end Aks
+end AKS
 
 @[expose] public section
 
