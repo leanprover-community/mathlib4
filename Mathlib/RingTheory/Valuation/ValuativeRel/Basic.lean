@@ -331,6 +331,21 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
         simpa using this
   }
 
+/-- Pull a `ValuativeRel` instace along a ring homomorphism. -/
+@[simps -isSimp]
+protected abbrev comap {S : Type*} [CommRing S] (f : S →+* R) : ValuativeRel S where
+  rel r s := f r ≤ᵥ f s
+  rel_total _ _ := rel_total _ _
+  rel_trans := rel_trans
+  rel_add {_ _ _} := by simpa using rel_add (R := R)
+  rel_mul_right _ := by simpa using rel_mul_right _
+  rel_mul_cancel {_ _ _} := by simpa using rel_mul_cancel (R := R)
+  not_rel_one_zero := by simpa using not_rel_one_zero
+
+instance (S : Subring R) : ValuativeRel S := .comap S.subtype
+
+lemma coe_rel_coe (S : Subring R) {x y : S} : (x : R) ≤ᵥ y ↔ x ≤ᵥ y := .rfl
+
 variable (R) in
 /-- The "canonical" value group-with-zero of a ring with a valuative relation. -/
 def ValueGroupWithZero := Quotient (valueSetoid R)
@@ -1215,6 +1230,10 @@ lemma _root_.ValuativeRel.IsRankLeOne.of_valuativeExtension [IsRankLeOne B] : Is
   exact ⟨⟨f.comp (mapValueGroupWithZero _ _), hf.comp mapValueGroupWithZero_strictMono⟩⟩
 
 end ValuativeExtension
+
+instance {R : Type*} [CommRing R] [ValuativeRel R] (S : Subring R) :
+    ValuativeExtension S R where
+  rel_iff_rel _ _ := .rfl
 
 namespace ValuativeRel
 
