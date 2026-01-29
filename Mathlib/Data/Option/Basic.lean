@@ -79,7 +79,7 @@ theorem map_comp_some (f : α → β) : Option.map f ∘ some = some ∘ f :=
 
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
-    (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
+    (hf : ∀ a ∈ y, binderNameHint a f (f a) = g a) : x.bind f = y.bind g :=
   hx.symm ▸ bind_congr hf
 
 theorem joinM_eq_join : joinM = @join α :=
