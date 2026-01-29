@@ -264,6 +264,16 @@ end AddSubgroup
 
 namespace Subgroup
 
+/-- The whole group `G` is normal. -/
+@[to_additive (attr := simp) /-- The whole group `G` is normal. -/]
+instance normal_top : (⊤ : Subgroup G).Normal where
+  conj_mem _ a _ := a
+
+/-- The trivial subgroup `{1}`is normal. -/
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}`is normal. -/]
+instance normal_bot : (⊥ : Subgroup G).Normal where
+  conj_mem := by simp
+
 variable {H K : Subgroup G}
 
 @[to_additive]
