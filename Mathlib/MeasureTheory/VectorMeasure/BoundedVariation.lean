@@ -13,17 +13,18 @@ public import Mathlib.Topology.EMetricSpace.BoundedVariation
 # Vector valued Stieltjes measure associated to a bounded variation function
 
 Let `α` be a dense linear order with compact segments (e.g. `ℝ` or `ℝ≥0`), and `f : α → E` a
-bounded variation function to a complete additive normed group.
+bounded variation function taking values in a complete additive normed group.
 We associate to `f` a vector measure, called `BoundedVariationOn.vectorMeasure`. It gives
 mass `f.rightLim b - f.leftLim a` to the interval `[a, b]` (with similar formulas for
 other types of intervals).
 
-For the construction, we define first a content on the set of open-closed intervals `(a, b]`,
-mapping this interval to `f.rightLim b - f.rightLim a`. To extend this content to the whole
-sigma-algebra, we show that it is dominated by a finite measure, the Stieltjes measure associated
-to the variation of `f.rightLim`. This extension is not exactly the desired limit, as we need to
-tweak things if there is a bot element `a`: the previous measure gives to `{a}` the mass `0` instead
-of the desired `f.rightLim a - f a`, so we add a Dirac mass to correct this defect.
+For the construction, we define first an additive content on the set semiring of open-closed
+intervals `(a, b]`, mapping this interval to `f.rightLim b - f.rightLim a`. To extend this content
+to the whole sigma-algebra, by general extension theorems, it is enough to show that it is
+dominated by a finite measure. For this, we can use the Stieltjes measure associated to the
+variation of `f.rightLim`. The extension we get is not exactly the desired vector measure, as we
+need to tweak things if there is a bot element `a`: the previous vector measure gives to `{a}` the
+mass `0` instead of the desired `f.rightLim a - f a`, so we add a Dirac mass to correct this defect.
 -/
 
 @[expose] public section
@@ -53,10 +54,10 @@ open scoped Classical in
 /-- Auxiliary measure used to construct the vector measure associated to a bounded variation
 function. This is *not* the total variation of this measure in general, as we need to adjust things
 when there is a bot element by adding a Dirac mass there. -/
-noncomputable def measureAux (hf : BoundedVariationOn f univ) : Measure α :=
+private noncomputable def measureAux (hf : BoundedVariationOn f univ) : Measure α :=
   if h : Nonempty α then (hf.stieltjesFunctionRightLim h.some).measure else 0
 
-instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
+private instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
   by_cases h : Nonempty α; swap
   · simp only [BoundedVariationOn.measureAux, h, ↓reduceDIte]
     infer_instance
@@ -69,9 +70,14 @@ instance (hf : BoundedVariationOn f univ) : IsFiniteMeasure hf.measureAux := by
 mass `f.rightLim v - f.rightLim a` to each open-closed interval `(a, b]`. This is *not* the
 measure associated to `f` in general, as we may need to adjust things at the bot element if
 there is one. -/
-lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
+private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
     ∃ m : VectorMeasure α E, (∀ u v, u ≤ v → m (Set.Ioc u v) = f.rightLim v - f.rightLim u) ∧
       m botSet = 0 ∧ ∀ s, ‖m s‖ₑ ≤ hf.measureAux s := by
+  /- We will apply the general extension theorem
+  `VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom`. For this, we
+  need to check that the additive content is bounded by the measure `measureAux`, and that the
+  semiring of sets given by the open-closed intervals covers the space modulo `0`. Indeed,
+  it covers everying except the bot element if there is one. -/
   rcases isEmpty_or_nonempty α with h'α | h'α
   · exact ⟨0, by simp⟩
   let m := AddContent.onIoc f.rightLim
@@ -129,7 +135,7 @@ lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ) :
 open scoped Classical in
 /-- The vector measure associated to a bounded variation function `f`, giving mass
 `f.rightLim b - f.leftLim a` to closed intervals `[a, b]`, and similarly for other intervals. -/
-noncomputable irreducible_def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
+@[no_expose] noncomputable def vectorMeasure (hf : BoundedVariationOn f univ) : VectorMeasure α E :=
   hf.exists_vectorMeasure_le_measureAux.choose +
   (if h : ∃ x, IsBot x then VectorMeasure.dirac h.choose (f.rightLim h.choose - f h.choose) else 0)
 
