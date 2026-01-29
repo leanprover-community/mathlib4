@@ -40,7 +40,7 @@ reasons:
 
 @[expose] public section
 
-variable {R S : Type*} [LinearOrder R] [LinearOrder S]
+variable {R S F : Type*} [LinearOrder R] [LinearOrder S]
 
 namespace ArchimedeanClass
 section Ring
@@ -131,7 +131,8 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
-variable {S : Type*} [LinearOrder S] [CommRing S] [IsStrictOrderedRing S]
+variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
+  [FunLike F S R] [OrderHomClass F S R]
 
 @[simp]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
@@ -145,15 +146,17 @@ theorem eq_zero_or_top_of_archimedean [Archimedean S] (x : ArchimedeanClass S) :
   induction x with | mk x
   obtain rfl | h := eq_or_ne x 0 <;> simp_all
 
-/-- See `mk_map_of_archimedean'` for a version taking `M →+*o R`. -/
-theorem mk_map_of_archimedean [Archimedean S] (f : S →+o R) {x : S} (h : x ≠ 0) :
-    mk (f x) = mk (f 1) := by
+/-- See `mk_map_of_archimedean'` for a version taking `S →+*o R`. -/
+theorem mk_map_of_archimedean [AddMonoidHomClass F S R] [Archimedean S]
+    (f : F) {x : S} (h : x ≠ 0) : mk (f x) = mk (f 1) := by
+  change mk ((f : S →+o R) x) = _
   rw [← orderHom_mk, mk_eq_zero_of_archimedean h, orderHom_zero]
+  rfl
 
-/-- See `mk_map_of_archimedean` for a version taking `M →+o R`. -/
-theorem mk_map_of_archimedean' [Archimedean S] (f : S →+*o R) {x : S} (h : x ≠ 0) :
-    mk (f x) = 0 := by
-  simpa using mk_map_of_archimedean f.toOrderAddMonoidHom h
+/-- See `mk_map_of_archimedean` for a version taking `S →+o R`. -/
+theorem mk_map_of_archimedean' [RingHomClass F S R] [Archimedean S]
+    (f : F) {x : S} (h : x ≠ 0) : mk (f x) = 0 := by
+  simpa using mk_map_of_archimedean f h
 
 theorem mk_le_mk_add_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y : S) :
     mk x ≤ mk (f y) + mk x := by
@@ -185,7 +188,7 @@ theorem lt_of_neg_of_archimedean [Archimedean S] (f : S →+*o R)
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S
   · exact Subsingleton.allEq ..
-  · exact mk_map_of_archimedean' ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
+  · exact mk_map_of_archimedean' (F := ℤ →+*o S) ⟨Int.castRingHom S, fun _ ↦ by simp⟩ h
 
 theorem mk_intCast_nonneg (n : ℤ) : 0 ≤ mk (n : S) := by
   obtain rfl | hn := eq_or_ne n 0

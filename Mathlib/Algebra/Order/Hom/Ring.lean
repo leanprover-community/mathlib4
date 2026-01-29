@@ -47,7 +47,7 @@ variable {F α β γ δ : Type*}
 is the type of monotone semiring homomorphisms from `α` to `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingHom α β)`,
-you should parametrize over `(F : Type*) [OrderRingHomClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderHomClass F α β] [RingHomClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingHomClass`. -/
 structure OrderRingHom (α β : Type*) [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β]
@@ -65,7 +65,7 @@ infixl:25 " →+*o " => OrderRingHom
 is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
 When possible, instead of parametrizing results over `(f : OrderRingIso α β)`,
-you should parametrize over `(F : Type*) [OrderRingIsoClass F α β] (f : F)`.
+you should parametrize over `(F : Type*) [OrderHomClass F α β] [RingIsoClass F α β] (f : F)`.
 
 When you extend this structure, make sure to extend `OrderRingIsoClass`. -/
 structure OrderRingIso (α β : Type*) [Mul α] [Add α] [Mul β] [Add β] [LE α] [LE β] extends
