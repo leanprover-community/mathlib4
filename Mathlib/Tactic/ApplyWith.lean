@@ -34,7 +34,7 @@ declare_config_elab elabApplyConfig ApplyConfig
 tactic_extension Lean.Parser.Tactic.apply
 
 @[tactic_alt Lean.Parser.Tactic.apply]
-elab (name := applyWith) "apply" cfg:optConfig e:term : tactic => do
+elab (name := applyWith) "apply" cfg:optConfig ppSpace e:term : tactic => do
   let cfg ← elabApplyConfig cfg
   evalApplyLikeTactic (·.apply · cfg) e
 
