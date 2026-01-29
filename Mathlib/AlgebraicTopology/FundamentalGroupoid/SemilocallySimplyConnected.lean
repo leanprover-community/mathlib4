@@ -24,6 +24,8 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
 
 * `semilocallySimplyConnected_iff` - Characterization in terms of loops
   being nullhomotopic.
+* `semilocallySimplyConnected_iff_paths` - Characterization: any two paths in U between the same
+  endpoints are homotopic.
 * `SemilocallySimplyConnected.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected.
 -/
@@ -100,5 +102,34 @@ theorem semilocallySimplyConnected_iff :
            FundamentalGroup.fromPath ⟦γ'.map continuous_subtype_val⟧ from rfl,
         Quotient.sound hhom]
     rfl
+
+/-- Characterization of semilocally simply connected spaces: any two paths in U between the same
+endpoints are homotopic. -/
+theorem semilocallySimplyConnected_iff_paths :
+    SemilocallySimplyConnected X ↔
+    ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
+      ∀ {u u' : X} (γ γ' : Path u u'),
+        Set.range γ ⊆ U → Set.range γ' ⊆ U → γ.Homotopic γ' := by
+  rw [semilocallySimplyConnected_iff]
+  constructor
+  · intro h x
+    obtain ⟨U, hU_open, hx_in_U, hU_loops⟩ := h x
+    refine ⟨U, hU_open, hx_in_U, ?_⟩
+    intro u u' γ γ' hγ hγ'
+    -- γ.trans γ'.symm is a loop in U, hence nullhomotopic
+    have hloop : Set.range (γ.trans γ'.symm) ⊆ U := by
+      intro y hy
+      simp only [Path.trans_range, Path.symm_range] at hy
+      exact hy.elim (fun h => hγ h) (fun h => hγ' h)
+    have hnull := hU_loops (γ.trans γ'.symm) hloop
+    exact Path.Homotopic.eq_of_trans_symm hnull
+  · intro h x
+    obtain ⟨U, hU_open, hx_in_U, hU_paths⟩ := h x
+    refine ⟨U, hU_open, hx_in_U, ?_⟩
+    intro u γ hγ
+    have hrefl : Set.range (Path.refl u) ⊆ U := by
+      simp only [Path.refl_range, Set.singleton_subset_iff]
+      exact hγ ⟨0, γ.source⟩
+    exact hU_paths γ (Path.refl u) hγ hrefl
 
 end SemilocallySimplyConnected
