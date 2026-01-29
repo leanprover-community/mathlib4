@@ -130,6 +130,8 @@ class Bicategory (B : Type u) extends CategoryStruct.{v} B where
 
 namespace Bicategory
 
+initialize_simps_projections Bicategory (-Hom)
+
 @[inherit_doc] scoped infixr:81 " ◁ " => Bicategory.whiskerLeft
 @[inherit_doc] scoped infixl:81 " ▷ " => Bicategory.whiskerRight
 @[inherit_doc] scoped notation "α_" => Bicategory.associator
