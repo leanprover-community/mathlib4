@@ -235,6 +235,15 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
   induction γ₂ using Quotient.ind with | mk γ₂ =>
   simpa [← mk_trans, eq] using Homotopic.trans_assoc γ₀ γ₁ γ₂
 
+/-- If `trans γ (symm γ') = refl`, then `γ = γ'`.
+This is the quotient analogue of `a * b⁻¹ = 1 → a = b`. -/
+theorem eq_of_trans_symm {γ γ' : Homotopic.Quotient x₀ x₁}
+    (h : trans γ (symm γ') = refl x₀) : γ = γ' := by
+  induction γ using Quotient.ind with | mk γ =>
+  induction γ' using Quotient.ind with | mk γ' =>
+  simp only [← mk_trans, ← mk_symm, ← mk_refl] at h
+  exact Quotient.sound (Homotopic.eq_of_trans_symm (Quotient.exact h))
+
 end Quotient
 
 end Homotopic
