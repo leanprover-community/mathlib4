@@ -63,7 +63,7 @@ instance : Inhabited Int where
 namespace X
 
 -- Here's another example, with nested attributes.
-/-- warning: declaration uses 'sorry' -/
+/-- warning: declaration uses `sorry` -/
 #guard_msgs in
 theorem foo (x y : Nat) : x = y := sorry
 
