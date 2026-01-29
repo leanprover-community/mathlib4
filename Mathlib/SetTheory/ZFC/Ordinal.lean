@@ -373,7 +373,7 @@ theorem card_toZFSet (o : Ordinal) : (toZFSet o).card = o.card := by
 end Ordinal
 
 namespace ZFSet
-open Ordinal
+open Ordinal Cardinal
 
 theorem isOrdinal_toZFSet (o : Ordinal) : IsOrdinal o.toZFSet := by
   refine ⟨fun x hx y hy ↦ ?_, fun {z y x} hz hy hx ↦ ?_⟩
@@ -408,6 +408,10 @@ noncomputable def _root_.Ordinal.toZFSetIso : Ordinal ≃o {x // ZFSet.IsOrdinal
 theorem rank_natCast {n : ℕ} : rank n = n := by
   rw [← toZFSet_natCast, rank_toZFSet]
 
+@[simp]
+theorem card_natCast {n : ℕ} : card n = n := by
+  rw [← toZFSet_natCast, card_toZFSet, card_nat]
+
 theorem isOrdinal_natCast {n : ℕ} : IsOrdinal n := by
   rw [← toZFSet_natCast]
   exact isOrdinal_toZFSet n
@@ -415,6 +419,10 @@ theorem isOrdinal_natCast {n : ℕ} : IsOrdinal n := by
 @[simp]
 theorem rank_omega : rank omega = ω := by
   rw [← toZFSet_omega0, rank_toZFSet]
+
+@[simp]
+theorem card_omega : card omega = ℵ₀ := by
+  rw [← toZFSet_omega0, card_toZFSet, card_omega0]
 
 theorem isOrdinal_omega : IsOrdinal omega := by
   rw [← toZFSet_omega0]
