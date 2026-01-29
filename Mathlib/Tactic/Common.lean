@@ -120,6 +120,7 @@ public import Mathlib.Util.CountHeartbeats
 public import Mathlib.Util.PrintSorries
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
+public import Reap
 
 /-!
 This file imports all tactics which do not have significant theory imports,
