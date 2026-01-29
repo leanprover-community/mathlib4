@@ -29,6 +29,15 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
   endpoints are homotopic.
 * `SemilocallySimplyConnectedAt.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected at every point.
+
+## Implementation notes
+
+Our definition quantifies over all basepoints in the neighborhood U (i.e., the inclusion-induced
+map `π₁(U, base) → π₁(X, base)` is trivial for all `base ∈ U`). This is sometimes called
+"unbased semilocally simply connected" in the literature, and is stronger than the standard
+definition which only requires triviality at the point `x` itself. However, the two definitions
+are equivalent for locally path-connected spaces, which are the primary context for covering
+space theory. See [arXiv:1102.0993](https://arxiv.org/abs/1102.0993), Definitions 2.1 and 2.2.
 -/
 
 public section
