@@ -122,6 +122,22 @@ instance instLieModule : LieModule A (A ⊗[R] L) (A ⊗[R] M) where
   smul_lie t x m := by simp only [bracket_def, map_smul, LinearMap.smul_apply]
   lie_smul _ _ _ := map_smul _ _ _
 
+instance instBaseLieAlgebra : LieAlgebra R (A ⊗[R] L) where
+  lie_smul r x y := by simp [bracket_def]
+
+/-- The Lie algebra homomorphism induced by an algebra map. -/
+@[simps!]
+def lieHom {A B : Type*} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B] (f : A →ₐ[R] B) :
+    A ⊗[R] L →ₗ⁅R⁆ B ⊗[R] L :=
+  { TensorProduct.map f.toLinearMap (LinearMap.id (M := L)) with
+    map_lie' {x y} := by
+      simp only [bracket_def, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
+      refine x.induction_on (by simp) ?_ ?_
+      · intro _ _
+        refine y.induction_on (by simp) (fun _ _ ↦ by simp) (fun _ _ h1 h2 ↦ by simp [h1, h2])
+      · intro _ _
+        refine y.induction_on (by simp) (fun _ _ h ↦ by simp [h]) (by simp_all) }
+
 end ExtendScalars
 
 namespace RestrictScalars

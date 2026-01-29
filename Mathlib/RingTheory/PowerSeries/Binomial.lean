@@ -14,19 +14,23 @@ public import Mathlib.Tactic.SuppressCompilation
 We introduce formal power series of the form `(1 + X) ^ r`, where `r` is an element of a
 commutative binomial ring `R`.
 
+-- also, substitute `f(X)` for `X`.
+--This formal exponentiation operation makes the group `1 + XR⟦X⟧` into an `R`-module.
+
 ## Main Definitions
 * `PowerSeries.binomialSeries`: A power series expansion of `(1 + X) ^ r`, where `r` is an element
   of a commutative binomial ring `R`.
 
 ## Main Results
-* `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
-* `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
-* `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
-  `X ↦ (-X)` is `(1 + X) ^ (-d)`
+ * `PowerSeries.binomial_add`: Adding exponents yields multiplication of series.
+ * `PowerSeries.binomialSeries_nat`: when `r` is a natural number, we get `(1 + X) ^ r`.
+ * `PowerSeries.rescale_neg_one_invOneSubPow`: The image of `(1 - X) ^ (-d)` under the map
+   `X ↦ (-X)` is `(1 + X) ^ (-d)`
 
 ## TODO
-* When `A` is a commutative `R`-algebra, the exponentiation action makes the multiplicative group
-  `1 + XA[[X]]` into an `R`-module.
+
+ * `PowerSeries.binomial_mul`: expand `(1 + (X 1)) ^ r * (1 + (X 2)) ^ r`
+ * `PowerSeries.binomial_pow`: show `((1 + X) ^ r) ^ s = (1 + X) ^ (r * s)`
 
 -/
 
@@ -34,9 +38,7 @@ commutative binomial ring `R`.
 
 open Finset BigOperators
 
-suppress_compilation
-
-variable {R A : Type*}
+variable {Γ R A : Type*}
 
 namespace PowerSeries
 
@@ -93,4 +95,40 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
       show (d : ℤ) + 1 + n - 1 = d + n by lia, ← Nat.cast_add, Ring.choose_natCast]
     norm_cast
 
+/-!
+lemma binomialSeries_mul (r : R) : -- need mvPowerSeries
+    (1 + (X 1)) ^ r * (1 + (X 2)) ^ r = (1 + (X 1) + (X 2) + (X 1) * (X 2)) ^ r := by
+
+
+variable [UniformSpace R] [T2Space R] [CompleteSpace R] [IsTopologicalRing R]
+[UniformAddGroup R] [IsLinearTopology R R] --[DiscreteTopology R]
+
+open WithPiTopology
+
+lemma X_mul_topologically_nilpotent (f : PowerSeries R) :
+    IsTopologicallyNilpotent (X * f) := by
+  intro U hU
+  refine Filter.mem_map'.mpr ?_
+  rw [Filter.mem_atTop_sets, Set.setOf_set]
+  rw [mem_nhds_iff] at hU
+  obtain ⟨t, ht1, ht2, ht3⟩ := hU
+  rw [isOpen_iff_isOpen_ball_subset] at ht2
+  specialize ht2 0 ht3
+  obtain ⟨V, hV1, hV2, hV3⟩ := ht2
+  rw [Set.subset_def] at hV3
+
+  sorry
+
+/-- The power series given by `(1 + X * f X) ^ r`. -/
+def BinomialEval (f : PowerSeries R) (r : R) : PowerSeries R :=
+  aeval (X_mul_topologically_nilpotent f) (binomialSeries R r)
+
+
+/-- `(1 + X) ^ (r * s) = ((1 + X) ^ r) ^ s` -/
+lemma binomial_mul (r s : R) :
+    BinomialSeries (r * s) = BinomialEval (mk fun n => Ring.choose r (n + 1)) s := by
+
+  simp only [binomial_coeff, BinomialEval, eval_coeff, smul_eq_mul]
+  rw [some_theorem_about_(r*s).choose]
+-/
 end PowerSeries
