@@ -308,9 +308,9 @@ lemma haarScalarFactor_eq_integral_div (μ' μ : Measure G) [IsHaarMeasure μ]
 lemma haarScalarFactor_eq_integral_div_of_continuous_nonneg_pos
     (μ' μ : Measure G) [IsHaarMeasure μ]
     [IsFiniteMeasureOnCompacts μ'] [IsMulLeftInvariant μ']
-    {f : C(G, ℝ)} (h : HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0) :
+    {f : C(G, ℝ)} (hf : HasCompactSupport f ∧ 0 ≤ f ∧ f 1 ≠ 0) :
     haarScalarFactor μ' μ = (∫ x, f x ∂μ') / ∫ x, f x ∂μ := by
-  obtain ⟨f_comp, f_nonneg, f_one⟩ := h
+  obtain ⟨f_comp, f_nonneg, f_one⟩ := hf
   have int_f_ne_zero : ∫ (x : G), f x ∂μ ≠ 0 :=
     ne_of_gt (f.2.integral_pos_of_hasCompactSupport_nonneg_nonzero f_comp f_nonneg f_one)
   exact haarScalarFactor_eq_integral_div _ _ f.2 f_comp int_f_ne_zero
