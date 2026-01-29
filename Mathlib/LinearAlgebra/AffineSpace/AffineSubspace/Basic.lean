@@ -5,6 +5,8 @@ Authors: Joseph Myers
 -/
 module
 
+import Mathlib.Analysis.Convex.Hull
+public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
@@ -344,6 +346,12 @@ theorem vectorSpan_pair (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = 
 /-- The `vectorSpan` of two points is the span of their difference (reversed). -/
 theorem vectorSpan_pair_rev (p₁ p₂ : P) : vectorSpan k ({p₁, p₂} : Set P) = k ∙ (p₂ -ᵥ p₁) := by
   rw [pair_comm, vectorSpan_pair]
+
+/-- The `vectorSpan` of a segment is the span of the difference of its endpoints. -/
+theorem vectorSpan_segment [PartialOrder k] [IsOrderedRing k] (p₁ p₂ : V) :
+    vectorSpan k (segment k p₁ p₂) = k ∙ (p₂ -ᵥ p₁) := by
+  rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
+      direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
 
 variable {k}
 

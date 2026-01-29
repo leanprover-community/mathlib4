@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.RCLike
 public import Mathlib.MeasureTheory.Measure.Hausdorff
 import Mathlib.Analysis.Convex.Intrinsic
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-!
 # Hausdorff dimension
@@ -515,10 +516,8 @@ lemma hausdorffMeasure_of_finrank_lt [MeasurableSpace E] [BorelSpace E] {d : ℝ
 /-- The Hausdorff dimension of a non-degenerate segment in a real normed space is 1. -/
 theorem dimH_segment {x y : E} (h : x ≠ y) :
     dimH (segment ℝ x y) = 1 := by
-  have hvs : vectorSpan ℝ (segment ℝ x y) = ℝ ∙ (y - x) := by
-    rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
-      direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
-  rw [(convex_segment x y).dimH_eq_finrank_vectorSpan ⟨x, left_mem_segment ℝ x y⟩, hvs]
+  rw [Convex.dimH_eq_finrank_vectorSpan (convex_segment x y) ⟨x, left_mem_segment ℝ x y⟩,
+      vectorSpan_segment]
   simp [finrank_span_singleton (sub_ne_zero.mpr h.symm)]
 
 end Real
