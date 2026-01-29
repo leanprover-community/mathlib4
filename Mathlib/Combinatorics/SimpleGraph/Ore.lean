@@ -5,7 +5,7 @@ Authors: Shao Yu
 -/
 
 
-
+-- import Mathlib
 module
 
 
@@ -14,7 +14,8 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Data.List.GetD
-
+public import Mathlib.Topology.LocallyFinite
+public import Mathlib.Topology.Compactness.LocallyFinite
 
 
 /-!
@@ -26,11 +27,17 @@ We proved Ore's theorem in graph theory:
 
 ## Main definitions
 
-* `Walk.IsMaximalPath` is the definiton of a simple path of fixed maximum length between two points..
+* `Walk.IsMaximalPath` is the definiton of a simple path of fixed maximum length
+      between two points..
 
 * `Walk.IsMaxlongPath` is the definiton of the longest simple path in a graph.
 
 -/
+
+
+set_option linter.style.longLine false
+set_option linter.style.longFile 0
+
 @[expose] public section
 
 open SimpleGraph Finset Walk Function List
@@ -59,15 +66,17 @@ def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
 /--
 Between any two points, there must exist a longest path.
 -/
-lemma exists_maximal_path [Fintype V] {G : SimpleGraph V} (hG : G.Connected) :
+lemma exists_maximal_path {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [DecidableEq V]  (hG : G.Connected) :
   ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
   intro a b
   by_cases h : a ≠ b
   · let S : ℕ → Set (G.Walk a b) := fun (n : ℕ) => {(p : G.Walk a b) | p.IsPath ∧ p.length = n}
     let lengths := {n |∃ (p : G.Walk a b), p.IsPath ∧ p.length = n}
-    classical
     obtain H := SimpleGraph.fintypeSetPathLength G a b
     have lengths_Finite : lengths.Finite := by
+      simp only [lengths]
+      obtain := LocallyFinite.fintypeOfCompact
+      --apply LocallyFinite.point_finite
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
         rcases hn with ⟨p, hp, rfl⟩
@@ -124,10 +133,11 @@ lemma exists_maximal_path [Fintype V] {G : SimpleGraph V} (hG : G.Connected) :
 
 
 
+
 /--
 In a connected graph, there must exist a path of maximum length.
 -/
-lemma exists_maxilongmal_path [Fintype V] {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] :
+lemma exists_maxilongmal_path {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite] (hG : G.Connected) :
    ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
   obtain H' := exists_maximal_path hG
   let S : (a b : V) → Set (G.Walk a b) := fun a b => {p | p.IsPath}
@@ -230,7 +240,7 @@ lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p
 For a path `G.Walk a b` in graph `G`, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not adjacent.
 -/
-lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
   ¬ G.Adj a b := by
   rcases hv_not_in_p with ⟨v, hv_not_in_p⟩
   intro H_adj
@@ -240,6 +250,9 @@ lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) 
     let S : (a  : V) → Set (G.Walk v a) := fun a =>  {s | s.IsPath ∧ a ∈ p.support}
     let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
     have l1 : lengths.Finite := by
+      classical
+      by_cases hfin : Finite V
+      have : Fintype V := Fintype.ofFinite V
       let N := Fintype.card V
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
@@ -255,6 +268,7 @@ lemma ore_endpoints_adjacent [Fintype V] {G : SimpleGraph V} (hG : G.Connected) 
         obtain H := Set.finite_le_nat (n := Fintype.card V)
         simp_all
       exact Set.Finite.subset finite_bounded bound
+      sorry
     have h_lengths_nonempty : lengths.Nonempty := by
       rw [Set.nonempty_def]
       have h_reachable : ∃ w ∈ p.support, G.Reachable v w := by
@@ -830,7 +844,7 @@ If there exists a vertex v outside the longest simple path p that is not on path
 then there exists a simple path s starting from v with its endpoint being the first
 point where it connects to path p , and p and s intersect only at the point.
 -/
-lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V]
+lemma exsist_walk {G : SimpleGraph V} [DecidableEq V]
     {hG : G.Connected} {a b : V} (p : G.Walk a b) {i : Fin (p.support.length - 1)} (hp : Walk.IsMaxlongPath p) :
     ∀ (v : V), ∃ (j : ℕ), G.Reachable v (p.getVert j) ∧ ∃ (s : G.Walk v (p.getVert j)), s.IsPath ∧ s.support ∩ p.support = {p.getVert j} := by
   intro v
@@ -839,6 +853,9 @@ lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V]
   let S : (a  : V) → Set (G.Walk v a) := fun a =>  {s | s.IsPath ∧ a ∈ p.support}
   let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
   have l1 : lengths.Finite := by
+    classical
+    by_cases hfin : Finite V
+    have : Fintype V := Fintype.ofFinite V
     let N := Fintype.card V
     have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
       intro n hn
@@ -854,6 +871,7 @@ lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V]
       obtain H := Set.finite_le_nat (n := Fintype.card V)
       simp_all only
     exact Set.Finite.subset finite_bounded bound
+    sorry
   have h_lengths_nonempty : lengths.Nonempty := by
     rw [Set.nonempty_def]
     have h_reachable : ∃ w ∈ p.support, G.Reachable v w := by
@@ -989,7 +1007,7 @@ lemma getVert_congr {G : SimpleGraph V}
 
 
 lemma len_dropUntil {G : SimpleGraph V} [DecidableEq V]
-  [G.LocallyFinite] {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.support} {hn : i ≤ p.length} :
+  {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.support} {hn : i ≤ p.length} :
   (p.dropUntil _ hi).length = p.length - i := by
   have : (p.dropUntil _ hi).length = p.length - (p.takeUntil _ hi).length := by
     have len : p.length = (p.dropUntil _ hi).length + (p.takeUntil _ hi).length := by
@@ -1095,8 +1113,7 @@ lemma end_not_exsit_tail {G : SimpleGraph V}
   · exact h
 
 
-lemma next_not_exsit_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
-  {u v : V} (p : G.Walk u v) {hp : p.IsPath} {j : ℕ} (h : p.getVert j ∈ p.support) (len : j < p.length) :
+lemma next_not_exsit_takeUntil {G : SimpleGraph V} [DecidableEq V] {u v : V} (p : G.Walk u v) {hp : p.IsPath} {j : ℕ} (h : p.getVert j ∈ p.support) (len : j < p.length) :
   ¬ p.getVert (j + 1) ∈ (p.takeUntil _ h).support := by
   by_contra Hk
   have h_indices_right : ∀ x ≤  p.length, p.getVert x ∈ (p.takeUntil _ h).support → x ≤ j  := by
@@ -1172,7 +1189,7 @@ lemma h_indices_trans_1 [DecidableEq V] {G : SimpleGraph V} {a b x : V} (p : G.W
     · apply SimpleGraph.Walk.length_takeUntil_le
   · exact hj
 
-lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [DecidableEq V]
+lemma h_indices_trans_2 {G : SimpleGraph V} [DecidableEq V]
   {a b x : V} (p : G.Walk a b) {i : ℕ} {hp : p.IsPath} {h : p.getVert i ∈ p.support}
   {hx : x ∈ (p.takeUntil _ h).support} {len : i ≤ p.length}
 : ∃ k, p.getVert k = x ∧ k ≤ i := by
@@ -1194,8 +1211,7 @@ lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [DecidableEq V]
 
 
 
-lemma h_indices_trans_3 {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite]
-  {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ} {hi : p.getVert i ∈ p.support} {hn : p.getVert j ∈ (p.takeUntil _ hi).reverse.support}
+lemma h_indices_trans_3 {G : SimpleGraph V} [DecidableEq V] {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ} {hi : p.getVert i ∈ p.support} {hn : p.getVert j ∈ (p.takeUntil _ hi).reverse.support}
   {hx : x ∈ ((p.takeUntil _ hi).reverse.takeUntil _ hn).support} {len : i ≤ p.length} {hl : j ≤ i}
 : ∃ k, p.getVert (i - k) = x ∧ k ≤ i - j:= by
   rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at hx
@@ -3081,7 +3097,7 @@ lemma getVert_length_dropUntil {G : SimpleGraph V} {u v w : V} [DecidableEq V] {
 /--
 Under the Ore condition, a Hamiltonian path must exist in the graph.
 -/
-lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite] {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} {h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V} :
+lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] [DecidableEq V] {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} {h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V} :
     p.IsHamiltonian := by
   classical
   obtain H := maximal_path_extends_or_hamiltonian
@@ -3094,7 +3110,7 @@ lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.Loc
 
 
 
-lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fintype V] (h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V) {h_order : Fintype.card V ≥ 3} {a b : V} {h_ne : a ≠ b} {p : G.Walk a b} {hp : Walk.IsMaxlongPath p} {h_ab : ¬ G.Adj a b}:
+lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] [G.LocallyFinite] (h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V) {h_order : Fintype.card V ≥ 3} {a b : V} {h_ne : a ≠ b} {p : G.Walk a b} {hp : Walk.IsMaxlongPath p} {h_ab : ¬ G.Adj a b}:
   ∃ (k : (Fin (Fintype.card V - 1))), G.Adj a (p.getVert (k.val + 1)) ∧ G.Adj  (p.getVert k.val) b := by
   have h_all : ∀ v : V, v ∈ p.support := by
     intro v
