@@ -143,6 +143,12 @@ theorem affineLocally_iff_affineOpens_le {X Y : Scheme.{u}} (f : X ⟶ Y) :
       ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), P (f.appLE U V e).hom :=
   forall_congr' fun U ↦ sourceAffineLocally_morphismRestrict P f U U.2
 
+theorem affineLocally_iff_forall_isAffineOpen {X Y : Scheme.{u}} (f : X ⟶ Y) :
+    affineLocally.{u} P f ↔
+      ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      P (f.appLE U V e).hom := by
+  simp [affineLocally_iff_affineOpens_le, Scheme.affineOpens]
+
 theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     (h₂ : RingHom.LocalizationAwayPreserves P) (h₃ : RingHom.OfLocalizationSpan P) :
     (sourceAffineLocally P).IsLocal := by
@@ -675,35 +681,43 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
   specialize H ⟨P, hP⟩
   rwa [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)] at H
 
-/-- Let `Q` be a property of ring maps that is stable under localization.
-Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
-lemma stalkMap
+/-- Let `Q` be a property of ring maps that implies `Q'` on stalks.
+Then if the associated property of scheme morphisms holds for `f`, `Q'` holds on all stalks. -/
+lemma stalkMap_of_respectsIso
+    {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hQ' : RingHom.RespectsIso Q')
     (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
-      (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
-    (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
-  have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
+      (J : Ideal S) (_ : J.IsPrime), Q' (Localization.localRingHom _ J f rfl))
+    (hf : P f) (x : X) : Q' (f.stalkMap x).hom := by
   wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
   · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp Y.isBasis_affineOpens
       (Opens.mem_top <| f x)
     obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp X.isBasis_affineOpens
       (show x ∈ f ⁻¹ᵁ U from hfx)
-    rw [← hQi.arrow_mk_iso_iff (Scheme.Hom.resLEStalkMap f e ⟨x, hx⟩)]
+    rw [← hQ'.arrow_mk_iso_iff (Scheme.Hom.resLEStalkMap f e ⟨x, hx⟩)]
     exact this (IsZariskiLocalAtSource.resLE _ hf) _ ⟨hV, hU⟩
   obtain ⟨hX, hY⟩ := h
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
-  · have : Q ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom x)).hom := by
+  · have : Q' ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom x)).hom := by
       refine this ?_ (X.isoSpec.hom x) inferInstance inferInstance ?_
       · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
       · use Γ(Y, ⊤), Γ(X, ⊤)
     rw [Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_comp, CommRingCat.hom_comp,
-      hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
+      hQ'.cancel_right_isIso, CommRingCat.hom_comp, hQ'.cancel_left_isIso] at this
     have heq : (X.isoSpec.inv (X.isoSpec.hom x)) = x := by simp
-    rwa [hQi.arrow_mk_iso_iff (f.arrowStalkMapIsoOfEq heq)] at this
+    rwa [hQ'.arrow_mk_iso_iff (f.arrowStalkMapIsoOfEq heq)] at this
   obtain ⟨R, S, rfl, rfl⟩ := hXY
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f
-  rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
+  rw [hQ'.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
   rw [Spec_iff (P := P)] at hf
   apply hQ _ hf
+
+/-- Let `Q` be a property of ring maps that is stable under localization.
+Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
+lemma stalkMap (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+      (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
+    (hf : P f) (x : X) : Q (f.stalkMap x).hom :=
+  stalkMap_of_respectsIso (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso hQ hf x
 
 end HasRingHomProperty
 

@@ -309,6 +309,91 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
 
+/-- If `I ≤ p` and `p` is prime, the height of `p` is bounded by the height of `p ⧸ I R` plus
+the span rank of `I`. -/
+lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (hrp : I ≤ p) :
+    p.height ≤ (p.map (Quotient.mk I)).height + I.spanFinrank := by
+  classical
+  let p' := p.map (algebraMap R (R ⧸ I))
+  have : p'.IsPrime := isPrime_map_quotientMk_of_isPrime hrp
+  obtain ⟨s, hps, hs⟩ := exists_finset_card_eq_height_of_isNoetherianRing p'
+  have hsp' : (s : Set (R ⧸ I)) ⊆ (p' : Set _) := fun _ hx ↦ hps.1.2 (subset_span hx)
+  have : Set.SurjOn (Ideal.Quotient.mk I) p s := by
+    refine Set.SurjOn.mono subset_rfl hsp' fun x hx ↦ ?_
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+    exact ⟨x, by simpa [hrp, sup_of_le_left, p'] using hx⟩
+  obtain ⟨o, hsubset, ho, himgo⟩ := s.exists_subset_injOn_image_eq_of_surjOn (p : Set R) this
+  have hI : I.FG := IsNoetherian.noetherian I
+  let t : Finset R := o ∪ (Submodule.FG.finite_generators hI).toFinset
+  suffices h : p.height ≤ t.card by
+    refine le_trans h (hs ▸ ?_)
+    norm_cast
+    have : (Submodule.FG.finite_generators hI).toFinset.card = I.spanFinrank := by
+      rw [← Set.ncard_eq_toFinset_card (hs := Submodule.FG.finite_generators hI)]
+      exact Submodule.FG.generators_ncard hI
+    grind
+  refine Ideal.height_le_card_of_mem_minimalPrimes_span_finset ?_
+  rw [Finset.coe_union, Set.Finite.coe_toFinset, span_union, sup_comm, span,
+    Submodule.span_generators]
+  refine Ideal.mem_minimalPrimes_sup hrp ?_
+  convert hps
+  simp [Ideal.map_span, ← himgo]
+
+lemma height_le_ringKrullDim_quotient_add_spanFinrank {p I : Ideal R} [p.IsPrime] (h : I ≤ p) :
+    p.height ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  trans (p.map (Ideal.Quotient.mk I)).height + I.spanFinrank
+  · norm_cast; exact Ideal.height_le_height_add_spanFinrank_of_le h
+  · gcongr
+    have : (Ideal.map (Ideal.Quotient.mk I) p).IsPrime :=
+      Ideal.isPrime_map_quotientMk_of_isPrime h
+    exact Ideal.height_le_ringKrullDim_of_ne_top Ideal.IsPrime.ne_top'
+
+lemma ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (I : Ideal R)
+    (h : I ≤ Ring.jacobson R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
+  nontriviality R
+  rw [ringKrullDim_le_iff_isMaximal_height_le]
+  intro m hm
+  exact height_le_ringKrullDim_quotient_add_spanFinrank <|
+    le_trans h <| Ring.jacobson_le_of_isMaximal m
+
+/-- If `p` is a prime ideal containing `s`, the height of `p` is bounded
+by the sum of the height of the image of `p` in `R ⧸ (s)` and the cardinality of `s`. -/
+lemma Ideal.height_le_height_add_encard_of_subset (s : Set R) {p : Ideal R} [p.IsPrime]
+    (hrm : s ⊆ p) : p.height ≤ (p.map (Quotient.mk (span s))).height + s.encard := by
+  apply le_trans (Ideal.height_le_height_add_spanFinrank_of_le (I := span s) (p := p) ?_) ?_
+  · rwa [span_le]
+  · gcongr
+    exact Submodule.spanFinrank_span_le_encard _
+
+lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
+    (s : Set R) (hs : s ⊆ p) : p.height ≤ ringKrullDim (R ⧸ span s) + s.encard := by
+  refine le_trans (height_le_ringKrullDim_quotient_add_spanFinrank (I := .span s) ?_) ?_
+  · simpa [span_le]
+  · gcongr; norm_cast; exact Submodule.spanFinrank_span_le_encard _
+
+lemma Ideal.height_le_height_add_one_of_mem {r : R} {p : Ideal R} [p.IsPrime] (hrm : r ∈ p) :
+    p.height ≤ (p.map (Quotient.mk (span {r}))).height + 1 := by
+  convert height_le_height_add_encard_of_subset {r} (p := p) (by simpa)
+  simp
+
+lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsPrime]
+    (hrp : r ∈ p) : p.height ≤ ringKrullDim (R ⧸ span {r}) + 1 := by
+  convert Ideal.height_le_ringKrullDim_quotient_add_encard {r} (by simpa)
+  simp
+
+lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span s) + s.encard := by
+  refine le_trans (ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (Ideal.span s) ?_) ?_
+  · simpa [Ideal.span_le]
+  · gcongr; norm_cast; exact Submodule.spanFinrank_span_le_encard _
+
+lemma ringKrullDim_le_ringKrullDim_quotient_add_card (s : Finset R)
+    (hs : (s : Set R) ⊆ Ring.jacobson R) :
+    ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span (s : Set R)) + s.card := by
+  convert ringKrullDim_le_ringKrullDim_quotient_add_encard s hs
+  norm_cast
+
 section Algebra
 
 variable {S : Type*} [CommRing S] [Algebra R S]

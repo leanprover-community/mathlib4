@@ -40,7 +40,7 @@ open SchwartzMap ContinuousLinearMap MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 E F F₁ F₂ : Type*}
+variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
@@ -114,8 +114,8 @@ variable (E F) in
 def toTemperedDistributionCLM (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
     𝓢(E, F) →L[ℂ] 𝓢'(E, F) where
   toFun f := toPointwiseConvergenceCLM _ _ _ _ <| integralCLM ℂ μ ∘L pairing (lsmul ℂ ℂ).flip f
-  map_add' _ _ := by ext; simp
-  map_smul' _ _ := by ext; simp
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
   cont := PointwiseConvergenceCLM.continuous_of_continuous_eval
     fun g ↦ (integralCLM ℂ μ).cont.comp <| pairing_continuous_left (lsmul ℂ ℂ).flip g
 
@@ -258,6 +258,33 @@ theorem smulLeftCLM_compL_smulLeftCLM {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasT
   ext1 f
   simp [hg₁, hg₂]
 
+theorem smulLeftCLM_smul {g : E → ℂ} (hg : g.HasTemperateGrowth) (c : ℂ) :
+    smulLeftCLM F (c • g) = c • smulLeftCLM F g := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_smul hg]
+
+theorem smulLeftCLM_add {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ + g₂) = smulLeftCLM F g₁ + smulLeftCLM F g₂ := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_add hg₁ hg₂]
+
+theorem smulLeftCLM_sub {g₁ g₂ : E → ℂ} (hg₁ : g₁.HasTemperateGrowth)
+    (hg₂ : g₂.HasTemperateGrowth) :
+    smulLeftCLM F (g₁ - g₂) = smulLeftCLM F g₁ - smulLeftCLM F g₂ := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_sub hg₁ hg₂]
+
+theorem smulLeftCLM_neg {g : E → ℂ} (hg : g.HasTemperateGrowth) :
+    smulLeftCLM F (-g) = -smulLeftCLM F g := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_neg hg]
+
+theorem smulLeftCLM_sum {g : ι → E → ℂ} {s : Finset ι} (hg : ∀ i ∈ s, (g i).HasTemperateGrowth) :
+    smulLeftCLM F (fun x ↦ ∑ i ∈ s, g i x) = ∑ i ∈ s, smulLeftCLM F (g i) := by
+  ext f u
+  simp [SchwartzMap.smulLeftCLM_sum hg]
+
 open ENNReal MeasureTheory
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [hμ : μ.HasTemperateGrowth]
@@ -313,22 +340,34 @@ continuous linear map on tempered distributions. -/
 instance instLineDeriv : LineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp m f := PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) f
 
-instance instLineDerivAdd : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
-  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+@[simp]
+theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
+    ∂_{m} f g = f (- ∂_{m} g) := rfl
 
-instance instLineDerivSMul : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivAdd E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_add m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_add
+  lineDerivOp_left_add x y f := by
+    ext u
+    simp [lineDerivOp_left_add, UniformConvergenceCLM.add_apply, add_comm]
+
+instance : LineDerivSMul ℂ E 𝓢'(E, F) 𝓢'(E, F) where
   lineDerivOp_smul m := (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul
 
-instance instContinuousLineDeriv : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
+instance : LineDerivSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_smul m :=
+    (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).map_smul_of_tower
+
+instance : LineDerivLeftSMul ℝ E 𝓢'(E, F) 𝓢'(E, F) where
+  lineDerivOp_left_smul r x f := by
+    ext u
+    simp [lineDerivOp_left_smul, map_smul_of_tower f]
+
+instance : ContinuousLineDeriv E 𝓢'(E, F) 𝓢'(E, F) where
   continuous_lineDerivOp m :=
     (PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m)).continuous
 
 theorem lineDerivOpCLM_eq (m : E) : lineDerivOpCLM ℂ 𝓢'(E, F) m =
   PointwiseConvergenceCLM.precomp F (-lineDerivOpCLM ℂ 𝓢(E, ℂ) m) := rfl
-
-@[simp]
-theorem lineDerivOp_apply_apply (f : 𝓢'(E, F)) (g : 𝓢(E, ℂ)) (m : E) :
-    ∂_{m} f g = f (- ∂_{m} g) := rfl
 
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E] [FiniteDimensional ℝ E]
   {μ : Measure E} [μ.IsAddHaarMeasure]
@@ -339,6 +378,43 @@ theorem lineDerivOp_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) (m : E) :
   simp [integral_smul_lineDerivOp_right_eq_neg_left g f, integral_neg]
 
 end lineDeriv
+
+/-! ### Laplacian-/
+
+section Laplacian
+
+open Laplacian LineDeriv
+open scoped SchwartzMap
+
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [NormedSpace ℂ F]
+
+instance : Laplacian 𝓢'(E, F) 𝓢'(E, F) where
+  laplacian := LineDeriv.laplacianCLM ℝ E 𝓢'(E, F)
+
+@[simp]
+theorem laplacianCLM_apply (f : 𝓢'(E, F)) : laplacianCLM ℂ E 𝓢'(E, F) f = Δ f := by
+  simp [laplacianCLM, laplacian]
+
+theorem laplacian_eq_sum [Fintype ι] (b : OrthonormalBasis ι ℝ E) (f : 𝓢'(E, F)) :
+    Δ f = ∑ i, ∂_{b i} (∂_{b i} f) := LineDeriv.laplacianCLM_eq_sum b f
+
+@[simp]
+theorem laplacian_apply_apply (f : 𝓢'(E, F)) (u : 𝓢(E, ℂ)) : (Δ f) u = f (Δ u) := by
+  simp [laplacian_eq_sum (stdOrthonormalBasis ℝ E),
+    SchwartzMap.laplacian_eq_sum (stdOrthonormalBasis ℝ E),
+    UniformConvergenceCLM.sum_apply, map_neg, neg_neg]
+
+variable [MeasurableSpace E] [BorelSpace E]
+
+/-- The distributional Laplacian and the classical Laplacian coincide on `𝓢(E, F)`. -/
+@[simp]
+theorem laplacian_toTemperedDistributionCLM_eq (f : 𝓢(E, F)) :
+    Δ (f : 𝓢'(E, F)) = Δ f := by
+  ext u
+  simp [SchwartzMap.integral_smul_laplacian_right_eq_left]
+
+end Laplacian
 
 /-! ### Fourier transform -/
 

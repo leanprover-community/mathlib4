@@ -72,7 +72,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
-    refine isPrimary_finset_inf (i := J) ?_ ?_ (by simp)
+    refine isPrimary_finsetInf (i := J) ?_ ?_ (by simp)
     · simp [hJ]
     · simp only [Finset.mem_filter, id_eq, and_imp]
       intro y hy

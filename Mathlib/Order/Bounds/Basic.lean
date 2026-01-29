@@ -697,6 +697,38 @@ theorem isGLB_upperBounds : IsGLB (upperBounds s) a ↔ IsLUB s a :=
 
 end
 
+section Minimal
+
+variable [Preorder α] {s : Set α} {a b : α}
+
+theorem DirectedOn.le_of_minimal (h : DirectedOn (fun x y ↦ y ≤ x) s) (hMin : Minimal (· ∈ s) a)
+    (hb : b ∈ s) : a ≤ b := by
+  obtain ⟨z, hz, hza, hzb⟩ := h a hMin.1 b hb
+  exact (hMin.2 hz hza).trans hzb
+
+theorem DirectedOn.le_of_maximal (h : DirectedOn (· ≤ ·) s) (hMax : Maximal (· ∈ s) a)
+    (hb : b ∈ s) : b ≤ a := by
+  obtain ⟨z, hz, haz, hbz⟩ := h a hMax.1 b hb
+  exact hbz.trans (hMax.2 hz haz)
+
+theorem DirectedOn.minimal_iff_isLeast (h : DirectedOn (fun x y ↦ y ≤ x) s) :
+    Minimal (· ∈ s) a ↔ IsLeast s a :=
+  ⟨fun hMin ↦ ⟨hMin.1, fun _ hy ↦ h.le_of_minimal hMin hy⟩, fun h ↦ ⟨h.1, fun _ hy _ ↦ h.2 hy⟩⟩
+
+theorem DirectedOn.maximal_iff_isGreatest (h : DirectedOn (· ≤ ·) s) :
+    Maximal (· ∈ s) a ↔ IsGreatest s a :=
+  minimal_iff_isLeast (α := αᵒᵈ) h
+
+end Minimal
+
+theorem minimal_iff_isLeast [LinearOrder α] {s : Set α} {a : α} :
+    Minimal (· ∈ s) a ↔ IsLeast s a :=
+  (Std.Total.directedOn s).minimal_iff_isLeast
+
+theorem maximal_iff_isGreatest [LinearOrder α] {s : Set α} {a : α} :
+    Maximal (· ∈ s) a ↔ IsGreatest s a :=
+  (Std.Total.directedOn s).maximal_iff_isGreatest
+
 /-!
 ### (In)equalities with the least upper bound and the greatest lower bound
 -/
