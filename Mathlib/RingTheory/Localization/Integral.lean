@@ -55,9 +55,6 @@ theorem coeffIntegerNormalization_of_coeff_zero (p : S[X]) (i : ℕ) (h : coeff 
   simp only [coeffIntegerNormalization, h, mem_support_iff, not_true, Ne,
     dif_neg, not_false_iff]
 
-@[deprecated (since := "2025-05-23")]
-alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_of_coeff_zero
-
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
@@ -464,7 +461,7 @@ variable (R S K)
 
 /-- `S` is algebraic over `R` iff a fraction ring of `S` is algebraic over `R` -/
 theorem isAlgebraic_iff' [Field K] [IsDomain R] [Algebra R K] [Algebra S K]
-    [NoZeroSMulDivisors R K] [IsFractionRing S K] [IsScalarTower R S K] :
+    [Module.IsTorsionFree R K] [IsFractionRing S K] [IsScalarTower R S K] :
     Algebra.IsAlgebraic R S ↔ Algebra.IsAlgebraic R K := by
   simp only [Algebra.isAlgebraic_def]
   constructor

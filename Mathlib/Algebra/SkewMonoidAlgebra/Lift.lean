@@ -41,7 +41,7 @@ variable (k G A)
 /-- Any monoid homomorphism `G →* A` can be lifted to an algebra homomorphism
   `SkewMonoidAlgebra k G →ₐ[k] A`. -/
 def lift : (G →* A) ≃ (AlgHom k (SkewMonoidAlgebra k G) A) where
-  invFun f := (f : SkewMonoidAlgebra k G →* A).comp  (of k G)
+  invFun f := (f : SkewMonoidAlgebra k G →* A).comp (of k G)
   toFun F := by
     apply liftNCAlgHom (Algebra.ofId k A) F
     simp_rw [show ∀ (g : G) (r : k), g • r = r by
@@ -148,6 +148,7 @@ section domCongr
 
 variable {A : Type*}
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `AddCommMonoid A` and `e : G ≃ H`, `domCongr e` is the corresponding `Equiv` between
 `SkewMonoidAlgebra A G` and `SkewMonoidAlgebra A H`. -/
 @[simps apply]
@@ -205,9 +206,9 @@ theorem domCongr_refl :
   apply AlgEquiv.ext
   aesop
 
-set_option backward.proofsInPublic true in
 @[simp] theorem domCongr_symm {e : G ≃* H} (he : ∀ (a : G) (x : A), a • x = (e a) • x) :
-    (domCongrAlg k A he).symm = domCongrAlg _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
+    (domCongrAlg k A he).symm =
+      domCongrAlg (e := e.symm) _ _ (fun a x ↦ by rw [he, MulEquiv.apply_symm_apply]) :=
   rfl
 
 end domCongr
@@ -219,6 +220,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 variable {V : Type*} [AddCommMonoid V] [Module k V] [Module (SkewMonoidAlgebra k G) V]
   [IsScalarTower k (SkewMonoidAlgebra k G) V]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- A submodule over `k` which is stable under scalar multiplication by elements of `G` is a
 submodule over `SkewMonoidAlgebra k G` -/
 def submoduleOfSmulMem (W : Submodule k V) (h : ∀ (g : G) (v : V), v ∈ W → of k G g • v ∈ W) :

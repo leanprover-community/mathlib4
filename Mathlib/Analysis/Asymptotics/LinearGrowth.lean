@@ -337,7 +337,7 @@ variable {u : ℕ → EReal} {v : ℕ → ℕ}
 
 lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
-  refine (eventually_ge_atTop (b-a)⁻¹).mono fun x ab_x ↦ ?_
+  refine (eventually_ge_atTop (b - a)⁻¹).mono fun x ab_x ↦ ?_
   rw [inv_le_iff_one_le_mul₀ (sub_pos_of_lt h), mul_comm, sub_mul, le_sub_iff_add_le'] at ab_x
   obtain ⟨n, n_bx, hn⟩ := (b * x).exists_floor
   refine ⟨n, ?_, n_bx⟩
@@ -440,9 +440,8 @@ lemma linearGrowthInf_comp_nonneg (h : Monotone u) (h' : u ≠ ⊥) (hv : Tendst
     0 ≤ linearGrowthInf (u ∘ v) := by
   simp only [ne_eq, funext_iff, not_forall] at h'
   obtain ⟨m, hum⟩ := h'
-  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n := by
-    apply (eventually_map (P := fun n : ℕ ↦ u m ≤ u n)).2
-    exact (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
+  have um_uvn : ∀ᶠ n in atTop, u m ≤ (u ∘ v) n :=
+    (eventually_atTop.2 ⟨m, fun n m_n ↦ h m_n⟩).filter_mono hv
   apply (linearGrowthInf_eventually_monotone um_uvn).trans'
   rcases eq_or_ne (u m) ⊤ with hum' | hum'
   · rw [hum', ← Pi.top_def, linearGrowthInf_top]; exact le_top

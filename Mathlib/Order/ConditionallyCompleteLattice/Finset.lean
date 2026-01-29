@@ -14,7 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set

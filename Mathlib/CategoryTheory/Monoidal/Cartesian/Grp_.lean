@@ -42,7 +42,7 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [- Functor.comp_obj]
+    simp [-Functor.comp_obj]
   right_inv := by
     change lift (𝟙 X) (α.homEquiv.symm (α.homEquiv (𝟙 X))⁻¹) ≫
       α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) =
@@ -51,7 +51,7 @@ def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _)
     simp only [α.homEquiv_comp, Equiv.apply_symm_apply]
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_one, map_mul]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
-    simp [- Functor.comp_obj]
+    simp [-Functor.comp_obj]
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.ofRepresentableBy := GrpObj.ofRepresentableBy
 
@@ -99,7 +99,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
   NatIso.ofComponents (fun Y ↦ MulEquiv.toGrpIso
     { toEquiv := α.homEquiv
       map_mul' :=
-  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul})
+  ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul })
       fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/

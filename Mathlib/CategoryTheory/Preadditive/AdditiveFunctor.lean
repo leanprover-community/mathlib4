@@ -144,6 +144,11 @@ end InducedCategory
 instance fullSubcategoryInclusion_additive {C : Type*} [Category* C] [Preadditive C]
     (Z : ObjectProperty C) : Z.ι.Additive where
 
+instance {C D : Type*} [Category* C] [Category* D] [Preadditive C] [Preadditive D]
+    (F : D ⥤ C) [F.Additive] (P : ObjectProperty C)
+    (hF : ∀ (X : D), P (F.obj X)) :
+    (P.lift F hF).Additive where
+
 section
 
 -- To talk about preservation of biproducts we need to specify universes explicitly.
@@ -297,7 +302,7 @@ abbrev AdditiveFunctor.ofRightExact : (C ⥤ᵣ D) ⥤ C ⥤+ D :=
 
 /-- Turn an exact functor into an additive functor. -/
 abbrev AdditiveFunctor.ofExact : (C ⥤ₑ D) ⥤ C ⥤+ D :=
-  ObjectProperty.ιOfLE (exactFunctor_le_additiveFunctor C D )
+  ObjectProperty.ιOfLE (exactFunctor_le_additiveFunctor C D)
 
 end
 

@@ -176,8 +176,8 @@ theorem naturality_2' (α : F ⟶ G) (f : X ⟶ Y) {_ : IsIso (α.app Y)} :
 instance isIso_app_of_isIso (α : F ⟶ G) [IsIso α] (X) : IsIso (α.app X) :=
   ⟨⟨(inv α).app X, ⟨by grind, by grind⟩⟩⟩
 
-@[simp]
-theorem isIso_inv_app (α : F ⟶ G) {_ : IsIso α} (X) : (inv α).app X = inv (α.app X) := by cat_disch
+@[simp, push ←]
+theorem isIso_inv_app (α : F ⟶ G) [IsIso α] (X) : (inv α).app X = inv (α.app X) := by cat_disch
 
 @[simp]
 theorem inv_map_inv_app (F : C ⥤ D ⥤ E) {X Y : C} (e : X ≅ Y) (Z : D) :
@@ -247,5 +247,15 @@ def isoCopyObj : F ≅ F.copyObj obj e :=
   NatIso.ofComponents e (by simp [Functor.copyObj])
 
 end Functor
+
+@[reassoc]
+lemma NatTrans.naturality_1 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.inv ≫ α.app X ≫ G.map e.hom = α.app Y := by
+  simp
+
+@[reassoc]
+lemma NatTrans.naturality_2 {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
+    F.map e.hom ≫ α.app Y ≫ G.map e.inv = α.app X := by
+  simp
 
 end CategoryTheory

@@ -10,7 +10,6 @@ public import Mathlib.Data.Finsupp.MonomialOrder
 public import Mathlib.Data.Finsupp.WellFounded
 public import Mathlib.Data.List.TFAE
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -567,9 +566,8 @@ theorem degree_pow [IsReduced R] (f : MvPolynomial σ R) (n : ℕ) :
     by_cases hn : n = 0
     · rw [hn, pow_zero, degree_one]
     · rw [zero_pow hn, degree_zero]
-  nontriviality R
   apply degree_pow_of_pow_leadingCoeff_ne_zero
-  apply IsReduced.pow_ne_zero
+  apply pow_ne_zero
   rw [leadingCoeff_ne_zero_iff]
   exact hf
 
@@ -817,7 +815,7 @@ lemma sPolynomial_def (f g : MvPolynomial σ R) :
     rw [sPolynomial, this, this, sup_comm]
   intro f g
   ext a
-  obtain (h|h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
+  obtain (h | h) := le_total (m.degree f a) (m.degree g a) <;> simp [h]
 
 lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
     (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
@@ -957,6 +955,8 @@ lemma sPolynomial_monomial_mul [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R
     tsub_add_tsub_cancel (sup_le_sup (self_le_add_left _ _) (self_le_add_left _ _)) (by simp),
     tsub_add_eq_add_tsub le_sup_left, tsub_add_eq_add_tsub le_sup_right,
     add_comm d₁, add_comm d₂, add_tsub_add_eq_tsub_right, add_tsub_add_eq_tsub_right]
+
+@[deprecated (since := "2025-12-15")] alias sPolynomial_mul_monomial := sPolynomial_monomial_mul
 
 lemma sPolynomial_monomial_mul' [NoZeroDivisors R] (p₁ p₂ : MvPolynomial σ R) (d₁ d₂ : σ →₀ ℕ)
     (c₁ c₂ : R) :

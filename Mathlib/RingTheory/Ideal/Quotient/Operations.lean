@@ -223,7 +223,7 @@ lemma quotientInfToPiQuotient_surj {I : ι → Ideal R}
     · simp [eq_sub_of_add_eq' hue, map_sub, eq_zero_iff_mem.mpr hu]
     · exact fun j hj ↦ eq_zero_iff_mem.mpr (he j hj)
   choose e he using key
-  use mk _ (∑ i, f i*e i)
+  use mk _ (∑ i, f i * e i)
   ext i
   rw [quotientInfToPiQuotient_mk', map_sum, Fintype.sum_eq_single i]
   · simp [(he i).1, hf]
@@ -456,8 +456,8 @@ variable [Semiring B] [Algebra R₁ B]
 /-- `Ideal.quotient.lift` as an `AlgHom`. -/
 def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     A ⧸ I →ₐ[R₁] B :=
-  {-- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
-      -- imports this file.
+  { -- this is IsScalarTower.algebraMap_apply R₁ A (A ⧸ I) but the file `Algebra.Algebra.Tower`
+    -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
     commutes' := fun r => by

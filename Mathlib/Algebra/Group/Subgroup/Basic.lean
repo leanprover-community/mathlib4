@@ -403,8 +403,6 @@ theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
   simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
   tauto
 
-variable (H)
-
 end Normalizer
 
 end Subgroup

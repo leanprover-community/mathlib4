@@ -17,7 +17,7 @@ then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
 -/
 
-@[expose] public section
+public section
 
 variable (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] [Algebra.FiniteType R A]
 

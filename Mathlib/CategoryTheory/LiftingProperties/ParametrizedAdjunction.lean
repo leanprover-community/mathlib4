@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.LiftingProperties.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Adjunction.Parametrized
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Lifting properties and parametrized adjunctions
@@ -132,7 +132,7 @@ namespace PullbackObjObj
 noncomputable def ofHasPullback
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
     G.PullbackObjObj f₁ f₃ :=
-  { isPullback := IsPullback.of_hasPullback _ _, ..}
+  { isPullback := IsPullback.of_hasPullback _ _, .. }
 
 variable {G f₁ f₃} (sq : G.PullbackObjObj f₁ f₃)
 

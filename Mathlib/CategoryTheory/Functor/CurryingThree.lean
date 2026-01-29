@@ -43,6 +43,23 @@ def fullyFaithfulUncurry₃ :
     (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ × C₂ × C₃ ⥤ E)).FullyFaithful :=
   currying₃.fullyFaithfulFunctor
 
+/-- Currying functors in three variables gives a fully faithful functor. -/
+def fullyFaithfulCurry₃ :
+    (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).FullyFaithful :=
+  currying₃.fullyFaithfulInverse
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Full :=
+  fullyFaithfulUncurry₃.full
+
+instance : (uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E).Faithful :=
+  fullyFaithfulUncurry₃.faithful
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Full :=
+  fullyFaithfulCurry₃.full
+
+instance : (curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)).Faithful :=
+  fullyFaithfulCurry₃.faithful
+
 @[simp]
 lemma curry₃_obj_map_app_app (F : C₁ × C₂ × C₃ ⥤ E)
     {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) (X₂ : C₂) (X₃ : C₃) :

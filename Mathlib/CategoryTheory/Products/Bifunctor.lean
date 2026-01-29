@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 # Lemmas about functors out of product categories.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory
