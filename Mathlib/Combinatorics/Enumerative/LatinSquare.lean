@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib
+import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # LatinSquare
@@ -277,15 +277,14 @@ end Isotopy
 
 section Completion
 
-variable {n : Type u'} [Fintype n] [Nonempty n]
+variable {n : Type u'} [Fintype n] [Nonempty n] [DecidableEq n]
 variable {k : Type u} [Fintype k] [Nonempty k]
 
 def is_subrect
   (A : LatinRectangle m n α)
-  (B : LatinRectangle m' n' α)
-  (i₁ : m ↪ m')
-  (i₂ : n ↪ n') :=
-  ∀ (i : m), ∀ (j : n), A.M i j = B.M (i₁ i) (i₂ j)
+  (B : LatinRectangle m' n α)
+  (ι : m ↪ m') :=
+  ∀ (i : m), ∀ (j : n), A.M i j = B.M (ι i) j
 
 
 def symbols_in
@@ -308,7 +307,7 @@ def symbols_not_in
 --  (symbols_in A j) ∩ (symbols_not_in A j) = ∅ := by sorry
 
 lemma count_by_group_or_element_indicator
-  {ι : Type*} [Fintype ι] [DecidableEq ι]
+  {ι : Type*} [Fintype ι] [DecidableEq ι
   (B : ι → Finset α)
   (s : Finset ι)
   : ∑ j ∈ s, (Finset.card (B j)) =
@@ -482,28 +481,28 @@ lemma exists_larger_subset
 
 
 lemma latin_rect_hall_property
-  {k n : Nat} [NeZero k] [NeZero n]
-  {B : Fin n → Finset α}
-  (h1 : k < n := by omega)
-  (h2 : ∀ j, Finset.card (B j) = n - k)
-  (h3 : ∀ x, ∀ (t : Finset (Fin n)), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ n - k) :
-  ∀ (s : Finset (Fin n)), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
-    intro s
-    set l := s.card with hl
-    have h1 : ∑ j ∈ s, (Finset.card (B j)) = l*(n-k) := by
-      conv =>
-        congr
-        arg 2
-        ext j
-        rw [h2]
-      simp [hl]
-    by_contra hc
-    simp at hc
-    have _ : NeZero (n-k) := {out := by omega}
-    have hcount := exists_larger_subset h2 hc
-    obtain ⟨ x, hx ⟩ := hcount
-    specialize h3 x s
-    omega
+  {B : n → Finset α}
+  (h1 : Fintype.card k < Fintype.card n := by omega)
+  (h2 : ∀ j, Finset.card (B j) = Fintype.card n - Fintype.card k)
+  (h3 : ∀ x, ∀ (t : Finset n), Finset.card {j | j ∈ t ∧ x ∈ B j} ≤ Fintype.card n - Fintype.card k) :
+  ∀ (s : Finset n), (Finset.card s) ≤ (Finset.card (s.biUnion B)) := by
+    sorry
+    -- intro s
+    -- set l := s.card with hl
+    -- have h1 : ∑ j ∈ s, (Finset.card (B j)) = l*(Fintype.card - Fintype.card k) := by
+    --   conv =>
+    --     congr
+    --     arg 2
+    --     ext j
+    --     rw [h2]
+    --   simp [hl]
+    -- by_contra hc
+    -- simp at hc
+    -- have _ : NeZero (n-k) := {out := by omega}
+    -- have hcount := exists_larger_subset h2 hc
+    -- obtain ⟨ x, hx ⟩ := hcount
+    -- specialize h3 x s
+    -- omega
 
 lemma col_map_in_symbols
     {k n : Nat} [NeZero k] [NeZero n]
@@ -539,44 +538,47 @@ lemma col_card
     
 
 lemma card_symbols_not_in
-  {k n : Nat} [NeZero k] [NeZero n]
     (A : LatinRectangle k n α)
-    (h : k < n := by omega) :
-  ∀ j, Finset.card (symbols_not_in A j) = n - k := by
-    simp [symbols_not_in,
-          Finset.card_sdiff, 
-          A.exactly_n_symbols,
-          col_map_in_symbols,
-          col_card A]
+    (h : Fintype.card k < Fintype.card n := by omega) :
+  ∀ j, Finset.card (symbols_not_in A j) = Fintype.card n - Fintype.card k := by
+    sorry
+    -- simp [symbols_not_in,
+    --       Finset.card_sdiff, 
+    --       A.exactly_n_symbols,
+    --       col_map_in_symbols,
+    --       col_card A]
 
 lemma row_entry_to_column_entry
-  {k n : Nat} [NeZero k] [NeZero n]
     (A : LatinRectangle k n α)
     (x : α)
-    (h : k < n := by omega) :
-    ∃ f : Fin k → Fin n, 
-    ∀ {a : Fin k} {b : Fin n}, LatinRectangle.M a b = x ↔ f a = b := by
+    (h : Fintype.card k < Fintype.card n := by omega) :
+    ∃ f : k → n, 
+    ∀ {a : k} {b : n}, LatinRectangle.M a b = x ↔ f a = b := by
       have hrow := A.once_per_row
-      unfold once_per_row at hrow
+      unfold once_per_row at hrow 
+      conv at hrow =>
+        ext
+        rw [Function.bijective_iff_existsUnique]
       rw[forall_swap] at hrow
       specialize hrow x
-      have hx : x ∈ symbols A.M := by sorry -- garbage only for sake of argument
-      rw [← imp_forall_iff] at hrow
-      specialize hrow hx
-      rw [ forall_existsUnique_iff] at hrow
+      rw [forall_existsUnique_iff] at hrow
       exact hrow
 
 -- TODO Rewrite in terms of new definition!
 theorem latin_rectangle_extends
-  {k n : Nat} [NeZero k] [NeZero n]
     (A : LatinRectangle k n α)
-    (h : k < n := by omega) :
-    ∃ (A' : LatinRectangle (k + 1) n α), is_subrect A A' := by
+    (h : Fintype.card k < Fintype.card n := by omega)
+    {k' : Type u} [Fintype k'] [DecidableEq k']
+    (ι : k ↪ k') 
+    (h₂ : Fintype.card k' = Fintype.card k + 1) :
+    ∃ (A' : LatinRectangle k' n α), is_subrect A A' ι := by
   let B := symbols_not_in A
-  have Bj_size (j : Fin n) : Finset.card (B j) = n-k := 
+  have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
     card_symbols_not_in A h j
-  have Bj_characterized (j : Fin n) (x : α) : x ∈ B j ↔ ¬ (∃ i, A.M i j = x)  := by sorry
-  have exactly_n_minus_k_cols_without_x : ∀ x, (Finset.card {j | x ∈ B j}) = n-k := by 
+  have Bj_characterized (j : n) (x : α) : x ∈ B j ↔ ¬ (∃ i, A.M i j = x) := by sorry
+  
+  have exactly_n_minus_k_cols_without_x : ∀ x, 
+    (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by 
     -- Uses properties of latin rectangle
     -- intro x
     -- conv =>
@@ -587,32 +589,38 @@ theorem latin_rectangle_extends
     --   rw [Bj_characterized j]
 
     intro x
-    set As : Finset (Fin n) := {j | ∃ i, A.M i j = x} with hA
-    set Bs : Finset (Fin n) := {j | x ∈ B j} with hB
-    set Cs : Finset (Fin k) := {i | ∃ j, A.M i j = x} with hC
+    set As : Finset (n) := {j | ∃ i, col A j i = x} with hA
+    set Bs : Finset (n) := {j | x ∈ B j} with hB
+    set Cs : Finset (k) := {i | ∃ j, row A i j = x} with hC
     set Ds := {(i,j) | A.M i j = x} with hD
     have h := row_entry_to_column_entry A x
     obtain ⟨f, hf⟩ := h
-    have h_Cs_card : Finset.card Cs = k := by
+    have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
       obtain ⟨f, hf⟩ := row_entry_to_column_entry A x
       simp [hf]
-    have h_Cs_bij_h_Bs : Cs ≃ Bs := by
-      refine ⟨?toF, ?invF, ?_, ?_⟩ 
-      · exact fun i => ⟨f i, sorry⟩
-      · exact fun p => ⟨p.fst, sorry⟩ 
-      · sorry
-      · sorry
-    have h_As_card : Finset.card As = k := by 
+    -- have h_Cs_bij_h_Bs : Cs ≃ Bs := by
+    --   refine ⟨?toF, ?invF, ?_, ?_⟩ 
+    --   · exact fun i => ⟨f i, sorry⟩
+    --   · exact fun p => ⟨p.fst, sorry⟩ 
+    --   · sorry
+    --   · sorry
+    have h_As_card : Finset.card As = Fintype.card k := by 
       unfold As
       have hrow := A.once_per_row
       unfold once_per_row at hrow
       have hcol := A.distinct_col_entries
+      
+
       unfold distinct_col_entries at hcol
+      
+      unfold col
+      
+
       
       sorry
     -- have h_union : As ∪ Bs = Fin n := by sorry
-    have h_union_card : Finset.card (As ∪ Bs) = n := by sorry
+    have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by sorry
     have h_intersect : As ∩ Bs = ∅ := by 
       ext
       sorry
@@ -623,10 +631,10 @@ theorem latin_rectangle_extends
     -- There are n-k columns that do not have an x
 
 
-  have pre_property_H : ∀ x, ∀ (t : Finset (Fin n)),
-    (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ n-k := by
+  have pre_property_H : ∀ x, ∀ (t : Finset n),
+    (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ Fintype.card n - Fintype.card k := by
     intro x t
-    have h : ({j | j ∈ t ∧ x ∈ B j} : Finset (Fin n)) ⊆ ({j | x ∈ B j} : Finset (Fin n)) := by
+    have h : ({j | j ∈ t ∧ x ∈ B j} : Finset n) ⊆ ({j | x ∈ B j} : Finset n) := by
       simp [Finset.subset_iff]
     have h' := Finset.card_le_card (s := {j | j ∈ t ∧ x ∈ B j}) (t := {j | x ∈ B j}) 
     have hx := exactly_n_minus_k_cols_without_x x
@@ -639,9 +647,9 @@ theorem latin_rectangle_extends
   set f := Classical.choice halls with hx
   simp [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
-  let M' : Fin (k+1) → (Fin n) → α := fun i j =>
-    if hif : i < k then A.M ⟨i, hif⟩ j else (f' ⟨j, by simp⟩ )
-  let A' : LatinRectangle (k+1) n α := {
+  let M' : k' → n → α := fun i j =>
+    if hif : i ∈ (Finset.image ι Finset.univ) then A.M (Function.invFun ι i) j else (f' ⟨j, by simp⟩ )
+  let A' : LatinRectangle k' n α := {
     M := M'
     exactly_n_symbols := sorry
     once_per_row := sorry
@@ -653,6 +661,8 @@ theorem latin_rectangle_extends
   unfold LatinRectangle.M
   simp[A', M']
   intro i j
+  rw [<-Function.comp_apply (f := Function.invFun ι)]
+  rw [Function.invFun_comp ι.injective]
   rfl
 
 end Completion
