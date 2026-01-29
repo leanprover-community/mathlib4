@@ -182,3 +182,11 @@ lemma mem_closure_finset {s : Finset M} :
 
 end CommMonoid
 end Submonoid
+
+section IsUnit
+
+@[to_additive]
+theorem IsUnit.coe {S : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] {N : S} {a : N}
+    (ha : IsUnit a) : IsUnit (a : M) := ha.map (SubmonoidClass.subtype N)
+
+end IsUnit

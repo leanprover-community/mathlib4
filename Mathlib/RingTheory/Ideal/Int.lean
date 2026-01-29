@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Field.ZMod
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
 /-!
 # Ideal of `ℤ`
@@ -32,6 +33,12 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 -/
 
 @[expose] public section
+
+instance (n : ℕ) [NeZero n] : Finite (ℤ ⧸ (Ideal.span {(n : ℤ)})) :=
+  Ideal.finiteQuotientOfFreeOfNeBot _ <| by simpa using NeZero.ne _
+
+theorem Int.card_ideal_quot (n : ℕ) : Nat.card (ℤ ⧸ (Ideal.span {(n : ℤ)})) = n := by
+  simp [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply]
 
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=

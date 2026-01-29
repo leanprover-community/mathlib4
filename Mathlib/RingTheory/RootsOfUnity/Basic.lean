@@ -258,6 +258,15 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 
+instance {L : Type*} [LeftCancelMonoid L] [Finite L] :
+    Finite (L →* Rˣ) := by
+  let S := rootsOfUnity (Monoid.exponent L) R
+  have : Finite (L →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective (fun f : L →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩
+
 end IsDomain
 
 section Reduced

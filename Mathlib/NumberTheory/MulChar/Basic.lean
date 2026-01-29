@@ -339,6 +339,14 @@ theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ 
   | zero => rw [pow_zero, pow_zero, one_apply_coe]
   | succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
 
+/-- If `a` is a unit and `n : ℤ`, then `(χ ^ n) a = χ (a ^ n`. -/
+theorem zpow_apply_coe {R : Type*} [CommGroupWithZero R] (χ : MulChar R R') (n : ℤ) (a : Rˣ) :
+    (χ ^ n) a = χ (a ^ n : Rˣ) := by
+  obtain ⟨n, (rfl | rfl)⟩ := Int.eq_nat_or_neg n
+  · simp [pow_apply_coe]
+  · rw [zpow_neg, zpow_natCast, inv_apply', ← Units.val_inv_eq_inv_val, pow_apply_coe, ← inv_zpow',
+      zpow_natCast, Units.val_pow_eq_pow_val, map_pow]
+
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
   by_cases ha : IsUnit a
@@ -353,8 +361,8 @@ lemma equivToUnitHom_mul_apply (χ₁ χ₂ : MulChar R R') (a : Rˣ) :
 
 /-- The equivalence between multiplicative characters and homomorphisms of unit groups
 as a multiplicative equivalence. -/
-noncomputable
-def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
+@[simps! apply symm_apply]
+noncomputable def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
   { equivToUnitHom with
     map_mul' := by
       intro χ ψ
@@ -363,8 +371,15 @@ def mulEquivToUnitHom : MulChar R R' ≃* (Rˣ →* R'ˣ) :=
         MonoidHom.mul_apply, Units.val_mul]
   }
 
-end Group
+/--
+The restriction of a `MulChar` to a submonoid.
+-/
+@[simps! apply]
+noncomputable def restrict {S : Type*} [SetLike S R] [SubmonoidClass S R] (T : S)
+    (χ : MulChar R R') : MulChar T R' :=
+  ofUnitHom <| χ.toUnitHom.comp <| Units.map (SubmonoidClass.subtype T)
 
+end Group
 
 /-!
 ### Properties of multiplicative characters
@@ -387,6 +402,10 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
+
+theorem restrict_eq_one_iff {S : Type*} [SetLike S R] [SubmonoidClass S R] {T : S}
+    {χ : MulChar R R'} : χ.restrict T = 1 ↔ ∀ x : Tˣ, χ x = 1 := by
+  simp [eq_one_iff]
 
 end nontrivial
 
@@ -417,6 +436,11 @@ lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 
   ext1
   simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
 
+lemma ringHomComp_comp {R₃ : Type*} [CommRing R₃] (χ : MulChar R R') (f : R' →+* R'')
+    (g : R'' →+* R₃) : (χ.ringHomComp f).ringHomComp g = χ.ringHomComp (g.comp f) := by
+  ext
+  simp
+
 lemma ringHomComp_inv {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'') :
     (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
   ext1
@@ -433,6 +457,13 @@ lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
   | zero => simp only [pow_zero, ringHomComp_one]
   | succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
 
+lemma ringHomComp_zpow {R : Type*} [CommMonoidWithZero R] (χ : MulChar R R') (f : R' →+* R'')
+    (n : ℤ) :
+    χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f := by
+  obtain ⟨a, (rfl | rfl)⟩ := Int.eq_nat_or_neg n
+  · rw [zpow_natCast, zpow_natCast, ringHomComp_pow]
+  · rw [zpow_neg, zpow_neg, zpow_natCast, zpow_natCast, ringHomComp_pow, ringHomComp_inv]
+
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
   simpa
@@ -447,6 +478,14 @@ lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
   (ringHomComp_eq_one_iff hf).not
+
+variable (R) in
+@[simps]
+def ringHomCompMonoidHom (f : R' →+* R'') :
+    MulChar R R' →* MulChar R R'' where
+  toFun := fun χ ↦ ringHomComp χ f
+  map_one' := by simp
+  map_mul' _ _ := by rw [ringHomComp_mul]
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
