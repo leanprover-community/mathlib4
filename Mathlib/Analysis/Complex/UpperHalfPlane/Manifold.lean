@@ -7,14 +7,21 @@ module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+public import Mathlib.LinearAlgebra.Complex.Determinant
+public import Mathlib.RingTheory.Complex
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Manifold structure on the upper half plane.
 
-In this file we define the complex manifold structure on the upper half-plane.
+In this file we define the complex manifold structure on the upper half-plane, and show it is
+invariant under Moebius transformations. We also calculate the derivative, and give an explicit
+formula for its Jacobian determinant over `ℝ` (used in proving that the action preserves
+a suitable measure).
 -/
 
 @[expose] public section
@@ -28,10 +35,10 @@ variable {n : WithTop ℕ∞}
 namespace UpperHalfPlane
 
 noncomputable instance : ChartedSpace ℂ ℍ :=
-  UpperHalfPlane.isOpenEmbedding_coe.singletonChartedSpace
+  isOpenEmbedding_coe.singletonChartedSpace
 
 instance : IsManifold 𝓘(ℂ) ω ℍ :=
-  UpperHalfPlane.isOpenEmbedding_coe.isManifold_singleton
+  isOpenEmbedding_coe.isManifold_singleton
 
 /-- The inclusion map `ℍ → ℂ` is a map of `C^n` manifolds. -/
 theorem contMDiff_coe : ContMDiff 𝓘(ℂ) 𝓘(ℂ) n ((↑) : ℍ → ℂ) :=
@@ -121,7 +128,7 @@ lemma mdifferentiable_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
 
 lemma eq_zero_of_frequently {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
     {τ : ℍ} (hτ : ∃ᶠ z in 𝓝[≠] τ, f z = 0) : f = 0 := by
-  rw [UpperHalfPlane.mdifferentiable_iff] at hf
+  rw [mdifferentiable_iff] at hf
   have := hf.analyticOnNhd isOpen_upperHalfPlaneSet
   ext w
   convert this.eqOn_zero_of_preconnected_of_frequently_eq_zero (z₀ := ↑τ) ?_ τ.2 ?_ w.property
@@ -146,5 +153,114 @@ lemma prod_eq_zero_iff {ι : Type*} {f : ι → ℍ → ℂ} {s : Finset ι}
   have : ∃ᶠ τ in 𝓝[≠] I, ∏ i ∈ s, f i τ = 0 := .of_forall <| by simpa using congrFun h0
   simp only [Finset.prod_eq_zero_iff, Finset.frequently_exists] at this
   exact this.imp fun i hi ↦ ⟨hi.1, eq_zero_of_frequently (hf i hi.1) hi.2⟩
+
+section deriv
+/-!
+## Explicit calculations of the derivative of `τ ↦ g • τ`
+
+TODO: would it be better to reimplement these using `mfderiv` together with a trivialization of
+the tangent space of `ℍ`, rather than using `ofComplex` as we currently do? Or would that bring
+more pain than gain?
+-/
+
+section Real
+
+/-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
+`GL(2, ℝ)`-action on `ℍ`. -/
+noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
+  -- TO DO: This is the same map as `UpperHalfPlane.σ` but bundled slightly differently: here as a
+  -- continuous `ℝ`-linear equivalence, while `UpperHalfPlane.σ` bundles it as a *ring* equiv.
+  -- Clearly it would be better to unify these by defining `UpperHalfPlane.σ` as a
+  -- `ContinuousAlgebraEquiv ℝ ℂ`, but this requires making `conj` as a `ContinuousAlgebraEquiv`
+  -- which doesn't seem to exist yet.
+  (if 0 < g.det.val then ContinuousLinearEquiv.refl ℝ ℂ else Complex.conjCLE) ∘L
+  (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
+
+/-- Determinant of the derivative of `g : ℍ → ℍ` considered as an `ℝ`-linear map. This is used in
+the proof that the action is measure-preserving. Note this formula applies for both orientation-
+preserving and orientation-reserving isometries. -/
+lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
+    (smulFDeriv g z).det =
+      SignType.sign g.det.val * g.det ^ 2 / ‖denom g z‖ ^ 4 := by
+  simp only [ContinuousLinearMap.det, smulFDeriv, ContinuousLinearEquiv.coe_refl,
+    ContinuousLinearMap.coe_comp, apply_ite, ContinuousLinearMap.coe_id,
+    ContinuousLinearMap.coe_restrictScalars, ContinuousLinearMap.toLinearMap_toSpanSingleton,
+    LinearMap.det_comp, LinearMap.det_id]
+  rw [show Complex.conjCLE.toContinuousLinearMap.toLinearMap = Complex.conjAe.toLinearMap by rfl]
+  simp only [Complex.det_conjAe]
+  rw [mul_div_assoc]
+  congr 1
+  · rcases lt_or_gt_of_ne (NeZero.ne g.det.val) with h | h
+    · simp only [not_lt.mpr h.le, ↓reduceIte, sign_neg h, SignType.coe_neg_one]
+    · simp only [h, ↓reduceIte, sign_pos h, SignType.coe_one]
+  · simp only [LinearMap.det_restrictScalars, LinearMap.det_ring, LinearMap.toSpanSingleton_apply,
+      smul_eq_mul, one_mul, Algebra.norm_complex_apply, Complex.normSq_eq_norm_sq]
+    rw [norm_div, div_pow, Complex.norm_real, ← norm_pow, Real.norm_of_nonneg (sq_nonneg _),
+      norm_pow, ← pow_mul]
+
+lemma hasFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
+    HasFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
+  suffices HasFDerivAt (σ g ∘ (num g / denom g)) _ τ by
+    refine this.congr_of_eventuallyEq ?_
+    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds τ.property] with z hz
+    simp_all [σ, coe_smul, ofComplex_apply_of_im_pos]
+  apply HasFDerivAt.comp
+  · convert ContinuousLinearMap.hasFDerivAt ..
+    split_ifs with h <;>
+    · ext
+      simp [σ, h, -Matrix.GeneralLinearGroup.val_det_apply]
+  · refine (HasDerivAt.hasFDerivAt ?_).restrictScalars ℝ
+    convert HasDerivAt.div (c' := (g 0 0 : ℂ)) (d' := g 1 0) ?_ ?_ (denom_ne_zero g τ)
+    · simp [num, denom, Matrix.det_fin_two]
+      ring
+    all_goals exact (hasDerivAt_const_mul _).add_const _
+
+end Real
+
+section Complex
+
+lemma deriv_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
+    deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ = g.val.det / denom g τ ^ 2 := by
+  have : (fun z ↦ ↑(g • ofComplex z)) =ᶠ[𝓝 ↑τ] (num g / denom g) := by
+    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos] with z hz
+    simp [coe_smul, ofComplex_apply_of_im_pos hz, σ, if_pos hg]
+  rw [EventuallyEq.deriv_eq this,
+    deriv_div (by unfold num; fun_prop) (by unfold denom; fun_prop) (denom_ne_zero g τ)]
+  congr 1
+  unfold num denom
+  simp only [deriv_add_const, Matrix.det_fin_two]
+  -- why does `rw` work here but `simp` does not?
+  rw [deriv_const_mul_field, deriv_id'', deriv_const_mul_field, deriv_id'']
+  push_cast
+  ring
+
+lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
+    deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ ≠ 0 := by
+  rw [deriv_smul hg]
+  apply div_ne_zero
+  · exact_mod_cast hg.ne'
+  · exact pow_ne_zero _ (denom_ne_zero g τ)
+
+lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
+    AnalyticAt ℂ (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ := by
+  refine DifferentiableOn.analyticAt (fun z hz ↦ ?_) (isOpen_upperHalfPlaneSet.mem_nhds τ.property)
+  apply DifferentiableAt.differentiableWithinAt
+  simpa [mdifferentiableAt_iff] using
+    (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
+
+lemma order_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
+    meromorphicOrderAt (fun z ↦ f (g • ofComplex z)) τ =
+      meromorphicOrderAt (fun z ↦ f (ofComplex z)) ↑(g • τ) := by
+  let G z : ℂ := ↑(g • ofComplex z)
+  let F z := f (ofComplex z)
+  have : (fun z : ℂ ↦ f (g • ofComplex z)) = F ∘ G := by ext; simp [F, G]
+  rw [this, meromorphicOrderAt_comp_of_deriv_ne_zero]
+  · simp [F, G]
+  · exact τ.analyticAt_smul hg
+  · exact τ.deriv_smul_ne_zero hg
+
+end Complex
+
+end deriv
 
 end UpperHalfPlane
