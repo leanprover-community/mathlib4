@@ -132,7 +132,7 @@ lemma edgeSet_mono (h : H ≤ G) : E(H) ⊆ E(G) := by
   obtain ⟨x, y, h'⟩ := exists_isLink_of_mem_edgeSet he
   exact (h'.of_le h).edge_mem
 
-lemma le_iff : H ≤ G ↔ (V(H) ⊆ V(G)) ∧ ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y :=
+lemma le_iff : H ≤ G ↔ V(H) ⊆ V(G) ∧ ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 lemma isLink_iff_isLink_of_le_of_mem (hle : H ≤ G) (he : e ∈ E(H)) :
