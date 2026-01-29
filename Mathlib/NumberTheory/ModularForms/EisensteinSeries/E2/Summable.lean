@@ -41,9 +41,9 @@ private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summan
     Matrix.cons_val_zero, Int.cast_add, Int.cast_natCast, Int.cast_one, Matrix.cons_val_one,
     Matrix.cons_val_fin_one, Int.reduceNeg, zpow_neg, mul_comm, mul_sum]
   congr with a
-  have H2 := qExpansion_identity_pnat (k := 1) (by grind)
-    ⟨(a + 1) * z, by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2⟩
-  simp only [coe_mk_subtype, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
+  have H2 := qExpansion_identity_pnat (k := 1) (by grind) <|
+    mk ((a + 1) * z) <| by simpa [show 0 < ((a + 1) : ℝ) by positivity] using z.2
+  simp only [coe_mk, add_comm, Nat.reduceAdd, one_div, mul_comm, mul_neg, even_two,
     Even.neg_pow, Nat.factorial_one, Nat.cast_one, div_one, pow_one] at H2
   simp_rw [zpow_ofNat, H2, ← tsum_mul_left, ← tsum_neg, ← exp_nsmul]
   refine tsum_congr fun b ↦ ?_

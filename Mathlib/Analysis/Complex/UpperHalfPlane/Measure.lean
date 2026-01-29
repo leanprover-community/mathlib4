@@ -24,8 +24,9 @@ the action of `GL(2, ℝ)`.
 -/
 
 open MeasureTheory
+open scoped NNReal
 
-@[expose] public noncomputable section
+public noncomputable section
 
 namespace UpperHalfPlane
 
@@ -36,70 +37,80 @@ instance : BorelSpace ℍ := Subtype.borelSpace _
 lemma measurableEmbedding_coe : MeasurableEmbedding UpperHalfPlane.coe :=
   isOpenEmbedding_coe.measurableEmbedding
 
+@[fun_prop, measurability]
+lemma measurable_coe : Measurable UpperHalfPlane.coe :=
+  measurableEmbedding_coe.measurable
+
 /-- The invariant measure on the upper half-plane, defined by `dx dy / y ^ 2`. -/
 instance : MeasureSpace ℍ :=
-  ⟨(volume.comap UpperHalfPlane.coe).withDensity fun z ↦ ↑((1 / ⟨z.im, z.im_pos.le⟩ : NNReal) ^ 2)⟩
+  ⟨(volume.comap UpperHalfPlane.coe).withDensity fun z ↦ ↑((1 / ⟨z.im, z.im_pos.le⟩ : ℝ≥0) ^ 2)⟩
 
-/-- Express the volume of a measurable set as a lintegral over the corresponding subset of `ℂ`. -/
-lemma volume_eq_lintegral {s : Set ℍ} (hs : MeasurableSet s) :
+theorem volume_def :
+    (volume : Measure ℍ) = (volume.comap UpperHalfPlane.coe).withDensity fun z ↦
+      ↑((1 / ⟨z.im, z.im_pos.le⟩ : ℝ≥0) ^ 2) :=
+  rfl
+
+instance : IsFiniteMeasureOnCompacts (volume.comap UpperHalfPlane.coe) :=
+  .comap' _ continuous_coe measurableEmbedding_coe
+
+instance : IsLocallyFiniteMeasure (volume.comap UpperHalfPlane.coe) := inferInstance
+
+instance : SigmaFinite (volume.comap UpperHalfPlane.coe) := inferInstance
+
+instance : SFinite (volume.comap UpperHalfPlane.coe) := inferInstance
+
+instance : IsLocallyFiniteMeasure (volume : Measure ℍ) := by
+  refine .withDensity_coe ?_
+  refine .pow (.div₀ continuous_const ?_ ?_) _
+  · exact continuous_im.subtype_mk _
+  · exact fun x ↦ NNReal.ne_iff.mp x.im_ne_zero
+
+instance : IsFiniteMeasureOnCompacts (volume : Measure ℍ) := inferInstance
+
+instance : SigmaFinite (volume : Measure ℍ) := inferInstance
+
+instance : SFinite (volume : Measure ℍ) := inferInstance
+
+/-- Express the volume of a measurable set as a Lebesgue integral
+over the corresponding subset of `ℂ`. -/
+lemma volume_eq_lintegral (s : Set ℍ) :
     volume s = ∫⁻ z : ℂ in (↑) '' s, ↑((1 / ‖z.im‖₊) ^ 2 : NNReal) := by
-  simp only [volume, one_div]
-  -- This proof is annoying because `setLIntegral_subtype` only works on a literal subtype,
-  -- while `UpperHalfPlane` is a _type alias_ for a subtype, so we need to do some annoying
-  -- defeq abuse.
-  rw [show UpperHalfPlane.coe = Subtype.val from rfl,
-    ← setLIntegral_subtype (by exact isOpen_upperHalfPlaneSet.measurableSet),
-    withDensity_apply _ hs]
-  congr 1 with z
-  congr 4
-  rw [Real.norm_of_nonneg (by simpa using z.im_pos.le), ← z.coe_im,
-    show UpperHalfPlane.coe = Subtype.val from rfl]
+  have : MeasurePreserving UpperHalfPlane.coe (volume.comap UpperHalfPlane.coe)
+      (volume.restrict (.range UpperHalfPlane.coe)) :=
+    ⟨measurable_coe, by rw [measurableEmbedding_coe.map_comap]⟩
+  rw [volume_def, withDensity_apply',
+    ← Set.inter_eq_self_of_subset_left (Set.image_subset_range _ _),
+    ← Measure.restrict_restrict', ← this.setLIntegral_comp_emb measurableEmbedding_coe]
+  · simp [Real.nnnorm_of_nonneg (im_pos _).le]
+  · exact measurableEmbedding_coe.measurableSet_range
 
 /-- The measure on the upper half-plane is invariant under `GL(2, ℝ)`. -/
 instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
   -- It suffices to show `volume (g • s) = volume s` for measurable sets `s`. First
   -- we write this as a lintegral over subsets of `ℂ`.
   refine ((smulInvariantMeasure_tfae _ _).out 2 0).mp fun g s hs ↦ ?_
-  rw [volume_eq_lintegral hs, volume_eq_lintegral (hs.const_smul _)]
-  -- We want to apply the Jacobian change-of-variable formula, so first
-  -- we establish the hypotheses.
-  have aux1 (x : ℂ) (hx : x ∈ (↑) '' s) :
-      HasFDerivWithinAt (𝕜 := ℝ) (smulAux' g) (smulFDeriv g x) ((↑) '' s) x := by
-    apply HasFDerivAt.hasFDerivWithinAt
-    rcases hx with ⟨τ, hτ, rfl⟩
-    apply (hasFDerivAt_smul g τ).congr_of_eventuallyEq
-    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds τ.property] with z hz
-    simp_all [σ, coe_smul, ofComplex_apply_of_im_pos, smulAux']
-  have aux2 : ((↑) '' s).InjOn (smulAux' g) := by
-      rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
-      rw [← UpperHalfPlane.ext_iff]
-      change (↑(g • x) : ℂ) = ↑(g • y) → x = y
-      simp only [ext_iff', smul_left_cancel_iff, imp_self]
-  -- Now invoke the change-of-variable formula.
+  rw [volume_eq_lintegral, volume_eq_lintegral, ← Set.image_smul, Set.image_image]
+  -- We want to apply the Jacobian change-of-variable formula.
+  have hinj : Set.InjOn (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (UpperHalfPlane.coe '' s) :=
+    .image_of_comp <| by simp
   have main := MeasureTheory.lintegral_image_eq_lintegral_abs_det_fderiv_mul
-      volume (measurableEmbedding_coe.measurableSet_image.mpr hs) aux1 aux2
+      volume (measurableEmbedding_coe.measurableSet_image.mpr hs)
+      (Set.forall_mem_image.mpr fun z hz ↦
+        (hasStrictFDerivAt_smul g _).hasFDerivAt.hasFDerivWithinAt)
+      hinj
       (fun z ↦ ↑((1 / ‖z.im‖₊) ^ 2 : NNReal))
-  -- Adjust the LHS of the resulting statement slightly to match our goal.
-  have aux3 : smulAux' g ∘ ((↑) : ℍ → ℂ) = (↑) ∘ (fun x ↦ g • x) := by rfl
-  rw [← Set.image_comp, aux3, Set.image_comp, Set.image_smul] at main
-  rw [main]
-  -- Now it remains to compare two integrals over `coe '' s`.
-  apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
-  rintro _ ⟨τ, hτ, rfl⟩
-  simp only [det_smulFDeriv, abs_div, abs_mul, abs_pow, abs_pow, sq_abs,
-    (show Even 4 by grind).pow_abs]
-  have : |(SignType.sign g.det.val : ℝ)| = 1 := by
-    rcases lt_or_gt_of_ne (NeZero.ne g.det.val) with h | h <;>
-    simp [-Matrix.GeneralLinearGroup.val_det_apply, h]
-  rw [this, one_mul, ENNReal.ofReal_eq_coe_nnreal (by positivity), ← ENNReal.coe_mul,
-    ENNReal.coe_inj, NNReal.eq_iff]
-  push_cast
-  rw [div_pow, one_pow, mul_one_div, show 4 = 2 * 2 by rfl, pow_mul, ← div_pow, ← div_pow]
-  simp only [sq_eq_sq_iff_abs_eq_abs, abs_div, abs_pow, abs_one, abs_norm,
-    show smulAux' g τ = ↑(g • τ) by rfl, coe_im, im_smul_eq_div_normSq, Complex.normSq_eq_norm_sq]
-  simp only [norm_div, norm_pow, norm_mul, norm_abs_eq_norm, Real.norm_eq_abs, abs_norm]
-  rw [div_div_div_cancel_right₀ (by simpa using denom_ne_zero g τ),
-    ← div_div, div_self (by aesop)]
+  convert main using 1
+  · simp [Set.image_image]
+  · apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
+    rintro _ ⟨τ, -, rfl⟩
+    simp only [← Real.enorm_eq_ofReal_abs, enorm_eq_nnnorm]
+    have : ‖(SignType.sign g.val.det : ℝ)‖₊ = 1 := by
+      rcases g.det_ne_zero.lt_or_gt with h | h <;> simp [h]
+    have := g.det_ne_zero
+    have := denom_ne_zero g τ
+    norm_cast
+    ext
+    simp [det_smulFDeriv, *, im_smul_eq_div_normSq, Complex.normSq_eq_norm_sq, field]
 
 end UpperHalfPlane
 

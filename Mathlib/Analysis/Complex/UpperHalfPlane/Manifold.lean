@@ -163,76 +163,22 @@ the tangent space of `ℍ`, rather than using `ofComplex` as we currently do? Or
 more pain than gain?
 -/
 
-section Real
-
-/-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
-`GL(2, ℝ)`-action on `ℍ`. -/
-noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
-  -- TO DO: This is the same map as `UpperHalfPlane.σ` but bundled slightly differently: here as a
-  -- continuous `ℝ`-linear equivalence, while `UpperHalfPlane.σ` bundles it as a *ring* equiv.
-  -- Clearly it would be better to unify these by defining `UpperHalfPlane.σ` as a
-  -- `ContinuousAlgebraEquiv ℝ ℂ`, but this requires making `conj` as a `ContinuousAlgebraEquiv`
-  -- which doesn't seem to exist yet.
-  (if 0 < g.det.val then ContinuousLinearEquiv.refl ℝ ℂ else Complex.conjCLE) ∘L
-  (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
-
-/-- Determinant of the derivative of `g : ℍ → ℍ` considered as an `ℝ`-linear map. This is used in
-the proof that the action is measure-preserving. Note this formula applies for both orientation-
-preserving and orientation-reserving isometries. -/
-lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
-    (smulFDeriv g z).det =
-      SignType.sign g.det.val * g.det ^ 2 / ‖denom g z‖ ^ 4 := by
-  simp only [ContinuousLinearMap.det, smulFDeriv, ContinuousLinearEquiv.coe_refl,
-    ContinuousLinearMap.coe_comp, apply_ite, ContinuousLinearMap.coe_id,
-    ContinuousLinearMap.coe_restrictScalars, ContinuousLinearMap.toLinearMap_toSpanSingleton,
-    LinearMap.det_comp, LinearMap.det_id]
-  rw [show Complex.conjCLE.toContinuousLinearMap.toLinearMap = Complex.conjAe.toLinearMap by rfl]
-  simp only [Complex.det_conjAe]
-  rw [mul_div_assoc]
-  congr 1
-  · rcases lt_or_gt_of_ne (NeZero.ne g.det.val) with h | h
-    · simp only [not_lt.mpr h.le, ↓reduceIte, sign_neg h, SignType.coe_neg_one]
-    · simp only [h, ↓reduceIte, sign_pos h, SignType.coe_one]
-  · simp only [LinearMap.det_restrictScalars, LinearMap.det_ring, LinearMap.toSpanSingleton_apply,
-      smul_eq_mul, one_mul, Algebra.norm_complex_apply, Complex.normSq_eq_norm_sq]
-    rw [norm_div, div_pow, Complex.norm_real, ← norm_pow, Real.norm_of_nonneg (sq_nonneg _),
-      norm_pow, ← pow_mul]
-
-lemma hasFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
-    HasFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
-  suffices HasFDerivAt (σ g ∘ (num g / denom g)) _ τ by
-    refine this.congr_of_eventuallyEq ?_
-    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds τ.property] with z hz
-    simp_all [σ, coe_smul, ofComplex_apply_of_im_pos]
-  apply HasFDerivAt.comp
-  · convert ContinuousLinearMap.hasFDerivAt ..
-    split_ifs with h <;>
-    · ext
-      simp [σ, h, -Matrix.GeneralLinearGroup.val_det_apply]
-  · refine (HasDerivAt.hasFDerivAt ?_).restrictScalars ℝ
-    convert HasDerivAt.div (c' := (g 0 0 : ℂ)) (d' := g 1 0) ?_ ?_ (denom_ne_zero g τ)
-    · simp [num, denom, Matrix.det_fin_two]
-      ring
-    all_goals exact (hasDerivAt_const_mul _).add_const _
-
-end Real
-
 section Complex
 
+lemma hasStrictDerivAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
+    HasStrictDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (g.val.det / denom g τ ^ 2) τ := by
+  suffices HasStrictDerivAt (num g / denom g) (g.val.det / denom g τ ^ 2) τ by
+    refine this.congr_of_eventuallyEq ?_
+    rw [← isOpenEmbedding_coe.map_nhds_eq, eventuallyEq_map]
+    simp [Function.comp_def, coe_smul_of_det_pos hg]
+  convert ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _).div
+    ((hasStrictDerivAt_id (τ : ℂ)).const_mul _ |>.add_const _) _ using 2
+  · simp [Matrix.det_fin_two]; ring
+  · apply denom_ne_zero
+
 lemma deriv_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
-    deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ = g.val.det / denom g τ ^ 2 := by
-  have : (fun z ↦ ↑(g • ofComplex z)) =ᶠ[𝓝 ↑τ] (num g / denom g) := by
-    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds τ.im_pos] with z hz
-    simp [coe_smul, ofComplex_apply_of_im_pos hz, σ, if_pos hg]
-  rw [EventuallyEq.deriv_eq this,
-    deriv_div (by unfold num; fun_prop) (by unfold denom; fun_prop) (denom_ne_zero g τ)]
-  congr 1
-  unfold num denom
-  simp only [deriv_add_const, Matrix.det_fin_two]
-  -- why does `rw` work here but `simp` does not?
-  rw [deriv_const_mul_field, deriv_id'', deriv_const_mul_field, deriv_id'']
-  push_cast
-  ring
+    deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ = g.val.det / denom g τ ^ 2 :=
+  hasStrictDerivAt_smul hg τ |>.hasDerivAt |>.deriv
 
 lemma deriv_smul_ne_zero {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
     deriv (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) τ ≠ 0 := by
@@ -248,7 +194,7 @@ lemma analyticAt_smul {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) (τ : ℍ) :
   simpa [mdifferentiableAt_iff] using
     (mdifferentiable_coe.comp <| (mdifferentiable_smul hg)).mdifferentiableAt (x := ⟨z, hz⟩)
 
-lemma order_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
+lemma meromorphicOrderAt_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 < g.val.det) :
     meromorphicOrderAt (fun z ↦ f (g • ofComplex z)) τ =
       meromorphicOrderAt (fun z ↦ f (ofComplex z)) ↑(g • τ) := by
   let G z : ℂ := ↑(g • ofComplex z)
@@ -260,6 +206,53 @@ lemma order_comp_smul {f : ℍ → ℂ} {τ : ℍ} {g : GL (Fin 2) ℝ} (hg : 0 
   · exact τ.deriv_smul_ne_zero hg
 
 end Complex
+
+
+section Real
+
+/-- `ℝ`-linear map from `ℂ` to itself, which we shall show is the real derivative of the
+`GL(2, ℝ)`-action on `ℍ`. -/
+noncomputable def smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) : ℂ →L[ℝ] ℂ :=
+  -- TO DO: This is the same map as `UpperHalfPlane.σ` but bundled slightly differently: here as a
+  -- continuous `ℝ`-linear equivalence, while `UpperHalfPlane.σ` bundles it as a *ring* equiv.
+  -- Clearly it would be better to unify these by defining `UpperHalfPlane.σ` as a
+  -- `ContinuousAlgebraEquiv ℝ ℂ`, but this requires making `conj` as a `ContinuousAlgebraEquiv`
+  -- which doesn't seem to exist yet.
+  (if 0 < g.det.val then ContinuousLinearEquiv.refl ℝ ℂ else Complex.conjCLE) ∘L
+  (ContinuousLinearMap.toSpanSingleton ℂ (g.det.val / denom g z ^ 2)).restrictScalars ℝ
+
+@[simp]
+theorem smulFDeriv_J_mul (g : GL (Fin 2) ℝ) (z : ℂ) :
+    smulFDeriv (J * g) z = -Complex.conjCLE ∘L smulFDeriv g z := by
+  ext
+  by_cases hg : 0 < g.val.det
+  · simp [smulFDeriv, hg, hg.not_gt, neg_div]
+  · simp [smulFDeriv, hg, g.det_ne_zero.lt_or_gt.resolve_right hg, neg_div]
+
+/-- Determinant of the derivative of `g : ℍ → ℍ` considered as an `ℝ`-linear map. This is used in
+the proof that the action is measure-preserving. Note this formula applies for both orientation-
+preserving and orientation-reserving isometries. -/
+lemma det_smulFDeriv (g : GL (Fin 2) ℝ) (z : ℂ) :
+    (smulFDeriv g z).det =
+      SignType.sign g.det.val * g.det ^ 2 / ‖denom g z‖ ^ 4 := by
+  simp [smulFDeriv, ContinuousLinearMap.det, LinearMap.det_restrictScalars,
+    Algebra.norm_complex_eq, Complex.normSq_eq_norm_sq,
+    apply_ite ContinuousLinearMap.toLinearMap, apply_ite LinearMap.det,
+    show Complex.conjCLE.toContinuousLinearMap.toLinearMap = Complex.conjAe.toLinearMap by rfl]
+  cases g.det_ne_zero.lt_or_gt <;> simp [*, lt_asymm, ← pow_mul, neg_div]
+
+lemma hasStrictFDerivAt_smul (g : GL (Fin 2) ℝ) (τ : ℍ) :
+    HasStrictFDerivAt (fun z ↦ ↑(g • ofComplex z) : ℂ → ℂ) (smulFDeriv g τ) τ := by
+  wlog hg : 0 < g.det.val generalizing g
+  · replace hg := g.det.ne_zero.lt_or_gt.resolve_right hg
+    convert Complex.conjCLE.hasStrictFDerivAt.neg.comp _ (this (J * g) (by simpa))
+    · simp [mul_smul, coe_J_smul]
+    · ext
+      simp
+  have := (hasStrictDerivAt_smul hg τ).hasStrictFDerivAt.restrictScalars ℝ
+  simp_all [smulFDeriv]
+
+end Real
 
 end deriv
 

@@ -43,8 +43,8 @@ variable (k) in
 lemma wt_eq_zero_of_eq_const {f : F} {c : ℂ} (hf : ⇑f = Function.const _ c) :
     k = 0 ∨ c = 0 := by
   have hI := slash_action_eqn_SL'' f (mem_Gamma_one S) I
-  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) ⟨2 * Complex.I, by simp⟩
-  simp_rw [sl_moeb, hf, Function.const, denom_S, coe_mk_subtype] at hI h2I2
+  have h2I2 := slash_action_eqn_SL'' f (mem_Gamma_one S) (.mk (2 * Complex.I) (by simp))
+  simp_rw [sl_moeb, hf, Function.const, denom_S, UpperHalfPlane.coe_mk] at hI h2I2
   nth_rw 1 [h2I2] at hI
   simp only [mul_zpow, coe_I, mul_eq_mul_right_iff, mul_left_eq_self₀] at hI
   refine hI.imp_left (Or.casesOn · (fun H ↦ ?_) (False.elim ∘ zpow_ne_zero k I_ne_zero))
@@ -68,8 +68,8 @@ private theorem cuspFunction_eqOn_const_of_nonpos_wt (hk : k ≤ 0) (f : F) :
   · simp only [Metric.mem_closedBall, dist_zero_right]
     rcases eq_or_ne q 0 with rfl | hq'
     · refine ⟨0, by simpa only [norm_zero] using exp_nonneg _, le_rfl⟩
-    · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f
-        ⟨_, im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'⟩
+    · obtain ⟨ξ, hξ, hξ₂⟩ := exists_one_half_le_im_and_norm_le hk f <|
+        .mk _ <| im_invQParam_pos_of_norm_lt_one Real.zero_lt_one (mem_ball_zero_iff.mp hq) hq'
       exact ⟨_, norm_qParam_le_of_one_half_le_im hξ,
         by simpa [← eq_cuspFunction f _ one_mem_strictPeriods_SL2Z one_ne_zero,
           qParam_right_inv one_ne_zero hq'] using hξ₂⟩

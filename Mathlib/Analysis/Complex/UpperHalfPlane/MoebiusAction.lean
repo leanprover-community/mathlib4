@@ -317,7 +317,11 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 
 @[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
 
-@[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
+@[simp] lemma denom_J (τ : ℂ) : denom J τ = 1 := by simp [J, denom]
+
+@[simp]
+lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
+  simp [denom, vecMul, vecHead, vecTail]
 
 end J
 
