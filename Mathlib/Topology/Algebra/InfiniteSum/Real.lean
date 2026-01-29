@@ -92,6 +92,10 @@ theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ 
   rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
   exact lt_irrefl _ (hn.trans_le (h n))
 
+theorem Real.tsum_le_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
+    (h : ∀ u : Finset ι, ∑ x ∈ u, f x ≤ c) : ∑' x, f x ≤ c :=
+  (summable_of_sum_le hf h).tsum_le_of_sum_le h
+
 theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
     (h : ∀ n, ∑ i ∈ Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
   (summable_of_sum_range_le hf h).tsum_le_of_sum_range_le h
