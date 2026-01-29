@@ -4493,6 +4493,7 @@ public import Mathlib.GroupTheory.Transfer
 public import Mathlib.InformationTheory.Hamming
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
+public import Mathlib.InformationTheory.TotalVariation.Basic
 public import Mathlib.Init
 public import Mathlib.Lean.ContextInfo
 public import Mathlib.Lean.CoreM
@@ -5739,8 +5740,16 @@ public import Mathlib.Probability.CDF
 public import Mathlib.Probability.CondVar
 public import Mathlib.Probability.ConditionalExpectation
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Decision.AuxLemmas
+public import Mathlib.Probability.Decision.BayesEstimator
+public import Mathlib.Probability.Decision.Binary
+public import Mathlib.Probability.Decision.BoolMeasure
+public import Mathlib.Probability.Decision.DeGrootInfo
 public import Mathlib.Probability.Decision.Risk.Basic
+public import Mathlib.Probability.Decision.Risk.Countable
 public import Mathlib.Probability.Decision.Risk.Defs
+public import Mathlib.Probability.Decision.RiskIncrease
+public import Mathlib.Probability.Decision.ZeroOneLoss
 public import Mathlib.Probability.Density
 public import Mathlib.Probability.Distributions.Beta
 public import Mathlib.Probability.Distributions.Exponential
