@@ -34,7 +34,7 @@ pass `"git commit -m 'message with spaces'`, the command will be split into
 `["git", "commit", "-m", "'message", "with", "spaces'"]`, which is not what you want.
 -/
 def runCmd (s : String) : IO String := do
-  let cmd::args := s.splitOn | EStateM.throw "Please provide at least one word in your command!"
+  let cmd::args := s.splitOn | throw <| IO.userError "Please provide at least one word in your command!"
   IO.Process.run {cmd := cmd, args := args.toArray}
 
 /--
@@ -125,11 +125,11 @@ formatted as a collapsible message.
 -/
 def processPrettyOneLine (log msg fname : String) : IO (String × MessageData) := do
   let hash := log.takeWhile (!·.isWhitespace)
-  let PRdescr := (log.drop hash.length).trim
+  let PRdescr := (log.drop hash.positions.count).trimAscii
   let gitDiffCLI := s!"git diff {hash}^...{hash} -- {fname}"
   let diff ← runCmd gitDiffCLI <|> pure s!"{hash}: error in computing '{gitDiffCLI}'"
   let diffCollapsed := .trace {cls := .str .anonymous s!"{hash}"} m!"{gitDiffCLI}" #[m!"{diff}"]
-  return (hash, m!"{msg} in " ++
+  return (hash.toString, m!"{msg} in " ++
     .trace {cls := .str .anonymous ("_" ++ hash.take 7)} m!"{PRdescr}" #[diffCollapsed])
 
 /--
@@ -146,11 +146,11 @@ If no input is provided, the default percentage is `100`.
 def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
   let mut dict := ∅
   let gitDiff ← runCmd s!"git diff --name-status origin/master...HEAD"
-  let lines := gitDiff.trim.splitOn "\n"
+  let lines := gitDiff.trimAscii.toString.splitOn "\n"
   for git in lines do
     -- If `git` corresponds to a rename, it contains `3` segments, separated by a
     -- tab character (`\t`): `R%%`, `oldName`, `newName`.
-    let [pct, oldName, newName] := git.split (· == '\t') | continue
+    let [pct, oldName, newName] := (git.split (· == '\t')).toList | continue
     if pct.take 1 != "R" then
       IO.println
         s!"mkRenamesDict: '{pct}' should have been of the form Rxxx, denoting a `R`ename \
@@ -160,7 +160,7 @@ def mkRenamesDict (percent : Nat := 100) : IO (Std.HashMap String String) := do
     -- This looks like a rename with a similarity index at least as big as our threshold:
     -- we add the rename to our dictionary.
     if percent ≤ pctNat then
-      dict := dict.insert oldName newName
+      dict := dict.insert oldName.toString newName.toString
     -- This looks like a rename, but the similarity index is smaller than our threshold:
     -- we report a message and do not add the rename to our dictionary.
     else
@@ -183,7 +183,7 @@ def mkModName (fname : System.FilePath) : String :=
     match cpts.getLast? with
     | none => cpts
     | some last =>
-      cpts.dropLast ++ [if last.endsWith ".lean" then last.dropRight ".lean".length else last]
+      cpts.dropLast ++ [if last.endsWith ".lean" then (last.dropEnd ".lean".length).toString else last]
   ".".intercalate cpts
 
 #guard mkModName ("Mathlib" / "Data" / "Nat" / "Basic.lean") == "Mathlib.Data.Nat.Basic"
@@ -214,15 +214,15 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
   -- Retrieve the last two commits that modified `fname`:
   -- the last one is the deletion, the previous one is the last file modification.
   let log ← runCmd s!"git log --pretty=oneline -2 -- {fname}"
-  let [deleted, lastModified] := log.trim.splitOn "\n" |
-    throwError "Found {(log.trim.splitOn "\n").length} commits, but expected 2! \
+  let [deleted, lastModified] := log.trimAscii.toString.splitOn "\n" |
+    throwError "Found {(log.trimAscii.toString.splitOn "\n").length} commits, but expected 2! \
       Please make sure the file {fname} existed at some point!"
   let (_deleteHash, deletedMsg) ← processPrettyOneLine deleted "deleted" fname
   let (modifiedHash, modifiedMsg) ← processPrettyOneLine lastModified "last modified" fname
   msgs := msgs.append #[m!"The file {fname} was\n", modifiedMsg, deletedMsg]
   -- Get the commit date, in `YYYY-MM-DD` format, of the commit deleting the file.
   let log' ← runCmd s!"git log --format=%cs -2 -- {fname}"
-  let deletionDate := (log'.trim.splitOn "\n")[0]!
+  let deletionDate := (log'.trimAscii.toString.splitOn "\n")[0]!
   let deprecation ← mkDeprecationWithDate deletionDate comment
   msgs := msgs.push ""
   -- Retrieve the final version of the file, before it was deleted.
@@ -233,7 +233,7 @@ def deprecateFilePath (fname : String) (rename comment : Option String) :
       let modName := mkModName rename
       pure s!"import {modName}"
     | none => getHeader fname file false
-  let deprecatedFile := s!"{fileHeader.trimRight}\n\n{deprecation.pretty.trimRight}\n"
+  let deprecatedFile := s!"{fileHeader.trimAsciiEnd}\n\n{deprecation.pretty.trimAsciiEnd}\n"
   msgs := msgs.push <| .trace {cls := `Deprecation} m!"{fname}" #[m!"\n{deprecatedFile}"]
   return (msgs, deprecatedFile)
 
@@ -300,17 +300,23 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
   -- (throwing an error if that doesn't exist).
   let getHashAndMessage (n : Nat) : CommandElabM (String × MessageData) := do
     let log ← runCmd s!"git log --pretty=oneline -{n}"
-    let some last := log.trim.splitOn "\n" |>.getLast? | throwError "Found no commits!"
+    let last := log.trimAscii.toString.splitOn "\n" |>.getLast?
+    let last := last.get! -- | throwError "Found no commits!"
     let commitHash := last.takeWhile (!·.isWhitespace)
-    let PRdescr := (last.drop commitHash.length).trim
-    return (commitHash, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
+    let PRdescr := (last.drop commitHash.positions.count).trimAscii
+    return (commitHash.toString, .trace {cls := `Commit} m!"{PRdescr}" #[m!"{commitHash}"])
   let getFilesAtHash (hash : String) : CommandElabM (Std.HashSet String) := do
     let files ← runCmd s!"git ls-tree -r --name-only {hash} Mathlib/"
     return .ofList <| files.splitOn "\n"
-  let (currentHash, currentPRdescr) ← getHashAndMessage 1
+  let result ← getHashAndMessage 1
+  let currentHash := result.1
+  let currentPRdescr := result.2
+  -- let (currentHash, currentPRdescr) := result
   let currentFiles ← getFilesAtHash currentHash
   msgs := msgs.push m!"{currentFiles.size} files at the current commit {currentPRdescr}"
-  let (pastHash, pastPRdescr) ← getHashAndMessage n
+  let result ← getHashAndMessage n
+  let pastHash := result.1
+  let pastPRdescr := result.2
   let pastFiles ← getFilesAtHash pastHash
   msgs := msgs.push m!"{pastFiles.size} files at the past commit {pastPRdescr}"
   let onlyPastFiles := pastFiles.filter fun fil ↦ fil.endsWith ".lean" && !currentFiles.contains fil
@@ -325,14 +331,12 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
     return
   let mut suggestions : Array Meta.Tactic.TryThis.Suggestion := #[]
   let ref := .ofRange {tk.getRange?.get! with stop := tk.getPos?.get!}
-  let dict ← mkRenamesDict (pct.getD (Syntax.mkNumLit "100")).getNat
+  -- let dict ← mkRenamesDict (pct.getD (Syntax.mkNumLit "100")).getNat
   for fname in onlyPastFiles do
     let fnameStx := Syntax.mkStrLit fname
-    let stx ← if let some newName := dict[fname]? then
-                let newNameStx := Syntax.mkStrLit newName
-                `(command|#create_deprecated_module $fnameStx rename_to $newNameStx)
-              else
-                `(command|#create_deprecated_module $fnameStx)
+    -- let result := dict[fname]?
+    let stx := `(command|#create_deprecated_module $fnameStx)
+    let stx <- stx
     suggestions := suggestions.push {
       suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
