@@ -206,3 +206,182 @@ theorem Complex.conj_rootsOfUnity {ζ : ℂˣ} {n : ℕ} [NeZero n] (hζ : ζ �
     (starRingEnd ℂ) ζ = ζ⁻¹ := by
   rw [← Units.mul_eq_one_iff_eq_inv, conj_mul', norm_eq_one_of_mem_rootsOfUnity hζ, ofReal_one,
     one_pow]
+
+/-
+Low order roots of unity
+-/
+
+section LowOrder
+
+open Complex
+
+variable {K : Type*} [Field K]
+
+/-
+Cubic roots of unity
+-/
+
+lemma cubic_cyclotomic_polynomial_roots_of_sq [NeZero (2 : K)] {z s : K}
+    (hs : s * s = -3) : z ^ 2 + z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 := by
+  suffices 1 * (z * z) + 1 * z + 1 = 0 ↔ z = -(1 / 2) + s / 2 ∨ z = -(1 / 2) - s / 2 by
+    rw [← this]; ring_nf
+  rw [quadratic_eq_zero_iff one_ne_zero (by rw [hs, discrim]; norm_num)]
+  ring_nf
+
+lemma cubic_cyclotomic_polynomial_ne_zero_of_sq_ne {z : K} (h : ∀ s : K, s^2 ≠ -3) :
+    z ^ 2 + z + 1 ≠ 0 := by
+  suffices 1 * (z * z) + 1 * z + 1 ≠ 0 by
+    rw[one_mul, one_mul, ← sq] at this
+    exact this
+  exact quadratic_ne_zero_of_discrim_ne_sq (fun s => by rw [discrim]; ring_nf; exact (h s).symm) _
+
+lemma cubic_roots_of_unity_of_sq_eq [NeZero (2 : K)] {s : K} (hs : s * s = -3) :
+    {z : K | z^3 = 1} = {1, -(1 / 2) + s / 2, -(1 / 2) - s / 2} := by
+  have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
+  ext1 z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H, ← cubic_cyclotomic_polynomial_roots_of_sq hs, mul_eq_zero, sub_eq_zero]
+
+lemma cubic_roots_of_unity_of_sq_ne (h : ∀ s : K, s^2 ≠ -3) : {z : K | z^3 = 1} = {1} := by
+  have H (z : K) : z ^ 3 - 1 = (z - 1) * (z ^ 2 + z + 1) := by ring
+  ext1 z
+  simp only [Set.mem_setOf_eq, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H, mul_eq_zero_iff_right (cubic_cyclotomic_polynomial_ne_zero_of_sq_ne h),
+    sub_eq_zero]
+
+example : {z : ℂ | z ^ 3 = 1} = {1, -(1 / 2) + √3 / 2 * I, -(1 / 2) - √3 / 2 * I} := by
+  have hs : (√3 * I) * (√3 * I) = -3 := by
+    ring_nf
+    rw [I_sq, ← ofReal_pow, Real.sq_sqrt zero_le_three, mul_neg, mul_one,  ofReal_ofNat]
+  rw [cubic_roots_of_unity_of_sq_eq hs]
+  ring_nf
+
+example : {z : ℝ | z ^ 3 = 1} = {1} := by
+  rw [cubic_roots_of_unity_of_sq_ne]
+  intro s
+  by_contra hc
+  have e2 : s=0 := by
+    rw [← sq_nonpos_iff]
+    simp_all only [Left.neg_nonpos_iff, Nat.ofNat_nonneg]
+  rw [e2, zero_pow two_ne_zero] at hc
+  simp_all only [zero_eq_neg, OfNat.ofNat_ne_zero]
+
+/-
+Quartic roots of unity
+-/
+
+lemma quartic_roots_of_unity_of_sq_eq {s : K} (hs : s * s = -1) :
+    {z : K | z ^ 4 = 1} = {1, s, -1, -s} := by
+  have H (z : K) : z ^ 4 - 1 = (z - 1) * (z - s) * (z + 1) * (z + s) := by
+    ring_nf
+    rw [sq s, hs]
+    ring
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H]
+  simp only [← sub_neg_eq_add, mul_eq_zero, sub_eq_zero, or_assoc]
+
+lemma quartic_roots_of_unity_of_sq_ne (h : ∀ s : K, s^2 ≠ -1) : {z : K | z ^ 4 = 1} = {1, -1} := by
+  have H (z : K) : z ^ 4 - 1 = (z - 1) * (z + 1) * (z ^ 2 + 1) := by
+    ring_nf
+  ext z
+  simp only [Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+  rw [← sub_eq_zero, H]
+  rw [mul_eq_zero_iff_right (by
+    by_contra hc
+    rw [add_eq_zero_iff_eq_neg] at hc
+    exact h z hc)]
+  rw [mul_eq_zero, sub_eq_zero, add_eq_zero_iff_eq_neg]
+
+example : {z : ℂ | z ^ 4 = 1} = {1, I, -1, -I} := quartic_roots_of_unity_of_sq_eq I_mul_I
+
+example : {z : ℝ | z ^ 4 = 1} = {1, -1} := by
+  rw [quartic_roots_of_unity_of_sq_ne]
+  intro s
+  by_contra hc
+  have e2 : s=0 := by
+    rw [← sq_nonpos_iff, hc]
+    simp [Left.neg_nonpos_iff, zero_le_one]
+  rw [e2] at hc
+  subst e2
+  simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow, zero_eq_neg, one_ne_zero]
+
+/-
+Quintic roots of unity
+-/
+
+lemma quintic_factorize_cyclotomic_polynomial [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) (z : K) :
+    z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = (z - ( (s - 1) / 4 + t₁ / 4))
+                                  * (z - ( (s - 1) / 4 - t₁ / 4))
+                                  * (z - (-(s + 1) / 4 + t₂ / 4))
+                                  * (z - (-(s + 1) / 4 - t₂ / 4)) := by
+  have s4 : s ^ 4 = 25 := by
+    calc s ^ 4 = (s * s) * (s * s) := by ring_nf
+    _ = 5 * 5 := by rw [hs]
+    _ = 25 := by norm_num
+  ring_nf
+  rw [sq t₁, ht₁, sq t₂, ht₂, sq s, hs, s4]
+  ring_nf
+  rw [sq s, hs]
+  ring_nf
+  have p2 : (4 : K) ^ 2 = (16 : K) := by norm_num
+  have p3 : (4 : K) ^ 3 = (64 : K) := by norm_num
+  have p4 : (4 : K) ^ 4 = (256 : K) := by norm_num
+  rw [mul_assoc, ← p3, ← mul_pow, mul_assoc, ← p2, ← mul_pow, ← p4, ← mul_pow _ 4, mul_assoc,
+    inv_mul_cancel₀ four_ne_zero, one_pow, mul_one, one_pow, mul_one, one_pow]
+  ring_nf
+
+lemma quintic_cyclotomic_polynomial_roots_of_sq [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) :
+    {z : K | z ^ 4 + z ^ 3 + z ^ 2 + z + 1 = 0} =
+      {(s - 1) / 4 + t₁ / 4,
+       (s - 1) / 4 - t₁ / 4,
+      -(s + 1) / 4 + t₂ / 4,
+      -(s + 1) / 4 - t₂ / 4} := by
+  ext1 z
+  simp only [(quintic_factorize_cyclotomic_polynomial hs ht₁ ht₂), neg_add_rev, mul_eq_zero,
+    sub_eq_zero, or_assoc, Set.mem_setOf_eq, Set.mem_insert_iff, Set.mem_singleton_iff]
+
+lemma quintic_roots_of_unity_of_sq [NeZero (4 : K)] {s t₁ t₂ : K} (hs : s * s = 5)
+    (ht₁ : t₁ * t₁ = -2 * (5 + s)) (ht₂ : t₂ * t₂ = -2 * (5 - s)) :
+  {z : K | z^5 = 1} = {1,
+      (s - 1) / 4 + t₁ / 4,
+       (s - 1) / 4 - t₁ / 4,
+      -(s + 1) / 4 + t₂ / 4,
+      -(s + 1) / 4 - t₂ / 4} := by
+  have H (z : K) : z ^ 5 - 1 = (z - 1) * (z ^ 4 + z ^ 3 + z ^ 2 + z + 1) := by ring
+  rw [← Set.singleton_union, ← quintic_cyclotomic_polynomial_roots_of_sq hs ht₁ ht₂]
+  ext1 z
+  simp only [Set.mem_setOf_eq, Set.singleton_union, Set.mem_insert_iff]
+  rw [← sub_eq_zero, H, mul_eq_zero, sub_eq_zero]
+
+example : {z : ℂ | z ^ 5 = 1} = {1,
+    (√5 -1)/4 + √2 * √(5 + √5)/4 * I,
+    (√5 -1)/4 - √2 * √(5 + √5)/4 * I,
+    -(√5 + 1)/4 + √2 * √(5 - √5) / 4 * I,
+    -(√5 +1)/4 - √2 * √(5 - √5) / 4 * I} := by
+  have hs : (√5 : ℂ) * √5 = 5 := by
+    norm_cast
+    norm_num
+  have ht₁ : (√2 * √(5 + √5) * I) * (√2 * √(5 + √5) * I) = -2 * (5 + √5) := by
+    rw [mul_assoc, mul_comm I,  mul_assoc _ I I, I_mul_I]
+    norm_cast
+    norm_num
+    ring_nf
+    rw [Real.sq_sqrt zero_le_two, Real.sq_sqrt (by simp only [Nat.ofNat_nonneg, Real.sqrt_nonneg,
+      Left.add_nonneg])]
+    ring_nf
+  have ht₂ : (√2 * √(5 - √5) * I) * (√2 * √(5 - √5) * I) = -2 * (5 - √5) := by
+    rw [mul_assoc, mul_comm I,  mul_assoc _ I I, I_mul_I]
+    norm_cast
+    norm_num
+    ring_nf
+    rw [Real.sq_sqrt zero_le_two, Real.sq_sqrt]
+    ring_nf
+    rw [sub_nonneg]
+    refine (Real.sqrt_le_left (Nat.ofNat_nonneg' 5)).mpr (by norm_num)
+  rw [quintic_roots_of_unity_of_sq hs ht₁ ht₂]
+  ring_nf
+
+end LowOrder
