@@ -262,7 +262,7 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
 /-- The kernel of a homomorphism composed with an isomorphism is equal to the kernel of
 the homomorphism mapped by the inverse isomorphism. -/
 @[to_additive (attr := simp)]
-lemma ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [Group K]
+lemma ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [MulOneClass K]
   (f : H →* K) (iso : G ≃* H) : (f.comp iso).ker = (Subgroup.map (iso.symm.toMonoidHom) f.ker) := by
   rw [← MonoidHom.comap_ker, Subgroup.comap_equiv_eq_map_symm]
   rfl
