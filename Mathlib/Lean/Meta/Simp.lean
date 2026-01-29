@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Init
 public import Lean.Elab.Tactic.Simp
+public import Lean.Meta.DiscrTree
 
 /-!
 # Helper functions for using the simplifier.

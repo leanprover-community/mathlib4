@@ -173,8 +173,8 @@ the continuous functional calculus is whether the import
 `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean` is needed, which contains
 the instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
 imports. If this import is not needed, then the file should be placed in the directory
-`Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus.lean`. If this import is needed
-then the appropriate location is `Mathlib/Analysis/CStarAlgebra/SpecialFunctions.lean`.
-If, as is often thecase, some results need the import and others do not, there should be two files,
+`Mathlib/Analysis/SpecialFunctions/ContinuousFunctionalCalculus/`. If this import is needed
+then the appropriate location is `Mathlib/Analysis/CStarAlgebra/SpecialFunctions/`.
+If, as is often the case, some results need the import and others do not, there should be two files,
 one in each location.
 -/

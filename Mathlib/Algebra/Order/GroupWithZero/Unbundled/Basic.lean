@@ -13,6 +13,8 @@ public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
+import Mathlib.Data.Set.Function
+
 /-!
 # Lemmas on the monotone multiplication typeclasses
 
@@ -1352,6 +1354,18 @@ lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ 
 
 end MulPosMono
 
+section PosMulStrictMono
+variable [PosMulStrictMono G₀] [MulPosMono G₀]
+
+lemma zpow_left_injOn₀ : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
+  | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+  | .negSucc n, _ => by
+    simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+
+lemma zpow_left_inj₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
+    a ^ n = b ^ n ↔ a = b := (zpow_left_injOn₀ hn).eq_iff ha hb
+
+end PosMulStrictMono
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero
