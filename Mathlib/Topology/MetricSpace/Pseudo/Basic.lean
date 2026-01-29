@@ -177,14 +177,17 @@ end Metric
 open Metric
 
 theorem Metric.inseparable_iff_nndist {x y : α} : Inseparable x y ↔ nndist x y = 0 := by
-  rw [EMetric.inseparable_iff, edist_nndist, ENNReal.coe_eq_zero]
+  rw [Metric.inseparable_iff_edist, edist_nndist, ENNReal.coe_eq_zero]
 
 alias ⟨Inseparable.nndist_eq_zero, _⟩ := Metric.inseparable_iff_nndist
 
-theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
+theorem Metric.inseparable_iff_dist {x y : α} : Inseparable x y ↔ dist x y = 0 := by
   rw [Metric.inseparable_iff_nndist, dist_nndist, NNReal.coe_eq_zero]
 
-alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff
+alias ⟨Inseparable.dist_eq_zero, _⟩ := Metric.inseparable_iff_dist
+
+@[deprecated (since := "2026-01-14")]
+alias Metric.inseparable_iff := Metric.inseparable_iff_dist
 
 /-- A weaker version of `tendsto_nhds_unique` for `PseudoMetricSpace`. -/
 theorem tendsto_nhds_unique_dist {f : β → α} {l : Filter β} {x y : α} [NeBot l]

@@ -56,7 +56,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le h h' (fun x => δ_le _) fun x => le_of_lt (hw _)
   -- Step 2: Prove that the sequence `w : ℕ → K` is a Cauchy sequence
   have seq_is_cauchy : CauchySeq fun n => (w n : F) := by
-    rw [cauchySeq_iff_le_tendsto_0]
+    rw [cauchySeq_iff_dist_le_tendsto_zero]
     -- splits into three goals
     let b := fun n : ℕ => 8 * δ * (1 / (n + 1)) + 4 * (1 / (n + 1)) * (1 / (n + 1))
     use fun n => √(b n)

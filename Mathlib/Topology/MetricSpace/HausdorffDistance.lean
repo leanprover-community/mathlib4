@@ -127,12 +127,12 @@ theorem infEDist_le_edist_add_infEDist : infEDist x s ≤ edist x y + infEDist y
   rw [add_comm]
   exact infEDist_le_infEDist_add_edist
 
-theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : edist x y ≤ infEDist x s + Metric.ediam s := by
+theorem edist_le_infEDist_add_ediam (hy : y ∈ s) : edist x y ≤ infEDist x s + ediam s := by
   simp_rw [infEDist, ENNReal.iInf_add]
   refine le_iInf₂ fun i hi => ?_
   calc
     edist x y ≤ edist x i + edist i y := edist_triangle _ _ _
-    _ ≤ edist x i + Metric.ediam s := add_le_add le_rfl (Metric.edist_le_ediam_of_mem hi hy)
+    _ ≤ edist x i + ediam s := add_le_add le_rfl (edist_le_ediam_of_mem hi hy)
 
 /-- The edist to a set depends continuously on the point -/
 @[continuity, fun_prop]
@@ -149,7 +149,7 @@ theorem infEDist_closure : infEDist x (closure s) = infEDist x s := by
     ENNReal.lt_add_right h.ne ε0.ne'
   obtain ⟨y : α, ycs : y ∈ closure s, hy : edist x y < infEDist x (closure s) + ↑ε / 2⟩ :=
     infEDist_lt_iff.mp this
-  obtain ⟨z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2⟩ := EMetric.mem_closure_iff.1 ycs (ε / 2) ε0
+  obtain ⟨z : α, zs : z ∈ s, dyz : edist y z < ↑ε / 2⟩ := mem_closure_iff_edist.1 ycs (ε / 2) ε0
   calc
     infEDist x s ≤ edist x z := infEDist_le_edist_of_mem zs
     _ ≤ edist x y + edist y z := edist_triangle _ _ _
@@ -162,7 +162,7 @@ theorem mem_closure_iff_infEDist_zero : x ∈ closure s ↔ infEDist x s = 0 :=
     rw [← infEDist_closure]
     exact infEDist_zero_of_mem h,
    fun h =>
-    EMetric.mem_closure_iff.2 fun ε εpos => infEDist_lt_iff.mp <| by rwa [h]⟩
+    mem_closure_iff_edist.2 fun ε εpos => infEDist_lt_iff.mp <| by rwa [h]⟩
 
 /-- Given a closed set `s`, a point belongs to `s` iff its infimum edistance to this set vanishes -/
 theorem mem_iff_infEDist_zero_of_closed (h : IsClosed s) : x ∈ s ↔ infEDist x s = 0 := by
@@ -185,13 +185,13 @@ theorem exists_real_pos_lt_infEDist_of_notMem_closure {x : α} {E : Set α} (h :
   exact ⟨ε, ⟨ENNReal.ofReal_pos.mp ε_pos, ε_lt⟩⟩
 
 theorem disjoint_closedEBall_of_lt_infEDist {r : ℝ≥0∞} (h : r < infEDist x s) :
-    Disjoint (EMetric.closedBall x r) s := by
+    Disjoint (closedEBall x r) s := by
   rw [disjoint_left]
   intro y hy h'y
   apply lt_irrefl (infEDist x s)
   calc
     infEDist x s ≤ edist x y := infEDist_le_edist_of_mem h'y
-    _ ≤ r := by rwa [EMetric.mem_closedBall, edist_comm] at hy
+    _ ≤ r := by rwa [mem_closedEBall, edist_comm] at hy
     _ < infEDist x s := h
 
 /-- The infimum edistance is invariant under isometries -/
@@ -331,14 +331,14 @@ theorem hausdorffEDist_image (h : Isometry Φ) :
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEDist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
-    hausdorffEDist s t ≤ Metric.ediam (s ∪ t) := by
+    hausdorffEDist s t ≤ ediam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffEDist_le_of_mem_edist ?_ ?_
   · intro z hz
-    exact ⟨y, yt, Metric.edist_le_ediam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
+    exact ⟨y, yt, edist_le_ediam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
-    exact ⟨x, xs, Metric.edist_le_ediam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
+    exact ⟨x, xs, edist_le_ediam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEDist_triangle : hausdorffEDist s u ≤ hausdorffEDist s t + hausdorffEDist t u := by

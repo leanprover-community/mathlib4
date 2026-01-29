@@ -556,10 +556,10 @@ section
 
 variable [EMetricSpace β]
 
-open ENNReal Filter EMetric
+open ENNReal Filter Metric
 
 /-- In an emetric ball, the distance between points is everywhere finite -/
-theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : edist x.1 y.1 ≠ ∞ :=
+theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : eball a r) : edist x.1 y.1 ≠ ∞ :=
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
@@ -568,12 +568,12 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
 is everywhere finite. -/
-def metricSpaceEMetricBall (a : β) (r : ℝ≥0∞) : MetricSpace (ball a r) :=
+def metricSpaceEBall (a : β) (r : ℝ≥0∞) : MetricSpace (eball a r) :=
   EMetricSpace.toMetricSpace edist_ne_top_of_mem_ball
 
-theorem nhds_eq_nhds_emetric_ball (a x : β) (r : ℝ≥0∞) (h : x ∈ ball a r) :
-    𝓝 x = map ((↑) : ball a r → β) (𝓝 ⟨x, h⟩) :=
-  (map_nhds_subtype_coe_eq_nhds _ <| IsOpen.mem_nhds EMetric.isOpen_ball h).symm
+theorem nhds_eq_nhds_eball (a x : β) (r : ℝ≥0∞) (h : x ∈ eball a r) :
+    𝓝 x = map ((↑) : eball a r → β) (𝓝 ⟨x, h⟩) :=
+  (map_nhds_subtype_coe_eq_nhds _ <| IsOpen.mem_nhds Metric.isOpen_eball h).symm
 
 end
 
@@ -585,14 +585,14 @@ open EMetric
 
 theorem tendsto_iff_edist_tendsto_0 {l : Filter β} {f : β → α} {y : α} :
     Tendsto f l (𝓝 y) ↔ Tendsto (fun x => edist (f x) y) l (𝓝 0) := by
-  simp only [EMetric.nhds_basis_eball.tendsto_right_iff, EMetric.mem_ball,
+  simp only [Metric.nhds_basis_eball.tendsto_right_iff, Metric.mem_eball,
     @tendsto_order ℝ≥0∞ β _ _, forall_prop_of_false ENNReal.not_lt_zero, forall_const, true_and]
 
 /-- Yet another metric characterization of Cauchy sequences on integers. This one is often the
 most efficient. -/
 theorem EMetric.cauchySeq_iff_le_tendsto_0 [Nonempty β] [SemilatticeSup β] {s : β → α} :
     CauchySeq s ↔ ∃ b : β → ℝ≥0∞, (∀ n m N : β, N ≤ n → N ≤ m → edist (s n) (s m) ≤ b N) ∧
-      Tendsto b atTop (𝓝 0) := EMetric.cauchySeq_iff.trans <| by
+      Tendsto b atTop (𝓝 0) := Metric.cauchySeq_iff_edist.trans <| by
   constructor
   · intro hs
     /- `s` is Cauchy sequence. Let `b n` be the diameter of the set `s '' Set.Ici n`. -/
@@ -617,9 +617,9 @@ theorem continuous_of_le_add_edist {f : α → ℝ≥0∞} (C : ℝ≥0∞) (hC 
   refine continuous_iff_continuousAt.2 fun x => ENNReal.tendsto_nhds_of_Icc fun ε ε0 => ?_
   rcases ENNReal.exists_nnreal_pos_mul_lt hC ε0.ne' with ⟨δ, δ0, hδ⟩
   rw [mul_comm] at hδ
-  filter_upwards [EMetric.closedBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
+  filter_upwards [Metric.closedEBall_mem_nhds x (ENNReal.coe_pos.2 δ0)] with y hy
   refine ⟨tsub_le_iff_right.2 <| (h x y).trans ?_, (h y x).trans ?_⟩ <;> grw [← hδ.le] <;> gcongr
-  exacts [EMetric.mem_closedBall'.1 hy, EMetric.mem_closedBall.1 hy]
+  exacts [Metric.mem_closedEBall'.1 hy, Metric.mem_closedEBall.1 hy]
 
 theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
   apply continuous_of_le_add_edist 2 (by decide)
@@ -640,7 +640,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
-theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
+theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
   isClosed_le (continuous_id.edist continuous_const) continuous_const
 
 @[simp]

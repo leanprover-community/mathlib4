@@ -277,7 +277,7 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
     change (if y = x then 0 else 1) < 1 at hy
     simp_all
   · refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
-    rw [Metric.cauchySeq_iff'] at hu
+    rw [Metric.cauchySeq_iff_dist'] at hu
     obtain ⟨N, hN⟩ := hu 1 (by simp)
     refine ⟨u N, @tendsto_atTop_of_eventually_const X UniformSpace.toTopologicalSpace (u N) _ _ _ N
       fun n hn ↦ ?_⟩

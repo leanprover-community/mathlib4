@@ -305,10 +305,10 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
     /- We have to show that `f n` converges to a bounded continuous function.
       For this, we prove pointwise convergence to define the limit, then check
       it is a continuous bounded function, and then check the norm convergence. -/
-    rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
+    rcases cauchySeq_iff_dist_le_tendsto_zero.1 hf with ⟨b, b0, b_bound, b_lim⟩
     have f_bdd := fun x n m N hn hm => le_trans (dist_coe_le_dist x) (b_bound n m N hn hm)
     have fx_cau : ∀ x, CauchySeq fun n => f n x :=
-      fun x => cauchySeq_iff_le_tendsto_0.2 ⟨b, b0, f_bdd x, b_lim⟩
+      fun x => cauchySeq_iff_dist_le_tendsto_zero.2 ⟨b, b0, f_bdd x, b_lim⟩
     choose F hF using fun x => cauchySeq_tendsto_of_complete (fx_cau x)
     /- `F : α → β`, `hF : ∀ (x : α), Tendsto (fun n ↦ ↑(f n) x) atTop (𝓝 (F x))`
       `F` is the desired limit function. Check that it is uniformly approximated by `f N`. -/

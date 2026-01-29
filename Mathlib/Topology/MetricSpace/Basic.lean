@@ -32,7 +32,7 @@ variable {x : γ} {s : Set γ}
 
 -- see Note [lower instance priority]
 instance (priority := 100) _root_.MetricSpace.instT0Space : T0Space γ where
-  t0 _ _ h := eq_of_dist_eq_zero <| Metric.inseparable_iff.1 h
+  t0 _ _ h := eq_of_dist_eq_zero h.dist_eq_zero
 
 /-- A map between metric spaces is a uniform embedding if and only if the distance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -46,7 +46,7 @@ theorem isUniformEmbedding_iff' [PseudoMetricSpace β] {f : γ → β} :
 abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
   toPseudoMetricSpace := ‹_›
-  eq_of_dist_eq_zero hdist := (Metric.inseparable_iff.2 hdist).eq
+  eq_of_dist_eq_zero hdist := (Metric.inseparable_iff_dist.2 hdist).eq
 
 -- see Note [lower instance priority]
 /-- A metric space induces an emetric space -/
@@ -209,7 +209,7 @@ variable {X : Type*} (m : PseudoEMetricSpace X) (d : X → X → ℝ≥0∞) (hd
 
 /-- Build new pseudoemetric space from an old one where the edistance is provably (but typically
 non-definitionally) equal to some given edistance. We also provide convenience versions for
-PseudoMetric, Emetric and Metric spaces. -/
+PseudoMetric, EMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceEDist : PseudoEMetricSpace X where
@@ -233,7 +233,7 @@ variable {X : Type*} (m : PseudoMetricSpace X) (d : X → X → ℝ) (hd : d = d
 
 /-- Build new pseudometric space from an old one where the distance is provably (but typically
 non-definitionally) equal to some given distance. We also provide convenience versions for
-PseudoEMetric, Emetric and Metric spaces. -/
+PseudoEMetric, EMetric and Metric spaces. -/
 -- See note [forgetful inheritance]
 -- See note [reducible non-instances]
 abbrev replaceDist : PseudoMetricSpace X where

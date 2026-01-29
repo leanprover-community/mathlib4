@@ -749,7 +749,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
     have cauchy_y : CauchySeq y := by
       have : Tendsto (fun n => 2 * u n) atTop (𝓝 0) := by
         simpa only [mul_zero] using u_lim.const_mul 2
-      refine cauchySeq_of_le_tendsto_0' (fun n => 2 * u n) (fun m n hmn => ?_) this
+      refine CauchySeq.of_dist_le_tendsto_zero (fun n => 2 * u n) (fun m n hmn => ?_) this
       rcases I m n with ⟨z, zsm, zsn⟩
       calc
         dist (y m) (y n) ≤ dist (y m) z + dist z (y n) := dist_triangle _ _ _

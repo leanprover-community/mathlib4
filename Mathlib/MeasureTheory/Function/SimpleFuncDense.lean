@@ -110,8 +110,8 @@ theorem edist_nearestPt_le (e : ℕ → α) (x : α) {k N : ℕ} (hk : k ≤ N) 
 
 theorem tendsto_nearestPt {e : ℕ → α} {x : α} (hx : x ∈ closure (range e)) :
     Tendsto (fun N => nearestPt e N x) atTop (𝓝 x) := by
-  refine (atTop_basis.tendsto_iff nhds_basis_eball).2 fun ε hε => ?_
-  rcases EMetric.mem_closure_iff.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
+  refine (atTop_basis.tendsto_iff Metric.nhds_basis_eball).2 fun ε hε => ?_
+  rcases Metric.mem_closure_iff_edist.1 hx ε hε with ⟨_, ⟨N, rfl⟩, hN⟩
   rw [edist_comm] at hN
   exact ⟨N, trivial, fun n hn => (edist_nearestPt_le e x hn).trans_lt hN⟩
 

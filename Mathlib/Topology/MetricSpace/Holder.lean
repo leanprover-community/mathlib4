@@ -121,7 +121,7 @@ theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : Holder
 /-- A Hölder continuous function is uniformly continuous -/
 protected theorem uniformContinuousOn (hf : HolderOnWith C r f s) (h0 : 0 < r) :
     UniformContinuousOn f s := by
-  refine EMetric.uniformContinuousOn_iff.2 fun ε εpos => ?_
+  refine Metric.uniformContinuousOn_iff_edist.2 fun ε εpos => ?_
   have : Tendsto (fun d : ℝ≥0∞ => (C : ℝ≥0∞) * d ^ (r : ℝ)) (𝓝 0) (𝓝 0) :=
     ENNReal.tendsto_const_mul_rpow_nhds_zero_of_pos ENNReal.coe_ne_top h0
   rcases ENNReal.nhds_zero_basis.mem_iff.1 (this (gt_mem_nhds εpos)) with ⟨δ, δ0, H⟩
