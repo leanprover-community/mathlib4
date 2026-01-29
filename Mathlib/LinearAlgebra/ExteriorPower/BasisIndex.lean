@@ -16,6 +16,7 @@ public import Mathlib.Data.Finset.Card
 
 namespace exteriorPower
 
+/-- An abbreviation of the subtype of finite sets of `I` with cardinality `n`. -/
 abbrev basisIndex (I : Type*) (n : ℕ) := {a : Finset I // a.card = n}
 
 namespace basisIndex
@@ -24,6 +25,7 @@ variable {I : Type*} {m n : ℕ}
 
 section cast
 
+/-- The equivalence between `basisIndex`s of equal cardinality. -/
 def cast (h : m = n) : basisIndex I m ≃ basisIndex I n where
   toFun s := ⟨s.val, h ▸ s.prop⟩
   invFun t := ⟨t.val, h ▸ t.prop⟩
@@ -72,6 +74,7 @@ section cons
 
 variable (i : I) (s : basisIndex I m) (his : i ∉ s)
 
+/-- The `basisIndex` obtained by inserting a new element. -/
 def cons : basisIndex I (m + 1) := ⟨Finset.cons i s.val his, by rw [Finset.card_cons his, s.prop]⟩
 
 @[simp]
@@ -97,6 +100,7 @@ section erase
 
 variable [DecidableEq I] (i : I) (s : basisIndex I m) (his : i ∈ s)
 
+/-- The `basisIndex` obtained by removing an element. -/
 def erase : basisIndex I (m - 1) := ⟨s.val.erase i, by rw [Finset.card_erase_of_mem his, s.prop]⟩
 
 @[simp]
@@ -123,6 +127,7 @@ section disjUnion
 
 variable (s : basisIndex I m) (t : basisIndex I n) (hst : Disjoint s.val t.val)
 
+/-- The `basisIndex` obtained by combining two disjoint sets. -/
 def disjUnion : basisIndex I (m + n) :=
   ⟨s.val.disjUnion t.val hst, by rw [Finset.card_disjUnion, s.prop, t.prop]⟩
 
@@ -153,6 +158,7 @@ section sdiff
 
 variable [DecidableEq I] (s : basisIndex I m) (t : basisIndex I n) (hts : t.val ⊆ s.val)
 
+/-- The `basisIndex` obtained by removing a subset of elements. -/
 def sdiff : basisIndex I (m - n) :=
   ⟨s.val \ t.val, by rw [Finset.card_sdiff_of_subset hts, s.prop, t.prop]⟩
 
