@@ -95,6 +95,31 @@ lemma isClosedMap_mul_left (a : G) : IsClosedMap (a * ·) := (Homeomorph.mulLeft
 theorem IsClosed.leftCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (x • U) :=
   isClosedMap_mul_left x _ h
 
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_left_nhdsGT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (c * ·) (𝓝[>] a) = (𝓝[>] (c * a)) := by
+  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [mul_comm]
+
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_left_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (c * ·) (𝓝[<] a) = (𝓝[<] (c * a)) := by
+  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp [mul_comm]
+
+
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_left_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (c * ·) (𝓝[≠] a) = (𝓝[≠] (c * a)) := by
+  convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
 /-- Multiplication from the right in a topological group as a homeomorphism. -/
 @[to_additive /-- Addition from the right in a topological additive group as a homeomorphism. -/]
 protected def Homeomorph.mulRight (a : G) : G ≃ₜ G :=
@@ -127,6 +152,30 @@ theorem isClosedMap_mul_right (a : G) : IsClosedMap (· * a) :=
 theorem IsClosed.rightCoset {U : Set G} (h : IsClosed U) (x : G) : IsClosed (op x • U) :=
   isClosedMap_mul_right x _ h
 
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_right_nhdsGT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (· * c) (𝓝[>] a) = (𝓝[>] (a * c)) := by
+  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_right_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (· * c) (𝓝[<] a) = (𝓝[<] (a * c)) := by
+  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.map_mul_right_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
+    {c a : G} :
+    map (· * c) (𝓝[≠] a) = (𝓝[≠] (a * c)) := by
+  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
 @[to_additive]
 theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpen ({1} : Set G) :=
   MulAction.IsPretransitive.discreteTopology_iff G 1
@@ -135,23 +184,6 @@ theorem discreteTopology_iff_isOpen_singleton_one : DiscreteTopology G ↔ IsOpe
 theorem discreteTopology_of_isOpen_singleton_one (h : IsOpen ({1} : Set G)) :
     DiscreteTopology G :=
   discreteTopology_iff_isOpen_singleton_one.mpr h
-
-theorem Filter.map_mul_right_nhdsGT {G : Type} [CommGroup G] [PartialOrder G]
-    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
-    {c a : G} :
-    map (· * c) (𝓝[>] a) = (𝓝[>] (a * c)) := by
-  convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
-  simp
-  ext x
-  simp
-
-
-theorem Filter.map_add_right_nhdsGT {G : Type} [AddCommGroup G] [PartialOrder G]
-    [IsOrderedAddMonoid G] [TopologicalSpace G] [ContinuousAdd G]
-    {c a : G} :
-    map (· + c) (𝓝[>] a) = (𝓝[>] (a + c)) := by
-  convert (Homeomorph.addRight c).isEmbedding.map_nhdsWithin_eq .. using 2
-  simp only [Homeomorph.coe_addRight, image_add_right, preimage_add_const_Ioi, sub_neg_eq_add]
 
 end ContinuousMulGroup
 
@@ -336,6 +368,30 @@ lemma continuousOn_inv_iff : ContinuousOn f⁻¹ s ↔ ContinuousOn f s :=
 @[to_additive] alias ⟨Continuous.of_inv, _⟩ := continuous_inv_iff
 @[to_additive] alias ⟨ContinuousAt.of_inv, _⟩ := continuousAt_inv_iff
 @[to_additive] alias ⟨ContinuousOn.of_inv, _⟩ := continuousOn_inv_iff
+
+@[to_additive (attr := simp)]
+theorem Filter.inv_nhdsGT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousInv G]
+    {a : G} :
+    (𝓝[>] a)⁻¹ = (𝓝[<] (a⁻¹)) := by
+  convert (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.inv_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousInv G]
+    {a : G} :
+    (𝓝[<] a)⁻¹ = (𝓝[>] (a⁻¹)) := by
+  convert (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
+
+@[to_additive (attr := simp)]
+theorem Filter.inv_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
+    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousInv G]
+    {a : G} :
+    (𝓝[≠] a)⁻¹ = (𝓝[≠] (a⁻¹)) := by
+  convert (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
+  simp
 
 end ContinuousInvolutiveInv
 
