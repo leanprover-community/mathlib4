@@ -98,7 +98,7 @@ theorem push {basis : Basis} {f : ℝ → ℝ} (h : WellFormedBasis basis)
   insert (by simp [h]) hf_tendsto hf_comp (by simp)
 
 /-- All functions from a well-formed basis tend to `atTop`. -/
-theorem tendsto_top {basis : Basis} (h : WellFormedBasis basis) {f : ℝ → ℝ}
+theorem tendsto_atTop {basis : Basis} (h : WellFormedBasis basis) {f : ℝ → ℝ}
     (hf : f ∈ basis) :
     Tendsto f atTop atTop := h.right f hf
 
@@ -124,7 +124,7 @@ theorem tail_IsLittleO_head {hd : ℝ → ℝ} {tl : Basis}
   rw [WellFormedBasis, List.pairwise_cons] at h
   exact h.left.left _ hf
 
-theorem insertLogLast {basis_hd : ℝ → ℝ} {basis_tl : Basis}
+theorem pushLogLast {basis_hd : ℝ → ℝ} {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl)) :
     WellFormedBasis ((basis_hd :: basis_tl) ++
       [Real.log ∘ (basis_hd :: basis_tl).getLast (by simp)]) := by
@@ -132,7 +132,7 @@ theorem insertLogLast {basis_hd : ℝ → ℝ} {basis_tl : Basis}
   · simp [Real.tendsto_log_atTop.comp, h_basis.right]
   · intro g hg
     simpa [List.getLast_of_getLast?_eq_some hg] using Real.isLittleO_log_id_atTop.comp_tendsto <|
-      Real.tendsto_log_atTop.comp <| h_basis.tendsto_top <| List.mem_of_getLast? hg
+      Real.tendsto_log_atTop.comp <| h_basis.tendsto_atTop <| List.mem_of_getLast? hg
 
 end WellFormedBasis
 
