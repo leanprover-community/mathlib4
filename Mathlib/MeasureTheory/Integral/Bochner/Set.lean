@@ -844,6 +844,14 @@ lemma integral_le_measure {f : X → ℝ} {s : Set X}
   · intro x hx
     simpa [g] using h's x hx
 
+lemma setIntegral_mono_of_nonneg (hs : MeasurableSet s) {g : X → ℝ} (hf : ∀ x ∈ s, 0 ≤ f x)
+    (h : ∀ x ∈ s, f x ≤ g x) (hg : IntegrableOn g s μ) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
+  refine integral_mono_of_nonneg ?_ hg ?_ <;>
+  change ∀ᵐ x ∂μ.restrict s, _ <;>
+  rw [ae_restrict_iff' hs]
+  · exact Eventually.of_forall hf
+  · exact Eventually.of_forall h
+
 end Nonneg
 
 section IntegrableUnion
