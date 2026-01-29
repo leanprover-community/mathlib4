@@ -469,4 +469,11 @@ lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S
   simp [hlq, l', ← PrimeSpectrum.asIdeal_le_asIdeal, map_le_iff_le_comap,
     LiesOver.over (p := p) (P := P)]
 
+variable (R) in
+lemma ringKrullDim_le_spanFinrank_maximalIdeal [IsLocalRing R] :
+    ringKrullDim R ≤ (IsLocalRing.maximalIdeal R).spanFinrank :=
+  le_of_eq_of_le IsLocalRing.maximalIdeal_height_eq_ringKrullDim.symm
+    (WithBot.coe_le_coe.mpr (Ideal.height_le_spanFinrank (IsLocalRing.maximalIdeal R)
+      Ideal.IsPrime.ne_top'))
+
 end Algebra
