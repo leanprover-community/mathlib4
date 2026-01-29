@@ -141,7 +141,7 @@ variable [EquivLike F α β]
 /-- Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`. -/]
 def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
-  { (f : α ≃ β), (f : α →ₙ* β) with }
+  { (.ofClass f : α ≃ β), (.ofClass f : α →ₙ* β) with }
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
@@ -199,12 +199,12 @@ theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩,
   ext fun _ => rfl
 
 @[to_additive (attr := simp)]
-theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
+theorem toEquiv_eq_ofClass (f : M ≃* N) : f.toEquiv = .ofClass f :=
   rfl
 
 /-- The `simp`-normal form to turn something into a `MulHom` is via `MulHomClass.toMulHom`. -/
 @[to_additive (attr := simp)]
-theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
+theorem toMulHom_eq_ofClass (f : M ≃* N) : f.toMulHom = .ofClass f :=
   rfl
 
 @[to_additive]
@@ -212,7 +212,7 @@ theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
 /-- `simp`-normal form of `toFun_eq_coe`. -/
 @[to_additive (attr := simp)]
-theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
+theorem coe_toEquiv (f : M ≃* N) : ⇑(.ofClass f : M ≃ N) = f := rfl
 
 @[to_additive (attr := simp)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
@@ -290,13 +290,13 @@ theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
 
 /-- `simp`-normal form of `invFun_eq_symm`. -/
 @[to_additive (attr := simp)]
-theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
+theorem symm_ofClass (f : M ≃* N) : ((.ofClass f : M ≃ N).symm : N → M) = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 
 @[to_additive (attr := simp)]
-theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
+theorem ofClass_symm (f : M ≃* N) : (.ofClass f.symm : N ≃ M) = (.ofClass f : M ≃ N).symm := rfl
 
 @[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
@@ -456,29 +456,6 @@ protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι}
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
-@[to_additive (attr := simp)]
-theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
-    (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_monoidHom_comp_coe_monoidHom_symm (e : M ≃* N) :
-    (e : M →* N).comp e.symm = MonoidHom.id _ := by ext; simp
-
-@[to_additive (attr := simp)]
-lemma coe_monoidHom_symm_comp_coe_monoidHom (e : M ≃* N) :
-    (e.symm : N →* M).comp e = MonoidHom.id _ := by ext; simp
-
-@[to_additive]
-lemma comp_left_injective (e : M ≃* N) : Injective fun f : N →* P ↦ f.comp (e : M →* N) :=
-  LeftInverse.injective (g := fun f ↦ f.comp e.symm) fun f ↦ by simp [MonoidHom.comp_assoc]
-
-@[to_additive]
-lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : M →* N).comp f :=
-  LeftInverse.injective (g := (e.symm : N →* M).comp) fun f ↦ by simp [← MonoidHom.comp_assoc]
-
 /-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
 @[to_additive
   /-- An additive isomorphism of additive monoids sends `0` to `0`
@@ -512,16 +489,40 @@ as a multiplication-preserving function.
 def toMonoidHom (h : M ≃* N) : M →* N :=
   { h with map_one' := h.map_one }
 
+instance : Coe (M ≃* N) (M →* N) := ⟨toMonoidHom⟩
+
 @[to_additive (attr := simp)]
 theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
 
-@[to_additive (attr := simp)]
-theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=
-  rfl
+@[to_additive (attr := deprecated "No replacement" (since := "2025-04-14"))]
+theorem toMonoidHom_eq_ofClass (f : M ≃* N) : f.toMonoidHom = (.ofClass f : M →* N) := rfl
 
 @[to_additive]
 theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
   Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
+
+@[to_additive (attr := simp)]
+theorem refl_toMonoidHom : (refl M).toMonoidHom = .id M := rfl
+
+@[to_additive (attr := simp)]
+lemma trans_toMonoidHom (e₁ : M ≃* N) (e₂ : N ≃* P) :
+    (e₁.trans e₂).toMonoidHom = e₂.toMonoidHom.comp e₁.toMonoidHom := rfl
+
+@[to_additive (attr := simp)]
+lemma toMonoidHom_comp_toMonoidHom_symm (e : M ≃* N) : e.toMonoidHom.comp e.symm = .id _ := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+lemma toMonoidHom_symm_comp_toMonoidHom (e : M ≃* N) : e.symm.toMonoidHom.comp e = .id _ := by
+  ext; simp
+
+@[to_additive]
+lemma comp_left_injective (e : M ≃* N) : Injective fun f : N →* P ↦ f.comp (e : M →* N) :=
+  LeftInverse.injective (g := fun f ↦ f.comp e.symm) fun f ↦ by simp [MonoidHom.comp_assoc]
+
+@[to_additive]
+lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : M →* N).comp f :=
+  LeftInverse.injective (g := (e.symm : N →* M).comp) fun f ↦ by simp [← MonoidHom.comp_assoc]
 
 end MulOneClass
 

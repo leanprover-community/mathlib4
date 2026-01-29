@@ -126,7 +126,7 @@ theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) =
 @[to_additive (attr := simp)]
 theorem _root_.map_units_inv {F : Type*} [FunLike F M α] [MonoidHomClass F M α]
     (f : F) (u : Units M) :
-    f ↑u⁻¹ = (f u)⁻¹ := ((f : M →* α).comp (Units.coeHom M)).map_inv u
+    f ↑u⁻¹ = (f u)⁻¹ := ((.ofClass f : M →* α).comp (Units.coeHom M)).map_inv u
 
 end DivisionMonoid
 
@@ -202,7 +202,7 @@ variable [Monoid M] [Monoid N]
 
 @[to_additive]
 theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
-  rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
+  obtain ⟨y, rfl⟩ := h; exact (y.map <| .ofClass f).isUnit
 
 @[to_additive]
 theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)
@@ -275,9 +275,11 @@ theorem MonoidHom.isLocalHom_comp (g : S →* T) (f : R →* S) [IsLocalHom g]
 
 -- see note [lower instance priority]
 @[instance 100]
-theorem isLocalHom_toMonoidHom (f : F) [IsLocalHom f] :
-    IsLocalHom (f : R →* S) :=
+theorem isLocalHom_monoidHomOfClass (f : F) [IsLocalHom f] : IsLocalHom (.ofClass f : R →* S) :=
   ⟨IsLocalHom.map_nonunit (f := f)⟩
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_toMonoidHom := isLocalHom_monoidHomOfClass
 
 theorem MonoidHom.isLocalHom_of_comp (f : R →* S) (g : S →* T) [IsLocalHom (g.comp f)] :
     IsLocalHom f :=
