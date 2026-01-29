@@ -42,10 +42,13 @@ In each of these cases, the models with corners are inferred from the domain and
 The search for models with corners uses the local context and is (almost) only based on expression
 structure, hence hopefully fast enough to always run.
 
-This has no dedicated support for product manifolds (or product vector spaces) yet;
-adding this is left for future changes. (It would need to make a choice between e.g. the
+Infering models with corners supports all current `ModelWithCorners` instances in mathlib.
+This will need to be updated as new instances are added.
+
+For products of manifolds, we explicitly track if the resulting space is a product of normed spaces:
+that case is ambiguous, and the elaborators would need to make a choice between e.g. the
 trivial model with corners on a product `E × F` and the product of the trivial models on `E` and
-`F`). In these settings, the elaborators should be avoided (for now).
+`F`). If we encounter such an ambiguity, we warn about it and do not infer a model with corners.
 
 ## `T%`
 
@@ -70,19 +73,18 @@ variable {s : E → E'} in
 
 These elaborators can be combined: `CMDiffAt[u] n (T% s) x`
 
-**Warning.** These elaborators are a proof of concept; the implementation should be considered a
-prototype. Don't rewrite all of mathlib to use it just yet. Notable limitations include
-the following.
-
 ## TODO
-- extend the elaborators to guess models with corners on product manifolds
-  (this has to make a guess, hence cannot always be correct: but it could make the guess that
-  is correct 90% of the time).
-  For products of vector spaces `E × F`, this could print a warning about making a choice between
-  the model in `E × F` and the product of the models on `E` and `F`.
-- better error messages (as needed), with tests
-- further testing and fixing of edge cases (with tests)
-- add delaborators for these elaborators
+
+* try an opinionated strategy on products of normed spaces:
+  is one guess correct more often than the other?
+* alternatively, can the elaborator generate two `Try this` suggestions, corresponding to the
+  possible options?
+* add delaborators for these elaborators
+* add elaborators for more notation
+* make the model finding extensible, by converting it to an environment extension
+
+If you would like to work on any of these, please coordinate with Michael Rothgang (@grunweg)
+to avoid duplicating or conflicting work.
 
 -/
 
@@ -205,6 +207,51 @@ scoped elab:max "T% " t:term:arg : term => do
 
 namespace Elab
 
+/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
+a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
+codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
+the codomain of the continuous linear maps (otherwise none). -/
+def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
+  match_expr e with
+    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
+      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
+      if ← withReducible <| isDefEq k S then
+        -- TODO: check if σ is actually the identity!
+        return some (k, E, F)
+      else
+        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
+    | _ => return none
+
+/-- Try a strategy `x : TermElabM` which either successfully produces some `Expr × α` or fails. On
+failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
+successfully returned.
+We run `x` with `errToSorry == false` to convert elaboration errors into
+exceptions, and under `withSynthesize` in order to force typeclass synthesis errors to appear and
+be caught.
+Trace messages produced during the execution of `x` are wrapped in a collapsible trace node titled
+with `strategyDescr` and an indicator of success. -/
+private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr × α)) :
+    TermElabM (Option (Expr × α)) := do
+  let s ← saveState
+  try
+    withTraceNode `Elab.DiffGeo.MDiff (fun e => pure m!"{e.emoji} {strategyDescr}") do
+      let e ←
+        try
+          Term.withoutErrToSorry <| Term.withSynthesize x
+        /- Catch the exception so that we can trace it, then throw it again to inform
+        `withTraceNode` of the result. -/
+        catch ex =>
+          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
+          throw ex
+      trace[Elab.DiffGeo.MDiff] "Found model: `{e.1}`"
+      return e
+  catch _ =>
+    -- Restore infotrees to prevent any stale hovers, code actions, etc.
+    -- Note that this does not break tracing, which saves each trace message's context.
+    s.restore true
+    return none
+
+-- TODO: deduplicate with tryStrategy', somehow!
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
@@ -236,22 +283,23 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr) :
     s.restore true
     return none
 
-/-- Check if an expression `e` is (after instantiating metavariables and performing `whnf`),
-a `ContinuousLinearMap` over an identity ring homomorphism and the coefficients of domain and
-codomain are reducibly definitionally equal. If so, we return the coefficient field, the domain and
-the codomain of the continuous linear maps (otherwise none). -/
-def isCLMReduciblyDefeqCoefficients (e : Expr) : TermElabM <| Option <| Expr × Expr × Expr := do
-  match_expr e with
-    | ContinuousLinearMap k S _ _ _σ E _ _ F _ _ _ _ =>
-      trace[Elab.DiffGeo.MDiff] "`{e}` is a space of continuous (semi-)linear maps"
-      if ← withReducible <| isDefEq k S then
-        -- TODO: check if σ is actually the identity!
-        return some (k, E, F)
-      else
-        throwError "Coefficients `{k}` and `{S}` of `{e}` are not reducibly definitionally equal"
-    | _ => return none
+/-- Captures information when a model with corners is the trivial model on a normed space
+(or on an inner product space, which is also a normed space):
+contains the expressions describing the normed space and its base field.
 
-set_option linter.style.emptyLine false in -- linter false positive
+Searching for a model with corners will return an `Option NormedSpaceInfo`, which is `some` iff
+a trivial model on a normed space was found.
+-/
+abbrev NormedSpaceInfo := Expr × Expr
+
+/-- Information about a model with corners found through search:
+this is a pair `(e, α`) of an expression `e` describing model with corners found, and
+the information `α` whether this model is the trivial model with corners on a normed space.
+(Knowing this is important for forming products of models.)
+`α` is `none` if not, and contains more information if yes.
+-/
+abbrev FindModelResult := Expr × Option NormedSpaceInfo
+
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
@@ -268,8 +316,12 @@ using the local context to infer the appropriate instance. This supports the fol
   and if successful, return `𝓘(𝕜)`.
 
 Further cases can be added as necessary.
+This method intentionally handles **neither** sums (disjoint unions) nor products of spaces,
+nor an open subset of an existing manifold. These are handled in `findModel`.
 
-Return an expression describing the found model with corners.
+Return an expression describing the found model with corners, together with information about
+whether the model is the trivial model with corners on a normed space. (This is important for
+forming products of models.)
 
 `baseInfo` is only used for the first case, a model with corners on the total space of the vector
 bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
@@ -284,25 +336,24 @@ This implementation is not maximally robust yet.
 -/
 -- TODO: better error messages when all strategies fail
 -- TODO: consider lowering monad to `MetaM`
-def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
-  trace[Elab.DiffGeo.MDiff] "Finding a model for: {e}"
-  if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return m
-  if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return m
-  if let some m ← tryStrategy m!"NormedSpace"         fromNormedSpace    then return m
-  if let some m ← tryStrategy m!"Manifold"            fromManifold       then return m
-  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM         then return m
-  if let some m ← tryStrategy m!"RealInterval"        fromRealInterval   then return m
-  if let some m ← tryStrategy m!"EuclideanSpace"      fromEuclideanSpace then return m
-  if let some m ← tryStrategy m!"UpperHalfPlane"      fromUpperHalfPlane then return m
-  if let some m ← tryStrategy m!"Units of algebra"    fromUnitsOfAlgebra then return m
-  if let some m ← tryStrategy m!"Complex unit circle" fromCircle      then return m
-  if let some m ← tryStrategy m!"Sphere"              fromSphere         then return m
-  if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return m
-  if let some m ← tryStrategy m!"InnerProductSpace"   fromInnerProductSpace then return m
-  throwError "Could not find a model with corners for `{e}`.
-
-Hint: failures to find a model with corners can be debugged with the command \
-`set_option trace.Elab.DiffGeo.MDiff true`."
+def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
+    TermElabM (Option FindModelResult) := do
+  if let some m ← tryStrategy m!"TotalSpace"          fromTotalSpace     then return some (m, none)
+  if let some m ← tryStrategy m!"TangentBundle"       fromTangentBundle  then return some (m, none)
+  if let some (m, eK) ← tryStrategy' NormedSpaceInfo m!"NormedSpace"   fromNormedSpace then
+    return some (m, some eK)
+  if let some m ← tryStrategy m!"Manifold"            fromManifold       then return some (m, none)
+  if let some m ← tryStrategy m!"ContinuousLinearMap" fromCLM            then return some (m, none)
+  if let some m ← tryStrategy m!"RealInterval"        fromRealInterval   then return some (m, none)
+  if let some m ← tryStrategy m!"EuclideanSpace"      fromEuclideanSpace then return some (m, none)
+  if let some m ← tryStrategy m!"UpperHalfPlane"      fromUpperHalfPlane then return some (m, none)
+  if let some m ← tryStrategy m!"Units of algebra"    fromUnitsOfAlgebra then return some (m, none)
+  if let some m ← tryStrategy m!"Complex unit circle" fromCircle         then return some (m, none)
+  if let some m ← tryStrategy m!"Sphere"              fromSphere         then return some (m, none)
+  if let some m ← tryStrategy m!"NormedField"         fromNormedField    then return some (m, none)
+  if let some (m, eK) ← tryStrategy' NormedSpaceInfo "InnerProductSpace" fromInnerProductSpace then
+    return some (m, some eK)
+  return none
 where
   /- Note that errors thrown in the following are caught by `tryStrategy` and converted to trace
   messages. -/
@@ -353,7 +404,7 @@ where
       Term.elabTerm resTerm none
     | _ => throwError "`{e}` is not a `TangentBundle`"
   /-- Attempt to find the trivial model on a normed space. -/
-  fromNormedSpace : TermElabM Expr := do
+  fromNormedSpace : TermElabM (Expr × NormedSpaceInfo) := do
     let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
@@ -362,9 +413,9 @@ where
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{e}` among local instances."
     trace[Elab.DiffGeo.MDiff] "`{e}` is a normed space over the field `{K}`"
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst]
+    return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst], (K, e))
   /-- Attempt to find the trivial model on an inner product space. -/
-  fromInnerProductSpace : TermElabM Expr := do
+  fromInnerProductSpace : TermElabM (Expr × NormedSpaceInfo) := do
     let some (inst, K) ← findSomeLocalInstanceOf? `InnerProductSpace fun inst type ↦ do
       -- We don't use `match_expr` here to avoid importing `InnerProductSpace`.
       match (← instantiateMVars type).cleanupAnnotations with
@@ -376,7 +427,7 @@ where
     trace[Elab.DiffGeo.MDiff] "`{e}` is an inner product space over the field `{K}`"
     -- Convert the InnerProductSpace to a NormedSpace instance.
     let inst' ← mkAppOptM `InnerProductSpace.toNormedSpace #[K, e, none, none, inst]
-    mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst']
+    return (← mkAppOptM ``modelWithCornersSelf #[K, none, e, none, inst'], (K, e))
   /-- Attempt to find a model with corners on a manifold, or on the charted space of a manifold. -/
   fromManifold : TermElabM Expr := do
     -- Return an expression for a type `H` (if any) such that `e` is a ChartedSpace over `H`,
@@ -607,6 +658,74 @@ where
     let eT : Term ← Term.exprToSyntax e
     let iTerm : Term ← ``(𝓘($eT, $eT))
     Term.elabTerm iTerm none
+
+set_option linter.style.emptyLine false in -- linter false positive
+/-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
+using the local context to infer the appropriate instance.
+TODO not yet: This supports all `ModelWithCorners`
+instances that are currently defined in mathlib. Further cases can be added as necessary.
+
+Return an expression describing the found model with corners.
+
+`baseInfo` is only used for the first case, a model with corners on the total space of the vector
+bundle. In this case, it contains a pair of expressions `(e, i)` describing the type of the base
+and the model with corners on the base: these are required to construct the right model with
+corners.
+
+Note that the matching on `e` does not see through reducibility (e.g. we distinguish the `abbrev`
+`TangentBundle` from its definition), so `whnfR` should not be run on `e` prior to calling
+`findModel` on it.
+
+This implementation is not maximally robust yet.
+-/
+-- TODO: better error messages when all strategies fail
+-- TODO: consider lowering monad to `MetaM`
+
+-- This function calls itself, which is why it is partial for now.
+-- This should not be an issue in practice.
+-- TODO: can I prove this terminates w.r.t. a suitable measure?
+-- I'm only recursing into subexpressions (at least, after match_expr), right?
+partial def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM Expr := do
+  trace[Elab.DiffGeo.MDiff] "Finding a model with corners for: `{e}`"
+  let some (u, _) := ← go e baseInfo
+    | throwError "Could not find a model with corners for `{e}`.
+
+Hint: failures to find a model with corners can be debugged with the command \
+`set_option trace.Elab.DiffGeo.MDiff true`."
+  return u
+where
+  go (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM (Option FindModelResult) := do
+    -- At first, try finding a model on the space itself.
+    if let some (m, r) ← findModelInner e baseInfo then return some (m, r)
+    -- Otherwise, we recurse into the expression,
+    -- depending whether we have an open subset of a space,
+    -- a product, or a direct sum of spaces.
+    match_expr e with
+    | TopologicalSpace.Opens M _ =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
+      -- (In practice, `M` is not an `Opens`, as `Opens X` is (currently?) not a topological space.
+      go M baseInfo
+    | Prod E F =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a product, recursing into each factor"
+      let some (srcE, normedSpaceE) := ← go E baseInfo
+        | throwError "Found no model with corners on first factor `{E}`"
+      let some (srcF, normedSpaceF) := ← go F baseInfo
+        | throwError "Found no model with corners on second factor `{F}`"
+      -- If both E and F are normed spaces, we have ambiguity: warn and exit.
+      if normedSpaceE.isSome && normedSpaceF.isSome then
+        throwError "`{e}` is a product of normed spaces, so there are two potential models with \
+        corners\nFor now, please specify the model by hand."
+      -- Otherwise, we are not a normed space, and normally form the product model.
+      let eTerm : Term ← Term.exprToSyntax srcE
+      let fTerm : Term ← Term.exprToSyntax srcF
+      let iTerm : Term ← ``(ModelWithCorners.prod $eTerm $fTerm)
+      return some (← Term.elabTerm iTerm none, none)
+    | Sum E F =>
+      trace[Elab.DiffGeo.MDiff] "Expression `{e}` is a direct sum of `{E}` and `{F}`\n\
+        We assume the models match, and only look into the first summand"
+      return ← go E baseInfo
+    | _ => return none
+    pure none
 
 /-- If the type of `e` is a non-dependent function between spaces `src` and `tgt`, try to find a
 model with corners on both `src` and `tgt`. If successful, return both models.

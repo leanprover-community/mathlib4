@@ -189,7 +189,7 @@ error: failed to synthesize
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (TangentSpace I)`
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ❌️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
@@ -198,7 +198,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
     [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
     [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
   [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
-[Elab.DiffGeo.MDiff] Finding a model for: F
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `Bundle.TotalSpace`.
@@ -280,7 +280,7 @@ error: Could not find a model with corners for `E'' →SL[id'] E'''`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: M
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
@@ -294,7 +294,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
   [Elab.DiffGeo.MDiff] Found model: `I`
-[Elab.DiffGeo.MDiff] Finding a model for: E'' →SL[id'] E'''
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[id'] E'''`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not a `Bundle.TotalSpace`.
@@ -530,7 +530,7 @@ error: Could not find a model with corners for `↑(Set.Icc x y)`.
 
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
@@ -651,11 +651,12 @@ variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
 #guard_msgs in
 #check MDiff f
 
--- Future, when products are implemented!
--- #guard_msgs in
--- #check CMDiff 37 (Prod.map f g)
--- #guard_msgs in
--- #check CMDiff 37 (Prod.map f' g')
+/-- info: ContMDiff ((𝓡 n).prod (𝓡 n')) (𝓘(ℝ, ℝ).prod (𝓡 m')) 37 (Prod.map f g) : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f g)
+/-- info: ContMDiff ((𝓡∂ 2).prod (𝓡∂ n)) (𝓘(ℝ, ℝ).prod (𝓡∂ m)) 37 (Prod.map f' g') : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f' g')
 
 end EuclideanSpace
 
