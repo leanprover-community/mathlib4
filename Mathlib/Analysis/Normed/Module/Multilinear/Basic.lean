@@ -923,50 +923,6 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
       ‖g (f m)‖ ≤ ‖g‖ * (‖f‖ * ∏ i, ‖m i‖) := g.le_opNorm_of_le <| f.le_opNorm _
       _ = _ := (mul_assoc _ _ _).symm
 
-variable (𝕜 E G G')
-
-/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled continuous bilinear map. -/
-def compContinuousMultilinearMapL :
-    (G →L[𝕜] G') →L[𝕜] ContinuousMultilinearMap 𝕜 E G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
-  LinearMap.mkContinuous₂
-    (LinearMap.mk₂ 𝕜 compContinuousMultilinearMap (fun _ _ _ => rfl) (fun _ _ _ => rfl)
-      (fun f g₁ g₂ => by ext1; apply f.map_add)
-      (fun c f g => by ext1; simp))
-    1
-    fun f g => by rw [one_mul]; exact f.norm_compContinuousMultilinearMap_le g
-
-variable {𝕜 G G'}
-
-/-- `ContinuousLinearMap.compContinuousMultilinearMap` as a bundled
-continuous linear equiv. -/
-def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight (g : G ≃L[𝕜] G') :
-    ContinuousMultilinearMap 𝕜 E G ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
-  { compContinuousMultilinearMapL 𝕜 E G G' g.toContinuousLinearMap with
-    invFun := compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap
-    left_inv := by
-      intro f
-      ext1 m
-      simp [compContinuousMultilinearMapL]
-    right_inv := by
-      intro f
-      ext1 m
-      simp [compContinuousMultilinearMapL]
-    continuous_invFun :=
-      (compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap).continuous }
-
-@[simp]
-theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_symm (g : G ≃L[𝕜] G') :
-    (g.continuousMultilinearMapCongrRight E).symm = g.symm.continuousMultilinearMapCongrRight E :=
-  rfl
-
-variable {E}
-
-@[simp]
-theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply (g : G ≃L[𝕜] G')
-    (f : ContinuousMultilinearMap 𝕜 E G) :
-    g.continuousMultilinearMapCongrRight E f = (g : G →L[𝕜] G').compContinuousMultilinearMap f :=
-  rfl
-
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
 @[simps! apply_apply]
@@ -1093,31 +1049,12 @@ theorem norm_compContinuous_linearIsometryEquiv (g : ContinuousMultilinearMap �
     (f i : E i →L[𝕜] E₁ i)).norm_compContinuous_linearIsometry_le
       fun i => (f i).symm.toLinearIsometry
 
-/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear map.
-This implementation fixes `f : Π i, E i →L[𝕜] E₁ i`.
-
-Actually, the map is multilinear in `f`,
-see `ContinuousMultilinearMap.compContinuousLinearMapContinuousMultilinear`.
-
-For a version fixing `g` and varying `f`, see `compContinuousLinearMapLRight`. -/
-def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
-    ContinuousMultilinearMap 𝕜 E₁ G →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-  LinearMap.mkContinuous
-    { toFun := fun g => g.compContinuousLinearMap f
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
-    (∏ i, ‖f i‖)
-    fun _ => (norm_compContinuousLinearMap_le _ _).trans_eq (mul_comm _ _)
-
-@[simp]
-theorem compContinuousLinearMapL_apply (g : ContinuousMultilinearMap 𝕜 E₁ G)
-    (f : ∀ i, E i →L[𝕜] E₁ i) : compContinuousLinearMapL f g = g.compContinuousLinearMap f :=
-  rfl
 
 variable (G) in
 theorem norm_compContinuousLinearMapL_le (f : ∀ i, E i →L[𝕜] E₁ i) :
-    ‖compContinuousLinearMapL (G := G) f‖ ≤ ∏ i, ‖f i‖ :=
-  LinearMap.mkContinuous_norm_le _ (by positivity) _
+    ‖compContinuousLinearMapL (F := G) f‖ ≤ ∏ i, ‖f i‖ :=
+  ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun g ↦
+    norm_compContinuousLinearMap_le _ _ |>.trans_eq <| mul_comm _ _
 
 /-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear map.
 This implementation fixes `g : ContinuousMultilinearMap 𝕜 E₁ G`.
@@ -1208,46 +1145,6 @@ lemma fderivCompContinuousLinearMap_apply [DecidableEq ι]
     (dg : ∀ i, E i →L[𝕜] E₁ i) (v : ∀ i, E i) :
     f.fderivCompContinuousLinearMap g dg v = ∑ i, f fun j ↦ (update g i (dg i) j) (v j) := by
   simp [fderivCompContinuousLinearMap]
-
-variable (G)
-
-/-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear equiv,
-given `f : Π i, E i ≃L[𝕜] E₁ i`. -/
-def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft (f : ∀ i, E i ≃L[𝕜] E₁ i) :
-    ContinuousMultilinearMap 𝕜 E₁ G ≃L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
-  { compContinuousLinearMapL fun i => (f i : E i →L[𝕜] E₁ i) with
-    invFun := compContinuousLinearMapL fun i => ((f i).symm : E₁ i →L[𝕜] E i)
-    continuous_toFun := (compContinuousLinearMapL fun i => (f i : E i →L[𝕜] E₁ i)).continuous
-    continuous_invFun :=
-      (compContinuousLinearMapL fun i => ((f i).symm : E₁ i →L[𝕜] E i)).continuous
-    left_inv := by
-      intro g
-      ext1 m
-      simp only [LinearMap.toFun_eq_coe, ContinuousLinearMap.coe_coe,
-        compContinuousLinearMapL_apply, compContinuousLinearMap_apply,
-        ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.apply_symm_apply]
-    right_inv := by
-      intro g
-      ext1 m
-      simp only [compContinuousLinearMapL_apply, LinearMap.toFun_eq_coe,
-        ContinuousLinearMap.coe_coe, compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
-        ContinuousLinearEquiv.symm_apply_apply] }
-
-@[simp]
-theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_symm
-    (f : ∀ i, E i ≃L[𝕜] E₁ i) :
-    (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f).symm =
-      .continuousMultilinearMapCongrLeft G fun i : ι => (f i).symm :=
-  rfl
-
-variable {G}
-
-@[simp]
-theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply
-    (g : ContinuousMultilinearMap 𝕜 E₁ G) (f : ∀ i, E i ≃L[𝕜] E₁ i) :
-    ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f g =
-      g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
-  rfl
 
 /-- One of the components of the iterated derivative of a continuous multilinear map. Given a
 bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a
