@@ -66,17 +66,18 @@ def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
 /--
 Between any two points, there must exist a longest path.
 -/
-lemma exists_maximal_path {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [DecidableEq V]  (hG : G.Connected) :
-  ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
+lemma exists_maximal_path {G : SimpleGraph V} [Finite V] [G.LocallyFinite] (hG : G.Connected)
+ : ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
+  have : Fintype V := Fintype.ofFinite V
   intro a b
   by_cases h : a ≠ b
   · let S : ℕ → Set (G.Walk a b) := fun (n : ℕ) => {(p : G.Walk a b) | p.IsPath ∧ p.length = n}
     let lengths := {n |∃ (p : G.Walk a b), p.IsPath ∧ p.length = n}
+    classical
     obtain H := SimpleGraph.fintypeSetPathLength G a b
+    obtain H' := SimpleGraph.fintypeSubtypePathLengthLT G a b
     have lengths_Finite : lengths.Finite := by
       simp only [lengths]
-      obtain := LocallyFinite.fintypeOfCompact
-      --apply LocallyFinite.point_finite
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
         rcases hn with ⟨p, hp, rfl⟩
@@ -137,8 +138,9 @@ lemma exists_maximal_path {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [Dec
 /--
 In a connected graph, there must exist a path of maximum length.
 -/
-lemma exists_maxilongmal_path {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite] (hG : G.Connected) :
-   ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
+lemma exists_maxilongmal_path {G : SimpleGraph V} [Finite V] [G.LocallyFinite] (hG : G.Connected)
+  : ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
+  have : Fintype V := Fintype.ofFinite V
   obtain H' := exists_maximal_path hG
   let S : (a b : V) → Set (G.Walk a b) := fun a b => {p | p.IsPath}
   let lengths  := {n | ∃ (c d : V), ∃ (q : G.Walk c d), q.IsPath ∧ q.length = n }
@@ -240,8 +242,9 @@ lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p
 For a path `G.Walk a b` in graph `G`, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not adjacent.
 -/
-lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+lemma ore_endpoints_adjacent {G : SimpleGraph V} [Finite V] (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
   ¬ G.Adj a b := by
+  have : Fintype V := Fintype.ofFinite V
   rcases hv_not_in_p with ⟨v, hv_not_in_p⟩
   intro H_adj
   classical
@@ -251,9 +254,6 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p
     let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
     have l1 : lengths.Finite := by
       classical
-      by_cases hfin : Finite V
-      have : Fintype V := Fintype.ofFinite V
-      let N := Fintype.card V
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
         rcases hn with ⟨c,p, hp, hq, rfl⟩
@@ -268,7 +268,6 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) {a b : V} {p
         obtain H := Set.finite_le_nat (n := Fintype.card V)
         simp_all
       exact Set.Finite.subset finite_bounded bound
-      sorry
     have h_lengths_nonempty : lengths.Nonempty := by
       rw [Set.nonempty_def]
       have h_reachable : ∃ w ∈ p.support, G.Reachable v w := by
@@ -844,9 +843,10 @@ If there exists a vertex v outside the longest simple path p that is not on path
 then there exists a simple path s starting from v with its endpoint being the first
 point where it connects to path p , and p and s intersect only at the point.
 -/
-lemma exsist_walk {G : SimpleGraph V} [DecidableEq V]
+lemma exsist_walk {G : SimpleGraph V} [Finite V] [DecidableEq V]
     {hG : G.Connected} {a b : V} (p : G.Walk a b) {i : Fin (p.support.length - 1)} (hp : Walk.IsMaxlongPath p) :
     ∀ (v : V), ∃ (j : ℕ), G.Reachable v (p.getVert j) ∧ ∃ (s : G.Walk v (p.getVert j)), s.IsPath ∧ s.support ∩ p.support = {p.getVert j} := by
+  have : Fintype V := Fintype.ofFinite V
   intro v
   unfold Walk.IsMaxlongPath at hp
   obtain ⟨hp_path, hp_max⟩ := hp
@@ -854,9 +854,6 @@ lemma exsist_walk {G : SimpleGraph V} [DecidableEq V]
   let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
   have l1 : lengths.Finite := by
     classical
-    by_cases hfin : Finite V
-    have : Fintype V := Fintype.ofFinite V
-    let N := Fintype.card V
     have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
       intro n hn
       rcases hn with ⟨c,p, hp, hq, rfl⟩
@@ -871,7 +868,6 @@ lemma exsist_walk {G : SimpleGraph V} [DecidableEq V]
       obtain H := Set.finite_le_nat (n := Fintype.card V)
       simp_all only
     exact Set.Finite.subset finite_bounded bound
-    sorry
   have h_lengths_nonempty : lengths.Nonempty := by
     rw [Set.nonempty_def]
     have h_reachable : ∃ w ∈ p.support, G.Reachable v w := by
