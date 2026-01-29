@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.RingTheory.Finiteness.Nakayama
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.ReesAlgebra
+module
+
+public import Mathlib.Algebra.Polynomial.Module.Basic
+public import Mathlib.RingTheory.Finiteness.Nakayama
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.ReesAlgebra
 
 /-!
 
@@ -35,6 +37,8 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
   **Krull's intersection theorem** (`⨅ i, I ^ i = ⊥`) for Noetherian domains.
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
@@ -188,7 +192,7 @@ theorem Stable.exists_pow_smul_eq (h : F.Stable) : ∃ n₀, ∀ k, F.N (n₀ + 
   intro k
   induction k with
   | zero => simp
-  | succ _ ih => rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]; cutsat
+  | succ _ ih => rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]; lia
 
 theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
     ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
@@ -201,7 +205,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
 theorem stable_iff_exists_pow_smul_eq_of_ge :
     F.Stable ↔ ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
   refine ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => ?_⟩⟩
-  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by cutsat), smul_smul, ← pow_succ',
+  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by lia), smul_smul, ← pow_succ',
     tsub_add_eq_add_tsub hn]
 
 theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
@@ -297,8 +301,8 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
-    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by cutsat)]
-    have e : n' ≤ n := by omega
+    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by lia)]
+    have e : n' ≤ n := by lia
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
     exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
@@ -445,8 +449,8 @@ theorem Ideal.isIdempotentElem_iff_eq_bot_or_top_of_isLocalRing {R} [CommRing R]
   · rintro (rfl | rfl) <;> simp [IsIdempotentElem]
 
 open IsLocalRing in
-theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
-    [IsNoetherianRing R] [NoZeroSMulDivisors R M]
+theorem Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree [IsDomain R]
+    [IsNoetherianRing R] [Module.IsTorsionFree R M]
     [Module.Finite R M] (h : I ≠ ⊤) : (⨅ i : ℕ, I ^ i • ⊤ : Submodule R M) = ⊥ := by
   rw [eq_bot_iff]
   intro x hx
@@ -456,8 +460,12 @@ theorem Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors
   have := smul_left_injective _ hx' (hr.trans (one_smul _ x).symm)
   exact I.eq_top_iff_one.not.mp h (this ▸ r.prop)
 
+@[deprecated (since := "2026-01-17")]
+alias Ideal.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors :=
+  Ideal.iInf_pow_smul_eq_bot_of_isTorsionFree
+
 /-- **Krull's intersection theorem** for Noetherian domains. -/
 theorem Ideal.iInf_pow_eq_bot_of_isDomain [IsNoetherianRing R] [IsDomain R] (h : I ≠ ⊤) :
     ⨅ i : ℕ, I ^ i = ⊥ := by
-  convert I.iInf_pow_smul_eq_bot_of_noZeroSMulDivisors (M := R) h
+  convert I.iInf_pow_smul_eq_bot_of_isTorsionFree (M := R) h
   simp

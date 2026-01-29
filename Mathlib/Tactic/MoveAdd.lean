@@ -3,13 +3,18 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public meta import Mathlib.Lean.Meta
+public meta import Aesop
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Order.Defs.LinearOrder
+public meta import Mathlib.Tactic.ToAdditive
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -100,6 +105,8 @@ Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruct
 This will be the content of a later PR.
 -/
 
+public meta section
+
 open Lean Expr
 
 /-- `getExprInputs e` inspects the outermost constructor of `e` and returns the array of all the
@@ -125,7 +132,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 
@@ -448,12 +455,12 @@ elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMa
   -- move around the operands
   replaceMainGoal (← reorderAndSimp op (← getMainGoal) instr)
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_add" rws:rwRuleSeq : tactic => do
   let hadd := mkIdent ``HAdd.hAdd
   evalTactic (← `(tactic| move_oper $hadd $rws))
 
-@[inherit_doc moveOperTac]
+@[tactic_alt moveOperTac]
 elab "move_mul" rws:rwRuleSeq : tactic => do
   let hmul := mkIdent ``HMul.hMul
   evalTactic (← `(tactic| move_oper $hmul $rws))

@@ -3,9 +3,11 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Logic.Equiv.Defs
-import Batteries.Tactic.SeqFocus
+module
+
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Logic.Equiv.Defs
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Transferring `Traversable` instances along isomorphisms
@@ -22,6 +24,8 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 * `Equiv.traversable`: `Equiv.traverse` as a traversable functor.
 * `Equiv.isLawfulTraversable`: `Equiv.traverse` as a lawful traversable functor.
 -/
+
+@[expose] public section
 
 
 universe u

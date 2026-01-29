@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Polynomial module
@@ -13,6 +15,8 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
+
+@[expose] public section
 universe u v
 open Polynomial
 
@@ -119,6 +123,11 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     exact Finsupp.mapDomain_single
 
 @[simp]
+theorem monomial_smul_lsingle (i : ℕ) (r : R) (j : ℕ) (m : M) :
+    (monomial i) r • lsingle R j m = lsingle R (i + j) (r • m) :=
+  monomial_smul_single ..
+
+@[simp]
 theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : ℕ) :
     (monomial i r • g) n = ite (i ≤ n) (r • g (n - i)) 0 := by
   induction g using PolynomialModule.induction_linear with
@@ -204,6 +213,13 @@ lemma equivPolynomial_single {S : Type*} [CommRing S] [Algebra R S] (n : ℕ) (x
 variable (R' : Type*) {M' : Type*} [CommRing R'] [AddCommGroup M'] [Module R' M']
 variable [Module R M']
 
+/-- Two `R`-linear maps from `PolynomialModule R M` which are equal
+after pre-composition with every `lsingle R a` are equal. -/
+@[ext high]
+theorem hom_ext {f g : PolynomialModule R M →ₗ[R] M'}
+    (h : ∀ a, f ∘ₗ lsingle R a = g ∘ₗ lsingle R a) : f = g :=
+  Finsupp.lhom_ext' h
+
 /-- The image of a polynomial under a linear map. -/
 noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] PolynomialModule R' M' :=
   Finsupp.mapRange.linearMap f
@@ -211,6 +227,11 @@ noncomputable def map (f : M →ₗ[R] M') : PolynomialModule R M →ₗ[R] Poly
 @[simp]
 theorem map_single (f : M →ₗ[R] M') (i : ℕ) (m : M) : map R' f (single R i m) = single R' i (f m) :=
   Finsupp.mapRange_single (hf := f.map_zero)
+
+@[simp]
+theorem map_lsingle (f : M →ₗ[R] M') (i : ℕ) (m : M) :
+    map R' f (lsingle R i m) = lsingle R' i (f m) :=
+  map_single ..
 
 variable [Algebra R R'] [IsScalarTower R R' M']
 

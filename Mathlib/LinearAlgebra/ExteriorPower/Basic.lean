@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
 # Exterior powers
@@ -18,8 +20,9 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
 
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
-  induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.ModuleCat.ExteriorPower`
-  for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
+  induced by a linear map `f : M →ₗ[R] N`. (See the file
+  `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
+  `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
 * `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
@@ -30,6 +33,8 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -163,7 +168,7 @@ are equal. -/
 @[ext]
 lemma linearMap_ext {f : ⋀[R]^n M →ₗ[R] N} {g : ⋀[R]^n M →ₗ[R] N}
     (heq : f.compAlternatingMap (ιMulti R n) = g.compAlternatingMap (ιMulti R n)) : f = g :=
-  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq )
+  (presentation R n M).postcomp_injective (by ext f; apply DFunLike.congr_fun heq)
 
 /-- The linear equivalence between `n`-fold alternating maps from `M` to `N` and linear maps from
 `⋀[R]^n M` to `N`: this is the universal property of the `n`th exterior power of `M`. -/
@@ -257,6 +262,32 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
     map n (g ∘ₗ f) = map n g ∘ₗ map n f := by
   aesop
 
+/-! Exactness properties of the exterior power functor. -/
+
+/-- If a linear map has a retraction, then the map it induces on exterior powers is injective. -/
+lemma map_injective {f : M →ₗ[R] N} (g : N →ₗ[R] M) (hg : g ∘ₗ f = .id) :
+    Injective (map n f) :=
+  RightInverse.injective (g := map n g)
+    (fun _ ↦ by rw [← LinearMap.comp_apply, ← map_comp, hg, map_id, LinearMap.id_coe, id_eq])
+
+/-- If the base ring is a field, then any injective linear map induces an injective map on
+exterior powers. -/
+lemma map_injective_field {K : Type*} [Field K] [Module K M] [Module K N]
+    {f : M →ₗ[K] N} (hf : Injective f) :
+    Injective (map n f) :=
+  map_injective _ (f.exists_leftInverse_of_injective (LinearMap.ker_eq_bot.mpr hf)).choose_spec
+
+/-- If a linear map is surjective, then the map it induces on exterior powers is surjective. -/
+lemma map_surjective {f : M →ₗ[R] N} (hf : Surjective f) :
+    Surjective (map n f) := by
+  rw [← LinearMap.range_eq_top, LinearMap.range_eq_map, ← ιMulti_span, ← ιMulti_span,
+    Submodule.map_span, ← Set.range_comp, ← LinearMap.coe_compAlternatingMap, map_comp_ιMulti,
+    AlternatingMap.coe_compLinearMap, Set.range_comp]
+  conv_rhs => rw [← Set.image_univ]
+  congr
+  rw [Set.range_eq_univ]
+  exact Surjective.comp_left hf
+
 /-! Linear equivalences in degrees 0 and 1. -/
 
 variable (R M) in
@@ -267,7 +298,7 @@ noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
     { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
-      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply]}
+      map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
     (by aesop) (by aesop)
 
 @[simp]

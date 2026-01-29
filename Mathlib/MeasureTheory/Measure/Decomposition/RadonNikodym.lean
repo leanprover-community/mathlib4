@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym theorem
@@ -40,6 +42,8 @@ The file also contains properties of `rnDeriv` that use the Radon-Nikodym theore
 Radon-Nikodym theorem
 -/
 
+public section
+
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure
 
@@ -70,8 +74,8 @@ theorem absolutelyContinuous_iff_withDensity_rnDeriv_eq
 
 lemma rnDeriv_pos [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) :
     ∀ᵐ x ∂μ, 0 < μ.rnDeriv ν x := by
-  rw [← Measure.withDensity_rnDeriv_eq _ _  hμν,
-    ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _  hμν]
+  rw [← Measure.withDensity_rnDeriv_eq _ _ hμν,
+    ae_withDensity_iff (Measure.measurable_rnDeriv _ _), Measure.withDensity_rnDeriv_eq _ _ hμν]
   exact ae_of_all _ (fun x hx ↦ lt_of_le_of_ne (zero_le _) hx.symm)
 
 lemma rnDeriv_pos' [HaveLebesgueDecomposition ν μ] [SigmaFinite μ] (hμν : μ ≪ ν) :

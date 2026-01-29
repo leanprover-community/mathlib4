@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Constructors for combining (co)fans
@@ -16,6 +18,8 @@ We provide constructors for combining (co)fans and show their (co)limit properti
 * Combine (co)fans on sigma types
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂
 
@@ -44,10 +48,10 @@ variable {c₁ c₂ bc}
 points, then the fan constructed from `combPairHoms` is a limit cone. -/
 def combPairIsLimit : IsLimit (Fan.mk bc.pt (combPairHoms c₁ c₂ bc)) :=
   mkFanLimit _
-    (fun s ↦ Fan.IsLimit.desc h <| fun i ↦ by
+    (fun s ↦ Fan.IsLimit.lift h <| fun i ↦ by
       cases i
-      · exact Fan.IsLimit.desc h₁ (fun a ↦ s.proj (.inl a))
-      · exact Fan.IsLimit.desc h₂ (fun a ↦ s.proj (.inr a)))
+      · exact Fan.IsLimit.lift h₁ (fun a ↦ s.proj (.inl a))
+      · exact Fan.IsLimit.lift h₂ (fun a ↦ s.proj (.inr a)))
     (fun s w ↦ by
       cases w <;>
       · simp only [fan_mk_proj, combPairHoms]

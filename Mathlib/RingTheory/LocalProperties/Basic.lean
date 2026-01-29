@@ -3,11 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.LocalProperties.Submodule
-import Mathlib.RingTheory.RingHomProperties
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # Local properties of commutative rings
@@ -40,6 +43,8 @@ In this file, we define local properties in general.
   `ideal_eq_bot_of_localization`, `eq_zero_of_localization`
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -112,6 +117,12 @@ Note that this is equivalent to `RingHom.OfLocalizationFiniteSpan` via
 def RingHom.OfLocalizationSpan :=
   ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (s : Set R) (_ : Ideal.span s = ⊤)
     (_ : ∀ r : s, P (Localization.awayMap f r)), P f
+
+/-- A property `P` of ring homs satisfies `RingHom.HoldsForLocalization`
+if `P` holds for each localization map `R →+* M⁻¹R`. -/
+def RingHom.HoldsForLocalization : Prop :=
+  ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (M : Submonoid R)
+    [IsLocalization M S], P (algebraMap R S)
 
 /-- A property `P` of ring homs satisfies `RingHom.HoldsForLocalizationAway`
 if `P` holds for each localization map `R →+* Rᵣ`. -/
@@ -222,6 +233,55 @@ lemma RingHom.OfLocalizationSpan.mk (hP : RingHom.RespectsIso P)
       Algebra.TensorProduct.tmul_one_eq_one_tmul, RingHom.algebraMap_toAlgebra]
   rw [this]
   exact hP.1 _ _ (hf ⟨r, hr⟩)
+
+section HoldsForLocalization
+
+variable {P}
+
+lemma RingHom.HoldsForLocalization.mk (hP : RespectsIso P)
+    (H : ∀ {R : Type u} [CommRing R] (M : Submonoid R), P (algebraMap R (Localization M))) :
+    HoldsForLocalization P := by
+  introv R _
+  rw [← (IsLocalization.algEquiv M (Localization M) S).toAlgHom.comp_algebraMap]
+  exact hP.1 _ _ (H _)
+
+lemma RingHom.HoldsForLocalization.holdsForLocalizationAway (hP : HoldsForLocalization P) :
+    HoldsForLocalizationAway P :=
+  fun _ _ _ _ _ r _ ↦ hP _ (Submonoid.powers r)
+
+lemma RingHom.HoldsForLocalization.isLocalizationMap
+    (hPc : StableUnderComposition P) (hPp : LocalizationPreserves P)
+    (hPl : HoldsForLocalization P)
+    {M : Submonoid R} {T : Submonoid S}
+    {R' : Type u} [CommRing R'] [Algebra R R'] [IsLocalization M R']
+    (S' : Type u) [CommRing S'] [Algebra S S'] [IsLocalization T S']
+    {f : R →+* S} (hy : M ≤ Submonoid.comap f T) (hf : P f) :
+    P (IsLocalization.map (S := R') S' f hy) := by
+  have hle : Submonoid.map f M ≤ T := by simpa [Submonoid.map_le_iff_le_comap]
+  letI : Algebra (Localization (M.map f)) S' :=
+    IsLocalization.localizationAlgebraOfSubmonoidLe _ _ (M.map f) T hle
+  have : IsScalarTower S (Localization (Submonoid.map f M)) S' :=
+    IsLocalization.localization_isScalarTower_of_submonoid_le _ _ _ _ _
+  have : IsLocalization (T.map (algebraMap S (Localization (M.map f)))) S' :=
+    IsLocalization.isLocalization_of_submonoid_le _ _ (M.map f) T hle
+  have heq : IsLocalization.map (S := R') S' f hy =
+      (algebraMap _ _).comp
+        (IsLocalization.map (M := M) (T := M.map f) (S := R') (Localization (M.map f)) f
+          (M.le_comap_map)) := by
+    apply IsLocalization.ringHom_ext M
+    ext
+    simp [← IsScalarTower.algebraMap_apply]
+  rw [heq]
+  exact hPc _ _ (hPp _ _ _ _ hf) (hPl _ (T.map (algebraMap S (Localization (M.map f)))))
+
+lemma RingHom.HoldsForLocalization.localRingHom (hPc : StableUnderComposition P)
+    (hPp : LocalizationPreserves P) (hPl : HoldsForLocalization P)
+    {R S : Type u} [CommRing R] [CommRing S] {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime]
+    {f : R →+* S} (h : p = q.comap f) (hf : P f) :
+    P (Localization.localRingHom p q f h) :=
+  hPl.isLocalizationMap hPc hPp _ _ hf
+
+end HoldsForLocalization
 
 theorem RingHom.HoldsForLocalizationAway.of_bijective
     (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :

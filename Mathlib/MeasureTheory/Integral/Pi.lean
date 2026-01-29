@@ -3,7 +3,9 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.Prod
+module
+
+public import Mathlib.MeasureTheory.Integral.Prod
 
 /-!
 # Integrals of functions defined on indexed product types
@@ -418,6 +420,8 @@ depending on a single coordinate is integrable, in `MeasureTheory.integrable_fin
 that its integral is the product of the individual integrals,
 in `MeasureTheory.integral_fintype_prod_eq_prod`.
 -/
+
+public section
 
 open Fintype MeasureTheory MeasureTheory.Measure
 

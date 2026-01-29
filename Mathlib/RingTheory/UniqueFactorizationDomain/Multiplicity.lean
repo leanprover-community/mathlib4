@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Unique factorization and multiplicity
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
 -/
+
+public section
 
 assert_not_exists Field
 
@@ -34,18 +38,18 @@ theorem WfDvdMonoid.max_power_factor [CommMonoidWithZero α] [WfDvdMonoid α] {a
     (h : a₀ ≠ 0) (hx : Irreducible x) : ∃ (n : ℕ) (a : α), ¬x ∣ a ∧ a₀ = x ^ n * a :=
   max_power_factor' h hx.not_isUnit
 
-theorem FiniteMultiplicity.of_not_isUnit [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_not_isUnit [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : ¬IsUnit a) (hb : b ≠ 0) : FiniteMultiplicity a b := by
   obtain ⟨n, c, ndvd, rfl⟩ := WfDvdMonoid.max_power_factor' hb ha
   exact ⟨n, by rwa [pow_succ, mul_dvd_mul_iff_left (left_ne_zero_of_mul hb)]⟩
 
-theorem FiniteMultiplicity.of_prime_left [CancelCommMonoidWithZero α] [WfDvdMonoid α]
+theorem FiniteMultiplicity.of_prime_left [CommMonoidWithZero α] [IsCancelMulZero α] [WfDvdMonoid α]
     {a b : α} (ha : Prime a) (hb : b ≠ 0) : FiniteMultiplicity a b :=
   .of_not_isUnit ha.not_unit hb
 
 namespace UniqueFactorizationMonoid
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
+variable {R : Type*} [CommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 section multiplicity
 

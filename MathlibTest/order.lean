@@ -33,9 +33,27 @@ example [PartialOrder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(
     c ≤ d := by
   order
 
-example [PartialOrder α] (a : α) :
-    ¬ (a < a) := by
+example [PartialOrder α] (a : α) : ¬ (a < a) := by
   order
+
+example (a b : α) [PartialOrder α] (h1 : a < b ∧ b < a) : False := by
+  order
+
+example (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
+  order
+
+example (a b : α) [Preorder α] (h : ∃ c, a < c ∧ c < b) : a ≠ b := by
+  order
+
+example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
+  order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
+
+example (L : Type) [Lattice L] :
+    (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
+    (∀ a b c : L, a ⊓ (b ⊔ c) = (a ⊓ b) ⊔ (a ⊓ c)) := by
+  refine ⟨fun h a b c ↦ ?_, fun h a b c ↦ ?_⟩
+  · order only [h (a ⊓ b) c a, h c a b]
+  · order only [h (a ⊔ b) c a, h c a b]
 
 example [Preorder α] (a b c d : α) (h1 : a ≤ b) (h2 : b ≤ c) (h3 : ¬(a < c))
     (h4 : a ≤ d) :
@@ -88,7 +106,6 @@ error: No contradiction found.
 Additional diagnostic information may be available using the `set_option trace.order true` command.
 ---
 trace:
-[order] Working on type α (partial order)
 [order] Collected atoms:
     #0 := a ⊓ (b ⊔ c)
     #1 := a
@@ -98,7 +115,15 @@ trace:
     #5 := a ⊓ b ⊔ a ⊓ c
     #6 := a ⊓ b
     #7 := a ⊓ c
+[order] Working on type α (partial order)
 [order] Collected facts:
+    #2 := #3 ⊔ #4
+    #0 := #1 ⊓ #2
+    #6 := #1 ⊓ #3
+    #7 := #1 ⊓ #4
+    #5 := #6 ⊔ #7
+    ¬ #0 ≤ #5
+[order] Processed facts:
     #3 ≤ #2
     #4 ≤ #2
     #2 := #3 ⊔ #4
@@ -132,9 +157,13 @@ Additional diagnostic information may be available using the `set_option trace.o
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
-example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
-  have h1 := Matrix.rank_mul_le A B
-  have h2 := Matrix.rank_mul_le (A * B) C
+-- check that order treats defeq types the same
+example (a : Fin 3) (b : Fin (2 + 1)) (h : a ≤ b) : LE.le (α := Fin (2 + 1)) a b := by
+  order
+
+-- Contrived example for universes not of the form `Sort (u + 1)`.
+example {α : Sort (max (v + 1) (u + 1))} [LinearOrder α] {a b c : α} (hab : a < b)
+    (habc : min a b ≤ c) (hcba : min c b ≤ a) : a = c := by
   order
 
 -- worst case for the current algorithm
@@ -200,4 +229,54 @@ example [PartialOrder α]
     (h82 : ¬(y28 < x28)) (h83 : y29 ≤ x28) (h84 : y28 ≤ x29)
     (h85 : ¬(y29 < x29)) (h86 : y30 ≤ x29) (h87 : y29 ≤ x30)
     (h88 : ¬(y30 < x30)) : x30 = y30 := by
+  order
+
+-- Tests for linear order with lattice operations
+
+example {α : Type*} [LinearOrder α] {a b c : α} (hab : a < b)
+    (habc : min a b ≤ c) (hcba : min c b ≤ a) : a = c := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h : a ≠ max a b) : b = max a b := by
+  order
+
+example {α : Type*} [LinearOrder α] {a b : α} (h1 : min a b ≠ a) (h2 : max a b ≠ a) : False := by
+  order
+
+-- Note: `order` does not use distributivity in general
+example {α : Type*} [LinearOrder α] {a b c : α} : max a (min b c) = min (max a b) (max a c) := by
+  order
+
+example {α : Type*} [LinearOrder α] [BoundedOrder α] {a b : α} (h1 : a ⊔ b = ⊤)
+    (h2 : b ≠ ⊤) : a = ⊤ := by
+  order
+
+example {α : Type*} [LinearOrder α] [BoundedOrder α] [Nontrivial α] {a b c d : α} (h1 : a ⊓ b = ⊥)
+    (h2 : c ⊓ d = ⊥) (h3 : a ⊔ c = ⊤) (h4 : b ⊔ d = ⊤) (h5 : a ⊔ d = ⊤) (h6 : b ⊔ c = ⊤) : False := by
+  have : (⊥ : α) < ⊤ := bot_lt_top -- TODO: detect `Nontrivial` instance in `order` and add this
+  -- fact automatically
+  order
+
+example
+    (x₀ x₁ y₀ y₁ t f : ℤ)
+    (htf : f < t)
+    (hxf : x₀ ⊓ x₁ ≤ f)
+    (hyf : y₀ ⊓ y₁ ≤ f)
+    (c1 : x₁ ⊔ y₁ ≥ t)
+    (c2 : x₁ ⊔ y₀ ≥ t)
+    (c3 : x₀ ⊔ y₁ ≥ t)
+    (c4 : x₀ ⊔ y₀ ≥ t)
+    : False := by
+  omega
+
+example {α : Type*} [LinearOrder α]
+    (x₀ x₁ y₀ y₁ t f : α)
+    (htf : f < t)
+    (hxf : x₀ ⊓ x₁ ≤ f)
+    (hyf : y₀ ⊓ y₁ ≤ f)
+    (c1 : x₁ ⊔ y₁ ≥ t)
+    (c2 : x₁ ⊔ y₀ ≥ t)
+    (c3 : x₀ ⊔ y₁ ≥ t)
+    (c4 : x₀ ⊔ y₀ ≥ t)
+    : False := by
   order

@@ -3,14 +3,16 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 -/
-import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-import Mathlib.MeasureTheory.Group.IntegralConvolution
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
+module
+
+public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Group.IntegralConvolution
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
 # Characteristic Function of a Finite Measure
@@ -49,8 +51,9 @@ and `L`.
 
 -/
 
-open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate NormedSpace
-  WithLp
+@[expose] public section
+
+open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate WithLp
 
 open scoped ENNReal
 
@@ -62,7 +65,7 @@ variable {E F : Type*} [SeminormedAddCommGroup E] [InnerProductSpace ℝ E]
 /-- The bounded continuous map `x ↦ exp(⟪x, t⟫ * I)`. -/
 noncomputable
 def innerProbChar (t : E) : E →ᵇ ℂ :=
-  char continuous_probChar (L := bilinFormOfRealInner) continuous_inner t
+  char continuous_probChar (L := innerₗ E) continuous_inner t
 
 lemma innerProbChar_apply (t x : E) : innerProbChar t x = exp (⟪x, t⟫ * I) := rfl
 
@@ -151,15 +154,15 @@ lemma charFun_eq_integral_probChar (t : E) : charFun μ t = ∫ x, (probChar ⟪
 
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
 lemma charFun_eq_fourierIntegral (t : E) :
-    charFun μ t = VectorFourier.fourierIntegral probChar μ bilinFormOfRealInner 1 (-t) := by
+    charFun μ t = VectorFourier.fourierIntegral probChar μ (innerₗ E) 1 (-t) := by
   simp [charFun_apply, VectorFourier.fourierIntegral_probChar]
 
 /-- `charFun` is a Fourier integral for the inner product and the character `fourierChar`. -/
 lemma charFun_eq_fourierIntegral' (t : E) :
     charFun μ t
-      = VectorFourier.fourierIntegral fourierChar μ bilinFormOfRealInner 1 (-(2 * π)⁻¹ • t) := by
+      = VectorFourier.fourierIntegral fourierChar μ (innerₗ E) 1 (-(2 * π)⁻¹ • t) := by
   simp only [charFun_apply, VectorFourier.fourierIntegral, neg_smul,
-    bilinFormOfRealInner_apply_apply, inner_neg_right, inner_smul_right, neg_neg,
+    innerₗ_apply_apply, inner_neg_right, inner_smul_right, neg_neg,
     fourierChar_apply', Pi.ofNat_apply, Circle.smul_def, Circle.coe_exp, ofReal_mul, ofReal_ofNat,
     ofReal_inv, smul_eq_mul, mul_one]
   congr with x
@@ -178,12 +181,12 @@ lemma norm_one_sub_charFun_le_two [IsProbabilityMeasure μ] : ‖1 - charFun μ 
   _ ≤ 1 + 1 := by simp [norm_charFun_le_one]
   _ = 2 := by norm_num
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :
     StronglyMeasurable (charFun μ) :=
   (Measurable.stronglyMeasurable (by fun_prop)).integral_prod_left
 
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_charFun [OpensMeasurableSpace E] [SecondCountableTopology E] [SFinite μ] :
     Measurable (charFun μ) :=
   stronglyMeasurable_charFun.measurable
@@ -234,7 +237,7 @@ theorem Measure.ext_of_charFun [CompleteSpace E]
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] (h : charFun μ = charFun ν) :
     μ = ν := by
   simp_rw [funext_iff, charFun_eq_integral_innerProbChar] at h
-  refine ext_of_integral_char_eq continuous_probChar probChar_ne_one (L := bilinFormOfRealInner)
+  refine ext_of_integral_char_eq continuous_probChar probChar_ne_one (L := innerₗ E)
     ?_ ?_ h
   · exact fun v hv ↦ DFunLike.ne_iff.mpr ⟨v, inner_self_ne_zero.mpr hv⟩
   · exact continuous_inner
@@ -347,6 +350,13 @@ lemma charFun_eq_charFunDual_toDualMap {E : Type*} [NormedAddCommGroup E] [Inner
     {mE : MeasurableSpace E} {μ : Measure E} (t : E) :
     charFun μ t = charFunDual μ (InnerProductSpace.toDualMap ℝ E t) := by
   simp [charFunDual_apply, charFun_apply, real_inner_comm]
+
+@[simp]
+lemma charFun_toDual_symm_eq_charFunDual {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+    [InnerProductSpace ℝ E] {mE : MeasurableSpace E} {μ : Measure E} (L : StrongDual ℝ E) :
+    charFun μ ((InnerProductSpace.toDual ℝ E).symm L) = charFunDual μ L := by
+  rw [charFun_eq_charFunDual_toDualMap, ← InnerProductSpace.toDual_apply_eq_toDualMap_apply]
+  simp
 
 lemma charFunDual_map [OpensMeasurableSpace E] [BorelSpace F] (L : E →L[ℝ] F)
     (L' : StrongDual ℝ F) : charFunDual (μ.map L) L' = charFunDual μ (L'.comp L) := by

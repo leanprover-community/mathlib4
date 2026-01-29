@@ -3,10 +3,12 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.Grp.LargeColimits
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Module.CharacterModule
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+module
+
+public import Mathlib.Algebra.Category.Grp.LargeColimits
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 
 /-!
 # Properties of the universe lift functor for groups
@@ -66,6 +68,8 @@ then the colimit of `K` in `GrpCat.{u}` exists and is the trivial group; meanwhi
 of `K ⋙ GrpCat.uliftFunctor.{u + 1}` is nontrivial (it is the "union" of all the `K j`, which is
 too big to be in `GrpCat.{u}`).
 -/
+
+@[expose] public section
 
 universe v w w' u
 
@@ -179,7 +183,7 @@ namespace AddCommGrpCat
 /-- The universe lift for commutative additive groups is additive.
 -/
 instance uliftFunctor_additive :
-    AddCommGrpCat.uliftFunctor.{u,v}.Additive where
+    AddCommGrpCat.uliftFunctor.{u, v}.Additive where
 
 open Colimits in
 /--

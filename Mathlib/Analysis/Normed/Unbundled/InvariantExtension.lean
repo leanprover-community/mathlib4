@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # algNormOfAlgEquiv and invariantExtension
@@ -36,6 +38,8 @@ Let `K` be a nonarchimedean normed field and `L/K` be a finite algebraic extensi
 algNormOfAlgEquiv, invariantExtension, norm, nonarchimedean
 -/
 
+@[expose] public section
+
 open scoped NNReal
 
 noncomputable section
@@ -46,6 +50,7 @@ variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 namespace IsUltrametricDist
 section algNormOfAlgEquiv
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a normed field `K`, a finite algebraic extension `L/K` and `σ : L ≃ₐ[K] L`, the function
 `L → ℝ` sending `x : L` to `‖ σ x ‖`, where `‖ ⬝ ‖` is any power-multiplicative algebra norm on `L`
 extending the norm on `K`, is an algebra norm on `K`. -/

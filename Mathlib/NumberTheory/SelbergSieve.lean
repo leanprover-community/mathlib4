@@ -3,8 +3,10 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.NumberTheory.ArithmeticFunction
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 
 /-!
 # The Selberg Sieve
@@ -27,6 +29,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -82,7 +86,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `BoundingSieve.weights`. -/
 @[positivity BoundingSieve.weights _ _]
-def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBoundingSieveWeights : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@BoundingSieve.weights $s $n) =>
     assertInstancesCommute
@@ -145,7 +149,7 @@ theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ s.prodPrimes) (hd_ne_
         apply s.nu_pos_of_prime p hp.1 (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
         apply s.nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
-      · simp only [nonempty_primeFactors, show 1 < d by cutsat]
+      · simp only [nonempty_primeFactors, show 1 < d by lia]
     _ = 1 := by
       simp
 

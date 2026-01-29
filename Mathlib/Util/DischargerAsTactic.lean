@@ -3,10 +3,13 @@ Copyright (c) 2023 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Simp.Rewrite
-import Batteries.Tactic.Exact
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Basic
+public meta import Lean.Meta.Tactic.Simp.Rewrite
+public import Batteries.Tactic.Exact
+public import Lean.Meta.Tactic.Simp
 
 /-!
 ## Dischargers for `simp` to tactics
@@ -14,6 +17,8 @@ import Batteries.Tactic.Exact
 This file defines a wrapper for `Simp.Discharger`s as regular tactics, that allows them to be
 used via the tactic frontend of `simp` via `simp (discharger := wrapSimpDischarger my_discharger)`.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 

@@ -3,8 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Localizing commutative monoids away from an element
@@ -16,6 +18,8 @@ We treat the special case of localizing away from an element in the sections
 localization, monoid localization, quotient monoid, congruence relation, characteristic predicate,
 commutative monoid, grothendieck group
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -70,7 +74,7 @@ respectively, the homomorphism induced from `N` to `P`. -/
 noncomputable def awayToAwayRight (y : M) (G : AwayMap (x * y) P) : N →* P :=
   F.lift x <|
     show IsUnit (G x) from
-      isUnit_of_mul_eq_one (G x) (G.mk' y ⟨x * y, mem_powers _⟩) <| by
+      .of_mul_eq_one (G.mk' y ⟨x * y, mem_powers _⟩) <| by
         rw [mul_mk'_eq_mk'_of_mul, mk'_self]
 
 end AwayMap
@@ -117,7 +121,7 @@ respectively, the homomorphism induced from `B` to `C`. -/
 noncomputable def awayToAwayRight (y : A) (G : AwayMap (x + y) C) : B →+ C :=
   F.lift x <|
     show IsAddUnit (G x) from
-      isAddUnit_of_add_eq_zero (G x) (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
+      .of_add_eq_zero (G.mk' y ⟨x + y, mem_multiples _⟩) <| by
         rw [add_mk'_eq_mk'_of_add, mk'_self]
 
 end AwayMap

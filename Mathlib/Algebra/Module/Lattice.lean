@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.Dimension.Localization
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Localization
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lattices
@@ -41,6 +43,8 @@ In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` where the 
 generated condition is replaced by having the discrete topology. This is for example used
 for complex tori.
 -/
+
+@[expose] public section
 
 open Module
 open scoped Pointwise
@@ -162,10 +166,10 @@ lemma of_rank_le [Module.Finite K V] [IsFractionRing R K] {M : Submodule R V}
 variable [IsPrincipalIdealRing R]
 
 /-- Any lattice over a PID is a free `R`-module.
-Note that under our conditions, `NoZeroSMulDivisors R K` simply says that `algebraMap R K` is
+Note that under our conditions, `Module.IsTorsionFree R K` simply says that `algebraMap R K` is
 injective. -/
-instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
-  have := NoZeroSMulDivisors.trans_faithfulSMul R K V
+instance free [Module.IsTorsionFree R K] (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+  have := Module.IsTorsionFree.trans_faithfulSMul R K V
   -- any torsion free finite module over a PID is free
   infer_instance
 

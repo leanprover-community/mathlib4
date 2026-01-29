@@ -3,7 +3,9 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Diameter of a simple graph
@@ -25,6 +27,8 @@ This module defines the eccentricity of vertices, the diameter, and the radius o
 - `SimpleGraph.center`: the set of vertices with eccentricity equal to the graph's radius.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -92,6 +96,27 @@ lemma eq_top_iff_forall_eccent_eq_one [Nontrivial α] :
   apply le_antisymm ((h u).symm ▸ edist_le_eccent)
   rw [Order.one_le_iff_pos, pos_iff_ne_zero, edist_eq_zero_iff.ne]
   exact huv.ne
+
+lemma eccent_le_iff (u : α) (k : ℕ∞) : G.eccent u ≤ k ↔ ∀ v, G.edist u v ≤ k :=
+  iSup_le_iff
+
+lemma eccent_le_one_iff (u : α) : G.eccent u ≤ 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  constructor
+  · intro h v huv
+    have hd : G.edist u v ≤ 1 := LE.le.trans edist_le_eccent h
+    have hd' : 1 ≤ G.edist u v := Order.one_le_iff_pos.mpr (G.edist_pos_of_ne huv)
+    exact edist_eq_one_iff_adj.mp (le_antisymm (hd') hd).symm
+  · intro hall
+    rw [eccent_le_iff]
+    intro v
+    rw [edist_le_one_iff_adj_or_eq]
+    exact or_iff_not_imp_right.mpr (hall v)
+
+lemma eccent_eq_one_iff [Nontrivial α] (u : α) :
+    G.eccent u = 1 ↔ ∀ v, u ≠ v → G.Adj u v := by
+  have h : 1 ≤ G.eccent u := ENat.one_le_iff_ne_zero.mpr (eccent_ne_zero u)
+  rw [← LE.le.ge_iff_eq' h]
+  exact eccent_le_one_iff u
 
 end eccent
 
@@ -239,7 +264,6 @@ lemma dist_le_diam (h : G.ediam ≠ ⊤) {u v : α} : G.dist u v ≤ G.diam :=
   ENat.toNat_le_toNat edist_le_ediam h
 
 lemma nontrivial_of_diam_ne_zero (h : G.diam ≠ 0) : Nontrivial α := by
-  apply G.nontrivial_of_ediam_ne_zero
   contrapose! h
   simp [diam, h]
 
@@ -313,7 +337,7 @@ lemma radius_eq_iInf_iSup_edist : G.radius = ⨅ u, ⨆ v, G.edist u v :=
 lemma radius_le_eccent {u : α} : G.radius ≤ G.eccent u :=
   iInf_le G.eccent u
 
-lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius  :=
+lemma exists_eccent_eq_radius [Nonempty α] : ∃ u, G.eccent u = G.radius :=
   ENat.exists_eq_iInf G.eccent
 
 lemma exists_edist_eq_radius_of_finite [Nonempty α] [Finite α] :

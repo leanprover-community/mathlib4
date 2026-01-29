@@ -412,7 +412,7 @@ example {x : ℚ} (hx : x ≠ 0) : x * x⁻¹ = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 x y z : ℚ
@@ -439,7 +439,7 @@ the top level, not recursively in subexpressions.
 level.) -/
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -583,7 +583,7 @@ example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
 
 end
 
-/-! Sometimes it takes iterated alternation betweeen `ring_nf` and `field_simp` in order to
+/-! Sometimes it takes iterated alternation between `ring_nf` and `field_simp` in order to
 normalize properly.
 
 It is not clear whether or not this iterated alternation always achieves the "obvious" normalization
@@ -626,7 +626,7 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -640,7 +640,7 @@ example {a b : ℚ} (H : b + a ≠ 0) : a / (a + b) + b / (b + a) = 1 := by
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -659,7 +659,7 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -674,7 +674,7 @@ example {a b : ℚ} (H : a + b + 1 ≠ 0) :
 
 /--
 info: Try this:
-  field_simp
+  [apply] field_simp
 ---
 error: unsolved goals
 a b : ℚ
@@ -837,7 +837,7 @@ example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 
--- Minimised from Fourier/AddCircle.lean
+-- Minimised from `Mathlib/Analysis/Fourier/AddCircle.lean`
 example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
     (2 * a / T * (n * (T / 2 / n))) = a := by
   field_simp
@@ -956,7 +956,7 @@ example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^
 example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field_simp
 
--- Extracted from `Analysis/SpecificLimits/Basic.lean`
+-- Extracted from `Mathlib/Analysis/SpecificLimits/Basic.lean`
 
 -- `field_simp` assumes commutativity: in its absence, it does nothing.
 /-- error: field_simp made no progress on goal -/

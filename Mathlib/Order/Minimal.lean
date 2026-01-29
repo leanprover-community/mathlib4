@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.WellFounded
 
 /-!
 # Minimality and Maximality
@@ -38,6 +40,8 @@ but it may be worth re-examining this to make it easier in the future; see the T
 * API to allow for easily expressing min/maximality with respect to an arbitrary non-`LE` relation.
 * API for `MinimalFor`/`MaximalFor`
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
@@ -176,7 +180,7 @@ end LE
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] {Q : ι → Prop} {f : ι → α} {i j : ι}
 
 theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → ¬ P y := by
   simp [Minimal, lt_iff_le_not_ge, imp.swap]
@@ -184,17 +188,35 @@ theorem minimal_iff_forall_lt : Minimal P x ↔ P x ∧ ∀ ⦃y⦄, y < x → �
 theorem maximal_iff_forall_gt : Maximal P x ↔ P x ∧ ∀ ⦃y⦄, x < y → ¬ P y :=
   minimal_iff_forall_lt (α := αᵒᵈ)
 
+theorem minimalFor_iff_forall_lt : MinimalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f j < f i → ¬ Q j := by
+  simp [MinimalFor, lt_iff_le_not_ge, imp.swap]
+
+theorem maximalFor_iff_forall_gt : MaximalFor Q f i ↔ Q i ∧ ∀ ⦃j⦄, f i < f j → ¬ Q j :=
+  minimalFor_iff_forall_lt (α := αᵒᵈ)
+
 theorem Minimal.not_prop_of_lt (h : Minimal P x) (hlt : y < x) : ¬ P y :=
   (minimal_iff_forall_lt.1 h).2 hlt
 
 theorem Maximal.not_prop_of_gt (h : Maximal P x) (hlt : x < y) : ¬ P y :=
   (maximal_iff_forall_gt.1 h).2 hlt
 
+theorem MinimalFor.not_prop_of_lt (h : MinimalFor Q f i) (hlt : f j < f i) : ¬ Q j :=
+  (minimalFor_iff_forall_lt.1 h).2 hlt
+
+theorem MaximalFor.not_prop_of_gt (h : MaximalFor Q f i) (hgt : f i < f j) : ¬ Q j :=
+  (maximalFor_iff_forall_gt.1 h).2 hgt
+
 theorem Minimal.not_lt (h : Minimal P x) (hy : P y) : ¬(y < x) :=
   fun hlt ↦ h.not_prop_of_lt hlt hy
 
 theorem Maximal.not_gt (h : Maximal P x) (hy : P y) : ¬(x < y) :=
   fun hlt ↦ h.not_prop_of_gt hlt hy
+
+theorem MinimalFor.not_lt (h : MinimalFor Q f i) (hj : Q j) : ¬(f j < f i) :=
+  fun hlt ↦ h.not_prop_of_lt hlt hj
+
+theorem MaximalFor.not_gt (h : MaximalFor Q f i) (hj : Q j) : ¬(f i < f j) :=
+  fun hgt ↦ h.not_prop_of_gt hgt hj
 
 @[simp] theorem minimal_le_iff : Minimal (· ≤ y) x ↔ x ≤ y ∧ IsMin x :=
   minimal_iff_isMin (fun _ _ h h' ↦ h'.trans h)
@@ -310,6 +332,24 @@ theorem maximal_iff_maximal_of_imp_of_forall (hPQ : ∀ ⦃x⦄, Q x → P x)
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] {i j : ι} {Q : ι → Prop} {f : ι → α}
+
+theorem Minimal.le (h : Minimal P x) (hy : P y) : x ≤ y :=
+  le_of_not_gt (h.not_lt hy)
+
+theorem Maximal.le (h : Maximal P x) (hy : P y) : y ≤ x :=
+  le_of_not_gt (h.not_gt hy)
+
+theorem MinimalFor.le (h : MinimalFor Q f i) (hj : Q j) : f i ≤ f j :=
+  le_of_not_gt (h.not_lt hj)
+
+theorem MaximalFor.le (h : MaximalFor Q f i) (hj : Q j) : f j ≤ f i :=
+  le_of_not_gt (h.not_gt hj)
+
+end LinearOrder
+
 section Subset
 
 variable {P : Set α → Prop} {s t : Set α}
@@ -358,9 +398,6 @@ theorem Maximal.mem_of_prop_insert (h : Maximal P s) (hx : P (insert x s)) : x �
 
 theorem Minimal.notMem_of_prop_diff_singleton (h : Minimal P s) (hx : P (s \ {x})) : x ∉ s :=
   fun hxs ↦ ((h.eq_of_superset hx diff_subset).subset hxs).2 rfl
-
-@[deprecated (since := "2025-05-23")]
-alias Minimal.not_mem_of_prop_diff_singleton := Minimal.notMem_of_prop_diff_singleton
 
 theorem Set.minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s \ {x}) :=
@@ -624,7 +661,7 @@ def setOfMinimalIsoSetOfMaximal (f : s ≃o tᵒᵈ) :
       toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal x).2⟩
       invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMinimal x).2⟩
-      __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMinimal
+      __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMinimal
 
 /-- If two sets are antitonically order isomorphic, their maximals/minimals are too. -/
 def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
@@ -632,7 +669,7 @@ def setOfMaximalIsoSetOfMinimal (f : s ≃o tᵒᵈ) :
   toFun x := ⟨(f ⟨x.1, x.2.1⟩).1, ((show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal x).2⟩
   invFun x := ⟨(f.symm ⟨x.1, x.2.1⟩).1,
         ((show ofDual ⁻¹' t ≃o s from f.symm).mapSetOfMaximal x).2⟩
-  __ := (show s ≃o ofDual⁻¹' t from f).mapSetOfMaximal
+  __ := (show s ≃o ofDual ⁻¹' t from f).mapSetOfMaximal
 
 end OrderIso
 

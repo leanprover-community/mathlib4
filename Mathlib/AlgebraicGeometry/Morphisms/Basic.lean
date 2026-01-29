@@ -3,10 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.CategoryTheory.MorphismProperty.Local
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.AlgebraicGeometry.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.Local
+public import Mathlib.Data.List.TFAE
 
 /-!
 # Properties of morphisms between Schemes
@@ -19,7 +20,7 @@ which we call an `AffineTargetMorphismProperty`. In this file, we provide API le
 local at the target, and special support for those properties whose `AffineTargetMorphismProperty`
 takes on a more simple form. We also provide API lemmas for properties local at the target.
 The main interfaces of the API are the typeclasses `IsLocalAtTarget`, `IsLocalAtSource` and
-`HasAffineProperty`, which we describle in detail below.
+`HasAffineProperty`, which we describe in detail below.
 
 ## `IsZariskiLocalAtTarget`
 
@@ -96,6 +97,8 @@ for the respective local property of morphism properties defined generally for c
 with a `Precoverage`.
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -161,7 +164,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
-    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+    (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
   rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
   apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance
@@ -178,7 +181,32 @@ lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : 
   apply (⨆ i, U i).ι.image_injective
   dsimp
   rw [Scheme.Hom.image_iSup, Scheme.Hom.image_top_eq_opensRange, Scheme.Opens.opensRange_ι]
-  simp [Scheme.Hom.image_preimage_eq_opensRange_inter, le_iSup U]
+  simp [Scheme.Hom.image_preimage_eq_opensRange_inf, le_iSup U]
+
+lemma of_forall_source_exists_preimage
+    [P.RespectsRight IsOpenImmersion] [P.HasOfPostcompProperty IsOpenImmersion]
+    (f : X ⟶ Y) (hX : ∀ x, ∃ (U : Y.Opens), f x ∈ U ∧ P ((f ⁻¹ᵁ U).ι ≫ f)) :
+    P f := by
+  choose U h₁ h₂ using hX
+  apply IsZariskiLocalAtTarget.of_range_subset_iSup U
+  · rintro y ⟨x, rfl⟩
+    simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
+    exact ⟨x, h₁ x⟩
+  · intro x
+    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
+
+lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
+    P (coprod.map f g) := by
+  refine IsZariskiLocalAtTarget.of_openCover (coprodOpenCover.{_, 0} _ _) ?_
+  rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inl_inl_coprodMap f g).flip.isoPullback.hom]
+    convert hf
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
+  · rw [← MorphismProperty.cancel_left_of_respectsIso P
+      (isPullback_inr_inr_coprodMap f g).flip.isoPullback.hom]
+    convert hg
+    simp [Scheme.Cover.pullbackHom, coprodOpenCover]
 
 end IsZariskiLocalAtTarget
 
@@ -385,7 +413,7 @@ instance (P : MorphismProperty Scheme) [IsZariskiLocalAtTarget P] :
   respectsIso := inferInstance
   to_basicOpen _ _ H := IsZariskiLocalAtTarget.restrict H _
   of_basicOpenCover {_ Y} _ _ _ hs := IsZariskiLocalAtTarget.of_iSup_eq_top _
-    (((isAffineOpen_top Y).basicOpen_union_eq_self_iff _).mpr hs)
+    ((isAffineOpen_top Y).iSup_basicOpen_eq_self_iff.mpr hs)
 
 /-- A `P : AffineTargetMorphismProperty` is stable under base change if `P` holds for `Y ⟶ S`
 implies that `P` holds for `X ×ₛ Y ⟶ X` with `X` and `S` affine schemes. -/
@@ -501,7 +529,7 @@ theorem of_iSup_eq_top
   rw [eq_targetAffineLocally P]
   classical
   intro V
-  induction V using of_affine_open_cover U hU  with
+  induction V using of_affine_open_cover U hU with
   | basicOpen U r h =>
     haveI : IsAffine _ := U.2
     have := AffineTargetMorphismProperty.IsLocal.to_basicOpen (f ∣_ U.1) (U.1.topIso.inv r) h

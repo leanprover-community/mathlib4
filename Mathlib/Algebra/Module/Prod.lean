@@ -3,14 +3,18 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Prod
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
+public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Prod instances for module and multiplicative actions
 
 This file defines instances for binary product of modules
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} {M : Type*} {N : Type*}

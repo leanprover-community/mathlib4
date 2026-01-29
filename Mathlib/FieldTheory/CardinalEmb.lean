@@ -3,11 +3,13 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.FreeAlgebra
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.DirectedInverseSystem
+module
+
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
@@ -64,6 +66,8 @@ between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] �
 
 -/
 
+@[expose] public section
+
 open Cardinal Module Free Set Order IntermediateField InverseSystem
 
 universe u v
@@ -79,10 +83,11 @@ noncomputable section
 set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => (Module.rank F E).ord.toType
+local notation "ι" => (Module.rank F E).ord.ToType
 
+set_option backward.privateInPublic true in
 private local instance : SuccOrder ι := SuccOrder.ofLinearWellFoundedLT ι
-local notation i"⁺" => succ i -- Note: conflicts with `PosPart` notation
+local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
 /-- A basis of E/F indexed by the initial ordinal. -/
 def wellOrderedBasis : Basis ι F E :=
@@ -130,14 +135,14 @@ def leastExt : ι → ι :=
         have : FiniteDimensional F (adjoin F s) :=
           finiteDimensional_adjoin fun x _ ↦ (IsAlgebraic.isAlgebraic x).isIntegral
         exact (Module.rank_lt_aleph0 _ _).trans_eq eq
-      · exact (Subalgebra.equivOfEq _ _ <| adjoin_algebraic_toSubalgebra
-          fun x _ ↦ IsAlgebraic.isAlgebraic x)|>.toLinearEquiv.rank_eq.trans_lt <|
+      · exact (Subalgebra.equivOfEq _ _ <| adjoin_toSubalgebra_of_isAlgebraic
+          fun x _ ↦ IsAlgebraic.isAlgebraic x) |>.toLinearEquiv.rank_eq.trans_lt <|
           (Algebra.rank_adjoin_le _).trans_lt (max_lt (mk_range_le.trans_lt this) lt)
 
 local notation "φ" => leastExt F E
 
 section
-local notation "E⟮<"i"⟯" => adjoin F (b ∘ φ '' Iio i)
+local notation "E⟮<" i "⟯" => adjoin F (b ∘ φ '' Iio i)
 
 theorem isLeast_leastExt (i : ι) : IsLeast {k | b k ∉ E⟮<i⟯} (φ i) := by
   rw [image_eq_range, leastExt, wellFounded_lt.fix_eq]
@@ -180,13 +185,16 @@ def succEquiv (i : ι) : (E⟮<i⁺⟯ →ₐ[F] Ē) ≃ (E⟮<i⟯ →ₐ[F] Ē
 
 theorem succEquiv_coherence (i : ι) (f) : (succEquiv i f).1 =
     f.comp (Subalgebra.inclusion <| strictMono_filtration.monotone <| le_succ i) := by
-  ext; simp [succEquiv]; rfl -- slow rfl (type checking took 11.9s)
+  ext
+  simp [succEquiv, embEquivOfIsAlgClosed, embEquivOfAdjoinSplits, Equiv.sigmaEquivProdOfEquiv,
+    algHomEquivSigma, AlgHom.restrictDomain, Subalgebra.inclusion, Set.inclusion, equivOfEq,
+    Subalgebra.equivOfEq]
 
 instance (i : ι) : FiniteDimensional (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
   adjoin.finiteDimensional ((Algebra.IsAlgebraic.tower_top (K := F) _).isAlgebraic _).isIntegral
 
 theorem deg_lt_aleph0 (i : ι) : #(X i) < ℵ₀ :=
-  (toNat_ne_zero.mp (Field.instNeZeroFinSepDegree (E⟮<i⟯) <| E⟮<i⟯⟮b (φ i)⟯).out).2
+  lt_aleph0_of_finite _
 
 open WithTop in
 /-- Extend the family `E⟮<i⟯, i : ι` by adjoining a top element. -/
@@ -211,8 +219,9 @@ instance (i : ι) : Algebra.IsSeparable (E⟮<i⟯) (E⟮<i⟯⟮b (φ i)⟯) :=
 
 open Field in
 theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
-  rw [← Nat.cast_ofNat, ← toNat_le_iff_le_of_lt_aleph0 (nat_lt_aleph0 _) (deg_lt_aleph0 i),
-    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable, Nat.succ_le]
+  rw [← Nat.cast_ofNat, ← toNat_le_iff_le_of_lt_aleph0 natCast_lt_aleph0 (deg_lt_aleph0 i),
+    toNat_natCast, ← Nat.card, ← finSepDegree, finSepDegree_eq_finrank_of_isSeparable,
+    Nat.succ_le_iff]
   by_contra!
   obtain ⟨x, hx⟩ := finrank_adjoin_simple_eq_one_iff.mp (this.antisymm Module.finrank_pos)
   refine (isLeast_leastExt i).1 (hx ▸ ?_)
@@ -220,7 +229,7 @@ theorem two_le_deg (i : ι) : 2 ≤ #(X i) := by
 
 end
 
-local notation "E⟮<"i"⟯" => filtration i
+local notation "E⟮<" i "⟯" => filtration i
 
 variable (F E) in
 /-- The functor on `WithTop ι` given by embeddings of `E⟮<i⟯` into `Ē` -/
@@ -231,6 +240,7 @@ instance : InverseSystem (embFunctor F E) where
   map_self _ _ := rfl
   map_map _ _ _ _ _ _ := rfl
 
+set_option backward.privateInPublic true in
 private local instance (i : ι) : Decidable (succ i = i) := .isFalse (lt_succ i).ne'
 
 /-- Extend `succEquiv` from `ι` to `WithTop ι`. -/
@@ -243,7 +253,7 @@ theorem equivSucc_coherence (i f) : (equivSucc i f).1 = embFunctor F E (le_succ 
 
 section Lim
 
-variable {i : WithTop (Module.rank F E).ord.toType} -- WithTop ι doesn't work
+variable {i : WithTop (Module.rank F E).ord.ToType} -- WithTop ι doesn't work
 
 theorem directed_filtration : Directed (· ≤ ·) fun j : Iio i ↦ filtration j.1 :=
   (filtration.monotone.comp <| Subtype.mono_coe _).directed_le
@@ -317,7 +327,7 @@ theorem cardinal_eq_two_pow_rank [Algebra.IsSeparable F E]
   haveI := Fact.mk rank_inf
   rw [Emb.Cardinal.embEquivPi.cardinal_eq, mk_pi]
   apply le_antisymm
-  · rw [← power_eq_two_power rank_inf (nat_lt_aleph0 2).le rank_inf]
+  · rw [← power_eq_two_power rank_inf natCast_le_aleph0 rank_inf]
     conv_rhs => rw [← mk_ord_toType (Module.rank F E), ← prod_const']
     exact prod_le_prod _ _ fun i ↦ (Emb.Cardinal.deg_lt_aleph0 _).le
   · conv_lhs => rw [← mk_ord_toType (Module.rank F E), ← prod_const']

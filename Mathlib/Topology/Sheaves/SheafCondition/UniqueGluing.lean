@@ -3,9 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Topology.Sheaves.Forget
-import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+module
+
+public import Mathlib.Topology.Sheaves.Forget
+public import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
 
 /-!
 # The sheaf condition in terms of unique gluings
@@ -33,6 +34,8 @@ isomorphism-reflecting functor leaves the sheaf condition invariant, as shown in
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
@@ -40,7 +43,7 @@ open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
 
 universe x
 
-variable {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable {C : Type*} [Category* C] {FC : C → C → Type*} {CC : C → Type*}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 namespace TopCat
@@ -96,7 +99,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
     ((Pairwise.diagram U).op ⋙ F).sections := by
   refine ⟨objPairwiseOfFamily sf, ?_⟩
   let G := (Pairwise.diagram U).op ⋙ F
-  rintro (i|⟨i,j⟩) (i'|⟨i',j'⟩) (_ | _ | _ | _)
+  rintro (i | ⟨i, j⟩) (i' | ⟨i', j'⟩) (_ | _ | _ | _)
   · exact congr_fun (G.map_id <| op <| Pairwise.single i) _
   · rfl
   · exact (h i' i).symm
@@ -105,7 +108,7 @@ def IsCompatible.sectionPairwise {sf} (h : IsCompatible F U sf) :
 theorem isGluing_iff_pairwise {sf s} : IsGluing F U sf s ↔
     ∀ i, (F.mapCone (Pairwise.cocone U).op).π.app i s = objPairwiseOfFamily sf i := by
   refine ⟨fun h ↦ ?_, fun h i ↦ h (op <| Pairwise.single i)⟩
-  rintro (i|⟨i,j⟩)
+  rintro (i | ⟨i, j⟩)
   · exact h i
   · rw [← (F.mapCone (Pairwise.cocone U).op).w (op <| Pairwise.Hom.left i j)]
     exact congr_arg _ (h i)
@@ -127,7 +130,7 @@ theorem isSheaf_iff_isSheafUniqueGluing_types : F.IsSheaf ↔ F.IsSheafUniqueGlu
   · exact h _ cpt.sectionPairwise.prop
   · specialize h (fun i ↦ s <| op <| Pairwise.single i) fun i j ↦
       (hs <| op <| Pairwise.Hom.left i j).trans (hs <| op <| Pairwise.Hom.right i j).symm
-    convert h; ext (i|⟨i,j⟩)
+    convert h; ext (i | ⟨i, j⟩)
     · rfl
     · exact (hs <| op <| Pairwise.Hom.left i j).symm
 

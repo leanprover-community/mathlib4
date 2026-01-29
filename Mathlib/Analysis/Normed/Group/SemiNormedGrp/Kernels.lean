@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin, Kim Morrison
 -/
-import Mathlib.Analysis.Normed.Group.SemiNormedGrp
-import Mathlib.Analysis.Normed.Group.Quotient
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.Analysis.Normed.Group.SemiNormedGrp
+public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # Kernels and cokernels in SemiNormedGrp₁ and SemiNormedGrp
@@ -22,6 +24,8 @@ and in `SemiNormedGrp` one can always take a cokernel and rescale its norm
 (and hence making `cokernel.π f` arbitrarily large in norm), obtaining another categorical cokernel.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits
@@ -69,7 +73,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               change (f ≫ s.π) b = 0
               simp)
             fun _ _ w =>
-            SemiNormedGrp₁.hom_ext <| Subtype.eq
+            SemiNormedGrp₁.hom_ext <| Subtype.ext
               (NormedAddGroupHom.lift_unique f.1.range _ _ _
                 (congr_arg Subtype.val (congr_arg Hom.hom w))) }
 
@@ -105,13 +109,13 @@ instance hasLimit_parallelPair {V W : SemiNormedGrp.{u}} (f g : V ⟶ W) :
         isLimit :=
           have this := fun (c : Fork f g) =>
             show NormedAddGroupHom.compHom (f - g).hom c.ι.hom = 0 by
-              rw [hom_sub, AddMonoidHom.map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
+              rw [hom_sub, map_sub, AddMonoidHom.sub_apply, sub_eq_zero]
               exact congr_arg Hom.hom c.condition
           Fork.IsLimit.mk _
             (fun c => ofHom <|
               NormedAddGroupHom.ker.lift (Fork.ι c).hom _ <| this c)
             (fun _ => SemiNormedGrp.hom_ext <| NormedAddGroupHom.ker.incl_comp_lift _ _ (this _))
-            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl}
+            fun c g h => by ext x; dsimp; simp_rw [← h]; rfl }
 
 instance : Limits.HasEqualizers.{u, u + 1} SemiNormedGrp :=
   @hasEqualizers_of_hasLimit_parallelPair SemiNormedGrp _ fun {_ _ f g} =>

@@ -3,12 +3,14 @@ Copyright (c) 2025 Richard Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Functor
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.CategoryTheory.Action.Limits
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Functor
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.Action.Limits
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 
@@ -40,6 +42,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
+
+@[expose] public section
 
 open CategoryTheory Functor ContinuousMap
 
@@ -90,12 +94,14 @@ def const : 𝟭 _ ⟶ I R G where
 
 namespace MultiInd
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The n-th functor taking `M` to `C(G, C(G,...,C(G, M)))` (with n `G`s).
 These functors form a complex, see `MultiInd.complex`. -/
 def functor : ℕ → Action (TopModuleCat R) G ⥤ Action (TopModuleCat R) G
   | 0     => 𝟭 _
   | n + 1 => functor n ⋙ I R G
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The differential map in `MultiInd.complex`. -/
 def d : ∀ n : ℕ, functor R G n ⟶ functor R G (n + 1)
   | 0     => const R G
@@ -159,7 +165,7 @@ def _root_.continuousCohomology (n : ℕ) : Action (TopModuleCat R) G ⥤ TopMod
 /-- The `0`-homogeneous cochains are isomorphic to `Xᴳ`. -/
 def kerHomogeneousCochainsZeroEquiv
     (X : Action (TopModuleCat R) G) (n : ℕ) (hn : n = 1) :
-    LinearMap.ker (((homogeneousCochains R G).obj X).d 0 n).hom ≃L[R] (invariants R G).obj X where
+    (((homogeneousCochains R G).obj X).d 0 n).hom.ker ≃L[R] (invariants R G).obj X where
   toFun x :=
   { val := DFunLike.coe (F := C(G, _)) x.1.1 1
     property g := by

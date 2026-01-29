@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
 /-!
 # Differential objects in a category.
@@ -19,6 +21,8 @@ We build the category of differential objects, and some basic constructions
 such as the forgetful functor, zero morphisms and zero objects, and the shift functor
 on differential objects.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits

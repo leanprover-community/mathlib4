@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.GroupTheory.Index
 
 /-!
 # Complements
@@ -23,6 +25,8 @@ In this file we define the complement of a subgroup.
 
 - `isComplement'_of_coprime` : Subgroups of coprime order are complements.
 -/
+
+@[expose] public section
 
 open Function Set
 open scoped Pointwise
@@ -159,7 +163,7 @@ lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
 @[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
     S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
   rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
-  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂:= (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
+  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂ := (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
 
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
@@ -594,7 +598,7 @@ theorem smul_toLeftFun (f : F) (S : H.LeftTransversal) (g : G) :
 
 @[to_additive]
 theorem smul_leftQuotientEquiv (f : F) (S : H.LeftTransversal) (q : G ⧸ H) :
-    f • (S.2.leftQuotientEquiv  q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
+    f • (S.2.leftQuotientEquiv q : G) = (f • S).2.leftQuotientEquiv (f • q) :=
   Quotient.inductionOn' q fun g => smul_toLeftFun f S g
 
 @[to_additive]

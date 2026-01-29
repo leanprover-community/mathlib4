@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.MinMax
-import Mathlib.Data.Nat.Order.Lemmas
-import Mathlib.Logic.Encodable.Basic
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.MinMax
+public import Mathlib.Data.Nat.Order.Lemmas
+public import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Denumerable types
@@ -20,6 +22,8 @@ functions are inverses of each other.
 This property already has a name, namely `α ≃ ℕ`, but here we are interested in using it as a
 typeclass.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -205,14 +209,14 @@ theorem succ_le_of_lt {x y : s} (h : y < x) : succ y ≤ x :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   let ⟨k, hk⟩ := Nat.exists_eq_add_of_lt h
   have : Nat.find hx ≤ k := Nat.find_min' _ (hk ▸ x.2)
-  show (y : ℕ) + Nat.find hx + 1 ≤ x by cutsat
+  show (y : ℕ) + Nat.find hx + 1 ≤ x by lia
 
 theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ y :=
   have hx : ∃ m, (y : ℕ) + m + 1 ∈ s := exists_succ _
   show (x : ℕ) ≤ (y : ℕ) + Nat.find hx + 1 from
     le_of_not_gt fun hxy =>
       (h ⟨_, Nat.find_spec hx⟩ hxy).not_gt <|
-        (by cutsat : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
+        (by lia : (y : ℕ) < (y : ℕ) + Nat.find hx + 1)
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
@@ -255,6 +259,7 @@ theorem ofNat_range : Set.range (ofNat s) = Set.univ :=
 theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s := by
   rw [Set.range_comp Subtype.val, ofNat_range, Set.image_univ, Subtype.range_coe]
 
+set_option backward.privateInPublic true in
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
@@ -263,6 +268,7 @@ private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
+set_option backward.privateInPublic true in
 private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
   | 0 => by
     rw [toFunAux_eq, card_eq_zero, eq_empty_iff_forall_notMem]
@@ -287,6 +293,8 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
       rhs
       rw [← ih, ← card_insert_of_notMem h₁, ← h₂]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Any infinite set of naturals is denumerable. -/
 def denumerable (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : Denumerable s :=
   Denumerable.ofEquiv ℕ

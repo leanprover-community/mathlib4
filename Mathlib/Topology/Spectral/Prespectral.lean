@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.Spectral.Hom
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.Spectral.Hom
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.Topology.Spectral.Hom
 In this file, we define prespectral spaces as spaces whose lattice of compact opens forms a basis.
 
 -/
+
+@[expose] public section
 
 open TopologicalSpace Topology
 
@@ -72,6 +76,21 @@ lemma PrespectralSpace.of_isInducing [PrespectralSpace Y]
 lemma PrespectralSpace.of_isClosedEmbedding [PrespectralSpace Y]
     (f : X → Y) (hf : IsClosedEmbedding f) : PrespectralSpace X :=
   .of_isInducing f hf.isInducing hf.isProperMap.isSpectralMap
+
+/-- Let `f : X → Y` be an open embedding of topological spaces.
+If `Y` is a prespectral space (i.e., the quasi-compact opens of `Y` form a basis),
+then `X` is also a prespectral space. -/
+lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
+    {f : X → Y} (hf : IsOpenEmbedding f) :
+    PrespectralSpace X where
+  isTopologicalBasis := by
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
+      (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
+        (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩
+    refine ⟨f ⁻¹' V, ⟨hoV.preimage hf.continuous, ?_⟩, ⟨hfx, fun y hy ↦ ?_⟩⟩
+    · exact hf.toIsInducing.isCompact_preimage' hcV <| Set.SurjOn.subset_range hVf
+    · exact hf.injective.mem_set_image.mp (hVf hy)
 
 instance PrespectralSpace.sigma {ι : Type*} (X : ι → Type*) [∀ i, TopologicalSpace (X i)]
     [∀ i, PrespectralSpace (X i)] : PrespectralSpace (Σ i, X i) :=
@@ -141,3 +160,16 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
       rintro ⟨i, hi, x, hx, rfl⟩
       have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
       exact this
+
+lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] {K U : Set X}
+    (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
+    ∃ (W : Set X), IsCompact W ∧ IsOpen W ∧ K ⊆ W ∧ W ⊆ U := by
+  refine hK.induction_on ⟨∅, by simp⟩ (fun s t hst ⟨W, Wc, Wo, hKW, hWU⟩ ↦ ?_) ?_ ?_
+  · use W, Wc, Wo, subset_trans hst hKW, hWU
+  · intro s t ⟨W₁, Wc₁, Wo₁, hKW₁, hWU₁⟩ ⟨W₂, Wc₂, Wo₂, hKW₂, hWU₂⟩
+    exact ⟨W₁ ∪ W₂, Wc₁.union Wc₂, Wo₁.union Wo₂, Set.union_subset_union hKW₁ hKW₂,
+      Set.union_subset hWU₁ hWU₂⟩
+  · intro x hx
+    obtain ⟨V, h, hxV, hVU⟩ :=
+      PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open (hKU hx) hU
+    exact ⟨V, mem_nhdsWithin.mpr ⟨V, h.1, hxV, Set.inter_subset_left⟩, V, h.2, h.1, subset_rfl, hVU⟩

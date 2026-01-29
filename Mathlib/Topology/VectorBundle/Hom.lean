@@ -3,7 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Topology.VectorBundle.Basic
+module
+
+public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
 # The vector bundle of continuous (semi)linear maps
@@ -27,6 +29,8 @@ topological vector bundles, exterior algebras, and so on, where again the topolo
 using a norm on the fiber model if this helps.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -42,12 +46,6 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜₁ F₁] (E�
 
 variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E₂ : B → Type*)
   [∀ x, AddCommGroup (E₂ x)] [∀ x, Module 𝕜₂ (E₂ x)] [TopologicalSpace (TotalSpace F₂ E₂)]
-
-/-- A reducible type synonym for the bundle of continuous (semi)linear maps. -/
-@[deprecated "Use the plain bundle syntax `fun (b : B) ↦ E₁ b →SL[σ] E₂ b` or
-`fun (b : B) ↦ E₁ b →L[𝕜] E₂ b` instead" (since := "2025-06-12")]
-protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
-    [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x ↦ E₁ x →SL[σ] E₂ x
 
 variable {E₁ E₂}
 variable [TopologicalSpace B] (e₁ e₁' : Trivialization F₁ (π F₁ E₁))

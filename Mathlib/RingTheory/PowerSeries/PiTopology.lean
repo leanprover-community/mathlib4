@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
+module
+
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 
@@ -47,6 +49,8 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
+
+public section
 
 
 namespace PowerSeries
@@ -156,6 +160,28 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   contrapose! hk
   exact coeff_of_lt_order _ <| by simpa using (hi k hk.le)
 
+variable {R} in
+/-- The geometric series converges if the constant term is zero. -/
+theorem summable_pow_of_constantCoeff_eq_zero {f : PowerSeries R} (h : f.constantCoeff = 0) :
+    Summable (f ^ ·) :=
+  MvPowerSeries.WithPiTopology.summable_pow_of_constantCoeff_eq_zero h
+
+section GeomSeries
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
+variable {f : PowerSeries R}
+
+/-- Formula for geometric series. -/
+theorem tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (∑' (i : ℕ), f ^ i) * (1 - f) = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).tsum_pow_mul_one_sub
+
+/-- Formula for geometric series. -/
+theorem one_sub_mul_tsum_pow_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (1 - f) * ∑' (i : ℕ), f ^ i = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).one_sub_mul_tsum_pow
+
+end GeomSeries
+
 end Sum
 
 section Prod
@@ -187,6 +213,28 @@ theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
 
 end Prod
 
+section ProdOneSubPow
+variable (R : Type*) [CommRing R] [TopologicalSpace R]
+
+theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
+  nontriviality R
+  simp_rw [sub_eq_add_neg]
+  apply multipliable_one_add_of_tendsto_order_atTop_nhds_top
+  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
+  intro m hm
+  rw [order_neg, order_X_pow]
+  norm_cast
+  exact Nat.lt_add_one_iff.mpr hm
+
+theorem tprod_one_sub_X_pow_ne_zero [T2Space R] [Nontrivial R] :
+    ∏' i, (1 - X ^ (i + 1)) ≠ (0 : R⟦X⟧) := by
+  by_contra! h
+  obtain h := PowerSeries.ext_iff.mp h 0
+  simp [coeff_zero_eq_constantCoeff, (multipliable_one_sub_X_pow R).map_tprod _
+    (continuous_constantCoeff R)] at h
+
+end ProdOneSubPow
+
 end WithPiTopology
 
 end Topological
@@ -217,8 +265,6 @@ theorem instCompleteSpace [CompleteSpace R] :
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsUniformAddGroup
-
-@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end WithPiTopology
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.Spectrum
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.Normed.Algebra.Spectrum
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.Complex.Spectrum
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Restrict
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-! # Instances of the continuous functional calculus
 
@@ -27,6 +29,8 @@ import Mathlib.Analysis.RCLike.Lemmas
 
 continuous functional calculus, normal, selfadjoint
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -56,7 +60,7 @@ open scoped ContinuousMapZero
 open Unitization in
 /--
 This is an auxiliary definition used for constructing an instance of the non-unital continuous
-functional calculus given a instance of the unital one on the unitization.
+functional calculus given an instance of the unital one on the unitization.
 
 This is the natural non-unital star homomorphism obtained from the chain
 ```lean
@@ -297,6 +301,11 @@ instance Nonneg.instContinuousFunctionalCalculus :
   SpectrumRestricts.cfc (q := IsSelfAdjoint) ContinuousMap.realToNNReal
     isUniformEmbedding_subtype_val le_rfl
     (fun _ ↦ nonneg_iff_isSelfAdjoint_and_quasispectrumRestricts)
+
+theorem IsStrictlyPositive.commute_iff {a b : A} (ha : IsStrictlyPositive a)
+    (hb : IsStrictlyPositive b) : Commute a b ↔ IsStrictlyPositive (a * b) := by
+  rw [commute_iff_mul_nonneg ha.nonneg hb.nonneg]
+  exact ⟨fun h => ha.isUnit.mul hb.isUnit |>.isStrictlyPositive h, fun h => h.nonneg⟩
 
 end Nonneg
 

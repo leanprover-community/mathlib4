@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Sqrt
 
 /-!
   # Norm on the complex numbers
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -38,7 +42,8 @@ theorem abs_re_le_norm (z : ℂ) : |z.re| ≤ ‖z‖ := by
 theorem re_le_norm (z : ℂ) : z.re ≤ ‖z‖ :=
   (abs_le.1 (abs_re_le_norm _)).2
 
-private theorem norm_add_le' (z w : ℂ) :  ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
+set_option backward.privateInPublic true in
+private theorem norm_add_le' (z w : ℂ) : ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
   (mul_self_le_mul_self_iff (norm_nonneg (z + w)) (add_nonneg (norm_nonneg z)
     (norm_nonneg w))).2 <| by
     rw [norm_mul_self_eq_normSq, add_mul_self_eq, norm_mul_self_eq_normSq, norm_mul_self_eq_normSq,
@@ -47,15 +52,20 @@ private theorem norm_add_le' (z w : ℂ) :  ‖z + w‖ ≤ ‖z‖ + ‖w‖ :=
     gcongr
     exact re_le_norm (z * conj w)
 
+set_option backward.privateInPublic true in
 private theorem norm_eq_zero_iff {z : ℂ} : ‖z‖ = 0 ↔ z = 0 :=
   (Real.sqrt_eq_zero <| normSq_nonneg _).trans normSq_eq_zero
 
+set_option backward.privateInPublic true in
 private theorem norm_map_zero' : ‖(0 : ℂ)‖ = 0 :=
   norm_eq_zero_iff.mpr rfl
 
+set_option backward.privateInPublic true in
 private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
   rw [Complex.norm_def, norm_def, normSq_neg]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
   { toFun := norm
@@ -81,7 +91,7 @@ instance isAbsoluteValueNorm : IsAbsoluteValue (‖·‖ : ℂ → ℝ) where
 protected theorem norm_pow (z : ℂ) (n : ℕ) : ‖z ^ n‖ = ‖z‖ ^ n :=
   map_pow isAbsoluteValueNorm.abvHom _ _
 
-protected theorem norm_zpow (z : ℂ) (n : ℤ) :  ‖z ^ n‖ = ‖z‖ ^ n :=
+protected theorem norm_zpow (z : ℂ) (n : ℤ) : ‖z ^ n‖ = ‖z‖ ^ n :=
   map_zpow₀ isAbsoluteValueNorm.abvHom _ _
 
 protected theorem norm_prod {ι : Type*} (s : Finset ι) (f : ι → ℂ) :
@@ -323,7 +333,7 @@ theorem isCauSeq_conj (f : CauSeq ℂ (‖·‖)) :
     IsCauSeq (‖·‖) fun n ↦ conj (f n) := fun ε ε0 ↦
   let ⟨i, hi⟩ := f.2 ε ε0
   ⟨i, fun j hj => by
-    simp_rw [← RingHom.map_sub, norm_conj]; exact hi j hj⟩
+    simp_rw [← map_sub, norm_conj]; exact hi j hj⟩
 
 /-- The complex conjugate of a complex Cauchy sequence, as a complex Cauchy sequence. -/
 noncomputable def cauSeqConj (f : CauSeq ℂ (‖·‖)) : CauSeq ℂ (‖·‖) :=
@@ -354,7 +364,7 @@ lemma re_neg_ne_zero_of_re_pos {s : ℂ} (hs : 0 < s.re) : (-s).re ≠ 0 :=
 lemma re_neg_ne_zero_of_one_lt_re {s : ℂ} (hs : 1 < s.re) : (-s).re ≠ 0 :=
   re_neg_ne_zero_of_re_pos <| zero_lt_one.trans hs
 
-lemma norm_sub_one_sq_eq_of_norm_one {z : ℂ} (hz : ‖z‖ = 1) :
+lemma norm_sub_one_sq_eq_of_norm_eq_one {z : ℂ} (hz : ‖z‖ = 1) :
     ‖z - 1‖ ^ 2 = 2 * (1 - z.re) := by
   have : z.im * z.im = 1 - z.re * z.re := by
     replace hz := sq_eq_one_iff.mpr (.inl hz)
@@ -363,9 +373,12 @@ lemma norm_sub_one_sq_eq_of_norm_one {z : ℂ} (hz : ‖z‖ = 1) :
   simp [Complex.sq_norm, normSq_apply, this]
   ring
 
+@[deprecated (since := "2025-11-15")] alias norm_sub_one_sq_eq_of_norm_one :=
+  norm_sub_one_sq_eq_of_norm_eq_one
+
 lemma norm_sub_one_sq_eqOn_sphere :
     (Metric.sphere (0 : ℂ) 1).EqOn (‖· - 1‖ ^ 2) (fun z ↦ 2 * (1 - z.re)) :=
-  fun z hz ↦ norm_sub_one_sq_eq_of_norm_one (by simpa using hz)
+  fun z hz ↦ norm_sub_one_sq_eq_of_norm_eq_one (by simpa using hz)
 
 lemma normSq_ofReal_add_I_mul_sqrt_one_sub {x : ℝ} (hx : ‖x‖ ≤ 1) :
     normSq (x + I * √(1 - x ^ 2)) = 1 := by

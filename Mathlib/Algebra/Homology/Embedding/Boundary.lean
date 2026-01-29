@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Basic
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Boundary of an embedding of complex shapes
@@ -31,6 +33,8 @@ only element in this lower boundary. Similarly, we define
 `Embedding.BoundaryLE`.
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
@@ -70,8 +74,6 @@ variable {e} in
 lemma BoundaryGE.notMem {j : ι} (hj : e.BoundaryGE j) {i' : ι'} (hi' : c'.Rel i' (e.f j))
     (a : ι) : e.f a ≠ i' := fun ha =>
   hj.2 a (by simpa only [ha] using hi')
-
-@[deprecated (since := "2025-05-23")] alias BoundaryGE.not_mem := BoundaryGE.notMem
 
 lemma prev_f_of_not_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     (hj : ¬ e.BoundaryGE j) :
@@ -126,8 +128,6 @@ lemma BoundaryLE.notMem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel 
     (a : ι) : e.f a ≠ k' := fun ha =>
   hj.2 a (by simpa only [ha] using hk')
 
-@[deprecated (since := "2025-05-23")] alias BoundaryLE.not_mem := BoundaryLE.notMem
-
 lemma next_f_of_not_boundaryLE [e.IsRelIff] {j k : ι} (hjk : c.next j = k)
     (hj : ¬ e.BoundaryLE j) :
     c'.next (e.f j) = e.f k := by
@@ -175,13 +175,13 @@ lemma boundaryGE_embeddingUpIntGE_iff (p : ℤ) (n : ℕ) :
     · rfl
     · have := h.2 n
       dsimp at this
-      cutsat
+      lia
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      cutsat
+      lia
 
 lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     (embeddingUpIntLE p).BoundaryLE n ↔ n = 0 := by
@@ -191,12 +191,12 @@ lemma boundaryLE_embeddingUpIntLE_iff (p : ℤ) (n : ℕ) :
     · rfl
     · have := h.2 n
       dsimp at this
-      cutsat
+      lia
   · rintro rfl
     constructor
     · simp
     · intro i hi
       dsimp at hi
-      cutsat
+      lia
 
 end ComplexShape

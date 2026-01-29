@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Complex.Asymptotics
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.Complex.Asymptotics
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 
 /-!
 # Complex and real exponential
@@ -18,6 +20,8 @@ limits of `Real.exp` at infinity.
 
 exp
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -54,8 +58,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
   calc
     ‖exp y - exp x‖ = ‖exp (x + (y - x)) - exp x‖ := by nth_rw 1 [hy_eq]
     _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * ‖y - x‖ ^ 2 := h_sq (y - x) (hyx.le.trans hr_le)
-    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) :=
-      (add_le_add_left (mul_le_mul le_rfl hyx_sq_le (sq_nonneg _) (norm_nonneg _)) _)
+    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) := by grw [hyx_sq_le]
     _ = (1 + r) * ‖exp x‖ * ‖y - x‖ := by ring
 
 -- Porting note: proof by term mode `locally_lipschitz_exp zero_le_one le_rfl x`
@@ -65,9 +68,7 @@ theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
       (fun y ↦ by
-        convert locally_lipschitz_exp zero_le_one le_rfl x y using 2
-        congr
-        ring)
+        simpa [dist_eq_norm, one_add_one_eq_two] using locally_lipschitz_exp zero_le_one le_rfl x y)
 
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
@@ -134,30 +135,23 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
-      rw [mul_sub_one, ← exp_add]
-      ring_nf
+    rw [mul_sub_one, ← exp_add]
+    ring_nf
   rw [this, mul_comm]
-  have hya : ‖cexp y‖ ≤ Real.exp a := by
-    simp only [norm_exp, Real.exp_le_exp]
-    exact hy
+  have hya : ‖cexp y‖ ≤ Real.exp a := by simpa only [norm_exp, Real.exp_le_exp]
   simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
-  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
-  have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
-    nth_rw 2 [mul_comm]
-    field_simp
-  rw [hrr]
-  exact div_two_lt_of_pos hε
+  apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) ha.le)
+  simp [field]
 
 end ComplexContinuousExpComp
 
 namespace Real
 
-@[continuity]
-theorem continuous_exp : Continuous exp :=
-  Complex.continuous_re.comp Complex.continuous_ofReal.cexp
+@[continuity, fun_prop]
+theorem continuous_exp : Continuous exp := by
+  unfold Real.exp; fun_prop
 
-theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s :=
-  continuous_exp.continuousOn
+theorem continuousOn_exp {s : Set ℝ} : ContinuousOn exp s := by fun_prop
 
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
@@ -188,6 +182,7 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
+
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
@@ -214,6 +209,12 @@ theorem tendsto_exp_atTop : Tendsto exp atTop atTop := by
     tendsto_atTop_add_const_right atTop 1 tendsto_id
   have B : ∀ᶠ x in atTop, x + 1 ≤ exp x := eventually_atTop.2 ⟨0, fun x _ => add_one_le_exp x⟩
   exact tendsto_atTop_mono' atTop B A
+
+/-- The function `y ↦ y * exp (-y)` is bounded above by `exp (-1)`. -/
+theorem mul_exp_neg_le_exp_neg_one (y : ℝ) : y * exp (-y) ≤ exp (-1) := by
+  have h_le : y ≤ exp (y - 1) := by simpa using add_one_le_exp (y - 1)
+  have h_mul_le : y * rexp (-y) ≤ rexp (y - 1) * rexp (-y) := by gcongr
+  simpa [← exp_add, sub_add_eq_add_sub] using h_mul_le
 
 /-- The real exponential function tends to `0` at `-∞` or, equivalently, `exp(-x)` tends to `0`
 at `+∞` -/
@@ -355,6 +356,7 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
     Tendsto (fun x => exp (f x)) l (𝓝 0) ↔ Tendsto f l atBot := by
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 
+@[fun_prop]
 theorem isOpenEmbedding_exp : IsOpenEmbedding exp :=
   isOpen_Ioi.isOpenEmbedding_subtypeVal.comp expOrderIso.toHomeomorph.isOpenEmbedding
 

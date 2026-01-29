@@ -3,16 +3,21 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Topology.Covering.AddCircle
 
 /-!
 # Maps on the unit circle
 
-In this file we prove some basic lemmas about `expMapCircle` and the restriction of `Complex.arg`
-to the unit circle. These two maps define a partial equivalence between `circle` and `ℝ`, see
-`circle.argPartialEquiv` and `circle.argEquiv`, that sends the whole circle to `(-π, π]`.
+In this file we prove some basic lemmas about `Circle.exp` and the restriction of `Complex.arg`
+to the unit circle. These two maps define a partial equivalence between `Circle` and `ℝ`, see
+`Circle.argPartialEquiv` and `Circle.argEquiv`, that sends the whole circle to `(-π, π]`.
 -/
+
+@[expose] public section
 
 
 open Complex Function Set
@@ -35,7 +40,7 @@ theorem arg_exp {x : ℝ} (h₁ : -π < x) (h₂ : x ≤ π) : arg (exp x) = x :
 theorem exp_arg (z : Circle) : exp (arg z) = z :=
   injective_arg <| arg_exp (neg_pi_lt_arg _) (arg_le_pi _)
 
-/-- `Complex.arg ∘ (↑)` and `expMapCircle` define a partial equivalence between `circle` and `ℝ`
+/-- `Complex.arg ∘ (↑)` and `Circle.exp` define a partial equivalence between `Circle` and `ℝ`
 with `source = Set.univ` and `target = Set.Ioc (-π) π`. -/
 @[simps -fullyApplied]
 noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
@@ -48,7 +53,7 @@ noncomputable def argPartialEquiv : PartialEquiv Circle ℝ where
   left_inv' z _ := exp_arg z
   right_inv' _ hx := arg_exp hx.1 hx.2
 
-/-- `Complex.arg` and `expMapCircle` define an equivalence between `circle` and `(-π, π]`. -/
+/-- `Complex.arg` and `Circle.exp ∘ (↑)` define an equivalence between `Circle` and `(-π, π]`. -/
 @[simps -fullyApplied]
 noncomputable def argEquiv : Circle ≃ Ioc (-π) π where
   toFun z := ⟨arg z, neg_pi_lt_arg _, arg_le_pi _⟩
@@ -81,7 +86,7 @@ lemma exp_eq_one {r : ℝ} : exp r = 1 ↔ ∃ n : ℤ, r = n * (2 * π) := by
     ← Complex.ofReal_inj]
 
 lemma exp_inj {r s : ℝ} : exp r = exp s ↔ r ≡ s [PMOD (2 * π)] := by
-  simp [AddCommGroup.ModEq, ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
+  simp [AddCommGroup.modEq_iff_zsmul', ← exp_eq_one, div_eq_one, eq_comm (a := exp r)]
 
 lemma exp_sub_two_pi (x : ℝ) : exp (x - 2 * π) = exp x := periodic_exp.sub_eq x
 lemma exp_add_two_pi (x : ℝ) : exp (x + 2 * π) = exp x := periodic_exp x
@@ -137,14 +142,24 @@ noncomputable def toCircle : AddCircle T → Circle :=
 theorem toCircle_apply_mk (x : ℝ) : @toCircle T x = Circle.exp (2 * π / T * x) :=
   rfl
 
-theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
-    @toCircle T (x + y) = toCircle x * toCircle y := by
+theorem toCircle_add (x y : AddCircle T) : toCircle (x + y) = toCircle x * toCircle y := by
   induction x using QuotientAddGroup.induction_on
   induction y using QuotientAddGroup.induction_on
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, Circle.exp_add]
 
 @[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
+
+theorem toCircle_neg (x : AddCircle T) : toCircle (-x) = (toCircle x)⁻¹ :=
+  (mul_left_inj (toCircle x)).mp <| by simp [← toCircle_add]
+
+theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCircle x ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [succ_nsmul, toCircle_add, ih, pow_succ]
+
+theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
+  cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
@@ -189,7 +204,35 @@ end AddCircle
 
 open AddCircle
 
--- todo: upgrade this to `IsCoveringMap Circle.exp`.
-lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp := by
-  have : Fact (0 < 2 * π) := ⟨by positivity⟩
-  exact homeomorphCircle'.isLocalHomeomorph.comp (isLocalHomeomorph_coe (2 * π))
+theorem Circle.isAddQuotientCoveringMap_exp :
+    IsAddQuotientCoveringMap exp (AddSubgroup.zmultiples (2 * Real.pi)) := by
+  convert (isAddQuotientCoveringMap_coe _).homeomorph_comp (homeomorphCircle _)
+  on_goal 2 => simp
+  ext; simp [homeomorphCircle_apply, toCircle]
+
+theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap_exp.isCoveringMap
+
+lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
+  Circle.isCoveringMap_exp.isLocalHomeomorph
+
+/- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
+topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
+and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
+kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
+  have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n
+  let e := AddCircle.homeomorphCircle one_ne_zero
+  refine Topology.IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_monoidHom
+    (f := zpowGroupHom (α := Circle) n) ?_ (Set.Finite.isDiscrete <| .of_preimage ?_ e.surjective)
+  · refine .of_comp e.continuous (continuous_zpow n) ?_
+    convert e.isQuotientMap.comp <| IsUnit.isQuotientMap_zsmul (M := ℝ)
+      (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))) isQuotientMap_quotient_mk' n hn
+    ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
+  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
+    ext
+    simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
+
+theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (powMonoidHom (α := Circle) n).ker :=
+  isQuotientCoveringMap_zpow n

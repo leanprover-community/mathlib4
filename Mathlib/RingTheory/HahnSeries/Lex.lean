@@ -3,25 +3,30 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.PiLex
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Ring.Synonym
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.PiLex
+public import Mathlib.RingTheory.HahnSeries.Multiplication
 
 /-!
 
 # Lexicographical order on Hahn series
 
-In this file, we define lexicographical ordered `Lex (HahnSeries Γ R)`, and show this
-is a `LinearOrder` when `Γ` and `R` themselves are linearly ordered. Additionally,
-it is an ordered group when `R` is.
+In this file, we define lexicographical ordered `Lex R⟦Γ⟧`, and show this is a `LinearOrder` when
+`Γ` and `R` themselves are linearly ordered. Additionally, it is an ordered group or ring whenever
+`R` is.
 
 ## Main definitions
 
-* `HahnSeries.finiteArchimedeanClassOrderIsoLex`: `FiniteArchimedeanClass` of `Lex (HahnSeries Γ R)`
+* `HahnSeries.finiteArchimedeanClassOrderIsoLex`: `FiniteArchimedeanClass` of `Lex R⟦Γ⟧`
   can be decomposed by `Γ`.
 
 -/
+
+@[expose] public section
 
 namespace HahnSeries
 
@@ -30,10 +35,10 @@ variable {Γ R : Type*} [LinearOrder Γ]
 section PartialOrder
 variable [Zero R] [PartialOrder R]
 
-instance : PartialOrder (Lex (HahnSeries Γ R)) :=
+instance : PartialOrder (Lex R⟦Γ⟧) :=
   PartialOrder.lift (toLex <| ofLex · |>.coeff) fun x y ↦ by simp
 
-theorem lt_iff (a b : Lex (HahnSeries Γ R)) :
+theorem lt_iff (a b : Lex R⟦Γ⟧) :
     a < b ↔ ∃ (i : Γ), (∀ (j : Γ), j < i → (ofLex a).coeff j = (ofLex b).coeff j)
     ∧ (ofLex a).coeff i < (ofLex b).coeff i := by rfl
 
@@ -43,7 +48,7 @@ section LinearOrder
 variable [Zero R] [LinearOrder R]
 
 noncomputable
-instance : LinearOrder (Lex (HahnSeries Γ R)) where
+instance : LinearOrder (Lex R⟦Γ⟧) where
   le_total a b := by
     rcases eq_or_ne a b with hab | hab
     · exact Or.inl hab.le
@@ -67,7 +72,7 @@ instance : LinearOrder (Lex (HahnSeries Γ R)) where
   toDecidableLE := Classical.decRel _
 
 @[simp]
-theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
+theorem leadingCoeff_pos_iff {x : Lex R⟦Γ⟧} : 0 < (ofLex x).leadingCoeff ↔ 0 < x := by
   rw [lt_iff]
   constructor
   · intro hpos
@@ -89,23 +94,22 @@ theorem leadingCoeff_pos_iff {x : Lex (HahnSeries Γ R)} : 0 < (ofLex x).leading
     rw [leadingCoeff_of_ne_zero hne, horder']
     simpa using hi
 
-theorem leadingCoeff_nonneg_iff {x : Lex (HahnSeries Γ R)} :
-    0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
-  constructor
-  · intro h
-    obtain heq | hlt := h.eq_or_lt
+@[simp]
+theorem leadingCoeff_nonneg_iff {x : Lex R⟦Γ⟧} : 0 ≤ (ofLex x).leadingCoeff ↔ 0 ≤ x := by
+  constructor <;> intro h
+  · obtain heq | hlt := h.eq_or_lt
     · exact le_of_eq (leadingCoeff_eq_zero.mp heq.symm).symm
     · exact (leadingCoeff_pos_iff.mp hlt).le
-  · intro h
-    obtain rfl | hlt := h.eq_or_lt
+  · obtain rfl | hlt := h.eq_or_lt
     · simp
     · exact (leadingCoeff_pos_iff.mpr hlt).le
 
-theorem leadingCoeff_neg_iff {x : Lex (HahnSeries Γ R)} : (ofLex x).leadingCoeff < 0 ↔ x < 0 := by
-  simpa using (leadingCoeff_nonneg_iff (x := x)).not
+@[simp]
+theorem leadingCoeff_neg_iff {x : Lex R⟦Γ⟧} : (ofLex x).leadingCoeff < 0 ↔ x < 0 := by
+  simp [← not_le]
 
-theorem leadingCoeff_nonpos_iff {x : Lex (HahnSeries Γ R)} :
-    (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
+@[simp]
+theorem leadingCoeff_nonpos_iff {x : Lex R⟦Γ⟧} : (ofLex x).leadingCoeff ≤ 0 ↔ x ≤ 0 := by
   simp [← not_lt]
 
 end LinearOrder
@@ -113,17 +117,15 @@ end LinearOrder
 section OrderedMonoid
 variable [PartialOrder R] [AddCommMonoid R] [AddLeftStrictMono R] [IsOrderedAddMonoid R]
 
-instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
+instance : IsOrderedAddMonoid (Lex R⟦Γ⟧) where
   add_le_add_left a b hab c := by
     obtain rfl | hlt := hab.eq_or_lt
     · simp
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, ?_, ?_⟩
-      · intro j hji
-        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
-      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+      refine ⟨i, fun j hji ↦ ?_, add_left_strictMono hi⟩
+      simp [hj j hji]
 
 end OrderedMonoid
 
@@ -131,19 +133,19 @@ section OrderedGroup
 variable [LinearOrder R] [AddCommGroup R] [IsOrderedAddMonoid R]
 
 @[simp]
-theorem support_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).support = (ofLex x).support := by
+theorem support_abs (x : Lex R⟦Γ⟧) : (ofLex |x|).support = (ofLex x).support := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle]
     simp
   · rw [abs_eq_self.mpr hge]
 
 @[simp]
-theorem orderTop_abs (x : Lex (HahnSeries Γ R)) : (ofLex |x|).orderTop = (ofLex x).orderTop := by
+theorem orderTop_abs (x : Lex R⟦Γ⟧) : (ofLex |x|).orderTop = (ofLex x).orderTop := by
   obtain hle | hge := le_total x 0
   · rw [abs_eq_neg_self.mpr hle, ofLex_neg, orderTop_neg]
   · rw [abs_eq_self.mpr hge]
 
-theorem order_abs [Zero Γ] (x : Lex (HahnSeries Γ R)) : (ofLex |x|).order = (ofLex x).order := by
+theorem order_abs [Zero Γ] (x : Lex R⟦Γ⟧) : (ofLex |x|).order = (ofLex x).order := by
   obtain rfl | hne := eq_or_ne x 0
   · simp
   · have hne' : ofLex x ≠ 0 := hne
@@ -152,7 +154,7 @@ theorem order_abs [Zero Γ] (x : Lex (HahnSeries Γ R)) : (ofLex |x|).order = (o
     rw [order_eq_orderTop_of_ne_zero habs, order_eq_orderTop_of_ne_zero hne']
     apply orderTop_abs
 
-theorem leadingCoeff_abs (x : Lex (HahnSeries Γ R)) :
+theorem leadingCoeff_abs (x : Lex R⟦Γ⟧) :
     (ofLex |x|).leadingCoeff = |(ofLex x).leadingCoeff| := by
   obtain hlt | rfl | hgt := lt_trichotomy x 0
   · obtain hlt' := leadingCoeff_neg_iff.mpr hlt
@@ -161,7 +163,7 @@ theorem leadingCoeff_abs (x : Lex (HahnSeries Γ R)) :
   · obtain hgt' := leadingCoeff_pos_iff.mpr hgt
     rw [abs_eq_self.mpr hgt.le, abs_eq_self.mpr hgt'.le]
 
-theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
+theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex y).orderTop < (ofLex x).orderTop) : |x| < |y| := by
   rw [← orderTop_abs x, ← orderTop_abs y] at h
   refine (lt_iff _ _).mpr ⟨(ofLex |y|).orderTop.untop h.ne_top, ?_, ?_⟩
@@ -169,7 +171,7 @@ theorem abs_lt_abs_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
   · simpa [-orderTop_abs, coeff_eq_zero_of_lt_orderTop, coeff_untop_eq_leadingCoeff, h]
       using h.ne_top
 
-theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex (HahnSeries Γ R)}
+theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Lex R⟦Γ⟧}
     (h : (ofLex x).orderTop = (ofLex y).orderTop) :
     ArchimedeanClass.mk x ≤ .mk y ↔
       ArchimedeanClass.mk (ofLex x).leadingCoeff ≤ .mk (ofLex y).leadingCoeff := by
@@ -219,7 +221,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff_of_orderTop_ofLex {x y : Le
     refine lt_of_le_of_lt hn <| nsmul_lt_nsmul_left ?_ (by simp)
     rwa [abs_pos, leadingCoeff_ne_zero]
 
-theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R)} :
+theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex R⟦Γ⟧} :
     ArchimedeanClass.mk x ≤ .mk y ↔
       (ofLex x).orderTop < (ofLex y).orderTop ∨
         (ofLex x).orderTop = (ofLex y).orderTop ∧
@@ -242,7 +244,7 @@ theorem archimedeanClassMk_le_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
     simpa using orderTop_smul_not_lt n (ofLex x)
   exact abs_lt_abs_of_orderTop_ofLex hgt'
 
-theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R)} :
+theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex R⟦Γ⟧} :
     ArchimedeanClass.mk x = ArchimedeanClass.mk y ↔
     (ofLex x).orderTop = (ofLex y).orderTop ∧
     ArchimedeanClass.mk (ofLex x).leadingCoeff = ArchimedeanClass.mk (ofLex y).leadingCoeff := by
@@ -254,10 +256,10 @@ theorem archimedeanClassMk_eq_archimedeanClassMk_iff {x y : Lex (HahnSeries Γ R
     exact ⟨.inr ⟨horder, hcoeff.le⟩, .inr ⟨horder.symm, hcoeff.ge⟩⟩
 
 variable (Γ R) in
-/-- Finite archimedean classes of `Lex (HahnSeries Γ R)` decompose into lexicographical pairs
+/-- Finite archimedean classes of `Lex R⟦Γ⟧` decompose into lexicographical pairs
 of `order` and the finite archimedean class of `leadingCoeff`. -/
 noncomputable def finiteArchimedeanClassOrderHomLex :
-    FiniteArchimedeanClass (Lex (HahnSeries Γ R)) →o Γ ×ₗ FiniteArchimedeanClass R :=
+    FiniteArchimedeanClass (Lex R⟦Γ⟧) →o Γ ×ₗ FiniteArchimedeanClass R :=
   FiniteArchimedeanClass.liftOrderHom
     (fun ⟨x, hx⟩ ↦ toLex
       ⟨(ofLex x).orderTop.untop (by simp [orderTop_of_ne_zero (show ofLex x ≠ 0 by exact hx)]),
@@ -272,7 +274,7 @@ noncomputable def finiteArchimedeanClassOrderHomLex :
 variable (Γ R) in
 /-- The inverse of `finiteArchimedeanClassOrderHomLex`. -/
 noncomputable def finiteArchimedeanClassOrderHomInvLex :
-    Γ ×ₗ FiniteArchimedeanClass R →o FiniteArchimedeanClass (Lex (HahnSeries Γ R)) where
+    Γ ×ₗ FiniteArchimedeanClass R →o FiniteArchimedeanClass (Lex R⟦Γ⟧) where
   toFun x := (ofLex x).2.liftOrderHom
     (fun a ↦ FiniteArchimedeanClass.mk (toLex (single (ofLex x).1 a.val)) (by
       simpa using a.prop))
@@ -289,11 +291,11 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     · exact OrderHom.monotone _ hle
 
 variable (Γ R) in
-/-- The correspondence between finite archimedean classes of `Lex (HahnSeries Γ R)`
+/-- The correspondence between finite archimedean classes of `Lex R⟦Γ⟧`
 and lexicographical pairs of `HahnSeries.orderTop` and the finite archimedean class of
 `HahnSeries.leadingCoeff`. -/
 noncomputable def finiteArchimedeanClassOrderIsoLex :
-    FiniteArchimedeanClass (Lex (HahnSeries Γ R)) ≃o Γ ×ₗ FiniteArchimedeanClass R := by
+    FiniteArchimedeanClass (Lex R⟦Γ⟧) ≃o Γ ×ₗ FiniteArchimedeanClass R := by
   apply OrderIso.ofHomInv (finiteArchimedeanClassOrderHomLex Γ R)
     (finiteArchimedeanClassOrderHomInvLex Γ R)
   · ext x
@@ -307,13 +309,13 @@ noncomputable def finiteArchimedeanClassOrderIsoLex :
       archimedeanClassMk_eq_archimedeanClassMk_iff, ha]
 
 @[simp]
-theorem finiteArchimedeanClassOrderIsoLex_apply_fst {x : Lex (HahnSeries Γ R)} (h : x ≠ 0) :
+theorem finiteArchimedeanClassOrderIsoLex_apply_fst {x : Lex R⟦Γ⟧} (h : x ≠ 0) :
     (ofLex (finiteArchimedeanClassOrderIsoLex Γ R (FiniteArchimedeanClass.mk x h))).1 =
     (ofLex x).orderTop := by
   simp [finiteArchimedeanClassOrderIsoLex, finiteArchimedeanClassOrderHomLex]
 
 @[simp]
-theorem finiteArchimedeanClassOrderIsoLex_apply_snd {x : Lex (HahnSeries Γ R)} (h : x ≠ 0) :
+theorem finiteArchimedeanClassOrderIsoLex_apply_snd {x : Lex R⟦Γ⟧} (h : x ≠ 0) :
     (ofLex (finiteArchimedeanClassOrderIsoLex Γ R (FiniteArchimedeanClass.mk x h))).2.val =
     ArchimedeanClass.mk (ofLex x).leadingCoeff := by
   simp [finiteArchimedeanClassOrderIsoLex, finiteArchimedeanClassOrderHomLex]
@@ -325,12 +327,12 @@ variable (Γ R) in
 /-- For `Archimedean` coefficients, there is a correspondence between finite
 archimedean classes and `HahnSeries.orderTop` without the top element. -/
 noncomputable def finiteArchimedeanClassOrderIso :
-    FiniteArchimedeanClass (Lex (HahnSeries Γ R)) ≃o Γ :=
+    FiniteArchimedeanClass (Lex R⟦Γ⟧) ≃o Γ :=
   have : Unique (FiniteArchimedeanClass R) := (nonempty_unique _).some
   (finiteArchimedeanClassOrderIsoLex Γ R).trans (Prod.Lex.prodUnique _ _)
 
 @[simp]
-theorem finiteArchimedeanClassOrderIso_apply {x : Lex (HahnSeries Γ R)} (h : x ≠ 0) :
+theorem finiteArchimedeanClassOrderIso_apply {x : Lex R⟦Γ⟧} (h : x ≠ 0) :
     finiteArchimedeanClassOrderIso Γ R (FiniteArchimedeanClass.mk x h) = (ofLex x).orderTop := by
   simp [finiteArchimedeanClassOrderIso]
 
@@ -338,12 +340,12 @@ variable (Γ R) in
 /-- For `Archimedean` coefficients, there is a correspondence between
 archimedean classes (with top) and `HahnSeries.orderTop`. -/
 noncomputable def archimedeanClassOrderIsoWithTop :
-    ArchimedeanClass (Lex (HahnSeries Γ R)) ≃o WithTop Γ :=
+    ArchimedeanClass (Lex R⟦Γ⟧) ≃o WithTop Γ :=
   (FiniteArchimedeanClass.withTopOrderIso _).symm.trans
   (finiteArchimedeanClassOrderIso _ _).withTopCongr
 
 @[simp]
-theorem archimedeanClassOrderIsoWithTop_apply (x : Lex (HahnSeries Γ R)) :
+theorem archimedeanClassOrderIsoWithTop_apply (x : Lex R⟦Γ⟧) :
     archimedeanClassOrderIsoWithTop Γ R (ArchimedeanClass.mk x) = (ofLex x).orderTop := by
   unfold archimedeanClassOrderIsoWithTop
   obtain rfl | h := eq_or_ne x 0 <;>
@@ -353,13 +355,36 @@ end Archimedean
 
 end OrderedGroup
 
+section OrderedRing
+variable [LinearOrder R] [Ring R] [AddCommMonoid Γ] [LinearOrder Γ]
+  [IsOrderedCancelAddMonoid Γ]
+
+instance [IsOrderedRing R] [NoZeroDivisors R] : IsOrderedRing (Lex R⟦Γ⟧) where
+  zero_le_one := by simp [← leadingCoeff_nonneg_iff]
+  mul_le_mul_of_nonneg_left a ha b c hbc := by
+    rw [← sub_nonneg] at hbc ⊢
+    rw [← mul_sub, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
+    apply mul_nonneg
+    · simpa
+    · rwa [leadingCoeff_nonneg_iff]
+  mul_le_mul_of_nonneg_right a ha b c hbc := by
+    rw [← sub_nonneg] at hbc ⊢
+    rw [← sub_mul, ← leadingCoeff_nonneg_iff, ofLex_mul, leadingCoeff_mul]
+    apply mul_nonneg
+    · rwa [leadingCoeff_nonneg_iff]
+    · simpa
+
+instance [IsDomain R] [IsStrictOrderedRing R] : IsStrictOrderedRing (Lex R⟦Γ⟧) where
+
+end OrderedRing
+
 section EmbDomain
 variable [PartialOrder R] {Γ' : Type*} [LinearOrder Γ'] (f : Γ ↪o Γ')
 
 /-- `HahnSeries.embDomain` as an `OrderEmbedding`. -/
 @[simps]
 noncomputable
-def embDomainOrderEmbedding [Zero R] : Lex (HahnSeries Γ R) ↪o Lex (HahnSeries Γ' R) where
+def embDomainOrderEmbedding [Zero R] : Lex R⟦Γ⟧ ↪o Lex R⟦Γ'⟧ where
   toFun a := toLex (embDomain f (ofLex a))
   inj' := toLex.injective.comp (embDomain_injective.comp (ofLex.injective))
   map_rel_iff' {a b} := by
@@ -385,7 +410,7 @@ def embDomainOrderEmbedding [Zero R] : Lex (HahnSeries Γ R) ↪o Lex (HahnSerie
 /-- `HahnSeries.embDomain` as an `OrderAddMonoidHom`. -/
 @[simps]
 noncomputable
-def embDomainOrderAddMonoidHom [AddMonoid R] : Lex (HahnSeries Γ R) →+o Lex (HahnSeries Γ' R) where
+def embDomainOrderAddMonoidHom [AddMonoid R] : Lex R⟦Γ⟧ →+o Lex R⟦Γ'⟧ where
   __ := (embDomainOrderEmbedding f).toOrderHom
   map_zero' := by simp
   map_add' := by simp [embDomainOrderEmbedding, embDomain_add]

@@ -3,13 +3,15 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.AffineMap
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.Analysis.Calculus.LocalExtr.Rolle
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.AffineMap
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.Analysis.Calculus.LocalExtr.Rolle
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.RCLike.Basic
 /-!
 # Mean value theorem
 
@@ -60,6 +62,8 @@ is not differentiable on the right at that point, and similarly differentiabilit
   is increasing or its second derivative is nonnegative, then the original function is convex.
 
 -/
+
+public section
 
 open Set Function Filter
 open scoped Topology

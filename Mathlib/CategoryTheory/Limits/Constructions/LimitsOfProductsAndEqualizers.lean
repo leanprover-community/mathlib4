@@ -3,15 +3,17 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sigma
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 # Constructing limits from products and equalizers.
@@ -27,6 +29,8 @@ Similarly, if it preserves all finite products and equalizers, then it preserves
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -170,7 +174,6 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · intro f
       dsimp [P, Q, t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
-      apply congrArg G.map
       dsimp
     · apply Fork.ofι (G.map i)
       rw [← G.map_comp, ← G.map_comp]
@@ -445,8 +448,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
     refine Cocones.ext (Iso.refl _) ?_
-    intro j
-    dsimp [P, Q, I, i]
+    dsimp [i]
     simp
 
 end

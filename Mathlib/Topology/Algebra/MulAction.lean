@@ -3,11 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddTorsor.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Algebra.AddTorsor.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Continuous monoid action
@@ -29,6 +32,8 @@ the map `(c, x) ↦ c • x` is continuous on `M × X`. We reuse this class for 
 Besides homeomorphisms mentioned above, in this file we provide lemmas like `Continuous.smul`
 or `Filter.Tendsto.smul` that provide dot-syntax access to `ContinuousSMul`.
 -/
+
+@[expose] public section
 
 open Topology Pointwise
 
@@ -226,6 +231,28 @@ lemma stabilizer_isOpen [DiscreteTopology X] (x : X) : IsOpen (MulAction.stabili
 
 end Group
 
+section GroupWithZero
+
+variable {G₀ X : Type*} [GroupWithZero G₀] [Zero X] [MulActionWithZero G₀ X]
+  [TopologicalSpace G₀] [(𝓝[≠] (0 : G₀)).NeBot] [TopologicalSpace X] [ContinuousSMul G₀ X]
+
+theorem Set.univ_smul_nhds_zero {s : Set X} (hs : s ∈ 𝓝 0) : (univ : Set G₀) • s = Set.univ := by
+  refine Set.eq_univ_of_forall fun x ↦ ?_
+  have : Tendsto (· • x) (𝓝 (0 : G₀)) (𝓝 0) :=
+    zero_smul G₀ x ▸ tendsto_id.smul tendsto_const_nhds
+  rcases Filter.nonempty_of_mem (inter_mem_nhdsWithin {0}ᶜ <| mem_map.1 <| this hs)
+    with ⟨c, hc₀, hc⟩
+  refine ⟨c⁻¹, trivial, c • x, hc, ?_⟩
+  simp_all
+
+@[simp]
+theorem Filter.top_smul_nhds_zero : (⊤ : Filter G₀) • 𝓝 (0 : X) = ⊤ := by
+  rw [(hasBasis_top.smul (basis_sets _)).eq_top_iff]
+  rintro ⟨_, s⟩ ⟨-, hs⟩
+  exact Set.univ_smul_nhds_zero hs
+
+end GroupWithZero
+
 @[to_additive]
 instance Prod.continuousSMul [SMul M X] [SMul M Y] [ContinuousSMul M X] [ContinuousSMul M Y] :
     ContinuousSMul M (X × Y) :=
@@ -251,7 +278,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
   let _ := sInf ts
   { continuous_smul := by
       -- Porting note: needs `( :)`
-      rw [← (sInf_singleton (a := ‹TopologicalSpace M›):)]
+      rw [← (sInf_singleton (a := ‹TopologicalSpace M›) :)]
       exact
         continuous_sInf_rng.2 fun t ht =>
           continuous_sInf_dom₂ (Eq.refl _) ht
