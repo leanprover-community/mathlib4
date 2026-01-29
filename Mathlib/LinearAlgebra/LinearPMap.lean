@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Partially defined linear maps
@@ -656,6 +657,21 @@ end LinearMap
 
 namespace LinearPMap
 
+open Classical in
+/-- Composition of a `LinearPMap` with a `LinearMap`.
+
+The composition is well-defined if the range of the `LinearMap` is
+contained in the domain of the `LinearPMap`.
+Otherwise it takes the junk value `0`. -/
+noncomputable def compLinearMap (f : F →ₗ.[R] G) (g : E →ₗ[R] F) : E →ₗ[R] G :=
+  if hgf : LinearMap.range g ≤ f.domain then f.toFun.comp (g.codRestrict f.domain
+    (fun x ↦ hgf (LinearMap.mem_range_self g x))) else 0
+
+theorem compLinearMap_apply {f : F →ₗ.[R] G} {g : E →ₗ[R] F} (hgf : LinearMap.range g ≤ f.domain)
+    (x : E) : (f.compLinearMap g) x = f ⟨g x, hgf (LinearMap.mem_range_self g x)⟩ := by
+  simp [compLinearMap, hgf]
+  congr
+
 /-- Restrict codomain of a `LinearPMap` -/
 def codRestrict (f : E →ₗ.[R] F) (p : Submodule R F) (H : ∀ x, f x ∈ p) : E →ₗ.[R] p where
   domain := f.domain
@@ -813,13 +829,15 @@ theorem image_iff {f : E →ₗ.[R] F} {x : E} {y : F} (hx : x ∈ f.domain) :
     y = f ⟨x, hx⟩ ↔ (x, y) ∈ f.graph := by
   grind
 
-theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x : E, (x, y) ∈ f.graph := by
+theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ f.toFun.range ↔
+    ∃ x : E, (x, y) ∈ f.graph := by
   constructor <;> intro h
-  · rw [Set.mem_range] at h
+  · rw [LinearMap.mem_range] at h
     rcases h with ⟨⟨x, hx⟩, h⟩
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
+  simp only [LinearMap.mem_range, toFun_eq_coe, Subtype.exists]
   grind
 
 theorem mem_domain_iff_of_eq_graph {f g : E →ₗ.[R] F} (h : f.graph = g.graph) {x : E} :
@@ -980,11 +998,10 @@ theorem inverse_domain : (inverse f).domain = LinearMap.range f.toFun := by
   rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
 
-variable (hf : f.toFun.ker = ⊥)
-include hf
+section injective
 
 /-- The graph of the inverse generates a `LinearPMap`. -/
-theorem mem_inverse_graph_snd_eq_zero (x : F × E)
+theorem mem_inverse_graph_snd_eq_zero (hf : f.toFun.ker = ⊥) (x : F × E)
     (hv : x ∈ (graph f).map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by
   rcases x with ⟨x, y⟩
@@ -995,25 +1012,188 @@ theorem mem_inverse_graph_snd_eq_zero (x : F × E)
   rw [LinearMap.ker_eq_bot'] at hf
   simp [hf z hz]
 
-theorem inverse_graph :
+theorem inverse_graph (hf : f.toFun.ker = ⊥) :
     (inverse f).graph = f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)) := by
   rw [inverse, Submodule.toLinearPMap_graph_eq _ (mem_inverse_graph_snd_eq_zero hf)]
 
-theorem inverse_range : LinearMap.range (inverse f).toFun = f.domain := by
+theorem graph_eq_inverse_graph_prodComm (hf : f.toFun.ker = ⊥) :
+    f.graph = f.inverse.graph.map (LinearEquiv.prodComm R F E : (F × E) →ₗ[R] (E × F)) := by
+  rw [inverse_graph hf]
+  ext x
+  simp
+
+theorem inverse_range (hf : f.toFun.ker = ⊥) : LinearMap.range (inverse f).toFun = f.domain := by
   rw [inverse, Submodule.toLinearPMap_range _ (mem_inverse_graph_snd_eq_zero hf),
     ← graph_map_fst_eq_domain, ← LinearEquiv.snd_comp_prodComm, Submodule.map_comp]
 
-theorem mem_inverse_graph (x : f.domain) : (f x, (x : E)) ∈ (inverse f).graph := by
+theorem mem_inverse_graph (hf : f.toFun.ker = ⊥) (x : f.domain) :
+    (f x, (x : E)) ∈ (inverse f).graph := by
   simp only [inverse_graph hf, Submodule.mem_map, mem_graph_iff, Subtype.exists, exists_and_left,
     exists_eq_left, LinearEquiv.coe_coe, LinearEquiv.prodComm_apply, Prod.exists, Prod.swap_prod_mk,
     Prod.mk.injEq]
   exact ⟨(x : E), f x, ⟨x.2, Eq.refl _⟩, Eq.refl _, Eq.refl _⟩
 
-theorem inverse_apply_eq {y : (inverse f).domain} {x : f.domain} (hxy : f x = y) :
+theorem mem_graph_of_inverse (hf : f.toFun.ker = ⊥) (y : f.inverse.domain) :
+    (f.inverse y, (y : F)) ∈ f.graph := by
+  simp [graph_eq_inverse_graph_prodComm hf]
+
+theorem inverse_apply_eq (hf : f.toFun.ker = ⊥) {y : (inverse f).domain} {x : f.domain}
+    (hxy : f x = y) :
     (inverse f) y = x := by
   have := mem_inverse_graph hf x
   grind
 
+end injective
+
+section bijective
+
+theorem inverse_domain_eq_top_of_bijective (hf : Function.Bijective f) :
+    f.inverse.domain = ⊤ := by
+  rw [inverse_domain, LinearMap.range_eq_top]
+  exact hf.2
+
+open Classical in
+/-- If `f` is bijective, then the inverse is defined as a linear map. -/
+noncomputable def inverse_asLinearMap (hf : Function.Bijective f) : F →ₗ[R] E :=
+  f.inverse.toFun.comp (LinearEquiv.ofTop f.inverse.domain
+    (inverse_domain_eq_top_of_bijective hf)).symm.toLinearMap
+
+theorem inverse_asLinearMap_eq_if_range_eq_top (hf : Function.Bijective f) :
+  inverse_asLinearMap hf = f.inverse.toFun.comp (LinearEquiv.ofTop f.inverse.domain
+    (inverse_domain_eq_top_of_bijective hf)).symm.toLinearMap := rfl
+
+theorem mem_inverse_domain_of_bijective (hf : Function.Bijective f) (y : F) :
+    y ∈ f.inverse.domain := by
+  rw [inverse_domain_eq_top_of_bijective hf]
+  exact Submodule.mem_top
+
+theorem inverse_asLinearMap_apply_eq_inverse_apply (hf : Function.Bijective f) {y : F} :
+    f.inverse_asLinearMap hf y = f.inverse ⟨y, mem_inverse_domain_of_bijective hf y⟩ := by
+  simp only [inverse_asLinearMap, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    toFun_eq_coe]
+  congr
+
+theorem inverse_asLinearMap_range (hf : Function.Bijective f) :
+    (f.inverse_asLinearMap hf).range = f.domain := by
+  simp [inverse_asLinearMap_eq_if_range_eq_top hf, inverse_range (LinearMap.ker_eq_bot.mpr hf.1)]
+
+theorem inverse_asLinearMap_apply_mem_domain (hf : Function.Bijective f) (x : F) :
+    f.inverse_asLinearMap hf x ∈ f.domain := by
+  rw [← inverse_asLinearMap_range hf]
+  exact (f.inverse_asLinearMap hf).mem_range_self x
+
+theorem mem_graph_of_inverse_asLinearMap (hf : Function.Bijective f) (y : F) :
+    (f.inverse_asLinearMap hf y, y) ∈ f.graph := by
+  rw [inverse_asLinearMap_apply_eq_inverse_apply hf]
+  exact mem_graph_of_inverse (LinearMap.ker_eq_bot.mpr hf.1) _
+
+theorem inverse_apply_apply_cancel (hf : Function.Bijective f) (x : F) :
+    f ⟨f.inverse_asLinearMap hf x, inverse_asLinearMap_apply_mem_domain hf x⟩ = x := by
+  apply ((image_iff (inverse_asLinearMap_apply_mem_domain hf x)).mpr ?_).symm
+  exact mem_graph_of_inverse_asLinearMap hf _
+
+theorem apply_inverse_apply_cancel (hf : Function.Bijective f) (x' : f.domain) :
+    f.inverse_asLinearMap hf (f x') = x' := by
+  have : (f x', (x' : E)) ∈ f.inverse.graph := by
+    rw [inverse_graph (LinearMap.ker_eq_bot.mpr hf.1)]
+    simp
+  rw [← image_iff (mem_inverse_domain_of_bijective hf _)] at this
+  rw [this]
+  exact inverse_asLinearMap_apply_eq_inverse_apply hf
+
+/-- Calculate the difference of inverses of `LinearPMap`s `f` and `g` assuming both are bijective
+and the domain of `g` is contained in the domain of `f`.
+
+Informally, this is expressed as `f⁻¹ - g⁻¹ = f⁻¹ (f - g) g⁻¹`. -/
+theorem inverse_sub_inverse_eq {g : E →ₗ.[R] F} (hf : Function.Bijective f)
+    (hg : Function.Bijective g) (hfg : g.domain ≤ f.domain) :
+    f.inverse_asLinearMap hf - g.inverse_asLinearMap hg =
+    f.inverse_asLinearMap hf ∘ₗ ((g - f).compLinearMap (g.inverse_asLinearMap hg)) := by
+  ext x
+  simp only [LinearMap.sub_apply, LinearMap.coe_comp, Function.comp_apply]
+  rw [compLinearMap_apply (by simpa [sub_domain, inverse_asLinearMap_range hg]
+    using hfg),
+    sub_apply]
+  simp [inverse_apply_apply_cancel hg, apply_inverse_apply_cancel hf]
+
+end bijective
+
 end inverse
+
+section resolvent
+
+variable {f : E →ₗ.[R] E}
+
+variable {r : R}
+
+variable [SMulCommClass R R E]
+
+
+/-- The resolvent set of a `LinearPMap`.
+
+This definition only agrees with the conventional one when `f` is closed, but if that is not
+the case, then the conventional definition yields that `resolvent_set f = ⊤`
+We use this definition for convience and since it makes fewer assumptions. -/
+def resolventSet (f : E →ₗ.[R] E) : Set R :=
+  { z | Function.Bijective ((z • (LinearMap.id (R := R) (M := E))) +ᵥ (-f) : E →ₗ.[R] E) }
+
+open Classical in
+/-- The resolvent of a `LinearPMap` as a `LinearMap`.
+
+This definition is only used to deduce algebraic properties, which hold without any reference to
+the topology. In particular, we prove the first and second resolvent identity.
+-/
+@[reducible]
+noncomputable def resolventLM (f : E →ₗ.[R] E) (z : R) : E →ₗ[R] E :=
+    if hz : z ∈ resolventSet f then
+      ((z • LinearMap.id) +ᵥ (-f) : E →ₗ.[R] E).inverse_asLinearMap hz
+    else 0
+
+theorem resolventLM_apply_apply {z : R} (hz : z ∈ resolventSet f) : resolventLM f z =
+    ((z • LinearMap.id) +ᵥ (-f) : E →ₗ.[R] E).inverse_asLinearMap hz := by
+  simp [resolventLM, hz]
+
+/-- The range of the resolvent `R(f, z)` is equal to the domain of `f` for any `z` in the resolvent
+set. -/
+theorem range_resolventLM (f : E →ₗ.[R] E) {z : R} (hz : z ∈ f.resolventSet) :
+    (f.resolventLM z).range = f.domain := by
+  simp [resolventLM, hz, inverse_asLinearMap_range hz]
+
+/-- The first resolvent identity. -/
+theorem resolventLM_sub_resolventLM_eq {f : E →ₗ.[R] E} {z₁ z₂ : R} (hz₁ : z₁ ∈ f.resolventSet)
+    (hz₂ : z₂ ∈ f.resolventSet) :
+    f.resolventLM z₁ - f.resolventLM z₂ = (z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂ := by
+  rw [resolventLM_apply_apply hz₁, resolventLM_apply_apply hz₂]
+  rw [inverse_sub_inverse_eq hz₁ hz₂ (by simp), ← LinearMap.comp_smul]
+  congr 1
+  ext x
+  rw [LinearMap.smul_apply, compLinearMap_apply]
+  · simp [sub_apply, vadd_apply, vadd_apply, ← sub_smul]
+  · simp [inverse_asLinearMap_range hz₂, sub_domain]
+
+theorem resolventLM_commute [NoZeroSMulDivisors R E] {f : E →ₗ.[R] E} {z₁ z₂ : R}
+    (hz₁ : z₁ ∈ f.resolventSet) (hz₂ : z₂ ∈ f.resolventSet) :
+    f.resolventLM z₁ ∘ₗ f.resolventLM z₂ = f.resolventLM z₂ ∘ₗ f.resolventLM z₁ := by
+  by_cases hz : z₁ = z₂
+  · rw [hz]
+  have h1 := resolventLM_sub_resolventLM_eq hz₁ hz₂
+  have h2 := resolventLM_sub_resolventLM_eq hz₂ hz₁
+  have : (z₂ - z₁) • f.resolventLM z₁ ∘ₗ f.resolventLM z₂ +
+      (z₁ - z₂) • f.resolventLM z₂ ∘ₗ f.resolventLM z₁ = 0 := by
+    rw [← h1, ← h2]
+    ext x
+    simp
+  have := eq_neg_of_add_eq_zero_right this
+  rw [← neg_smul, neg_sub] at this
+  apply smul_cancel_of_non_zero_divisor (z₁ - z₂)
+  · intro f hf
+    have := LinearMap.instNoZeroSMulDivisors.eq_zero_or_eq_zero_of_smul_eq_zero hf
+    obtain h1|h2 := this
+    · exfalso
+      exact hz (sub_eq_zero.mp h1)
+    exact h2
+  exact this.symm
+
+end resolvent
 
 end LinearPMap
