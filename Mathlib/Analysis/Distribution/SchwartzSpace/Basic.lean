@@ -163,15 +163,18 @@ end IsBigO
 
 section Aux
 
+private
 theorem bounds_nonempty (k n : ℕ) (f : 𝓢(E, F)) :
     ∃ c : ℝ, c ∈ { c : ℝ | 0 ≤ c ∧ ∀ x : E, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } :=
   let ⟨M, hMp, hMb⟩ := f.decay k n
   ⟨M, le_of_lt hMp, hMb⟩
 
+private
 theorem bounds_bddBelow (k n : ℕ) (f : 𝓢(E, F)) :
     BddBelow { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c } :=
   ⟨0, fun _ ⟨hn, _⟩ => hn⟩
 
+private
 theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n ((f : E → F) + (g : E → F)) x‖ ≤
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
@@ -180,12 +183,13 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
   rw [iteratedFDeriv_add_apply (f.smooth _).contDiffAt (g.smooth _).contDiffAt]
   exact norm_add_le _ _
 
+private
 theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (-f : E → F) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
   rw [iteratedFDeriv_neg_apply, norm_neg]
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-
+variable [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F] in
+private
 theorem decay_smul_aux (k n : ℕ) (f : 𝓢(E, F)) (c : 𝕜) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • (f : E → F)) x‖ =
       ‖c‖ * ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ := by
@@ -197,17 +201,21 @@ end Aux
 section SeminormAux
 
 /-- Helper definition for the seminorms of the Schwartz space. -/
+private
 protected def seminormAux (k n : ℕ) (f : 𝓢(E, F)) : ℝ :=
   sInf { c | 0 ≤ c ∧ ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ c }
 
+private
 theorem seminormAux_nonneg (k n : ℕ) (f : 𝓢(E, F)) : 0 ≤ f.seminormAux k n :=
   le_csInf (bounds_nonempty k n f) fun _ ⟨hx, _⟩ => hx
 
+private
 theorem le_seminormAux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
     ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (⇑f) x‖ ≤ f.seminormAux k n :=
   le_csInf (bounds_nonempty k n f) fun _ ⟨_, h⟩ => h x
 
 /-- If one controls the norm of every `A x`, then one controls the norm of `A`. -/
+private
 theorem seminormAux_le_bound (k n : ℕ) (f : 𝓢(E, F)) {M : ℝ} (hMp : 0 ≤ M)
     (hM : ∀ x, ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ ≤ M) : f.seminormAux k n ≤ M :=
   csInf_le (bounds_bddBelow k n f) ⟨hMp, hM⟩
@@ -225,13 +233,16 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
   ⟨fun c f =>
     { toFun := c • (f : E → F)
       smooth' := (f.smooth _).const_smul c
-      decay' k n := .intro (f.seminormAux k n * ‖c‖) fun x ↦ calc
-        ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • ⇑f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ * ‖c‖ := by
-          rw [mul_comm _ ‖c‖, ← mul_assoc]
-          exact decay_smul_aux k n f c x
-        _ ≤ SchwartzMap.seminormAux k n f * ‖c‖ := by
-          gcongr
-          apply f.le_seminormAux }⟩
+      decay' k n := by
+        use f.seminormAux k n * ‖c‖
+        intro x
+        calc
+          ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (c • ⇑f) x‖ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ * ‖c‖ := by
+            rw [mul_comm _ ‖c‖, ← mul_assoc]
+            exact decay_smul_aux k n f c x
+          _ ≤ SchwartzMap.seminormAux k n f * ‖c‖ := by
+            gcongr
+            apply f.le_seminormAux }⟩
 
 @[simp]
 theorem smul_apply {f : 𝓢(E, F)} {c : 𝕜} {x : E} : (c • f) x = c • f x :=
@@ -243,6 +254,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' F] : IsSc
 instance instSMulCommClass [SMulCommClass 𝕜 𝕜' F] : SMulCommClass 𝕜 𝕜' 𝓢(E, F) :=
   ⟨fun a b f => ext fun x => smul_comm a b (f x)⟩
 
+private
 theorem seminormAux_smul_le (k n : ℕ) (c : 𝕜) (f : 𝓢(E, F)) :
     (c • f).seminormAux k n ≤ ‖c‖ * f.seminormAux k n := by
   refine (c • f).seminormAux_le_bound k n (mul_nonneg (norm_nonneg _) (seminormAux_nonneg _ _ _))
@@ -285,6 +297,7 @@ theorem coeFn_zero : ⇑(0 : 𝓢(E, F)) = (0 : E → F) :=
 theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
   rfl
 
+private
 theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
   le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
@@ -295,8 +308,10 @@ section Neg
 
 instance instNeg : Neg 𝓢(E, F) :=
   ⟨fun f =>
-    ⟨-f, (f.smooth _).neg, fun k n =>
-      ⟨f.seminormAux k n, fun x => (decay_neg_aux k n f x).le.trans (f.le_seminormAux k n x)⟩⟩⟩
+    ⟨-f, (f.smooth _).neg, fun k n => by
+      use f.seminormAux k n
+      intro x
+      grw [f.decay_neg_aux k n x, f.le_seminormAux k n x]⟩⟩
 
 @[simp]
 theorem neg_apply (f : 𝓢(E, F)) (x : E) : (-f) x = - (f x) := rfl
@@ -307,15 +322,16 @@ section Add
 
 instance instAdd : Add 𝓢(E, F) :=
   ⟨fun f g =>
-    ⟨f + g, (f.smooth _).add (g.smooth _), fun k n =>
-      ⟨f.seminormAux k n + g.seminormAux k n, fun x =>
-        (decay_add_le_aux k n f g x).trans
-          (add_le_add (f.le_seminormAux k n x) (g.le_seminormAux k n x))⟩⟩⟩
+    ⟨f + g, (f.smooth _).add (g.smooth _), fun k n => by
+      use f.seminormAux k n + g.seminormAux k n
+      intro x
+      grw [decay_add_le_aux k n f g x, f.le_seminormAux k n x, g.le_seminormAux k n x]⟩⟩
 
 @[simp]
 theorem add_apply {f g : 𝓢(E, F)} {x : E} : (f + g) x = f x + g x :=
   rfl
 
+private
 theorem seminormAux_add_le (k n : ℕ) (f g : 𝓢(E, F)) :
     (f + g).seminormAux k n ≤ f.seminormAux k n + g.seminormAux k n :=
   (f + g).seminormAux_le_bound k n
@@ -395,6 +411,7 @@ variable (𝕜)
 
 /-- The seminorms of the Schwartz space given by the best constants in the definition of
 `𝓢(E, F)`. -/
+@[no_expose]
 protected def seminorm (k n : ℕ) : Seminorm 𝕜 𝓢(E, F) :=
   Seminorm.ofSMulLE (SchwartzMap.seminormAux k n) (seminormAux_zero k n) (seminormAux_add_le k n)
     (seminormAux_smul_le k n)
@@ -679,9 +696,8 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
     (f.smooth ⊤) hg.1 x (n := n) (mod_cast le_top)
   grw [hnorm_mul]
   rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
-  move_mul [← ‖B‖]
-  simp_rw [mul_assoc ‖B‖]
-  gcongr _ * ?_
+  move_mul [‖B‖, ‖B‖]
+  gcongr ?_ * _
   rw [Finset.mul_sum]
   have : (∑ _x ∈ Finset.range (n + 1), (1 : ℝ)) = n + 1 := by simp
   simp_rw [mul_assoc ((n : ℝ) + 1)]
