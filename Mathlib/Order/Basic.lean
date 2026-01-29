@@ -930,11 +930,9 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-@[to_dual decidableLE']
 instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
     DecidableLE (Subtype p) := fun a b ↦ h a b
 
-@[to_dual decidableLT']
 instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
     DecidableLT (Subtype p) := fun a b ↦ h a b
 
