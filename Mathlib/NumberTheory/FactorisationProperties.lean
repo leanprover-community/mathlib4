@@ -60,7 +60,8 @@ namespace Nat
 variable {n m p : ℕ}
 
 /-- `n : ℕ` is _abundant_ if the sum of the proper divisors of `n` is greater than `n`. -/
-def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i deriving Decidable
+def Abundant (n : ℕ) : Prop := n < ∑ i ∈ properDivisors n, i
+deriving Decidable
 
 /-- `n : ℕ` is _deficient_ if the sum of the proper divisors of `n` is less than `n`. -/
 def Deficient (n : ℕ) : Prop := ∑ i ∈ properDivisors n, i < n
