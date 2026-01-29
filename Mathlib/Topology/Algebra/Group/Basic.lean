@@ -114,8 +114,7 @@ theorem Filter.map_mul_left_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
 
 @[to_additive (attr := simp)]
 theorem Filter.map_mul_left_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
-    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
-    {c a : G} :
+    [TopologicalSpace G] [ContinuousMul G] {c a : G} :
     map (c * ·) (𝓝[≠] a) = (𝓝[≠] (c * a)) := by
   convert (Homeomorph.mulLeft c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
@@ -170,8 +169,7 @@ theorem Filter.map_mul_right_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
 
 @[to_additive (attr := simp)]
 theorem Filter.map_mul_right_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
-    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousMul G]
-    {c a : G} :
+    [TopologicalSpace G] [ContinuousMul G] {c a : G} :
     map (· * c) (𝓝[≠] a) = (𝓝[≠] (a * c)) := by
   convert (Homeomorph.mulRight c).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
@@ -387,8 +385,7 @@ theorem Filter.inv_nhdsLT {G : Type*} [CommGroup G] [PartialOrder G]
 
 @[to_additive (attr := simp)]
 theorem Filter.inv_nhdsNE {G : Type*} [CommGroup G] [PartialOrder G]
-    [IsOrderedMonoid G] [TopologicalSpace G] [ContinuousInv G]
-    {a : G} :
+    [TopologicalSpace G] [ContinuousInv G] {a : G} :
     (𝓝[≠] a)⁻¹ = (𝓝[≠] (a⁻¹)) := by
   convert (Homeomorph.inv G).isEmbedding.map_nhdsWithin_eq .. using 2
   simp
