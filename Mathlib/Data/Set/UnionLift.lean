@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Subset
 public import Mathlib.Order.Directed
 
 /-!
@@ -43,6 +44,7 @@ directed union, directed supremum, glue, gluing
 variable {α : Type*} {ι β : Sort _}
 
 namespace Set
+open Set.Notation
 
 section UnionLift
 
@@ -85,6 +87,10 @@ theorem preimage_iUnionLift (t : Set β) :
   · rintro ⟨i, ⟨y, hi⟩, h, hxy⟩
     obtain rfl : y = x := congr_arg Subtype.val hxy
     rwa [iUnionLift_of_mem x hi]
+
+theorem iUnionLift_restrict {i : ι} :
+    restrict (T ↓∩ S i) (iUnionLift S f hf T hT) = f i ∘ preimageValInclusion T (S i) := by
+  ext ⟨⟨x, hxT⟩, hxS⟩; simp at hxS; simp [iUnionLift_of_mem ⟨x, hxT⟩ hxS]
 
 /-- `iUnionLift_const` is useful for proving that `iUnionLift` is a homomorphism
   of algebraic structures when defined on the Union of algebraic subobjects.
@@ -168,5 +174,9 @@ theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, 
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _
   rw [preimage_comp, preimage_iUnionLift]
   ext; simp
+
+@[simp]
+theorem liftCover_restrict {i : ι} : (S i).restrict (liftCover S f hf hS) = f i := by ext x; simp
+
 
 end Set
