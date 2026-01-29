@@ -518,7 +518,7 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
   have hvs : vectorSpan ℝ (segment ℝ x y) = ℝ ∙ (y - x) := by
     rw [← convexHull_pair, ← direction_affineSpan, affineSpan_convexHull,
       direction_affineSpan, vectorSpan_pair_rev, vsub_eq_sub]
-  rw [Convex.dimH_eq_finrank_vectorSpan (convex_segment x y) ⟨x, left_mem_segment ℝ x y⟩, hvs]
+  rw [(convex_segment x y).dimH_eq_finrank_vectorSpan ⟨x, left_mem_segment ℝ x y⟩, hvs]
   simp [finrank_span_singleton (sub_ne_zero.mpr h.symm)]
 
 end Real
