@@ -27,11 +27,12 @@ change of signs in the "action" part of the Lie bracket.
 * `LieAlgebra.Extension.ringModuleOf`: Given an extension whose kernel is abelian, we obtain a Lie
   action of the target on the kernel.
 * `LieAlgebra.Extension.twoCocycle`: The 2-cocycle attached to an extension with a linear section.
+* `LieAlgebra.Extension.oneCochainOfTwoSplitting`: A 1-cochain attached to a pair of linear sections
+  of an extension.
 
 ## TODO
 * `IsCentral` - central extensions
 * `Equiv` - equivalence of extensions
-* The 2-coboundary from two linear splittings of an extension.
 
 ## References
 * [Chevalley, Eilenberg, *Cohomology Theory of Lie Groups and Lie
