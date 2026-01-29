@@ -17,6 +17,8 @@ The fix ensures `@[simps]` doesn't call `inferDefEqAttr` when the body is not ex
 avoiding `@[defeq]` validation errors.
 -/
 
+public section
+
 structure MyStruct where
   val : Nat
 
