@@ -5939,6 +5939,8 @@ public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.CohenMacaulay.Polynomial
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
@@ -6348,6 +6350,7 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.Ischebeck
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.EssFiniteType
