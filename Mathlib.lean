@@ -333,6 +333,7 @@ public import Mathlib.Algebra.GCDMonoid.PUnit
 public import Mathlib.Algebra.GradedMonoid
 public import Mathlib.Algebra.GradedMulAction
 public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Action.BigOperators
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
@@ -5121,7 +5122,9 @@ public import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
-public import Mathlib.MeasureTheory.Measure.Haar.DistribChar
+public import Mathlib.MeasureTheory.Measure.Haar.DistribChar.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.DistribChar.Complex
+public import Mathlib.MeasureTheory.Measure.Haar.DistribChar.Real
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 public import Mathlib.MeasureTheory.Measure.Haar.MulEquivHaarChar
 public import Mathlib.MeasureTheory.Measure.Haar.NormedSpace
