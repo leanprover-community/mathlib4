@@ -29,9 +29,11 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: The declaration `Lean.foo` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo` has instance hypotheses which conflict on the data they provide. Specifically:
 
 There are 4 instances of `[Add Nat]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
 -/
 #guard_msgs in
 def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
@@ -39,49 +41,56 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-warning: The declaration `Lean.foo₁` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo₁` has instance hypotheses which conflict on the data they provide. Specifically:
 
 `[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₁`.
 -/
 #guard_msgs in
 def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
   exact true
 
 /--
-warning: The declaration `Lean.foo₂` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo₂` has instance hypotheses which conflict on the data they provide. Specifically:
 
-There are 2 instances of `[FooBarBaz Nat]`.
+• There are 2 instances of `[FooBarBaz Nat]`.
+• `[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 
-`[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₂`.
 -/
 #guard_msgs in
 def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: The declaration `Lean.foo₃` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo₃` has instance hypotheses which conflict on the data they provide. Specifically:
 
 There are 2 instances of `[FooBarBaz Nat]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₃`.
 -/
 #guard_msgs in
 def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-warning: The declaration `Lean.foo₄` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo₄` has instance hypotheses which conflict on the data they provide. Specifically:
 
-There are 2 instances of `[FooBarBaz Nat]`.
+• There are 2 instances of `[FooBarBaz Nat]`.
+• There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[FooBarBaz Nat]`.
 
-There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[FooBarBaz Nat]`.
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₄`.
 -/
 #guard_msgs in
 def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
 
 -- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
-warning: The declaration `Lean.foo₅` has instance hypotheses which overlap on data-carrying components.
+warning: The declaration `foo₅` has instance hypotheses which conflict on the data they provide. Specifically:
 
-`[Baz Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+• `[Baz Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+• `[Bar Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
 
-`[Bar Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₅`.
 -/
 #guard_msgs in
 def foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : Bool := true

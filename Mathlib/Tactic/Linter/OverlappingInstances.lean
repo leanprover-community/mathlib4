@@ -135,36 +135,45 @@ decl of the same name in the local context. In the future, we should account for
 the name within a more appropriate message context. The type of this declaration is therefore
 subject to change.
 -/
-private def _root_.Lean.Elab.ContextInfo.toDeclDescr (ctx : ContextInfo) : MessageData :=
+private def _root_.Lean.Elab.ContextInfo.toDeclDescr (ctx : ContextInfo) : MetaM MessageData := do
   if let some decl := ctx.parentDecl? then
-    m!"declaration `{privateToUserName decl}`"
+    let decl ← unresolveNameGlobal decl
+    return m!"declaration `{decl}`"
   else
-    "current declaration"
+    return "current declaration"
 
 /-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/
 def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM MessageData := do
   let mut msg := m!"The {declDescr} \
-    has instance hypotheses which overlap on data-carrying components."
+    has instance hypotheses which conflict on the data they provide. Specifically:"
+  let mut msgs := #[]
   for (overlap, fvars) in overlaps do
     let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
       if isDirect then .inl fvar else .inr fvar
     let overlapType := m!"`{.ofInstanceType overlap}`"
     let indirectTypes := MessageData.andList <|← indirect.mapM fun fvar =>
       return m!"`{.ofInstanceType <|← inferType fvar}`"
-    msg := msg ++ "\n\n"
-    msg := msg ++
+    msgs := msgs.push <|
       if indirect.isEmpty then
         -- Necessarily plural:
         m!"There are {direct.length} instances of {overlapType}."
       else
-        if direct.isEmpty then
-          m!"{overlapType} is provided by {indirectTypes}."
-        else if let [_] := direct then
-          m!"There is an instance of {overlapType} in the local context, but it is \
+        match direct with
+        | []  => m!"{overlapType} is provided by {indirectTypes}."
+        | [_] => m!"There is an instance of {overlapType} in the local context, but it is \
             also provided by {indirectTypes}."
-        else
-          m!"There are {direct.length} instances of {overlapType} in the local \
+        | _   => m!"There are {direct.length} instances of {overlapType} in the local \
             context, and it is also provided by {indirectTypes}."
+
+  msg :=
+    if h : msgs.size = 1 then
+      msg ++ "\n\n" ++ msgs[0]
+    else
+      msgs.foldl (init := msg ++ "\n") fun accMsg newMsg => m!"{accMsg}\n• {newMsg}"
+
+  msg := msg ++ m!"\n\n\
+    There should only be a single instance of these data-carrying typeclasses in the local context \
+    at a time. Consider choosing different instance hypotheses for the {declDescr}."
   addMessageContextFull msg
 
 open Linter in
@@ -207,6 +216,6 @@ def overlappingInstances : Linter where
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
-              logWarning <|← overlaps.toMsg ctx.toDeclDescr
+              logWarning <|← overlaps.toMsg <|← ctx.toDeclDescr
 
 initialize addLinter overlappingInstances
