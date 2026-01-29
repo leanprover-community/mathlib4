@@ -9,7 +9,7 @@ public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Equicontinuity
 public import Mathlib.Topology.Algebra.Group.Compact
 public import Mathlib.Topology.ContinuousMap.Algebra
-public import Mathlib.Topology.UniformSpace.Ascoli
+import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!
 # The compact-open topology on continuous monoid morphisms.
