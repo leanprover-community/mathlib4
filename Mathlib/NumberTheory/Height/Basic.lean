@@ -166,7 +166,7 @@ meta def evalMulHeight₁ : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
-    pure (.positive q(@mulHeight₁_pos $K $KF $KA $a))
+    pure (.positive q(mulHeight₁_pos $a))
   | _, _, _ => throwError "not Height.mulHeight₁"
 
 /-- Extension for the `positivity` tactic: `Height.logHeight₁` is always nonnegative. -/
@@ -175,7 +175,7 @@ meta def evalLogHeight₁ : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight₁ $K $KF $KA $a) =>
     assertInstancesCommute
-    pure (.nonnegative q(@zero_le_logHeight₁ $K $KF $KA $a))
+    pure (.nonnegative q(zero_le_logHeight₁ $a))
   | _, _, _ => throwError "not Height.logHeight₁"
 
 end Mathlib.Meta.Positivity
@@ -342,15 +342,12 @@ meta def evalMulHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@mulHeight $K $KF $KA $ι $a) =>
     assertInstancesCommute
-    -- Check wether there is a `Finite` instance for `$ι` around.
-    let o : Option Q(Finite $ι) := ← do
-      let .some instFinite ← trySynthInstanceQ q(Finite $ι) | return none
-      return some instFinite
-    match o with
-    | some instFinite =>
+    -- Check whether there is a `Finite` instance for `$ι` around.
+    match ← trySynthInstanceQ q(Finite $ι) with
+    | .some _instFinite =>
       assertInstancesCommute
-      return .positive q(@mulHeight_pos $K $KF $KA $ι $instFinite $a)
-    | none => throwError "index type in Height.mulHeight not known to be finite"
+      return .positive q(mulHeight_pos $a)
+    | _ => throwError "index type in Height.mulHeight not known to be finite"
   | _, _, _ => throwError "not Height.mulHeight"
 
 /-- Extension for the `positivity` tactic: `Height.logHeight` is always nonnegative. -/
@@ -359,15 +356,12 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@logHeight $K $KF $KA $ι $a) =>
     assertInstancesCommute
-    -- Check wether there is a `Finite` instance for `$ι` around.
-    let o : Option Q(Finite $ι) := ← do
-      let .some instFinite ← trySynthInstanceQ q(Finite $ι) | return none
-      return some instFinite
-    match o with
-    | some instFinite =>
+    -- Check whether there is a `Finite` instance for `$ι` around.
+    match ← trySynthInstanceQ q(Finite $ι) with
+    | .some _instFinite =>
       assertInstancesCommute
-      return .nonnegative q(@zero_le_logHeight $K $KF $KA $ι $instFinite $a)
-    | none => throwError "index type in Height.logHeight not known to be finite"
+      return .nonnegative q(zero_le_logHeight)
+    | _ => throwError "index type in Height.logHeight not known to be finite"
   | _, _, _ => throwError "not Height.logHeight"
 
 end Mathlib.Meta.Positivity
