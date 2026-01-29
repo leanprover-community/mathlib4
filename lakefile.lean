@@ -112,6 +112,12 @@ lean_exe mk_all where
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
 
+/-- `lake exe run-linter` runs all environment linters: a custom fork of `runLinter` with
+some experimental features for easier configuration. -/
+lean_exe «run-linter» where
+  srcDir := "scripts"
+  supportInterpreter := true
+
 /-- `lake exe lint-style` runs text-based style linters. -/
 lean_exe «lint-style» where
   srcDir := "scripts"
