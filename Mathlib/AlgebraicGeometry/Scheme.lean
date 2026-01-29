@@ -216,7 +216,6 @@ protected lemma ext {f g : X ⟶ Y} (h_base : f.base = g.base)
 protected lemma ext' {f g : X ⟶ Y} (h : f.toLRSHom = g.toLRSHom) : f = g := by
   cases f; cases g; congr 1
 
-@[simp]
 lemma mem_preimage {x : X} {U : Opens Y} : x ∈ f ⁻¹ᵁ U ↔ f x ∈ U := .rfl
 
 lemma coe_preimage {U : Opens Y} : f ⁻¹ᵁ U = f ⁻¹' U := rfl
@@ -590,7 +589,7 @@ The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` as a natura
 This is almost never needed in practical use cases. Use `ΓSpecIso` instead.
 -/
 def SpecΓIdentity : Scheme.Spec.rightOp ⋙ Scheme.Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u,u,u+1,u+1}
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1}
     (fun R => asIso (StructureSheaf.toOpen R ⊤))
     (fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f)
 

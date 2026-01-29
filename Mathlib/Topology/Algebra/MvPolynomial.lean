@@ -20,7 +20,7 @@ In this file we prove the following lemma:
 multivariate polynomial, continuity
 -/
 
-@[expose] public section
+public section
 
 variable {X σ : Type*} [TopologicalSpace X] [CommSemiring X] [IsTopologicalSemiring X]
   (p : MvPolynomial σ X)

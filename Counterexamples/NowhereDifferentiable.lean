@@ -103,7 +103,7 @@ theorem lt_seq {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : x < seq b x m := by
 
 theorem le_seq {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : x ≤ seq b x m := (lt_seq hb x m).le
 
-theorem seq_le {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : seq b x m ≤ x + (3 / 2) * b⁻¹ ^ m  := by
+theorem seq_le {b : ℝ} (hb : 0 < b) (x : ℝ) (m : ℕ) : seq b x m ≤ x + (3 / 2) * b⁻¹ ^ m := by
   grw [seq, Int.floor_le]
   simp [field]
 
@@ -235,13 +235,13 @@ theorem weierstrass_slope {a : ℝ} (ha : a ∈ Set.Ioo 0 1) {b : ℕ} (hb : Odd
     |seq b x m - x| * ((2 / 3 - π / (a * b - 1)) * (a * b) ^ m) ≤
       |weierstrass a b (seq b x m) - weierstrass a b x| := by
   simp_rw [weierstrass]
-  obtain hsseq := summable_weierstrass ha b (seq b x m)
-  obtain hsx := summable_weierstrass ha b x
-  obtain hsum := hsseq.sub hsx
+  have hsseq := summable_weierstrass ha b (seq b x m)
+  have hsx := summable_weierstrass ha b x
+  have hsum := hsseq.sub hsx
   rw [← hsseq.tsum_sub hsx]
   simp_rw [← mul_sub] at ⊢ hsum
   rw [← hsum.sum_add_tsum_nat_add m]
-  obtain hsum_shift := (summable_nat_add_iff m).mpr hsum
+  have hsum_shift := (summable_nat_add_iff m).mpr hsum
   rw [add_comm]
   refine le_trans ?_ (abs_sub_abs_le_abs_add _ _)
   rw [sub_mul (2 / 3), mul_sub |seq b x m - x|]
@@ -263,7 +263,7 @@ theorem not_differentiableAt_weierstrass
       atTop (𝓝 (f' 1)) := by
     convert (h.lim_real 1).comp (tendsto_seq_sub_inv hb1 x)
     simp
-  obtain h := (continuous_abs.tendsto _).comp this
+  have h := (continuous_abs.tendsto _).comp this
   contrapose! h
   apply not_tendsto_nhds_of_tendsto_atTop
   -- To show the absolute value of slope tends to ∞, it suffices to show its lower bound does.

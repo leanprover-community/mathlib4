@@ -77,7 +77,7 @@ protected theorem analyticOn (f : E →L[𝕜] F) (s : Set E) : AnalyticOn 𝕜 
 `(E × F) [×2]→L[𝕜] G`. This multilinear map is the second term in the formal
 multilinear series expansion of `uncurry f`. It is given by
 `f.uncurryBilinear ![(x, y), (x', y')] = f x y'`. -/
-def uncurryBilinear (f : E →L[𝕜] F →L[𝕜] G) : E × F[×2]→L[𝕜] G :=
+def uncurryBilinear (f : E →L[𝕜] F →L[𝕜] G) : E × F [×2]→L[𝕜] G :=
   @ContinuousLinearMap.uncurryLeft 𝕜 1 (fun _ => E × F) G _ _ _ _ _ <|
     (↑(continuousMultilinearCurryFin1 𝕜 (E × F) G).symm : (E × F →L[𝕜] G) →L[𝕜] _).comp <|
       f.bilinearComp (fst _ _ _) (snd _ _ _)

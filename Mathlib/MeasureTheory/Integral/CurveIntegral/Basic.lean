@@ -358,6 +358,7 @@ protected theorem CurveIntegrable.add (h₁ : CurveIntegrable ω₁ γ) (h₂ : 
     CurveIntegrable (ω₁ + ω₂) γ := by
   simpa [CurveIntegrable] using IntervalIntegrable.add h₁ h₂
 
+-- TODO: `to_fun` generates wrong lemma name
 theorem curveIntegral_add (h₁ : CurveIntegrable ω₁ γ) (h₂ : CurveIntegrable ω₂ γ) :
     curveIntegral (ω₁ + ω₂) γ = ∫ᶜ x in γ, ω₁ x + ∫ᶜ x in γ, ω₂ x := by
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
@@ -376,10 +377,9 @@ theorem curveIntegralFun_zero : curveIntegralFun (0 : E → E →L[𝕜] F) γ =
 theorem curveIntegralFun_fun_zero : curveIntegralFun (fun _ ↦ 0 : E → E →L[𝕜] F) γ = 0 :=
   curveIntegralFun_zero
 
+@[to_fun]
 theorem CurveIntegrable.zero : CurveIntegrable (0 : E → E →L[𝕜] F) γ := by
   simp [CurveIntegrable, IntervalIntegrable.zero]
-
-theorem CurveIntegrable.fun_zero : CurveIntegrable (fun _ ↦ 0 : E → E →L[𝕜] F) γ := .zero
 
 @[simp]
 theorem curveIntegral_zero : curveIntegral (0 : E → E →L[𝕜] F) γ = 0 := by simp [curveIntegral]
@@ -391,11 +391,9 @@ theorem curveIntegral_fun_zero : ∫ᶜ _ in γ, (0 : E →L[𝕜] F) = 0 := cur
 theorem curveIntegralFun_neg : curveIntegralFun (-ω) γ = -curveIntegralFun ω γ := by
   ext; simp [curveIntegralFun]
 
+@[to_fun]
 theorem CurveIntegrable.neg (h : CurveIntegrable ω γ) : CurveIntegrable (-ω) γ := by
   simpa [CurveIntegrable] using IntervalIntegrable.neg h
-
-theorem CurveIntegrable.fun_neg (h : CurveIntegrable ω γ) : CurveIntegrable (-ω ·) γ :=
-  h.neg
 
 @[simp]
 theorem curveIntegrable_neg_iff : CurveIntegrable (-ω) γ ↔ CurveIntegrable ω γ :=

@@ -52,8 +52,7 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
     refine ⟨{s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a}, ?_, by rw [← H]⟩
     have d_count : d.Countable :=
       (((c_count.image _).union (c'_count.image _)).union (by simp)).union (by simp)
-    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by
-      ext; simp; grind
+    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by grind
     rw [this]
     exact (d_count.image _).union (d_count.image _)
   -- We should check the easy direction that all the elements in our generating set are open.
@@ -254,5 +253,22 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
+
+lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
+    Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using .of_forall fun _ ↦ Subsingleton.elim ..
+  refine nhds_top_basis.tendsto_right_iff.trans ?_
+  rw [← Set.forall_mem_range (p := (∀ᶠ a in f, · < x a)), WithTop.range_coe]
+  simp
+
+lemma tendsto_coe_atTop [NoMaxOrder ι] :
+    Tendsto ((↑) : ι → WithTop ι) atTop (𝓝 ⊤) := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using Subsingleton.elim ..
+  rw [tendsto_nhds_top_iff]
+  intro i
+  filter_upwards [atTop_basis_Ioi.mem_of_mem (i := i) trivial]
+  simp
 
 end WithTop

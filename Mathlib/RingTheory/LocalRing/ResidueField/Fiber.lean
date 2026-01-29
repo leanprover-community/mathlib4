@@ -30,7 +30,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] (p : Ideal R) [p.
 lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     (x : S ⊗[R] p.ResidueField) : ∃ r ∉ p, ∃ s, r • x = s ⊗ₜ[R] 1 := by
   obtain ⟨t, r, a, hrt, e⟩ := RingHom.SurjectiveOnStalks.exists_mul_eq_tmul
-    p.surjectiveOnStalks_residueField x ⊥ bot_prime
+    p.surjectiveOnStalks_residueField x ⊥ isPrime_bot
   obtain ⟨t, rfl⟩ := IsLocalRing.residue_surjective t
   obtain ⟨⟨y, t⟩, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl t
   simp only [smul_def, Submodule.mem_bot, mul_eq_zero, algebraMap_residueField_eq_zero,

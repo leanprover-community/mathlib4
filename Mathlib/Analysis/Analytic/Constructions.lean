@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Analytic.Linear
 public import Mathlib.Analysis.Normed.Operator.Mul
 public import Mathlib.Analysis.Normed.Ring.Units
 public import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Tactic.ToFun
 
 /-!
 # Various ways to combine analytic functions
@@ -35,8 +34,8 @@ variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAd
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
-variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {𝕝 : Type*} [NormedDivisionRing 𝕝] [NormedAlgebra 𝕜 𝕝]
 
 /-!
 ### Constants are analytic
@@ -71,7 +70,7 @@ theorem analyticOn_const {v : F} {s : Set E} : AnalyticOn 𝕜 (fun _ => v) s :=
 section
 
 variable {f g : E → F} {pf pg : FormalMultilinearSeries 𝕜 E F} {s : Set E} {x : E} {r : ℝ≥0∞}
-  {c : 𝕜}
+  {R : Type*} [NormedRing R] [Module R F] [IsBoundedSMul R F] [SMulCommClass 𝕜 R F] {c : R}
 
 theorem HasFPowerSeriesWithinOnBall.add (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
@@ -109,6 +108,14 @@ theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
   let ⟨_, hpf⟩ := hf
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
+
+theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (f + g) s :=
+  fun z hz => (hf z hz).add (hg z hz)
+
+theorem AnalyticOnNhd.add (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (f + g) s :=
+  fun z hz => (hf z hz).add (hg z hz)
 
 theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (-f) (-pf) s x r :=
@@ -148,6 +155,12 @@ theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   mp hf := by simpa using hf.neg
   mpr := .neg
 
+theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
+theorem AnalyticOnNhd.neg (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (-f) s :=
+  fun z hz ↦ (hf z hz).neg
+
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
     HasFPowerSeriesWithinOnBall (f - g) (pf - pg) s x r := by
@@ -174,6 +187,14 @@ theorem AnalyticWithinAt.sub (hf : AnalyticWithinAt 𝕜 f s x) (hg : AnalyticWi
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
+
+theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
+    AnalyticOn 𝕜 (f - g) s :=
+  fun z hz => (hf z hz).sub (hg z hz)
+
+theorem AnalyticOnNhd.sub (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+    AnalyticOnNhd 𝕜 (f - g) s :=
+  fun z hz => (hf z hz).sub (hg z hz)
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
@@ -207,27 +228,30 @@ theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c �
   let ⟨_, hpf⟩ := hf
   hpf.const_smul.analyticAt
 
-theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f + g) s :=
-  fun z hz => (hf z hz).add (hg z hz)
+@[to_fun]
+theorem AnalyticOn.const_smul (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (c • f) s :=
+  fun x hx ↦ (hf x hx).const_smul
 
-theorem AnalyticOnNhd.add (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
-    AnalyticOnNhd 𝕜 (f + g) s :=
-  fun z hz => (hf z hz).add (hg z hz)
+@[to_fun]
+theorem AnalyticOnNhd.const_smul (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (c • f) s :=
+  fun x hx ↦ (hf x hx).const_smul
 
-theorem AnalyticOn.neg (hf : AnalyticOn 𝕜 f s) : AnalyticOn 𝕜 (-f) s :=
-  fun z hz ↦ (hf z hz).neg
+lemma AnalyticWithinAt.div_const {f : E → 𝕝} (hf : AnalyticWithinAt 𝕜 f s x) {c : 𝕝} :
+    AnalyticWithinAt 𝕜 (f · / c) s x := by
+  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
-theorem AnalyticOnNhd.neg (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (-f) s :=
-  fun z hz ↦ (hf z hz).neg
+@[fun_prop]
+lemma AnalyticAt.div_const {f : E → 𝕝} (hf : AnalyticAt 𝕜 f x) {c : 𝕝} :
+    AnalyticAt 𝕜 (f · / c) x := by
+  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
-theorem AnalyticOn.sub (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
-    AnalyticOn 𝕜 (f - g) s :=
-  fun z hz => (hf z hz).sub (hg z hz)
+lemma AnalyticOn.div_const {f : E → 𝕝} (hf : AnalyticOn 𝕜 f s) {c : 𝕝} :
+    AnalyticOn 𝕜 (f · / c) s := by
+  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
-theorem AnalyticOnNhd.sub (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
-    AnalyticOnNhd 𝕜 (f - g) s :=
-  fun z hz => (hf z hz).sub (hg z hz)
+lemma AnalyticOnNhd.div_const {f : E → 𝕝} (hf : AnalyticOnNhd 𝕜 f s) {c : 𝕝} :
+    AnalyticOnNhd 𝕜 (f · / c) s := by
+  simpa [div_eq_mul_inv] using hf.const_smul (R := 𝕝ᵐᵒᵖ)
 
 end
 
@@ -450,7 +474,7 @@ lemma FormalMultilinearSeries.le_radius_pi (h : ∀ i, r ≤ (p i).radius) :
     ⟨∑ i, C i, Finset.sum_nonneg (fun i _ ↦ (C_pos i).le),
       fun i ↦ Finset.single_le_sum (fun j _ ↦ (C_pos j).le) (Finset.mem_univ _)⟩
   apply le_radius_of_bound _ D (fun n ↦ ?_)
-  rcases le_or_gt ((r' : ℝ)^n) 0 with hr' | hr'
+  rcases le_or_gt ((r' : ℝ) ^ n) 0 with hr' | hr'
   · exact le_trans (mul_nonpos_of_nonneg_of_nonpos (by positivity) hr') D_nonneg
   · simp only [pi]
     rw [← le_div_iff₀ hr', ContinuousMultilinearMap.opNorm_pi,
@@ -566,44 +590,41 @@ end
 -/
 
 /-- Scalar multiplication is analytic (jointly in both variables). The statement is a little
-pedantic to allow towers of field extensions.
-
-TODO: can we replace `𝕜'` with a "normed module" in such a way that `analyticAt_mul` is a special
-case of this? -/
+pedantic to allow towers of field extensions. -/
 @[fun_prop]
-lemma analyticAt_smul [NormedSpace 𝕝 E] [IsScalarTower 𝕜 𝕝 E] (z : 𝕝 × E) :
-    AnalyticAt 𝕜 (fun x : 𝕝 × E ↦ x.1 • x.2) z :=
-  (ContinuousLinearMap.lsmul 𝕜 𝕝).analyticAt_bilinear z
+lemma analyticAt_smul [Module A E] [IsBoundedSMul A E] [IsScalarTower 𝕜 A E] (z : A × E) :
+    AnalyticAt 𝕜 (fun x : A × E ↦ x.1 • x.2) z :=
+  (ContinuousLinearMap.lsmul 𝕜 A).analyticAt_bilinear z
 
 /-- Multiplication in a normed algebra over `𝕜` is analytic. -/
 @[fun_prop]
 lemma analyticAt_mul (z : A × A) : AnalyticAt 𝕜 (fun x : A × A ↦ x.1 * x.2) z :=
-  (ContinuousLinearMap.mul 𝕜 A).analyticAt_bilinear z
+  analyticAt_smul z
 
 /-- Scalar multiplication of one analytic function by another. -/
-lemma AnalyticWithinAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
-    {f : E → 𝕝} {g : E → F} {s : Set E} {z : E}
+lemma AnalyticWithinAt.smul [Module A F] [IsBoundedSMul A F] [IsScalarTower 𝕜 A F]
+    {f : E → A} {g : E → F} {s : Set E} {z : E}
     (hf : AnalyticWithinAt 𝕜 f s z) (hg : AnalyticWithinAt 𝕜 g s z) :
     AnalyticWithinAt 𝕜 (fun x ↦ f x • g x) s z :=
   (analyticAt_smul _).comp₂_analyticWithinAt hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-@[to_fun]
-lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {z : E}
-    (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
+@[to_fun (attr := fun_prop)]
+lemma AnalyticAt.smul [Module A F] [IsBoundedSMul A F] [IsScalarTower 𝕜 A F] {f : E → A}
+    {g : E → F} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f • g) z :=
   (analyticAt_smul _).comp₂ hf hg
 
 /-- Scalar multiplication of one analytic function by another. -/
-lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
-    {f : E → 𝕝} {g : E → F} {s : Set E}
+lemma AnalyticOn.smul [Module A F] [IsBoundedSMul A F] [IsScalarTower 𝕜 A F]
+    {f : E → A} {g : E → F} {s : Set E}
     (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (fun x ↦ f x • g x) s :=
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
 /-- Scalar multiplication of one analytic function by another. -/
-lemma AnalyticOnNhd.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝} {g : E → F} {s : Set E}
-    (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
+lemma AnalyticOnNhd.smul [Module A F] [IsBoundedSMul A F] [IsScalarTower 𝕜 A F]
+    {f : E → A} {g : E → F} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
     AnalyticOnNhd 𝕜 (fun x ↦ f x • g x) s :=
   fun _ m ↦ (hf _ m).smul (hg _ m)
 
@@ -617,19 +638,19 @@ lemma AnalyticWithinAt.mul {f g : E → A} {s : Set E} {z : E}
 @[to_fun (attr := fun_prop)]
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
-  (analyticAt_mul _).comp₂ hf hg
+  hf.smul hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E}
     (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (fun x ↦ f x * g x) s :=
-  fun _ m ↦ (hf _ m).mul (hg _ m)
+  hf.smul hg
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOnNhd.mul {f g : E → A} {s : Set E}
     (hf : AnalyticOnNhd 𝕜 f s) (hg : AnalyticOnNhd 𝕜 g s) :
     AnalyticOnNhd 𝕜 (fun x ↦ f x * g x) s :=
-  fun _ m ↦ (hf _ m).mul (hg _ m)
+  hf.smul hg
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 @[to_fun]
@@ -663,31 +684,31 @@ lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) 
     AnalyticOnNhd 𝕜 (f ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+/-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
+exponent is nonnegative. -/
 @[to_fun]
 lemma AnalyticWithinAt.zpow_nonneg {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     (hf : AnalyticWithinAt 𝕜 f s z) (hn : 0 ≤ n) :
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+/-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
+exponent is nonnegative. -/
 @[to_fun]
 lemma AnalyticAt.zpow_nonneg {f : E → 𝕝} {z : E} {n : ℤ} (hf : AnalyticAt 𝕜 f z) (hn : 0 ≤ n) :
     AnalyticAt 𝕜 (f ^ n) z := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+/-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
+exponent is nonnegative. -/
 @[to_fun]
 lemma AnalyticOn.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOn 𝕜 f s)
     (hn : 0 ≤ n) :
     AnalyticOn 𝕜 (f ^ n) s := by
   simpa [← zpow_natCast, hn] using hf.pow n.toNat
 
-/-- ZPowers of analytic functions (into a normed field over `𝕜`) are analytic if the exponent is
-nonnegative. -/
+/-- ZPowers of analytic functions (into a normed division algebra over `𝕜`) are analytic if the
+exponent is nonnegative. -/
 @[to_fun]
 lemma AnalyticOnNhd.zpow_nonneg {f : E → 𝕝} {s : Set E} {n : ℤ} (hf : AnalyticOnNhd 𝕜 f s)
     (hn : 0 ≤ n) :
@@ -750,8 +771,7 @@ end
 -/
 
 section Geometric
-
-variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
+variable (𝕜 A)
 
 /-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
@@ -772,24 +792,18 @@ lemma formalMultilinearSeries_geometric_apply_norm [NormOneClass A] (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ = 1 :=
   ContinuousMultilinearMap.norm_mkPiAlgebraFin
 
-end Geometric
-
-lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
+lemma one_le_formalMultilinearSeries_geometric_radius :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
     FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
-lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
+lemma formalMultilinearSeries_geometric_radius [NormOneClass A] :
     (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
   formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
     FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
-lemma hasFPowerSeriesOnBall_inverse_one_sub
-    (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+lemma hasFPowerSeriesOnBall_inverse_one_sub [HasSummableGeomSeries A] :
     HasFPowerSeriesOnBall (fun x : A ↦ Ring.inverse (1 - x))
       (formalMultilinearSeries_geometric 𝕜 A) 0 1 := by
   constructor
@@ -803,18 +817,18 @@ lemma hasFPowerSeriesOnBall_inverse_one_sub
     exact (summable_geometric_of_norm_lt_one hy).hasSum
 
 @[fun_prop]
-lemma analyticAt_inverse_one_sub (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-    (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+lemma analyticAt_inverse_one_sub [HasSummableGeomSeries A] :
     AnalyticAt 𝕜 (fun x : A ↦ Ring.inverse (1 - x)) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inverse_one_sub 𝕜 A⟩⟩
+
+end Geometric
 
 /-- If `A` is a normed algebra over `𝕜` with summable geometric series, then inversion on `A` is
 analytic at any unit. -/
 @[fun_prop]
-lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] (z : Aˣ) :
+lemma analyticAt_inverse [HasSummableGeomSeries A] (z : Aˣ) :
     AnalyticAt 𝕜 Ring.inverse (z : A) := by
-  rcases subsingleton_or_nontrivial A with hA|hA
+  rcases subsingleton_or_nontrivial A with hA | hA
   · convert analyticAt_const (v := (0 : A))
   · let f1 : A → A := fun a ↦ a * z.inv
     let f2 : A → A := fun b ↦ Ring.inverse (1 - b)
@@ -841,20 +855,19 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
       exact analyticAt_inverse_one_sub 𝕜 A
     · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
 
-lemma analyticOnNhd_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+lemma analyticOnNhd_inverse [HasSummableGeomSeries A] :
     AnalyticOnNhd 𝕜 Ring.inverse {x : A | IsUnit x} :=
   fun _ hx ↦ analyticAt_inverse (IsUnit.unit hx)
 
-lemma hasFPowerSeriesOnBall_inv_one_sub
-    (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
+variable (𝕜 𝕝) in
+lemma hasFPowerSeriesOnBall_inv_one_sub :
     HasFPowerSeriesOnBall (fun x : 𝕝 ↦ (1 - x)⁻¹) (formalMultilinearSeries_geometric 𝕜 𝕝) 0 1 := by
   convert hasFPowerSeriesOnBall_inverse_one_sub 𝕜 𝕝
   exact Ring.inverse_eq_inv'.symm
 
+variable (𝕝) in
 @[fun_prop]
-lemma analyticAt_inv_one_sub (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
-    AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
+lemma analyticAt_inv_one_sub : AnalyticAt 𝕜 (fun x : 𝕝 ↦ (1 - x)⁻¹) 0 :=
   ⟨_, ⟨_, hasFPowerSeriesOnBall_inv_one_sub 𝕜 𝕝⟩⟩
 
 /-- If `𝕝` is a normed field extension of `𝕜`, then the inverse map `𝕝 → 𝕝` is `𝕜`-analytic
@@ -905,7 +918,7 @@ lemma AnalyticWithinAt.zpow {f : E → 𝕝} {z : E} {s : Set E} {n : ℤ}
     AnalyticWithinAt 𝕜 (f ^ n) s z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+  · rw [(Int.eq_neg_comm.mp rfl : n = -(-n))]
     conv => arg 2; intro x; rw [zpow_neg]
     exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
 
@@ -916,7 +929,7 @@ lemma AnalyticAt.zpow {f : E → 𝕝} {z : E} {n : ℤ} (h₁f : AnalyticAt �
     AnalyticAt 𝕜 (f ^ n) z := by
   by_cases hn : 0 ≤ n
   · exact zpow_nonneg h₁f hn
-  · rw [(Int.eq_neg_comm.mp rfl : n = - (- n))]
+  · rw [(Int.eq_neg_comm.mp rfl : n = -(-n))]
     conv => arg 2; intro x; rw [zpow_neg]
     exact (h₁f.zpow_nonneg (by linarith)).inv (zpow_ne_zero (-n) h₂f)
 
@@ -938,8 +951,8 @@ lemma AnalyticOnNhd.zpow {f : E → 𝕝} {s : Set E} {n : ℤ} (h₁f : Analyti
 
 /- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_fun_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝}
-    {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+theorem analyticAt_iff_analytic_fun_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
+    {f : E → 𝕝} {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (fun z ↦ f z • g z) z := by
   constructor
   · exact fun a ↦ h₁f.smul a
@@ -953,8 +966,8 @@ theorem analyticAt_iff_analytic_fun_smul [NormedSpace 𝕝 F] [IsScalarTower �
 
 /- A function is analytic at a point iff it is analytic after scalar
   multiplication with a non-vanishing analytic function. -/
-theorem analyticAt_iff_analytic_smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E → 𝕝}
-    {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
+theorem analyticAt_iff_analytic_smul [Module 𝕝 F] [IsBoundedSMul 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
+    {f : E → 𝕝} {g : E → F} {z : E} (h₁f : AnalyticAt 𝕜 f z) (h₂f : f z ≠ 0) :
     AnalyticAt 𝕜 g z ↔ AnalyticAt 𝕜 (f • g) z :=
   analyticAt_iff_analytic_fun_smul h₁f h₂f
 
@@ -980,17 +993,11 @@ theorem AnalyticWithinAt.div {f g : E → 𝕝} {s : Set E} {x : E}
   simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
-@[fun_prop]
-theorem AnalyticAt.fun_div {f g : E → 𝕝} {x : E}
-    (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (fun x ↦ f x / g x) x := by
-  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
-
-@[fun_prop]
+@[to_fun (attr := fun_prop)]
 theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
-    AnalyticAt 𝕜 (f / g) x :=
-  fa.fun_div ga g0
+    AnalyticAt 𝕜 (f / g) x := by
+  simp_rw [div_eq_mul_inv]; exact fa.mul (ga.inv g0)
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}

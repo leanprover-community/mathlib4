@@ -932,6 +932,22 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
     exact ⟨C, fun ⟨f, s, hs⟩ => eLpNorm_le_of_tendstoInMeasure
       (Eventually.of_forall fun n => hC (s n)) hs (fun n => hUI.1 (s n))⟩
 
+/-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
+`UniformIntegrable`, then `g` is in `Lp`. -/
+lemma UniformIntegrable.memLp_of_tendstoInMeasure {κ : Type*} {u : Filter κ} [NeBot u]
+    [IsCountablyGenerated u] {f : κ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f p μ) (htends : TendstoInMeasure μ f u g) :
+    MemLp g p μ := by
+  simpa using (hUI.uniformIntegrable_of_tendstoInMeasure u).memLp ⟨g, ⟨fun n => n, htends⟩⟩
+
+/-- Suppose `f` is a sequence of functions that converges in measure to `g`. If `f` is
+`UniformIntegrable`, then `g` is integrable. -/
+lemma UniformIntegrable.integrable_of_tendstoInMeasure {κ : Type*} {u : Filter κ} [NeBot u]
+    [IsCountablyGenerated u] {f : κ → α → β} {g : α → β}
+    (hUI : UniformIntegrable f 1 μ) (htends : TendstoInMeasure μ f u g) :
+    Integrable g μ :=
+  memLp_one_iff_integrable.mp (hUI.memLp_of_tendstoInMeasure htends)
+
 /-- If `fn` is `UniformIntegrable`, then the family of a.e. limits of sequences of `fn` is
 `UniformIntegrable`. -/
 lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter κ) [NeBot u]
@@ -944,6 +960,22 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
   · obtain ⟨C, hC⟩ := hUI.2.2
     exact ⟨C, fun ⟨f, s, hs⟩ => Lp.eLpNorm_le_of_ae_tendsto
       (Eventually.of_forall fun n => hC (s n)) (fun n => hUI.1 (s n)) hs⟩
+
+/-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
+`UniformIntegrable`, then `g` is in `Lp`. -/
+lemma UniformIntegrable.memLp_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
+    [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f p μ)
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
+    MemLp g p μ := by
+  simpa using (hUI.uniformIntegrable_of_ae_tendsto u).memLp ⟨g, ⟨fun n => n, htends⟩⟩
+
+/-- Suppose `f` is a sequence of functions that converges a.e. to `g`. If `f` is
+`UniformIntegrable`, then `g` is integrable. -/
+lemma UniformIntegrable.integrable_of_ae_tendsto {κ : Type*} {u : Filter κ} [NeBot u]
+    [IsCountablyGenerated u] {f : κ → α → β} {g : α → β} (hUI : UniformIntegrable f 1 μ)
+    (htends : ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ f n x) u (𝓝 (g x))) :
+    Integrable g μ :=
+  memLp_one_iff_integrable.mp (hUI.memLp_of_ae_tendsto htends)
 
 end UniformIntegrable
 

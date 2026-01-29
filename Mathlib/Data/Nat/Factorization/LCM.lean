@@ -15,7 +15,7 @@ This file contains some lemmas about `factorizationLCMLeft`.
 These were split from `Mathlib.Data.Nat.Factorization.Basic` to reduce transitive imports.
 -/
 
-@[expose] public section
+public section
 
 open Finset List Finsupp
 

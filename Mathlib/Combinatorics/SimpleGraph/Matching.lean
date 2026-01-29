@@ -377,8 +377,6 @@ lemma IsCycles.toSimpleGraph (c : G.ConnectedComponent) (h : G.IsCycles) :
   ext w'
   simp only [mem_neighborSet, c.adj_spanningCoe_toSimpleGraph, hw, true_and]
 
-@[deprecated (since := "2025-06-08")] alias IsCycles.induce_supp := IsCycles.toSimpleGraph
-
 lemma Walk.IsCycle.isCycles_spanningCoe_toSubgraph {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
     p.toSubgraph.spanningCoe.IsCycles := by
   intro v hv
@@ -399,14 +397,14 @@ lemma Walk.IsPath.isCycles_spanningCoe_toSubgraph_sup_edge {u v} {p : G.Walk u v
 lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.Walk u u}
     (hp : p.IsCycle) (hcyc : G.IsCycles) (hv : v ∈ p.toSubgraph.verts) :
     ∀ w, p.toSubgraph.Adj v w ↔ G.Adj v w := by
-  refine fun w ↦ Subgraph.adj_iff_of_neighborSet_equiv (?_ : Inhabited _).default (Set.toFinite _)
-  apply Classical.inhabited_of_nonempty
+  refine fun w ↦ Subgraph.adj_iff_of_neighborSet_equiv (?_ : Nonempty _).some (Set.toFinite _)
+  have := hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)
   rw [← Cardinal.eq, ← Set.cast_ncard (Set.toFinite _),
-      ← Set.cast_ncard (finite_neighborSet_toSubgraph p), hcyc
-        (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
-          Set.nonempty_of_ncard_ne_zero <| by simp [
-          hp.ncard_neighborSet_toSubgraph_eq_two (by aesop)]),
-      hp.ncard_neighborSet_toSubgraph_eq_two (by simp_all)]
+    ← Set.cast_ncard (finite_neighborSet_toSubgraph p),
+    hcyc
+      (Set.Nonempty.mono (p.toSubgraph.neighborSet_subset v) <|
+        Set.nonempty_of_ncard_ne_zero <| by simp [this]),
+    this]
 
 open scoped symmDiff
 
