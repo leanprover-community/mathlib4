@@ -178,39 +178,35 @@ lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Io
 -/
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Ici (a b : α) : (fun x => a * x) ⁻¹' Ici b = Ici (b / a) :=
+theorem preimage_const_mul_Ici : (fun x => a * x) ⁻¹' Ici b = Ici (b / a) :=
   ext fun _x => (div_le_iff_le_mul').symm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Ioi (a b : α) : (fun x => a * x) ⁻¹' Ioi b = Ioi (b / a) :=
+theorem preimage_const_mul_Ioi : (fun x => a * x) ⁻¹' Ioi b = Ioi (b / a) :=
   ext fun _x => div_lt_iff_lt_mul'.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Iic (a b : α) : (fun x => a * x) ⁻¹' Iic b = Iic (b / a) :=
+theorem preimage_const_mul_Iic : (fun x => a * x) ⁻¹' Iic b = Iic (b / a) :=
   ext fun _x => le_div_iff_mul_le'.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Iio (a b : α) : (fun x => a * x) ⁻¹' Iio b = Iio (b / a) :=
+theorem preimage_const_mul_Iio : (fun x => a * x) ⁻¹' Iio b = Iio (b / a) :=
   ext fun _x => lt_div_iff_mul_lt'.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Icc (a b c : α) :
-    (fun x => a * x) ⁻¹' Icc b c = Icc (b / a) (c / a) := by
+theorem preimage_const_mul_Icc : (fun x => a * x) ⁻¹' Icc b c = Icc (b / a) (c / a) := by
   simp [← Ici_inter_Iic]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Ico (a b c : α) :
-    (fun x => a * x) ⁻¹' Ico b c = Ico (b / a) (c / a) := by
+theorem preimage_const_mul_Ico : (fun x => a * x) ⁻¹' Ico b c = Ico (b / a) (c / a) := by
   simp [← Ici_inter_Iio]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Ioc (a b c : α) :
-    (fun x => a * x) ⁻¹' Ioc b c = Ioc (b / a) (c / a) := by
+theorem preimage_const_mul_Ioc : (fun x => a * x) ⁻¹' Ioc b c = Ioc (b / a) (c / a) := by
   simp [← Ioi_inter_Iic]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_mul_Ioo (a b c : α) :
-    (fun x => a * x) ⁻¹' Ioo b c = Ioo (b / a) (c / a) := by
+theorem preimage_const_mul_Ioo : (fun x => a * x) ⁻¹' Ioo b c = Ioo (b / a) (c / a) := by
   simp [← Ioi_inter_Iio]
 
 /-!
@@ -218,39 +214,35 @@ theorem preimage_const_mul_Ioo (a b c : α) :
 -/
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Ici (a b : α) : (fun x => x * a) ⁻¹' Ici b = Ici (b / a) :=
+theorem preimage_mul_const_Ici : (fun x => x * a) ⁻¹' Ici b = Ici (b / a) :=
   ext fun _x => div_le_iff_le_mul.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Ioi (a b : α) : (fun x => x * a) ⁻¹' Ioi b = Ioi (b / a) :=
+theorem preimage_mul_const_Ioi : (fun x => x * a) ⁻¹' Ioi b = Ioi (b / a) :=
   ext fun _x => div_lt_iff_lt_mul.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Iic (a b : α) : (fun x => x * a) ⁻¹' Iic b = Iic (b / a) :=
+theorem preimage_mul_const_Iic : (fun x => x * a) ⁻¹' Iic b = Iic (b / a) :=
   ext fun _x => le_div_iff_mul_le.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Iio (a b : α) : (fun x => x * a) ⁻¹' Iio b = Iio (b / a) :=
+theorem preimage_mul_const_Iio : (fun x => x * a) ⁻¹' Iio b = Iio (b / a) :=
   ext fun _x => lt_div_iff_mul_lt.symm
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Icc (a b c : α) :
-    (fun x => x * a) ⁻¹' Icc b c = Icc (b / a) (c / a) := by
+theorem preimage_mul_const_Icc : (fun x => x * a) ⁻¹' Icc b c = Icc (b / a) (c / a) := by
   simp [← Ici_inter_Iic]
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Ico (a b c : α) :
-    (fun x => x * a) ⁻¹' Ico b c = Ico (b / a) (c / a) := by
+theorem preimage_mul_const_Ico : (fun x => x * a) ⁻¹' Ico b c = Ico (b / a) (c / a) := by
   simp [← Ici_inter_Iio]
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Ioc (a b c : α) :
-    (fun x => x * a) ⁻¹' Ioc b c = Ioc (b / a) (c / a) := by
+theorem preimage_mul_const_Ioc : (fun x => x * a) ⁻¹' Ioc b c = Ioc (b / a) (c / a) := by
   simp [← Ioi_inter_Iic]
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_const_Ioo (a b c : α) :
-    (fun x => x * a) ⁻¹' Ioo b c = Ioo (b / a) (c / a) := by
+theorem preimage_mul_const_Ioo : (fun x => x * a) ⁻¹' Ioo b c = Ioo (b / a) (c / a) := by
   simp [← Ioi_inter_Iio]
 
 /-!
@@ -258,39 +250,35 @@ theorem preimage_mul_const_Ioo (a b c : α) :
 -/
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Ici (a b : α) : (fun x => x / a) ⁻¹' Ici b = Ici (b * a) := by
+theorem preimage_div_const_Ici : (fun x => x / a) ⁻¹' Ici b = Ici (b * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Ioi (a b : α) : (fun x => x / a) ⁻¹' Ioi b = Ioi (b * a) := by
+theorem preimage_div_const_Ioi : (fun x => x / a) ⁻¹' Ioi b = Ioi (b * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Iic (a b : α) : (fun x => x / a) ⁻¹' Iic b = Iic (b * a) := by
+theorem preimage_div_const_Iic : (fun x => x / a) ⁻¹' Iic b = Iic (b * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Iio (a b : α) : (fun x => x / a) ⁻¹' Iio b = Iio (b * a) := by
+theorem preimage_div_const_Iio : (fun x => x / a) ⁻¹' Iio b = Iio (b * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Icc (a b c : α) :
-    (fun x => x / a) ⁻¹' Icc b c = Icc (b * a) (c * a) := by
+theorem preimage_div_const_Icc : (fun x => x / a) ⁻¹' Icc b c = Icc (b * a) (c * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Ico (a b c : α) :
-    (fun x => x / a) ⁻¹' Ico b c = Ico (b * a) (c * a) := by
+theorem preimage_div_const_Ico : (fun x => x / a) ⁻¹' Ico b c = Ico (b * a) (c * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Ioc (a b c : α) :
-    (fun x => x / a) ⁻¹' Ioc b c = Ioc (b * a) (c * a) := by
+theorem preimage_div_const_Ioc : (fun x => x / a) ⁻¹' Ioc b c = Ioc (b * a) (c * a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem preimage_div_const_Ioo (a b c : α) :
-    (fun x => x / a) ⁻¹' Ioo b c = Ioo (b * a) (c * a) := by
+theorem preimage_div_const_Ioo : (fun x => x / a) ⁻¹' Ioo b c = Ioo (b * a) (c * a) := by
   simp [div_eq_mul_inv]
 
 /-!
@@ -298,39 +286,35 @@ theorem preimage_div_const_Ioo (a b c : α) :
 -/
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Ici (a b : α) : (fun x => a / x) ⁻¹' Ici b = Iic (a / b) :=
+theorem preimage_const_div_Ici : (fun x => a / x) ⁻¹' Ici b = Iic (a / b) :=
   ext fun _x => le_div_comm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Iic (a b : α) : (fun x => a / x) ⁻¹' Iic b = Ici (a / b) :=
+theorem preimage_const_div_Iic : (fun x => a / x) ⁻¹' Iic b = Ici (a / b) :=
   ext fun _x => div_le_comm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Ioi (a b : α) : (fun x => a / x) ⁻¹' Ioi b = Iio (a / b) :=
+theorem preimage_const_div_Ioi : (fun x => a / x) ⁻¹' Ioi b = Iio (a / b) :=
   ext fun _x => lt_div_comm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Iio (a b : α) : (fun x => a / x) ⁻¹' Iio b = Ioi (a / b) :=
+theorem preimage_const_div_Iio : (fun x => a / x) ⁻¹' Iio b = Ioi (a / b) :=
   ext fun _x => div_lt_comm
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Icc (a b c : α) :
-    (fun x => a / x) ⁻¹' Icc b c = Icc (a / c) (a / b) := by
+theorem preimage_const_div_Icc : (fun x => a / x) ⁻¹' Icc b c = Icc (a / c) (a / b) := by
   simp [← Ici_inter_Iic, inter_comm]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Ico (a b c : α) :
-    (fun x => a / x) ⁻¹' Ico b c = Ioc (a / c) (a / b) := by
+theorem preimage_const_div_Ico : (fun x => a / x) ⁻¹' Ico b c = Ioc (a / c) (a / b) := by
   simp [← Ioi_inter_Iic, ← Ici_inter_Iio, inter_comm]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Ioc (a b c : α) :
-    (fun x => a / x) ⁻¹' Ioc b c = Ico (a / c) (a / b) := by
+theorem preimage_const_div_Ioc : (fun x => a / x) ⁻¹' Ioc b c = Ico (a / c) (a / b) := by
   simp [← Ioi_inter_Iic, ← Ici_inter_Iio, inter_comm]
 
 @[to_additive (attr := simp)]
-theorem preimage_const_div_Ioo (a b c : α) :
-    (fun x => a / x) ⁻¹' Ioo b c = Ioo (a / c) (a / b) := by
+theorem preimage_const_div_Ioo : (fun x => a / x) ⁻¹' Ioo b c = Ioo (a / c) (a / b) := by
   simp [← Ioi_inter_Iio, inter_comm]
 
 /-!
@@ -339,23 +323,21 @@ theorem preimage_const_div_Ioo (a b c : α) :
 
 -- simp can prove this modulo `mul_comm`
 @[to_additive]
-theorem image_const_mul_Iic (a b : α) :
-    (fun x => a * x) '' Iic b = Iic (a * b) := by simp [mul_comm]
+theorem image_const_mul_Iic : (fun x => a * x) '' Iic b = Iic (a * b) := by simp [mul_comm]
 
 -- simp can prove this modulo `mul_comm`
 @[to_additive]
-theorem image_const_mul_Iio (a b : α) :
-    (fun x => a * x) '' Iio b = Iio (a * b) := by simp [mul_comm]
+theorem image_const_mul_Iio : (fun x => a * x) '' Iio b = Iio (a * b) := by simp [mul_comm]
 
 /-!
 ### Images under `x ↦ x * a`
 -/
 
 @[to_additive]
-theorem image_mul_const_Iic (a b : α) : (fun x => x * a) '' Iic b = Iic (b * a) := by simp
+theorem image_mul_const_Iic : (fun x => x * a) '' Iic b = Iic (b * a) := by simp
 
 @[to_additive]
-theorem image_mul_const_Iio (a b : α) : (fun x => x * a) '' Iio b = Iio (b * a) := by simp
+theorem image_mul_const_Iio : (fun x => x * a) '' Iio b = Iio (b * a) := by simp
 
 
 /-!
@@ -393,42 +375,42 @@ theorem image_inv_Ioo : Inv.inv '' Ioo a b = Ioo (b⁻¹) (a⁻¹) := by simp
 -/
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Ici (a b : α) : (fun x => a / x) '' Ici b = Iic (a / b) := by
+theorem image_const_div_Ici : (fun x => a / x) '' Ici b = Iic (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Iic (a b : α) : (fun x => a / x) '' Iic b = Ici (a / b) := by
+theorem image_const_div_Iic : (fun x => a / x) '' Iic b = Ici (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Ioi (a b : α) : (fun x => a / x) '' Ioi b = Iio (a / b) := by
+theorem image_const_div_Ioi : (fun x => a / x) '' Ioi b = Iio (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Iio (a b : α) : (fun x => a / x) '' Iio b = Ioi (a / b) := by
+theorem image_const_div_Iio : (fun x => a / x) '' Iio b = Ioi (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Icc (a b c : α) : (fun x => a / x) '' Icc b c = Icc (a / c) (a / b) := by
+theorem image_const_div_Icc : (fun x => a / x) '' Icc b c = Icc (a / c) (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Ico (a b c : α) : (fun x => a / x) '' Ico b c = Ioc (a / c) (a / b) := by
+theorem image_const_div_Ico : (fun x => a / x) '' Ico b c = Ioc (a / c) (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Ioc (a b c : α) : (fun x => a / x) '' Ioc b c = Ico (a / c) (a / b) := by
+theorem image_const_div_Ioc : (fun x => a / x) '' Ioc b c = Ico (a / c) (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
 @[to_additive (attr := simp)]
-theorem image_const_div_Ioo (a b c : α) : (fun x => a / x) '' Ioo b c = Ioo (a / c) (a / b) := by
+theorem image_const_div_Ioo : (fun x => a / x) '' Ioo b c = Ioo (a / c) (a / b) := by
   have := image_comp (fun x => a * x) fun x => x⁻¹; dsimp [Function.comp_def] at this
   simp [div_eq_mul_inv, this, mul_comm]
 
@@ -437,35 +419,35 @@ theorem image_const_div_Ioo (a b c : α) : (fun x => a / x) '' Ioo b c = Ioo (a 
 -/
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ici (a b : α) :
+theorem image_div_const_Ici :
     (fun x => x / a) '' Ici b = Ici (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Iic (a b : α) :
+theorem image_div_const_Iic :
     (fun x => x / a) '' Iic b = Iic (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ioi (a b : α) :
+theorem image_div_const_Ioi :
     (fun x => x / a) '' Ioi b = Ioi (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Iio (a b : α) :
+theorem image_div_const_Iio :
     (fun x => x / a) '' Iio b = Iio (b / a) := by simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Icc (a b c : α) : (fun x => x / a) '' Icc b c = Icc (b / a) (c / a) := by
+theorem image_div_const_Icc : (fun x => x / a) '' Icc b c = Icc (b / a) (c / a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ico (a b c : α) : (fun x => x / a) '' Ico b c = Ico (b / a) (c / a) := by
+theorem image_div_const_Ico : (fun x => x / a) '' Ico b c = Ico (b / a) (c / a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ioc (a b c : α) : (fun x => x / a) '' Ioc b c = Ioc (b / a) (c / a) := by
+theorem image_div_const_Ioc : (fun x => x / a) '' Ioc b c = Ioc (b / a) (c / a) := by
   simp [div_eq_mul_inv]
 
 @[to_additive (attr := simp)]
-theorem image_div_const_Ioo (a b c : α) : (fun x => x / a) '' Ioo b c = Ioo (b / a) (c / a) := by
+theorem image_div_const_Ioo : (fun x => x / a) '' Ioo b c = Ioo (b / a) (c / a) := by
   simp [div_eq_mul_inv]
 
 /-!
