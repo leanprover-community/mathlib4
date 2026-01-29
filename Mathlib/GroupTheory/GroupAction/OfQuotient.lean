@@ -35,10 +35,10 @@ lemma coe_quotient_smul_fixedPoints
     (g : G) (a : fixedPoints H A) :
     (g : G ⧸ H) • a = g • a := rfl
 
-lemma quotient_smul_fixedPoints_def
+lemma quotient_out_smul_fixedPoints
     (g : G ⧸ H) (a : fixedPoints H A) :
-    g • a = g.out • a := by
-  conv_lhs => rw [← g.out_eq]
+    g.out • a = g • a := by
+  conv_rhs => rw [← g.out_eq]
   rfl
 
 end MulAction
