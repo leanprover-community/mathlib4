@@ -52,13 +52,15 @@ the bundled version, see `Rel`.
 
 open Function
 
-variable {α β γ δ ε ζ : Type*}
+variable {α β γ δ ε ζ : Sort*}
 
 section NeImp
 
 variable {r : α → α → Prop}
 
 theorem Std.Refl.reflexive [Std.Refl r] : Reflexive r := fun x ↦ Std.Refl.refl x
+
+@[deprecated (since := "2026-01-09")] alias IsRefl.reflexive := Std.Refl.reflexive
 
 /-- To show a reflexive relation `r : α → α → Prop` holds over `x y : α`,
 it suffices to show it holds when `x ≠ y`. -/
@@ -466,6 +468,12 @@ theorem head'_iff : TransGen r a c ↔ ∃ b, r a b ∧ ReflTransGen r b c := by
   | tail _ hbc IH =>
   rcases IH with ⟨d, had, hdb⟩
   exact ⟨_, had, hdb.tail hbc⟩
+
+theorem symmetric (hr : Symmetric r) : Symmetric (TransGen r) := by
+  intro x y h
+  induction h with
+  | single i => exact .single (hr i)
+  | tail _ h₁ h₂ => exact .head (hr h₁) h₂
 
 end TransGen
 
