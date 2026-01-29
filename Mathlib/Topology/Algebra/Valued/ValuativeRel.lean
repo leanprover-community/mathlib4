@@ -43,6 +43,13 @@ theorem of_zero [ContinuousConstVAdd R R]
     simpa [← vadd_mem_nhds_vadd_iff (t := s) (-x), ← image_vadd, ← image_subset_iff] using
       h₀ ((x + ·) ⁻¹' s)
 
+/-- Assuming `ContinuousConstVAdd R R`, we only need to check the neighbourhood of `0` in order to
+prove `IsValuativeTopology R`. -/
+lemma of_hasBasis_zero [ContinuousConstVAdd R R]
+    (h : (𝓝 (0 : R)).HasBasis (fun _ ↦ True) fun γ : (ValueGroupWithZero R)ˣ ↦ { x | v x < γ }) :
+    IsValuativeTopology R :=
+  .of_zero <| by simp [h.mem_iff]
+
 end
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R] [IsValuativeTopology R]
@@ -232,4 +239,63 @@ scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal ↥𝒪[K]
 @[inherit_doc]
 scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField ↥𝒪[K]
 
+variable {R : Type*} [CommRing R] [ValuativeRel R]
+
+-- TODO: should this be generalized to `Valuation.Integers`?
+
+instance : ValuativeRel 𝒪[R] :=
+  .ofValuation ((valuation R).comap (Subring.subtype _))
+
+@[simp]
+lemma rel_val_integer_iff {x y : 𝒪[R]} :
+    (x : R) ≤ᵥ y ↔ x ≤ᵥ y := by
+  have hv : (valuation R).Compatible := inferInstance
+  simp [hv.rel_iff_le, (Valuation.Compatible.ofValuation _).rel_iff_le]
+
+instance : ValuativeExtension 𝒪[R] R where
+  rel_iff_rel := by simp [Algebra.algebraMap_ofSubring_apply]
+
 end ValuativeRel
+
+namespace IsValuativeTopology
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
+open ValuativeRel
+
+instance : IsValuativeTopology 𝒪[K] := by
+  apply IsValuativeTopology.of_hasBasis_zero
+  rw [nhds_subtype_eq_comap]
+  refine ((hasBasis_nhds_zero K).comap Subtype.val).to_hasBasis ?_ ?_
+  · simp only [Set.preimage_setOf_eq, Set.setOf_subset_setOf, Subtype.forall, true_and,
+    forall_const]
+    intro r
+    rcases lt_or_ge 1 r.val with hr | hr
+    · use 1
+      simp +contextual [← (ValuativeExtension.mapValueGroupWithZero_strictMono (B := K)).lt_iff_lt,
+        Algebra.algebraMap_ofSubring_apply, hr.trans']
+    · obtain ⟨a, b, hab⟩ := valuation_surjective r.val
+      rcases eq_or_ne a 0 with rfl | ha
+      · simp [eq_comm] at hab
+      -- this is where we use `Field` since we need to construct an element of `𝒪[K]`
+      rw [← hab, ← map_div₀] at hr
+      refine ⟨Units.mk0 (valuation _ ⟨a / b, hr⟩) ?_, ?_⟩
+      · simp [← (ValuativeExtension.mapValueGroupWithZero_strictMono (B := K)).injective.ne_iff,
+          Subtype.ext_iff, ha]
+      · simp only [Units.val_mk0, lt_iff_le_not_ge, ←
+          (Valuation.Compatible.ofValuation _).rel_iff_le, ← hab, ← map_div₀]
+        intro _ _
+        refine And.imp rel_val_integer_iff.mpr (mt ?_)
+        intro h
+        exact rel_val_integer_iff.mp h -- not clear where `* ↑1` comes from
+  · simp only [Set.preimage_setOf_eq, Set.setOf_subset_setOf, Subtype.forall, true_and,
+    forall_const]
+    intro r
+    use Units.map (ValuativeExtension.mapValueGroupWithZero _ _).toMonoidHom r
+    simp only [Units.coe_map, MonoidHom.coe_mk, ZeroHom.toFun_eq_coe,
+      MonoidWithZeroHom.toZeroHom_coe, OneHom.coe_mk]
+    intro _ _ hxr
+    rw [← (ValuativeExtension.mapValueGroupWithZero_strictMono (B := K)).lt_iff_lt]
+    simp [Algebra.algebraMap_ofSubring_apply, hxr]
+
+end IsValuativeTopology
