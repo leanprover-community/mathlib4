@@ -5345,6 +5345,7 @@ public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 public import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+public import Mathlib.NumberTheory.ModularForms.LFunction
 public import Mathlib.NumberTheory.ModularForms.LevelOne
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
