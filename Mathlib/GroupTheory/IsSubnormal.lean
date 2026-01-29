@@ -46,10 +46,6 @@ variable {G : Type*} [Group G] {H K : Subgroup G}
 
 namespace Subgroup
 
--- Adding this lemma to the `simp` set means that `simp` can prove that characteristic subgroups
--- are normal.  In particular, the two trivial subgroups `⊥` and `⊤` are normal.
-attribute [local simp] normal_of_characteristic
-
 /-- A subgroup `H` of a group `G` satisfies `IsSubnormal` if
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
