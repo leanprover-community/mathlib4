@@ -463,6 +463,11 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
   · field_simp
     ring_nf
 
+theorem continuous_convexCombo {a b : ℝ} :
+    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
+  apply Continuous.subtype_mk
+  fun_prop
+
 end Set.Icc
 
 open scoped unitInterval
@@ -499,6 +504,127 @@ lemma exists_monotone_Icc_subset_open_cover_unitInterval_prod_self {ι} {c : ι 
   obtain ⟨i, hsub⟩ := ball_subset (addNSMul h (δ / 2) n, addNSMul h (δ / 2) m) trivial
   exact ⟨i, fun t ht ↦ hsub (Metric.mem_ball.mpr <| (max_le (abs_sub_addNSMul_le h hδ.le n ht.1) <|
     abs_sub_addNSMul_le h hδ.le m ht.2).trans_lt <| half_lt_self δ_pos)⟩
+
+/-- Finite partition variant: Any open cover of `[a, b]` can be refined to a finite partition
+with strictly monotone partition points indexed by `Fin (n + 1)`. -/
+lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b) {c : ι → Set (Icc a b)}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → Icc a b),
+      StrictMono t ∧ t 0 = a ∧ t (Fin.last n) = b ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  -- Get Lebesgue number
+  obtain ⟨δ, δ_pos, hδ⟩ := lebesgue_number_lemma_of_metric isCompact_univ hc₁ hc₂
+  -- Pick n: if a = b then n = 0, otherwise pick n large enough so that (b - a) / n < δ
+  by_cases hab : a = b
+  · -- Case a = b: take n = 0 with single partition point
+    subst hab
+    refine ⟨0, fun _ => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
+    · -- StrictMono: vacuously true for Fin 1
+      intro i j hij
+      exact absurd hij (by omega)
+    · -- t 0 = a
+      rfl
+    · -- t (Fin.last 0) = a = b
+      rfl
+    · -- Covering property: vacuously true for Fin 0
+      intro i
+      exact absurd i.val.lt_succ_self (by omega)
+  · -- Case a < b: pick n with (b - a) / n < δ
+    have hab_pos : 0 < b - a := sub_pos.mpr (Ne.lt_of_le hab h)
+    obtain ⟨n, hn_pos, hn_small⟩ : ∃ n : ℕ, 0 < n ∧ (b - a) / n < δ := by
+      obtain ⟨n, hn⟩ := exists_nat_gt ((b - a) / δ)
+      have hn_pos : 0 < n := by
+        have h1 : 0 < (b - a) / δ := div_pos hab_pos δ_pos
+        have h2 : (0 : ℝ) < n := by linarith
+        exact Nat.cast_pos.mp h2
+      refine ⟨n, hn_pos, ?_⟩
+      have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
+      -- From (b - a) / δ < n, multiply both sides by δ to get b - a < n * δ
+      have h_mul : b - a < n * δ := calc
+        b - a = (b - a) / δ * δ := by field_simp [δ_pos.ne']
+        _ < n * δ := by nlinarith [δ_pos]
+      calc (b - a) / n < (n * δ) / n := by gcongr
+        _ = δ := by field_simp
+    -- Define partition: t k = a + k * (b - a) / n
+    let t : Fin (n + 1) → Icc a b := fun k => ⟨a + k * (b - a) / n, by
+      constructor
+      · linarith [mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h),
+          div_nonneg (mul_nonneg (Nat.cast_nonneg (k : ℕ)) (sub_nonneg.mpr h)) (Nat.cast_nonneg n)]
+      · have hk : (k : ℝ) ≤ n := Nat.cast_le.mpr (Nat.lt_succ_iff.mp k.is_lt)
+        have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
+        calc a + k * (b - a) / n ≤ a + n * (b - a) / n := by {
+              have : k * (b - a) ≤ n * (b - a) := by nlinarith
+              linarith [div_le_div_of_nonneg_right this hn_pos'.le] }
+          _ = b := by field_simp [hn_pos'.ne']; ring⟩
+    refine ⟨n, t, ?_, ?_, ?_, ?_⟩
+    · -- StrictMono
+      intro i j hij
+      change (t i : ℝ) < (t j : ℝ)
+      simp only [t]
+      have hij' : (i : ℝ) < (j : ℝ) := Nat.cast_lt.mpr hij
+      have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
+      have : i * (b - a) < j * (b - a) := by nlinarith [hab_pos]
+      linarith [div_lt_div_of_pos_right this hn_pos']
+    · -- t 0 = a
+      simp [t]
+    · -- t (Fin.last n) = b
+      simp [t]
+      field_simp [Nat.cast_pos.mpr hn_pos]
+      ring
+    · -- Covering property
+      intro i
+      -- Use StrictMono to get that t i.castSucc < t i.succ
+      have h_mono : (t i.castSucc : ℝ) < (t i.succ : ℝ) := by
+        simp only [t]
+        have hij : (i.castSucc : ℕ) < (i.succ : ℕ) := by
+          rw [Fin.val_castSucc]
+          simp
+        have hij' : (i.castSucc : ℝ) < (i.succ : ℝ) := Nat.cast_lt.mpr hij
+        have hn_pos' : (0 : ℝ) < n := Nat.cast_pos.mpr hn_pos
+        have : i.castSucc * (b - a) < i.succ * (b - a) := by nlinarith [hab_pos]
+        linarith [div_lt_div_of_pos_right this hn_pos']
+      -- Define the midpoint
+      let m : Icc a b := ⟨((t i.castSucc : ℝ) + (t i.succ : ℝ)) / 2, by
+        constructor
+        · linarith [(t i.castSucc).2.1, (t i.succ).2.1]
+        · linarith [(t i.castSucc).2.2, (t i.succ).2.2]⟩
+      -- The segment is contained in ball m δ
+      have h_subset : Icc (t i.castSucc) (t i.succ) ⊆ Metric.ball m δ := by
+        intro x hx
+        simp only [Metric.ball, mem_setOf_eq]
+        -- The segment has length (b-a)/n, so max distance from midpoint is (b-a)/(2n)
+        have segment_len : (t i.succ : ℝ) - (t i.castSucc : ℝ) = (b - a) / n := by
+          simp [t]
+          field_simp
+          ring
+        -- x is in the segment, so its distance from midpoint is at most (b-a)/(2n) < δ
+        have hx_bounds : (t i.castSucc : ℝ) ≤ (x : ℝ) ∧ (x : ℝ) ≤ (t i.succ : ℝ) := ⟨hx.1, hx.2⟩
+        have dist_bound : dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := by
+          rw [dist_comm, Real.dist_eq]
+          simp only [m, abs_sub_le_iff]
+          constructor
+          · linarith [hx_bounds.1, hx_bounds.2]
+          · linarith [hx_bounds.1, hx_bounds.2]
+        -- Since (b-a)/n < δ, we have (b-a)/(2n) < δ/2 < δ
+        calc dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := dist_bound
+          _ < δ / 2 := by linarith [hn_small]
+          _ < δ := by linarith [δ_pos]
+      -- Apply Lebesgue number property to get the covering set
+      obtain ⟨j, hj⟩ := hδ m trivial
+      exact ⟨j, Subset.trans h_subset hj⟩
+
+/-- Finite partition variant: Any open cover of the unit interval can be refined to a finite
+partition with strictly monotone partition points indexed by `Fin (n + 1)`. -/
+lemma exists_strictMono_Icc_subset_open_cover_unitInterval {ι} {c : ι → Set I}
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : univ ⊆ ⋃ i, c i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → I),
+      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      ∀ i : Fin n, ∃ j : ι, Icc (t i.castSucc) (t i.succ) ⊆ c j := by
+  obtain ⟨n, t, ht_strict, ht0, htn, ht_cover⟩ :=
+    exists_strictMono_Icc_subset_open_cover_Icc zero_le_one hc₁ hc₂
+  refine ⟨n, t, ht_strict, ?_, ?_, ht_cover⟩
+  · ext; exact ht0
+  · ext; exact htn
 
 end partition
 
