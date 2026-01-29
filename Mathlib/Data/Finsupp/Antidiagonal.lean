@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Finset.NatAntidiagonal
 public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.Data.Multiset.Antidiagonal
+import Mathlib.Data.Finsupp.Order
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
@@ -71,5 +72,21 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
       exact h.imp Eq.symm Eq.symm
   · rintro ⟨a, b, rfl, rfl, rfl⟩
     exact (single_add _ _ _).symm
+
+open Classical in
+theorem antidiagonal_image_prodMap_embDomain {σ τ : Type*} (f : σ ↪ τ) (y : σ →₀ ℕ) :
+  image (Prod.map (embDomain f) (embDomain f)) (antidiagonal y) =
+    antidiagonal (embDomain f y) := by
+  ext ⟨u, v⟩
+  simp only [mem_image, mem_antidiagonal, Prod.exists, Prod.map_apply,
+    Prod.mk.injEq]
+  refine ⟨fun ⟨w, z, h, hw, hz⟩ ↦ ?_, fun h ↦ ⟨u.comapDomain f f.injective.injOn,
+    ⟨v.comapDomain f f.injective.injOn, ?_, ?_, ?_⟩⟩⟩
+  · rw [← hw, ← hz, ← embDomain_add, h]
+  · rw [← comapDomain_add_of_injective f.injective, h, comapDomain_embDomain]
+  · rw [embDomain_comapDomain (mem_range_embDomain_iff.mp
+      (isLowerSet_range_embDomain f (le_iff_exists_add.mpr ⟨v, h.symm⟩) (by simp)))]
+  · rw [embDomain_comapDomain (mem_range_embDomain_iff.mp
+      (isLowerSet_range_embDomain f (le_iff_exists_add'.mpr ⟨u, h.symm⟩) (by simp)))]
 
 end Finsupp

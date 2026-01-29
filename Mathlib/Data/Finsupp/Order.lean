@@ -271,6 +271,18 @@ lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
     u - single i 1 + single i 1 = u := by
   rw [sub_single_one_add h, add_tsub_cancel_right]
 
+theorem isLowerSet_range_embDomain (f : α ↪ β) :
+    IsLowerSet ((Set.range (embDomain f)) : Set (β →₀ ℕ)) := by
+  intro x y h x_in
+  rcases x_in with ⟨z, rfl⟩
+  obtain ⟨w, hw⟩ := exists_add_of_le h
+  rw [mem_range_embDomain_iff]
+  trans ↑(y + w).support
+  · simp only [SetLike.coe_subset_coe, le_eq_subset, subset_iff, mem_support_iff, ne_eq,
+      Finsupp.coe_add, Pi.add_apply, Nat.add_eq_zero_iff, not_and]
+    grind
+  simp [← hw]
+
 end Nat
 
 end Finsupp
