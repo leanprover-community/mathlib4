@@ -38,11 +38,12 @@ noncomputable def digamma : ℂ → ℂ := logDeriv Gamma
 
 theorem digamma_def : digamma = logDeriv Gamma := rfl
 
+@[simp]
 theorem digamma_zero : digamma 0 = 0 :=
   logDeriv_eq_zero_of_not_differentiableAt Gamma 0 not_differentiableAt_Gamma_zero
 
 theorem digamma_one : digamma 1 = - Real.eulerMascheroniConstant := by
-  rw [digamma_def, logDeriv_apply, (hasDerivAt_Gamma_one).deriv, Gamma_one, div_one]
+  rw [digamma_def, logDeriv_apply, hasDerivAt_Gamma_one.deriv, Gamma_one, div_one]
 
 theorem digamma_one_half : digamma (1 / 2) = - 2 * log 2 - Real.eulerMascheroniConstant := by
   rw [digamma_def, logDeriv_apply, (hasDerivAt_Gamma_one_half).deriv, add_comm, Gamma_one_half_eq,
