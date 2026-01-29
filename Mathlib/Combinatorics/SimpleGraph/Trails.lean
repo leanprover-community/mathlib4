@@ -155,6 +155,22 @@ theorem IsEulerian.card_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V} {p
   apply IsEulerian.card_filter_odd_degree ht
   simp
 
+theorem IsEulerian.mem_support_of_Connected {u v : V} {p : G.Walk u v} (hp : p.IsEulerian)
+    (hc : G.Connected) (w : V) : w ∈ p.support := by
+  by_cases h : w = u
+  · simp [h]
+  · have : ∃ e ∈ G.edgeSet, w ∈ e := by
+      obtain ⟨p', _⟩ := hc.preconnected.exists_isPath w u
+      have hw : w ∈ p'.support := by simp
+      obtain ⟨y, _, hwy⟩ := G.adj_of_mem_walk_support p' (not_nil_of_ne h) hw
+      use s(w, y)
+      simp [hwy]
+    obtain ⟨e, he, hwe⟩ := this
+    obtain ⟨x, hx⟩ := e.mem_iff_exists.mp hwe
+    have : e ∈ p.edges := hp.mem_edges_iff.mpr he
+    rw [hx] at this
+    exact p.fst_mem_support_of_mem_edges this
+
 end Walk
 
 end SimpleGraph
