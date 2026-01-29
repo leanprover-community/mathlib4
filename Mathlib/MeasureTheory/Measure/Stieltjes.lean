@@ -38,9 +38,6 @@ two technical definitions:
 * `Iotop a b` is the interval `Ioo a b` if `b` is not top, and `Ioc a b` if `b` is top.
 * `botSet` is the empty set if there is no bot element, and `{x}` if `x` is bot.
 
-These definitions are just handy tools for some proofs of this file, so they are only included
-there, and not exported.
-
 Note that the theory of Stieltjes measures is not completely satisfactory when there is a bot
 element `x`: any Stieltjes measure gives zero mass to `{x}` in this case, so the Dirac mass at `x`
 is not representable as a Stieltjes measure.
@@ -617,7 +614,7 @@ theorem measure_Ico (a b : R) : f.measure (Ico a b) = ofReal (leftLim f b - left
 
 @[simp]
 theorem measure_botSet : f.measure botSet = 0 := by
-  by_cases! hx : ∃ (x : R), IsBot x
+  by_cases! hx : ∃ x : R, IsBot x
   · simp [botSet_eq_singleton_of_isBot hx.choose_spec, leftLim_eq_of_isBot hx.choose_spec]
   · simp [botSet, hx]
 
