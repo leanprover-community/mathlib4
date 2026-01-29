@@ -10,10 +10,10 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
-# MulAction of quotient group on fixed points
+# MulAction and MulDistribMulAction of quotient group on fixed points
 
-Given a `MulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
-there is a `MulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
+Given a `MulAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
+there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
 
 -/
 
@@ -41,3 +41,32 @@ lemma quotient_out_smul_fixedPoints (g : G ⧸ H) (a : fixedPoints H A) :
   rfl
 
 end MulAction
+
+namespace MulDistribMulAction
+
+open MulAction
+
+variable {G : Type*} [Group G] {A : Type*} [Monoid A] [MulDistribMulAction G A]
+
+variable {H : Subgroup G} [H.Normal]
+
+instance : MulDistribMulAction (G ⧸ H) (FixedPoints.submonoid H A) where
+  __ := instQuotientSubgroupElemFixedPointsSubtypeMem
+  smul_mul _ _ _ := by
+    ext
+    repeat
+      rw [← quotient_out_smul_fixedPoints]
+    simp [-quotient_out_smul_fixedPoints]
+    rfl
+  smul_one _ := by
+    ext; rw [← quotient_out_smul_fixedPoints]
+    simp [-quotient_out_smul_fixedPoints]
+
+open scoped FixedPoints
+
+variable {α : Type*} [Group α] [MulDistribMulAction G α]
+
+instance : MulDistribMulAction (G ⧸ H) (α ^* H) :=
+  instQuotientSubgroupSubtypeMemSubmonoidSubmonoid
+
+end MulDistribMulAction
