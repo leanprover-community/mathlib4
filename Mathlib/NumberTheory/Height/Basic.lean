@@ -322,7 +322,7 @@ lemma mulHeight_pos (x : ι → K) : 0 < mulHeight x :=
 lemma mulHeight.ne_zero (x : ι → K) : mulHeight x ≠ 0 :=
   (mulHeight_pos x).ne'
 
-lemma zero_le_logHeight {x : ι → K} : 0 ≤ logHeight x :=
+lemma zero_le_logHeight (x : ι → K) : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
 
 end Height
@@ -357,7 +357,7 @@ meta def evalLogHeight : PositivityExt where eval {u α} _ _ e := do
     match ← trySynthInstanceQ q(Finite $ι) with
     | .some _instFinite =>
       assertInstancesCommute
-      return .nonnegative q(zero_le_logHeight)
+      return .nonnegative q(zero_le_logHeight $a)
     | _ => throwError "index type in Height.logHeight not known to be finite"
   | _, _, _ => throwError "not Height.logHeight"
 
