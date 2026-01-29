@@ -261,4 +261,20 @@ lemma range_single_one :
     obtain ⟨a, rfl⟩ := (Finsupp.sum_eq_one_iff _).mp hp
     use a
 
+theorem degree_mapDomain_eq {M τ : Type*} {f : σ → τ} [AddCommMonoid M] [Subsingleton (AddUnits M)]
+    {x : σ →₀ M} : degree (x.mapDomain f) = degree x := by
+  classical
+  trans (x.mapDomain f).sum (fun _ ↦ id)
+  · simp [degree, sum]
+  simp only [sum, mapDomain_support_of_subsingletonAddUnits, id_eq, degree, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk]
+  exact Finset.sum_image' _ (fun _ _ ↦ mapDomain_apply_eq_sum)
+
+theorem degree_comapDomain_le {M τ : Type*} {f : σ → τ} [AddCommMonoid M] [PartialOrder M]
+    [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
+      degree (x.comapDomain f hf) ≤ degree x := by
+  classical
+  simpa [degree, comapDomain, Finset.sum_preimage' f x.support hf x] using
+    Finset.sum_le_sum_of_subset (Finset.filter_subset ..)
+
 end Finsupp
