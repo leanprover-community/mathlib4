@@ -302,7 +302,7 @@ def findModel (e : Expr) (baseInfo : Option (Expr × Expr) := none) : TermElabM 
   if ← isTracingEnabledFor `Elab.DiffGeo.MDiff then
     throwError m!"Could not find a model with corners for `{e}`."
   else
-  throwError m!"Could not find a model with corners for `{e}`.
+    throwError m!"Could not find a model with corners for `{e}`.
 
 Hint: failures to find a model with corners can be debugged with the command \
 `set_option trace.Elab.DiffGeo.MDiff true`."
