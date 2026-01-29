@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
 
-import Mathlib.Algebra.Module.Torsion.Pi
 
 /-!
 # Multilinear maps

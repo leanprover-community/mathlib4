@@ -331,6 +331,9 @@ theorem lt_one_iff_zero {c : Cardinal} : c < 1 ↔ c = 0 := by
   rw [← succ_le_iff, ← nat_succ, ← lift_mk_fin, aleph0, lift_mk_le.{u}]
   exact ⟨⟨(↑), fun a b => Fin.ext⟩⟩
 
+@[deprecated natCast_lt_aleph0 (since := "2026-01-21")]
+theorem nat_lt_aleph0 (n : ℕ) : (n : Cardinal.{u}) < ℵ₀ := natCast_lt_aleph0
+
 @[simp] lemma natCast_le_aleph0 {n : ℕ} : (n : Cardinal.{u}) ≤ ℵ₀ := natCast_lt_aleph0.le
 
 @[simp] lemma ofNat_lt_aleph0 {n : ℕ} [n.AtLeastTwo] : ofNat(n) < ℵ₀ := natCast_lt_aleph0

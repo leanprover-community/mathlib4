@@ -379,9 +379,9 @@ def Unit' : Type := Unit
 @[to_additive_do_translate] def Unit'' : Type := Unit
 
 run_meta do
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd) == some (.inl `Test.MonoidEnd)
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit') == some (.inl `Test.Unit')
-  guard <| shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'') == none
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup MonoidEnd)).any (·.isConstOf `Test.MonoidEnd)
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit')).any (·.isConstOf `Test.Unit')
+  guard <| (shouldTranslate (← getEnv) ToAdditive.data q(Semigroup Unit'')).isNone
 
 
 @[to_additive instSemiGroupAddMonoidEnd]
@@ -483,7 +483,7 @@ If this is intentional, use the `@[to_additive self]` syntax.
 Otherwise, check that your declaration name is correct (if your declaration is an instance, try naming it)
 or provide a translated name using the `@[to_additive my_add_name]` syntax.
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 @[to_additive]
