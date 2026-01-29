@@ -31,6 +31,13 @@ public section
 open Filter Set
 open scoped ENNReal Topology
 
+/-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
+i.e. `f = g` away from a null set.
+
+This is local notation for `Filter.EventuallyEq (MeasureTheory.ae μ) f g` before we define the more
+general one in a later file knowing about `Measure`. -/
+local notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (MeasureTheory.ae μ) f g
+
 namespace MeasureTheory
 
 variable {α ι F : Type*} [FunLike F (Set α) ℝ≥0∞] [OuterMeasureClass F α] [Countable ι] {μ : F}
