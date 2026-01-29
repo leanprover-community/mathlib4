@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Bilinear
 public import Mathlib.Analysis.Normed.Operator.NNNorm
-public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Operator norm for maps on normed spaces
@@ -286,16 +285,6 @@ theorem coord_norm (x : E) (h : x ≠ 0) : ‖coord 𝕜 x h‖ = ‖x‖⁻¹ :
   haveI : Nontrivial (𝕜 ∙ x) := Submodule.nontrivial_span_singleton h
   exact ContinuousLinearMap.homothety_norm _ fun y =>
     homothety_inverse _ hx _ (LinearEquiv.toSpanNonzeroSingleton_homothety 𝕜 x h) _
-
-section RCLike
-
-variable (𝕜 : Type*) [RCLike 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
-theorem coord_norm' {x : E} (h : x ≠ 0) : ‖(‖x‖ : 𝕜) • coord 𝕜 x h‖ = 1 := by
-  simp [-algebraMap_smul, norm_smul, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
-
-end RCLike
 
 end
 
