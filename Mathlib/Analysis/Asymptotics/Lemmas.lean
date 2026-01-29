@@ -711,6 +711,52 @@ lemma isLittleO_mul_iff_isLittleO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l,
   rw [isLittleO_iff_forall_isBigOWith, isLittleO_iff_forall_isBigOWith]
   simp [isBigOWith_mul_iff_isBigOWith_div hf]
 
+lemma isBigO_nat_atTop_induction {f : ℕ → E''} {g : ℕ → F''}
+    (h : ∀ᶠ n in atTop, g n = 0 → f n = 0)
+    (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
+      (∀ m ∈ Finset.Ico n₀ n, ‖f m‖ ≤ C * ‖g m‖) → ‖f n‖ ≤ C * ‖g n‖) :
+    f =O[atTop] g := by
+  rw [← eventually_forall_ge_atTop] at h
+  obtain ⟨n₀, h, hrec⟩ := h.and hrec |>.exists
+  obtain ⟨C₀, hrec⟩ := hrec
+  rw [isBigO_iff]
+  rw [← eventually_forall_ge_atTop] at hrec
+  obtain ⟨n₁, H₁, H₂⟩ := (eventually_ge_atTop n₀).and hrec |>.exists
+  let ubounds := {C | ∀ m ∈ Finset.Icc n₀ n₁, ‖f m‖ ≤ C * ‖g m‖}
+  let C₁ := (Finset.Icc n₀ n₁).sup' (Finset.nonempty_Icc.mpr H₁) fun n => ‖f n‖ / ‖g n‖
+  have C₁_mem : C₁ ∈ ubounds := by
+    rw [Set.mem_setOf]
+    intro m hm
+    calc ‖f m‖ = (‖f m‖ / ‖g m‖) * ‖g m‖ := by by_cases hm' : g m = 0 <;> grind [norm_eq_zero]
+      _ ≤ C₁ * ‖g m‖ := by
+        gcongr
+        exact Finset.le_sup' (fun x => ‖f x‖ / ‖g x‖) (Finset.mem_def.mpr hm)
+  refine ⟨max C₀ C₁, ?_⟩
+  filter_upwards [eventually_ge_atTop n₁] with n hn
+  induction n using Nat.strongRecOn with
+  | ind n h_ind =>
+    refine H₂ _ (by grind) _ (by grind) fun m hm => ?_
+    by_cases hbase : m < n₁
+    · have hC₁ : C₁ ≤ max C₀ C₁ := by grind
+      grw [← hC₁]
+      grind
+    · grind
+
+lemma isBigO_nat_atTop_induction_of_eventually_pos {f g : ℕ → ℝ}
+    (hf : ∀ᶠ n in atTop, 0 ≤ f n) (hg : ∀ᶠ n in atTop, 0 < g n)
+    (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
+      (∀ m ∈ Finset.Ico n₀ n, f m ≤ C * g m) → f n ≤ C * g n) :
+    f =O[atTop] g := by
+  refine isBigO_nat_atTop_induction ?hzero ?hrec
+  case hzero => filter_upwards [hf, hg]; grind
+  case hrec =>
+    filter_upwards [eventually_forall_ge_atTop.mpr hg, eventually_forall_ge_atTop.mpr hf, hrec]
+      with n₀ hn₀ hn₀' hnrec
+    obtain ⟨C₀, hnrec⟩ := hnrec
+    refine ⟨C₀, ?_⟩
+    filter_upwards [hnrec, eventually_ge_atTop n₀]
+    grind [Real.norm_eq_abs]
+
 end Asymptotics
 
 open Asymptotics

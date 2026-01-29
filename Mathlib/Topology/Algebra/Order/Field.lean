@@ -309,7 +309,7 @@ instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
 
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
-  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
+  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi₀ _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp
