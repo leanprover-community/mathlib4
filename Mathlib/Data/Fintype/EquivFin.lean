@@ -164,6 +164,7 @@ In this section we prove that `α : Type*` is `Finite` if and only if `Fintype �
 protected theorem Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
   ⟨Fintype.equivFin α⟩
 
+set_option linter.unusedFintypeInType false in
 /-- For efficiency reasons, we want `Finite` instances to have higher
 priority than ones coming from `Fintype` instances. -/
 instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite α :=
@@ -267,12 +268,12 @@ variable [Fintype α] [Fintype β]
 theorem bijective_iff_injective_and_card (f : α → β) :
     Bijective f ↔ Injective f ∧ card α = card β :=
   ⟨fun h => ⟨h.1, card_of_bijective h⟩, fun h =>
-    ⟨h.1, h.1.surjective_of_fintype <| equivOfCardEq h.2⟩⟩
+    ⟨h.1, h.1.surjective_of_finite <| equivOfCardEq h.2⟩⟩
 
 theorem bijective_iff_surjective_and_card (f : α → β) :
     Bijective f ↔ Surjective f ∧ card α = card β :=
   ⟨fun h => ⟨h.2, card_of_bijective h⟩, fun h =>
-    ⟨h.1.injective_of_fintype <| equivOfCardEq h.2, h.1⟩⟩
+    ⟨h.1.injective_of_finite <| equivOfCardEq h.2, h.1⟩⟩
 
 theorem _root_.Function.LeftInverse.rightInverse_of_card_le {f : α → β} {g : β → α}
     (hfg : LeftInverse f g) (hcard : card α ≤ card β) : RightInverse f g :=
@@ -375,6 +376,14 @@ theorem exists_of_card_le_finset [Fintype α] {s : Finset β} (h : Fintype.card 
   rcases nonempty_of_card_le h with ⟨f⟩
   exact ⟨f.trans (Embedding.subtype _), by simp [Set.range_subset_iff]⟩
 
+lemma exists_of_card_eq_finset [Fintype α] {s : Finset β} (hsn : Fintype.card α = s.card) :
+    ∃ f : α ↪ β, Finset.univ.map f = s := by
+  obtain ⟨f : α ↪ β, hf⟩ := exists_of_card_le_finset (Nat.le_of_eq hsn)
+  use f
+  apply Finset.eq_of_subset_of_card_le
+  · simp [← coe_subset, hf]
+  · simp [← hsn]
+
 end Function.Embedding
 
 @[simp]
@@ -387,7 +396,7 @@ theorem card_lt_of_surjective_not_injective [Fintype α] [Fintype β] (f : α �
     (h : Function.Surjective f) (h' : ¬Function.Injective f) : card β < card α :=
   card_lt_of_injective_not_surjective _ (Function.injective_surjInv h) fun hg =>
     have w : Function.Bijective (Function.surjInv h) := ⟨Function.injective_surjInv h, hg⟩
-    h' <| h.injective_of_fintype (Equiv.ofBijective _ w).symm
+    h' <| h.injective_of_finite (Equiv.ofBijective _ w).symm
 
 end Fintype
 
@@ -438,8 +447,6 @@ theorem of_surjective_from_set {s : Set α} (hs : s ≠ Set.univ) {f : s → α}
 
 theorem exists_notMem_finset [Infinite α] (s : Finset α) : ∃ x, x ∉ s :=
   not_forall.1 fun h => Fintype.false ⟨s, h⟩
-
-@[deprecated (since := "2025-05-23")] alias exists_not_mem_finset := exists_notMem_finset
 
 -- see Note [lower instance priority]
 instance (priority := 100) (α : Type*) [Infinite α] : Nontrivial α :=
@@ -506,8 +513,15 @@ instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β
 instance Prod.infinite_of_left [Infinite α] [Nonempty β] : Infinite (α × β) :=
   Infinite.of_surjective Prod.fst Prod.fst_surjective
 
+instance [Infinite α] : Infinite (Equiv.Perm α) := by
+  classical
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Infinite.of_injective _ (Equiv.swap_injective_of_left a)
+
 namespace Infinite
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → α
   | n =>
     letI := Classical.decEq α
@@ -516,6 +530,8 @@ private noncomputable def natEmbeddingAux (α : Type*) [Infinite α] : ℕ → �
         ((Multiset.range n).pmap (fun m (_ : m < n) => natEmbeddingAux _ m) fun _ =>
             Multiset.mem_range.1).toFinset)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
     Function.Injective (natEmbeddingAux α) := by
   rintro m n h
@@ -530,6 +546,8 @@ private theorem natEmbeddingAux_injective (α : Type*) [Infinite α] :
   refine Multiset.mem_toFinset.2 (Multiset.mem_pmap.2 ⟨m, Multiset.mem_range.2 hmn, ?_⟩)
   rw [h, natEmbeddingAux]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Embedding of `ℕ` into an infinite type. -/
 noncomputable def natEmbedding (α : Type*) [Infinite α] : ℕ ↪ α :=
   ⟨_, natEmbeddingAux_injective α⟩

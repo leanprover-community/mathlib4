@@ -31,7 +31,7 @@ A variant of the formula with measures of sets of the form `{ω | f(ω) > t}` in
 layer cake representation, Cavalieri's principle, tail probability formula
 -/
 
-@[expose] public section
+public section
 
 open Set
 

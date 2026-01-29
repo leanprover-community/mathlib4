@@ -155,6 +155,19 @@ theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
 
 alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
+theorem nontrivial_iff_nontrivialTopology {α} [EMetricSpace α] :
+    Nontrivial α ↔ NontrivialTopology α := by
+  simp_rw [nontrivial_iff, TopologicalSpace.nontrivial_iff_exists_not_inseparable,
+    EMetric.inseparable_iff, edist_eq_zero]
+
+theorem subsingleton_iff_indiscreteTopology {α} [EMetricSpace α] :
+    Subsingleton α ↔ IndiscreteTopology α := by
+  simpa [not_nontrivial_iff_subsingleton] using nontrivial_iff_nontrivialTopology (α := α).not
+
+/-- In an (e)metric space, every nontrivial type has a nontrivial topology. -/
+instance (priority := 100) {α} [EMetricSpace α] [Nontrivial α] : NontrivialTopology α :=
+  nontrivial_iff_nontrivialTopology.1 ‹_›
+
 -- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
 the pseudoedistance between its elements is arbitrarily small -/
@@ -188,6 +201,18 @@ theorem totallyBounded_iff' {s : Set α} :
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 section Compact
+
+/-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
+set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
+theorem subset_countable_closure_of_almost_dense_set (s : Set α)
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
+    ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
+  apply UniformSpace.subset_countable_closure_of_almost_dense_set
+  intro U hU
+  obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
+  obtain ⟨t, tC, ht⟩ := hs ε hε
+  refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
+  rwa [mem_closedBall, edist_comm] at hy
 
 -- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
@@ -287,38 +312,6 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       toUniformSpace := inferInstance,
       uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
-
-namespace TopologicalSpace
-
-section Compact
-
-open Topology
-
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
-subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
-of separability does not need in general to be contained in `s`. -/
-theorem IsSeparable.exists_countable_dense_subset
-    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
-    rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
-    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
-    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  exact subset_countable_closure_of_almost_dense_set _ this
-
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
-  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
-  lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
-
-end Compact
-
-end TopologicalSpace
 
 section LebesgueNumberLemma
 

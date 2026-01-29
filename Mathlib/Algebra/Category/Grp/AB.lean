@@ -23,7 +23,7 @@ universe u
 
 open CategoryTheory Limits
 
-instance {J C : Type*} [Category J] [Category C] [HasColimitsOfShape J C] [Preadditive C] :
+instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
@@ -61,7 +61,7 @@ attribute [local instance] Abelian.hasFiniteBiproducts
 instance : AB4 AddCommGrpCat.{u} := AB4.of_AB5 _
 
 instance : HasExactLimitsOfShape (Discrete J) (AddCommGrpCat.{u}) := by
-  apply (config := { allowSynthFailures := true }) hasExactLimitsOfShape_of_preservesEpi
+  apply +allowSynthFailures hasExactLimitsOfShape_of_preservesEpi
   exact {
     preserves {X Y} f hf := by
       let iX : limit X ≅ AddCommGrpCat.of ((i : J) → X.obj ⟨i⟩) := (Pi.isoLimit X).symm ≪≫

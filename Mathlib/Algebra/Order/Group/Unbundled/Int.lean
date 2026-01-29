@@ -24,7 +24,7 @@ See note [foundational algebra order theory].
   induction on numbers less than `b`.
 -/
 
-@[expose] public section
+public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton Ring
@@ -84,7 +84,7 @@ lemma eq_zero_of_abs_lt_dvd {m x : ℤ} (h1 : m ∣ x) (h2 : |x| < m) : x = 0 :=
   by_contra h
   have := Int.natAbs_le_of_dvd_ne_zero h1 h
   rw [Int.abs_eq_natAbs] at h2
-  cutsat
+  lia
 
 lemma abs_sub_lt_of_lt_lt {m a b : ℕ} (ha : a < m) (hb : b < m) : |(b : ℤ) - a| < m := by
   grind

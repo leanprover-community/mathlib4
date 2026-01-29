@@ -6,8 +6,6 @@ Authors: Mario Carneiro, Kenny Lau
 module
 
 public import Mathlib.Data.List.Forall2
-public import Mathlib.Data.Nat.Basic
-public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -16,8 +14,7 @@ public import Mathlib.Order.Basic
 predicate.
 -/
 
-@[expose] public section
-
+public section
 
 universe u v
 
@@ -27,9 +24,12 @@ variable {α : Type u} {β : Type v} {l l₁ l₂ : List α} {r : α → α → 
 
 namespace List
 
-protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrrefl α r] (h : Pairwise r l) :
+protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [Std.Irrefl r] (h : Pairwise r l) :
     Nodup l :=
   h.imp ne_of_irrefl
+
+@[deprecated (since := "2025-10-11")]
+alias Sorted.nodup := Pairwise.nodup
 
 open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
@@ -49,8 +49,6 @@ theorem Nodup.of_cons (h : Nodup (a :: l)) : Nodup l :=
 
 theorem Nodup.notMem (h : (a :: l).Nodup) : a ∉ l :=
   (nodup_cons.1 h).1
-
-@[deprecated (since := "2025-05-23")] alias Nodup.not_mem := Nodup.notMem
 
 theorem not_nodup_cons_of_mem : a ∈ l → ¬Nodup (a :: l) :=
   imp_not_comm.1 Nodup.notMem
@@ -86,6 +84,12 @@ theorem nodup_iff_injective_getElem {l : List α} :
 
 theorem nodup_iff_injective_get {l : List α} : Nodup l ↔ Function.Injective l.get :=
   nodup_iff_injective_getElem
+
+protected theorem Nodup.injective_get {l : List α} (h : Nodup l) : Function.Injective l.get :=
+  nodup_iff_injective_get.mp h
+
+protected theorem _root_.Function.Injective.nodup {l : List α}
+    (h : Function.Injective l.get) : l.Nodup := nodup_iff_injective_get.mpr h
 
 theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
@@ -126,8 +130,9 @@ theorem idxOf_getElem [DecidableEq α] {l : List α} : Nodup l → (i : Nat) →
 
 -- This is incorrectly named and should be `idxOf_get`;
 -- this already exists, so will require a deprecation dance.
-theorem get_idxOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
-    idxOf (get l i) l = i := by grind
+theorem get_idxOf [BEq α] [LawfulBEq α] {l : List α} (H : Nodup l) (i : Fin l.length) :
+    idxOf (get l i) l = i := by
+  simp [H]
 
 theorem nodup_iff_count_le_one [BEq α] [LawfulBEq α] {l : List α} : Nodup l ↔ ∀ a, count a l ≤ 1 :=
   nodup_iff_sublist.trans <|

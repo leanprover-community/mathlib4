@@ -27,7 +27,7 @@ open CategoryTheory Limits Abelian
 
 namespace CochainComplex
 
-variable {C : Type*} [Category C] [Abelian C] [EnoughInjectives C]
+variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
   {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
 namespace cm5b
@@ -68,9 +68,9 @@ as a monomorphism `K ⟶ mappingCone (𝟙 (I K)) ⊞ L`. -/
 noncomputable def i : K ⟶ mappingCone (𝟙 (I K)) ⊞ L :=
   biprod.lift (mappingCone.lift _
     (HomComplex.Cocycle.mk (HomComplex.Cochain.mk (fun p q _ => K.d p q ≫ Injective.ι _)) 2
-      (by cutsat) (by
+      (by lia) (by
         ext p q hpq
-        simp [HomComplex.δ_v 1 2 (by cutsat) _ p q hpq (p + 1) (p + 1) (by cutsat) rfl]))
+        simp [HomComplex.δ_v 1 2 (by lia) _ p q hpq (p + 1) (p + 1) (by lia) rfl]))
     (HomComplex.Cochain.ofHoms (fun n => Injective.ι _)) (by cat_disch)) f
 
 @[reassoc]

@@ -50,9 +50,6 @@ lemma preimage_insertNth_Icc_of_notMem {i : Fin (n + 1)} {x : α i} {q₁ q₂ :
   Set.ext fun p ↦ by
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and, mem_empty_iff_false]
 
-@[deprecated (since := "2025-05-23")]
-alias preimage_insertNth_Icc_of_not_mem := preimage_insertNth_Icc_of_notMem
-
 end Fin
 
 open Fin Matrix

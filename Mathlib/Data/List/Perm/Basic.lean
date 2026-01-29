@@ -37,7 +37,7 @@ lemma perm_rfl : l ~ l := Perm.refl _
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
 
-instance : IsSymm (List α) Perm := ⟨fun _ _ ↦ .symm⟩
+instance : Std.Symm (α := List α) Perm := ⟨fun _ _ ↦ .symm⟩
 
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩

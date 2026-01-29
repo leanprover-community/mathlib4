@@ -11,7 +11,6 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Basic
 
 /-!
@@ -47,7 +46,7 @@ theorem Finset.prod_apply {α : Type*} {M : α → Type*} [∀ a, CommMonoid (M 
   map_prod (Pi.evalMonoidHom M a) _ _
 
 /-- An 'unapplied' analogue of `Finset.prod_apply`. -/
-@[to_additive /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
+@[to_additive (attr := push ←) /-- An 'unapplied' analogue of `Finset.sum_apply`. -/]
 theorem Finset.prod_fn {α : Type*} {M : α → Type*} {ι} [∀ a, CommMonoid (M a)] (s : Finset ι)
     (g : ι → ∀ a, M a) : ∏ c ∈ s, g c = fun a ↦ ∏ c ∈ s, g c a :=
   funext fun _ ↦ Finset.prod_apply _ _ _
@@ -197,11 +196,11 @@ def Pi.monoidHomMulEquiv {ι : Type*} [Fintype ι] [DecidableEq ι] (M : ι → 
 
 end MulEquiv
 
-variable [Finite ι] [DecidableEq ι] {M : Type*}
+variable [Finite ι] [DecidableEq ι] {M : ι → Type*}
 
 -- manually additivized to fix variable names
 -- See https://github.com/leanprover-community/mathlib4/issues/11462
-lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+lemma Pi.single_induction [∀ i, AddCommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (zero : p 0) (add : ∀ f g, p f → p g → p (f + g))
     (single : ∀ i m, p (Pi.single i m)) : p f := by
   cases nonempty_fintype ι
@@ -209,7 +208,7 @@ lemma Pi.single_induction [AddCommMonoid M] (p : (ι → M) → Prop) (f : ι �
   exact Finset.sum_induction _ _ add zero (by simp [single])
 
 @[to_additive existing (attr := elab_as_elim)]
-lemma Pi.mulSingle_induction [CommMonoid M] (p : (ι → M) → Prop) (f : ι → M)
+lemma Pi.mulSingle_induction [∀ i, CommMonoid (M i)] (p : (Π i, M i) → Prop) (f : Π i, M i)
     (one : p 1) (mul : ∀ f g, p f → p g → p (f * g))
     (mulSingle : ∀ i m, p (Pi.mulSingle i m)) : p f := by
   cases nonempty_fintype ι

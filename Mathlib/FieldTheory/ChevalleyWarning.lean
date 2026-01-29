@@ -35,7 +35,7 @@ and `q` is notation for the cardinality of `K`.
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

@@ -6,6 +6,7 @@ Authors: Kyle Miller, Pim Otte, Daniel Weber, Rida Hamadani
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walks.Traversal
+public import Mathlib.Data.List.Zip
 
 /-!
 # Operations on walks
@@ -156,6 +157,9 @@ theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
 theorem reverse_singleton {u v : V} (h : G.Adj u v) : (cons h nil).reverse = cons (G.symm h) nil :=
   rfl
+
+@[simp]
+theorem reverse_toWalk {u v : V} (h : G.Adj u v) : h.toWalk.reverse = h.symm.toWalk := rfl
 
 @[simp]
 theorem cons_reverseAux {u v w x : V} (p : G.Walk u v) (q : G.Walk w x) (h : G.Adj w u) :
@@ -349,6 +353,12 @@ theorem support_eq_concat {u v : V} (p : G.Walk u v) : p.support = p.support.dro
     obtain ⟨_, _, _, hq⟩ := exists_cons_eq_concat h p
     simp [hq]
 
+lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) : p = q := by
+  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
+  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+  grind [map_fst_darts, map_snd_darts]
+
 @[simp]
 theorem mem_tail_support_append_iff {t u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     t ∈ (p.append p').support.tail ↔ t ∈ p.support.tail ∨ t ∈ p'.support.tail := by
@@ -459,8 +469,8 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
   refine p.support_reverse ▸ p.support.nodup_tail_reverse ?_
-  rw [← getVert_eq_support_getElem? _ (by cutsat), List.getLast?_eq_getElem?,
-    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; cutsat)]
+  rw [← getVert_eq_support_getElem? _ (by lia), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_getElem? _ (by rw [Walk.length_support]; lia)]
   simp
 
 @[simp]
@@ -503,12 +513,33 @@ lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n 
 lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n <;> cases n <;> simp [*, drop, add_right_comm]
 
+lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).drop m := by
+  rw [add_comm]
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
+    p.drop (n + m) = ((p.drop n).drop m).copy (drop_getVert ..) rfl :=
+  eq_of_heq <| drop_add_heq .. |>.trans <| by simp [Walk.copy]
+
+lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma darts_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).darts = p.darts.drop n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
+lemma edges_drop (p : G.Walk u v) (n : ℕ) : (p.drop n).edges = p.edges.drop n := by
+  induction p generalizing n <;> cases n <;> simp [*, drop]
+
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+@[simp]
+lemma take_zero (p : G.Walk u v) : p.take 0 = nil.copy rfl p.getVert_zero.symm := by
+  cases p <;> simp [take]
 
 @[simp]
 lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
@@ -518,8 +549,27 @@ lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.lengt
 lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
   induction p generalizing n m <;> cases n <;> cases m <;> simp [*, take]
 
+lemma take_add_heq (p : G.Walk u v) (n m : ℕ) :
+    p.take (n + m) ≍ (p.take n).append ((p.drop n).take m) := by
+  rw [add_comm]
+  induction p generalizing n <;> cases n <;> simp [take, drop]
+  grind [drop_getVert]
+
+lemma take_add_eq (p : G.Walk u v) (n m : ℕ) :
+    p.take (n + m) = ((p.take n).append ((p.drop n).take m)).copy rfl (drop_getVert ..) :=
+  eq_of_heq <| take_add_heq .. |>.trans <| by simp [Walk.copy]
+
+lemma nil_take_iff (p : G.Walk u v) (n : ℕ) : (p.take n).Nil ↔ p.Nil ∨ n = 0 := by
+  cases p <;> cases n <;> simp [take]
+
 lemma take_support_eq_support_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
     (p.take n).support = p.support.take (n + 1) := by
+  induction p generalizing n <;> cases n <;> simp [*, take]
+
+lemma darts_take (p : G.Walk u v) (n : ℕ) : (p.take n).darts = p.darts.take n := by
+  induction p generalizing n <;> cases n <;> simp [*, take]
+
+lemma edges_take (p : G.Walk u v) (n : ℕ) : (p.take n).edges = p.edges.take n := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
 @[simp]
@@ -537,6 +587,7 @@ lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
 
+@[simp]
 lemma drop_zero {u v} (p : G.Walk u v) :
     p.drop 0 = p.copy (getVert_zero p).symm rfl := by
   cases p <;> simp [Walk.drop]
@@ -544,6 +595,16 @@ lemma drop_zero {u v} (p : G.Walk u v) :
 lemma drop_support_eq_support_drop_min {u v} (p : G.Walk u v) (n : ℕ) :
     (p.drop n).support = p.support.drop (n ⊓ p.length) := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
+
+@[simp]
+theorem append_take_drop_eq (p : G.Walk u v) (n : ℕ) : (p.take n).append (p.drop n) = p := by
+  apply ext_support
+  rw [support_append, take_support_eq_support_take_succ, drop_support_eq_support_drop_min,
+    List.tail_drop]
+  by_cases! h : n < p.length
+  · simp [min_eq_left_of_lt h]
+  · rw [Nat.min_eq_right h, ← length_support, List.drop_length]
+    simp [h]
 
 /-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
 def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
@@ -635,21 +696,6 @@ lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
   | i + 1, _ => by
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
-
-lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
-    p = q := by
-  induction q with
-  | nil => exact nil_iff_eq_nil.mp (nil_iff_support_eq.mpr (support_nil ▸ h))
-  | cons ha q ih =>
-    cases p with
-    | nil => simp at h
-    | cons _ p =>
-      simp only [support_cons, List.cons.injEq, true_and] at h
-      apply List.getElem_of_eq at h
-      specialize h (i := 0) (by simp)
-      simp_rw [List.getElem_zero, p.head_support, q.head_support] at h
-      have : (p.copy h rfl).support = q.support := by simpa
-      simp [← ih this]
 
 lemma support_injective {u v : V} : (support (G := G) (u := u) (v := v)).Injective :=
   fun _ _ ↦ ext_support

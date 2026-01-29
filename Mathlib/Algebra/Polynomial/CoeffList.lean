@@ -5,7 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.EraseLead
 public import Mathlib.Data.List.Range
 
@@ -107,7 +107,7 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     have : ((monomial n) x).natDegree.succ = n + 1 := by
       simp [Polynomial.natDegree_monomial_eq n hx]
     simpa [coeffList, withBotSucc_degree_eq_natDegree_add_one h]
-      using Polynomial.coeff_monomial_of_ne _ (by cutsat)
+      using Polynomial.coeff_monomial_of_ne _ (by lia)
 
 /- Coefficients of a polynomial `P` are always the leading coefficient, some number of zeros, and
 then `coeffList P.eraseLead`. -/
@@ -127,35 +127,35 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
   have h₂ := withBotSucc_degree_eq_natDegree_add_one hep
   obtain ⟨n, hn, hn2⟩ : ∃ d, P.natDegree = P.eraseLead.natDegree + 1 + d ∧
       d = P.natDegree - P.eraseLead.degree.succ := by
-    use P.natDegree - P.eraseLead.natDegree -  1
+    use P.natDegree - P.eraseLead.natDegree - 1
     have := eraseLead_natDegree_le P
-    cutsat
+    lia
   rw [← hn2]; clear hn2
   apply List.ext_getElem?
   rintro (_ | k)
-  · obtain ⟨w,h⟩ := (coeffList_eq_cons_leadingCoeff h)
+  · obtain ⟨w, h⟩ := (coeffList_eq_cons_leadingCoeff h)
     simp_all
   simp only [coeffList, List.map_reverse]
   by_cases! hkd : P.natDegree + 1 ≤ k + 1
   · rw [List.getElem?_eq_none]
-      <;> simpa [hep, h] using by cutsat
+      <;> simpa [hep, h] using by lia
   obtain ⟨dk, hdk⟩ := exists_add_of_le (Nat.le_of_lt_succ hkd)
   rw [List.getElem?_reverse (by simpa [withBotSucc_degree_eq_natDegree_add_one h] using hkd),
     List.getElem?_cons_succ, List.length_map, List.length_range, List.getElem?_map,
-    List.getElem?_range (by cutsat), Option.map_some]
+    List.getElem?_range (by lia), Option.map_some]
   conv_lhs => arg 1; equals P.eraseLead.coeff dk =>
-    rw [eraseLead_coeff_of_ne (f := P) dk (by cutsat)]
+    rw [eraseLead_coeff_of_ne (f := P) dk (by lia)]
     congr
-    cutsat
+    lia
   by_cases! hkn : k < n
-  · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by cutsat)
+  · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by lia)
   · rw [List.getElem?_append_right (List.length_replicate ▸ hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
-        List.getElem?_range (by cutsat), Option.map_some]
+        List.getElem?_range (by lia), Option.map_some]
       congr 2
-      cutsat
-    · simpa using by cutsat
+      lia
+    · simpa using by lia
 
 end Semiring
 

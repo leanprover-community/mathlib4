@@ -18,7 +18,7 @@ jobs:
           rm -rf "$HOME/.cache/mathlib"
 
       - name: Checkout mathlib
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6.0.1
         with:
           repository: leanprover-community/mathlib4-nightly-testing
           ref: nightly-testing-green
