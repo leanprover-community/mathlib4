@@ -282,13 +282,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts 
         isometry_toCloseds.isUniformInducing).2 <|
     isClosed_in_closeds.isComplete
 
-/-- In a compact space, the type of nonempty compact subsets is compact. This follows from
-the same statement for closed subsets -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
-  ⟨by
-    rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
-    exact isClosed_in_closeds.isCompact⟩
-
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
 instance instSecondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
