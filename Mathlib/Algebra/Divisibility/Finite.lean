@@ -16,5 +16,5 @@ public import Mathlib.Data.Fintype.Defs
 
 variable {M : Type*} [Semigroup M]
 
-instance [Fintype M] [DecidableEq M] (a b : M) : Decidable (a ∣ b) :=
+@[to_additive] instance [Fintype M] [DecidableEq M] (a b : M) : Decidable (a ∣ b) :=
   decidable_of_iff (∃ c, b = a * c) dvd_def

@@ -546,7 +546,7 @@ theorem prodProdProdComm_toEquiv :
     (prodProdProdComm M N M' N' : _ ≃ _) = Equiv.prodProdProdComm M N M' N' :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp) prodProdProdComm_symm]
 theorem prodProdProdComm_symm : (prodProdProdComm M N M' N').symm = prodProdProdComm M M' N N' :=
   rfl
 

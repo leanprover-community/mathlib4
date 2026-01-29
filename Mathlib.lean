@@ -1123,6 +1123,7 @@ public import Mathlib.Algebra.Polynomial.UnitTrinomial
 public import Mathlib.Algebra.PresentedMonoid.Basic
 public import Mathlib.Algebra.Prime.Defs
 public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Algebra.Prime.Prod
 public import Mathlib.Algebra.QuadraticAlgebra
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.Algebra.QuadraticAlgebra.Defs
