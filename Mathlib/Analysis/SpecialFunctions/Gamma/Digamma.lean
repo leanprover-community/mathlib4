@@ -33,6 +33,7 @@ proves some basic properties.
 
 namespace Complex
 
+/-- The digamma function, defined as the logarithmic derivative of the Gamma function. -/
 noncomputable def digamma : ℂ → ℂ := logDeriv Gamma
 
 theorem digamma_def : digamma = logDeriv Gamma := rfl
