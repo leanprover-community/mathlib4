@@ -306,8 +306,11 @@ variable [SemilatticeInf β] [OrderTop β] (f g : TopHom α β)
 instance : Min (TopHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_top, map_top, inf_top_eq]⟩⟩
 
+instance : PartialOrder (TopHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -327,7 +330,7 @@ instance : Max (TopHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_top, map_top, sup_top_eq]⟩⟩
 
 instance : SemilatticeSup (TopHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -339,11 +342,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+instance [Lattice β] [OrderTop β] : Lattice (TopHom α β) where
 
 instance [DistribLattice β] [OrderTop β] : DistribLattice (TopHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end TopHom
 
@@ -479,8 +481,11 @@ variable [SemilatticeInf β] [OrderBot β] (f g : BotHom α β)
 instance : Min (BotHom α β) :=
   ⟨fun f g => ⟨f ⊓ g, by rw [Pi.inf_apply, map_bot, map_bot, inf_bot_eq]⟩⟩
 
+instance : PartialOrder (BotHom α β) :=
+  PartialOrder.lift _ DFunLike.coe_injective
+
 instance : SemilatticeInf (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeInf _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[simp]
 theorem coe_inf : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -500,7 +505,7 @@ instance : Max (BotHom α β) :=
   ⟨fun f g => ⟨f ⊔ g, by rw [Pi.sup_apply, map_bot, map_bot, sup_bot_eq]⟩⟩
 
 instance : SemilatticeSup (BotHom α β) :=
-  (DFunLike.coe_injective.semilatticeSup _) fun _ _ => rfl
+  DFunLike.coe_injective.semilatticeSup _ .rfl .rfl fun _ _ => rfl
 
 @[simp]
 theorem coe_sup : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -512,11 +517,10 @@ theorem sup_apply (a : α) : (f ⊔ g) a = f a ⊔ g a :=
 
 end SemilatticeSup
 
-instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) :=
-  DFunLike.coe_injective.lattice _ (fun _ _ => rfl) fun _ _ => rfl
+instance [Lattice β] [OrderBot β] : Lattice (BotHom α β) where
 
 instance [DistribLattice β] [OrderBot β] : DistribLattice (BotHom α β) :=
-  DFunLike.coe_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  DFunLike.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 end BotHom
 
