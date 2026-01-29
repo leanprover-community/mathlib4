@@ -1870,6 +1870,7 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
 public import Mathlib.Analysis.InnerProductSpace.Semisimple
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.Analysis.InnerProductSpace.StandardSubspace
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.Subspace
 public import Mathlib.Analysis.InnerProductSpace.Symmetric
