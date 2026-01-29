@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Action.Monoidal
 public import Mathlib.RepresentationTheory.Basic
@@ -62,11 +63,29 @@ instance (V : Rep k G) : Module k V := by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
+instance (V : Rep k G) : MulAction G V := Action.instMulAction V
+
+instance (V : Rep k G) : DistribMulAction G V where
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
+
+/-- A homomorphism between `V W : Rep k G` can be seen as a `DistribMulActionHom`. -/
+def Hom.toDistribMulActionHom {V W : Rep k G} (f : V ⟶ W) : V →+[G] W where
+  __ := f.hom.hom.toAddMonoidHom
+  map_smul' g x := congr($(f.comm g) x)
+
+instance {V W : Rep k G} : Coe (V ⟶ W) (V →+[G] W) := ⟨Hom.toDistribMulActionHom⟩
+
+lemma toDistribMulActionHom_eq_hom {V W : Rep k G} (f : V ⟶ W) :
+    ((f : V →+[G] W) : V → W) = f.hom := rfl
+
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): was `V.ρ`
   (ModuleCat.endRingEquiv V.V).toMonoidHom.comp (Action.ρ V)
+
+lemma smul_eq_ρ_apply {V : Rep k G} (s : G) (v : V) : s • v = (V.ρ s) v := rfl
 
 /-- Lift an unbundled representation to `Rep`. -/
 abbrev of {V : Type u} [AddCommGroup V] [Module k V] (ρ : G →* V →ₗ[k] V) : Rep k G :=
@@ -208,6 +227,12 @@ theorem mono_iff_injective {A B : Rep k G} (f : A ⟶ B) : Mono f ↔ Function.I
   ⟨fun _ => (ModuleCat.mono_iff_injective ((forget₂ _ _).map f)).1 inferInstance,
   fun h => (forget₂ _ _).mono_of_mono_map ((ModuleCat.mono_iff_injective <|
     (forget₂ _ _).map f).2 h)⟩
+
+lemma exact_iff_exact (X : ShortComplex (Rep k G)) :
+    X.Exact ↔ Function.Exact (X.f : X.X₁ →+[G] X.X₂) (X.g : X.X₂ →+[G] X.X₃) := by
+  convert (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact
+    (X.map (forget₂ (Rep k G) (ModuleCat k))))
+  exact (ShortComplex.exact_map_iff_of_faithful X (forget₂ (Rep k G) (ModuleCat k))).symm
 
 instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.hom :=
   inferInstanceAs <| Mono ((forget₂ _ _).map f)

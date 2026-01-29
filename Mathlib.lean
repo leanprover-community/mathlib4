@@ -5865,6 +5865,7 @@ public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Functoria
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Hilbert90
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LongExactSequence
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.NonAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Shapiro
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.FiniteCyclic
