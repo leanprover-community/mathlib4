@@ -29,7 +29,7 @@ error: unsolved goals
 inst✝¹ inst✝ : Add Nat
 ⊢ [Add Nat] → [Add Nat] → Bool
 ---
-warning: The declaration `foo` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 There are 4 instances of `[Add Nat]`.
 
@@ -41,7 +41,7 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 
 
 /--
-warning: The declaration `foo₁` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 `[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 
@@ -52,7 +52,7 @@ def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
   exact true
 
 /--
-warning: The declaration `foo₂` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • There are 2 instances of `[FooBarBaz Nat]`.
 • `[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
@@ -63,7 +63,7 @@ There should only be a single instance of these data-carrying typeclasses in the
 def foo₂ [FooBarBaz Nat] [FooBarBaz Nat] [FooBarBaq Nat] : Bool := true
 
 /--
-warning: The declaration `foo₃` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo₃` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 There are 2 instances of `[FooBarBaz Nat]`.
 
@@ -73,7 +73,7 @@ There should only be a single instance of these data-carrying typeclasses in the
 def foo₃ [FooBarBaz Nat] [FooBarBaz Nat] : Bool := true
 
 /--
-warning: The declaration `foo₄` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo₄` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • There are 2 instances of `[FooBarBaz Nat]`.
 • There is an instance of `[Bar Nat]` in the local context, but it is also provided by `[FooBarBaz Nat]`.
@@ -85,7 +85,7 @@ def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
 
 -- Note that `[SubBar Nat]` is absent, as `[Bar Nat]` is already reported.
 /--
-warning: The declaration `foo₅` has instance hypotheses which conflict on the data they provide. Specifically:
+warning: The declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • `[Baz Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
 • `[Bar Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.

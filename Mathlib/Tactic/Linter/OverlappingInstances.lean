@@ -145,7 +145,7 @@ private def _root_.Lean.Elab.ContextInfo.toDeclDescr (ctx : ContextInfo) : MetaM
 /-- Creates a message describing the violations captured in `Overlaps`, assumed to be nonempty. -/
 def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM MessageData := do
   let mut msg := m!"The {declDescr} \
-    has instance hypotheses which conflict on the data they provide. Specifically:"
+    has instance hypotheses which provide conflicting versions of the same data. Specifically:"
   let mut msgs := #[]
   for (overlap, fvars) in overlaps do
     let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
