@@ -655,6 +655,22 @@ lemma of_coprod_inl_with_id {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct 
       · simpa using h₂
       · simp [← h₁])⟩
 
+lemma of_coprod_inr_with_id (X : C) {A B : C} (f : A ⟶ B) [HasBinaryCoproduct X A]
+    [HasBinaryCoproduct X B] :
+    IsPushout coprod.inr f (coprod.map (𝟙 X) f) coprod.inr where
+  w := by simp
+  isColimit' := ⟨PushoutCocone.isColimitAux' _ (fun s ↦ by
+    refine ⟨coprod.desc (coprod.inl ≫ s.inl) s.inr , ?_, ?_, ?_⟩
+    · ext
+      · simp
+      · simp [PushoutCocone.condition]
+    · simp
+    · intro m h₁ h₂
+      dsimp at m h₁ h₂ ⊢
+      ext
+      · simp [← h₁]
+      · simpa)⟩
+
 lemma of_isColimit_binaryCofan_of_isInitial
     {X Y : C} {c : BinaryCofan X Y} (hc : IsColimit c)
     {I : C} (hI : IsInitial I) :

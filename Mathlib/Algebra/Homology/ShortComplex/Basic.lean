@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+public import Mathlib.CategoryTheory.ArrowTwo
 
 /-!
 # Short complexes
@@ -309,6 +310,27 @@ abbrev unopOp (S : ShortComplex Cᵒᵖ) : S.unop.op ≅ S := (opEquiv C).counit
 /-- The canonical isomorphism `S.op.unop ≅ S` for a short complex `S` -/
 abbrev opUnop (S : ShortComplex C) : S.op.unop ≅ S :=
   Iso.unop ((opEquiv C).unitIso.app (Opposite.op S))
+
+@[simps]
+def arrow₂ : Arrow₂ C := Arrow₂.mk S.f S.g
+
+lemma _root_.CategoryTheory.Arrow₂.zero_of_arrow₂Iso
+    {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
+    D.f ≫ D.g = 0 := by
+  have : IsIso e.hom.τ₂ := (inferInstance : IsIso (Arrow₂.obj₂.mapIso e).hom)
+  rw [← cancel_mono e.hom.τ₂, assoc, zero_comp, ← e.hom.commg, ← e.hom.commf_assoc]
+  dsimp
+  rw [S.zero, comp_zero]
+
+@[simps!]
+def mkOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) : ShortComplex C :=
+    ShortComplex.mk D.f D.g (Arrow₂.zero_of_arrow₂Iso e)
+
+@[simps!]
+def isoOfArrow₂Iso {D : Arrow₂ C} {S : ShortComplex C} (e : D ≅ S.arrow₂) :
+    mkOfArrow₂Iso e ≅ S :=
+  isoMk (Arrow₂.obj₀.mapIso e) (Arrow₂.obj₁.mapIso e) (Arrow₂.obj₂.mapIso e)
+    e.hom.commf e.hom.commg
 
 end ShortComplex
 

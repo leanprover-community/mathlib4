@@ -27,6 +27,11 @@ namespace Int
 theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   lia
 
+lemma eq_add_ofNat_of_le {m n : ℤ} (h : m ≤ n) :
+    ∃ (d : ℕ), n = m + d := by
+  obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ n - m by omega)
+  exact ⟨d, by omega⟩
+
 /-! ### `succ` and `pred` -/
 
 

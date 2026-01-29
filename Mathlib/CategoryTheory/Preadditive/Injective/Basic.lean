@@ -85,6 +85,9 @@ section
 
 open ZeroObject
 
+lemma injective_of_isZero (X : C) (hX : IsZero X) : Injective X where
+  factors _ _ _ := ⟨hX.from_ _, hX.eq_of_tgt _ _⟩
+
 instance zero_injective [HasZeroObject C] : Injective (0 : C) :=
   (isZero_zero C).injective
 
@@ -265,6 +268,40 @@ theorem enoughProjectives_of_enoughInjectives_op [EnoughInjectives Cᵒᵖ] : En
 
 theorem enoughInjectives_of_enoughProjectives_op [EnoughProjectives Cᵒᵖ] : EnoughInjectives C :=
   ⟨fun X => ⟨⟨_, inferInstance, (Projective.π (op X)).unop, inferInstance⟩⟩⟩
+
+open Injective
+
+/-
+
+redundant with Exact.descToInjective in CategoryTheory.Abelian.InjectiveResolution
+
+section
+
+variable [HasZeroMorphisms C] [HasImages Cᵒᵖ] [HasEqualizers Cᵒᵖ]
+
+/-- Given a pair of exact morphism `f : Q ⟶ R` and `g : R ⟶ S` and a map `h : R ⟶ J` to an injective
+object `J` such that `f ≫ h = 0`, then `g` descents to a map `S ⟶ J`. See below:
+
+```
+Q --- f --> R --- g --> S
+            |
+            | h
+            v
+            J
+```
+-/
+def Exact.desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
+    (hgf : Exact g.op f.op) (w : f ≫ h = 0) : S ⟶ J :=
+  (Exact.lift h.op g.op f.op hgf (congr_arg Quiver.Hom.op w)).unop
+#align category_theory.injective.exact.desc CategoryTheory.Injective.Exact.desc
+
+@[simp]
+theorem Exact.comp_desc {J Q R S : C} [Injective J] (h : R ⟶ J) (f : Q ⟶ R) (g : R ⟶ S)
+    (hgf : Exact g.op f.op) (w : f ≫ h = 0) : g ≫ Exact.desc h f g hgf w = h := by
+  convert congr_arg Quiver.Hom.unop (Exact.lift_comp h.op g.op f.op hgf (congrArg Quiver.Hom.op w))
+#align category_theory.injective.exact.comp_desc CategoryTheory.Injective.Exact.comp_desc
+
+end-/
 
 end Injective
 

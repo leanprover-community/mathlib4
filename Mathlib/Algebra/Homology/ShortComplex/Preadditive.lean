@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Homology
+public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 public import Mathlib.CategoryTheory.Preadditive.Opposite
 
@@ -24,6 +25,28 @@ namespace CategoryTheory
 open Category Limits Preadditive
 
 variable {C : Type*} [Category* C] [Preadditive C]
+
+/-- More general version of `mono_of_isZero_kernel`. -/
+lemma mono_of_isZero_kernel' {X Y : C} {f : X ⟶ Y} (c : KernelFork f) (hc : IsLimit c)
+    (h : IsZero c.pt) : Mono f := ⟨fun g₁ g₂ eq => by
+  rw [← sub_eq_zero, ← Preadditive.sub_comp] at eq
+  obtain ⟨a, ha⟩ := KernelFork.IsLimit.lift' hc _ eq
+  rw [← sub_eq_zero, ← ha, h.eq_of_tgt a 0, zero_comp]⟩
+
+lemma mono_of_isZero_kernel {X Y : C} (f : X ⟶ Y) [HasKernel f] (h : IsZero (kernel f)) :
+    Mono f :=
+  mono_of_isZero_kernel' _ (kernelIsKernel _) h
+
+/-- More general version of `epi_of_isZero_cokernel`. -/
+lemma epi_of_isZero_cokernel' {X Y : C} {f : X ⟶ Y} (c : CokernelCofork f) (hc : IsColimit c)
+    (h : IsZero c.pt) : Epi f := ⟨fun g₁ g₂ eq => by
+  rw [← sub_eq_zero, ← Preadditive.comp_sub] at eq
+  obtain ⟨a, ha⟩ := CokernelCofork.IsColimit.desc' hc _ eq
+  rw [← sub_eq_zero, ← ha, h.eq_of_src a 0, comp_zero]⟩
+
+lemma epi_of_isZero_cokernel {X Y : C} (f : X ⟶ Y) [HasCokernel f] (h : IsZero (cokernel f)) :
+    Epi f :=
+  epi_of_isZero_cokernel' _ (cokernelIsCokernel _) h
 
 namespace ShortComplex
 
@@ -177,7 +200,6 @@ instance leftHomologyFunctor_additive [HasKernels C] [HasCokernels C] :
 instance cyclesFunctor_additive [HasKernels C] [HasCokernels C] : (cyclesFunctor C).Additive where
 
 end LeftHomology
-
 
 section RightHomology
 
@@ -722,9 +744,92 @@ def trans (e : HomotopyEquiv S₁ S₂) (e' : HomotopyEquiv S₂ S₃) :
     (((e.homotopyInvHomId.compRight e'.hom).compLeft e'.inv).trans
       ((Homotopy.ofEq (by simp)).trans e'.homotopyInvHomId))
 
+variable (e : HomotopyEquiv S₁ S₂)
+
+/-- Variant of `leftHomologyIso`. -/
+@[simps]
+def leftHomologyIso' (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHomologyData) :
+    h₁.H ≅ h₂.H where
+  hom := leftHomologyMap' e.hom h₁ h₂
+  inv := leftHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← leftHomologyMap'_comp, e.homotopyHomInvId.leftHomologyMap'_congr,
+      leftHomologyMap'_id]
+  inv_hom_id := by
+    rw [← leftHomologyMap'_comp, e.homotopyInvHomId.leftHomologyMap'_congr,
+      leftHomologyMap'_id]
+
+/-- Variant of `righgHomologyIso`. -/
+@[simps]
+def rightHomologyIso' (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData) :
+    h₁.H ≅ h₂.H where
+  hom := rightHomologyMap' e.hom h₁ h₂
+  inv := rightHomologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← rightHomologyMap'_comp, e.homotopyHomInvId.rightHomologyMap'_congr,
+      rightHomologyMap'_id]
+  inv_hom_id := by
+    rw [← rightHomologyMap'_comp, e.homotopyInvHomId.rightHomologyMap'_congr,
+      rightHomologyMap'_id]
+
+/-- Variant of `homologyIso`. -/
+@[simps]
+def homologyIso' (h₁ : S₁.HomologyData) (h₂ : S₂.HomologyData) :
+    h₁.left.H ≅ h₂.left.H where
+  hom := homologyMap' e.hom h₁ h₂
+  inv := homologyMap' e.inv h₂ h₁
+  hom_inv_id := by
+    rw [← homologyMap'_comp, e.homotopyHomInvId.homologyMap'_congr, homologyMap'_id]
+  inv_hom_id := by
+    rw [← homologyMap'_comp, e.homotopyInvHomId.homologyMap'_congr, homologyMap'_id]
+
+@[simps]
+noncomputable def leftHomologyIso [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    S₁.leftHomology ≅ S₂.leftHomology where
+  hom := leftHomologyMap e.hom
+  inv := leftHomologyMap e.inv
+  hom_inv_id := (e.leftHomologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.leftHomologyIso' _ _).inv_hom_id
+
+@[simps]
+noncomputable def rightHomologyIso [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    S₁.rightHomology ≅ S₂.rightHomology where
+  hom := rightHomologyMap e.hom
+  inv := rightHomologyMap e.inv
+  hom_inv_id := (e.rightHomologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.rightHomologyIso' _ _).inv_hom_id
+
+@[simps]
+noncomputable def homologyIso [S₁.HasHomology] [S₂.HasHomology] :
+    S₁.homology ≅ S₂.homology where
+  hom := homologyMap e.hom
+  inv := homologyMap e.inv
+  hom_inv_id := (e.homologyIso' _ _).hom_inv_id
+  inv_hom_id := (e.homologyIso' _ _).inv_hom_id
+
+instance quasiIso_hom [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.hom := by
+  rw [quasiIso_iff]
+  change IsIso e.homologyIso.hom
+  infer_instance
+
+instance quasiIso_inv [S₁.HasHomology] [S₂.HasHomology] : QuasiIso e.inv :=
+  (inferInstance : QuasiIso (e.symm).hom)
+
 end HomotopyEquiv
 
 end Homotopy
+
+variable (S : ShortComplex C)
+
+lemma add_liftCycles {A : C} (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+    [S.HasLeftHomology] : S.liftCycles k hk + S.liftCycles k' hk' =
+      S.liftCycles (k + k') (by rw [add_comp, hk, hk', add_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, add_comp]
+
+lemma sub_liftCycles {A : C} (k k' : A ⟶ S.X₂) (hk : k ≫ S.g = 0) (hk' : k' ≫ S.g = 0)
+    [S.HasLeftHomology] : S.liftCycles k hk - S.liftCycles k' hk' =
+      S.liftCycles (k - k') (by rw [sub_comp, hk, hk', sub_zero]) := by
+  simp only [← cancel_mono S.iCycles, liftCycles_i, sub_comp]
 
 end ShortComplex
 

@@ -45,6 +45,10 @@ instance : (subcategoryAcyclic C).IsClosedUnderIsomorphisms := by
   dsimp [subcategoryAcyclic]
   infer_instance
 
+instance : (subcategoryAcyclic C).IsStableUnderRetracts := by
+  dsimp only [subcategoryAcyclic]
+  infer_instance
+
 variable {C}
 
 lemma mem_subcategoryAcyclic_iff (X : HomotopyCategory C (ComplexShape.up ℤ)) :
@@ -64,9 +68,17 @@ lemma quotient_obj_mem_subcategoryAcyclic_iff_acyclic (K : CochainComplex C ℤ)
 
 variable (C)
 
-lemma quasiIso_eq_subcategoryAcyclic_W :
+lemma quasiIso_eq_subcategoryAcyclic_trW :
     quasiIso C (ComplexShape.up ℤ) = (subcategoryAcyclic C).trW := by
   ext K L f
   exact ((homologyFunctor C (ComplexShape.up ℤ) 0).mem_homologicalKernel_trW_iff f).symm
+
+instance : (quasiIso C (ComplexShape.up ℤ)).IsCompatibleWithShift ℤ := by
+  rw [quasiIso_eq_subcategoryAcyclic_trW]
+  infer_instance
+
+instance quasiIso_respectsIso : (quasiIso C (ComplexShape.up ℤ)).RespectsIso := by
+  rw [quasiIso_eq_subcategoryAcyclic_trW]
+  infer_instance
 
 end HomotopyCategory

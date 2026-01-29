@@ -287,8 +287,14 @@ lemma rightOp_map_unop {F : Cᵒᵖ ⥤ D} {X Y} (f : X ⟶ Y) :
 instance {F : C ⥤ D} [Full F] : Full F.op where
   map_surjective f := ⟨(F.preimage f.unop).op, by simp⟩
 
+instance {F : Cᵒᵖ ⥤ Dᵒᵖ} [Full F] : Full F.unop where
+  map_surjective f := ⟨(F.preimage f.op).unop, by simp⟩
+
 instance {F : C ⥤ D} [Faithful F] : Faithful F.op where
   map_injective h := Quiver.Hom.unop_inj <| by simpa using map_injective F (Quiver.Hom.op_inj h)
+
+instance {F : Cᵒᵖ ⥤ Dᵒᵖ} [Faithful F] : Faithful F.unop where
+  map_injective h := Quiver.Hom.op_inj (F.map_injective (Quiver.Hom.unop_inj h))
 
 /-- The opposite of a fully faithful functor is fully faithful. -/
 protected def FullyFaithful.op {F : C ⥤ D} (hF : F.FullyFaithful) : F.op.FullyFaithful where
@@ -841,6 +847,9 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
 instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
   mem_essImage X := ⟨op _, ⟨(F.objObjPreimageIso X.unop).op.symm⟩⟩
 
+instance {F : Cᵒᵖ ⥤ Dᵒᵖ} [EssSurj F] : EssSurj F.unop where
+  mem_essImage X := ⟨_, ⟨(F.objObjPreimageIso (op X)).unop.symm⟩⟩
+
 instance {F : Cᵒᵖ ⥤ D} [EssSurj F] : EssSurj F.rightOp where
   mem_essImage X := ⟨_, ⟨(F.objObjPreimageIso X.unop).op.symm⟩⟩
 
@@ -849,9 +858,15 @@ instance {F : C ⥤ Dᵒᵖ} [EssSurj F] : EssSurj F.leftOp where
 
 instance {F : C ⥤ D} [IsEquivalence F] : IsEquivalence F.op where
 
+instance {F : Cᵒᵖ ⥤ Dᵒᵖ} [IsEquivalence F] : IsEquivalence F.unop where
+
 instance {F : Cᵒᵖ ⥤ D} [IsEquivalence F] : IsEquivalence F.rightOp where
 
 instance {F : C ⥤ Dᵒᵖ} [IsEquivalence F] : IsEquivalence F.leftOp where
+
+instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
+  mem_essImage Y := ⟨op (F.objPreimage Y.unop), ⟨(F.objObjPreimageIso Y.unop).symm.op⟩⟩
+
 
 end Functor
 

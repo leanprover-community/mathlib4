@@ -124,6 +124,14 @@ theorem associativity_inv (X Y Z : C) :
   rw [Iso.eq_inv_comp, ← associativity_assoc, ← F.map_comp, Iso.hom_inv_id,
     F.map_id, comp_id]
 
+/-- The tensorator on a lax monoidal functor `F : C ⥤ D`,
+as a natural transformation between bifunctors in `C ⥤ C ⥤ D`. -/
+@[simps!]
+noncomputable def μNatTrans :
+    (((whiskeringLeft₂ D).obj F).obj F).obj (curriedTensor D) ⟶
+      (Functor.postcompose₂.obj F).obj (curriedTensor C) where
+  app X₁ := { app X₂ := μ F X₁ X₂ }
+
 @[reassoc]
 lemma ε_tensorHom_comp_μ {X : C} {Y : D} (f : Y ⟶ F.obj X) :
     (ε F ⊗ₘ f) ≫ μ F (𝟙_ C) X = 𝟙_ D ◁ f ≫ (λ_ (F.obj X)).hom ≫ F.map (λ_ X).inv := by
@@ -230,6 +238,49 @@ instance comp : (F ⋙ G).LaxMonoidal where
       assoc, μ_natural_right_assoc, ← associativity_assoc, ← G.map_comp, associativity]
 
 end
+
+def ofIso {F G : C ⥤ D} [F.LaxMonoidal] (e : F ≅ G) : G.LaxMonoidal where
+  ε := ε F ≫ e.hom.app _
+  μ X Y := (e.inv.app X ⊗ₘ e.inv.app Y) ≫ μ F X Y ≫ e.hom.app _
+  μ_natural_left {X₁ Y₁} f₁ X₂ := by
+    rw [Category.assoc, Category.assoc, ← e.hom.naturality,
+      ← μ_natural_left_assoc, tensorHom_def_assoc,
+      ← comp_whiskerRight_assoc, e.inv.naturality,
+      tensorHom_def'_assoc, ← comp_whiskerRight_assoc, whisker_exchange_assoc]
+  μ_natural_right X₂ {Y₂ X₁} f₂ := by
+    rw [Category.assoc, Category.assoc, ← e.hom.naturality,
+      ← μ_natural_right_assoc, tensorHom_def'_assoc,
+      ← MonoidalCategory.whiskerLeft_comp_assoc, e.inv.naturality,
+      tensorHom_def_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      whisker_exchange_assoc]
+  associativity X₁ X₂ X₃ := by
+    have := associativity F X₁ X₂ X₃
+    rw [assoc, assoc, comp_whiskerRight_assoc, comp_whiskerRight_assoc,
+      MonoidalCategory.whiskerLeft_comp_assoc, MonoidalCategory.whiskerLeft_comp_assoc,
+      tensorHom_def'_assoc, ← whisker_exchange_assoc, ← whisker_exchange_assoc,
+      ← whisker_exchange_assoc, ← comp_whiskerRight_assoc (e.hom.app _),
+      Iso.hom_inv_id_app, id_whiskerRight, id_comp, ← e.hom.naturality,
+      associativity_assoc, tensor_whiskerLeft_assoc,
+      tensorHom_def' (e.inv.app X₂),
+      MonoidalCategory.whiskerLeft_comp_assoc,
+      tensorHom_def, comp_whiskerRight_assoc, whisker_assoc,
+      assoc, assoc, Iso.inv_hom_id_assoc,
+      associator_naturality_left_assoc, Iso.inv_hom_id_assoc,
+      ← whisker_exchange_assoc, ← whisker_exchange_assoc,
+      tensorHom_def'_assoc]
+    rw [← MonoidalCategory.whiskerLeft_comp_assoc _ (e.hom.app _),
+      Iso.hom_inv_id_app, MonoidalCategory.whiskerLeft_id, id_comp]
+  left_unitality X := by
+    rw [assoc, assoc, tensorHom_def_assoc,
+      ← comp_whiskerRight_assoc, assoc, e.hom_inv_id_app, comp_id,
+      ← whisker_exchange_assoc, id_whiskerLeft_assoc, left_unitality_inv_assoc,
+      NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, Iso.map_inv_hom_id, comp_id]
+  right_unitality X := by
+    rw [assoc, assoc, tensorHom_def'_assoc, ← MonoidalCategory.whiskerLeft_comp_assoc,
+      assoc, Iso.hom_inv_id_app, comp_id, whisker_exchange_assoc,
+      MonoidalCategory.whiskerRight_id_assoc, right_unitality_inv_assoc,
+      NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc,
+      Iso.map_inv_hom_id, comp_id]
 
 end LaxMonoidal
 

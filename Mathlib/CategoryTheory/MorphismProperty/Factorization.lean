@@ -251,6 +251,14 @@ instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 
+variable {W₁ W₂} in
+lemma HasFunctorialFactorization.of_le
+    {W₁' W₂' : MorphismProperty C} [HasFunctorialFactorization W₁ W₂]
+    (le₁ : W₁ ≤ W₁') (le₂ : W₂ ≤ W₂') :
+    HasFunctorialFactorization W₁' W₂' where
+  nonempty_functorialFactorizationData :=
+    ⟨(functorialFactorizationData W₁ W₂).ofLE le₁ le₂⟩
+
 end MorphismProperty
 
 end CategoryTheory

@@ -5,6 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.ComposableArrows.One
 public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.Triangulated.Functor
@@ -14,14 +17,6 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 
 In this file, we introduce the category `SpectralObject C ι` of spectral
 objects in a pretriangulated category `C` indexed by the category `ι`.
-
-## TODO (@joelriou)
-* construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
-of all truncations of an object of a triangulated category equipped with a t-structure
-* define a similar notion of spectral objects in abelian categories, show that
-by applying a homological functor `C ⥤ A` to a spectral object in the
-triangulated category `C`, we obtain a spectral object in the abelian category `A`
-* construct the spectral sequence attached to a spectral object in an abelian category
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
@@ -80,6 +75,18 @@ are composable. -/
 def δ : X.ω₁.obj (mk₁ g) ⟶ (X.ω₁.obj (mk₁ f))⟦(1 : ℤ)⟧ :=
   X.δ'.app (mk₂ f g)
 
+@[reassoc]
+lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
+    (α : mk₁ f ⟶ mk₁ f') (β : mk₁ g ⟶ mk₁ g') (hαβ : α.app 1 = β.app 0) :
+    X.ω₁.map β ≫ X.δ f' g' = X.δ f g ≫ (X.ω₁.map α)⟦(1 : ℤ)⟧' := by
+  let φ : mk₂ f g ⟶ mk₂ f' g' := homMk₂ (α.app 0) (α.app 1) (β.app 1) (naturality' α 0 1)
+    (by simpa only [hαβ] using naturality' β 0 1)
+  have h := X.δ'.naturality φ
+  dsimp at h
+  simp only [φ, hαβ] at h
+  convert h <;> aesop_cat
+
+
 /-- The distinguished triangle attached to a spectral object `E : SpectralObjet C ι`
 and composable morphisms `f : i ⟶ j` and `g : j ⟶ k` in `ι`. -/
 @[simps!]
@@ -90,10 +97,38 @@ def triangle : Triangle C :=
 lemma triangle_distinguished : X.triangle f g ∈ distTriang C :=
   X.ω₂_obj_distinguished (mk₂ f g)
 
-end
-
 section
 
+variable {f g}
+variable {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'}
+
+noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
+    X.triangle f g ⟶ X.triangle f' g' where
+  hom₁ := X.ω₁.map ((functorArrows ι 0 1 2).map φ)
+  hom₂ := X.ω₁.map ((functorArrows ι 0 2 2).map φ)
+  hom₃ := X.ω₁.map ((functorArrows ι 1 2 2).map φ)
+  comm₁ := by
+    dsimp
+    simp only [← X.ω₁.map_comp]
+    congr 1
+    ext
+    · simp
+    · exact naturality' φ 1 2
+  comm₂ := by
+    dsimp
+    simp only [← X.ω₁.map_comp]
+    congr 1
+    ext
+    · exact naturality' φ 0 1
+    · simp
+  comm₃ := by
+    symm
+    apply X.δ_naturality
+    rfl
+
+end
+
+end
 variable {ι' : Type*} [Category ι'] (F : ι' ⥤ ι)
 
 attribute [local simp] Precomp.map Precomp.obj δ in
@@ -136,8 +171,6 @@ def precomp : SpectralObject C ι' where
       · congr; cat_disch
       · cat_disch
 
-end
-
 section
 
 variable (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated]
@@ -167,26 +200,51 @@ structure Hom (Y : SpectralObject C ι) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
+@[simps id_hom comp_hom]
 instance : Category (SpectralObject C ι) where
   Hom := Hom
   id X := { hom := 𝟙 _ }
   comp f g :=
     { hom := f.hom ≫ g.hom }
 
+attribute [simp] id_hom
+attribute [reassoc (attr := simp)] comp_hom
+
+variable {X} in
+@[ext]
+lemma hom_ext {Y : SpectralObject C ι} {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
+
 section
 
-variable {X} {Y Z : SpectralObject C ι}
+variable {A : Type*} [Category A] [Abelian A]
+  (F : C ⥤ A) [F.IsHomological] [F.ShiftSequence ℤ]
 
-@[ext]
-lemma hom_ext {α β : X ⟶ Y} (h : α.hom = β.hom) : α = β := Hom.ext h
+@[simps]
+noncomputable def mapHomologicalFunctor : Abelian.SpectralObject A ι where
+  H n := X.ω₁ ⋙ F.shift n
+  δ' n₀ n₁ h :=
+    { app D := F.homologySequenceδ (X.triangle (D.map' 0 1) (D.map' 1 2)) n₀ n₁ h
+      naturality D₁ D₂ φ := by
+        obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D₁
+        obtain ⟨_, _, _, f', g', rfl⟩ := mk₂_surjective D₂
+        exact F.homologySequenceδ_naturality (X.mapTriangle φ) n₀ n₁ h }
+  exact₁' n₀ n₁ h D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₁ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
+  exact₂' n D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₂ _ (X.triangle_distinguished f g) n).exact_toComposableArrows
+  exact₃' n₀ n₁ h D := by
+    obtain ⟨_, _, _, f, g, rfl⟩ := mk₂_surjective D
+    exact (F.homologySequence_exact₃ _
+      (X.triangle_distinguished f g) n₀ n₁ h).exact_toComposableArrows
 
-variable (X) in
 @[simp]
-lemma id_hom : Hom.hom (𝟙 X) = 𝟙 _ := rfl
-
-@[simp, reassoc]
-lemma comp_hom (α : X ⟶ Y) (β : Y ⟶ Z) :
-    (α ≫ β).hom = α.hom ≫ β.hom := rfl
+lemma mapHomologicalFunctor_δ (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) :
+    (X.mapHomologicalFunctor F).δ n₀ n₁ h f g =
+      F.homologySequenceδ (X.triangle f g) n₀ n₁ h := by
+  rfl
 
 end
 

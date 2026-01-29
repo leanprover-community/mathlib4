@@ -312,24 +312,45 @@ def prodFunctor : (A ⥤ B) × (C ⥤ D) ⥤ A × C ⥤ B × D where
 
 namespace NatIso
 
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D₁ : Type u₃} {D₂ : Type u₄}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D₁] [Category.{v₄} D₂]
+
 /-- The Cartesian product of two natural isomorphisms. -/
 @[simps]
-def prod {F F' : A ⥤ B} {G G' : C ⥤ D} (e₁ : F ≅ F') (e₂ : G ≅ G') :
-    F.prod G ≅ F'.prod G' where
-  hom := NatTrans.prod e₁.hom e₂.hom
-  inv := NatTrans.prod e₁.inv e₂.inv
+def prod {F F' : C₁ ⥤ D₁} {G G' : C₂ ⥤ D₂} (e₁ : F ≅ F') (e₂ : G ≅ G') :
+    F.prod G ≅ F'.prod G' :=
+{ hom := NatTrans.prod e₁.hom e₂.hom
+  inv := NatTrans.prod e₁.inv e₂.inv }
+
+/-- The cartesian product of two natural isomorphisms. -/
+@[simps]
+def prod' {F G : A ⥤ B × C} (e₁ : F ⋙ Prod.fst _ _ ≅ G ⋙ Prod.fst _ _)
+    (e₂ : F ⋙ Prod.snd _ _ ≅ G ⋙ Prod.snd _ _) :
+  F ≅ G :=
+{ hom := NatTrans.prod' e₁.hom e₂.hom
+  inv := NatTrans.prod' e₁.inv e₂.inv }
 
 end NatIso
 
 namespace Equivalence
 
+variable {C₁ : Type u₁} {C₂ : Type u₂} {D₁ : Type u₃} {D₂ : Type u₄}
+  [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} D₁] [Category.{v₄} D₂]
+
 /-- The Cartesian product of two equivalences of categories. -/
 @[simps]
-def prod (E₁ : A ≌ B) (E₂ : C ≌ D) : A × C ≌ B × D where
+def prod (E₁ : C₁ ≌ D₁) (E₂ : C₂ ≌ D₂) : C₁ × C₂ ≌ D₁ × D₂ where
   functor := E₁.functor.prod E₂.functor
   inverse := E₁.inverse.prod E₂.inverse
   unitIso := NatIso.prod E₁.unitIso E₂.unitIso
   counitIso := NatIso.prod E₁.counitIso E₂.counitIso
+  functor_unitIso_comp := by
+    intro ⟨x₁, x₂⟩
+    apply Prod.ext
+    · dsimp
+      simp
+    · dsimp
+      simp
 
 end Equivalence
 
@@ -415,6 +436,7 @@ section Opposite
 
 open Opposite
 
+variable (D) in
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
 @[simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where

@@ -339,6 +339,39 @@ lemma IsPointwiseLeftKanExtension.isIso_hom [L.Full] [L.Faithful] :
   have := fun X => (h (L.obj X)).isIso_hom_app
   NatIso.isIso_of_isIso_app ..
 
+@[simps!]
+def coconeAtIso {Y Y' : D} (e : Y ≅ Y') :
+    (E.coconeAt Y').whisker (CostructuredArrow.mapIso e).functor ≅ E.coconeAt Y :=
+  Cocones.ext (E.right.mapIso e.symm) (fun j => by
+    dsimp
+    simp only [assoc, ← map_comp, e.hom_inv_id, comp_id])
+
+variable (E E')
+
+def isUniversalOfPointwise (h : E.IsPointwiseLeftKanExtension) :
+    E.IsUniversal :=
+  IsInitial.ofUniqueHom (fun G => StructuredArrow.homMk
+        { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
+          naturality := fun Y₁ Y₂ φ => by
+            apply (h Y₁).hom_ext
+            intro X
+            rw [(h Y₁).fac_assoc (coconeAt G Y₁) X]
+            simpa using (h Y₂).fac (coconeAt G Y₂) ((CostructuredArrow.map φ).obj X) }
+      (by
+        ext X
+        simpa using (h (L.obj X)).fac (LeftExtension.coconeAt G _) (CostructuredArrow.mk (𝟙 _))))
+    (fun G => by
+      suffices ∀ (m₁ m₂ : E ⟶ G), m₁ = m₂ by intros; apply this
+      intro m₁ m₂
+      ext Y
+      apply (h Y).hom_ext
+      intro X
+      have eq₁ := congr_app (StructuredArrow.w m₁) X.left
+      have eq₂ := congr_app (StructuredArrow.w m₂) X.left
+      dsimp at eq₁ eq₂ ⊢
+      simp only [assoc, NatTrans.naturality]
+      rw [reassoc_of% eq₁, reassoc_of% eq₂])
+
 end LeftExtension
 
 namespace RightExtension

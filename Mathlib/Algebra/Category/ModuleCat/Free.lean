@@ -188,4 +188,13 @@ theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.F
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
   simp only [Nat.cast_add, finrank_eq_rank]
 
+/-- free_shortExact_finrank_add' -/
+theorem free_shortExact_finrank_add' {n p : ℕ} (_ : Module.Free R S.X₁) (_ : Module.Finite R S.X₁)
+    (_ : Module.Free R S.X₃) (_ : Module.Finite R S.X₃)
+    (hN : Module.finrank R S.X₁ = n)
+    (hP : Module.finrank R S.X₃ = p)
+    [StrongRankCondition R] :
+    Module.finrank R S.X₂ = n + p :=
+  free_shortExact_finrank_add hS' hN hP
+
 end ModuleCat

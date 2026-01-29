@@ -29,7 +29,7 @@ namespace CategoryTheory
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {E : Type u₃} [Category.{v₃} E]
   (L : C ⥤ D) (W : MorphismProperty C) [L.IsLocalization W]
-  (A : Type w) [AddMonoid A] [HasShift C A]
+  (A : Type w) [AddMonoid A] [HasShift C A] [HasShift E A]
 
 namespace MorphismProperty
 
@@ -127,7 +127,7 @@ section
 open Localization
 
 variable (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
-  [HasShift D A] [HasShift E A] [L.CommShift A] [F.CommShift A]
+  [HasShift D A] [L.CommShift A] [F.CommShift A]
 
 namespace Functor
 

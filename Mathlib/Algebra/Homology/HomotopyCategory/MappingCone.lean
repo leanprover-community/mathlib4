@@ -565,6 +565,16 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
+lemma to_break {X : C} {n : ℤ} (x : X ⟶ (mappingCone φ).X n) (p : ℤ) (hp : n + 1 = p) :
+    ∃ (x₁ : X ⟶ F.X p) (x₂ : X ⟶ G.X n), x = x₁ ≫ (mappingCone.inl φ).v p n (by omega) +
+      x₂ ≫ (mappingCone.inr φ).f n :=
+  ⟨x ≫ (mappingCone.fst φ).1.v n p hp, x ≫ (mappingCone.snd φ).v n n (by omega),
+    by simp [ext_to_iff φ _ _ hp]⟩
+
+/-- The composition `φ ≫ mappingCone.inr φ` is homotopic to `0`. -/
+noncomputable def inrCompHomotopy :
+    Homotopy (φ ≫ inr φ) 0 :=
+  homotopyCofiber.inrCompHomotopy φ (fun n => ⟨n - 1, by simp⟩)
 
 section
 
@@ -603,7 +613,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,
       inl_v_snd_v, inr_f_snd_v]
-    simp [ext_from_iff _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm, H.map_zero]
 
 /-- If `H : C ⥤ D` is an additive functor and `φ` is a morphism of cochain complexes
 in `C`, this is the comparison isomorphism (in each degree) between the image

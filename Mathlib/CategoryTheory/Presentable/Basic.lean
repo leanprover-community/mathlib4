@@ -268,6 +268,10 @@ lemma isPresentable_of_isCardinalPresentable (κ : Cardinal.{w}) [Fact κ.IsRegu
     [IsCardinalPresentable X κ] : IsPresentable.{w} X where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
+lemma IsPresentable.exists_cardinal (X : C) [IsPresentable.{w} X] :
+    ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalPresentable X κ :=
+  Functor.IsAccessible.exists_cardinal.{w}
+
 end
 
 section

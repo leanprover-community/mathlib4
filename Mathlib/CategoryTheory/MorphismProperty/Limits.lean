@@ -568,6 +568,13 @@ instance IsStableUnderColimitsOfShape.isomorphisms :
       h₁.hom_ext (fun j ↦ by simp [reassoc_of% (hφ j)]),
       h₂.hom_ext (by simp [hφ])⟩
 
+lemma IsStableUnderColimitsOfShape.of_equivalence {J' : Type*} [Category* J']
+    (e : J ≌ J') [W.IsStableUnderColimitsOfShape J] :
+    W.IsStableUnderColimitsOfShape J' := by
+  rw [isStableUnderColimitsOfShape_iff_colimitsOfShape_le,
+    ← colimitsOfShape_eq_of_equivalence W e]
+  apply colimitsOfShape_le
+
 end ColimitsOfShape
 
 /-- The condition that a property of morphisms is stable by filtered colimits. -/
@@ -695,6 +702,11 @@ class IsStableUnderFiniteCoproducts : Prop where
   isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 attribute [instance] IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape
+
+instance [W.IsStableUnderFiniteCoproducts] (J : Type w) [Finite J] :
+    W.IsStableUnderCoproductsOfShape J := by
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  exact IsStableUnderColimitsOfShape.of_equivalence (Discrete.equivalence e.symm)
 
 /-- The condition that a property of morphisms is stable by coproducts. -/
 @[pp_with_univ]
@@ -847,6 +859,51 @@ lemma universally_mk' (P : MorphismProperty C) [P.RespectsIso] {X Y : C} (g : X 
 
 end Universally
 
+variable (C)
+
+def quarrable : MorphismProperty C := fun _ Y f => ∀ ⦃Y' : C⦄ (g : Y' ⟶ Y), HasPullback f g
+
+def coquarrable : MorphismProperty C := fun X _ f => ∀ ⦃X' : C⦄ (g : X ⟶ X'), HasPushout f g
+
+variable {C}
+
+lemma quarrable.hasPullback {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback f g := hf g
+
+/-- Variant of `quarrable.hasPullback`. -/
+lemma quarrable.hasPullback' {X Y Y' : C} (f : X ⟶ Y) (hf : quarrable C f) (g : Y' ⟶ Y) :
+    HasPullback g f := by
+  have : HasPullback f g := hasPullback f hf g
+  exact ⟨⟨_, (IsPullback.of_hasPullback f g).flip.isLimit'.some⟩⟩
+
+lemma coquarrable.hasPushout {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout f g := hf g
+
+/-- Variant of `coquarrable.hasPushout`. -/
+lemma coquarrable.hasPushout' {X X' Y : C} (f : X ⟶ Y) (hf : coquarrable C f) (g : X ⟶ X') :
+    HasPushout g f := by
+  have : HasPushout f g := hasPushout f hf g
+  exact ⟨⟨_, (IsPushout.of_hasPushout f g).flip.isColimit'.some⟩⟩
+
+lemma quarrable.op {X Y : C} (f : X ⟶ Y) (hf : quarrable C f) : coquarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPullback f g.unop := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.unop).flip.op.isColimit⟩
+
+lemma quarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : quarrable Cᵒᵖ f) : coquarrable C f.unop := by
+  intro _ g
+  have : HasPullback f g.op := hf _
+  exact ⟨_, (IsPullback.of_hasPullback f g.op).flip.unop.isColimit⟩
+
+lemma coquarrable.op {X Y : C} (f : X ⟶ Y) (hf : coquarrable C f) : quarrable Cᵒᵖ f.op := by
+  intro _ g
+  have : HasPushout f g.unop := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.unop).flip.op.isLimit⟩
+
+lemma coquarrable.unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : coquarrable Cᵒᵖ f) : quarrable C f.unop := by
+  intro _ g
+  have : HasPushout f g.op := hf _
+  exact ⟨_, (IsPushout.of_hasPushout f g.op).flip.unop.isLimit⟩
 variable (P : MorphismProperty C)
 
 /-- `P` has pullbacks if for every `f` satisfying `P`, pullbacks of arbitrary morphisms along `f`

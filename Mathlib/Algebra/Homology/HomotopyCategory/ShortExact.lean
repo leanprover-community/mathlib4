@@ -51,6 +51,8 @@ variable (S : ShortComplex (CochainComplex C ℤ)) (hS : S.ShortExact)
 of cochain complexes. -/
 noncomputable def descShortComplex : mappingCone S.f ⟶ S.X₃ := desc S.f 0 S.g (by simp)
 
+@[deprecated (since := "2024-12-01")] alias fromOfShortComplex := descShortComplex
+
 @[reassoc (attr := simp)]
 lemma inr_descShortComplex : inr S.f ≫ descShortComplex S = S.g := by
   simp [descShortComplex]
@@ -147,6 +149,9 @@ lemma quasiIso_descShortComplex : QuasiIso (descShortComplex S) where
         (composableArrows₅_exact hS n _ rfl).δlast φ
       all_goals dsimp [φ]; infer_instance
     apply IsIso.of_isIso_comp_left ((homologyFunctorFactors C (up ℤ) n).hom.app (mappingCone S.f))
+
+@[deprecated (since := "2024-12-01")] alias isIso_homologyMap_fromOfShortComplex :=
+quasiIso_descShortComplex
 
 end mappingCone
 

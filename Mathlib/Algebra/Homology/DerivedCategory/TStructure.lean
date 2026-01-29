@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Homology
+public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 
 /-!
 # The canonical t-structure on the derived category
@@ -188,5 +190,149 @@ lemma exists_iso_singleFunctor_obj_of_isGE_of_isLE
   obtain ⟨K, _, _, ⟨e⟩⟩ := exists_iso_Q_obj_of_isGE_of_isLE X n n
   obtain ⟨Y, ⟨e'⟩⟩ := CochainComplex.exists_iso_single K n
   exact ⟨Y, ⟨e ≪≫ Q.mapIso e'⟩⟩
+
+lemma exists_iso_single (X : DerivedCategory C) (n : ℤ) [X.IsGE n] [X.IsLE n] :
+    ∃ (A : C), Nonempty (X ≅ (singleFunctor C n).obj A) := by
+  dsimp only [singleFunctor, Functor.comp_obj]
+  obtain ⟨Y, _, _, ⟨e⟩⟩ := X.exists_iso_Q_obj_of_isGE_of_isLE n n
+  obtain ⟨A, ⟨e'⟩⟩ := Y.exists_iso_single n
+  exact ⟨A, ⟨e ≪≫ Q.mapIso e' ≪≫
+    ((SingleFunctors.evaluation _ _ n).mapIso (singleFunctorsPostcompQIso C)).symm.app A⟩⟩
+
+lemma singleFunctor_preimage {A B : C} {n : ℤ}
+    (f : (singleFunctor C n).obj A ⟶ (singleFunctor C n).obj B) :
+    (singleFunctor C n).preimage f = (singleFunctorCompHomologyFunctorIso C n).inv.app A ≫
+        (homologyFunctor _ n).map f ≫ (singleFunctorCompHomologyFunctorIso C n).hom.app B := by
+  obtain ⟨φ, rfl⟩ := (singleFunctor C n).map_surjective f
+  erw [Functor.preimage_map, ← NatTrans.naturality_assoc, Iso.inv_hom_id_app,
+    comp_id, Functor.id_map]
+
+namespace TStructure
+
+lemma singleFunctor_obj_mem_heart (X : C) :
+    t.heart ((singleFunctor C 0).obj X) := by
+  rw [TStructure.mem_heart_iff]
+  constructor <;> infer_instance
+
+@[simp]
+lemma essImage_singleFunctor_eq_heart :
+    (singleFunctor C 0).essImage = t.heart := by
+  ext X
+  constructor
+  · rintro ⟨A, ⟨e⟩⟩
+    exact t.heart.prop_of_iso e (singleFunctor_obj_mem_heart A)
+  · intro (h : t.heart _)
+    rw [TStructure.mem_heart_iff] at h
+    have := h.1
+    have := h.2
+    obtain ⟨A, ⟨e⟩⟩ := exists_iso_single X 0
+    exact ⟨A, ⟨e.symm⟩⟩
+
+noncomputable instance : (t : TStructure (DerivedCategory C)).HasHeart where
+  H := C
+  ι := singleFunctor C 0
+
+lemma isIso_homologyFunctor_map_truncLTι_app (X : DerivedCategory C) (a n : ℤ) (hn : n < a) :
+    IsIso ((homologyFunctor C n).map ((t.truncLTι a).app X)) := by
+  have : Mono ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
+    ((homologyFunctor C 0).homologySequence_mono_shift_map_mor₁_iff _
+      (t.triangleLTGE_distinguished a X) (n-1) n (by linarith)).2 (by
+      apply IsZero.eq_of_src
+      exact isZero_of_isGE ((t.truncGE a).obj X) a (n-1) (by linarith))
+  have : Epi ((homologyFunctor C n).map ((t.truncLTι a).app X)) :=
+    ((homologyFunctor C 0).homologySequence_epi_shift_map_mor₁_iff _
+      (t.triangleLTGE_distinguished a X) n).2 (by
+      apply IsZero.eq_of_tgt
+      exact isZero_of_isGE ((t.truncGE a).obj X) a n (by linarith))
+  apply isIso_of_mono_of_epi
+
+lemma isIso_homologyFunctor_map_truncLEι_app (X : DerivedCategory C) (a n : ℤ) (hn : n ≤ a) :
+    IsIso ((homologyFunctor C n).map ((t.truncLEι a).app X )) :=
+  isIso_homologyFunctor_map_truncLTι_app X (a+1) n (by linarith)
+
+lemma isIso_homologyFunctor_map_truncGEπ_app (X : DerivedCategory C) (a n : ℤ) (hn : a ≤ n) :
+    IsIso ((homologyFunctor C n).map ((t.truncGEπ a).app X )) := by
+  have : Mono ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
+    ((homologyFunctor C 0).homologySequence_mono_shift_map_mor₂_iff _
+      (t.triangleLTGE_distinguished a X) n).2 (by
+        apply IsZero.eq_of_src
+        exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) n (by linarith))
+  have : Epi ((homologyFunctor C n).map ((t.truncGEπ a).app X)) :=
+    ((homologyFunctor C 0).homologySequence_epi_shift_map_mor₂_iff _
+      (t.triangleLTGE_distinguished a X) n (n+1) rfl).2 (by
+        apply IsZero.eq_of_tgt
+        exact isZero_of_isLE ((t.truncLT a).obj X) (a-1) (n+1) (by linarith))
+  apply isIso_of_mono_of_epi
+
+variable (C)
+
+lemma isIso_whiskerRight_truncLEι_homologyFunctor (a n : ℤ) (hn : n ≤ a) :
+    IsIso (Functor.whiskerRight (t.truncLEι a) (homologyFunctor C n)) :=
+  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
+    (fun X => isIso_homologyFunctor_map_truncLEι_app X a n hn)
+
+noncomputable def truncLECompHomologyFunctorIso (a n : ℤ) (hn : n ≤ a) :
+    t.truncLE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
+  have := isIso_whiskerRight_truncLEι_homologyFunctor C a n hn
+  exact asIso (Functor.whiskerRight (t.truncLEι a) (homologyFunctor C n))
+
+lemma isIso_whiskerRight_truncGEπ_homologyFunctor (a n : ℤ) (hn : a ≤ n) :
+  IsIso (Functor.whiskerRight (t.truncGEπ a) (homologyFunctor C n)) :=
+  @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _
+    (fun X => isIso_homologyFunctor_map_truncGEπ_app X a n hn)
+
+noncomputable def truncGECompHomologyFunctorIso (a n : ℤ) (hn : a ≤ n) :
+    t.truncGE a ⋙ homologyFunctor C n ≅ homologyFunctor C n := by
+  have := isIso_whiskerRight_truncGEπ_homologyFunctor C a n hn
+  exact (asIso (Functor.whiskerRight (t.truncGEπ a) (homologyFunctor C n))).symm
+
+noncomputable def truncGELECompHomologyFunctorIso (a b n : ℤ) (ha : a ≤ n) (hb : n ≤ b) :
+  t.truncGELE a b ⋙ homologyFunctor C n ≅ homologyFunctor C n :=
+    Functor.associator _ _ _ ≪≫
+      Functor.isoWhiskerLeft (t.truncLE b) (truncGECompHomologyFunctorIso C a n ha) ≪≫
+      truncLECompHomologyFunctorIso C b n hb
+
+variable {C}
+
+noncomputable def truncLE₀GE₀ToHeart : DerivedCategory C ⥤ C :=
+  t.liftHeart (t.truncGELE 0 0) t.truncGE₀LE₀_mem_heart
+
+noncomputable def truncLE₀GE₀ToHeartιHeart :
+    (truncLE₀GE₀ToHeart : _ ⥤ C) ⋙ t.ιHeart ≅ t.truncGELE 0 0 :=
+  t.liftHeartιHeart _ _
+
+variable (C)
+
+noncomputable def homologyFunctorIsotruncLE₀GE₀ToHeart :
+    homologyFunctor C 0 ≅ truncLE₀GE₀ToHeart :=
+  (truncGELECompHomologyFunctorIso C 0 0 0 (by rfl) (by rfl)).symm ≪≫
+    Functor.isoWhiskerRight truncLE₀GE₀ToHeartιHeart.symm _ ≪≫
+    Functor.associator _ _ _ ≪≫
+    Functor.isoWhiskerLeft _ (singleFunctorCompHomologyFunctorIso C 0) ≪≫
+    truncLE₀GE₀ToHeart.rightUnitor
+
+noncomputable instance : (t : TStructure (DerivedCategory C)).HasHomology₀ where
+  homology₀ := homologyFunctor C 0
+  iso := Functor.isoWhiskerRight (homologyFunctorIsotruncLE₀GE₀ToHeart C) _ ≪≫
+    truncLE₀GE₀ToHeartιHeart
+
+noncomputable instance : (t : TStructure (DerivedCategory C)).homology₀.ShiftSequence ℤ :=
+  (inferInstance : (homologyFunctor C 0).ShiftSequence ℤ)
+
+end TStructure
+
+open DerivedCategory.TStructure
+
+variable (C)
+
+abbrev Minus := (t : TStructure (DerivedCategory C)).minus.FullSubcategory
+abbrev Plus := (t : TStructure (DerivedCategory C)).plus.FullSubcategory
+abbrev Bounded := (t : TStructure (DerivedCategory C)).bounded.FullSubcategory
+
+variable {C}
+
+abbrev Minus.ι : Minus C ⥤ DerivedCategory C := t.minus.ι
+abbrev Plus.ι : Plus C ⥤ DerivedCategory C := t.plus.ι
+abbrev Bounded.ι : Bounded C ⥤ DerivedCategory C := t.bounded.ι
 
 end DerivedCategory

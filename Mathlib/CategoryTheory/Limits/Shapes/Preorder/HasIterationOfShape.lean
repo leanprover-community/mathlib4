@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 public import Mathlib.Order.SuccPred.Limit
 public import Mathlib.Order.Interval.Set.InitialSeg
 
@@ -57,6 +58,11 @@ lemma hasColimitsOfShape_of_isSuccLimit'
   exact hasColimitsOfShape_of_equivalence h.orderIsoIio.equivalence.symm
 
 instance : HasIterationOfShape J (Arrow C) where
+  hasColimitsOfShape_of_isSuccLimit j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance (Y : C) : HasIterationOfShape J (Over Y) where
   hasColimitsOfShape_of_isSuccLimit j hj := by
     have := hasColimitsOfShape_of_isSuccLimit C j hj
     infer_instance

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Retract
 
 /-! # Properties of objects which are stable under retracts
@@ -95,5 +96,18 @@ instance [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
       hom_inv_id := by simp [reassoc_of% hri]
       inv_hom_id := by simp [← reassoc_of% hri]
     }⟩⟩
+
+instance [P.IsStableUnderRetracts] :
+    P.IsClosedUnderIsomorphisms where
+  of_iso e h := P.prop_of_retract (Retract.ofIso e.symm) h
+
+instance [IsIdempotentComplete C] [P.IsStableUnderRetracts] :
+    IsIdempotentComplete P.FullSubcategory where
+  idempotents_split := by
+    rintro X p hp
+    obtain ⟨Y, e, he⟩ := retract_of_isIdempotentComplete X.1 p.hom
+      ((ObjectProperty.ι _).congr_map hp)
+    exact ⟨⟨Y, P.prop_of_retract e X.2⟩, homMk e.i, homMk e.r,
+      by cat_disch, by cat_disch⟩
 
 end CategoryTheory.ObjectProperty

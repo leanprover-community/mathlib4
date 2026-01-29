@@ -162,4 +162,15 @@ lemma isKInjective_of_injective (L : CochainComplex C ℤ) (d : ℤ)
       limitSequence_eqUpTo φ hφ x₀ k₀ n (n - 1) (by lia) (by lia),
       limitSequence_eqUpTo φ hφ x₀ k₀ (n + 1) n (by lia) (by lia)]
 
+instance (K L : CochainComplex C ℤ) [hK : K.IsKInjective] [hL : L.IsKInjective] :
+    (K ⊞ L).IsKInjective := by
+  let S := (HomotopyCategory.subcategoryAcyclic C).rightOrthogonal
+  rw [isKInjective_iff_rightOrthogonal] at hK hL ⊢
+  have : PreservesBinaryBiproducts (HomotopyCategory.quotient C (.up ℤ)) :=
+    preservesBinaryBiproducts_of_preservesBiproducts _
+  refine ObjectProperty.prop_of_iso _
+    ((HomotopyCategory.quotient C (.up ℤ)).mapBiprod K L).symm ?_
+  apply ObjectProperty.biprod_stable_of_isTriangulated
+  all_goals assumption
+
 end CochainComplex

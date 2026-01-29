@@ -229,6 +229,7 @@ def injectiveResolutions : C ⥤ HomotopyCategory C (ComplexShape.up ℕ) where
     rw [← (HomotopyCategory.quotient _ _).map_comp]
     apply HomotopyCategory.eq_of_homotopy
     apply InjectiveResolution.descCompHomotopy
+
 variable {C}
 
 /-- If `I : InjectiveResolution X`, then the chosen `(injectiveResolutions C).obj X`

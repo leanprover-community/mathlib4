@@ -46,7 +46,6 @@ four lemma, five lemma, diagram lemma, diagram chase
 
 public section
 
-
 namespace CategoryTheory
 
 open Category Limits Preadditive

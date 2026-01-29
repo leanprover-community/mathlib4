@@ -172,6 +172,131 @@ lemma quasiIso_τ₃ (h₁ : QuasiIso φ.τ₁) (h₂ : QuasiIso φ.τ₂) :
   apply isIso_homologyMap_τ₃ φ hS₁ hS₂
   all_goals infer_instance
 
+lemma epi_homologyMap_τ₁ (j : ι)
+    (h₁ : Epi (homologyMap φ.τ₂ j))
+    (h₂ : Mono (homologyMap φ.τ₃ j))
+    (h₃ : ∀ i, c.Rel i j → Epi (homologyMap φ.τ₃ i)) :
+    Epi (homologyMap φ.τ₁ j) := by
+  by_cases hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    apply epi_of_epi_of_epi_of_mono
+      ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δ₀
+    · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δ₀
+    · exact h₃ i hij
+    · exact h₁
+    · exact h₂
+  · refine epi_of_mono_of_epi_of_mono (mapComposableArrows₂ φ j)
+      (composableArrows₂_exact hS₁ j) (composableArrows₂_exact hS₂ j) ?_ h₁ h₂
+    have := hS₂.mono_f
+    apply HomologicalComplex.mono_homologyMap_of_mono_of_not_rel
+    simpa using hj
+
+lemma mono_homologyMap_τ₁ (j : ι)
+    (h₁ : Mono (homologyMap φ.τ₂ j))
+    (h₂ : ∀ i, c.Rel i j → Mono (homologyMap φ.τ₃ i))
+    (h₃ : ∀ i, c.Rel i j → Epi (homologyMap φ.τ₂ i)) :
+    Mono (homologyMap φ.τ₁ j) := by
+  by_cases hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    apply mono_of_epi_of_mono_of_mono
+        ((δ₀Functor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δlast
+    · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δlast
+    · exact h₃ i hij
+    · exact h₂ i hij
+    · exact h₁
+  · have := hS₁.mono_f
+    have eq := (homologyFunctor C _ j).congr_map φ.comm₁₂
+    dsimp at eq
+    simp only [homologyMap_comp] at eq
+    have : Mono (homologyMap S₁.f j) :=
+      HomologicalComplex.mono_homologyMap_of_mono_of_not_rel _ _ (by simpa using hj)
+    exact mono_of_mono_fac eq
+
+lemma isIso_homologyMap_τ₁ (j : ι)
+    (h₁ : IsIso (homologyMap φ.τ₂ j))
+    (h₂ : Mono (homologyMap φ.τ₃ j))
+    (h₃ : ∀ i, c.Rel i j → Epi (homologyMap φ.τ₂ i))
+    (h₄ : ∀ i, c.Rel i j → IsIso (homologyMap φ.τ₃ i)) :
+    IsIso (homologyMap φ.τ₁ j) := by
+  have := mono_homologyMap_τ₁ φ hS₁ hS₂ j inferInstance
+    (fun i hij => by
+      have := h₄ i hij
+      infer_instance)
+    (fun i hij => by
+      have := h₃ i hij
+      infer_instance)
+  have := epi_homologyMap_τ₁ φ hS₁ hS₂ j inferInstance h₂
+    (fun i hij => by
+      have := h₄ i hij
+      infer_instance)
+  apply isIso_of_mono_of_epi
+
+lemma quasiIso_τ₁ (h₂ : QuasiIso φ.τ₂) (h₃ : QuasiIso φ.τ₃) :
+    QuasiIso φ.τ₁ := by
+  rw [quasiIso_iff]
+  intro i
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  apply isIso_homologyMap_τ₁ φ hS₁ hS₂
+  all_goals infer_instance
+
+lemma mono_homologyMap_τ₂ (j : ι)
+    (h₁ : Mono (homologyMap φ.τ₁ j))
+    (h₂ : Mono (homologyMap φ.τ₃ j))
+    (h₃ : ∀ i, c.Rel i j → Epi (homologyMap φ.τ₃ i)) :
+    Mono (homologyMap φ.τ₂ j) := by
+  by_cases hj : ∃ i, c.Rel i j
+  · obtain ⟨i, hij⟩ := hj
+    apply mono_of_epi_of_mono_of_mono
+        ((δ₀Functor ⋙ δ₀Functor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    · exact (composableArrows₅_exact hS₁ i j hij).δ₀.δ₀
+    · exact (composableArrows₅_exact hS₂ i j hij).δ₀.δ₀
+    · exact h₃ i hij
+    · exact h₁
+    · exact h₂
+  · have := hS₂.mono_f
+    exact mono_of_mono_of_mono_of_mono (mapComposableArrows₂ φ j)
+      (composableArrows₂_exact hS₁ j)
+      (mono_homologyMap_of_mono_of_not_rel S₂.f j (by simpa using hj)) h₁ h₂
+
+lemma epi_homologyMap_τ₂ (i : ι)
+    (h₁ : Epi (homologyMap φ.τ₁ i))
+    (h₂ : Epi (homologyMap φ.τ₃ i))
+    (h₃ : ∀ j, c.Rel i j → Mono (homologyMap φ.τ₁ j)) :
+    Epi (homologyMap φ.τ₂ i) := by
+  by_cases hi : ∃ j, c.Rel i j
+  · obtain ⟨j, hij⟩ := hi
+    apply epi_of_epi_of_epi_of_mono
+        ((δlastFunctor ⋙ δlastFunctor).map (mapComposableArrows₅ φ hS₁ hS₂ i j hij))
+    · exact (composableArrows₅_exact hS₁ i j hij).δlast.δlast
+    · exact (composableArrows₅_exact hS₂ i j hij).δlast.δlast
+    · exact h₁
+    · exact h₂
+    · exact h₃ j hij
+  · have := hS₁.epi_g
+    exact epi_of_epi_of_epi_of_epi (mapComposableArrows₂ φ i)
+      (composableArrows₂_exact hS₂ i)
+      (epi_homologyMap_of_epi_of_not_rel S₁.g i (by simpa using hi)) h₁ h₂
+
+lemma isIso_homologyMap_τ₂ (j : ι)
+    (h₁ : IsIso (homologyMap φ.τ₁ j))
+    (h₂ : IsIso (homologyMap φ.τ₃ j))
+    (h₃ : ∀ i, c.Rel i j → Epi (homologyMap φ.τ₃ i))
+    (h₄ : ∀ k, c.Rel j k → Mono (homologyMap φ.τ₁ k)) :
+    IsIso (homologyMap φ.τ₂ j) := by
+  have := mono_homologyMap_τ₂ φ hS₁ hS₂ j inferInstance inferInstance h₃
+  have := epi_homologyMap_τ₂ φ hS₁ hS₂ j inferInstance inferInstance h₄
+  apply isIso_of_mono_of_epi
+
+lemma quasiIso_τ₂ (h₁ : QuasiIso φ.τ₁) (h₃ : QuasiIso φ.τ₃) :
+    QuasiIso φ.τ₂ := by
+  rw [quasiIso_iff]
+  intro i
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  apply isIso_homologyMap_τ₂ φ hS₁ hS₂
+  all_goals infer_instance
+
 end HomologySequence
 
 end HomologicalComplex

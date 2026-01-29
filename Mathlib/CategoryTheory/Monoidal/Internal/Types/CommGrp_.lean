@@ -19,8 +19,6 @@ Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 
 @[expose] public section
 
-assert_not_exists Field
-
 universe v u
 
 open CategoryTheory MonObj

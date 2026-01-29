@@ -103,6 +103,10 @@ lemma additive_of_iso {G : C ⥤ D} (e : F ≅ G) : G.Additive := by
   simp only [← NatIso.naturality_1 e (f + g), map_add, Preadditive.add_comp,
     NatTrans.naturality, Preadditive.comp_add, Iso.inv_hom_id_app_assoc]
 
+omit [F.Additive] in
+lemma additive_iff_of_iso {G : C ⥤ D} (e : F ≅ G) : F.Additive ↔ G.Additive :=
+  ⟨fun _ => additive_of_iso e, fun _ => additive_of_iso e.symm⟩
+
 variable (F)
 
 lemma additive_of_full_essSurj_comp [Full F] [EssSurj F] (G : D ⥤ E)
@@ -188,6 +192,66 @@ lemma additive_of_preserves_binary_products
   have := preservesBinaryBiproducts_of_preservesBinaryProducts F
   exact Functor.additive_of_preservesBinaryBiproducts F
 
+lemma additive_of_preserves_finite_products
+    [HasFiniteProducts C] [PreservesFiniteProducts F] : F.Additive :=
+  F.additive_of_preserves_binary_products
+
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Fan X) (hc : IsLimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfLimitCone : Bicone X where
+  pt := c.pt
+  π j := c.proj j
+  ι j := by exact hc.lift (Fan.mk (X j) (fun i => if h : j = i then eqToHom (by rw [h]) else 0))
+  ι_π i j := by
+    erw [IsLimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    rw [Preadditive.sum_comp, Category.id_comp, Finset.sum_eq_single j]
+    · change _ ≫ (biconeOfLimitCone c hc).π j = _
+      rw [Category.assoc, Bicone.ι_π, dif_pos rfl, eqToHom_refl, Category.comp_id]
+      rfl
+    · intro i _ hi
+      dsimp
+      simp only [Category.assoc, IsLimit.fac, Fan.mk_pt, Fan.mk_π_app, dif_neg hi, comp_zero]
+    · intro h
+      simp at h ))
+
+end
+
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Cofan X) (hc : IsColimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfColimitCocone : Bicone X where
+  pt := c.pt
+  π j := hc.desc (Cofan.mk (X j) (fun i => if h : i = j then eqToHom (by rw [h]) else 0))
+  ι j := c.inj j
+  ι_π i j := by
+    erw [IsColimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfColimitCocone : (biconeOfColimitCocone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    erw [Preadditive.comp_sum, Category.comp_id, Finset.sum_eq_single j]
+    · simp
+      rfl
+    · intro i _ hi
+      simp [dif_neg hi.symm]
+    · intro h
+      simp at h))
+
+end
+
 end
 
 end
@@ -270,6 +334,7 @@ attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryCoproducts
 
+omit [HasZeroObject D] in
 lemma leftExactFunctor_le_additiveFunctor :
     leftExactFunctor C D ≤ additiveFunctor C D :=
   fun F h ↦ by
@@ -282,6 +347,7 @@ lemma rightExactFunctor_le_additiveFunctor :
     simp only [rightExactFunctor_iff] at h
     exact Functor.additive_of_preservesBinaryBiproducts F
 
+omit [HasZeroObject D] in
 lemma exactFunctor_le_additiveFunctor :
     exactFunctor C D ≤ additiveFunctor C D :=
   (exactFunctor_le_leftExactFunctor C D).trans
@@ -303,6 +369,8 @@ end
 
 variable {C D}
 
+
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofLeftExact_obj_fst (F : C ⥤ₗ D) :
     ((AdditiveFunctor.ofLeftExact C D).obj F).obj = F.obj :=
@@ -313,11 +381,13 @@ theorem AdditiveFunctor.ofRightExact_obj_fst (F : C ⥤ᵣ D) :
     ((AdditiveFunctor.ofRightExact C D).obj F).obj = F.obj :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofExact_obj_fst (F : C ⥤ₑ D) :
     ((AdditiveFunctor.ofExact C D).obj F).obj = F.obj :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofLeftExact_map_hom {F G : C ⥤ₗ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofLeftExact C D).map α).hom = α.hom :=
@@ -328,6 +398,7 @@ theorem AdditiveFunctor.ofRightExact_map_hom {F G : C ⥤ᵣ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofRightExact C D).map α).hom = α.hom :=
   rfl
 
+omit [HasZeroObject D] in
 @[simp]
 theorem AdditiveFunctor.ofExact_map_hom {F G : C ⥤ₑ D} (α : F ⟶ G) :
     ((AdditiveFunctor.ofExact C D).map α).hom = α.hom :=
