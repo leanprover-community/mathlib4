@@ -41,17 +41,17 @@ variable (R : Type*) [CommRing R]
 
 namespace Pentagonal
 
-theorem tendsTo_order_aux_X (k : ℕ) :
-    Tendsto (fun i ↦ (aux k i (X : R⟦X⟧)).order) atTop (nhds ⊤) := by
+theorem tendsto_order_powMulProdOneSubPow_X (k : ℕ) :
+    Tendsto (fun i ↦ (powMulProdOneSubPow k i (X : R⟦X⟧)).order) atTop (nhds ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n + 1, ?_⟩
   intro m hm
-  grw [aux, ← le_order_mul, order_X_pow]
+  grw [powMulProdOneSubPow, ← le_order_mul, order_X_pow]
   refine lt_add_of_lt_of_nonneg ?_ (by simp)
   norm_cast
   grind
 
-theorem tendsTo_order_neg_X_pow (k : ℕ) :
+theorem tendsto_order_neg_X_pow (k : ℕ) :
     Tendsto (fun i ↦ (-(X : R⟦X⟧) ^ (i + k + 1)).order) atTop (nhds ⊤) := by
   nontriviality R using Subsingleton.eq_zero
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr fun n ↦ eventually_atTop.mpr ⟨n, ?_⟩
@@ -60,7 +60,7 @@ theorem tendsTo_order_neg_X_pow (k : ℕ) :
   norm_cast
   linarith
 
-theorem tendsTo_order_pow_pentagonal_sub :
+theorem tendsto_order_pow_pentagonal_sub :
     Tendsto (fun i ↦ ((-1) ^ i * ((X : R⟦X⟧) ^ (i * (3 * i + 1) / 2) -
       X ^ ((i + 1) * (3 * i + 2) / 2))).order) atTop (nhds ⊤) := by
   nontriviality R using Subsingleton.eq_zero
@@ -79,12 +79,12 @@ variable [TopologicalSpace R]
 
 namespace Pentagonal
 
-theorem summable_aux_X (k : ℕ) : Summable (aux k · (X : R⟦X⟧)) :=
-  summable_of_tendsto_order_atTop_nhds_top R (tendsTo_order_aux_X R k)
+theorem summable_powMulProdOneSubPow_X (k : ℕ) : Summable (powMulProdOneSubPow k · (X : R⟦X⟧)) :=
+  summable_of_tendsto_order_atTop_nhds_top R (tendsto_order_powMulProdOneSubPow_X R k)
 
 theorem multipliable_one_sub_X_pow (k : ℕ) : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + k + 1) := by
   simpa [sub_eq_add_neg] using
-    multipliable_one_add_of_tendsto_order_atTop_nhds_top R (tendsTo_order_neg_X_pow R k)
+    multipliable_one_add_of_tendsto_order_atTop_nhds_top R (tendsto_order_neg_X_pow R k)
 
 end Pentagonal
 
@@ -93,7 +93,7 @@ namespace PowerSeries.WithPiTopology
 
 theorem summable_pow_pentagonal_sub : Summable fun (k : ℕ) ↦
     ((-1) ^ k * (X ^ (k * (3 * k + 1) / 2) - X ^ ((k + 1) * (3 * k + 2) / 2)) : R⟦X⟧) :=
-  summable_of_tendsto_order_atTop_nhds_top R (Pentagonal.tendsTo_order_pow_pentagonal_sub R)
+  summable_of_tendsto_order_atTop_nhds_top R (Pentagonal.tendsto_order_pow_pentagonal_sub R)
 
 /-- **Pentagonal number theorem** for power series, summing over natural numbers:
 
@@ -107,7 +107,7 @@ theorem tprod_one_sub_X_pow_eq_tsum_nat [IsTopologicalRing R] [T2Space R] :
   · rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun i (hi : i ≥ d + 1) ↦ ?_
     grind [coeff_X_pow]
-  · apply Pentagonal.summable_aux_X
+  · apply Pentagonal.summable_powMulProdOneSubPow_X
   · apply Pentagonal.multipliable_one_sub_X_pow
   · apply summable_pow_pentagonal_sub
   · rw [tendsto_iff_coeff_tendsto]
