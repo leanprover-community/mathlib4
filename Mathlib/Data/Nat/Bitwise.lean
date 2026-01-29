@@ -131,25 +131,6 @@ attribute [simp] testBit_xor
 
 end
 
-@[simp]
-theorem bit_false : bit false = (2 * ·) :=
-  rfl
-
-@[simp]
-theorem bit_true : bit true = (2 * · + 1) :=
-  rfl
-
-@[simp]
-theorem bit_false_apply (n) : bit false n = (2 * n) :=
-  rfl
-
-@[simp]
-theorem bit_true_apply (n) : bit true n = (2 * n + 1) :=
-  rfl
-
-theorem bit_ne_zero_iff {n : ℕ} {b : Bool} : n.bit b ≠ 0 ↔ n = 0 → b = true := by
-  simp
-
 /-- An alternative for `bitwise_bit` which replaces the `f false false = false` assumption
 with assumptions that neither `bit a m` nor `bit b n` are `0`
 (albeit, phrased as the implications `m = 0 → a = true` and `n = 0 → b = true`) -/
@@ -388,9 +369,6 @@ theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
       apply Nat.xor_self
     | 3 =>
       apply zero_xor
-
-@[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
-  cases b <;> simp <;> lia
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
