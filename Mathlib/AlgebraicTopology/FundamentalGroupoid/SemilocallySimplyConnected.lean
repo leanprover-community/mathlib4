@@ -37,7 +37,7 @@ open CategoryTheory FundamentalGroupoid
 variable {X : Type*} [TopologicalSpace X]
 
 /-- A topological space is semilocally simply connected if every point has a neighborhood `U`
-such that the inclusion map from `π₁(U, base)` to `π₁(X, base)` is trivial for all basepoints
+such that the map from `π₁(U, base)` to `π₁(X, base)` induced by the inclusion is trivial for all basepoints
 in `U`. Equivalently, every loop in `U` is nullhomotopic in `X`. -/
 def SemilocallySimplyConnected (X : Type*) [TopologicalSpace X] : Prop :=
   ∀ x : X, ∃ U : Set X, IsOpen U ∧ x ∈ U ∧
