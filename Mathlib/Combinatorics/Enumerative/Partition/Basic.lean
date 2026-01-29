@@ -229,6 +229,71 @@ theorem countRestricted_two (n : ℕ) : countRestricted n 2 = distincts n := by
 def oddDistincts (n : ℕ) : Finset n.Partition :=
   odds n ∩ distincts n
 
+/-- If `r` is a positive integer, then we have a correspondence between:
+1. Partitions of `n + r` whose largest part is `r`;
+2. Partitions of `n` whose largest part is ≤ `r`.
+The correspondence is to erase `r` to go from 1 to 2, and to add `r` to go from 2 to 1.
+-/
+def eraseEquiv (n r : ℕ) (hr : 0 < r) :
+    {π : Partition (n + r) // π.parts.sup = r} ≃
+    {π : Partition n // π.parts.sup ≤ r} :=
+by
+  classical
+  have hpos : 0 < n + r := Nat.add_pos_right n hr
+  exact
+  { toFun := fun s => by
+      have hne : s.1.parts ≠ 0 := by
+        intro h0
+        have : (0 : ℕ) = n + r := by simpa [h0] using s.1.3
+        exact (Nat.ne_of_gt hpos) this.symm
+      have hrmem : r ∈ s.1.parts := by
+        have : s.1.parts.sup ∈ s.1.parts :=
+          Multiset.sup_mem_of_ne_zero s.1.parts hne
+        simpa [s.2] using this
+      have hall : ∀ x ∈ s.1.parts, x ≤ r :=
+        (Multiset.sup_le.1 (le_of_eq s.2))
+      refine
+        ⟨⟨s.1.parts.erase r, (s.1.2 <| Multiset.mem_of_mem_erase ·),
+          (add_right_inj r).1 <| by
+            rw [Multiset.sum_erase hrmem, s.1.3, add_comm]⟩,
+          ?_⟩
+      exact
+        Multiset.sup_le.mpr (fun x hx =>
+          hall x (Multiset.mem_of_mem_erase hx))
+
+    invFun := fun s => by
+      refine
+        ⟨⟨r ::ₘ s.1.parts, by cases s.1; aesop,
+          by cases s.1; aesop (add unsafe add_comm)⟩, ?_⟩
+      simp [Multiset.sup_cons, sup_eq_left.2 s.2]
+
+    left_inv := by
+      rintro ⟨π, hsup⟩
+      have hne : π.parts ≠ 0 := by
+        intro h0
+        have : (0 : ℕ) = n + r := by simpa [h0] using π.3
+        exact (Nat.ne_of_gt hpos) this.symm
+      have hrmem : r ∈ π.parts := by
+        have : π.parts.sup ∈ π.parts :=
+          Multiset.sup_mem_of_ne_zero π.parts hne
+        simpa [hsup] using this
+      ext a
+      simpa using
+        congrArg (fun t => Multiset.count a t) (Multiset.cons_erase hrmem)
+
+    right_inv := by
+      intro s
+      aesop
+  }
+
+/-- The number of partitions of `n` whose largest part is `r` equals the number of partitions
+of `n - r` whose largest part is ≤ `r`. This is a result of `eraseEquiv`. -/
+theorem partition_max_equals_bound (n r : ℕ) (h₁ : r ≤ n) (h₂ : r ≠ 0) :
+    Fintype.card {π : Partition n // π.parts.sup = r} =
+    Fintype.card {π : Partition (n - r) // π.parts.sup ≤ r} := by
+  have hr : 0 < r := Nat.pos_of_ne_zero h₂
+  convert Fintype.card_congr (eraseEquiv (n - r) r hr) <;> omega
+
 end Partition
 
 end Nat
