@@ -289,18 +289,29 @@ protected theorem neg_add_cancel (x : X[S⁻¹]) : -x + x = 0 := by
 
 /-- `zsmul` of `OreLocalization` -/
 @[irreducible]
-protected def zsmul : ℤ → X[S⁻¹] → X[S⁻¹] := zsmulRec
+protected def zsmul [SMul ℤ R] : ℤ → X[S⁻¹] → X[S⁻¹] := OreLocalization.hsmul
 
-unseal OreLocalization.zsmul in
-instance instAddGroupOreLocalization : AddGroup X[S⁻¹] where
+-- When R is a ring the action of ℤ on R induces an action of ℤ on X[S⁻¹]
+-- and we need to ensure that this is the action which the AddGroup instance
+-- picks up
+instance instAddGroupOreLocalization [SMul ℤ R] : AddGroup X[S⁻¹] where
   neg_add_cancel := OreLocalization.neg_add_cancel
-  zsmul := OreLocalization.zsmul
+  zsmul := OreLocalization.hsmul
+  zsmul_zero' := sorry
+  zsmul_succ' := sorry
+  zsmul_neg' := sorry
+
+-- When R is not a ring there is no action of ℤ on R so we can just use
+-- the default action of ℤ on an abelian group.
+instance (priority := low) instAddGroupOreLocalization' : AddGroup X[S⁻¹] where
+  neg_add_cancel := OreLocalization.neg_add_cancel
+  zsmul := zsmulRec
 
 end AddGroup
 
 section AddCommGroup
 
-variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S]
+variable {R : Type*} [Monoid R] {S : Submonoid R} [OreSet S] [SMul ℤ R]
 variable {X : Type*} [AddCommGroup X] [DistribMulAction R X]
 
 instance : AddCommGroup X[S⁻¹] where
