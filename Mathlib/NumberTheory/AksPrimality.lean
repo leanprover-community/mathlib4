@@ -48,7 +48,7 @@ prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
 
 open Polynomial Finset
 
-namespace Aks
+namespace AKS
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
