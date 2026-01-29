@@ -3,10 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Further properties of homeomorphisms
@@ -16,46 +18,27 @@ Pretty much every topological property is preserved under homeomorphisms.
 
 -/
 
+@[expose] public section
+
 assert_not_exists Module MonoidWithZero
 
 open Filter Function Set Topology
 
 variable {X Y W Z : Type*}
 
-namespace Homeomorph
+section
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace W] [TopologicalSpace Z]
   {X' Y' : Type*} [TopologicalSpace X'] [TopologicalSpace Y']
 
-/-- Homeomorphism given an embedding. -/
-@[simps! apply_coe]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
-    X ≃ₜ Set.range f :=
-  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
-    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias ofIsEmbedding := IsEmbedding.toHomeomorph
-
-@[deprecated (since := "2024-10-26")]
-alias ofEmbedding := IsEmbedding.toHomeomorph
-
-/-- A surjective embedding is a homeomorphism. -/
-@[simps! apply]
-noncomputable def _root_.Topology.IsEmbedding.toHomeomorphOfSurjective {f : X → Y}
-    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
-
-@[deprecated (since := "2025-04-16")]
-alias _root_.Topology.IsEmbedding.toHomeomorph_of_surjective :=
-  IsEmbedding.toHomeomorphOfSurjective
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorphOfSurjective
+namespace Homeomorph
 
 protected theorem secondCountableTopology [SecondCountableTopology Y]
     (h : X ≃ₜ Y) : SecondCountableTopology X :=
   h.isInducing.secondCountableTopology
+
+protected theorem baireSpace [BaireSpace X] (f : X ≃ₜ Y) : BaireSpace Y :=
+  f.isOpenQuotientMap.baireSpace
 
 /-- If `h : X → Y` is a homeomorphism, `h(s)` is compact iff `s` is. -/
 @[simp]
@@ -228,7 +211,7 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
     (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
   continuous_toFun := .prodMk (by fun_prop) (by fun_prop)
-  continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
+  continuous_invFun := continuous_pi <| by rintro (s | t) <;> dsimp <;> fun_prop
 
 /-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
 space `f ⬝` when `α` only contains `⬝`.
@@ -300,7 +283,7 @@ def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X whe
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
 `Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]
-def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
+def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
     dsimp [Equiv.sumArrowEquivProdArrow]
@@ -374,7 +357,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   -- TODO: by continuity!
-  continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
+  continuous_toFun := e.continuous.continuousOn.mapsToRestrict (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
@@ -440,6 +423,39 @@ end
 
 end Homeomorph
 
+namespace Topology.IsEmbedding
+
+/-- Homeomorphism given an embedding. -/
+@[simps! apply_coe]
+noncomputable def toHomeomorph {f : X → Y} (hf : IsEmbedding f) :
+    X ≃ₜ Set.range f :=
+  Equiv.ofInjective f hf.injective |>.toHomeomorphOfIsInducing <|
+    IsInducing.subtypeVal.of_comp_iff.mp hf.toIsInducing
+
+/-- A surjective embedding is a homeomorphism. -/
+@[simps! apply]
+noncomputable def toHomeomorphOfSurjective {f : X → Y}
+    (hf : IsEmbedding f) (hsurj : Function.Surjective f) : X ≃ₜ Y :=
+  Equiv.ofBijective f ⟨hf.injective, hsurj⟩ |>.toHomeomorphOfIsInducing hf.toIsInducing
+
+/-- A set is homeomorphic to its image under any embedding. -/
+noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
+  (hf.comp .subtypeVal).toHomeomorph.trans <| .setCongr <| by simp [Set.range_comp]
+
+/-- An embedding restricts to a homeomorphism between the preimage and any subset of its range. -/
+noncomputable def homeomorphOfSubsetRange {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) : (f ⁻¹' s) ≃ₜ s :=
+  hf.homeomorphImage (f ⁻¹' s) |>.trans <| .setCongr <| Set.image_preimage_eq_of_subset hs
+
+@[simp]
+theorem homeomorphOfSubsetRange_apply_coe {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) (x : f ⁻¹' s) :
+    ↑(hf.homeomorphOfSubsetRange hs x) = f ↑x := rfl
+
+end Topology.IsEmbedding
+
+end
+
 namespace Continuous
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
@@ -449,7 +465,7 @@ theorem continuous_symm_of_equiv_compact_to_t2 [CompactSpace X] [T2Space Y] {f :
   rw [continuous_iff_isClosed]
   intro C hC
   have hC' : IsClosed (f '' C) := (hC.isCompact.image hf).isClosed
-  rwa [Equiv.image_eq_preimage] at hC'
+  rwa [Equiv.image_eq_preimage_symm] at hC'
 
 /-- Continuous equivalences from a compact space to a T2 space are homeomorphisms.
 
@@ -488,14 +504,6 @@ lemma isOpenEmbedding : IsOpenEmbedding f := (hf.homeomorph f).isOpenEmbedding
 lemma isClosedEmbedding : IsClosedEmbedding f := (hf.homeomorph f).isClosedEmbedding
 lemma isDenseEmbedding : IsDenseEmbedding f := (hf.homeomorph f).isDenseEmbedding
 
-@[deprecated (since := "2024-10-28")] alias inducing := isInducing
-
-@[deprecated (since := "2024-10-26")]
-alias embedding := isEmbedding
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap := isQuotientMap
-
 end IsHomeomorph
 
 /-- A map is a homeomorphism iff it is the map underlying a bundled homeomorphism `h : X ≃ₜ Y`. -/
@@ -515,9 +523,6 @@ lemma isHomeomorph_iff_isEmbedding_surjective : IsHomeomorph f ↔ IsEmbedding f
   mp hf := ⟨hf.isEmbedding, hf.surjective⟩
   mpr h := ⟨h.1.continuous, ((isOpenEmbedding_iff f).2 ⟨h.1, h.2.range_eq ▸ isOpen_univ⟩).isOpenMap,
     h.1.injective, h.2⟩
-
-@[deprecated (since := "2024-10-26")]
-alias isHomeomorph_iff_embedding_surjective := isHomeomorph_iff_isEmbedding_surjective
 
 /-- A map is a homeomorphism iff it is continuous, closed and bijective. -/
 lemma isHomeomorph_iff_continuous_isClosedMap_bijective : IsHomeomorph f ↔
@@ -543,7 +548,7 @@ lemma IsHomeomorph.sigmaMap {ι κ : Type*} {X : ι → Type*} {Y : κ → Type*
     [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)] {f : ι → κ}
     (hf : Bijective f) {g : (i : ι) → X i → Y (f i)} (hg : ∀ i, IsHomeomorph (g i)) :
     IsHomeomorph (Sigma.map f g) := by
-  simp_rw [isHomeomorph_iff_isEmbedding_surjective,] at hg ⊢
+  simp_rw [isHomeomorph_iff_isEmbedding_surjective] at hg ⊢
   exact ⟨(isEmbedding_sigmaMap hf.1).2 fun i ↦ (hg i).1, hf.2.sigma_map fun i ↦ (hg i).2⟩
 
 lemma IsHomeomorph.pi_map {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]

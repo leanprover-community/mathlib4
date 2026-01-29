@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-!
 # The homology sequence
@@ -29,13 +31,15 @@ the Liquid Tensor Experiment.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
 section HasZeroMorphisms
 
-variable {C ι : Type*} [Category C] [HasZeroMorphisms C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [HasZeroMorphisms C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) (φ : K ⟶ L) (i j : ι)
   [K.HasHomology i] [K.HasHomology j] [L.HasHomology i] [L.HasHomology j]
 
@@ -94,7 +98,7 @@ end HasZeroMorphisms
 
 section Preadditive
 
-variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
   (K : HomologicalComplex C c) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
@@ -110,15 +114,10 @@ instance [K.HasHomology i] [K.HasHomology j] :
   dsimp
   infer_instance
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  dsimp
+  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+  dsimp [-Fin.reduceFinMk]
   infer_instance
 
 include hij in
@@ -152,12 +151,6 @@ variable (C)
 
 attribute [local simp] homologyMap_comp cyclesMap_comp opcyclesMap_comp
 
-#adaptation_note /-- nightly-2024-03-11
-We turn off simprocs here.
-Ideally someone will investigate whether `simp` lemmas can be rearranged
-so that this works without the `set_option`,
-*or* come up with a proposal regarding finer control of disabling simprocs. -/
-set_option simprocs false in
 /-- The functor `HomologicalComplex C c ⥤ ComposableArrows C 3` that maps `K` to the
 diagram `K.homology i ⟶ K.opcycles i ⟶ K.cycles j ⟶ K.homology j`. -/
 @[simps]
@@ -165,7 +158,8 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    (homologyMap φ j) (by simp) (by simp) (by simp)
+    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
+    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
 
 end HomologySequence
 
@@ -173,7 +167,7 @@ end Preadditive
 
 section Abelian
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
 
 /-- If `X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` is an exact sequence of homological complexes, then
 `X₁.opcycles i ⟶ X₂.opcycles i ⟶ X₃.opcycles i ⟶ 0` is exact. This lemma states
@@ -186,7 +180,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
   have : Epi (ShortComplex.map S (eval C c i)).g := by dsimp; infer_instance
   have hj := (hS.map (HomologicalComplex.eval C c i)).gIsCokernel
   apply ShortComplex.exact_of_g_is_cokernel
-  refine CokernelCofork.IsColimit.ofπ' _ _  (fun {A} k hk => by
+  refine CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk => by
     dsimp at k hk ⊢
     have H := CokernelCofork.IsColimit.desc' hj (S.X₂.pOpcycles i ≫ k) (by
       dsimp
@@ -274,7 +268,7 @@ namespace CategoryTheory
 
 open HomologicalComplex HomologySequence
 
-variable {C ι : Type*} [Category C] [Abelian C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Abelian C] {c : ComplexShape ι}
   {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
@@ -282,7 +276,7 @@ namespace ShortComplex
 
 namespace ShortExact
 
-/-- The connecting homoomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
+/-- The connecting homomorphism `S.X₃.homology i ⟶ S.X₁.homology j` for a short exact
 short complex `S`. -/
 noncomputable def δ : S.X₃.homology i ⟶ S.X₁.homology j := (snakeInput hS i j hij).δ
 

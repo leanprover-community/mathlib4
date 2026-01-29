@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` missing function from standard library
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta
@@ -79,7 +83,7 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   | 0, _ => mkAppM ``Prod.fst #[x]
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM ``Prod.snd #[x]) i' n'
 
-/-- For an element of a product type(of size`n`) `xs` create an array of all possible projections
+/-- For an element of a product type (of size `n`) `xs` create an array of all possible projections
 i.e. `#[xs.1, xs.2.1, xs.2.2.1, ..., xs.2..2]` -/
 def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
   (Array.range n)

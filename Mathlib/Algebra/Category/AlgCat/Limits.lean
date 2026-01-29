@@ -3,11 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Category.Ring.Limits
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.Ring.Limits
 
 /-!
 # The category of R-algebras has all limits
@@ -15,6 +18,8 @@ import Mathlib.Algebra.Category.Ring.Limits
 Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits
@@ -62,7 +67,7 @@ instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
   inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
 
-/-- `limit.π (F ⋙ forget (AlgCat R)) j` as a `AlgHom`. -/
+/-- `limit.π (F ⋙ forget (AlgCat R)) j` as an `AlgHom`. -/
 def limitπAlgHom (j) :
     (Types.Small.limitCone (F ⋙ forget (AlgCat R))).pt →ₐ[R]
       (F ⋙ forget (AlgCat.{w} R)).obj j :=
@@ -73,7 +78,7 @@ def limitπAlgHom (j) :
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
     commutes' := fun x => by
-      simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply _ R,
+      simp only [Types.Small.limitCone_π_app, ← Shrink.algEquiv_apply R,
         Types.Small.limitCone_pt, AlgEquiv.commutes]
       rfl
     }

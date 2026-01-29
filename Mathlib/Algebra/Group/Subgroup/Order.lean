@@ -3,15 +3,19 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Ruben Van de Velde
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Order.Atoms
 
 /-!
 # Facts about ordered structures and ordered instances on subgroups
 -/
+
+@[expose] public section
 
 open Subgroup
 
@@ -73,10 +77,10 @@ namespace Subgroup
 variable {G : Type*}
 
 /-- A subgroup of an ordered group is an ordered group. -/
-@[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
+@[to_additive /-- An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`. -/]
 instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H : Subgroup G) :
     IsOrderedMonoid H :=
-  Subtype.coe_injective.isOrderedMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
+  Function.Injective.isOrderedMonoid Subtype.val (fun _ _ => rfl) .rfl
 
 end Subgroup
 

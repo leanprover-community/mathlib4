@@ -3,9 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
-import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+public import Mathlib.Order.Atoms
 
 /-! # Simple rings
 
@@ -16,6 +17,8 @@ A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `
 - `IsSimpleRing`: a predicate expressing that a ring is simple.
 
 -/
+
+public section
 
 
 /--

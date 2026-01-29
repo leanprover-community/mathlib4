@@ -3,10 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Linear categories
@@ -25,10 +28,12 @@ This makes for longer signatures than would be ideal.
 
 ## Future work
 
-It would be nice to have a usable framework of enriched categories in which this just became
+It would be nice to have a usable framework of enriched categories in which this would just be
 a category enriched in `Module R`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -39,15 +44,15 @@ open LinearMap
 namespace CategoryTheory
 
 /-- A category is called `R`-linear if `P ⟶ Q` is an `R`-module such that composition is
-    `R`-linear in both variables. -/
+`R`-linear in both variables. -/
 class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditive C] where
   homModule : ∀ X Y : C, Module R (X ⟶ Y) := by infer_instance
   /-- compatibility of the scalar multiplication with the post-composition -/
   smul_comp : ∀ (X Y Z : C) (r : R) (f : X ⟶ Y) (g : Y ⟶ Z), (r • f) ≫ g = r • f ≫ g := by
-    aesop_cat
+    cat_disch
   /-- compatibility of the scalar multiplication with the pre-composition -/
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
-    aesop_cat
+    cat_disch
 
 attribute [instance] Linear.homModule
 
@@ -94,16 +99,24 @@ universe u'
 variable {D : Type u'} (F : D → C)
 
 instance inducedCategory : Linear.{w, v} R (InducedCategory C F) where
-  homModule X Y := @Linear.homModule R _ C _ _ _ (F X) (F Y)
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+  homModule X Y := Equiv.module _ InducedCategory.homEquiv
+  smul_comp _ _ _ _ _ _ := by ext; apply smul_comp
+  comp_smul _ _ _ _ _ _ := by ext; apply comp_smul
+
+variable {F} in
+/-- The linear equivalence `(X ⟶ Y) ≃+ (F X ⟶ F Y)` when `F : D → C` and
+`C` is a `R`-linear category. -/
+@[simps!]
+def _root_.CategoryTheory.InducedCategory.homLinearEquiv
+    {X Y : InducedCategory C F} :
+    (X ⟶ Y) ≃ₗ[R] (F X ⟶ F Y) where
+  toAddEquiv := InducedCategory.homAddEquiv
+  map_smul' := by cat_disch
 
 end InducedCategory
 
-instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory where
-  homModule X Y := @Linear.homModule R _ C _ _ _ X.obj Y.obj
-  smul_comp _ _ _ _ _ _ := smul_comp _ _ _ _ _ _
-  comp_smul _ _ _ _ _ _ := comp_smul _ _ _ _ _ _
+instance fullSubcategory (Z : ObjectProperty C) : Linear.{w, v} R Z.FullSubcategory :=
+  inducedCategory _
 
 variable (R)
 
@@ -124,16 +137,16 @@ def rightComp (X : C) {Y Z : C} (g : Y ⟶ Z) : (X ⟶ Y) →ₗ[R] X ⟶ Z wher
 instance {X Y : C} (f : X ⟶ Y) [Epi f] (r : R) [Invertible r] : Epi (r • f) :=
   ⟨fun g g' H => by
     rw [smul_comp, smul_comp, ← comp_smul, ← comp_smul, cancel_epi] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 instance {X Y : C} (f : X ⟶ Y) [Mono f] (r : R) [Invertible r] : Mono (r • f) :=
   ⟨fun g g' H => by
     rw [comp_smul, comp_smul, ← smul_comp, ← smul_comp, cancel_mono] at H
-    simpa [smul_smul] using congr_arg (fun f => ⅟ r • f) H⟩
+    simpa [smul_smul] using congr_arg (fun f => ⅟r • f) H⟩
 
 /-- Given isomorphic objects `X ≅ Y, W ≅ Z` in a `k`-linear category, we have a `k`-linear
 isomorphism between `Hom(X, W)` and `Hom(Y, Z).` -/
-def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [Linear k C]
+def homCongr (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C] [Linear k C]
     {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) : (X ⟶ W) ≃ₗ[k] Y ⟶ Z :=
   {
     (rightComp k Y f₂.hom).comp
@@ -149,12 +162,12 @@ def homCongr (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C] [
         leftComp_apply, LinearMap.toFun_eq_coe, Iso.inv_hom_id_assoc, Category.assoc,
         Iso.inv_hom_id, Category.comp_id] }
 
-theorem homCongr_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_apply (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : X ⟶ W) :
     homCongr k f₁ f₂ f = (f₁.inv ≫ f) ≫ f₂.hom :=
   rfl
 
-theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category C] [Semiring k] [Preadditive C]
+theorem homCongr_symm_apply (k : Type*) {C : Type*} [Category* C] [Semiring k] [Preadditive C]
     [Linear k C] {X Y W Z : C} (f₁ : X ≅ Y) (f₂ : W ≅ Z) (f : Y ⟶ Z) :
     (homCongr k f₁ f₂).symm f = f₁.hom ≫ f ≫ f₂.inv :=
   rfl

@@ -3,9 +3,12 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.TrivSqZeroExt
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Topology on `TrivSqZeroExt R M`
@@ -23,6 +26,8 @@ one value.
 * `TrivSqZeroExt.topologicalRing`: the ring operations are continuous
 
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -65,20 +70,14 @@ theorem continuous_inr [Zero R] : Continuous (inr : M → tsze R M) :=
 theorem IsEmbedding.inl [Zero M] : IsEmbedding (inl : R → tsze R M) :=
   .of_comp continuous_inl continuous_fst .id
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_inl := IsEmbedding.inl
-
 theorem IsEmbedding.inr [Zero R] : IsEmbedding (inr : M → tsze R M) :=
   .of_comp continuous_inr continuous_snd .id
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_inr := IsEmbedding.inr
 
 variable (R M)
 
 /-- `TrivSqZeroExt.fst` as a continuous linear map. -/
 @[simps]
-def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : tsze R M →L[R] R :=
+def fstCLM [CommSemiring R] [AddCommMonoid M] [Module R M] : StrongDual R (tsze R M) :=
   { ContinuousLinearMap.fst R R M with toFun := fst }
 
 /-- `TrivSqZeroExt.snd` as a continuous linear map. -/

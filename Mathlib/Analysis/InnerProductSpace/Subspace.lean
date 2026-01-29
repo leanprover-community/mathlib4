@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
 /-!
 # Subspaces of inner product spaces
@@ -12,9 +14,11 @@ This file defines the inner-product structure on a subspace of an inner-product 
 some theorems about orthogonal families of subspaces.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)
 
@@ -153,7 +157,7 @@ theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Inject
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
-    Orthonormal 𝕜 fun a : Σi, α i => V a.1 (v_family a.1 a.2) := by
+    Orthonormal 𝕜 fun a : Σ i, α i => V a.1 (v_family a.1 a.2) := by
   constructor
   · rintro ⟨i, v⟩
     simpa only [LinearIsometry.norm_map] using (hv_family i).left v

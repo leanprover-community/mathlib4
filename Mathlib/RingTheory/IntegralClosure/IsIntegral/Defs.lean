@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Tactic.Algebraize
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Defs
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.Tactic.Algebraize
 
 /-!
 # Integral closure of a subring.
@@ -22,6 +24,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 * `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
                           coefficients in `R`.
 -/
+
+@[expose] public section
 
 open Polynomial
 

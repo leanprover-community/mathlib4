@@ -3,8 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Data.Nat.Squarefree
+module
+
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Smooth numbers
@@ -30,6 +32,8 @@ and we provide some API, in particular bounds for their cardinalities; see
 `Nat.smoothNumbersUpTo_card_le` and `Nat.roughNumbersUpTo_card_le`.
 -/
 
+@[expose] public section
+
 open scoped Finset
 namespace Nat
 
@@ -51,13 +55,10 @@ lemma lt_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p < n :=
 
 lemma primesBelow_succ (n : ℕ) :
     primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
-  rw [primesBelow, primesBelow, Finset.range_succ, Finset.filter_insert]
+  rw [primesBelow, primesBelow, Finset.range_add_one, Finset.filter_insert]
 
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
-
-@[deprecated (since := "2025-05-23")] alias not_mem_primesBelow := notMem_primesBelow
-
 
 /-!
 ### `s`-factored numbers
@@ -282,7 +283,7 @@ lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     Finset.mem_range]
 
 /-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
-lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
+lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
     smoothNumbers n = factoredNumbers n.primesBelow := by
   rw [smoothNumbers_eq_factoredNumbers]
   refine Set.Subset.antisymm (fun m hm ↦ ?_) <| factoredNumbers_mono Finset.mem_of_mem_filter
@@ -314,7 +315,7 @@ of primes below `n`. -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
   primeFactors_subset_of_mem_factoredNumbers <|
-    smmoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
+    smoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
 
 /-- `m` is an `n`-smooth number if the `Finset` of its prime factors consists of numbers `< n`. -/
 lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
@@ -349,7 +350,7 @@ lemma prod_mem_smoothNumbers (n N : ℕ) :
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
 See `Nat.equivProdNatSmoothNumbers` for when `N` is prime. -/
 lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : (N + 1).smoothNumbers = N.smoothNumbers := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_succ, factoredNumbers_insert _ hN]
+  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_add_one, factoredNumbers_insert _ hN]
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
   simp +decide only [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
@@ -376,7 +377,7 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
   rcases (mem_primeFactorsList_mul hp' hn.1).mp hq with H | H
   · rw [mem_primeFactorsList hp'] at H
-    exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
+    exact Nat.lt_succ_of_le <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
   · exact (hn.2 q H).trans <| lt_succ_self p
 
 /-- If `p` is a prime and `n` is `p`-smooth, then `p` and `n` are coprime. -/
@@ -401,7 +402,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_succ ▸ rfl
+    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -425,7 +426,7 @@ def smoothNumbersUpTo (N k : ℕ) : Finset ℕ :=
 
 lemma mem_smoothNumbersUpTo {N k n : ℕ} :
     n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
-  simp [smoothNumbersUpTo, lt_succ]
+  simp [smoothNumbersUpTo]
 
 /-- The positive non-`k`-smooth (so "`k`-rough") numbers up to and including `N` as a `Finset` -/
 def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
@@ -474,11 +475,12 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
     simp only [ne_eq, _root_.mul_eq_zero, sq_eq_zero_iff, not_or] at this
     exact this.1
-  · rw [lt_succ, le_sqrt']
+  · rw [Nat.lt_succ_iff, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
-    exact mul_le_mul_left' (Finset.one_le_prod' fun p hp ↦
-      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_lt.le) _
+    gcongr
+    exact Finset.one_le_prod' fun p hp ↦
+      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
@@ -501,9 +503,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
-  have H₁ : m ≠ 0 → p ∣ m → m < N + 1 → p < N + 1 :=
-    fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
-  have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
+  have H : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
   grind
 

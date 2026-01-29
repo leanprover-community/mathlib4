@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Bases of dual vector spaces
@@ -30,17 +32,15 @@ This file concerns bases on dual vector spaces.
     then `ε` is a basis.
 -/
 
-open Module Submodule
+@[expose] public section
+
+open Module Dual Submodule LinearMap Function
 
 noncomputable section
 
-namespace Basis
+namespace Module.Basis
 
-universe u v w
-
-open Module Module.Dual Submodule LinearMap Function
-
-universe uR uM uK uV uι
+universe u v w uR uM uK uV uι
 variable {R : Type uR} {M : Type uM} {K : Type uK} {V : Type uV} {ι : Type uι}
 
 section CommSemiring
@@ -54,27 +54,22 @@ def toDual : M →ₗ[R] Module.Dual R M :=
   b.constr ℕ fun v => b.constr ℕ fun w => if w = v then (1 : R) else 0
 
 theorem toDual_apply (i j : ι) : b.toDual (b i) (b j) = if i = j then 1 else 0 := by
-  erw [constr_basis b, constr_basis b]
+  rw [toDual, constr_basis b, constr_basis b]
   simp only [eq_comm]
 
 @[simp]
 theorem toDual_linearCombination_left (f : ι →₀ R) (i : ι) :
     b.toDual (Finsupp.linearCombination R b f) (b i) = f i := by
   rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, LinearMap.sum_apply]
-  simp_rw [LinearMap.map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
-    Finset.sum_ite_eq']
-  split_ifs with h
-  · rfl
-  · rw [Finsupp.notMem_support_iff.mp h]
+  simp_rw [map_smul, LinearMap.smul_apply, toDual_apply, smul_eq_mul, mul_boole,
+    Finset.sum_ite_eq', Finsupp.if_mem_support]
 
 @[simp]
 theorem toDual_linearCombination_right (f : ι →₀ R) (i : ι) :
     b.toDual (b i) (Finsupp.linearCombination R b f) = f i := by
   rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum]
-  simp_rw [LinearMap.map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq]
-  split_ifs with h
-  · rfl
-  · rw [Finsupp.notMem_support_iff.mp h]
+  simp_rw [map_smul, toDual_apply, smul_eq_mul, mul_boole, Finset.sum_ite_eq,
+    Finsupp.if_mem_support]
 
 theorem toDual_apply_left (m : M) (i : ι) : b.toDual m (b i) = b.repr m i := by
   rw [← b.toDual_linearCombination_left, b.linearCombination_repr]
@@ -86,7 +81,7 @@ theorem coe_toDual_self (i : ι) : b.toDual (b i) = b.coord i := by
   ext
   apply toDual_apply_right
 
-/-- `h.toDual_flip v` is the linear map sending `w` to `h.toDual w v`. -/
+/-- `h.toDualFlip v` is the linear map sending `w` to `h.toDual w v`. -/
 def toDualFlip (m : M) : M →ₗ[R] R :=
   b.toDual.flip m
 
@@ -108,12 +103,9 @@ theorem toDual_inj (m : M) (a : b.toDual m = 0) : m = 0 :=
 theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
   ker_eq_bot'.mpr b.toDual_inj
 
-theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine eq_top_iff'.2 fun f => ?_
-  let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
-  refine ⟨Finsupp.linearCombination R b lin_comb, b.ext fun i => ?_⟩
-  rw [b.toDual_eq_repr _ i, repr_linearCombination b]
-  rfl
+theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ :=
+  eq_top_iff'.2 fun f => ⟨Finsupp.linearCombination R b <|
+    Finsupp.equivFunOnFinite.symm fun i => f (b i), b.ext fun i => by simp⟩
 
 omit [DecidableEq ι] in
 @[simp]
@@ -151,7 +143,7 @@ theorem linearCombination_dualBasis (f : ι →₀ R) (i : ι) :
   cases nonempty_fintype ι
   rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype, LinearMap.sum_apply]
   · simp_rw [LinearMap.smul_apply, smul_eq_mul, dualBasis_apply_self, mul_boole,
-    Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
+      Finset.sum_ite_eq, if_pos (Finset.mem_univ i)]
   · intro
     rw [zero_smul]
 
@@ -210,20 +202,19 @@ theorem linearCombination_coord [Finite ι] (b : Basis ι R M) (f : ι →₀ R)
 
 end CommSemiring
 
-end Basis
+end Module.Basis
 
 section DualBases
-
-open Module
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open Lean.Elab.Tactic in
 /-- Try using `Set.toFinite` to dispatch a `Set.Finite` goal. -/
-def evalUseFiniteInstance : TacticM Unit := do
+meta def evalUseFiniteInstance : TacticM Unit := do
   evalTactic (← `(tactic| intros; apply Set.toFinite))
 
+@[inherit_doc evalUseFiniteInstance]
 elab "use_finite_instance" : tactic => evalUseFiniteInstance
 
 /-- `e` and `ε` have characteristic properties of a basis and its dual -/
@@ -237,7 +228,7 @@ end DualBases
 
 namespace Module.DualBases
 
-open Module Module.Dual LinearMap Function
+open LinearMap Function
 
 variable {R M ι : Type*}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
@@ -317,5 +308,3 @@ theorem coe_dualBasis [DecidableEq ι] [Finite ι] : ⇑h.basis.dualBasis = ε :
   funext fun i => h.basis.ext fun j => by simp
 
 end Module.DualBases
-
-open Module

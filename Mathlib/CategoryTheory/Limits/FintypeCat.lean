@@ -3,12 +3,17 @@ Copyright (c) 2023 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Finite.Sigma
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Products
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Finite.Sigma
 
 /-!
 # (Co)limits in the category of finite types
@@ -16,6 +21,8 @@ import Mathlib.Data.Finite.Sigma
 We show that finite (co)limits exist in `FintypeCat` and that they are preserved by the natural
 inclusion `FintypeCat.incl`.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Functor
 
@@ -28,7 +35,7 @@ instance {J : Type} [SmallCategory J] (K : J ⥤ FintypeCat.{u}) (j : J) :
   simp only [comp_obj, FintypeCat.incl_obj]
   infer_instance
 
-/-- Any functor from a finite category to Types that only involves finite objects,
+/-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite limit. -/
 noncomputable instance finiteLimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (limit K) := by
@@ -40,7 +47,7 @@ noncomputable instance inclusionCreatesFiniteLimits {J : Type} [SmallCategory J]
   CreatesLimit {K} := createsLimitOfFullyFaithfulOfIso
     (FintypeCat.of <| limit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite limits for the forgtful functor. -/
+/- Help typeclass inference to infer creation of finite limits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesLimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteLimits
@@ -56,7 +63,7 @@ noncomputable instance inclusion_preservesFiniteLimits :
   preservesFiniteLimits _ :=
     preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite limits for the forgtful functor. -/
+/- Help typeclass inference to infer preservation of finite limits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteLimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteLimits
 
@@ -88,20 +95,32 @@ instance nonempty_pi_of_nonempty {ι : Type*} [Finite ι] (X : ι → FintypeCat
     [∀ i, Nonempty (X i)] : Nonempty (∏ᶜ X : FintypeCat.{u}) :=
   (Equiv.nonempty_congr <| productEquiv X).mpr inferInstance
 
-/-- Any functor from a finite category to Types that only involves finite objects,
+/-- The colimit type of a functor from a finite category to Types that only
+involves finite objects is finite. -/
+instance finite_colimitType {J : Type} [SmallCategory J] [FinCategory J]
+    (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Finite K.ColimitType :=
+  Quot.finite _
+
+/-- Any functor from a finite category to `Type*` that only involves finite objects,
+has a finite colimit. -/
+lemma finite_of_isColimit {J : Type} [SmallCategory J] [FinCategory J]
+    {K : J ⥤ Type*} [∀ j, Finite (K.obj j)] {c : Cocone K} (hc : IsColimit c) :
+    Finite c.pt :=
+  Finite.of_equiv _ ((Types.isColimit_iff_coconeTypesIsColimit c).1 ⟨hc⟩).equiv
+
+/-- Any functor from a finite category to `Type*` that only involves finite objects,
 has a finite colimit. -/
 noncomputable instance finiteColimitOfFiniteDiagram {J : Type} [SmallCategory J] [FinCategory J]
     (K : J ⥤ Type*) [∀ j, Finite (K.obj j)] : Fintype (colimit K) := by
-  have : Finite (Types.Quot K) := Quot.finite (Types.Quot.Rel K)
-  have : Fintype (Types.Quot K) := Fintype.ofFinite (Types.Quot K)
-  exact Fintype.ofEquiv (Types.Quot K) (Types.colimitEquivQuot K).symm
+  have : Finite (colimit K) := finite_of_isColimit (colimit.isColimit K)
+  apply Fintype.ofFinite
 
 noncomputable instance inclusionCreatesFiniteColimits {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J FintypeCat.incl.{u} where
   CreatesColimit {K} := createsColimitOfFullyFaithfulOfIso
     (FintypeCat.of <| colimit <| K ⋙ FintypeCat.incl) (Iso.refl _)
 
-/- Help typeclass inference to infer creation of finite colimits for the forgtful functor. -/
+/- Help typeclass inference to infer creation of finite colimits for the forgetful functor. -/
 noncomputable instance {J : Type} [SmallCategory J] [FinCategory J] :
     CreatesColimitsOfShape J (forget FintypeCat) :=
   FintypeCat.inclusionCreatesFiniteColimits
@@ -117,11 +136,11 @@ noncomputable instance inclusion_preservesFiniteColimits :
   preservesFiniteColimits _ :=
     preservesColimitOfShape_of_createsColimitsOfShape_and_hasColimitsOfShape FintypeCat.incl
 
-/- Help typeclass inference to infer preservation of finite colimits for the forgtful functor. -/
+/- Help typeclass inference to infer preservation of finite colimits for the forgetful functor. -/
 noncomputable instance : PreservesFiniteColimits (forget FintypeCat) :=
   FintypeCat.inclusion_preservesFiniteColimits
 
-lemma jointly_surjective {J : Type*} [Category J] [FinCategory J]
+lemma jointly_surjective {J : Type*} [SmallCategory J] [FinCategory J]
     (F : J ⥤ FintypeCat.{u}) (t : Cocone F) (h : IsColimit t) (x : t.pt) :
     ∃ j y, t.ι.app j y = x :=
   let hs := isColimitOfPreserves FintypeCat.incl.{u} h

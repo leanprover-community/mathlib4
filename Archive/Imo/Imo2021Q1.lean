@@ -14,7 +14,7 @@ Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each o
 He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
-# Solution
+## Solution
 
 We show there exists a triplet `a, b, c ∈ [n , 2n]` with `a < b < c` and each of the sums `(a + b)`,
 `(b + c)`, `(a + c)` being a perfect square. Specifically, we consider the linear system of
@@ -52,7 +52,7 @@ lemma exists_numbers_in_interval {n : ℕ} (hn : 100 ≤ n) :
   have h₂ := Nat.succ_le_succ_sqrt' (n + 1)
   have h₃ : 10 ≤ (n + 1).sqrt := by
     rw [Nat.le_sqrt]
-    omega
+    lia
   rw [← Nat.sub_add_cancel hn'] at h₁ h₂ h₃
   set l := (n + 1).sqrt - 1
   refine ⟨l, ?_, ?_⟩
@@ -65,8 +65,8 @@ lemma exists_triplet_summing_to_squares {n : ℕ} (hn : 100 ≤ n) :
       IsSquare (a + b) ∧ IsSquare (c + a) ∧ IsSquare (b + c) := by
   obtain ⟨l, hl1, hl2⟩ := exists_numbers_in_interval hn
   have hl : 1 < l := by contrapose! hl1; interval_cases l <;> linarith
-  have h₁ : 4 * l ≤ 2 * l ^ 2 := by omega
-  have h₂ : 1 ≤ 2 * l := by omega
+  have h₁ : 4 * l ≤ 2 * l ^ 2 := by lia
+  have h₂ : 1 ≤ 2 * l := by lia
   refine ⟨2 * l ^ 2 - 4 * l, 2 * l ^ 2 + 1, 2 * l ^ 2 + 4 * l, ?_, ?_, ?_,
     ⟨?_, ⟨2 * l - 1, ?_⟩, ⟨2 * l, ?_⟩, 2 * l + 1, ?_⟩⟩
   all_goals zify [h₁, h₂]; linarith
@@ -84,19 +84,11 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
   · suffices a ∉ {b, c} ∧ b ∉ {c} by
       rw [Finset.card_insert_of_notMem this.1, Finset.card_insert_of_notMem this.2,
         Finset.card_singleton]
-    rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
-    push_neg
-    exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
+    grind
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
-    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)
-    all_goals
-      first
-      | contradiction
-      | assumption
-      | simpa only [add_comm x y]
-  · simp only [Finset.mem_insert, Finset.mem_singleton]
-    rintro d (rfl | rfl | rfl) <;> constructor <;> linarith only [hna, hab, hbc, hcn]
+    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl) <;> grind
+  · grind
 
 end Imo2021Q1
 

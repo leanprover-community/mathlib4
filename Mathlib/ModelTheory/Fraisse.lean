@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.PartialEquiv
-import Mathlib.ModelTheory.Bundled
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.ModelTheory.FinitelyGenerated
+public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -65,6 +67,8 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - Show existence of Fraïssé limits
 
 -/
+
+@[expose] public section
 
 
 universe u v w w'
@@ -195,7 +199,7 @@ theorem age.countable_quotient [h : Countable M] : (Quotient.mk' '' L.age M).Cou
 
 -- This is not a simp-lemma because it does not apply to itself.
 /-- The age of a direct limit of structures is the union of the ages of the structures. -/
-theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] [Nonempty ι]
+theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirectedOrder ι] [Nonempty ι]
     (G : ι → Type max w w') [∀ i, L.Structure (G i)] (f : ∀ i j, i ≤ j → G i ↪[L] G j)
     [DirectedSystem G fun i j h => f i j h] : L.age (DirectLimit G f) = ⋃ i : ι, L.age (G i) := by
   classical
@@ -212,7 +216,7 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     intro x hx
     refine ⟨f (out x).1 i (hi (out x).1 (Finset.mem_image_of_mem _ hx)) (out x).2, ?_⟩
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
-      DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
+      DirectLimit.equiv_iff G f (le_refl _) (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
   · rintro ⟨i, Mfg, ⟨e⟩⟩
     exact ⟨Mfg, ⟨Embedding.comp (DirectLimit.of L ι G f i) e⟩⟩
@@ -420,7 +424,7 @@ theorem isFraisseLimit_of_countable_infinite
     have : Finite S := hS.finite
     have : Infinite { x // x ∉ S } := ((Set.toFinite _).infinite_compl).to_subtype
     have : Finite f.toHom.range := (((Substructure.fg_iff_structure_fg S).1 hS).range _).finite
-    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl ).to_subtype
+    have : Infinite { x // x ∉ f.toHom.range } := ((Set.toFinite _).infinite_compl).to_subtype
     refine ⟨StrongHomClass.toEquiv (f.equivRange.subtypeCongr nonempty_equiv_of_countable.some), ?_⟩
     ext x
     simp [Equiv.subtypeCongr]

@@ -3,13 +3,17 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Coprime.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -39,8 +43,6 @@ lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
 
 lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
-@[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
-
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
   suffices ∀ x : ℕ, x.Coprime n → ∃ k : ℕ, (x + k * n).Coprime m by
@@ -48,7 +50,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def, - castHom_apply]
+    simp [unitsMap_def, -castHom_apply]
   intro x hx
   let ps : Finset ℕ := {p ∈ m.primeFactors | ¬p ∣ x}
   use ps.prod id
@@ -104,7 +106,7 @@ lemma eq_unit_mul_divisor {N : ℕ} (a : ZMod N) :
     exact ⟨p, q, Int.eq_one_of_mul_eq_self_right (Nat.cast_ne_zero.mpr hd) hpq⟩
   -- Lift it arbitrarily to a unit mod `N`.
   obtain ⟨u, hu⟩ := (unitsMap_surjective (⟨d, mul_comm d N₀ ▸ hN₀⟩ : N₀ ∣ N)) hu₀.unit
-  rw [unitsMap_def, ← Units.eq_iff, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe] at hu
+  rw [unitsMap_def, ← Units.val_inj, Units.coe_map, IsUnit.unit_spec, MonoidHom.coe_coe] at hu
   refine ⟨u.val, u.isUnit, ?_⟩
   rw [← natCast_zmod_val a, ← natCast_zmod_val u.1, ha₀, ← Nat.cast_mul,
     natCast_eq_natCast_iff, mul_comm _ d, Nat.ModEq]

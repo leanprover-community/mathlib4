@@ -3,9 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Perm.ViaEmbedding
-import Mathlib.GroupTheory.Subgroup.Simple
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups
@@ -21,6 +25,7 @@ the derived series of a group.
 * `IsSolvable G` : the group `G` is solvable
 -/
 
+@[expose] public section
 
 open Subgroup
 
@@ -171,7 +176,7 @@ theorem isSolvable_iff_commutator_lt [WellFoundedLT (Subgroup G)] :
   refine ⟨fun _ _ ↦ IsSolvable.commutator_lt_of_ne_bot, fun h ↦ ?_⟩
   suffices h : IsSolvable (⊤ : Subgroup G) from
     solvable_of_surjective (MonoidHom.range_eq_top.mp (range_subtype ⊤))
-  refine WellFoundedLT.induction (C := fun (H : Subgroup G) ↦ IsSolvable H) ⊤ fun H hH ↦ ?_
+  induction (⊤ : Subgroup G) using WellFoundedLT.induction with | ind H hH
   rcases eq_or_ne H ⊥ with rfl | h'
   · infer_instance
   · obtain ⟨n, hn⟩ := hH ⁅H, H⁆ (h H h')

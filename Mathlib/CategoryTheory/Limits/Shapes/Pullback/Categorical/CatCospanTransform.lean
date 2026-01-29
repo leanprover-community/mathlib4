@@ -3,12 +3,14 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-! # Morphisms of categorical cospans.
 
 Given `F : A ⥤ B`, `G : C ⥤ B`, `F' : A' ⥤ B'` and `G' : C' ⥤ B'`,
-this files defines `CatCospanTransform F G F' G'`, the category of
+this file defines `CatCospanTransform F G F' G'`, the category of
 "categorical transformations" from the (categorical) cospan `F G` to
 the (categorical) cospan `F' G'`. Such a transformation consists of a
 diagram
@@ -26,9 +28,12 @@ with specified `CatCommSq`s expressing 2-commutativity of the squares. These
 transformations are used to encode 2-functoriality of categorical pullback squares.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Limits
 
-universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂
+universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ v₁₀ v₁₁ v₁₂ v₁₃ v₁₄ v₁₅
+universe u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉ u₁₀ u₁₁ u₁₂ u₁₃ u₁₄ u₁₅
 
 /-- A `CatCospanTransform F G F' G'` is a diagram
 ```
@@ -78,13 +83,13 @@ variable {F G}
 /-- Composition of `CatCospanTransforms` is defined "componentwise". -/
 @[simps]
 def comp
-  {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
-  [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
-  {F' : A' ⥤ B'} {G' : C' ⥤ B'}
-  {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
-  [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
-  {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
-  (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
+    {A' : Type u₄} {B' : Type u₅} {C' : Type u₆}
+    [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
+    {F' : A' ⥤ B'} {G' : C' ⥤ B'}
+    {A'' : Type u₇} {B'' : Type u₈} {C'' : Type u₉}
+    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
+    {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
+    (ψ : CatCospanTransform F G F' G') (ψ' : CatCospanTransform F' G' F'' G'') :
     CatCospanTransform F G F'' G'' where
   left := ψ.left ⋙ ψ'.left
   base := ψ.base ⋙ ψ'.base
@@ -103,7 +108,7 @@ variable {A : Type u₁} {B : Type u₂} {C : Type u₃}
     {F : A ⥤ B} {G : C ⥤ B}
     [Category.{v₄} A'] [Category.{v₅} B'] [Category.{v₆} C']
     {F' : A' ⥤ B'} {G' : C' ⥤ B'}
-    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₅} C'']
+    [Category.{v₇} A''] [Category.{v₈} B''] [Category.{v₉} C'']
     {F'' : A'' ⥤ B''} {G'' : C'' ⥤ B''}
 
 /-- A morphism of `CatCospanTransform F G F' G'` is a triple of natural
@@ -121,12 +126,12 @@ structure CatCospanTransformMorphism
   left_coherence :
       ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left F' =
       Functor.whiskerLeft F base ≫ ψ'.squareLeft.iso.hom := by
-    aesop_cat
+    cat_disch
   /-- the coherence condition for the right square -/
   right_coherence :
       ψ.squareRight.iso.hom ≫ Functor.whiskerRight right G' =
       Functor.whiskerLeft G base ≫ ψ'.squareRight.iso.hom := by
-    aesop_cat
+    cat_disch
 
 namespace CatCospanTransform
 
@@ -144,11 +149,11 @@ instance category : Category (CatCospanTransform F G F' G') where
   comp α β :=
     { left := α.left ≫ β.left
       right := α.right ≫ β.right
-      base := α.base ≫ β.base}
+      base := α.base ≫ β.base }
 
 attribute [local ext] CatCospanTransformMorphism in
 @[ext]
-lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ': ψ ⟶ ψ'}
+lemma hom_ext {ψ ψ' : CatCospanTransform F G F' G'} {θ θ' : ψ ⟶ ψ'}
     (hl : θ.left = θ'.left) (hr : θ.right = θ'.right) (hb : θ.base = θ'.base) :
     θ = θ' := by
   apply CatCospanTransformMorphism.ext <;> assumption
@@ -213,11 +218,11 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
     (left_coherence :
         ψ.squareLeft.iso.hom ≫ Functor.whiskerRight left.hom F' =
         Functor.whiskerLeft F base.hom ≫ ψ'.squareLeft.iso.hom := by
-      aesop_cat)
+      cat_disch)
     (right_coherence :
         ψ.squareRight.iso.hom ≫ Functor.whiskerRight right.hom G' =
         Functor.whiskerLeft G base.hom ≫ ψ'.squareRight.iso.hom := by
-      aesop_cat) :
+      cat_disch) :
     ψ ≅ ψ' where
   hom :=
     { left := left.hom
@@ -235,6 +240,76 @@ def mkIso {ψ ψ' : CatCospanTransform F G F' G'}
         simpa using ψ'.squareRight.iso.hom ≫=
           IsIso.inv_eq_inv.mpr right_coherence =≫
           ψ.squareRight.iso.hom }
+
+section Iso
+
+variable {ψ ψ' : CatCospanTransform F G F' G'}
+  (f : ψ' ⟶ ψ') [IsIso f] (e : ψ ≅ ψ')
+
+instance isIso_left : IsIso f.left :=
+  ⟨(inv f).left, by simp [← CatCospanTransform.category_comp_left]⟩
+
+instance isIso_right : IsIso f.right :=
+  ⟨(inv f).right, by simp [← CatCospanTransform.category_comp_right]⟩
+
+instance isIso_base : IsIso f.base :=
+  ⟨(inv f).base, by simp [← CatCospanTransform.category_comp_base]⟩
+
+@[simp]
+lemma inv_left : inv f.left = (inv f).left := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_left]
+
+@[simp]
+lemma inv_right : inv f.right = (inv f).right := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_right]
+
+@[simp]
+lemma inv_base : inv f.base = (inv f).base := by
+  symm
+  apply IsIso.eq_inv_of_inv_hom_id
+  simp [← CatCospanTransform.category_comp_base]
+
+/-- Extract an isomorphism between left components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def leftIso : ψ.left ≅ ψ'.left where
+  hom := e.hom.left
+  inv := e.inv.left
+  hom_inv_id := by simp [← category_comp_left]
+  inv_hom_id := by simp [← category_comp_left]
+
+/-- Extract an isomorphism between right components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def rightIso : ψ.right ≅ ψ'.right where
+  hom := e.hom.right
+  inv := e.inv.right
+  hom_inv_id := by simp [← category_comp_right]
+  inv_hom_id := by simp [← category_comp_right]
+
+/-- Extract an isomorphism between base components from an isomorphism in
+`CatCospanTransform F G F' G'`. -/
+@[simps]
+def baseIso : ψ.base ≅ ψ'.base where
+  hom := e.hom.base
+  inv := e.inv.base
+  hom_inv_id := by simp [← category_comp_base]
+  inv_hom_id := by simp [← category_comp_base]
+
+omit [IsIso f] in
+lemma isIso_iff : IsIso f ↔ IsIso f.left ∧ IsIso f.base ∧ IsIso f.right where
+  mp h := ⟨inferInstance, inferInstance, inferInstance⟩
+  mpr h := by
+    obtain ⟨_, _, _⟩ := h
+    use mkIso (asIso f.left) (asIso f.right) (asIso f.base)
+      f.left_coherence f.right_coherence |>.inv
+    aesop_cat
+
+end Iso
 
 /-- The left unitor isomorphism for categorical cospan transformations. -/
 @[simps!]
@@ -260,6 +335,103 @@ def associator {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
     (φ.left.associator φ'.left φ''.left)
     (φ.right.associator φ'.right φ''.right)
     (φ.base.associator φ'.base φ''.base)
+
+section lemmas
+
+-- We scope the notations with notations from bicategories to make life easier.
+-- Due to performance issues, these notations should not be in scope at the same time
+-- as the ones in bicategories.
+
+@[inherit_doc] scoped infixr:81 " ◁ " => CatCospanTransformMorphism.whiskerLeft
+@[inherit_doc] scoped infixl:81 " ▷ " => CatCospanTransformMorphism.whiskerRight
+@[inherit_doc] scoped notation "α_" => CatCospanTransform.associator
+@[inherit_doc] scoped notation "λ_" => CatCospanTransform.leftUnitor
+@[inherit_doc] scoped notation "ρ_" => CatCospanTransform.rightUnitor
+
+variable
+    {A''' : Type u₁₀} {B''' : Type u₁₁} {C''' : Type u₁₂}
+    [Category.{v₁₀} A'''] [Category.{v₁₁} B'''] [Category.{v₁₂} C''']
+    {F''' : A''' ⥤ B'''} {G''' : C''' ⥤ B'''}
+    {ψ ψ' ψ'' : CatCospanTransform F G F' G'}
+    (η : ψ ⟶ ψ') (η' : ψ' ⟶ ψ'')
+    {φ φ' φ'' : CatCospanTransform F' G' F'' G''}
+    (θ : φ ⟶ φ') (θ' : φ' ⟶ φ'')
+    {τ τ' : CatCospanTransform F'' G'' F''' G'''}
+    (γ : τ ⟶ τ')
+
+@[reassoc]
+lemma whisker_exchange : ψ ◁ θ ≫ η ▷ φ' = η ▷ φ ≫ ψ' ◁ θ := by cat_disch
+
+@[simp]
+lemma id_whiskerRight : 𝟙 ψ ▷ φ = 𝟙 _ := by cat_disch
+
+@[reassoc]
+lemma whiskerRight_id : η ▷ (.id _ _) = (ρ_ _).hom ≫ η ≫ (ρ_ _).inv := by cat_disch
+
+@[simp, reassoc]
+lemma comp_whiskerRight : (η ≫ η') ▷ φ = η ▷ φ ≫ η' ▷ φ := by cat_disch
+
+@[reassoc]
+lemma whiskerRight_comp :
+    η ▷ (φ.comp τ) = (α_ _ _ _).inv ≫ (η ▷ φ) ▷ τ ≫ (α_ _ _ _).hom := by
+  cat_disch
+
+@[simp]
+lemma whiskerleft_id : ψ ◁ 𝟙 φ = 𝟙 _ := by cat_disch
+
+@[reassoc]
+lemma id_whiskerLeft : (.id _ _) ◁ η = (λ_ _).hom ≫ η ≫ (λ_ _).inv := by cat_disch
+
+@[simp, reassoc]
+lemma whiskerLeft_comp : ψ ◁ (θ ≫ θ') = (ψ ◁ θ) ≫ (ψ ◁ θ') := by cat_disch
+
+@[reassoc]
+lemma comp_whiskerLeft :
+    (ψ.comp φ) ◁ γ = (α_ _ _ _).hom ≫ (ψ ◁ (φ ◁ γ)) ≫ (α_ _ _ _).inv := by
+  cat_disch
+
+@[reassoc]
+lemma pentagon
+    {A'''' : Type u₁₃} {B'''' : Type u₁₄} {C'''' : Type u₁₅}
+    [Category.{v₁₃} A''''] [Category.{v₁₄} B''''] [Category.{v₁₅} C'''']
+    {F'''' : A'''' ⥤ B''''} {G'''' : C'''' ⥤ B''''}
+    {σ : CatCospanTransform F''' G''' F'''' G''''} :
+    (α_ ψ φ τ).hom ▷ σ ≫ (α_ ψ (φ.comp τ) σ).hom ≫ ψ ◁ (α_ φ τ σ).hom =
+      (α_ (ψ.comp φ) τ σ).hom ≫ (α_ ψ φ (τ.comp σ)).hom := by
+  cat_disch
+
+@[reassoc]
+lemma triangle :
+    (α_ ψ (.id _ _) φ).hom ≫ ψ ◁ (λ_ φ).hom = (ρ_ ψ).hom ▷ φ := by
+  cat_disch
+
+@[reassoc]
+lemma triangle_inv :
+     (α_ ψ (.id _ _) φ).inv ≫ (ρ_ ψ).hom ▷ φ = ψ ◁ (λ_ φ).hom := by
+  cat_disch
+
+section Isos
+
+variable {ψ ψ' : CatCospanTransform F G F' G'} (η : ψ ⟶ ψ') [IsIso η]
+    {φ φ' : CatCospanTransform F' G' F'' G''} (θ : φ ⟶ φ') [IsIso θ]
+
+instance : IsIso (ψ ◁ θ) :=
+    ⟨ψ ◁ inv θ, ⟨by simp [← whiskerLeft_comp], by simp [← whiskerLeft_comp]⟩⟩
+
+lemma inv_whiskerLeft : inv (ψ ◁ θ) = ψ ◁ inv θ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← whiskerLeft_comp]
+
+instance : IsIso (η ▷ φ) :=
+    ⟨inv η ▷ φ, ⟨by simp [← comp_whiskerRight], by simp [← comp_whiskerRight]⟩⟩
+
+lemma inv_whiskerRight : inv (η ▷ φ) = inv η ▷ φ := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp [← comp_whiskerRight]
+
+end Isos
+
+end lemmas
 
 end CatCospanTransform
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Localization.InvSubmonoid
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Localization.InvSubmonoid
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
@@ -22,6 +24,8 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
 *`RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
+
+public section
 
 section Algebra
 
@@ -49,7 +53,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S']
     (IsLocalization.finsetIntegerMultiple_image _ s).symm
   obtain ⟨n, hn⟩ :=
     Algebra.pow_smul_mem_of_smul_subset_of_mem_adjoin (y : S) (s : Set S') (A.map g)
-      (by rw [hx₁]; exact Set.image_subset _ hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
+      (by rw [hx₁]; exact Set.image_mono hA₁) hx (Set.mem_image_of_mem _ (hA₂ y.2))
   obtain ⟨x', hx', hx''⟩ := hn n (le_of_eq rfl)
   rw [Algebra.smul_def, ← map_mul] at hx''
   obtain ⟨a, ha₂⟩ := (IsLocalization.eq_iff_exists M S').mp hx''
@@ -231,15 +235,4 @@ theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
     (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
       finiteType_holdsForLocalizationAway).right⟩
 
-@[deprecated (since := "2025-03-01")]
-alias finiteType_is_local := finiteType_isLocal
-
 end RingHom
-
-@[deprecated (since := "2025-03-14")]
-alias RingHom.IsLocalization.lift_mem_adjoin_finsetIntegerMultiple :=
-  IsLocalization.lift_mem_adjoin_finsetIntegerMultiple
-
-@[deprecated (since := "2025-03-14")]
-alias RingHom.IsLocalization.exists_smul_mem_of_mem_adjoin :=
-  IsLocalization.exists_smul_mem_of_mem_adjoin
