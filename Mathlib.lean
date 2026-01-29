@@ -4310,6 +4310,7 @@ public import Mathlib.Geometry.Manifold.Metrizable
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.Geometry.Manifold.PoincareConjecture
+public import Mathlib.Geometry.Manifold.PrincipalFiberBundle.PrincipalGBundle
 public import Mathlib.Geometry.Manifold.Riemannian.Basic
 public import Mathlib.Geometry.Manifold.Riemannian.PathELength
 public import Mathlib.Geometry.Manifold.Sheaf.Basic
