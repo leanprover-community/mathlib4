@@ -36,10 +36,9 @@ universe u
 
 variable {α β γ δ : Type*}
 
-open Classical in
 lemma Function.support_subsingleton_of_disjoint [Zero β] {s : δ → Set α} (f : α → β)
-    (hs : Pairwise (Disjoint on s)) (i : α) (j : δ) (hj : i ∈ s j) :
-    Function.support (fun d ↦ if i ∈ s d then f i else 0) ⊆ {j} := by
+    (hs : Pairwise (Disjoint on s)) (i : α) [DecidablePred (fun d => i ∈ s d)] (j : δ)
+    (hj : i ∈ s j) : Function.support (fun d ↦ if i ∈ s d then f i else 0) ⊆ {j} := by
   intro d
   simp_rw [Set.mem_singleton_iff, Function.mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp]
   rw [← not_imp_not]
@@ -99,6 +98,22 @@ diracs. -/
 noncomputable def toMeasure (w : MassFunction α) : @Measure α ⊤ :=
   Measure.sum (fun a ↦ (w a) • @Measure.dirac α ⊤ a)
 
+/-- The `@Measure α mα` as defined through a `MassFunction α` (mass function) through a sum of
+diracs, using a given `MeasurableSpace α`. -/
+noncomputable def toMeasure' (w : MassFunction α) (mα : MeasurableSpace α) : Measure[mα] α :=
+  Measure.sum (fun a ↦ (w a) • @Measure.dirac α mα a)
+
+lemma toMeasure_trim_eq_toMeasure' (w : MassFunction α) [mα : MeasurableSpace α] :
+    (w.toMeasure).trim (le_top) = w.toMeasure' mα := by
+  ext s hs
+  rw [trim_measurableSet_eq _ hs, toMeasure, toMeasure', sum_apply _ hs,
+    sum_apply _ MeasurableSpace.measurableSet_top]
+  simp_rw [smul_apply]
+  apply tsum_congr fun b ↦ ?_
+  congr 1
+  simp only [dirac_apply', MeasurableSpace.measurableSet_top]
+  rw [dirac_apply' _ hs]
+
 lemma toMeasure_apply (μ : MassFunction α) (s : Set α) :
     μ.toMeasure s = ∑' (i : α), μ i * s.indicator 1 i := by
   simp [toMeasure]
@@ -139,7 +154,6 @@ lemma toMeasure_additive (μ : MassFunction α) (s : δ → Set α) (hs : Pairwi
   rw [ENNReal.tsum_comm]
   exact tsum_congr (fun b ↦ Set.indicator_iUnion_of_disjoint s hs μ b)
 
-@[simp]
 theorem toMeasure_apply_finset {μ : MassFunction α} (s : Finset α) : μ.toMeasure s = ∑ x ∈ s, μ x
     := by
   rw [toMeasure_apply₁, tsum_eq_sum (s := s)]
