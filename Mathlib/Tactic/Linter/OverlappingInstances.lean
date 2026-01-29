@@ -148,22 +148,26 @@ def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM Messa
     has instance hypotheses which provide conflicting versions of the same data. Specifically:"
   let mut msgs := #[]
   for (overlap, fvars) in overlaps do
-    let (direct, indirect) := fvars.toList.partitionMap fun (fvar, isDirect) =>
-      if isDirect then .inl fvar else .inr fvar
+    let (instsOfOverlap, parentsOfOverlap) :=
+      fvars.toList.partitionMap fun (fvar, isFVarType) =>
+        if isFVarType then .inl fvar else .inr fvar
     let overlapType := m!"`{.ofInstanceType overlap}`"
-    let indirectTypes := MessageData.andList <|← indirect.mapM fun fvar =>
+    let parentTypesOfOverlap := MessageData.andList <|← parentsOfOverlap.mapM fun fvar =>
       return m!"`{.ofInstanceType <|← inferType fvar}`"
+    let parentTypesOfOverlap :=
+      m!"{if let [_, _] := parentsOfOverlap then m!"both " else m!""}{parentTypesOfOverlap}"
+
     msgs := msgs.push <|
-      if indirect.isEmpty then
+      if parentsOfOverlap.isEmpty then
         -- Necessarily plural:
-        m!"There are {direct.length} instances of {overlapType}."
+        m!"There are {instsOfOverlap.length} instances of {overlapType}."
       else
-        match direct with
-        | []  => m!"{overlapType} is provided by {indirectTypes}."
+        match instsOfOverlap with
+        | []  => m!"{overlapType} is provided by {parentTypesOfOverlap}."
         | [_] => m!"There is an instance of {overlapType} in the local context, but it is \
-            also provided by {indirectTypes}."
-        | _   => m!"There are {direct.length} instances of {overlapType} in the local \
-            context, and it is also provided by {indirectTypes}."
+            also provided by {parentTypesOfOverlap}."
+        | _   => m!"There are {instsOfOverlap.length} instances of {overlapType} in the local \
+            context, and it is also provided by {parentTypesOfOverlap}."
 
   msg :=
     if h : msgs.size = 1 then

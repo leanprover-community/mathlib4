@@ -43,7 +43,7 @@ def foo [Add Nat] [Add Nat] : [Add Nat] → [Add Nat] → Bool := by
 /--
 warning: The declaration `foo₁` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-`[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
+`[Bar Nat]` is provided by both `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₁`.
 -/
@@ -55,7 +55,7 @@ def foo₁ [FooBarBaz Nat] [FooBarBaq Nat] : Bool := by
 warning: The declaration `foo₂` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
 • There are 2 instances of `[FooBarBaz Nat]`.
-• `[Bar Nat]` is provided by `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
+• `[Bar Nat]` is provided by both `[FooBarBaq Nat]` and `[FooBarBaz Nat]`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₂`.
 -/
@@ -87,8 +87,8 @@ def foo₄ [FooBarBaz Nat] [FooBarBaz Nat] [Bar Nat] : Bool := true
 /--
 warning: The declaration `foo₅` has instance hypotheses which provide conflicting versions of the same data. Specifically:
 
-• `[Baz Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
-• `[Bar Nat]` is provided by `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+• `[Baz Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
+• `[Bar Nat]` is provided by both `[FooBarBaz Nat]` and `[FooBarBaz' Nat]`.
 
 There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo₅`.
 -/
