@@ -100,7 +100,7 @@ lemma ιMulti_dual_apply_nondiag {I : Type*} [LinearOrder I] (b : Basis I R M)
 independent in the `n`th exterior power of `M`. -/
 lemma ιMulti_family_linearIndependent_ofBasis {I : Type*} [LinearOrder I] (b : Basis I R M) :
     LinearIndependent R (ιMulti_family R n b) :=
-  LinearIndependent.ofDualFamily _ (fun s ↦ ιMulti_dual R n b s)
+  LinearIndependent.of_pairwise_dual_eq_zero_one _ (fun s ↦ ιMulti_dual R n b s)
     (fun _ _ h => ιMulti_dual_apply_nondiag R n b _ _ h)
     (fun _ => ιMulti_dual_apply_diag _ _ _ _)
 
@@ -195,7 +195,7 @@ lemma ιMulti_family_linearIndependent_field {I : Type*} [LinearOrder I] {v : I 
     rw [Subtype.val]
   rw [h, ← map_comp_ιMulti_family]
   refine LinearIndependent.map' ?_ (map n W.subtype)
-    (LinearMap.ker_eq_bot.mpr (map_injective_field (Submodule.ker_subtype _)))
+    (LinearMap.ker_eq_bot.mpr (map_injective_field (Submodule.subtype_injective _)))
   have hv'span : ⊤ ≤ Submodule.span K (Set.range v') := by
     rintro x -
     rw [← Submodule.apply_mem_span_image_iff_mem_span (Submodule.injective_subtype W),
