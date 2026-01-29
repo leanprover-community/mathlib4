@@ -321,3 +321,76 @@ end Set
 
 theorem Finset.countable_toSet (s : Finset α) : Set.Countable (↑s : Set α) :=
   s.finite_toSet.countable
+
+namespace Set
+
+/-- A set is uncountable if it is not countable.
+
+This is protected so that it does not conflict with global `Uncountable`. -/
+protected def Uncountable (s : Set α) : Prop :=
+  ¬s.Countable
+
+@[simp, push]
+theorem not_countable_iff_uncountable {s : Set α} : ¬s.Countable ↔ s.Uncountable := .rfl
+
+@[simp, push]
+theorem not_uncountable_iff_countable {s : Set α} : ¬s.Uncountable ↔ s.Countable :=
+  not_not
+
+alias ⟨_, Countable.not_uncountable⟩ := not_uncountable_iff_countable
+
+@[simp] lemma Uncountable.not_countable {s : Set α} (hs : s.Uncountable) : ¬ s.Countable := hs
+
+attribute [simp] Countable.not_uncountable
+
+theorem uncountable_coe_iff {s : Set α} : Uncountable s ↔ s.Uncountable :=
+  not_countable_iff.symm.trans countable_coe_iff.not
+
+alias ⟨_root_.Uncountable.to_set, Uncountable.to_subtype⟩ := uncountable_coe_iff
+
+theorem uncountable_univ_iff : (@univ α).Uncountable ↔ Uncountable α := by
+  rw [Set.Uncountable, countable_univ_iff, not_countable_iff]
+
+theorem uncountable_univ [h : Uncountable α] : (@univ α).Uncountable :=
+  uncountable_univ_iff.2 h
+
+protected lemma Uncountable.mono {s t : Set α} (h : s ⊆ t) : s.Uncountable → t.Uncountable :=
+  mt (·.mono h)
+
+theorem uncountable_of_countable_compl [Uncountable α] {s : Set α} (hs : sᶜ.Countable) :
+    s.Uncountable := fun h =>
+  Set.uncountable_univ (α := α) (by simpa using hs.union h)
+
+theorem Countable.uncountable_compl [Uncountable α] {s : Set α} (hs : s.Countable) :
+    sᶜ.Uncountable := fun h =>
+  Set.uncountable_univ (α := α) (by simpa using hs.union h)
+
+theorem Uncountable.diff {s t : Set α} (hs : s.Uncountable) (ht : t.Countable) :
+    (s \ t).Uncountable := fun h =>
+  hs <| h.of_diff ht
+
+@[simp]
+theorem uncountable_union {s t : Set α} : (s ∪ t).Uncountable ↔ s.Uncountable ∨ t.Uncountable := by
+  simp only [Set.Uncountable, countable_union, not_and_or]
+
+theorem Uncountable.of_image (f : α → β) {s : Set α} (hs : (f '' s).Uncountable) : s.Uncountable :=
+  mt (Countable.image · f) hs
+
+theorem Uncountable.image {s : Set α} {f : α → β} (hs : s.Uncountable) (hi : InjOn f s) :
+    (f '' s).Uncountable :=
+  mt (countable_of_injective_of_countable_image hi) hs
+
+theorem Uncountable.range [Uncountable α] {f : α → β} (hi : Injective f) :
+    (range f).Uncountable := by
+  simpa using uncountable_univ.image (hi.injOn (s := Set.univ))
+
+theorem Uncountable.infinite {s : Set α} (hs : s.Uncountable) : s.Infinite :=
+  mt Finite.countable hs
+
+theorem Uncountable.nonempty {s : Set α} (hs : s.Uncountable) : s.Nonempty :=
+  hs.infinite.nonempty
+
+theorem Uncountable.nontrivial {s : Set α} (hs : s.Uncountable) : s.Nontrivial :=
+  hs.infinite.nontrivial
+
+end Set

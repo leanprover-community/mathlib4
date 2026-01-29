@@ -449,6 +449,11 @@ theorem aleph0_lt_mk_iff : ℵ₀ < #α ↔ Uncountable α := by
 theorem aleph0_lt_mk [Uncountable α] : ℵ₀ < #α :=
   aleph0_lt_mk_iff.mpr ‹_›
 
+theorem aleph0_lt_iff_set_uncountable {s : Set α} : ℵ₀ < #s ↔ s.Uncountable :=
+  aleph0_lt_mk_iff.trans uncountable_coe_iff
+
+alias ⟨_, _root_.Set.Uncountable.aleph0_lt⟩ := aleph0_lt_iff_set_uncountable
+
 instance canLiftCardinalNat : CanLift Cardinal ℕ (↑) fun x => x < ℵ₀ :=
   ⟨fun _ hx =>
     let ⟨n, hn⟩ := lt_aleph0.mp hx
