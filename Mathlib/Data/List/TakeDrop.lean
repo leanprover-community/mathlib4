@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro, Rudy Peterson
 -/
 module
 
@@ -150,6 +150,94 @@ theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, d
   simpa using span.loop_eq_take_drop p l []
 
 end Filter
+
+section Splits
+
+/-! ### Generate splits of a list. -/
+
+/-- Pairs of prefixes and suffixes of a list.
+
+For example,
+`[1, 2, 3].splits = [([], [1, 2, 3]), ([1], [2, 3]), ([1, 2], [3]), ([1, 2, 3], [])]`. -/
+def splits (xs : List α) : List (List α × List α) :=
+  (range (xs.length + 1)).map xs.splitAt
+
+@[simp]
+lemma splits_nil : ([] : List α).splits = [([], [])] := rfl
+
+lemma splits_cons (x : α) (xs : List α) :
+    (x :: xs).splits = ([], x :: xs) :: xs.splits.map fun td ↦ (x :: td.1, td.2) := by
+  simp [splits, range_succ_eq_map]
+
+@[simp, grind =]
+lemma mem_splits_iff {x y l : List α} :
+    (x, y) ∈ l.splits ↔ l = x ++ y := by
+  simp only [splits, splitAt_eq, mem_map, mem_range, Prod.mk.injEq]
+  constructor
+  · rintro ⟨n, hn, rfl, rfl⟩
+    rw [take_append_drop]
+  · rintro rfl
+    exact ⟨x.length, by grind, by simp⟩
+
+lemma nil_self_mem_splits (l : List α) : ([], l) ∈ l.splits := by
+  simp
+
+lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
+  simp
+
+private lemma splits_eq_cons_tail (l : List α) : l.splits = ([], l) :: l.splits.tail := by
+  simp [splits, range_succ_eq_map]
+
+private lemma splits_eq_append_singleton_dropLast (l : List α) :
+    l.splits = l.splits.dropLast ++ [(l, [])] := by
+  simp [splits, range_add]
+
+lemma splits_append_tail {x y : List α} :
+    (x ++ y).splits =
+    (x.splits.map (fun td ↦ (td.1, td.2 ++ y)))
+    ++ (y.splits.map (fun td ↦ (x ++ td.1, td.2))).tail := by
+  induction x generalizing y with
+  | nil => simp [←splits_eq_cons_tail]
+  | cons a x ih => simp [splits_cons, ih, Function.comp_def, ←map_tail]
+
+lemma splits_append_dropLast {x y : List α} :
+    (x ++ y).splits =
+    (x.splits.map (fun td ↦ (td.1, td.2 ++ y))).dropLast
+    ++ (y.splits.map (fun td ↦ (x ++ td.1, td.2))) := by
+  rw [splits_append_tail]
+  rw (occs := .pos [1]) [splits_eq_append_singleton_dropLast x]
+  rw (occs := .pos [2]) [splits_eq_cons_tail y]
+  simp
+
+lemma splits_append_singleton {x : List α} {a : α} :
+    (x ++ [a]).splits = x.splits.map (fun td ↦ (td.1, td.2 ++ [a])) ++ [(x ++ [a], [])] := by
+  simp [splits_append_tail, List.splits_cons]
+
+lemma splits_reverse {l : List α} :
+    l.reverse.splits = (l.splits.map (fun td ↦ (td.2.reverse, td.1.reverse))).reverse := by
+  induction l with
+  | nil => simp
+  | cons a l ih => simp [splits_cons, splits_append_singleton, ih]
+
+/-- Left-associative triple splits of a list. -/
+def splits₃Left (l : List α) : List (List α × List α × List α) :=
+  l.splits.flatMap fun td ↦ td.1.splits.map fun t ↦ (t.1, t.2, td.2)
+
+@[simp, grind =]
+lemma mem_splits₃Left_iff {x y z l : List α} :
+    (x, y, z) ∈ l.splits₃Left ↔ l = x ++ y ++ z := by
+  simp [splits₃Left]
+
+/-- Right-associative triple splits of a list. -/
+def splits₃Right (l : List α) : List (List α × List α × List α) :=
+  l.splits.flatMap fun td ↦ td.2.splits.map fun d ↦ (td.1, d.1, d.2)
+
+@[simp, grind =]
+lemma mem_splits₃Right_iff {x y z l : List α} :
+    (x, y, z) ∈ l.splits₃Right ↔ l = x ++ y ++ z := by
+  simp [splits₃Right]
+
+end Splits
 
 /-! ### Miscellaneous lemmas -/
 
