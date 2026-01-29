@@ -94,3 +94,19 @@ There should only be a single instance of these data-carrying typeclasses in the
 -/
 #guard_msgs in
 def foo₅ [FooBarBaz Nat] [FooBarBaz' Nat] : Bool := true
+
+namespace Foo
+
+/-! Test unresolving name (`foo`, not `Foo.foo` or `_private...foo`) -/
+
+/--
+warning: The declaration `foo` has instance hypotheses which provide conflicting versions of the same data. Specifically:
+
+There are 2 instances of `[Add Nat]`.
+
+There should only be a single instance of these data-carrying typeclasses in the local context at a time. Consider choosing different instance hypotheses for the declaration `foo`.
+-/
+#guard_msgs in
+private def foo [Add Nat] [Add Nat] : Bool := true
+
+end Foo
