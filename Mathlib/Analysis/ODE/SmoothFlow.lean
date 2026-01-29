@@ -619,6 +619,18 @@ lemma contDiffOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set 
       exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryLeftEquiv ℝ
         (fun _ : Fin (n + 1) ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))).comp_contDiffOn hI
 
+/-- Specialization of `contDiffOn_integralCMLM` to the case `n = 0`, where `g : E → E [×0]→L[ℝ] E`
+corresponds to a function `f : E → E` via `uncurry0`/`curry0`. -/
+lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ) (hf : ContDiffOn ℝ k f u) :
+    ContDiffOn ℝ k (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
+      {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
+  have hg : ContDiffOn ℝ k (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
+  exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryFin0 ℝ
+    (C(Icc tmin tmax, E)) (C(Icc tmin tmax, E)))).comp_contDiffOn
+    (contDiffOn_integralCMLM hu t₀ k hg)
+
 end
 
 end SmoothFlow
