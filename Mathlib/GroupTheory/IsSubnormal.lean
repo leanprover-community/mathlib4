@@ -8,15 +8,36 @@ module
 
 public import Mathlib.GroupTheory.Subgroup.Simple
 
-/-! # Subnormal subgroups
+/-!
+# Subnormal subgroups
 
-In this file, we define subnormal subgroups in `IsSubnormal`.
-We also prove a few basic facts.
+In this file, we define subnormal subgroups.
 
-* The definition is equivalent to the existence of a finite chain of inclusions of
-  subgroups, each normal in the successor, starting at the subgroup itself and
-  ending with the whole group (`isSubnormal_iff`).
-* The relation of being `IsSubnormal` is transitive (`IsSubnormal.trans`).
+We also show some basic results about the interaction of subnormality and simplicity of groups.
+These should cover most of the results needed in this case.
+
+## Main Definition
+
+`IsSubnormal H`: A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+* either `H = ⊤`;
+* or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
+  `K` satisfies `IsSubnormal`.
+
+## Main Statements
+
+* `eq_bot_or_top_of_isSimpleGroup`: the only subnormal subgroups of simple groups are
+  `⊥`, the trivial subgroup, and `⊤`, the whole group.
+* `isSubnormal_iff`: Shows that `IsSubnormal H` holds if and only if there is
+  an increasing chain of subgroups, each normal in the following, starting from `H` and
+  reaching `⊤` in a finite number of steps.
+* `IsSubnormal.trans`: The relation of being `IsSubnormal` is transitive.
+
+## Implementation Notes
+
+We deviate from the common informal definition of subnormality and use an inductive predicate.
+This turns out to be more convenient to work with.
+We show the equivalence of the current definition with the existence of chains in
+`isSubnormal_iff`.
 -/
 
 variable {G : Type*} [Group G] {H K : Subgroup G}
@@ -120,6 +141,7 @@ the following one.
 
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
+-- TODO: consider using `MonotoneOn f {i | i ≤ n}` or some variant.
 lemma isSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
     (Monotone f) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
