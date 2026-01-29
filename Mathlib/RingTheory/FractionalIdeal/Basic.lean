@@ -7,7 +7,6 @@ module
 
 public import Mathlib.RingTheory.Localization.Integer
 public import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.Algebra.Module.Torsion.Field
 
 /-!
 # Fractional ideals

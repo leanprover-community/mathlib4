@@ -142,14 +142,24 @@ noncomputable def toCircle : AddCircle T → Circle :=
 theorem toCircle_apply_mk (x : ℝ) : @toCircle T x = Circle.exp (2 * π / T * x) :=
   rfl
 
-theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
-    @toCircle T (x + y) = toCircle x * toCircle y := by
+theorem toCircle_add (x y : AddCircle T) : toCircle (x + y) = toCircle x * toCircle y := by
   induction x using QuotientAddGroup.induction_on
   induction y using QuotientAddGroup.induction_on
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, Circle.exp_add]
 
 @[simp] lemma toCircle_zero : toCircle (0 : AddCircle T) = 1 := by
   rw [← QuotientAddGroup.mk_zero, toCircle_apply_mk, mul_zero, Circle.exp_zero]
+
+theorem toCircle_neg (x : AddCircle T) : toCircle (-x) = (toCircle x)⁻¹ :=
+  (mul_left_inj (toCircle x)).mp <| by simp [← toCircle_add]
+
+theorem toCircle_nsmul (x : AddCircle T) (n : ℕ) : toCircle (n • x) = toCircle x ^ n := by
+  induction n with
+  | zero => simp
+  | succ n ih => rw [succ_nsmul, toCircle_add, ih, pow_succ]
+
+theorem toCircle_zsmul (x : AddCircle T) (n : ℤ) : toCircle (n • x) = toCircle x ^ n := by
+  cases n <;> simp [toCircle_nsmul, toCircle_neg]
 
 theorem continuous_toCircle : Continuous (@toCircle T) :=
   continuous_coinduced_dom.mpr (Circle.exp.continuous.comp <| continuous_const.mul continuous_id')
@@ -204,3 +214,25 @@ theorem Circle.isCoveringMap_exp : IsCoveringMap exp := isAddQuotientCoveringMap
 
 lemma isLocalHomeomorph_circleExp : IsLocalHomeomorph Circle.exp :=
   Circle.isCoveringMap_exp.isLocalHomeomorph
+
+/- TODO: this generalizes to a large class of groups, but requires an open mapping theorem for
+topological groups to show the `n`th power map is open (see https://www.mathematik.tu-darmstadt.de/media/mathematik/forschung/preprint/preprints/2480.pdf
+and https://www.math.uwaterloo.ca/~cgodsil/pdfs/topology/topgr.pdf), and discreteness of the
+kernel (see https://gemini.google.com/share/6e9ab4abcb95). -/
+theorem Circle.isQuotientCoveringMap_zpow (n : ℤ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (zpowGroupHom (α := Circle) n).ker := by
+  have hn : IsUnit (n : ℝ) := by simpa using NeZero.ne n
+  let e := AddCircle.homeomorphCircle one_ne_zero
+  refine Topology.IsQuotientMap.isQuotientCoveringMap_of_isDiscrete_ker_monoidHom
+    (f := zpowGroupHom (α := Circle) n) ?_ (Set.Finite.isDiscrete <| .of_preimage ?_ e.surjective)
+  · refine .of_comp e.continuous (continuous_zpow n) ?_
+    convert e.isQuotientMap.comp <| IsUnit.isQuotientMap_zsmul (M := ℝ)
+      (QuotientAddGroup.mk' (AddSubgroup.zmultiples (1 : ℝ))) isQuotientMap_quotient_mk' n hn
+    ext; simp [zpowGroupHom, e, homeomorphCircle_apply, toCircle_zsmul]
+  · convert finite_torsion_of_isSMulRegular_int (1 : ℝ) n fun _ ↦ by simp [NeZero.ne]
+    ext
+    simp [e, homeomorphCircle_apply, ← toCircle_zsmul, ← (injective_toCircle one_ne_zero).eq_iff]
+
+theorem Circle.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :
+    IsQuotientCoveringMap (· ^ n : Circle → _) (powMonoidHom (α := Circle) n).ker :=
+  isQuotientCoveringMap_zpow n

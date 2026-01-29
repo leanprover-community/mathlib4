@@ -518,6 +518,11 @@ theorem comp_assoc {R₄ : Type*} [Semiring R₄] [Module R₄ M₄] {σ₁₄ :
     (h.comp g).comp f = h.comp (g.comp f) :=
   rfl
 
+theorem cancel_left {g : M₂ →SL[σ₂₃] M₃} {f₁ f₂ : M₁ →SL[σ₁₂] M₂} (hg : Function.Injective g)
+    (h : g.comp f₁ = g.comp f₂) : f₁ = f₂ := by
+  ext x
+  exact hg congr($h x)
+
 instance instMul : Mul (M₁ →L[R₁] M₁) :=
   ⟨comp⟩
 

@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.RingTheory.RingHom.EssFiniteType
 public import Mathlib.RingTheory.RingHom.FiniteType
 public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
@@ -92,6 +93,14 @@ instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteTy
 instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
     LocallyOfFiniteType (f.resLE V U e) := by
   delta Scheme.Hom.resLE; infer_instance
+
+lemma LocallyOfFiniteType.stalkMap [LocallyOfFiniteType f] (x : X) :
+    (f.stalkMap x).hom.EssFiniteType :=
+  HasRingHomProperty.stalkMap_of_respectsIso RingHom.EssFiniteType.respectsIso
+    (fun f hf _ _ ↦ RingHom.EssFiniteType.holdsForLocalization.localRingHom
+      RingHom.EssFiniteType.stableUnderComposition
+      RingHom.EssFiniteType.isStableUnderBaseChange.localizationPreserves _
+      (RingHom.FiniteType.essFiniteType hf)) ‹_› x
 
 instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
   inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
