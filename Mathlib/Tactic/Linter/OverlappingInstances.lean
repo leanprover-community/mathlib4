@@ -168,13 +168,9 @@ def Overlaps.toMsg (declDescr : MessageData) (overlaps : Overlaps) : MetaM Messa
             also provided by {parentTypesOfOverlap}."
         | _   => m!"There are {instsOfOverlap.length} instances of {overlapType} in the local \
             context, and it is also provided by {parentTypesOfOverlap}."
-
-  msg :=
-    if h : msgs.size = 1 then
-      msg ++ "\n\n" ++ msgs[0]
-    else
-      msgs.foldl (init := msg ++ "\n") fun accMsg newMsg => m!"{accMsg}\n• {newMsg}"
-
+  -- Create a bulleted list if there are multiple messages, otherwise just a single line
+  msg := if h : msgs.size = 1 then msg ++ "\n\n" ++ msgs[0] else
+    msgs.foldl (init := msg ++ "\n") fun accMsg newMsg => m!"{accMsg}\n• {newMsg}"
   msg := msg ++ m!"\n\n\
     There should only be a single instance of these data-carrying typeclasses in the local context \
     at a time. Consider choosing different instance hypotheses for the {declDescr}."
