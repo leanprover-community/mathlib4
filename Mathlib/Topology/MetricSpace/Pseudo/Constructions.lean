@@ -260,3 +260,45 @@ protected lemma Filter.Tendsto.nndist {f g : β → α} {x : Filter β} {a b : �
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) :
     Tendsto (fun x => nndist (f x) (g x)) x (𝓝 (nndist a b)) :=
   (continuous_nndist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
+
+section Discrete
+
+namespace PseudoMetricSpace
+
+variable {X : Type*}
+
+/-- The trivial metric space, where every distinct element is 1 away from another.
+This takes an explicit `DiscreteTopology` instance to ensure that the forgetful
+inheritance to topology matches. -/
+@[nolint unusedArguments]
+def ofDiscreteTopology [TopologicalSpace X]
+    [DiscreteTopology X] [DecidableEq X] : PseudoMetricSpace X where
+  dist x y := if x = y then 0 else 1
+  dist_self := by simp
+  dist_comm := by intros; split_ifs <;> simp_all
+  dist_triangle := by intros; split_ifs <;> simp_all
+  edist_dist := by intros; split_ifs <;> simp_all
+
+section
+variable [TopologicalSpace X] [DiscreteTopology X] [DecidableEq X]
+
+attribute [local instance] ofDiscreteTopology
+
+@[grind =] lemma ofDiscreteTopology_dist_def (x y : X) :
+    dist x y = if x = y then 0 else 1 :=
+  rfl
+
+lemma ofDiscreteTopology_uniformSpace_eq_bot : PseudoMetricSpace.toUniformSpace (α := X) = ⊥ := by
+  rw [UniformSpace.uniformSpace_eq_bot]
+  convert Metric.dist_mem_uniformity one_pos
+  ext
+  grind [SetRel.mem_id]
+
+lemma ofDiscreteTopology_discreteUniformity : DiscreteUniformity X where
+  eq_bot := ofDiscreteTopology_uniformSpace_eq_bot
+
+end
+
+end PseudoMetricSpace
+
+end Discrete
