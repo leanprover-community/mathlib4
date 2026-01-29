@@ -12,11 +12,11 @@ class SubBar (α : Type) where
 class Bar (α : Type) extends SubBar α where
   a : α
 
-class Baz (β : Type) where
-  b : β
+class Baz (α : Type) where
+  b : α
 
-class Baq (β : Type) where
-  b : β
+class Baq (α : Type) where
+  b : α
 
 class FooBarBaz (α) extends Bar α, Baz α
 
