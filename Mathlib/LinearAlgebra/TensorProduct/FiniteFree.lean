@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 # Tensor product with finite free modules.
@@ -29,3 +30,11 @@ noncomputable def LinearEquiv.chooseBasis_piScalarRight (R : Type*) (M : Type*) 
     (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V → M) :=
   (LinearEquiv.baseChange R M _ _ (Module.Free.chooseBasis R V).equivFun) ≪≫ₗ
     TensorProduct.piScalarRight R M M (Module.Free.ChooseBasisIndex R V)
+
+@[simps! apply symm_apply]
+noncomputable def LinearEquiv.chooseBasis_piScalarRight' (R : Type*) (M : Type*) (V : Type*)
+    [CommSemiring M] [CommSemiring R] [Algebra R M]
+    [AddCommGroup V] [Module R V] [Module.Free R V] :
+    (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V →₀ M) :=
+  (LinearEquiv.baseChange R M _ _ (Module.Free.chooseBasis R V).repr) ≪≫ₗ
+    TensorProduct.finsuppScalarRight R M M (Module.Free.ChooseBasisIndex R V)
