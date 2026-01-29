@@ -20,15 +20,23 @@ open scoped Nat NNReal Topology
 /-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
 `dist x y`. -/
 -- TODO: this is the "left" version. make a "right" version too
+-- move somewhere
 lemma segment_subset_closedBall {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
     (x y : E) : segment ℝ x y ⊆ Metric.closedBall x (dist x y) :=
   (convex_closedBall x _).segment_subset (Metric.mem_closedBall_self dist_nonneg)
     (Metric.mem_closedBall.mpr (dist_comm y x ▸ le_refl _))
 
 /-- `f` maps `univ` into `t` if and only if the range of `f` is contained in `t`. -/
+-- TODO: move somewhere
 lemma Set.mapsTo_univ_iff_range_subset {α : Type*} {β : Type*} {t : Set β} {f : α → β} :
     MapsTo f univ t ↔ range f ⊆ t :=
   mapsTo_univ_iff.trans range_subset_iff.symm
+
+/-- The distance between two points in `Icc tmin tmax` is at most `|tmax - tmin|`. -/
+-- TODO: move somewhere
+lemma _root_.Set.Icc.abs_sub_le {tmin tmax : ℝ} (t t₀ : Icc tmin tmax) :
+    |(t : ℝ) - t₀| ≤ |tmax - tmin| := by
+  apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
 
 namespace SmoothFlow
 
@@ -344,7 +352,7 @@ lemma continuousOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Se
         ((norm_le_pi_norm dα i).trans ((hC dα hdα).trans (le_max_left ..)))
     _ ≤ δ * max C 0 ^ n * |↑tmax - ↑tmin| := by
       gcongr 1
-      apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
+      exact Icc.abs_sub_le t t₀
     _ = ε * ((|tmax - tmin| * (max C 0 ^ n)) / ((1 + |tmax - tmin|) * (1 + max C 0 ^ n))) := by
       simp_rw [δ]
       field_simp
@@ -462,13 +470,11 @@ lemma norm_integralCMLM_sub_fderiv_le {n : ℕ} {g : E → E [×n]→L[ℝ] E} {
     apply mul_le_mul (h τ)
       (Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ (dα _).norm_coe_le_norm _)
       (by positivity) (by positivity)
-  · have : |(t : ℝ) - t₀| ≤ |tmax - tmin| := by
-      apply abs_le_abs <;> linarith [t.2.1, t.2.2, t₀.2.1, t₀.2.2]
-    rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
+  · rw [hC, mul_comm, ← mul_assoc, ← mul_assoc, mul_div_left_comm]
     gcongr
     apply mul_le_of_le_one_right hε.le
     rw [div_le_one (by positivity)]
-    linarith [abs_nonneg (tmax - tmin)]
+    linarith [abs_nonneg (tmax - tmin), Icc.abs_sub_le t t₀]
 
 /-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
 `integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Currying of multilinear maps is
