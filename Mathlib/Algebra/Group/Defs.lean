@@ -166,6 +166,84 @@ theorem mul_ne_mul_left (a : G) {b c : G} : b * a ≠ c * a ↔ b ≠ c :=
 
 end IsRightCancelMul
 
+/-- We say that `G` has *left common multiples* if for all `a b : G`, there exist
+`c d : G` such that `c * a = d * b`. This mixin carries both the property
+of having left common multiples and the data of how to determine `c` and `d` from `a` and `b`.
+This will be used to define the left Ore localization of a monoid with respect to itself. -/
+class LeftCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
+  cl₁ : G → G → G
+  /-- the factor for b -/
+  cl₂ : G → G → G
+   /-- there is a common multiple for any two elements of G -/
+  cl_spec : ∀ (a b : G), cl₁ a b * a = cl₂ a b * b
+
+/-- We say that `G` has *right common multiples* if for all `a b : G`, there exist
+`c d : G` such that `a * c = b * d`. This mixin carries both the property
+of having right common multiples and the data of how to determine `c` and `d` from `a` and `b`.
+This will be used to define the right Ore localization of a monoid with respect to itself. -/
+class RightCommonMul (G : Type u) [Mul G] where
+  /-- the factor for a -/
+  cr₁ : G → G → G
+  /-- the factor for b -/
+  cr₂ : G → G → G
+  /-- there is a common multiple for any two elements of G -/
+  cr_spec : ∀ (a b : G), a * cr₁ a b = b * cr₂ a b
+
+/-- A mixin for common multiples. -/
+class CommonMul (G : Type u) [Mul G] extends LeftCommonMul G, RightCommonMul G
+
+/-- We say that `G` has *left common sums* if for all `a b : G`, there exist
+`c d : G` such that `c + a = d + b`. This mixin carries both the property
+of having left common sums and the data of how to determine `c` and `d` from `a` and `b`. -/
+class LeftCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
+  cl₁ : G → G → G
+  /-- the addend for b -/
+  cl₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
+  cl_spec : ∀ (a b : G), cl₁ a b + a = cl₂ a b + b
+
+attribute [to_additive] LeftCommonMul
+
+/-- We say that `G` has *right common sums* if for all `a b : G`, there exist
+`c d : G` such that `a + c = b + d`. This mixin carries both the property
+of having right common sums and the data of how to determine `c` and `d` from `a` and `b`. -/
+class RightCommonAdd (G : Type u) [Add G] where
+  /-- the addend for a -/
+  cr₁ : G → G → G
+  /-- the addend for b -/
+  cr₂ : G → G → G
+  /-- there is a common sum for any two elements of G -/
+  cr_spec : ∀ (a b : G), a + cr₁ a b = b + cr₂ a b
+
+attribute [to_additive] RightCommonMul
+
+/-- A mixin for common sums. -/
+class CommonAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
+
+attribute [to_additive] CommonMul
+
+section LeftCommonMul
+
+variable [LeftCommonMul G] {a b : G}
+
+@[to_additive]
+theorem common_left_mul : LeftCommonMul.cl₁ a b * a = LeftCommonMul.cl₂ a b * b :=
+  LeftCommonMul.cl_spec a b
+
+end LeftCommonMul
+
+section RightCommonMul
+
+variable [RightCommonMul G] {a b : G}
+
+@[to_additive]
+theorem common_right_mul : a * RightCommonMul.cr₁ a b = b * RightCommonMul.cr₂ a b :=
+  RightCommonMul.cr_spec a b
+
+end RightCommonMul
+
 end Mul
 
 /-- A semigroup is a type with an associative `(*)`. -/
