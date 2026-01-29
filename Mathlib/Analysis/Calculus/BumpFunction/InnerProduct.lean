@@ -38,8 +38,8 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
     apply ContDiffAt.contDiffWithinAt
     rw [← sub_pos] at hR
     rcases eq_or_ne x 0 with rfl | hx
-    · have A : ContinuousAt (fun p : ℝ × E ↦ (p.1 - ‖p.2‖) / (p.1 - 1)) (R, 0) :=
-        ContinuousAt.div (by fun_prop) (by fun_prop) hR.ne'
+    · have A : ContinuousAt (fun p : ℝ × E ↦ (p.1 - ‖p.2‖) / (p.1 - 1)) (R, 0) := by
+        fun_prop (disch := positivity)
       have B : ∀ᶠ p in 𝓝 (R, (0 : E)), 1 ≤ (p.1 - ‖p.2‖) / (p.1 - 1) :=
         A.eventually <| le_mem_nhds <| (one_lt_div hR).2 <| sub_lt_sub_left (by simp) _
       refine (contDiffAt_const (c := 1)).congr_of_eventuallyEq <| B.mono fun _ ↦
