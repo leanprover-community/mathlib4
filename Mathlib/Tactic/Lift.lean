@@ -74,7 +74,7 @@ namespace Mathlib.Tactic
 open Lean Parser Elab Tactic Meta
 
 /-- Lift an expression to another type.
-* Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id id?)?)?`.
+* Usage: `'lift' expr 'to' expr ('using' expr)? ('with' id (id)?)?`.
 * If `n : ℤ` and `hn : n ≥ 0` then the tactic `lift n to ℕ using hn` creates a new
   constant of type `ℕ`, also named `n` and replaces all occurrences of the old variable `(n : ℤ)`
   with `↑n` (where `n` in the new variable). It will clear `n` from the context and
@@ -100,7 +100,7 @@ open Lean Parser Elab Tactic Meta
     `n : ℤ, hn : n + 3 ≥ 0, h : P (n + 3) ⊢ n + 3 = 2 * n` to the goal
     `n : ℤ, k : ℕ, hk : ↑k = n + 3, h : P ↑k ⊢ ↑k = 2 * n`.
 * The tactic `lift n to ℕ using h` will remove `h` from the context. If you want to keep it,
-  specify it again as the third argument to `with`, like this: `lift n to ℕ using h with n rfl h`.
+  use `using id h` instead, as you would do for `obtain ⟨...⟩ := id h`.
 * More generally, this can lift an expression from `α` to `β` assuming that there is an instance
   of `CanLift α β`. In this case the proof obligation is specified by `CanLift.prf`.
 * Given an instance `CanLift β γ`, it can also lift `α → β` to `α → γ`; more generally, given
@@ -176,12 +176,24 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
     evalTactic (← `(tactic| try clear $hUsingStx))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
+open Linter in
 elab_rules : tactic
 | `(tactic| lift $e to $t $[using $h]? $[with $newVarName $[$newEqName]? $[$newPrfName]?]?) =>
-  withMainContext <|
-    let keepUsing := match h, newPrfName.join with
-      | some h, some newPrfName => h.raw == newPrfName
-      | _, _ => false
+  withMainContext <| do
+    let keepUsing ← do
+      if let .some newPrfName := newPrfName.join then
+        if h.map (·.raw) == some newPrfName then
+          if getLinterValue linter.deprecated (← getLinterOptions) then
+            Lean.logWarningAt newPrfName <|
+              .tagged ``deprecatedAttr
+                m!"This syntax is deprecated; to avoid clearing {h}, \
+                  replace it with `id {h}` instead."
+          pure true
+        else
+          logErrorAt newPrfName "This syntax doesn't do anything, please remove it."
+          pure false
+      else
+        pure false
     Lift.main e t h newVarName newEqName.join keepUsing
 
 end Mathlib.Tactic
