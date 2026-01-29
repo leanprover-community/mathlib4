@@ -90,7 +90,7 @@ theorem deficient_one : Deficient 1 := by
 theorem deficient_two : Deficient 2 := by
   decide
 
-theorem deficient_three : Deficient 3 :=  by
+theorem deficient_three : Deficient 3 := by
   decide
 
 theorem not_abundant_zero : ¬ Abundant 0 := by

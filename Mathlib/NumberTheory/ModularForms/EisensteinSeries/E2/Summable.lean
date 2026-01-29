@@ -227,7 +227,7 @@ private lemma aux_tendsto_tsum : Tendsto (fun n : ℕ ↦ 2 / z *
       (∑' m : ℕ+, cexp (2 * π * I * (-n / z)) ^ (m : ℕ)) + 2 / n) := by
     ext N
     have h2 := cot_series_rep (coe_mem_integerComplement ⟨-N / z, im_pnat_div_pos N z⟩)
-    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add',coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
+    rw [pi_mul_cot_pi_q_exp, ← sub_eq_iff_eq_add', coe_mk_subtype, one_div, inv_div, neg_mul, ← h2,
       ← tsum_zero_pnat_eq_tsum_nat
       (by simpa using norm_exp_two_pi_I_lt_one ⟨-N / z, im_pnat_div_pos N z⟩)] at *
     field [ne_zero z]
@@ -243,8 +243,8 @@ lemma tendsto_tsum_one_div_linear_sub_succ_eq :
     Tendsto (fun N : ℕ+ ↦ ∑ n ∈ Ico (-N : ℤ) N,
     ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))) atTop (𝓝 (-2 * π * I / z)) := by
   have (N : ℕ+) :
-      ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ , (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
-      = ∑' m : ℤ , ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
+      ∑ n ∈ Ico (-N : ℤ) N, ∑' m : ℤ, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1))
+      = ∑' m : ℤ, ∑ n ∈ Ico (-N : ℤ) N, (1 / ((m : ℂ) * z + n) - 1 / (m * z + n + 1)) := by
     rw [Summable.tsum_finsetSum (fun i hi ↦ ?_)]
     apply (summable_left_one_div_linear_sub_one_div_linear z i (i + 1)).congr
     grind
