@@ -287,9 +287,6 @@ variable {𝒜}
 
 namespace HomogeneousIdeal
 
-instance : PartialOrder (HomogeneousIdeal 𝒜) :=
-  inferInstanceAs (PartialOrder (HomogeneousSubmodule 𝒜 𝒜))
-
 instance : Top (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊤, Ideal.IsHomogeneous.top 𝒜⟩⟩
 
