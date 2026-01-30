@@ -84,24 +84,6 @@ lemma sum_biUnion {ι α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq
   have hp_disj : Disjoint p p := (ha hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
   exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
 
-/-- Restrict a partition of `a` to a sub-element `b ≤ a` by intersecting each part with `b`. -/
-def restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
-    {a : α} (P : Finpartition a) (b : α) (hb : b ≤ a) : Finpartition b where
-  parts := (P.parts.image (· ⊓ b)).erase ⊥
-  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [Finset.coe_erase, Finset.coe_image, Set.mem_diff, Set.mem_image,
-      Set.mem_singleton_iff] at hx hy
-    obtain ⟨⟨px, hpx, rfl⟩, _⟩ := hx
-    obtain ⟨⟨py, hpy, rfl⟩, _⟩ := hy
-    simpa [Function.onFun, id_eq]
-      using (P.disjoint hpx hpy fun h => hxy (h ▸ rfl)).mono inf_le_left inf_le_left
-  sup_parts := by
-    simp only [Finset.sup_erase_bot, Finset.sup_image, Function.id_comp,
-      (Finset.sup_inf_distrib_right ..).symm]
-    have : P.parts.sup (fun x => x) = a := P.sup_parts
-    rw [this, inf_eq_right.mpr hb]
-  bot_notMem := Finset.notMem_erase _ _
-
 /-- The sum over restricted partition parts equals the sum over original parts with `f (· ⊓ b)`,
 provided `f ⊥ = 0` (so bottom terms don't contribute). -/
 lemma sum_restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
