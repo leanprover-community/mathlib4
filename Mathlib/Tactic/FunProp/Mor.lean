@@ -9,6 +9,8 @@ public import Mathlib.Init
 public meta import Lean.Meta.CoeAttr
 public import Lean.Meta.CoeAttr
 
+import Mathlib.Tactic.TypeStar
+
 /-!
 ## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
 
@@ -30,6 +32,10 @@ namespace Mathlib
 open Lean Meta
 
 namespace Meta.FunProp
+
+/-- An abbreviation of `∀ x, p x`. It is used by `fun_prop` to represent Pi types as function
+applications and should not occur in any place other than the implementation of `fun_prop`. -/
+abbrev Forall {α : Sort*} (p : α → Sort*) := ∀ x, p x
 
 namespace Mor
 
@@ -136,9 +142,7 @@ where
       go (.app (.app c f) x) as
     | .app f a, as => go f (as.push { expr := a })
     | .forallE x t b bi, _ => do
-      let u ← getLevel t
-      let v ← withLocalDecl x bi t fun x => getLevel (b.instantiate1 x)
-      k (.const `_Forall [u, v]) #[{ expr := t }, { expr := .lam x t b bi }]
+      go (← mkAppM ``Forall #[.lam x t b bi]) #[]
     | f, as => k f as.reverse
 
 
@@ -163,10 +167,6 @@ def getAppArgs (e : Expr) : MetaM (Array Arg) := withApp e fun _ xs => return xs
 
 /-- `mkAppN f #[a₀, ..., aₙ]` ==> `f a₀ a₁ .. aₙ` where `f` can be bundled morphism. -/
 def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
-  let f :=
-    if f.isConstOf `_Forall then
-      Expr.mkLambdaForall f.constLevels![0]! f.constLevels![1]!
-    else f
   xs.foldl (init := f) (fun f x =>
     match x with
     | ⟨x, .none⟩ => (f.app x)
