@@ -43,7 +43,6 @@ instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
   inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
-instance : EnoughInjectives (Sheaf AddCommGrpCat.{u} X) := IsGrothendieckAbelian.enoughInjectives
 
 instance : HasExt.{u} (Sheaf AddCommGrpCat.{u} X) :=
   hasExt_of_enoughInjectives (Sheaf AddCommGrpCat X)
