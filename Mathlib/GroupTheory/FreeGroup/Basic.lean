@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Data.List.Chain
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Group.PUnit
 
 /-!
 # Free groups
@@ -886,6 +887,22 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   invFun _ := 1
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
+/-- We define the free group on no generators as isomorphic to the trivial `Unit` group. -/
+@[to_additive]
+def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
+{ toEquiv := freeGroupEmptyEquivUnit
+  map_mul' _ _ := rfl }
+
+/-- We define the free group on no generators as isomorphic to the trivial `PUnit` group. -/
+@[to_additive]
+def freeGroupEmptyMulEquivPUnit : FreeGroup Empty ≃* PUnit where
+  toEquiv :=
+  { toFun _ := PUnit.unit
+    invFun _ := 1
+    left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
+    right_inv := by intro; rfl }
+  map_mul' _ _ := rfl
+
 -- TODO: find a good way to fix the linter
 -- simp applies to two goals at once, with different simp sets
 set_option linter.flexible false in
@@ -910,6 +927,17 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
       (fun i ih => by
         simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
+
+/-- We define the free group on one element as isomorphic to ℤ. -/
+def freeGroupUnitMulEquivInt :
+    FreeGroup Unit ≃* Multiplicative ℤ where
+    toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
+    invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
+    left_inv _ := by simp
+    right_inv _ := by simp
+    map_mul' _ _  := by
+      ext
+      simp [FreeGroup.freeGroupUnitEquivInt]
 
 section Category
 
