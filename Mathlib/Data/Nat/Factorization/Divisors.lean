@@ -33,6 +33,18 @@ theorem divisors_eq_image_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
   apply Finset.coe_inj.mp
   grind [coe_divisors_eq_prod_pow_le_factorization]
 
+theorem divisors_eq_map_attach_Iic_factorization_prod_pow {n : ℕ} (hn : n ≠ 0) :
+    n.divisors = (Finset.Iic n.factorization).attach.map ⟨(·.val.prod (· ^ ·)), by
+      have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
+        fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
+          prime_of_mem_primeFactors <| support_mono hd hp
+      grind [Function.Injective]
+    ⟩ := by
+  rw [Finset.map_eq_image]
+  change _ = (Finset.Iic n.factorization).attach.image ((·.prod (· ^ ·)) ∘ Subtype.val)
+  rw [← Finset.image_image, Finset.attach_image_val]
+  exact divisors_eq_image_Iic_factorization_prod_pow hn
+
 theorem coe_properDivisors_eq_prod_pow_lt_factorization {n : ℕ} :
     n.properDivisors = { f.prod (· ^ ·) | f < n.factorization } := by
   by_cases hn : n = 0
@@ -56,5 +68,17 @@ theorem properDivisors_eq_image_Iio_factorization_prod_pow {n : ℕ} :
     n.properDivisors = (Finset.Iio n.factorization).image (·.prod (· ^ ·)) := by
   apply Finset.coe_inj.mp
   grind [coe_properDivisors_eq_prod_pow_lt_factorization]
+
+theorem properDivisors_eq_map_attach_Iio_factorization_prod_pow {n : ℕ} :
+    n.properDivisors = (Finset.Iio n.factorization).attach.map ⟨(·.val.prod (· ^ ·)), by
+      have : ∀ d ≤ n.factorization, (d.prod (· ^ ·)).factorization = d :=
+        fun _ hd ↦ prod_pow_factorization_eq_self fun _ hp ↦
+          prime_of_mem_primeFactors <| support_mono hd hp
+      grind [Function.Injective]
+    ⟩ := by
+  rw [Finset.map_eq_image]
+  change _ = (Finset.Iio n.factorization).attach.image ((·.prod (· ^ ·)) ∘ Subtype.val)
+  rw [← Finset.image_image, Finset.attach_image_val]
+  exact properDivisors_eq_image_Iio_factorization_prod_pow
 
 end Nat
