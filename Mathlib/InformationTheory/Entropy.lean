@@ -145,54 +145,6 @@ private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a
   have hle := Summable.le_tsum h_rest_summable a' h_nonneg'
   simpa [ha'] using hle
 
-private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p = PMF.pure a) :
-    Set.Nontrivial p.support := by
-  obtain ⟨a0, ha0⟩ := p.support_nonempty
-  rw [Set.nontrivial_iff_ne_singleton ha0]
-  intro heq
-  have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq
-  have : p = PMF.pure a0 := PMF.ext fun x => by
-    by_cases hx : x = a0
-    · subst hx; simp only [PMF.pure_apply, ↓reduceIte]; exact h1
-    · have : (PMF.pure a0) x = 0 := by simp only [PMF.pure_apply, if_neg hx]
-      rw [this]; exact (p.apply_eq_zero_iff x).mpr (by rw [heq]; simp [hx])
-  exact h ⟨a0, this⟩
-
-private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx : x ∈ p.support)
-    (h : ¬ ∃ a : α, p = PMF.pure a) : (p x).toReal < 1 := by
-  by_contra h_not
-  push_neg at h_not
-  have hx_le_one : (p x).toReal ≤ 1 := by
-    have hpx : p x ≤ (1 : ENNReal) := PMF.coe_le_one p x
-    exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpx)
-  have hx_toReal_eq_one : (p x).toReal = 1 := le_antisymm hx_le_one h_not
-  have hx_eq_one : p x = 1 := (ENNReal.toReal_eq_one_iff (p x)).1 hx_toReal_eq_one
-  have hsupp : p.support = {x} := (p.apply_eq_one_iff x).1 hx_eq_one
-  have hpure : p = PMF.pure x := PMF.ext fun y => by
-    by_cases hy : y = x
-    · subst hy; simp only [PMF.pure_apply, ↓reduceIte]; exact hx_eq_one
-    · have : (PMF.pure x) y = 0 := by simp only [PMF.pure_apply, if_neg hy]
-      rw [this]; exact (p.apply_eq_zero_iff y).mpr (by rw [hsupp]; simp [hy])
-  exact h ⟨x, hpure⟩
-
-private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
-    0 ≤ (if b = a then 0 else Real.negMulLog ((p b).toReal)) := by
-  by_cases hb : b = a
-  · simp only [hb, ite_true]; exact le_rfl
-  · simp only [hb, ite_false]; exact Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
-      have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
-      exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpb))
-
-private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a' : α) (ha' : a' ≠ a) :
-    Real.negMulLog ((p a').toReal) ≤
-      ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by
-  have h_rest_summable : Summable (fun b => if b = a then 0 else Real.negMulLog ((p b).toReal)) :=
-    Summable.of_finite
-  have h_nonneg' : ∀ j : α, j ≠ a' → 0 ≤ (if j = a then 0 else Real.negMulLog ((p j).toReal)) :=
-    fun j _ => negMulLog_ite_nonneg p a j
-  have hle := Summable.le_tsum h_rest_summable a' h_nonneg'
-  simpa [ha'] using hle
-
 lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
   entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
   classical
