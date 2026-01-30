@@ -53,7 +53,7 @@ error: Could not find a model with corners for `TangentBundle 𝓘(?_, ?_) ?_`.
 Hint: failures to find a model with corners can be debugged with the command `set_option trace.Elab.DiffGeo.MDiff true`.
 -/
 #guard_msgs in
-set_option pp.mvars false in
+set_option pp.mvars.anonymous false in
 lemma contMDiff_proj : CMDiff ∞ (proj) := by
   unfold proj
   exact contMDiff_snd_tangentBundle_modelSpace 𝕜 𝓘(𝕜)
