@@ -161,7 +161,7 @@ lemma ScottContinuous.id : ScottContinuous (id : α → α) := by simp [ScottCon
 
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := by
-  simp only [← scottContinuousOn_univ, ScottContinuousOn.const]
+  simp_rw [← scottContinuousOn_univ, ScottContinuousOn.const]
 
 @[fun_prop, to_fun]
 lemma ScottContinuous.comp {g : β → γ}
@@ -179,11 +179,11 @@ lemma ScottContinuous.prodMk {g : α → γ}
 
 @[simp, fun_prop]
 lemma ScottContinuous.fst : ScottContinuous (Prod.fst : α × β → α) := by
-  simp only [← scottContinuousOn_univ, ScottContinuousOn.fst]
+  simp_rw [← scottContinuousOn_univ, ScottContinuousOn.fst]
 
 @[simp, fun_prop]
 lemma ScottContinuous.snd : ScottContinuous (Prod.snd : α × β → β) := by
-  simp only [← scottContinuousOn_univ, ScottContinuousOn.snd]
+  simp_rw [← scottContinuousOn_univ, ScottContinuousOn.snd]
 
 end ScottContinuous
 
