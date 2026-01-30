@@ -80,18 +80,6 @@ lemma parts_subset_extendOfLE {α : Type*} [GeneralizedBooleanAlgebra α]
   · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
   · exact Finset.subset_insert _ _
 
--- Added this definition since it seemed the useful thing but currently this is not used here
-/-- Construct a `Finpartition` of `T.sup id` from a finset `T` of pairwise disjoint elements.
-Any `⊥` elements in `T` are erased. -/
-@[simps]
-def ofPairwiseDisjoint {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α] (T : Finset α)
-    (hT : (T : Set α).PairwiseDisjoint id) : Finpartition (T.sup id) where
-  parts := T.erase ⊥
-  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun _ ha _ hb hab =>
-    hT (Finset.erase_subset _ _ ha) (Finset.erase_subset _ _ hb) hab
-  sup_parts := Finset.sup_erase_bot T
-  bot_notMem := Finset.notMem_erase _ _
-
 -- Despite being similar to `Finpartition.bind` this is much more convenient. Better name?
 /-- Merge a family of partitions of pairwise disjoint elements into a partition of their sup.
 Similar to `Finpartition.bind`, but combines partitions of different elements rather than
