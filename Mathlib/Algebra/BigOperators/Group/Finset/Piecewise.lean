@@ -246,6 +246,13 @@ theorem prod_ite_one (s : Finset ι) (p : ι → Prop) [DecidablePred p]
 theorem prod_pow_boole [DecidableEq ι] (s : Finset ι) (f : ι → M) (a : ι) :
     (∏ x ∈ s, f x ^ ite (a = x) 1 0) = ite (a ∈ s) (f a) 1 := by simp
 
+@[to_additive]
+lemma prod_eq_prod_iff_single [IsRightCancelMul M] {f g : ι → M} {i : ι} (hi : i ∈ s)
+    (hfg : ∀ j ∈ s, j ≠ i → f j = g j) : ∏ j ∈ s, f j = ∏ j ∈ s, g j ↔ f i = g i := by
+  classical
+  rw [prod_eq_mul_prod_diff_singleton hi, prod_eq_mul_prod_diff_singleton hi,
+    prod_congr rfl (by simpa), mul_left_inj]
+
 end CommMonoid
 
 lemma card_filter (p) [DecidablePred p] (s : Finset ι) :

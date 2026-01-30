@@ -11,8 +11,6 @@ public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Regular.Basic
 
-import Mathlib.Tactic.ByContra
-import Mathlib.Tactic.TermCongr
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -229,6 +227,10 @@ lemma sub_pos : 0 < a - b ↔ b < a ∨ b = ⊤ := by
   obtain rfl | hb := eq_or_ne b ⊤
   · simp
   · simp [← sub_self_eq_zero_of_ne_top hb, hb]
+
+@[simp]
+lemma neg_pos : 0 < -a ↔ a < 0 ∨ a = ⊤ := by
+  simpa using sub_pos (a := 0) (b := a)
 
 end LinearOrderedAddCommGroupWithTop
 

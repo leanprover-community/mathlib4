@@ -111,6 +111,10 @@ lemma Submonoid.closure_image_isMulIndecomposable_baseOf [Finite ι]
   replace hjk : v i ∈ closure (v '' t) := hjk ▸ mul_mem hj' hk'
   exact hi₁ hjk
 
+@[deprecated (since := "2025-12-30")]
+alias Submonoid.closure_image_one_lt_and_isMulIndecomposable :=
+  Submonoid.closure_image_isMulIndecomposable_baseOf
+
 @[to_additive]
 lemma Subgroup.closure_image_isMulIndecomposable_baseOf [Finite ι] [InvolutiveInv ι]
     [CommGroup S] [IsOrderedMonoid S]
@@ -176,34 +180,57 @@ lemma pairwise_baseOf_div_notMem [InvolutiveInv ι] [CommGroup S] [IsOrderedMono
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 @[to_additive]
 lemma mem_or_inv_mem_closure_baseOf [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
-    (v : ι → G) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
-    (f : G →* S) (hf : ∀ i, f (v i) ≠ 1) (i : ι) :
+    (v : ι → G)
+    (f : G →* S) (i : ι) (hi : f (v i) ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
      v i    ∈ Submonoid.closure (v '' baseOf v f) ∨
     (v i)⁻¹ ∈ Submonoid.closure (v '' baseOf v f) := by
   rw [Submonoid.closure_image_isMulIndecomposable_baseOf v f]
-  rcases lt_or_gt_of_ne (hf i) with hj | hj
+  rcases lt_or_gt_of_ne hi with hj | hj
   · right
-    exact Submonoid.subset_closure ⟨i⁻¹, by simpa [hv_inv]⟩
+    exact Submonoid.subset_closure ⟨i⁻¹, by simpa [hi']⟩
   · left
     exact Submonoid.subset_closure ⟨i, by simpa⟩
 
 end IsMulIndecomposable
 
 @[to_additive]
+lemma Submonoid.mem_closure_image_one_lt_iff [CommMonoid S] [IsOrderedCancelMonoid S]
+    (v : ι → M) (f : M →* S) (i : ι) (hv_one : v i ≠ 1) :
+    v i ∈ closure (v '' {i | 1 < f (v i)}) ↔ 1 < f (v i) := by
+  refine ⟨fun hi ↦ ?_, fun hi ↦ subset_closure <| mem_image_of_mem v hi⟩
+  suffices v i = 1 ∨ 1 < f (v i) from this.resolve_left hv_one
+  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy ↦ ?_) hi
+  rcases hx with rfl | hx; · simpa
+  rcases hy with rfl | hy; · right; simpa
+  right
+  simpa only [map_mul] using Left.one_lt_mul hx hy
+
+@[to_additive]
 lemma Submonoid.apply_ne_one_of_mem_or_inv_mem_closure
     [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
-    (v : ι → G) (hv_one : ∀ i, v i ≠ 1) (hv_inv : ∀ i, v i⁻¹ = (v i)⁻¹)
+    (v : ι → G)
     (f : G →* S)
     (s : Set ι)
-    (hsp : ∀ i, v i ∈ Submonoid.closure (v '' s) ∨
-               (v i)⁻¹ ∈ Submonoid.closure (v '' s))
-    (hf : ∀ i ∈ s, 1 < f (v i)) (i : ι) :
+    (hf : ∀ i ∈ s, 1 < f (v i))
+    (i : ι) (hv_one : v i ≠ 1) (hv_inv : v i⁻¹ = (v i)⁻¹)
+    (hsp : v i ∈ closure (v '' s) ∨ (v i)⁻¹ ∈ closure (v '' s)) :
     f (v i) ≠ 1 := by
-  wlog hi : v i ∈ Submonoid.closure (v '' s)
-  · rcases hsp i with hi' | hi'; · contradiction
-    simpa [hv_inv, hi'] using this v hv_one hv_inv f s hsp hf i⁻¹
-  suffices v i ≠ 1 → 1 < f (v i) from (this (hv_one i)).ne'
-  refine Submonoid.closure_induction (by aesop) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
+  wlog hi : v i ∈ closure (v '' s)
+  · rcases hsp with hi' | hi'; · contradiction
+    simpa [hv_inv] using this v f s hf i⁻¹ (by simpa [hv_inv]) (by simp [hv_inv])
+      (by left; simpa [hv_inv]) (by simpa [hv_inv])
+  suffices v i ≠ 1 → 1 < f (v i) from (this hv_one).ne'
+  refine closure_induction (by aesop) (by simp) (fun x y _ _ hx hy _ ↦ ?_) hi
   rcases eq_or_ne x 1 with rfl | hx'; · grind
   rcases eq_or_ne y 1 with rfl | hy'; · grind
   simpa using lt_mul_of_lt_of_one_lt (hx hx') (hy hy')
+
+open Submonoid in
+@[to_additive]
+lemma IsMulIndecomposable.apply_ne_one_iff_mem_closure
+    [Finite ι] [InvolutiveInv ι] [CommGroup S] [IsOrderedMonoid S]
+    (v : ι → G) (f : G →* S) (i : ι) (hi : v i ≠ 1) (hi' : v i⁻¹ = (v i)⁻¹) :
+    f (v i) ≠ 1 ↔ v i ∈ closure (v '' baseOf v f) ∨
+                 (v i)⁻¹ ∈ closure (v '' baseOf v f) :=
+  ⟨fun h ↦ mem_or_inv_mem_closure_baseOf v f i h hi',
+    apply_ne_one_of_mem_or_inv_mem_closure v f (baseOf v f) (baseOf_subset_one_lt v f) i hi hi'⟩
