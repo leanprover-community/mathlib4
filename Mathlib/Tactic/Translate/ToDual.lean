@@ -88,17 +88,12 @@ generates `_assoc` theorems that aren't dual to any other theorem. To deal with 
 attribute will add a `to_dual none` tag to an `_assoc` theorem if the original theorem was
 already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
 
-The `reassoc` attribute in category theory interacts with `to_dual` in a unique way, because it
-generates `_assoc` theorems that aren't dual to any other theorem. To deal with this, the `reassoc`
-attribute will add a `to_dual none` tag to an `_assoc` theorem if the original theorem was
-already tagged with `to_dual`. This also works with `to_dual (attr := reassoc)`.
-
 Some definitions are dual to something other than the dual of their value. Some examples:
 - `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
 - `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
 - `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.
 
-To be able to translate a term involfing such constants, `to_dual` needs to insert casts,
+To be able to translate a term involving such constants, `to_dual` needs to insert casts,
 so that the term's correctness doesn't rely on unfolding them.
 You can instruct `to_dual` to do this using the `to_dual_insert_cast` or `to_dual_insert_cast_fun`
 commands.
