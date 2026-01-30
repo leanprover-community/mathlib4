@@ -5,6 +5,7 @@ Authors: Eric Wieser, Yi Yuan
 -/
 module
 
+public import Mathlib.Data.Fin.Pigeonhole
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 public import Mathlib.GroupTheory.Perm.Option
 public import Mathlib.Logic.Equiv.Fin.Rotate
@@ -529,20 +530,19 @@ section Extension
 
 /-! ### Extension of injective functions to permutations
 
-Any injective function `k : Fin m → Fin n` can be extended to a permutation of `Fin n`
-when `m ≤ n`.
+Any injective function `k : Fin m → Fin n` can be extended to a permutation of `Fin n`.
 -/
 
-/-- Any injective function `k : Fin m → Fin n` extends to a permutation of `Fin n` when `m ≤ n`. -/
+/-- Any injective function `k : Fin m → Fin n` extends to a permutation of `Fin n`. -/
 theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
-    (hk : Function.Injective k) (hmn : m ≤ n) :
-    ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE hmn i) = k i :=
-  let e := (Fin.castLEquiv hmn).symm.trans (Equiv.ofInjective k hk)
-  ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e (Fin.castLE hmn i) i.isLt⟩
+    (hk : Function.Injective k) :
+    ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk) i) = k i :=
+  let e := (Fin.castLEquiv (Fin.le_of_injective k hk)).symm.trans (Equiv.ofInjective k hk)
+  ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e _ i.isLt⟩
 
-/-- Any strictly monotone function `k : Fin m → Fin n` extends to a permutation when `m ≤ n`. -/
-theorem Equiv.Perm.exists_extending_strictMono {m n : ℕ} (k : Fin m → Fin n) (hk : StrictMono k)
-    (hmn : m ≤ n) : ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE hmn i) = k i :=
-  Equiv.Perm.exists_extending_injective k hk.injective hmn
+/-- Any strictly monotone function `k : Fin m → Fin n` extends to a permutation. -/
+theorem Equiv.Perm.exists_extending_strictMono {m n : ℕ} (k : Fin m → Fin n) (hk : StrictMono k) :
+    ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk.injective) i) = k i :=
+  Equiv.Perm.exists_extending_injective k hk.injective
 
 end Extension
