@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Thomas Read, Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
-public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Yoneda
 public import Mathlib.CategoryTheory.Opposites
 
@@ -85,17 +84,20 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
       ((adj1.homEquiv X.unop Y).trans (adj2.homEquiv X.unop Y).symm).toIso
 
 /-- Deprecated: prefer `Adjunction.leftAdjointUniq`. -/
-@[deprecated "Use `Adjunction.leftAdjointUniq`." (since := "2026-01-29")]
+@[deprecated "Use `Adjunction.leftAdjointUniq` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Unique`)." (since := "2026-01-31")]
 def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   NatIso.removeOp ((Coyoneda.fullyFaithful.whiskeringRight _).isoEquiv.symm
     (leftAdjointsCoyonedaEquiv adj2 (adj1.ofNatIsoRight r)))
 
+set_option linter.deprecated false in
 /-- Deprecated: prefer `Adjunction.rightAdjointUniq`. -/
-@[deprecated "Use `Adjunction.rightAdjointUniq`." (since := "2026-01-29")]
+@[deprecated "Use `Adjunction.rightAdjointUniq` \
+  (requires `import Mathlib.CategoryTheory.Adjunction.Unique`)." (since := "2026-01-31")]
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  Adjunction.rightAdjointUniq adj1 (adj2.ofNatIsoLeft l.symm)
+  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
 end Adjunction
 
