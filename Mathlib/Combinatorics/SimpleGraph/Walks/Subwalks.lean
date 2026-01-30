@@ -176,34 +176,28 @@ protected lemma IsSubwalk.tail {u v u' v'} {p : G.Walk u v} {q : G.Walk u' v'}
   · grind [getVert_nil, append_nil, tail_nil, nil_isSubwalk_iff_exists]
   · exact ⟨r₁.concat (Walk.adj_snd (by simp)), r₂, by simp [concat_append]⟩
 
-theorem take_isSubwalk_take_succ {u v} (p : G.Walk u v) (n : ℕ) :
-    (p.take n).IsSubwalk (p.take (n + 1)) := by
-  cases p
-  · exact isSubwalk_take _ _
-  · cases n
-    · exact isSubwalk_of_append_left rfl
-    simp [getVert_cons_succ, take, isSubwalk_iff_support_isInfix, support_cons,
-      take_support_eq_support_take_succ, ← List.take_succ_cons, List.IsPrefix.isInfix]
-
 theorem take_isSubwalk_take {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.take n).IsSubwalk (p.take k) := by
-  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
-  induction t with
-  | zero => rfl
-  | succ t ih => exact (ih (n.le_add_right t)).trans <| p.take_isSubwalk_take_succ (n + t)
-
-theorem drop_succ_isSubwalk_drop {u v} (p : G.Walk u v) (n : ℕ) :
-    (p.drop (n + 1)).IsSubwalk (p.drop n) := by
-  induction n generalizing p u with
-  | zero => exact p.drop_zero ▸ (p.isSubwalk_rfl.copy rfl rfl p.getVert_zero.symm rfl).tail
-  | succ _ ih => cases p <;> simp [drop, ih]
+  induction k, h using Nat.le_induction with
+  | base => rfl
+  | succ k h ih =>
+    apply ih.trans
+    cases p
+    · exact isSubwalk_take _ _
+    · cases k
+      · exact isSubwalk_of_append_left rfl
+      simp [isSubwalk_iff_support_isInfix, take_support_eq_support_take_succ, List.IsPrefix.isInfix]
 
 theorem drop_isSubwalk_drop {u v n k} (p : G.Walk u v) (h : n ≤ k) :
     (p.drop k).IsSubwalk (p.drop n) := by
-  obtain ⟨t, rfl⟩ := Nat.exists_eq_add_of_le h
-  induction t with
-  | zero => rfl
-  | succ t ih => exact (drop_succ_isSubwalk_drop p (n + t)).trans <| ih (n.le_add_right t)
+  induction k, h using Nat.le_induction with
+  | base => rfl
+  | succ k h ih =>
+    apply IsSubwalk.trans ?_ ih
+    clear h ih
+    induction k generalizing p u with
+    | zero => exact p.drop_zero ▸ (p.isSubwalk_rfl.copy rfl rfl p.getVert_zero.symm rfl).tail
+    | succ _ ih => cases p <;> simp [drop, ih]
 
 end Walk
 
