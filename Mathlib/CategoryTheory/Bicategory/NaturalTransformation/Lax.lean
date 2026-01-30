@@ -41,7 +41,7 @@ transformations respectively.
 We also provide API for going between lax transformations and strong transformations:
 * `Lax.StrongCore F G`: a structure on a lax transformation between lax functors that
 promotes it to a strong transformation.
-* `Lax.mkOfLax η η'`: given an lax transformation `η` such that each component
+* `Lax.mkOfLax η η'`: given a lax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
 
 ## References
@@ -224,7 +224,7 @@ def id : OplaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
-instance : Inhabited (OplaxTrans F F ) :=
+instance : Inhabited (OplaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/
@@ -341,7 +341,7 @@ attribute [nolint docBlame] CategoryTheory.Lax.StrongTrans.app
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
-/-- A structure on an lax transformation that promotes it to a strong transformation.
+/-- A structure on a lax transformation that promotes it to a strong transformation.
 
 See `Pseudofunctor.StrongTrans.mkOfLax`. -/
 structure LaxTrans.StrongCore {F G : B ⥤ᴸ C} (η : F ⟶ G) where
@@ -360,14 +360,14 @@ def toLax {F G : B ⥤ᴸ C} (η : StrongTrans F G) : LaxTrans F G where
   app := η.app
   naturality f := (η.naturality f).hom
 
-/-- Construct a strong natural transformation from an lax natural transformation whose
+/-- Construct a strong natural transformation from a lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
 def mkOfLax {F G : B ⥤ᴸ C} (η : LaxTrans F G) (η' : LaxTrans.StrongCore η) :
     StrongTrans F G where
   app := η.app
   naturality := η'.naturality
 
-/-- Construct a strong natural transformation from an lax natural transformation whose
+/-- Construct a strong natural transformation from a lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
 noncomputable def mkOfLax' {F G : B ⥤ᴸ C} (η : LaxTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where

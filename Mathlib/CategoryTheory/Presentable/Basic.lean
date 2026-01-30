@@ -21,7 +21,7 @@ a regular cardinal `κ` such that `Functor.IsCardinalAccessible`.
 
 An object `X` of a category is `κ`-presentable (`IsCardinalPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
-Similar as for accessible functors, we define a type class `IsAccessible`.
+Similarly as for accessible functors, we define a type class `IsAccessible`.
 
 ## References
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
@@ -189,7 +189,6 @@ lemma isCardinalPresentable_of_equivalence
       (Equiv.ulift.trans ((e.toAdjunction.homEquiv X Z).trans Equiv.ulift.symm)).toIso) (by
         intro _ _ f
         ext ⟨g⟩
-        apply Equiv.ulift.injective
         simp [Adjunction.homEquiv_unit])
   exact preservesColimit_of_natIso Y iso.symm
 

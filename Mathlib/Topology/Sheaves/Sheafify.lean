@@ -110,9 +110,9 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   rcases F.germ_eq x mU mV gU gV e with ⟨W, mW, iU', iV', (e' : F.map iU'.op gU = F.map iV'.op gV)⟩
   use ⟨W ⊓ (U' ⊓ V'), ⟨mW, mU, mV⟩⟩
   refine ⟨?_, ?_, ?_⟩
-  · change W ⊓ (U' ⊓ V') ⟶ U.obj
+  · change W ⊓ (U' ⊓ V') ⟶ U.val
     exact Opens.infLERight _ _ ≫ Opens.infLELeft _ _ ≫ iU
-  · change W ⊓ (U' ⊓ V') ⟶ V.obj
+  · change W ⊓ (U' ⊓ V') ⟶ V.val
     exact Opens.infLERight _ _ ≫ Opens.infLERight _ _ ≫ iV
   · intro w
     specialize wU ⟨w.1, w.2.2.1⟩

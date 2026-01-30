@@ -63,8 +63,6 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
     add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 
-variable {M}
-
 end AddCommMonoid
 
 /-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
@@ -84,7 +82,7 @@ When `R` is commutative, usually `algebraMap` should be preferred. -/
   map_zero' := zero_smul R 1
   map_add' := (add_smul · · 1)
 
-/-- A homomorphism between semirings R and S can be equivalently specified by a R-module
+/-- A homomorphism between semirings R and S can be equivalently specified by an R-module
 structure on S such that S/S/R is a scalar tower. -/
 def ringHomEquivModuleIsScalarTower [Semiring R] [Semiring S] :
     (R →+* S) ≃ {_inst : Module R S // IsScalarTower R S S} where

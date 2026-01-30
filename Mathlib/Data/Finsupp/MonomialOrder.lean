@@ -34,7 +34,7 @@ It is activated using `open scoped MonomialOrder`.
 
 Commutative algebra defines many monomial orders, with different usefulness ranges.
 In this file, we provide the basic example of lexicographic ordering.
-For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/DegLex.lean`
+For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/MonomialOrder/DegLex.lean`
 
 * `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`.
 For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -61,7 +61,7 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
-  /-- `syn` is a additive commutative monoid -/
+  /-- `syn` is an additive commutative monoid -/
   acm : AddCommMonoid syn := by infer_instance
   /-- `syn` is linearly ordered -/
   lo : LinearOrder syn := by infer_instance

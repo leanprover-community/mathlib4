@@ -215,7 +215,7 @@ theorem fib_le_of_contsAux_b :
       · simp [contsAux] -- case n = 0
       · simp [contsAux] -- case n = 1
       · let g := of v -- case 2 ≤ n
-        have : ¬n + 2 ≤ 1 := by omega
+        have : ¬n + 2 ≤ 1 := by lia
         have not_terminatedAt_n : ¬g.TerminatedAt n := Or.resolve_left hyp this
         obtain ⟨gp, s_ppred_nth_eq⟩ : ∃ gp, g.s.get? n = some gp :=
           Option.ne_none_iff_exists'.mp not_terminatedAt_n

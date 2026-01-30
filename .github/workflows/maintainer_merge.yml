@@ -29,7 +29,12 @@ jobs:
       EVENT_NAME: ${{ github.event_name }}
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: >- # crude check to skip running this on most reviews / comments
+      github.repository == 'leanprover-community/mathlib4' && 
+      (
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') || 
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
+      )
     steps:
       - name: Find maintainer merge/delegate
         id: merge_or_delegate
@@ -87,7 +92,7 @@ jobs:
       # upload artifact if we have no access to secrets
       - if: ${{ steps.merge_or_delegate.outputs.secrets == '' && ! steps.merge_or_delegate.outputs.mOrD == '' }}
         name: Upload artifact
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: workflow-data
           path: artifact-data.json
@@ -107,7 +112,7 @@ jobs:
 
       - name: Checkout
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: master
           sparse-checkout: |

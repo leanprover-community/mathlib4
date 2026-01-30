@@ -38,6 +38,7 @@ namespace ExtendScalars
 variable [CommRing R] [CommRing A] [Algebra R A] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.privateInPublic true in
 /-- The Lie bracket on the extension of a Lie algebra `L` over `R` by an algebra `A` over `R`. -/
 private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
   TensorProduct.curry <|
@@ -49,6 +50,8 @@ private def bracket' : A ⊗[R] L →ₗ[A] A ⊗[R] M →ₗ[A] A ⊗[R] M :=
 private theorem bracket'_tmul (s t : A) (x : L) (m : M) :
     bracket' R A L M (s ⊗ₜ[R] x) (t ⊗ₜ[R] m) = (s * t) ⊗ₜ ⁅x, m⁆ := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Bracket (A ⊗[R] L) (A ⊗[R] M) where bracket x m := bracket' R A L M x m
 
 private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bracket' R A L M x m :=
@@ -57,6 +60,7 @@ private theorem bracket_def (x : A ⊗[R] L) (m : A ⊗[R] M) : ⁅x, m⁆ = bra
 @[simp]
 theorem bracket_tmul (s t : A) (x : L) (y : M) : ⁅s ⊗ₜ[R] x, t ⊗ₜ[R] y⁆ = (s * t) ⊗ₜ ⁅x, y⁆ := rfl
 
+set_option backward.privateInPublic true in
 private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
   simp only [bracket_def]
   refine x.induction_on ?_ ?_ ?_
@@ -79,6 +83,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
     · intro y₁ y₂ hy₁ hy₂
       simp only [add_add_add_comm, hy₁, hy₂, add_zero, LinearMap.add_apply, map_add]
 
+set_option backward.privateInPublic true in
 private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     ⁅x, ⁅y, z⁆⁆ = ⁅⁅x, y⁆, z⁆ + ⁅y, ⁅x, z⁆⁆ := by
   simp only [bracket_def]
@@ -96,6 +101,8 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
     · grind [LinearMap.add_apply]
   · grind [LinearMap.add_apply]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instLieRing : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]
@@ -104,6 +111,8 @@ instance instLieRing : LieRing (A ⊗[R] L) where
 
 instance instLieAlgebra : LieAlgebra A (A ⊗[R] L) where lie_smul _a _x _y := map_smul _ _ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance instLieRingModule : LieRingModule (A ⊗[R] L) (A ⊗[R] M) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, map_add]
   lie_add x y z := by simp only [bracket_def, map_add]

@@ -83,7 +83,7 @@ instance IsUltraUniformity.pi {ι : Type*} {X : ι → Type*} [U : Π i, Uniform
 set_option linter.flexible false in -- simp followed by infer_instance
 instance IsUltraUniformity.bot [UniformSpace X] [DiscreteUniformity X] : IsUltraUniformity X := by
   have := Filter.hasBasis_principal (SetRel.id (α := X))
-  rw [← DiscreteUniformity.eq_principal_relId] at this
+  rw [← DiscreteUniformity.eq_principal_setRelId] at this
   apply mk_of_hasBasis this <;> { simp; infer_instance }
 
 set_option linter.flexible false in -- simp followed by infer_instance

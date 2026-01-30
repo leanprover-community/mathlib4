@@ -93,8 +93,8 @@ theorem of_exists_prime_mem_of_isPrime
   induction this using closure_induction with
   | mem z hz =>
       rcases hz with h | h
-      · exact ⟨∅, by simp, by simpa using (associated_one_iff_isUnit.2 h).symm⟩
-      · exact ⟨{z}, by simpa, by simpa using Associated.rfl⟩
+      · exact ⟨∅, by simpa using (associated_one_iff_isUnit.2 h).symm⟩
+      · exact ⟨{z}, by simpa⟩
   | one => exact ⟨∅, by simp⟩
   | mul z₁ z₂ hz₁ hz₂ h₁ h₂ =>
       obtain ⟨S₁, hS₁pri, hS₁⟩ := h₁

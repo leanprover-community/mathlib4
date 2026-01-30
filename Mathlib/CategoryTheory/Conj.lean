@@ -72,7 +72,7 @@ theorem conj_pow (f : End X) (n : ℕ) : α.conj (f ^ n) = α.conj f ^ n :=
   α.conj.toMonoidHom.map_pow f n
 
 -- TODO: change definition so that `conjAut_apply` becomes a `rfl`?
-/-- `conj` defines a group isomorphisms between groups of automorphisms -/
+/-- `conj` defines a group isomorphism between groups of automorphisms -/
 def conjAut : Aut X ≃* Aut Y :=
   (Aut.unitsEndEquivAut X).symm.trans <| (Units.mapEquiv α.conj).trans <| Aut.unitsEndEquivAut Y
 

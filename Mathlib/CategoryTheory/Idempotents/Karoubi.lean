@@ -31,7 +31,7 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 namespace Idempotents
 
@@ -222,8 +222,8 @@ instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
     use Y
     exact
       Nonempty.intro
-        { hom := ⟨i, by erw [id_comp, ← h₂, ← assoc, h₁, id_comp]⟩
-          inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
+        { hom := ⟨i, by simp [← Category.assoc, h₁, ← h₂]⟩
+          inv := ⟨e, by simp [Category.assoc, h₁, ← h₂]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
 instance toKaroubi_isEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence where

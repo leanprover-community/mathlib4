@@ -168,10 +168,10 @@ theorem exists_mem_span_nat_finset_of_ge :
     ← eq, Finset.mul_sum, smul_eq_mul, ← mul_assoc, ← Finset.sum_add_distrib, ← add_mul]
   congr! 2 with i
   split_ifs with hai
-  · rw [Int.toNat_eq_zero.mpr (by cutsat), cast_zero, mul_zero, add_zero,
+  · rw [Int.toNat_eq_zero.mpr (by lia), cast_zero, mul_zero, add_zero,
       Int.natCast_natAbs, abs_eq_self.mpr hai]
-  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by cutsat), sub_mul,
-      ← Int.eq_natCast_toNat.mpr (by cutsat), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
+  · rw [cast_sub, Int.natCast_natAbs, abs_eq_neg_self.mpr (by lia), sub_mul,
+      ← Int.eq_natCast_toNat.mpr (by lia), mul_neg (rx : ℤ), sub_neg_eq_add, add_comm]
     rw [← Nat.mul_le_mul_left_iff (pos_of_ne_zero h0), ← hrx,
       Nat.mul_div_cancel' (setGcd_dvd_of_mem hxs)]
     exact (c.mod_lt (pos_of_ne_zero hx)).le
@@ -215,7 +215,7 @@ theorem exists_frobeniusNumber_iff {s : Set ℕ} :
   mp := fun ⟨n, hn⟩ ↦ by
     rw [frobeniusNumber_iff] at hn
     exact ⟨dvd_one.mp <| Nat.dvd_add_iff_right (setGcd_dvd_of_mem_closure (hn.2 (n + 1)
-      (by omega))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by omega))),
+      (by lia))) (n := 1) |>.mpr (setGcd_dvd_of_mem_closure (hn.2 (n + 2) (by lia))),
       fun h ↦ hn.1 <| AddSubmonoid.closure_mono (Set.singleton_subset_iff.mpr h)
         (addSubmonoidClosure_one.ge ⟨⟩)⟩
   mpr h := by

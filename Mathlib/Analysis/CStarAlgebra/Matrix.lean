@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Matrix
 # Analytic properties of the `star` operation on matrices
 
 This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 m` to
-`Matrix m n 𝕜`. See the file `Analysis.Matrix` for many other matrix norms.
+`Matrix m n 𝕜`. See the file `Mathlib/Analysis/Matrix.lean` for many other matrix norms.
 
 ## Main definitions
 
@@ -113,19 +113,9 @@ lemma coe_toEuclideanCLM_eq_toEuclideanLin (A : Matrix n n 𝕜) :
 lemma toEuclideanCLM_toLp (A : Matrix n n 𝕜) (x : n → 𝕜) :
     toEuclideanCLM (n := n) (𝕜 := 𝕜) A (toLp _ x) = toLp _ (A *ᵥ x) := rfl
 
-@[deprecated toEuclideanCLM_toLp (since := "2025-05-07")]
-lemma toEuclideanCLM_piLp_equiv_symm (A : Matrix n n 𝕜) (x : n → 𝕜) :
-    toEuclideanCLM (n := n) (𝕜 := 𝕜) A ((WithLp.equiv _ _).symm x) =
-      (WithLp.equiv _ _).symm (A *ᵥ x) := rfl
-
 @[simp]
 lemma ofLp_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ ofLp x := rfl
-
-@[deprecated ofLp_toEuclideanCLM (since := "2025-05-07")]
-lemma piLp_equiv_toEuclideanCLM (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
-    WithLp.equiv _ _ (toEuclideanCLM (n := n) (𝕜 := 𝕜) A x) = A *ᵥ (WithLp.equiv _ _ x) :=
-  rfl
 
 /-- An auxiliary definition used only to construct the true `NormedAddCommGroup` (and `Metric`)
 structure provided by `Matrix.instMetricSpaceL2Op` and `Matrix.instNormedAddCommGroupL2Op`. -/

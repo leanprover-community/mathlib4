@@ -31,7 +31,7 @@ convergence in measure and other notions of convergence.
 * `MeasureTheory.tendstoInMeasure_of_tendsto_ae`: convergence almost everywhere in a finite
   measure space implies convergence in measure.
 * `MeasureTheory.TendstoInMeasure.exists_seq_tendsto_ae`: if `f` is a sequence of functions
-  which converges in measure to `g`, then `f` has a subsequence which convergence almost
+  which converges in measure to `g`, then `f` has a subsequence which converges almost
   everywhere to `g`.
 * `MeasureTheory.exists_seq_tendstoInMeasure_atTop_iff`: for a sequence of functions `f`,
   convergence in measure is equivalent to the fact that every subsequence has another subsequence
@@ -64,7 +64,7 @@ lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι}
   intro ε hε
   by_cases hε_top : ε = ∞
   · have h1 : Tendsto (fun n ↦ μ {ω | 1 ≤ edist (f n ω) (g ω)}) l (𝓝 0) := h 1 (by simp) (by simp)
-    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le') ?_
+    refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h1 (fun _ ↦ zero_le _) ?_
     intro n
     simp only [hε_top]
     gcongr
@@ -148,17 +148,23 @@ theorem tendstoInMeasure_iff_tendsto_toNNReal [EDist E] [IsFiniteMeasure μ]
   · rw [← ENNReal.tendsto_toNNReal_iff ENNReal.zero_ne_top (hfin ε)]
     exact h ε hε
 
-lemma TendstoInMeasure.mono [EDist E] {f : ι → α → E} {g : α → E} {u v : Filter ι} (huv : v ≤ u)
-    (hg : TendstoInMeasure μ f u g) : TendstoInMeasure μ f v g :=
-  fun ε hε => (hg ε hε).mono_left huv
-
-lemma TendstoInMeasure.comp [EDist E] {f : ι → α → E} {g : α → E} {u : Filter ι}
-    {v : Filter κ} {ns : κ → ι} (hg : TendstoInMeasure μ f u g) (hns : Tendsto ns v u) :
-    TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
-
 namespace TendstoInMeasure
 
 variable [EDist E] {l : Filter ι} {f f' : ι → α → E} {g g' : α → E}
+
+lemma mono {v : Filter ι} (huv : v ≤ l) (hg : TendstoInMeasure μ f l g) :
+    TendstoInMeasure μ f v g := fun ε hε => (hg ε hε).mono_left huv
+
+lemma comp {v : Filter κ} {ns : κ → ι} (hg : TendstoInMeasure μ f l g)
+    (hns : Tendsto ns v l) : TendstoInMeasure μ (f ∘ ns) v g := fun ε hε ↦ (hg ε hε).comp hns
+
+theorem indicator {F : Type*} [PseudoEMetricSpace F] [Zero F] {f : ι → α → F} {g : α → F}
+    (hg : TendstoInMeasure μ f l g) (s : Set α) :
+    TendstoInMeasure μ (fun i => s.indicator (f i)) l (s.indicator g) := by
+  refine fun ε hε => tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds (hg ε hε) ?_ ?_
+  · intro; simp
+  · refine fun n => measure_mono (fun x hx => ?_)
+    by_cases x ∈ s <;> simp_all
 
 protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' := by
@@ -337,7 +343,7 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
   refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae, fun h1 ↦ ?_⟩
   rw [tendstoInMeasure_iff_tendsto_toNNReal]
-  by_contra! h; rcases h with ⟨ε, hε, h2⟩
+  by_contra! ⟨ε, hε, h2⟩
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ edist (f (ns n) x) (g x)}).toNNReal := by
     obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_notMem.1 h2
@@ -355,7 +361,7 @@ end ExistsSeqTendstoAe
 is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by `C`. -/
 lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
     {u : Filter ι} [NeBot u] [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} {C : ℝ≥0∞}
-    (p : ℝ≥0∞) (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
+    {p : ℝ≥0∞} (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
   obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
   exact Lp.eLpNorm_le_of_ae_tendsto (hl.1.eventually bound) (fun n => hf (l n)) hl.2

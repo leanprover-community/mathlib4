@@ -14,15 +14,16 @@ jobs:
 
     steps:
     - name: Checkout mathlib4 repository
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       with:
         ref: nightly-testing
         fetch-depth: 0  # Fetch all branches
+        token: ${{ secrets.NIGHTLY_TESTING }}
 
     - name: Set up Git
       run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+        git config --global user.name "leanprover-community-mathlib4-bot"
+        git config --global user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
 
     - name: Configure Lean
       uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
@@ -113,6 +114,17 @@ jobs:
         PRS="${{ steps.get-prs.outputs.prs }}"
         echo "=== PRS ========================="
         echo "$PRS"
+
+        # CRITICAL: If no PRs were found, skip branch matching entirely.
+        # An empty prs.txt causes `grep -f prs.txt` to match ALL lines,
+        # which would incorrectly select every lean-pr-testing branch!
+        if [ -z "$PRS" ]; then
+          echo "No PRs found between old and new nightlies. Skipping branch discovery."
+          echo "branches_exist=false" >> "$GITHUB_ENV"
+          printf "branches<<EOF\n\nEOF" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
         echo "$PRS" | tr ' ' '\n' > prs.txt
         echo "=== prs.txt ====================="
         cat prs.txt

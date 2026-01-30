@@ -84,8 +84,7 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
-  __ := Nonneg.isOrderedRing
-  mul_le_mul_left _ _ h c := mul_le_mul_of_nonneg_right h c.prop
+  zero_le a := a.2
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
@@ -98,7 +97,7 @@ instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZe
     NoZeroDivisors { x : α // 0 ≤ x } :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
-      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
+      simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self] }
 
 instance orderedSub [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     OrderedSub { x : α // 0 ≤ x } :=

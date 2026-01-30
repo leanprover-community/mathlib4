@@ -139,7 +139,7 @@ theorem kronecker_mulVec_vec (A : Matrix l m R) (X : Matrix m n R) (B : Matrix p
 
 theorem vec_vecMul_kronecker (A : Matrix m l R) (X : Matrix m n R) (B : Matrix n p R) :
     vec X ᵥ* (B ⊗ₖ A) = vec (Aᵀ * X * B) :=
-  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _=> Commute.all _ _
+  vec_vecMul_kronecker_of_commute _ _ _ fun _ _ _ => Commute.all _ _
 
 end NonUnitalCommSemiring
 

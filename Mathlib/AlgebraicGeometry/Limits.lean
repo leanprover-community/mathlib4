@@ -8,6 +8,11 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+
 
 /-!
 # (Co)Limits of Schemes
@@ -95,12 +100,12 @@ theorem emptyIsInitial_to : emptyIsInitial.to = Scheme.emptyTo :=
 instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
-instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u+1}) :=
+instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
   inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
-  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_isIso_stalkMap
+  apply +allowSynthFailures IsOpenImmersion.of_isIso_stalkMap
   · exact .of_isEmpty (X := X) _
   · intro (i : X); exact isEmptyElim i
 
@@ -117,8 +122,12 @@ noncomputable def isInitialOfIsEmpty {X : Scheme} [IsEmpty X] : IsInitial X :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 /-- `Spec 0` is the initial object in the category of schemes. -/
-noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u+1}) :=
+noncomputable def specPunitIsInitial : IsInitial (Spec <| .of PUnit.{u + 1}) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
+
+lemma isInitial_iff_isEmpty {X : Scheme.{u}} : Nonempty (IsInitial X) ↔ IsEmpty X :=
+  ⟨fun ⟨h⟩ ↦ (h.uniqueUpToIso specPunitIsInitial).hom.homeomorph.isEmpty,
+    fun _ ↦ ⟨isInitialOfIsEmpty⟩⟩
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
   .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec <| .of PUnit))
@@ -140,6 +149,7 @@ instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
 
 -- This is also true for schemes with two points.
 -- But there are non-affine schemes with three points.
+/-- This is true in general for finite discrete schemes. See below. -/
 instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
   cases isEmpty_or_nonempty X with
   | inl h => infer_instance
@@ -149,6 +159,11 @@ instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
     X.isBasis_affineOpens.exists_subset_of_mem_open (a := x) (by trivial) isOpen_univ
   obtain rfl : U = ⊤ := by ext y; simpa [Subsingleton.elim y x]
   exact .of_isIso (Scheme.topIso X).inv
+
+theorem IsAffineOpen.of_subsingleton {X : Scheme} {U : X.Opens}
+    (hU : Set.Subsingleton (U : Set X)) : IsAffineOpen U :=
+  have : Subsingleton U := hU.coe_sort
+  inferInstanceAs (IsAffine _)
 
 end Initial
 
@@ -169,8 +184,8 @@ instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetTo
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
   ⟨fun _ ↦ hasColimit_of_created _ Scheme.forgetToLocallyRingedSpace⟩
 
-lemma sigmaι_eq_iff (i j : ι) (x y) :
-    Sigma.ι f i x = Sigma.ι f j y ↔ (Sigma.mk i x : Σ i, f i) = Sigma.mk j y := by
+lemma sigmaι_eq_iff [Small.{u} σ] (i j : σ) (x y) :
+    Sigma.ι g i x = Sigma.ι g j y ↔ (Sigma.mk i x : Σ i, g i) = Sigma.mk j y := by
   refine (Scheme.IsLocallyDirected.ι_eq_ι_iff _).trans ⟨?_, ?_⟩
   · rintro ⟨k, ⟨⟨⟨⟩⟩⟩, ⟨⟨⟨⟩⟩⟩, x, rfl, rfl⟩; simp
   · simp only [Discrete.functor_obj_eq_as, Sigma.mk.injEq]
@@ -179,13 +194,40 @@ lemma sigmaι_eq_iff (i j : ι) (x y) :
     exact ⟨⟨i⟩, 𝟙 _, 𝟙 _, x, by simp⟩
 
 /-- The images of each component in the coproduct is disjoint. -/
-lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
-    Disjoint (Sigma.ι f i).opensRange (Sigma.ι f j).opensRange := by
+lemma disjoint_opensRange_sigmaι [Small.{u} σ] (i j : σ) (h : i ≠ j) :
+    Disjoint (Sigma.ι g i).opensRange (Sigma.ι g j).opensRange := by
   intro U hU hU' x hx
   obtain ⟨x, rfl⟩ := hU hx
   obtain ⟨y, hy⟩ := hU' hx
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
+
+variable {g} in
+lemma isEmpty_of_commSq_sigmaι_of_ne [Small.{u} σ] {i j : σ} {Z : Scheme.{u}} {a : Z ⟶ g i}
+    {b : Z ⟶ g j} (h : CommSq a b (Sigma.ι g i) (Sigma.ι g j)) (hij : i ≠ j) :
+    IsEmpty Z := by
+  refine ⟨fun z ↦ ?_⟩
+  fapply eq_bot_iff.mp <| disjoint_iff.mp <| disjoint_opensRange_sigmaι g i j hij
+  · exact (a ≫ Sigma.ι g i).base z
+  · exact ⟨⟨a.base z, rfl⟩, ⟨b.base z, by rw [← Scheme.Hom.comp_apply, h.w]⟩⟩
+
+lemma isEmpty_pullback_sigmaι_of_ne [Small.{u} σ] {i j : σ} (hij : i ≠ j) :
+    IsEmpty ↑(pullback (Sigma.ι g i) (Sigma.ι g j)) :=
+  isEmpty_of_commSq_sigmaι_of_ne ⟨pullback.condition⟩ hij
+
+noncomputable instance [Small.{u} σ] : CoproductsOfShapeDisjoint Scheme.{u} σ where
+  coproductDisjoint g := by
+    refine .of_hasCoproduct (fun _ ↦ pullback.cone _ _) (fun _ ↦ pullback.isLimit _ _) ?_
+    intro i j hij
+    apply Nonempty.some
+    rw [isInitial_iff_isEmpty]
+    exact isEmpty_pullback_sigmaι_of_ne _ hij
+
+instance : HasFiniteCoproducts Scheme.{u} where
+  out := inferInstance
+
+instance : MonoCoprod Scheme.{u} :=
+  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]
@@ -234,7 +276,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
-      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
+      (f := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.Hom.comp_apply]
     · simp [← Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
@@ -263,7 +305,7 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
   have : IsOpenImmersion (Sigma.desc f) := by
     refine isOpenImmersion_sigmaDesc _ _ (fun i j hij ↦ ?_)
     simpa [Function.onFun_apply, disjoint_iff, Opens.ext_iff] using hdisj hij
-  simp only [← Cofan.isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
+  simp only [Cofan.nonempty_isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
   apply isIso_of_isOpenImmersion_of_opensRange_eq_top
   rw [eq_top_iff]
   intro x hx
@@ -302,6 +344,14 @@ lemma isCompl_opensRange_inl_inr :
   convert isCompl_range_inl_inr X Y
   simp only [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
   rfl
+
+@[simp]
+lemma inl_ne_inr (x : X) (y : Y) : (coprod.inl : X ⟶ X ⨿ Y) x ≠ (coprod.inr : Y ⟶ X ⨿ Y) y :=
+  Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr X Y).disjoint ⟨x, rfl⟩ ⟨y, rfl⟩
+
+@[simp]
+lemma inr_ne_inl (x : X) (y : Y) : (coprod.inr : Y ⟶ X ⨿ Y) y ≠ (coprod.inl : X ⟶ X ⨿ Y) x :=
+  (inl_ne_inr _ _ _ _).symm
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union -/
 noncomputable
@@ -356,7 +406,7 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
     Nonempty (IsColimit <| BinaryCofan.mk f g) := by
   let c' : Cofan fun j ↦ (WalkingPair.casesOn j X Y : Scheme.{u}) :=
     .mk S fun j ↦ WalkingPair.casesOn j f g
-  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b|b) <;> rfl)
+  let i : BinaryCofan.mk f g ≅ c' := Cofan.ext (Iso.refl _) (by rintro (b | b) <;> rfl)
   refine ⟨IsColimit.ofIsoColimit (Nonempty.some ?_) i.symm⟩
   let fi (j : WalkingPair) : WalkingPair.casesOn j X Y ⟶ S := WalkingPair.casesOn j f g
   convert nonempty_isColimit_cofanMk_of fi _ _
@@ -367,6 +417,71 @@ lemma nonempty_isColimit_binaryCofanMk_of_isCompl {X Y S : Scheme.{u}}
     match i, j with
     | .left, .right => simpa [fi] using hf.1
     | .right, .left => simpa [fi] using hf.1.symm
+
+lemma isPullback_inl_inl_coprodMap {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback f coprod.inl coprod.inl (coprod.map f g) := by
+  refine IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_
+  apply le_antisymm
+  · rintro x ⟨y, hxy⟩
+    obtain ⟨(x | x), rfl⟩ := (coprodMk _ _).surjective x
+    · simp
+    · simp only [coprodMk_inr, ← Scheme.Hom.comp_apply, coprod.inr_map] at hxy
+      cases Set.disjoint_iff_forall_ne.mp (isCompl_range_inl_inr _ _).1 ⟨y, rfl⟩ ⟨_, rfl⟩ hxy
+  · rintro _ ⟨x, rfl⟩
+    exact ⟨f x, by simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base]⟩
+
+lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') : IsPullback g coprod.inr coprod.inr (coprod.map f g) :=
+  (isPullback_inl_inl_coprodMap g f).of_iso (.refl _) (.refl _) (coprod.braiding _ _)
+    (coprod.braiding _ _) (by simp) (by simp) (by simp) (by simp)
+
+instance : FinitaryExtensive Scheme where
+  hasFiniteCoproducts.out := inferInstance
+  van_kampen' {X Y} c hc := by
+    suffices IsVanKampenColimit (BinaryCofan.mk (P := X ⨿ Y) coprod.inl coprod.inr) from
+      this.of_iso (hc.uniqueUpToIso (coprodIsCoprod _ _)).symm
+    refine BinaryCofan.isVanKampen_mk _ _ (fun _ _ ↦ coprodIsCoprod _ _) _
+      (fun _ _ ↦ pullbackIsPullback _ _) ?_ ?_
+    · intro X' Y' αX αY f h₁ h₂
+      have h₁' (x : _) := congr($h₁ x).symm
+      have h₂' (x : _) := congr($h₂ x).symm
+      dsimp at h₁ h₂ h₁' h₂'
+      refine ⟨(IsOpenImmersion.isPullback _ _ _ _ h₁.symm ?_).flip,
+        (IsOpenImmersion.isPullback _ _ _ _ h₂.symm ?_).flip⟩ <;>
+        ext x <;> obtain ⟨x | x, rfl⟩ := (coprodMk _ _).surjective x <;> simp_all
+    · dsimp
+      refine fun {Z} f ↦ (nonempty_isColimit_binaryCofanMk_of_isCompl _ _ ?_).some
+      rw [Scheme.Hom.opensRange_pullbackFst, Scheme.Hom.opensRange_pullbackFst]
+      convert (isCompl_range_inl_inr X Y).map (CompleteLatticeHom.setPreimage f)
+      simp [isCompl_iff, disjoint_iff, codisjoint_iff, ← TopologicalSpace.Opens.coe_inj]
+
+variable {X Y}
+
+/-- The sections on coproducts of schemes are the (categorical) product of the sections
+on the components -/
+noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
+    Γ(X ⨿ Y, U) ≅ Γ(X, coprod.inl (C := Scheme) ⁻¹ᵁ U) ⨯ Γ(Y, coprod.inr (C := Scheme) ⁻¹ᵁ U) :=
+  letI ι₁ : X ⟶ X ⨿ Y := coprod.inl
+  letI ι₂ : Y ⟶ X ⨿ Y := coprod.inr
+  haveI h₁ : ι₁ ''ᵁ ι₁ ⁻¹ᵁ U ⊔ ι₂ ''ᵁ ι₂ ⁻¹ᵁ U = U := by
+    simp_rw [Scheme.Hom.image_preimage_eq_opensRange_inf]
+    rw [← inf_sup_right, (isCompl_opensRange_inl_inr X Y).sup_eq_top, top_inf_eq]
+  haveI h₂ : ι₁ ''ᵁ ι₁ ⁻¹ᵁ U ⊓ ι₂ ''ᵁ ι₂ ⁻¹ᵁ U = ⊥ := by
+    simp_rw [Scheme.Hom.image_preimage_eq_opensRange_inf]
+    rw [← inf_inf_distrib_right, (isCompl_opensRange_inl_inr X Y).inf_eq_bot, bot_inf_eq]
+  (X ⨿ Y).presheaf.mapIso (eqToIso h₁).op ≪≫
+    ((X ⨿ Y).sheaf.isProductOfDisjoint _ _ h₂).conePointUniqueUpToIso (limit.isLimit _) ≪≫
+    prod.mapIso (ι₁.appIso _) (ι₂.appIso _)
+
+@[reassoc (attr := simp)]
+lemma Scheme.coprodPresheafObjIso_hom_fst (U : (X ⨿ Y).Opens) :
+    (coprodPresheafObjIso U).hom ≫ prod.fst = (coprod.inl (C := Scheme)).app U := by
+  simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
+
+@[reassoc (attr := simp)]
+lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
+    (coprodPresheafObjIso U).hom ≫ prod.snd = (coprod.inr (C := Scheme)).app U := by
+  simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
 variable (R S : Type u) [CommRing R] [CommRing S]
 
@@ -508,20 +623,88 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
   rw [this]
   infer_instance
 
-instance [Finite ι] [∀ i, IsAffine (f i)] : IsAffine (∐ f) :=
-  .of_isIso ((Sigma.mapIso (fun i ↦ (f i).isoSpec)).hom ≫ sigmaSpec _)
+instance [Finite σ] [∀ i, IsAffine (g i)] : IsAffine (∐ g) := by
+  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small.{u} (α := σ)
+  have : Finite ι := e.finite_iff.mp ‹_›
+  have (i : _) : IsAffine ((g ∘ e.symm) i) := by dsimp; infer_instance
+  exact IsAffine.of_isIso ((Sigma.reindex e.symm g).inv ≫
+    (Sigma.mapIso (fun i ↦ Scheme.isoSpec _)).hom ≫ sigmaSpec _)
 
 instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
   .of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
 
+open scoped Function in
+/-- A version with more restrictive universes. See `IsAffineOpen.iSup_of_disjoint`. -/
+private lemma IsAffineOpen.iSup_of_disjoint_aux [Finite ι] {U : ι → X.Opens}
+    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
+    IsAffineOpen (iSup U) := by
+  have := isOpenImmersion_sigmaDesc _ (fun i ↦ (U i).ι)
+    (fun i j e ↦ by convert hU' e using 0; simp [← Opens.coe_disjoint])
+  convert isAffineOpen_opensRange (Sigma.desc fun i ↦ (U i).ι)
+  · ext
+    simp [(sigmaMk _).symm.exists_congr_left, ← Scheme.Hom.comp_apply, Scheme.Opens.exists_toScheme]
+  · have (i : _) : IsAffine _ := hU i
+    infer_instance
+
+open scoped Function in
+lemma IsAffineOpen.iSup_of_disjoint [Finite σ] {U : σ → X.Opens}
+    (hU : ∀ i, IsAffineOpen (U i)) (hU' : Pairwise (Disjoint on U)) :
+    IsAffineOpen (iSup U) := by
+  obtain ⟨ι, ⟨e⟩⟩ := Small.equiv_small.{u} (α := σ)
+  have : Finite ι := e.finite_iff.mp ‹_›
+  rw [← e.symm.iSup_congr fun _ ↦ rfl]
+  exact .iSup_of_disjoint_aux (by simp [*]) fun i j h ↦ hU' (e.symm.injective.ne h)
+
+open scoped Function in
+lemma IsAffineOpen.biSup_of_disjoint {s : Set σ} (hs : s.Finite)
+    {U : σ → X.Opens} (hU : ∀ i ∈ s, IsAffineOpen (U i)) (hU' : s.Pairwise (Disjoint on U)) :
+    IsAffineOpen (⨆ i ∈ s, U i) := by
+  rw [← iSup_subtype'']
+  have := hs.to_subtype
+  exact .iSup_of_disjoint (by simpa) fun i j e ↦ hU' i.2 j.2 (by aesop)
+
+lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : IsAffineOpen V)
+    (H : Disjoint U V) :
+    IsAffineOpen (U ⊔ V) := by
+  convert iSup_of_disjoint (U := fun i : Unit ⊕ Unit ↦ i.elim (fun _ ↦ U) (fun _ ↦ V)) (by simp_all)
+    (by simp_all [_root_.Pairwise, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
+  aesop
+
+instance (priority := low) [Finite X] [DiscreteTopology X] : IsAffine X :=
+  have : IsAffineOpen (⨆ (x : X), (⟨{x}, isOpen_discrete _⟩ : X.Opens)) :=
+    .iSup_of_disjoint (fun i ↦ .of_subsingleton Set.subsingleton_singleton)
+      fun i j e ↦ by simpa [← TopologicalSpace.Opens.coe_disjoint]
+  have : IsAffine (⊤ : X.Opens).toScheme := show IsAffineOpen _ by convert this; ext; simp
+  .of_isIso X.topIso.inv
+
 end Coproduct
+
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    (i : WalkingPair) : Mono ((span f g ⋙ Scheme.forget).map (WidePushoutShape.Hom.init i)) := by
+  rw [mono_iff_injective]
+  cases i
+  · simpa using f.isOpenEmbedding.injective
+  · simpa using g.isOpenEmbedding.injective
+
+instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
+    {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
+  obtain (a | (a | a)) := t
+  · simp only [WidePushoutShape.hom_id, CategoryTheory.Functor.map_id]
+    infer_instance
+  · simpa
+  · simpa
+
+-- Test that instances on locally directed colimits fire correctly.
+example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
+    [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
+  inferInstance
 
 instance : CartesianMonoidalCategory Scheme := .ofHasFiniteProducts
 instance : BraidedCategory Scheme := .ofCartesianMonoidalCategory
 
 section IsAffine
 
-lemma Scheme.isAffine_of_isLimit {I : Type*} [Category I] {D : I ⥤ Scheme.{u}}
+lemma Scheme.isAffine_of_isLimit {I : Type*} [Category* I] {D : I ⥤ Scheme.{u}}
     (c : Cone D) (hc : IsLimit c) [∀ i, IsAffine (D.obj i)] :
     IsAffine c.pt := by
   let α : D ⟶ (D ⋙ Scheme.Γ.rightOp) ⋙ Scheme.Spec := D.whiskerLeft ΓSpec.adjunction.unit
