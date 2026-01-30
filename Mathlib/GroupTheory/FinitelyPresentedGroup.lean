@@ -52,22 +52,6 @@ finitely presented group, finitely generated normal closure
 
 -- Start of suggested additions to #FreeGroup
 
-/-- We define that the free group on no generators as isomorphic to the trivial group. -/
-def FreeGroup.freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
-{ toEquiv := FreeGroup.freeGroupEmptyEquivUnit
-  map_mul' _ _ := rfl }
-
-/-- We define that the free group on one element as isomorphic to ℤ. -/
-def FreeGroup.freeGroupUnitMulEquivInt :
-    FreeGroup Unit ≃* Multiplicative ℤ where
-    toFun := fun x ↦ Multiplicative.ofAdd (FreeGroup.freeGroupUnitEquivInt x)
-    invFun := fun z ↦ FreeGroup.freeGroupUnitEquivInt.symm z.toAdd
-    left_inv _ := by simp
-    right_inv _ := by simp
-    map_mul' _ _  := by
-      ext
-      simp [FreeGroup.freeGroupUnitEquivInt]
-
 /-- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
 FreeGroup.map is also surjective. -/
 theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
