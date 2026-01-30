@@ -638,14 +638,18 @@ lemma toClass_injective : Function.Injective <| toClass (W := W) := by
   · exact zero_add 0
   · exact CoordinateRing.mk_XYIdeal'_neg_mul h
 
+instance : AddCommSemigroup W.Point where
+  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
+  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
+
 instance : AddCommGroup W.Point where
-  nsmul := nsmulRec
-  zsmul := zsmulRec
+  nsmul := nsmulBinRec
+  nsmul_succ := nsmulBinRec_succ
+  zsmul := zsmulRec nsmulBinRec
+  zsmul_succ' := nsmulBinRec_succ
   zero_add := zero_add
   add_zero := add_zero
   neg_add_cancel _ := by rw [add_eq_zero]
-  add_comm _ _ := toClass_injective <| by simp only [map_add, add_comm]
-  add_assoc _ _ _ := toClass_injective <| by simp only [map_add, add_assoc]
 
 /-! ## Maps and base changes -/
 

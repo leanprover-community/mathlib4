@@ -519,13 +519,9 @@ theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j 
 @[to_additive]
 instance (priority := 100) ContinuousMul.measurableMul [Mul γ] [ContinuousMul γ] :
     MeasurableMul γ where
-  measurable_const_mul _ := by fun_prop
-  measurable_mul_const _ := by fun_prop
 
 instance (priority := 100) ContinuousSub.measurableSub [Sub γ] [ContinuousSub γ] :
     MeasurableSub γ where
-  measurable_const_sub _ := by fun_prop
-  measurable_sub_const _ := by fun_prop
 
 @[to_additive]
 instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv γ] :
@@ -535,13 +531,11 @@ instance (priority := 100) ContinuousInv.measurableInv [Inv γ] [ContinuousInv �
 instance (priority := 100) ContinuousConstSMul.toMeasurableConstSMul {M α} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SMul M α] [ContinuousConstSMul M α] :
     MeasurableConstSMul M α where
-  measurable_const_smul _ := (continuous_const_smul _).measurable
 
 @[to_additive]
 instance (priority := 100) ContinuousSMul.toMeasurableSMul {M α} [TopologicalSpace M]
     [TopologicalSpace α] [MeasurableSpace M] [MeasurableSpace α] [OpensMeasurableSpace M]
     [BorelSpace α] [SMul M α] [ContinuousSMul M α] : MeasurableSMul M α where
-  measurable_smul_const _ := by fun_prop
 
 section Homeomorph
 
