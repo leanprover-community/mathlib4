@@ -113,13 +113,11 @@ theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
 
 theorem diagonal_hadamard_eq_diagonal_iff {A : Matrix n n α} {d e} :
     diagonal d ⊙ A = diagonal e ↔ d * A.diag = e := by
-  simp only [← ext_iff, hadamard_apply, diagonal_apply, ite_mul, zero_mul, funext_iff, Pi.mul_apply]
-  grind [diag_apply]
+  simp [diagonal_hadamard, diagonal_eq_diagonal_iff, funext_iff]
 
 theorem hadamard_diagonal_eq_diagonal_iff {A : Matrix n n α} {d e} :
     A ⊙ diagonal d = diagonal e ↔ A.diag * d = e := by
-  simp only [← ext_iff, hadamard_apply, diagonal_apply, mul_ite, mul_zero, funext_iff, Pi.mul_apply]
-  grind [diag_apply]
+  simp [hadamard_diagonal, diagonal_eq_diagonal_iff, funext_iff]
 
 end Diagonal
 
