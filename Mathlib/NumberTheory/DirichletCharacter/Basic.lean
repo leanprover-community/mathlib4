@@ -148,7 +148,7 @@ lemma factorsThrough_iff_ker_unitsMap {d : ℕ} [NeZero n] (hd : d ∣ n) :
 Let `χ` and `ψ` be Dirichlet characters of level `n` and `m` respectively. Assume that they agree
 at level `n * m`. Then `χ` factors through `gcd(n, m)`.
 -/
-theorem FactorsThrough_gcd {m : ℕ} [NeZero n] (ψ : DirichletCharacter R m)
+theorem factorsThrough_gcd {m : ℕ} [NeZero n] (ψ : DirichletCharacter R m)
     (h : χ.changeLevel (n.dvd_mul_right m) = ψ.changeLevel (m.dvd_mul_left n)) :
     χ.FactorsThrough (n.gcd m) := by
   refine (factorsThrough_iff_ker_unitsMap (n.gcd_dvd_left m)).mpr fun x hx ↦
@@ -315,7 +315,7 @@ theorem conductor_dvd_of_mem_conductorSet {d : ℕ} (hn : n ≠ 0) (hd : d ∈ �
   obtain ⟨hd, χ₀, hχ₀⟩ := hd
   suffices (changeLevel (d.dvd_mul_right χ.conductor)) χ₀ =
       (changeLevel (χ.conductor.dvd_mul_left d)) χ.primitiveCharacter by
-    obtain ⟨_, χ₁, hχ₁⟩ := FactorsThrough_gcd χ₀ χ.primitiveCharacter this
+    obtain ⟨_, χ₁, hχ₁⟩ := factorsThrough_gcd χ₀ χ.primitiveCharacter this
     refine ⟨Nat.dvd_trans (d.gcd_dvd_left χ.conductor) hd, χ₁, ?_⟩
     rw [changeLevel_trans _ (d.gcd_dvd_left χ.conductor), ← hχ₁, hχ₀]
   have : NeZero (d * χ.conductor * n) :=
