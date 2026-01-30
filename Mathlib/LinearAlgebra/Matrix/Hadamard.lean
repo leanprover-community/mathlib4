@@ -98,18 +98,29 @@ theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
 
 end Zero
 
+section Diagonal
+
+variable [DecidableEq n] [MulZeroClass α]
+
+theorem hadamard_diagonal (M) (w : n → α) :
+    M ⊙ diagonal w = diagonal (M.diag * w) := by aesop (add simp diagonal)
+
+theorem diagonal_hadamard (M) (w : n → α) :
+    diagonal w ⊙ M = diagonal (w * M.diag) := by aesop (add simp diagonal)
+
+theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
+    diagonal v ⊙ diagonal w = diagonal (v * w) := by simp [diagonal_hadamard]
+
+end Diagonal
+
 section One
 
 variable [DecidableEq n] [MulZeroOneClass α]
 variable (M : Matrix n n α)
 
-theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
-  ext i j
-  by_cases h : i = j <;> simp [h]
+theorem hadamard_one : M ⊙ 1 = diagonal M.diag := mul_one M.diag ▸ hadamard_diagonal M 1
 
-theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
-  ext i j
-  by_cases h : i = j <;> simp [h]
+theorem one_hadamard : 1 ⊙ M = diagonal M.diag := one_mul M.diag ▸ diagonal_hadamard M 1
 
 theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 := by
   simp [← ext_iff, funext_iff, Matrix.one_apply]
@@ -119,11 +130,11 @@ theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 
 
 theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 := by
   simp_rw [one_hadamard, ← diagonal_one, diagonal_eq_diagonal_iff]
-  simp [funext_iff, diag_apply]
+  simp [funext_iff]
 
 theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1 := by
   simp_rw [hadamard_one, ← diagonal_one, diagonal_eq_diagonal_iff]
-  simp [funext_iff, diag_apply]
+  simp [funext_iff]
 
 end One
 
@@ -151,16 +162,6 @@ theorem single_hadamard_single_of_ne
   cases h <;> (simp only [single]; aesop)
 
 end single
-
-section Diagonal
-
-variable [DecidableEq n] [MulZeroClass α]
-
-theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
-    diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
-
-end Diagonal
 
 section trace
 
