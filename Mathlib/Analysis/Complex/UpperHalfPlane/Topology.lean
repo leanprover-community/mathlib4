@@ -34,6 +34,7 @@ instance : TopologicalSpace ℍ :=
 theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℍ → ℂ) :=
   IsOpen.isOpenEmbedding_subtypeVal <| isOpen_upperHalfPlaneSet
 
+@[fun_prop]
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℍ → ℂ) :=
   IsEmbedding.subtypeVal
 
@@ -48,6 +49,12 @@ theorem continuous_re : Continuous re :=
 @[fun_prop]
 theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
+
+@[fun_prop]
+theorem _root_.Continuous.upperHalfPlaneMk {X : Type*} [TopologicalSpace X] {f : X → ℂ}
+    (hf : Continuous f) (hf₀ : ∀ x, 0 < (f x).im) :
+    Continuous fun x ↦ mk (f x) (hf₀ x) :=
+  hf.subtype_mk _
 
 instance : SecondCountableTopology ℍ :=
   TopologicalSpace.Subtype.secondCountableTopology _
@@ -150,8 +157,8 @@ lemma ofComplex_apply_eq_ite (w : ℂ) :
     exact (a.prop.not_ge (by simpa using hw)).elim
 
 lemma ofComplex_apply_of_im_pos {z : ℂ} (hz : 0 < z.im) :
-    ofComplex z = ⟨z, hz⟩ := by
-  simpa only [coe_mk_subtype] using ofComplex_apply ⟨z, hz⟩
+    ofComplex z = mk z hz := by
+  simpa only [coe_mk] using ofComplex_apply (mk z hz)
 
 lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
     ofComplex w = Classical.choice inferInstance := by
@@ -174,7 +181,7 @@ lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤
 lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
-  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk_subtype]
+  simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq, coe_mk]
 
 end ofComplex
 

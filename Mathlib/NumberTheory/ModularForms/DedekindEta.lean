@@ -52,8 +52,8 @@ lemma eta_q_eq_pow (n : ℕ) (z : ℂ) : eta_q n z = cexp (2 * π * I * z) ^ (n 
 lemma one_sub_eta_q_ne_zero (n : ℕ) {z : ℂ} (hz : z ∈ ℍₒ) : 1 - eta_q n z ≠ 0 := by
   rw [eta_q_eq_cexp, sub_ne_zero]
   intro h
-  simpa [← mul_assoc, ← h] using norm_exp_two_pi_I_lt_one ⟨(n + 1) • z, by
-    simpa [(show 0 < (n + 1 : ℝ) by positivity)] using hz⟩
+  simpa [← mul_assoc, ← h] using norm_exp_two_pi_I_lt_one (.mk ((n + 1) • z) <| by
+    simpa [(show 0 < (n + 1 : ℝ) by positivity)] using hz)
 
 /-- The eta function, whose value at z is `q^ 1 / 24 * ∏' 1 - q ^ (n + 1)` for `q = e ^ 2 π i z`. -/
 noncomputable def eta (z : ℂ) := 𝕢 24 z * ∏' n, (1 - eta_q n z)

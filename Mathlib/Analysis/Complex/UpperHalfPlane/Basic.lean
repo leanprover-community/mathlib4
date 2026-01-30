@@ -42,6 +42,8 @@ instance : Inhabited ℍ :=
 
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 
+theorem coe_injective : Function.Injective UpperHalfPlane.coe := Subtype.coe_injective
+
 instance canLift : CanLift ℂ ℍ ((↑) : ℍ → ℂ) fun z => 0 < z.im :=
   Subtype.canLift fun (z : ℂ) => 0 < z.im
 
@@ -54,8 +56,11 @@ def re (z : ℍ) :=
   (z : ℂ).re
 
 /-- Extensionality lemma in terms of `UpperHalfPlane.re` and `UpperHalfPlane.im`. -/
-theorem ext' {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
+theorem ext_re_im {a b : ℍ} (hre : a.re = b.re) (him : a.im = b.im) : a = b :=
   ext <| Complex.ext hre him
+
+@[deprecated (since := "2026-01-29")]
+alias ext' := ext_re_im
 
 /-- Constructor for `UpperHalfPlane`. It is useful if `⟨z, h⟩` makes Lean use a wrong
 typeclass instance. -/
@@ -82,14 +87,14 @@ theorem mk_im (z : ℂ) (h : 0 < z.im) : (mk z h).im = z.im :=
 theorem coe_mk (z : ℂ) (h : 0 < z.im) : (mk z h : ℂ) = z :=
   rfl
 
-@[simp]
+@[deprecated coe_mk (since := "2026-01-29")]
 lemma coe_mk_subtype {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ⟨z, hz⟩ = z := by
   rfl
 
 instance : Nontrivial ℍ := by
   constructor
-  use ⟨Complex.I, by simp⟩, ⟨2 * Complex.I, by simp⟩
+  use mk Complex.I (by simp), mk (2 * Complex.I) (by simp)
   simp [ne_eq, UpperHalfPlane.ext_iff]
 
 @[simp]
@@ -161,24 +166,25 @@ lemma im_pnat_div_pos (n : ℕ) [NeZero n] (z : ℍ) : 0 < (-(n : ℂ) / z).im :
   suffices 0 < n * z.im / Complex.normSq z by simpa [Complex.div_im, neg_div]
   positivity [NeZero.ne n, z.normSq_pos]
 
-lemma ne_nat (z : ℍ) : ∀ n : ℕ, z.1 ≠ n := by
-  intro n
-  have h1 := z.2
-  aesop
+lemma ne_ofReal (z : ℍ) (x : ℝ) : (z : ℂ) ≠ x :=
+  ne_of_apply_ne Complex.im <| by simp [im_ne_zero]
 
-lemma ne_int (z : ℍ) : ∀ n : ℤ, z.1 ≠ n := by
-  intro n
-  have h1 := z.2
-  aesop
+lemma ne_intCast (z : ℍ) (n : ℤ) : (z : ℂ) ≠ n := mod_cast ne_ofReal z n
+
+@[deprecated (since := "2026-01-29")] alias ne_int := ne_intCast
+
+lemma ne_natCast (z : ℍ) (n : ℕ) : (z : ℂ) ≠ n := mod_cast ne_intCast z n
+
+@[deprecated (since := "2026-01-29")] alias ne_nat := ne_natCast
 
 section PosRealAction
 
-instance posRealAction : MulAction { x : ℝ // 0 < x } ℍ where
-  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.2
-  one_smul _ := Subtype.ext <| one_smul _ _
-  mul_smul x y z := Subtype.ext <| mul_smul (x : ℝ) y (z : ℂ)
+instance posRealAction : MulAction {x : ℝ // 0 < x} ℍ where
+  smul x z := mk ((x : ℝ) • (z : ℂ)) <| by simpa using mul_pos x.2 z.im_pos
+  one_smul _ := ext <| one_smul _ _
+  mul_smul x y z := ext <| mul_smul (x : ℝ) y (z : ℂ)
 
-variable (x : { x : ℝ // 0 < x }) (z : ℍ)
+variable (x : {x : ℝ // 0 < x}) (z : ℍ)
 
 @[simp]
 theorem coe_pos_real_smul : ↑(x • z) = (x : ℝ) • (z : ℂ) :=
@@ -198,8 +204,8 @@ section RealAddAction
 
 instance : AddAction ℝ ℍ where
   vadd x z := mk (x + z) <| by simpa using z.im_pos
-  zero_vadd _ := Subtype.ext <| by simp [HVAdd.hVAdd]
-  add_vadd x y z := Subtype.ext <| by simp [HVAdd.hVAdd, add_assoc]
+  zero_vadd _ := ext <| by simp [HVAdd.hVAdd]
+  add_vadd x y z := ext <| by simp [HVAdd.hVAdd, add_assoc]
 
 variable (x : ℝ) (z : ℍ)
 

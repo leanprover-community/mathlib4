@@ -137,8 +137,8 @@ theorem center_im (z r) : (center z r).im = z.im * Real.cosh r :=
   rfl
 
 @[simp]
-theorem center_zero (z : ℍ) : center z 0 = z :=
-  ext' rfl <| by rw [center_im, Real.cosh_zero, mul_one]
+theorem center_zero (z : ℍ) : center z 0 = z := by
+  apply ext_re_im <;> simp
 
 theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^ 2 =
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
