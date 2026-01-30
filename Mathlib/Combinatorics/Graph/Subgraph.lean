@@ -26,7 +26,7 @@ and components.
 
 ## Notation
 
-- `H ≤ G` means `H` is a subgraph of `G` (`Graph.IsSubgraph`).
+- `H ≤ G` means `H` is a subgraph of `G`.
 - `H ≤s G` means `H` is a spanning subgraph of `G`.
 - `H ≤i G` means `H` is an induced subgraph of `G`.
 - `H ≤c G` means `H` is a closed subgraph of `G` (a union of components of `G`).
