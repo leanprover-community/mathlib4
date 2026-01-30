@@ -151,16 +151,7 @@ lemma disjoint_aux {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Sub
   have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
   simp [hxy, ← hgy₀, this]
 
-end
-
-section RCLike
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  [CompleteSpace E] [CompleteSpace F] [CompleteSpace G] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
-
+-- I **think** this argument works over any field: if not, will need to adapt downstream files!
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
@@ -229,7 +220,14 @@ lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
     (g.toContinuousLinearMap.comp f).Splits :=
   g.splits.comp hf
 
-omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+end
+
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
 
 /-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by

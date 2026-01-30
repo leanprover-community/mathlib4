@@ -20,8 +20,10 @@ open Function Set
 
 public section
 
--- does NontriviallyNormedField also suffice? composition seems to require this...
-variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
+-- XXX. I *think* a `NontriviallyNormedField` suffices; if RCLike is required, it will be for the
+-- composition of split continuous linear maps. I believe this is fine, but the proof is not
+-- sorry-free yet.
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -261,18 +263,26 @@ lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSp
 
 -- TODO: should I augment the definition of MSplits, to demand being C^n?
 
+variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {H : Type*} [TopologicalSpace H] {G : Type*} [TopologicalSpace G]
+  {I : ModelWithCorners 𝕜 E H} {J : ModelWithCorners 𝕜 F G}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  {f : M → N} {x : M} {n : WithTop ℕ∞}
+
 /-- If `f : M → N` is injective and `M` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
-    (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
+    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
   have : FiniteDimensional 𝕜 (TangentSpace I x) := by assumption
   exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace (hf' x)
 
 /-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 E']
-    (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
+lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 F]
+    (hf' : ∀ x, Injective (mfderiv I J f x)) : MSplits I J f := by
   intro x
-  have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := by assumption
+  have : FiniteDimensional 𝕜 (TangentSpace J (f x)) := by assumption
   exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional (hf' x)
 
 -- FUTURE (once mathlib has a notion of Fredholm operators):
