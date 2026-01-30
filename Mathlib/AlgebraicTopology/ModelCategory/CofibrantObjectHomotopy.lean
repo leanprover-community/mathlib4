@@ -198,7 +198,7 @@ noncomputable def HoCat.resolution : C ⥤ CofibrantObject.HoCat C where
     exact resolutionObj_hom_ext (by simpa using .refl _)
 
 variable (C) in
-/-- The cofibration resolution functor `HoCat.resolution`, as a localizer morphism. -/
+/-- The cofibrant resolution functor `HoCat.resolution`, as a localizer morphism. -/
 @[simps]
 noncomputable def HoCat.localizerMorphismResolution :
     LocalizerMorphism (weakEquivalences C)
@@ -215,7 +215,7 @@ a natural transformation `ι ⋙ HoCat.resolution ⟶ toπ`. -/
 noncomputable def HoCat.ιCompResolutionNatTrans :
     ι ⋙ HoCat.resolution (C := C) ⟶ toHoCat where
   app X := toHoCat.map { hom := (HoCat.pResolutionObj (ι.obj X)) }
-  naturality _ _ f :=  toHoCat.congr_map (by
+  naturality _ _ f := toHoCat.congr_map (by
     ext : 1
     exact HoCat.resolutionMap_fac f.hom)
 
