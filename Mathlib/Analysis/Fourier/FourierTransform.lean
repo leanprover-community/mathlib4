@@ -160,8 +160,8 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
   · exact fun w ↦ ((fourierIntegral_convergent_iff he hL w).2 hf).1
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (Circle.norm_smul _ _)
   · exact hf.norm
-  · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
-    exact (hL.comp (.prodMk_right _)).neg
+  · filter_upwards with v
+    fun_prop
 
 end Continuous
 

@@ -53,7 +53,7 @@ instance : FunLike (IntertwiningMap ρ σ) V W where
 lemma isIntertwining (f : IntertwiningMap ρ σ) (g : G) (v : V) :
     f (ρ g v) = σ g (f v) := f.isIntertwining' g v
 
-@[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v  = f v := rfl
+@[simp] theorem toLinearMap_apply (f : IntertwiningMap ρ σ) (v : V) : f.toLinearMap v = f v := rfl
 
 instance : Zero (IntertwiningMap ρ σ) := ⟨⟨0, by simp⟩⟩
 
@@ -101,7 +101,7 @@ def equivLinearMapAsModule :
         induction m using MonoidAlgebra.induction_linear with
           | zero => simp [f.toLinearMap.map_zero]
           | add x y hx hy => simp [add_smul, map_add, hx, hy]
-          | single g a => simp [f.isIntertwining]; rfl}
+          | single g a => simp [f.isIntertwining]; rfl }
   invFun f :=
     { toLinearMap := { f with
         map_smul' a v := by simp }
