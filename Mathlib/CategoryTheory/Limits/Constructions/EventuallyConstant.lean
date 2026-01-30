@@ -137,6 +137,15 @@ lemma isIso_π_of_isLimit' {c : Cone F} (hc : IsLimit c) (j : J) (π : j ⟶ i�
     IsIso (c.π.app j) :=
   (h.precomp π).isIso_π_of_isLimit hc
 
+noncomputable def isLimitOfIsIso (c : Cone F) [IsIso (c.π.app i₀)] : IsLimit c :=
+  IsLimit.ofIsoLimit h.isLimitCone (by
+    refine Cones.ext (asIso (c.π.app i₀)).symm (fun j ↦ ?_)
+    let i := IsCofiltered.min i₀ j
+    let α : i ⟶ i₀ := IsCofiltered.minToLeft _ _
+    let β : i ⟶ j := IsCofiltered.minToRight _ _
+    dsimp
+    rw [IsIso.eq_inv_comp, ← c.w α, ← c.w β, h.coneπApp_eq j _ α β, assoc, isoMap_hom_inv_id_assoc])
+
 end IsEventuallyConstantTo
 
 namespace IsEventuallyConstantFrom
@@ -230,6 +239,15 @@ lemma isIso_ι_of_isColimit {c : Cocone F} (hc : IsColimit c) :
 lemma isIso_ι_of_isColimit' {c : Cocone F} (hc : IsColimit c) (j : J) (ι : i₀ ⟶ j) :
     IsIso (c.ι.app j) :=
   (h.postcomp ι).isIso_ι_of_isColimit hc
+
+noncomputable def isColimitOfIsIso (c : Cocone F) [IsIso (c.ι.app i₀)] : IsColimit c :=
+  IsColimit.ofIsoColimit h.isColimitCocone (by
+    refine Cocones.ext (asIso (c.ι.app i₀)) (fun j ↦ ?_)
+    let i := IsFiltered.max i₀ j
+    let α : i₀ ⟶ i := IsFiltered.leftToMax _ _
+    let β : j ⟶ i := IsFiltered.rightToMax _ _
+    dsimp
+    rw [← c.w α, ← c.w β, h.coconeιApp_eq j _ β α, assoc, isoMap_inv_hom_id_assoc])
 
 end IsEventuallyConstantFrom
 

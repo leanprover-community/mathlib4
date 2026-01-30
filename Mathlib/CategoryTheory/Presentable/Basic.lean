@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
@@ -94,16 +95,16 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
 instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
-  preservesColimitOfShape J _ hJ := { preservesColimit := { preserves hc := ⟨{
-    desc s := s.ι.app (IsCardinalFiltered.nonempty J κ).some
-    fac s j := by
-      rw [isCardinalFiltered_iff] at hJ
-      obtain ⟨k, hk⟩ := @hJ.1 ({(IsCardinalFiltered.nonempty J κ).some, j} : Set J) Subtype.val
-        (hasCardinalLT_of_finite _ _ (Cardinal.IsRegular.aleph0_le Fact.out))
-      have := s.ι.naturality (hk ⟨(IsCardinalFiltered.nonempty J κ).some, by simp⟩).some
-      have := s.ι.naturality (hk ⟨j, by simp⟩).some
-      simp_all
-    uniq s m h := by simpa using h (IsCardinalFiltered.nonempty J κ).some }⟩ } }
+  preservesColimitOfShape J _ _ :=
+    { preservesColimit {F} :=
+        { preserves {c} hc := ⟨by
+            have h := isFiltered_of_isCardinalFiltered J κ
+            have (j : J) : IsIso ((((const C).obj A).mapCocone c).ι.app j) := by
+              dsimp
+              infer_instance
+            exact Functor.IsEventuallyConstantFrom.isColimitOfIsIso
+              (i₀ := h.nonempty.some) (fun _ _ ↦ by dsimp; infer_instance) _⟩ } }
+
 
 end
 
