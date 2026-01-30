@@ -663,6 +663,18 @@ lemma contDiffOn_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (
       (fun p hp ↦ hp.2)
   exact (h1.contDiffOn.sub h2.contDiffOn).add h3
 
+/-- `T` is `C^k` at the point `(x, α)` when the vector field `f` is `C^k` and `range α ⊆ u`. -/
+lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (k : ℕ∞) (hf : ContDiffOn ℝ k f u) {x : E} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
+    ContDiffAt ℝ k (T f u t₀) (x, α) := by
+  have hopen : IsOpen ((univ : Set E) ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) := by
+    apply isOpen_univ.prod
+    simp_rw [← Set.mapsTo_univ_iff_range_subset]
+    exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
+  have hmem : (x, α) ∈ (univ : Set E) ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u} :=
+    ⟨mem_univ x, hα⟩
+  exact (contDiffOn_T hu t₀ k hf).contDiffAt (hopen.mem_nhds hmem)
+
 end
 
 end SmoothFlow
