@@ -38,14 +38,6 @@ instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (Category
 
 instance : (Sheaf.forget AddCommGrpCat X).Additive where
 
-instance : HasSeparator AddCommGrpCat.{u} where
-  hasSeparator := by
-    use AddCommGrpCat.of (ULift ℤ)
-    intro A B f g h; simp_all only [ObjectProperty.singleton_iff, AddCommGrpCat.ext_iff,
-      AddCommGrpCat.hom_comp, AddMonoidHom.coe_comp, Function.comp_apply, forall_eq', ULift.forall]
-    (intro x; specialize h (AddCommGrpCat.ofHom
-    (AddMonoidHom.mk' (fun y => y • x) fun y z => by simp only [add_smul])) 1; aesop)
-
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 
 instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
