@@ -79,7 +79,7 @@ theorem comap_coe_nhdsGT_eq_atBot_iff :
   rfl
 
 theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → ∃ a < b, Ioo a b ⊆ s)
-    (hb : IsSuccPrelimit b) :
+    (hb : IsSuccPrelimit b := by exact .of_dense _) :
     comap ((↑) : s → X) (𝓝[<] b) = atTop := by
   rw [comap_coe_nhdsLT_eq_atTop_iff]
   refine ⟨hsb, fun hsne a ha ↦ ?_⟩
@@ -89,13 +89,13 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : s.Nonempty → 
   exact ⟨x, hcs ⟨hacx.2, hxb⟩, hacx.1, hxb⟩
 
 theorem comap_coe_nhdsGT_of_Ioo_subset (hsa : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s)
-    (ha : IsPredPrelimit a) :
+    (ha : IsPredPrelimit a := by exact .of_dense _) :
     comap ((↑) : s → X) (𝓝[>] a) = atBot := by
   refine comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from hsa) ?_ ha.dual
   simpa only [OrderDual.exists, Ioo_toDual]
 
 theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a < b, Ioo a b ⊆ s)
-    (hb : IsSuccPrelimit b) :
+    (hb : IsSuccPrelimit b := by exact .of_dense _) :
     map ((↑) : s → X) atTop = 𝓝[<] b := by
   rcases eq_empty_or_nonempty (Iio b) with (hb' | ⟨a, ha⟩)
   · have : IsEmpty s := ⟨fun x => hb'.subset (hsb x.2)⟩
@@ -105,7 +105,7 @@ theorem map_coe_atTop_of_Ioo_subset (hsb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a 
     exact (mem_nhdsLT_iff_exists_Ioo_subset' ha).2 (hs a ha)
 
 theorem map_coe_atBot_of_Ioo_subset (hsa : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s)
-    (ha : IsPredPrelimit a) :
+    (ha : IsPredPrelimit a := by exact .of_dense _) :
     map ((↑) : s → X) atBot = 𝓝[>] a := by
   refine map_coe_atTop_of_Ioo_subset (s := ofDual ⁻¹' s) (b := toDual a) hsa ?_ ha.dual
   intro b' hb'
@@ -114,7 +114,7 @@ theorem map_coe_atBot_of_Ioo_subset (hsa : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
 @[simp]
-theorem comap_coe_Ioo_nhdsLT (a b : X) (hb : IsSuccPrelimit b) :
+theorem comap_coe_Ioo_nhdsLT (a b : X) (hb : IsSuccPrelimit b := by exact .of_dense _) :
     comap ((↑) : Ioo a b → X) (𝓝[<] b) = atTop :=
   comap_coe_nhdsLT_of_Ioo_subset Ioo_subset_Iio_self
     (fun h => ⟨a, h.elim fun _x hx ↦ hx.1.trans hx.2, Subset.rfl⟩) hb
@@ -122,77 +122,79 @@ theorem comap_coe_Ioo_nhdsLT (a b : X) (hb : IsSuccPrelimit b) :
 /-- The `atBot` filter for an open interval `Ioo a b` comes from the right-neighbourhoods filter at
 the left endpoint in the ambient order. -/
 @[simp]
-theorem comap_coe_Ioo_nhdsGT (a b : X) (ha : IsPredPrelimit a) :
+theorem comap_coe_Ioo_nhdsGT (a b : X) (ha : IsPredPrelimit a := by exact .of_dense _) :
     comap ((↑) : Ioo a b → X) (𝓝[>] a) = atBot :=
   comap_coe_nhdsGT_of_Ioo_subset Ioo_subset_Ioi_self
     (fun h => ⟨b, h.elim fun _x hx ↦ hx.1.trans hx.2, Subset.rfl⟩) ha
 
 @[simp]
-theorem comap_coe_Ioi_nhdsGT (a : X) (ha : IsPredPrelimit a) :
+theorem comap_coe_Ioi_nhdsGT (a : X) (ha : IsPredPrelimit a := by exact .of_dense _) :
     comap ((↑) : Ioi a → X) (𝓝[>] a) = atBot :=
   comap_coe_nhdsGT_of_Ioo_subset Subset.rfl (fun ⟨x, hx⟩ => ⟨x, hx, Ioo_subset_Ioi_self⟩) ha
 
 @[simp]
-theorem comap_coe_Iio_nhdsLT (a : X) (ha : IsSuccPrelimit a) :
+theorem comap_coe_Iio_nhdsLT (a : X) (ha : IsSuccPrelimit a := by exact .of_dense _) :
     comap ((↑) : Iio a → X) (𝓝[<] a) = atTop :=
   comap_coe_Ioi_nhdsGT (toDual a) ha.dual
 
 @[simp]
-theorem map_coe_Ioo_atTop {a b : X} (h : a < b) (hb : IsSuccPrelimit b) :
+theorem map_coe_Ioo_atTop (h : a < b) (hb : IsSuccPrelimit b := by exact .of_dense _) :
     map ((↑) : Ioo a b → X) atTop = 𝓝[<] b :=
   map_coe_atTop_of_Ioo_subset Ioo_subset_Iio_self (fun _ _ => ⟨_, h, Subset.rfl⟩) hb
 
 @[simp]
-theorem map_coe_Ioo_atBot {a b : X} (h : a < b) (ha : IsPredPrelimit a) :
+theorem map_coe_Ioo_atBot (h : a < b) (ha : IsPredPrelimit a := by exact .of_dense _) :
     map ((↑) : Ioo a b → X) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset Ioo_subset_Ioi_self (fun _ _ => ⟨_, h, Subset.rfl⟩) ha
 
 @[simp]
-theorem map_coe_Ioi_atBot (a : X) (ha : IsPredPrelimit a) : map ((↑) : Ioi a → X) atBot = 𝓝[>] a :=
+theorem map_coe_Ioi_atBot (a : X) (ha : IsPredPrelimit a := by exact .of_dense _) :
+    map ((↑) : Ioi a → X) atBot = 𝓝[>] a :=
   map_coe_atBot_of_Ioo_subset Subset.rfl (fun b hb => ⟨b, hb, Ioo_subset_Ioi_self⟩) ha
 
 @[simp]
-theorem map_coe_Iio_atTop (a : X) (ha : IsSuccPrelimit a) : map ((↑) : Iio a → X) atTop = 𝓝[<] a :=
+theorem map_coe_Iio_atTop (a : X) (ha : IsSuccPrelimit a := by exact .of_dense _) :
+    map ((↑) : Iio a → X) atTop = 𝓝[<] a :=
   map_coe_Ioi_atBot (toDual a) ha.dual
 
 variable {α : Type*} {l : Filter α} {f : X → α}
 
 @[simp]
-theorem tendsto_comp_coe_Ioo_atTop (h : a < b) (hb : IsSuccPrelimit b) :
+theorem tendsto_comp_coe_Ioo_atTop (h : a < b) (hb : IsSuccPrelimit b := by exact .of_dense _) :
     Tendsto (fun x : Ioo a b => f x) atTop l ↔ Tendsto f (𝓝[<] b) l := by
   rw [← map_coe_Ioo_atTop h hb, tendsto_map'_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_comp_coe_Ioo_atBot (h : a < b) (ha : IsPredPrelimit a) :
+theorem tendsto_comp_coe_Ioo_atBot (h : a < b) (ha : IsPredPrelimit a := by exact .of_dense _) :
     Tendsto (fun x : Ioo a b => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioo_atBot h ha, tendsto_map'_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_comp_coe_Ioi_atBot (ha : IsPredPrelimit a) :
+theorem tendsto_comp_coe_Ioi_atBot (ha : IsPredPrelimit a := by exact .of_dense _) :
     Tendsto (fun x : Ioi a => f x) atBot l ↔ Tendsto f (𝓝[>] a) l := by
   rw [← map_coe_Ioi_atBot a ha, tendsto_map'_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_comp_coe_Iio_atTop (ha : IsSuccPrelimit a) :
+theorem tendsto_comp_coe_Iio_atTop (ha : IsSuccPrelimit a := by exact .of_dense _) :
     Tendsto (fun x : Iio a => f x) atTop l ↔ Tendsto f (𝓝[<] a) l := by
   rw [← map_coe_Iio_atTop a ha, tendsto_map'_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_Ioo_atTop {f : α → Ioo a b} (hb : IsSuccPrelimit b) :
+theorem tendsto_Ioo_atTop {f : α → Ioo a b} (hb : IsSuccPrelimit b := by exact .of_dense _) :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : X)) l (𝓝[<] b) := by
   rw [← comap_coe_Ioo_nhdsLT a b hb, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_Ioo_atBot {f : α → Ioo a b} (ha : IsPredPrelimit a) :
+theorem tendsto_Ioo_atBot {f : α → Ioo a b} (ha : IsPredPrelimit a := by exact .of_dense _) :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : X)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioo_nhdsGT a b ha, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_Ioi_atBot {f : α → Ioi a} (ha : IsPredPrelimit a) :
+theorem tendsto_Ioi_atBot {f : α → Ioi a} (ha : IsPredPrelimit a := by exact .of_dense _) :
     Tendsto f l atBot ↔ Tendsto (fun x => (f x : X)) l (𝓝[>] a) := by
   rw [← comap_coe_Ioi_nhdsGT a ha, tendsto_comap_iff, Function.comp_def]
 
 @[simp]
-theorem tendsto_Iio_atTop {f : α → Iio a} (ha : IsSuccPrelimit a) :
+theorem tendsto_Iio_atTop {f : α → Iio a} (ha : IsSuccPrelimit a := by exact .of_dense _) :
     Tendsto f l atTop ↔ Tendsto (fun x => (f x : X)) l (𝓝[<] a) := by
   rw [← comap_coe_Iio_nhdsLT a ha, tendsto_comap_iff, Function.comp_def]

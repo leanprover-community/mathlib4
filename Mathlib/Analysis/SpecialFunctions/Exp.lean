@@ -338,8 +338,7 @@ theorem tendsto_comp_exp_atTop {f : ℝ → α} :
 
 @[simp]
 theorem map_exp_atBot : map exp atBot = 𝓝[>] 0 := by
-  rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot,
-    ← map_coe_Ioi_atBot _ (.of_dense _)]
+  rw [← coe_comp_expOrderIso, ← Filter.map_map, expOrderIso.map_atBot, ← map_coe_Ioi_atBot]
 
 @[simp]
 theorem comap_exp_nhdsGT_zero : comap exp (𝓝[>] 0) = atBot := by
