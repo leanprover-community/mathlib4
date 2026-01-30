@@ -10,6 +10,8 @@ public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Inhabit
 public import Batteries.Tactic.Trans
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Extra facts about `Prod`
 
