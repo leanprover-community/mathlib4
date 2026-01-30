@@ -270,6 +270,10 @@ instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := �
 theorem coe_bot : ↑(⊥ : Subtype (MeasurableSet : Set α → Prop)) = (⊥ : Set α) :=
   rfl
 
+@[simp]
+theorem subtype_bot_eq : (⟨∅, .empty⟩ : Subtype (MeasurableSet : Set α → Prop)) = ⊥ :=
+  rfl
+
 instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨⟨Set.univ, MeasurableSet.univ⟩⟩
 

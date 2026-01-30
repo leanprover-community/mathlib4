@@ -183,14 +183,7 @@ lemma sum_restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq �
 
 end Finpartition
 
-
-
 variable {X : Type*} [MeasurableSpace X]
-
--- To be moved to MeasurableSpace/MeasurablyGenerated/
-@[simp]
-lemma MeasurableSet.subtype_bot_eq :
-    (⟨∅, .empty⟩ : Subtype (MeasurableSet (α := X))) = ⊥ := rfl
 
 open MeasureTheory BigOperators ENNReal Function
 
