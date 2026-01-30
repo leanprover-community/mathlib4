@@ -743,6 +743,50 @@ lemma hasFDerivAt_T {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u) (hu : 
   rw [hfun, hderiv]
   exact (h1.add h2).add h3
 
+/-- The derivative of `T` restricted to the second component is
+`-id + fderivIntegralCurry0 f u t₀ α`. -/
+lemma fderiv_T_comp_inr {f : E → E} {u : Set E}
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)} :
+    ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
+      ContinuousLinearMap.snd ℝ E _ +
+      (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _)).comp
+        (ContinuousLinearMap.inr ℝ E _) =
+      -ContinuousLinearMap.id ℝ _ + fderivIntegralCurry0 f u t₀ α := by
+  ext y
+  simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.inr_apply,
+    ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
+    ContinuousLinearMap.neg_apply, ContinuousLinearMap.id_apply,
+    ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd',
+    _root_.map_zero, zero_sub]
+
+/-- The derivative of `T` restricted to the second component is bijective when the norm of
+`fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
+theorem to apply. -/
+lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hnorm : ‖fderivIntegralCurry0 f u t₀ α‖ < 1) :
+    Function.Bijective
+      (((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp
+          (ContinuousLinearMap.fst ℝ E _) - ContinuousLinearMap.snd ℝ E _ +
+        (fderivIntegralCurry0 f u t₀ α).comp (ContinuousLinearMap.snd ℝ E _)).comp
+          (ContinuousLinearMap.inr ℝ E _)) := by
+  rw [fderiv_T_comp_inr t₀]
+  -- Show -id + A = -(id - A), and bijectivity of negation preserves bijectivity
+  have heq : -ContinuousLinearMap.id ℝ (C(Icc tmin tmax, E)) + fderivIntegralCurry0 f u t₀ α =
+      -(ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) := by
+    ext; simp [sub_eq_add_neg, add_comm]
+  rw [heq]
+  -- Use isUnit_one_sub_of_norm_lt_one to show id - A is invertible
+  have hunit : IsUnit (ContinuousLinearMap.id ℝ _ - fderivIntegralCurry0 f u t₀ α) :=
+    isUnit_one_sub_of_norm_lt_one hnorm
+  -- IsUnit implies bijective
+  have hbij := ContinuousLinearMap.isUnit_iff_bijective.mp hunit
+  -- Negation is a bijection, so (-f) is bijective iff f is bijective
+  -- ⇑(-g) = Neg.neg ∘ ⇑g
+  change Function.Bijective
+    (Neg.neg ∘ ⇑(ContinuousLinearMap.id ℝ (C(Icc tmin tmax, E)) - fderivIntegralCurry0 f u t₀ α))
+  exact (ContinuousLinearEquiv.neg ℝ (M := C(Icc tmin tmax, E))).bijective.comp hbij
+
 end
 
 end SmoothFlow
