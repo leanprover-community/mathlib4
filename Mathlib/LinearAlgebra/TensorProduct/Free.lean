@@ -26,11 +26,15 @@ The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the ca
 @[simps! apply symm_apply]
 noncomputable def LinearEquiv.chooseBasis_piScalarRight
     (R : Type*) (M : Type*) (V : Type*)
-    [CommSemiring M] [CommSemiring R] [Algebra R M]
-    [AddCommGroup V] [Module R V] [Module.Finite R V] [Module.Free R V] :
-    (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V → M) :=
-  (LinearEquiv.baseChange R M _ _ (Module.Free.chooseBasis R V).equivFun) ≪≫ₗ
-    TensorProduct.piScalarRight R M M (Module.Free.ChooseBasisIndex R V)
+    [CommSemiring M] [CommSemiring R] [Nontrivial R] [Algebra R M]
+    [AddCommGroup V] [Module R V] [Module.Finite R V]
+    {ι : Type*} (b : Module.Basis ι R V) :
+    (M ⊗[R] V) ≃ₗ[M] (ι → M) :=
+  open Classical in
+  have : Finite ι := Module.Finite.finite_basis b
+  have : Fintype ι := .ofFinite _
+  (LinearEquiv.baseChange R M _ _ b.equivFun) ≪≫ₗ
+    TensorProduct.piScalarRight R M M ι
 
 /--
 The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from the canonical
@@ -39,7 +43,9 @@ The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from the
 @[simps! apply symm_apply]
 noncomputable def LinearEquiv.chooseBasis_finsuppScalarRight (R : Type*) (M : Type*) (V : Type*)
     [CommSemiring M] [CommSemiring R] [Algebra R M]
-    [AddCommGroup V] [Module R V] [Module.Free R V] :
-    (M ⊗[R] V) ≃ₗ[M] (Module.Free.ChooseBasisIndex R V →₀ M) :=
-  (LinearEquiv.baseChange R M _ _ (Module.Free.chooseBasis R V).repr) ≪≫ₗ
-    TensorProduct.finsuppScalarRight R M M (Module.Free.ChooseBasisIndex R V)
+    [AddCommGroup V] [Module R V]
+    {ι : Type*} (b : Module.Basis ι R V) :
+    (M ⊗[R] V) ≃ₗ[M] (ι →₀ M) :=
+  open Classical in
+  (LinearEquiv.baseChange R M _ _ b.repr) ≪≫ₗ
+    TensorProduct.finsuppScalarRight R M M ι
