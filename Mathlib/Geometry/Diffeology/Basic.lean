@@ -160,23 +160,22 @@ class DiffeologicalSpace (X : Type*) where
   constant_plots {n : ℕ} (x : X) : (fun _ ↦ x) ∈ plots n
   /-- Smooth reparametrisations of plots need to be plots. -/
   plot_reparam {n m : ℕ} {p : EuclideanSpace ℝ (Fin m) → X}
-    {f : EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin m)} :
-    p ∈ plots m → (ContDiff ℝ ∞ f) → (p ∘ f ∈ plots n)
+    {f : EuclideanSpace ℝ (Fin n) → EuclideanSpace ℝ (Fin m)}
+    (hp : p ∈ plots m) (hf : ContDiff ℝ ∞ f) : p ∘ f ∈ plots n
   /-- Every locally smooth map `EuclideanSpace ℝ (Fin n) → X` is a plot. -/
   locality {n : ℕ} {p : EuclideanSpace ℝ (Fin n) → X} :
     (∀ x : EuclideanSpace ℝ (Fin n), ∃ u : Set (EuclideanSpace ℝ (Fin n)), IsOpen u ∧ x ∈ u ∧
       ∀ {m : ℕ} {f : EuclideanSpace ℝ (Fin m) → EuclideanSpace ℝ (Fin n)},
         (hfu : ∀ x, f x ∈ u) → ContDiff ℝ ∞ f → p ∘ f ∈ plots m) → p ∈ plots n
   /-- The D-topology of the diffeology. This is included as part of the data in order to give
-  control over what the D-topology is defeq to. -/
+  control over what the D-topology is defeq to. See also note [forgetful inheritance]. -/
   dTopology : TopologicalSpace X := {
     IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p ∈ plots n, IsOpen (p ⁻¹' u)
     isOpen_univ := fun _ _ _ ↦ isOpen_univ
     isOpen_inter := fun _ _ hs ht _ p hp ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
     isOpen_sUnion := fun _ hs _ p hp ↦
-      Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp
-  }
+      Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
       ∀ {n : ℕ}, ∀ p ∈ plots n, IsOpen (p ⁻¹' u) := by rfl
