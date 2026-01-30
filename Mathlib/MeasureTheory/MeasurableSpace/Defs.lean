@@ -511,15 +511,16 @@ theorem measurable_id {_ : MeasurableSpace α} : Measurable (@id α) := fun _ =>
 @[fun_prop]
 theorem measurable_id' {_ : MeasurableSpace α} : Measurable fun a : α => a := measurable_id
 
+attribute [local push ←] Function.comp_def
+@[to_fun]
 protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
-@[fun_prop]
-protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
-    {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
-    Measurable (fun x => g (f x)) := Measurable.comp hg hf
+attribute [fun_prop] Measurable.fun_comp
+
+@[deprecated (since := "2026-01-23")] alias Measurable.comp' := Measurable.fun_comp
 
 @[simp, fun_prop]
 theorem measurable_const {_ : MeasurableSpace α} {_ : MeasurableSpace β} {a : α} :
