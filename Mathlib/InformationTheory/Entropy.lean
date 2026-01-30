@@ -82,11 +82,8 @@ noncomputable def entropy (p : PMF α) : ℝ :=
   have h : (fun a' : α => Real.negMulLog (ENNReal.toReal (if a' = a then 1 else 0)))
       = (fun _ : α => (0 : ℝ)) := by
     funext a'
-    by_cases ha : a' = a
-    · simp [ha, Real.negMulLog_one]
-    · simp [ha, Real.negMulLog_zero]
-  rw [h]
-  simp [tsum_zero]
+    by_cases ha : a' = a <;> simp [ha, Real.negMulLog_one, Real.negMulLog_zero]
+  simp [h, tsum_zero]
 
 /-- Entropy of a deterministic distribution is zero. -/
 example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
@@ -96,13 +93,10 @@ example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
 /-- Entropy of a PMF is non negative. -/
 @[simp] lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
   simp only [entropy]
-  refine tsum_nonneg fun a => ?_
-  refine Real.negMulLog_nonneg ?_ ?_
-  · exact ENNReal.toReal_nonneg
-  · refine ENNReal.toReal_le_of_le_ofReal ?_ ?_
-    · exact zero_le_one' ℝ
-    · simp_all only [ENNReal.ofReal_one]
-      exact PMF.coe_le_one p a
+  refine tsum_nonneg (fun a => ?_)
+  refine Real.negMulLog_nonneg ENNReal.toReal_nonneg ?_
+  exact ENNReal.toReal_le_of_le_ofReal (by simp) (by
+      simpa using (PMF.coe_le_one p a))
 
 private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p = PMF.pure a) :
     Set.Nontrivial p.support := by
@@ -129,16 +123,16 @@ private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx
   have hsupp : p.support = {x} := (p.apply_eq_one_iff x).1 hx_eq_one
   have hpure : p = PMF.pure x := PMF.ext fun y => by
     by_cases hy : y = x
-    · subst hy; simp only [PMF.pure_apply, ↓reduceIte]; exact hx_eq_one
+    · subst hy; simpa only [PMF.pure_apply, ↓reduceIte] using hx_eq_one
     · have : (PMF.pure x) y = 0 := by simp only [PMF.pure_apply, if_neg hy]
-      rw [this]; exact (p.apply_eq_zero_iff y).mpr (by rw [hsupp]; simp [hy])
+      rw [this]; exact (p.apply_eq_zero_iff y).mpr (by simp [hsupp, hy])
   exact h ⟨x, hpure⟩
 
 private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
     0 ≤ (if b = a then 0 else Real.negMulLog ((p b).toReal)) := by
   by_cases hb : b = a
-  · simp only [hb, ite_true]; exact le_rfl
-  · simp only [hb, ite_false]; exact Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
+  · simpa only [hb, ite_true] using le_rfl
+  · simpa only [hb, ite_false] using Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
       have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
       exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpb))
 
