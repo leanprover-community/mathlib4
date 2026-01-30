@@ -959,8 +959,7 @@ theorem HasFPowerSeriesWithinOnBall.tendstoLocallyUniformlyOn'
     (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     TendstoLocallyUniformlyOn (fun n y => p.partialSum n (y - x)) f atTop
       (insert x s ∩ EMetric.ball (x : E) r) := by
-  have A : ContinuousOn (fun y : E => y - x) (insert x s ∩ EMetric.ball (x : E) r) :=
-    (continuous_id.sub continuous_const).continuousOn
+  have A : ContinuousOn (fun y : E => y - x) (insert x s ∩ EMetric.ball (x : E) r) := by fun_prop
   convert hf.tendstoLocallyUniformlyOn.comp (fun y : E => y - x) _ A using 1
   · ext z
     simp

@@ -224,13 +224,10 @@ homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
-  continuous_toFun := by
-    refine
-      continuous_if_le (by fun_prop) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn ?_
-    rintro x hx
-    norm_num [hx]
+  continuous_toFun :=
+    continuous_if_le (by fun_prop) continuous_const
+      (F.continuous.comp (by fun_prop)).continuousOn
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 
@@ -382,8 +379,7 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
   -- TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x), continuous_toFun.comp (by fun_prop)⟩
 
 namespace HomotopyWith
 

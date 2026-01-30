@@ -149,13 +149,13 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
-  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ici.image _ (by fun_prop)
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
 theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
-  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ioi.image _ (by fun_prop)
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by

@@ -515,8 +515,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   refine mem_closure_iff_nhds.2 fun t ht => ?_
   -- TODO: generalize to any vector space over `ℝ`
   set g : ℝ → ℂ := fun x => w + ofReal x
-  have : Tendsto g (𝓝 0) (𝓝 w) :=
-    (continuous_const.add continuous_ofReal).tendsto' 0 w (add_zero _)
+  have : Tendsto g (𝓝 0) (𝓝 w) := Continuous.tendsto' (by fun_prop) 0 w (add_zero _)
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by

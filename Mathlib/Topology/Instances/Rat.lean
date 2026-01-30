@@ -122,9 +122,7 @@ instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom
 
-instance : ContinuousSub ℚ≥0 :=
-  ⟨((continuous_subtype_val.fst'.sub continuous_subtype_val.snd').max
-      continuous_const).subtype_mk _⟩
+instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
 instance : ContinuousInv₀ ℚ≥0 := inferInstance
