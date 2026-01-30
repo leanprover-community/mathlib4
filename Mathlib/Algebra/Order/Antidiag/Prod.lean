@@ -128,7 +128,8 @@ section CancelMonoid
 variable [CancelMonoid M] [HasMulAntidiagonal M] {p q : M × M} {n : M}
 
 /-- A point in the multiplicative antidiagonal is determined by its first coordinate. -/
-@[to_additive /-- A point in the antidiagonal is determined by its first coordinate.
+@[to_additive antidiagonal_congr /-- A point in the antidiagonal is determined by its first
+coordinate.
 
 See also `Finset.antidiagonal_congr'`. -/]
 theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
@@ -139,8 +140,9 @@ theorem mulAntidiagonal_congr (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAnti
 
 /-- A point in the multiplicative antidiagonal is determined by its first coordinate
 (subtype version). -/
-@[to_additive (attr := ext) /-- A point in the antidiagonal is determined by its first co-ordinate
-(subtype version of `Finset.antidiagonal_congr`). This lemma is used by the `ext` tactic. -/]
+@[to_additive (attr := ext) antidiagonal_subtype_ext /-- A point in the antidiagonal is determined
+by its first co-ordinate (subtype version of `Finset.antidiagonal_congr`). This lemma is used by
+the `ext` tactic. -/]
 theorem mulAntidiagonal_subtype_ext {p q : mulAntidiagonal n} (h : p.val.1 = q.val.1) : p = q :=
   Subtype.ext ((mulAntidiagonal_congr p.prop q.prop).mpr h)
 
