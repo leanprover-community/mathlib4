@@ -323,7 +323,7 @@ theorem inf_mul_assoc (A B C : Subgroup G) (h : C ≤ A) :
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left {H K : Subgroup G}
     (hHnK : H.normalizer ≤ K.normalizer) :
     H.normalizer ≤ (H ⊔ K).normalizer := by
-  have  hK : H ≤ K.normalizer := le_normalizer.trans hHnK
+  have hK : H ≤ K.normalizer := le_normalizer.trans hHnK
   intro n hH h
   have hnK : n ∈ K.normalizer := hHnK hH
   rw [← SetLike.mem_coe, coe_mul_of_left_le_normalizer_right _ _ hK,
