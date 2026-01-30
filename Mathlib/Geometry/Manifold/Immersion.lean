@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+public import Mathlib.Geometry.Manifold.MSplits
 public import Mathlib.Analysis.Normed.Module.Shrink
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 
@@ -57,6 +58,17 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersion.contMDiff`: if f is a `C^n` immersion, it is automatically `C^n`
   in the sense of `ContMDiff`.
 
+TODO tweak these doc-strings, add missing variants!
+* If `f` is an immersion at `x`, its differential splits, hence is injective.
+* If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
+  immersion at `x`. (This requires the inverse function theorem.)
+* `IsImmersionAt.comp`: if `f : M → N` and `g: N → N'` are maps between Banach manifolds such that
+  `f` is an immersion at `x : M` and `g` is an immersion at `f x`, then `g ∘ f` is an immersion
+  at `x`.
+* `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
+* If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
+  implies `f` is an immersion at `x`.
+
 ## Implementation notes
 
 * In most applications, there is no need to control the chosen complement in the definition of
@@ -75,15 +87,6 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
-* If `f` is an immersion at `x`, its differential splits, hence is injective.
-* If `f : M → N` is a map between Banach manifolds, `mfderiv I J f x` splitting implies `f` is an
-  immersion at `x`. (This requires the inverse function theorem.)
-* `IsImmersionAt.comp`: if `f : M → N` and `g: N → N'` are maps between Banach manifolds such that
-  `f` is an immersion at `x : M` and `g` is an immersion at `f x`, then `g ∘ f` is an immersion
-  at `x`.
-* `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
-* If `f : M → N` is a map between finite-dimensional manifolds, `mfderiv I J f x` being injective
-  implies `f` is an immersion at `x`.
 * `IsLocalDiffeomorphAt.isImmersionAt` and `IsLocalDiffeomorph.isImmersion`:
   a local diffeomorphism (at `x`) is an immersion (at `x`)
 * `Diffeomorph.isImmersion`: in particular, a diffeomorphism is an immersion
@@ -451,6 +454,79 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : ContMDiffAt I J n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
 
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
+
+variable [IsManifold I 1 M] [IsManifold J 1 N]
+
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsAt I J f x := by
+  -- The local representative of f in the nice charts at x, as a continuous linear map.
+  let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+  have : rhs.Splits := by
+    have : CompleteSpace (E × F) := sorry -- h.equiv is a cle E × F and E''; E'' is complete
+    apply h.equiv.splits.comp
+    refine ⟨?_, ?_, ?_⟩
+    · intro x y hxy
+      simpa using hxy
+    · have hrange : range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
+          Set.prod (Set.univ) {0} := by
+        sorry
+      rw [hrange]
+      exact isClosed_univ.prod isClosed_singleton
+    · sorry
+      /- have hrange : LinearMap.range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
+          Submodule.prod ⊤ ⊥ := by
+        erw [LinearMap.range_prod_eq]
+        -- No idea why simp needs to run twice.
+        simp only [ContinuousLinearMap.coe_id, LinearMap.range_id, ContinuousLinearMap.coe_zero,
+          LinearMap.range_zero]
+        simp
+      simp_rw [hrange]
+      exact Submodule.closedComplemented_top.prod Submodule.closedComplemented_bot -/
+  -- Since rhs is linear, it is smooth - and it equals its own fderiv.
+  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'')) rhs (I (h.domChart x)) := by
+    dsimp only [MSplitsAt]
+    sorry -- was: rw [mfderiv_eq_fderiv, rhs.fderiv]
+    -- exact this
+  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E''))
+      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I x)) := by
+    apply this.congr
+    apply Set.EqOn.eventuallyEq_of_mem h.writtenInCharts
+    simp only [OpenPartialHomeomorph.extend, PartialEquiv.trans_target, ModelWithCorners.target_eq,
+      ModelWithCorners.toPartialEquiv_coe_symm, Filter.inter_mem_iff]
+    -- This is close to true... but perhaps the neighbourhood in my definition is wrong!
+    constructor <;> sorry
+
+  have : MSplitsAt I (𝓘(𝕜, E''))
+      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x :=
+    this.comp (MSplitsAt.extend h.domChart_mem_maximalAtlas (mem_chart_source _ x))
+  have : MSplitsAt I (𝓘(𝕜, E'')) ((h.codChart.extend J) ∘ f) x := by
+    apply this.congr
+    -- on some nbhd, an extended chart and its inverse cancel
+    sorry
+  have : MSplitsAt I J ((h.codChart.extend J).symm ∘ (h.codChart.extend J) ∘ f) x := by
+    refine MSplitsAt.comp ?_ this
+    exact MSplitsAt.extend_symm h.codChart_mem_maximalAtlas (mem_chart_source _ (f x))
+  apply this.congr
+  sorry -- extended chart and its inverse cancel
+
+/-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
+theorem _root_.isImmersionAtOfComplement_iff_msplitsAt {x : M} :
+    IsImmersionAtOfComplement F I J n f x ↔ MSplitsAt I J f x := by
+  refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
+  -- This direction uses the inverse function theorem: this is the hard part!
+  sorry
+
+/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+then `g ∘ f` is an immersion at `x`. -/
+lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAtOfComplement F' J I' n g (f x))
+    (hf : IsImmersionAtOfComplement F I J n f x) :
+    IsImmersionAtOfComplement (F × F') I I' n (g ∘ f) x := by
+  rw [isImmersionAtOfComplement_iff_msplitsAt] at hf hg ⊢
+  exact hg.comp hf
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
@@ -641,6 +717,31 @@ theorem contMDiffOn (h : IsImmersionAt I J n f x) :
 theorem contMDiffAt (h : IsImmersionAt I J n f x) : ContMDiffAt I J n f x :=
   h.isImmersionAtOfComplement_complement.contMDiffAt
 
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
+  [IsManifold I 1 M] [IsManifold J 1 N]
+
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+theorem msplitsAt {x : M} (h : IsImmersionAt I J n f x) : MSplitsAt I J f x := by
+  have aux := IsImmersionAt.isImmersionAtOfComplement_complement h
+  exact aux.msplitsAt
+
+/-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
+theorem _root_.isImmersionAt_iff_msplitsAt {x : M} [IsManifold J n N] :
+    IsImmersionAt I J n f x ↔ MSplitsAt I J f x := by
+  refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
+  -- TODO: where does F come from? does this direction make sense at all? think!!
+  -- rw [← isImmersionAtOfComplement_iff_msplitsAt (n := n)] at h
+  sorry
+
+/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+then `g ∘ f` is an immersion at `x`. -/
+lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionAt J I' n g (f x)) (hf : IsImmersionAt I J n f x) :
+    IsImmersionAt I I' n (g ∘ f) x := by
+  rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  exact hg.comp hf
+
 end IsImmersionAt
 
 variable (F I J n) in
@@ -739,6 +840,29 @@ theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersionOfComplement F I J n f) : ContMDiff I J n f :=
   fun x ↦ (h x).contMDiffAt
 
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
+  [IsManifold I 1 M] [IsManifold J 1 N]
+
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+theorem msplits [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersionOfComplement F I J n f) : MSplits I J f :=
+  fun x ↦ (h x).msplitsAt
+
+/-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
+theorem _root_.isImmersionOfComplement_iff_msplits [IsManifold I n M] [IsManifold J n N] :
+    IsImmersionOfComplement F I J n f ↔ MSplits I J f := by
+  simp_rw [IsImmersionOfComplement, MSplits, isImmersionAtOfComplement_iff_msplitsAt]
+
+/- TODO: this statement needs some thought --- what is the right complement?
+/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+then `g ∘ f` is an immersion at `x`. -/
+lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
+    (hg : IsImmersionOfComplement F J I' n g) (hf : IsImmersionOfComplement F I J n f) :
+    IsImmersionOfComplement _ I I' n (g ∘ f) := by
+  --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  sorry -- exact hg.comp hf -/
+
 end IsImmersionOfComplement
 
 namespace IsImmersion
@@ -800,6 +924,30 @@ lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
 theorem contMDiff [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersion I J n f) : ContMDiff I J n f :=
   h.isImmersionOfComplement_complement.contMDiff
+
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
+  [IsManifold I 1 M] [IsManifold J 1 N]
+
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+theorem msplits [IsManifold I n M] [IsManifold J n N]
+    (h : IsImmersion I J n f) : MSplits I J f :=
+  h.isImmersionOfComplement_complement.msplits
+
+/-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
+theorem _root_.isImmersion_iff_msplits [IsManifold I n M] [IsManifold I 1 M] [IsManifold J n N] :
+    IsImmersion I J n f ↔ MSplits I J f := by
+  refine ⟨fun h ↦ h.isImmersionOfComplement_complement.msplits, fun h ↦ ?_⟩
+  -- TODO: how to conjure a complement out of thin air? same issue as before...
+  sorry
+
+/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+then `g ∘ f` is an immersion at `x`. -/
+lemma comp [IsManifold I' 1 M'] [IsManifold I n M] [IsManifold J n N] [IsManifold I' n M']
+    {g : N → M'} (hg : IsImmersion J I' n g) (hf : IsImmersion I J n f) :
+    IsImmersion I I' n (g ∘ f) := by
+  rw [isImmersion_iff_msplits] at hf hg ⊢
+  exact hg.comp hf
 
 end IsImmersion
 

@@ -210,7 +210,7 @@ end MSplitsAt
 variable (I I') in
 /-- If `f : M → M` is differentiable, we say `f` splits iff it splits at every `x`,
 i.e. each `mfderiv 𝕜 I I' f x` splits. -/
-def MSplits (f : M → M') : Prop := ∀ x, MSplitsAt I I' f x
+@[expose] def MSplits (f : M → M') : Prop := ∀ x, MSplitsAt I I' f x
 
 namespace MSplits
 

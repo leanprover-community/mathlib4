@@ -57,7 +57,7 @@ end
 
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
 its image has a closed complement. -/
-protected def ContinuousLinearMap.Splits (f : E →L[𝕜] F) : Prop :=
+@[expose] protected def ContinuousLinearMap.Splits (f : E →L[𝕜] F) : Prop :=
   Injective f ∧ IsClosed (Set.range f) ∧ Submodule.ClosedComplemented (f.range)
 
 -- XXX: should this be about ContinuousLinearMapClass?
