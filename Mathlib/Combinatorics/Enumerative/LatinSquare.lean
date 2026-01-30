@@ -575,19 +575,10 @@ theorem latin_rectangle_extends
   let B := symbols_not_in A
   have Bj_size (j : n) : Finset.card (B j) = (Fintype.card n) - (Fintype.card k) := 
     card_symbols_not_in A h j
-  have Bj_characterized (j : n) (x : α) : x ∈ B j ↔ ¬ (∃ i, A.M i j = x) := by sorry
+  -- have Bj_characterized (j : n) (x : α) : x ∈ B j ↔ ¬ (∃ i, A.M i j = x) := by sorry
   
   have exactly_n_minus_k_cols_without_x : ∀ x, 
     (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by 
-    -- Uses properties of latin rectangle
-    -- intro x
-    -- conv =>
-    --   lhs
-    --   congr
-    --   congr
-    --   ext j
-    --   rw [Bj_characterized j]
-
     intro x
     set As : Finset (n) := {j | ∃ i, col A j i = x} with hA
     set Bs : Finset (n) := {j | x ∈ B j} with hB
@@ -595,27 +586,19 @@ theorem latin_rectangle_extends
     set Ds := {(i,j) | A.M i j = x} with hD
     have h := row_entry_to_column_entry A x
     obtain ⟨f, hf⟩ := h
+
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
       obtain ⟨f, hf⟩ := row_entry_to_column_entry A x
       simp [hf]
-    -- have h_Cs_bij_h_Bs : Cs ≃ Bs := by
-    --   refine ⟨?toF, ?invF, ?_, ?_⟩ 
-    --   · exact fun i => ⟨f i, sorry⟩
-    --   · exact fun p => ⟨p.fst, sorry⟩ 
-    --   · sorry
-    --   · sorry
+
     have h_As_card : Finset.card As = Fintype.card k := by 
       unfold As
       have hrow := A.once_per_row
       unfold once_per_row at hrow
       have hcol := A.distinct_col_entries
-      
-
       unfold distinct_col_entries at hcol
-      
       unfold col
-      
 
       
       sorry
@@ -623,8 +606,7 @@ theorem latin_rectangle_extends
     have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by sorry
     have h_intersect : As ∩ Bs = ∅ := by 
       ext
-      sorry
-      
+      simp [As, Bs, B, symbols_not_in]
     have h_card := Finset.card_union As Bs
     simp [h_union_card, h_As_card, h_intersect] at h_card
     omega
