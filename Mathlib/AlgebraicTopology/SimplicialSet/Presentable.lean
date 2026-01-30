@@ -38,8 +38,7 @@ lemma exists_epi_from_isCardinalPresentable (X : SSet.{u}) [X.Finite] :
       (p : Y ⟶ X), Epi p := by
   refine ⟨∐ (fun (s : X.N) ↦ Δ[s.dim]), inferInstance, ?_,
     Sigma.desc (fun s ↦ yonedaEquiv.symm s.simplex), ?_⟩
-  · apply (config := { allowSynthFailures := true })
-      isCardinalPresentable_of_isColimit' _ (coproductIsCoproduct _)
+  · apply +allowSynthFailures isCardinalPresentable_of_isColimit' _ (coproductIsCoproduct _)
     · exact hasCardinalLT_of_finite _ _ (by rfl)
     · rintro s
       dsimp
@@ -53,8 +52,7 @@ instance (X : SSet.{u}) [X.Finite] : IsFinitelyPresentable.{u} X := by
   obtain ⟨Z, _, _, q, _⟩ := exists_epi_from_isCardinalPresentable (pullback p p)
   have := Cardinal.fact_isRegular_aleph0.{u}
   have := IsRegularEpiCategory.regularEpiOfEpi p
-  apply (config := { allowSynthFailures := true })
-    isCardinalPresentable_of_isColimit' _
+  apply +allowSynthFailures isCardinalPresentable_of_isColimit' _
       (isCoequalizerEpiComp ((EffectiveEpi.getStruct p).isColimitCoforkOfIsPullback
         (IsPullback.of_hasPullback p p)) q) _
   · exact hasCardinalLT_of_finite _ _ (by rfl)
