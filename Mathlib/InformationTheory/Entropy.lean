@@ -104,118 +104,76 @@ example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
     · simp_all only [ENNReal.ofReal_one]
       exact PMF.coe_le_one p a
 
+private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p = PMF.pure a) :
+    Set.Nontrivial p.support := by
+  obtain ⟨a0, ha0⟩ := p.support_nonempty
+  rw [Set.nontrivial_iff_ne_singleton ha0]
+  intro heq
+  have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq
+  have : p = PMF.pure a0 := PMF.ext fun x => by
+    by_cases hx : x = a0
+    · subst hx; simp only [PMF.pure_apply, ↓reduceIte]; exact h1
+    · have : (PMF.pure a0) x = 0 := by simp only [PMF.pure_apply, if_neg hx]
+      rw [this]; exact (p.apply_eq_zero_iff x).mpr (by rw [heq]; simp [hx])
+  exact h ⟨a0, this⟩
+
+private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx : x ∈ p.support)
+    (h : ¬ ∃ a : α, p = PMF.pure a) : (p x).toReal < 1 := by
+  by_contra h_not
+  push_neg at h_not
+  have hx_le_one : (p x).toReal ≤ 1 := by
+    have hpx : p x ≤ (1 : ENNReal) := PMF.coe_le_one p x
+    exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpx)
+  have hx_toReal_eq_one : (p x).toReal = 1 := le_antisymm hx_le_one h_not
+  have hx_eq_one : p x = 1 := (ENNReal.toReal_eq_one_iff (p x)).1 hx_toReal_eq_one
+  have hsupp : p.support = {x} := (p.apply_eq_one_iff x).1 hx_eq_one
+  have hpure : p = PMF.pure x := PMF.ext fun y => by
+    by_cases hy : y = x
+    · subst hy; simp only [PMF.pure_apply, ↓reduceIte]; exact hx_eq_one
+    · have : (PMF.pure x) y = 0 := by simp only [PMF.pure_apply, if_neg hy]
+      rw [this]; exact (p.apply_eq_zero_iff y).mpr (by rw [hsupp]; simp [hy])
+  exact h ⟨x, hpure⟩
+
+private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
+    0 ≤ (if b = a then 0 else Real.negMulLog ((p b).toReal)) := by
+  by_cases hb : b = a
+  · simp only [hb, ite_true]; exact le_rfl
+  · simp only [hb, ite_false]; exact Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
+      have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
+      exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpb))
+
+private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a' : α) (ha' : a' ≠ a) :
+    Real.negMulLog ((p a').toReal) ≤
+      ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by
+  have h_rest_summable : Summable (fun b => if b = a then 0 else Real.negMulLog ((p b).toReal)) :=
+    Summable.of_finite
+  have h_nonneg' : ∀ j : α, j ≠ a' → 0 ≤ (if j = a then 0 else Real.negMulLog ((p j).toReal)) :=
+    fun j _ => negMulLog_ite_nonneg p a j
+  have hle := Summable.le_tsum h_rest_summable a' h_nonneg'
+  simpa [ha'] using hle
+
 lemma entropy_eq_zero_iff (p : PMF α) [Finite α] :
   entropy p = 0 ↔ ∃ a : α, p = PMF.pure a := by
   classical
   constructor
   · intro hE
     by_contra h
-    -- When p is not pure, the support has at least two elements
-    obtain ⟨a0, ha0⟩ := p.support_nonempty
-    have h_supp : Set.Nontrivial p.support := by
-      rw [Set.nontrivial_iff_ne_singleton ha0]
-      intro heq
-      have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq
-      have : p = pure a0 := PMF.ext fun x => by
-        /- by_cases hx : x = a0 <;> simp [pure] -/
-        by_cases hx : x = a0 <;> simp only [pure, PMF.pure_apply]
-        · simp_all only [not_exists, Set.mem_singleton_iff, ↓reduceIte]
-        · simp_all only [entropy_def, not_exists, Set.mem_singleton_iff, ↓reduceIte]
-          refine (PMF.apply_eq_zero_iff p x).mpr ?_
-          simp_all only [Set.mem_singleton_iff, not_false_eq_true]
-        /- exact (p.apply_eq_zero_iff x).2 (fun h' => hx (Set.mem_singleton_iff.1 (heq.symm h'))) -/
-      exact h ⟨a0, this⟩
-    obtain ⟨a, ha, a', ha', haa'⟩ := h_supp
+    obtain ⟨a, ha, a', ha', haa'⟩ := support_nontrivial_of_not_pure p h
     have ha_pos : 0 < (p a).toReal :=
       ENNReal.toReal_pos ((p.mem_support_iff a).1 ha) (p.apply_ne_top a)
     have ha'_pos : 0 < (p a').toReal :=
       ENNReal.toReal_pos ((p.mem_support_iff a').1 ha') (p.apply_ne_top a')
-    have ha_lt_one : (p a).toReal < 1 := by
-      by_contra h_not
-      push_neg at h_not
-      /- have h1 : (p a).toReal = 1 := le_antisymm ?_ h_not -/
-      have h1 : (p a).toReal = 1 := le_antisymm
-        (by
-          have hpa : p a ≤ (1 : ENNReal) := PMF.coe_le_one p a
-          refine ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpa)
-        ) 
-        h_not
-      /- have h1 : (p a).toReal = 1 := le_antisymm (by aesop?) h_not -/
-      /- have h2 : p a = 1 := by simp [(ENNReal.toReal_eq_one_iff (p a))] -/
-      have h2 : p a = 1 := by 
-        simp_all only [entropy_def, not_exists, PMF.mem_support_iff, ne_eq, zero_lt_one, le_refl]
-        exact (ENNReal.toReal_eq_one_iff (p a)).1 h1
-        
-      have : p.support = {a} := (p.apply_eq_one_iff a).1 h2
-      have : p = pure a := PMF.ext fun x => by
-        by_cases hx : x = a <;> simp_all only [not_exists, Set.mem_singleton_iff, 
-                                               ne_eq, not_true_eq_false]
-      exact h ⟨a, this⟩
-    have ha'_lt_one : (p a').toReal < 1 := by
-      by_contra h_not
-      push_neg at h_not
-      /- have h1 : (p a).toReal = 1 := le_antisymm ?_ h_not -/
-      have h1 : (p a').toReal = 1 := le_antisymm
-        (by
-          have hpa : p a' ≤ (1 : ENNReal) := PMF.coe_le_one p a'
-          refine ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpa)
-        ) 
-        h_not
-      /- have h1 : (p a).toReal = 1 := le_antisymm (by aesop?) h_not -/
-      /- have h2 : p a = 1 := by simp [(ENNReal.toReal_eq_one_iff (p a))] -/
-      have h2 : p a' = 1 := by 
-        simp_all only [entropy_def, not_exists, PMF.mem_support_iff, ne_eq, zero_lt_one, le_refl]
-        exact (ENNReal.toReal_eq_one_iff (p a')).1 h1
-        
-      have : p.support = {a'} := (p.apply_eq_one_iff a').1 h2
-      have : p = pure a := PMF.ext fun x => by
-        by_cases hx : x = a' <;> simp_all only [not_exists, Set.mem_singleton_iff]
-      exact h ⟨a, this⟩
-    
-    have h_neg_pos : ∀ x : ℝ, 0 < x → x < 1 → 0 < Real.negMulLog x := by
-      intro x hx0 hx1
-      rw [Real.negMulLog_eq_neg, neg_pos]
-      exact mul_neg_of_pos_of_neg hx0 (Real.log_neg hx0 hx1)
-    have h1 : 0 < Real.negMulLog ((p a).toReal) := h_neg_pos _ ha_pos ha_lt_one
-    have h2 : 0 < Real.negMulLog ((p a').toReal) := h_neg_pos _ ha'_pos ha'_lt_one
+    have ha_lt_one : (p a).toReal < 1 := toReal_lt_one_of_mem_support_of_not_pure p a ha h
+    have ha'_lt_one : (p a').toReal < 1 := toReal_lt_one_of_mem_support_of_not_pure p a' ha' h
+    have h1 : 0 < Real.negMulLog ((p a).toReal) :=
+      Real.negMulLog_pos_of_pos_lt_one ha_pos ha_lt_one
+    have h2 : 0 < Real.negMulLog ((p a').toReal) :=
+      Real.negMulLog_pos_of_pos_lt_one ha'_pos ha'_lt_one
+    have h_sum := entropy_tsum_ite_ge p a a' (ne_comm.1 haa')
     have h_summable : Summable (fun b : α => Real.negMulLog (ENNReal.toReal (p b))) :=
       Summable.of_finite
-    have h_rest_summable : Summable (fun b => 
-      if b = a then 0 else Real.negMulLog (ENNReal.toReal (p b))) := Summable.of_finite
-    have h_sum :
-        Real.negMulLog ((p a').toReal)
-          ≤ ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) := by
-      have ha'ne : a' ≠ a := ne_comm.1 haa'
-      -- pointwise nonneg of the "rest" function
-      have h_nonneg :
-          ∀ b : α, 0 ≤ (if b = a then 0 else Real.negMulLog ((p b).toReal)) := by
-        intro b
-        by_cases hb : b = a
-        · simp [hb]
-        · -- `negMulLog` is nonnegative on `[0,1]`
-          have hb0 : 0 ≤ (p b).toReal := ENNReal.toReal_nonneg
-          have hb1 : (p b).toReal ≤ 1 := by
-            have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
-            -- convert toReal ≤ 1
-            exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpb)
-          have : 0 ≤ Real.negMulLog ((p b).toReal) := Real.negMulLog_nonneg hb0 hb1
-          simpa [hb] using this
-      -- apply `le_tsum` to pick out the `a'` term
-      have h_nonneg' :
-          ∀ j : α, j ≠ a' →
-            0 ≤ (if j = a then 0 else Real.negMulLog ((p j).toReal)) := by
-        intro j hj
-        exact h_nonneg j
-      
-      have hle :
-          (if a' = a then 0 else Real.negMulLog ((p a').toReal))
-            ≤ ∑' b : α, if b = a then 0 else Real.negMulLog ((p b).toReal) :=
-        (Summable.le_tsum h_rest_summable a') h_nonneg'
-      -- simplify the picked term using `a' ≠ a`
-      simpa [ha'ne] using hle
     rw [entropy, (h_summable.tsum_eq_add_tsum_ite a)] at hE
     linarith [h1, h2, h_sum]
-    
   · rintro ⟨a, rfl⟩
     simp only [entropy_pure]
 
@@ -228,14 +186,6 @@ lemma entropy_pos_of_not_pure (p : PMF α) [Finite α]
     exact hp ((entropy_eq_zero_iff p).1 h0)
   -- nonneg + ≠0 gives strict positivity in ℝ
   exact lt_of_le_of_ne hnonneg (by simpa [eq_comm] using hne)
-
-
-/-     (hp : ∀ a : α, p ≠ PMF.pure a) : -/
-/-     0 < entropy p := by -/
-/-   apply entropy_pos_of_not_pure (α := α) p -/
-/-   intro h -/
-/-   rcases h with ⟨a, rfl⟩ -/
-/-   exact hp a rfl -/
 
 /-! ### Connection to Binary Entropy -/
 /-- The entropy of a Bernoulli PMF equals the binary entropy function.
@@ -252,12 +202,12 @@ example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ
   simp only [entropy, PMF.uniformOfFinset]
   -- We compute: - (1/2) * log(1/2) - (1/2) * log(1/2) = - log(1/2) = log 2
   have h1 : Real.negMulLog ((2⁻¹ : ENNReal).toReal) = Real.log 2 / 2 := by
-    simp only [Real.negMulLog, ENNReal.toReal_inv, ENNReal.toReal_ofNat, 
+    simp only [Real.negMulLog, ENNReal.toReal_inv, ENNReal.toReal_ofNat,
                Real.log_inv, mul_neg, neg_mul, neg_neg]
     ring_nf
-  have h2 : (fun a : ℕ => 
+  have h2 : (fun a : ℕ =>
       Real.negMulLog (ENNReal.toReal (if a = 0 ∨ a = 1 then (2⁻¹ : ENNReal) else 0)))
-      = (fun a : ℕ => (if a = 0 then Real.log 2 / 2 else 0) + 
+      = (fun a : ℕ => (if a = 0 then Real.log 2 / 2 else 0) +
                       (if a = 1 then Real.log 2 / 2 else 0)) := by
     funext a
     aesop
@@ -266,7 +216,7 @@ example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ
     apply hasSum_ite_eq 0
   have hsumm2 : HasSum (fun (n : ℕ) => (if n = 1 then Real.log 2 / 2 else 0)) (Real.log 2 / 2) := by
     apply hasSum_ite_eq 1
-  simp only [Summable.tsum_add (HasSum.summable hsumm1) (HasSum.summable hsumm2), 
+  simp only [Summable.tsum_add (HasSum.summable hsumm1) (HasSum.summable hsumm2),
              tsum_ite_eq, add_halves]
 
 end InformationTheory
