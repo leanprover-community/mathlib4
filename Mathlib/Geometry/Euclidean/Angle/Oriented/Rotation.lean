@@ -421,23 +421,18 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
     ⟪x, y⟫ = 0 ↔ x = 0 ∨ ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) x = y := by
-  rw [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rcases h with (rfl | rfl | h | h)
-    · exact Or.inl rfl
-    · exact Or.inr ⟨0, zero_smul _ _⟩
-    · obtain ⟨r, _, rfl⟩ :=
-        (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero (o.left_ne_zero_of_oangle_eq_pi_div_two h)
-          (o.right_ne_zero_of_oangle_eq_pi_div_two h) _).1 h
-      exact Or.inr ⟨r, rfl⟩
-    · obtain ⟨r, _, rfl⟩ :=
-        (o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero
-          (o.left_ne_zero_of_oangle_eq_neg_pi_div_two h)
-          (o.right_ne_zero_of_oangle_eq_neg_pi_div_two h) _).1 h
-      refine Or.inr ⟨-r, ?_⟩
-      rw [neg_smul, ← smul_neg, o.neg_rotation_pi_div_two]
-  · rcases h with (rfl | ⟨r, rfl⟩)
-    · exact Or.inl rfl
-    · exact (eq_zero_or_oangle_eq_iff_inner_eq_zero o).mpr (by simp)
+  wlog! +distrib H : x ≠ 0 ∧ y ≠ 0
+  · rcases H with (rfl | rfl) <;> simp
+  simp only [← o.eq_zero_or_oangle_eq_iff_inner_eq_zero, H, ← neg_smul, false_or,
+    o.oangle_eq_iff_eq_pos_smul_rotation_of_ne_zero H.1 H.2, ← o.neg_rotation_pi_div_two, smul_neg]
+  constructor
+  · grind
+  · rintro ⟨r, rfl⟩
+    rcases lt_trichotomy 0 r with (hr0 | rfl | hr0)
+    · grind
+    · simp_all
+    · right
+      use -r
+      simp_all
 
 end Orientation
