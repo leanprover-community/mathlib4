@@ -202,7 +202,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
       ext a
       exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
 
-instance instNonempty (a : α) : Nonempty (Finpartition a) := by
+instance instNonempty : Nonempty (Finpartition a) := by
   by_cases h : a = ⊥
   · rw [h]; exact ⟨Finpartition.empty α⟩
   · exact ⟨Finpartition.indiscrete h⟩
