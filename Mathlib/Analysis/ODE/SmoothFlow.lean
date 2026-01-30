@@ -631,6 +631,11 @@ lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
     (C(Icc tmin tmax, E)) (C(Icc tmin tmax, E)))).comp_contDiffOn
     (contDiffOn_integralCMLM hu t₀ k hg)
 
+/-- The implicit equation that defines the flow as its implicit function (when `T = 0`) -/
+def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
+    C(Icc tmin tmax, E) :=
+  ContinuousMap.const _ p.1 - p.2 + (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ p.2).curry0
+
 end
 
 end SmoothFlow
