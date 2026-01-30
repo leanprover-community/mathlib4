@@ -153,7 +153,7 @@ theorem PreservesPullback.iso_inv_snd :
     (PreservesPullback.iso G f g).inv ≫ G.map (pullback.snd f g) = pullback.snd _ _ := by
   simp [PreservesPullback.iso, Iso.inv_comp_eq]
 
-/-- A pullback cone in `C` is limit iff if it is so after the application
+/-- A pullback cone in `C` is a limit iff it is so after the application
 of `coyoneda.obj X` for all `X : Cᵒᵖ`. -/
 def PullbackCone.isLimitCoyonedaEquiv (c : PullbackCone f g) :
     IsLimit c ≃ ∀ (X : Cᵒᵖ), IsLimit (c.map (coyoneda.obj X)) :=

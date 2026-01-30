@@ -42,7 +42,7 @@ The file also contains properties of `rnDeriv` that use the Radon-Nikodym theore
 Radon-Nikodym theorem
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure

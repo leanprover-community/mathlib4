@@ -17,7 +17,7 @@ Investigate whether these lemmas are really needed,
 or if they can be replaced by use of the `coherence` tactic.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory Category Iso

@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -17,7 +17,7 @@ A regular monomorphism is a morphism that is the equalizer of some parallel pair
 
 In this file, we give the following definitions.
 * `RegularMono f`, which is a structure carrying the data that exhibits `f` as a regular
-  monomorphism. That is, it carries a fork and data specifying `f` a the equalizer of that fork.
+  monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
 * `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
 and constructions
@@ -508,7 +508,7 @@ Then, `Y ⟶ X` is the coequalizer of `p₁` and `p₂`. -/
 noncomputable def EffectiveEpiStruct.isColimitCoforkOfIsPullback
     {X Y Z : C} {p : Y ⟶ X} (hp : EffectiveEpiStruct p) {p₁ p₂ : Z ⟶ Y}
     (sq : IsPullback p₁ p₂ p p) :
-    IsColimit (Cofork.ofπ  p sq.w) :=
+    IsColimit (Cofork.ofπ p sq.w) :=
   Cofork.IsColimit.mk _ (fun s ↦ hp.desc s.π (fun {T} g₁ g₂ h ↦ by
       obtain ⟨l, rfl, rfl⟩ := sq.exists_lift g₁ g₂ h
       simp [s.condition]))

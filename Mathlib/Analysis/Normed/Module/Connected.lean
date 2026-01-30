@@ -26,7 +26,7 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal

@@ -6,7 +6,6 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Order.Group.Indicator
-public import Mathlib.Algebra.Order.Pi
 public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
@@ -18,7 +17,7 @@ This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`
 indicator, norm
 -/
 
-@[expose] public section
+public section
 
 open Set
 

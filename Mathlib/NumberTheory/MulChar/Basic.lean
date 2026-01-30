@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Data.Fintype.Units
 public import Mathlib.GroupTheory.OrderOfElement
 

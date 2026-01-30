@@ -217,13 +217,13 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
 filtration is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condExp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
-    UniformIntegrable (fun i => μ[g|f i]) 1 μ :=
+    UniformIntegrable (fun i => μ[g | f i]) 1 μ :=
   hg.uniformIntegrable_condExp f.le
 
 theorem Filtration.condExp_condExp [Preorder ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [CompleteSpace E] (f : Ω → E) {μ : Measure Ω} (ℱ : Filtration ι m)
     {i j : ι} (hij : i ≤ j) [SigmaFinite (μ.trim (ℱ.le j))] :
-    μ[μ[f|ℱ j]|ℱ i] =ᵐ[μ] μ[f|ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
+    μ[μ[f | ℱ j] | ℱ i] =ᵐ[μ] μ[f | ℱ i] := condExp_condExp_of_le (ℱ.mono hij) (ℱ.le j)
 
 section OfSet
 
@@ -533,7 +533,7 @@ variable {α : Type*}
 def cylinderEventsCompl : Filtration (Finset α)ᵒᵈ (.pi (X := fun _ : α ↦ Ω)) where
   seq Λ := cylinderEvents (↑(OrderDual.ofDual Λ))ᶜ
   mono' _ _ h := cylinderEvents_mono <| Set.compl_subset_compl_of_subset h
-  le' _  := cylinderEvents_le_pi
+  le' _ := cylinderEvents_le_pi
 
 end Filtration
 

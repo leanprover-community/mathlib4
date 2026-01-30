@@ -5,6 +5,8 @@ Authors: Yury Kudryashov, Moritz Doll
 -/
 module
 
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
 
 /-!

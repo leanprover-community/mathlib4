@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Infinite sum in the reals
@@ -16,7 +16,7 @@ This file provides lemmas about Cauchy sequences in terms of infinite sums and i
 in the reals.
 -/
 
-@[expose] public section
+public section
 
 open Filter Finset NNReal Topology
 

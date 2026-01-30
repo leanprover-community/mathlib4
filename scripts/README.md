@@ -15,6 +15,7 @@ to learn about it as well!
   If these web pages are deprecated or removed, we should remove these scripts.
 
 **Repository analysis and reporting**
+- `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
   Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
@@ -115,6 +116,13 @@ to learn about it as well!
   with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
+- `verify_commits.sh` verifies special commits in a PR:
+  - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
+  - **Automated commits** (prefix `x: <command>`) must match the output of re-running the command
+  Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
+  displaying human-readable output.
+- `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
+  Used by CI to post verification summaries on pull requests.
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at

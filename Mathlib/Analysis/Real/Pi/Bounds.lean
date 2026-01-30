@@ -19,7 +19,7 @@ See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/W
 infinite formulas for `π`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Real
 

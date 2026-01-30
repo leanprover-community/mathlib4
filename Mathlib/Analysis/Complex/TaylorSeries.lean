@@ -26,7 +26,7 @@ see `Complex.hasSum_taylorSeries_of_entire`, `Complex.taylorSeries_eq_of_entire`
 `Complex.taylorSeries_eq_of_entire'`.
 -/
 
-@[expose] public section
+public section
 
 namespace Complex
 

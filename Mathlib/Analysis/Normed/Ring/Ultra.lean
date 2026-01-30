@@ -38,7 +38,7 @@ Instead, we use weakest pre-existing typeclass that implies both
 ultrametric, nonarchimedean
 -/
 
-@[expose] public section
+public section
 open Metric NNReal
 
 namespace IsUltrametricDist

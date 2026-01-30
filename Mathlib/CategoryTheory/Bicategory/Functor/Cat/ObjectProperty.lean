@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
 public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 
 /-!
@@ -22,7 +21,7 @@ to define a sub-pseudofunctor `P.fullsubcategory : Pseudofunctor B Cat`.
 a type class `Pseudofunctor.ObjectProperty.IsLocal P J` extending
 `IsClosedUnderMapObj` saying that if an object locally satisfies
 the property, then it satisfies the property. Assuming this, show that
-`P.fullsubcategory` if a stack if the original pseudofunctor was.
+`P.fullsubcategory` is a stack if the original pseudofunctor was.
 
 -/
 
@@ -62,7 +61,7 @@ class IsClosedUnderMapObj (P : F.ObjectProperty) : Prop where
 export IsClosedUnderMapObj (map_obj)
 
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`, this is the
-condition that all `P.prop : ObjectProprety (F.obj X)` for `X : B` are closed
+condition that all `P.prop : ObjectProperty (F.obj X)` for `X : B` are closed
 under isomorphisms. -/
 class IsClosedUnderIsomorphisms : Prop where
   isClosedUnderIsomorphisms (X : B) : (P.prop X).IsClosedUnderIsomorphisms

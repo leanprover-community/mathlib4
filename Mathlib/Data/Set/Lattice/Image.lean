@@ -37,7 +37,7 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

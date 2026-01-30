@@ -273,12 +273,15 @@ noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
   target := (Prod.map Subtype.val id) ⁻¹' e.target
   map_source' z hz := by
     simpa only [Prod.map_apply, ← e.proj_toFun _ hz] using e.map_source' hz
-  map_target' x hx := by rw [dif_pos (by exact hx)]; exact e.map_target' hx
+  map_target' x hx := by
+    simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
+    rw [dif_pos hx]; exact e.map_target' hx
   left_inv' z hz := by
     dsimp only; rw [dif_pos] <;> all_goals simp_rw [← e.proj_toFun _ hz]
     exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
   right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
-    simp_rw [Prod.map_apply]; rw [dif_pos (by exact hx)]
+    simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
+    simp_rw [Prod.map_apply]; rw [dif_pos hx]
     convert ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
   open_target := e.open_target.preimage <| by fun_prop
   baseSet := Subtype.val ⁻¹' e.baseSet

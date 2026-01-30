@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 # Interactions between the Lebesgue integral and norms
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

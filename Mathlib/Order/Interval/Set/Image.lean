@@ -16,7 +16,7 @@ This file shows many variants of the fact that a monotone function `f` sends an 
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*} {f : α → β}
 

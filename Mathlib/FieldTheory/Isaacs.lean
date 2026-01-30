@@ -29,7 +29,7 @@ The American Mathematical Monthly
 
 -/
 
-@[expose] public section
+public section
 
 namespace Field
 

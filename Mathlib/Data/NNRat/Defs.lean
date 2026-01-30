@@ -41,7 +41,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 
 assert_not_exists CompleteLattice IsOrderedMonoid
 
-library_note2 «specialised high priority simp lemma» /--
+library_note «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
