@@ -681,22 +681,20 @@ section OrderClosedTopology
 variable [TopologicalSpace β] [OrderClosedTopology β] {f : α → β} {b : β}
 
 lemma IsPreconnected.subset_Ioi_or_Iio (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) : Set.MapsTo f s (Set.Ioi b) ∨ Set.MapsTo f s (Set.Iio b) :=
-  (hs.image f hf).subset_or_subset isOpen_Ioi isOpen_Iio (by grind) (by grind)
-
-lemma IsPreconnected.lt_or_gt (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) : (∀ x ∈ s, b < f x) ∨ ∀ x ∈ s, f x < b := by
-  rcases hs.subset_Ioi_or_Iio hf hfb with (ha | hb)
-  all_goals simp_all; grind
+    (hfb : ∀ x ∈ s, f x ≠ b) : Set.MapsTo f s (Set.Ioi b) ∨ Set.MapsTo f s (Set.Iio b) := by
+  simpa [mapsTo_iff_image_subset] using
+    (hs.image f hf).subset_or_subset isOpen_Ioi isOpen_Iio (by grind) (by grind)
 
 lemma IsPreconnected.lt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
     (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, b < f x) {x : α} (hx : x ∈ s) : b < f x := by
-  have := hs.lt_or_gt hf hfb
+  have := hs.subset_Ioi_or_Iio hf hfb
+  simp_all [MapsTo]
   grind
 
 lemma IsPreconnected.gt_of_ne (hs : IsPreconnected s) (hf : ContinuousOn f s)
     (hfb : ∀ x ∈ s, f x ≠ b) (hfx : ∃ x ∈ s, f x < b) {x : α} (hx : x ∈ s) : f x < b := by
-  have := hs.lt_or_gt hf hfb
+  have := hs.subset_Ioi_or_Iio hf hfb
+  simp_all [MapsTo]
   grind
 
 end OrderClosedTopology
