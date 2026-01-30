@@ -138,10 +138,10 @@ theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1
 
 end One
 
-@[simp] theorem hadamard_of_one {m n} [MulOneClass α] (A : Matrix m n α) :
+@[simp] theorem hadamard_of_one [MulOneClass α] (A : Matrix m n α) :
     A ⊙ (.of fun _ _ ↦ 1) = A := by ext; simp
 
-@[simp] theorem of_one_hadamard {m n} [MulOneClass α] (A : Matrix m n α) :
+@[simp] theorem of_one_hadamard [MulOneClass α] (A : Matrix m n α) :
     (.of fun _ _ ↦ 1) ⊙ A = A := by ext; simp
 
 theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
