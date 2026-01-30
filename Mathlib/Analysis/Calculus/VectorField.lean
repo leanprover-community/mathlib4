@@ -33,11 +33,11 @@ In addition to comprehensive API on these two notions, the main results are the 
 @[expose] public section
 
 open Set
-open scoped Topology
+open scoped Topology ContDiff
 
 noncomputable section
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -247,7 +247,7 @@ lemma fderiv_apply_lieBracket_of_isSymmSndFDerivAt {f : E → F}
 
 /-- The differentiation operator along `[W, V]`
 is the commutator of the differentiation operators along `W` and `V`. -/
-lemma fderivWithin_apply_lieBracket {f : E → F} {n : WithTop ℕ∞}
+lemma fderivWithin_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hs : UniqueDiffOn 𝕜 s) (hxs' : x ∈ closure (interior s)) (hxs : x ∈ s)
     (hW : DifferentiableWithinAt 𝕜 W s x) (hV : DifferentiableWithinAt 𝕜 V s x) :
@@ -259,7 +259,7 @@ lemma fderivWithin_apply_lieBracket {f : E → F} {n : WithTop ℕ∞}
 
 /-- The differentiation operator along `[W, V]`
 is the commutator of the differentiation operators along `W` and `V`. -/
-lemma fderiv_apply_lieBracket {f : E → F} {n : WithTop ℕ∞}
+lemma fderiv_apply_lieBracket {f : E → F} {n : ℕ∞ω}
     (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n)
     (hW : DifferentiableAt 𝕜 W x) (hV : DifferentiableAt 𝕜 V x) :
     fderiv 𝕜 f x (lieBracket 𝕜 V W x) =
@@ -269,7 +269,7 @@ lemma fderiv_apply_lieBracket {f : E → F} {n : WithTop ℕ∞}
   exacts [hf.of_le <| le_minSmoothness.trans hn, hf.isSymmSndFDerivAt hn]
 
 lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
-    {m n : WithTop ℕ∞} (hV : ContDiffWithinAt 𝕜 n V s x)
+    {m n : ℕ∞ω} (hV : ContDiffWithinAt 𝕜 n V s x)
     (hW : ContDiffWithinAt 𝕜 n W s x) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx : x ∈ s) :
     ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 V W s) s x := by
   apply ContDiffWithinAt.sub
@@ -278,19 +278,19 @@ lemma _root_.ContDiffWithinAt.lieBracketWithin_vectorField
   · exact ContDiffWithinAt.clm_apply (hV.fderivWithin_right hs hmn hx)
       (hW.of_le (le_trans le_self_add hmn))
 
-lemma _root_.ContDiffAt.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiffAt 𝕜 n V x)
+lemma _root_.ContDiffAt.lieBracket_vectorField {m n : ℕ∞ω} (hV : ContDiffAt 𝕜 n V x)
     (hW : ContDiffAt 𝕜 n W x) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (lieBracket 𝕜 V W) x := by
   rw [← contDiffWithinAt_univ] at hV hW ⊢
   simp_rw [← lieBracketWithin_univ]
   exact hV.lieBracketWithin_vectorField hW uniqueDiffOn_univ hmn (mem_univ _)
 
-lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : WithTop ℕ∞} (hV : ContDiffOn 𝕜 n V s)
+lemma _root_.ContDiffOn.lieBracketWithin_vectorField {m n : ℕ∞ω} (hV : ContDiffOn 𝕜 n V s)
     (hW : ContDiffOn 𝕜 n W s) (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (lieBracketWithin 𝕜 V W s) s :=
   fun x hx ↦ (hV x hx).lieBracketWithin_vectorField (hW x hx) hs hmn hx
 
-lemma _root_.ContDiff.lieBracket_vectorField {m n : WithTop ℕ∞} (hV : ContDiff 𝕜 n V)
+lemma _root_.ContDiff.lieBracket_vectorField {m n : ℕ∞ω} (hV : ContDiff 𝕜 n V)
     (hW : ContDiff 𝕜 n W) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m (lieBracket 𝕜 V W) :=
   contDiff_iff_contDiffAt.2 (fun _ ↦ hV.contDiffAt.lieBracket_vectorField hW.contDiffAt hmn)

@@ -23,7 +23,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a `C^n` manifold `M` over the pair `(E, H)`.
   {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞}
+  {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : ℕ∞ω}
   [IsManifold I n M]
   -- declare a topological space `M'`.
   {M' : Type*} [TopologicalSpace M']

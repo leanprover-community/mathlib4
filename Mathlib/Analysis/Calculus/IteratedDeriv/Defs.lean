@@ -46,7 +46,7 @@ iterated Fréchet derivative.
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology ContDiff
 open Filter Asymptotics Set
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -146,12 +146,12 @@ theorem contDiffOn_of_differentiableOn_deriv {n : ℕ∞}
 /-- On a set with unique derivatives, a `C^n` function has derivatives up to `n` which are
 continuous. -/
 theorem ContDiffOn.continuousOn_iteratedDerivWithin
-    {n : WithTop ℕ∞} {m : ℕ} (h : ContDiffOn 𝕜 n f s)
+    {n : ℕ∞ω} {m : ℕ} (h : ContDiffOn 𝕜 n f s)
     (hmn : m ≤ n) (hs : UniqueDiffOn 𝕜 s) : ContinuousOn (iteratedDerivWithin m f s) s := by
   simpa only [iteratedDerivWithin_eq_equiv_comp, LinearIsometryEquiv.comp_continuousOn_iff] using
     h.continuousOn_iteratedFDerivWithin hmn hs
 
-theorem ContDiffWithinAt.differentiableWithinAt_iteratedDerivWithin {n : WithTop ℕ∞} {m : ℕ}
+theorem ContDiffWithinAt.differentiableWithinAt_iteratedDerivWithin {n : ℕ∞ω} {m : ℕ}
     (h : ContDiffWithinAt 𝕜 n f s x) (hmn : m < n) (hs : UniqueDiffOn 𝕜 (insert x s)) :
     DifferentiableWithinAt 𝕜 (iteratedDerivWithin m f s) s x := by
   simpa only [iteratedDerivWithin_eq_equiv_comp,
@@ -160,7 +160,7 @@ theorem ContDiffWithinAt.differentiableWithinAt_iteratedDerivWithin {n : WithTop
 
 /-- On a set with unique derivatives, a `C^n` function has derivatives less than `n` which are
 differentiable. -/
-theorem ContDiffOn.differentiableOn_iteratedDerivWithin {n : WithTop ℕ∞} {m : ℕ}
+theorem ContDiffOn.differentiableOn_iteratedDerivWithin {n : ℕ∞ω} {m : ℕ}
     (h : ContDiffOn 𝕜 n f s) (hmn : m < n) (hs : UniqueDiffOn 𝕜 s) :
     DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := fun x hx =>
   (h x hx).differentiableWithinAt_iteratedDerivWithin hmn <| by rwa [insert_eq_of_mem hx]
@@ -178,7 +178,7 @@ reformulated in terms of the one-dimensional derivative on sets with unique deri
 theorem contDiffOn_nat_iff_continuousOn_differentiableOn_deriv {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s ↔ (∀ m : ℕ, m ≤ n → ContinuousOn (iteratedDerivWithin m f s) s) ∧
       ∀ m : ℕ, m < n → DifferentiableOn 𝕜 (iteratedDerivWithin m f s) s := by
-  rw [show n = ((n : ℕ∞) : WithTop ℕ∞) from rfl,
+  rw [show n = ((n : ℕ∞) : ℕ∞ω) from rfl,
     contDiffOn_iff_continuousOn_differentiableOn_deriv hs]
   simp
 
@@ -274,7 +274,7 @@ theorem contDiff_of_differentiable_iteratedDeriv {n : ℕ∞}
     (h : ∀ m : ℕ, (m : ℕ∞) ≤ n → Differentiable 𝕜 (iteratedDeriv m f)) : ContDiff 𝕜 n f :=
   contDiff_iff_iteratedDeriv.2 ⟨fun m hm => (h m hm).continuous, fun m hm => h m (le_of_lt hm)⟩
 
-theorem ContDiff.continuous_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
+theorem ContDiff.continuous_iteratedDeriv {n : ℕ∞ω} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : m ≤ n) : Continuous (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le hmn)).1 m le_rfl
 
@@ -283,7 +283,7 @@ theorem ContDiff.continuous_iteratedDeriv' (m : ℕ) (h : ContDiff 𝕜 m f) :
     Continuous (iteratedDeriv m f) :=
   ContDiff.continuous_iteratedDeriv m h (le_refl _)
 
-theorem ContDiff.differentiable_iteratedDeriv {n : WithTop ℕ∞} (m : ℕ) (h : ContDiff 𝕜 n f)
+theorem ContDiff.differentiable_iteratedDeriv {n : ℕ∞ω} (m : ℕ) (h : ContDiff 𝕜 n f)
     (hmn : m < n) : Differentiable 𝕜 (iteratedDeriv m f) :=
   (contDiff_iff_iteratedDeriv.1 (h.of_le (ENat.add_one_natCast_le_withTop_of_lt hmn))).2 m
     (mod_cast (lt_add_one m))

@@ -37,11 +37,17 @@ variable
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
 
+open Filter
+
+open LinearMap (ker range)
+
+open scoped Topology ContDiff
+
 namespace ImplicitFunctionData
 
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
-theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : WithTop ℕ∞}
+theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : ℕ∞ω}
     (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : n ≠ 0) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
@@ -50,15 +56,9 @@ theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : Wi
 
 end ImplicitFunctionData
 
-open Filter
-
-open LinearMap (ker range)
-
-open scoped Topology
-
 /-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → G` that will
 lead to a $C^n$ implicit function `φ : E → F`. -/
-structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
+structure IsContDiffImplicitAt (n : ℕ∞ω) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
     Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
@@ -68,7 +68,7 @@ structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E �
 namespace IsContDiffImplicitAt
 
 variable
-  {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
+  {n : ℕ∞ω} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
 
 omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G] in
 @[deprecated IsContDiffImplicitAt.ne_zero (since := "2025-12-22")]

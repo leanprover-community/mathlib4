@@ -345,13 +345,13 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
+    · have hi' : (i : ℕ∞ω) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
     · simp
@@ -390,11 +390,11 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     (f.contDiff.iteratedFDeriv_right le_rfl)
     ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
   map_add' f g := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    have hi : (i : ℕ∞ω) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
   map_smul' c f := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
+    have hi : (i : ℕ∞ω) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 

@@ -70,13 +70,13 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : OpenPartialHomeomorph M H}
-  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : WithTop ℕ∞}
+  {e' : OpenPartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞ω}
 
 variable (I I') in
 /-- Property in the model space of a model with corners of being `C^n` within a set at a point,
 when read in the model vector space. This property will be lifted to manifolds to define `C^n`
 functions between manifolds. -/
-def ContDiffWithinAtProp (n : WithTop ℕ∞) (f : H → H') (s : Set H) (x : H) : Prop :=
+def ContDiffWithinAtProp (n : ℕ∞ω) (f : H → H') (s : Set H) (x : H) : Prop :=
   ContDiffWithinAt 𝕜 n (I' ∘ f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x)
 
 theorem contDiffWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
@@ -95,7 +95,7 @@ theorem contDiffWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `Cⁿ` maps. Therefore,
 it lifts nicely to manifolds. -/
-theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : m ≤ n) :
+theorem contDiffWithinAt_localInvariantProp_of_le (n m : ℕ∞ω) (hmn : m ≤ n) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' m) where
   is_local {s x u f} u_open xu := by
@@ -138,13 +138,13 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : 
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `C^n` maps. Therefore,
 it lifts nicely to manifolds. -/
-theorem contDiffWithinAt_localInvariantProp (n : WithTop ℕ∞) :
+theorem contDiffWithinAt_localInvariantProp (n : ℕ∞ω) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' n) :=
   contDiffWithinAt_localInvariantProp_of_le n n le_rfl
 
 theorem contDiffWithinAtProp_mono_of_mem_nhdsWithin
-    (n : WithTop ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
+    (n : ℕ∞ω) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
   refine h.mono_of_mem_nhdsWithin ?_
   refine inter_mem ?_ (mem_of_superset self_mem_nhdsWithin inter_subset_right)
@@ -161,17 +161,17 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable within a set at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable in this set around this point, when
 read in the preferred chart at this point. -/
-def ContMDiffWithinAt (n : WithTop ℕ∞) (f : M → M') (s : Set M) (x : M) :=
+def ContMDiffWithinAt (n : ℕ∞ω) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
 it is continuous and it is `n` times continuously differentiable around this point, when
 read in the preferred chart at this point. -/
-def ContMDiffAt (n : WithTop ℕ∞) (f : M → M') (x : M) :=
+def ContMDiffAt (n : ℕ∞ω) (f : M → M') (x : M) :=
   ContMDiffWithinAt I I' n f univ x
 
-theorem contMDiffAt_iff {n : WithTop ℕ∞} {f : M → M'} {x : M} :
+theorem contMDiffAt_iff {n : ℕ∞ω} {f : M → M'} {x : M} :
     ContMDiffAt I I' n f x ↔
       ContinuousAt f x ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (range I)
@@ -182,14 +182,14 @@ variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable on this set in the charts
 around these points. -/
-def ContMDiffOn (n : WithTop ℕ∞) (f : M → M') (s : Set M) :=
+def ContMDiffOn (n : ℕ∞ω) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
 and, for any pair of points, it is `n` times continuously differentiable in the charts
 around these points. -/
-def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
+def ContMDiff (n : ℕ∞ω) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
 /-! ### Deducing smoothness from higher smoothness -/

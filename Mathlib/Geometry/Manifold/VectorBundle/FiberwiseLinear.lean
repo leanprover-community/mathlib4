@@ -19,7 +19,7 @@ noncomputable section
 
 open Set TopologicalSpace
 
-open scoped Manifold Topology
+open scoped Manifold Topology ContDiff
 
 /-! ### The groupoid of `C^n`, fiberwise-linear maps -/
 
@@ -118,7 +118,7 @@ Then the source of `e` is of the form `U ×ˢ univ`, for some set `U` in `B`, an
 `U`, admits a neighbourhood `u` of `x` such that `e` is equal on `u ×ˢ univ` to some bi-`C^n`
 fiberwise linear open partial homeomorphism. -/
 theorem ContMDiffFiberwiseLinear.locality_aux₁
-    (n : WithTop ℕ∞) (e : OpenPartialHomeomorph (B × F) (B × F))
+    (n : ℕ∞ω) (e : OpenPartialHomeomorph (B × F) (B × F))
     (h : ∀ p ∈ e.source, ∃ s : Set (B × F), IsOpen s ∧ p ∈ s ∧
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u)
         (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x : F →L[𝕜] F)) u)
@@ -171,7 +171,7 @@ locally.
 The `U` in the conclusion is the same `U` as in the hypothesis. We state it like this, because this
 is exactly what we need for `contMDiffFiberwiseLinear`. -/
 theorem ContMDiffFiberwiseLinear.locality_aux₂
-    (n : WithTop ℕ∞) (e : OpenPartialHomeomorph (B × F) (B × F)) (U : Set B)
+    (n : ℕ∞ω) (e : OpenPartialHomeomorph (B × F) (B × F)) (U : Set B)
     (hU : e.source = U ×ˢ univ)
     (h : ∀ x ∈ U,
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u) (_hUu : u ⊆ U) (_hux : x ∈ u)
@@ -237,7 +237,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
 -- Having this private lemma speeds up `simp` calls below a lot.
 -- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
 -- in `contMDiffFiberwiseLinear` are quite slow, even with this change)
-private theorem mem_aux {e : OpenPartialHomeomorph (B × F) (B × F)} {n : WithTop ℕ∞} :
+private theorem mem_aux {e : OpenPartialHomeomorph (B × F) (B × F)} {n : ℕ∞ω} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => φ x : B → F →L[𝕜] F) U)
       (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
@@ -256,7 +256,7 @@ variable (F B IB)
 homeomorphisms which are bi-`C^n` and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is `C^n`, then the composition of charts associated
 to the vector bundle belong to this groupoid. -/
-def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) where
+def contMDiffFiberwiseLinear (n : ℕ∞ω) : StructureGroupoid (B × F) where
   members :=
     ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => φ x : B → F →L[𝕜] F) U)
@@ -303,7 +303,7 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 
 @[simp]
-theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞}
+theorem mem_contMDiffFiberwiseLinear_iff {n : ℕ∞ω}
     (e : OpenPartialHomeomorph (B × F) (B × F)) :
     e ∈ contMDiffFiberwiseLinear B F IB n ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :

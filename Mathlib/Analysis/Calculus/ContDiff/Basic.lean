@@ -27,7 +27,7 @@ Similar results are given for `C^n` functions on domains.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
+In this file, we denote `WithTop ℕ∞` with `ℕ∞ω`, `(⊤ : ℕ∞) : ℕ∞ω` with `∞` and `⊤ : ℕ∞ω` with `ω`.
 
 ## Tags
 
@@ -53,7 +53,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
+  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞ω} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 section constants
@@ -192,7 +192,7 @@ theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContD
 
 /-- If `f` admits a Taylor series `p` in a set `s`, and `g` is linear, then `g ∘ f` admits a Taylor
 series whose `k`-th term is given by `g ∘ (p k)`. -/
-theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : WithTop ℕ∞} (g : F →L[𝕜] G)
+theorem HasFTaylorSeriesUpToOn.continuousLinearMap_comp {n : ℕ∞ω} (g : F →L[𝕜] G)
     (hf : HasFTaylorSeriesUpToOn n f p s) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x k => g.compContinuousMultilinearMap (p x k)) s where
   zero_eq x hx := congr_arg g (hf.zero_eq x hx)
@@ -518,7 +518,7 @@ section prod
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
 product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
+theorem HasFTaylorSeriesUpToOn.prodMk {n : ℕ∞ω}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
@@ -1100,7 +1100,7 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
   induction i generalizing x with
   | zero => simp
   | succ i ih =>
-    replace hi : (i : WithTop ℕ∞) < n := lt_of_lt_of_le (by norm_cast; simp) hi
+    replace hi : (i : ℕ∞ω) < n := lt_of_lt_of_le (by norm_cast; simp) hi
     have h_deriv_apply : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s) s :=
       (hc.clm_apply contDiffOn_const).differentiableOn_iteratedFDerivWithin hi hs
     have h_deriv : DifferentiableOn 𝕜 (iteratedFDerivWithin 𝕜 i c s) s :=
@@ -1130,14 +1130,14 @@ Warning: if you think you need this lemma, it is likely that you can simplify yo
 reformulating the lemma that you're applying next using the tips in
 Note [continuity lemma statement]
 -/
-theorem contDiff_prodAssoc {n : WithTop ℕ∞} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
+theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).contDiff
 
 /-- The natural equivalence `E × (F × G) ≃ (E × F) × G` is smooth.
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/
-theorem contDiff_prodAssoc_symm {n : WithTop ℕ∞} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
+theorem contDiff_prodAssoc_symm {n : ℕ∞ω} : ContDiff 𝕜 n <| (Equiv.prodAssoc E F G).symm :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).symm.contDiff
 
 /-! ### Bundled derivatives are smooth -/
@@ -1462,12 +1462,12 @@ theorem ContDiffOn.deriv_of_isOpen (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOp
 
 theorem ContDiffOn.continuousOn_derivWithin (h : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
     (hn : 1 ≤ n) : ContinuousOn (derivWithin f₂ s₂) s₂ := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_derivWithin hs).1 (h.of_le hn)).2.2.continuousOn
 
 theorem ContDiffOn.continuousOn_deriv_of_isOpen (h : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂)
     (hn : 1 ≤ n) : ContinuousOn (deriv f₂) s₂ := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact ((contDiffOn_succ_iff_deriv_of_isOpen hs).1 (h.of_le hn)).2.2.continuousOn
 
 @[fun_prop]
@@ -1488,16 +1488,16 @@ theorem contDiff_succ_iff_deriv :
 
 theorem contDiff_one_iff_deriv :
     ContDiff 𝕜 1 f₂ ↔ Differentiable 𝕜 f₂ ∧ Continuous (deriv f₂) := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl, contDiff_succ_iff_deriv]
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl, contDiff_succ_iff_deriv]
   simp
 
 theorem contDiff_infty_iff_deriv :
     ContDiff 𝕜 ∞ f₂ ↔ Differentiable 𝕜 f₂ ∧ ContDiff 𝕜 ∞ (deriv f₂) := by
-  rw [show (∞ : WithTop ℕ∞) = ∞ + 1 from rfl, contDiff_succ_iff_deriv]
+  rw [show (∞ : ℕ∞ω) = ∞ + 1 from rfl, contDiff_succ_iff_deriv]
   simp
 
 theorem ContDiff.continuous_deriv (h : ContDiff 𝕜 n f₂) (hn : 1 ≤ n) : Continuous (deriv f₂) := by
-  rw [show (1 : WithTop ℕ∞) = 0 + 1 from rfl] at hn
+  rw [show (1 : ℕ∞ω) = 0 + 1 from rfl] at hn
   exact (contDiff_succ_iff_deriv.mp (h.of_le hn)).2.2.continuous
 
 @[fun_prop]
