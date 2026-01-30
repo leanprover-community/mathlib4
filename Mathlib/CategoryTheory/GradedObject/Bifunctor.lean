@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.GradedObject
 
 Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and types `I` and `J`, we construct an obvious functor
 `mapBifunctor F I J : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃`.
-When we have a map `p : I × J → K` and that suitable coproducts exists, we also get
+When we have a map `p : I × J → K` and that suitable coproducts exist, we also get
 a functor
 `mapBifunctorMap F p : GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃`.
 

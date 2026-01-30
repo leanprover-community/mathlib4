@@ -80,7 +80,7 @@ in `R`, then `P ∩ S` (as a prime of `S`) is also unramified in `R`.
 lemma Algebra.IsUnramifiedAt.of_liesOver
     (p : Ideal S) (P : Ideal T) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R P] [EssFiniteType R S] [EssFiniteType R T]
-    [IsDedekindDomain S] [IsDomain T] [NoZeroSMulDivisors S T] : IsUnramifiedAt R p :=
+    [IsDedekindDomain S] [IsDomain T] [Module.IsTorsionFree S T] : IsUnramifiedAt R p :=
   IsUnramifiedAt.of_liesOver_of_ne_bot R p P P.primeCompl_le_nonZeroDivisors
     (Ideal.ne_bot_of_liesOver_of_ne_bot · P)
 

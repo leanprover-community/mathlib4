@@ -12,6 +12,7 @@ public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 public import Mathlib.Tactic.LinearCombination
 public import Mathlib.Tactic.Module
 public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Rays in modules
@@ -27,10 +28,9 @@ This file defines rays in modules.
   common positive multiple.
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
-
-noncomputable section
+open Module
 
 section StrictOrderedCommSemiring
 
@@ -352,7 +352,7 @@ alias ⟨SameRay.of_neg, SameRay.neg⟩ := sameRay_neg_iff
 
 theorem sameRay_neg_swap : SameRay R (-x) y ↔ SameRay R x (-y) := by rw [← sameRay_neg_iff, neg_neg]
 
-theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr : r < 0)
+lemma eq_zero_of_sameRay_neg_smul_right [IsDomain R] [IsTorsionFree R M] {r : R} (hr : r < 0)
     (h : SameRay R x (r • x)) : x = 0 := by
   rcases h with (rfl | h₀ | ⟨r₁, r₂, hr₁, hr₂, h⟩)
   · rfl
@@ -362,7 +362,8 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
-theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
+theorem eq_zero_of_sameRay_self_neg [IsDomain R] [IsTorsionFree R M] (h : SameRay R x (-x)) :
+    x = 0 := by
   refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
 
@@ -410,7 +411,7 @@ instance : InvolutiveNeg (Module.Ray R M) where
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
 /-- A ray does not equal its own negation. -/
-theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
+theorem ne_neg_self [IsDomain R] [IsTorsionFree R M] (x : Module.Ray R M) : x ≠ -x := by
   induction x using Module.Ray.ind with | h x hx =>
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
@@ -453,7 +454,7 @@ theorem units_inv_smul (u : Rˣ) (v : Module.Ray R M) : u⁻¹ • v = u • v :
 
 section
 
-variable [NoZeroSMulDivisors R M]
+variable [IsTorsionFree R M]
 
 @[simp]
 theorem sameRay_smul_right_iff {v : M} {r : R} : SameRay R v (r • v) ↔ 0 ≤ r ∨ v = 0 :=
