@@ -2076,6 +2076,7 @@ public import Mathlib.Analysis.NormedSpace.FunctionSeries
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
 public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Splits
 public import Mathlib.Analysis.NormedSpace.HomeomorphBall
 public import Mathlib.Analysis.NormedSpace.IndicatorFunction
 public import Mathlib.Analysis.NormedSpace.Int
