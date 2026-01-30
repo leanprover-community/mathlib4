@@ -843,16 +843,58 @@ lemma opNorm_fderivIntegralCurry0_le {f : E → E} {u : Set E} (hf : ContDiffOn 
     _ = |tmax - tmin| * C * ‖dα‖ := by ring
 
 /-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
-sufficiently small relative to the derivative bound on `ball x₀ a`. -/
+sufficiently small relative to the derivative bound on `range α`. -/
 lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {x₀ : E} {a : ℝ}
-    (hau : ball x₀ a ⊆ u) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ ball x₀ a)
-    {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ ball x₀ a, ‖fderiv ℝ f x‖ ≤ C)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C)
     (hsmall : |tmax - tmin| * C < 1) :
-    ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
-  have hαu : range α ⊆ u := hα.trans hau
-  have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hα hx)
-  exact (opNorm_fderivIntegralCurry0_le hf hu t₀ hαu hC hbound').trans_lt hsmall
+    ‖fderivIntegralCurry0 f u t₀ α‖ < 1 :=
+  (opNorm_fderivIntegralCurry0_le hf hu t₀ hα hC hbound).trans_lt hsmall
+
+/-- For any `x₀ ∈ u`, there exist `a > 0` and `ε > 0` such that `ball x₀ a ⊆ u` and for any
+time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
+`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f u t₀ α‖ < 1`. -/
+lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E}
+    (hf : ContDiffOn ℝ 1 f u) (hu : IsOpen u) {x₀ : E} (hx₀ : x₀ ∈ u) :
+    ∃ a > 0, ∃ ε > 0, ball x₀ a ⊆ u ∧
+      ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
+        range α ⊆ ball x₀ a → |tmax - tmin| < ε → ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
+  -- Get a ball around x₀ contained in u
+  obtain ⟨a', ha'pos, ha'u⟩ := Metric.isOpen_iff.mp hu x₀ hx₀
+  -- The derivative is continuous on u
+  have hfderiv_cont : ContinuousOn (fderiv ℝ f) u :=
+    hf.continuousOn_fderiv_of_isOpen hu (le_refl 1)
+  -- Use continuity at x₀ to get a ball where the derivative is bounded
+  set C := ‖fderiv ℝ f x₀‖ + 1 with hC_def
+  have hCpos : 0 < C := by positivity
+  have hfderiv_x₀ : ‖fderiv ℝ f x₀‖ < C := lt_add_one _
+  obtain ⟨δ, hδpos, hδbound⟩ := Metric.continuousOn_iff.mp hfderiv_cont x₀ hx₀ 1 one_pos
+  -- Choose a to be small enough for both conditions
+  set a := min (a' / 2) δ with ha_def
+  have hapos : 0 < a := lt_min (by linarith) hδpos
+  have hau : ball x₀ a ⊆ u :=
+    (ball_subset_ball (min_le_of_left_le (by linarith : a' / 2 ≤ a'))).trans ha'u
+  -- On ball x₀ a, the derivative is bounded by C
+  have hbound : ∀ x ∈ ball x₀ a, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ by
+    have hxu : x ∈ u := hau hx
+    have hdist : dist x x₀ < δ := (mem_ball.mp hx).trans_le (min_le_right _ _)
+    have hnorm_diff : dist (fderiv ℝ f x) (fderiv ℝ f x₀) < 1 := hδbound x hxu hdist
+    have h1 : ‖fderiv ℝ f x‖ ≤ ‖fderiv ℝ f x₀‖ + ‖fderiv ℝ f x - fderiv ℝ f x₀‖ :=
+      norm_le_insert' _ _
+    have h2 : ‖fderiv ℝ f x - fderiv ℝ f x₀‖ < 1 := by rwa [← dist_eq_norm]
+    linarith
+  -- Choose ε so that ε * C < 1
+  set ε := 1 / (C + 1) with hε_def
+  have hεpos : 0 < ε := by positivity
+  refine ⟨a, hapos, ε, hεpos, hau, ?_⟩
+  intro tmin tmax t₀ α hαball hsmall
+  have hαu : range α ⊆ u := hαball.trans hau
+  have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hαball hx)
+  apply opNorm_fderivIntegralCurry0_lt_one hf hu t₀ hαu hCpos.le hbound'
+  calc |tmax - tmin| * C
+    _ < ε * C := mul_lt_mul_of_pos_right hsmall hCpos
+    _ = C / (C + 1) := by rw [hε_def]; ring
+    _ < 1 := (div_lt_one (by positivity : 0 < C + 1)).mpr (lt_add_one C)
 
 /-
 Lang Lemma 1.13 doesn't make any sense!
@@ -881,6 +923,8 @@ Let `α` be an integral curve beginning within `r` from `x₀`.
 
 Conclude that `‖fderivIntegralCurry0 f u t₀ α‖ < 1` for all integral curves `α` of `f` beginning
 within `r` from `x₀`.
+
+α : ℝ → E
 -/
 
 
