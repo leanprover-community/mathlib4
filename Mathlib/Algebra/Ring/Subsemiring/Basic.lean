@@ -903,6 +903,14 @@ instance smulCommClass_right [SMul α β] [SMul R' β] [SMulCommClass α R' β] 
     SMulCommClass α S β :=
   inferInstance
 
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass R (Subsemiring.center R) M :=
+  inferInstanceAs <| SMulCommClass R (Submonoid.center R) M
+
+instance {R M : Type*} [Semiring R] [MulAction R M] :
+    SMulCommClass (Subsemiring.center R) R M :=
+  inferInstanceAs <| SMulCommClass (Submonoid.center R) R M
+
 /-- Note that this provides `IsScalarTower S R R` which is needed by `smul_mul_assoc`. -/
 instance isScalarTower [SMul α β] [SMul R' α] [SMul R' β] [IsScalarTower R' α β]
     (S : Subsemiring R') :
