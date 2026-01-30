@@ -51,7 +51,7 @@ instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 instance : Abelian (Sheaf AddCommGrpCat.{u} X) := sheafIsAbelian
 
 instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
-  CategoryTheory.Sheaf.instIsGrothendieckAbelian (Opens.grothendieckTopology X) AddCommGrpCat
+  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
 instance : EnoughInjectives (Sheaf AddCommGrpCat.{u} X) := IsGrothendieckAbelian.enoughInjectives
 
