@@ -65,7 +65,7 @@ public instance : TotallySeparatedSpace (CompleteType T α) := by
     rwa [mem_compl_iff, mem_typesWith_iff, ← hφ, not_not]
   | inr h =>
     refine ⟨typesWith ∼φ, isClopen_typesWith _, h, ?_⟩
-    rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ←not_mem_iff]
+    rwa [mem_compl_iff, mem_typesWith_iff, not_mem_iff, ← hφ, not_not, ← not_mem_iff]
 
 
 end CompleteType
