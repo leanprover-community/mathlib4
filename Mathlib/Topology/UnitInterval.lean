@@ -126,6 +126,11 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
+/-- The midpoint of the unit interval. -/
+def half : I := ⟨1 / 2, by constructor <;> linarith⟩
+
+@[simp]
+theorem coe_half : (half : ℝ) = 1 / 2 := rfl
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff

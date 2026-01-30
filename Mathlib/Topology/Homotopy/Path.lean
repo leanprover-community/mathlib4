@@ -467,12 +467,6 @@ open Set.Icc
 
 variable {X : Type*} [TopologicalSpace X] {x y : X}
 
-/-- The midpoint of the unit interval. -/
-def _root_.unitInterval.half : I := ⟨1 / 2, by constructor <;> linarith⟩
-
-@[simp]
-theorem _root_.unitInterval.coe_half : (unitInterval.half : ℝ) = 1 / 2 := rfl
-
 /-- Extract a subpath from γ on the interval [a, b] ⊆ [0, 1].
 This is γ reparametrized via the affine map t ↦ a + t(b - a). -/
 def subpathOn (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) : Path (γ a) (γ b) where
@@ -496,7 +490,7 @@ theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (hab : a ≤
   ext t
   simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_mk',
     ContinuousMap.coe_mk, Function.comp_apply, Set.projIcc]
-  split_ifs with h <;> (congr 1; ext; simp only [half, one_div]; norm_num)
+  split_ifs with h <;> (congr 1; ext; simp only [unitInterval.half, one_div]; norm_num)
   · have := t.2.1; have := t.2.2
     rw [min_eq_right (by linarith : 2 * (t : ℝ) ≤ 1),
         max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]; ring
