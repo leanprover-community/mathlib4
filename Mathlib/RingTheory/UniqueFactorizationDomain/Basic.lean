@@ -115,8 +115,6 @@ theorem _root_.Associated.card_factors_eq {a b : α} (h : Associated a b) :
   by_cases hb : b = 0
   · simp_all
   have ha : a ≠ 0 := h.ne_zero_iff.mpr hb
-  by_cases hb : b = 0
-  · simp [hb, ha] at h
   apply Multiset.card_eq_card_of_rel
   apply factors_unique irreducible_of_factor irreducible_of_factor
   exact (factors_prod ha).trans <| h.trans (factors_prod hb).symm
