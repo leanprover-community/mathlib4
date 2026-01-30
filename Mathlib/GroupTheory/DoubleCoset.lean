@@ -148,7 +148,7 @@ theorem disjoint_out {H K : Subgroup G} {a b : Quotient H K} :
   intro h
   simpa [out_eq'] using mk_eq_of_doubleCoset_eq (eq_of_not_disjoint h)
 
-theorem union_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K q = Set.univ := by
+theorem iUnion_quotToDoubleCoset (H K : Subgroup G) : ⋃ q, quotToDoubleCoset H K q = Set.univ := by
   ext x
   simp only [Set.mem_iUnion, quotToDoubleCoset, mem_doubleCoset, SetLike.mem_coe, Set.mem_univ,
     iff_true]
@@ -182,6 +182,8 @@ theorem doubleCoset_union_leftCoset (H K : Subgroup G) (a : G) :
     refine ⟨⟨x, hx⟩, ?_⟩
     simp only [hxy, ← mul_assoc, hy, one_mul, inv_mul_cancel, inv_mul_cancel_right]
 
+open Quotient QuotientGroup
+
 theorem left_bot_eq_left_quot (H : Subgroup G) :
     Quotient (⊥ : Subgroup G) (H : Set G) = (G ⧸ H) := by
   unfold Quotient
@@ -190,83 +192,76 @@ theorem left_bot_eq_left_quot (H : Subgroup G) :
   simp_rw [← bot_rel_eq_leftRel H]
 
 theorem right_bot_eq_right_quot (H : Subgroup G) :
-    Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (QuotientGroup.rightRel H) := by
+    Quotient (H : Set G) (⊥ : Subgroup G) = _root_.Quotient (rightRel H) := by
   unfold Quotient
   congr
   ext
   simp_rw [← rel_bot_eq_right_group_rel H]
 
-theorem iUnion_finset_quotToDoubleCoset (H K : Subgroup G) :
+theorem finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
     (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ) ↔
     Finite (Quotient (H : Set G) K) := by
   constructor
-  · intro ⟨I, hI⟩
+  · rintro ⟨I, hI⟩
     suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
-      rw [← Set.finite_univ_iff, ← this]
-      exact I.finite_toSet
+      simp_rw [← Set.finite_univ_iff, ← this, I.finite_toSet]
     rw [Set.eq_univ_iff_forall] at hI ⊢
     rintro ⟨g⟩
     obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
-    rw [mem_quotToDoubleCoset_iff] at hT
-    simpa [← hT] using hi
+    simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using hi
   · intro _
     cases nonempty_fintype (Quotient (H : Set G) K)
-    use Finset.univ
-    simpa using union_quotToDoubleCoset H K
+    exact ⟨Finset.univ, by simpa using iUnion_quotToDoubleCoset _ _⟩
 
-private theorem union_image_mk {H K : Subgroup G} :
-    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ ∧
-    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ := by
+private theorem iUnion_image_mk {H K : Subgroup G} :
+    ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ ∧
+    ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ := by
   constructor
   all_goals
-  have cover := union_quotToDoubleCoset H K
+  have cover := iUnion_quotToDoubleCoset H K
   apply Set.Subset.antisymm_iff.mpr
   simp only [Set.subset_univ, true_and]
   intro x hx
   simp only [Set.mem_iUnion, Set.mem_image]
-  obtain ⟨y, hy⟩ := Quot.exists_rep x
-  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (Quotient.out i) H K  := by
+  obtain ⟨y, hy⟩ := exists_rep x
+  have ⟨i, hi⟩ : ∃ i : Quotient H K, y ∈ doubleCoset (out i) H K  := by
     contrapose cover
     refine (Set.ne_univ_iff_exists_notMem _).mpr ?_
     exact ⟨y, by simpa using cover⟩
   exact ⟨i, y, hi, hy⟩
 
-theorem union_image_mk_leftRel (H K : Subgroup G) :
-    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.leftRel K) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).1
+theorem iUnion_image_mk_leftRel (H K : Subgroup G) :
+    ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ :=
+  iUnion_image_mk.1
 
-theorem union_image_mk_rightRel (H K : Subgroup G) :
-    ⋃ (q : Quotient H K), Quot.mk (QuotientGroup.rightRel H) ''
-      (doubleCoset (Quotient.out q : G) H K) = Set.univ := (union_image_mk).2
+theorem iUnion_image_mk_rightRel (H K : Subgroup G) :
+    ⋃ q : Quotient H K, Quot.mk (rightRel H) '' doubleCoset (out q : G) H K = Set.univ :=
+  iUnion_image_mk.2
 
-theorem union_finset_leftRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
-    (ht : Set.univ ⊆
-      ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.leftRel K) '' doubleCoset (Quotient.out i) H K) :
-    ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
+theorem iUnion_finset_leftRel_eq_univ_of_leftRel (H K : Subgroup G) (t : Finset (Quotient H K))
+    (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (leftRel K) '' doubleCoset (out i) H K) :
+    ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
   simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
   obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem _).mp ht
-  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (⇑(QuotientGroup.leftRel K)) x, ?_⟩
+  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (leftRel K) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
   contrapose! hx
   simp only [Set.mem_iUnion, exists_prop]
   refine ⟨y, hy, ?_⟩
   rw [← doubleCoset_eq_of_mem hq,  mem_doubleCoset]
-  obtain ⟨a', ha'⟩ := (Quotient.eq).mp hx
-  exact ⟨1, one_mem H, (MulOpposite.unop a'⁻¹), Subgroup.mem_op.mp (by simp), by simpa
+  obtain ⟨a', ha'⟩ := Quotient.eq.mp hx
+  exact ⟨1, one_mem H, MulOpposite.unop a'⁻¹, Subgroup.mem_op.mp (by simp), by simpa
     using (eq_mul_inv_of_mul_eq ha')⟩
 
-theorem union_finset_rightRel_cover (H K : Subgroup G) (t : Finset (Quotient H K))
-    (ht : Set.univ ⊆
-      ⋃ i ∈ t, Quot.mk ⇑(QuotientGroup.rightRel H) '' doubleCoset (Quotient.out i)
-    H K) : ⋃ q ∈ t, doubleCoset (Quotient.out q) H K = Set.univ := by
+theorem iUnion_finset_rightRel_eq_univ_of_rightRel (H K : Subgroup G) (t : Finset (Quotient H K))
+    (ht : Set.univ ⊆ ⋃ i ∈ t, Quot.mk (rightRel H) '' doubleCoset (out i) H K) :
+    ⋃ q ∈ t, doubleCoset (out q) H K = Set.univ := by
   contrapose ht
   simp only [Set.univ_subset_iff, ← ne_eq] at ⊢ ht
   obtain ⟨x, hx⟩ := (Set.ne_univ_iff_exists_notMem _).mp ht
-  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (⇑(QuotientGroup.rightRel H)) x, ?_⟩
+  refine (Set.ne_univ_iff_exists_notMem _).mpr ⟨Quot.mk (rightRel H) x, ?_⟩
   simp only [Set.mem_iUnion, Set.mem_image, exists_prop, not_exists, not_and]
   intro y hy q hq
   contrapose! hx
