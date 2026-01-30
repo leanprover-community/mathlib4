@@ -50,32 +50,6 @@ finitely presented group, finitely generated normal closure
 
 @[expose] public section
 
--- Start of suggested additions to #FreeGroup
-
-/-- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
-FreeGroup.map is also surjective. -/
-theorem FreeGroup.map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
-  Function.Surjective (FreeGroup.map f) := by
-  intro x
-  induction x using FreeGroup.induction_on with
-  | C1 =>
-      use 1
-      rfl
-  | of b =>
-      rcases hf b with ⟨a, ha⟩
-      refine ⟨FreeGroup.of a, ?_⟩
-      simp [ha]
-  | inv_of b hb =>
-      rcases hb with ⟨a, ha⟩
-      refine ⟨a⁻¹, ?_⟩
-      simp [ha]
-  | mul b c hb hc =>
-      rcases hb with ⟨a, ha⟩
-      rcases hc with ⟨d, hd⟩
-      refine ⟨a * d, ?_⟩
-      simp [ha, hd]
--- end of addition to #FreeGroup
-
 -- Start of suggested additions to #Subgroup
 
 /-- The normal closure of an empty set is the trivial subgroup. -/
