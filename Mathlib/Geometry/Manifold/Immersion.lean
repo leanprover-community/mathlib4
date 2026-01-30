@@ -527,6 +527,22 @@ lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
   rw [isImmersionAtOfComplement_iff_msplitsAt] at hf hg ⊢
   exact hg.comp hf
 
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` is injective. -/
+theorem mfderiv_injective {x : M} (h : IsImmersionAtOfComplement F I J n f x) :
+    Injective (mfderiv I J f x) :=
+  h.msplitsAt.mfderiv_injective
+
+-- TODO: this only holds for real or complex manifolds!
+/-
+/- If `M` is finite-dimensional, and `mfderiv I J f x` is injective, then `f` is immersed at `x`.
+Some sources call this condition `f is infinitesimally injective at x`. -/
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+    (hf' : Injective (mfderiv I J f x)) : IsImmersionAtOfComplement F I J n f x := by
+  rw [isImmersionAtOfComplement_iff_msplitsAt]
+  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_of_completeSpace hf'
+  show FiniteDimensional 𝕜 E; assumption
+-/
+
 end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
