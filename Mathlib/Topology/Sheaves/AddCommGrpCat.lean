@@ -32,7 +32,7 @@ namespace TopCat
 
 variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
 
-instance [Abelian C] : Abelian (Presheaf C X) := Abelian.functorCategoryAbelian
+instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
 instance : Abelian (Sheaf AddCommGrpCat X) := sheafIsAbelian
 
