@@ -111,6 +111,16 @@ theorem diagonal_hadamard (M) (w : n → α) :
 theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
     diagonal v ⊙ diagonal w = diagonal (v * w) := by simp [diagonal_hadamard]
 
+theorem diagonal_hadamard_eq_diagonal_iff {A : Matrix n n α} {d e} :
+    diagonal d ⊙ A = diagonal e ↔ d * A.diag = e := by
+  simp only [← ext_iff, hadamard_apply, diagonal_apply, ite_mul, zero_mul, funext_iff, Pi.mul_apply]
+  grind [diag_apply]
+
+theorem hadamard_diagonal_eq_diagonal_iff {A : Matrix n n α} {d e} :
+    A ⊙ diagonal d = diagonal e ↔ A.diag * d = e := by
+  simp only [← ext_iff, hadamard_apply, diagonal_apply, mul_ite, mul_zero, funext_iff, Pi.mul_apply]
+  grind [diag_apply]
+
 end Diagonal
 
 section One
@@ -122,19 +132,23 @@ theorem hadamard_one : M ⊙ 1 = diagonal M.diag := mul_one M.diag ▸ hadamard_
 
 theorem one_hadamard : 1 ⊙ M = diagonal M.diag := one_mul M.diag ▸ diagonal_hadamard M 1
 
-theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 := by
-  simp [← ext_iff, funext_iff, Matrix.one_apply]
+theorem one_hadamard_eq_diagonal_iff {A : Matrix n n α} {d} : 1 ⊙ A = diagonal d ↔ A.diag = d := by
+  simpa using diagonal_hadamard_eq_diagonal_iff (A := A) (d := 1)
 
-theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 := by
-  simp [← ext_iff, funext_iff, Matrix.one_apply]
+theorem hadamard_one_eq_diagonal_iff {A : Matrix n n α} {d} : A ⊙ 1 = diagonal d ↔ A.diag = d := by
+  simpa using hadamard_diagonal_eq_diagonal_iff (A := A) (d := 1)
 
-theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 := by
-  simp_rw [one_hadamard, ← diagonal_one, diagonal_eq_diagonal_iff]
-  simp [funext_iff]
+theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 :=
+  diagonal_zero (n := n) (α := α) ▸ one_hadamard_eq_diagonal_iff
 
-theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1 := by
-  simp_rw [hadamard_one, ← diagonal_one, diagonal_eq_diagonal_iff]
-  simp [funext_iff]
+theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 :=
+  diagonal_zero (n := n) (α := α) ▸ hadamard_one_eq_diagonal_iff
+
+theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 :=
+  one_hadamard_eq_diagonal_iff
+
+theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1 :=
+  hadamard_one_eq_diagonal_iff
 
 end One
 
