@@ -374,9 +374,8 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
   rw [← one_smul A m, ← smul_assoc, Algebra.smul_def, mul_one, one_smul]
 
 @[simp]
-theorem algebraMap_smul (r : R) {a : A} (m : M) (hra : a = algebraMap R A r) :
-    a • m = r • m :=
-  hra ▸ (algebra_compatible_smul A r m).symm
+theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
+  (algebra_compatible_smul A r m).symm
 
 lemma isSMulRegular_algebraMap_iff {r : R} :
     IsSMulRegular M (algebraMap R A r) ↔ IsSMulRegular M r :=
