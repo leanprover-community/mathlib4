@@ -66,7 +66,8 @@ noncomputable def mulAntidiagonal : Finset (α × α) :=
 variable {hs ht a} {u : Set α} {hu : u.IsPWO} {x : α × α}
 
 @[to_additive (attr := simp)]
-theorem mem_mulAntidiagonal : x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
+theorem mem_setMulAntidiagonal :
+    x ∈ mulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 * x.2 = a := by
   simp only [mulAntidiagonal, Set.Finite.mem_toFinset, Set.mem_mulAntidiagonal]
 
 @[to_additive]
@@ -79,14 +80,14 @@ theorem mulAntidiagonal_mono_right (h : u ⊆ t) :
   Set.Finite.toFinset_mono <| Set.mulAntidiagonal_mono_right h
 
 @[to_additive]
-theorem swap_mem_mulAntidiagonal :
+theorem swap_mem_setMulAntidiagonal :
     x.swap ∈ Finset.mulAntidiagonal hs ht a ↔ x ∈ Finset.mulAntidiagonal ht hs a := by
   simp
 
 @[to_additive]
 theorem support_mulAntidiagonal_subset_mul : { a | (mulAntidiagonal hs ht a).Nonempty } ⊆ s * t :=
   fun a ⟨b, hb⟩ => by
-  rw [mem_mulAntidiagonal] at hb
+  rw [mem_setMulAntidiagonal] at hb
   exact ⟨b.1, hb.1, b.2, hb.2⟩
 
 @[to_additive]
@@ -98,7 +99,7 @@ theorem mulAntidiagonal_min_mul_min {α} [CommMonoid α] [LinearOrder α] [IsOrd
     {s t : Set α} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty) (hnt : t.Nonempty) :
     mulAntidiagonal hs.isPWO ht.isPWO (hs.min hns * ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
-  simp only [mem_mulAntidiagonal, mem_singleton, Prod.ext_iff]
+  simp only [mem_setMulAntidiagonal, mem_singleton, Prod.ext_iff]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
