@@ -49,46 +49,6 @@ of `s ↦ ‖μ s‖ₑ`.
 
 @[expose] public section
 
-namespace Finpartition
-
-/-- The sum over a combined partition equals the sum of sums over component partitions. -/
-lemma sum_combine {ι α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
-    {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
-    (ha : Set.PairwiseDisjoint (I : Set ι) a) {M : Type*} [AddCommMonoid M] (f : α → M) :
-    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
-  change ∑ p ∈ I.biUnion (fun i => (P i).parts), f p = _
-  refine Finset.sum_biUnion fun i hi j hj hij => ?_
-  rw [Function.onFun, Finset.disjoint_left]
-  intro p hpi hpj
-  have hp_disj : Disjoint p p := (ha hi hj hij).mono ((P i).le hpi) ((P j).le hpj)
-  exact (P i).ne_bot hpi (disjoint_self.mp hp_disj)
-
-/-- The sum over restricted partition parts equals the sum over original parts with `f (· ⊓ b)`,
-provided `f ⊥ = 0` (so bottom terms don't contribute). -/
-lemma sum_restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
-    {a : α} (P : Finpartition a) {b : α} (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
-    (f : α → M) (hf : f ⊥ = 0) :
-    ∑ p ∈ (P.restrict hb).parts, f p = ∑ q ∈ P.parts, f (q ⊓ b) := by
-  have hinj : ∀ x ∈ P.parts.filter (· ⊓ b ≠ ⊥), ∀ y ∈ P.parts.filter (· ⊓ b ≠ ⊥),
-      x ⊓ b = y ⊓ b → x = y := fun x hx y hy hxy => by
-    simp only [Finset.mem_filter] at hx hy
-    by_contra hne
-    have hdisj : Disjoint (x ⊓ b) (y ⊓ b) := (P.disjoint hx.1 hy.1 hne).mono inf_le_left inf_le_left
-    rw [hxy] at hdisj
-    exact hy.2 (disjoint_self.mp hdisj)
-  have heq : (P.parts.image (· ⊓ b)).erase ⊥ = (P.parts.filter (· ⊓ b ≠ ⊥)).image (· ⊓ b) := by
-    ext p; simp only [Finset.mem_erase, ne_eq, Finset.mem_image, Finset.mem_filter]
-    constructor
-    · rintro ⟨hp, q, hq, rfl⟩; exact ⟨q, ⟨hq, hp⟩, rfl⟩
-    · rintro ⟨q, ⟨hq, hp⟩, rfl⟩; exact ⟨hp, q, hq, rfl⟩
-  have hz : ∑ x ∈ P.parts.filter (¬ · ⊓ b ≠ ⊥), f (x ⊓ b) = 0 := Finset.sum_eq_zero fun x hx => by
-    simp only [ne_eq, Decidable.not_not, Finset.mem_filter] at hx
-    rw [hx.2, hf]
-  simp only [restrict, heq, ← Finset.sum_filter_add_sum_filter_not P.parts (· ⊓ b ≠ ⊥), hz,
-    Finset.sum_image hinj, add_zero]
-
-end Finpartition
-
 variable {X : Type*} [MeasurableSpace X]
 
 open MeasureTheory BigOperators ENNReal Function
