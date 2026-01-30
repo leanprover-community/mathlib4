@@ -34,8 +34,7 @@ noncomputable def Algebra.TensorProduct.equiv_pi_of_finite_basis
     (A ⊗[R] V) ≃ₗ[A] (ι → A) :=
   open Classical in
   have : Fintype ι := .ofFinite _
-  (b.equivFun.baseChange R A _ _) ≪≫ₗ
-    TensorProduct.piScalarRight R A A ι
+  (b.equivFun.baseChange R A _ _) ≪≫ₗ TensorProduct.piScalarRight R A A ι
 
 /--
 The `A`-algebra isomorphism `A ⊗[R] V ≃ₗ[A] (ι →₀ A)` coming from an
@@ -45,5 +44,4 @@ The `A`-algebra isomorphism `A ⊗[R] V ≃ₗ[A] (ι →₀ A)` coming from an
 noncomputable def Algebra.TensorProduct.equiv_finsupp_of_basis :
     (A ⊗[R] V) ≃ₗ[A] (ι →₀ A) :=
   open Classical in
-  (b.repr.baseChange R A _ _) ≪≫ₗ
-    TensorProduct.finsuppScalarRight R A A ι
+  (b.repr.baseChange R A _ _) ≪≫ₗ TensorProduct.finsuppScalarRight R A A ι
