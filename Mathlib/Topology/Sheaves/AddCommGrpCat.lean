@@ -32,9 +32,9 @@ namespace TopCat
 
 variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
 
-instance [Abelian C] : Abelian (Presheaf C X) := Abelian.functorCategoryAbelian
+instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
-instance : Abelian (Sheaf AddCommGrpCat X) := sheafIsAbelian
+instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
 instance : (Sheaf.forget AddCommGrpCat X).Additive where
 
@@ -49,7 +49,7 @@ instance : HasSeparator AddCommGrpCat.{u} where
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 
 instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
-  CategoryTheory.Sheaf.instIsGrothendieckAbelian (Opens.grothendieckTopology X) AddCommGrpCat
+  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
 instance : EnoughInjectives (Sheaf AddCommGrpCat.{u} X) := IsGrothendieckAbelian.enoughInjectives
 
