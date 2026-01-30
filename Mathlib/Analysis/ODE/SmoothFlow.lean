@@ -787,6 +787,48 @@ lemma bijective_fderiv_T_comp_inr {f : E → E} {u : Set E}
     (Neg.neg ∘ ⇑(ContinuousLinearMap.id ℝ (C(Icc tmin tmax, E)) - fderivIntegralCurry0 f u t₀ α))
   exact (ContinuousLinearEquiv.neg ℝ (M := C(Icc tmin tmax, E))).bijective.comp hbij
 
+/-- The implicit function theorem applies to `T f u t₀` at a point `a = (x₀, α₀)` satisfying:
+- `range α₀ ⊆ u` (the curve stays in the domain)
+- `‖fderivIntegralCurry0 f u t₀ α₀‖ < 1` (the integral operator has small norm)
+- `n ≥ 1` (we need at least `C^1` for the implicit function theorem) -/
+lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
+    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
+    IsContDiffImplicitAt n (T f u t₀)
+      ((ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).comp (ContinuousLinearMap.fst ℝ E _) -
+        ContinuousLinearMap.snd ℝ E _ +
+        (fderivIntegralCurry0 f u t₀ α₀).comp (ContinuousLinearMap.snd ℝ E _))
+      (x₀, α₀) where
+  hasFDerivAt := hasFDerivAt_T (hf.of_le (mod_cast hn)) hu t₀ hα₀
+  contDiffAt := contDiffAt_T hu t₀ n hf hα₀
+  bijective := bijective_fderiv_T_comp_inr t₀ hnorm
+  ne_zero := by
+    simp only [ne_eq, WithTop.coe_eq_zero]
+    exact (one_pos.trans_le hn).ne'
+
+/-- The implicit function `E → C(Icc tmin tmax, E)` extracted from the implicit function theorem
+applied to `T`. This is the local flow of the ODE near `x₀`. -/
+noncomputable def localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
+    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
+    E → C(Icc tmin tmax, E) :=
+  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).implicitFunction
+
+/-- The local flow satisfies `T f u t₀ (x, localFlow x) = T f u t₀ (x₀, α₀)` in a neighborhood of
+`x₀`. -/
+lemma T_localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
+    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
+    ∀ᶠ x in 𝓝 x₀, T f u t₀ (x, localFlow hf hu t₀ x₀ hα₀ hnorm hn x) = T f u t₀ (x₀, α₀) :=
+  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).apply_implicitFunction
+
+/-- The local flow is `C^n` at `x₀`. -/
+lemma contDiffAt_localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
+    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
+    ContDiffAt ℝ n (localFlow hf hu t₀ x₀ hα₀ hnorm hn) x₀ :=
+  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).contDiffAt_implicitFunction
+
 end
 
 end SmoothFlow
