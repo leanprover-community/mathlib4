@@ -12,7 +12,6 @@ public import Mathlib.Data.Nat.Notation
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.TypeStar
-public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -34,7 +33,7 @@ See note [foundational algebra order theory].
 
 @[expose] public section
 
-library_note2 «foundational algebra order theory» /--
+library_note «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`
 which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
 libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
@@ -434,6 +433,9 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
+
+instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
+  out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
 /-! ### `Nat.AtLeastTwo` -/
 

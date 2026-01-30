@@ -403,12 +403,35 @@ lemma shift_distinguished (n : ℤ) :
     | zero => exact H_neg_one
     | succ n hn => exact H_add hn H_neg_one rfl
 
-omit hT in
+section
+
+omit hT
+
 lemma shift_distinguished_iff (n : ℤ) :
     (CategoryTheory.shiftFunctor (Triangle C) n).obj T ∈ (distTriang C) ↔ T ∈ distTriang C :=
   ⟨fun hT ↦ isomorphic_distinguished _ (shift_distinguished _ hT (-n)) _
       ((shiftEquiv (Triangle C) n).unitIso.app T),
     fun hT ↦ shift_distinguished T hT n⟩
+
+lemma distinguished_iff_of_isZero₃ (T : Triangle C) (h : IsZero T.obj₃) :
+    T ∈ distTriang _ ↔ IsIso T.mor₁ :=
+  ⟨fun hT ↦ by rwa [← isZero₃_iff_isIso₁ _ hT],
+    fun _ ↦ isomorphic_distinguished _ (contractible_distinguished T.obj₁) _
+      (isoMk _ _ (Iso.refl _) (asIso T.mor₁).symm h.isoZero (by simp)
+        ((isZero_zero C).eq_of_tgt _ _) (h.eq_of_src _ _))⟩
+
+lemma distinguished_iff_of_isZero₁ (T : Triangle C) (h : IsZero T.obj₁) :
+    T ∈ distTriang _ ↔ IsIso T.mor₂ := by
+  rw [rotate_distinguished_triangle,
+    distinguished_iff_of_isZero₃ _ (Functor.map_isZero (CategoryTheory.shiftFunctor C 1) h)]
+  simp
+
+lemma distinguished_iff_of_isZero₂ (T : Triangle C) (h : IsZero T.obj₂) :
+    T ∈ distTriang _ ↔ IsIso T.mor₃ := by
+  rw [rotate_distinguished_triangle, distinguished_iff_of_isZero₁ _ h]
+  simp
+
+end
 
 end Triangle
 
@@ -660,6 +683,31 @@ def isoTriangleOfIso₁₂ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang
     have eq := h.choose_spec.1
     dsimp at eq ⊢
     conv_lhs => rw [← eq, TriangleMorphism.comm₃])
+
+/-- A choice of isomorphism `T₁ ≅ T₂` between two distinguished triangles
+when we are given two isomorphisms `e₁ : T₁.obj₁ ≅ T₂.obj₁` and `e₃ : T₁.obj₃ ≅ T₂.obj₃`. -/
+@[simps! hom_hom₁ hom_hom₃ inv_hom₁ inv_hom₃]
+def isoTriangleOfIso₁₃ (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)
+    (hT₂ : T₂ ∈ distTriang C) (e₁ : T₁.obj₁ ≅ T₂.obj₁) (e₃ : T₁.obj₃ ≅ T₂.obj₃)
+    (comm : T₁.mor₃ ≫ (shiftFunctor C 1).map e₁.hom = e₃.hom ≫ T₂.mor₃) :
+      T₁ ≅ T₂ := by
+  have h := exists_iso_of_arrow_iso _ _ (inv_rot_of_distTriang _ hT₁)
+    (inv_rot_of_distTriang _ hT₂)
+    (Arrow.isoMk ((shiftFunctor C (-1)).mapIso e₃) e₁ (by
+      have := (shiftFunctorCompIsoId C (1 : ℤ) (-1) (by simp)).hom.naturality e₁.hom
+      dsimp at this ⊢
+      simp only [comp_neg, neg_comp, assoc, neg_inj, ← Functor.map_comp_assoc, ← comm]
+      simp [this]))
+  let e := h.choose
+  have h₁ : e.hom.hom₁ = _ := h.choose_spec.1
+  have h₂ : _ = e.hom.hom₂ := h.choose_spec.2.symm
+  have h₃ := e.hom.comm₃
+  have h₄ := (shiftFunctorCompIsoId C (-1 : ℤ) 1 (by simp)).inv.naturality e₃.hom
+  dsimp at h₁ h₂ h₃ h₄
+  refine Triangle.isoMk _ _ e₁ (Triangle.π₃.mapIso e) e₃ ?_ ?_ comm
+  · convert e.hom.comm₂ using 2
+  · simp [← cancel_mono ((shiftFunctorCompIsoId C (-1) 1 (neg_add_cancel 1)).inv.app T₂.obj₃),
+      ← h₃, assoc, h₁, h₄]
 
 end Pretriangulated
 

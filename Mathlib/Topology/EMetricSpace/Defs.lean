@@ -30,7 +30,7 @@ to `EMetricSpace` at the end.
 @[expose] public section
 
 
-assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
+assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding.prod TendstoUniformlyOnFilter
 
 open Filter Set Topology
 
@@ -306,7 +306,7 @@ theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
 /-- Consider an extended distance on a topological space, for which the neighborhoods can be
 expressed in terms of the distance. Then we define the emetric space structure associated to this
 distance, with a topology defeq to the initial one. -/
-@[reducible] noncomputable def PseudoEmetricSpace.ofEdistOfTopology {α : Type*} [TopologicalSpace α]
+@[reducible] noncomputable def PseudoEMetricSpace.ofEDistOfTopology {α : Type*} [TopologicalSpace α]
     (d : α → α → ℝ≥0∞) (h_self : ∀ x, d x x = 0) (h_comm : ∀ x y, d x y = d y x)
     (h_triangle : ∀ x y z, d x z ≤ d x y + d y z)
     (h_basis : ∀ x, (𝓝 x).HasBasis (fun c ↦ 0 < c) (fun c ↦ {y | d x y < c})) :
@@ -317,6 +317,9 @@ distance, with a topology defeq to the initial one. -/
   edist_triangle := h_triangle
   toUniformSpace := uniformSpaceOfEDistOfHasBasis d h_self h_comm h_triangle h_basis
   uniformity_edist := rfl
+
+@[deprecated (since := "2026-01-08")]
+alias PseudoEmetricSpace.ofEdistOfTopology := PseudoEMetricSpace.ofEDistOfTopology
 
 namespace MulOpposite
 

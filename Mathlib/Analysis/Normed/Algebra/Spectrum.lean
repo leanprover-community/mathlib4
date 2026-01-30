@@ -14,7 +14,6 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 public import Mathlib.Topology.Algebra.Module.CharacterSpace
 public import Mathlib.Topology.Semicontinuity.Hemicontinuity
-import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -707,7 +706,7 @@ lemma upperHemicontinuous_spectrum [NormedField 𝕜] [ProperSpace 𝕜]
   rw [upperHemicontinuous_iff]
   refine fun a₀ ↦ .of_sequences
     (isCompact_closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)).isSeqCompact ?_ <|
-    fun a ha x hx_mem x₀ hx↦ ?_
+    fun a ha x hx_mem x₀ hx ↦ ?_
   /- We must show that `spectrum 𝕜 (a n)` is eventually contained in some fixed compact set
   (we've chosen `closedBall 0 ((‖a₀‖ + 1) * ‖(1 : A)‖)`). This follows since the spectrum of any
   `b` is bounded `‖b‖ * ‖1‖` and `a` converges to `a₀`.  -/

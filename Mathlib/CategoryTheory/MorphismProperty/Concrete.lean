@@ -39,10 +39,10 @@ open Function
 /-- Injectivity (in a concrete category) as a `MorphismProperty` -/
 protected def injective : MorphismProperty C := fun _ _ f => Injective f
 
-/-- Surjectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Surjectivity (in a concrete category) as a `MorphismProperty` -/
 protected def surjective : MorphismProperty C := fun _ _ f => Surjective f
 
-/-- Bijectiveness (in a concrete category) as a `MorphismProperty` -/
+/-- Bijectivity (in a concrete category) as a `MorphismProperty` -/
 protected def bijective : MorphismProperty C := fun _ _ f => Bijective f
 
 theorem bijective_eq_sup :

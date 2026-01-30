@@ -28,7 +28,7 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Metric Real Set
+open Filter Metric Real Set
 
 namespace ValueDistribution
 
@@ -82,6 +82,28 @@ lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := b
 -/
 
 /--
+If two functions differ only on a discrete set, then their proximity functions
+agree, except perhaps at radius 0.
+-/
+lemma proximity_congr_codiscreteWithin {f g : ℂ → E} {a : WithTop E} {r : ℝ}
+    (hfg : f =ᶠ[codiscreteWithin (sphere 0 |r|)] g) (hr : r ≠ 0) :
+    proximity f a r = proximity g a r := by
+  by_cases h : a = ⊤
+  all_goals
+    simp only [proximity, h, ↓reduceDIte]
+    apply circleAverage_congr_codiscreteWithin _ hr
+    filter_upwards [hfg] using by aesop
+
+/--
+If two functions differ only on a discrete set, then their proximity functions
+agree, except perhaps at radius 0.
+-/
+lemma proximity_congr_codiscrete {f g : ℂ → E} {a : WithTop E} {r : ℝ}
+    (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
+    proximity f a r = proximity g a r :=
+  proximity_congr_codiscreteWithin (hfg.filter_mono (codiscreteWithin.mono (by tauto))) hr
+
+/--
 For finite values `a₀`, the proximity function `proximity f a₀` equals the proximity function for
 the value zero of the shifted function `f - a₀`.
 -/
@@ -109,6 +131,26 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   · apply circleIntegrable_posLog_norm_meromorphicOn h₁f.meromorphicOn
   · simp_rw [← norm_inv]
     apply circleIntegrable_posLog_norm_meromorphicOn h₁f.inv.meromorphicOn
+
+/--
+The proximity function is even.
+-/
+theorem proximity_even : (proximity f a).Even := by
+  intro r
+  by_cases h : a = ⊤ <;> simp [proximity, h]
+
+/--
+The proximity function is non-negative.
+-/
+theorem proximity_nonneg {a : WithTop E} :
+    0 ≤ proximity f a := by
+  by_cases h : a = ⊤ <;>
+  · intro r
+    simpa [proximity, h] using circleAverage_nonneg_of_nonneg (fun x _ ↦ posLog_nonneg)
+
+@[simp] lemma proximity_const {c : E} {r : ℝ} :
+    proximity (fun _ ↦ c) ⊤ r = log⁺ ‖c‖ := by
+  simp [proximity, circleAverage_const]
 
 /-!
 ## Behaviour under Arithmetic Operations

@@ -9,9 +9,6 @@ public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Limits.HasLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import all Mathlib.CategoryTheory.Limits.Cones
-import all Mathlib.CategoryTheory.Limits.HasLimits
-import all Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
@@ -22,7 +19,6 @@ public section
 
 open CategoryTheory CategoryTheory.Limits
 
-set_option linter.existingAttributeWarning false in
 attribute [elementwise (attr := simp)] Cone.w limit.lift_π limit.w
   colimit.ι_desc colimit.w kernel.lift_ι cokernel.π_desc kernel.condition cokernel.condition
 

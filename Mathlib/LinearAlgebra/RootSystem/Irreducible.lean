@@ -60,6 +60,38 @@ instance : BoundedOrder P.invtRootSubmodule where
 instance [Nontrivial M] : Nontrivial P.invtRootSubmodule where
   exists_pair_ne := ⟨⊥, ⊤, by rw [ne_eq, Subtype.ext_iff]; exact bot_ne_top⟩
 
+@[simp] lemma coe_bot : ((⊥ : P.invtRootSubmodule) : Submodule R M) = ⊥ := rfl
+
+@[simp] lemma coe_top : ((⊤ : P.invtRootSubmodule) : Submodule R M) = ⊤ := rfl
+
+open Module in
+lemma invtRootSubmodule.eq_bot_iff {K : Type*} [Field K] [NeZero (2 : K)]
+    [Module K M] [Module K N] {P : RootPairing ι K M N} [P.IsRootSystem]
+    (q : P.invtRootSubmodule) :
+    q = ⊥ ↔ ∀ i, P.root i ∉ (q : Submodule K M) := by
+  have : IsReflexive K M := .of_isPerfPair P.toLinearMap
+  refine ⟨fun h ↦ by simp [h, P.ne_zero], fun h ↦ ?_⟩
+  rw [Subtype.mk_eq_bot_iff (by simp), Submodule.eq_bot_iff]
+  intro x hx
+  by_contra hx₀
+  obtain ⟨i, hi⟩ : ∃ i, P.coroot' i x ≠ 0 := by
+    contrapose! hx₀
+    suffices Dual.eval K M x = 0 from
+      ((Dual.eval K M).map_eq_zero_iff (bijective_dual_eval K M).injective).mp this
+    exact LinearMap.ext_on_range P.span_coroot'_eq_top hx₀
+  replace h : P.reflection i x ∉ (q : Submodule K M) := by
+    specialize h i
+    contrapose! h
+    rw [reflection_apply, LinearMap.flip_apply, Submodule.sub_mem_iff_right _ hx] at h
+    exact (Submodule.smul_mem_iff _ hi).mp h
+  have h' : P.reflection i x ∈ (q : Submodule K M) := P.mem_invtRootSubmodule_iff.mp q.property i hx
+  contradiction
+
+lemma invtRootSubmodule.eq_top_iff {K : Type*} [Field K] [Module K M] [Module K N]
+    {P : RootPairing ι K M N} [P.IsRootSystem] (q : P.invtRootSubmodule) :
+    q = ⊤ ↔ range P.root ⊆ q :=
+  ⟨fun h ↦ by simp [h], fun h ↦ by simpa using Submodule.span_mono h (R := K)⟩
+
 lemma isSimpleModule_weylGroupRootRep_iff [Nontrivial M] :
     IsSimpleModule R[P.weylGroup] P.weylGroupRootRep.asModule ↔
     ∀ (q : Submodule R M), (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -148,7 +180,7 @@ lemma isIrreducible_iff_invtRootSubmodule
     exact IsSimpleOrder.eq_top_of_lt hq'
 
 lemma exist_set_root_not_disjoint_and_le_ker_coroot'_of_invtSubmodule
-    [NeZero (2 : R)] [NoZeroSMulDivisors R M] (q : Submodule R M)
+    [NeZero (2 : R)] [IsDomain R] [Module.IsTorsionFree R M] (q : Submodule R M)
     (hq : ∀ i, q ∈ invtSubmodule (P.reflection i)) :
     ∃ Φ : Set ι, (∀ i ∈ Φ, ¬ Disjoint q (R ∙ P.root i)) ∧ (∀ i ∉ Φ, q ≤ ker (P.coroot' i)) := by
   refine ⟨{i | ¬ Disjoint q (R ∙ P.root i)}, by simp, fun i hi ↦ ?_⟩
