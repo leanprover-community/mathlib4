@@ -34,7 +34,7 @@ variable {X : TopCat.{u}} {U V : Opens X} {C : Type v} [Category.{w} C]
 
 instance [Abelian C] : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
 
-instance : Abelian (Sheaf AddCommGrpCat X) := sheafIsAbelian
+instance : Abelian (Sheaf AddCommGrpCat X) := inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
 
 instance : (Sheaf.forget AddCommGrpCat X).Additive where
 
