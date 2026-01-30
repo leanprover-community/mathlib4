@@ -3,9 +3,10 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Mac Malone
 -/
-import Mathlib.Init
-import Lean.Elab.Declaration
-import Lean.Elab.Notation
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Declaration
 
 /-!
 # Suppressing compilation to executable code in a file or in a section
@@ -22,6 +23,8 @@ sure that they work properly.
 Note that `suppress_compilation` does not work with `notation3`. You need to prefix such a notation
 declaration with `unsuppress_compilation` if `suppress_compilation` is active.
 -/
+
+public meta section
 
 open Lean Parser Elab Command
 
@@ -60,9 +63,9 @@ them with `unsuppress_compilation`. -/
 def expandSuppressCompilationNotation : Macro := fun
 | `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
     $(prec?)? $(name?)? $(prio?)? $items* => $v) => do
-  let defn ← expandNotation <| ← `($[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
-    $(prec?)? $(name?)? $(prio?)? $items* => $v)
-  `(unsuppress_compilation in $(⟨defn⟩):command)
+  `(unsuppress_compilation in
+    $[$doc?:docComment]? $(attrs?)? $(attrKind)? notation
+      $(prec?)? $(name?)? $(prio?)? $items* => $v)
 | _ => Macro.throwUnsupported
 
 /-- Replacing `def` and `instance` by `noncomputable def` and `noncomputable instance`, designed

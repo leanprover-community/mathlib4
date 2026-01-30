@@ -3,17 +3,19 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Module.Hom
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs  -- shake: keep (`example` dependency)
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
 # Centroid homomorphisms
 
-Let `A` be a (non unital, non associative) algebra. The centroid of `A` is the set of linear maps
+Let `A` be a (nonunital, non-associative) algebra. The centroid of `A` is the set of linear maps
 `T` on `A` such that `T` commutes with left and right multiplication, that is to say, for all `a`
 and `b` in `A`,
 $$
@@ -42,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -220,10 +224,8 @@ instance : Add (CentroidHom α) :=
   ⟨fun f g ↦
     { (f + g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        show f (a * b) + g (a * b) = a * (f b + g b)
         simp [map_mul_left, mul_add]
       map_mul_right' := fun a b ↦ by
-        show f (a * b) + g (a * b) = (f a + g a) * b
         simp [map_mul_right, add_mul] }⟩
 
 instance : Mul (CentroidHom α) :=
@@ -449,7 +451,7 @@ def centerToCentroidCenter :
       val := ⟨L z, z.prop.left_comm, z.prop.left_assoc ⟩
       property := by
         rw [Subsemiring.mem_center_iff]
-        intros g
+        intro g
         ext a
         exact map_mul_left g (↑z) a }
   map_zero' := by
@@ -492,8 +494,6 @@ lemma _root_.NonUnitalNonAssocSemiring.mem_center_iff (a : α) :
     constructor
     case comm => exact (congr($hc.symm ·))
     case left_assoc => simpa [e1] using (map_mul_right T · ·)
-    case mid_assoc => exact fun b c ↦ by simpa [e1 c, e2 b] using
-      (map_mul_right T b c).symm.trans <| map_mul_left T b c
     case right_assoc => simpa [e2] using (map_mul_left T · ·)
 
 end NonUnitalNonAssocSemiring
@@ -523,7 +523,7 @@ variable [NonAssocSemiring α]
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
     invFun := fun T ↦
-      ⟨T 1, by refine ⟨?_, ?_, ?_, ?_⟩; all_goals simp [← map_mul_left, ← map_mul_right]⟩
+      ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
     left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
     right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
@@ -540,20 +540,16 @@ instance : Neg (CentroidHom α) :=
   ⟨fun f ↦
     { (-f : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change -f (a * b) = a * (-f b)
         simp [map_mul_left]
       map_mul_right' := fun a b ↦ by
-        change -f (a * b) = (-f a) * b
         simp [map_mul_right] }⟩
 
 instance : Sub (CentroidHom α) :=
   ⟨fun f g ↦
     { (f - g : α →+ α) with
       map_mul_left' := fun a b ↦ by
-        change (⇑f - ⇑g) (a * b) = a * (⇑f - ⇑g) b
         simp [map_mul_left, mul_sub]
       map_mul_right' := fun a b ↦ by
-        change (⇑f - ⇑g) (a * b) = ((⇑f - ⇑g) a) * b
         simp [map_mul_right, sub_mul] }⟩
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
@@ -607,7 +603,7 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=

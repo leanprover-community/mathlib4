@@ -3,20 +3,24 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Smooth
-import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.CategoryTheory.Limits.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import Mathlib.AlgebraicGeometry.Morphisms.FormallyUnramified
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
 
-# Etale morphisms
+# Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if it is smooth of relative dimension zero. We
 also define the category of schemes étale over `X`.
 
 -/
+
+@[expose] public section
 
 universe t u
 
@@ -41,15 +45,15 @@ instance : IsStableUnderBaseChange @IsEtale :=
 
 open RingHom in
 instance (priority := 900) [IsEtale f] : FormallyUnramified f where
-  formallyUnramified_of_affine_subset U V e := by
-    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE (↑U) (↑V) e).hom :=
-      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _ inferInstance ..
+  formallyUnramified_appLE {U} hU {V} hV e := by
+    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE U V e).hom :=
+      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _
+        inferInstance ⟨U, hU⟩ ⟨V, hV⟩ _
     have : Locally RingHom.FormallyUnramified (f.appLE U V e).hom := by
       apply locally_of_locally _ this
       intro R S _ _ f hf
       algebraize [f]
       rw [RingHom.FormallyUnramified]
-      have : Algebra.IsStandardSmoothOfRelativeDimension 0 R S := hf
       infer_instance
     rwa [← RingHom.locally_iff_of_localizationSpanTarget
       FormallyUnramified.respectsIso FormallyUnramified.ofLocalizationSpanTarget]
@@ -60,7 +64,7 @@ instance : MorphismProperty.HasOfPostcompProperty
   intro X Y f ⟨hft, hfu⟩
   exact inferInstanceAs <| IsEtale (pullback.diagonal f)
 
-/-- If `f ≫ g` is etale and `g` unramified, then `f` is étale. -/
+/-- If `f ≫ g` is étale and `g` unramified, then `f` is étale. -/
 lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsEtale (f ≫ g)] [LocallyOfFiniteType g]
     [FormallyUnramified g] : IsEtale f :=
   of_postcomp _ (W' := @LocallyOfFiniteType ⊓ @FormallyUnramified) f g ⟨‹_›, ‹_›⟩ ‹_›

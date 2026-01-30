@@ -3,9 +3,11 @@ Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Finite.Set
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Finite.Set
 
 /-!
 # Ends
@@ -13,6 +15,8 @@ import Mathlib.Data.Finite.Set
 This file contains a definition of the ends of a simple graph, as sections of the inverse system
 assigning, to each finite set of vertices, the connected components of its complement.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -109,8 +113,6 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
 
 theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
 
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by

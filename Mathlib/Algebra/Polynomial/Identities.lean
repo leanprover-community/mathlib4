@@ -3,15 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Ring
 
 /-!
 # Theory of univariate polynomials
 
 The main def is `Polynomial.binomExpansion`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -48,6 +52,7 @@ def powAddExpansion {R : Type*} [CommSemiring R] (x y : R) :
 
 variable [CommRing R]
 
+set_option backward.privateInPublic true in
 private def polyBinomAux1 (x y : R) (e : ℕ) (a : R) :
     { k : R // a * (x + y) ^ e = a * (x ^ e + e * x ^ (e - 1) * y + k * y ^ 2) } := by
   exists (powAddExpansion x y e).val
@@ -60,6 +65,7 @@ private theorem poly_binom_aux2 (f : R[X]) (x y : R) :
   unfold eval; rw [eval₂_eq_sum]; congr with (n z)
   apply (polyBinomAux1 x y _ _).property
 
+set_option backward.privateInPublic true in
 private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
     f.eval (x + y) =
       ((f.sum fun e a => a * x ^ e) + f.sum fun e a => a * e * x ^ (e - 1) * y) +
@@ -67,6 +73,8 @@ private theorem poly_binom_aux3 (f : R[X]) (x y : R) :
   rw [poly_binom_aux2]
   simp [left_distrib, sum_add, mul_assoc]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A polynomial `f` evaluated at `x + y` can be expressed as
 the evaluation of `f` at `x`, plus `y` times the (polynomial) derivative of `f` at `x`,
 plus some element `k : R` times `y^2`.

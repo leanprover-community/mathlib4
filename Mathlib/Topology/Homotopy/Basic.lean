@@ -3,10 +3,12 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Homotopy between functions
@@ -51,6 +53,8 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 
 - [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -202,7 +206,7 @@ instance : Inhabited (Homotopy (ContinuousMap.id X) (ContinuousMap.id X)) :=
 @[simps]
 def symm {f₀ f₁ : C(X, Y)} (F : Homotopy f₀ f₁) : Homotopy f₁ f₀ where
   toFun x := F (σ x.1, x.2)
-  map_zero_left := by norm_num
+  map_zero_left := by simp
   map_one_left := by norm_num
 
 @[simp]
@@ -220,13 +224,10 @@ homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 -/
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
-  continuous_toFun := by
-    refine
-      continuous_if_le (by fun_prop) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn ?_
-    rintro x hx
-    norm_num [hx]
+  continuous_toFun :=
+    continuous_if_le (by fun_prop) continuous_const
+      (F.continuous.comp (by fun_prop)).continuousOn
+      (G.continuous.comp (by fun_prop)).continuousOn (fun x hx ↦ by norm_num [hx])
   map_zero_left x := by norm_num
   map_one_left x := by norm_num
 
@@ -269,24 +270,22 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : Homotopy f₀ f₁) (h₀ : f₀ =
   map_zero_left := by simp [← h₀]
   map_one_left := by simp [← h₁]
 
-/-- Composition of a `Homotopy g₀ g₁` and `f : C(X, Y)` as a homotopy between `g₀.comp f` and
-`g₁.comp f`. -/
-@[simps!]
-def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y)) :
-    Homotopy (g₀.comp f) (g₁.comp f) where
-  toContinuousMap := G.comp (.prodMap (.id _) f)
-  map_zero_left _ := G.map_zero_left _
-  map_one_left _ := G.map_one_left _
-
-/-- If we have a `Homotopy f₀ f₁` and a `Homotopy g₀ g₁`, then we can compose them and get a
+/-- If we have a `Homotopy g₀ g₁` and a `Homotopy f₀ f₁`, then we can compose them and get a
 `Homotopy (g₀.comp f₀) (g₁.comp f₁)`.
 -/
 @[simps]
-def hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
+def comp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (F : Homotopy f₀ f₁) :
     Homotopy (g₀.comp f₀) (g₁.comp f₁) where
   toFun x := G (x.1, F x)
   map_zero_left := by simp
   map_one_left := by simp
+
+/-- Composition of a `Homotopy g₀ g₁` and `f : C(X, Y)` as a homotopy between `g₀.comp f` and
+`g₁.comp f`. -/
+@[simps!]
+def compContinuousMap {g₀ g₁ : C(Y, Z)} (G : Homotopy g₀ g₁) (f : C(X, Y)) :
+    Homotopy (g₀.comp f) (g₁.comp f) :=
+  G.comp (.refl f)
 
 /-- Let `F` be a homotopy between `f₀ : C(X, Y)` and `f₁ : C(X, Y)`. Let `G` be a homotopy between
 `g₀ : C(X, Z)` and `g₁ : C(X, Z)`. Then `F.prodMk G` is the homotopy between `f₀.prodMk g₀` and
@@ -302,7 +301,7 @@ nonrec def prodMk {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(X, Z)} (F : Homotopy f₀
 `f₁.prodMap g₁` that sends `(t, x, z)` to `(F (t, x), G (t, z))`. -/
 def prodMap {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Z, Z')} (F : Homotopy f₀ f₁) (G : Homotopy g₀ g₁) :
     Homotopy (f₀.prodMap g₀) (f₁.prodMap g₁) :=
-  .prodMk (.hcomp (.refl .fst) F) (.hcomp (.refl .snd) G)
+  .prodMk (F.compContinuousMap .fst) (G.compContinuousMap .snd)
 
 /-- Given a family of homotopies `F i` between `f₀ i : C(X, Y i)` and `f₁ i : C(X, Y i)`, returns a
 homotopy between `ContinuousMap.pi f₀` and `ContinuousMap.pi f₁`. -/
@@ -318,7 +317,7 @@ returns a homotopy between `ContinuousMap.piMap f₀` and `ContinuousMap.piMap f
 protected def piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, TopologicalSpace (Y i)]
     {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopy (f₀ i) (f₁ i)) :
     Homotopy (.piMap f₀) (.piMap f₁) :=
-  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
+  .pi fun i ↦ (F i).compContinuousMap <| .eval i
 
 end Homotopy
 
@@ -342,9 +341,9 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : Homotopic f g) : Homotopic g f :=
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : Homotopic f g) (h₁ : Homotopic g h) : Homotopic f h :=
   h₀.map2 Homotopy.trans h₁
 
-theorem hcomp {f₀ f₁ : C(X, Y)} {g₀ g₁ : C(Y, Z)} (h₀ : Homotopic f₀ f₁) (h₁ : Homotopic g₀ g₁) :
+theorem comp {g₀ g₁ : C(Y, Z)} {f₀ f₁ : C(X, Y)} (hg : Homotopic g₀ g₁) (hf : Homotopic f₀ f₁) :
     Homotopic (g₀.comp f₀) (g₁.comp f₁) :=
-  h₀.map2 Homotopy.hcomp h₁
+  hg.map2 Homotopy.comp hf
 
 theorem equivalence : Equivalence (@Homotopic X Y _ _) :=
   ⟨refl, by apply symm, by apply trans⟩
@@ -369,7 +368,7 @@ homotopic to `ContinuousMap.pi f₁`. -/
 protected theorem piMap {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] {f₀ f₁ : ∀ i, C(X i, Y i)} (F : ∀ i, Homotopic (f₀ i) (f₁ i)) :
     Homotopic (.piMap f₀) (.piMap f₁) :=
-  .pi fun i ↦ .hcomp (.refl <| .eval i) (F i)
+  .pi fun i ↦ .comp (F i) (.refl <| .eval i)
 
 end Homotopic
 
@@ -378,10 +377,9 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
+  -- TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
-  prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
+  prop' : ∀ t, P ⟨fun x ↦ toFun (t, x), continuous_toFun.comp (by fun_prop)⟩
 
 namespace HomotopyWith
 
@@ -512,7 +510,6 @@ namespace HomotopicWith
 
 variable {P : C(X, Y) → Prop}
 
--- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) (hf : P f) : HomotopicWith f f P :=
   ⟨HomotopyWith.refl f hf⟩
 
@@ -614,7 +611,7 @@ def cast {f₀ f₁ g₀ g₁ : C(X, Y)} (F : HomotopyRel f₀ f₁ S) (h₀ : f
 /-- Post-compose a homotopy relative to a set by a continuous function. -/
 @[simps!] def compContinuousMap {f₀ f₁ : C(X, Y)} (F : f₀.HomotopyRel f₁ S) (g : C(Y, Z)) :
     (g.comp f₀).HomotopyRel (g.comp f₁) S where
-  toHomotopy := F.hcomp (ContinuousMap.Homotopy.refl g)
+  toHomotopy := .comp (.refl g) F.toHomotopy
   prop' t x hx := congr_arg g (F.prop t x hx)
 
 end HomotopyRel
@@ -633,7 +630,6 @@ variable {S : Set X}
 protected theorem homotopic {f₀ f₁ : C(X, Y)} (h : HomotopicRel f₀ f₁ S) : Homotopic f₀ f₁ :=
   h.map fun F ↦ F.1
 
--- Porting note: removed @[refl]
 theorem refl (f : C(X, Y)) : HomotopicRel f f S :=
   ⟨HomotopyRel.refl f S⟩
 

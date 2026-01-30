@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Ring.Parity
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Canonically ordered rings and semirings.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -18,19 +22,6 @@ open Function
 universe u
 
 variable {R : Type u}
-
-set_option linter.deprecated false in
-/-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
-iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
-not the integers or other ordered groups. -/
-@[deprecated "Use `[OrderedCommSemiring R] [CanonicallyOrderedAdd R] [NoZeroDivisors R]` instead."
-  (since := "2025-01-13")]
-structure CanonicallyOrderedCommSemiring (R : Type*) extends CanonicallyOrderedAddCommMonoid R,
-    CommSemiring R where
-  /-- No zero divisors. -/
-  protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : R}, a * b = 0 → a = 0 ∨ b = 0
-
-attribute [nolint docBlame] CanonicallyOrderedCommSemiring.toCommSemiring
 
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
@@ -67,14 +58,11 @@ variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 
 -- TODO: make it an instance
 lemma toIsOrderedMonoid : IsOrderedMonoid R where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 -- TODO: make it an instance
 lemma toIsOrderedRing : IsOrderedRing R where
-  zero_le_one := zero_le _
   add_le_add_left _ _ := add_le_add_left
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 @[simp]
 protected theorem mul_pos [NoZeroDivisors R] {a b : R} :
@@ -101,21 +89,21 @@ section Sub
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 namespace AddLECancellable
 
 protected theorem mul_tsub {a b c : R}
     (h : AddLECancellable (a * c)) : a * (b - c) = a * b - a * c := by
   obtain (hbc | hcb) := total_of (· ≤ ·) b c
-  · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_left' hbc a)]
+  · rw [tsub_eq_zero_iff_le.2 hbc, mul_zero, tsub_eq_zero_iff_le.2 (mul_le_mul_right hbc a)]
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 
 protected theorem tsub_mul [MulRightMono R] {a b c : R}
     (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   obtain (hab | hba) := total_of (· ≤ ·) a b
-  · rw [tsub_eq_zero_iff_le.2 hab, zero_mul, tsub_eq_zero_iff_le.2 (mul_le_mul_right' hab c)]
+  · rw [tsub_eq_zero_iff_le.2 hab, zero_mul, tsub_eq_zero_iff_le.2 (mul_le_mul_left hab c)]
   · apply h.eq_tsub_of_add_eq
     rw [← add_mul, tsub_add_cancel_of_le hba]
 
@@ -135,7 +123,7 @@ end NonUnitalNonAssocSemiring
 section NonAssocSemiring
 
 variable [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)]
 
 lemma mul_tsub_one [AddLeftReflectLE R] (a b : R) :
     a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
@@ -147,7 +135,7 @@ end NonAssocSemiring
 section CommSemiring
 
 variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
-  [Sub R] [OrderedSub R] [IsTotal R (· ≤ ·)] [AddLeftReflectLE R]
+  [Sub R] [OrderedSub R] [@Std.Total R (· ≤ ·)] [AddLeftReflectLE R]
 
 /-- The `tsub` version of `mul_self_sub_mul_self`. Notably, this holds for `Nat` and `NNReal`. -/
 theorem mul_self_tsub_mul_self (a b : R) :

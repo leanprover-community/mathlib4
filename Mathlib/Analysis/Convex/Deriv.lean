@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, David Loeffler
 -/
-import Mathlib.Analysis.Convex.Slope
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Convexity of functions and derivatives
@@ -18,6 +20,8 @@ Here we relate convexity of functions `ℝ → ℝ` to properties of their deriv
 * `ConvexOn.monotoneOn_deriv`: if a function is convex and differentiable, then its derivative is
   monotone.
 -/
+
+public section
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
 open scoped Topology NNReal
@@ -74,10 +78,9 @@ theorem StrictMonoOn.exists_slope_lt_deriv_aux {x y : ℝ} {f : ℝ → ℝ} (hf
 theorem StrictMonoOn.exists_slope_lt_deriv {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, (f y - f x) / (y - x) < deriv f a := by
-  by_cases h : ∀ w ∈ Ioo x y, deriv f w ≠ 0
+  by_cases! h : ∀ w ∈ Ioo x y, deriv f w ≠ 0
   · apply StrictMonoOn.exists_slope_lt_deriv_aux hf hxy hf'_mono h
-  · push_neg at h
-    rcases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
+  · rcases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
     obtain ⟨a, ⟨hxa, haw⟩, ha⟩ : ∃ a ∈ Ioo x w, (f w - f x) / (w - x) < deriv f a := by
       apply StrictMonoOn.exists_slope_lt_deriv_aux _ hxw _ _
       · exact hf.mono (Icc_subset_Icc le_rfl hwy.le)
@@ -118,10 +121,9 @@ theorem StrictMonoOn.exists_deriv_lt_slope_aux {x y : ℝ} {f : ℝ → ℝ} (hf
 theorem StrictMonoOn.exists_deriv_lt_slope {x y : ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f (Icc x y))
     (hxy : x < y) (hf'_mono : StrictMonoOn (deriv f) (Ioo x y)) :
     ∃ a ∈ Ioo x y, deriv f a < (f y - f x) / (y - x) := by
-  by_cases h : ∀ w ∈ Ioo x y, deriv f w ≠ 0
+  by_cases! h : ∀ w ∈ Ioo x y, deriv f w ≠ 0
   · apply StrictMonoOn.exists_deriv_lt_slope_aux hf hxy hf'_mono h
-  · push_neg at h
-    rcases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
+  · rcases h with ⟨w, ⟨hxw, hwy⟩, hw⟩
     obtain ⟨a, ⟨hxa, haw⟩, ha⟩ : ∃ a ∈ Ioo x w, deriv f a < (f w - f x) / (w - x) := by
       apply StrictMonoOn.exists_deriv_lt_slope_aux _ hxw _ _
       · exact hf.mono (Icc_subset_Icc le_rfl hwy.le)
@@ -433,7 +435,7 @@ lemma hasDerivWithinAt_sInf_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo x b ⊆ {y | y ∈ S ∧ x < y} := fun z hz ↦ ⟨habs ⟨hxab.1.trans hz.1, hz.2⟩, hz.1⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[>] x) (𝓝 (sInf (slope f x '' Ioo x b))) :=
     ((monotoneOn_slope_gt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_right
-      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.2) ((bddBelow_slope_lt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sInf (slope f x '' Ioo x b) = sInf (slope f x '' {y ∈ S | x < y}) by rwa [← this]
   apply (monotoneOn_slope_gt hfc (habs hxab)).csInf_eq_of_subset_of_forall_exists_le
     (bddBelow_slope_lt_of_mem_interior hfc hxs) h ?_
@@ -451,7 +453,7 @@ lemma hasDerivWithinAt_sSup_slope_of_mem_interior (hfc : ConvexOn ℝ S f) (hxs 
   have h : Ioo a x ⊆ {y | y ∈ S ∧ y < x} := fun z hz ↦ ⟨habs ⟨hz.1, hz.2.trans hxab.2⟩, hz.2⟩
   have h_Ioo : Tendsto (slope f x) (𝓝[<] x) (𝓝 (sSup (slope f x '' Ioo a x))) :=
     ((monotoneOn_slope_lt hfc (habs hxab)).mono h).tendsto_nhdsWithin_Ioo_left
-      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_subset _ h))
+      (by simpa using hxab.1) ((bddAbove_slope_gt_of_mem_interior hfc hxs).mono (image_mono h))
   suffices sSup (slope f x '' Ioo a x) = sSup (slope f x '' {y ∈ S | y < x}) by rwa [← this]
   apply (monotoneOn_slope_lt hfc (habs hxab)).csSup_eq_of_subset_of_forall_exists_le
     (bddAbove_slope_gt_of_mem_interior hfc hxs) h ?_
@@ -565,9 +567,6 @@ lemma rightDeriv_le_slope (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S)
     derivWithin f (Ioi x) x ≤ slope f x y :=
   le_slope_of_hasDerivWithinAt_Ioi hfc hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias right_deriv_le_slope := rightDeriv_le_slope
-
 lemma rightDeriv_le_slope_of_mem_interior (hfc : ConvexOn ℝ S f)
     {y : ℝ} (hxs : x ∈ interior S) (hys : y ∈ S) (hxy : x < y) :
     derivWithin f (Ioi x) x ≤ slope f x y :=
@@ -627,9 +626,6 @@ lemma slope_le_leftDeriv (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) 
     (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y ≤ derivWithin f (Iio y) y :=
   hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias slope_le_left_deriv := slope_le_leftDeriv
 
 lemma slope_le_leftDeriv_of_mem_interior (hfc : ConvexOn ℝ S f)
     (hys : x ∈ S) (hxs : y ∈ interior S) (hxy : x < y) :
@@ -749,9 +745,6 @@ lemma rightDeriv_lt_slope (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y 
     derivWithin f (Ioi x) x < slope f x y :=
   hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias right_deriv_lt_slope := rightDeriv_lt_slope
-
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `x ∈ S`, then the
 slope of any secant line with left endpoint at `x` is strictly greater than the derivative of `f`
 within `S` at `x`.
@@ -791,7 +784,7 @@ section right
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable at `y ∈ S`, then the slope of any
 secant line with right endpoint at `y` is strictly less than the left derivative at `y`. -/
 lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
-    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y)  :
+    (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y < f' := by
   obtain ⟨u, hxu, huy⟩ := exists_between hxy
   have hu : u ∈ S := hfc.1.ordConnected.out hx hy ⟨hxu.le, huy.le⟩
@@ -800,12 +793,9 @@ lemma slope_lt_of_hasDerivWithinAt_Iio (hfc : StrictConvexOn ℝ S f)
   exact this.trans_le <| hfc.convexOn.slope_le_of_hasDerivWithinAt_Iio hu hy huy hf'
 
 lemma slope_lt_leftDeriv (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
-    (hfd : DifferentiableWithinAt ℝ f (Iio y) y)  :
+    (hfd : DifferentiableWithinAt ℝ f (Iio y) y) :
     slope f x y < derivWithin f (Iio y) y :=
   hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias slope_lt_left_deriv := slope_lt_leftDeriv
 
 /-- If `f : ℝ → ℝ` is strictly convex on `S` and differentiable within `S` at `y ∈ S`, then the
 slope of any secant line with right endpoint at `y` is strictly less than the derivative of `f`
@@ -881,9 +871,6 @@ lemma slope_le_rightDeriv (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
     slope f x y ≤ derivWithin f (Ioi x) x :=
   hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias slope_le_right_deriv := slope_le_rightDeriv
-
 lemma slope_le_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : HasDerivWithinAt f f' S x) :
     slope f x y ≤ f' :=
@@ -923,9 +910,6 @@ lemma leftDeriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S)
     derivWithin f (Iio y) y ≤ slope f x y :=
   hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias left_deriv_le_slope := leftDeriv_le_slope
-
 lemma le_slope_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
     f' ≤ slope f x y :=
@@ -964,8 +948,7 @@ lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn �
 antitone (monotone decreasing) on `S`. -/
 theorem antitoneOn_deriv (hfc : ConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     AntitoneOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.monotoneOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end ConcaveOn
 
@@ -986,9 +969,6 @@ lemma slope_lt_rightDeriv (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y
     (hfd : DifferentiableWithinAt ℝ f (Ioi x) x) :
     slope f x y < derivWithin f (Ioi x) x :=
   hfc.slope_lt_of_hasDerivWithinAt_Ioi hx hy hxy hfd.hasDerivWithinAt
-
-@[deprecated (since := "2025-01-26")]
-alias slope_lt_right_deriv := slope_lt_rightDeriv
 
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConcaveOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hfd : HasDerivWithinAt f f' S x) :
@@ -1030,9 +1010,6 @@ lemma leftDeriv_lt_slope (hfc : StrictConcaveOn ℝ S f) (hx : x ∈ S) (hy : y 
     derivWithin f (Iio y) y < slope f x y :=
   hfc.lt_slope_of_hasDerivWithinAt_Iio hx hy hxy hfd.hasDerivWithinAt
 
-@[deprecated (since := "2025-01-26")]
-alias left_deriv_lt_slope := leftDeriv_lt_slope
-
 lemma lt_slope_of_hasDerivWithinAt (hfc : StrictConcaveOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
     f' < slope f x y := by
@@ -1067,8 +1044,7 @@ lemma strictAntiOn_derivWithin (hfc : StrictConcaveOn ℝ S f) (hfd : Differenti
 
 theorem strictAntiOn_deriv (hfc : StrictConcaveOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     StrictAntiOn (deriv f) S := by
-  simpa only [Pi.neg_def, deriv.neg, neg_neg] using
-    (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
+  simpa using (hfc.neg.strictMonoOn_deriv (fun x hx ↦ (hfd x hx).neg)).neg
 
 end StrictConcaveOn
 

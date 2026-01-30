@@ -3,14 +3,16 @@ Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 -/
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.CategoryTheory.Abelian.Ext
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Local cohomology.
@@ -44,6 +46,8 @@ local cohomology, local cohomology modules
     * the characterization as the cohomology of a Cech-like complex
 * Establish long exact sequence(s) in local cohomology
 -/
+
+@[expose] public section
 
 
 open Opposite
@@ -132,11 +136,7 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 /-- The full subcategory of all ideals with radical containing `J` -/
 def SelfLERadical (J : Ideal R) : Type u :=
   ObjectProperty.FullSubcategory fun J' : Ideal R => J ≤ J'.radical
-
--- The `Category` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance (J : Ideal R) : Category (SelfLERadical J) :=
-  (ObjectProperty.FullSubcategory.category _)
+deriving Category
 
 instance SelfLERadical.inhabited (J : Ideal R) : Inhabited (SelfLERadical J) where
   default := ⟨J, Ideal.le_radical⟩
@@ -200,13 +200,13 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
 variable {I J K : Ideal R}
 
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
-radical containing `J`. This uses noetherianness. -/
+radical containing `J`. This uses Noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
-    apply (config := { allowSynthFailures := true }) zigzag_isConnected
+    apply +allowSynthFailures zigzag_isConnected
     · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fg J'.2 (isNoetherian_def.mp hR _)
-      exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
+      exact ⟨CostructuredArrow.mk (⟨⟨⟨hk⟩⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
     · intro j1 j2
       apply Relation.ReflTransGen.single
       -- The inclusions `J^n1 ≤ J'` and `J^n2 ≤ J'` always form a triangle, based on
@@ -222,7 +222,7 @@ def isoSelfLERadical (J : Ideal.{u} R) [IsNoetherian.{u, u} R R] (i : ℕ) :
     localCohomology.ofSelfLERadical.{u} J i ≅ localCohomology.{u} J i :=
   (localCohomology.isoOfFinal.{u, u, 0} (idealPowersToSelfLERadical.{u} J)
     (selfLERadicalDiagram.{u} J) i).symm ≪≫
-      HasColimit.isoOfNatIso.{0,0,u+1,u+1} (Iso.refl.{u+1,u+1} _)
+      HasColimit.isoOfNatIso.{0, 0, u + 1, u + 1} (Iso.refl.{u + 1, u + 1} _)
 
 /-- Casting from the full subcategory of ideals with radical containing `J` to the full
 subcategory of ideals with radical containing `K`. -/

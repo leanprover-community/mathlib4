@@ -3,16 +3,17 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions
@@ -30,12 +31,13 @@ of `•` belong elsewhere.
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
-open Pointwise
-
-open Function
+open Function Module
+open scoped Pointwise
 
 namespace MulAction
 
@@ -87,12 +89,12 @@ theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
     a ∈ fixedPoints M α ↔ Fintype.card (orbit M a) = 1 := by
   simp only [← subsingleton_orbit_iff_mem_fixedPoints, le_antisymm_iff,
     Fintype.card_le_one_iff_subsingleton, Nat.add_one_le_iff, Fintype.card_pos_iff,
-    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, orbit_nonempty, implies_true]
+    Set.subsingleton_coe, iff_self_and, Set.nonempty_coe_sort, nonempty_orbit, implies_true]
 
 @[to_additive instDecidablePredMemSetFixedByAddOfDecidableEq]
 instance (m : M) [DecidableEq β] :
     DecidablePred fun b : β => b ∈ MulAction.fixedBy β m := fun b ↦ by
-  simp only [MulAction.mem_fixedBy, Equiv.Perm.smul_def]
+  simp only [MulAction.mem_fixedBy]
   infer_instance
 
 end FixedPoints
@@ -101,7 +103,7 @@ end MulAction
 
 /-- `smul` by a `k : M` over a group is injective, if `k` is not a zero divisor.
 The general theory of such `k` is elaborated by `IsSMulRegular`.
-The typeclass that restricts all terms of `M` to have this property is `NoZeroSMulDivisors`. -/
+The typeclass that restricts all terms of `M` to have this property is `Module.IsTorsionFree`. -/
 theorem smul_cancel_of_non_zero_divisor {M G : Type*} [Monoid M] [AddGroup G]
     [DistribMulAction M G] (k : M) (h : ∀ x : G, k • x = 0 → x = 0) {a b : G} (h' : k • a = k • b) :
     a = b := by
@@ -120,7 +122,7 @@ variable {G α β : Type*} [Group G] [MulAction G α] [MulAction G β]
   apply Subsingleton.elim ..
 
 /-- If a group acts nontrivially, then the type is nontrivial -/
-@[to_additive "If a subgroup acts nontrivially, then the type is nontrivial."]
+@[to_additive /-- If a subgroup acts nontrivially, then the type is nontrivial. -/]
 theorem nontrivial_of_fixedPoints_ne_univ (h : fixedPoints G α ≠ .univ) :
     Nontrivial α :=
   (subsingleton_or_nontrivial α).resolve_left fun _ ↦ h fixedPoints_of_subsingleton
@@ -134,10 +136,10 @@ theorem smul_orbit (g : G) (a : α) : g • orbit G a = orbit G a :=
   (smul_orbit_subset g a).antisymm <|
     calc
       orbit G a = g • g⁻¹ • orbit G a := (smul_inv_smul _ _).symm
-      _ ⊆ g • orbit G a := Set.image_subset _ (smul_orbit_subset _ _)
+      _ ⊆ g • orbit G a := Set.image_mono (smul_orbit_subset _ _)
 
 /-- The action of a group on an orbit is transitive. -/
-@[to_additive "The action of an additive group on an orbit is transitive."]
+@[to_additive /-- The action of an additive group on an orbit is transitive. -/]
 instance (a : α) : IsPretransitive G (orbit G a) :=
   ⟨by
     rintro ⟨_, g, rfl⟩ ⟨_, h, rfl⟩
@@ -157,11 +159,11 @@ lemma orbitRel_subgroupOf (H K : Subgroup G) :
   simp_rw [orbitRel_apply]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
     simpa using gp
   · rcases h with ⟨⟨gv, gp⟩, rfl⟩
-    simp only [Submonoid.mk_smul]
+    simp only
     simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
     refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
     · exact gp.2
@@ -172,8 +174,8 @@ variable (G α)
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
-@[to_additive "An additive action is pretransitive if and only if the quotient by
-`AddAction.orbitRel` is a subsingleton."]
+@[to_additive /-- An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton. -/]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -184,8 +186,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
-@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
-quotient has exactly one element."]
+@[to_additive /-- If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element. -/]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
@@ -233,9 +235,16 @@ lemma orbitRel_le_snd :
 end Orbit
 
 section Stabilizer
-variable (G)
 
-variable {G}
+@[to_additive (attr := simp)]
+lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
+    stabilizer G a = ⊥ :=
+  Subgroup.eq_bot_iff_forall _ |>.mpr fun _ hg ↦ IsCancelSMul.eq_one_of_smul hg
+
+@[to_additive]
+lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
+    IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
@@ -318,7 +327,7 @@ theorem stabilizerEquivStabilizer_symm_apply (hg : b = g +ᵥ b) (x : stabilizer
   simp [stabilizerEquivStabilizer]
 
 theorem stabilizerEquivStabilizer_trans
-    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g):
+    (hg : b = g +ᵥ a) (hh : c = h +ᵥ b) (hk : c = k +ᵥ a) (H : k = h + g) :
     (stabilizerEquivStabilizer hg).trans (stabilizerEquivStabilizer hh)
       = stabilizerEquivStabilizer hk := by
   ext; simp [stabilizerEquivStabilizer_apply, H]
@@ -362,7 +371,7 @@ variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/
 @[to_additive
-  "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
+  /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions. -/]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor
@@ -383,8 +392,7 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
 end MulAction
 
 section
-
-variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :

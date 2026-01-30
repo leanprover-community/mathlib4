@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 /-!
 # Inverse function theorem - the easy half
@@ -20,6 +22,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, inverse function
 -/
+
+public section
 
 
 universe u v
@@ -54,13 +58,13 @@ theorem HasStrictDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : �
     HasStrictDerivAt g f'⁻¹ a :=
   (hf.hasStrictFDerivAt_equiv hf').of_local_left_inverse hg hfg
 
-/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
+/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a` in the strict sense, then `f.symm` has the derivative `f'⁻¹`
 at `a` in the strict sense.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.hasStrictDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f' : 𝕜}
+theorem OpenPartialHomeomorph.hasStrictDerivAt_symm (f : OpenPartialHomeomorph 𝕜 𝕜) {a f' : 𝕜}
     (ha : a ∈ f.target) (hf' : f' ≠ 0) (htff' : HasStrictDerivAt f f' (f.symm a)) :
     HasStrictDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
@@ -75,19 +79,20 @@ theorem HasDerivAt.of_local_left_inverse {f g : 𝕜 → 𝕜} {f' a : 𝕜} (hg
     HasDerivAt g f'⁻¹ a :=
   (hf.hasFDerivAt_equiv hf').of_local_left_inverse hg hfg
 
-/-- If `f` is a partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
+/-- If `f` is an open partial homeomorphism defined on a neighbourhood of `f.symm a`, and `f` has a
 nonzero derivative `f'` at `f.symm a`, then `f.symm` has the derivative `f'⁻¹` at `a`.
 
 This is one of the easy parts of the inverse function theorem: it assumes that we already have
 an inverse function. -/
-theorem PartialHomeomorph.hasDerivAt_symm (f : PartialHomeomorph 𝕜 𝕜) {a f' : 𝕜} (ha : a ∈ f.target)
-    (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) : HasDerivAt f.symm f'⁻¹ a :=
+theorem OpenPartialHomeomorph.hasDerivAt_symm (f : OpenPartialHomeomorph 𝕜 𝕜) {a f' : 𝕜}
+    (ha : a ∈ f.target) (hf' : f' ≠ 0) (htff' : HasDerivAt f f' (f.symm a)) :
+    HasDerivAt f.symm f'⁻¹ a :=
   htff'.of_local_left_inverse (f.symm.continuousAt ha) hf' (f.eventually_right_inverse ha)
 
 theorem HasDerivWithinAt.eventually_ne (h : HasDerivWithinAt f f' s x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[s \ {x}] x, f z ≠ c :=
   h.hasFDerivWithinAt.eventually_ne
-    ⟨‖f'‖⁻¹, fun z => by field_simp [norm_smul, mt norm_eq_zero.1 hf']⟩
+    ⟨‖f'‖⁻¹, fun z => by simp [norm_smul]; field_simp; rfl⟩
 
 theorem HasDerivAt.eventually_ne (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
     ∀ᶠ z in 𝓝[≠] x, f z ≠ c := by
@@ -98,17 +103,13 @@ theorem HasDerivAt.tendsto_nhdsNE (h : HasDerivAt f f' x) (hf' : f' ≠ 0) :
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ h.continuousAt.continuousWithinAt
     (h.eventually_ne hf')
 
-@[deprecated (since := "2025-03-02")]
-alias HasDerivAt.tendsto_punctured_nhds := HasDerivAt.tendsto_nhdsNE
-
 /-- If a function is equal to a constant at a set of points that accumulates to `x` in `s`,
 then its derivative within `s` at `x` equals zero,
 either because it has derivative zero or because it isn't differentiable at this point. -/
 theorem derivWithin_zero_of_frequently_const {c} (h : ∃ᶠ y in 𝓝[s \ {x}] x, f y = c) :
     derivWithin f s x = 0 := by
   by_cases hf : DifferentiableWithinAt 𝕜 f s x
-  · contrapose h
-    rw [not_frequently]
+  · contrapose! h
     exact hf.hasDerivWithinAt.eventually_ne h
   · exact derivWithin_zero_of_not_differentiableWithinAt hf
 

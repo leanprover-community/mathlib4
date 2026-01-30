@@ -3,10 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Action.End
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Ideal.Over
 
 /-!
 
@@ -15,6 +18,8 @@ import Mathlib.RingTheory.LocalRing.RingHom.Basic
 We prove basic properties of the residue field of a local ring.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*}
 
@@ -127,8 +132,8 @@ noncomputable def mapEquiv (f : R ≃+* S) :
   invFun := map (f.symm : S →+* R)
   left_inv x := by simp only [map_map, RingEquiv.symm_comp, map_id, RingHom.id_apply]
   right_inv x := by simp only [map_map, RingEquiv.comp_symm, map_id, RingHom.id_apply]
-  map_mul' := RingHom.map_mul _
-  map_add' := RingHom.map_add _
+  map_mul' := map_mul _
+  map_add' := map_add _
 
 @[simp]
 theorem mapEquiv.symm (f : R ≃+* S) : (mapEquiv f).symm = mapEquiv f.symm :=
@@ -170,21 +175,31 @@ section FiniteDimensional
 
 variable [Algebra R S] [IsLocalHom (algebraMap R S)]
 
-noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
-  (ResidueField.map (algebraMap R S)).toAlgebra
+instance : (maximalIdeal S).LiesOver (maximalIdeal R) :=
+  ⟨(((local_hom_TFAE (algebraMap R S)).out 0 4 rfl rfl).mp inferInstance).symm⟩
 
-instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
-  IsScalarTower.of_algebraMap_eq (congrFun rfl)
+instance : Algebra (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.algebraOfLiesOver _ _
+
+@[simp] lemma algebraMap_residue (x : R) :
+    algebraMap (ResidueField R) (ResidueField S) (residue R x) =
+      residue S (algebraMap R S x) := rfl
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
+    IsScalarTower R₀ (ResidueField R) (ResidueField S) :=
+  Ideal.Quotient.isScalarTower_of_liesOver ..
+
+instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S]
+    [IsLocalRing R₀] [IsLocalHom (algebraMap R₀ R)] [IsLocalHom (algebraMap R₀ S)] :
+    IsScalarTower (ResidueField R₀) (ResidueField R) (ResidueField S) := by
+  refine .of_algebraMap_eq fun x ↦ ?_
+  obtain ⟨x, rfl⟩ := residue_surjective x
+  simp [← IsScalarTower.algebraMap_apply]
 
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
   .of_restrictScalars_finite R _ _
 
-@[deprecated (since := "2025-01-12")]
-alias finiteDimensional_of_noetherian := finite_of_module_finite
-
--- We want to be able to refer to `hfin`
-set_option linter.unusedVariables false in
 lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
     Finite (ResidueField S) := Module.finite_of_finite (ResidueField R)
 
@@ -192,80 +207,9 @@ end FiniteDimensional
 
 end ResidueField
 
-theorem isLocalHom_residue : IsLocalHom (IsLocalRing.residue R) := by
-  constructor
-  intro a ha
-  by_contra h
-  rw [residue_def, Ideal.Quotient.eq_zero_iff_mem.mpr ((IsLocalRing.mem_maximalIdeal _).mpr h)]
-    at ha
-  exact ha.ne_zero rfl
+@[deprecated (since := "2025-10-06")]
+  alias isLocalHom_residue := instIsLocalHomResidueFieldRingHomResidue
 
 end
 
 end IsLocalRing
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ker_residue := IsLocalRing.ker_residue
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.residue_eq_zero_iff := IsLocalRing.residue_eq_zero_iff
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.residue_ne_zero_iff_isUnit := IsLocalRing.residue_ne_zero_iff_isUnit
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.residue_surjective := IsLocalRing.residue_surjective
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.algebraMap_eq := IsLocalRing.ResidueField.algebraMap_eq
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.lift := IsLocalRing.ResidueField.lift
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.lift_comp_residue := IsLocalRing.ResidueField.lift_comp_residue
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.lift_residue_apply := IsLocalRing.ResidueField.lift_residue_apply
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map := IsLocalRing.ResidueField.map
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_id := IsLocalRing.ResidueField.map_id
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_comp := IsLocalRing.ResidueField.map_comp
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_comp_residue := IsLocalRing.ResidueField.map_comp_residue
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_residue := IsLocalRing.ResidueField.map_residue
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_id_apply := IsLocalRing.ResidueField.map_id_apply
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.map_map := IsLocalRing.ResidueField.map_map
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.mapEquiv := IsLocalRing.ResidueField.mapEquiv
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.mapEquiv.symm := IsLocalRing.ResidueField.mapEquiv.symm
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.mapEquiv_trans := IsLocalRing.ResidueField.mapEquiv_trans
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.mapEquiv_refl := IsLocalRing.ResidueField.mapEquiv_refl
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.mapAut := IsLocalRing.ResidueField.mapAut
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.residue_smul := IsLocalRing.ResidueField.residue_smul
-
-@[deprecated (since := "2024-11-11")]
-alias LocalRing.ResidueField.finite_of_finite := IsLocalRing.ResidueField.finite_of_finite
