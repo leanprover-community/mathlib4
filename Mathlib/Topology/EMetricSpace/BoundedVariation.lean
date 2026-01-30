@@ -690,28 +690,8 @@ theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [Topolog
 /-- A bounded variation function has a limit on its right within a set. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace E] [TopologicalSpace α]
     [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
-    ∃ l, Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l) := by
-  rcases Filter.eq_or_neBot (𝓝[s ∩ Ioi x] x) with h | h
-  · simp only [h, tendsto_bot, exists_const_iff, and_true]
-    exact ⟨f x⟩
-  apply CompleteSpace.complete
-  apply EMetric.cauchy_iff.2 ⟨by simp [neBot_iff.mp h], fun ε εpos ↦ ?_⟩
-  obtain ⟨y, hy, y_mem⟩ : ∃ y, eVariationOn f (s ∩ Ioc x y) < ε ∧ y ∈ s ∩ Ioi x := by
-    have := (hf.tendsto_eVariationOn_Ioc_zero x).mono_left
-      (nhdsWithin_mono (s := s ∩ Ioi x) _ inter_subset_left)
-    exact (((tendsto_order.1 this).2 ε εpos).and self_mem_nhdsWithin).exists
-  refine ⟨f '' (s ∩ Ioc x y), ?_, ?_⟩
-  · simp only [mem_map]
-    apply mem_of_superset ?_ (subset_preimage_image _ _)
-    exact inter_mem_nhdsWithin_inter self_mem_nhdsWithin (Ioc_mem_nhdsGT y_mem.2)
-  · rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
-    exact (eVariationOn.edist_le _ ha hb).trans_lt hy
-
-/-- A bounded variation function has a limit on its left within a set. -/
-theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [TopologicalSpace α]
-    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
-    ∃ l, Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l) :=
-  hf.ofDual.exists_tendsto_right (toDual x)
+    ∃ l, Tendsto f (𝓝[s ∩ Ioi x] x) (𝓝 l) :=
+  hf.ofDual.exists_tendsto_left (toDual x)
 
 /-- A bounded variation function tends to its left-limit on its left. -/
 theorem _root_.BoundedVariationOn.tendsto_leftLim [CompleteSpace E] [TopologicalSpace α]
@@ -825,20 +805,10 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Iic_zero
 theorem _root_.BoundedVariationOn.exists_tendsto_atTop [CompleteSpace E] [hE : Nonempty E]
     {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
     ∃ l, Tendsto f (𝓟 s ⊓ atTop) (𝓝 l) := by
-  rcases Filter.eq_or_neBot (𝓟 s ⊓ atTop) with h | h
-  · simp only [h, tendsto_bot, exists_const_iff, and_true]
-    exact ⟨hE.some⟩
-  apply CompleteSpace.complete
-  apply EMetric.cauchy_iff.2 ⟨by simp [neBot_iff.mp h], fun ε εpos ↦ ?_⟩
-  obtain ⟨y, hy, y_mem⟩ : ∃ y, eVariationOn f (s ∩ Ici y) < ε ∧ y ∈ s := by
-    have : s ∈ 𝓟 s ⊓ atTop := mem_inf_of_left (by simp)
-    exact (((tendsto_order.1 hf.tendsto_eVariationOn_Ici_zero).2 ε εpos).and this).exists
-  refine ⟨f '' (s ∩ Ici y), ?_, ?_⟩
-  · simp only [mem_map]
-    apply mem_of_superset ?_ (subset_preimage_image _ _)
-    exact inter_mem_inf (by simp) (Ici_mem_atTop _)
-  · rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
-    exact (eVariationOn.edist_le _ ha hb).trans_lt hy
+  rcases eq_empty_or_nonempty s with rfl | hs
+  · simp
+  · exact hf.exists_tendsto_left_of_filter _
+      (fun y hy ↦ inter_mem_inf (mem_principal_self s) (Ici_mem_atTop _)) hs
 
 /-- A bounded variation function has a limit at `-∞`. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_atBot [CompleteSpace E] [hE : Nonempty E]
