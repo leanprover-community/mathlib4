@@ -1101,6 +1101,12 @@ def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where a
 @[simps]
 def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app _ f := f.1
 
+/-- Any component `f : Y ⟶ X` of the sieve `S` induces a natural transformation from `yoneda.obj Y`
+to the presheaf induced by `S`. -/
+@[simps]
+def toFunctor (S : Sieve X) {Y : C} (f : Y ⟶ X) (hf : S f) : yoneda.obj Y ⟶ S.functor where
+  app Z g := ⟨g ≫ f, S.downward_closed hf g⟩
+
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
   rfl
