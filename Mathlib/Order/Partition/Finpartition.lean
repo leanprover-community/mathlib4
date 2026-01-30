@@ -454,6 +454,24 @@ theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧
   rintro rfl
   rw [sdiff_eq_bot_iff]
 
+/-- Extend a partition of `a` to a partition of `b` when `a ≤ b`, by adding `b \ a` as a `part`. -/
+def extendOfLE (hab : a ≤ b) : Finpartition b :=
+  if hr : b \ a = ⊥ then (le_antisymm (sdiff_eq_bot_iff.mp hr) hab) ▸ P
+    else P.extend hr disjoint_sdiff_self_right (sup_sdiff_cancel_right hab)
+
+lemma parts_extendOfLE_of_eq (hab : a = b) : (P.extendOfLE hab.le).parts = P.parts := by
+  subst hab; simp [extendOfLE]
+
+lemma parts_extendOfLE_of_lt (hab : a < b) :
+    (P.extendOfLE (le_of_lt hab)).parts = insert (b \ a) P.parts := by
+  simp [extendOfLE, sdiff_eq_bot_iff.not.mpr (not_le_of_gt hab)]
+
+lemma parts_subset_extendOfLE (hab : a ≤ b) : P.parts ⊆ (P.extendOfLE hab).parts := by
+  unfold extendOfLE
+  split_ifs with hr
+  · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
+  · exact Finset.subset_insert _ _
+
 end GeneralizedBooleanAlgebra
 
 end Finpartition

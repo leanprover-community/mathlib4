@@ -55,31 +55,6 @@ of `s ↦ ‖μ s‖ₑ`.
 
 namespace Finpartition
 
-/-- Extend a partition of `a` to a partition of `b` when `a ≤ b`, by adding `b \ a` as a `part`. -/
-def extendOfLE {α : Type*} [GeneralizedBooleanAlgebra α]
-    [DecidableEq α] {a b : α} (P : Finpartition a) (hab : a ≤ b) : Finpartition b :=
-  if hr : b \ a = ⊥ then (le_antisymm (sdiff_eq_bot_iff.mp hr) hab) ▸ P
-    else P.extend hr disjoint_sdiff_self_right (sup_sdiff_cancel_right hab)
-
--- We don't need the following here but perhaps it is good to add this with the new def?
-lemma parts_extendOfLE_of_eq {α : Type*} [GeneralizedBooleanAlgebra α]
-    [DecidableEq α] {a : α} (P : Finpartition a) :
-    (P.extendOfLE (a := a) (b := a) (by rfl)).parts = P.parts := by simp [extendOfLE]
-
--- We don't need the following here but perhaps it is good to add this with the new def?
-lemma parts_extendOfLE_of_lt {α : Type*} [GeneralizedBooleanAlgebra α]
-    [DecidableEq α] {a b : α} (P : Finpartition a) (hab : a < b) :
-    (P.extendOfLE (le_of_lt hab)).parts = insert (b \ a) P.parts := by
-  simp [extendOfLE, Std.not_le_of_gt hab]
-
-lemma parts_subset_extendOfLE {α : Type*} [GeneralizedBooleanAlgebra α]
-    [DecidableEq α] {a b : α} (P : Finpartition a) (hab : a ≤ b) :
-    P.parts ⊆ (P.extendOfLE hab).parts := by
-  simp only [Finpartition.extendOfLE]
-  split_ifs with hr
-  · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
-  · exact Finset.subset_insert _ _
-
 -- Despite being similar to `Finpartition.bind` this is much more convenient. Better name?
 /-- Merge a family of partitions of pairwise disjoint elements into a partition of their sup.
 Similar to `Finpartition.bind`, but combines partitions of different elements rather than
