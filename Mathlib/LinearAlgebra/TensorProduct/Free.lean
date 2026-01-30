@@ -19,33 +19,31 @@ This file contains lemmas about tensoring with free modules.
 
 open TensorProduct
 
+variable {R : Type*} (A : Type*) {V : Type*}
+    [CommSemiring A] [CommSemiring R] [Algebra R A]
+    [AddCommGroup V] [Module R V]
+    {ι : Type*} (b : Module.Basis ι R V)
+
 /--
-The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from an
+The `A`-algebra isomorphism `A ⊗[R] V ≃ₗ[A] (ι → A)` coming from an
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
-noncomputable def LinearEquiv.chooseBasis_piScalarRight
-    (R : Type*) (M : Type*) (V : Type*)
-    [CommSemiring M] [CommSemiring R] [Nontrivial R] [Algebra R M]
-    [AddCommGroup V] [Module R V] [Module.Finite R V]
-    {ι : Type*} (b : Module.Basis ι R V) :
-    (M ⊗[R] V) ≃ₗ[M] (ι → M) :=
+noncomputable def Algebra.TensorProduct.equiv_pi_of_finite_basis
+    [Finite ι] :
+    (A ⊗[R] V) ≃ₗ[A] (ι → A) :=
   open Classical in
-  have : Finite ι := Module.Finite.finite_basis b
   have : Fintype ι := .ofFinite _
-  (LinearEquiv.baseChange R M _ _ b.equivFun) ≪≫ₗ
-    TensorProduct.piScalarRight R M M ι
+  (b.equivFun.baseChange R A _ _) ≪≫ₗ
+    TensorProduct.piScalarRight R A A ι
 
 /--
-The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from an
+The `A`-algebra isomorphism `A ⊗[R] V ≃ₗ[A] (ι →₀ A)` coming from an
 `ι`-indexed basis of a free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
-noncomputable def LinearEquiv.chooseBasis_finsuppScalarRight (R : Type*) (M : Type*) (V : Type*)
-    [CommSemiring M] [CommSemiring R] [Algebra R M]
-    [AddCommGroup V] [Module R V]
-    {ι : Type*} (b : Module.Basis ι R V) :
-    (M ⊗[R] V) ≃ₗ[M] (ι →₀ M) :=
+noncomputable def Algebra.TensorProduct.equiv_finsupp_of_basis :
+    (A ⊗[R] V) ≃ₗ[A] (ι →₀ A) :=
   open Classical in
-  (LinearEquiv.baseChange R M _ _ b.repr) ≪≫ₗ
-    TensorProduct.finsuppScalarRight R M M ι
+  (b.repr.baseChange R A _ _) ≪≫ₗ
+    TensorProduct.finsuppScalarRight R A A ι
