@@ -29,8 +29,7 @@ The `A`-algebra isomorphism `A ⊗[R] V ≃ₗ[A] (ι → A)` coming from an
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
-noncomputable def Algebra.TensorProduct.equiv_pi_of_finite_basis
-    [Finite ι] :
+noncomputable def Algebra.TensorProduct.equiv_pi_of_finite_basis [Finite ι] :
     (A ⊗[R] V) ≃ₗ[A] (ι → A) :=
   open Classical in
   have : Fintype ι := .ofFinite _
