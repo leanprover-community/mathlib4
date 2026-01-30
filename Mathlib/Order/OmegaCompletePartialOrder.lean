@@ -447,10 +447,7 @@ lemma ωScottContinuous.prodMk
     {f : α → β} (hf : ωScottContinuous f)
     {g : α → γ} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ (f x, g x) :=
-  ScottContinuousOn.prodMk (fun a b hab ↦ by
-    use pair a b hab
-    exact range_pair a b hab
-  ) hf hg
+  ScottContinuousOn.prodMk (fun a b hab ↦ ⟨pair a b hab, range_pair a b hab⟩) hf hg
 
 @[fun_prop]
 lemma ωScottContinuous_fst : ωScottContinuous (Prod.fst : α × β → α) :=
@@ -734,8 +731,7 @@ instance : OmegaCompletePartialOrder (α →𝒄 β) :=
 
 @[fun_prop]
 lemma ωScottContinuous_apply
-    {f : α → β →𝒄 γ} (hf : ωScottContinuous f)
-    {g : α → β} (hg : ωScottContinuous g) :
+    {f : α → β →𝒄 γ} (hf : ωScottContinuous f) {g : α → β} (hg : ωScottContinuous g) :
     ωScottContinuous fun x ↦ f x (g x) := by
   apply ωScottContinuous.of_monotone_map_ωSup ⟨?_, fun c ↦ ?_⟩
   · intro x y hxy
@@ -745,9 +741,7 @@ lemma ωScottContinuous_apply
     apply le_antisymm
     · apply ωSup_le
       intro i
-      dsimp only [
-        map_coe, OrderHom.apply_coe, OrderHom.coe_mk, Function.comp_apply,
-        toMono_coe, OrderHomClass.coe_coe, Function.eval]
+      dsimp
       rw [(f (c i)).continuous]
       apply ωSup_le
       intro j
@@ -766,8 +760,7 @@ namespace Prod
 
 /-- The application of continuous functions as a continuous function. -/
 @[simps!]
-def apply : (α →𝒄 β) × α →𝒄 β :=
-  ofFun (fun f ↦ f.1 f.2)
+def apply : (α →𝒄 β) × α →𝒄 β := ofFun (fun f ↦ f.1 f.2)
 
 end Prod
 

@@ -5,10 +5,10 @@ Authors: Christopher Hoskin
 -/
 module
 
-import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.ToFun
+import Mathlib.Order.Bounds.Image
 
 /-!
 # Scott continuity
@@ -78,31 +78,22 @@ lemma ScottContinuousOn.id : ScottContinuousOn D (id : α → α) := by simp [Sc
 @[fun_prop, to_fun (attr := simp)]
 lemma ScottContinuousOn.const (x : β) : ScottContinuousOn D (Function.const α x) := by
   rintro s _ ⟨a⟩ _ _ _
-  simp only [
-    IsLUB, IsLeast, upperBounds, Function.const_apply, mem_image, exists_and_right,
-    and_imp, forall_exists_index, forall_apply_eq_imp_iff₂, mem_setOf_eq, le_refl,
-    implies_true, lowerBounds, true_and]
-  grind
+  simp [IsLUB, IsLeast, upperBounds, lowerBounds]; grind
 
 @[fun_prop, to_fun]
-theorem ScottContinuousOn.comp
-    {g : β → γ} {D'}
-    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)
-    (hD' : Set.MapsTo (f '' ·) D D')
-    (hg : ScottContinuousOn D' g)
-    (hf : ScottContinuousOn D f) :
+theorem ScottContinuousOn.comp {g : β → γ} {D'}
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D) (hD' : Set.MapsTo (f '' ·) D D')
+    (hg : ScottContinuousOn D' g) (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) := by
   intro d hd₁ hd₂ hd₃ a ha
-  have hd₁' : f '' d ∈ D' := hD' hd₁
   have hd₂' : (f '' d).Nonempty := ⟨f hd₂.choose, by grind⟩
   have hd₃' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
     have := hf.monotone
-    simp only [
-      Monotone, DirectedOn, mem_image, exists_exists_and_eq_and,
-      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂] at ⊢ this hd₃
+    simp only [Monotone, DirectedOn, mem_image, exists_exists_and_eq_and, forall_exists_index,
+      and_imp, forall_apply_eq_imp_iff₂] at ⊢ this hd₃
     grind
   rw [Set.image_comp]
-  refine hg hd₁' hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
+  exact hg (hD' hd₁) hd₂' hd₃' (hf hd₁ hd₂ hd₃ ha)
 
 @[fun_prop, to_fun]
 theorem ScottContinuousOn.image_comp
@@ -176,22 +167,15 @@ lemma ScottContinuous.const (x : β) : ScottContinuous (Function.const α x) := 
 lemma ScottContinuous.comp {g : β → γ}
     (hf : ScottContinuous f) (hg : ScottContinuous g) :
     ScottContinuous (g ∘ f) := by
-  intro d hd₁ hd₂ a ha
-  have hd₁' : (f '' d).Nonempty := ⟨f hd₁.choose, by grind⟩
-  have hd₂' : DirectedOn (fun x1 x2 ↦ x1 ≤ x2) (f '' d) := by
-    have := hf.monotone
-    simp only [Monotone, DirectedOn] at ⊢ this hd₂
-    grind
-  rw [Set.image_comp]
-  exact hg hd₁' hd₂' (hf hd₁ hd₂ ha)
+  rw [← scottContinuousOn_univ] at ⊢ hf hg
+  exact ScottContinuousOn.comp (by simp) (by simp [MapsTo]) hg hf
 
 @[fun_prop]
 lemma ScottContinuous.prodMk {g : α → γ}
     (hf : ScottContinuous f) (hg : ScottContinuous g) :
     ScottContinuous fun x => (f x, g x) := by
-  simp only [← scottContinuousOn_univ] at ⊢ hf hg
-  apply ScottContinuousOn.prodMk ?_ hf hg
-  grind
+  rw [← scottContinuousOn_univ] at ⊢ hf hg
+  exact ScottContinuousOn.prodMk (by grind) hf hg
 
 @[simp, fun_prop]
 lemma ScottContinuous.fst : ScottContinuous (Prod.fst : α × β → α) := by
