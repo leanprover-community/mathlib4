@@ -87,6 +87,14 @@ lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) �
       _ ≤ μ x + ε := by
         gcongr
 
+instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
+  PseudoEMetricSpace.toPseudoMetricSpaceOfDist
+    (fun s t ↦ μ.real ((s : Set α) ∆ t)) (fun s t ↦ ENNReal.toReal_nonneg)
+    (fun s t ↦ by simp [Measure.real, MeasuredSets.edist_def])
+
+lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
+    dist s t = μ.real ((s : Set α) ∆ t) := rfl
+
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetRing C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
@@ -177,9 +185,37 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure 
   · rw [h]
     apply le_antisymm (generateFrom_mono subset_supClosure)
     apply generateFrom_le (fun t ht ↦ ?_)
-    rcases ht with ⟨P, hP, PC, rfl⟩
-    rw [Finset.sup'_eq_sup, Finset.sup_id_set_eq_sUnion]
-    exact MeasurableSet.sUnion (Finset.countable_toSet P)
-      (fun s hs ↦ measurableSet_generateFrom (PC hs))
+    apply measurableSet_generateFrom_of_mem_supClosure ht
+
+
+lemma EMetric.dense_iff {α : Type*} [PseudoEMetricSpace α] {s : Set α} :
+    Dense s ↔ ∀ (x : α), ∀ r > 0, (EMetric.ball x r ∩ s).Nonempty :=
+  forall_congr' fun x => by
+    simp only [EMetric.mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, EMetric.mem_ball']
+
+lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
+    {C : Set (Set α)} (hC : IsSetRing C)
+    (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C) :
+    Dense ((SetLike.coe : MeasuredSets μ → Set α)⁻¹' C) := by
+  rw [EMetric.dense_iff]
+  rintro s ε εpos
+  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
+  have t_meas : MeasurableSet t := by rw [h]; exact measurableSet_generateFrom tC
+  refine ⟨⟨t, t_meas⟩, ?_, tC⟩
+  simpa [MeasuredSets.edist_def] using ht
+
+lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
+    {C : Set (Set α)} (hC : IsSetSemiring C)
+    (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C) :
+    Dense ((SetLike.coe : MeasuredSets μ → Set α)⁻¹' (supClosure C)) := by
+  rw [EMetric.dense_iff]
+  rintro s ε εpos
+  rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
+    with ⟨t, tC, ht⟩
+  have t_meas : MeasurableSet t := by
+    rw [h]
+    apply measurableSet_generateFrom_of_mem_supClosure ht
+  refine ⟨⟨t, t_meas⟩, ?_, tC⟩
+  simpa [MeasuredSets.edist_def] using ht
 
 end MeasureTheory
