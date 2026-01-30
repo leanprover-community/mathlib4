@@ -290,7 +290,7 @@ equivalences `e` such that the linear map `e - id` has rank at most 1.
 See also `LinearEquiv.mem_dilatransvections_iff_finrank`. -/
 theorem mem_dilatransvections_iff_rank {K : Type*} [DivisionRing K] [Module K V] {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      Module.rank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
+      Module.rank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   simp only [dilatransvections]
   constructor
   · simp only [Set.mem_setOf_eq]
@@ -334,7 +334,7 @@ theorem mem_dilatransvections_iff_finrank
     {K : Type*} [DivisionRing K] [Module K V] [Module.Finite K V]
     {e : V ≃ₗ[K] V} :
     e ∈ dilatransvections K V ↔
-      finrank K (range ((e : V →ₗ[K] V)- LinearMap.id (R := K))) ≤ 1 := by
+      finrank K (range ((e : V →ₗ[K] V) - LinearMap.id (R := K))) ≤ 1 := by
   rw [mem_dilatransvections_iff_rank, finrank, ← one_toNat,
     toNat_le_iff_le_of_lt_aleph0 (rank_lt_aleph0 K _) one_lt_aleph0]
 

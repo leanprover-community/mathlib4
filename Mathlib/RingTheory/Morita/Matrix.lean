@@ -91,7 +91,7 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
     IsScalarTower R (Matrix ι ι R) M :=
   letI := Module.compHom M (Matrix.scalar (α := R) ι)
   { smul_assoc r m x := show _ = Matrix.scalar ι r • (m • x) by
-      rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul]}
+      rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
 
 /-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
   induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
