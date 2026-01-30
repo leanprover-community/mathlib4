@@ -43,8 +43,8 @@ instance : CoeFun (Polygon P n) (fun _ => Fin n → P) where
 def NondegenerateEdges [NeZero n] (poly : Polygon P n) : Prop :=
   ∀ i : Fin n, poly i ≠ poly (i + 1)
 
-theorem NondegenerateEdges.n_ge_2 [NeZero n] {poly : Polygon P n}
-    (h : poly.NondegenerateEdges) : n ≥ 2 := by
+theorem NondegenerateEdges.two_le [NeZero n] {poly : Polygon P n}
+    (h : poly.NondegenerateEdges) : 2 ≤ n := by
   by_contra hlt
   push_neg at hlt
   have hn : 1 ≤ n := Nat.one_le_iff_ne_zero.mpr (NeZero.ne n)
@@ -85,8 +85,8 @@ theorem NondegenerateVertices.nondegenerateEdges [Nontrivial R] {poly : Polygon 
   intro i
   simpa using (h i).injective.ne (by decide : (0 : Fin 3) ≠ 1)
 
-theorem NondegenerateVertices.n_ge_3 [Nontrivial R] {poly : Polygon P n}
-    (h : poly.NondegenerateVertices R) : n ≥ 3 := by
+theorem NondegenerateVertices.three_le [Nontrivial R] {poly : Polygon P n}
+    (h : poly.NondegenerateVertices R) : 3 ≤ n := by
   unfold NondegenerateVertices at h
   specialize h 0
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, zero_add] at h
