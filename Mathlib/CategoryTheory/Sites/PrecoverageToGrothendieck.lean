@@ -5,7 +5,7 @@ Authors: Adam Topaz, Benoît Guillemet
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
@@ -112,7 +112,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
     | of X S hS =>
       exact fun _ _ => H S hS
     | top =>
-      simp [Presieve.isSheafFor_top_sieve P]
+      simp [Presieve.isSheafFor_top P]
     | pullback X S hS _ f ih =>
       intro Y f
       rw [← S.pullback_comp]
@@ -162,6 +162,47 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       apply hx
       simp
 
+lemma mem_toGrothendieck_iff_of_isStableUnderComposition [IsStableUnderComposition J]
+    [IsStableUnderBaseChange J] [J.HasPullbacks] [HasIsos J] {X : C} {S : Sieve X} :
+    S ∈ J.toGrothendieck X ↔ ∃ R ∈ J X, R ≤ S := by
+  refine ⟨fun hS ↦ ?_, fun ⟨R, hR, hle⟩ ↦ ?_⟩
+  · induction hS with
+    | of X R hR =>
+      use R, hR
+      exact Sieve.le_generate R
+    | top X =>
+      exact ⟨Presieve.singleton (𝟙 X), mem_coverings_of_isIso (𝟙 X), by simp⟩
+    | pullback X S hS Y f h =>
+      obtain ⟨R, hR, hle⟩ := h
+      have : R.HasPullbacks f := J.hasPullbacks_of_mem f hR
+      refine ⟨R.pullbackArrows f, pullbackArrows_mem f hR, ?_⟩
+      rw [← Sieve.generate_le_iff, Sieve.pullbackArrows_comm]
+      apply Sieve.pullback_monotone
+      rwa [Sieve.generate_le_iff]
+    | transitive X S T hS hT hleS hleT =>
+      obtain ⟨R, hR, hle⟩ := hleS
+      rw [mem_iff_exists_zeroHypercover] at hR
+      obtain ⟨E, rfl⟩ := hR
+      replace hleT (i : E.I₀) : ∃ (F : J.ZeroHypercover (E.X i)),
+          F.presieve₀ ≤ (Sieve.pullback (E.f i) T).arrows := by
+        obtain ⟨R', hR', hle'⟩ := hleT (hle _ ⟨i⟩)
+        rw [mem_iff_exists_zeroHypercover] at hR'
+        obtain ⟨F, rfl⟩ := hR'
+        use F
+      choose F hle' using hleT
+      refine ⟨(E.bind F).presieve₀, (E.bind F).mem₀, ?_⟩
+      rw [Presieve.ofArrows_le_iff]
+      intro i
+      exact hle' _ _ ⟨i.snd⟩
+  · rw [← Sieve.generate_le_iff] at hle
+    apply GrothendieckTopology.superset_covering _ hle
+    exact generate_mem_toGrothendieck hR
+
+lemma toGrothendieck_toPretopology_eq_toGrothendieck [IsStableUnderComposition J]
+    [IsStableUnderBaseChange J] [Limits.HasPullbacks C] [HasIsos J] :
+    J.toPretopology.toGrothendieck = J.toGrothendieck := by
+  ext
+  exact J.mem_toGrothendieck_iff_of_isStableUnderComposition.symm
 end Precoverage
 
 @[grind .]

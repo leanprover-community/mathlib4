@@ -324,8 +324,10 @@ protected theorem antisymm : ∀ (_ : r ↪r s) [Std.Antisymm s], Std.Antisymm r
 protected theorem isTrans : ∀ (_ : r ↪r s) [IsTrans β s], IsTrans α r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ _ h₁ h₂ => o.1 (H _ _ _ (o.2 h₁) (o.2 h₂))⟩
 
-protected theorem isTotal : ∀ (_ : r ↪r s) [IsTotal β s], IsTotal α r
+protected theorem total : ∀ (_ : r ↪r s) [Std.Total s], Std.Total r
   | ⟨_, o⟩, ⟨H⟩ => ⟨fun _ _ => (or_congr o o).1 (H _ _)⟩
+
+@[deprecated (since := "2026-01-09")] protected alias isTotal := RelEmbedding.total
 
 protected theorem isPreorder : ∀ (_ : r ↪r s) [IsPreorder β s], IsPreorder α r
   | f, _ => { f.stdRefl, f.isTrans with }
@@ -334,7 +336,7 @@ protected theorem isPartialOrder : ∀ (_ : r ↪r s) [IsPartialOrder β s], IsP
   | f, _ => { f.isPreorder, f.antisymm with }
 
 protected theorem isLinearOrder : ∀ (_ : r ↪r s) [IsLinearOrder β s], IsLinearOrder α r
-  | f, _ => { f.isPartialOrder, f.isTotal with }
+  | f, _ => { f.isPartialOrder, f.total with }
 
 protected theorem isStrictOrder : ∀ (_ : r ↪r s) [IsStrictOrder β s], IsStrictOrder α r
   | f, _ => { f.irrefl, f.isTrans with }
