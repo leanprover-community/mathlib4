@@ -162,10 +162,10 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
       ∑ i ∈ Finset.range (T s).1, dist (f ((T s).2 i).1) (f ((T s).2 i).2) +
       (∑ b ∈ u_coe s, dist (f b.1) (f b.2)) := by
     rw [Finset.sum_eq_sum_range_intervalGapsWithin _ rfl (fun x y ↦ dist (f x) (f y)),
-      Finset.sum_range_succ, add_right_comm, ← Finset.sum_add_distrib]
+        Finset.sum_range_succ, add_right_comm, ← Finset.sum_add_distrib]
     grw [← Finset.sum_le_sum (fun _ _ ↦ dist_triangle _ _ _),
-      ← dist_le_range_sum_dist,
-      ← dist_triangle]
+        ← dist_le_range_sum_dist,
+        ← dist_triangle]
     simp [T]
   exact le_of_tendsto_of_tendsto' (by simp) sum_tendsto dist_le_sum
 
