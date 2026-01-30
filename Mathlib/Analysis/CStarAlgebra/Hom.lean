@@ -17,7 +17,7 @@ Here we collect properties of C⋆-algebra homomorphisms.
   is isometric.
 -/
 
-@[expose] public section
+public section
 
 open CStarAlgebra in
 lemma IsSelfAdjoint.map_spectrum_real {F A B : Type*} [CStarAlgebra A] [CStarAlgebra B]

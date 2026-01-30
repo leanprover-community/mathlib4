@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.Prod
 # `Filter.atTop` and `Filter.atBot` filters on products
 -/
 
-@[expose] public section
+public section
 
 variable {ι ι' α β γ : Type*}
 

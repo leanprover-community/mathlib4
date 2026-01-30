@@ -18,7 +18,7 @@ function indeed satisfies the following recurrences:
 - `Bₙ = bₙ * Bₙ₋₁ + aₙ * Bₙ₋₂`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace GenContFract

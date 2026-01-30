@@ -51,13 +51,13 @@ set_option backward.privateInPublic.warn false in
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
   Adjunction.mk' {
     homEquiv := typeToCatObjectsAdjHomEquiv
-    unit := { app:= fun _  ↦ Discrete.mk }
+    unit := { app := fun _ ↦ Discrete.mk }
     counit := {
       app C := (typeToCatObjectsAdjCounitApp C).toCatHom
-      naturality := fun _ _ _  ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
+      naturality := fun _ _ _ ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            cat_disch ) } }
+            cat_disch) } }
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
@@ -72,13 +72,13 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
     homEquiv := fun C X ↦ (ConnectedComponents.typeToCatHomEquiv C X).trans
       (Functor.equivCatHom C (Discrete X))
     unit :=
-      { app:= fun C ↦ Functor.toCatHom <|
+      { app := fun C ↦ Functor.toCatHom <|
         ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
     counit := {
         app := fun X => ConnectedComponents.liftFunctor _ (𝟙 typeToCat.obj X).toFunctor
         naturality := fun _ _ _ =>
           funext (fun xcc => by
-            obtain ⟨x,h⟩ := Quotient.exists_rep xcc
+            obtain ⟨x, h⟩ := Quotient.exists_rep xcc
             cat_disch) }
     homEquiv_counit := fun {C X G} => by
       funext cc

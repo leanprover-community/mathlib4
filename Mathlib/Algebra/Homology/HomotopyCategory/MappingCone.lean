@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Tactic.Linarith
 
 /-! # The mapping cone of a morphism of cochain complexes
 
@@ -597,7 +598,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
       inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
     rw [← H.map_id]
     congr 1
-    simp [ext_from_iff  _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm]
   inv_hom_id := by
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,

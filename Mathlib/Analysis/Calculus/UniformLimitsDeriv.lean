@@ -94,7 +94,7 @@ continuous, then you can avoid the mean value theorem and much of the work aroun
 uniform convergence, limits of derivatives
 -/
 
-@[expose] public section
+public section
 
 
 open Filter

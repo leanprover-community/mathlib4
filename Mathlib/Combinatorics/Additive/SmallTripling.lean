@@ -25,7 +25,7 @@ In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement tha
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
 
-@[expose] public section
+public section
 
 open Fin MulOpposite
 open List hiding tail

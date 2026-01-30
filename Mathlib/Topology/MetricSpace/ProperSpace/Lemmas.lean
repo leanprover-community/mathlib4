@@ -23,7 +23,7 @@ This file contains some more involved results about `ProperSpace`s.
 * `Metric.exists_isLocalMin_mem_ball`
 -/
 
-@[expose] public section
+public section
 
 open Set Metric
 

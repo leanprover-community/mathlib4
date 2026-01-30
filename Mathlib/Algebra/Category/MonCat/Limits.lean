@@ -160,7 +160,7 @@ noncomputable instance forget_createsLimit :
   apply createsLimitOfReflectsIso
   intro c t
   have : Small.{u} (Functor.sections (F ⋙ forget MonCat)) :=
-    (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk {cone := c, isLimit := t})
+    (Types.hasLimit_iff_small_sections _).mp (HasLimit.mk { cone := c, isLimit := t })
   refine LiftsToLimit.mk (LiftableCone.mk
     { pt := MonCat.of (Types.Small.limitCone (F ⋙ forget MonCat)).pt,
       π := NatTrans.mk
@@ -172,7 +172,7 @@ noncomputable instance forget_createsLimit :
   refine IsLimit.ofFaithful (forget MonCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _) ?_ ?_
   · intro _
     refine ofHom
-      { toFun := (Types.Small.limitConeIsLimit.{v,u} _).lift ((forget MonCat).mapCone _),
+      { toFun := (Types.Small.limitConeIsLimit.{v, u} _).lift ((forget MonCat).mapCone _),
         map_one' := by simp; rfl, map_mul' := ?_ }
     · intro x y
       simp only [Types.Small.limitConeIsLimit_lift, Functor.comp_obj, Functor.mapCone_pt,

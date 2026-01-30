@@ -40,8 +40,7 @@ In Lean, names can end with exclamation marks (e.g. `List.get!`), so you cannot 
 `n!` in Lean, but must write `(n)!` or `n !` instead. The former is preferred, since
 Lean can confuse the `!` in `n !` as the (prefix) Boolean negation operation in some
 cases.
-For numerals the parentheses are not required, so e.g. `0!` or `1!` work fine.
-Todo: replace occurrences of `n !` with `(n)!` in Mathlib. -/
+For numerals the parentheses are not required, so e.g. `0!` or `1!` work fine. -/
 scoped notation:10000 n "!" => Nat.factorial n
 
 section Factorial

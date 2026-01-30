@@ -17,7 +17,7 @@ In this file we prove that the set of Liouville numbers form a dense `Gδ` set. 
 similar statement about irrational numbers.
 -/
 
-@[expose] public section
+public section
 
 
 open scoped Filter

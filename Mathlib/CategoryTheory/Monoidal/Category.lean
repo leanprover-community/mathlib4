@@ -357,7 +357,7 @@ def whiskerLeftIso (X : C) {Y Z : C} (f : Y ≅ Z) : X ⊗ Y ≅ X ⊗ Z where
 instance whiskerLeft_isIso (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] : IsIso (X ◁ f) :=
   (whiskerLeftIso X (asIso f)).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) [IsIso f] :
     inv (X ◁ f) = X ◁ inv f := by
   cat_disch
@@ -385,7 +385,7 @@ def whiskerRightIso {X Y : C} (f : X ≅ Y) (Z : C) : X ⊗ Z ≅ Y ⊗ Z where
 instance whiskerRight_isIso {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] : IsIso (f ▷ Z) :=
   (whiskerRightIso (asIso f) Z).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) [IsIso f] :
     inv (f ▷ Z) = inv f ▷ Z := by
   cat_disch
@@ -429,7 +429,7 @@ theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ₘ g) :=
   (asIso f ⊗ᵢ asIso g).isIso_hom
 
-@[simp]
+@[simp, push]
 theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] :
     inv (f ⊗ₘ g) = inv f ⊗ₘ inv g := by
   simp [tensorHom_def, whisker_exchange]
@@ -632,8 +632,6 @@ theorem whiskerLeft_rightUnitor_inv (X Y : C) :
 theorem leftUnitor_tensor_hom (X Y : C) :
     (λ_ (X ⊗ Y)).hom = (α_ (𝟙_ C) X Y).inv ≫ (λ_ X).hom ▷ Y := by simp
 
-@[deprecated (since := "2025-06-24")] alias leftUnitor_tensor := leftUnitor_tensor_hom
-
 @[reassoc]
 theorem leftUnitor_tensor_inv (X Y : C) :
     (λ_ (X ⊗ Y)).inv = (λ_ X).inv ▷ Y ≫ (α_ (𝟙_ C) X Y).hom := by simp
@@ -641,8 +639,6 @@ theorem leftUnitor_tensor_inv (X Y : C) :
 @[reassoc]
 theorem rightUnitor_tensor_hom (X Y : C) :
     (ρ_ (X ⊗ Y)).hom = (α_ X Y (𝟙_ C)).hom ≫ X ◁ (ρ_ Y).hom := by simp
-
-@[deprecated (since := "2025-06-24")] alias rightUnitor_tensor := rightUnitor_tensor_hom
 
 @[reassoc]
 theorem rightUnitor_tensor_inv (X Y : C) :

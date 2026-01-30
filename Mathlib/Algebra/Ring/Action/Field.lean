@@ -13,7 +13,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 # Group action on fields
 -/
 
-@[expose] public section
+public section
 
 variable {M} [Monoid M] {F} [DivisionRing F]
 

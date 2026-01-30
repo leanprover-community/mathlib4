@@ -63,7 +63,7 @@ is not differentiable on the right at that point, and similarly differentiabilit
 
 -/
 
-@[expose] public section
+public section
 
 open Set Function Filter
 open scoped Topology
