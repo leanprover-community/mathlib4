@@ -326,10 +326,6 @@ instance : OrderBot (SupBotHom α β) where
   bot_le _ _ := bot_le
 
 @[simp]
-theorem coe_sup (f g : SupBotHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
-  rfl
-
-@[simp]
 theorem coe_bot : ⇑(⊥ : SupBotHom α β) = ⊥ :=
   rfl
 
@@ -474,10 +470,6 @@ instance : SemilatticeInf (InfTopHom α β) :=
 instance : OrderTop (InfTopHom α β) where
   top := ⟨⊤, rfl⟩
   le_top _ _ := le_top
-
-@[simp]
-theorem coe_inf (f g : InfTopHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
-  rfl
 
 @[simp]
 theorem coe_top : ⇑(⊤ : InfTopHom α β) = ⊤ :=

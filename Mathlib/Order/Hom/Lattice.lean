@@ -308,10 +308,6 @@ instance [BoundedOrder β] : BoundedOrder (SupHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
 
 @[simp]
-theorem coe_sup (f g : SupHom α β) : DFunLike.coe (f ⊔ g) = f ⊔ g :=
-  rfl
-
-@[simp]
 theorem coe_bot [Bot β] : ⇑(⊥ : SupHom α β) = ⊥ :=
   rfl
 
@@ -488,10 +484,6 @@ instance [OrderTop β] : OrderTop (InfHom α β) :=
 
 instance [BoundedOrder β] : BoundedOrder (InfHom α β) :=
   BoundedOrder.lift ((↑) : _ → α → β) (fun _ _ => id) rfl rfl
-
-@[simp]
-theorem coe_inf (f g : InfHom α β) : DFunLike.coe (f ⊓ g) = f ⊓ g :=
-  rfl
 
 @[simp]
 theorem coe_bot [Bot β] : ⇑(⊥ : InfHom α β) = ⊥ :=
