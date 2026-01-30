@@ -367,16 +367,17 @@ initialize registerBuiltinAttribute {
         -- Try to interpret the lemma as an implicational `gcongr` lemma,
         -- such as `Or.imp : (a → c) → (b → d) → a ∨ b → c ∨ d`.
         -- We want to support such lemmas even if the hypotheses are given in a different order.
-        -- So, we try this for each hypothesis that has the same head constant as the conclusion.
+        -- So, we find the last hypothesis whose head matches that of the conclusion,
+        -- and move it to the end.
         let .const c _ := type.getAppFn | failure
         let rec findIdx (i : Nat) (h : i ≤ xs.size) : MetaM (Fin xs.size) :=
           match i with
           | 0 => failure
           | i + 1 => do
             if (← inferType xs[i]).getAppFn.isConstOf c then
-              return ⟨i, by grind⟩
+              return ⟨i, by lia⟩
             else
-              findIdx i (by grind)
+              findIdx i (by lia)
         let i ← findIdx xs.size xs.size.le_refl
         let type ← mkForallFVars #[xs[i]] type
         let xs' :=  xs.eraseIdx i i.isLt
