@@ -263,12 +263,8 @@ theorem comap_ker {P : Type*} [MulOneClass P] (g : N →* P) (f : G →* N) :
 the homomorphism mapped by the inverse isomorphism. -/
 @[to_additive (attr := simp)]
 lemma ker_comp_mulEquiv {G H K : Type*} [Group G] [Group H] [MulOneClass K]
-  (f : H →* K) (iso : G ≃* H) : (f.comp iso).ker = (map (iso.symm.toMonoidHom) f.ker) := by
+  (f : H →* K) (iso : G ≃* H) : (f.comp iso).ker = map (iso.symm : H →* G) f.ker := by
   rw [← comap_ker, comap_equiv_eq_map_symm]
-  rfl
-
-
-
 
 @[to_additive (attr := simp)]
 theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
