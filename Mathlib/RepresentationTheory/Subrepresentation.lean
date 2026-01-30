@@ -147,7 +147,7 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
 
 @[simp]
 lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
-  by rfl
+  .rfl
 
 /-- An order-preserving equivalence between subrepresentations of `ρ` and submodules of
 `ρ.asModule`. -/
