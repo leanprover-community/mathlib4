@@ -851,34 +851,40 @@ lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDif
     ‖fderivIntegralCurry0 f u t₀ α‖ < 1 :=
   (opNorm_fderivIntegralCurry0_le hf hu t₀ hα hC hbound).trans_lt hsmall
 
-/-- For any `x₀ ∈ u`, there exist `a > 0` and `ε > 0` such that `ball x₀ a ⊆ u` and for any
+/-- For `f` that is `C^1` at `x₀`, there exist `a > 0` and `ε > 0` such that for any
 time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α` with
-`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f u t₀ α‖ < 1`. -/
-lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E}
-    (hf : ContDiffOn ℝ 1 f u) (hu : IsOpen u) {x₀ : E} (hx₀ : x₀ ∈ u) :
-    ∃ a > 0, ∃ ε > 0, ball x₀ a ⊆ u ∧
+`range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`. -/
+lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
+    (hf : ContDiffAt ℝ 1 f x₀) :
+    ∃ a > 0, ∃ ε > 0,
       ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
-        range α ⊆ ball x₀ a → |tmax - tmin| < ε → ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
-  -- Get a ball around x₀ contained in u
-  obtain ⟨a', ha'pos, ha'u⟩ := Metric.isOpen_iff.mp hu x₀ hx₀
-  -- The derivative is continuous on u
-  have hfderiv_cont : ContinuousOn (fderiv ℝ f) u :=
-    hf.continuousOn_fderiv_of_isOpen hu (le_refl 1)
+        range α ⊆ ball x₀ a → |tmax - tmin| < ε →
+          ‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1 := by
+  -- Extract an open neighborhood where f is C^1
+  obtain ⟨u, hu_mem, hfu⟩ := hf.contDiffOn le_rfl nofun
+  obtain ⟨a', ha'pos, ha'u⟩ := Metric.mem_nhds_iff.mp hu_mem
+  -- Restrict to the open ball
+  have hfball : ContDiffOn ℝ 1 f (ball x₀ a') := hfu.mono ha'u
+  -- The derivative is continuous on ball x₀ a'
+  have hfderiv_cont : ContinuousOn (fderiv ℝ f) (ball x₀ a') :=
+    hfball.continuousOn_fderiv_of_isOpen isOpen_ball (le_refl 1)
+  have hx₀ball : x₀ ∈ ball x₀ a' := mem_ball_self ha'pos
   -- Use continuity at x₀ to get a ball where the derivative is bounded
   set C := ‖fderiv ℝ f x₀‖ + 1 with hC_def
   have hCpos : 0 < C := by positivity
-  have hfderiv_x₀ : ‖fderiv ℝ f x₀‖ < C := lt_add_one _
-  obtain ⟨δ, hδpos, hδbound⟩ := Metric.continuousOn_iff.mp hfderiv_cont x₀ hx₀ 1 one_pos
+  obtain ⟨δ, hδpos, hδbound⟩ := Metric.continuousOn_iff.mp hfderiv_cont x₀ hx₀ball 1 one_pos
   -- Choose a to be small enough for both conditions
-  set a := min (a' / 2) δ with ha_def
-  have hapos : 0 < a := lt_min (by linarith) hδpos
-  have hau : ball x₀ a ⊆ u :=
-    (ball_subset_ball (min_le_of_left_le (by linarith : a' / 2 ≤ a'))).trans ha'u
+  set a := min (a' / 2) (δ / 2) with ha_def
+  have hapos : 0 < a := lt_min (by linarith) (by linarith)
+  have ha_lt_a' : a < a' := (min_le_left _ _).trans_lt (by linarith)
+  have ha_lt_δ : a < δ := (min_le_right _ _).trans_lt (by linarith)
+  have hball_sub : ball x₀ a ⊆ ball x₀ a' := ball_subset_ball (le_of_lt ha_lt_a')
+  have hfu' : ContDiffOn ℝ 1 f (ball x₀ a) := hfball.mono hball_sub
   -- On ball x₀ a, the derivative is bounded by C
   have hbound : ∀ x ∈ ball x₀ a, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ by
-    have hxu : x ∈ u := hau hx
-    have hdist : dist x x₀ < δ := (mem_ball.mp hx).trans_le (min_le_right _ _)
-    have hnorm_diff : dist (fderiv ℝ f x) (fderiv ℝ f x₀) < 1 := hδbound x hxu hdist
+    have hxball : x ∈ ball x₀ a' := hball_sub hx
+    have hdist : dist x x₀ < δ := (mem_ball.mp hx).trans ha_lt_δ
+    have hnorm_diff : dist (fderiv ℝ f x) (fderiv ℝ f x₀) < 1 := hδbound x hxball hdist
     have h1 : ‖fderiv ℝ f x‖ ≤ ‖fderiv ℝ f x₀‖ + ‖fderiv ℝ f x - fderiv ℝ f x₀‖ :=
       norm_le_insert' _ _
     have h2 : ‖fderiv ℝ f x - fderiv ℝ f x₀‖ < 1 := by rwa [← dist_eq_norm]
@@ -886,11 +892,10 @@ lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set 
   -- Choose ε so that ε * C < 1
   set ε := 1 / (C + 1) with hε_def
   have hεpos : 0 < ε := by positivity
-  refine ⟨a, hapos, ε, hεpos, hau, ?_⟩
+  refine ⟨a, hapos, ε, hεpos, ?_⟩
   intro tmin tmax t₀ α hαball hsmall
-  have hαu : range α ⊆ u := hαball.trans hau
   have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hαball hx)
-  apply opNorm_fderivIntegralCurry0_lt_one hf hu t₀ hαu hCpos.le hbound'
+  apply opNorm_fderivIntegralCurry0_lt_one hfu' isOpen_ball t₀ hαball hCpos.le hbound'
   calc |tmax - tmin| * C
     _ < ε * C := mul_lt_mul_of_pos_right hsmall hCpos
     _ = C / (C + 1) := by rw [hε_def]; ring
@@ -923,8 +928,6 @@ Let `α` be an integral curve beginning within `r` from `x₀`.
 
 Conclude that `‖fderivIntegralCurry0 f u t₀ α‖ < 1` for all integral curves `α` of `f` beginning
 within `r` from `x₀`.
-
-α : ℝ → E
 -/
 
 
