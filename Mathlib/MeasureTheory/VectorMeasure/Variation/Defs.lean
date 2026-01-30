@@ -49,10 +49,6 @@ of `s ↦ ‖μ s‖ₑ`.
 
 @[expose] public section
 
-/-!
-### To be moved to Order/Partition/Finpartition
--/
-
 namespace Finpartition
 
 -- Despite being similar to `Finpartition.bind` this is much more convenient. Better name?

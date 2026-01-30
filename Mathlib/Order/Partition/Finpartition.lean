@@ -35,6 +35,10 @@ We provide many ways to build finpartitions:
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
+* `Finpartition.extend`: Extends a finpartition of `a` to a finpartition of `a ⊔ b` by adding `b`
+  as a new part.
+* `Finpartition.extendOfLE`: Extends a finpartition of `a` to a finpartition of `b` when `a ≤ b`,
+  by adding `b \ a` as a new part (if nonempty).
 * `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
   element is in exactly one part.
 * `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
