@@ -9,9 +9,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.Hamiltonian
 public import Mathlib.Data.List.GetD
 
-set_option linter.style.longFile 4300
-set_option linter.style.longLine false
-
 /-!
 # Ore's theorem
 
@@ -26,7 +23,6 @@ Let G be a graph of order n ≥ 3 that satisfies the Ore property; then G has a 
 
 -/
 
-
 set_option linter.style.longLine false
 set_option linter.style.longFile 0
 
@@ -36,9 +32,7 @@ open SimpleGraph Finset Walk Function List
 
 
 
-
 variable {V : Type*} {e : Sym2 V}
-
 
 /--
 Define a simple path of fixed maximum length between two points.
@@ -2375,6 +2369,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           · simp only [nil_takeUntil]
                             by_contra h
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
+                            simp at hiJ
                             rw [← h] at hiJ
                             obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
@@ -2480,6 +2475,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           · simp only [nil_takeUntil]
                             by_contra h
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
+                            simp at hiJ
                             rw [← h] at hiJ
                             obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
@@ -2630,10 +2626,9 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                       rw [hlen]
                     simpa [eq] using h_in_i_succ
                   have : ¬ p.getVert (j + 1) ∈ (p.takeUntil _ h1).support := by
-                    apply next_not_mem_takeUntil
+                    apply next_not_exsit_takeUntil
                     · exact hp_path
                     · trivial
-                    · gcongr
                   contradiction
                 · have len : ((p.takeUntil _ h1).reverse.takeUntil _ h_in_i_succ).length = j - (i + 1) := by
                     rw [len_takeUntil_reverse_takeUntil (hp := hp_path)]
