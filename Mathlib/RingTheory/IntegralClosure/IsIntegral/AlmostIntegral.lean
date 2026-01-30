@@ -114,7 +114,7 @@ lemma IsAlmostIntegral.isIntegral_of_nonZeroDivisors_le_comap
 @[stacks 00GX "Part 3"]
 lemma IsAlmostIntegral.isIntegral [IsNoetherianRing R] [IsDomain S] [FaithfulSMul R S]
     {s : S} (H : IsAlmostIntegral R s) : IsIntegral R s := by
-  have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsDomain.of_faithfulSMul R S
   exact H.isIntegral_of_nonZeroDivisors_le_comap fun _ ↦ by simp
 
 lemma isAlmostIntegral_iff_isIntegral [IsNoetherianRing R] [IsDomain R] [IsFractionRing R S]
