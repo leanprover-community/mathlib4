@@ -25,7 +25,8 @@ Among the basic results, we show that
 
 * `IsPerfect.map`: The image of a perfect subgroup under a monoid homomorphism is perfect.
 * `IsPerfect.instQuotient`: The quotient of a perfect group by a normal subgroup is perfect.
-* `IsPerfect.map_surjective`: The image of a perfect group under a monoid homomorphism is perfect.
+* `IsPerfect.map_surjective`: The image of a perfect group under a surjective monoid homomorphism
+  is perfect.
 
 ## Implementation Notes
 
@@ -125,11 +126,8 @@ there is a surjectivity assumption on `f` instead.
 -/
 lemma map_surjective {G'} [Group G'] [IsPerfect (⊤ : Subgroup G)] {f : G →* G'}
     (hf : Function.Surjective f) :
-    IsPerfect (⊤ : Subgroup G') where
-  commutator_eq_top := by
-    ext g'
-    simp only [mem_top, iff_true]
-    obtain ⟨g, rfl⟩ := hf g'
-    simp [← map_top_of_surjective f hf, ← map_commutator]
+    IsPerfect (⊤ : Subgroup G') := by
+  rw [← map_top_of_surjective f hf]
+  exact IsPerfect.map _
 
 end Subgroup.IsPerfect
