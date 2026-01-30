@@ -307,7 +307,7 @@ def symbols_not_in
 --  (symbols_in A j) ∩ (symbols_not_in A j) = ∅ := by sorry
 
 lemma count_by_group_or_element_indicator
-  {ι : Type*} [Fintype ι] [DecidableEq ι
+  {ι : Type*} [Fintype ι] [DecidableEq ι]
   (B : ι → Finset α)
   (s : Finset ι)
   : ∑ j ∈ s, (Finset.card (B j)) =
@@ -548,6 +548,7 @@ lemma card_symbols_not_in
     --       col_map_in_symbols,
     --       col_card A]
 
+#check Set.range_restrict
 lemma row_entry_to_column_entry
     (A : LatinRectangle k n α)
     (x : α)
@@ -569,7 +570,7 @@ theorem latin_rectangle_extends
     (A : LatinRectangle k n α)
     (h : Fintype.card k < Fintype.card n := by omega)
     {k' : Type u} [Fintype k'] [DecidableEq k']
-    (ι : k ↪ k') 
+    (ι : k ↪ k')
     (h₂ : Fintype.card k' = Fintype.card k + 1) :
     ∃ (A' : LatinRectangle k' n α), is_subrect A A' ι := by
   let B := symbols_not_in A
@@ -580,39 +581,45 @@ theorem latin_rectangle_extends
   have exactly_n_minus_k_cols_without_x : ∀ x, 
     (Finset.card {j | x ∈ B j}) = Fintype.card n - Fintype.card k := by 
     intro x
-    set As : Finset (n) := {j | ∃ i, col A j i = x} with hA
-    set Bs : Finset (n) := {j | x ∈ B j} with hB
-    set Cs : Finset (k) := {i | ∃ j, row A i j = x} with hC
-    set Ds := {(i,j) | A.M i j = x} with hD
+    set As : Finset (n) := {j | ∃ i, col A j i = x} with hA -- column indices with x
+    set Bs : Finset (n) := {j | x ∈ B j} with hB -- column indices without x
+    set Cs : Finset (k) := {i | ∃ j, row A i j = x} with hC -- row indices with x
+    set Ds : Finset (k × n) := {(i, j) | A.M i j = x}
     have h := row_entry_to_column_entry A x
     obtain ⟨f, hf⟩ := h
-
+    have f_inj : Function.Injective f := by
+      sorry
     have h_Cs_card : Finset.card Cs = Fintype.card k := by
       unfold Cs
       obtain ⟨f, hf⟩ := row_entry_to_column_entry A x
       simp [hf]
-
+    let g : Cs -> As := fun x => ⟨f x, by
+      simp only [As]
+      rw [Finset.mem_def] 
+      simp only [Matrix.col_apply, 
+        Finset.filter_val, 
+        Multiset.mem_filter, 
+        Finset.mem_val, 
+        Finset.mem_univ, 
+        true_and]
+      use x
+      rw [hf]⟩
+    have gbij : Function.Bijective g := by sorry
+    let As_to_Cs : Cs ≃ As := Equiv.ofBijective g gbij
     have h_As_card : Finset.card As = Fintype.card k := by 
-      unfold As
-      have hrow := A.once_per_row
-      unfold once_per_row at hrow
-      have hcol := A.distinct_col_entries
-      unfold distinct_col_entries at hcol
-      unfold col
-
-      
-      sorry
-    -- have h_union : As ∪ Bs = Fin n := by sorry
-    have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by sorry
+      rw [<- h_Cs_card]
+      exact Finset.card_eq_of_equiv As_to_Cs.symm
     have h_intersect : As ∩ Bs = ∅ := by 
       ext
       simp [As, Bs, B, symbols_not_in]
+    have h_union_card : Finset.card (As ∪ Bs) = Fintype.card n := by 
+      congr
+      simp only [As, Bs, B, symbols_not_in]
+      ext
+      simp [exists_or_forall_not]
     have h_card := Finset.card_union As Bs
     simp [h_union_card, h_As_card, h_intersect] at h_card
     omega
-    -- There are n-k columns that do not have an x
-
-
   have pre_property_H : ∀ x, ∀ (t : Finset n),
     (Finset.card {j | j ∈ t ∧ x ∈ B j}) ≤ Fintype.card n - Fintype.card k := by
     intro x t
@@ -620,17 +627,18 @@ theorem latin_rectangle_extends
       simp [Finset.subset_iff]
     have h' := Finset.card_le_card (s := {j | j ∈ t ∧ x ∈ B j}) (t := {j | x ∈ B j}) 
     have hx := exactly_n_minus_k_cols_without_x x
-    simp at hx
     rw[hx] at h'
     exact h' h
 
   let halls := hallMatchingsOn.nonempty (B)
     (latin_rect_hall_property h Bj_size pre_property_H) (Finset.univ)
   set f := Classical.choice halls with hx
-  simp [hallMatchingsOn] at f
+  simp only [hallMatchingsOn] at f
   obtain ⟨ f', hf⟩ := f
   let M' : k' → n → α := fun i j =>
-    if hif : i ∈ (Finset.image ι Finset.univ) then A.M (Function.invFun ι i) j else (f' ⟨j, by simp⟩ )
+    if hif : i ∈ (Finset.image ι Finset.univ) 
+    then A.M (Function.invFun ι i) j 
+    else (f' ⟨j, by simp⟩ )
   let A' : LatinRectangle k' n α := {
     M := M'
     exactly_n_symbols := sorry
@@ -641,12 +649,13 @@ theorem latin_rectangle_extends
   use A'
   unfold is_subrect
   unfold LatinRectangle.M
-  simp[A', M']
+  simp only [A', M']
   intro i j
   rw [<-Function.comp_apply (f := Function.invFun ι)]
   rw [Function.invFun_comp ι.injective]
+  simp
   rfl
-
+  
 end Completion
 
 end LatinSquare
