@@ -20,7 +20,7 @@ This file contains lemmas about tensoring with free modules.
 open TensorProduct
 
 /--
-The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from the canonical
+The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι → M)` coming from an
 `ι`-indexed basis of a finite free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
@@ -37,7 +37,7 @@ noncomputable def LinearEquiv.chooseBasis_piScalarRight
     TensorProduct.piScalarRight R M M ι
 
 /--
-The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from the canonical
+The `M`-algebra isomorphism `M ⊗[R] V ≃ₗ[M] (ι →₀ M)` coming from an
 `ι`-indexed basis of a free `R`-module `V`.
 -/
 @[simps! apply symm_apply]
