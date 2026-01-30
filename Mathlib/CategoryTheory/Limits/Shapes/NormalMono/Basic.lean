@@ -115,6 +115,21 @@ def normalOfIsPullbackFstOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     NormalMono f :=
   normalOfIsPullbackSndOfNormal comm.symm (PullbackCone.flipIsLimit t)
 
+/-- Transport a `NormalMono` structure via an isomorphism of arrows. -/
+def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
+    (hf : NormalMono f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
+    NormalMono f' where
+  Z := hf.Z
+  g := e.inv.right ≫ hf.g
+  w := by
+    have := Arrow.w e.inv
+    dsimp at this
+    rw [← reassoc_of% this, hf.w, comp_zero]
+  isLimit := by
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
+    · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
+    · exact Fork.ext (Arrow.leftFunc.mapIso e)
+
 section
 
 variable (C)
@@ -218,6 +233,22 @@ end
 open Opposite
 
 variable [HasZeroMorphisms C]
+
+/-- Transport a `NormalEpi` structure via an isomorphism of arrows. -/
+def NormalEpi.ofArrowIso [HasZeroMorphisms C] {X Y : C} {f : X ⟶ Y}
+    (hf : NormalEpi f) {X' Y' : C} {f' : X' ⟶ Y'} (e : Arrow.mk f ≅ Arrow.mk f') :
+    NormalEpi f' where
+  W := hf.W
+  g := hf.g ≫ e.hom.left
+  w := by
+    have := Arrow.w e.hom
+    dsimp at this
+    rw [Category.assoc, this, reassoc_of% hf.w, zero_comp]
+  isColimit := by
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
+    · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
+    · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
+
 
 /-- A normal mono becomes a normal epi in the opposite category. -/
 def normalEpiOfNormalMonoUnop {X Y : Cᵒᵖ} (f : X ⟶ Y) (m : NormalMono f.unop) : NormalEpi f where
