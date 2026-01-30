@@ -55,6 +55,10 @@ lemma IsPath.isHamiltonian_of_mem (hp : p.IsPath) (hp' : ∀ w, w ∈ p.support)
 lemma IsPath.isHamiltonian_iff (hp : p.IsPath) : p.IsHamiltonian ↔ ∀ w, w ∈ p.support :=
   ⟨(·.mem_support), hp.isHamiltonian_of_mem⟩
 
+theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
+  intro v
+  rw [nil_iff_support_eq.mp p.nil_of_subsingleton, Subsingleton.elim v a, List.count_singleton_self]
+
 /-- If a path `p` is Hamiltonian then its vertex set must be finite. -/
 protected def IsHamiltonian.fintype (hp : p.IsHamiltonian) : Fintype α where
   elems := p.support.toFinset
@@ -178,6 +182,12 @@ lemma IsHamiltonian.connected (hG : G.IsHamiltonian) : G.Connected where
     have b_mem := hp.mem_support b
     exact ((p.takeUntil a a_mem).reverse.append <| p.takeUntil b b_mem).reachable
   nonempty := not_isEmpty_iff.1 fun _ ↦ by simpa using hG <| by simp [@Fintype.card_eq_zero]
+
+lemma IsHamiltonian.of_card_eq_one (h : Fintype.card α = 1) : G.IsHamiltonian :=
+  (· h |>.elim)
+
+lemma IsHamiltonian.of_unique [Unique α] : G.IsHamiltonian :=
+  of_card_eq_one <| Fintype.card_unique
 
 variable {V : Type*} [Fintype V] [DecidableEq V]
 
