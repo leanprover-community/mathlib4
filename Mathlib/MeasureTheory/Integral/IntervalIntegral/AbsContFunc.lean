@@ -28,6 +28,8 @@ absolutely continuous, fundamental theorem of calculus, integration by parts
 
 @[expose] public section
 
+variable {X F : Type*} [PseudoMetricSpace X] [NormedAddCommGroup F] [NormedSpace ℝ F]
+
 open Filter Fin.NatCast Function MeasureTheory Set
 
 open scoped Topology
@@ -35,7 +37,7 @@ open scoped Topology
 /-- If `f` has derivative `f'` a.e. on `[d, b]` and `η` is positive, then there is a collection of
 pairwise disjoint closed subintervals of `[a, b]` of total length `b - a` where the slope of `f`
 on each subinterval `[x, y]` differs from `f' x` by at most `η`. -/
-lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → ℝ} {d b η : ℝ}
+lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → F} {d b η : ℝ}
     (hdb : d ≤ b) (hf : ∀ᵐ x, x ∈ Icc d b → HasDerivAt f (f' x) x) (hη : 0 < η) :
     ∃ u : Set (ℝ × ℝ),
       (∀ z ∈ u, (d < z.1 ∧ z.1 < z.2 ∧ z.2 < b) ∧ dist (slope f z.1 z.2) (f' z.1) < η) ∧
@@ -109,7 +111,7 @@ lemma exists_dist_slope_lt_pairwiseDisjoint_hasSum {f f' : ℝ → ℝ} {d b η 
 /-- If `f` is absolutely continuous on `[d, b]` and there is a collection of pairwise disjoint
 closed subintervals of `(d, b)` of total length `b - d` such that the sum of `dist (f x) (f y)` for
 `[x, y]` in the collection is equal to `y`, then `dist (f b) (f d) ≤ y`. -/
-lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ → ℝ} {d b y : ℝ}
+lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ → X} {d b y : ℝ}
     (hdb : d ≤ b) (hf : AbsolutelyContinuousOnInterval f d b) {u : Set (ℝ × ℝ)}
     (hu₁ : ∀ z ∈ u, d < z.1 ∧ z.1 < z.2 ∧ z.2 < b)
     (hu₂ : u.PairwiseDisjoint (fun z ↦ Icc z.1 z.2))
@@ -159,16 +161,17 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
       dist (f d) (f b) ≤
       ∑ i ∈ Finset.range (T s).1, dist (f ((T s).2 i).1) (f ((T s).2 i).2) +
       (∑ b ∈ u_coe s, dist (f b.1) (f b.2)) := by
-    rw [dist_comm, Finset.sum_congr rfl fun i hi ↦ dist_comm (f ((T s).2 i).1) _,
-        Finset.sum_congr rfl fun (b : ℝ × ℝ) hb ↦ dist_comm (f b.1) _]
-    simp_rw [Real.dist_eq]
-    rw [← (u_coe s).sum_intervalGapsWithin_add_sum_eq_sub rfl]
-    grw [abs_add_le, Finset.abs_sum_le_sum_abs, Finset.abs_sum_le_sum_abs]
+    rw [Finset.sum_eq_sum_range_intervalGapsWithin _ rfl (fun x y ↦ dist (f x) (f y)),
+      Finset.sum_range_succ, add_right_comm, ← Finset.sum_add_distrib]
+    grw [← Finset.sum_le_sum (fun _ _ ↦ dist_triangle _ _ _),
+      ← dist_le_range_sum_dist,
+      ← dist_triangle]
+    simp [T]
   exact le_of_tendsto_of_tendsto' (by simp) sum_tendsto dist_le_sum
 
 /-- If `f` is absolutely continuous on `uIcc a b` and `f' x = 0` for a.e. `x ∈ uIcc a b`, then `f`
 is constant on `uIcc a b`. -/
-theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → ℝ} {a b : ℝ}
+theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → F} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hf₀ : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt f 0 x) :
     ∃ C, ∀ x ∈ uIcc a b, f x = C := by
   -- Proof idea : Assume wlog `a < b`. We need to show that `f d = f b` for any `d ∈ [a, b]`.
@@ -180,7 +183,7 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
   -- `AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum` to conclude that
   -- `dist (f d) (f b) ≤ r`.
   wlog hab : a ≤ b
-  · exact uIcc_comm b a ▸ @this f b a hf.symm (uIcc_comm a b ▸ hf₀) (by linarith)
+  · exact uIcc_comm b a ▸ this (a := b) (b := a) hf.symm (uIcc_comm a b ▸ hf₀) (by linarith)
   suffices ∀ x ∈ uIcc a b, f x = f b by use f b
   rw [uIcc_of_le hab] at hf₀ ⊢
   intro d hd
@@ -204,9 +207,12 @@ theorem AbsolutelyContinuousOnInterval.const_of_ae_hasDerivAt_zero {f : ℝ → 
     have (z : u) (hz : z ∈ s) : g z ≤ r / (b - d) * (z.val.2 - z.val.1) := by
       have slope_bound := hu₁ z (by simp) |>.right |>.le
       have : 0 < z.val.2 - z.val.1 := by linarith [hu₁ z (by simp)]
-      simp only [Real.dist_eq, slope, vsub_eq_sub, smul_eq_mul, sub_zero, abs_mul,
-        abs_inv] at slope_bound
-      rwa [inv_mul_le_iff₀' (abs_pos_of_pos this), abs_of_pos this, abs_sub_comm] at slope_bound
+      grw [← slope_bound]
+      simp only [dist_eq_norm, slope, vsub_eq_sub, sub_zero, ge_iff_le, g, mul_comm]
+      nth_rw 1 [← Real.norm_of_nonneg this.le]
+      simp only [norm_smul, Real.norm_eq_abs, norm_inv]
+      field_simp
+      rw [norm_sub_rev]
     grw [Finset.sum_le_sum this]
     rw [← Finset.mul_sum]
     have : ∑ z ∈ s, (z.val.2 - z.val.1) ≤ b - d :=
