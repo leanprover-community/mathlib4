@@ -95,6 +95,8 @@ instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
 lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     dist s t = μ.real ((s : Set α) ∆ t) := rfl
 
+/- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
+structure, any measurable set can be approximated by elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetRing C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
@@ -174,6 +176,8 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     _ < ε / 2 + ε / 2 := by gcongr
     _ = ε :=  ENNReal.add_halves ε
 
+/- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
+structure, any measurable set can be approximated by finite unions of elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetSemiring C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C)
@@ -187,16 +191,12 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure 
     apply generateFrom_le (fun t ht ↦ ?_)
     apply measurableSet_generateFrom_of_mem_supClosure ht
 
-
-lemma EMetric.dense_iff {α : Type*} [PseudoEMetricSpace α] {s : Set α} :
-    Dense s ↔ ∀ (x : α), ∀ r > 0, (EMetric.ball x r ∩ s).Nonempty :=
-  forall_congr' fun x => by
-    simp only [EMetric.mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, EMetric.mem_ball']
-
+/- A ring of sets covering the space modulo `0` and generating the measurable space
+structure is dense among measurable sets. -/
 lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetRing C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C) :
-    Dense ((SetLike.coe : MeasuredSets μ → Set α)⁻¹' C) := by
+    Dense ((SetLike.coe : MeasuredSets μ → Set α) ⁻¹' C) := by
   rw [EMetric.dense_iff]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetRing hC h'C h s.2 εpos with ⟨t, tC, ht⟩
@@ -204,18 +204,18 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
   simpa [MeasuredSets.edist_def] using ht
 
+/- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
+structure, finite unions of elements of `C` are dense among measurable sets. -/
 lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetSemiring C)
     (h'C : ∃ D : Set (Set α), D.Countable ∧ D ⊆ C ∧ μ (⋃₀ D)ᶜ = 0) (h : mα = generateFrom C) :
-    Dense ((SetLike.coe : MeasuredSets μ → Set α)⁻¹' (supClosure C)) := by
+    Dense ((SetLike.coe : MeasuredSets μ → Set α) ⁻¹' (supClosure C)) := by
   rw [EMetric.dense_iff]
   rintro s ε εpos
   rcases exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring hC h'C h s.2 εpos
     with ⟨t, tC, ht⟩
-  have t_meas : MeasurableSet t := by
-    rw [h]
-    apply measurableSet_generateFrom_of_mem_supClosure ht
-  refine ⟨⟨t, t_meas⟩, ?_, tC⟩
-  simpa [MeasuredSets.edist_def] using ht
+  refine ⟨⟨t, ?_⟩, by simpa [MeasuredSets.edist_def] using ht, tC⟩
+  rw [h]
+  exact measurableSet_generateFrom_of_mem_supClosure tC
 
 end MeasureTheory
