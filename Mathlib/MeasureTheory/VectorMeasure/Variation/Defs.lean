@@ -55,12 +55,6 @@ of `s ↦ ‖μ s‖ₑ`.
 
 namespace Finpartition
 
-instance instNonempty {α : Type*} [Lattice α] [OrderBot α] (a : α) :
-    Nonempty (Finpartition a) := by
-  by_cases h : a = ⊥
-  · rw [h]; exact ⟨Finpartition.empty α⟩
-  · exact ⟨Finpartition.indiscrete h⟩
-
 /-- Extend a partition of `a` to a partition of `b` when `a ≤ b`, by adding `b \ a` as a `part`. -/
 def extendOfLE {α : Type*} [GeneralizedBooleanAlgebra α]
     [DecidableEq α] {a b : α} (P : Finpartition a) (hab : a ≤ b) : Finpartition b :=
