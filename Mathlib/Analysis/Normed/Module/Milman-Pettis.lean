@@ -60,7 +60,7 @@ end ContinuousLinearMap
 end opNorm
 
 variable {𝕜 𝕜₁ 𝕜₂ E E₁ E₂ : Type*} [RCLike 𝕜₂] [NontriviallyNormedField 𝕜] [NormedField 𝕜₁]
-[NormedAddCommGroup E] [NormedSpace 𝕜 E]
+[NormedAddCommGroup E] [NormedSpace 𝕜 E] [Module ℝ E]
 [SeminormedAddCommGroup E₁] [NormedSpace 𝕜₁ E₁]
 [NormedAddCommGroup E₂] [NormedSpace 𝕜₂ E₂]
 
@@ -119,7 +119,7 @@ dual of a Banach space (**FAE: I suspect completeness is not needed) ** is the c
 to the weak topology `σ(E**, E*)` induced by the canonical pairing `E** × E* → ℝ`, of the image of
 the unit ball in  `E`. Observe that, for any topological `𝕜`-module `M`, `strongDualPairing 𝕜 M` is
 the pairing whose *first* variable is in `M*` and the second is in `M`. -/
-axiom goldstine : closure (X := (WeakBilin (strongDualPairing ℝ (StrongDual ℝ E))))
+axiom goldstine : closure (X := (WeakBilin (topDualPairing ℝ (StrongDual ℝ E))))
   (inclusionInDoubleDual ℝ E '' (closedBall 0 1)) = closedBall (0 : E**) 1-- := by sorry
 -- **use**
 -- theorem polar_flip_polar_eq {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] :
@@ -196,7 +196,7 @@ lemma exists_ball_lt [UniformConvexSpace E] {ξ : E**} {ε : ℝ} (hε : 0 < ε)
              _ = 2 - δ' := by linarith
 
 
-lemma sphere_subset_closure [UniformConvexSpace E] : sphere 0 1 ⊆ closure 𝒰 := by
+lemma sphere_subset_closure [Module ℝ E] [UniformConvexSpace E] : sphere 0 1 ⊆ closure 𝒰 := by
   let 𝒯 : TopologicalSpace <| WeakDual ℝ (StrongDual ℝ E) := inferInstance
   intro x hx
   rw [Metric.mem_closure_iff]
@@ -248,5 +248,5 @@ instance : Module.IsReflexive ℝ E where
     convert (LinearIsometryEquiv_of_uniformConvexSpace E).bijective
     sorry
 
-alias milman_pettis := surjective_of_uniformConvexSpace
--- alias milman_pettis := LinearIsometryEquiv_of_uniformConvexSpace
+-- alias milman_pettis := surjective_of_uniformConvexSpace
+alias milman_pettis := LinearIsometryEquiv_of_uniformConvexSpace
