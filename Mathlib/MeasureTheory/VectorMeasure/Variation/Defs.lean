@@ -50,13 +50,6 @@ of `s ↦ ‖μ s‖ₑ`.
 @[expose] public section
 
 /-!
-## Definitions to be moved to other files
-
-The following definitions and lemmas are placed here temporarily and will eventually be moved
-to their appropriate locations in the library.
--/
-
-/-!
 ### To be moved to Order/Partition/Finpartition
 -/
 
@@ -93,7 +86,7 @@ lemma parts_subset_extendOfLE {α : Type*} [GeneralizedBooleanAlgebra α]
   · cases le_antisymm (sdiff_eq_bot_iff.mp hr) hab; rfl
   · exact Finset.subset_insert _ _
 
--- Ddded this definition since it seemed the useful thing but currently this is not used here
+-- Added this definition since it seemed the useful thing but currently this is not used here
 /-- Construct a `Finpartition` of `T.sup id` from a finset `T` of pairwise disjoint elements.
 Any `⊥` elements in `T` are erased. -/
 @[simps]
@@ -105,8 +98,7 @@ def ofPairwiseDisjoint {α : Type*} [DistribLattice α] [OrderBot α] [Decidable
   sup_parts := Finset.sup_erase_bot T
   bot_notMem := Finset.notMem_erase _ _
 
--- Despite being similar to `Finpartition.bind` this is much more convenient here.
--- Is there a better name for this?
+-- Despite being similar to `Finpartition.bind` this is much more convenient. Better name?
 /-- Merge a family of partitions of pairwise disjoint elements into a partition of their sup.
 Similar to `Finpartition.bind`, but combines partitions of different elements rather than
 refining a single partition. -/
