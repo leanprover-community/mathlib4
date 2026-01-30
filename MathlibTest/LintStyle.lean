@@ -1,7 +1,7 @@
 module
 
 import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Linter.Style
+import all Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Contrapose
@@ -430,7 +430,7 @@ info: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 #check "                              \"                \
                                                                   "
 
-/- Tests for the `openClassical` linter -/
+/-! Tests for the `openClassical` linter -/
 section openClassical
 
 set_option linter.style.openClassical true
@@ -560,7 +560,7 @@ def aux' : Nat := 1
 
 end openClassical
 
-/- Tests for the `show` linter -/
+/-! Tests for the `show` linter -/
 section showLinter
 
 set_option linter.style.show true
@@ -607,6 +607,32 @@ example := by
   rfl
 
 end showLinter
+
+/-! Unit tests for the `nameCheck` linter and friends -/
+section nameCheck
+
+open Mathlib.Linter.Style.nameCheck
+
+#guard !isWronglyCased "something"
+#guard !isWronglyCased "myDeclaration"
+#guard !isWronglyCased "lowerCamelCase"
+#guard isWronglyCased "Foo"
+-- Acronyms
+#guard !isWronglyCased "ofLE"
+#guard !isWronglyCased "LE"
+#guard isWronglyCased "LEOne"
+#guard !isWronglyCased "leOne"
+-- Explicit exceptions.
+#guard !isWronglyCased "Ioo"
+#guard !isWronglyCased "Lp"
+#guard !isWronglyCased "Ioo'"
+#guard !isWronglyCased "L1"
+#guard !isWronglyCased "L1H'"
+#guard !isWronglyCased "L1"
+#guard !isWronglyCased "L₁"
+#guard !isWronglyCased "I₀'"
+
+end nameCheck
 
 /-! Tests for linters defined in `TextBased.lean`. -/
 section textBased

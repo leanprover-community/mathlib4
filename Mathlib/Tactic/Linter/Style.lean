@@ -483,8 +483,8 @@ def isAcronymLike (s : String) : Bool :=
 /-- Explicit allow-list of naming components which are allowed to be in uppercase. -/
 def allowed : Array String.Slice := #[
   "Icc", "Ico", "Ici", "Ioc", "Ioo", "Ioi", "Iic", "Iio",
+  "IicProdIoc", "IocProdIoc", -- all components (Iic, Prod, Ioc etc.) are allowed
   "Lp", "Lq", -- TODO: should Lp and Lq be used in names?
-  "IicProdIoc", "IocProdIoc", -- TODO: should these be allowed?
 ]
 
 /-- Whether a string `s` is uppercased and not an exception to mathlib's naming rules. -/
@@ -492,23 +492,6 @@ def isWronglyCased (s : String) : Bool :=
   -- The string starts with an uppercase character, is not like an acronym
   -- and (after removing any trailing primes) is not an allowed exception.
  s.front.isUpper && !(isAcronymLike s) && (!allowed.contains (s.dropEndWhile '\''))
-
-#guard !isWronglyCased "something"
-#guard !isWronglyCased "myDeclaration"
-#guard !isWronglyCased "lowerCamelCase"
-#guard isWronglyCased "Foo"
--- Acronyms
-#guard !isWronglyCased "ofLE"
-#guard !isWronglyCased "LE"
--- Explicit exceptions.
-#guard !isWronglyCased "Ioo"
-#guard !isWronglyCased "Lp"
-#guard !isWronglyCased "Ioo'"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L1H'"
-#guard !isWronglyCased "L1"
-#guard !isWronglyCased "L₁"
-#guard !isWronglyCased "I₀'"
 
 @[inherit_doc linter.style.nameCheck]
 def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
