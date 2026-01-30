@@ -51,32 +51,11 @@ of `s ↦ ‖μ s‖ₑ`.
 
 namespace Finpartition
 
--- Despite being similar to `Finpartition.bind` this is much more convenient. Better name?
-/-- Merge a family of partitions of pairwise disjoint elements into a partition of their sup.
-Similar to `Finpartition.bind`, but combines partitions of different elements rather than
-refining a single partition. -/
-def biUnion {ι α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
-    {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
-    (ha : Set.PairwiseDisjoint (I : Set ι) a) : Finpartition (I.sup a) where
-  parts := I.biUnion fun i => (P i).parts
-  supIndep := Finset.supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
-    simp only [Finset.coe_biUnion, Set.mem_iUnion, Finset.mem_coe] at hx hy
-    obtain ⟨i, hi, hxi⟩ := hx
-    obtain ⟨j, hj, hyj⟩ := hy
-    by_cases hij : i = j
-    · subst hij; exact (P i).disjoint hxi hyj fun h => hxy (h ▸ rfl)
-    · exact (ha hi hj hij).mono ((P i).le hxi) ((P j).le hyj)
-  sup_parts := by
-    rw [Finset.sup_biUnion]
-    exact Finset.sup_congr rfl fun i _ => (P i).sup_parts
-  bot_notMem := by
-    rw [Finset.mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
-
-/-- The sum over a merged partition equals the sum of sums over component partitions. -/
-lemma sum_biUnion {ι α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
+/-- The sum over a combined partition equals the sum of sums over component partitions. -/
+lemma sum_combine {ι α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
     {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
     (ha : Set.PairwiseDisjoint (I : Set ι) a) {M : Type*} [AddCommMonoid M] (f : α → M) :
-    ∑ p ∈ (Finpartition.biUnion P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
+    ∑ p ∈ (Finpartition.combine P ha).parts, f p = ∑ i ∈ I, ∑ p ∈ (P i).parts, f p := by
   change ∑ p ∈ I.biUnion (fun i => (P i).parts), f p = _
   refine Finset.sum_biUnion fun i hi j hj hij => ?_
   rw [Function.onFun, Finset.disjoint_left]
@@ -89,7 +68,7 @@ provided `f ⊥ = 0` (so bottom terms don't contribute). -/
 lemma sum_restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq α]
     {a : α} (P : Finpartition a) {b : α} (hb : b ≤ a) {M : Type*} [AddCommMonoid M]
     (f : α → M) (hf : f ⊥ = 0) :
-    ∑ p ∈ (P.restrict b hb).parts, f p = ∑ q ∈ P.parts, f (q ⊓ b) := by
+    ∑ p ∈ (P.restrict hb).parts, f p = ∑ q ∈ P.parts, f (q ⊓ b) := by
   have hinj : ∀ x ∈ P.parts.filter (· ⊓ b ≠ ⊥), ∀ y ∈ P.parts.filter (· ⊓ b ≠ ⊥),
       x ⊓ b = y ⊓ b → x = y := fun x hx y hy hxy => by
     simp only [Finset.mem_filter] at hx hy
@@ -223,13 +202,13 @@ lemma sum_le_preVariation_iUnion' {s : ℕ → Set X} (hs : ∀ i, MeasurableSet
   have hs_disj : Set.PairwiseDisjoint (Finset.range n : Set ℕ) s' := fun i _ j _ hij => by
     simp only [Function.onFun, disjoint_iff, Subtype.ext_iff]
     exact Set.disjoint_iff_inter_eq_empty.mp (hs' hij)
-  let Q := Finpartition.biUnion P hs_disj
+  let Q := Finpartition.combine P hs_disj
   have hQ_le : (Finset.range n).sup s' ≤ ⟨⋃ i, s i, MeasurableSet.iUnion hs⟩ := by
     rw [← Subtype.coe_le_coe, Finset.sup_measurableSetSubtype_eq_biUnion s']
     exact Set.iUnion₂_subset fun i _ => Set.subset_iUnion s i
   let R := Q.extendOfLE hQ_le
   calc ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p
-    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_biUnion P hs_disj (fun p => f p)).symm
+    _ = ∑ p ∈ Q.parts, f p := (Finpartition.sum_combine P hs_disj (fun p => f p)).symm
     _ ≤ ∑ p ∈ R.parts, f p := Finset.sum_le_sum_of_subset (Q.parts_subset_extendOfLE hQ_le)
     _ ≤ preVariation f (⋃ i, s i) := sum_le f (MeasurableSet.iUnion hs) R
 
@@ -271,7 +250,7 @@ lemma iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
   simp only [preVariation, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ⟩ := hb
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
-  let P (i : ℕ) := Q.restrict (s' i) (Set.subset_iUnion s i)
+  let P (i : ℕ) := Q.restrict (b := s' i) (Set.subset_iUnion s i)
   have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := by
     calc ∑ q ∈ Q.parts, f q
       _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by

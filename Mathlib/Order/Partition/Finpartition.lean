@@ -39,8 +39,10 @@ We provide many ways to build finpartitions:
   as a new part.
 * `Finpartition.extendOfLE`: Extends a finpartition of `a` to a finpartition of `b` when `a ≤ b`,
   by adding `b \ a` as a new part (if nonempty).
-* `Finpartition.restrict`: Restricts a finpartition of `a` to a sub-element `b ≤ a` by intersecting
+* `Finpartition.restrict`: Restricts a finpartition of `a` to `b` where `b ≤ a` by intersecting
   each part with `b`.
+* `Finpartition.combine`: Combines a family of partitions of pairwise disjoint elements into a
+  partition of their sup.
 * `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
   element is in exactly one part.
 * `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
@@ -452,6 +454,23 @@ def restrict (P : Finpartition a) (hb : b ≤ a) : Finpartition b where
     have : P.parts.sup (fun x => x) = a := P.sup_parts
     rw [this, inf_eq_right.mpr hb]
   bot_notMem := notMem_erase _ _
+
+/-- Combine a family of partitions of pairwise disjoint elements into a partition of their sup. -/
+def combine {ι : Type*} {I : Finset ι} {a : ι → α} (P : ∀ i, Finpartition (a i))
+    (ha : Set.PairwiseDisjoint (I : Set ι) a) : Finpartition (I.sup a) where
+  parts := I.biUnion fun i => (P i).parts
+  supIndep := supIndep_iff_pairwiseDisjoint.mpr fun x hx y hy hxy => by
+    simp only [coe_biUnion, Set.mem_iUnion, mem_coe] at hx hy
+    obtain ⟨i, hi, hxi⟩ := hx
+    obtain ⟨j, hj, hyj⟩ := hy
+    by_cases hij : i = j
+    · subst hij; exact (P i).disjoint hxi hyj fun h => hxy (h ▸ rfl)
+    · exact (ha hi hj hij).mono ((P i).le hxi) ((P j).le hyj)
+  sup_parts := by
+    rw [sup_biUnion]
+    exact sup_congr rfl fun i _ => (P i).sup_parts
+  bot_notMem := by
+    rw [mem_biUnion]; push_neg; exact fun i _ => (P i).bot_notMem
 
 end DistribLattice
 
