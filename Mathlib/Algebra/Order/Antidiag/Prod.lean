@@ -150,7 +150,8 @@ section CancelCommMonoid
 variable [CancelCommMonoid M] [HasMulAntidiagonal M] {p q : M × M} {n : M}
 
 /-- A point in the multiplicative antidiagonal is determined by its second coordinate. -/
-@[to_additive /-- A point in the antidiagonal is determined by its second coordinate.
+@[to_additive antidiagonal_congr' /-- A point in the antidiagonal is determined by its second
+coordinate.
 
 See also `Finset.antidiagonal_congr`. -/]
 lemma mulAntidiagonal_congr' (hp : p ∈ mulAntidiagonal n) (hq : q ∈ mulAntidiagonal n) :
@@ -162,9 +163,9 @@ end CancelCommMonoid
 
 /-- The disjoint union of multiplicative antidiagonals `Σ (n : M), mulAntidiagonal n` is equivalent
 to the product `M × M`. -/
-@[to_additive (attr := simps) /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is
-equivalent to the product `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))`
-to `(k, l)`. -/]
+@[to_additive (attr := simps) sigmaAntidiagonalEquivProd
+    /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
+    `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/]
 def sigmaMulAntidiagonalEquivProd [Monoid M] [HasMulAntidiagonal M] :
     (Σ n : M, mulAntidiagonal n) ≃ M × M where
   toFun x := x.2

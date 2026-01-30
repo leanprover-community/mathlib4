@@ -17,8 +17,8 @@ in `G` and `t` in `P`, the `Finset` of all pairs of an element in `s` and an ele
 scalar-multiply to `a`.
 
 ## Definitions
-* Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
-* Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
+* Finset.setSMulAntidiagonal : Finset antidiagonal for PWO inputs.
+* Finset.setVAddAntidiagonal : Finset antidiagonal for PWO inputs.
 
 -/
 
@@ -62,37 +62,37 @@ variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
     {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
     {hv : v.IsPWO} {x : G × P}
 
-/-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
+/-- `Finset.setSMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose scalar multiplication yields `a`, but its construction requires proofs that `s`
 and `t` are well-ordered. -/
-@[to_additive /-- `Finset.VAddAntidiagonal hs ht a` is the set of all pairs of an element in `s`
-and an element in `t` whose vector addition yields `a`, but its construction requires proofs that
-`s` and `t` are well-ordered. -/]
-noncomputable def SMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P]
+@[to_additive /-- `Finset.setVAddAntidiagonal hs ht a` is the set of all pairs
+of an element in `s` and an element in `t` whose vector addition yields `a`, but its construction
+requires proofs that `s` and `t` are well-ordered. -/]
+noncomputable def setSMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrderedCancelSMul G P]
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
 @[to_additive (attr := simp)]
-theorem mem_smulAntidiagonal :
-    x ∈ SMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
-  simp only [SMulAntidiagonal, Set.Finite.mem_toFinset]
+theorem mem_setSMulAntidiagonal :
+    x ∈ setSMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
+  simp only [setSMulAntidiagonal, Set.Finite.mem_toFinset]
   exact Set.mem_sep_iff
 
 @[to_additive]
-theorem smulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
-    SMulAntidiagonal hu ht a ⊆ SMulAntidiagonal hs ht a :=
+theorem setSMulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :
+    setSMulAntidiagonal hu ht a ⊆ setSMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_left h
 
 @[to_additive]
-theorem smulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
-    SMulAntidiagonal hs hv a ⊆ SMulAntidiagonal hs ht a :=
+theorem setSMulAntidiagonal_mono_right {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : v ⊆ t) :
+    setSMulAntidiagonal hs hv a ⊆ setSMulAntidiagonal hs ht a :=
   Set.Finite.toFinset_mono <| Set.smulAntidiagonal_mono_right h
 
 @[to_additive]
-theorem support_smulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (SMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
+theorem support_setSMulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
+    { a | (setSMulAntidiagonal hs ht a).Nonempty } ⊆ (s • t) :=
   fun a ⟨b, hb⟩ => by
-  rw [mem_smulAntidiagonal] at hb
+  rw [mem_setSMulAntidiagonal] at hb
   rw [Set.mem_smul]
   use b.1
   refine { left := hb.1, right := ?_ }
@@ -100,19 +100,19 @@ theorem support_smulAntidiagonal_subset_smul {hs : s.IsPWO} {ht : t.IsPWO} :
   exact { left := hb.2.1, right := hb.2.2 }
 
 @[to_additive]
-theorem isPWO_support_smulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
-    { a | (SMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
-  (hs.smul ht).mono (support_smulAntidiagonal_subset_smul)
+theorem isPWO_support_setSMulAntidiagonal {hs : s.IsPWO} {ht : t.IsPWO} :
+    { a | (setSMulAntidiagonal hs ht a).Nonempty }.IsPWO :=
+  (hs.smul ht).mono (support_setSMulAntidiagonal_subset_smul)
 
 end
 
 @[to_additive]
-theorem smulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
+theorem setSMulAntidiagonal_min_smul_min [LinearOrder G] [LinearOrder P] [SMul G P]
     [IsOrderedCancelSMul G P] {s : Set G} {t : Set P} (hs : s.IsWF) (ht : t.IsWF) (hns : s.Nonempty)
-    (hnt : t.Nonempty) :
-    SMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns • ht.min hnt) = {(hs.min hns, ht.min hnt)} := by
+    (hnt : t.Nonempty) : setSMulAntidiagonal hs.isPWO ht.isPWO (hs.min hns • ht.min hnt) =
+    {(hs.min hns, ht.min hnt)} := by
   ext ⟨a, b⟩
-  simp only [mem_smulAntidiagonal, mem_singleton, Prod.ext_iff]
+  simp only [mem_setSMulAntidiagonal, mem_singleton, Prod.ext_iff]
   constructor
   · rintro ⟨has, hat, hst⟩
     obtain rfl :=
