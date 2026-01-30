@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Yu Shao. All rights reserved.
+Copyright (c) 2026 Shao Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yu Shao
+Authors: Shao Yu
 -/
 module
 
@@ -19,12 +19,18 @@ Let G be a graph of order n ≥ 3 that satisfies the Ore property; then G has a 
 
 ## Main definitions
 
-* `Walk.IsMaximalPath` is the definiton of a simple path of fixed maximum length between two points..
+* `Walk.IsMaximalPath` is the definiton of a simple path of fixed maximum length
+      between two points..
 
 * `Walk.IsMaxlongPath` is the definiton of the longest simple path in a graph.
 
 -/
 
+
+set_option linter.style.longLine false
+set_option linter.style.longFile 0
+
+@[expose] public section
 
 open SimpleGraph Finset Walk Function List
 
@@ -37,14 +43,14 @@ variable {V : Type*} {e : Sym2 V}
 /--
 Define a simple path of fixed maximum length between two points.
 -/
-def Walk.IsMaximalPath {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) : Prop :=
+def Walk.IsMaximalPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
   p.IsPath ∧ ∀ (q : G.Walk a b), q.IsPath → q.length ≤ p.length
 
 
 /--
 Defines the longest simple path in a graph.
 -/
-def Walk.IsMaxlongPath {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) : Prop :=
+def Walk.IsMaxlongPath {G : SimpleGraph V} {a b : V} (p : G.Walk a b) : Prop :=
   p.IsPath ∧ ∀ (c d : V), ∀ (q : G.Walk c d),  q.IsPath → q.length ≤ p.length
 
 
@@ -52,16 +58,18 @@ def Walk.IsMaxlongPath {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Wa
 /--
 Between any two points, there must exist a longest path.
 -/
-lemma exists_maximal_path {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] (hG : G.Connected) :
-  ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
+lemma exists_maximal_path {G : SimpleGraph V} [Finite V] (hG : G.Connected)
+ : ∀ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaximalPath p := by
+  have : Fintype V := Fintype.ofFinite V
   intro a b
   by_cases h : a ≠ b
   · let S : ℕ → Set (G.Walk a b) := fun (n : ℕ) => {(p : G.Walk a b) | p.IsPath ∧ p.length = n}
-    let lengths  := {n |∃ (p : G.Walk a b), p.IsPath ∧ p.length = n}
+    let lengths := {n |∃ (p : G.Walk a b), p.IsPath ∧ p.length = n}
     classical
     obtain H := SimpleGraph.fintypeSetPathLength G a b
+    obtain H' := SimpleGraph.fintypeSubtypePathLengthLT G a b
     have lengths_Finite : lengths.Finite := by
-      let N := Fintype.card V
+      simp only [lengths]
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
         rcases hn with ⟨p, hp, rfl⟩
@@ -91,7 +99,7 @@ lemma exists_maximal_path {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] (hG 
       rcases hi_mem with ⟨p, hp_is_path, hp_length⟩
       refine ⟨p, hp_length, ?_⟩
       unfold S
-      simp [hp_is_path, hp_length]
+      simp only [Set.mem_setOf_eq, hp_is_path, hp_length, and_self]
     rcases this with ⟨p, hp⟩
     use p
     constructor
@@ -118,11 +126,13 @@ lemma exists_maximal_path {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] (hG 
 
 
 
+
 /--
 In a connected graph, there must exist a path of maximum length.
 -/
-lemma exists_maxilongmal_path {G : SimpleGraph V} (hG : G.Connected) [Fintype V] [G.LocallyFinite] :
-   ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
+lemma exists_maxilongmal_path {G : SimpleGraph V} [Finite V] (hG : G.Connected)
+  : ∃ (a b : V), ∃ (p : G.Walk a b), Walk.IsMaxlongPath p := by
+  have : Fintype V := Fintype.ofFinite V
   obtain H' := exists_maximal_path hG
   let S : (a b : V) → Set (G.Walk a b) := fun a b => {p | p.IsPath}
   let lengths  := {n | ∃ (c d : V), ∃ (q : G.Walk c d), q.IsPath ∧ q.length = n }
@@ -157,7 +167,7 @@ lemma exists_maxilongmal_path {G : SimpleGraph V} (hG : G.Connected) [Fintype V]
     simp_rw [Set.mem_setOf_eq] at hi_mem
     rcases hi_mem with ⟨c,d,q, hp_is_path, hp_length⟩
     refine ⟨c,d,q, hp_is_path, ?_⟩
-    simp [S, hp_is_path]
+    simp only [Set.mem_setOf_eq, hp_is_path, S]
   rcases this with ⟨c, d, q, hp, h⟩
   have :∃ (a b : V), ∃ (p : G.Walk a b), p.length = i ∧ p ∈ S a b := by
     rcases hi with ⟨hi_mem, hi_max⟩
@@ -165,7 +175,7 @@ lemma exists_maxilongmal_path {G : SimpleGraph V} (hG : G.Connected) [Fintype V]
     simp_rw [Set.mem_setOf_eq] at hi_mem
     rcases hi_mem with ⟨a, b, p, hp_is_path, hp_length⟩
     refine ⟨a, b, p, hp_length, ?_⟩
-    simp [S]
+    simp only [Set.mem_setOf_eq, S]
     simp_all only
   rcases this with ⟨a,b,p, hp,h⟩
   simp only [S, Set.mem_setOf_eq] at h
@@ -190,9 +200,8 @@ lemma exists_maxilongmal_path {G : SimpleGraph V} (hG : G.Connected) [Fintype V]
 /--
 The length of a path `p` truncated to a certain vertex equals the length of the vertex list.
 -/
-lemma length_takeUntil_eq_index {G : SimpleGraph V} [DecidableEq V] [Fintype V] [G.LocallyFinite]
-    {a b : V} (p : G.Walk a b) (u : V) (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length)
-    (hp_path : p.IsPath) : (p.takeUntil _ h).length = p.support.idxOf u := by
+lemma length_takeUntil_eq_index [DecidableEq V] {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (u : V) (h : u ∈ p.support) (g : List.idxOf u p.support ≤ p.length) (hp_path : p.IsPath) :
+  (p.takeUntil _ h).length = p.support.idxOf u := by
   have l : (p.takeUntil u h).length < p.support.length := by
     calc
     _ ≤ p.length := by
@@ -212,7 +221,7 @@ lemma length_takeUntil_eq_index {G : SimpleGraph V} [DecidableEq V] [Fintype V] 
   · obtain h := SimpleGraph.Walk.getVert_length_takeUntil h
     rw [SimpleGraph.Walk.getVert_eq_support_getElem] at h
     conv at h =>
-      right ;
+      right;
       rw [← l1]
     · rw [List.Nodup.getElem_inj_iff] at h
       · exact h
@@ -225,9 +234,10 @@ lemma length_takeUntil_eq_index {G : SimpleGraph V} [DecidableEq V] [Fintype V] 
 For a path `G.Walk a b` in graph `G`, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not adjacent.
 -/
-lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] [G.LocallyFinite]
-    {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) {v : V} {hv_not_in_p : v ∉ p.support} :
-    ¬ G.Adj a b := by
+lemma ore_endpoints_adjacent {G : SimpleGraph V} [Finite V] (hG : G.Connected) {a b : V} {p : G.Walk a b} (hp : Walk.IsMaxlongPath p) (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+  ¬ G.Adj a b := by
+  have : Fintype V := Fintype.ofFinite V
+  rcases hv_not_in_p with ⟨v, hv_not_in_p⟩
   intro H_adj
   classical
   have H : ∃ j : ℕ, G.Reachable v (p.getVert (j)) ∧
@@ -235,7 +245,7 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
     let S : (a  : V) → Set (G.Walk v a) := fun a =>  {s | s.IsPath ∧ a ∈ p.support}
     let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
     have l1 : lengths.Finite := by
-      let N := Fintype.card V
+      classical
       have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
         intro n hn
         rcases hn with ⟨c,p, hp, hq, rfl⟩
@@ -281,7 +291,7 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
     let k := p.support.idxOf a
     have hw : p.getVert k = a := by
       rw [SimpleGraph.Walk.getVert_eq_support_getElem]
-      · simp [k]
+      · simp only [getElem_idxOf, k]
       · have : k < p.support.length := by
           apply List.idxOf_lt_length_iff.mpr
           exact h.2
@@ -324,7 +334,8 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
         obtain := SimpleGraph.Walk.end_mem_support s
         omega
       obtain  h :=  List.mem_inter_of_mem_of_mem l1 l2
-      simp at h_has_other
+      simp only [mem_inter_iff, ne_eq, not_exists, not_and, Decidable.not_not,
+        and_imp] at h_has_other
       have h_support_eq (hs_inter : s.support.toFinset ∩ p.support.toFinset = {a}):
           s.support ∩ p.support = {a} := by
         rw [← List.toFinset_inter] at hs_inter
@@ -477,7 +488,7 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
                     have : x ∉ s.support.dropLast.reverse := by
                       rw [h']
                       exact H
-                    simp at this
+                    simp only [mem_reverse] at this
                     contradiction
                   contradiction
                 · apply Finset.empty_subset
@@ -722,13 +733,13 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
                 have : x ∉ s'.support.dropLast.reverse := by
                   rw [h']
                   exact H
-                simp at this
+                simp only [mem_reverse] at this
                 contradiction
               contradiction
             · apply Finset.empty_subset
           exact H3
     have hq_length : q.length = p.length + s'.length := by
-      simp [q]
+      simp only [Walk.length_append, Walk.length_reverse, q]
     have len_le : q.length > p.length := by
       rw [hq_length]
       have : 0 < s'.length:= by
@@ -746,9 +757,8 @@ lemma ore_endpoints_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] 
 The longest path `G.Walk a b` in a graph, if there exists a vertex `v` not on this path,
 then the two endpoints `a` and `b` of the path are not equal.
 -/
-lemma endpoint_ne {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] {hG : G.Connected} {a b : V}
-    (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3}
-    (hv_not_in_p : ∃ (v : V), v ∉ p.support) : a ≠ b := by
+lemma endpoint_ne [Fintype V] {G : SimpleGraph V} {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} (hv_not_in_p : ∃ (v : V), v ∉ p.support) :
+  a ≠ b := by
   unfold Walk.IsMaxlongPath at hp
   obtain ⟨hp_path, hp_max⟩ := hp
   rcases hv_not_in_p with ⟨v, hv_not_in_p⟩
@@ -786,8 +796,8 @@ lemma endpoint_ne {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] {hG : G.Conn
 /--
 The length of path p take to a certain vertex with "takeUntil".
 -/
-lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V] [Fintype V] [G.LocallyFinite] {a b : V}
-    (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hn : i ≤ p.length} {hi : p.getVert i ∈ p.support} :
+lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V]
+    {a b : V} (p : G.Walk a b) {i : ℕ} {hp : p.IsPath} {hn : i ≤ p.length} {hi : p.getVert i ∈ p.support} :
   (p.takeUntil _ hi).length = i := by
   rw [length_takeUntil_eq_index]
   · rw [SimpleGraph.Walk.getVert_eq_support_getElem, List.Nodup.idxOf_getElem]
@@ -802,9 +812,8 @@ lemma len_takeUntil {G : SimpleGraph V} [DecidableEq V] [Fintype V] [G.LocallyFi
 /--
 The length of the reverse of path p take to a certain vertex with "takeUntil".
 -/
-lemma len_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] [G.LocallyFinite] {a b : V}
-    (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.reverse.support} :
-    (p.reverse.takeUntil _ hi).length = p.length - i := by
+lemma len_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V] {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.reverse.support} :
+  (p.reverse.takeUntil _ hi).length = p.length - i := by
   obtain H := SimpleGraph.Walk.getVert_length_takeUntil hi
   rw [SimpleGraph.Walk.getVert_eq_support_getElem] at H
   · have : p.getVert i = p.reverse.getVert (p.reverse.length - i) := by
@@ -824,17 +833,17 @@ If there exists a vertex v outside the longest simple path p that is not on path
 then there exists a simple path s starting from v with its endpoint being the first
 point where it connects to path p , and p and s intersect only at the point.
 -/
-lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
-    {hG : G.Connected} {a b : V} (p : G.Walk a b) {i : Fin (p.support.length - 1)}
-    (hp : Walk.IsMaxlongPath p) (v : V) :
-    ∃ (j : ℕ), G.Reachable v (p.getVert j) ∧
-      ∃ (s : G.Walk v (p.getVert j)), s.IsPath ∧ s.support ∩ p.support = {p.getVert j} := by
+lemma exsist_walk {G : SimpleGraph V} [Finite V] [DecidableEq V]
+    {hG : G.Connected} {a b : V} (p : G.Walk a b) {i : Fin (p.support.length - 1)} (hp : Walk.IsMaxlongPath p) :
+    ∀ (v : V), ∃ (j : ℕ), G.Reachable v (p.getVert j) ∧ ∃ (s : G.Walk v (p.getVert j)), s.IsPath ∧ s.support ∩ p.support = {p.getVert j} := by
+  have : Fintype V := Fintype.ofFinite V
+  intro v
   unfold Walk.IsMaxlongPath at hp
   obtain ⟨hp_path, hp_max⟩ := hp
   let S : (a  : V) → Set (G.Walk v a) := fun a =>  {s | s.IsPath ∧ a ∈ p.support}
   let lengths  := {n | ∃ (a : V), ∃ (s : G.Walk v a), s.IsPath ∧ a ∈ p.support ∧ s.length = n }
   have l1 : lengths.Finite := by
-    let N := Fintype.card V
+    classical
     have bound : ∀ n ∈ lengths, n ≤ Fintype.card V := by
       intro n hn
       rcases hn with ⟨c,p, hp, hq, rfl⟩
@@ -927,7 +936,7 @@ lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFini
       obtain := SimpleGraph.Walk.end_mem_support s
       omega
     obtain  h :=  List.mem_inter_of_mem_of_mem l1 l2
-    simp at h_has_other
+    simp only [mem_inter_iff, ne_eq, not_exists, not_and, Decidable.not_not, and_imp] at h_has_other
     have h_support_eq (hs_inter : s.support.toFinset ∩ p.support.toFinset = {a}):
         s.support ∩ p.support = {a} := by
       rw [← List.toFinset_inter] at hs_inter
@@ -972,8 +981,9 @@ lemma exsist_walk {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFini
       mem_inter_iff, and_self, singleton_subset_iff, mem_inter, mem_toFinset]
 
 
-lemma getVert_congr {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk a b) {hp : p.IsPath}
-    {i j : ℕ} {h : p.getVert i = p.getVert j} {hn1 : i ≤ p.length} {hn2 : j ≤ p.length} :
+lemma getVert_congr {G : SimpleGraph V}
+    {a b : V} {i j : ℕ} (p : G.Walk a b) {hp : p.IsPath} {h : p.getVert i = p.getVert j}
+    {hn1 : i ≤ p.length} {hn2 : j ≤ p.length} :
     i = j := by
   rw [SimpleGraph.Walk.getVert_eq_support_getElem p hn1] at h
   rw [SimpleGraph.Walk.getVert_eq_support_getElem p hn2] at h
@@ -982,9 +992,9 @@ lemma getVert_congr {G : SimpleGraph V} [G.LocallyFinite] {a b : V} (p : G.Walk 
   · exact hp.support_nodup
 
 
-lemma len_dropUntil {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite] {a b : V}
-    (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.support} {hn : i ≤ p.length} :
-    (p.dropUntil _ hi).length = p.length - i := by
+lemma len_dropUntil {G : SimpleGraph V} [DecidableEq V]
+  {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {hi : p.getVert i ∈ p.support} {hn : i ≤ p.length} :
+  (p.dropUntil _ hi).length = p.length - i := by
   have : (p.dropUntil _ hi).length = p.length - (p.takeUntil _ hi).length := by
     have len : p.length = (p.dropUntil _ hi).length + (p.takeUntil _ hi).length := by
       rw [add_comm]
@@ -996,11 +1006,9 @@ lemma len_dropUntil {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
     omega
   rw [this, len_takeUntil (hp := hp) (hn := hn)]
 
-lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [Fintype V] [DecidableEq V]
-    [G.LocallyFinite] {a b : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ}
-    {hj : p.getVert j ∈ p.support} {hi : p.getVert i ∈ (p.takeUntil _ hj).reverse.support}
-    {hn1 : j ≤ p.length} {hn2 : i ≤ j} :
-    ((p.takeUntil _ hj).reverse.takeUntil _ hi).length = j - i := by
+lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [DecidableEq V]
+    {a b : V} {i j : ℕ} (p : G.Walk a b) {hp : p.IsPath} {hj : p.getVert j ∈ p.support} {hi : p.getVert i ∈ (p.takeUntil _ hj).reverse.support} {hn1 : j ≤ p.length} {hn2 : i ≤ j}
+    : ((p.takeUntil _ hj).reverse.takeUntil _ hi).length = j - i := by
   have len_take_i : (p.takeUntil (p.getVert j) hj).length = j := by
     rw [len_takeUntil (hp := hp)]
     omega
@@ -1047,7 +1055,7 @@ lemma len_takeUntil_reverse_takeUntil {G : SimpleGraph V} [Fintype V] [Decidable
 /--
 The tail of a simple path is also a simple path.
 -/
-lemma tail_Ispath {G : SimpleGraph V} [G.LocallyFinite]
+lemma tail_Ispath {G : SimpleGraph V}
     {a b : V} (p : G.Walk a b) {hp : p.IsPath} {h : ¬p.Nil} : p.support.tail.Nodup := by
     rw [← SimpleGraph.Walk.support_tail_of_not_nil]
     · rw [← SimpleGraph.Walk.isPath_def]
@@ -1059,7 +1067,7 @@ lemma tail_Ispath {G : SimpleGraph V} [G.LocallyFinite]
 /--
 The start point of path p is not in the tail of the path.
 -/
-lemma end_not_exsit_tail {G : SimpleGraph V} [G.LocallyFinite]
+lemma end_not_exsit_tail {G : SimpleGraph V}
     {u v : V} (p : G.Walk u v) {hp : p.IsPath} {h : ¬p.Nil} :
     u ∉ p.support.tail := by
   classical
@@ -1092,9 +1100,8 @@ lemma end_not_exsit_tail {G : SimpleGraph V} [G.LocallyFinite]
   · exact h
 
 
-lemma next_not_mem_takeUntil {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
-    {u v : V} (p : G.Walk u v) {hp : p.IsPath} {i j : ℕ} (h : p.getVert j ∈ p.support)
-    (len : j < p.length) : ¬ p.getVert (j + 1) ∈ (p.takeUntil _ h).support := by
+lemma next_not_exsit_takeUntil {G : SimpleGraph V} [DecidableEq V] {u v : V} (p : G.Walk u v) {hp : p.IsPath} {j : ℕ} (h : p.getVert j ∈ p.support) (len : j < p.length) :
+  ¬ p.getVert (j + 1) ∈ (p.takeUntil _ h).support := by
   by_contra Hk
   have h_indices_right : ∀ x ≤  p.length, p.getVert x ∈ (p.takeUntil _ h).support → x ≤ j  := by
     intro x h' hx
@@ -1171,9 +1178,10 @@ lemma h_indices_trans_1 [DecidableEq V] {G : SimpleGraph V} {a b x : V} (p : G.W
     · apply SimpleGraph.Walk.length_takeUntil_le
   · exact hj
 
-lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [DecidableEq V]
-    {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i : ℕ} {h : p.getVert i ∈ p.support}
-    {hx : x ∈ (p.takeUntil _ h).support} {len : i ≤ p.length} : ∃ k, p.getVert k = x ∧ k ≤ i := by
+lemma h_indices_trans_2 {G : SimpleGraph V} [DecidableEq V]
+  {a b x : V} (p : G.Walk a b) {i : ℕ} {hp : p.IsPath} {h : p.getVert i ∈ p.support}
+  {hx : x ∈ (p.takeUntil _ h).support} {len : i ≤ p.length}
+: ∃ k, p.getVert k = x ∧ k ≤ i := by
   rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at hx
   rcases hx with ⟨k, hk, hj⟩
   rw [SimpleGraph.Walk.getVert_takeUntil] at hk
@@ -1192,11 +1200,9 @@ lemma h_indices_trans_2 {G : SimpleGraph V} [G.LocallyFinite] [Fintype V] [Decid
 
 
 
-lemma h_indices_trans_3 {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite]
-    {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ} {hi : p.getVert i ∈ p.support}
-    {hn : p.getVert j ∈ (p.takeUntil _ hi).reverse.support}
-    {hx : x ∈ ((p.takeUntil _ hi).reverse.takeUntil _ hn).support} {len : i ≤ p.length}
-    {hl : j ≤ i} : ∃ k, p.getVert (i - k) = x ∧ k ≤ i - j := by
+lemma h_indices_trans_3 {G : SimpleGraph V} [DecidableEq V] {a b x : V} (p : G.Walk a b) {hp : p.IsPath} {i j : ℕ} {hi : p.getVert i ∈ p.support} {hn : p.getVert j ∈ (p.takeUntil _ hi).reverse.support}
+  {hx : x ∈ ((p.takeUntil _ hi).reverse.takeUntil _ hn).support} {len : i ≤ p.length} {hl : j ≤ i}
+: ∃ k, p.getVert (i - k) = x ∧ k ≤ i - j:= by
   rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at hx
   rcases hx with ⟨k , hk, hj⟩
   rw [SimpleGraph.Walk.getVert_takeUntil] at hk
@@ -1282,7 +1288,7 @@ lemma Disjoint_tail_1 {G : SimpleGraph V} [DecidableEq V] {a b u v : V} (p : G.W
       have s_eq : (u :: (p.takeUntil _ hi).reverse.support.tail) =
         (p.takeUntil _ hi).reverse.support := by
         nth_rw 2 [SimpleGraph.Walk.support_eq_cons]
-        simp [hu]
+        simp only [hu, support_reverse, tail_reverse]
       have l : (p.takeUntil _ hi).reverse.support.Nodup := by
         rw [← SimpleGraph.Walk.isPath_def]
         simp only [isPath_reverse_iff]
@@ -1340,7 +1346,7 @@ lemma Disjoint_tail_2 {G : SimpleGraph V} [DecidableEq V] {a b u v : V} (p : G.W
       obtain  H:= List.Nodup.notMem  l
       have : x ∉ ((p.takeUntil _ hj).reverse.takeUntil (p.getVert _) hi).support.tail.reverse := by
         simpa [h'] using H
-      simp at this
+      simp only [mem_reverse] at this
       contradiction
     contradiction
   · apply Finset.empty_subset
@@ -1376,9 +1382,9 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
       refine ⟨?_, ?_⟩
       · obtain h := SimpleGraph.Walk.IsPath.cons (hp := hp_path) hv_not_in_p (h := hav.symm)
         exact h.1
-      · simp [q, hp_path.2]
+      · simp only [support_cons, nodup_cons, hp_path.2, and_true, q]
         omega
-    have hq_length : q.length = p.length + 1 := by simp [q]
+    have hq_length : q.length = p.length + 1 := by simp only [Walk.length_cons, q]
     have := hp_max v b q ⟨hq_path.1, ?_⟩
     · rw [hq_length] at this
       omega
@@ -1393,20 +1399,21 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
         rw [SimpleGraph.Walk.concat_isPath_iff]
         obtain h :=  SimpleGraph.Walk.IsPath.cons (hp := hp_path) (hu :=hv_not_in_p)
         refine ⟨hp_path, hv_not_in_p⟩
-      have hq_length : q.length = p.length + 1 := by simp [q]
+      have hq_length : q.length = p.length + 1 := by simp only [Walk.length_append,
+        Walk.length_cons, Walk.length_nil, zero_add, q]
       have := hp_max a v q ⟨hq_path.1, ?_⟩
       · rw [hq_length] at this
         omega
       · rw [SimpleGraph.Walk.isPath_def] at hq_path
         omega
     · let I : Finset (Fin (p.support.length - 1)) :=
-        (Finset.univ : Finset (Fin (p.support.length - 1))).filter (λ i =>
+        (Finset.univ : Finset (Fin (p.support.length - 1))).filter (fun i =>
           let x := p.support.get ⟨i.val + 1, by
             have := i.2
             omega⟩
           G.Adj a x)
       let J : Finset (Fin (p.support.length - 1)) :=
-        (Finset.univ : Finset (Fin (p.support.length - 1))).filter (λ i =>
+        (Finset.univ : Finset (Fin (p.support.length - 1))).filter (fun i =>
             let y := p.support.get ⟨i.val , by
               have := i.2
               omega⟩
@@ -1418,8 +1425,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
         intro i hi
         simp only [mem_inter] at hi
         rcases hi with ⟨hiI, hiJ⟩
-        simp [I, Finset.mem_filter] at hiI
-        simp [J, Finset.mem_filter] at hiJ
+        simp only [I, Finset.mem_filter] at hiI
+        simp only [J, Finset.mem_filter] at hiJ
         have hi_val_lt : i.val + 1 < p.support.length := by omega
         let x := p.support.get ⟨i.val + 1, by
           have : i.val + 1 < p.support.length := by
@@ -1594,7 +1601,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                       s.support.toFinset ∩ p.support.toFinset = {p.getVert j} := by
                     rw [← List.toFinset_inter, hs_inter]
                     ext x
-                    simp [Finset.mem_singleton]
+                    simp only [mem_toFinset, Finset.mem_singleton]
                     exact List.mem_singleton
                   obtain h_support_eq' := h_support_eq hs_inter
                   rw [Finset.inter_comm] at h_support_eq'
@@ -1612,7 +1619,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         obtain h := h_subset hx_left
                         simp only [mem_toFinset]
                         exact h
-                      · simp at hx_right
+                      · simp only [mem_erase, ne_eq, mem_toFinset] at hx_right
                         simp only [mem_toFinset]
                         exact hx_right.2
                     rw [h_support_eq', Finset.mem_singleton] at this
@@ -1632,7 +1639,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   simp_all only [ge_iff_le, ne_eq, not_true_eq_false]
               have H3 : eady_xb.reverse.support.Disjoint (Walk.cons h_adj_ax.symm (s.append eady_ja).reverse).support.tail := by
                 have l_nodup: (eady_xb.reverse.support ++ (Walk.cons h_adj_ax.symm (s.append eady_ja).reverse).support.tail).Nodup := by
-                  simp [eady_xb, eady_ja]
+                  simp only [reverse_copy, Walk.reverse_reverse, support_copy, Walk.reverse_append,
+                    support_cons, List.tail_cons, eady_xb, eady_ja]
                   have : ((p.takeUntil (p.getVert j) h1).append s.reverse).support.Nodup =
                         ((p.takeUntil (p.getVert j) h1).support ++ s.reverse.support.tail).Nodup  := by
                           rw [Walk.support_append]
@@ -1640,7 +1648,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   constructor
                   · rw [← SimpleGraph.Walk.isPath_def]
                     apply SimpleGraph.Walk.IsPath.takeUntil
-                    simp
+                    simp only [isPath_reverse_iff]
                     exact hp_path
                   · constructor
                     · rw [this, List.nodup_append']
@@ -1897,7 +1905,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                     · have h_indices_right : ∃ k, p.getVert k = x ∧ k ≤ j := by
                         have hj_le : j < p.support.length := by
                           omega
-                        simp at hj_le
+                        simp only [length_support, Order.lt_add_one_iff] at hj_le
                         rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at hx_right
                         rcases hx_right with ⟨k , hk, hj⟩
                         rw [SimpleGraph.Walk.getVert_takeUntil] at hk
@@ -1951,7 +1959,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
             have h2 : p.getVert (j + 1) ∈ p.support := by simp
             have h_in_isucc : p.getVert (i + 1) ∈ p.support := by simp
             rcases Decidable.em (i = j) with hI | hI
-            · have eq : p.getVert i = p.getVert j := by simp [hI]
+            · have eq : p.getVert i = p.getVert j := by simp only [hI]
               have h_pen_in : p.penultimate ∈ p.support := by simp
               let eady_ja : G.Walk (p.getVert j) a := (p.takeUntil _ h_in_i).reverse.copy eq rfl
               let eady_v_isucc : G.Walk v (p.getVert (i + 1)) := ((s.append eady_ja).concat h_adj_ax).copy rfl h_x_eq
@@ -1993,7 +2001,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                 have len_drop_isucc : (p.dropUntil _ h_in_isucc).length = p.length - (i + 1) := by
                   rw [len_dropUntil (hp := hp_path) (hn := by omega)]
                 constructor
-                · simp [eady_v_isucc]
+                · simp only [support_copy, support_concat, List.concat_eq_append, eady_v_isucc]
                   rw [List.nodup_append']
                   constructor
                   · obtain H := List.nodup_append' (l₁ := s.support) (l₂ := eady_ja.support.tail)
@@ -2012,27 +2020,27 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           by_contra! H
                           rw [← h_y_eq] at H
                           rw [← H] at h_adj_yb
-                          obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := hv_not_in_p)
+                          obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                           contradiction
                       · have H1 : s.support.Disjoint eady_ja.support.tail := by
                           have h' : eady_ja.getVert i ∈ eady_ja.support := by
                             simp only [support_copy,getVert_copy, eady_ja]
                             apply getVert_mem_support
-                          simp only [support_copy, disjoint_reverse_right, eady_ja]
+                          simp only [support_copy, eady_ja]
                           obtain H := Disjoint_tail_1 (u := p.getVert j) (hp := hp_path) (s := s) (p := p) (hu := eq.symm) (h_inter := hs_inter)
                           apply H
                         exact H1
                   · constructor
                     · simp only [nodup_cons, not_mem_nil, not_false_eq_true, nodup_nil, and_self]
-                    · simp
+                    · simp only [List.disjoint_singleton, mem_support_append_iff, not_or]
                       constructor
-                      · simp [h_x_eq]
+                      · simp only [h_x_eq]
                         by_contra h_in_s
                         obtain h' := List.mem_inter_of_mem_of_mem h_in_s h_in_isucc
                         rw [hs_inter,  List.singleton_eq, List.mem_singleton] at h'
                         obtain congr := getVert_congr (h := h') (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                         omega
-                      · simp [eady_ja]
+                      · simp only [support_copy, support_reverse, mem_reverse, eady_ja]
                         exact H_x_not_in
                 constructor
                 · apply tail_Ispath
@@ -2042,18 +2050,21 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   · simp only [eady_isucc_b]
                     by_contra h
                     obtain l := SimpleGraph.Walk.Nil.eq (p := (p.dropUntil _ h_in_isucc))
-                    simp_all only [ge_iff_le, ne_eq, add_le_iff_nonpos_right, nonpos_iff_eq_zero,
-                      one_ne_zero, not_false_eq_true, gt_iff_lt, lt_add_iff_pos_right, zero_lt_one,
-                      getVert_mem_support, implies_true, eq_iff_iff, forall_const]
+                    simp_all only [ge_iff_le, ne_eq, length_support, add_tsub_cancel_right,
+                      get_eq_getElem, true_and, mem_univ, getVert_mem_support, support_reverse,
+                      mem_reverse, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero,
+                      not_false_eq_true, gt_iff_lt, lt_add_iff_pos_right, _root_.zero_lt_one,
+                      implies_true, eq_iff_iff, forall_const]
                     rw [← hI] at l
                     rw [h_x_eq, l] at h_adj_ax
-                    obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := hv_not_in_p)
+                    obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                     contradiction
                 · have H2 : eady_v_isucc.support.Disjoint eady_isucc_b.support.tail := by
-                    simp [eady_v_isucc, eady_isucc_b]
+                    simp only [support_copy, support_concat, List.concat_eq_append,
+                      disjoint_append_left, singleton_disjoint, eady_v_isucc, eady_isucc_b]
                     rw [← List.inter_eq_nil_iff_disjoint]
                     rw [← List.toFinset_eq_empty_iff]
-                    simp
+                    simp only [toFinset_inter]
                     constructor
                     · apply Finset.Subset.antisymm
                       · intro x hx
@@ -2071,8 +2082,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           rcases h' with ⟨k , hk, hj⟩
                           rw [getVert_dropUntil (n := i + 1)] at hk
                           · use (i + 1 + k)
-                            refine' ⟨hk, by simp, ?_⟩
-                            simp [len_drop_isucc] at hj
+                            refine ⟨hk, by simp, ?_⟩
+                            simp only [len_drop_isucc] at hj
                             omega
                           · exact len_take_isucc.symm
                           · rw [← hI] at hJ
@@ -2092,7 +2103,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           rw [← hk_eq] at h'
                           obtain congr := getVert_congr (h := h') (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                           rw [congr] at h'; omega
-                        · simp [eady_ja] at hx_left
+                        · simp only [support_copy, support_reverse, mem_reverse,
+                          eady_ja] at hx_left
                           have h_indices_left : ∃ k, p.getVert k = x ∧ k ≤ i := by
                             rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at hx_left
                             rcases hx_left with ⟨k , hk, hj⟩
@@ -2118,16 +2130,17 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         conv_rhs => rw [SimpleGraph.Walk.support_eq_cons, List.erase_cons_head]
                       rw [p_tail_erase_eq] at hx_right'
                       rw [Nodup.mem_erase_iff] at hx_right'
-                      rw [h_x_eq] at hx_right'
-                      simp only [ne_eq, not_true_eq_false, start_mem_support, and_true] at hx_right'
-                      rw [← SimpleGraph.Walk.isPath_def]
-                      apply SimpleGraph.Walk.IsPath.dropUntil
-                      exact hp_path
+                      · rw [h_x_eq] at hx_right'
+                        simp only [ne_eq, not_true_eq_false, start_mem_support, and_true] at hx_right'
+                      · rw [← SimpleGraph.Walk.isPath_def]
+                        apply SimpleGraph.Walk.IsPath.dropUntil
+                        exact hp_path
                   exact H2
               · obtain h := h hq_path
                 have hq_len : q.length = p.length +  s.length:= by
-                  simp [q]
-                  simp [eady_v_isucc, eady_ja, eady_isucc_b]
+                  simp only [Walk.length_append, q]
+                  simp only [length_copy, Walk.length_concat, Walk.length_append,
+                    Walk.length_reverse, eady_v_isucc, eady_ja, eady_isucc_b]
                   rw [len_takeUntil (hp := hp_path), len_dropUntil (hp := hp_path), Nat.add_assoc (n := s.length), ← Nat.add_sub_assoc, Nat.sub_add_comm, Nat.add_sub_cancel]
                   all_goals omega
                 have : q.length > p.length := by
@@ -2223,26 +2236,25 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         rw [SimpleGraph.Walk.mem_support_iff_exists_getVert] at H
                         rcases H with ⟨k , hk, hj⟩
                         rw [SimpleGraph.Walk.getVert_takeUntil] at hk
-                        obtain l :=  SimpleGraph.Walk.length_takeUntil_le p h_in_i
-                        use k
-                        refine ⟨hk, by omega⟩
-                        exact hj
+                        · obtain l :=  SimpleGraph.Walk.length_takeUntil_le p h_in_i
+                          use k
+                          refine ⟨hk, by omega⟩
+                        · exact hj
                       have h3 : x = p.getVert j := by
                         have h_inter : x ∈ s.support ∩ p.support := by
                           simp only [mem_inter_iff]
                           refine ⟨hx_left, h2⟩
                         rw [hs_inter, List.singleton_eq] at h_inter
                         simp_all only [ge_iff_le, ne_eq, not_le, gt_iff_lt,
-                          getVert_mem_support, implies_true, List.tail_cons,
-                          List.append_nil, nodup_nil, disjoint_nil_right, and_self,
-                          and_true, eq_iff_iff, mem_inter, mem_toFinset,
+                          getVert_mem_support, implies_true, and_self,
+                          eq_iff_iff, mem_inter, mem_toFinset,
                           mem_support_append_iff, true_or, List.mem_cons, not_mem_nil,
                           or_false]
                       rcases h_indices_right with ⟨k₁, hk₁_eq, hk₁_ge⟩
                       rw [h3] at hk₁_eq
                       obtain congr := getVert_congr (h := hk₁_eq) (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                       omega
-                    · simp [eady_j_isucc] at hx_left
+                    · simp only [support_copy, eady_j_isucc] at hx_left
                       have h_in : ∃ k, p.getVert k = x ∧ k ≥ i + 1 ∧ k ≤ j := by
                         obtain hx_left := h_indices_trans_3 (hp := hp_path) (hx := hx_left) (i := j) (j := i + 1) (hn := h_in_i_succ) (len := by omega) (hl := by omega)
                         rcases hx_left with ⟨k , hk, hj⟩
@@ -2264,8 +2276,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                     conv at H => lhs; rw [eq]
                     obtain congr := getVert_congr (h := H) (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                     rw [← congr] at h_y_eq
-                    simp [h_y_eq] at h_adj_yb
-                    obtain no_adj := ore_endpoints_adjacent hG (hp := ⟨hp_path, hp_max⟩) (hv_not_in_p := hv_not_in_p)
+                    simp only [h_y_eq, getVert_zero] at h_adj_yb
+                    obtain no_adj := ore_endpoints_adjacent hG (hp := ⟨hp_path, hp_max⟩) (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                     contradiction
                 have not_exist_s : b ∉ s.support := by
                   by_contra hb
@@ -2297,7 +2309,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                       rw [Walk.support_append]
                     rw [this, H]
                     constructor
-                    · simp [eady_va]
+                    · simp only [support_concat, List.concat_eq_append, eady_va]
                       rw [List.nodup_append']
                       constructor
                       · obtain H := List.nodup_append'  (l₁ := s.support) (l₂ := eady_j_isucc.support.tail)
@@ -2307,14 +2319,14 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         have eady_j_isucc_tail_Nodup : eady_j_isucc.support.tail.Nodup := by
                           rcases Decidable.em (eady_j_isucc.Nil) with h_nil | h_nil
                           · rw [SimpleGraph.Walk.nil_iff_support_eq] at h_nil
-                            simp [h_nil]
-                          · simp [eady_j_isucc]
+                            simp only [h_nil, List.tail_cons, nodup_nil]
+                          · simp only [support_copy, eady_j_isucc]
                             apply tail_Ispath
                             · apply SimpleGraph.Walk.IsPath.takeUntil
                               simp only [isPath_reverse_iff]
                               apply SimpleGraph.Walk.IsPath.takeUntil
                               exact hp_path
-                            · simp [eady_j_isucc] at h_nil
+                            · simp only [nil_copy, nil_takeUntil, eady_j_isucc] at h_nil
                               simp only [nil_takeUntil]
                               exact h_nil
                         constructor
@@ -2324,7 +2336,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           · exact Disjoint_s_j_isucc
                       · constructor
                         · simp
-                        · simp [eady_j_isucc]
+                        · simp only [List.disjoint_singleton, mem_support_append_iff, support_copy,
+                          not_or, eady_j_isucc]
                           constructor
                           · have la : p.getVert 0 = a := by
                               rw [SimpleGraph.Walk.getVert_zero]
@@ -2352,7 +2365,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                               omega
                             contradiction
                     · constructor
-                      · simp [eady_ab]
+                      · simp only [support_concat, support_copy, List.concat_eq_append, ne_eq,
+                        support_ne_nil, not_false_eq_true, tail_append_of_ne_nil, eady_ab]
                         rw [List.nodup_append']
                         constructor
                         · apply tail_Ispath
@@ -2362,13 +2376,17 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             by_contra h
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
                             rw [← h] at hiJ
-                            obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := hv_not_in_p)
+                            obtain h' := ore_endpoints_adjacent hG ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
                         · constructor
                           · simp only [nodup_cons, not_mem_nil, not_false_eq_true, nodup_nil, and_self]
                           · simp only [List.disjoint_singleton]
                             exact Disjoint_take_i_b
-                      · simp [eady_va, eady_ab]
+                      · simp only [support_concat, List.concat_eq_append, support_copy, ne_eq,
+                        support_ne_nil, not_false_eq_true, tail_append_of_ne_nil,
+                        disjoint_append_right, disjoint_append_left, singleton_disjoint,
+                        List.disjoint_singleton, mem_append, mem_support_append_iff, List.mem_cons,
+                        not_mem_nil, or_false, not_or, eady_va, eady_ab]
                         constructor
                         · constructor
                           · exact s_append_jisucc_Disjoint
@@ -2376,7 +2394,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         · constructor
                           · constructor
                             · exact not_exist_s
-                            · simp [eady_j_isucc]
+                            · simp only [support_copy, eady_j_isucc]
                               exact not_exist_b_take_reverse
                           · by_contra h_eq
                             obtain eq_symm := Eq.symm h_eq
@@ -2392,7 +2410,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                       rw [Walk.support_append]
                     rw [this, H]
                     constructor
-                    · simp [eady_va]
+                    · simp only [support_concat, List.concat_eq_append, eady_va]
                       rw [List.nodup_append']
                       constructor
                       · obtain H := List.nodup_append' (l₁ := s.support) (l₂ := eady_j_isucc.support.tail)
@@ -2402,8 +2420,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         have eady_j_isucc_tail_Nodup : eady_j_isucc.support.tail.Nodup := by
                           rcases Decidable.em (eady_j_isucc.Nil) with h_nil | h_nil
                           · rw [SimpleGraph.Walk.nil_iff_support_eq] at h_nil
-                            simp [h_nil]
-                          · simp [eady_j_isucc]
+                            simp only [h_nil, List.tail_cons, nodup_nil]
+                          · simp only [support_copy, eady_j_isucc]
                             apply tail_Ispath
                             · apply SimpleGraph.Walk.IsPath.takeUntil
                               simp only [isPath_reverse_iff]
@@ -2432,10 +2450,10 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             obtain congr := getVert_congr (h := this) (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                             rw [← congr] at hji_ne
                             have : i.val = 0 := by omega
-                            simp [this] at hiJ
+                            simp only [mem_univ, this, get_eq_getElem, true_and] at hiJ
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (h := by omega)] at la
                             rw [la] at hiJ
-                            obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩  (hv_not_in_p := hv_not_in_p)
+                            obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩  (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
                           · by_contra H
                             have H4 : ¬ a ∈ ((p.takeUntil _ h1).reverse.takeUntil _ h_in_i_succ).support  := by
@@ -2463,32 +2481,36 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             by_contra h
                             rw [SimpleGraph.Walk.getVert_eq_support_getElem p (by omega)] at h
                             rw [← h] at hiJ
-                            obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := hv_not_in_p)
+                            obtain h' := ore_endpoints_adjacent hG  ⟨hp_path, hp_max⟩ (hv_not_in_p := ⟨v, hv_not_in_p⟩)
                             contradiction
                         · constructor
                           · simp only [nodup_cons, not_mem_nil, not_false_eq_true, nodup_nil, and_self]
                           · simp only [List.disjoint_singleton]
                             exact Disjoint_take_i_b
-                      · simp [eady_va, eady_ab]
+                      · simp only [support_concat, List.concat_eq_append, support_copy, ne_eq,
+                        support_ne_nil, not_false_eq_true, tail_append_of_ne_nil,
+                        disjoint_append_right, disjoint_append_left, singleton_disjoint,
+                        List.disjoint_singleton, mem_append, mem_support_append_iff, List.mem_cons,
+                        not_mem_nil, or_false, not_or, eady_va, eady_ab]
                         constructor
-                        . constructor
+                        · constructor
                           · exact s_append_jisucc_Disjoint
                           · exact not_exist_take_i
                         · constructor
                           · constructor
                             · exact not_exist_s
-                            · simp [eady_j_isucc]
+                            · simp only [support_copy, eady_j_isucc]
                               exact not_exist_b_take_reverse
                           · by_contra h_eq
                             obtain eq_symm := Eq.symm h_eq
                             contradiction
                   · constructor
-                    · simp [eady_bj_succ]
+                    · simp only [eady_bj_succ]
                       apply tail_Ispath
                       · apply SimpleGraph.Walk.IsPath.takeUntil
                         simp only [isPath_reverse_iff]
                         exact hp_path
-                      · simp [eady_bj_succ] at h_nil
+                      · simp only [nil_takeUntil, eady_bj_succ] at h_nil
                         simp only [nil_takeUntil]
                         exact h_nil
                     · have append_total_Disjoint : (eady_va.append eady_ab).support.Disjoint eady_bj_succ.support.tail := by
@@ -2504,7 +2526,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           simp only [mem_toFinset] at hx_right
                           obtain H := h hx_right
                           have h_indices_right : ∃ k, p.getVert k = x ∧ k ≥ (j + 1) ∧ k < p.length := by
-                            simp [eady_bj_succ] at H
+                            simp only [eady_bj_succ] at H
                             obtain H := h_indices_trans_1 (hp := hp_path) (hx := H) (i := (j + 1)) (h := h2') (len := by omega)
                             rcases H with ⟨k , hk, hj⟩
                             use (p.length - k)
@@ -2515,7 +2537,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             by_contra h
                             have l : k = 0 := by omega
                             rw [l] at hk
-                            simp at hk
+                            simp only [tsub_zero, getVert_length] at hk
                             rw [← hk] at hx_right
                             have not_nil : ¬ eady_bj_succ.Nil := by
                               simp_all only [ge_iff_le, ne_eq, length_support,
@@ -2524,30 +2546,32 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                                 mem_toFinset, mem_support_append_iff, true_and, zero_le,
                                 lt_self_iff_false, not_false_eq_true]
                             have h' : eady_bj_succ.IsPath := by
-                              simp [eady_bj_succ]
+                              simp only [eady_bj_succ]
                               apply SimpleGraph.Walk.IsPath.takeUntil
-                              simp
+                              simp only [isPath_reverse_iff]
                               exact hp_path
                             obtain not_in := end_not_exsit_tail (p := eady_bj_succ) (h := not_nil) (hp := h')
                             contradiction
                           rcases h_indices_right with ⟨k₁, hk₁_eq, hk₁_ge⟩
                           rcases hx_left with (hx_left | hx_left)
-                          · simp [eady_va] at hx_left
+                          · simp only [support_concat, List.concat_eq_append, mem_append,
+                            mem_support_append_iff, List.mem_cons, not_mem_nil, or_false,
+                            eady_va] at hx_left
                             rcases hx_left with ((hs | he) | ha)
                             · have h2 : x ∈ p.support := by
                                 rw [SimpleGraph.Walk.mem_support_iff_exists_getVert]
                                 use k₁
-                                refine' ⟨hk₁_eq, by omega⟩
+                                refine ⟨hk₁_eq, by omega⟩
                               have h3 : x = p.getVert j := by
                                 have h_inter : x ∈ s.support ∩ p.support := by
-                                  simp
-                                  refine' ⟨hs, h2⟩
+                                  simp only [mem_inter_iff]
+                                  refine ⟨hs, h2⟩
                                 rw [hs_inter, List.singleton_eq] at h_inter
                                 simp_all only [mem_inter, mem_toFinset, List.mem_cons, not_mem_nil, or_false]
                               rw [h3] at hk₁_eq
                               obtain congr := getVert_congr (h := hk₁_eq) (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                               omega
-                            · simp [eady_j_isucc] at he
+                            · simp only [support_copy, eady_j_isucc] at he
                               have h_indices_left : ∃ k, p.getVert k = x ∧ k ≥ i + 1 ∧ k ≤ j := by
                                 obtain H := h_indices_trans_3 (hp := hp_path) (hx := he) (i := j) (j := i + 1) (hn := h_in_i_succ) (len := by omega) (hl := by omega)
                                 rcases H with ⟨k , hk, hj⟩
@@ -2563,7 +2587,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                               rw [ha] at hk₁_eq
                               obtain congr := getVert_congr (h := hk₁_eq) (hp := hp_path) (hn1 := by omega) (hn2 := by omega)
                               omega
-                          · simp [eady_ab] at hx_left
+                          · simp only [support_concat, support_copy, List.concat_eq_append,
+                            mem_append, List.mem_cons, not_mem_nil, or_false, eady_ab] at hx_left
                             rcases hx_left with (hx_left | hx_left)
                             · have h_indices_left : ∃ k, p.getVert k = x ∧ k ≤ i := by
                                 obtain H := h_indices_trans_2 (hp := hp_path) (hx := hx_left) (i := i) (h := h3) (len := by omega)
@@ -2580,7 +2605,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                         · apply Finset.empty_subset
                       exact append_total_Disjoint
               have hq_length : q.length = p.length + s.length := by
-                simp [q, eady_va, eady_j_isucc, eady_ab, eady_bj_succ]
+                simp only [Walk.length_append, Walk.length_concat, length_copy, q, eady_va,
+                  eady_j_isucc, eady_ab, eady_bj_succ]
                 have len_take_i : (p.takeUntil (p.getVert i) h_in_i).length = i := by
                   rw [len_takeUntil (hp := hp_path)]
                   omega
@@ -2634,7 +2660,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
             let s' : G.Walk v b := s.copy rfl eq
             have s'_path : s'.IsPath := by
               unfold s'
-              simp
+              simp only [isPath_copy]
               exact hs_path
             let q  : G.Walk a v := p.append s'.reverse
             have hq_path : q.IsPath := by
@@ -2656,7 +2682,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   · intro H
                     rw [SimpleGraph.Walk.nil_reverse] at H
                     obtain H' := SimpleGraph.Walk.Nil.eq H
-                    simp_all only [end_mem_support, not_true_eq_false]
+                    simp_all only [not_true_eq_false]
                 · have H3 : p.support.Disjoint s'.reverse.support.tail := by
                     rw [← List.inter_eq_nil_iff_disjoint, ← List.toFinset_eq_empty_iff]
                     simp only [support_reverse, tail_reverse, inter_reverse, toFinset_inter]
@@ -2680,13 +2706,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                             not_false_eq_true]
                         have s_eq : (s'.support.dropLast ++ [p.getVert (j)]).reverse= s'.support.reverse := by
                           rw [← List.dropLast_append_getLast (l := s'.support)]
-                          simp only [getLast_support, ne_eq, cons_ne_self, not_false_eq_true,
+                          · simp only [getLast_support, ne_eq, cons_ne_self, not_false_eq_true,
                             dropLast_append_of_ne_nil, dropLast_singleton, List.append_nil]
-                          · rw [eq]
+                            rw [eq]
                           · exact h''
                         rw [List.reverse_concat'] at s_eq
                         have l : (s'.support.reverse).Nodup := by
-                          simp
+                          simp only [nodup_reverse]
                           exact s'_path.support_nodup
                         rw [← s_eq] at l
                         obtain  H:= List.Nodup.notMem  l
@@ -2694,13 +2720,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                           rw [← eq] at h'
                           rw [h']
                           exact H
-                        simp at this
+                        simp only [mem_reverse] at this
                         contradiction
                       contradiction
                     · apply Finset.empty_subset
                   exact H3
             have hq_length : q.length = p.length + s'.length := by
-              simp [q]
+              simp only [Walk.length_append, Walk.length_reverse, q]
             have len_le : q.length > p.length := by
               rw [hq_length]
               have : 0 < s'.length:= by
@@ -2719,16 +2745,16 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
         have h1 : ({i | G.Adj a (p.support.get ⟨(i + 1) , by omega⟩)} :
           Finset (Fin (p.support.length - 1 ))) = I := by
           ext i
-          simp [I, Finset.mem_filter]
+          simp only [get_eq_getElem, Finset.mem_filter, mem_univ, true_and, I]
         have h2 : ({x | x ∈ {x | G.Adj a x}} )= (G.neighborSet a).toFinset := by
           ext v
           simp only [Set.mem_setOf_eq, Set.coe_toFinset, mem_neighborSet]
         simp only [List.get_eq_getElem, Set.mem_setOf_eq, Set.coe_toFinset] at h1 h2
-        simp_all only [ne_eq, ge_iff_le, not_false_eq_true]
+        simp_all only [ne_eq, ge_iff_le]
         let f : I → G.neighborSet a := fun ⟨i, hi⟩ => ⟨p.support.get ⟨i.val + 1 , by omega⟩, by
           simp only [List.get_eq_getElem, mem_neighborSet] at hi ⊢
           rw [← h1] at hi
-          simp at hi
+          simp only [Finset.mem_filter, mem_univ, true_and] at hi
           exact hi⟩
         have hinj : Function.Injective f := by
           intro x y h
@@ -2755,7 +2781,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                 unfold q
                 simp_all only [mem_neighborSet, Walk.cons_append, Walk.nil_append,
                   cons_isPath_iff, not_false_eq_true, and_self]
-              have hq_length : q.length = p.length + 1 := by simp [q]
+              have hq_length : q.length = p.length + 1 := by simp only [Walk.cons_append,
+                Walk.nil_append, Walk.length_cons, q]
               have := hp_max v b q ⟨hq_path.1, ?_⟩
               · rw [hq_length] at this
                 omega
@@ -2772,8 +2799,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                 have l : k ≤ p.length := by omega
                 rw [SimpleGraph.Walk.getVert_eq_support_getElem p l]
                 simp only [getElem_idxOf, k]
-              simp_all only [mem_neighborSet, length_support, lt_add_iff_pos_left, add_pos_iff,
-                zero_lt_one, or_true, le_refl, getVert_zero, SimpleGraph.irrefl]
+              simp_all only [mem_neighborSet, length_support, lt_add_iff_pos_left,
+                Order.lt_add_one_iff, zero_le, le_refl, getVert_zero, SimpleGraph.irrefl]
             have : k - 1 < (p.support.length - 1)  := by omega
             let i : Fin (p.support.length - 1 ) := ⟨k - 1, this⟩
             refine ⟨i, ?_⟩
@@ -2781,13 +2808,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
             p.support.get ⟨i.val + 1 , by omega⟩ = p.support.get ⟨k , by omega⟩ := by
               simp_all only [mem_neighborSet, get_eq_getElem]
               have : k - 1 + 1 = k := by omega
-              simp [i, this]
+              simp only [this, i]
             _ = p.support.get ⟨k , by omega⟩ := by
               simp_all only [mem_neighborSet, get_eq_getElem]
             _ = v := by
               obtain h := List.get_idxOf hp_path.support_nodup
               simp_all only [mem_neighborSet, get_eq_getElem]
-              simp [k]
+              simp only [getElem_idxOf, k]
           rcases this with ⟨i, hi⟩
           have mem : i ∈ I := by
             unfold I
@@ -2852,9 +2879,11 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
                   rw [Walk.support_append]
                 rw [SimpleGraph.Walk.isPath_def]
                 rw [this, H]
-                simp
+                simp only [support_cons, support_nil, List.tail_cons, nodup_cons, not_mem_nil,
+                  not_false_eq_true, nodup_nil, and_self, List.disjoint_singleton, true_and]
                 refine ⟨ hp_path.support_nodup, by omega⟩
-              have hq_length : q.length = p.length + 1 := by simp [q]
+              have hq_length : q.length = p.length + 1 := by simp only [Walk.length_append,
+                Walk.length_cons, Walk.length_nil, zero_add, q]
               have := hp_max a v q ⟨hq_path.1, ?_⟩
               · rw [hq_length] at this
                 omega
@@ -2869,25 +2898,24 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
               rcases this with hlt | heq
               · exact hlt
               · simp_all only [mem_neighborSet, length_support, add_tsub_cancel_right,
-                lt_add_iff_pos_right, zero_lt_one, le_refl, lt_self_iff_false]
-                have l1 : p.support.get ⟨p.support.length - 1, by simp only [length_support, add_tsub_cancel_right, lt_add_iff_pos_right,
-                    zero_lt_one]⟩ = b := by
+                lt_add_iff_pos_right, _root_.zero_lt_one, le_refl, lt_self_iff_false]
+                have l1 : p.support.get ⟨p.support.length - 1, by simp⟩ = b := by
                   have h_x_eq : p.getVert (p.support.length - 1) = b := by
                     rw [SimpleGraph.Walk.IsPath.getVert_eq_end_iff]
-                    simp
+                    · simp only [length_support, add_tsub_cancel_right]
                     · omega
-                    · simp
-                  have vertex0_is_a : p.support.get ⟨(p.support.length - 1), by simp only [length_support, add_tsub_cancel_right, lt_add_iff_pos_right,
-                    zero_lt_one]⟩ = b := by
+                    · simp only [length_support, add_tsub_cancel_right, le_refl]
+                  have vertex0_is_a : p.support.get ⟨(p.support.length - 1), by simp⟩ = b := by
                     simp
                     rw [Walk.getVert_eq_getD_support] at h_x_eq
-                    simp at h_x_eq
+                    simp only [length_support, add_tsub_cancel_right, getD_eq_getElem?_getD,
+                      lt_add_iff_pos_right, _root_.zero_lt_one, getElem?_pos,
+                      Option.getD_some] at h_x_eq
                     omega
                   omega
-                have l2: p.support.get ⟨p.support.length - 1, by simp only [length_support, add_tsub_cancel_right, lt_add_iff_pos_right,
-                    zero_lt_one]⟩ = v := by
+                have l2: p.support.get ⟨p.support.length - 1, by simp⟩ = v := by
                   conv_lhs => enter [2, 1]; rw [length_support, ← heq]
-                  simp [k]
+                  simp only [add_tsub_cancel_right, get_eq_getElem, getElem_idxOf, k]
                 simp_all only [length_support, add_tsub_cancel_right, get_eq_getElem,
                   SimpleGraph.irrefl]
             let i : Fin (p.support.length - 1) := ⟨k , this⟩
@@ -2895,13 +2923,13 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
             calc
             p.support.get ⟨i.val  , by omega⟩ = p.support.get ⟨k , by omega⟩ := by
               simp_all only [mem_neighborSet, get_eq_getElem]
-              simp[i]
+              simp only [i]
             _ = p.support.get ⟨k , by omega⟩ := by
               simp_all only [mem_neighborSet, get_eq_getElem]
             _ = v := by
               obtain h := List.get_idxOf hp_path.support_nodup
               simp_all only [mem_neighborSet, get_eq_getElem]
-              simp [k]
+              simp only [getElem_idxOf, k]
           rcases this with ⟨i, hi⟩
           have mem : i ∈ J := by
             unfold J
@@ -2932,8 +2960,8 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
               calc
                 (I ∪ J).card ≤ p.support.length - 1 := by
                   obtain h := Finset.card_le_univ (s := I ∪ J)
-                  simp at h
-                  simp
+                  simp only [length_support, add_tsub_cancel_right, Fintype.card_fin] at h
+                  simp only [length_support, add_tsub_cancel_right]
                   exact h
                 _ = p.length := by
                   rw [this]
@@ -2957,7 +2985,7 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
         obtain h := SimpleGraph.Walk.IsPath.length_lt hp_path
         omega
       have h_degree_lower_bound : G.degree a + G.degree b ≥ p.length + 1 := by
-        obtain no_adj := ore_endpoints_adjacent hG (hp := ⟨hp_path, hp_max⟩) (hv_not_in_p := hv_not_in_p)
+        obtain no_adj := ore_endpoints_adjacent hG (hp := ⟨hp_path, hp_max⟩) (hv_not_in_p := ⟨v, hv_not_in_p⟩)
         obtain h := h_ore a b h_neq no_adj
         omega
       have : p.length < G.degree a + G.degree b := by omega
@@ -2970,12 +2998,12 @@ lemma maximal_path_extends_or_hamiltonian {G : SimpleGraph V} [Fintype V] [G.Loc
 
 
 
-lemma Walk.edge_get_verts {G : SimpleGraph V} [G.LocallyFinite] {u w : V} (p : G.Walk u w) (hp : p.IsPath) :
+lemma Walk.edge_get_verts {G : SimpleGraph V} {u w : V} (p : G.Walk u w) (hp : p.IsPath) :
     ∀ (i :ℕ) (hi : i < p.edges.length), p.edges.get ⟨i, hi⟩ = s(p.getVert i, p.getVert (i + 1)) := by
   induction p with
   | nil =>
     intro i hi
-    simp at hi
+    simp only [edges_nil, List.length_nil, not_lt_zero] at hi
   | cons hd tl ih =>
       intro i hi
       by_cases hi0 : i = 0
@@ -2987,8 +3015,8 @@ lemma Walk.edge_get_verts {G : SimpleGraph V} [G.LocallyFinite] {u w : V} (p : G
           conv_rhs => enter [1, 1];rw [show i = i - 1 + 1 by rw [Nat.sub_add_cancel (by omega)]]
           rw [← List.get_tail]
           · simp_all only [length_edges, get_eq_getElem, cons_isPath_iff, edges_cons,
-            List.length_cons, lt_add_iff_pos_right, zero_lt_one, List.tail_cons, getVert_cons_succ,
-            getVert_length, forall_const, implies_true]
+            List.length_cons, lt_add_iff_pos_right, _root_.zero_lt_one, List.tail_cons,
+            getVert_cons_succ, getVert_length, forall_const, implies_true]
             have : tl.length = tl.support.length - 1 := by
               rw [SimpleGraph.Walk.length_support]; simp
             have l2 : tl.length - 1 < tl.edges.length := by
@@ -2998,17 +3026,17 @@ lemma Walk.edge_get_verts {G : SimpleGraph V} [G.LocallyFinite] {u w : V} (p : G
             rw [H, Nat.sub_add_cancel (by omega)]
             simp only [getVert_length]
           · simp_all only [length_edges, get_eq_getElem, cons_isPath_iff, edges_cons,
-            List.length_cons, lt_add_iff_pos_right, zero_lt_one, List.tail_cons, tsub_lt_self_iff,
-            and_true, forall_const, implies_true]
+            List.length_cons, lt_add_iff_pos_right, _root_.zero_lt_one, List.tail_cons,
+            tsub_lt_self_iff, and_true, forall_const, implies_true]
             omega
         · conv_lhs => enter [2, 1];rw [show i = i - 1 + 1 by rw [Nat.sub_add_cancel (by omega)]]
           rw [← List.get_tail]
           · have : 0 < i := Nat.pos_of_ne_zero hi0
             have : (Walk.cons hd tl).getVert i = tl.getVert (i - 1) := by
               rw [show i = i -1 + 1  by omega]
-              simp [Walk.getVert]
+              simp only [getVert, add_tsub_cancel_right]
             have : (Walk.cons hd tl).getVert (i + 1) = tl.getVert i := by
-              simp [Walk.getVert]
+              simp only [getVert]
             simp_all only [length_edges, get_eq_getElem, cons_isPath_iff, edges_cons,
               List.length_cons, getVert_cons_succ, List.tail_cons, forall_const, implies_true]
             have hi' : i < tl.edges.length := by
@@ -3054,7 +3082,7 @@ lemma getVert_length_dropUntil {G : SimpleGraph V} [DecidableEq V] {u v w : V} {
 /--
 Under the Ore condition, a Hamiltonian path must exist in the graph.
 -/
-lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFinite] {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} {h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V} :
+lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [G.LocallyFinite] [DecidableEq V] {hG : G.Connected} {a b : V} (p : G.Walk a b) (hp : Walk.IsMaxlongPath p) {h_order : Fintype.card V ≥ 3} {h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V} :
     p.IsHamiltonian := by
   classical
   obtain H := maximal_path_extends_or_hamiltonian
@@ -3067,7 +3095,7 @@ lemma maximal_hamiltonian {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.Loc
 
 
 
-lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fintype V] (h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V) {h_order : Fintype.card V ≥ 3} {a b : V} {h_ne : a ≠ b} {p : G.Walk a b} {hp : Walk.IsMaxlongPath p} {h_ab : ¬ G.Adj a b}:
+lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [Fintype V] [G.LocallyFinite] (h_ore : ∀ u v : V, u ≠ v → ¬ G.Adj u v → G.degree u + G.degree v ≥ Fintype.card V) {h_order : Fintype.card V ≥ 3} {a b : V} {h_ne : a ≠ b} {p : G.Walk a b} {hp : Walk.IsMaxlongPath p} {h_ab : ¬ G.Adj a b}:
   ∃ (k : (Fin (Fintype.card V - 1))), G.Adj a (p.getVert (k.val + 1)) ∧ G.Adj  (p.getVert k.val) b := by
   have h_all : ∀ v : V, v ∈ p.support := by
     intro v
@@ -3108,7 +3136,7 @@ lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fin
     have h1 : ({i | G.Adj a ( p.support.get ⟨i + 1, by rw [h_vertices_length]; omega⟩)} :
       Finset (Fin (Fintype.card V - 1))) = I := by
       ext i
-      simp [I, Finset.mem_filter]
+      simp only [get_eq_getElem, Finset.mem_filter, mem_univ, true_and, I]
     have h2 : ({x | x ∈ {x | G.Adj a x}} )= (G.neighborSet a).toFinset := by
       ext v
       simp
@@ -3181,10 +3209,10 @@ lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fin
     unfold J
     rw [← SimpleGraph.card_neighborSet_eq_degree G b]
     apply Finset.card_eq_of_equiv_fintype
-    have h1 : ({i | G.Adj (p.support.get ⟨i , by rw [h_vertices_length] ; omega⟩) b} :
+    have h1 : ({i | G.Adj (p.support.get ⟨i, by rw [h_vertices_length]; omega⟩) b} :
       Finset (Fin (Fintype.card V - 1) ) ) = J := by
       ext i
-      simp [J, Finset.mem_filter]
+      simp only [get_eq_getElem, Finset.mem_filter, mem_univ, true_and, J]
     have h2 : ({x | x ∈ {x | G.Adj x b}} )= (G.neighborSet b).toFinset := by
       ext v
       simp only [Set.mem_setOf_eq, Set.coe_toFinset, mem_neighborSet]
@@ -3242,7 +3270,7 @@ lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fin
           rcases hk with (h1 | h2)
           · omega
           · have v_eq : v = b := by
-              simp_all only [mem_neighborSet, tsub_lt_self_iff, zero_lt_one, and_true,
+              simp_all only [mem_neighborSet, tsub_lt_self_iff, _root_.zero_lt_one, and_true,
                 tsub_pos_iff_lt, and_self]
               have len : Fintype.card V - 1 = p.length := by
                 rw [← h_vertices_length, SimpleGraph.Walk.length_support]; simp
@@ -3263,14 +3291,14 @@ lemma ore_adjacent {G : SimpleGraph V} (hG : G.Connected) [G.LocallyFinite] [Fin
         p.support.get ⟨i.val, by omega⟩ = p.support.get ⟨k , by omega⟩ := by
           have : k - 1 + 1 = k := by omega
           simp_all only [mem_neighborSet, get_eq_getElem]
-          simp[i]
+          simp only [i]
         _ = p.support.get ⟨k , by omega⟩ := by
           simp_all
         _ = v := by
           unfold Walk.IsMaxlongPath at hp
           obtain h := List.get_idxOf hp.1.support_nodup
           simp_all only [mem_neighborSet, get_eq_getElem]
-          simp [k]
+          simp only [getElem_idxOf, k]
       rcases this with ⟨i, hi⟩
       have mem : i ∈ J := by
         unfold J
@@ -3377,8 +3405,10 @@ theorem Ore_Connected {G : SimpleGraph V} [Fintype V] [G.LocallyFinite]
       obtain h := SimpleGraph.Reachable.trans hx_left hx_right
       contradiction
     · apply Finset.empty_subset
-  have hU_nonempty : U.Nonempty := ⟨x, by simp [U, comp_u]⟩
-  have hW_nonempty : W.Nonempty := ⟨y, by simp [W, comp_v]⟩
+  have hU_nonempty : U.Nonempty := ⟨x, by simp only [ConnectedComponent.eq, Finset.mem_filter,
+    mem_univ, Reachable.rfl, and_self, U, comp_u]⟩
+  have hW_nonempty : W.Nonempty := ⟨y, by simp only [ConnectedComponent.eq, Finset.mem_filter,
+    mem_univ, Reachable.rfl, and_self, W, comp_v]⟩
   let r := U.card
   let s := W.card
   have h_card_sum : r + s ≤ n := by
@@ -3403,7 +3433,7 @@ theorem Ore_Connected {G : SimpleGraph V} [Fintype V] [G.LocallyFinite]
         exact hw
       simp only [Finset.mem_filter, mem_univ, comp_eq, and_self, U]
     have not_self_neighbor : x ∉ G.neighborFinset x := by
-      simp [mem_neighborFinset]
+      simp only [mem_neighborFinset, SimpleGraph.irrefl, not_false_eq_true]
     calc
       G.degree x = (G.neighborFinset x).card := by rw [SimpleGraph.card_neighborFinset_eq_degree]
       _ ≤ (U.erase x).card := by
@@ -3413,13 +3443,13 @@ theorem Ore_Connected {G : SimpleGraph V} [Fintype V] [G.LocallyFinite]
         rw [Finset.subset_iff] at neighbors_in_U
         obtain h := neighbors_in_U hw
         simp
-        simp at hw
+        simp only [mem_neighborFinset] at hw
         obtain l := SimpleGraph.Adj.ne hw.symm
         refine ⟨by simp only [ne_eq] at l; exact l, h⟩
       _ = r - 1 := by
         simp only [r]
         apply Finset.card_erase_of_mem
-        simp [U, comp_u]
+        simp only [ConnectedComponent.eq, Finset.mem_filter, mem_univ, Reachable.rfl, and_self, U, comp_u]
     simp only [tsub_le_iff_right, r]
     rw [Nat.sub_add_cancel]
     · simp only [ConnectedComponent.eq, le_refl, U, comp_u]
@@ -3448,7 +3478,7 @@ theorem Ore_Connected {G : SimpleGraph V} [Fintype V] [G.LocallyFinite]
         rw [Finset.subset_iff] at neighbors_in_W
         obtain h := neighbors_in_W hw
         simp
-        simp at hw
+        simp only [mem_neighborFinset] at hw
         obtain l := SimpleGraph.Adj.ne hw.symm
         refine ⟨by simp only [ne_eq] at l; exact l, h⟩
       _ = s - 1 := by
@@ -3495,7 +3525,7 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
         · intro h
           rw [h] at h_all_vertices
           have : Fintype.card V = 1 := by
-            simp [Walk.support_nil] at h_all_vertices
+            simp only [support_nil, List.mem_cons, not_mem_nil, or_false] at h_all_vertices
             apply Fintype.card_eq_one_of_forall_eq (i := a)
             omega
           omega
@@ -3611,9 +3641,9 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
                   simp
                 rw [SimpleGraph.Walk.length_edges] at this
                 rename_i hl
-                simp only [getD_eq_getElem?_getD, length_support, lt_add_iff_pos_right, zero_lt_one,
-                  getElem?_pos, Option.getD_some] at l
-                rw [<- List.getD_eq_getD_getElem?, List.getD_eq_getElem] at l
+                simp only [getD_eq_getElem?_getD, length_support, lt_add_iff_pos_right,
+                  _root_.zero_lt_one, getElem?_pos, Option.getD_some] at l
+                rw [<- List.getD_eq_getElem?_getD, List.getD_eq_getElem] at l
                 · obtain Hl := List.Nodup.getElem_inj_iff h_maxpath.1.support_nodup (j := 1) (i := p.length)
                   have h_length_eq : p.length = 1 := Hl.mp l
                   omega
@@ -3630,7 +3660,8 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
                   enter[2]; rw [SimpleGraph.Walk.length_edges]
                 omega
               obtain l1 := SimpleGraph.Walk.IsPath.getVert_eq_start_iff (p := p) (hp := h_maxpath.1) (i := (i + 1)) l2
-              simp [h1'.symm] at l1
+              simp only [h1'.symm, Nat.add_eq_zero_iff, one_ne_zero, and_false, iff_false,
+                not_true_eq_false] at l1
             · obtain h1'  := h2.2
               rw [Eq.comm] at h1'
               have l1' : i ≤ p.length := by
@@ -3679,7 +3710,8 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
           rw [List.nodup_append]
           constructor
           · exact h_maxpath.1.support_nodup.tail
-          · simp
+          · simp only [nodup_cons, not_mem_nil, not_false_eq_true, nodup_nil, and_self,
+            List.mem_cons, or_false, ne_eq, forall_eq, true_and]
             intro h_inter
             rw [SimpleGraph.Walk.support_eq_cons p] at h_nodup
             simp only [Nodup, ne_eq, List.pairwise_cons] at h_nodup
@@ -3698,10 +3730,10 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
           unfold cycle
           rw [SimpleGraph.Walk.support_tail_of_not_nil]
           · simp
-          · simp [Walk.concat]
+          · simp only [Walk.concat, nil_append_iff, not_nil_cons, and_false, not_false_eq_true]
         rw [this]
         obtain H := h_all_vertices v
-        simp
+        simp only [mem_append, List.mem_cons, not_mem_nil, or_false]
         rw [SimpleGraph.Walk.mem_support_iff] at H
         exact H.symm
       simp_all only [ge_iff_le, ne_eq]
@@ -3841,15 +3873,14 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
         have h_p_trail : p.IsTrail := h_maxpath.1.isTrail
         rw [SimpleGraph.Walk.isTrail_def] at h_p_trail
         unfold cycle
-        simp [Walk.cons_append, edges_cons,
-          edges_append, nodup_cons, mem_append, List.mem_cons, Sym2.eq, Sym2.rel_iff',
-          Prod.mk.injEq, Prod.swap_prod_mk, not_or, not_and]
+        simp only [Walk.cons_append, edges_cons, edges_append, nodup_cons, mem_append,
+          List.mem_cons, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, not_or, not_and]
         constructor
         · constructor
-          · simp [eaxy_ksucc_b]
+          · simp only [eaxy_ksucc_b]
             have hp_path : (p.reverse.takeUntil (p.getVert (k + 1)) hk').IsPath := by
               apply SimpleGraph.Walk.IsPath.takeUntil
-              simp
+              simp only [isPath_reverse_iff]
               exact h_maxpath.1
             by_contra h_edge_in
             obtain H := SimpleGraph.Walk.fst_mem_support_of_mem_edges (p := (p.reverse.takeUntil (p.getVert (k + 1)) hk')) h_edge_in
@@ -3901,7 +3932,7 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
                 simp only [h] at h'
                 rw [← this] at h'
                 contradiction
-            · simp [eaxy_ak]
+            · simp only [eaxy_ak]
               have hp_path :(p.takeUntil (p.getVert k) hk).IsPath := by
                 apply SimpleGraph.Walk.IsPath.takeUntil
                 exact h_maxpath.1
@@ -3940,17 +3971,17 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
         · rw [← SimpleGraph.Walk.support_tail_of_not_nil, ← SimpleGraph.Walk.support_tail_of_not_nil]
           · rw [H]
             constructor
-            · simp [eaxy_ksucc_b]
+            · simp only [getVert_cons_succ, Walk.tail_cons, support_copy, eaxy_ksucc_b]
               rw [← SimpleGraph.Walk.isPath_def]
               apply SimpleGraph.Walk.IsPath.takeUntil
               simp only [isPath_reverse_iff]
               exact h_maxpath.1
             · constructor
-              · simp [eaxy_ak]
+              · simp only [getVert_cons_succ, Walk.tail_cons, support_copy, eaxy_ak]
                 rw [← SimpleGraph.Walk.isPath_def]
                 apply SimpleGraph.Walk.IsPath.takeUntil
                 exact h_maxpath.1
-              · simp [eaxy_ksucc_b, eaxy_ak]
+              · simp only [getVert_cons_succ, Walk.tail_cons, support_copy, eaxy_ksucc_b, eaxy_ak]
                 have H4 : (p.reverse.takeUntil (p.getVert (k + 1)) hk').support.Disjoint
                   ((p.takeUntil (p.getVert k) hk)).support := by
                   rw [← List.inter_eq_nil_iff_disjoint]
@@ -4070,8 +4101,7 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
             true_and]
           apply List.subset_append_of_subset_left
           rw [List.subset_def]
-          intro v
-          intro hv
+          intro v hv
           have h_indices_hv: ∃ j, p.getVert j = v ∧ j ≥ k + 1 ∧ j ≤ p.length:= by
             rw [← SimpleGraph.Walk.support_tail_of_not_nil] at hv
             · rw [SimpleGraph.Walk.mem_support_iff_exists_getVert ] at hv
@@ -4083,7 +4113,7 @@ theorem Ore_theorem {G : SimpleGraph V} [Fintype V] [DecidableEq V] [G.LocallyFi
                 · simp only [add_tsub_cancel_right]
                 · apply SimpleGraph.Walk.not_nil_of_ne
                   by_contra H
-                  simp [H] at h2
+                  simp only [H, SimpleGraph.irrefl] at h2
               rw [this] at hj_len
               have len : (p.takeUntil (p.getVert k) hk).length = k := by
                   have : p.getVert (p.takeUntil (p.getVert k) hk).length =  p.getVert k := by

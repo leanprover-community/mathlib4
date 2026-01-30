@@ -54,6 +54,8 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 * `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
+We define a specific example of `AddContent`, called `AddContent.onIoc`, on the semiring of sets
+made of open-closed intervals, mapping `(a, b]` to `f b - f a`.
 -/
 
 @[expose] public section
@@ -267,6 +269,103 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_IsSigmaSubadditive {m : AddCont
     (fun _ hf hf_Union _ ↦ m_subadd hf hf_Union) f hf hf_Union hf_disj
 
 end IsSetSemiring
+
+section OnIoc
+
+variable [LinearOrder α] {G : Type*} [AddCommGroup G]
+
+open scoped Classical in
+/-- The function associating to an interval `Ioc u v` the difference `f v - f u`.
+Use instead `AddContent.ofIoc` which upgrades this function to an additive content. -/
+noncomputable def AddContent.onIocAux (f : α → G) (s : Set α) : G :=
+  if h : ∃ (p : α × α), p.1 ≤ p.2 ∧ s = Set.Ioc p.1 p.2
+    then f h.choose.2 - f h.choose.1 else 0
+
+lemma AddContent.onIocAux_apply {f : α → G} {u v : α} (h : u ≤ v) :
+    AddContent.onIocAux f (Ioc u v) = f v - f u := by
+  have h' : ∃ (p : α × α), p.1 ≤ p.2 ∧ Ioc u v = Ioc p.1 p.2 := ⟨(u, v), h, rfl⟩
+  simp only [onIocAux, h', ↓reduceDIte]
+  set u' := h'.choose.1
+  set v' := h'.choose.2
+  have hu'v' : u' ≤ v' ∧ Ioc u v = Ioc u' v' := h'.choose_spec
+  rcases h.eq_or_lt with rfl | huv
+  · grind [Set.Ioc_eq_empty_iff]
+  rw [Ioc_eq_Ioc_iff (Or.inl huv)] at hu'v'
+  grind
+
+lemma AddContent.onIocAux_empty (f : α → G) :
+    AddContent.onIocAux f ∅ = 0 := by
+  classical
+  rw [onIocAux, dite_eq_right_iff]
+  grind [Set.Ioc_eq_empty_iff]
+
+/-- The additive content on the set of open-closed intervals, associating to an interval `Ioc u v`
+the difference `f v - f u`. -/
+noncomputable def AddContent.onIoc (f : α → G) :
+    AddContent G {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  toFun := AddContent.onIocAux f
+  empty' := AddContent.onIocAux_empty f
+  sUnion' := by
+    classical
+    /- Consider a finite union of open-closed intervals whose union is again an open-closed
+    interval `(u, v]`. We have to show that the sum of `f b - f a` over the intervals gives
+    `f v - f u`. Informally, `(u, v]` is an ordered
+    union `(a₀, a₁] ∪ (a₁, a₂] ∪ ... ∪ (a_{n-1}, aₙ]` and there is a telescoping sum.
+    For the formal argument, we argue by induction on the number of intervals, and remove the
+    right-most one (i.e., the one that contains `v`) to reduce to one interval less. Denoting
+    this right-most interval by `(u', v]`, then the union of the other intervals
+    is exactly `(u, u']`. From this and the induction assumption, the conclusion follows. -/
+    intro I hI h'I h''I
+    induction hn : Finset.card I generalizing I with
+    | zero =>
+      have : I = ∅ := by grind
+      simp [this, onIocAux_empty f]
+    | succ n ih =>
+      rcases h''I with ⟨u, v, huv, h'uv⟩
+      -- If the interval `(u, v]` is empty, i.e., `u = v`, then the result is easy.
+      rcases huv.eq_or_lt with rfl | huv
+      · have : onIocAux f (Set.Ioc u u) = ∑ u ∈ I, 0 := by simp [onIocAux_empty f]
+        rw [h'uv, this]
+        apply Finset.sum_congr rfl fun i hi ↦ ?_
+        have : i = ∅ := by grind [sUnion_eq_empty]
+        grind [onIocAux_empty]
+      -- otherwise, `v` is in `(u, v]`, therefore it belongs to some interval `(u', v']`
+      -- featuring in the union.
+      have : v ∈ ⋃₀ ↑I := by simp [h'uv, huv]
+      obtain ⟨t, tI, ht⟩ : ∃ t ∈ I, v ∈ t := by simpa using this
+      rcases hI tI with ⟨u', v', hu'v', rfl⟩
+      -- we have `u ≤ u'` and `v' = v` since `(u', v']` is part of the union, and therefore
+      -- contained in `(u, v]`.
+      have ⟨_, uu'⟩ : v' ≤ v ∧ u ≤ u' := (Ioc_subset_Ioc_iff (by grind)).1 (by grind)
+      obtain rfl : v = v' := by grind
+      rw [h'uv, onIocAux_apply huv.le]
+      -- let us remove the right-most interval `(u', v]` from the union, and let `I'` be the
+      -- remaining set of intervals.
+      let I' := I.erase (Set.Ioc u' v)
+      have I'I : I' ⊆ I := erase_subset (Set.Ioc u' v) I
+      have I_eq_insert : I = insert (Set.Ioc u' v) I' := by simp [I', tI]
+      -- the intervals in `I'` cover exactly `(u, u']`.
+      have UI' : ⋃₀ ↑I' = Ioc u u' := by
+        have : (Ioc u' v ∪ ⋃₀ ↑I') \ Ioc u' v = ⋃₀ ↑I' := by
+          refine Disjoint.sup_sdiff_cancel_left ?_
+          simp only [coe_erase, disjoint_sUnion_right, mem_diff, mem_singleton_iff, and_imp, I']
+          intro u hu hu'
+          exact (h'I hu tI hu').symm
+        simp only [I_eq_insert, coe_insert, sUnion_insert] at h'uv
+        grind
+      -- by the inductive assumption, the sum over `I'` is exactly `f u' - f u`.
+      have IH : onIocAux f (⋃₀ ↑I') = ∑ u ∈ I', onIocAux f u :=
+        ih _ (Subset.trans I'I hI) (h'I.subset I'I) (by grind) (by grind)
+      -- the conclusion follows.
+      rw [I_eq_insert, sum_insert, ← IH, UI', onIocAux_apply hu'v', onIocAux_apply uu']
+      · simp
+      · simp [I']
+
+lemma AddContent.onIoc_apply {f : α → G} {u v : α} (h : u ≤ v) :
+    AddContent.onIoc f (Ioc u v) = f v - f u :=
+  AddContent.onIocAux_apply h
+
+end OnIoc
 
 section AddContentExtend
 
