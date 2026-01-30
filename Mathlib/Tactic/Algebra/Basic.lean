@@ -218,12 +218,10 @@ def neg (cR : Algebra.Cache sR) (a : Q($A)) (_rA : Q(CommRing $A)) (za : BaseTyp
 /-- Raise a normalized expression in `R` to the power of a normalized natural number expression
 using `ring`. -/
 def pow (a : Q($A)) (za : BaseType sAlg a) (b : Q(ℕ))
-    (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
+    (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Common.Result (BaseType sAlg) q($a ^ $b)) := do
   let ⟨r, vr⟩ := za
-  let ⟨b', vb'⟩ := vb.toExProdNat
-  have : $b =Q $b' := ⟨⟩
-  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr (vb')
+  let ⟨_, vs, ps⟩ ← Common.evalPow₁ (Ring.ringCompute sR) rcℕ vr vb
   return ⟨_, ⟨_, vs⟩, q(pow_algebraMap $ps)⟩
 
 /-- Evaluate the inverse of two normalized expressions in `R` using `ring`. -/

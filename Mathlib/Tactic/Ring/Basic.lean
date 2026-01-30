@@ -388,15 +388,17 @@ def ExSum.cast
 
 end
 
-lemma smul_eq_mul {α : Type*} [Mul α] (a b : α) : a • b = a * b := rfl
+lemma smul_eq_mul {α : Type*} [Mul α] {a a' : α} (h : a = a') (b : α) : a • b = a' * b := by
+  subst h
+  rfl
 
-theorem Nat.smul_eq_mul {n : ℕ} {r : R} (hr : n = r) {a : R} : n • a = r * a := by
+theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) : n' • a = r * a := by
   subst_vars
   simp only [nsmul_eq_mul]
 
 omit [CommSemiring R] in
-theorem Int.smul_eq_mul {n : ℤ} {r : R} [CommRing R] (hr : n = r) {a : R} :
-    n • a = r * a := by
+theorem Int.smul_eq_mul {n n': ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
+    n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]
 
@@ -447,18 +449,18 @@ def cast (v : Lean.Level) (β : Q(Type v)) (sβ : Q(CommSemiring $β))
     let ⟨b, vb⟩ := (ExSum.cast (u := v) (v := u) (sα := sβ) (sβ := sα) vx)
     have : $b =Q $x' := ⟨⟩
     assumeInstancesCommute
-    return ⟨_, vb, q(fun a => $px ▸ smul_eq_mul $x' a)⟩
+    return ⟨_, vb, q(smul_eq_mul $px)⟩
   match v, β, sβ with
   | 0, ~q(ℕ), ~q(inferInstance) =>
     let ⟨y, vy, py⟩ ← ExSum.evalNatCast sα sβ vx
     assumeInstancesCommute
-    return ⟨y, vy, q(fun _ => $px ▸ Nat.smul_eq_mul $py)⟩
+    return ⟨y, vy, q(Nat.smul_eq_mul $py $px)⟩
   | 0, ~q(ℤ), ~q(inferInstance) =>
     -- TODO: use the cache instead.
     let rα : Q(CommRing $α) ← synthInstanceQ q(CommRing $α)
     let ⟨y, vy, py⟩ ← ExSum.evalIntCast sα sβ rα vx
     assumeInstancesCommute
-    return ⟨y, vy, q(fun _ => $px ▸ Int.smul_eq_mul $py)⟩
+    return ⟨y, vy, q(Int.smul_eq_mul $py $px)⟩
   | _ => failure
 
 /-- Negate rational number expressions. -/
@@ -473,7 +475,7 @@ def neg (a : Q($α)) (_crα : Q(CommRing $α)) (za : BaseType sα a) :
 
 Fails if the exponent is not a literal. -/
 def pow (a : Q($α)) (za : BaseType sα a) (b : Q(ℕ))
-    (vb : Common.ExProd Common.btℕ Common.sℕ q($b)) :
+    (vb : Common.ExProdNat q($b)) :
     OptionT MetaM (Result (BaseType sα) q($a ^ $b)) := do
   match vb with
   | .const _ =>

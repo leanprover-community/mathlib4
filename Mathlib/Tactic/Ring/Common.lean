@@ -287,7 +287,7 @@ structure RingCompute {u : Lean.Level} {α : Q(Type u)} (BaseType : Q($α) → T
   /-- Raise a coefficient to some natural power.
   The exponent may not be a natural literal. If the tactic can only raise coefficients to the power
   of a literal (e.g. `ring`), it should check for this and return `none` otherwise. -/
-  pow (sα) : ∀ x : Q($α), BaseType x → (b : Q(ℕ)) → (vb : ExProd btℕ sℕ q($b)) →
+  pow (sα) : ∀ x : Q($α), BaseType x → (b : Q(ℕ)) → (vb : ExProdNat q($b)) →
     OptionT MetaM (Result BaseType q($x ^ $b))
   -- TODO: Do we want this to run in AtomM or in MetaM & handle atoms on failure?
   /-- Evaluate the inverse of a coefficient. -/
@@ -393,7 +393,7 @@ def ExBase.toProd
     Result (ExProd bt sα) q($a ^ $b * (nat_lit 1).rawCast) :=
       let ⟨_, one, pf⟩ := rc.one
       ⟨_, .mul va vb (.const  (one)),
-        (q($pf ▸ Eq.refl ($a ^ $b * (nat_lit 1).rawCast))) ⟩
+        (q(by rw [← $pf])) ⟩
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum {e : Q($α)} (v : ExProd bt sα e) : ExSum bt sα q($e + 0) :=
@@ -753,7 +753,9 @@ def evalSub {a b : Q($α)}
 
 /-! ### Exponentiation -/
 
-theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
+theorem pow_prod_atom (a : R) (b) {e : R} (h : (a + 0) ^ b * (nat_lit 1).rawCast = e) :
+    a ^ b = e := by
+  simp [← h]
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -765,9 +767,11 @@ the input types are different.)
 def evalPowProdAtom {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat b) :
     Result (ExProd bt sα) q($a ^ $b) :=
     let ⟨_, vc, pc⟩ := (ExBase.sum va.toSum).toProd rc vb
-  ⟨_, vc, q($pc ▸ pow_prod_atom $a $b)⟩
+  ⟨_, vc, q(pow_prod_atom $a $b $pc)⟩
 
-theorem pow_atom (a : R) (b) : a ^ b = a ^ b * (nat_lit 1).rawCast + 0 := by simp
+theorem pow_atom (a : R) (b) {e : R} (h : a ^ b * (nat_lit 1).rawCast = e) :
+    a ^ b = e + 0 := by
+  simp [← h]
 
 /--
 The fallback case for exponentiating polynomials is to use `ExBase.toProd` to just build an
@@ -778,7 +782,7 @@ exponent expression.
 def evalPowAtom {a : Q($α)} {b : Q(ℕ)} (va : ExBase bt sα a) (vb : ExProdNat b) :
     Result (ExSum bt sα) q($a ^ $b) :=
   let ⟨_, vc, pc⟩ := (va.toProd rc vb)
-  ⟨_, vc.toSum, q($pc ▸ pow_atom $a $b)⟩
+  ⟨_, vc.toSum, q(pow_atom $a $b $pc)⟩
 
 theorem const_pos (n : ℕ) (h : Nat.ble 1 n = true) : 0 < (n.rawCast : ℕ) := Nat.le_of_ble_eq_true h
 
@@ -906,9 +910,7 @@ def evalPowProd {a : Q($α)} {b : Q(ℕ)} (va : ExProd bt sα a) (vb : ExProdNat
       | .some pf =>
         return ⟨_, va, q(one_pow $b $pf)⟩
       | .none =>
-        let ⟨b', vb'⟩ := vb.toExProd
-        have : $b =Q $b' := ⟨⟩
-        let ⟨_, zc, pc⟩ ← rc.pow _ za _ vb'
+        let ⟨_, zc, pc⟩ ← rc.pow _ za _ vb
         return ⟨_, .const zc, q($pc)⟩
     | .mul vxa₁ (e := ea₁) vea₁ va₂ =>
       let ⟨ea₁', vea₁'⟩ := vea₁.toExProd
@@ -936,7 +938,8 @@ structure ExtractCoeff (e : Q(ℕ)) where
   /-- The proof that `e` splits into the coefficient `k` and the monic monomial `e'`. -/
   p : Q($e = $e' * $k)
 
-theorem coeff_one (k : ℕ) : k.rawCast = (nat_lit 1).rawCast * k := by simp
+theorem coeff_one (k : ℕ) {e : ℕ} (h : (nat_lit 1).rawCast = e) :
+  k.rawCast = e * k := by simp [← h]
 
 theorem coeff_mul {a₃ c₂ k : ℕ}
     (a₁ a₂ : ℕ) (_ : a₃ = c₂ * k) : a₁ ^ a₂ * a₃ = (a₁ ^ a₂ * c₂) * k := by
@@ -955,7 +958,7 @@ def extractCoeff {a : Q(ℕ)} (va : ExProdNat a) : ExtractCoeff a :=
     have : $a =Q Nat.rawCast $k := ⟨⟩
     assumeInstancesCommute
     let ⟨_, one, pf⟩ := rcℕ.one
-    return ⟨k, _, .const (one), q($pf ▸ coeff_one $k)⟩
+    return ⟨k, _, .const (one), q(coeff_one $k $pf)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨k, _, vc, pc⟩ := extractCoeff va₃
     ⟨k, _, .mul va₁ va₂ vc, q(coeff_mul $a₁ $a₂ $pc)⟩
@@ -1013,7 +1016,8 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExP
   | _ =>
     NotPowOne
 
-theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
+theorem pow_zero (a : R) {e : R} (h : (nat_lit 1 ).rawCast = e) :
+    a ^ 0 = e + 0 := by simp [← h]
 
 theorem pow_add {b₁ b₂ : ℕ} {d : R}
     (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) : (a : R) ^ (b₁ + b₂) = d := by
@@ -1030,7 +1034,7 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExSumNat b) :
   | .zero =>
     let ⟨_, one, pf⟩ := rc.one
     assumeInstancesCommute
-    return ⟨_, (ExProd.const (one)).toSum, q($pf ▸ pow_zero $a)⟩
+    return ⟨_, (ExProd.const (one)).toSum, q(pow_zero $a $pf)⟩
   | .add vb₁ vb₂ =>
     let ⟨_, vc₁, pc₁⟩ ← evalPow₁ rc rcℕ va vb₁
     let ⟨_, vc₂, pc₂⟩ ← evalPow va vb₂
@@ -1055,10 +1059,15 @@ def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
 
 theorem toProd_pf (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
     a = a' ^ e * (nat_lit 1).rawCast := by simp [← hone, *]
-theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
-    a = a ^ e * (nat_lit 1).rawCast + 0 := by simp [← hone]
-theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e) :
-    a = a' ^ e * (nat_lit 1).rawCast + 0 := by simp [← hone, *]
+
+theorem atom_pf (a : R) {e : ℕ} (hone : (nat_lit 1).rawCast = e)
+    (hb : a ^ e * (nat_lit 1).rawCast = b) :
+    a = b + 0 := by
+  simp [← hone, ← hb]
+
+theorem atom_pf' (p : (a : R) = a') {e : ℕ} (hone : (nat_lit 1).rawCast = e)
+    (hb : a' ^ e * (nat_lit 1).rawCast = b) :
+    a = b + 0 := by simp [← hone, ←hb, *]
 
 /--
 Evaluates an atom, an expression where `ring` can find no additional structure.
@@ -1076,9 +1085,9 @@ def evalAtom (e : Q($α)) : AtomM (Result (ExSum bt sα) e) := do
   pure ⟨_, vc, match r.proof? with
   | none =>
     have : $e =Q $e' := ⟨⟩
-    q($pb ▸ atom_pf $e $pf_one)
+    q(atom_pf $e $pf_one $pb)
   | some (p : Q($e = $a')) =>
-    q($pb ▸ atom_pf' $p $pf_one)⟩
+    q(atom_pf' $p $pf_one $pb)⟩
 
 theorem inv_mul {R} [Semifield R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -1145,8 +1154,7 @@ def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum bt s�
     let ⟨_, one, pf⟩ := rcℕ.one
     let ⟨_', vb', pb'⟩ := vb.toProd rc (ExProdNat.const (one))
     assumeInstancesCommute
-    -- FIXME: Instance issue
-    pure ⟨_, vb'.toSum, q($pb' ▸ atom_pf' $pb $pf)⟩
+    pure ⟨_, vb'.toSum, q(atom_pf' $pb $pf $pb')⟩
 
 end
 
