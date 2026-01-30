@@ -230,8 +230,10 @@ theorem mem_ker {f : G →* M} {x : G} : x ∈ f.ker ↔ f x = 1 :=
   Iff.rfl
 
 @[to_additive]
-theorem div_mem_ker_iff (f : G →* N) {x y : G} : x / y ∈ ker f ↔ f x = f y := by
-  rw [mem_ker, map_div, div_eq_one]
+theorem div_mem_ker_iff (f : G →* M) {x y : G} : x / y ∈ ker f ↔ f x = f y := by
+  constructor <;> intro h
+  · rw [← div_mul_cancel x y, map_mul, mem_ker.mp h, one_mul]
+  · rw [mem_ker, div_eq_mul_inv, map_mul, h, ← map_mul, mul_inv_cancel, map_one]
 
 @[to_additive]
 theorem coe_ker (f : G →* M) : (f.ker : Set G) = (f : G → M) ⁻¹' {1} :=
@@ -262,7 +264,7 @@ theorem comap_bot (f : G →* N) : (⊥ : Subgroup N).comap f = f.ker :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem ker_restrict (f : G →* N) : (f.restrict K).ker = f.ker.subgroupOf K :=
+theorem ker_restrict (f : G →* M) : (f.restrict K).ker = f.ker.subgroupOf K :=
   rfl
 
 @[to_additive (attr := simp)]
@@ -307,7 +309,7 @@ theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g
   SetLike.ext fun _ => Prod.mk_eq_one
 
 @[to_additive]
-theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
+theorem range_le_ker_iff (f : G →* G') (g : G' →* M) : f.range ≤ g.ker ↔ g.comp f = 1 :=
   ⟨fun h => ext fun x => h ⟨x, rfl⟩, by rintro h _ ⟨y, rfl⟩; exact DFunLike.congr_fun h y⟩
 
 @[to_additive]

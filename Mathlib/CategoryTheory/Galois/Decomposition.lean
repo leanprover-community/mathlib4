@@ -33,7 +33,7 @@ is represented by a Galois object.
 
 -/
 
-@[expose] public section
+public section
 
 universe u₁ u₂ w
 
@@ -189,15 +189,18 @@ section GaloisRepAux
 
 variable (X : C)
 
+set_option backward.privateInPublic true in
 /-- The self product of `X` indexed by its fiber. -/
 @[simp]
 private noncomputable def selfProd : C := ∏ᶜ (fun _ : F.obj X ↦ X)
 
+set_option backward.privateInPublic true in
 /-- For `g : F.obj X → F.obj X`, this is the element in the fiber of the self product,
 which has at index `x : F.obj X` the element `g x`. -/
 private noncomputable def mkSelfProdFib : F.obj (selfProd F X) :=
   (PreservesProduct.iso F _).inv ((Concrete.productEquiv (fun _ : F.obj X ↦ F.obj X)).symm id)
 
+set_option backward.privateInPublic true in
 @[simp]
 private lemma mkSelfProdFib_map_π (t : F.obj X) : F.map (Pi.π _ t) (mkSelfProdFib F X) = t := by
   rw [← piComparison_comp_π]
@@ -207,18 +210,21 @@ variable {X} {A : C} (u : A ⟶ selfProd F X)
   (a : F.obj A) (h : F.map u a = mkSelfProdFib F X) {F}
 include h
 
+set_option backward.privateInPublic true in
 /-- For each `x : F.obj X`, this is the composition of `u` with the projection at `x`. -/
 @[simp]
 private noncomputable def selfProdProj (x : F.obj X) : A ⟶ X := u ≫ Pi.π _ x
 
 variable {u a}
 
+set_option backward.privateInPublic true in
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by
   simp_all
 
 variable [IsConnected A]
 
+set_option backward.privateInPublic true in
 /-- An element `b : F.obj A` defines a permutation of the fiber of `X` by projecting onto the
 `F.map u b` factor. -/
 private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
@@ -230,12 +236,15 @@ private noncomputable def fiberPerm (b : F.obj A) : F.obj X ≃ F.obj X := by
   have h' : selfProdProj u t = selfProdProj u s := evaluation_injective_of_isConnected F A X b hs
   rw [← selfProdProj_fiber h s, ← selfProdProj_fiber h t, h']
 
+set_option backward.privateInPublic true in
 /-- Twisting `u` by `fiberPerm h b` yields an inclusion of `A` into `selfProd F X`. -/
 private noncomputable def selfProdPermIncl (b : F.obj A) : A ⟶ selfProd F X :=
   u ≫ (Pi.whiskerEquiv (fiberPerm h b) (fun _ => Iso.refl X)).inv
 
+set_option backward.privateInPublic true in
 private instance [Mono u] (b : F.obj A) : Mono (selfProdPermIncl h b) := mono_comp _ _
 
+set_option backward.privateInPublic true in
 /-- Key technical lemma: the twisted inclusion `selfProdPermIncl h b` maps `a` to `F.map u b`. -/
 private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     F.map u b = F.map (selfProdPermIncl h b) a := by
@@ -251,6 +260,7 @@ private lemma selfProdTermIncl_fib_eq (b : F.obj A) :
     rw [← map_comp, Pi.map'_comp_π, Category.comp_id, mkSelfProdFib_map_π F X (fiberPerm h b t)]
     rfl
 
+set_option backward.privateInPublic true in
 /-- There exists an automorphism `f` of `A` that maps `b` to `a`.
 `f` is obtained by considering `u` and `selfProdPermIncl h b`.
 Both are inclusions of `A` into `selfProd F X` mapping `b` respectively `a` to the same element

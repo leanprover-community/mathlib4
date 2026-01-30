@@ -17,7 +17,7 @@ This file contains some more results on nontriviality of tensor product of algeb
 
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 
@@ -38,6 +38,7 @@ theorem nontrivial_of_algebraMap_injective_of_isDomain
   let fb : FR →ₐ[R] FB := IsFractionRing.liftAlgHom (g := Algebra.ofId R FB)
     ((IsFractionRing.injective B FB).comp hb)
   algebraize_only [fa.toRingHom, fb.toRingHom]
+  letI : CompatibleSMul FR R FA FB := CompatibleSMul.isScalarTower
   exact Algebra.TensorProduct.mapOfCompatibleSMul FR R FA FB |>.comp
     (Algebra.TensorProduct.map (IsScalarTower.toAlgHom R A FA) (IsScalarTower.toAlgHom R B FB))
     |>.toRingHom.domain_nontrivial

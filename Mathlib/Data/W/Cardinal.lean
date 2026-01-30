@@ -24,7 +24,7 @@ this surjection can be used to put an upper bound on the cardinality of `MvPolyn
 W, W type, cardinal, first order
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

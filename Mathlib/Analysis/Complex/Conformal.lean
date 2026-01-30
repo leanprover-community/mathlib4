@@ -265,7 +265,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivWithinAt (h₁ : DifferentiableWithinAt ℝ f s x)
     (h₂ : fderivWithin ℝ f s x I = I • fderivWithin ℝ f s x 1) :
     HasDerivWithinAt f ((fderivWithin ℝ f s x).complexOfReal h₂ 1) s x := by
-  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, smulRight_one_one]
+  rw [hasDerivWithinAt_iff_hasFDerivWithinAt, toSpanSingleton_apply_map_one]
   exact h₁.hasFDerivWithinAt.complexOfReal h₂
 
 /--
@@ -304,7 +304,7 @@ complex derivative equals `ContinuousLinearMap.complexOfReal` of the real deriva
 theorem complexOfReal_hasDerivAt (h₁ : DifferentiableAt ℝ f x)
     (h₂ : fderiv ℝ f x I = I • fderiv ℝ f x 1) :
     HasDerivAt f ((fderiv ℝ f x).complexOfReal h₂ 1) x := by
-  rw [hasDerivAt_iff_hasFDerivAt, smulRight_one_one]
+  rw [hasDerivAt_iff_hasFDerivAt, toSpanSingleton_apply_map_one]
   exact hasFDerivAt_of_restrictScalars ℝ h₁.hasFDerivAt rfl
 
 /--

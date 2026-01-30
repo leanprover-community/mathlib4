@@ -6,8 +6,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.MvPolynomial.Monad
-public import Mathlib.Algebra.CharP.Frobenius
-public import Mathlib.RingTheory.MvPolynomial.Basic
 public import Mathlib.Algebra.MvPolynomial.Nilpotent
 public import Mathlib.Algebra.Order.Ring.Finset
 
@@ -84,6 +82,12 @@ lemma coeff_expand_smul (hp : p ≠ 0) (φ : MvPolynomial σ R) (m : σ →₀ �
     (expand p φ).coeff (p • m) = φ.coeff m := by
   classical
   induction φ using induction_on' <;> simp [*, nsmul_right_inj hp]
+
+@[simp]
+lemma coeff_expand_zero (hp : p ≠ 0) (φ : MvPolynomial σ R) :
+    (expand p φ).coeff 0 = φ.coeff 0 :=
+  calc (expand p φ).coeff 0 = (expand p φ).coeff (p • 0) := by rw [smul_zero]
+                          _ = φ.coeff 0 := by rw [coeff_expand_smul p hp]
 
 /-- Expansion is injective. -/
 theorem expand_injective {n : ℕ} (hn : 0 < n) : Function.Injective (expand n (R := R) (σ := σ)) :=
@@ -184,66 +188,40 @@ theorem totalDegree_expand (f : MvPolynomial σ R) :
     (expand p f).totalDegree = f.totalDegree * p := by
   classical
   rcases p.eq_zero_or_pos with hp | hp
-  · rw [hp, expand_zero_apply]
-    simp
+  · simp [hp]
   by_cases hf : f = 0
   · rw [hf, map_zero, totalDegree_zero, zero_mul]
   simp_rw [totalDegree_eq, support_expand _ (p.ne_zero_iff_zero_lt.mpr hp)]
-  simp only [Finsupp.card_toMultiset, Finset.sup_image, Finset.sup_mul₀]
-  congr! 1
-  funext d
-  rw [Function.comp_apply, Finsupp.sum_of_support_subset _ Finsupp.support_smul _ (by simp)]
+  simp only [Finsupp.card_toMultiset, Finset.sup_image, Finset.sup_mul₀, Function.comp_def]
+  congr! 2 with d
+  rw [Finsupp.sum_of_support_subset _ Finsupp.support_smul _ (by simp)]
   simp [Finsupp.sum, Finset.sum_mul, mul_comm p]
 
 end
 
-section ExpChar
-
-variable [ExpChar R p]
-
-theorem expand_char {f : MvPolynomial σ R} :
-    (f.expand p).map (frobenius R p) = f ^ p :=
-  f.induction_on' fun _ _ => by simp [monomial_pow, frobenius]
-    fun _ _ ha hb => by rw [map_add, map_add, ha, hb, add_pow_expChar]
-
-theorem map_expand_pow_char (f : MvPolynomial σ R) (n : ℕ) :
-    map (frobenius R p ^ n) (expand (p ^ n) f) = f ^ p ^ n := by
-  induction n with
-  | zero => simp [RingHom.one_def, map_id]
-  | succ _ n_ih =>
-    symm
-    rw [pow_succ, pow_mul, ← n_ih, ← expand_char, pow_succ', RingHom.mul_def, ← map_map, mul_comm,
-      expand_mul, ← map_expand]
-
-end ExpChar
-
 end CommSemiring
 
-section IsDomain
+section CommRing
 
-variable (R σ : Type*) [CommRing R] [IsDomain R]
+variable (R σ : Type*) [CommRing R]
 
-theorem isLocalHom_expand {p : ℕ} (hp : 0 < p) : IsLocalHom (expand p (R := R) (σ := σ)) := by
+theorem isLocalHom_expand {p : ℕ} (hp : p ≠ 0) : IsLocalHom (expand p (R := R) (σ := σ)) := by
   refine ⟨fun f hf => ?_⟩
-  obtain ⟨r, hr₁, hr₂⟩ := MvPolynomial.isUnit_iff_eq_C_of_isReduced.mp hf
-  rw [expand_eq_C hp] at hr₂
-  simpa [hr₂]
+  rw [MvPolynomial.isUnit_iff] at hf ⊢
+  simp only [coeff_expand_zero p hp] at hf
+  refine ⟨hf.1, fun i hi ↦ ?_⟩
+  rw [← coeff_expand_smul p hp]
+  apply hf.2
+  simp [hi, hp]
 
 variable {R}
 
 theorem of_irreducible_expand {p : ℕ} (hp : p ≠ 0) {f : MvPolynomial σ R}
     (hf : Irreducible (expand p f)) :
     Irreducible f :=
-  let _ := isLocalHom_expand R σ (p.ne_zero_iff_zero_lt.mp hp)
+  let _ := isLocalHom_expand R σ hp
   hf.of_map
 
-theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : MvPolynomial σ R} {n : ℕ} :
-    Irreducible (expand (p ^ n) f) → Irreducible f :=
-  Nat.recOn n (fun hf => by rwa [pow_zero, expand_one] at hf) fun n ih hf =>
-    ih <| of_irreducible_expand σ hp <| by
-      rw [pow_succ'] at hf
-      rwa [← expand_mul]
-
-end IsDomain
+end CommRing
 
 end MvPolynomial

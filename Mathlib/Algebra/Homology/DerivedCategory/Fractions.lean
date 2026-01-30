@@ -113,7 +113,7 @@ a quasi-isomorphism with `X'` strictly `≥ a` and `≤ b`, and `g : X' ⟶ Y`. 
 lemma right_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ) [X.IsStrictlyGE a] [X.IsStrictlyLE b]
     [Y.IsStrictlyGE a] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (X' : CochainComplex C ℤ) ( _ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
+    ∃ (X' : CochainComplex C ℤ) (_ : X'.IsStrictlyGE a) (_ : X'.IsStrictlyLE b)
     (s : X' ⟶ X) (_ : IsIso (Q.map s)) (g : X' ⟶ Y), f = inv (Q.map s) ≫ Q.map g := by
   obtain ⟨X', hX', s, hs, g, fac⟩ := right_fac_of_isStrictlyLE f b
   have : IsIso (Q.map (CochainComplex.truncGEMap s a)) := by
@@ -139,7 +139,7 @@ can be written as `f = Q.map g ≫ inv (Q.map s)` with `g : X ⟶ Y'` and
 lemma left_fac_of_isStrictlyLE_of_isStrictlyGE
     {X Y : CochainComplex C ℤ} (a b : ℤ)
     [X.IsStrictlyLE b] [Y.IsStrictlyGE a] [Y.IsStrictlyLE b] (f : Q.obj X ⟶ Q.obj Y) :
-    ∃ (Y' : CochainComplex C ℤ) ( _ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
+    ∃ (Y' : CochainComplex C ℤ) (_ : Y'.IsStrictlyGE a) (_ : Y'.IsStrictlyLE b)
     (g : X ⟶ Y') (s : Y ⟶ Y') (_ : IsIso (Q.map s)), f = Q.map g ≫ inv (Q.map s) := by
   obtain ⟨Y', hY', g, s, hs, fac⟩ := left_fac_of_isStrictlyGE f a
   have : IsIso (Q.map (CochainComplex.truncLEMap s b)) := by
