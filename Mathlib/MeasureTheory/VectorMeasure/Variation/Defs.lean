@@ -201,44 +201,38 @@ above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) : Prop := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
   Pairwise (Disjoint on s) → f (⋃ (i : ℕ), s i) ≤ ∑' (i : ℕ), f (s i)
 
--- This is strictly weaker than `iUnion` and so shouldn't be public or could be inlined in `iUnion`
 open Classical in
-lemma iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
-    (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
-    preVariation f (⋃ i, s i) ≤ ∑' i, preVariation f (s i) := by
-  refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
-  simp only [preVariation, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
-  obtain ⟨Q, hQ⟩ := hb
-  let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
-  let P (i : ℕ) := Q.restrict (b := s' i) (Set.subset_iUnion s i)
-  have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := by
-    calc ∑ q ∈ Q.parts, f q
-      _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by
-          apply Finset.sum_le_sum fun q hq => ?_
-          have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
-            rw [← Set.inter_iUnion]; exact (Set.inter_eq_left.mpr (Q.le hq)).symm
-          have hq_disj : Pairwise (Disjoint on fun i => q.val ∩ s i) :=
-            fun i j hij => (hs' hij).mono Set.inter_subset_right Set.inter_subset_right
-          calc f q
-            _ = f (⋃ i, q.val ∩ s i) := congrArg f hq_eq
-            _ ≤ ∑' i, f (q.val ∩ s i) := hf _ (q.2.inter <| hs ·) hq_disj
-            _ = ∑' i, f (q ⊓ s' i) := rfl
-      _ = ∑' i, ∑ q ∈ Q.parts, f (q ⊓ s' i) :=
-          (Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)).symm
-      _ = ∑' i, ∑ p ∈ (P i).parts, f p := by
-          congr 1; funext i
-          exact (Q.sum_restrict _ (fun p => f p) hf').symm
-  obtain ⟨n, hn⟩ := lt_iSup_iff.mp <| ENNReal.tsum_eq_iSup_nat ▸ lt_of_lt_of_le hQ splitting
-  have bound (i : ℕ) : ∑ p ∈ (P i).parts, f p ≤ preVariation f (s i) := sum_le f (hs i) (P i)
-  exact ⟨Finset.range n, lt_of_lt_of_le hn (Finset.sum_le_sum fun i _ => bound i)⟩
-
 /-- Additivity of `preVariation` for disjoint measurable sets. -/
 lemma iUnion (hf : IsSubadditive f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariation f (s i)) (preVariation f (⋃ i, s i)) := by
   refine ENNReal.summable.hasSum_iff.mpr (eq_of_le_of_ge ?_ ?_)
   · exact sum_le_preVariation_iUnion f hs hs'
-  · exact iUnion_le f hs hs' hf hf'
+  · refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
+    simp only [preVariation, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
+    obtain ⟨Q, hQ⟩ := hb
+    let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
+    let P (i : ℕ) := Q.restrict (b := s' i) (Set.subset_iUnion s i)
+    have splitting : ∑ q ∈ Q.parts, f q ≤ ∑' i, ∑ p ∈ (P i).parts, f p := by
+      calc ∑ q ∈ Q.parts, f q
+        _ ≤ ∑ q ∈ Q.parts, ∑' i, f (q ⊓ s' i) := by
+            apply Finset.sum_le_sum fun q hq => ?_
+            have hq_eq : q.val = ⋃ i, q.val ∩ s i := by
+              rw [← Set.inter_iUnion]; exact (Set.inter_eq_left.mpr (Q.le hq)).symm
+            have hq_disj : Pairwise (Disjoint on fun i => q.val ∩ s i) :=
+              fun i j hij => (hs' hij).mono Set.inter_subset_right Set.inter_subset_right
+            calc f q
+              _ = f (⋃ i, q.val ∩ s i) := congrArg f hq_eq
+              _ ≤ ∑' i, f (q.val ∩ s i) := hf _ (q.2.inter <| hs ·) hq_disj
+              _ = ∑' i, f (q ⊓ s' i) := rfl
+        _ = ∑' i, ∑ q ∈ Q.parts, f (q ⊓ s' i) :=
+            (Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)).symm
+        _ = ∑' i, ∑ p ∈ (P i).parts, f p := by
+            congr 1; funext i
+            exact (Q.sum_restrict _ (fun p => f p) hf').symm
+    obtain ⟨n, hn⟩ := lt_iSup_iff.mp <| ENNReal.tsum_eq_iSup_nat ▸ lt_of_lt_of_le hQ splitting
+    have bound (i : ℕ) : ∑ p ∈ (P i).parts, f p ≤ preVariation f (s i) := sum_le f (hs i) (P i)
+    exact ⟨Finset.range n, lt_of_lt_of_le hn (Finset.sum_le_sum fun i _ => bound i)⟩
 
 end VectorMeasure.preVariation
 
