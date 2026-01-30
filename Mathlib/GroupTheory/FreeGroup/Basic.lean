@@ -889,8 +889,8 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
   left_inv := by rintro ⟨_ | ⟨⟨⟨⟩, _⟩, _⟩⟩; rfl
 
 /-- We define the free group on no generators as isomorphic to the trivial `Unit` group. -/
-@[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial `Unit` group. -/
-]
+@[to_additive /-- We define the additive free group on no generators as isomorphic to the trivial
+`Unit` group. -/]
 def freeGroupEmptyMulEquivUnit : FreeGroup Empty ≃* Unit :=
 { toEquiv := freeGroupEmptyEquivUnit
   map_mul' _ _ := rfl }
