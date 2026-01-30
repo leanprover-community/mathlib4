@@ -136,11 +136,11 @@ theorem one_hadamard_eq_diagonal_iff {A : Matrix n n α} {d} : 1 ⊙ A = diagona
 theorem hadamard_one_eq_diagonal_iff {A : Matrix n n α} {d} : A ⊙ 1 = diagonal d ↔ A.diag = d := by
   simpa using hadamard_diagonal_eq_diagonal_iff (A := A) (d := 1)
 
-theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 :=
-  diagonal_zero (n := n) (α := α) ▸ one_hadamard_eq_diagonal_iff
+theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 := by
+  simpa using one_hadamard_eq_diagonal_iff (A := A) (d := 0)
 
-theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 :=
-  diagonal_zero (n := n) (α := α) ▸ hadamard_one_eq_diagonal_iff
+theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 := by
+  simpa using hadamard_one_eq_diagonal_iff (A := A) (d := 0)
 
 theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 :=
   one_hadamard_eq_diagonal_iff
