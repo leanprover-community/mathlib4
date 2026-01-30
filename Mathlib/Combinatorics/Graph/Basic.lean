@@ -98,6 +98,8 @@ structure Graph (α β : Type*) where
   /-- If some edge `e` is incident to `x`, then `x ∈ V`. -/
   left_mem_of_isLink : ∀ ⦃e x y⦄, IsLink e x y → x ∈ vertexSet
 
+initialize_simps_projections Graph (IsLink → isLink)
+
 namespace Graph
 
 variable {G H : Graph α β}
@@ -360,6 +362,33 @@ protected lemma ext {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂))
 lemma ext_inc {G₁ G₂ : Graph α β} (hV : V(G₁) = V(G₂)) (h : ∀ e x, G₁.Inc e x ↔ G₂.Inc e x) :
     G₁ = G₂ :=
   Graph.ext hV fun _ _ _ ↦ by simp_rw [isLink_iff_inc, h]
+
+/-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
+for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
+definitional equalities while keeping the same underlying graph. -/
+@[simps]
+def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop} (hV : V(G) = V)
+    (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
+  vertexSet := V
+  edgeSet := E
+  IsLink := IsLink
+  isLink_symm e he x y := by
+    simp_rw [← h_isLink]
+    apply G.isLink_symm (hE ▸ he)
+  eq_or_eq_of_isLink_of_isLink := by
+    simp_rw [← h_isLink]
+    exact G.eq_or_eq_of_isLink_of_isLink
+  edge_mem_iff_exists_isLink := by
+    simp_rw [← h_isLink, ← hE]
+    exact G.edge_mem_iff_exists_isLink
+  left_mem_of_isLink := by
+    simp_rw [← h_isLink, ← hV]
+    exact G.left_mem_of_isLink
+
+lemma copy_eq_self (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
+    (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
+    G.copy hV hE h_isLink = G := by
+  ext <;> simp_all
 
 /-! ### Sets of edges or loops incident to a vertex -/
 

@@ -18,7 +18,7 @@ and components.
 ## Main definitions
 
 - `Graph.copy`: produce a graph equal to a given one but with definitional conveniences.
-- `Graph.IsSubgraph`: the subgraph relation; used as the partial order `≤` on graphs.
+- `≤`: the subgraph relation as a partial order on graphs.
 - `Graph.IsSpanningSubgraph` (notation `≤s`): same vertex set as the ambient graph.
 - `Graph.IsInducedSubgraph` (notation `≤i`): contains every ambient link between its vertices.
 - `Graph.IsClosedSubgraph` (notation `≤c`): union of components of the ambient graph.
@@ -47,40 +47,11 @@ graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph, componen
 variable {α β : Type*} {x y z u v w : α} {e f : β} {G H K : Graph α β} {F F₁ F₂ : Set β}
     {X Y : Set α}
 
-initialize_simps_projections Graph (IsLink → isLink)
-
 open Set
 
 open scoped Sym2
 
 namespace Graph
-
-/-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
-for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
-definitional equalities while keeping the same underlying graph. -/
-@[simps]
-def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop} (hV : V(G) = V)
-    (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
-  vertexSet := V
-  edgeSet := E
-  IsLink := IsLink
-  isLink_symm e he x y := by
-    simp_rw [← h_isLink]
-    apply G.isLink_symm (hE ▸ he)
-  eq_or_eq_of_isLink_of_isLink := by
-    simp_rw [← h_isLink]
-    exact G.eq_or_eq_of_isLink_of_isLink
-  edge_mem_iff_exists_isLink := by
-    simp_rw [← h_isLink, ← hE]
-    exact G.edge_mem_iff_exists_isLink
-  left_mem_of_isLink := by
-    simp_rw [← h_isLink, ← hV]
-    exact G.left_mem_of_isLink
-
-lemma copy_eq_self (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop}
-    (hV : V(G) = V) (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) :
-    G.copy hV hE h_isLink = G := by
-  ext <;> simp_all
 
 /-- `H ≤ G` means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. The subgraph order is a
 partial order on graphs. -/
@@ -95,7 +66,7 @@ instance : PartialOrder (Graph α β) where
 lemma IsLink.mono (hle : H ≤ G) (h : H.IsLink e x y) : G.IsLink e x y :=
   hle.2 h
 
-lemma IsLink.of_le_of_mem (h : G.IsLink e x y) (hle : H ≤ G) (he : e ∈ E(H)) : H.IsLink e x y := by
+lemma IsLink.anti_of_mem (h : G.IsLink e x y) (hle : H ≤ G) (he : e ∈ E(H)) : H.IsLink e x y := by
   obtain ⟨u, v, huv⟩ := exists_isLink_of_mem_edgeSet he
   obtain ⟨rfl, rfl⟩ | ⟨rfl,rfl⟩ := (huv.mono hle).eq_and_eq_or_eq_and_eq h
   · assumption
@@ -105,9 +76,9 @@ lemma IsLink.of_le_of_mem (h : G.IsLink e x y) (hle : H ≤ G) (he : e ∈ E(H))
 lemma Inc.mono (hle : H ≤ G) (h : H.Inc e x) : G.Inc e x :=
   (h.choose_spec.mono hle).inc_left
 
-lemma Inc.of_le_of_mem (h : G.Inc e x) (hle : H ≤ G) (he : e ∈ E(H)) : H.Inc e x := by
+lemma Inc.anti_of_mem (h : G.Inc e x) (hle : H ≤ G) (he : e ∈ E(H)) : H.Inc e x := by
   obtain ⟨y, hy⟩ := h
-  exact (hy.of_le_of_mem hle he).inc_left
+  exact (hy.anti_of_mem hle he).inc_left
 
 lemma IsLoopAt.mono (h : H.IsLoopAt e x) (hle : H ≤ G) : G.IsLoopAt e x :=
   IsLink.mono hle h
@@ -134,7 +105,7 @@ lemma le_iff : H ≤ G ↔ V(H) ⊆ V(G) ∧ ∀ ⦃e x y⦄, H.IsLink e x y →
 
 lemma isLink_iff_isLink_of_le_of_mem (hle : H ≤ G) (he : e ∈ E(H)) :
     G.IsLink e x y ↔ H.IsLink e x y :=
-  ⟨fun h ↦ h.of_le_of_mem hle he, fun h ↦ h.mono hle⟩
+  ⟨fun h ↦ h.anti_of_mem hle he, fun h ↦ h.mono hle⟩
 
 lemma le_of_le_le_subset_subset {H₁ H₂ : Graph α β} (h₁ : H₁ ≤ G) (h₂ : H₂ ≤ G) (hV : V(H₁) ⊆ V(H₂))
     (hE : E(H₁) ⊆ E(H₂)) : H₁ ≤ H₂ := by
@@ -148,7 +119,7 @@ lemma ext_of_le_le {H₁ H₂ : Graph α β} (h₁ : H₁ ≤ G) (h₂ : H₂ �
     (le_of_le_le_subset_subset h₂ h₁ hV.symm.subset hE.symm.subset)
 
 lemma isLink_iff_of_le (hle : H ≤ G) (he : e ∈ E(H)) : H.IsLink e x y ↔ G.IsLink e x y :=
-  ⟨fun h ↦ h.mono hle, fun h ↦ h.of_le_of_mem hle he⟩
+  ⟨fun h ↦ h.mono hle, fun h ↦ h.anti_of_mem hle he⟩
 
 lemma isLink_eqOn_of_le (hle : H ≤ G) : EqOn H.IsLink G.IsLink E(H) := by
   rintro e he
@@ -266,11 +237,11 @@ lemma IsClosedSubgraph.edgeSet_mono (h : H ≤c G) : E(H) ⊆ E(G) := Graph.edge
 
 lemma IsClosedSubgraph.isInducedSubgraph (h : H ≤c G) : H ≤i G where
   le := h.le
-  isLink_of_mem_mem _ _ _ he hx _ := he.of_le_of_mem h.le (h.closed he.inc_left hx)
+  isLink_of_mem_mem _ _ _ he hx _ := he.anti_of_mem h.le (h.closed he.inc_left hx)
 
 lemma IsClosedSubgraph.trans {G₁ G₂ G₃ : Graph α β} (h₁ : G₁ ≤c G₂) (h₂ : G₂ ≤c G₃) : G₁ ≤c G₃ where
   le := h₁.le.trans h₂.le
-  closed _ _ h hx :=  h₁.closed (h.of_le_of_mem h₂.le (h₂.closed h (h₁.vertexSet_mono hx))) hx
+  closed _ _ h hx :=  h₁.closed (h.anti_of_mem h₂.le (h₂.closed h (h₁.vertexSet_mono hx))) hx
 
 instance : IsPartialOrder (Graph α β) (· ≤c ·) where
   refl _ := ⟨le_rfl, fun _ _ h _ ↦ h.edge_mem⟩
@@ -283,11 +254,11 @@ lemma isClosedSubgraph_self : G ≤c G where
   closed _ _ he _ := he.edge_mem
 
 lemma Inc.of_isClosedSubgraph_of_mem (h : G.Inc e x) (hle : H ≤c G) (hx : x ∈ V(H)) : H.Inc e x :=
-  h.of_le_of_mem hle.le (hle.closed h hx)
+  h.anti_of_mem hle.le (hle.closed h hx)
 
 lemma IsLink.of_isClosedSubgraph_of_mem (h : G.IsLink e x y) (hle : H ≤c G) (hx : x ∈ V(H)) :
     H.IsLink e x y :=
-  h.of_le_of_mem hle.le (h.inc_left.of_isClosedSubgraph_of_mem hle hx).edge_mem
+  h.anti_of_mem hle.le (h.inc_left.of_isClosedSubgraph_of_mem hle hx).edge_mem
 
 lemma IsClosedSubgraph.isLink_iff_of_mem (h : H ≤c G) (hx : x ∈ V(H)) :
     H.IsLink e x y ↔ G.IsLink e x y :=
@@ -303,7 +274,7 @@ lemma IsClosedSubgraph.mem_tfae_of_isLink (h : H ≤c G) (he : G.IsLink e x y) :
     List.TFAE [x ∈ V(H), y ∈ V(H), e ∈ E(H)] := by
   tfae_have 1 → 2 := (h.mem_iff_mem_of_isLink he).mp
   tfae_have 2 → 3 := (he.symm.of_isClosedSubgraph_of_mem h · |>.edge_mem)
-  tfae_have 3 → 1 := (he.of_le_of_mem h.le · |>.left_mem)
+  tfae_have 3 → 1 := (he.anti_of_mem h.le · |>.left_mem)
   tfae_finish
 
 lemma IsClosedSubgraph.adj_of_adj_of_mem (h : H ≤c G) (hx : x ∈ V(H)) (hxy : G.Adj x y) :
