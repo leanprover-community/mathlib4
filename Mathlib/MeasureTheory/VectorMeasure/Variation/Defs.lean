@@ -143,7 +143,6 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : NNReal
       _ ≤ ∑ p ∈ P.parts, f p + ε := by gcongr
   · simp [*]
 
--- Perhaps goes in MeasurableSpace.Basic? Or just a private helper here?
 open Classical in
 /-- The sup of measurable set subtypes over a finset equals the biUnion of the underlying sets. -/
 lemma Finset.sup_measurableSetSubtype_eq_biUnion {ι : Type*}
@@ -193,9 +192,6 @@ lemma sum_le_preVariation_iUnion {s : ℕ → Set X} (hs : ∀ i, MeasurableSet 
       simp [show n * ε = ε' by rw [mul_div_cancel₀ _ (by positivity)]]
     _ ≤ preVariation f (⋃ i, s i) + ε' := by gcongr; exact sum_le_preVariation_iUnion' f hs hs' P n
 
--- Perhaps this should be called `IsCountablySubadditiveOnDisjoint`?
--- Or is this a common notion that belongs somewhere else?
--- Mathlib has `AddContent.IsSigmaSubadditive` but we don't have an `AddContent` here with `‖μ ·‖ₑ`.
 /-- A set function is subadditive if the value assigned to the union of disjoint sets is bounded
 above by the sum of the values assigned to the individual sets. -/
 def IsSubadditive (f : Set X → ℝ≥0∞) : Prop := ∀ (s : ℕ → Set X), (∀ i, MeasurableSet (s i)) →
