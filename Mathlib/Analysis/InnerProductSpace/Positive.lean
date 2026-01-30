@@ -547,3 +547,14 @@ theorem ContinuousLinearMap.isPositive_iff_eq_sum_rankOne [FiniteDimensional �
       (hT.toLinearMap.nonneg_eigenvalues rfl _), mul_comm _ (⟪_, _⟫_𝕜), ← smul_eq_mul, smul_assoc,
     ← hT.isSymmetric.apply_eigenvectorBasis, ← map_smul, ← map_sum,
     ← OrthonormalBasis.repr_apply_apply, OrthonormalBasis.sum_repr, coe_coe]
+
+open scoped ComplexOrder in
+theorem Matrix.posSemidef_iff_eq_sum_vecMulVec {n : Type*} [Fintype n] {M : Matrix n n 𝕜} :
+    M.PosSemidef ↔ ∃ (m : ℕ) (v : Fin m → (n → 𝕜)), M = ∑ i, vecMulVec (v i) (star (v i)) := by
+  classical
+  rw [← isPositive_toEuclideanLin_iff, ← isPositive_toContinuousLinearMap_iff,
+    isPositive_iff_eq_sum_rankOne]
+  simp_rw [eq_comm, ← LinearEquiv.symm_apply_eq, coe_toContinuousLinearMap_symm,
+    ContinuousLinearMap.coe_sum, map_sum, symm_toEuclideanLin_rankOne, eq_comm]
+  exact ⟨fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ (u i).ofLp, hu⟩,
+    fun ⟨m, u, hu⟩ ↦ ⟨m, fun i ↦ WithLp.toLp 2 (u i), hu⟩⟩
