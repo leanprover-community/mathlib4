@@ -476,35 +476,15 @@ theorem _root_.unitInterval.coe_half : (unitInterval.half : ℝ) = 1 / 2 := rfl
 /-- Extract a subpath from γ on the interval [a, b] ⊆ [0, 1].
 This is γ reparametrized via the affine map t ↦ a + t(b - a). -/
 def subpathOn (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) : Path (γ a) (γ b) where
-  toFun t := γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
-    constructor
-    · apply add_nonneg a.2.1
-      apply mul_nonneg t.2.1
-      linarith [show (a : ℝ) ≤ b from hab]
-    · calc (a : ℝ) + t * ((b : ℝ) - a)
-          ≤ a + 1 * ((b : ℝ) - a) := by
-            apply add_le_add_right
-            apply mul_le_mul_of_nonneg_right t.2.2
-            linarith [show (a : ℝ) ≤ b from hab]
-        _ = b := by ring
-        _ ≤ 1 := b.2.2⟩
+  toFun t := γ (convexCombo a b t)
   source' := by simp
   target' := by simp
 
 @[simp]
 theorem subpathOn_apply (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) (t : unitInterval) :
-    (γ.subpathOn a b hab) t = γ ⟨(a : ℝ) + t * ((b : ℝ) - a), by
-      constructor
-      · apply add_nonneg a.2.1
-        apply mul_nonneg t.2.1
-        linarith [show (a : ℝ) ≤ b from hab]
-      · calc (a : ℝ) + t * ((b : ℝ) - a)
-            ≤ a + 1 * ((b : ℝ) - a) := by
-              apply add_le_add_right
-              apply mul_le_mul_of_nonneg_right t.2.2
-              linarith [show (a : ℝ) ≤ b from hab]
-          _ = b := by ring
-          _ ≤ 1 := b.2.2⟩ := rfl
+    (γ.subpathOn a b hab) t = γ (convexCombo a b t) := by
+  unfold subpathOn convexCombo
+  simp only [Path.coe_mk_mk]
 
 /-- Splitting a sub-path in halves rejoining them gives the original path. -/
 theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) :
@@ -514,9 +494,9 @@ theorem subpathOn_trans_aux₁ (γ : Path x y) (a b : unitInterval) (hab : a ≤
       (Set.Icc.convexCombo_le hab _))) =
     (γ.subpathOn a b hab) := by
   ext t
-  simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_convexCombo, coe_mk',
+  simp only [trans, one_div, extend, Set.IccExtend, subpathOn, coe_mk',
     ContinuousMap.coe_mk, Function.comp_apply, Set.projIcc]
-  split_ifs with h <;> (congr 1; ext; simp only [half, one_div, add_right_inj]; norm_num)
+  split_ifs with h <;> (congr 1; ext; simp only [half, one_div]; norm_num)
   · have := t.2.1; have := t.2.2
     rw [min_eq_right (by linarith : 2 * (t : ℝ) ≤ 1),
         max_eq_right (by linarith : 0 ≤ 2 * (t : ℝ))]; ring
@@ -541,7 +521,7 @@ theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (hab : a ≤
       ((γ.subpathOn a (convexCombo a b (convexCombo s t u)) (le_convexCombo hab _)).trans
         (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
     continuous_toFun := by
-      simp only [trans_apply, one_div, subpathOn_apply, coe_convexCombo]
+      simp only [trans_apply, one_div, subpathOn_apply, convexCombo]
       simp only [← extend_apply, dite_eq_ite]
       apply continuous_if_le (hfg := by grind) <;> fun_prop
     map_zero_left v := by simp [Path.trans_apply]
