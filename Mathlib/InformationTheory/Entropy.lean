@@ -85,18 +85,13 @@ noncomputable def entropy (p : PMF α) : ℝ :=
     by_cases ha : a' = a <;> simp [ha, Real.negMulLog_one, Real.negMulLog_zero]
   simp [h, tsum_zero]
 
-/-- Entropy of a deterministic distribution is zero. -/
-example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
-/-- Entropy of another deterministic distribution is zero. -/
-example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
-
 /-- Entropy of a PMF is non negative. -/
 @[simp] lemma entropy_nonneg (p : PMF α) : 0 ≤ entropy p := by
   simp only [entropy]
   refine tsum_nonneg (fun a => ?_)
   refine Real.negMulLog_nonneg ENNReal.toReal_nonneg ?_
   exact ENNReal.toReal_le_of_le_ofReal (by simp) (by
-      simpa using (PMF.coe_le_one p a))
+      simpa only [ENNReal.ofReal_one] using (PMF.coe_le_one p a))
 
 private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p = PMF.pure a) :
     Set.Nontrivial p.support := by
@@ -106,9 +101,10 @@ private lemma support_nontrivial_of_not_pure (p : PMF α) (h : ¬ ∃ a : α, p 
   have h1 : p a0 = 1 := (p.apply_eq_one_iff a0).2 heq
   have : p = PMF.pure a0 := PMF.ext fun x => by
     by_cases hx : x = a0
-    · subst hx; simp only [PMF.pure_apply, ↓reduceIte]; exact h1
+    · subst hx; 
+      simpa only [PMF.pure_apply, ↓reduceIte] using h1
     · have : (PMF.pure a0) x = 0 := by simp only [PMF.pure_apply, if_neg hx]
-      rw [this]; exact (p.apply_eq_zero_iff x).mpr (by rw [heq]; simp [hx])
+      simpa [this] using (p.apply_eq_zero_iff x).mpr (by simp [heq, hx])
   exact h ⟨a0, this⟩
 
 private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx : x ∈ p.support)
@@ -123,9 +119,10 @@ private lemma toReal_lt_one_of_mem_support_of_not_pure (p : PMF α) (x : α) (hx
   have hsupp : p.support = {x} := (p.apply_eq_one_iff x).1 hx_eq_one
   have hpure : p = PMF.pure x := PMF.ext fun y => by
     by_cases hy : y = x
-    · subst hy; simpa only [PMF.pure_apply, ↓reduceIte] using hx_eq_one
+    · subst hy; 
+      simpa only [PMF.pure_apply, ↓reduceIte] using hx_eq_one
     · have : (PMF.pure x) y = 0 := by simp only [PMF.pure_apply, if_neg hy]
-      rw [this]; exact (p.apply_eq_zero_iff y).mpr (by simp [hsupp, hy])
+      simpa [this] using (p.apply_eq_zero_iff y).mpr (by simp [hsupp, hy])
   exact h ⟨x, hpure⟩
 
 private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
@@ -134,7 +131,9 @@ private lemma negMulLog_ite_nonneg (p : PMF α) (a b : α) [DecidableEq α] :
   · simpa only [hb, ite_true] using le_rfl
   · simpa only [hb, ite_false] using Real.negMulLog_nonneg ENNReal.toReal_nonneg (by
       have hpb : p b ≤ (1 : ENNReal) := PMF.coe_le_one p b
-      exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simpa using hpb))
+      exact ENNReal.toReal_le_of_le_ofReal (by simp only [zero_le_one]) (
+        by simpa only [ENNReal.ofReal_one] using hpb)
+      )
 
 private lemma entropy_tsum_ite_ge (p : PMF α) [Finite α] [DecidableEq α] (a a' : α) (ha' : a' ≠ a) :
     Real.negMulLog ((p a').toReal) ≤
@@ -212,5 +211,63 @@ example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ
     apply hasSum_ite_eq 1
   simp only [Summable.tsum_add (HasSum.summable hsumm1) (HasSum.summable hsumm2),
              tsum_ite_eq, add_halves]
+
+lemma nat_mul_negMulLog_inv_eq_log (n : ℕ) (hn : 0 < n) :
+    (n : ℝ) * Real.negMulLog (((n : ENNReal)⁻¹).toReal) = Real.log n := by
+  -- set up positivity / nonzero facts for coercions
+  have hn0 : (n : ℝ) ≠ 0 := by exact_mod_cast (Nat.ne_of_gt hn)
+  have hn_pos : 0 < (n : ℝ) := by exact_mod_cast hn
+  have htoReal : (((n : ENNReal)⁻¹).toReal) = (n : ℝ)⁻¹ := by
+    simp only [ENNReal.toReal_inv, ENNReal.toReal_natCast]
+  calc
+    (n : ℝ) * Real.negMulLog (((n : ENNReal)⁻¹).toReal)
+        = (n : ℝ) * (-( ((n : ENNReal)⁻¹).toReal * Real.log (((n : ENNReal)⁻¹).toReal) )) := by
+          simp [htoReal, Real.negMulLog]
+    _ = -((n : ℝ) * ((n : ENNReal)⁻¹).toReal) * Real.log (((n : ENNReal)⁻¹).toReal) := by
+          ring
+    _ = -(1 : ℝ) * Real.log (((n : ENNReal)⁻¹).toReal) := by
+          simp [htoReal, hn0]
+    _ = - Real.log (((n : ENNReal)⁻¹).toReal) := by simp
+    _ = Real.log n := by
+          simp [htoReal, Real.log_inv]
+
+lemma entropy_uniformOfFinset
+    (s : Finset α) (hs : s.Nonempty) :
+    entropy (PMF.uniformOfFinset s hs : PMF α) = Real.log s.card := by
+  classical
+  set p : PMF α := (PMF.uniformOfFinset s hs : PMF α)
+  set f : α → ℝ := fun a => Real.negMulLog (ENNReal.toReal (p a))
+  -- reduce the tsum to a finset sum using `tsum_eq_sum`
+  have htsum : (∑' a : α, f a) = ∑ a ∈ s, f a := by
+    refine tsum_eq_sum (s := s) ?_
+    intro a ha
+    simp [f, p, PMF.uniformOfFinset, ha]
+  -- unfold entropy and use htsum
+  simp only [entropy_def, f, htsum]
+  have hcard : 0 < s.card := hs.card_pos
+  calc
+    ∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a))
+        = (s.card : ℝ) * Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
+      have : (∑ a ∈ s, Real.negMulLog (ENNReal.toReal (p a)))
+              =
+            ∑ a ∈ s, Real.negMulLog (((s.card : ENNReal)⁻¹).toReal) := by
+        refine Finset.sum_congr rfl ?_
+        intro a ha_mem
+        -- inside s: p a = (card s)⁻¹
+        simp [p, PMF.uniformOfFinset, ha_mem]
+      simp [this, Finset.sum_const, nsmul_eq_mul]
+    _ = Real.log s.card := by
+      have h := nat_mul_negMulLog_inv_eq_log s.card hcard
+      simpa only [ENNReal.toReal_inv, ENNReal.toReal_natCast] using h
+
+/-- Entropy of a deterministic distribution is zero. -/
+example : entropy (PMF.pure ()) = 0 := by simp only [entropy_pure]
+
+/-- Entropy of another deterministic distribution is zero. -/
+example : entropy (PMF.pure true) = 0 := by simp only [entropy_pure]
+
+example : entropy (PMF.uniformOfFinset ({0, 1} : Finset ℕ) (by simp) : PMF ℕ) = Real.log 2 := by
+  simpa using
+    (entropy_uniformOfFinset (α := ℕ) ({0, 1} : Finset ℕ) (by simp))
 
 end InformationTheory
