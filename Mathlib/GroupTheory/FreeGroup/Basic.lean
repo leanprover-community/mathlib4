@@ -767,9 +767,9 @@ theorem map.comp {γ : Type w} (f : α → β) (g : β → γ) (x) :
 theorem map.of {x} : map f (of x) = of (f x) :=
   rfl
 
-/-- If `α` and `β` are arbitrary types and there is a surjection between them, then the induced
-FreeGroup.map is also surjective. -/
-@[to_additive]
+
+@[to_additive /-- If `α` and `β` are arbitrary types and there is a surjection between them,
+then the induced FreeGroup.map is also surjective. -/]
 theorem map_surjective {α β : Type*} (f : α → β) (hf : Function.Surjective f) :
   Function.Surjective (FreeGroup.map f) := by
   intro x
