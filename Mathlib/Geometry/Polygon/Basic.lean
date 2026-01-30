@@ -12,7 +12,7 @@ public import Mathlib.Algebra.Ring.Defs
 /-!
 # Polygons
 
-This file includes the basic definitions related to polygons in affine spaces.
+This file defines polygons in affine spaces.
 For the special case `n = 3`, an interconversion is provided with `Affine.Triangle`.
 
 ## Main definitions
