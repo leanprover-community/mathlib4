@@ -48,8 +48,6 @@ instance : HasSeparator AddCommGrpCat.{u} where
 
 instance : IsGrothendieckAbelian.{u} AddCommGrpCat.{u} where
 
-instance : Abelian (Sheaf AddCommGrpCat.{u} X) := sheafIsAbelian
-
 instance : IsGrothendieckAbelian.{u} (Sheaf AddCommGrpCat.{u} X) :=
   CategoryTheory.Sheaf.instIsGrothendieckAbelian (Opens.grothendieckTopology X) AddCommGrpCat
 
