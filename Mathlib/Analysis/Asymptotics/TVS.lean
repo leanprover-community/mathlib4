@@ -17,9 +17,9 @@ import Mathlib.Tactic.Peel
 /-!
 # Asymptotics in a Topological Vector Space
 
-This file defines `Asymptotics.IsLittleOTVS` and `Asymptotics.IsBigOTVS`
-as generalizations of `Asymptotics.IsLittleO` and `Asymptotics.IsBigO`
-from normed spaces to topological spaces.
+This file defines `Asymptotics.IsLittleOTVS`, `Asymptotics.IsBigOTVS`, and `Asymptotics.IsThetaTVS`
+as generalizations of `Asymptotics.IsLittleO`, `Asymptotics.IsBigO`, and `Asymptotics.IsTheta`
+from normed spaces to topological vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
@@ -30,11 +30,13 @@ such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g
 (resp., $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$),
 where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
 
+We say that $f=Θ(g)$, if both $f=O(g)$ and $g=O(f)$.
+
 In a normed space, we can use balls of positive radius as both `U` and `V`,
 thus reducing the definition to the classical one.
 
-This frees the user from having to chose a canonical norm, at the expense of having to pick a
-specific base field.
+These modifications of the definitions free the user from having to chose a canonical norm,
+at the expense of having to pick a specific base field.
 This is exactly the tradeoff we want in `HasFDerivAtFilter`,
 as there the base field is already chosen,
 and this removes the choice of norm being part of the statement.
@@ -58,9 +60,8 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 ## TODO
 
-- Add `Asymptotics.IsThetaTVS` and `Asymptotics.IsEquivalentTVS`.
-- Prove equivalence of `IsBigOTVS` and `IsBigO`.
-- Prove a version of `Asymptotics.isBigO_One` for `IsBigOTVS`.
+- Add `Asymptotics.IsEquivalentTVS`.
+- Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
 
 -/
 
@@ -113,6 +114,14 @@ structure IsBigOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
 
 @[inherit_doc]
 notation:100 f " =O[" 𝕜 "; " l "] " g:100 => IsBigOTVS 𝕜 l f g
+
+/-- We say that `f =Θ[𝕜; l] g` (`IsThetaTVS 𝕜 l f g`), if `f =O[𝕜; l] g` and `g =O[𝕜; l] f`.
+It is a generalization of `f =Θ[l] g` that works in topological `𝕜`-vector spaces. -/
+def IsThetaTVS (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+  (f =O[𝕜; l] g) ∧ (g =O[𝕜; l] f)
+
+@[inherit_doc]
+notation:100 f " =Θ[" 𝕜 "; " l "] " g:100 => IsThetaTVS 𝕜 l f g
 
 end Defs
 
@@ -202,14 +211,34 @@ protected theorem IsBigOTVS.refl (f : α → E) (l : Filter α) : f =O[𝕜; l] 
 
 protected theorem IsBigOTVS.rfl : f =O[𝕜; l] f := .refl f l
 
+protected theorem IsThetaTVS.refl (f : α → E) (l : Filter α) : f =Θ[𝕜; l] f :=
+  ⟨.rfl, .rfl⟩
+
+protected theorem IsThetaTVS.rfl : f =Θ[𝕜; l] f := .refl f l
+
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
   rcases h.1 U hU with ⟨V, hV₀, hV⟩
   use V, hV₀
   simpa using hV 1 one_ne_zero
 
+theorem IsThetaTVS.isBigOTVS (h : f =Θ[𝕜; l] g) : f =O[𝕜; l] g := h.left
+
+@[symm]
+theorem IsThetaTVS.symm (h : f =Θ[𝕜; l] g) : g =Θ[𝕜; l] f := And.symm h
+
+theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g =Θ[𝕜; l] f := and_comm
+
+/-!
+### Transitivity lemmas
+-/
+
+section Trans
+
+variable {k : α → G}
+
 @[trans]
-theorem IsBigOTVS.trans {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
+theorem IsBigOTVS.trans (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
   obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
   obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
@@ -220,7 +249,31 @@ instance instTransIsBigOTVSIsBigOTVS :
     @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) where
   trans := IsBigOTVS.trans
 
-theorem IsLittleOTVS.trans_isBigOTVS {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
+theorem IsBigOTVS.trans_isThetaTVS (hfg : f =O[𝕜; l] g) (hgk : g =Θ[𝕜; l] k) :
+    f =O[𝕜; l] k :=
+  hfg.trans hgk.isBigOTVS
+
+instance instTransIsBigOTVSIsThetaTVS :
+    @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsThetaTVS 𝕜 l) (IsBigOTVS 𝕜 l) where
+  trans := IsBigOTVS.trans_isThetaTVS
+
+theorem IsThetaTVS.trans_isBigOTVS (hfg : f =Θ[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
+    f =O[𝕜; l] k :=
+  hfg.isBigOTVS.trans hgk
+
+instance instTransIsThetaOTVSIsBigOTVS :
+    @Trans (α → E) (α → F) (α → G) (IsThetaTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsBigOTVS 𝕜 l) where
+  trans := IsThetaTVS.trans_isBigOTVS
+
+@[trans]
+theorem IsThetaTVS.trans (hfg : f =Θ[𝕜; l] g) (hgk : g =Θ[𝕜; l] k) : f =Θ[𝕜; l] k :=
+  ⟨hfg.1.trans hgk.1, hgk.2.trans hfg.2⟩
+
+instance instTransIsThetaOTVS :
+    @Trans (α → E) (α → F) (α → G) (IsThetaTVS 𝕜 l) (IsThetaTVS 𝕜 l) (IsThetaTVS 𝕜 l) where
+  trans := IsThetaTVS.trans
+
+theorem IsLittleOTVS.trans_isBigOTVS (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
   obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
@@ -232,7 +285,15 @@ instance instTransIsLittleOTVSIsBigOTVS :
     @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans_isBigOTVS
 
-theorem IsBigOTVS.trans_isLittleOTVS {k : α → G} (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
+theorem IsLittleOTVS.trans_isThetaTVS (hfg : f =o[𝕜; l] g) (hgk : g =Θ[𝕜; l] k) :
+    f =o[𝕜; l] k :=
+  hfg.trans_isBigOTVS hgk.isBigOTVS
+
+instance instTransIsLittleOTVSIsThetaTVS :
+    @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsThetaTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
+  trans := IsLittleOTVS.trans_isThetaTVS
+
+theorem IsBigOTVS.trans_isLittleOTVS (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
   obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
@@ -244,13 +305,23 @@ instance instTransIsBigOTVSIsLittleOTVS :
     @Trans (α → E) (α → F) (α → G) (IsBigOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsBigOTVS.trans_isLittleOTVS
 
+theorem IsThetaTVS.trans_isLittleOTVS (hfg : f =Θ[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
+    f =o[𝕜; l] k :=
+  hfg.isBigOTVS.trans_isLittleOTVS hgk
+
+instance instTransIsThetaTVSIsLittleOTVS :
+    @Trans (α → E) (α → F) (α → G) (IsThetaTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
+  trans := IsThetaTVS.trans_isLittleOTVS
+
 @[trans]
-theorem IsLittleOTVS.trans {k : α → G} (hfg : f =o[𝕜; l] g) (hgk : g =o[𝕜; l] k) : f =o[𝕜; l] k :=
+theorem IsLittleOTVS.trans (hfg : f =o[𝕜; l] g) (hgk : g =o[𝕜; l] k) : f =o[𝕜; l] k :=
   hfg.trans_isBigOTVS hgk.isBigOTVS
 
 instance instTransIsLittleOTVSIsLittleOTVS :
     @Trans (α → E) (α → F) (α → G) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) (IsLittleOTVS 𝕜 l) where
   trans := IsLittleOTVS.trans
+
+end Trans
 
 protected theorem _root_.Filter.HasBasis.isLittleOTVS_iff
     {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
@@ -277,6 +348,28 @@ protected theorem _root_.Filter.HasBasis.isBigOTVS_iff
   · rintro s t hsub ⟨V, hV₀, hV⟩
     exact ⟨V, hV₀, hV.mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
   · exact fun s t hsub h ↦ h.mono fun x hx ↦ hx.trans <| egauge_anti 𝕜 hsub (g x)
+
+/-- The definition of `IsBigOTVS` says that
+for each neighborhood `U` of the origin in the codomain of `f`,
+there exists a neighborhood `V` of the origin in the codomain of `g` such that
+`egauge 𝕜 U (f x) ≤ egauge 𝕜 V (g x)` eventually along `l`.
+
+This lemma shows that it suffices to make this inequality work up to a constant multiplier. -/
+theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι → Prop} {U : ι → Set E}
+    (hb : (𝓝 0).HasBasis p U)
+    (h : ∀ i, p i → ∃ C : ℝ≥0, ∃ V ∈ 𝓝 (0 : F),
+      (egauge 𝕜 (U i) <| f ·) ≤ᶠ[l] (fun x ↦ C * egauge 𝕜 V (g x))) :
+    f =O[𝕜; l] g := by
+  rw [hb.isBigOTVS_iff (basis_sets _)]
+  intro i hi
+  rcases h i hi with ⟨C, V, hV₀, hV⟩
+  rcases NormedField.exists_lt_nnnorm 𝕜 C with ⟨c, hc⟩
+  have hc₀ : c ≠ 0 := by rintro rfl; simp at hc
+  refine ⟨c⁻¹ • V, (set_smul_mem_nhds_zero_iff <| inv_ne_zero hc₀).mpr hV₀, ?_⟩
+  refine hV.trans <| .of_forall fun x ↦ ?_
+  simp only
+  grw [hc]
+  simp [egauge_smul_left, hc₀, enorm_eq_nnnorm, ENNReal.div_eq_inv_mul]
 
 theorem isLittleOTVS_iff_smallSets :
     f =o[𝕜; l] g ↔ ∀ U ∈ 𝓝 0, ∀ᶠ V in (𝓝 0).smallSets, ∀ ε ≠ (0 : ℝ≥0),
@@ -345,6 +438,10 @@ lemma _root_.LinearMap.isBigOTVS_rev_comp (g : E →ₗ[𝕜] F) (hg : comap g (
   apply egauge_le_of_mem_smul
   grw [← hgV, ← (IsUnit.mk0 _ hc₀).preimage_smul_set]
   exact hc
+
+lemma _root_.ContinuousLinearMap.isThetaTVS_comp (g : E →L[𝕜] F) (hg : Topology.IsInducing g) :
+    (g ∘ f) =Θ[𝕜; l] f :=
+  ⟨g.isBigOTVS_comp, g.isBigOTVS_rev_comp <| by simp [hg.nhds_eq_comap]⟩
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜; l] g := by
@@ -654,9 +751,9 @@ section NormedSpace
 
 variable [NontriviallyNormedField 𝕜]
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable {f : α → E} {g : α → F} {l : Filter α}
 
-lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
-    f =o[𝕜; l] g ↔ f =o[l] g := by
+lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
   have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
   simp only [isLittleO_iff, nhds_basis_ball.isLittleOTVS_iff nhds_basis_ball]
@@ -690,6 +787,45 @@ lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
       _ ≤ δ * egauge 𝕜 (ball 0 1) (g x) := by gcongr; apply le_egauge_ball_one
 
 alias ⟨isLittleOTVS.isLittleO, IsLittleO.isLittleOTVS⟩ := isLittleOTVS_iff_isLittleO
+
+lemma isBigOTVS_iff_isBigO : f =O[𝕜; l] g ↔ f =O[l] g := by
+  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
+  constructor
+  · rw [nhds_basis_ball.isBigOTVS_iff nhds_basis_ball, isBigO_iff]
+    intro h
+    rcases h 1 one_pos with ⟨r, hr₀, hr⟩
+    lift r to ℝ≥0 using hr₀.le
+    norm_cast at hr₀
+    refine ⟨(‖c‖₊ / r : ℝ≥0), hr.mono fun x hx ↦ ?_⟩
+    suffices ‖f x‖ₑ ≤ (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ by
+      simp only [enorm_eq_nnnorm, ← coe_nnnorm] at this ⊢
+      exact mod_cast this
+    calc
+      ‖f x‖ₑ ≤ egauge 𝕜 (ball 0 1) (f x) := le_egauge_ball_one ..
+      _ ≤ egauge 𝕜 (ball 0 r) (g x) := hx
+      _ ≤ ‖c‖ₑ * ‖g x‖ₑ / ↑r :=
+        egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
+      _ = (‖c‖₊ / r : ℝ≥0) * ‖g x‖ₑ := by
+        simp [hr₀.ne', ENNReal.mul_div_right_comm, enorm_eq_nnnorm]
+  · rw [nhds_basis_ball.isBigOTVS_iff nhds_basis_ball, isBigO_iff']
+    have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
+    rintro ⟨C, hC₀, hC⟩ r hr₀
+    lift C to ℝ≥0 using hC₀.le; norm_cast at hC₀
+    lift r to ℝ≥0 using hr₀.le; norm_cast at hr₀
+    refine ⟨r / (C * ‖c‖₊), by positivity, hC.mono fun x hx ↦ ?_⟩
+    calc
+      egauge 𝕜 (ball 0 r) (f x) ≤ ‖c‖ₑ * ‖f x‖ₑ / r :=
+        egauge_ball_le_of_one_lt_norm hc <| .inl hr₀.ne'
+      _ ≤ ‖c‖ₑ * (C * ‖g x‖ₑ) / r := by
+        gcongr
+        simp only [enorm_eq_nnnorm, ← coe_nnnorm] at hx ⊢
+        exact mod_cast hx
+      _ = ‖g x‖ₑ / (r / (C * ‖c‖₊) : ℝ≥0) := by
+        simp_all [pos_iff_ne_zero, ENNReal.div_eq_inv_mul, ENNReal.mul_inv]
+        ac_rfl
+      _ ≤ _ := div_le_egauge_ball _ _ _
+
+alias ⟨isBigOTVS.isBigO, IsBigO.isBigOTVS⟩ := isBigOTVS_iff_isBigO
 
 end NormedSpace
 
