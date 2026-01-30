@@ -1062,6 +1062,9 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [IsAffine S] [IsAffine X] [∀ i, IsAffine (D.obj i)]
     (a : c.pt ⟶ X) (ha : c.π ≫ t = (Functor.const _).map (a ≫ f)) :
     ∃ (i : I) (g : D.obj i ⟶ X), c.π.app i ≫ g = a ∧ g ≫ f = t.app i := by
+  -- Every scheme involved is affine, so the proof is merely translate to commutative algebra and
+  -- use `RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit`.
+  -- Unfortunately the translation takes 45 lines.
   wlog hS : ∃ R, S = Spec R generalizing S
   · obtain ⟨i, g, hg, hg'⟩ := this (t ≫ ((Functor.const I).mapIso S.isoSpec).hom)
       (f ≫ S.isoSpec.hom) (by simp [reassoc_of% ha]) ⟨_, rfl⟩
@@ -1116,6 +1119,11 @@ private nonrec lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
 
 open TopologicalSpace in
 include hc in
+/--
+Given a cofiltered diagram of qcqs schemes `Dᵢ` over `S` with affine transition maps.
+If `X` is locally of finite presentation over `S`, then any `S`-morphism `lim Dᵢ ⟶ X` factors
+through some `lim Dᵢ ⟶ Dⱼ ⟶ X` for some `j`.
+-/
 lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
     [IsCofiltered I] [LocallyOfFinitePresentation f]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
