@@ -222,5 +222,3 @@ theorem isOne_algebraMap {r : R} (h : IsNat r 1) :
 end RingCompute
 
 end Mathlib.Tactic.Algebra
-
-#lint
