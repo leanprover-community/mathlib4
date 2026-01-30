@@ -183,18 +183,6 @@ lemma sum_restrict {α : Type*} [DistribLattice α] [OrderBot α] [DecidableEq �
 
 end Finpartition
 
-section
-
-open ENNReal
-
--- Move to Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-lemma le_tsum_of_forall_exist_lt_sum {ι : Type} {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : ∀ b < a, ∃ I : Finset ι, b < ∑ i ∈ I, f i) : a ≤ ∑' i, f i := by
-  refine le_of_forall_lt fun b hb ↦ ?_
-  obtain ⟨I, hI⟩ := h b hb
-  exact lt_of_lt_of_le hI (ENNReal.sum_le_tsum I)
-
-end
 
 
 variable {X : Type*} [MeasurableSpace X]
@@ -359,7 +347,7 @@ open Classical in
 lemma iUnion_le {s : ℕ → Set X} (hs : ∀ i, MeasurableSet (s i))
     (hs' : Pairwise (Disjoint on s)) (hf : IsSubadditive f) (hf' : f ∅ = 0) :
     preVariation f (⋃ i, s i) ≤ ∑' i, preVariation f (s i) := by
-  refine le_tsum_of_forall_exist_lt_sum fun b hb ↦ ?_
+  refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
   simp only [preVariation, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb
   obtain ⟨Q, hQ⟩ := hb
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
