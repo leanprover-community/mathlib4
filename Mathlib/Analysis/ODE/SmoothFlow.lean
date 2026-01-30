@@ -580,9 +580,7 @@ lemma iteratedFDerivUncurry_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E
       exact contDiffOn_iteratedFDerivUncurry hu k hg'
     rw [heq.fderiv_eq, fderiv_integralCMLM hsmooth hu t₀ hα]
 
-/-- If `g` is `C^k` on `u`, then `integralCMLM g u t₀` is `C^k` on the set of curves whose range is
-contained in `u`. -/
-lemma contDiffOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+lemma contDiffOn_integralCMLM_nat {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ) (hg : ContDiffOn ℝ k g u) :
     ContDiffOn ℝ k (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
   induction k generalizing n g with
@@ -619,10 +617,21 @@ lemma contDiffOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set 
       exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryLeftEquiv ℝ
         (fun _ : Fin (n + 1) ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))).comp_contDiffOn hI
 
+/-- If `g` is `C^k` on `u`, then `integralCMLM g u t₀` is `C^k` on the set of curves whose range is
+contained in `u`. -/
+lemma contDiffOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ∞) (hg : ContDiffOn ℝ k g u) :
+    ContDiffOn ℝ k (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
+  induction k using WithTop.recTopCoe with
+  | top =>
+    exact contDiffOn_infty.mpr fun m ↦ contDiffOn_integralCMLM_nat hu t₀ m
+      (hg.of_le (WithTop.coe_le_coe.mpr le_top))
+  | coe k => exact contDiffOn_integralCMLM_nat hu t₀ k hg
+
 /-- Specialization of `contDiffOn_integralCMLM` to the case `n = 0`, where `g : E → E [×0]→L[ℝ] E`
 corresponds to a function `f : E → E` via `uncurry0`/`curry0`. -/
 lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ) (hf : ContDiffOn ℝ k f u) :
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ∞) (hf : ContDiffOn ℝ k f u) :
     ContDiffOn ℝ k (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
       {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
   have hg : ContDiffOn ℝ k (fun x ↦ uncurry0 ℝ E (f x)) u :=
@@ -635,6 +644,24 @@ lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
 def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
     C(Icc tmin tmax, E) :=
   ContinuousMap.const _ p.1 - p.2 + (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ p.2).curry0
+
+/-- `T` is `C^k` in `p` when the vector field `f` is `C^k`. -/
+lemma contDiffOn_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    (k : ℕ∞) (hf : ContDiffOn ℝ k f u) :
+    ContDiffOn ℝ k (T f u t₀) (univ ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) := by
+  unfold T
+  -- `ContinuousMap.const _ p.1` is smooth (linear in p.1)
+  have h1 : ContDiff ℝ k (fun p : E × C(Icc tmin tmax, E) ↦ ContinuousMap.const _ p.1) :=
+    (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).contDiff.comp contDiff_fst
+  -- `p.2` is smooth (projection)
+  have h2 : ContDiff ℝ k (fun p : E × C(Icc tmin tmax, E) ↦ p.2) := contDiff_snd
+  -- The integral term is C^k by contDiffOn_integralCMLM_curry0
+  have h3 : ContDiffOn ℝ k (fun p : E × C(Icc tmin tmax, E) ↦
+      (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ p.2).curry0)
+      (univ ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) :=
+    (contDiffOn_integralCMLM_curry0 hu t₀ k hf).comp contDiff_snd.contDiffOn
+      (fun p hp ↦ hp.2)
+  exact (h1.contDiffOn.sub h2.contDiffOn).add h3
 
 end
 
