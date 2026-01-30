@@ -3,7 +3,10 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Instances.Real
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Real
+
 /-!
 # Embedded submanifolds
 
@@ -38,6 +41,8 @@ instead of an injective continuous linear map `E → E'`, we ask for a linear is
 
 -/
 
+public section
+
 open scoped Manifold ContDiff
 open Topology Function Set
 
@@ -68,9 +73,9 @@ space `F`, which induces the map `E → E'` in the obvious way.
 -/
 class SliceModel where
   /-- The continuous linear equivalence `E × F ≃L[𝕜] E'` underlying this slice model -/
-  equiv: (E × F) ≃L[𝕜] E'
+  equiv : (E × F) ≃L[𝕜] E'
   /-- The embedding `H → H'` underlying this slice model -/
-  map: H → H'
+  map : H → H'
   hmap : Topology.IsEmbedding map
   compatible : I' ∘ map = equiv ∘ ((·, 0) : E → E × F) ∘ I
 
@@ -152,7 +157,7 @@ def instTrans (h : SliceModel F I I') (h' : SliceModel F' I' I'') : SliceModel (
   compatible := by -- paste the commutative diagrams for `h` and `h'` together
     ext x
     simp only [comp_apply, ContinuousLinearEquiv.trans_apply, ContinuousLinearEquiv.prodCongr_apply,
-      ContinuousLinearEquiv.refl_apply, ContinuousLinearEquiv.prodAssoc_symm_apply]
+      ContinuousLinearEquiv.refl_apply] -- ContinuousLinearEquiv.prodAssoc_symm_apply
     -- can this be condensed? feels unnecessarily painful
     -- (grind errors with `unknown constant h.compatible`)
     calc
