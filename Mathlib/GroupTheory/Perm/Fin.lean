@@ -530,7 +530,7 @@ section Extension
 
 /-! ### Extension of injective functions to permutations -/
 
-/-- Any injective function `k : Fin m → Fin n` extends to a permutation of `Fin n`. -/
+/-- Injective `k : Fin m → Fin n` extends to a permutation agreeing with `k` on `Fin.castLE`. -/
 theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
     (hk : Function.Injective k) :
     ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk) i) = k i :=
