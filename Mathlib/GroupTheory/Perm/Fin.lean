@@ -530,20 +530,17 @@ section Extension
 /-! ### Extension of injective functions to permutations
 
 Any injective function `k : Fin m → Fin n` can be extended to a permutation of `Fin n`
-when `m ≤ n`. This is useful for relating exchangeability and contractability in probability.
+when `m ≤ n`.
 -/
 
-/-- Any injective function `k : Fin m → Fin n` can be extended to a permutation of `Fin n`.
-
-The permutation agrees with `k` on the image of `Fin.castLE`: for all `i : Fin m`,
-we have `σ (Fin.castLE hmn i) = k i`. -/
+/-- Any injective function `k : Fin m → Fin n` extends to a permutation of `Fin n` when `m ≤ n`. -/
 theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
     (hk : Function.Injective k) (hmn : m ≤ n) :
     ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE hmn i) = k i :=
   let e := (Fin.castLEquiv hmn).symm.trans (Equiv.ofInjective k hk)
   ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e (Fin.castLE hmn i) i.isLt⟩
 
-/-- Any strictly monotone function `k : Fin m → Fin n` can be extended to a permutation. -/
+/-- Any strictly monotone function `k : Fin m → Fin n` extends to a permutation when `m ≤ n`. -/
 theorem Equiv.Perm.exists_extending_strictMono {m n : ℕ} (k : Fin m → Fin n) (hk : StrictMono k)
     (hmn : m ≤ n) : ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE hmn i) = k i :=
   Equiv.Perm.exists_extending_injective k hk.injective hmn
