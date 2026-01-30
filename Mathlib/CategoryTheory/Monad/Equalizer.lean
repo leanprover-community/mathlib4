@@ -3,9 +3,11 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Special equalizers associated to a comonad
@@ -21,6 +23,8 @@ This file is adapted from `Mathlib/CategoryTheory/Monad/Coequalizer.lean`.
 Please try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -42,7 +46,7 @@ Show that any coalgebra is an equalizer of cofree coalgebras.
 
 /-- The top map in the equalizer diagram we will construct. -/
 @[simps!]
-def CofreeEqualizer.topMap :  (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
+def CofreeEqualizer.topMap : (Comonad.cofree T).obj X.A ⟶ (Comonad.cofree T).obj (T.obj X.A) :=
   (Comonad.cofree T).map X.a
 
 /-- The bottom map in the equalizer diagram we will construct. -/
@@ -84,9 +88,9 @@ cofree coalgebras.
 -/
 def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
   Fork.IsLimit.mk' _ fun s => by
-    have h₁ :  s.ι.f  ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
+    have h₁ : s.ι.f ≫ (T : C ⥤ C).map X.a = s.ι.f ≫ T.δ.app X.A :=
       congr_arg Comonad.Coalgebra.Hom.f s.condition
-    have h₂ :  s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
+    have h₂ : s.pt.a ≫ (T : C ⥤ C).map s.ι.f = s.ι.f ≫ T.δ.app X.A := s.ι.h
     refine ⟨⟨s.ι.f ≫ T.ε.app _, ?_⟩, ?_, ?_⟩
     · dsimp
       rw [Functor.map_comp, reassoc_of% h₂, Comonad.right_counit]
@@ -106,7 +110,7 @@ def beckCoalgebraEqualizer : IsLimit (beckCoalgebraFork X) :=
 def beckSplitEqualizer : IsSplitEqualizer (T.map X.a) (T.δ.app _) X.a :=
   ⟨T.ε.app _, T.ε.app _, X.coassoc.symm, X.counit, T.left_counit _, (T.ε.naturality _)⟩
 
-/-- This is the Beck fork. It is a split equalizer, in particular a equalizer. -/
+/-- This is the Beck fork. It is a split equalizer, in particular an equalizer. -/
 @[simps! pt]
 def beckFork : Fork (T.map X.a) (T.δ.app _) :=
   (beckSplitEqualizer X).asFork
@@ -115,7 +119,7 @@ def beckFork : Fork (T.map X.a) (T.δ.app _) :=
 theorem beckFork_ι : (beckFork X).ι = X.a :=
   rfl
 
-/-- The Beck fork is a equalizer. -/
+/-- The Beck fork is an equalizer. -/
 def beckEqualizer : IsLimit (beckFork X) :=
   (beckSplitEqualizer X).isEqualizer
 

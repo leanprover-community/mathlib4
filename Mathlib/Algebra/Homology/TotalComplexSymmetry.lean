@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
 
 /-! The symmetry of the total complex of a bicomplex
 
@@ -20,13 +22,15 @@ are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomo
 
 -/
 
+@[expose] public section
+
 assert_not_exists Ideal TwoSidedIdeal
 
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex₂
 
-variable {C I₁ I₂ J : Type*} [Category C] [Preadditive C]
+variable {C I₁ I₂ J : Type*} [Category* C] [Preadditive C]
     {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂} (K : HomologicalComplex₂ C c₁ c₂)
     (c : ComplexShape J) [TotalComplexShape c₁ c₂ c] [TotalComplexShape c₂ c₁ c]
     [TotalComplexShapeSymmetry c₁ c₂ c]

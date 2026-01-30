@@ -1,11 +1,11 @@
 /-
 Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
+Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Beibei Xiong, Weijie Jiang
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Multinomial
 
 /-! # Bell numbers for multisets
 
@@ -21,13 +21,18 @@ The definition presents it as a natural number.
 * `Nat.uniformBell m n` : short name for `Multiset.bell (replicate m n)`
 
 * `Multiset.bell_mul_eq` shows that
-    `m.bell * (m.map (fun j ↦ j !)).prod *
-      Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
+  `m.bell * (m.map (fun j ↦ j !)).prod * Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
 
 * `Nat.uniformBell_mul_eq`  shows that
-    `uniformBell m n * n ! ^ m * m ! = (m * n)!`
+  `uniformBell m n * n ! ^ m * m ! = (m * n) !`
 
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
+
+* `Nat.bell n`: the `n`th standard Bell number,
+  which counts the number of partitions of a set of cardinality `n`
+
+* `Nat.bell_succ n` shows that
+  `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)`
 
 ## TODO
 
@@ -35,6 +40,8 @@ Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
 
 -/
+
+@[expose] public section
 
 open Multiset Nat
 
@@ -58,7 +65,7 @@ private theorem bell_mul_eq_lemma {x : ℕ} (hx : x ≠ 0) :
             ∏ j ∈ Finset.range (c + 1), (j * x + x - 1).choose (x - 1) := by
         rw [factorial_succ, pow_succ]; ring
       _ = (x ! ^ c * c ! * ∏ j ∈ Finset.range c, (j * x + x - 1).choose (x - 1)) *
-            (c * x + x - 1).choose (x - 1) * x ! * (c + 1)  := by
+            (c * x + x - 1).choose (x - 1) * x ! * (c + 1) := by
         rw [Finset.prod_range_succ]; ring
       _ = (c + 1) * (c * x + x - 1).choose (x - 1) * (x * c)! * x ! := by
         rw [bell_mul_eq_lemma hx]; ring
@@ -106,8 +113,8 @@ theorem bell_eq (m : Multiset ℕ) :
     apply Nat.dvd_mul_left
   · rw [← Nat.pos_iff_ne_zero]
     apply Nat.mul_pos
-    · simp only [gt_iff_lt, CanonicallyOrderedAdd.multiset_prod_pos, mem_map,
-      forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    · simp only [CanonicallyOrderedAdd.multiset_prod_pos, mem_map, forall_exists_index, and_imp,
+        forall_apply_eq_imp_iff₂]
       exact fun _ _ ↦ Nat.factorial_pos _
     · apply Finset.prod_pos
       exact fun _ _ ↦ Nat.factorial_pos _
@@ -125,7 +132,7 @@ theorem uniformBell_eq (m n : ℕ) : m.uniformBell n =
   unfold uniformBell bell
   rw [toFinset_replicate]
   split_ifs with hm
-  · simp  [hm]
+  · simp [hm]
   · by_cases hn : n = 0
     · simp [hn]
     · rw [show ({n} : Finset ℕ).erase 0 = {n} by simp [Ne.symm hn]]
@@ -138,7 +145,7 @@ theorem uniformBell_zero_right (m : ℕ) : uniformBell m 0 = 1 := by
   simp [uniformBell_eq]
 
 theorem uniformBell_succ_left (m n : ℕ) :
-    uniformBell (m+1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
+    uniformBell (m + 1) n = choose (m * n + n - 1) (n - 1) * uniformBell m n := by
   simp only [uniformBell_eq, Finset.prod_range_succ, mul_comm]
 
 theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
@@ -146,7 +153,7 @@ theorem uniformBell_one_left (n : ℕ) : uniformBell 1 n = 1 := by
     zero_add, choose_self]
 
 theorem uniformBell_one_right (m : ℕ) : uniformBell m 1 = 1 := by
-  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, ge_iff_le, le_refl,
+  simp only [uniformBell_eq, mul_one, add_tsub_cancel_right, le_refl,
     tsub_eq_zero_of_le, choose_zero_right, Finset.prod_const_one]
 
 theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
@@ -162,10 +169,46 @@ theorem uniformBell_mul_eq (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
   · simp
 
 theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
-    uniformBell m n = (m * n) ! / (n ! ^ m * m !) := by
+    uniformBell m n = (m * n)! / (n ! ^ m * m !) := by
   rw [eq_comm]
   apply Nat.div_eq_of_eq_mul_left
   · exact Nat.mul_pos (Nat.pow_pos (Nat.factorial_pos n)) m.factorial_pos
   · rw [← mul_assoc, ← uniformBell_mul_eq _ hn]
+
+/--
+The `n`th standard Bell number,
+which counts the number of partitions of a set of cardinality `n`.
+
+## TODO
+
+Prove that `Nat.bell n` is equal to the sum of `Multiset.bell m`
+over all multisets `m : Multiset ℕ` such that `m.sum = n`.
+-/
+protected def bell : ℕ → ℕ
+  | 0 => 1
+  | n + 1 => ∑ i : Fin n.succ, choose n i * Nat.bell (n - i)
+
+theorem bell_succ (n : ℕ) :
+    Nat.bell (n + 1) = ∑ i : Fin n.succ, Nat.choose n i * Nat.bell (n - i) := by
+  rw [Nat.bell]
+
+theorem bell_succ' (n : ℕ) :
+    Nat.bell (n + 1) = ∑ ij ∈ Finset.antidiagonal n, Nat.choose n ij.1 * Nat.bell ij.2 := by
+  rw [Nat.bell_succ,
+    Finset.Nat.sum_antidiagonal_eq_sum_range_succ (fun x y => Nat.choose n x * Nat.bell y) n,
+    Finset.sum_range]
+
+
+@[simp]
+theorem bell_zero : Nat.bell 0 = 1 := by
+  simp [Nat.bell]
+
+@[simp]
+theorem bell_one : Nat.bell 1 = 1 := by
+  simp [Nat.bell]
+
+@[simp]
+theorem bell_two : Nat.bell 2 = 2 := by
+  simp [Nat.bell]
 
 end Nat

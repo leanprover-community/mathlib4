@@ -3,8 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ExactSequence
-import Mathlib.CategoryTheory.Abelian.Refinements
+module
+
+public import Mathlib.Algebra.Homology.ExactSequence
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # The four and five lemmas
@@ -29,11 +31,11 @@ We show:
 
 ## Implementation details
 
-The diagram of the five lemmas is given by a morphism in the category `ComposableArrows C 4`
+The diagram of the five lemma is given by a morphism in the category `ComposableArrows C 4`
 between two objects which satisfy `ComposableArrows.Exact`. Similarly, the two versions of the
 four lemma are stated in terms of the category `ComposableArrows C 3`.
 
-The five lemmas is deduced from the two versions of the four lemma. Both of these versions
+The five lemma is deduced from the two versions of the four lemma. Both of these versions
 are proved separately. It would be easy to deduce the epi version from the mono version
 using duality, but this would require lengthy API developments for `ComposableArrows` (TODO).
 
@@ -42,6 +44,8 @@ using duality, but this would require lengthy API developments for `ComposableAr
 four lemma, five lemma, diagram lemma, diagram chase
 -/
 
+public section
+
 
 namespace CategoryTheory
 
@@ -49,7 +53,7 @@ open Category Limits Preadditive
 
 namespace Abelian
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 open ComposableArrows
 
@@ -224,7 +228,7 @@ end Abelian
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 variable {R₁ R₂ : ShortComplex C} (φ : R₁ ⟶ R₂)
 
 attribute [local simp] ComposableArrows.Precomp.map

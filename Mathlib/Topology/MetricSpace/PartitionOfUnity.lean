@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Analysis.Convex.PartitionOfUnity
+module
+
+public import Mathlib.Topology.EMetricSpace.Paracompact
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Convex.PartitionOfUnity
 
 /-!
 # Lemmas about (e)metric spaces that need partition of unity
@@ -13,7 +15,7 @@ import Mathlib.Analysis.Convex.PartitionOfUnity
 The main lemma in this file (see `Metric.exists_continuous_real_forall_closedBall_subset`) says the
 following. Let `X` be a metric space. Let `K : ι → Set X` be a locally finite family of closed sets,
 let `U : ι → Set X` be a family of open sets such that `K i ⊆ U i` for all `i`. Then there exists a
-positive continuous function `δ : C(X, → ℝ)` such that for any `i` and `x ∈ K i`, we have
+positive continuous function `δ : C(X, ℝ)` such that for any `i` and `x ∈ K i`, we have
 `Metric.closedBall x (δ x) ⊆ U i`. We also formulate versions of this lemma for extended metric
 spaces and for different codomains (`ℝ`, `ℝ≥0`, and `ℝ≥0∞`).
 
@@ -24,6 +26,8 @@ lemma.
 
 metric space, partition of unity, locally finite
 -/
+
+public section
 
 open Topology ENNReal NNReal Filter Set Function TopologicalSpace
 

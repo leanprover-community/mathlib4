@@ -3,10 +3,14 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -29,6 +33,8 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
+
+public section
 
 
 open Set Filter Metric Complex
@@ -61,7 +67,7 @@ theorem DiffContOnCl.ball_subset_image_closedBall (h : DiffContOnCl ℂ f (ball 
   refine ⟨z, ball_subset_closedBall hz1, sub_eq_zero.mp ?_⟩
   have h6 := h1.differentiableOn.eventually_differentiableAt (isOpen_ball.mem_nhds hz1)
   refine (eventually_eq_or_eq_zero_of_isLocalMin_norm h6 hz2).resolve_left fun key => ?_
-  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; field_simp
+  have h7 : ∀ᶠ w in 𝓝 z, f w = f z := by filter_upwards [key] with h; simp
   replace h7 : ∃ᶠ w in 𝓝[≠] z, f w = f z := (h7.filter_mono nhdsWithin_le_nhds).frequently
   have h8 : IsPreconnected (ball z₀ r) := (convex_ball z₀ r).isPreconnected
   have h9 := h3.eqOn_of_preconnected_of_frequently_eq analyticOnNhd_const h8 hz1 h7
@@ -101,7 +107,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds_aux (hf : AnalyticAt 
   obtain ⟨x, hx, hfx⟩ := (isCompact_sphere z₀ r).exists_isMinOn h8 h9
   refine ⟨‖f x - f z₀‖ / 2, half_pos (norm_sub_pos_iff.mpr (h7 x hx)), ?_⟩
   exact (h6.ball_subset_image_closedBall hr (fun z hz => hfx hz) (not_eventually.mp h)).trans
-    (image_subset f (closedBall_subset_closedBall inf_le_right))
+    (by gcongr; exact inf_le_right)
 
 /-- The *open mapping theorem* for holomorphic functions, local version: is a function `g : E → ℂ`
 is analytic at a point `z₀`, then either it is constant in a neighborhood of `z₀`, or it maps every
@@ -141,15 +147,14 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
     simpa only [ray, gray, w, smul_smul, mul_inv_cancel₀ h', one_smul, add_sub_cancel,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right
+    simp only [not_forall] at h
     -- Otherwise, it is open along at least one direction and that implies the result
-    push_neg at h
     obtain ⟨z, hz, hrz⟩ := h
     specialize h1 z hz 0 (mem_ball_self hr)
     have h7 := h1.eventually_constant_or_nhds_le_map_nhds_aux.resolve_left hrz
     rw [show gray z 0 = g z₀ by simp [gray, ray], ← map_compose] at h7
     refine h7.trans (map_mono ?_)
-    have h10 : Continuous fun t : ℂ => z₀ + t • z :=
-      continuous_const.add (continuous_id'.smul continuous_const)
+    have h10 : Continuous fun t : ℂ => z₀ + t • z := by fun_prop
     simpa using h10.tendsto 0
 
 /-- The *open mapping theorem* for holomorphic functions, global version: if a function `g : E → ℂ`
@@ -160,8 +165,52 @@ theorem AnalyticOnNhd.is_constant_or_isOpen (hg : AnalyticOnNhd ℂ g U) (hU : I
   by_cases h : ∃ z₀ ∈ U, ∀ᶠ z in 𝓝 z₀, g z = g z₀
   · obtain ⟨z₀, hz₀, h⟩ := h
     exact Or.inl ⟨g z₀, hg.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const hU hz₀ h⟩
-  · push_neg at h
+  · simp only [not_exists, not_and] at h
     refine Or.inr fun s hs1 hs2 => isOpen_iff_mem_nhds.mpr ?_
     rintro z ⟨w, hw1, rfl⟩
     exact (hg w (hs1 hw1)).eventually_constant_or_nhds_le_map_nhds.resolve_left (h w (hs1 hw1))
         (image_mem_map (hs2.mem_nhds hw1))
+
+theorem AnalyticOnNhd.is_constant_or_isOpenMap (hg : AnalyticOnNhd ℂ g .univ) :
+    (∃ w, ∀ z, g z = w) ∨ IsOpenMap g :=
+  (hg.is_constant_or_isOpen PreconnectedSpace.isPreconnected_univ).imp
+    (fun ⟨w, eq⟩ ↦ ⟨w, fun z ↦ eq z ⟨⟩⟩) (· · <| subset_univ _)
+
+theorem Polynomial.C_eq_or_isOpenQuotientMap_eval (p : Polynomial ℂ) :
+    (∃ x, C x = p) ∨ IsOpenQuotientMap p.eval := by
+  refine or_iff_not_imp_left.mpr fun h ↦ ?_
+  obtain ⟨x, eq⟩ | hp := (AnalyticOnNhd.eval_polynomial p).is_constant_or_isOpenMap
+  · exact (h ⟨x, funext <| by simpa [eq_comm (a := x)]⟩).elim
+  · exact ⟨IsAlgClosed.eval_surjective <| natDegree_eq_zero.not.mpr h, p.continuous_aeval, hp⟩
+
+theorem Polynomial.isOpenQuotientMap_eval (p : Polynomial ℂ) (hp : p.natDegree ≠ 0) :
+    IsOpenQuotientMap p.eval :=
+  p.C_eq_or_isOpenQuotientMap_eval.resolve_left <| natDegree_eq_zero.not.mp hp
+
+namespace Complex
+
+theorem isOpenQuotientMap_pow (n : ℕ) [NeZero n] : IsOpenQuotientMap (· ^ n : ℂ → ℂ) := by
+  convert Polynomial.isOpenQuotientMap_eval (.X ^ n) _
+  · simp
+  · simpa using NeZero.ne n
+
+theorem isOpenQuotientMap_pow_compl_zero (n : ℕ) [NeZero n] :
+    IsOpenQuotientMap
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, pow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) where
+  surjective z := have ⟨w, h⟩ := (isOpenQuotientMap_pow n).surjective z
+    ⟨⟨w, by rintro rfl; exact z.2 (by simpa [zero_pow (NeZero.ne n)] using h.symm)⟩, Subtype.ext h⟩
+  continuous := by fun_prop
+  isOpenMap := (IsOpen.isOpenEmbedding_subtypeVal isClosed_singleton.1).isOpenMap_iff.mpr <|
+    (isOpenQuotientMap_pow n).isOpenMap.comp isClosed_singleton.1.isOpenMap_subtype_val
+
+theorem isOpenQuotientMap_zpow_compl_zero (n : ℤ) [NeZero n] :
+    IsOpenQuotientMap
+      fun z : {z : ℂ // z ≠ 0} ↦ (⟨z ^ n, zpow_ne_zero n z.2⟩ : {z : ℂ // z ≠ 0}) := by
+  obtain ⟨n, rfl | rfl⟩ := n.eq_nat_or_neg
+  · have : NeZero n := ⟨Nat.cast_ne_zero.mp (NeZero.ne (n : ℤ))⟩
+    exact isOpenQuotientMap_pow_compl_zero n
+  · have : NeZero n := ⟨Nat.cast_ne_zero.mp <| neg_ne_zero.mp (NeZero.ne (-n : ℤ))⟩
+    convert (isOpenQuotientMap_pow_compl_zero n).comp (Homeomorph.inv₀ ℂ).isOpenQuotientMap
+    simp [Homeomorph.inv₀]
+
+end Complex

@@ -3,18 +3,22 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Preadditive.Injective.Basic
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Injective objects in abelian categories
 
-* Objects in an abelian categories are injective if and only if the preadditive Yoneda functor
+* Objects in an abelian category are injective if and only if the preadditive Yoneda functor
   on them preserves finite colimits.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -29,7 +33,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- The preadditive Yoneda functor on `J` preserves homology if `J` is injective. -/
 instance preservesHomology_preadditiveYonedaObj_of_injective (J : C) [hJ : Injective J] :
-    (preadditiveYonedaObj J).PreservesHomology  := by
+    (preadditiveYonedaObj J).PreservesHomology := by
   letI := (injective_iff_preservesEpimorphisms_preadditive_yoneda_obj' J).mp hJ
   apply Functor.preservesHomology_of_preservesEpis_and_kernels
 

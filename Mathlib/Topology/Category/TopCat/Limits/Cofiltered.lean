@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Cofiltered limits in the category of topological spaces
@@ -13,6 +15,8 @@ Given a *compatible* collection of topological bases for the factors in a cofilt
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
 of sets in the limit is, in fact, a topological basis.
 -/
+
+public section
 
 
 open TopologicalSpace Topology
@@ -83,17 +87,14 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       exact compat j e (g e he) (U e) (h1 e he)
     · -- conclude...
       rw [h2]
-      change _ = (C.π.app j)⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
+      change _ = (C.π.app j) ⁻¹' ⋂ (e : J) (_ : e ∈ G), Vs e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 e
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      -- Porting note: needed more hand holding here
-      change (C.π.app e)⁻¹' U e =
-        (C.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      simp [he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

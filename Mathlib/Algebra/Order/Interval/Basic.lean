@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Interval.Basic
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic
@@ -17,6 +19,8 @@ This file defines arithmetic operations on intervals and prove their correctness
 full precision operations. The essentials of float operations can be found
 in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -127,7 +131,7 @@ instance : Mul (NonemptyInterval α) :=
 
 @[to_additive]
 instance : Mul (Interval α) :=
-  ⟨Option.map₂ (· * ·)⟩
+  ⟨WithBot.map₂ (· * ·)⟩
 
 namespace NonemptyInterval
 
@@ -161,11 +165,11 @@ variable (s t : Interval α)
 
 @[to_additive (attr := simp)]
 theorem bot_mul : ⊥ * t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
 @[to_additive]
 theorem mul_bot : s * ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 -- simp can already prove `add_bot`
 attribute [simp] mul_bot
@@ -228,14 +232,12 @@ end NonemptyInterval
 @[to_additive]
 instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
-  mul := (· * ·)
-  one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by
-      simp_rw [one_mul, ← Function.id_def, Option.map_id, id]
+    (WithBot.map₂_coe_left _ _ _).trans <| by
+      simp_rw [one_mul, ← Function.id_def, WithBot.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by
-      simp_rw [mul_one, ← Function.id_def, Option.map_id, id]
+    (WithBot.map₂_coe_right _ _ _).trans <| by
+      simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
@@ -321,7 +323,7 @@ instance : Sub (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst - t.snd, s.snd - t.fst), tsub_le_tsub s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Sub (Interval α) :=
-  ⟨Option.map₂ Sub.sub⟩
+  ⟨WithBot.map₂ Sub.sub⟩
 
 namespace NonemptyInterval
 
@@ -354,11 +356,11 @@ variable (s t : Interval α)
 
 @[simp]
 theorem bot_sub : ⊥ - t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
 @[simp]
 theorem sub_bot : s - ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 end Interval
 
@@ -379,7 +381,7 @@ instance : Div (NonemptyInterval α) :=
   ⟨fun s t => ⟨(s.fst / t.snd, s.snd / t.fst), div_le_div'' s.fst_le_snd t.fst_le_snd⟩⟩
 
 instance : Div (Interval α) :=
-  ⟨Option.map₂ (· / ·)⟩
+  ⟨WithBot.map₂ (· / ·)⟩
 
 namespace NonemptyInterval
 
@@ -412,11 +414,11 @@ variable (s t : Interval α)
 
 @[simp]
 theorem bot_div : ⊥ / t = ⊥ :=
-  rfl
+  WithBot.map₂_bot_left _ _
 
 @[simp]
 theorem div_bot : s / ⊥ = ⊥ :=
-  Option.map₂_none_right _ _
+  WithBot.map₂_bot_right _ _
 
 end Interval
 
@@ -435,7 +437,7 @@ instance : Inv (NonemptyInterval α) :=
 
 @[to_additive]
 instance : Inv (Interval α) :=
-  ⟨Option.map Inv.inv⟩
+  ⟨WithBot.map Inv.inv⟩
 
 namespace NonemptyInterval
 
@@ -488,8 +490,6 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
@@ -506,8 +506,6 @@ instance subtractionCommMonoid {α : Type u}
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
@@ -539,34 +537,32 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg some (neg_neg _)
-    neg_add_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (neg_add_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+    neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
+    neg_add_rev := by
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h)
+          | exact congr_arg WithBot.some (neg_eq_of_add_eq_zero_right <| WithBot.coe_injective h)
     -- TODO: use a better defeq
     zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg some (inv_inv _)
-    mul_inv_rev := by rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg some (mul_inv_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+    inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
+    mul_inv_rev := by
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (inv_eq_of_mul_eq_one_right <| Option.some_injective _ h) }
+          | exact congr_arg WithBot.some (inv_eq_of_mul_eq_one_right <| WithBot.coe_injective h) }
 
 end Interval
 
@@ -655,7 +651,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length :=
-  Finset.le_sum_of_subadditive _ length_zero length_add_le _ _
+  Finset.le_sum_of_subadditive _ length_zero.le length_add_le _ _
 
 end Interval
 
@@ -666,7 +662,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
-def evalNonemptyIntervalLength : PositivityExt where
+meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
@@ -676,7 +672,7 @@ def evalNonemptyIntervalLength : PositivityExt where
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
-def evalIntervalLength : PositivityExt where
+meta def evalIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)

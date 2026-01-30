@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.EReal.Operations
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Bornology.Real
-import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Order.Real
-import Mathlib.Topology.UniformSpace.Real
+module
+
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Bornology.Real
+public import Mathlib.Topology.Instances.Int
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Topology.Order.Real
+public import Mathlib.Topology.UniformSpace.Real
 
 /-!
 # Topological algebra properties of ℝ
@@ -22,6 +24,8 @@ This file defines topological field/(semi)ring structures on the
 It also includes a bit of more general topological theory of the reals,
 needed to define the structures and prove continuity.
 -/
+
+@[expose] public section
 
 assert_not_exists StarRing UniformContinuousConstSMul UniformOnFun
 
@@ -48,7 +52,7 @@ instance : IsUniformAddGroup ℝ :=
   IsUniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
 
 theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
-  uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)
+  uniformContinuous_of_continuousAt_zero (DistribSMul.toAddMonoidHom ℝ x)
     (continuous_const_smul x).continuousAt
 
 -- short-circuit type class inference
@@ -69,7 +73,7 @@ Instances for the following typeclasses are defined:
 
 * `IsTopologicalSemiring ℝ≥0`
 * `ContinuousSub ℝ≥0`
-* `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
+* `ContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
 
 Everything is inherited from the corresponding structures on the reals.
@@ -82,7 +86,7 @@ instance : IsTopologicalSemiring ℝ≥0 where
 instance : ContinuousSub ℝ≥0 :=
   ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
 
-instance : HasContinuousInv₀ ℝ≥0 := inferInstance
+instance : ContinuousInv₀ ℝ≥0 := inferInstance
 
 variable {α : Type*}
 

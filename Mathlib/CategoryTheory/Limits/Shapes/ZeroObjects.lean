@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Zero objects
@@ -16,6 +18,8 @@ see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -36,7 +40,7 @@ namespace Limits
 /-- An object `X` in a category is a *zero object* if for every object `Y`
 there is a unique morphism `to : X → Y` and a unique morphism `from : Y → X`.
 
-This is a characteristic predicate for `has_zero_object`. -/
+This is a characteristic predicate for `HasZeroObject`. -/
 structure IsZero (X : C) : Prop where
   /-- there are unique morphisms to the object -/
   unique_to : ∀ Y, Nonempty (Unique (X ⟶ Y))
@@ -47,8 +51,10 @@ namespace IsZero
 
 variable {X Y : C}
 
--- Porting note: `to` is a reserved word, it was replaced by `to_`
-/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
+/-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`.
+
+`to` is a reserved word, it was replaced by `to_`
+-/
 protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
 
@@ -58,8 +64,10 @@ theorem eq_to (h : IsZero X) (f : X ⟶ Y) : f = h.to_ Y :=
 theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 
--- Porting note: `from` is a reserved word, it was replaced by `from_`
-/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
+/-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`.
+
+`from` is a reserved word, it was replaced by `from_`
+-/
 protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited
 
@@ -171,7 +179,7 @@ section
 variable [HasZeroObject C]
 
 /-- Construct a `Zero C` for a category with a zero object.
-This can not be a global instance as it will trigger for every `Zero C` typeclass search.
+This cannot be a global instance as it will trigger for every `Zero C` typeclass search.
 -/
 protected def HasZeroObject.zero' : Zero C where zero := HasZeroObject.zero.choose
 
@@ -206,6 +214,14 @@ theorem IsZero.obj [HasZeroObject D] {F : C ⥤ D} (hF : IsZero F) (X : C) : IsZ
   have hG : IsZero G := Functor.isZero _ fun _ => isZero_zero _
   let e : F ≅ G := hF.iso hG
   exact (isZero_zero _).of_iso (e.app X)
+
+lemma IsZero.of_full_of_faithful_of_isZero
+    (F : C ⥤ D) [F.Full] [F.Faithful] (X : C) (hX : IsZero (F.obj X)) :
+    IsZero X := by
+  have h : F.FullyFaithful := .ofFullyFaithful _
+  have (Y : C) := (hX.unique_to (F.obj Y)).some
+  have (Y : C) := (hX.unique_from (F.obj Y)).some
+  exact ⟨fun Y ↦ ⟨h.homEquiv.unique⟩, fun Y ↦ ⟨h.homEquiv.unique⟩⟩
 
 namespace HasZeroObject
 
