@@ -339,7 +339,9 @@ theorem not_uncountable_iff_countable {s : Set α} : ¬s.Uncountable ↔ s.Count
 
 alias ⟨_, Countable.not_uncountable⟩ := not_uncountable_iff_countable
 
-lemma Uncountable.not_countable {s : Set α} (hs : s.Uncountable) : ¬ s.Countable := hs
+@[simp] lemma Uncountable.not_countable {s : Set α} (hs : s.Uncountable) : ¬ s.Countable := hs
+
+attribute [simp] Countable.not_uncountable
 
 theorem uncountable_coe_iff {s : Set α} : Uncountable s ↔ s.Uncountable :=
   not_countable_iff.symm.trans countable_coe_iff.not
