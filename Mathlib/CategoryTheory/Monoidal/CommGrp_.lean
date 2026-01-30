@@ -175,13 +175,16 @@ section
 variable {G H : CommGrp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X] := by cat_disch)
   (mul_f : μ[G.X] ≫ e.hom = (e.hom ⊗ₘ e.hom) ≫ μ[H.X] := by cat_disch)
 
+set_option backward.privateInPublic true in
 /-- Construct an isomorphism of group objects by giving an isomorphism between the underlying
 objects and checking compatibility with unit and multiplication only in the forward direction. -/
 abbrev mkIso : G ≅ H :=
   have : IsMonHom e.hom := ⟨one_f, mul_f⟩
   mkIso' e
 
+set_option backward.privateInPublic true in
 @[simp] lemma mkIso_hom_hom_hom_hom : (mkIso e one_f mul_f).hom.hom.hom.hom = e.hom := rfl
+set_option backward.privateInPublic true in
 @[simp] lemma mkIso_inv_hom_hom_hom : (mkIso e one_f mul_f).inv.hom.hom.hom = e.inv := rfl
 
 @[deprecated (since := "2025-12-18")] alias mkIso_hom_hom := mkIso_hom_hom_hom_hom

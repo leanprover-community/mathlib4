@@ -156,7 +156,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   algebraMap :=
   { toFun := (· • 1)
     map_one' := by simp
-    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
+    map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1) by
       rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
         mul_smul]
       congr

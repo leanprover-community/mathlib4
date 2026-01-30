@@ -35,7 +35,7 @@ Note that there are related results about convolution with respect to peak funct
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
-@[expose] public section
+public section
 
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 

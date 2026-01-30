@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Adjoin.Basic
 This file contains some results on dimensions of `Algebra.adjoin`.
 -/
 
-@[expose] public section
+public section
 
 open Module
 

@@ -26,6 +26,7 @@ universe v u
 
 variable (R : Type u) [CommRing R]
 
+set_option backward.privateInPublic true in
 /-- The category of R-algebras and their morphisms. -/
 structure AlgCat where
   private mk ::
@@ -45,6 +46,8 @@ instance : CoeSort (AlgCat R) (Type v) :=
 
 attribute [coe] AlgCat.carrier
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
 typeclasses. This is the preferred way to construct a term of `AlgCat R`. -/
 abbrev of (X : Type v) [Ring X] [Algebra R X] : AlgCat.{v} R :=
@@ -54,6 +57,7 @@ lemma coe_of (X : Type v) [Ring X] [Algebra R X] : (of R X : Type v) = X :=
   rfl
 
 variable {R} in
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `AlgCat R`. -/
 @[ext]
 structure Hom (A B : AlgCat.{v} R) where
@@ -61,11 +65,15 @@ structure Hom (A B : AlgCat.{v} R) where
   /-- The underlying algebra map. -/
   hom' : A →ₐ[R] B
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category (AlgCat.{v} R) where
   Hom A B := Hom A B
   id A := ⟨AlgHom.id R A⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory (AlgCat.{v} R) (· →ₐ[R] ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -171,14 +179,6 @@ lemma forget₂_module_obj (X : AlgCat.{v} R) :
 lemma forget₂_module_map {X Y : AlgCat.{v} R} (f : X ⟶ Y) :
     (forget₂ (AlgCat.{v} R) (ModuleCat.{v} R)).map f = ModuleCat.ofHom f.hom.toLinearMap :=
   rfl
-
-variable {R} in
-/-- Forgetting to the underlying type and then building the bundled object returns the original
-algebra. -/
-@[deprecated Iso.refl (since := "2025-05-15")]
-def ofSelfIso (M : AlgCat.{v} R) : AlgCat.of R M ≅ M where
-  hom := 𝟙 M
-  inv := 𝟙 M
 
 /-- The "free algebra" functor, sending a type `S` to the free algebra on `S`. -/
 @[simps! obj map]

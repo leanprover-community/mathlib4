@@ -67,6 +67,12 @@ lemma toScheme_carrier : (U : Type u) = (U : Set X) := rfl
 
 lemma toScheme_presheaf_obj (V) : Γ(U, V) = Γ(X, U.ι ''ᵁ V) := rfl
 
+lemma forall_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∀ x, P x) ↔ ∀ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.forall
+
+lemma exists_toScheme {U : X.Opens} {P : U.toScheme → Prop} :
+    (∃ x, P x) ↔ ∃ (x : X) (hx : x ∈ U), P ⟨x, hx⟩ := Subtype.exists
+
 @[simp]
 lemma toScheme_presheaf_map {V W} (i : V ⟶ W) :
     U.toScheme.presheaf.map i = X.presheaf.map (U.ι.opensFunctor.map i.unop).op := rfl
@@ -484,7 +490,7 @@ lemma basicOpenIsoSpecAway_inv_homOfLE {R : CommRingCat.{u}} (f g x : R) (hx : x
   simp only [← Spec.map_comp, ← CommRingCat.ofHom_comp]
   congr
   ext x
-  exact (IsLocalization.Away.awayToAwayRight_eq f g x).symm
+  exact (IsLocalization.Away.awayToAwayRight_eq f g x (S := Localization.Away f)).symm
 
 section MorphismRestrict
 

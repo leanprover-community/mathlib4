@@ -95,6 +95,7 @@ theorem self : IsSubDPIdeal hI I where
   isSubideal := le_rfl
   dpow_mem _ hn _ ha := hI.dpow_mem hn ha
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The divided power structure on a sub-dp-ideal. -/
 def dividedPowers {J : Ideal A} (hJ : IsSubDPIdeal hI J) [∀ x, Decidable (x ∈ J)] :
     DividedPowers J where
@@ -246,6 +247,7 @@ theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 @[simp]
 theorem memCarrier {s : SubDPIdeal hI} {x : A} : x ∈ s.carrier ↔ x ∈ s := Iff.rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
   isSubideal := J.isSubideal
   dpow_mem   := J.dpow_mem
@@ -511,6 +513,7 @@ theorem le_equalizer_of_isDPMorphism {B : Type*} [CommSemiring B] (f : A →+* B
   rintro b ⟨a, ha, rfl⟩
   exact ⟨hI_le_K (mem_map_of_mem f ha), fun n ↦ by rw [hIK.2 a ha, hIK'.2 a ha]⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- If there is a divided power structure on `I⬝(A/J)` such that the quotient map is
 a dp-morphism, then `J ⊓ I` is a sub-dp-ideal of `I`. -/
 def subDPIdeal_inf_of_quot {A : Type*} [CommRing A] {I : Ideal A} {hI : DividedPowers I}
@@ -631,10 +634,13 @@ variable {J : Ideal A} (hIJ : IsSubDPIdeal hI (J ⊓ I))
 noncomputable def dpow (J : Ideal A) : ℕ → A ⧸ J → A ⧸ J :=
   DividedPowers.Quotient.OfSurjective.dpow hI (Ideal.Quotient.mk J)
 
+set_option backward.privateInPublic true in
 private theorem isSubDPIdeal_aux (hIJ : IsSubDPIdeal hI (J ⊓ I)) :
     IsSubDPIdeal hI (RingHom.ker (Ideal.Quotient.mk J) ⊓ I) := by
   simpa [Ideal.mk_ker] using hIJ
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- When `I ⊓ J` is a sub-dp-ideal of `I`, this is the divided power structure on the ideal
  `I(A⧸J)` of the quotient. -/
 noncomputable def dividedPowers : DividedPowers (I.map (Ideal.Quotient.mk J)) :=

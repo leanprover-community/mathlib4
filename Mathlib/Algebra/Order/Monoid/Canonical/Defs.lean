@@ -175,9 +175,6 @@ theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_l
 lemma one_notMem_iff [OrderBot α] {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
   bot_eq_one (α := α) ▸ bot_notMem_iff
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
-@[to_additive existing, deprecated (since := "2025-05-23")] alias one_not_mem_iff := one_notMem_iff
-
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
 

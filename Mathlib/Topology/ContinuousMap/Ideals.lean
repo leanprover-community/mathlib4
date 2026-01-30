@@ -107,8 +107,6 @@ theorem mem_idealOfSet {s : Set X} {f : C(X, R)} :
 theorem notMem_idealOfSet {s : Set X} {f : C(X, R)} : f ∉ idealOfSet R s ↔ ∃ x ∈ sᶜ, f x ≠ 0 := by
   simp_rw [mem_idealOfSet]; push_neg; rfl
 
-@[deprecated (since := "2025-05-23")] alias not_mem_idealOfSet := notMem_idealOfSet
-
 /-- Given an ideal `I` of `C(X, R)`, construct the set of points for which every function in the
 ideal vanishes on the complement. -/
 def setOfIdeal (I : Ideal C(X, R)) : Set X :=
@@ -117,8 +115,6 @@ def setOfIdeal (I : Ideal C(X, R)) : Set X :=
 theorem notMem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∉ setOfIdeal I ↔ ∀ ⦃f : C(X, R)⦄, f ∈ I → f x = 0 := by
   rw [← Set.mem_compl_iff, setOfIdeal, compl_compl, Set.mem_setOf]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_setOfIdeal := notMem_setOfIdeal
 
 theorem mem_setOfIdeal {I : Ideal C(X, R)} {x : X} :
     x ∈ setOfIdeal I ↔ ∃ f ∈ I, (f : C(X, R)) x ≠ 0 := by

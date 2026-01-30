@@ -256,6 +256,7 @@ section
 
 variable [NoZeroDivisors A]
 
+set_option backward.privateInPublic true in
 private def indepMatroid : IndepMatroid A where
   E := univ
   Indep := AlgebraicIndepOn R id
@@ -279,6 +280,8 @@ private def indepMatroid : IndepMatroid A where
   indep_maximal X _ I ind hIX := exists_maximal_algebraicIndependent I X hIX ind
   subset_ground _ _ := subset_univ _
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If `R` is a commutative ring and `A` is a commutative `R`-algebra with injective algebra map
 and no zero-divisors, then the `R`-algebraic independent subsets of `A` form a matroid. -/
 def matroid : Matroid A := (indepMatroid R A).matroid.copyBase univ
@@ -451,8 +454,7 @@ theorem Polynomial.trdeg_of_isDomain [IsDomain R] : trdeg R (Polynomial R) = 1 :
 -- TODO: generalize to Nontrivial S
 theorem trdeg_lt_aleph0 [IsDomain R] [fin : FiniteType R S] : trdeg R S < ℵ₀ :=
   have ⟨n, f, surj⟩ := FiniteType.iff_quotient_mvPolynomial''.mp fin
-  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by
-    simpa using Cardinal.nat_lt_aleph0 _
+  lift_lt.mp <| (lift_trdeg_le_of_surjective f surj).trans_lt <| by simp
 
 namespace Algebra.IsAlgebraic
 

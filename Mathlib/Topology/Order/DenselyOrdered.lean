@@ -60,6 +60,10 @@ theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := 
     · rw [Icc_eq_empty_of_lt hab]
       exact empty_subset _
 
+@[simp]
+theorem closure_uIoo {a b : α} (hab : a ≠ b) : closure (uIoo a b) = uIcc a b := by
+  simp [uIoo, uIcc, hab]
+
 /-- The closure of the interval `(a, b]` is the closed interval `[a, b]`. -/
 @[simp]
 theorem closure_Ioc {a b : α} (hab : a ≠ b) : closure (Ioc a b) = Icc a b := by
@@ -67,6 +71,10 @@ theorem closure_Ioc {a b : α} (hab : a ≠ b) : closure (Ioc a b) = Icc a b := 
   · exact closure_minimal Ioc_subset_Icc_self isClosed_Icc
   · apply Subset.trans _ (closure_mono Ioo_subset_Ioc_self)
     rw [closure_Ioo hab]
+
+@[simp]
+theorem closure_uIoc {a b : α} (hab : a ≠ b) : closure (uIoc a b) = uIcc a b := by
+  simp [uIoc, uIcc, hab]
 
 /-- The closure of the interval `[a, b)` is the closed interval `[a, b]`. -/
 @[simp]
@@ -198,8 +206,10 @@ theorem nhdsWithin_Iio_neBot' {b c : α} (H₁ : (Iio c).Nonempty) (H₂ : b ≤
 theorem nhdsWithin_Iio_neBot [NoMinOrder α] {a b : α} (H : a ≤ b) : NeBot (𝓝[Iio b] a) :=
   nhdsWithin_Iio_neBot' nonempty_Iio H
 
-theorem nhdsWithin_Iio_self_neBot' {b : α} (H : (Iio b).Nonempty) : NeBot (𝓝[<] b) :=
+theorem nhdsLT_neBot_of_exists_lt {b : α} (H : ∃ a, a < b) : NeBot (𝓝[<] b) :=
   nhdsWithin_Iio_neBot' H (le_refl b)
+
+@[deprecated (since := "2026-01-16")] alias nhdsWithin_Iio_self_neBot' := nhdsLT_neBot_of_exists_lt
 
 instance nhdsLT_neBot [NoMinOrder α] (a : α) : NeBot (𝓝[<] a) := nhdsWithin_Iio_neBot (le_refl a)
 

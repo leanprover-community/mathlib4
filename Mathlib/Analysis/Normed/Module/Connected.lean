@@ -26,7 +26,7 @@ We show several results related to the (path)-connectedness of subsets of real v
 Statements with connectedness instead of path-connectedness are also given.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
@@ -211,7 +211,7 @@ theorem isConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0
 /-- In a real vector space of dimension `> 1`, any sphere is preconnected. -/
 theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
     IsPreconnected (sphere x r) := by
-  rcases le_or_gt 0 r with hr|hr
+  rcases le_or_gt 0 r with hr | hr
   · exact (isConnected_sphere h x hr).isPreconnected
   · simpa [hr] using isPreconnected_empty
 

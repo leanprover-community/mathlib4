@@ -54,6 +54,12 @@ theorem isDiscrete_iff_nhdsNE {S : Set Y} :
     IsDiscrete S ↔ ∀ x ∈ S, 𝓝[≠] x ⊓ 𝓟 S = ⊥ := by
   rw [isDiscrete_iff_discreteTopology, discreteTopology_subtype_iff]
 
+/-- If a subset of a topological space has no accumulation points,
+then it carries the discrete topology. -/
+lemma discreteTopology_of_noAccPts {X : Type*} [TopologicalSpace X] {E : Set X}
+    (h : ∀ x ∈ E, ¬ AccPt x (𝓟 E)) : DiscreteTopology E := by
+  simpa [discreteTopology_subtype_iff, AccPt] using h
+
 lemma discreteTopology_subtype_iff' {S : Set Y} :
     DiscreteTopology S ↔ ∀ y ∈ S, ∃ U : Set Y, IsOpen U ∧ U ∩ S = {y} := by
   simp [discreteTopology_iff_isOpen_singleton, isOpen_induced_iff, Set.ext_iff]
@@ -277,9 +283,6 @@ theorem nhdsNE_of_nhdsNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space 
     exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
-@[deprecated (since := "2025-05-22")]
-alias nhdNE_of_nhdNE_sdiff_finite := nhdsNE_of_nhdsNE_sdiff_finite
-
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
 More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
 intersect `U \ s` in only finitely many points. -/
@@ -334,7 +337,9 @@ lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
     obtain ⟨u, hu1, hu2, hu3⟩ := ht1
     refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
     simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
-  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
+  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by
+      have aux : Subtype.val ⁻¹' (S \ Subtype.val '' U)ᶜ = U := by ext; simp
+      simpa [aux] using tendsto_def.mp this ((S \ Subtype.val '' U)ᶜ)
     exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
       continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 

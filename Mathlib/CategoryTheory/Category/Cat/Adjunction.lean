@@ -30,6 +30,8 @@ namespace CategoryTheory.Cat
 
 variable (X : Type u) (C : Cat)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat.objects.obj C) where
   toFun F x := F.toFunctor.obj ⟨x⟩
   invFun f := (Discrete.functor f).toCatHom
@@ -37,21 +39,25 @@ private def typeToCatObjectsAdjHomEquiv : (typeToCat.obj X ⟶ C) ≃ (X ⟶ Cat
     obtain rfl := Discrete.eq_of_hom f
     simp)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 private def typeToCatObjectsAdjCounitApp : (Cat.objects ⋙ typeToCat).obj C ⥤ C where
   obj := Discrete.as
   map := eqToHom ∘ Discrete.eq_of_hom
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `typeToCat : Type ⥤ Cat` is left adjoint to `Cat.objects : Cat ⥤ Type` -/
 def typeToCatObjectsAdj : typeToCat ⊣ Cat.objects :=
   Adjunction.mk' {
     homEquiv := typeToCatObjectsAdjHomEquiv
-    unit := { app:= fun _  ↦ Discrete.mk }
+    unit := { app := fun _ ↦ Discrete.mk }
     counit := {
       app C := (typeToCatObjectsAdjCounitApp C).toCatHom
-      naturality := fun _ _ _  ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
+      naturality := fun _ _ _ ↦ Hom.ext <| Functor.hext (fun _ ↦ rfl)
         (by intro ⟨_⟩ ⟨_⟩ f
             obtain rfl := Discrete.eq_of_hom f
-            cat_disch ) } }
+            cat_disch) } }
 
 /-- The connected components functor -/
 def connectedComponents : Cat.{v, u} ⥤ Type u where
@@ -66,13 +72,13 @@ def connectedComponentsTypeToCatAdj : connectedComponents ⊣ typeToCat :=
     homEquiv := fun C X ↦ (ConnectedComponents.typeToCatHomEquiv C X).trans
       (Functor.equivCatHom C (Discrete X))
     unit :=
-      { app:= fun C ↦ Functor.toCatHom <|
+      { app := fun C ↦ Functor.toCatHom <|
         ConnectedComponents.functorToDiscrete _ (𝟙 (connectedComponents.obj C)) }
     counit := {
         app := fun X => ConnectedComponents.liftFunctor _ (𝟙 typeToCat.obj X).toFunctor
         naturality := fun _ _ _ =>
           funext (fun xcc => by
-            obtain ⟨x,h⟩ := Quotient.exists_rep xcc
+            obtain ⟨x, h⟩ := Quotient.exists_rep xcc
             cat_disch) }
     homEquiv_counit := fun {C X G} => by
       funext cc

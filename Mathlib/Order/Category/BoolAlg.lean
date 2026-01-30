@@ -42,6 +42,7 @@ instance : CoeSort BoolAlg (Type _) :=
 
 attribute [coe] BoolAlg.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]
 structure Hom (X Y : BoolAlg.{u}) where
@@ -49,11 +50,15 @@ structure Hom (X Y : BoolAlg.{u}) where
   /-- The underlying `BoundedLatticeHom`. -/
   hom' : BoundedLatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BoolAlg.{u} where
   Hom X Y := Hom X Y
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BoolAlg (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk

@@ -154,6 +154,7 @@ def OneTruncation₂.ofNerve₂.natIso :
       simp only [comp_id, id_comp]
       rfl))
 
+set_option backward.privateInPublic true in
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
@@ -192,6 +193,8 @@ def δ1₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 1
 /-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
 def δ2₂ : ⦋1⦌₂ ⟶ ⦋2⦌₂ := δ₂ (n := 1) 2
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 0th face of a 2-simplex. -/
 def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ φ :=
@@ -200,11 +203,15 @@ def ev12₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev1₂ φ ⟶ ev2₂ �
       (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm),
     map_map_of_eq V rfl⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 1st face of a 2-simplex. -/
 def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ φ :=
   ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
 2nd face of a 2-simplex. -/
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
@@ -271,6 +278,12 @@ lemma mk_surjective : Function.Surjective (mk (V := V)) := by
   rintro ⟨⟨x⟩⟩
   exact ⟨x, rfl⟩
 
+lemma ext {x y : V.HomotopyCategory} (h : x.as.as = y.as.as) : x = y := by
+  obtain ⟨x, rfl⟩ := x.mk_surjective
+  obtain ⟨y, rfl⟩ := y.mk_surjective
+  obtain rfl : x = y := h
+  rfl
+
 @[elab_as_elim, cases_eliminator]
 protected lemma cases_on {motive : V.HomotopyCategory → Prop}
     (h : ∀ (x : V _⦋0⦌₂), motive (.mk x))
@@ -303,7 +316,7 @@ lemma homMk_id (x : V _⦋0⦌₂) :
 lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
     {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
-  simpa [homMk] using  CategoryTheory.Quotient.sound _
+  simpa [homMk] using CategoryTheory.Quotient.sound _
     (OneTruncation₂.HoRel₂.of_compStruct h)
 
 variable (V) in
@@ -388,6 +401,8 @@ variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
   (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
     F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e) := by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
 def mkNatTrans : F ⟶ G where
   app _ := φ _
@@ -396,6 +411,8 @@ def mkNatTrans : F ⟶ G where
       morphismProperty_eq_top (fun e ↦ hφ e)
     exact this.symm.le f (by simp)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
     (mkNatTrans φ hφ).app (mk v) = φ v := rfl
@@ -408,14 +425,20 @@ variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
   (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
     (iso x).hom ≫ G.map (homMk e) := by cat_disch)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
 def mkNatIso : F ≅ G :=
   NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
     (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl
@@ -431,6 +454,33 @@ lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
     (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _)
 
 end
+
+instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
+    Subsingleton X.HomotopyCategory where
+  allEq x y := by
+    obtain ⟨x, rfl⟩ := x.mk_surjective
+    obtain ⟨y, rfl⟩ := y.mk_surjective
+    obtain rfl := Subsingleton.elim x y
+    rfl
+
+instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
+    (x y : X.HomotopyCategory) :
+    Subsingleton (x ⟶ y) :=
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  letI (x y : (OneTruncation₂ X)) : Subsingleton (x ⟶ y) :=
+    inferInstanceAs (Subsingleton <| X.Edge _ _)
+  CategoryTheory.Quotient.instSubsingletonHom _ _ _
+
+instance (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] : Unique X.HomotopyCategory :=
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  CategoryTheory.Quotient.instUnique _
+
+/-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
+then `X.HomotopyCategory` is a terminal object in `Cat`. -/
+def isTerminal (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)] :
+    IsTerminal (Cat.of X.HomotopyCategory) :=
+  letI : IsDiscrete (X.HomotopyCategory) := { eq_of_hom := by subsingleton }
+  Cat.isTerminalOfUniqueOfIsDiscrete
 
 end HomotopyCategory
 
