@@ -759,6 +759,134 @@ lemma fderiv_T_comp_inr {f : E → E} {u : Set E}
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.coe_snd',
     _root_.map_zero, zero_sub]
 
+/-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is bounded by
+`|tmax - tmin| * C` where `C` bounds `‖fderiv ℝ f x‖` on `range α`. -/
+lemma opNorm_fderivIntegralCurry0_le {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C) :
+    ‖fderivIntegralCurry0 f u t₀ α‖ ≤ |tmax - tmin| * C := by
+  -- Define the inner function with explicit type to help inference
+  set fderivUncurry : E → E [×1]→L[ℝ] E :=
+    fun y ↦ (fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) y).uncurryLeft with hfderivUncurry
+  have hg' : ContDiffOn ℝ 1 (fun y ↦ uncurry0 ℝ E (f y)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
+  have hg : ContinuousOn fderivUncurry u := hg'.continuousOn_fderiv_uncurryLeft hu
+  -- Show the goal equals what we want to prove
+  have hgoal : fderivIntegralCurry0 f u t₀ α =
+      (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
+        (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap.comp
+        ((integralCMLM fderivUncurry u t₀ α).curryLeft) := rfl
+  rw [hgoal]
+  -- The composition with an isometry preserves the norm
+  calc ‖(continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
+        (C(Icc tmin tmax, E))).toContinuousLinearEquiv.toContinuousLinearMap.comp
+        ((integralCMLM fderivUncurry u t₀ α).curryLeft)‖
+    _ = ‖(integralCMLM fderivUncurry u t₀ α).curryLeft‖ :=
+        (continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E))
+          (C(Icc tmin tmax, E))).toLinearIsometry.norm_toContinuousLinearMap_comp
+    _ ≤ |tmax - tmin| * C := ?_
+  -- Bound the norm of curryLeft of integralCMLM
+  refine ContinuousLinearMap.opNorm_le_bound (M := |tmax - tmin| * C) (hMp := by positivity)
+    (hM := fun dα ↦ ?_)
+  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun v ↦ ?_
+  rw [ContinuousMap.norm_le _ (by positivity)]
+  intro t
+  rw [ContinuousMultilinearMap.curryLeft_apply, integralCMLM_apply_if_pos hg,
+    integralCM_apply_if_pos hα, integralFun]
+  -- Bound the integrand pointwise
+  have hboundUncurry : ∀ τ ∈ uIoc (t₀ : ℝ) t,
+      ‖fderivUncurry (compProj t₀ α τ)
+        (fun (i : Fin 1) ↦ compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ)‖ ≤ C * ‖dα‖ := by
+    intro τ hτ
+    have hτ' : τ ∈ Icc tmin tmax := uIcc_subset_Icc t₀.2 t.2 (uIoc_subset_uIcc hτ)
+    have hmem : compProj t₀ α τ ∈ range α := ⟨⟨τ, hτ'⟩, (compProj_of_mem hτ').symm⟩
+    have hdiff : DifferentiableAt ℝ f (compProj t₀ α τ) :=
+      (hf.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds (hα hmem))
+    -- The derivative of uncurry0 ∘ f equals uncurry0 ∘ fderiv f
+    let curry0Inv := (continuousMultilinearCurryFin0 ℝ E E).symm
+    have hcomp : fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ) =
+        curry0Inv.toContinuousLinearEquiv.toContinuousLinearMap.comp
+          (fderiv ℝ f (compProj t₀ α τ)) := by
+      convert fderiv_comp (compProj t₀ α τ)
+        ((continuousMultilinearCurryFin0 ℝ E E).symm.differentiableAt) hdiff using 1
+      rw [curry0Inv.fderiv]
+    have hfderiv : ‖fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ)‖ ≤ C := by
+      rw [hcomp]
+      have h : ‖curry0Inv.toContinuousLinearEquiv.toContinuousLinearMap.comp
+              (fderiv ℝ f (compProj t₀ α τ))‖ = ‖fderiv ℝ f (compProj t₀ α τ)‖ :=
+        curry0Inv.toLinearIsometry.norm_toContinuousLinearMap_comp
+      rw [h]
+      exact hbound _ hmem
+    -- Bound ‖fderivUncurry x m‖ ≤ ‖fderivUncurry x‖ * ∏‖m i‖ ≤ C * ‖dα‖
+    let m : Fin 1 → E := fun i ↦ compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ
+    have step1 : ‖fderivUncurry (compProj t₀ α τ) m‖ ≤
+        ‖fderivUncurry (compProj t₀ α τ)‖ * ∏ i : Fin 1, ‖m i‖ :=
+      ContinuousMultilinearMap.le_opNorm _ _
+    have step2 : ‖fderivUncurry (compProj t₀ α τ)‖ =
+        ‖fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ)‖ := by
+      simp only [hfderivUncurry, ContinuousLinearMap.uncurryLeft_norm]
+    have step3 : ∏ i : Fin 1, ‖m i‖ = ‖compProj t₀ dα τ‖ := by
+      simp only [Fin.prod_univ_one, m, Fin.cons_zero]
+    have step4 : ‖compProj t₀ dα τ‖ ≤ ‖dα‖ := dα.norm_coe_le_norm _
+    calc _ ≤ ‖fderivUncurry (compProj t₀ α τ)‖ * ∏ i : Fin 1, ‖m i‖ := step1
+      _ = ‖fderiv ℝ (fun z ↦ uncurry0 ℝ E (f z)) (compProj t₀ α τ)‖ * ‖compProj t₀ dα τ‖ := by
+          rw [step2, step3]
+      _ ≤ C * ‖compProj t₀ dα τ‖ := mul_le_mul_of_nonneg_right hfderiv (norm_nonneg _)
+      _ ≤ C * ‖dα‖ := mul_le_mul_of_nonneg_left step4 hC
+  -- Since v : Fin 0 → _, the product ∏ i, ‖v i‖ = 1
+  simp only [Fin.prod_univ_zero, mul_one]
+  calc ‖∫ τ in (t₀ : ℝ)..t, fderivUncurry (compProj t₀ α τ)
+        (fun (i : Fin 1) ↦ compProj t₀ ((Fin.cons dα v : Fin 1 → _) i) τ)‖
+    _ ≤ C * ‖dα‖ * |↑t - ↑t₀| := intervalIntegral.norm_integral_le_of_norm_le_const hboundUncurry
+    _ ≤ C * ‖dα‖ * |tmax - tmin| := mul_le_mul_of_nonneg_left (Icc.abs_sub_le t t₀)
+        (mul_nonneg hC (norm_nonneg _))
+    _ = |tmax - tmin| * C * ‖dα‖ := by ring
+
+/-- The operator norm of `fderivIntegralCurry0 f u t₀ α` is less than 1 when the time interval is
+sufficiently small relative to the derivative bound on `ball x₀ a`. -/
+lemma opNorm_fderivIntegralCurry0_lt_one {f : E → E} {u : Set E} (hf : ContDiffOn ℝ 1 f u)
+    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {x₀ : E} {a : ℝ}
+    (hau : ball x₀ a ⊆ u) {α : C(Icc tmin tmax, E)} (hα : range α ⊆ ball x₀ a)
+    {C : ℝ} (hC : 0 ≤ C) (hbound : ∀ x ∈ ball x₀ a, ‖fderiv ℝ f x‖ ≤ C)
+    (hsmall : |tmax - tmin| * C < 1) :
+    ‖fderivIntegralCurry0 f u t₀ α‖ < 1 := by
+  have hαu : range α ⊆ u := hα.trans hau
+  have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hα hx)
+  exact (opNorm_fderivIntegralCurry0_le hf hu t₀ hαu hC hbound').trans_lt hsmall
+
+/-
+Lang Lemma 1.13 doesn't make any sense!
+
+Clarify:
+`of_contDiffAt_one` gives `ε > 0`, `a ≥ 0`, `r > 0`, `L ≥ 0`, `K ≥ 0`.
+`ε` for nontrivial time interval `Icc (t₀ - ε) (t₀ + ε)` (can be shrunken arbitrarily)
+`a` for how far away from `x₀` an integral curve `α` can travel
+`r` for how far away from `x₀` an integral curve `α` can begin
+`L` for bounding `‖f‖` within `closedBall x₀ a`
+`K` for Lipschitz constant of `f` within `closedBall x₀ a` (can be enlarged arbitrarily)
+
+Then any integral curve `α` of `f` starting in `closedBall x₀ r` and defined on
+`Icc (t₀ - ε) (t₀ + ε)` is `L`-Lipschitz and stays within `closedBall x₀ a`. (missing lemmas?)
+
+`‖f'‖ ≤ K < K + 1` at `x₀`.
+Shrink `a` (shrink `r` proportionally and shrink `ε` appropriately) so that `f` is `C^1` and
+`‖f'‖ < K + 1` within `closedBall x₀ a`. (missing lemmas?)
+Shrink `ε` more so that `|tmax - tmin| * (K + 1) < 1`.
+Shrink `ε` even more so that `L * max (tmax - t₀) (t₀ - tmin) < a - r`
+(need a modified `mem_closedBall` for `ball`)
+
+`IsPicardLindelof` still holds with new constants.
+Let `α` be an integral curve beginning within `r` from `x₀`.
+`range α ⊆ ball x₀ a`, so we can apply lemmas with `u := ball x₀ a`.
+
+Conclude that `‖fderivIntegralCurry0 f u t₀ α‖ < 1` for all integral curves `α` of `f` beginning
+within `r` from `x₀`.
+-/
+
+
+
+
+
 /-- The derivative of `T` restricted to the second component is bijective when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
 theorem to apply. -/
