@@ -133,7 +133,7 @@ instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
 
-instance [Nonempty V] [Nontrivial α] [Nonempty <| G.Coloring α] : Nontrivial <| G.Coloring α := by
+instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <| G.Coloring α := by
   classical
   have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
   have ⟨v⟩ := ‹Nonempty V›
@@ -143,7 +143,7 @@ instance [Nonempty V] [Nontrivial α] [Nonempty <| G.Coloring α] : Nontrivial <
   dsimp [Iso.completeGraph] at this
   grind
 
-instance [Nonempty V] [Infinite α] [Nonempty <| G.Coloring α] : Infinite <| G.Coloring α := by
+instance [Nonempty <| G.Coloring α] [Infinite α] [Nonempty V] : Infinite <| G.Coloring α := by
   classical
   have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
   have ⟨v⟩ := ‹Nonempty V›
