@@ -66,7 +66,7 @@ universe uι uE uH uM uF
 open Bundle Function Filter Module Set
 open scoped Topology Manifold ContDiff
 
-noncomputable section
+noncomputable section Manifold
 
 variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
@@ -847,3 +847,63 @@ theorem exists_contMDiff_zero_iff_one_iff_of_isClosed {s t : Set M}
 
 @[deprecated (since := "2025-12-17")]
 alias exists_msmooth_zero_iff_one_iff_of_isClosed := exists_contMDiff_zero_iff_one_iff_of_isClosed
+
+end Manifold
+
+section NormedSpace
+
+variable {ι : Type*} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {s : Set E}
+
+variable (ι E) in
+/-- We say that a collection of functions form a smooth partition of unity on a set `s` if
+
+* all functions are infinitely smooth and nonnegative;
+* the family `fun i ↦ support (f i)` is locally finite;
+* for all `x ∈ s` the sum `∑ᶠ i, f i x` equals one;
+* for all `x`, the sum `∑ᶠ i, f i x` is less than or equal to one. -/
+structure Normed.SmoothPartitionOfUnity (s : Set E := univ) where
+  /-- The family of functions forming the partition of unity. -/
+  toFun : ι → E → ℝ
+  /-- Every function is smooth. -/
+  contDiff' : ∀ i, ContDiff ℝ ∞ (toFun i)
+  /-- Around each point, there are only finitely many nonzero functions in the family. -/
+  locallyFinite' : LocallyFinite fun i => support (toFun i)
+  /-- All the functions in the partition of unity are nonnegative. -/
+  nonneg' : ∀ i x, 0 ≤ toFun i x
+  /-- The functions in the partition of unity add up to `1` at any point of `s`. -/
+  sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
+  /-- The functions in the partition of unity add up to at most `1` everywhere. -/
+  sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
+
+namespace Normed.SmoothPartitionOfUnity
+
+variable (f : Normed.SmoothPartitionOfUnity ι E s)
+
+instance : FunLike (Normed.SmoothPartitionOfUnity ι E s) ι (E → ℝ) where
+  coe := toFun
+  coe_injective' f g h := by cases f; cases g; congr
+
+protected theorem contDiff (i : ι) : ContDiff ℝ ∞ (f i) := f.contDiff' i
+
+protected theorem nonneg (i : ι) (x : E) : 0 ≤ f i x := f.nonneg' i x
+
+/-- A smooth partition of unity `f i` is subordinate to a family of sets `U i` indexed by the same
+type if for each `i` the closure of the support of `f i` is a subset of `U i`. -/
+def IsSubordinate (f : Normed.SmoothPartitionOfUnity ι E s) (U : ι → Set E) :=
+  ∀ i, tsupport (f i) ⊆ U i
+
+variable [FiniteDimensional ℝ E]
+
+/-- If `X` is a normed space and `U` is an open covering of a closed set
+`s`, then there exists a `SmoothPartitionOfUnity ι E s` that is subordinate to `U`. -/
+theorem exists_isSubordinate {s : Set E} (hs : IsClosed s) (U : ι → Set E) (ho : ∀ i, IsOpen (U i))
+    (hU : s ⊆ ⋃ i, U i) : ∃ f : SmoothPartitionOfUnity ι E s, f.IsSubordinate U := by
+  obtain ⟨f', hf'⟩ := _root_.SmoothPartitionOfUnity.exists_isSubordinate 𝓘(ℝ, E) hs U ho hU
+  use ⟨(f' ·), fun i ↦ (f' i).contMDiff.contDiff, f'.locallyFinite, f'.nonneg, f'.sum_eq_one',
+    f'.sum_le_one⟩
+  exact hf'
+
+end Normed.SmoothPartitionOfUnity
+
+end NormedSpace
