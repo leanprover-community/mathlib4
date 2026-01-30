@@ -533,12 +533,15 @@ lemma exists_lt_eVariationOn_inter_Icc {f : α → E} {ε : ℝ≥0∞} {s : Set
     order
   simp [this] at A
 
-/-- If a function has bounded variation, then the variation on small closed-open
-intervals to the left of any point tends to `0`. -/
-theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ico_zero
-    [TopologicalSpace α] [OrderTopology α]
-    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
-    Tendsto (fun y ↦ eVariationOn f (s ∩ Ico y x)) (𝓝[s] x) (𝓝 0) := by
+/-- If a function has bounded variation, then the variation on closed semi-infinite intervals
+tends to `0`. We give a version with a generic filter, that applies both to left-neighborhoods of
+points and to `atTop`. -/
+theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero_of_filter
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s)
+    (L : Filter α) (hL : ∀ y ∈ s, s ∩ Ici y ∈ L) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ici y)) L (𝓝 0) := by
+  rcases eq_empty_or_nonempty s with rfl | ⟨x₀, hx₀⟩
+  · simpa using tendsto_const_nhds
   /- The variation is monotone, therefore it converges. If the limit were positive, say `ε`,
   then one would get variation `ε` between two points `x₀` and `x₁`. But also between two points
   `x₁` and `x₂`, and so on. Adding up these variations would be arbitrarily large, contradicting
@@ -546,32 +549,24 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ico_zero
   apply tendsto_order.2 ⟨by simp, fun ε εpos ↦ ?_⟩
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, δ ∈ Ioo 0 ε := exists_between εpos
   by_contra! H
-  have I {y} (hy : ε ≤ eVariationOn f (s ∩ Ico y x)) : y < x := by
-    contrapose! hy
-    have : Ico y x = ∅ := by grind
-    simpa [this] using εpos
-  have A (y) (hy : y ∈ s ∩ Iio x) : ∃ y', ε ≤ eVariationOn f (s ∩ Ico y' x) ∧ y' ∈ s ∩ Ioo y x := by
-    have : s ∩ Ioi y ∈ 𝓝[s] x := inter_mem_nhdsWithin _ (Ioi_mem_nhds hy.2)
-    obtain ⟨y', hy', h'y'⟩ : ∃ y', ε ≤ eVariationOn f (s ∩ Ico y' x) ∧ y' ∈ s ∩ Ioi y :=
-      (H.and_eventually this).exists
-    exact ⟨y', hy', h'y'.1, h'y'.2, I hy'⟩
-  have B (y) (hy : y ∈ s ∩ Iio x) : ∃ y' ∈ s ∩ Ioo y x, δ ≤ eVariationOn f (s ∩ Icc y y') := by
-    rcases A y hy with ⟨y', hy', y'_mem⟩
-    have : δ < eVariationOn f (s ∩ Ico y' x) := lt_of_lt_of_le hδ hy'
-    obtain ⟨a, ha, b, hb, hab, h⟩ : ∃ a ∈ s ∩ Ico y' x, ∃ b ∈ s ∩ Ico y' x, a < b ∧
-      δ < eVariationOn f ((s ∩ Ico y' x) ∩ Icc a b) := exists_lt_eVariationOn_inter_Icc this
-    refine ⟨b, ⟨hb.1, y'_mem.2.1.trans_le hb.2.1, hb.2.2⟩, h.le.trans (mono _ (by grind))⟩
+  have B (y) (hy : y ∈ s) : ∃ y' ∈ s ∩ Ici y, δ ≤ eVariationOn f (s ∩ Icc y y') := by
+    obtain ⟨y', hy', y'_mem⟩ : ∃ y', ε ≤ eVariationOn f (s ∩ Ici y') ∧ y' ∈ s ∩ Ici y :=
+      (H.and_eventually (hL y hy)).exists
+    obtain ⟨a, ha, b, hb, hab, h⟩ : ∃ a ∈ s ∩ Ici y', ∃ b ∈ s ∩ Ici y', a < b ∧
+      δ < eVariationOn f ((s ∩ Ici y') ∩ Icc a b) :=
+        exists_lt_eVariationOn_inter_Icc (hδ.trans_le hy')
+    refine ⟨b, ⟨hb.1, le_trans y'_mem.2 hb.2⟩, ?_⟩
+    have : Ici y' ∩ Icc a b = Icc a b := by grind
+    rw [inter_assoc, this] at h
+    exact h.le.trans (mono _ (by grind))
   choose! y y_mem le_y using B
-  obtain ⟨u, le_u, hu⟩ : ∃ u, ε ≤ eVariationOn f (s ∩ Ico u x) ∧ u ∈ s :=
-    (H.and_eventually self_mem_nhdsWithin).exists
-  let v (n : ℕ) := y^[n] u
-  have I n : v n ∈ s ∩ Iio x := by
+  let v (n : ℕ) := y^[n] x₀
+  have I n : v n ∈ s := by
     induction n with
-    | zero => simpa [v] using ⟨hu, I le_u⟩
+    | zero => simpa [v] using hx₀
     | succ n ih =>
       simp only [Function.iterate_succ', Function.comp_apply, v]
-      have : s ∩ Ioo (y^[n] u) x ⊆ s ∩ Iio x := by grind
-      exact this (y_mem _ ih)
+      exact (y_mem _ ih).1
   have J (n : ℕ) : n * δ ≤ eVariationOn f s := calc
     n * δ
     _ = ∑ i ∈ Finset.range n, δ := by simp
@@ -583,7 +578,7 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ico_zero
       apply eVariationOn.sum
       · apply monotone_nat_of_le_succ (fun n ↦ ?_)
         simp only [Function.iterate_succ', Function.comp_apply, v]
-        exact (y_mem _ (I n)).2.1.le
+        exact (y_mem _ (I n)).2
       · grind
     _ ≤ eVariationOn f s := mono _ inter_subset_left
   have : Tendsto (fun (n : ℕ) ↦ n * δ) atTop (𝓝 (∞ * δ)) :=
@@ -592,6 +587,45 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ico_zero
   have : ∞ ≤ eVariationOn f s := le_of_tendsto this (Eventually.of_forall J)
   simp only [BoundedVariationOn] at hf
   order
+
+/-- A bounded variation function has a limit on its left within a set. Version with a general
+filter, covering both left neighborhoods of points and `atTop`. -/
+theorem _root_.BoundedVariationOn.exists_tendsto_left_of_filter [CompleteSpace E]
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s)
+    (L : Filter α) (hL : ∀ y ∈ s, s ∩ Ici y ∈ L) (hs : s.Nonempty) :
+    ∃ l, Tendsto f L (𝓝 l) := by
+  rcases hs with ⟨x₀, hx₀⟩
+  rcases Filter.eq_or_neBot L with h | h
+  · simp only [h, tendsto_bot, exists_const_iff, and_true]
+    exact ⟨f x₀⟩
+  apply CompleteSpace.complete
+  apply EMetric.cauchy_iff.2 ⟨by simp [neBot_iff.mp h], fun ε εpos ↦ ?_⟩
+  obtain ⟨y, y_mem, hy⟩ : ∃ y ∈ s, eVariationOn f (s ∩ Ici y) < ε := by
+    have W := hf.tendsto_eVariationOn_Ici_zero_of_filter L hL
+    rcases (((tendsto_order.1 W).2 ε εpos).and (hL x₀ hx₀)).exists with ⟨y, hy, h'y⟩
+    exact ⟨y, h'y.1, hy⟩
+  refine ⟨f '' (s ∩ Ici y), ?_, ?_⟩
+  · simp only [mem_map]
+    apply mem_of_superset (hL y y_mem) (subset_preimage_image _ _)
+  · rintro - ⟨a, ha, rfl⟩ - ⟨b, hb, rfl⟩
+    exact (eVariationOn.edist_le _ ha hb).trans_lt hy
+
+/-- If a function has bounded variation, then the variation on small closed-open
+intervals to the left of any point tends to `0`. -/
+theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ico_zero
+    [TopologicalSpace α] [OrderTopology α]
+    {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ico y x)) (𝓝[s] x) (𝓝 0) := by
+  have A : Tendsto (fun y ↦ eVariationOn f (s ∩ Ico y x)) (𝓝[s ∩ Iio x] x) (𝓝 0) := by
+    simp_rw [← Iio_inter_Ici, ← inter_assoc]
+    exact (hf.mono inter_subset_left).tendsto_eVariationOn_Ici_zero_of_filter (𝓝[s ∩ Iio x] x)
+      (fun y hy ↦ inter_mem_nhdsWithin _ (Ici_mem_nhds hy.2))
+  have B : Tendsto (fun y ↦ eVariationOn f (s ∩ Ico y x)) (𝓝[s ∩ Ici x] x) (𝓝 0) := by
+    apply tendsto_const_nhds.congr'
+    filter_upwards [self_mem_nhdsWithin] with a ha using by simp [show Ico a x = ∅ by grind]
+  nth_rewrite 2 [show s = (s ∩ Iio x) ∪ (s ∩ Ici x) by grind]
+  rw [nhdsWithin_union, tendsto_sup]
+  simp [A, B]
 
 /-- If a function has bounded variation, then the variation on small open-closed
 intervals to the right of any point tends to `0`. -/
@@ -642,6 +676,16 @@ theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Icc_zero_right
     rw [Icc_toDual, ← preimage_inter, eVariationOn_ofDual]
   rw [this]
   exact hf.ofDual.tendsto_eVariationOn_Icc_zero_left h
+
+/-- A bounded variation function has a limit on its left within a set. -/
+theorem _root_.BoundedVariationOn.exists_tendsto_left [CompleteSpace E] [TopologicalSpace α]
+    [OrderTopology α] {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) (x : α) :
+    ∃ l, Tendsto f (𝓝[s ∩ Iio x] x) (𝓝 l) := by
+  rcases eq_empty_or_nonempty (s ∩ Iio x) with hs | hs
+  · simp only [hs, nhdsWithin_empty, tendsto_bot, exists_const_iff, and_true]
+    exact ⟨f x⟩
+  exact BoundedVariationOn.exists_tendsto_left_of_filter (s := s ∩ Iio x)
+    (hf.mono inter_subset_left) _ (fun y hy ↦ inter_mem_nhdsWithin _ (Ici_mem_nhds hy.2)) hs
 
 /-- A bounded variation function has a limit on its right within a set. -/
 theorem _root_.BoundedVariationOn.exists_tendsto_right [CompleteSpace E] [TopologicalSpace α]
@@ -761,48 +805,9 @@ lemma _root_.BoundedVariationOn.continuousWithinAt_rightLim [TopologicalSpace α
 intervals tends to `0` at `+∞`. -/
 theorem _root_.BoundedVariationOn.tendsto_eVariationOn_Ici_zero
     {f : α → E} {s : Set α} (hf : BoundedVariationOn f s) :
-    Tendsto (fun y ↦ eVariationOn f (s ∩ Ici y)) (𝓟 s ⊓ atTop) (𝓝 0) := by
-  /- The variation is monotone, therefore it converges. If the limit were positive, say `ε`,
-  then one would get variation `ε` between two points `x₀` and `x₁`. But also between two points
-  `x₁` and `x₂`, and so on. Adding up these variations would be arbitrarily large, contradicting
-  the finite variation of the function. -/
-  rcases isEmpty_or_nonempty α with hα | hα
-  · simp only [inf_bot_eq, tendsto_bot, filter_eq_bot_of_isEmpty atTop]
-  apply tendsto_order.2 ⟨by simp, fun ε εpos ↦ ?_⟩
-  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, δ ∈ Ioo 0 ε := exists_between εpos
-  by_contra! H
-  have A (y) : ∃ y', ε ≤ eVariationOn f (s ∩ Ici y') ∧ y' ∈ s ∩ Ici y := by
-    have : s ∩ Ici y ∈ 𝓟 s ⊓ atTop := inter_mem_inf (by simp) (Ici_mem_atTop _)
-    exact (H.and_eventually this).exists
-  have B (y) : ∃ y' ∈ s ∩ Ici y, δ ≤ eVariationOn f (s ∩ Icc y y') := by
-    rcases A y with ⟨y', hy', y'_mem⟩
-    have : δ < eVariationOn f (s ∩ Ici y') := lt_of_lt_of_le hδ hy'
-    obtain ⟨a, ha, b, hb, hab, h⟩ : ∃ a ∈ s ∩ Ici y', ∃ b ∈ s ∩ Ici y', a < b ∧
-      δ < eVariationOn f ((s ∩ Ici y') ∩ Icc a b) := exists_lt_eVariationOn_inter_Icc this
-    exact ⟨b, by grind, h.le.trans (mono _ (by grind))⟩
-  choose! y y_mem le_y using B
-  let v (n : ℕ) := y^[n + 1] hα.some
-  have J (n : ℕ) : n * δ ≤ eVariationOn f s := calc
-    n * δ
-    _ = ∑ i ∈ Finset.range n, δ := by simp
-    _ ≤ ∑ i ∈ Finset.range n, eVariationOn f (s ∩ Icc (v i) (v (i + 1))) := by
-      gcongr with i hi
-      simp only [Function.iterate_succ', Function.comp_apply, v]
-      grind
-    _ = eVariationOn f (s ∩ Icc (v 0) (v n)) := by
-      apply eVariationOn.sum
-      · apply monotone_nat_of_le_succ (fun n ↦ ?_)
-        simp only [Function.iterate_succ', Function.comp_apply, v]
-        exact (y_mem _).2
-      · intro i hi h'i
-        simpa only [Function.iterate_succ', Function.comp_apply, v] using (y_mem _).1
-    _ ≤ eVariationOn f s := mono _ inter_subset_left
-  have : Tendsto (fun (n : ℕ) ↦ n * δ) atTop (𝓝 (∞ * δ)) :=
-    ENNReal.Tendsto.mul_const ENNReal.tendsto_nat_nhds_top (by simp)
-  rw [ENNReal.top_mul δpos.ne'] at this
-  have : ∞ ≤ eVariationOn f s := le_of_tendsto this (Eventually.of_forall J)
-  simp only [BoundedVariationOn] at hf
-  order
+    Tendsto (fun y ↦ eVariationOn f (s ∩ Ici y)) (𝓟 s ⊓ atTop) (𝓝 0) :=
+  hf.tendsto_eVariationOn_Ici_zero_of_filter _
+    (fun y _ ↦ inter_mem_inf (mem_principal_self s) (Ici_mem_atTop y))
 
 /-- If a function has bounded variation, then the variation on semi-infinite closed
 intervals tends to `0` at `-∞`. -/
