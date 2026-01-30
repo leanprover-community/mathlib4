@@ -270,7 +270,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     is a Cauchy sequence. -/
   let L0 : ℕ → E →L[𝕜] F := fun e => L e (n e) (n e)
   have : CauchySeq L0 := by
-    rw [Metric.cauchySeq_iff']
+    rw [Metric.cauchySeq_iff_dist']
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / (12 * ‖c‖) :=
       exists_pow_lt_of_lt_one (by positivity) (by norm_num)
@@ -599,7 +599,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     is a Cauchy sequence. -/
   let L0 : ℕ → F := fun e => L e (n e) (n e)
   have : CauchySeq L0 := by
-    rw [Metric.cauchySeq_iff']
+    rw [Metric.cauchySeq_iff_dist']
     intro ε εpos
     obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)

@@ -617,7 +617,7 @@ theorem NormedAddCommGroup.cauchy_series_of_le_geometric'' {C : ℝ} {u : ℕ �
 /-- The term norms of any convergent series are bounded by a constant. -/
 lemma exists_norm_le_of_cauchySeq (h : CauchySeq fun n ↦ ∑ k ∈ range n, f k) :
     ∃ C, ∀ n, ‖f n‖ ≤ C := by
-  obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_le_tendsto_0.mp h
+  obtain ⟨b, ⟨_, key, _⟩⟩ := cauchySeq_iff_dist_le_tendsto_zero.mp h
   refine ⟨b 0, fun n ↦ ?_⟩
   simpa only [dist_partial_sum'] using key n (n + 1) 0 (_root_.zero_le _) (_root_.zero_le _)
 

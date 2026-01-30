@@ -126,7 +126,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a
     standard criterion. -/
-  refine EMetric.complete_of_convergent_controlled_sequences B B_pos fun s hs => ?_
+  refine CompleteSpace.of_forall_seq_edist_lt_exists_tendsto B B_pos fun s hs => ?_
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
@@ -180,7 +180,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
             as required. -/
     intro n x xt0
     have : x ∈ closure (⋃ m ≥ n, s m : Set α) := by apply mem_iInter.1 xt0 n
-    obtain ⟨z : α, hz, Dxz : edist x z < B n⟩ := EMetric.mem_closure_iff.1 this (B n) (B_pos n)
+    obtain ⟨z : α, hz, Dxz : edist x z < B n⟩ := Metric.mem_closure_iff_edist.1 this (B n) (B_pos n)
     simp only [exists_prop, Set.mem_iUnion] at hz
     obtain ⟨m : ℕ, m_ge_n : m ≥ n, hm : z ∈ (s m : Set α)⟩ := hz
     have : hausdorffEDist (s m : Set α) (s n) < B n := hs n m n m_ge_n (le_refl n)
@@ -197,7 +197,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
   have main : ∀ n : ℕ, edist (s n) t ≤ 2 * B n := fun n =>
     hausdorffEDist_le_of_mem_edist (I1 n) (I2 n)
   -- from this, the convergence of `s n` to `t0` follows.
-  refine EMetric.tendsto_atTop.2 fun ε εpos => ?_
+  refine Metric.tendsto_atTop_iff_edist.2 fun ε εpos => ?_
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul (ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one <|
       by simp) (Or.inr <| by simp)
@@ -286,18 +286,18 @@ theorem isClosed_in_closeds [CompleteSpace α] :
   rw [this]
   refine isClosed_of_closure_subset fun s hs => ⟨?_, ?_⟩
   · -- take a set t which is nonempty and at a finite distance of s
-    rcases EMetric.mem_closure_iff.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
+    rcases Metric.mem_closure_iff_edist.1 hs ⊤ ENNReal.coe_lt_top with ⟨t, ht, Dst⟩
     rw [edist_comm] at Dst
     -- since `t` is nonempty, so is `s`
     exact nonempty_of_hausdorffEDist_ne_top ht.1 (ne_of_lt Dst)
   · refine isCompact_iff_totallyBounded_isComplete.2 ⟨?_, s.isClosed.isComplete⟩
-    refine EMetric.totallyBounded_iff.2 fun ε (εpos : 0 < ε) => ?_
+    refine Metric.totallyBounded_iff_eball.2 fun ε (εpos : 0 < ε) => ?_
     -- we have to show that s is covered by finitely many eballs of radius ε
     -- pick a nonempty compact set t at distance at most ε/2 of s
-    rcases EMetric.mem_closure_iff.1 hs (ε / 2) (ENNReal.half_pos εpos.ne') with ⟨t, ht, Dst⟩
+    rcases Metric.mem_closure_iff_edist.1 hs (ε / 2) (ENNReal.half_pos εpos.ne') with ⟨t, ht, Dst⟩
     -- cover this space with finitely many balls of radius ε/2
-    rcases EMetric.totallyBounded_iff.1 (isCompact_iff_totallyBounded_isComplete.1 ht.2).1 (ε / 2)
-        (ENNReal.half_pos εpos.ne') with ⟨u, fu, ut⟩
+    rcases Metric.totallyBounded_iff_eball.1 ht.2.totallyBounded (ε / 2) (ENNReal.half_pos εpos.ne')
+      with ⟨u, fu, ut⟩
     refine ⟨u, ⟨fu, fun x hx => ?_⟩⟩
     -- u : set α, fu : u.finite, ut : t ⊆ ⋃ (y : α) (H : y ∈ u), eball y (ε / 2)
     -- then s is covered by the union of the balls centered at u of radius ε
@@ -333,21 +333,21 @@ instance instSecondCountableTopology [SecondCountableTopology α] :
     refine ⟨⟨v, ?_, ?_⟩⟩
     · have : v0.Countable := countable_setOf_finite_subset cs
       exact this.preimage SetLike.coe_injective
-    · refine fun t => EMetric.mem_closure_iff.2 fun ε εpos => ?_
+    · refine fun t => Metric.mem_closure_iff_edist.2 fun ε εpos => ?_
       -- t is a compact nonempty set, that we have to approximate uniformly by a a set in `v`.
       rcases exists_between εpos with ⟨δ, δpos, δlt⟩
       have δpos' : 0 < δ / 2 := ENNReal.half_pos δpos.ne'
       -- construct a map F associating to a point in α an approximating point in s, up to δ/2.
       have Exy : ∀ x, ∃ y, y ∈ s ∧ edist x y < δ / 2 := by
         intro x
-        rcases EMetric.mem_closure_iff.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
+        rcases Metric.mem_closure_iff_edist.1 (s_dense x) (δ / 2) δpos' with ⟨y, ys, hy⟩
         exact ⟨y, ⟨ys, hy⟩⟩
       let F x := (Exy x).choose
       have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
-      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, EMetric.ball y (δ / 2)⟩ :=
-        EMetric.totallyBounded_iff.1 this (δ / 2) δpos'
+      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, Metric.eball y (δ / 2)⟩ :=
+        Metric.totallyBounded_iff_eball.1 this (δ / 2) δpos'
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a
       have : b.Finite := af.image _

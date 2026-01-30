@@ -27,7 +27,7 @@ open Filter Metric Set
 instance Real.instCompleteSpace : CompleteSpace ℝ := by
   apply complete_of_cauchySeq_tendsto
   intro u hu
-  let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
+  let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff_dist'.1 hu⟩
   refine ⟨c.lim, fun s h => ?_⟩
   rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
   have := c.equiv_lim ε ε0

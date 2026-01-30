@@ -501,7 +501,7 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   let _ := i.toUniformSpace.toTopologicalSpace
   funext
   simp only [comp, toGlueL, toGlueR]
-  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff_dist.2 ?_)
   exact glueDist_glued_points Φ Ψ 0 _
 
 theorem toGlueL_isometry (hΦ : Isometry Φ) (hΨ : Isometry Ψ) : Isometry (toGlueL hΦ hΨ) :=
@@ -618,7 +618,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   let _ := h.toUniformSpace.toTopologicalSpace
   funext x
   simp only [comp, toInductiveLimit]
-  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff_dist.2 ?_)
   change inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]

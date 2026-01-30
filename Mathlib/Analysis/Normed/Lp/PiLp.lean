@@ -298,7 +298,7 @@ with the product one. Therefore, we do not register it as an instance. Using thi
 pseudoemetric space instance, we will show that the uniform structure is equal (but not defeq) to
 the product one, and then register an instance in which we replace the uniform structure by the
 product one using this pseudoemetric space and `PseudoEMetricSpace.replaceUniformity`. -/
-def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
+def pseudoEMetricAux : PseudoEMetricSpace (PiLp p β) where
   edist_self := PiLp.edist_self p
   edist_comm := PiLp.edist_comm p
   edist_triangle f g h := by
@@ -321,7 +321,7 @@ def pseudoEmetricAux : PseudoEMetricSpace (PiLp p β) where
               (∑ i, edist (g i) (h i) ^ p.toReal) ^ (1 / p.toReal) :=
           ENNReal.Lp_add_le _ _ _ hp
 
-attribute [local instance] PiLp.pseudoEmetricAux
+attribute [local instance] PiLp.pseudoEMetricAux
 
 /-- An auxiliary lemma used twice in the proof of `PiLp.pseudoMetricAux` below. Not intended for
 use outside this file. -/
@@ -509,7 +509,7 @@ set_option backward.privateInPublic.warn false in
 /-- pseudoemetric space instance on the product of finitely many pseudoemetric spaces, using the
 `L^p` pseudoedistance, and having as uniformity the product uniformity. -/
 instance [∀ i, PseudoEMetricSpace (β i)] : PseudoEMetricSpace (PiLp p β) :=
-  (pseudoEmetricAux p β).replaceUniformity (uniformity_aux p β).symm
+  (pseudoEMetricAux p β).replaceUniformity (uniformity_aux p β).symm
 
 /-- emetric space instance on the product of finitely many emetric spaces, using the `L^p`
 edistance, and having as uniformity the product uniformity. -/

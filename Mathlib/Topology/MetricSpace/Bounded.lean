@@ -523,23 +523,18 @@ theorem _root_.IsComplete.nonempty_iInter_of_nonempty_biInter {s : ℕ → Set �
     (h0 : IsComplete (s 0)) (hs : ∀ n, IsClosed (s n)) (h's : ∀ n, IsBounded (s n))
     (h : ∀ N, (⋂ n ≤ N, s n).Nonempty) (h' : Tendsto (fun n => diam (s n)) atTop (𝓝 0)) :
     (⋂ n, s n).Nonempty := by
-  let u N := (h N).some
-  have I : ∀ n N, n ≤ N → u N ∈ s n := by
-    intro n N hn
-    apply mem_of_subset_of_mem _ (h N).choose_spec
-    intro x hx
-    simp only [mem_iInter] at hx
-    exact hx n hn
+  choose u hu using h
+  have I {n m : ℕ} (hn : n ≤ m) : u m ∈ s n :=
+    iInter₂_subset n hn (hu m)
   have : CauchySeq u := by
-    apply cauchySeq_of_le_tendsto_0 _ _ h'
-    intro m n N hm hn
-    exact dist_le_diam_of_mem (h's N) (I _ _ hm) (I _ _ hn)
+    apply CauchySeq.of_dist_le_tendsto_zero _ _ h'
+    intro n m hnm
+    exact dist_le_diam_of_mem (h's n) (I le_rfl) (I hnm)
   obtain ⟨x, -, xlim⟩ : ∃ x ∈ s 0, Tendsto (fun n : ℕ => u n) atTop (𝓝 x) :=
-    cauchySeq_tendsto_of_isComplete h0 (fun n => I 0 n (zero_le _)) this
+    cauchySeq_tendsto_of_isComplete h0 (fun n => I (zero_le _)) this
   refine ⟨x, mem_iInter.2 fun n => ?_⟩
   apply (hs n).mem_of_tendsto xlim
-  filter_upwards [Ici_mem_atTop n] with p hp
-  exact I n p hp
+  filter_upwards [Ici_mem_atTop n] with p hp using I hp
 
 /-- In a complete space, if a family of closed sets with diameter tending to `0` is such that each
 finite intersection is nonempty, then the total intersection is also nonempty. -/
