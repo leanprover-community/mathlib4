@@ -112,14 +112,11 @@ lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : 
   have A : ⋃ i ∈ a, f i = ⋃₀ (a.image f) := by simp
   rw [A, addContent_sUnion]; rotate_left
   · grind
-  · rw [Finset.coe_image]
-    exact h_dis.image
+  · simpa using h_dis.image
   · rwa [← A]
   rw [sum_image_of_pairwise_eq_zero]
-  intro i hi j hj hij h'ij
-  have : Disjoint (f i) (f j) := h_dis hi hj hij
-  simp only [← h'ij, disjoint_self, Set.bot_eq_empty] at this
-  simp [this]
+  refine h_dis.imp ?_
+  grind [Set.bot_eq_empty (α := α), addContent_empty]
 
 lemma addContent_iUnion {ι : Type*} [Fintype ι] {f : ι → Set α} (hf : ∀ i, f i ∈ C)
     (h_dis : Pairwise (Disjoint on f)) (h_mem : ⋃ i, f i ∈ C) :
@@ -185,40 +182,30 @@ In other words, `m` can be canonically extended to finite unions of elements of 
 theorem sum_addContent_eq_of_sUnion_eq (hC : IsSetSemiring C) (J J' : Finset (Set α))
     (hJ : ↑J ⊆ C) (hJdisj : PairwiseDisjoint (J : Set (Set α)) id)
     (hJ' : ↑J' ⊆ C) (hJ'disj : PairwiseDisjoint (J' : Set (Set α)) id)
-    (h : ⋃₀ (↑J : Set (Set α)) = ⋃₀ ↑J') :
+    (h : ⋃₀ (J : Set (Set α)) = ⋃₀ J') :
     ∑ s ∈ J, m s = ∑ t ∈ J', m t := by
   calc ∑ s ∈ J, m s
   _ = ∑ s ∈ J, (∑ t ∈ J', m (s ∩ t)) := by
     apply Finset.sum_congr rfl (fun s hs ↦ ?_)
     have : s = ⋃ t ∈ J', s ∩ t := by
-      apply Set.Subset.antisymm _ (by simp)
-      intro x hx
-      have A : x ∈ ⋃₀ ↑J' := by
-        rw [← h]
-        simp only [mem_sUnion, SetLike.mem_coe]
-        exact ⟨s, hs, hx⟩
-      simpa [mem_iUnion, mem_inter_iff, exists_and_left, exists_prop, hx] using A
+      simp_rw [← Finset.set_biUnion_coe, ← inter_iUnion, left_eq_inter, ← sUnion_eq_biUnion, ← h]
+      exact subset_sUnion_of_mem hs
     nth_rewrite 1 [this]
     apply addContent_biUnion
     · exact fun t ht ↦ hC.inter_mem _ (hJ hs) _ (hJ' ht)
-    · exact fun i hi j hj hij ↦ (hJ'disj hi hj hij).mono (by simp) (by simp)
+    · exact hJ'disj.mono fun _ ↦ by simp
     · rw [← this]
       exact hJ hs
   _ = ∑ t ∈ J', (∑ s ∈ J, m (s ∩ t)) := sum_comm
   _ = ∑ t ∈ J', m t := by
     apply Finset.sum_congr rfl (fun t ht ↦ ?_)
     have : t = ⋃ s ∈ J, s ∩ t := by
-      apply Set.Subset.antisymm _ (by simp)
-      intro x hx
-      have A : x ∈ ⋃₀ ↑J := by
-        rw [h]
-        simp only [mem_sUnion, SetLike.mem_coe]
-        exact ⟨t, ht, hx⟩
-      simpa [mem_iUnion, mem_inter_iff, exists_and_left, exists_prop, hx] using A
+      simp_rw [← Finset.set_biUnion_coe, ← iUnion_inter, right_eq_inter, ← sUnion_eq_biUnion, h]
+      exact subset_sUnion_of_mem ht
     nth_rewrite 2 [this]
     apply (addContent_biUnion _ _ _).symm
     · exact fun s hs ↦ hC.inter_mem _ (hJ hs) _ (hJ' ht)
-    · exact fun i hi j hj hij ↦ (hJdisj hi hj hij).mono (by simp) (by simp)
+    · exact hJdisj.mono fun _ ↦ by simp
     · rw [← this]
       exact hJ' ht
 
@@ -266,8 +253,7 @@ private lemma AddContent.supClosureFun_apply_of_mem (hC : IsSetSemiring C)
     choose! J hJC hJdisj hJs using A
     have H {a i} (hi : i ∈ I) (ha : a ∈ J i) : a ⊆ i := by
       rw [hJs i hi]
-      simp only [sUnion_eq_biUnion, SetLike.mem_coe]
-      exact Set.subset_biUnion_of_mem (u := id) ha
+      exact subset_sUnion_of_mem ha
     let K : Finset (Set α) := Finset.biUnion I J
     have : ⋃₀ ↑I = ⋃₀ (↑K : Set (Set α)) := by
       simp [K, sUnion_eq_biUnion] at hJs ⊢; grind
