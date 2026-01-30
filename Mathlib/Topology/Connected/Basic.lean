@@ -681,7 +681,7 @@ section OrderClosedTopology
 variable [TopologicalSpace β] [OrderClosedTopology β] {f : α → β} {b : β}
 
 lemma IsPreconnected.subset_Ioi_or_Iio (hs : IsPreconnected s) (hf : ContinuousOn f s)
-    (hfb : ∀ x ∈ s, f x ≠ b) : f '' s ⊆ Set.Ioi b ∨ f '' s ⊆ Set.Iio b :=
+    (hfb : ∀ x ∈ s, f x ≠ b) : Set.MapsTo f s (Set.Ioi b) ∨ Set.MapsTo f s (Set.Iio b) :=
   (hs.image f hf).subset_or_subset isOpen_Ioi isOpen_Iio (by grind) (by grind)
 
 lemma IsPreconnected.lt_or_gt (hs : IsPreconnected s) (hf : ContinuousOn f s)
