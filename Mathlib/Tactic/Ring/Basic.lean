@@ -397,7 +397,7 @@ theorem Nat.smul_eq_mul {n n' : ℕ} {r : R} (hr : n = r) (hn : n' = n) (a : R) 
   simp only [nsmul_eq_mul]
 
 omit [CommSemiring R] in
-theorem Int.smul_eq_mul {n n': ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
+theorem Int.smul_eq_mul {n n' : ℤ} {r : R} [CommRing R] (hr : n = r) (hn : n' = n) (a : R) :
     n' • a = r * a := by
   subst_vars
   simp only [zsmul_eq_mul]

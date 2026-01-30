@@ -1016,7 +1016,7 @@ partial def evalPow₁ {a : Q($α)} {b : Q(ℕ)} (va : ExSum bt sα a) (vb : ExP
   | _ =>
     NotPowOne
 
-theorem pow_zero (a : R) {e : R} (h : (nat_lit 1 ).rawCast = e) :
+theorem pow_zero (a : R) {e : R} (h : (nat_lit 1).rawCast = e) :
     a ^ 0 = e + 0 := by simp [← h]
 
 theorem pow_add {b₁ b₂ : ℕ} {d : R}
