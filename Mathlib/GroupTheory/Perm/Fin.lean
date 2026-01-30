@@ -528,10 +528,7 @@ end Sign
 
 section Extension
 
-/-! ### Extension of injective functions to permutations
-
-Any injective function `k : Fin m → Fin n` can be extended to a permutation of `Fin n`.
--/
+/-! ### Extension of injective functions to permutations -/
 
 /-- Any injective function `k : Fin m → Fin n` extends to a permutation of `Fin n`. -/
 theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
@@ -540,9 +537,9 @@ theorem Equiv.Perm.exists_extending_injective {m n : ℕ} (k : Fin m → Fin n)
   let e := (Fin.castLEquiv (Fin.le_of_injective k hk)).symm.trans (Equiv.ofInjective k hk)
   ⟨e.extendSubtype, fun i => Equiv.extendSubtype_apply_of_mem e _ i.isLt⟩
 
-/-- Any strictly monotone function `k : Fin m → Fin n` extends to a permutation. -/
+/-- `StrictMono` version of `Equiv.Perm.exists_extending_injective`. -/
 theorem Equiv.Perm.exists_extending_strictMono {m n : ℕ} (k : Fin m → Fin n) (hk : StrictMono k) :
     ∃ σ : Perm (Fin n), ∀ i : Fin m, σ (Fin.castLE (Fin.le_of_injective k hk.injective) i) = k i :=
-  Equiv.Perm.exists_extending_injective k hk.injective
+  exists_extending_injective k hk.injective
 
 end Extension
