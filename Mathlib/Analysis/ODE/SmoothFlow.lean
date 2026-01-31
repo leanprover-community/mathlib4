@@ -1090,8 +1090,8 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
   exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
 
 /-- When f is C^1 at x₀, there exist ε > 0, a > 0, and a continuous map
-`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that the range of α is in `ball x₀ a`,
-`T f (ball x₀ a) t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
+`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that `f` is C^1 on `ball x₀ a`, the range of α is in
+`ball x₀ a`, `T f (ball x₀ a) t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
 
 Note that `T = 0` implies `α(t₀) = x₀` since the integral from `t₀` to `t₀` vanishes.
 
@@ -1099,15 +1099,16 @@ This is a reformulation of `exists_integralCurve_opNorm_fderivIntegralCurry0_lt_
 mentioning `ODE.FunSpace`, expressing everything in terms of continuous maps. -/
 lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ≥0) (_ : 0 < a)
+    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ) (_ : 0 < a)
       (α : C(Icc (t₀ - ε) (t₀ + ε), E)),
+        ContDiffOn ℝ 1 f (ball x₀ a) ∧
         range α ⊆ ball x₀ a ∧
         T f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 ∧
         ‖fderivIntegralCurry0 f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ α‖ < 1 := by
   obtain ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL, α, hα_fixed, hα_ball, hα_norm⟩ :=
     exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
   refine ⟨ε, hεpos, a', NNReal.coe_pos.mp (hapos.trans_le (NNReal.coe_le_coe.mpr haa')),
-    α.toContinuousMap, ?_, ?_, ?_⟩
+    α.toContinuousMap, hf_diff, ?_, ?_, ?_⟩
   · -- range α ⊆ ball x₀ a'
     intro y hy
     obtain ⟨t, ht⟩ := hy
@@ -1171,28 +1172,23 @@ lemma isContDiffImplicitAt_T {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDi
     simp only [ne_eq, WithTop.coe_eq_zero]
     exact (one_pos.trans_le hn).ne'
 
-/-- The implicit function `E → C(Icc tmin tmax, E)` extracted from the implicit function theorem
-applied to `T`. This is the local flow of the ODE near `x₀`. -/
-noncomputable def localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
-    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    E → C(Icc tmin tmax, E) :=
-  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).implicitFunction
+/-- When f is C^1 at x₀, the implicit function theorem provides a local flow: there exist
+ε > 0, a > 0, and a function `lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)` such that
+`T f (ball x₀ a) t₀ (x, lf x) = 0` in a neighborhood of x₀, and `lf` is C^1 at x₀.
 
-/-- The local flow satisfies `T f u t₀ (x, localFlow x) = T f u t₀ (x₀, α₀)` in a neighborhood of
-`x₀`. -/
-lemma T_localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
-    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    ∀ᶠ x in 𝓝 x₀, T f u t₀ (x, localFlow hf hu t₀ x₀ hα₀ hnorm hn x) = T f u t₀ (x₀, α₀) :=
-  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).apply_implicitFunction
-
-/-- The local flow is `C^n` at `x₀`. -/
-lemma contDiffAt_localFlow {n : ℕ∞} {f : E → E} {u : Set E} (hf : ContDiffOn ℝ n f u)
-    (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) {α₀ : C(Icc tmin tmax, E)}
-    (hα₀ : range α₀ ⊆ u) (hnorm : ‖fderivIntegralCurry0 f u t₀ α₀‖ < 1) (hn : 1 ≤ n) :
-    ContDiffAt ℝ n (localFlow hf hu t₀ x₀ hα₀ hnorm hn) x₀ :=
-  (isContDiffImplicitAt_T hf hu t₀ x₀ hα₀ hnorm hn).contDiffAt_implicitFunction
+This is the key result connecting the ODE theory to the implicit function theorem. -/
+lemma exists_localFlow {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ) (_ : 0 < a)
+      (lf : E → C(Icc (t₀ - ε) (t₀ + ε), E)),
+        (∀ᶠ x in 𝓝 x₀, T f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ (x, lf x) = 0) ∧
+        ContDiffAt ℝ 1 lf x₀ := by
+  obtain ⟨ε, hεpos, a, hapos, α₀, hf_diff, hα₀_range, hT_zero, hnorm⟩ :=
+    exists_contMap_T_eq_zero_opNorm_lt_one hf t₀
+  set h := isContDiffImplicitAt_T hf_diff isOpen_ball ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀
+    hα₀_range hnorm le_rfl
+  refine ⟨ε, hεpos, a, hapos, h.implicitFunction, ?_, h.contDiffAt_implicitFunction⟩
+  filter_upwards [h.apply_implicitFunction] with x hx
+  rw [hx, hT_zero]
 
 end
 
