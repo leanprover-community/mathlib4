@@ -183,7 +183,6 @@ noncomputable def gluedCocone : Cocone D := by
     · intro i
       exact ((d.cocone i).ι.app a).left ≫ colimit.ι d.relativeGluingData.functor i
     · intro i j hij
-      change ((d.trans hij).app _).left ≫ _ ≫ _ = _
       conv_rhs => rw [← colimit.w d.relativeGluingData.functor hij]
       simp only [← Category.assoc]
       congr 1
