@@ -193,7 +193,7 @@ variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 This is a stronger version of `DistribMulAction.toAddEquiv`. -/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
-  { toAddEquiv M s, toLinearMap R M s with }
+  { toAddEquiv M s, DistribSMul.toLinearMap R M s with }
 
 /-- Each element of the group defines a module automorphism.
 
@@ -683,6 +683,10 @@ theorem conj_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁'
     e.conj f = ((↑e : M₁' →ₛₗ[σ₁'₂'] M₂').comp f).comp (e.symm : M₂' →ₛₗ[σ₂'₁'] M₁') :=
   rfl
 
+-- Note this has lower `simp` priority for performance reasons, so that we rewrite as
+-- `e.conj LinearMap.id x => LinearMap.id x` => `x` rather than
+-- `e.conj LinearMap.id x => e (LinearMap.id (e.symm x)) => e (e.symm x) => x`.
+@[simp 900]
 theorem conj_apply_apply (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') (x : M₂') :
     e.conj f x = e (f (e.symm x)) :=
   rfl
@@ -700,14 +704,13 @@ theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃�
   rfl
 
 @[simp] lemma conj_conj_symm (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₂' M₂') :
-    e.conj (e.symm.conj f) = f := by ext; simp [conj_apply]
+    e.conj (e.symm.conj f) = f := by ext; simp
 
 @[simp] lemma conj_symm_conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') (f : Module.End R₁' M₁') :
-    e.symm.conj (e.conj f) = f := by ext; simp [conj_apply]
+    e.symm.conj (e.conj f) = f := by ext; simp
 
 @[simp]
-theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
-  simp [conj_apply]
+theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by ext; simp
 
 @[simp]
 theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl

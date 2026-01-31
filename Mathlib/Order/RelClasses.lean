@@ -29,6 +29,8 @@ open Function
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
   ⟨refl_of r⟩
 
+@[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
+
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
   ⟨irrefl_of r⟩
 
@@ -41,7 +43,9 @@ theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisy
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
   ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
 
-theorem IsTotal.swap (r) [IsTotal α r] : IsTotal α (swap r) :=
+@[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
+
+theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
   ⟨fun a b => (total_of r a b).symm⟩
 
 theorem IsTrichotomous.swap (r) [IsTrichotomous α r] : IsTrichotomous α (swap r) :=
@@ -223,10 +227,6 @@ theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : Wel
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Asymm r :=
   ⟨IsWellFounded.wf.asymmetric⟩
 
--- see Note [lower instance priority]
-instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : Std.Irrefl r :=
-  inferInstance
-
 instance (r : α → α → Prop) [i : IsWellFounded α r] : IsWellFounded α (Relation.TransGen r) :=
   ⟨i.wf.transGen⟩
 
@@ -254,22 +254,6 @@ class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :
     IsStrictTotalOrder α r where
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrichotomous α r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : IsTrans α r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Irrefl r := by
-  infer_instance
-
--- see Note [lower instance priority]
-instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] : Std.Asymm r := by
-  infer_instance
 
 namespace WellFoundedLT
 
@@ -374,6 +358,9 @@ instance Prod.wellFoundedLT [Preorder α] [WellFoundedLT α] [Preorder β] [Well
     · exact iha x.1 (ha'.trans_le ha) x.1 le_rfl x.2
     · exact ihb x.2 hb x.1 (ha'.trans ha)
 
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedLT' := Prod.wellFoundedLT
+@[deprecated (since := "2026-01-12")] alias Prod.wellFoundedGT' := Prod.wellFoundedGT
+
 namespace Set
 
 /-- An unbounded or cofinal set. -/
@@ -424,7 +411,7 @@ instance instIsStrictWeakOrder [IsStrictWeakOrder α r] {f : β → α} :
 
 instance instIsEquiv [IsEquiv α r] {f : β → α} : IsEquiv β (f ⁻¹'o r) where
 
-instance instIsTotal [IsTotal α r] {f : β → α} : IsTotal β (f ⁻¹'o r) :=
+instance instTotal [Std.Total r] {f : β → α} : Std.Total (f ⁻¹'o r) :=
   ⟨fun _ _ => total_of r _ _⟩
 
 theorem antisymm [Std.Antisymm r] {f : β → α} (hf : f.Injective) : Std.Antisymm (f ⁻¹'o r) :=
@@ -682,8 +669,8 @@ instance instAntisymmLe [PartialOrder α] : @Std.Antisymm α (· ≤ ·) :=
 @[to_dual instIsPartialOrderGe]
 instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-@[to_dual isTotal']
-instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
+@[to_dual total']
+instance LE.total [LinearOrder α] : @Std.Total α (· ≤ ·) :=
   ⟨le_total⟩
 
 @[to_dual instIsLinearOrderGe]
@@ -695,7 +682,7 @@ instance [LinearOrder α] : IsTrichotomous α (· < ·) :=
 
 @[to_dual instIsTrichotomousGe]
 instance [LinearOrder α] : IsTrichotomous α (· ≤ ·) :=
-  IsTotal.isTrichotomous _
+  Std.Total.isTrichotomous _
 
 @[to_dual instIsStrictTotalOrderGt]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
@@ -708,9 +695,9 @@ theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=
 theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
   transitive_of_trans _
 
-@[to_dual isTotal_ge]
-instance OrderDual.isTotal_le [LE α] [h : IsTotal α (· ≤ ·)] : IsTotal αᵒᵈ (· ≤ ·) :=
-  @IsTotal.swap α _ h
+@[to_dual total_ge]
+instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
+  @Std.Total.swap α _ h
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩

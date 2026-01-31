@@ -40,7 +40,7 @@ jobs:
         labels="$(lake exe autolabel)"
         printf '%s\n' "${labels}"
         # extract
-        label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
+        label="$(printf '%s' "${labels}" | sed -n 's=^::notice::.*#\[\([^,]*\)\].*=\1=p')"
         printf 'label: "%s"\n' "${label}"
         if [ -n "${label}" ]
         then

@@ -161,7 +161,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ (Spec <| .of K))
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))
     (g := (X.presheaf.map (homOfLE le_top).op).hom)
-  exact LocallyOfFiniteType.finiteType_of_affine_subset ⟨⊤, isAffineOpen_top _⟩ ⟨U, hU⟩ (by simp)
+  exact f.finiteType_appLE (isAffineOpen_top _) hU (by simp)
 
 end GlobalSection
 

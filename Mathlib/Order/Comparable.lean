@@ -88,8 +88,10 @@ theorem AntisymmRel.compRel (h : AntisymmRel r a b) : CompRel r a b :=
   Or.inl h.1
 
 @[simp]
-theorem IsTotal.compRel [IsTotal α r] (a b : α) : CompRel r a b :=
-  IsTotal.total a b
+theorem compRel_of_total [Std.Total r] (a b : α) : CompRel r a b :=
+  Std.Total.total a b
+
+@[deprecated (since := "2026-01-13")] alias IsTotal.compRel := compRel_of_total
 
 end Relation
 
@@ -196,13 +198,12 @@ theorem incompRel_swap_apply : IncompRel (swap r) a b ↔ IncompRel r a b :=
 theorem IncompRel.refl [Std.Irrefl r] (a : α) : IncompRel r a a :=
   AntisymmRel.refl rᶜ a
 
-variable {r} in
+variable {r}
+
 theorem IncompRel.rfl [Std.Irrefl r] {a : α} : IncompRel r a a := .refl ..
 
 instance [Std.Irrefl r] : Std.Refl (IncompRel r) where
   refl := .refl r
-
-variable {r}
 
 @[symm]
 theorem IncompRel.symm : IncompRel r a b → IncompRel r b a :=
@@ -230,9 +231,15 @@ theorem not_incompRel_iff : ¬ IncompRel r a b ↔ CompRel r a b := by
   rw [← not_compRel_iff, not_not]
 
 @[simp]
-theorem IsTotal.not_incompRel [IsTotal α r] (a b : α) : ¬ IncompRel r a b := by
+theorem not_incompRel_of_total [Std.Total r] (a b : α) : ¬ IncompRel r a b := by
   rw [not_incompRel_iff]
-  exact IsTotal.compRel a b
+  exact compRel_of_total a b
+
+@[deprecated (since := "2026-01-13")] alias IsTotal.not_incompRel := not_incompRel_of_total
+
+theorem IncompRel.ne [Std.Refl r] {a b : α} (h : IncompRel r a b) : a ≠ b := by
+  rintro rfl
+  exact h.1 <| refl_of r a
 
 end Relation
 
