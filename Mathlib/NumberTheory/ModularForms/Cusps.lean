@@ -245,7 +245,7 @@ lemma strictPeriods_le_periods : 𝒢.strictPeriods ≤ 𝒢.periods := by
 
 /-- A subgroup is *regular at ∞* if its periods and strict periods coincide. -/
 def IsRegularAtInfty : Prop :=
-    𝒢.strictPeriods = 𝒢.periods
+  𝒢.strictPeriods = 𝒢.periods
 
 lemma IsRegularAtInfty.eq (h : 𝒢.IsRegularAtInfty) : 𝒢.strictPeriods = 𝒢.periods := h
 

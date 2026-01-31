@@ -88,6 +88,6 @@ lemma rank_closure_finite_le_nat_card (s : Set G) [Finite s] : rank (closure s) 
 
 lemma nat_card_centralizer_nat_card_stabilizer (g : G) :
     Nat.card (centralizer {g}) = Nat.card (MulAction.stabilizer (ConjAct G) g) := by
-  rw [centralizer_eq_comap_stabilizer];   rfl
+  rw [centralizer_eq_comap_stabilizer]; rfl
 
 end Subgroup

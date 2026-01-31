@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.PartrecCode
 public import Mathlib.Tactic.Ring
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Ackermann function
@@ -95,9 +95,9 @@ theorem ack_three (n : ℕ) : ack 3 n = 2 ^ (n + 3) - 3 := by
   | succ n IH =>
     rw [ack_succ_succ, IH, ack_two, Nat.succ_add, Nat.pow_succ 2 (n + 3), mul_comm _ 2,
         Nat.mul_sub_left_distrib, ← Nat.sub_add_comm, two_mul 3, Nat.add_sub_add_right]
-    calc  2 * 3
+    calc 2 * 3
       _ ≤ 2 * 2 ^ 3 := by simp
-      _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> omega
+      _ ≤ 2 * 2 ^ (n + 3) := by gcongr <;> lia
 
 theorem ack_pos : ∀ m n, 0 < ack m n
   | 0, n => by simp
@@ -157,7 +157,7 @@ theorem add_lt_ack : ∀ m n, m + n < ack m n
   | m + 1, 0 => by simpa using add_lt_ack m 1
   | m + 1, n + 1 =>
     calc
-      m + 1 + n + 1 ≤ m + (m + n + 2) := by omega
+      m + 1 + n + 1 ≤ m + (m + n + 2) := by lia
       _ < ack m (m + n + 2) := add_lt_ack _ _
       _ ≤ ack m (ack (m + 1) n) :=
         ack_mono_right m <| le_of_eq_of_le (by rw [succ_eq_add_one]; ring_nf)
@@ -180,7 +180,7 @@ private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
     calc
-      n + 1 + 1 ≤ m + (m + 1 + n + 1) := by omega
+      n + 1 + 1 ≤ m + (m + 1 + n + 1) := by lia
       _ ≤ m + ack (m + 1) n := by gcongr; exact add_add_one_le_ack ..
       _ < ack m (ack (m + 1) n) := add_lt_ack ..
   | m₁ + 1, m₂ + 1, 0 => fun h => by
@@ -230,18 +230,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction n with
   | zero => simp
-  | succ k hk =>
-    rcases k with - | k
-    · simp
-    · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
-          add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
-      · apply Nat.add_le_add hk
-        norm_num
-        apply succ_le_of_lt
-        rw [Nat.pow_succ, mul_comm _ 2, mul_lt_mul_iff_right₀ (zero_lt_two' ℕ)]
-        exact Nat.lt_two_pow_self
-      · rw [Nat.pow_succ, Nat.pow_succ]
-        linarith [one_le_pow k 2 zero_lt_two]
+  | succ k => cases k <;> lia
 
 theorem ack_add_one_sq_lt_ack_add_three : ∀ m n, (ack m n + 1) ^ 2 ≤ ack (m + 3) n
   | 0, n => by simpa using sq_le_two_pow_add_one_minus_three (n + 2)

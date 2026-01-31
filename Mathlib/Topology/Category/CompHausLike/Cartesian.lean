@@ -14,6 +14,9 @@ public import Mathlib.Topology.Category.CompHausLike.Limits
 If the predicate `P` is preserved under taking type-theoretic products and `PUnit` satisfies it,
 then `CompHausLike P` is a cartesian monoidal category.
 
+If the predicate `P` is preserved under taking type-theoretic sums, we provide an explicit coproduct
+cocone in `CompHausLike P`. When we have the dual of `CartesianMonoidalCategory`, this can be used
+to provide an instance of that on `CompHausLike P`.
 -/
 
 @[expose] public section
@@ -24,7 +27,11 @@ open CategoryTheory Limits
 
 namespace CompHausLike
 
-variable {P : TopCat.{u} → Prop} (X Y : CompHausLike.{u} P) [HasProp P (X × Y)]
+variable {P : TopCat.{u} → Prop} (X Y : CompHausLike.{u} P)
+
+section Product
+
+variable [HasProp P (X × Y)]
 
 /--
 Explicit binary fan in `CompHausLike P`, given that the predicate `P` is preserved under taking
@@ -32,26 +39,17 @@ type-theoretic products.
 -/
 def productCone : BinaryFan X Y :=
   BinaryFan.mk (P := CompHausLike.of P (X × Y))
-    (TopCat.ofHom { toFun := Prod.fst }) (TopCat.ofHom { toFun := Prod.snd })
+    (ofHom _ { toFun := Prod.fst }) (ofHom _ { toFun := Prod.snd })
 
 /--
 When the predicate `P` is preserved under taking type-theoretic products, that product is a
 category-theoretic product in `CompHausLike P`.
 -/
-def productIsLimit : IsLimit (productCone X Y) where
-  lift := fun S : BinaryFan X Y ↦ TopCat.ofHom {
-    toFun := fun s ↦ (S.fst s, S.snd s)  }
-  fac := by rintro S (_ | _) <;> {dsimp; ext; rfl}
-  uniq := by
-    intro S m h
-    ext x
-    refine Prod.ext ?_ ?_
-    · specialize h ⟨WalkingPair.left⟩
-      apply_fun fun e ↦ e x at h
-      exact h
-    · specialize h ⟨WalkingPair.right⟩
-      apply_fun fun e ↦ e x at h
-      exact h
+def productIsLimit : IsLimit (productCone X Y) := by
+  refine BinaryFan.isLimitMk (fun s ↦ ofHom _ { toFun x := (s.fst x, s.snd x) })
+    (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
+  ext x
+  exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
 
 /--
 When the predicate `P` is preserved under taking type-theoretic products and `PUnit` satisfies it,
@@ -66,5 +64,30 @@ def cartesianMonoidalCategory [∀ (X Y : CompHausLike.{u} P), HasProp P (X × Y
   .ofChosenFiniteProducts
     ⟨_, CompHausLike.isTerminalPUnit⟩
     (fun X Y ↦ ⟨productCone X Y, productIsLimit X Y⟩)
+
+end Product
+
+section Coproduct
+
+variable [HasProp P (X ⊕ Y)]
+
+/--
+Explicit binary cofan in `CompHausLike P`, given that the predicate `P` is preserved under taking
+type-theoretic sums.
+-/
+def coproductCocone : BinaryCofan X Y := BinaryCofan.mk (P := CompHausLike.of P (X ⊕ Y))
+  (ofHom _ { toFun := Sum.inl }) (ofHom _ { toFun := Sum.inr })
+
+/--
+When the predicate `P` is preserved under taking type-theoretic sums, that sum is a
+category-theoretic coproduct in `CompHausLike P`.
+-/
+def coproductIsColimit : IsColimit (coproductCocone X Y) := by
+  refine BinaryCofan.isColimitMk (fun s ↦ ofHom _ { toFun := Sum.elim s.inl s.inr })
+    (by rfl_cat) (by rfl_cat) fun _ _ h₁ h₂ ↦ ?_
+  ext ⟨⟩
+  exacts [ConcreteCategory.congr_hom h₁ _, ConcreteCategory.congr_hom h₂ _]
+
+end Coproduct
 
 end CompHausLike

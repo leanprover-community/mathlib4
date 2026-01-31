@@ -78,7 +78,7 @@ theorem mk_comp_liftRingHom (n : ℕ) :
 /--
 Uniqueness of the lift.
 Given a compatible family of linear maps `f n : R →ₗ[R] S ⧸ (I ^ n)`.
-If `F : R →+* S` makes the following diagram commutes
+If `F : R →+* S` makes the following diagram commute
 ```
   R
   | \

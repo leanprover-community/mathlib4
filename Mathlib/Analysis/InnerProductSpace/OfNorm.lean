@@ -86,6 +86,7 @@ variable [NormedSpace 𝕜 E]
 
 local notation "𝓚" => algebraMap ℝ 𝕜
 
+set_option backward.privateInPublic true in
 /-- Auxiliary definition of the inner product derived from the norm. -/
 private noncomputable def inner_ (x y : E) : 𝕜 :=
   4⁻¹ * (𝓚 ‖x + y‖ * 𝓚 ‖x + y‖ - 𝓚 ‖x - y‖ * 𝓚 ‖x - y‖ +
@@ -96,6 +97,7 @@ namespace InnerProductSpaceable
 
 variable {𝕜} (E)
 
+set_option backward.privateInPublic true in
 -- This has a prime added to avoid clashing with public `innerProp`
 /-- Auxiliary definition for the `add_left` property. -/
 private def innerProp' (r : 𝕜) : Prop :=
@@ -103,11 +105,15 @@ private def innerProp' (r : 𝕜) : Prop :=
 
 variable {E}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
   unfold _root_.inner_
   fun_prop
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   simp only [inner_, normSq_apply, ofNat_re, ofNat_im, map_sub, map_add,
     ofReal_re, ofReal_im, mul_re, inv_re, mul_im, I_re, inv_im]
@@ -116,6 +122,8 @@ theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
   rw [h₁, h₂]
   ring
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y := by
   simp only [inner_, map_sub, map_add, map_mul, map_inv₀, map_ofNat, conj_ofReal, conj_I]
   rw [add_comm y x, norm_sub_rev]
@@ -134,6 +142,8 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
 
 variable [InnerProductSpaceable E]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem add_left (x y z : E) : inner_ 𝕜 (x + y) z = inner_ 𝕜 x z + inner_ 𝕜 y z := by
   unfold inner_
   have h1 := parallelogram_identity (x + y + z) (x - z)
@@ -177,6 +187,8 @@ private theorem I_prop : innerProp' E (I : 𝕜) := by
   rw [h₁, h₂]
   linear_combination (- 𝓚 ‖(I : 𝕜) • x - y‖ ^ 2 + 𝓚 ‖(I : 𝕜) • x + y‖ ^ 2) * hI' / 4
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem innerProp (r : 𝕜) : innerProp' E r := by
   intro x y
   rw [← re_add_im r, add_smul, add_left, real_prop _ x, ← smul_smul, real_prop _ _ y, I_prop,
@@ -187,6 +199,8 @@ end InnerProductSpaceable
 
 open InnerProductSpaceable
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
 parallelogram identity can be given a compatible inner product. -/
 noncomputable def InnerProductSpace.ofNorm

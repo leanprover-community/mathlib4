@@ -18,7 +18,7 @@ holds iff `Sieve.ofObjects Y X` is covering for `J`.
 We introduce a notion of compatible family of elements on objects `Y`
 and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section`
 which asserts that if a presheaf of types is a sheaf, then any compatible
-family of elements on objects `Y` which cover the final object extends as
+family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
 
 -/

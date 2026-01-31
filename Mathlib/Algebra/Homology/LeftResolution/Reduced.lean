@@ -38,7 +38,7 @@ to `0 : M` (TODO).
 
 namespace CategoryTheory.Abelian
 
-variable {A C : Type*} [Category C] [Category A] {ι : C ⥤ A}
+variable {A C : Type*} [Category* C] [Category* A] {ι : C ⥤ A}
   (Λ : LeftResolution ι)
 
 open Idempotents Limits MorphismProperty

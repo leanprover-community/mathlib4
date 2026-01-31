@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits Preadditive
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive D]
+variable {C D : Type*} [Category* C] [Category* D] [Preadditive D]
 
 instance {F G : C ⥤ D} : Zero (F ⟶ G) where
   zero := { app := fun _ => 0 }

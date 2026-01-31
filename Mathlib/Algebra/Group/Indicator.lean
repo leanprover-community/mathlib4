@@ -64,12 +64,6 @@ theorem mulIndicator_union_of_notMem_inter (h : a ∉ s ∩ t) (f : α → M) :
     mulIndicator (s ∪ t) f a = mulIndicator s f a * mulIndicator t f a := by
   rw [← mulIndicator_union_mul_inter_apply f s t, mulIndicator_of_notMem h, mul_one]
 
-@[deprecated (since := "2025-05-23")]
-alias indicator_union_of_not_mem_inter := indicator_union_of_notMem_inter
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_union_of_not_mem_inter := mulIndicator_union_of_notMem_inter
-
 @[to_additive]
 theorem mulIndicator_union_of_disjoint (h : Disjoint s t) (f : α → M) :
     mulIndicator (s ∪ t) f = fun a => mulIndicator s f a * mulIndicator t f a :=
@@ -201,6 +195,19 @@ theorem apply_mulIndicator_symmDiff {g : G → β} (hg : ∀ x, g x⁻¹ = g x)
   by_cases hs : x ∈ s <;> by_cases ht : x ∈ t <;> simp [mem_symmDiff, *]
 
 end Group
+
+/-! ### Relationship with `Pi.mulSingle`/`Pi.single` -/
+
+variable {ι : Type*} [DecidableEq ι] {M : Type*} [One M]
+
+/-- On non-dependent functions, `Set.mulIndicator` on a singleton set equals `Pi.mulSingle`. -/
+@[to_additive (attr := simp)
+  /-- On non-dependent functions, `Set.indicator` on a singleton set equals `Pi.single`. -/]
+theorem mulIndicator_singleton (i : ι) (f : ι → M) :
+    Set.mulIndicator {i} f = Pi.mulSingle i (f i) := by
+  ext j
+  simp only [Set.mulIndicator_apply, Pi.mulSingle_apply, Set.mem_singleton_iff]
+  split_ifs with h <;> simp [h]
 
 end Set
 
