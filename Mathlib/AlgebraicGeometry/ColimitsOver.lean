@@ -82,7 +82,7 @@ def transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) :
 lemma cocone_ι_transitionMap {i j : 𝒰.I₀} (hij : i ⟶ j) (a : J) :
     (Over.map ⊤ (d.prop_trans hij)).map ((d.cocone i).ι.app a) ≫
       d.transitionMap hij = (d.trans hij).app a ≫ (d.cocone j).ι.app a := by
-  simp [transitionMap, ← Functor.mapCocone_ι_app, IsColimit.fac, transitionCocone]
+  simp [transitionMap, ← Functor.mapCocone_ι_app, transitionCocone]
 
 @[simp]
 lemma transitionMap_id (i : 𝒰.I₀) :
@@ -185,7 +185,7 @@ noncomputable def gluedCocone : Cocone D := by
     · intro i j hij
       change ((d.trans hij).app _).left ≫ _ ≫ _ = _
       conv_rhs => rw [← colimit.w d.relativeGluingData.functor hij]
-      simp_rw [← Category.assoc]
+      simp only [← Category.assoc]
       congr 1
       exact congr($(d.cocone_ι_transitionMap hij a).left).symm
     · intro
@@ -247,7 +247,7 @@ def isColimitGluedCocone : IsColimit d.gluedCocone := by
       PreZeroHypercover.pullback₁_f, 𝒲, fst_gluedCocone_ι_assoc]
     change _ ≫ 𝒱.f _ ≫ _ = _
     rw [Scheme.OpenCover.map_glueMorphismsOverOfLocallyDirected_left, ← Over.comp_left_assoc,
-      ← Comma.comp_hom, IsColimit.fac]
+      ← Comma.comp_hom]
     simp
   · intro s m hm
     ext
