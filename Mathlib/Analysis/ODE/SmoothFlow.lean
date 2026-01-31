@@ -712,6 +712,24 @@ lemma T_eq_zero_of_isFixedPt {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
   simp only [hfixed, hintegral, Function.const_apply]
   abel
 
+/-- If `T f u t₀ (x₀, α) = 0`, then `α t₀ = x₀`. This follows from the fact that the integral
+from `t₀` to `t₀` vanishes. -/
+lemma eq_of_T_eq_zero {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {α : C(Icc tmin tmax, E)}
+    (hα : range α ⊆ u) (hT : T f u t₀ (x₀, α) = 0) :
+    α t₀ = x₀ := by
+  have heq := congrFun (congrArg DFunLike.coe hT) t₀
+  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const,
+    Pi.sub_apply, Pi.add_apply, ContinuousMap.zero_apply] at heq
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
+  rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
+    integralCMLMAux_apply, integralCM_if_pos hα] at heq
+  simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
+    uncurry0_apply, intervalIntegral.integral_same] at heq
+  simp only [add_zero, Function.const_apply, sub_eq_zero] at heq
+  exact heq.symm
+
 /-- The derivative of `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`,
 which appears as a component of the derivative of `T`. This is the composition of `curry0` with
 the derivative of `integralCMLM`. -/
@@ -893,7 +911,7 @@ time interval `[tmin, tmax]` of size less than `ε` and any continuous curve `α
 `range α ⊆ ball x₀ a`, the operator norm `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`. -/
 lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) :
-    ∃ a > 0, ∃ ε > 0,
+    ∃ a > 0, ∃ ε > 0, ContDiffOn ℝ 1 f (ball x₀ a) ∧
       ∀ (tmin tmax : ℝ) (t₀ : Icc tmin tmax) (α : C(Icc tmin tmax, E)),
         range α ⊆ ball x₀ a → |tmax - tmin| < ε →
           ‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1 := by
@@ -929,7 +947,7 @@ lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
   -- Choose ε so that ε * C < 1
   set ε := 1 / (C + 1) with hε_def
   have hεpos : 0 < ε := by positivity
-  refine ⟨a, hapos, ε, hεpos, ?_⟩
+  refine ⟨a, hapos, ε, hεpos, hfu', ?_⟩
   intro tmin tmax t₀ α hαball hsmall
   have hbound' : ∀ x ∈ range α, ‖fderiv ℝ f x‖ ≤ C := fun x hx ↦ hbound x (hαball hx)
   apply opNorm_fderivIntegralCurry0_lt_one hfu' isOpen_ball t₀ hαball hCpos.le hbound'
@@ -966,6 +984,7 @@ which can be converted to a continuous map via `toContinuousMap`. -/
 lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ (ε : ℝ) (hε : 0 < ε) (a a' : ℝ≥0) (L K : ℝ≥0) (_ : 0 < a) (_ : a ≤ a')
+      (_ : ContDiffOn ℝ 1 f (ball x₀ a'))
       (hPL : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
         ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a 0 L K),
       ∃ α : ODE.FunSpace ⟨t₀, by simp [le_of_lt hε]⟩ x₀ 0 L,
@@ -974,7 +993,7 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
         ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hε]⟩ α.toContinuousMap‖
           < 1 := by
   -- Get parameters from the two key lemmas
-  obtain ⟨a₁, ha₁pos, ε₁, hε₁pos, hfderiv_bound⟩ :=
+  obtain ⟨a₁, ha₁pos, ε₁, hε₁pos, hf_diff, hfderiv_bound⟩ :=
     exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one hf
   obtain ⟨ε₂, hε₂pos, a₂, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
   -- We have a₂ > 0 since r > 0 and a₂ ≥ r (from the mul_max_le constraint)
@@ -1068,7 +1087,42 @@ lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x�
       linarith
     have ht₀mem : t₀ ∈ Icc (t₀ - ε) (t₀ + ε) := by simp [le_of_lt hεpos]
     exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ α_fun.toContinuousMap hα_range hinterval
-  exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
+  exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
+
+/-- When f is C^1 at x₀, there exist ε > 0, a > 0, and a continuous map
+`α : C(Icc (t₀ - ε) (t₀ + ε), E)` such that the range of α is in `ball x₀ a`,
+`T f (ball x₀ a) t₀ (x₀, α) = 0`, and `‖fderivIntegralCurry0 f (ball x₀ a) t₀ α‖ < 1`.
+
+Note that `T = 0` implies `α(t₀) = x₀` since the integral from `t₀` to `t₀` vanishes.
+
+This is a reformulation of `exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one` that avoids
+mentioning `ODE.FunSpace`, expressing everything in terms of continuous maps. -/
+lemma exists_contMap_T_eq_zero_opNorm_lt_one {f : E → E} {x₀ : E}
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a : ℝ≥0) (_ : 0 < a)
+      (α : C(Icc (t₀ - ε) (t₀ + ε), E)),
+        range α ⊆ ball x₀ a ∧
+        T f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 ∧
+        ‖fderivIntegralCurry0 f (ball x₀ a) ⟨t₀, by simp [le_of_lt hε]⟩ α‖ < 1 := by
+  obtain ⟨ε, hεpos, a, a', L, K, hapos, haa', hf_diff, hPL, α, hα_fixed, hα_ball, hα_norm⟩ :=
+    exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one hf t₀
+  refine ⟨ε, hεpos, a', NNReal.coe_pos.mp (hapos.trans_le (NNReal.coe_le_coe.mpr haa')),
+    α.toContinuousMap, ?_, ?_, ?_⟩
+  · -- range α ⊆ ball x₀ a'
+    intro y hy
+    obtain ⟨t, ht⟩ := hy
+    rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
+    exact ball_subset_ball (NNReal.coe_le_coe.mpr haa') (hα_ball t)
+  · -- T f (ball x₀ a') t₀ (x₀, α.toContinuousMap) = 0
+    have hfu : ContinuousOn f (ball x₀ a') := hf_diff.continuousOn
+    have hrange : range α.toContinuousMap ⊆ ball x₀ a' := by
+      intro y hy
+      obtain ⟨t, ht⟩ := hy
+      rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
+      exact ball_subset_ball (NNReal.coe_le_coe.mpr haa') (hα_ball t)
+    exact T_eq_zero_of_isFixedPt hfu hPL α hα_fixed hrange
+  · -- ‖fderivIntegralCurry0 f (ball x₀ a') t₀ α.toContinuousMap‖ < 1
+    exact hα_norm
 
 /-- The derivative of `T` restricted to the second component is bijective when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
