@@ -472,9 +472,13 @@ theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n 
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
 
-lemma add_lt_add_iff_of_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+lemma add_lt_add_iff_of_right_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
     a + c < b + c ↔ a < b := by
   constructor <;> contrapose! <;> simp [add_le_add_iff_of_lt_aleph0 hc]
+
+lemma add_lt_add_iff_of_left_lt_aleph0 {a b c : Cardinal} (hc : c < ℵ₀) :
+    c + a < c + b ↔ a < b := by
+  simpa [add_comm] using add_lt_add_iff_of_right_lt_aleph0 (a:=a) (b:=b) hc
 
 lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
     (hκ : κ₁ < κ₂) (hμ : μ₁ < μ₂) : κ₁ + μ₁ < κ₂ + μ₂ := by
@@ -483,7 +487,7 @@ lemma add_lt_add_of_lt_of_lt {κ₁ κ₂ μ₁ μ₂ : Cardinal}
   · have hfin_ : κ₂ < ℵ₀ ∧ μ₂ < ℵ₀ := add_lt_aleph0_iff.1 hfin
     apply lt_of_le_of_lt
     · exact (add_le_add_iff_of_lt_aleph0 (hμ.trans hfin_.right)).mpr hκ.le
-    · simpa [add_comm] using (add_lt_add_iff_of_lt_aleph0 hfin_.left).mpr hμ
+    · simpa [add_comm] using (add_lt_add_iff_of_right_lt_aleph0 hfin_.left).mpr hμ
 
 end aleph
 
@@ -502,10 +506,8 @@ lemma nat_mul_strictMono {n : ℕ} (hneq0 : n ≠ 0) : StrictMono fun a : Cardin
     refine Cardinal.add_lt_add_of_lt_of_lt ?_ hlt
     simpa using (nat_mul_strictMono (Nat.succ_ne_zero n) hlt)
 
-lemma mul_nat_strictMono (hneq0 : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n := by
-  intro _ _ hlt
-  have := nat_mul_strictMono hneq0 hlt
-  simpa [mul_comm] using this
+lemma mul_nat_strictMono (hneq0 : n ≠ 0) : StrictMono fun a : Cardinal ↦ a * n :=
+  fun _ _ hlt => by simpa [mul_comm] using nat_mul_strictMono hneq0 hlt
 
 @[simp]
 lemma nat_mul_cancel_iff (hneq0 : n ≠ 0) : n * a = n * b ↔ a = b :=
