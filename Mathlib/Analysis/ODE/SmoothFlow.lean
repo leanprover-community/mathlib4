@@ -675,6 +675,43 @@ lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (
     ⟨mem_univ x, hα⟩
   exact (contDiffOn_T hu t₀ k hf).contDiffAt (hopen.mem_nhds hmem)
 
+/-- If `α : FunSpace t₀ x₀ 0 L` is a fixed point of `next hPL hx₀`, then
+`T f u t₀ (x₀, α.toContinuousMap) = 0`. This connects the Picard-Lindelöf fixed point to the
+implicit function theorem formulation. -/
+lemma T_eq_zero_of_isFixedPt {f : E → E} {u : Set E} (hfu : ContinuousOn f u)
+    {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a L K : ℝ≥0}
+    (hPL : IsPicardLindelof (fun _ ↦ f) t₀ x₀ a 0 L K)
+    (α : ODE.FunSpace t₀ x₀ 0 L)
+    (hα : IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α)
+    (hrange : range α.toContinuousMap ⊆ u) :
+    T f u t₀ (x₀, α.toContinuousMap) = 0 := by
+  ext t
+  simp only [T, ContinuousMap.coe_sub, ContinuousMap.coe_add, ContinuousMap.coe_const, Pi.sub_apply,
+    Pi.add_apply, ContinuousMap.zero_apply]
+  -- α t₀ = x₀ since r = 0
+  have hα₀ : α t₀ = x₀ := dist_le_zero.mp α.mem_closedBall₀
+  -- The fixed point equation gives α t = x₀ + ∫_{t₀}^t f(α(s)) ds
+  have hfixed : (α.toContinuousMap t : E) = x₀ + ∫ τ in (t₀ : ℝ)..t, f (α.compProj τ) := by
+    have heq := congrArg (· t) hα
+    simp only [ODE.FunSpace.next_apply, ODE.picard_apply] at heq
+    rw [ODE.FunSpace.toContinuousMap_apply_eq_apply]
+    exact heq.symm
+  -- compProj t₀ α.toContinuousMap agrees with α.compProj
+  have hcompProj : ∀ τ, compProj t₀ α.toContinuousMap τ = α.compProj τ := fun τ ↦ by
+    simp only [compProj, ODE.FunSpace.compProj_apply, ODE.FunSpace.toContinuousMap_apply_eq_apply]
+  -- The integral term in T
+  have hg : ContinuousOn (fun x ↦ uncurry0 ℝ E (f x)) u :=
+    (continuousMultilinearCurryFin0 ℝ E E).symm.continuous.comp_continuousOn hfu
+  -- Unfold the integral term to match hfixed
+  have hintegral : (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α.toContinuousMap).curry0 t =
+      ∫ τ in (t₀ : ℝ)..t, f (α.compProj τ) := by
+    rw [ContinuousMultilinearMap.curry0_apply, integralCMLM, dif_pos hg,
+      integralCMLMAux_apply, integralCM_if_pos hrange]
+    simp only [integralCMAux, ContinuousMap.coe_mk, integralFun, Matrix.zero_empty,
+      uncurry0_apply, hcompProj]
+  simp only [hfixed, hintegral, Function.const_apply]
+  abel
+
 /-- The derivative of `fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0` at `α`,
 which appears as a component of the derivative of `T`. This is the composition of `curry0` with
 the derivative of `integralCMLM`. -/
@@ -901,38 +938,137 @@ lemma exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E
     _ = C / (C + 1) := by rw [hε_def]; ring
     _ < 1 := (div_lt_one (by positivity : 0 < C + 1)).mpr (lt_add_one C)
 
-/-
-Lang Lemma 1.13 doesn't make any sense!
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+/-- `IsPicardLindelof` is preserved when shrinking the time interval for time-independent ODEs. -/
+lemma IsPicardLindelof.shrink_time_indep {f : E → E} {t₀ : ℝ} {x₀ : E} {a r L K : ℝ≥0}
+    {ε ε' : ℝ} (hε : 0 < ε) (hε' : 0 < ε') (hε'ε : ε' ≤ ε)
+    (hf : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
+      ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a r L K) :
+    IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε') (tmax := t₀ + ε')
+      ⟨t₀, by simp [le_of_lt hε']⟩ x₀ a r L K where
+  lipschitzOnWith t _ := hf.lipschitzOnWith t (by simp at *; constructor <;> linarith)
+  continuousOn x hx :=
+    (hf.continuousOn x hx).mono fun t ht ↦ ⟨by linarith [ht.1], by linarith [ht.2]⟩
+  norm_le t ht x hx := hf.norm_le t (by simp at *; constructor <;> linarith) x hx
+  mul_max_le := by
+    calc (L : ℝ) * max ((t₀ + ε') - t₀) (t₀ - (t₀ - ε'))
+      _ = L * ε' := by simp
+      _ ≤ L * ε := by gcongr
+      _ = L * max ((t₀ + ε) - t₀) (t₀ - (t₀ - ε)) := by simp
+      _ ≤ a - r := hf.mul_max_le
 
-Clarify:
-`of_contDiffAt_one` gives `ε > 0`, `a ≥ 0`, `r > 0`, `L ≥ 0`, `K ≥ 0`.
-`ε` for nontrivial time interval `Icc (t₀ - ε) (t₀ + ε)` (can be shrunken arbitrarily)
-`a` for how far away from `x₀` an integral curve `α` can travel
-`r` for how far away from `x₀` an integral curve `α` can begin
-`L` for bounding `‖f‖` within `closedBall x₀ a`
-`K` for Lipschitz constant of `f` within `closedBall x₀ a` (can be enlarged arbitrarily)
+/-- When f is C^1 at x₀, there exist ε > 0, a > 0, a' ≥ a, and an integral curve α starting at x₀
+defined on `Icc (t₀ - ε) (t₀ + ε)`, such that the range of α is in `ball x₀ a` and
+`‖fderivIntegralCurry0 f (ball x₀ a') t₀' α‖ < 1`.
 
-Then any integral curve `α` of `f` starting in `closedBall x₀ r` and defined on
-`Icc (t₀ - ε) (t₀ + ε)` is `L`-Lipschitz and stays within `closedBall x₀ a`. (missing lemmas?)
-
-`‖f'‖ ≤ K < K + 1` at `x₀`.
-Shrink `a` (shrink `r` proportionally and shrink `ε` appropriately) so that `f` is `C^1` and
-`‖f'‖ < K + 1` within `closedBall x₀ a`. (missing lemmas?)
-Shrink `ε` more so that `|tmax - tmin| * (K + 1) < 1`.
-Shrink `ε` even more so that `L * max (tmax - t₀) (t₀ - tmin) < a - r`
-(need a modified `mem_closedBall` for `ball`)
-
-`IsPicardLindelof` still holds with new constants.
-Let `α` be an integral curve beginning within `r` from `x₀`.
-`range α ⊆ ball x₀ a`, so we can apply lemmas with `u := ball x₀ a`.
-
-Conclude that `‖fderivIntegralCurry0 f u t₀ α‖ < 1` for all integral curves `α` of `f` beginning
-within `r` from `x₀`.
--/
-
-
-
-
+The integral curve is given as a `FunSpace` satisfying `IsFixedPt (next hPL hx₀) α`,
+which can be converted to a continuous map via `toContinuousMap`. -/
+lemma exists_integralCurve_opNorm_fderivIntegralCurry0_lt_one {f : E → E} {x₀ : E}
+    (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a a' : ℝ≥0) (L K : ℝ≥0) (_ : 0 < a) (_ : a ≤ a')
+      (hPL : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
+        ⟨t₀, by simp [le_of_lt hε]⟩ x₀ a 0 L K),
+      ∃ α : ODE.FunSpace ⟨t₀, by simp [le_of_lt hε]⟩ x₀ 0 L,
+        IsFixedPt (ODE.FunSpace.next hPL (mem_closedBall_self le_rfl)) α ∧
+        (∀ t, α t ∈ ball x₀ a) ∧
+        ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hε]⟩ α.toContinuousMap‖
+          < 1 := by
+  -- Get parameters from the two key lemmas
+  obtain ⟨a₁, ha₁pos, ε₁, hε₁pos, hfderiv_bound⟩ :=
+    exists_ball_eps_opNorm_fderivIntegralCurry0_lt_one hf
+  obtain ⟨ε₂, hε₂pos, a₂, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  -- We have a₂ > 0 since r > 0 and a₂ ≥ r (from the mul_max_le constraint)
+  have ha₂pos : (0 : ℝ) < a₂ := by
+    have h := hPL.mul_max_le; simp only at h
+    have hL : (0 : ℝ) ≤ L := L.2
+    have hmax : 0 < max (t₀ + ε₂ - t₀) (t₀ - (t₀ - ε₂)) := by simp; linarith
+    have hrpos' : (0 : ℝ) < r := hrpos
+    nlinarith
+  -- Choose a = min a₁ (a₂ / 2) so that closedBall x₀ a ⊆ closedBall x₀ a₂ (for Lipschitz/bound)
+  -- and ball x₀ a ⊆ ball x₀ a₁ (for the fderiv bound)
+  have ha_pos_real : 0 < min a₁ ((a₂ : ℝ) / 2) := lt_min ha₁pos (by linarith)
+  set a : ℝ≥0 := ⟨min a₁ (a₂ / 2), le_of_lt ha_pos_real⟩ with ha_def
+  set a' : ℝ≥0 := ⟨a₁, le_of_lt ha₁pos⟩ with ha'_def
+  have hapos : 0 < a := by simp only [a]; exact ha_pos_real
+  have ha_le_a₁ : (a : ℝ) ≤ a₁ := min_le_left _ _
+  have haa' : a ≤ a' := NNReal.coe_le_coe.mp ha_le_a₁
+  have ha_lt_a₂ : (a : ℝ) < a₂ := (min_le_right _ _).trans_lt (by linarith)
+  -- Choose ε small enough for both conditions
+  -- Need: 2ε < ε₁ (for fderiv bound), ε ≤ ε₂ (for PicardLindelof),
+  -- and L * ε < a (strict, for mem_ball)
+  set ε := min (min (ε₁ / 4) (ε₂ / 2)) ((a : ℝ) / (L + 1)) with hε_def
+  have hεpos : 0 < ε := by
+    apply lt_min (lt_min (by positivity) (by positivity))
+    exact div_pos (NNReal.coe_pos.mpr hapos) (by positivity)
+  have hε_lt_ε₁ : 2 * ε < ε₁ := by
+    calc 2 * ε ≤ 2 * (ε₁ / 4) := by gcongr; exact (min_le_left _ _).trans (min_le_left _ _)
+      _ = ε₁ / 2 := by ring
+      _ < ε₁ := by linarith
+  have hε_le_ε₂ : ε ≤ ε₂ := by
+    calc ε ≤ ε₂ / 2 := (min_le_left _ _).trans (min_le_right _ _)
+      _ ≤ ε₂ := by linarith
+  have hLε_lt_a : (L : ℝ) * ε < a := by
+    have hapos' : (0 : ℝ) < a := NNReal.coe_pos.mpr hapos
+    calc (L : ℝ) * ε
+      _ ≤ L * ((a : ℝ) / (L + 1)) := by gcongr; exact min_le_right _ _
+      _ = L * a / (L + 1) := by ring
+      _ < a := by
+        rcases eq_or_lt_of_le L.2 with hL | hL
+        · have : (L : ℝ) = 0 := hL.symm; simp only [this, zero_mul, zero_div, hapos']
+        · have hLnonneg : (0 : ℝ) ≤ L := L.2
+          have hLpos1 : (0 : ℝ) < (L : ℝ) + 1 := by linarith
+          have hLne : (L : ℝ) + 1 ≠ 0 := ne_of_gt hLpos1
+          field_simp [hLne]
+          nlinarith
+  -- Shrink PicardLindelof to the smaller time interval with r = 0 and smaller a
+  have hPL' : IsPicardLindelof (fun _ ↦ f) (tmin := t₀ - ε) (tmax := t₀ + ε)
+      ⟨t₀, by simp [le_of_lt hεpos]⟩ x₀ a 0 L K := by
+    have hPL_shrink := IsPicardLindelof.shrink_time_indep hε₂pos hεpos hε_le_ε₂ hPL
+    refine IsPicardLindelof.of_time_independent ?_ ?_ ?_
+    · intro x hx
+      apply hPL_shrink.norm_le t₀ (by simp [le_of_lt hεpos]) x
+      exact closedBall_subset_closedBall (le_of_lt ha_lt_a₂) hx
+    · apply (hPL_shrink.lipschitzOnWith t₀ (by simp [le_of_lt hεpos])).mono
+      exact closedBall_subset_closedBall (le_of_lt ha_lt_a₂)
+    · simp only [NNReal.coe_zero, sub_zero, add_sub_cancel_left, sub_sub_cancel, max_self]
+      exact le_of_lt hLε_lt_a
+  -- Get the fixed point (integral curve) from Picard-Lindelöf
+  have hx₀ : x₀ ∈ closedBall x₀ (0 : ℝ≥0) := mem_closedBall_self le_rfl
+  obtain ⟨α_fun, hα_fixed⟩ := ODE.FunSpace.exists_isFixedPt_next hPL' hx₀
+  -- Show α t ∈ ball x₀ a for all t
+  have hα_ball : ∀ t, α_fun t ∈ ball x₀ a := fun t ↦ by
+    rw [mem_ball, dist_eq_norm]
+    calc ‖α_fun t - x₀‖
+        ≤ ‖α_fun t - α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩‖ +
+            ‖α_fun ⟨t₀, by simp [le_of_lt hεpos]⟩ - x₀‖ :=
+          norm_sub_le_norm_sub_add_norm_sub ..
+      _ ≤ L * |t.1 - t₀| + 0 := by
+          apply add_le_add
+          · rw [← dist_eq_norm]; exact α_fun.lipschitzWith.dist_le_mul t _
+          · have := α_fun.mem_closedBall₀
+            simp only [NNReal.coe_zero, mem_closedBall] at this
+            rw [dist_le_zero.mp this, sub_self, norm_zero]
+      _ ≤ L * max ((t₀ + ε) - t₀) (t₀ - (t₀ - ε)) := by
+          simp only [add_zero]
+          gcongr
+          exact abs_sub_le_max_sub t.2.1 t.2.2 _
+      _ < a := by simp only [add_sub_cancel_left, sub_sub_cancel, max_self]; exact hLε_lt_a
+  -- Show the operator norm bound
+  have hα_norm :
+      ‖fderivIntegralCurry0 f (ball x₀ a') ⟨t₀, by simp [le_of_lt hεpos]⟩ α_fun.toContinuousMap‖
+        < 1 := by
+    have hα_range : range α_fun.toContinuousMap ⊆ ball x₀ a' := by
+      intro y hy
+      obtain ⟨t, ht⟩ := hy
+      rw [← ht, ODE.FunSpace.toContinuousMap_apply_eq_apply]
+      exact ball_subset_ball ha_le_a₁ (hα_ball t)
+    have hinterval : |(t₀ + ε) - (t₀ - ε)| < ε₁ := by
+      have h1 : (t₀ + ε) - (t₀ - ε) = 2 * ε := by ring
+      rw [h1, abs_of_pos (by linarith)]
+      linarith
+    have ht₀mem : t₀ ∈ Icc (t₀ - ε) (t₀ + ε) := by simp [le_of_lt hεpos]
+    exact hfderiv_bound (t₀ - ε) (t₀ + ε) ⟨t₀, ht₀mem⟩ α_fun.toContinuousMap hα_range hinterval
+  exact ⟨ε, hεpos, a, a', L, K, hapos, haa', hPL', α_fun, hα_fixed, hα_ball, hα_norm⟩
 
 /-- The derivative of `T` restricted to the second component is bijective when the norm of
 `fderivIntegralCurry0 f u t₀ α` is less than 1. This is the key condition for the implicit function
