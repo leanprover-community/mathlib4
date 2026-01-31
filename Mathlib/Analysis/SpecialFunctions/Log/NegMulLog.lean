@@ -154,8 +154,7 @@ lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog
 
 lemma negMulLog_pos_of_pos_lt_one {x : ℝ} (hx0 : 0 < x) (hx1 : x < 1) :
     0 < negMulLog x := by
-  rw [negMulLog_eq_neg, neg_pos]
-  exact mul_neg_of_pos_of_neg hx0 (log_neg hx0 hx1)
+  simpa only [negMulLog_eq_neg, neg_pos] using mul_neg_of_pos_of_neg hx0 (log_neg hx0 hx1)
 
 lemma negMulLog_mul (x y : ℝ) : negMulLog (x * y) = y * negMulLog x + x * negMulLog y := by
   simp only [negMulLog, neg_mul]
