@@ -309,8 +309,8 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
       rw [Finset.coe_union, Set.union_subset_iff]
       exact ⟨x_supp, by simpa [support_single_ne_zero]⟩
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
-    obtain ⟨x, hx⟩ := le_iff_exists_add'.mp (show single i 1 ≤ f by
-      simpa [Nat.one_le_iff_ne_zero] using hi)
+    obtain ⟨x, hx⟩ := le_iff_exists_add'.mp
+      (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
     use x; split_ands
     · aesop
     · trans ↑f.support
