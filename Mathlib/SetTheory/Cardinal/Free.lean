@@ -86,10 +86,10 @@ theorem mk_freeGroup [Nonempty α] : #(FreeGroup α) = max #α ℵ₀ := by
       Nat.cast_ofNat, lift_ofNat]
     obtain hα | hα := lt_or_ge #α ℵ₀
     · simp only [hα.le, max_eq_right, max_eq_right_iff]
-      exact (mul_lt_aleph0 hα (nat_lt_aleph0 2)).le
+      exact (mul_lt_aleph0 hα natCast_lt_aleph0).le
     · rw [max_eq_left hα, max_eq_left (hα.trans <| Cardinal.le_mul_right two_ne_zero),
         Cardinal.mul_eq_left hα _ (by simp)]
-      exact (nat_lt_aleph0 2).le.trans hα
+      exact natCast_le_aleph0.trans hα
   · apply max_le
     · exact mk_le_of_injective FreeGroup.of_injective
     · simp

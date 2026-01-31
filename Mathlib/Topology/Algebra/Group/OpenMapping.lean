@@ -21,7 +21,7 @@ the discrete topology, and `H` the real line with the usual topology. Both are l
 groups, and the identity from `G` to `H` is continuous but not open.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology Pointwise
 

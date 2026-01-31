@@ -373,6 +373,31 @@ theorem angle_eq_zero_iff_eq_and_ne_or_sbtw {p₁ p₂ p₃ : P} :
   by_cases hp₃p₂ : p₃ = p₂; · simp [hp₃p₂]
   simp [hp₁p₂, hp₁p₃, Ne.symm hp₁p₃, Sbtw, hp₃p₂]
 
+/-- An Unoriented angle is unchanged by replacing the third point by one strictly further away on
+the same ray. -/
+theorem _root_.Sbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Sbtw ℝ p₂ p₃ p) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p :=
+  angle_eq_angle_of_angle_eq_pi _ h.angle₁₂₃_eq_pi
+
+/-- An Unoriented angle is unchanged by replacing the first point by one strictly further away on
+the same ray. -/
+theorem _root_.Sbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Sbtw ℝ p₂ p₁ p) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
+  simpa only [angle_comm] using h.angle_eq_right p₃
+
+/-- An Unoriented angle is unchanged by replacing the third point by one weakly further away on the
+same ray. -/
+theorem _root_.Wbtw.angle_eq_right {p₂ p₃ p : P} (p₁ : P) (h : Wbtw ℝ p₂ p₃ p) (hp₃p₂ : p₃ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p := by
+  by_cases hp₃p : p₃ = p; · simp [hp₃p]
+  exact Sbtw.angle_eq_right _ ⟨h, hp₃p₂, hp₃p⟩
+
+/-- An Unoriented angle is unchanged by replacing the first point by one weakly further away on the
+same ray. -/
+theorem _root_.Wbtw.angle_eq_left {p₁ p p₂ : P} (p₃ : P) (h : Wbtw ℝ p₂ p₁ p) (hp₁p₂ : p₁ ≠ p₂) :
+    ∠ p₁ p₂ p₃ = ∠ p p₂ p₃ := by
+  simpa only [angle_comm] using h.angle_eq_right p₃ hp₁p₂
+
 /-- Three points are collinear if and only if the first or third point equals the second or the
 angle between them is 0 or π. -/
 theorem collinear_iff_eq_or_eq_or_angle_eq_zero_or_angle_eq_pi {p₁ p₂ p₃ : P} :

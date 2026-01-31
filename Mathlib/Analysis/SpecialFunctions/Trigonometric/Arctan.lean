@@ -134,14 +134,17 @@ theorem arctan_tan (hx₁ : -(π / 2) < x) (hx₂ : x < π / 2) : arctan (tan x)
 theorem cos_arctan_pos (x : ℝ) : 0 < cos (arctan x) :=
   cos_pos_of_mem_Ioo <| arctan_mem_Ioo x
 
+theorem sin_sq_arctan (x : ℝ) : sin (arctan x) ^ 2 = x ^ 2 / (1 + x ^ 2) := by
+  rw [← tan_sq_div_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+
 theorem cos_sq_arctan (x : ℝ) : cos (arctan x) ^ 2 = 1 / (1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
+  rw [one_div, ← inv_one_add_tan_sq (cos_arctan_pos x).ne', tan_arctan]
 
 theorem sin_arctan (x : ℝ) : sin (arctan x) = x / √(1 + x ^ 2) := by
-  rw_mod_cast [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [← tan_div_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem cos_arctan (x : ℝ) : cos (arctan x) = 1 / √(1 + x ^ 2) := by
-  rw_mod_cast [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
+  rw [one_div, ← inv_sqrt_one_add_tan_sq (cos_arctan_pos x), tan_arctan]
 
 theorem arctan_lt_pi_div_two (x : ℝ) : arctan x < π / 2 :=
   (arctan_mem_Ioo x).2
@@ -201,6 +204,20 @@ theorem arctan_eq_of_tan_eq (h : tan x = y) (hx : x ∈ Ioo (-(π / 2)) (π / 2)
 @[simp]
 theorem arctan_one : arctan 1 = π / 4 :=
   arctan_eq_of_tan_eq tan_pi_div_four <| by constructor <;> linarith [pi_pos]
+
+@[simp]
+theorem arctan_sqrt_three : arctan (√3) = π / 3 := by
+  rw [← tan_pi_div_three, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
+
+@[simp]
+theorem arctan_inv_sqrt_three : arctan (√3)⁻¹ = π / 6 := by
+  rw [inv_eq_one_div, ← tan_pi_div_six, arctan_tan]
+  all_goals
+  · field_simp
+    norm_num
 
 @[simp]
 theorem arctan_eq_pi_div_four : arctan x = π / 4 ↔ x = 1 := arctan_injective.eq_iff' arctan_one

@@ -17,7 +17,7 @@ $\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof. We also provide some boun
 "geometric" sum of `a/b^i` where `a b : ℕ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

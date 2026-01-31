@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 # Nilpotent elements in quotient rings
 -/
 
-@[expose] public section
+public section
 
 theorem Ideal.isRadical_iff_quotient_reduced {R : Type*} [CommRing R] (I : Ideal R) :
     I.IsRadical ↔ IsReduced (R ⧸ I) := by

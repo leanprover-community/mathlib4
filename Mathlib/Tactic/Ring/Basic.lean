@@ -5,9 +5,11 @@ Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.NormNum.Inv
-public meta import Mathlib.Tactic.NormNum.Pow
 public meta import Mathlib.Util.AtomM
+public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
+public meta import Mathlib.Tactic.NormNum.Result
 
 /-!
 # `ring` tactic
@@ -1424,17 +1426,17 @@ where
       return q(of_eq $pa $pb)
 
 /--
-Tactic for solving equations of *commutative* (semi)rings,
+`ring1` solves the goal when it is an equality in *commutative* (semi)rings,
 allowing variables in the exponent.
 
-* This version of `ring` fails if the target is not an equality.
-* The variant `ring1!` will use a more aggressive reducibility setting
-  to determine equality of atoms.
+This version of `ring` fails if the target is not an equality.
+
+* `ring1!` uses a more aggressive reducibility setting to determine equality of atoms.
 -/
 elab (name := ring1) "ring1" tk:"!"? : tactic => liftMetaMAtMain fun g ↦ do
   AtomM.run (if tk.isSome then .default else .reducible) (proveEq g)
 
-@[inherit_doc ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
+@[tactic_alt ring1] macro "ring1!" : tactic => `(tactic| ring1 !)
 
 end Ring
 

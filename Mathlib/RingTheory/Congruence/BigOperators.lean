@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Congruence.Defs
 
 -/
 
-@[expose] public section
+public section
 
 namespace RingCon
 

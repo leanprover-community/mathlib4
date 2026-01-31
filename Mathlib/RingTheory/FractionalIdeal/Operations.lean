@@ -326,7 +326,7 @@ theorem coeIdeal_eq_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) = 1 ↔ I =
 theorem coeIdeal_ne_one {I : Ideal R} : (I : FractionalIdeal R⁰ K) ≠ 1 ↔ I ≠ 1 :=
   not_iff_not.mpr coeIdeal_eq_one
 
-theorem num_eq_zero_iff [Nontrivial R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
+theorem num_eq_zero_iff [IsDomain R] {I : FractionalIdeal R⁰ K} : I.num = 0 ↔ I = 0 where
   mp h := zero_of_num_eq_bot zero_notMem_nonZeroDivisors h
   mpr h := h ▸ num_zero_eq (IsFractionRing.injective R K)
 
@@ -606,7 +606,7 @@ theorem spanSingleton_le_iff_mem {x : P} {I : FractionalIdeal S P} :
     spanSingleton S x ≤ I ↔ x ∈ I := by
   rw [← coe_le_coe, coe_spanSingleton, Submodule.span_singleton_le_iff_mem, mem_coe]
 
-theorem spanSingleton_eq_spanSingleton [NoZeroSMulDivisors R P] {x y : P} :
+theorem spanSingleton_eq_spanSingleton [IsDomain R] [Module.IsTorsionFree R P] {x y : P} :
     spanSingleton S x = spanSingleton S y ↔ ∃ z : Rˣ, z • x = y := by
   rw [← Submodule.span_singleton_eq_span_singleton, spanSingleton, spanSingleton]
   exact Subtype.mk_eq_mk

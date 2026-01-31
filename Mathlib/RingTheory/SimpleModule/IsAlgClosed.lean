@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.SimpleModule.WedderburnArtin
 # Wedderburn–Artin Theorem over an algebraically closed field
 -/
 
-@[expose] public section
+public section
 
 variable (F R : Type*) [Field F] [IsAlgClosed F] [Ring R] [Algebra F R]
 

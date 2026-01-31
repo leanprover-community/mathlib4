@@ -412,7 +412,7 @@ scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convoluti
 
 /-- The convolution of two functions with respect to a bilinear operation `L` and the volume. -/
 scoped[Convolution]
-  notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureSpace.volume
+  notation:67 f " ⋆[" L:67 "] " g:66 => convolution f g L MeasureSpace.volume
 
 /-- The convolution of two real-valued functions with respect to volume. -/
 scoped[Convolution]
@@ -556,7 +556,7 @@ theorem continuousOn_convolution_right_with_param {g : P → G → E'} {s : Set 
     have B : Continuous (g p) := by
       refine hg.comp_continuous (.prodMk_right _) fun x => ?_
       simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
-    rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H|H
+    rcases eq_zero_or_locallyCompactSpace_of_support_subset_isCompact_of_addGroup hk A B with H | H
     · simp [H] at hx
     · exact H
   /- Since `G` is locally compact, one may thicken `k` a little bit into a larger compact set
@@ -963,7 +963,7 @@ theorem _root_.HasCompactSupport.hasFDerivAt_convolution_right (hcg : HasCompact
         ((hasFDerivAt_id x).sub (hasFDerivAt_const t x))
   let K' := -tsupport (fderiv 𝕜 g) + closedBall x₀ 1
   have hK' : IsCompact K' := (hcg.fderiv 𝕜).isCompact.neg.add (isCompact_closedBall x₀ 1)
-  apply hasFDerivAt_integral_of_dominated_of_fderiv_le zero_lt_one h1 _ (h2 x₀)
+  apply hasFDerivAt_integral_of_dominated_of_fderiv_le (ball_mem_nhds _ zero_lt_one) h1 _ (h2 x₀)
   · filter_upwards with t x hx using
       (hcg.fderiv 𝕜).convolution_integrand_bound_right L' (hg.continuous_fderiv one_ne_zero)
         (ball_subset_closedBall hx)
@@ -1153,7 +1153,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
       rw [this]
       exact (hasFDerivAt_id x).sub_const (0, a)
     exact Z.comp x Z'
-  exact hasFDerivAt_integral_of_dominated_of_fderiv_le δpos I1 I2 I3 I4 I5 I6
+  exact hasFDerivAt_integral_of_dominated_of_fderiv_le (ball_mem_nhds _ δpos) I1 I2 I3 I4 I5 I6
 
 /-- The convolution `f * g` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
 supported. Version where `g` depends on an additional parameter in an open subset `s` of a

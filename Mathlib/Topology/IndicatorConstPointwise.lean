@@ -31,7 +31,7 @@ The results stating these in the case when the indicators take values in a Fréc
 
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Topology

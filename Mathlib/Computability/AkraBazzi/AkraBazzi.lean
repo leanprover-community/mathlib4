@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Computability.AkraBazzi.SumTransform
 public import Mathlib.Analysis.Calculus.Deriv.Inv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
@@ -704,7 +704,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
       _ = (∑ i, a i * (C * ((1 + ε (r i n)) * ((r i n) ^ (p a b)
             * (1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1))))))) + g n := by
         simp_rw [asympBound_def']
-      _ = (∑ i, C * a i * ((r i n)^(p a b) * (1 + ε (r i n))
+      _ = (∑ i, C * a i * ((r i n) ^ (p a b) * (1 + ε (r i n))
                 * ((1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1)))))) + g n := by
         congr; ext; ring
       _ ≥ (∑ i, C * a i * ((b i) ^ (p a b) * n ^ (p a b) * (1 + ε n)

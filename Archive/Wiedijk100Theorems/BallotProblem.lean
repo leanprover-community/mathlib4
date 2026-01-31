@@ -320,9 +320,9 @@ theorem ballot_problem' :
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
-    haveI := uniformOn_isProbabilityMeasure
+    haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
-    haveI := uniformOn_isProbabilityMeasure
+    haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
     have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
@@ -350,7 +350,7 @@ theorem ballot_problem :
     ∀ q p, q < p → uniformOn (countedSequence p q) staysPositive = (p - q) / (p + q) := by
   intro q p qp
   haveI :=
-    uniformOn_isProbabilityMeasure (countedSequence_finite p q) (countedSequence_nonempty _ _)
+    isProbabilityMeasure_uniformOn (countedSequence_finite p q) (countedSequence_nonempty _ _)
   have :
     (uniformOn (countedSequence p q) staysPositive).toReal =
       ((p - q) / (p + q) : ℝ≥0∞).toReal := by

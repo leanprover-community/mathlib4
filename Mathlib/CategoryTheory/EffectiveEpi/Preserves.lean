@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Comp
-public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 /-!
 
 # Functors preserving effective epimorphisms
@@ -100,6 +100,12 @@ class PreservesEffectiveEpis (F : C ⥤ D) : Prop where
 instance map_effectiveEpi (F : C ⥤ D) [F.PreservesEffectiveEpis] {X Y : C} (f : X ⟶ Y)
     [EffectiveEpi f] : EffectiveEpi (F.map f) :=
   PreservesEffectiveEpis.preserves f
+
+instance [IsRegularEpiCategory D] (F : C ⥤ D) [F.PreservesEpimorphisms] [Limits.HasPullbacks D] :
+    F.PreservesEffectiveEpis where
+  preserves _ _ := by
+    rw [← isRegularEpi_iff_effectiveEpi]
+    apply IsRegularEpiCategory.regularEpiOfEpi
 
 /--
 A class describing the property of preserving effective epimorphic families.

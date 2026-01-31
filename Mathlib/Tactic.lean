@@ -1,4 +1,4 @@
-module
+module  -- shake: keep-all
 
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
@@ -32,6 +32,7 @@ public import Mathlib.Tactic.CategoryTheory.Bicategory.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Bicategory.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 public import Mathlib.Tactic.CategoryTheory.CategoryStar
 public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 public import Mathlib.Tactic.CategoryTheory.Coherence
@@ -88,7 +89,6 @@ public import Mathlib.Tactic.Explode.Pretty
 public import Mathlib.Tactic.Ext
 public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.ExtractGoal
-public import Mathlib.Tactic.ExtractLets
 public import Mathlib.Tactic.FBinop
 public import Mathlib.Tactic.FailIfNoProgress
 public import Mathlib.Tactic.FastInstance
@@ -104,10 +104,8 @@ public import Mathlib.Tactic.Finiteness
 public import Mathlib.Tactic.Finiteness.Attr
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.FunProp.Attr
-public import Mathlib.Tactic.FunProp.ContDiff
 public import Mathlib.Tactic.FunProp.Core
 public import Mathlib.Tactic.FunProp.Decl
-public import Mathlib.Tactic.FunProp.Differentiable
 public import Mathlib.Tactic.FunProp.Elab
 public import Mathlib.Tactic.FunProp.FunctionData
 public import Mathlib.Tactic.FunProp.Mor
@@ -137,7 +135,6 @@ public import Mathlib.Tactic.IntervalCases
 public import Mathlib.Tactic.IrreducibleDef
 public import Mathlib.Tactic.Lemma
 public import Mathlib.Tactic.Lift
-public import Mathlib.Tactic.LiftLets
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Linarith.Frontend
@@ -178,11 +175,13 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
 public import Mathlib.Tactic.Linter.ValidatePRTitle
+public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports

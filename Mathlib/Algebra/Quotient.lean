@@ -14,7 +14,7 @@ This file defines notation for algebraic quotients, e.g. quotient groups `G ⧸ 
 quotient modules `M ⧸ N` and ideal quotients `R ⧸ I`.
 
 The actual quotient structures are defined in the following files:
-* Quotient Group: `Mathlib/GroupTheory/Cosets/Defs.lean`
+* Quotient Group: `Mathlib/GroupTheory/QuotientGroup/Defs.lean`
 * Quotient Module: `Mathlib/LinearAlgebra/Quotient/Defs.lean`
 * Quotient Ring: `Mathlib/RingTheory/Ideal/Quotient/Defs.lean`
 
