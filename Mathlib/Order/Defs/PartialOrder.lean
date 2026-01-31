@@ -154,8 +154,6 @@ between. This is denoted `a ⋖ b`. -/
 def CovBy {α : Type*} [LT α] (a b : α) : Prop :=
   a < b ∧ ∀ ⦃c⦄, a < c → ¬c < b
 
-to_dual_insert_cast CovBy := by grind
-
 @[inherit_doc]
 infixl:50 " ⋖ " => CovBy
 
@@ -199,11 +197,15 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
+@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
     else isFalse fun heq => hab (heq ▸ le_refl _)
+
+@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableGE := decidableEqOfDecidableLE'
+@[deprecated (since := "2025-12-09")] alias decidableEqofDecidableLE' := decidableEqOfDecidableLE'
 
 -- See Note [decidable namespace]
 @[to_dual Decidable.lt_or_eq_of_le']
