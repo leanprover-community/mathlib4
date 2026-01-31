@@ -299,15 +299,9 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
   induction n with
   | zero => aesop (add simp degree_eq_zero_iff)
   | succ n ih =>
-    simp only [succ_nsmul, ih, Set.ext_iff, Set.mem_add, Set.mem_setOf_eq, Set.mem_image,
-      exists_exists_and_eq_and]
-    refine fun f ↦ ⟨fun ⟨x, ⟨x_deg, x_supp⟩, ⟨c, c_in, hc⟩⟩ ↦ ⟨?_, ?_⟩, fun ⟨f_deg, f_supp⟩ ↦ ?_⟩
-    · rw [← hc, map_add, x_deg, degree_single]
-    · rw [← hc]; trans ↑(x.support ∪ (single c 1).support)
-      · rw [SetLike.coe_subset_coe, Finset.le_iff_subset]
-        exact support_add
-      rw [Finset.coe_union, Set.union_subset_iff]
-      exact ⟨x_supp, by simpa [support_single_ne_zero]⟩
+    rw [succ_nsmul, ih]
+    refine subset_antisymm ?_ fun f ⟨f_deg, f_supp⟩ ↦ ?_
+    · simp [Set.subset_def, Set.mem_add, @forall_comm (α →₀ ℕ)]; grind
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
     obtain ⟨x, hx⟩ := le_iff_exists_add'.mp
       (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
