@@ -1206,6 +1206,7 @@ public import Mathlib.Algebra.Ring.Subring.IntPolynomial
 public import Mathlib.Algebra.Ring.Subring.MulOpposite
 public import Mathlib.Algebra.Ring.Subring.Order
 public import Mathlib.Algebra.Ring.Subring.Pointwise
+public import Mathlib.Algebra.Ring.Subring.Polynomial
 public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Defs
