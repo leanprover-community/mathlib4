@@ -40,10 +40,10 @@ namespace Polynomial
 variable (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R)
 
 @[simp]
-theorem toSubring_coeff (n : ℕ) : ↑((P.toSubring R hP).coeff n) = P.coeff n := rfl
+theorem toSubring_coeff (n : ℕ) : (P.toSubring R hP).coeff n = P.coeff n := rfl
 
 @[simp]
-theorem toSubring_leadingCoeff : ↑(P.toSubring R hP).leadingCoeff = P.leadingCoeff := rfl
+theorem toSubring_leadingCoeff : (P.toSubring R hP).leadingCoeff = P.leadingCoeff := rfl
 
 @[simp]
 theorem toSubring_monic_iff : (P.toSubring R hP).Monic ↔ P.Monic := by
