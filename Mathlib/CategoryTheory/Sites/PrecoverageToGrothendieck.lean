@@ -203,6 +203,7 @@ lemma toGrothendieck_toPretopology_eq_toGrothendieck [IsStableUnderComposition J
     J.toPretopology.toGrothendieck = J.toGrothendieck := by
   ext
   exact J.mem_toGrothendieck_iff_of_isStableUnderComposition.symm
+
 end Precoverage
 
 @[grind .]

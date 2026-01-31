@@ -288,7 +288,7 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   let ι' : U' ⟶ X' := Over.homMk ι
   have : IsSeparated Y'.hom := ‹_›
   have : IsDominant (equalizer.ι f' g').left := by
-    apply (config := { allowSynthFailures := true }) IsDominant.of_comp (equalizer.lift ι' ?_).left
+    apply +allowSynthFailures IsDominant.of_comp (equalizer.lift ι' ?_).left
     · rwa [← Over.comp_left, equalizer.lift_ι]
     · ext1; exact hU
   have : Surjective (equalizer.ι f' g').left :=
@@ -332,7 +332,7 @@ instance (priority := low) {X : Scheme.{u}} [X.IsSeparated] : QuasiSeparatedSpac
   quasiSeparatedSpace_of_quasiSeparated (terminal.from X)
 
 instance (priority := 900) [X.IsSeparated] : IsSeparated f := by
-  apply (config := { allowSynthFailures := true }) @IsSeparated.of_comp (g := terminal.from Y)
+  apply +allowSynthFailures @IsSeparated.of_comp (g := terminal.from Y)
   rw [terminal.comp_from]
   infer_instance
 

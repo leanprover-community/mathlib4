@@ -174,6 +174,10 @@ theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p 
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
 
+theorem IsClosed.mem_of_mapClusterPt {l : X} {s : Set X} {f : α → X} {b : Filter α}
+    (hs : IsClosed s) (hf : MapClusterPt l b f) (h : ∀ᶠ (x : α) in b, f x ∈ s) : l ∈ s :=
+  (hf.frequently' h).mem_of_closed hs
+
 end MapClusterPt
 
 theorem accPt_sup {x : X} {F G : Filter X} :
