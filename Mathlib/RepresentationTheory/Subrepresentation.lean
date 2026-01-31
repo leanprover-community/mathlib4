@@ -36,7 +36,7 @@ namespace Subrepresentation
 
 lemma toSubmodule_injective :
     Function.Injective (toSubmodule : Subrepresentation ρ → Submodule A W) := by
-  rintro ⟨_,_⟩
+  rintro ⟨_, _⟩
   congr!
 
 instance : SetLike (Subrepresentation ρ) W where
@@ -126,8 +126,8 @@ lemma mem_asSubmodule'_iff {σ : Subrepresentation (Representation.ofModule (k :
 -/
 def ofSubmodule (N : Submodule A[G] M) :
     Subrepresentation (Representation.ofModule (k := A) (G := G) M) where
-  toSubmodule := {N with
-    smul_mem' a m hm := N.smul_mem' (algebraMap A A[G] a) hm}
+  toSubmodule := { N with
+    smul_mem' a m hm := N.smul_mem' (algebraMap A A[G] a) hm }
   apply_mem_toSubmodule g v hv := by
     simpa [Representation.ofModule, RestrictScalars.lsmul] using
       Submodule.smul_of_tower_mem N (MonoidAlgebra.single g 1) hv
@@ -138,8 +138,8 @@ lemma mem_ofSubmodule_iff {N : Submodule A[G] M} {m : M} : m ∈ ofSubmodule N �
 /-- An `A[G]`-submodule of `ρ.asModule` can be thought of as a subrepresentation of `ρ`.
 -/
 def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
-  toSubmodule := {N with
-    smul_mem' a w hw := by simpa using (N.smul_mem (algebraMap A A[G] a) hw)}
+  toSubmodule := { N with
+    smul_mem' a w hw := by simpa using (N.smul_mem (algebraMap A A[G] a) hw) }
   apply_mem_toSubmodule g w hw := by
     letI _ : Module A[G] W := ρ.instModuleMonoidAlgebraAsModule
     have h : (MonoidAlgebra.single g (1 : A)) • w ∈ N :=
@@ -149,7 +149,7 @@ def ofSubmodule' (N : Submodule A[G] ρ.asModule) : Subrepresentation ρ where
 
 @[simp]
 lemma mem_ofSubmodule'_iff {N : Submodule A[G] ρ.asModule} {w : W} : w ∈ ofSubmodule' N ↔ w ∈ N :=
-  by rfl
+  .rfl
 
 /-- An order-preserving equivalence between subrepresentations of `ρ` and submodules of
 `ρ.asModule`. -/

@@ -15,7 +15,7 @@ public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 In this file, the `orthogonal` complement of a submodule `K` is defined, and basic API established.
 We make duplicates for `Submodule` and `ClosedSubmodule`.
 Some of the more subtle results about the orthogonal complement are delayed to
-`Analysis.InnerProductSpace.Projection`.
+`Mathlib/Analysis/InnerProductSpace/Projection/`.
 
 See also `BilinForm.orthogonal` for orthogonality with respect to a general bilinear form.
 
@@ -125,11 +125,7 @@ lemma map_orthogonal (f : E →ₗᵢ[𝕜] F) :
   simp only [Submodule.ext_iff, mem_map, mem_orthogonal, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, mem_inf, mem_map, LinearMap.mem_range,
     LinearIsometry.coe_toLinearMap]
-  refine fun x ↦ ⟨?_, ?_⟩
-  · rintro ⟨x, hx, rfl⟩
-    refine ⟨by simpa using hx, x, rfl⟩
-  · rintro ⟨hx, x, rfl⟩
-    refine ⟨x, by simpa using hx, rfl⟩
+  grind [LinearIsometry.inner_map_map]
 
 lemma map_orthogonal_equiv (f : E ≃ₗᵢ[𝕜] F) :
     Kᗮ.map (f.toLinearEquiv : E →ₗ[𝕜] F) = (K.map (f.toLinearEquiv : E →ₗ[𝕜] F))ᗮ := by
@@ -416,9 +412,14 @@ def orthogonal : ClosedSubmodule 𝕜 E where
 notation:1200 K "ᗮ" => orthogonal K
 
 @[simp]
-lemma orthogonal_toSubmodule_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
+lemma toSubmodule_orthogonal_eq : K.orthogonal.toSubmodule = K.toSubmodule.orthogonal := rfl
 
-lemma mem_orthogonal_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+@[deprecated (since := "2026-01-18")] alias orthogonal_toSubmodule_eq := toSubmodule_orthogonal_eq
+
+@[simp]
+lemma mem_orthogonal_toSubmodule_iff (v : E) : v ∈ (K.toSubmodule)ᗮ ↔ v ∈ Kᗮ := Iff.rfl
+
+@[deprecated (since := "2026-01-18")] alias mem_orthogonal_iff := mem_orthogonal_toSubmodule_iff
 
 /-- When a vector is in `Kᗮ`. -/
 @[simp]
@@ -452,7 +453,7 @@ theorem orthogonal_disjoint : Disjoint K Kᗮ := by simp [disjoint_iff, K.inf_or
 inner product with each of the elements of `K`. -/
 theorem orthogonal_eq_inter : Kᗮ = ⨅ v : K, LinearMap.ker (innerSL 𝕜 (v : E)).toLinearMap := by
   ext
-  simpa using mem_orthogonal_iff _ _
+  simp
 
 variable (𝕜 E)
 
