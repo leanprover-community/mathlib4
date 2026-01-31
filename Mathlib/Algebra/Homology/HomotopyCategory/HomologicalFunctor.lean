@@ -27,7 +27,7 @@ assert_not_exists TwoSidedIdeal
 
 open CategoryTheory
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace HomotopyCategory
 

@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 # Functor categories have finite limits when the target category does
 
-These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory.lean` because
+These declarations cannot be in `Mathlib/CategoryTheory/Limits/FunctorCategory/Basic.lean` because
 that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.lean`.
 -/
 
@@ -21,7 +21,7 @@ that file shouldn't import `Mathlib/CategoryTheory/Limits/Shapes/FiniteProducts.
 
 namespace CategoryTheory.Limits
 
-variable {C : Type*} [Category C] {K : Type*} [Category K]
+variable {C : Type*} [Category* C] {K : Type*} [Category* K]
 
 instance [HasFiniteLimits C] : HasFiniteLimits (K ⥤ C) := ⟨fun _ ↦ inferInstance⟩
 

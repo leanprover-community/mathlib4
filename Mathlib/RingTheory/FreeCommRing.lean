@@ -127,6 +127,7 @@ section lift
 
 variable {R : Type v} [CommRing R] (f : α → R)
 
+set_option backward.privateInPublic true in
 /-- A helper to implement `lift`. This is essentially `FreeCommMonoid.lift`, but this does not
 currently exist. -/
 private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R) where
@@ -149,6 +150,8 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
         ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
 def lift : (α → R) ≃ (FreeCommRing α →+* R) :=
   Equiv.trans liftToMultiset FreeAbelianGroup.liftMonoid

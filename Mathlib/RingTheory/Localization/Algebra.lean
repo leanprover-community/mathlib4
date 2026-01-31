@@ -112,7 +112,7 @@ noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :
-    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)  :=
+    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) :=
   rfl
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :

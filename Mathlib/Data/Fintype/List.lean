@@ -75,7 +75,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
       simp only [_root_.Disjoint]
       rw [← m.coe_toList, ← n.coe_toList, Multiset.lists_coe, Multiset.lists_coe]
       have := Multiset.coe_disjoint m.toList.permutations n.toList.permutations
-      rw  [_root_.Disjoint] at this
+      rw [_root_.Disjoint] at this
       rw [this]
       simp only [ne_eq]
       rw [List.disjoint_iff_ne]

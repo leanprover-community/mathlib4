@@ -16,7 +16,7 @@ We show that if a function `f` has derivative `f'` at a point `a + x`, then `f (
 has derivative `f'` at `x`. Similarly for `x + a`.
 -/
 
-@[expose] public section
+public section
 
 open scoped Pointwise
 

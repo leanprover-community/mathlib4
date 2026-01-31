@@ -6,7 +6,6 @@ Authors: Martin Dvorak
 module
 
 public import Mathlib.Computability.Language
-import Mathlib.Data.Finset.Image
 
 /-!
 # Context-Free Grammars
@@ -84,7 +83,7 @@ lemma Rewrites.input_output : r.Rewrites [.nonterminal r.input] r.output := by
 lemma rewrites_of_exists_parts (r : ContextFreeRule T N) (p q : List (Symbol T N)) :
     r.Rewrites (p ++ [Symbol.nonterminal r.input] ++ q) (p ++ r.output ++ q) := by
   induction p with
-  | nil         => exact Rewrites.head q
+  | nil => exact Rewrites.head q
   | cons d l ih => exact Rewrites.cons d ih
 
 /-- Rule `r` rewrites string `u` is to string `v` iff they share both a prefix `p` and postfix `q`

@@ -456,6 +456,13 @@ theorem liftRingHom_apply_ofFractionRing_mk (φ : R[X] →+* L) (hφ : R[X]⁰ �
     (d : R[X]⁰) : liftRingHom φ hφ (ofFractionRing (Localization.mk n d)) = φ n / φ d :=
   liftMonoidWithZeroHom_apply_ofFractionRing_mk _ hφ _ _
 
+@[simp]
+lemma liftRingHom_ofFractionRing_algebraMap
+    (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) (x : R[X]) :
+    RatFunc.liftRingHom φ hφ (ofFractionRing <| algebraMap R[X] _ x) = φ x := by
+  rw [← Localization.mk_one_eq_algebraMap, liftRingHom_apply_ofFractionRing_mk]
+  simp
+
 theorem liftRingHom_injective [Nontrivial R] (φ : R[X] →+* L) (hφ : Function.Injective φ)
     (hφ' : R[X]⁰ ≤ L⁰.comap φ := nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ hφ) :
     Function.Injective (liftRingHom φ hφ') :=
@@ -583,11 +590,20 @@ theorem liftRingHom_apply_div {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p / algebraMap _ _ q) = φ p / φ q :=
   liftMonoidWithZeroHom_apply_div _ hφ _ _
 
-@[simp]
 theorem liftRingHom_apply_div' {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
     (p q : K[X]) : liftRingHom φ hφ (algebraMap _ _ p) / liftRingHom φ hφ (algebraMap _ _ q) =
       φ p / φ q :=
   liftMonoidWithZeroHom_apply_div' _ hφ _ _
+
+@[simp]
+lemma liftRingHom_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ)
+    (x : K[X]) : liftRingHom φ hφ (algebraMap K[X] _ x) = φ x := by
+  simpa using liftRingHom_apply_div' φ hφ x 1
+
+@[simp]
+lemma liftRingHom_comp_algebraMap {L : Type*} [Field L] (φ : K[X] →+* L) (hφ : K[X]⁰ ≤ L⁰.comap φ) :
+    (liftRingHom φ hφ).comp (algebraMap K[X] _) = φ :=
+  RingHom.ext fun _ ↦ liftRingHom_algebraMap _ hφ _
 
 variable (K)
 
@@ -1049,6 +1065,28 @@ theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y :=
   rw [map_mul, map_add, map_mul, map_mul, ← div_add_div, num_div_denom, num_div_denom]
   · exact algebraMap_ne_zero (denom_ne_zero x)
   · exact algebraMap_ne_zero (denom_ne_zero y)
+
+theorem num_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : num x⁻¹ ∣ denom x := by
+  rw [num_dvd x.denom_ne_zero]
+  refine ⟨x.num, num_ne_zero hx, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem denom_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := by
+  rw [denom_dvd (num_ne_zero hx)]
+  refine ⟨x.denom, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem associated_num_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
+  apply associated_of_dvd_dvd (num_inv_dvd hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
+  rw [inv_inv]
+
+theorem associated_denom_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
+  apply Associated.symm
+  convert associated_num_inv (inv_ne_zero hx)
+  rw [inv_inv]
 
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]
     (φ : F) (hφ : Function.Injective φ) (f : RatFunc K) : φ f.denom ≠ 0 := fun H =>

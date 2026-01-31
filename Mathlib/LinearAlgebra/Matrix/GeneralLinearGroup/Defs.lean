@@ -7,7 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
@@ -257,9 +257,7 @@ def mapGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n S :=
 @[simp]
 lemma mapGL_inj [FaithfulSMul R S] (g g' : SpecialLinearGroup n R) :
     mapGL S g = mapGL S g' ↔ g = g' := by
-  refine ⟨fun h ↦ ?_, by tauto⟩
-  apply SpecialLinearGroup.ext
-  simpa [mapGL, toGL_inj, ext_iff, (FaithfulSMul.algebraMap_injective R S).eq_iff] using h
+  simp [mapGL, ext_iff]
 
 lemma mapGL_injective [FaithfulSMul R S] :
     Function.Injective (mapGL (R := R) (n := n) S) :=

@@ -108,14 +108,14 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
       nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) (hf.eventually (by simp)))
     filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
       with y hy h'y h''y
-    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt two_ne_zero)
   have : fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) s x := by
     apply Filter.EventuallyEq.fderivWithin_eq A
-    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt one_le_two)
+    exact fderivWithin_of_mem_nhdsWithin h (hs x hx) (hf.differentiableWithinAt two_ne_zero)
   rw [this]
   apply fderivWithin_of_mem_nhdsWithin h (hs x hx)
   exact (hf.fderivWithin_right (m := 1) ht le_rfl
-    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt le_rfl
+    (mem_of_mem_nhdsWithin hx h)).differentiableWithinAt one_ne_zero
 
 lemma fderivWithin_fderivWithin_eq_of_eventuallyEq (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := calc
@@ -553,10 +553,10 @@ theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
       filter_upwards [v_open.mem_nhds xv] with y hy
       have : DifferentiableAt 𝕜 f y := by
         have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
-        exact this.differentiableAt one_le_two
+        exact this.differentiableAt two_ne_zero
       exact DifferentiableAt.hasFDerivAt this
     · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
-        apply ContDiffAt.differentiableAt _ le_rfl
+        apply ContDiffAt.differentiableAt _ one_ne_zero
         exact hf.fderiv_right (le_minSmoothness.trans hn)
       exact DifferentiableAt.hasFDerivAt this
   -- then deal with the case of an arbitrary field, with analytic functions.

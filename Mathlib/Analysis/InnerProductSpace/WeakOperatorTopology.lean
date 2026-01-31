@@ -16,7 +16,7 @@ Hilbert spaces. This mostly involves using the Fréchet-Riesz representation to 
 applications of elements of the dual and inner products with vectors in the space.
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology InnerProductSpace
 

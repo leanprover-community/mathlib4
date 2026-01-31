@@ -439,7 +439,7 @@ instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
   { instSemilatticeInfOpenNormalSubgroup,
     instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+    toPartialOrder := instPartialOrderOpenNormalSubgroup }
 
 end OpenNormalSubgroup
 
@@ -497,10 +497,6 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
     V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
 
-@[deprecated (since := "2025-05-22")] alias exist_mul_closure_nhd := exist_mul_closure_nhds
-@[deprecated (since := "2025-05-22")] alias _root_.IsTopologicalAddGroup.exist_add_closure_nhd :=
-  IsTopologicalAddGroup.exist_add_closure_nhds
-
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
     ∃ T, mulInvClosureNhd T W := by
@@ -554,12 +550,5 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     use 1, einW, x, xin
     rw [one_mul]
   apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
-
-@[deprecated (since := "2025-05-22")]
-alias exist_openSubgroup_sub_clopen_nhd_of_one := exist_openSubgroup_sub_clopen_nhds_of_one
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhd_of_zero :=
-  IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhds_of_zero
 
 end IsTopologicalGroup

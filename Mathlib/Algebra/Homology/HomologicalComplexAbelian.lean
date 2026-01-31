@@ -19,13 +19,13 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)

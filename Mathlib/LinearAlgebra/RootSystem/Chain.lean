@@ -52,7 +52,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+    have : IsAddTorsionFree M := .of_isTorsionFree R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this
@@ -190,7 +190,7 @@ lemma root_sub_zsmul_mem_range_iff {z : ℤ} :
     P.root j - z • P.root i ∈ range P.root ↔
       z ∈ Icc (-P.chainTopCoeff i j : ℤ) (P.chainBotCoeff i j) := by
   rw [sub_eq_add_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc, mem_Icc]
-  omega
+  lia
 
 lemma setOf_root_add_zsmul_mem_eq_Icc :
     {k : ℤ | P.root j + k • P.root i ∈ range P.root} =
@@ -232,13 +232,10 @@ private lemma chainCoeff_reflectionPerm_left_aux :
     ext z
     rw [← P.root_add_zsmul_mem_range_iff h', indexNeg_neg, root_reflectionPerm, mem_Icc,
       reflection_apply_self, smul_neg, ← neg_smul, P.root_add_zsmul_mem_range_iff h, mem_Icc]
-    omega
+    lia
   · have h' : ¬ LinearIndependent R ![P.root (-i), P.root j] := by simpa
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
-
-@[deprecated (since := "2025-05-28")]
-alias chainCoeff_reflection_perm_left_aux := chainCoeff_reflectionPerm_left_aux
 
 private lemma chainCoeff_reflectionPerm_right_aux :
     letI := P.indexNeg
@@ -255,9 +252,6 @@ private lemma chainCoeff_reflectionPerm_right_aux :
     simp only [chainTopCoeff_of_not_linearIndependent h, chainTopCoeff_of_not_linearIndependent h',
       chainBotCoeff_of_not_linearIndependent h, chainBotCoeff_of_not_linearIndependent h']
 
-@[deprecated (since := "2025-05-28")]
-alias chainCoeff_reflection_perm_right_aux := chainCoeff_reflectionPerm_right_aux
-
 @[simp]
 lemma chainTopCoeff_reflectionPerm_left :
     P.chainTopCoeff (P.reflectionPerm i i) j = P.chainBotCoeff i j := by
@@ -268,9 +262,6 @@ lemma chainTopCoeff_reflectionPerm_left :
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff (-i) j)
   · simpa using this (P.chainBotCoeff i j)
-
-@[deprecated (since := "2025-05-28")]
-alias chainTopCoeff_reflection_perm_left := chainTopCoeff_reflectionPerm_left
 
 @[simp]
 lemma chainBotCoeff_reflectionPerm_left :
@@ -283,9 +274,6 @@ lemma chainBotCoeff_reflectionPerm_left :
   · simpa using this (-P.chainBotCoeff (-i) j)
   · simpa using this (-P.chainTopCoeff i j)
 
-@[deprecated (since := "2025-05-28")]
-alias chainBotCoeff_reflection_perm_left := chainBotCoeff_reflectionPerm_left
-
 @[simp]
 lemma chainTopCoeff_reflectionPerm_right :
     P.chainTopCoeff i (P.reflectionPerm j j) = P.chainBotCoeff i j := by
@@ -296,9 +284,6 @@ lemma chainTopCoeff_reflectionPerm_right :
   refine le_antisymm ?_ ?_
   · simpa using this (P.chainTopCoeff i (-j))
   · simpa using this (P.chainBotCoeff i j)
-
-@[deprecated (since := "2025-05-28")]
-alias chainTopCoeff_reflection_perm_right := chainTopCoeff_reflectionPerm_right
 
 @[simp]
 lemma chainBotCoeff_reflectionPerm_right :
@@ -361,9 +346,6 @@ lemma chainTopCoeff_of_add {k : ι} (hk : P.root k = P.root j + P.root i) :
   exact chainTopCoeff_of_sub h hk
 
 omit h
-@[deprecated (since := "2025-05-28")]
-alias chainBotCoeff_reflection_perm_right := chainBotCoeff_reflectionPerm_right
-
 variable (i j)
 
 open scoped Classical in
@@ -428,7 +410,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
     rw [← root_reflectionPerm]
     exact mem_range_self _
   rw [h₁, root_add_zsmul_mem_range_iff h, mem_Icc] at h₂
-  omega
+  lia
 
 lemma chainTopCoeff_sub_chainBotCoeff :
     P.chainTopCoeff i j - P.chainBotCoeff i j = -P.pairingIn ℤ j i := by

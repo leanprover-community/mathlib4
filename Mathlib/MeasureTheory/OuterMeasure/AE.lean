@@ -90,9 +90,6 @@ theorem measure_eq_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ
 
 @[deprecated (since := "2025-08-26")]
 alias measure_zero_iff_ae_notMem := measure_eq_zero_iff_ae_notMem
-@[deprecated (since := "2025-05-24")]
-alias measure_zero_iff_ae_nmem := measure_eq_zero_iff_ae_notMem
-
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall
 

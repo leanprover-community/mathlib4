@@ -258,12 +258,11 @@ variable [Finite G]
 
 instance normal : Normal (FixedPoints.subfield G F) F where
   isAlgebraic x := (isIntegral G F x).isAlgebraic
-  splits' x :=
-    by
-      cases nonempty_fintype G
-      rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
-        Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
-      exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
+  splits' x := by
+    cases nonempty_fintype G
+    rw [← minpoly_eq_minpoly, minpoly, coe_algebraMap, ← Subfield.toSubring_subtype_eq_subtype,
+      Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
+    exact Polynomial.Splits.prod fun _ _ => Polynomial.Splits.X_sub_C _
 
 instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
@@ -277,7 +276,7 @@ instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
 instance : FiniteDimensional (subfield G F) F := by
   cases nonempty_fintype G
   exact IsNoetherian.iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt <| Cardinal.nat_lt_aleph0 _)
+    (IsNoetherian.iff_rank_lt_aleph0.2 <| (rank_le_card G F).trans_lt Cardinal.natCast_lt_aleph0)
 
 end Finite
 

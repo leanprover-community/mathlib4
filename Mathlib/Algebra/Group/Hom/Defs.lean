@@ -197,7 +197,7 @@ instance OneHom.funLike : FunLike (OneHom M N) M N where
 instance OneHom.oneHomClass : OneHomClass (OneHom M N) M N where
   map_one := OneHom.map_one'
 
-library_note2 «hom simp lemma priority»
+library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
@@ -706,6 +706,13 @@ then `f x` has a left inverse too. For elements invertible on both sides see `Is
 theorem map_exists_left_inv (f : F) {x : M} (hx : ∃ y, y * x = 1) : ∃ y, y * f x = 1 :=
   let ⟨y, hy⟩ := hx
   ⟨f y, map_mul_eq_one f hy⟩
+
+@[to_additive] theorem _root_.IsDedekindFiniteMonoid.of_injective (f : F)
+    (hf : Function.Injective f) [IsDedekindFiniteMonoid N] : IsDedekindFiniteMonoid M where
+  mul_eq_one_symm eq := hf <| by simpa [mul_eq_one_comm] using congr_arg f eq
+
+@[deprecated (since := "2025-12-14")]
+alias isDedekindFiniteMonoid_of_injective := IsDedekindFiniteMonoid.of_injective
 
 end MonoidHom
 

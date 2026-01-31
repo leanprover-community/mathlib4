@@ -268,8 +268,6 @@ theorem gramSchmidtNormed_orthonormal {f : ι → E} (h₀ : LinearIndependent �
     repeat' right
     exact gramSchmidt_orthogonal 𝕜 f hij
 
-@[deprecated (since := "2025-07-10")] alias gramSchmidt_orthonormal := gramSchmidtNormed_orthonormal
-
 /-- **Gram-Schmidt Orthonormalization**:
 `gramSchmidtNormed` produces an orthornormal system of vectors after removing the vectors which
 become zero in the process. -/
@@ -279,9 +277,6 @@ theorem gramSchmidtNormed_orthonormal' (f : ι → E) :
   rintro i j (hij : ¬_)
   rw [Subtype.ext_iff] at hij
   simp [gramSchmidtNormed, inner_smul_left, inner_smul_right, gramSchmidt_orthogonal 𝕜 f hij]
-
-@[deprecated (since := "2025-07-10")]
-alias gramSchmidt_orthonormal' := gramSchmidtNormed_orthonormal'
 
 open Submodule Set Order
 
