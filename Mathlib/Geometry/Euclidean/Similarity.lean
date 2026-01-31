@@ -224,16 +224,12 @@ theorem similar_of_side_oangle_neg_side (h_not_col : ¬ Collinear ℝ {a, b, c})
 theorem _root_.Similar.oangle_eq_or_neg (h : ![a, b, c] ∼ ![a', b', c'])
     (h_not_col : ¬ Collinear ℝ {a, b, c}) (h_not_col' : ¬ Collinear ℝ {a', b', c'}) :
     ∡ a b c = ∡ a' b' c' ∨ ∡ a b c = -∡ a' b' c' := by
-  have h1 := h.angle_eq
   have h_1 := EuclideanGeometry.oangle_eq_angle_or_eq_neg_angle (ne₁₂_of_not_collinear h_not_col)
     (ne₂₃_of_not_collinear h_not_col).symm
   have h_2 := EuclideanGeometry.oangle_eq_angle_or_eq_neg_angle (ne₁₂_of_not_collinear h_not_col')
     (ne₂₃_of_not_collinear h_not_col').symm
   rcases h_1 with h₁ | h₁ <;> rcases h_2 with h₂ | h₂
-  · left; rw [h₁, h₂, h1]
-  · right; rw [h₁, h₂, h1, neg_neg]
-  · right; rw [h₁, h₂, h1]
-  · left; rw [h₁, h₂, h1]
+  all_goals simp [h₁, h₂, h.angle_eq]
 
 /-- In two similar triangles, all three corresponding oangles are equal if the signs are equal. -/
 theorem _root_.Similar.oangle_eq_all_if_sign_eq (h : ![a, b, c] ∼ ![a', b', c'])
