@@ -612,8 +612,7 @@ variable [PartialOrder G] [CanonicallyOrderedAdd G]
 lemma addContent_union_le (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
     m (s ∪ t) ≤ m s + m t := by
   rw [← union_diff_self, addContent_union hC hs (hC.diff_mem ht hs)]
-  · exact add_le_add le_rfl
-      (addContent_mono hC.isSetSemiring (hC.diff_mem ht hs) ht diff_subset)
+  · exact add_le_add_right (addContent_mono hC.isSetSemiring (hC.diff_mem ht hs) ht diff_subset) _
   · rw [Set.disjoint_iff_inter_eq_empty, inter_diff_self]
 
 lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
@@ -656,7 +655,7 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
     ⦃f : ℕ → Set α⦄ (hf : ∀ i, f i ∈ C) (hUf : (⋃ i, f i) ∈ C)
     (h_disj : Pairwise (Disjoint on f)) :
     m (⋃ i, f i) = ∑' i, m (f i) := by
-  -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (set.accumulate f n)`
+  -- We use the continuity of `m` at `∅` on the sequence `n ↦ (⋃ i, f i) \ (Set.accumulate f n)`
   let s : ℕ → Set α := fun n ↦ (⋃ i, f i) \ Set.accumulate f n
   have hCs n : s n ∈ C := hC.diff_mem hUf (hC.accumulate_mem hf n)
   have h_tendsto : Tendsto (fun n ↦ m (s n)) atTop (𝓝 0) := by

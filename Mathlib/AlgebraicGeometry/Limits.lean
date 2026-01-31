@@ -276,7 +276,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
-      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
+      (f := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.Hom.comp_apply]
     · simp [← Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
