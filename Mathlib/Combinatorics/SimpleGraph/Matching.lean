@@ -214,7 +214,7 @@ protected lemma IsMatching.map {G' : SimpleGraph W} {M : Subgraph G} (f : G →g
   cases hf hw'.symm
   rw [hv'.2 w' hw]
 
-lemma IsMatching.matching_restricted {G' : Subgraph G} (hM : M.IsMatching) (hle : M ≤ G') :
+lemma IsMatching.restrict {G' : Subgraph G} (hM : M.IsMatching) (hle : M ≤ G') :
     (Subgraph.restrict (G' := G') M).IsMatching := by
   rintro ⟨v, hvG'⟩ hvM
   obtain ⟨w, hadj, hw⟩ := hM hvM
@@ -223,7 +223,7 @@ lemma IsMatching.matching_restricted {G' : Subgraph G} (hM : M.IsMatching) (hle 
   intro u _ _ hvuM
   exact hw u hvuM
 
-lemma isMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, w} ∧ M.Adj v w) :
+lemma IsMatching.of_connected_pair {M : Subgraph G} (h : ∃ v w, M.verts = {v, w} ∧ M.Adj v w) :
     M.IsMatching := by
   obtain ⟨v, ⟨w, ⟨hverts, hadj⟩⟩⟩ := h
   intro a ha
@@ -242,7 +242,7 @@ section card
 
 open Cardinal
 
-lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.verts := by
+lemma IsMatching.card_dart_eq_card_verts (hM : M.IsMatching) : #M.coe.Dart = #M.verts := by
   let f : M.coe.Dart → M.verts := fun d => d.fst
   let g : M.verts → M.coe.Dart := fun v =>
     let w : V := (hM v.prop).choose
@@ -253,10 +253,10 @@ lemma IsMatching.dart_card_eq_vert_card (hM : M.IsMatching) : #M.coe.Dart = #M.v
   rintro ⟨⟨v, w⟩, hadj⟩
   simpa using Subtype.val_inj.mp ((hM v.prop).choose_spec.right w hadj).symm
 
-lemma IsMatching.edge_card_eq_double_vert_card (hM : M.IsMatching) :
+lemma IsMatching.card_verts_eq_two_mul_card_edgeSet (hM : M.IsMatching) :
     #M.verts = 2 * #M.edgeSet := by
-  refine hM.dart_card_eq_vert_card.symm.trans ?_
-  apply M.coe.card_darts.trans
+  refine hM.card_dart_eq_card_verts.symm.trans ?_
+  apply M.coe.card_dart.trans
   suffices h : #M.coe.edgeSet = #M.edgeSet from congr_arg _ h
   simp only [edgeSet_coe]
   refine Cardinal.mk_preimage_of_injective_of_subset_range _ M.edgeSet ?inj ?range
@@ -686,10 +686,11 @@ lemma Subgraph.IsPerfectMatching.isAlternating_symmDiff_right
 
 section maximal_matching
 open scoped Cardinal
+open Subgraph
 
 /-- A subgraph `M` is a *maximum matching* if it is a matching and no other matching
 has strictly more edges. -/
-def Subgraph.IsMaxSizeMatching (M : Subgraph G) : Prop :=
+def Subgraph.IsMaximumMatching (M : Subgraph G) : Prop :=
   MaximalFor IsMatching (#·.edgeSet) M
 
 /-- A subgraph `M` is a *maximal matching* if it is a matching and it is not properly

@@ -135,7 +135,7 @@ private lemma mk_eq_sum_fiber {A B : Type _} (f : A → B) :
     right_inv := by rintro ⟨b, ⟨a, h⟩⟩; cases h; rfl }
   simpa [Cardinal.mk_sigma] using (Cardinal.mk_congr e)
 
-lemma card_darts (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
+lemma card_dart (G : SimpleGraph V) : #G.Dart = 2 * #G.edgeSet := by
   let f : G.Dart → G.edgeSet := fun ⟨⟨v, w⟩, hvw⟩ => ⟨s(v, w), hvw⟩
   suffices fib_size : ∀ e, #{d // f d = e} = 2 from by
     simp[mk_eq_sum_fiber f, fib_size, mul_comm]
