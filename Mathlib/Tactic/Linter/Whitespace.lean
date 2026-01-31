@@ -162,8 +162,8 @@ def parallelScanAux (as : Array FormatError) (L M : String.Slice) : Array Format
   -- doc-strings).  In this case, we drop everything until the following line break in the
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
-  if L.startsWith "/--" && M.startsWith "/--" then
-    parallelScanAux as (L.drop 3) (M.drop 3)
+  if let (some newL, some newM) := (L.dropPrefix? "/--", M.dropPrefix? "/--") then
+    parallelScanAux as newL newM
   else if L.startsWith "--" then
     let mut diff := 0
     let mut pos := L.startPos
