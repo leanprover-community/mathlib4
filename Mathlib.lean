@@ -2731,6 +2731,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
@@ -5730,6 +5731,7 @@ public import Mathlib.Order.Synonym
 public import Mathlib.Order.TeichmullerTukey
 public import Mathlib.Order.TransfiniteIteration
 public import Mathlib.Order.TypeTags
+public import Mathlib.Order.Types.Defs
 public import Mathlib.Order.ULift
 public import Mathlib.Order.UpperLower.Basic
 public import Mathlib.Order.UpperLower.Closure

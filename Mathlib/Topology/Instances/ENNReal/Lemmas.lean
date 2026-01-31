@@ -641,7 +641,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 theorem Metric.isClosed_closedEBall {a : α} {r : ℝ≥0∞} : IsClosed (closedEBall a r) :=
-  isClosed_le (continuous_id.edist continuous_const) continuous_const
+  isClosed_le (by fun_prop) continuous_const
 
 @[deprecated (since := "2026-01-24")]
 alias EMetric.isClosed_closedBall := Metric.isClosed_closedEBall

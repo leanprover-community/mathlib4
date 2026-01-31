@@ -154,8 +154,7 @@ theorem norm_cexp_neg_mul_sq (b : ℂ) (x : ℝ) :
 
 theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => cexp (-b * (x : ℂ) ^ 2) := by
-  refine ⟨(Complex.continuous_exp.comp
-    (continuous_const.mul (continuous_ofReal.pow 2))).aestronglyMeasurable, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   rw [← hasFiniteIntegral_norm_iff]
   simp_rw [norm_cexp_neg_mul_sq]
   exact (integrable_exp_neg_mul_sq hb).2
@@ -163,7 +162,7 @@ theorem integrable_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
 theorem integrable_mul_cexp_neg_mul_sq {b : ℂ} (hb : 0 < b.re) :
     Integrable fun x : ℝ => ↑x * cexp (-b * (x : ℂ) ^ 2) := by
   refine ⟨(continuous_ofReal.mul (Complex.continuous_exp.comp ?_)).aestronglyMeasurable, ?_⟩
-  · exact continuous_const.mul (continuous_ofReal.pow 2)
+  · fun_prop
   have := (integrable_mul_exp_neg_mul_sq hb).hasFiniteIntegral
   rw [← hasFiniteIntegral_norm_iff] at this ⊢
   convert this
@@ -237,20 +236,14 @@ theorem continuousAt_gaussian_integral (b : ℂ) (hb : 0 < re b) :
     ContinuousAt (fun c : ℂ => ∫ x : ℝ, cexp (-c * (x : ℂ) ^ 2)) b := by
   let f : ℂ → ℝ → ℂ := fun (c : ℂ) (x : ℝ) => cexp (-c * (x : ℂ) ^ 2)
   obtain ⟨d, hd, hd'⟩ := exists_between hb
-  have f_meas : ∀ c : ℂ, AEStronglyMeasurable (f c) volume := fun c => by
-    apply Continuous.aestronglyMeasurable
-    exact Complex.continuous_exp.comp (continuous_const.mul (continuous_ofReal.pow 2))
-  have f_cts : ∀ x : ℝ, ContinuousAt (fun c => f c x) b := fun x =>
-    (Complex.continuous_exp.comp (continuous_id'.neg.mul continuous_const)).continuousAt
   have f_le_bd : ∀ᶠ c : ℂ in 𝓝 b, ∀ᵐ x : ℝ, ‖f c x‖ ≤ exp (-d * x ^ 2) := by
     refine eventually_of_mem ((continuous_re.isOpen_preimage _ isOpen_Ioi).mem_nhds hd') ?_
     intro c hc; filter_upwards with x
     rw [norm_cexp_neg_mul_sq]
     gcongr
     exact le_of_lt hc
-  exact
-    continuousAt_of_dominated (Eventually.of_forall f_meas) f_le_bd (integrable_exp_neg_mul_sq hd)
-      (ae_of_all _ f_cts)
+  exact continuousAt_of_dominated (Eventually.of_forall (by fun_prop)) f_le_bd
+    (integrable_exp_neg_mul_sq hd) (ae_of_all _ (by fun_prop))
 
 theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
