@@ -636,32 +636,17 @@ def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E 
 /-- `T` is `C^k` in `p` when the vector field `f` is `C^k`. -/
 lemma contDiffOn_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (k : ℕ∞) (hf : ContDiffOn ℝ k f u) :
-    ContDiffOn ℝ k (T f u t₀) (univ ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) := by
-  unfold T
-  -- `ContinuousMap.const _ p.1` is smooth (linear in p.1)
-  have h1 : ContDiff ℝ k (fun p : E × C(Icc tmin tmax, E) ↦ ContinuousMap.const _ p.1) :=
-    (ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E)).contDiff.comp contDiff_fst
-  -- `p.2` is smooth (projection)
-  have h2 : ContDiff ℝ k (fun p : E × C(Icc tmin tmax, E) ↦ p.2) := contDiff_snd
-  -- The integral term is C^k by contDiffOn_integralCMLM_curry0
-  have h3 : ContDiffOn ℝ k (fun p : E × C(Icc tmin tmax, E) ↦
-      (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ p.2).curry0)
-      (univ ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) :=
-    (contDiffOn_integralCMLM_curry0 hu t₀ k hf).comp contDiff_snd.contDiffOn
-      (fun p hp ↦ hp.2)
-  exact (h1.contDiffOn.sub h2.contDiffOn).add h3
+    ContDiffOn ℝ k (T f u t₀) (univ ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) :=
+  ContinuousLinearMap.const ℝ (Icc tmin tmax) (M := E) |>.contDiff.comp contDiff_fst
+    |>.contDiffOn.sub contDiffOn_snd |>.add
+      <| (contDiffOn_integralCMLM_curry0 hu t₀ k hf).comp contDiff_snd.contDiffOn (fun _ h ↦ h.2)
 
 /-- `T` is `C^k` at the point `(x, α)` when the vector field `f` is `C^k` and `range α ⊆ u`. -/
 lemma contDiffAt_T {f : E → E} {u : Set E} (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
     (k : ℕ∞) (hf : ContDiffOn ℝ k f u) {x : E} {α : C(Icc tmin tmax, E)} (hα : range α ⊆ u) :
-    ContDiffAt ℝ k (T f u t₀) (x, α) := by
-  have hopen : IsOpen ((univ : Set E) ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u}) := by
-    apply isOpen_univ.prod
-    simp_rw [← Set.mapsTo_univ_iff_range_subset]
-    exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
-  have hmem : (x, α) ∈ (univ : Set E) ×ˢ {α : C(Icc tmin tmax, E) | range α ⊆ u} :=
-    ⟨mem_univ x, hα⟩
-  exact (contDiffOn_T hu t₀ k hf).contDiffAt (hopen.mem_nhds hmem)
+    ContDiffAt ℝ k (T f u t₀) (x, α) :=
+  (contDiffOn_T hu t₀ k hf).contDiffAt <| prod_mem_nhds Filter.univ_mem
+    <| (ContinuousMap.isOpen_setOf_range_subset hu).mem_nhds hα
 
 /-- If `α : FunSpace t₀ x₀ 0 L` is a fixed point of `next hPL hx₀`, then
 `T f u t₀ (x₀, α.toContinuousMap) = 0`. This connects the Picard-Lindelöf fixed point to the
