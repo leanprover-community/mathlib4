@@ -386,7 +386,7 @@ theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : Dire
     ZeroMemClass.coe_eq_zero, imp_self]
 
 theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite := by
+    (fun i => (x i : M)).HasFiniteSupport := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
