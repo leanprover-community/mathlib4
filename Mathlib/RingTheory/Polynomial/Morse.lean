@@ -28,7 +28,7 @@ Such polynomials are called *Morse functions* in section 4.4 of [serre-galois].
 ## TODO
 
 - Specialize to the case of number fields where generation by inertia subgroups is a consequence
-of Minkowski's theorem.
+  of Minkowski's theorem.
 - Show that the Selmer polynomials `X ^ n - X - 1` have Galois group `S_n`.
 
 ## References
