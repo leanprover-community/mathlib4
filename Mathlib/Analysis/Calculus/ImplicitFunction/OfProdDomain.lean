@@ -71,6 +71,11 @@ noncomputable def implicitFunctionOfProdDomain
     E₁ → E₂ :=
   fun x => ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2
 
+theorem implicitFunctionOfProdDomain_def
+    {dfu : HasStrictFDerivAt f f' u} {if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible} :
+    dfu.implicitFunctionOfProdDomain if₂ =
+      fun x ↦ ((dfu.implicitFunctionDataOfProdDomain if₂).implicitFunction (f u) x).2 := rfl
+
 theorem hasStrictFDerivAt_implicitFunctionOfProdDomain
     (dfu : HasStrictFDerivAt f f' u) (if₂ : (f' ∘L .inr 𝕜 E₁ E₂).IsInvertible) :
     HasStrictFDerivAt (dfu.implicitFunctionOfProdDomain if₂)
@@ -101,7 +106,7 @@ theorem image_implicitFunctionOfProdDomain
   have hψ := dfu.tendsto_implicitFunctionOfProdDomain if₂
   set ψ := dfu.implicitFunctionOfProdDomain if₂
   suffices ∀ᶠ x in 𝓝 u.1, f (x, ψ x) = f u ↔ ψ x = ψ x by simpa
-  apply Eventually.image_of_prod (r := fun x y => f (x, y) = f u ↔ ψ x = y) hψ
+  apply Eventually.image_of_prod (r := fun x y ↦ f (x, y) = f u ↔ ψ x = y) hψ
   rw [← nhds_prod_eq]
   exact dfu.image_eq_iff_implicitFunctionOfProdDomain if₂
 

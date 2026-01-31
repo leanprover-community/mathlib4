@@ -78,7 +78,7 @@ theorem contDiffAt_implicitFunction
     ContDiffAt 𝕜 n (cdf.implicitFunction pn if₂) u.1 := by
   have := (cdf.hasStrictFDerivAt pn).implicitFunctionDataOfProdDomain if₂
     |>.contDiff_implicitFunction cdf contDiffAt_fst pn
-  unfold implicitFunction HasStrictFDerivAt.implicitFunctionOfProdDomain
+  rw [implicitFunction, HasStrictFDerivAt.implicitFunctionOfProdDomain_def]
   fun_prop
 
 theorem hasStrictFDerivAt_implicitFunction
@@ -103,7 +103,10 @@ namespace IsContDiffImplicitAt
 
 @[deprecated (since := "2026-01-27")]
 alias implicitFunction := ContDiffAt.implicitFunction
-
+/-- At the base point `a.1`, the implicit function evaluates to `a.2`. -/
+theorem implicitFunction_apply_self (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunction a.1 = a.2 :=
+  congr_arg Prod.snd <| h.implicitFunctionData.implicitFunction_apply_image.self_of_nhds
 @[deprecated (since := "2026-01-27")]
 alias apply_implicitFunction := ContDiffAt.image_implicitFunction
 
