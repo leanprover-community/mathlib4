@@ -252,6 +252,14 @@ theorem MaximalFor.of_strictMonoOn_comp (hg : StrictMonoOn g (f '' setOf Q))
   by_contra
   exact h.not_gt hj <| hg ⟨i, h.prop, rfl⟩ ⟨j, hj, rfl⟩ <| lt_of_le_not_ge hle this
 
+theorem MinimalFor.minimal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MinimalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.maximal_of_strictMonoOn (hg : StrictMonoOn g (setOf P)) (h : MaximalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| .of_strictMonoOn_comp (Set.image_id _ ▸ hg) h
+
 theorem MinimalFor.maximalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' setOf Q))
     (h : MinimalFor Q (g ∘ f) i) : MaximalFor Q f i := by
   refine ⟨h.prop, fun j hj hle ↦ ?_⟩
@@ -263,6 +271,14 @@ theorem MaximalFor.minimalFor_of_strictAntiOn_comp (hg : StrictAntiOn g (f '' se
   refine ⟨h.prop, fun j hj hle ↦ ?_⟩
   by_contra
   exact h.not_gt hj <| hg ⟨j, hj, rfl⟩ ⟨i, h.prop, rfl⟩ <| lt_of_le_not_ge hle this
+
+theorem MinimalFor.maximal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MinimalFor P g x) :
+    Maximal P x :=
+  maximalFor_id.mp <| MinimalFor.maximalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
+
+theorem MaximalFor.minimal_of_strictAntiOn (hg : StrictAntiOn g (setOf P)) (h : MaximalFor P g x) :
+    Minimal P x :=
+  minimalFor_id.mp <| MaximalFor.minimalFor_of_strictAntiOn_comp (Set.image_id _ ▸ hg) h
 
 section WellFoundedLT
 variable [WellFoundedLT α]
