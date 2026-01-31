@@ -6,6 +6,8 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
+public meta import Std.Data.Iterators.Combinators.Zip
+public meta import Std.Data.Iterators.Producers.Range
 
 /-!
 # The `whitespace` linter
@@ -148,7 +150,7 @@ flagging some line-breaking changes.
 (The pretty-printer does not always produce desirably formatted code.)
 -/
 partial
-def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError :=
+def parallelScanAux (as : Array FormatError) (L M : String.Slice) : Array FormatError := Id.run do
   if M.trimAscii.isEmpty then as else
   -- We try as hard as possible to scan the strings one character at a time.
   -- However, single line comments introduced with `--` pretty-print differently than `/--`.
@@ -160,46 +162,54 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
   -- doc-strings).  In this case, we drop everything until the following line break in the
   -- original syntax, and for the same amount of characters in the pretty-printed one, since the
   -- pretty-printer *erases* the line break at the end of a single line comment.
-  if L.take 3 == "/--".toSlice && M.take 3 == "/--".toSlice then
-    parallelScanAux as (L.drop 3).copy (M.drop 3).copy else
-  if L.take 2 == "--".toSlice then
-    let newL := L.dropWhile (· != '\n')
-    let diff := L.length - newL.copy.length
+  if L.startsWith "/--" && M.startsWith "/--" then
+    parallelScanAux as (L.drop 3) (M.drop 3)
+  else if L.startsWith "--" then
+    let mut diff := 0
+    let mut pos := L.startPos
+    for (⟨currPos, h⟩, currDiff) in L.positions.zip ((0 : Nat)...*).iter do
+      diff := currDiff
+      pos := currPos
+      if currPos.get h == ' ' then
+        break
+
+    let newL := L.sliceFrom pos
     -- Assumption: if `L` contains an embedded inline comment, so does `M`
     -- (modulo additional whitespace).
     -- This holds because we call this function with `M` being a pretty-printed version of `L`.
     -- If the pretty-printer changes in the future, this code may need to be adjusted.
     let newM := M.dropWhile (· != '-') |>.drop diff
-    parallelScanAux as newL.trimAsciiStart.copy newM.trimAsciiStart.copy else
-  if L.take 2 == "-/".toSlice then
-    let newL := L.drop 2 |>.trimAsciiStart
+    parallelScanAux as newL.trimAsciiStart newM.trimAsciiStart
+  else if let some newL := L.dropPrefix? "-/" then
+    let newL := newL.trimAsciiStart
     let newM := M.drop 2 |>.trimAsciiStart
-    parallelScanAux as newL.copy newM.copy else
-  let ls := L.drop 1
-  let ms := M.drop 1
-  match L.front, M.front with
-  | ' ', m =>
-    if m.isWhitespace then
-      parallelScanAux as ls.copy ms.trimAsciiStart.copy
-    else
-      parallelScanAux (pushFormatError as (mkFormatError L M "extra space")) ls.copy M
-  | '\n', m =>
-    if m.isWhitespace then
-      parallelScanAux as ls.trimAsciiStart.copy ms.trimAsciiStart.copy
-    else
-      parallelScanAux
-        (pushFormatError as (mkFormatError L M "remove line break")) ls.trimAsciiStart.copy M
-  | l, m => -- `l` is not whitespace
-    if l == m then
-      parallelScanAux as ls.copy ms.copy
-    else
+    parallelScanAux as newL newM
+  else
+    let ls := L.drop 1
+    let ms := M.drop 1
+    let m := M.front
+    match L.front with
+    | ' ' =>
       if m.isWhitespace then
+        parallelScanAux as ls ms.trimAsciiStart
+      else
+        parallelScanAux (pushFormatError as (mkFormatError L.copy M.copy "extra space")) ls M
+    | '\n' =>
+      if m.isWhitespace then
+        parallelScanAux as ls.trimAsciiStart ms.trimAsciiStart
+      else
         parallelScanAux
-          (pushFormatError as (mkFormatError L M "missing space")) L ms.trimAsciiStart.copy
-    else
-      -- If this code is reached, then `L` and `M` differ by something other than whitespace.
-      -- This should not happen in practice.
-      pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)")
+          (pushFormatError as (mkFormatError L.copy M.copy "remove line break")) ls.trimAsciiStart M
+    | l => -- `l` is not whitespace
+      if l == m then
+        parallelScanAux as ls.copy ms.copy
+      else if m.isWhitespace then
+        parallelScanAux
+          (pushFormatError as (mkFormatError L.copy M.copy "missing space")) L ms.trimAsciiStart
+      else
+        -- If this code is reached, then `L` and `M` differ by something other than whitespace.
+        -- This should not happen in practice.
+        pushFormatError as (mkFormatError ls.copy ms.copy "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
 def parallelScan (src fmt : String) : Array FormatError :=
