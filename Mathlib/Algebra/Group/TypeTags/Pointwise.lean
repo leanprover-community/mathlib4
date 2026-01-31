@@ -24,7 +24,7 @@ variable [AddMonoid M]
 
 @[simp]
 lemma ofAdd_image_setAdd (s t : Set M) :
-    Multiplicative.ofAdd '' (s + t) = Multiplicative.ofAdd '' s * Multiplicative.ofAdd '' t := by
+    ofAdd '' (s + t) = ofAdd '' s * ofAdd '' t := by
   rw [← Set.image2_add, Set.image_image2_distrib ofAdd_add, Set.image2_mul]
 
 @[simp]
