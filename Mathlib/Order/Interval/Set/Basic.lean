@@ -181,25 +181,17 @@ theorem nonempty_Ico : (Ico a b).Nonempty ↔ a < b :=
 theorem nonempty_Ioc : (Ioc a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, hx⟩ => hx.1.trans_le hx.2, fun h => ⟨b, right_mem_Ioc.2 h⟩⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem nonempty_Ici : (Ici a).Nonempty :=
   ⟨a, self_mem_Ici⟩
-
-@[simp]
-theorem nonempty_Iic : (Iic a).Nonempty :=
-  ⟨a, self_mem_Iic⟩
 
 @[simp]
 theorem nonempty_Ioo [DenselyOrdered α] : (Ioo a b).Nonempty ↔ a < b :=
   ⟨fun ⟨_, ha, hb⟩ => ha.trans hb, exists_between⟩
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem nonempty_Ioi [NoMaxOrder α] : (Ioi a).Nonempty :=
   exists_gt a
-
-@[simp]
-theorem nonempty_Iio [NoMinOrder α] : (Iio a).Nonempty :=
-  exists_lt a
 
 theorem nonempty_Icc_subtype (h : a ≤ b) : Nonempty (Icc a b) :=
   Nonempty.to_subtype (nonempty_Icc.mpr h)
@@ -399,17 +391,13 @@ theorem Ioc_subset_Ioi_self : Ioc a b ⊆ Ioi a := fun _ => And.left
 
 theorem Ioo_subset_Ioi_self : Ioo a b ⊆ Ioi a := fun _ => And.left
 
-theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := fun _ hx => le_of_lt hx
-
-theorem Iio_subset_Iic_self : Iio a ⊆ Iic a := fun _ hx => le_of_lt hx
+@[to_dual] theorem Ioi_subset_Ici_self : Ioi a ⊆ Ici a := fun _ hx => le_of_lt hx
 
 theorem Ico_subset_Ici_self : Ico a b ⊆ Ici a := fun _ => And.left
 
+@[to_dual]
 theorem Ioi_ssubset_Ici_self : Ioi a ⊂ Ici a :=
   ⟨Ioi_subset_Ici_self, fun h => lt_irrefl a (h le_rfl)⟩
-
-theorem Iio_ssubset_Iic_self : Iio a ⊂ Iic a :=
-  @Ioi_ssubset_Ici_self αᵒᵈ _ _
 
 theorem Icc_subset_Icc_iff (h₁ : a₁ ≤ b₁) : Icc a₁ b₁ ⊆ Icc a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
   ⟨fun h => ⟨(h ⟨le_rfl, h₁⟩).1, (h ⟨h₁, le_rfl⟩).2⟩, fun ⟨h, h'⟩ _ ⟨hx, hx'⟩ =>
