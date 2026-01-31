@@ -168,13 +168,13 @@ lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :
     B m₀ m₁ = 0 := by
-  replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (- 1 : R) ^ k • B ((φ x ^ k) m) n := by
+  replace hB : ∀ x (k : ℕ) m n, B m ((φ x ^ k) n) = (-1 : R) ^ k • B ((φ x ^ k) m) n := by
     intro x k
     induction k with
     | zero => simp
     | succ k ih =>
     intro m n
-    replace hB : ∀ m, B m (φ x n) = (- 1 : R) • B (φ x m) n := by simp [hB]
+    replace hB : ∀ m, B m (φ x n) = (-1 : R) • B (φ x m) n := by simp [hB]
     have : (-1 : R) ^ k • (-1 : R) = (-1 : R) ^ (k + 1) := by rw [pow_succ (-1 : R), smul_eq_mul]
     conv_lhs => rw [pow_succ, Module.End.mul_eq_comp, LinearMap.comp_apply, ih, hB,
       ← (φ x).comp_apply, ← Module.End.mul_eq_comp, ← pow_succ', ← smul_assoc, this]
@@ -215,10 +215,10 @@ lemma traceForm_lieSubalgebra_mk_right (L' : LieSubalgebra R L) {x : L'} {y : L}
 
 open TensorProduct
 
-variable [LieRing.IsNilpotent L] [IsDomain R] [IsPrincipalIdealRing R]
+variable [LieRing.IsNilpotent L] [IsDomain R]
 
-lemma traceForm_eq_sum_genWeightSpaceOf
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
+lemma traceForm_eq_sum_genWeightSpaceOf [IsPrincipalIdealRing R]
+    [Module.IsTorsionFree R M] [IsNoetherian R M] [IsTriangularizable R L M] (z : L) :
     traceForm R L M =
     ∑ χ ∈ (finite_genWeightSpaceOf_ne_bot R L M z).toFinset,
       traceForm R L (genWeightSpaceOf M χ z) := by
@@ -227,8 +227,8 @@ lemma traceForm_eq_sum_genWeightSpaceOf
       (genWeightSpaceOf M χ z) (genWeightSpaceOf M χ z) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (genWeightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
-    convert finite_genWeightSpaceOf_ne_bot R L M z
-    exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
+    simp_rw [ne_eq, LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)]
+    exact finite_genWeightSpaceOf_ne_bot R L M z
   classical
   have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
@@ -266,7 +266,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   rw [traceForm_apply_apply, LinearMap.zero_apply]
   let A := AlgebraicClosure (FractionRing R)
   suffices algebraMap R A (trace R _ ((φ z).comp (φ x))) = 0 by
-    have _i : NoZeroSMulDivisors R A := NoZeroSMulDivisors.trans_faithfulSMul R (FractionRing R) A
+    have that : Module.IsTorsionFree R A := .trans_faithfulSMul R (FractionRing R) A
     rw [← map_zero (algebraMap R A)] at this
     exact FaithfulSMul.algebraMap_injective R A this
   rw [← LinearMap.trace_baseChange, LinearMap.baseChange_comp, ← toEnd_baseChange,
@@ -283,7 +283,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.maxGenEigenspace_eq_top (1 ⊗ₜ[R] x)
   · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
-      (genWeightSpaceOf (A ⊗[R] M) μ ((1:A) ⊗ₜ[R] x)) (le_refl 1) hz
+      (genWeightSpaceOf (A ⊗[R] M) μ ((1 : A) ⊗ₜ[R] x)) (le_refl 1) hz
   · exact commute_toEnd_of_mem_center_right (A ⊗[R] M) hzc (1 ⊗ₜ x)
 
 /-- A nilpotent Lie algebra with a representation whose trace form is non-singular is Abelian. -/

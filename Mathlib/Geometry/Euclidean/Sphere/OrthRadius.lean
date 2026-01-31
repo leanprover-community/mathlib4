@@ -106,7 +106,7 @@ lemma orthRadius_map {s : Sphere P} (p : P) {f : P ≃ᵃⁱ[ℝ] P} (h : f s.ce
     (s.orthRadius p).map f.toAffineMap = s.orthRadius (f p) := by
   rw [orthRadius, map_mk', orthRadius]
   convert rfl using 2
-  convert (Submodule.map_orthogonal (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
+  convert (Submodule.map_orthogonal_equiv (ℝ ∙ (p -ᵥ s.center)) f.linearIsometryEquiv).symm
   simp [Submodule.map_span, Set.image_singleton, h]
 
 lemma direction_orthRadius_le_iff {s : Sphere P} {p q : P} :
@@ -116,11 +116,11 @@ lemma direction_orthRadius_le_iff {s : Sphere P} {p q : P} :
 
 lemma orthRadius_parallel_orthRadius_iff {s : Sphere P} {p q : P} :
     s.orthRadius p ∥ s.orthRadius q ↔ ∃ r : ℝ, r ≠ 0 ∧ q -ᵥ s.center = r • (p -ᵥ s.center) := by
-  simp only [orthRadius, parallel_iff_direction_eq_and_eq_bot_iff_eq_bot, direction_mk',
+  simp_rw [orthRadius, parallel_iff_direction_eq_and_eq_bot_iff_eq_bot, direction_mk',
     Submodule.orthogonalComplement_eq_orthogonalComplement,
     Submodule.span_singleton_eq_span_singleton, ← coe_eq_bot_iff,
-    ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, not_true_eq_false, and_true]
-  exact ⟨fun ⟨r, h⟩ ↦ ⟨r, r.ne_zero, h.symm⟩, fun ⟨r, hr, h⟩ ↦ ⟨.mk0 r hr, h.symm⟩⟩
+    ← Set.not_nonempty_iff_eq_empty, mk'_nonempty, and_true, ← Units.exists_iff_ne_zero, eq_comm,
+    Units.smul_def]
 
 end Sphere
 

@@ -9,6 +9,7 @@ public import Mathlib.Topology.Coherent
 public import Mathlib.Topology.UniformSpace.Equiv
 public import Mathlib.Topology.UniformSpace.Pi
 public import Mathlib.Topology.UniformSpace.UniformApproximation
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -527,7 +528,7 @@ theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ�
       (UniformFun.hasBasis_uniformity δ₂ β |>.comap _)
         |>.le_basis_iff (UniformFun.hasBasis_uniformity α β) |>.mpr fun U hU ↦
         ⟨⟨U, U⟩, ⟨hU, hU⟩, fun ⟨f, g⟩ hfg x ↦ ?_⟩
-    rcases h_cover.ge <| mem_univ x with (⟨y, rfl⟩|⟨y, rfl⟩)
+    rcases h_cover.ge <| mem_univ x with (⟨y, rfl⟩ | ⟨y, rfl⟩)
     · exact hfg.1 y
     · exact hfg.2 y
 
@@ -1178,7 +1179,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually
   classical
   obtain ⟨s', hs', hs⟩ := eventually_iff_exists_mem.mp hF
   let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
-  have hF : F =ᶠ[p] F' :=  by
+  have hF : F =ᶠ[p] F' := by
     rw [eventuallyEq_iff_exists_mem]
     refine ⟨s', hs', fun y hy => by aesop⟩
   have h' : TendstoUniformly F' f p := by

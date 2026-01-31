@@ -18,7 +18,7 @@ namespace CategoryTheory
 
 open MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
-variable {C D : Type*} [Category C] [Category D] [MonoidalCategory C] [MonoidalCategory D]
+variable {C D : Type*} [Category* C] [Category* D] [MonoidalCategory C] [MonoidalCategory D]
   (F : C ⥤ D) [F.Monoidal]
 
 /-- Given candidate data for an exact pairing,

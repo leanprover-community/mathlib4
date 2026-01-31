@@ -11,7 +11,7 @@ public import Mathlib.Analysis.MellinTransform
 # Abstract functional equations for Mellin transforms
 
 This file formalises a general version of an argument used to prove functional equations for
-zeta and L functions.
+zeta and L-functions.
 
 ### FE-pairs
 
@@ -60,7 +60,7 @@ See the sections *Main theorems on weak FE-pairs* and
 @[expose] public section
 
 
-/- TODO : Consider extending the results to allow functional equations of the form
+/- TODO: Consider extending the results to allow functional equations of the form
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
@@ -111,6 +111,7 @@ lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field [P.hε, (rpow_pos_of_pos hx _).ne']
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The hypotheses are symmetric in `f` and `g`, with the constant `ε` replaced by `ε⁻¹`. -/
 def WeakFEPair.symm (P : WeakFEPair E) : WeakFEPair E where
   f := P.g
@@ -268,8 +269,8 @@ lemma hf_modif_int :
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
     refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
-    refine (continuousAt_const.mul ?_).smul continuousAt_const
-    exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
+    have : x ≠ 0 ∨ 0 ≤ -P.k := Or.inl hx.ne'
+    fun_prop (discharger := assumption)
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · obtain ⟨s, hs, hs'⟩ := P.hf_int.sub (locallyIntegrableOn_const _) x hx
     refine ⟨s, hs, ?_⟩
@@ -300,6 +301,7 @@ lemma hf_modif_FE (x : ℝ) (hx : 0 < x) :
     simp_rw [rpow_neg hx.le]
     match_scalars <;> field [(rpow_pos_of_pos hx P.k).ne', P.hε]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weak FE-pair `(f, g)`, modify it into a strong FE-pair by subtracting suitable
 correction terms from `f` and `g`. -/
 def toStrongFEPair : StrongFEPair E where
@@ -451,7 +453,8 @@ theorem Λ_residue_k :
     apply ((continuous_sub_right _).smul P.differentiable_Λ₀.continuous).tendsto
   · rw [(by rw [sub_self, zero_smul] : 𝓝 0 = 𝓝 ((P.k - P.k : ℂ) • (1 / P.k : ℂ) • P.f₀))]
     refine (continuous_sub_right _).continuousAt.smul (ContinuousAt.smul ?_ continuousAt_const)
-    exact continuousAt_const.div continuousAt_id (ofReal_ne_zero.mpr P.hk.ne')
+    have := ofReal_ne_zero.mpr P.hk.ne'
+    fun_prop (discharger := assumption)
   · refine (tendsto_const_nhds.mono_left nhdsWithin_le_nhds).congr' ?_
     refine eventually_nhdsWithin_of_forall (fun s (hs : s ≠ P.k) ↦ ?_)
     match_scalars

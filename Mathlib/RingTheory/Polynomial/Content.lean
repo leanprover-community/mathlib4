@@ -73,9 +73,14 @@ theorem _root_.Irreducible.isPrimitive [NoZeroDivisors R]
   obtain ⟨s, hs, rfl⟩ := Polynomial.isUnit_iff.mp H
   simp [hq, Polynomial.natDegree_C_mul hr] at hp'
 
+/-- In a field, the notion of primitive polynomials is degenerate. -/
+@[simp]
+theorem isPrimitive_iff_ne_zero {F : Type*} [Field F] (p : F[X]) : p.IsPrimitive ↔ p ≠ 0 :=
+  ⟨IsPrimitive.ne_zero, fun h _ hrp ↦ .mk0 _ fun hr ↦ ne_zero_of_dvd_ne_zero h hrp <| hr ▸ C_0⟩
+
 end Primitive
 
-variable {R : Type*} [CommRing R] [IsDomain R]
+variable {R : Type*} [CommRing R]
 
 section NormalizedGCDMonoid
 
@@ -245,10 +250,11 @@ theorem isPrimitive_primPart (p : R[X]) : p.primPart.IsPrimitive := by
 theorem content_primPart (p : R[X]) : p.primPart.content = 1 :=
   p.isPrimitive_primPart.content_eq_one
 
-theorem primPart_ne_zero (p : R[X]) : p.primPart ≠ 0 :=
+theorem primPart_ne_zero [Nontrivial R] (p : R[X]) : p.primPart ≠ 0 :=
   p.isPrimitive_primPart.ne_zero
 
 theorem natDegree_primPart (p : R[X]) : p.primPart.natDegree = p.natDegree := by
+  nontriviality R
   by_cases h : C p.content = 0
   · rw [C_eq_zero, content_eq_zero_iff] at h
     simp [h]
@@ -277,10 +283,12 @@ theorem primPart_dvd (p : R[X]) : p.primPart ∣ p :=
   Dvd.intro_left (C p.content) p.eq_C_content_mul_primPart.symm
 
 theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
+    [Module.IsTorsionFree R S] {p : R[X]} {s : S} (hpzero : p ≠ 0) (hp : aeval s p = 0) :
     aeval s p.primPart = 0 := by
+  nontriviality S
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   refine eq_zero_of_ne_zero_of_mul_left_eq_zero ?_ hp
+  have : IsDomain R := { Module.nontrivial R S with }
   rwa [(FaithfulSMul.algebraMap_injective R S).ne_iff' (map_zero _), Ne, content_eq_zero_iff]
 
 theorem eval₂_primPart_eq_zero {S : Type*} [CommSemiring S] [IsDomain S] {f : R →+* S}
@@ -315,6 +323,7 @@ theorem content_mul_aux {p q : R[X]} :
 
 @[simp]
 theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
+  nontriviality R
   classical
     suffices h :
         ∀ (n : ℕ) (p q : R[X]), (p * q).degree < n → (p * q).content = p.content * q.content by
@@ -415,6 +424,7 @@ theorem exists_primitive_lcm_of_isPrimitive {p q : R[X]} (hp : p.IsPrimitive) (h
     rw [cancelLeads, tsub_eq_zero_iff_le.mpr hs, pow_zero, mul_one] at rcs
     have h :=
       dvd_add rcs (Dvd.intro_left (C (leadingCoeff s) * X ^ (natDegree s - natDegree r)) rfl)
+    nontriviality R
     have hC0 := rprim.ne_zero
     rw [Ne, ← leadingCoeff_eq_zero, ← C_eq_zero] at hC0
     rw [sub_add_cancel, ← rprim.dvd_primPart_iff_dvd (mul_ne_zero hC0 s0)] at h
@@ -445,6 +455,7 @@ noncomputable instance (priority := 100) normalizedGcdMonoid : NormalizedGCDMono
     · rw [C_eq_zero, lcm_eq_zero_iff, content_eq_zero_iff, content_eq_zero_iff] at hpq
       rcases hpq with (hpq | hpq) <;> simp [hpq, hs]
     iterate 3 rw [dvd_iff_content_dvd_content_and_primPart_dvd_primPart hs]
+    nontriviality R
     rw [content_mul, rprim.content_eq_one, mul_one, content_C, normalize_lcm, lcm_dvd_iff,
       primPart_mul (mul_ne_zero hpq rprim.ne_zero), rprim.primPart_eq,
       (isUnit_primPart_C (lcm p.content q.content)).mul_left_dvd, ← hr s.primPart]

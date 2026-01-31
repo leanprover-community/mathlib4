@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # The factorization lemma by K. S. Brown
@@ -35,7 +36,7 @@ open CategoryTheory Limits MorphismProperty
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category C] [ModelCategory C]
+variable {C : Type*} [Category* C] [ModelCategory C]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a morphism `f : X ⟶ Y` in a model category,

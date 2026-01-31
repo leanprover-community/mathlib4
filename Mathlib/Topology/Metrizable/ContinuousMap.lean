@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metrizability of `C(X, Y)`
@@ -26,11 +29,10 @@ variable {X Y : Type*}
   [TopologicalSpace Y]
 
 instance [PseudoMetrizableSpace Y] : PseudoMetrizableSpace C(X, Y) :=
-  let _ := pseudoMetrizableSpacePseudoMetric Y
+  let := pseudoMetrizableSpaceUniformity Y
+  have := pseudoMetrizableSpaceUniformity_countably_generated Y
   inferInstance
 
-instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) :=
-  let _ := metrizableSpaceMetric Y
-  UniformSpace.metrizableSpace
+instance [MetrizableSpace Y] : MetrizableSpace C(X, Y) where
 
 end ContinuousMap

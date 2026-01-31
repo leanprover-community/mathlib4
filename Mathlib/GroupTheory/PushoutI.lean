@@ -98,7 +98,7 @@ variable (φ) in
 theorem of_apply_eq_base (i : ι) (x : H) : of i (φ i x) = base φ x := by
   rw [← MonoidHom.comp_apply, of_comp_eq_base]
 
-/-- Define a homomorphism out of the pushout of monoids be defining it on each object in the
+/-- Define a homomorphism out of the pushout of monoids by defining it on each object in the
 diagram -/
 def lift (f : ∀ i, G i →* K) (k : H →* K)
     (hf : ∀ i, (f i).comp (φ i) = k) :
@@ -124,7 +124,7 @@ theorem lift_base (f : ∀ i, G i →* K) (k : H →* K)
   delta PushoutI lift base
   simp only [MonoidHom.coe_comp, Con.coe_mk', comp_apply, Con.lift_coe, lift_apply_inr]
 
--- `ext` attribute should be lower priority then `hom_ext_nonempty`
+-- `ext` attribute should be lower priority than `hom_ext_nonempty`
 @[ext 1199]
 theorem hom_ext {f g : PushoutI φ →* K}
     (h : ∀ i, f.comp (of i : G i →* _) = g.comp (of i : G i →* _))
@@ -247,13 +247,13 @@ structure _root_.Monoid.PushoutI.NormalWord (d : Transversal φ) extends CoprodI
   /-- Every `NormalWord` is the product of an element of the base group and a word made up
   of letters each of which is in the transversal. `head` is that element of the base group. -/
   head : H
-  /-- All letter in the word are in the transversal. -/
+  /-- All letters in the word are in the transversal. -/
   normalized : ∀ i g, ⟨i, g⟩ ∈ toList → g ∈ d.set i
 
 /--
 A `Pair d i` is a word in the coproduct, `Coprod G`, the `tail`, and an element of the group `G i`,
 the `head`. The first letter of the `tail` must not be an element of `G i`.
-Note that the `head` may be `1` Every letter in the `tail` must be in the transversal given by `d`.
+Note that the `head` may be `1`. Every letter in the `tail` must be in the transversal given by `d`.
 Similar to `Monoid.CoprodI.Pair` except every letter must be in the transversal
 (not including the head letter). -/
 structure Pair (d : Transversal φ) (i : ι) extends CoprodI.Word.Pair G i where

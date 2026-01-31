@@ -156,7 +156,7 @@ lemma mapComp'₀₁₃_hom (hf : f₀₁ ≫ f₁₃ = f) :
 lemma mapComp'₀₂₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
     (F.mapComp' f₀₂ f₂₃ f).hom =
     (F.mapComp' f₀₁ f₁₃ f).hom ≫ F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).hom ≫
-      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃:= by
+      (α_ _ _ _).inv ≫ (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).inv ▷ F.map f₂₃ := by
   simp [← mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_assoc _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
 @[to_app (attr := reassoc)]

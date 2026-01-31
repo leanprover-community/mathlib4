@@ -14,7 +14,7 @@ If `R` is a semisimple ring, then any `R`-module is both injective and projectiv
 
 -/
 
-@[expose] public section
+public section
 
 namespace Module
 

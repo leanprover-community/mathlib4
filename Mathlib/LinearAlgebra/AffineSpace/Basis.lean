@@ -213,9 +213,6 @@ theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
-@[deprecated (since := "2025-05-23")]
-alias coord_apply_combination_of_not_mem := coord_apply_combination_of_notMem
-
 @[simp]
 theorem sum_coord_apply_eq_one [Fintype ι] (q : P) : ∑ i, b.coord i q = 1 := by
   have hq : q ∈ affineSpan k (range b) := by

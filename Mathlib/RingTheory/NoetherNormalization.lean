@@ -51,7 +51,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
 
-@[expose] public section
+public section
 open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
@@ -93,7 +93,7 @@ private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
-    Fin.coe_cast, mul_comm, sum_ofFn] using h
+    Fin.val_cast, mul_comm, sum_ofFn] using h
 
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by

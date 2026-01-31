@@ -44,7 +44,7 @@ namespace HomologicalComplex
 
 open ShortComplex
 
-variable {C : Type*} [Category C] [Limits.HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [Limits.HasZeroMorphisms C]
   (A : C) {φ : A ⟶ A} {ψ : A ⟶ A} (hOdd : φ ≫ ψ = 0) (hEven : ψ ≫ φ = 0)
 
 /-- Let `c : ComplexShape ℕ` be such that `i j : ℕ` have opposite parity if they are related by
@@ -142,7 +142,7 @@ end HomologicalComplex
 
 open CategoryTheory Limits AlgebraicTopology
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 namespace ChainComplex
 
