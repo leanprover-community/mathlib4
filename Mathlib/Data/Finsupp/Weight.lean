@@ -311,12 +311,7 @@ lemma nsmul_single_one_image {α : Type*} {n : ℕ} {s : Set α} :
     obtain ⟨i, hi⟩ : f.support.Nonempty := by aesop
     obtain ⟨x, hx⟩ := le_iff_exists_add'.mp
       (show single i 1 ≤ f by simpa [Nat.one_le_iff_ne_zero] using hi)
-    use x; split_ands
-    · aesop
-    · trans ↑f.support
-      · simpa [hx] using support_mono le_self_add
-      exact f_supp
-    exact ⟨i, ⟨f_supp (Finset.mem_coe.mpr hi), hx.symm⟩⟩
+    exact ⟨x, by aesop (add simp Set.subset_def), _, ⟨_, f_supp (by simp_all), rfl⟩, hx.symm⟩
 
 open scoped Pointwise in
 theorem image_pow_eq_finsuppProd_image {α β : Type*} [CommMonoid β] {f : α → β} {n} {s : Set α} :
