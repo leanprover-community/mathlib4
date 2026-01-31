@@ -459,7 +459,7 @@ variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
 
 variable [IsManifold I 1 M] [IsManifold J 1 N]
 
-/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAtOfComplement F I J n f x) : MSplitsAt I J f x := by
   -- The local representative of f in the nice charts at x, as a continuous linear map.
   let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
@@ -737,7 +737,7 @@ theorem contMDiffAt (h : IsImmersionAt I J n f x) : ContMDiffAt I J n f x :=
 variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
   [IsManifold I 1 M] [IsManifold J 1 N]
 
-/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAt I J n f x) : MSplitsAt I J f x :=
   h.isImmersionAtOfComplement_complement.msplitsAt
 
@@ -875,7 +875,7 @@ theorem contMDiff [IsManifold I n M] [IsManifold J n N]
 variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
   [IsManifold I 1 M] [IsManifold J 1 N]
 
-/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
+/-- If `f` is a `C^n` immersion at `x`, then `mfderiv I J f x` splits. -/
 theorem msplits [IsManifold I n M] [IsManifold J n N]
     (h : IsImmersionOfComplement F I J n f) : MSplits I J f :=
   fun x ↦ (h x).msplitsAt
