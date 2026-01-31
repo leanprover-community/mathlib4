@@ -18,6 +18,14 @@ We show that if `C` has limits of shape `I` and `A : C ⥤ Type w` preserves lim
 the category of elements of `A` has limits of shape `I` and the forgetful functor
 `π : A.Elements ⥤ C` creates them.
 
+## Further results
+
+- If `A` is (co)representable, then `A.Elements` has an initial object.
+
+## TODOs
+
+- Show that `A` is (co)representable if `A.Elements` has an initial object.
+
 -/
 
 @[expose] public section
