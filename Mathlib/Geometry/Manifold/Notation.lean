@@ -227,8 +227,8 @@ Captures information when a model with corners is the trivial model on a normed 
 (or on an inner product space, which is also a normed space):
 contains the expressions describing the normed space and its base field.
 
-Searching for a model with corners will return an `Option NormedSpaceInfo`, which is `some` iff
-a trivial model on a normed space was found.
+Searching for a model with corners will return an `Option NormedSpaceInfo`,
+which is `some` if and only if the trivial model on a normed space was found.
 -/
 structure NormedSpaceInfo where
   /-- The expression for the normed space itself. -/
@@ -238,7 +238,7 @@ structure NormedSpaceInfo where
 deriving Inhabited
 
 /--
-Information about a model with corners found through search.
+Information about a model with corners found through `findModelInner`.
 It includes the model with corners found, and, if this model is the trivial model with corners on a
 normed space, information about that normed space. (Knowing this is important for forming products
 of models.)
@@ -247,18 +247,18 @@ Most search results are not a model with corners for a normed space, so an `Expr
 model with corners may be coerced directly to this type.
 -/
 structure FindModelResult where
-  /-- The model with corners. -/
+  /-- Expression describing the model with corners found. -/
   model : Expr
-  /-- Information on the underlying normed space if this model it the trivial model with corners on
-  a normed space. -/
+  /-- Information on the underlying normed space,
+  if this model is the trivial model with corners on a normed space. -/
   normedSpaceInfo? : Option NormedSpaceInfo := none
 deriving Inhabited
 
 instance : Coe Expr FindModelResult where
   coe model := { model }
 
-/-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
-failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
+/-- Try a strategy `x : TermElabM` which either successfully finds a `ModelWithCorners` or fails.
+On failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
 
 We run `x` with `errToSorry == false` to convert elaboration errors into
@@ -341,6 +341,8 @@ def findModelInner (e : Expr) (baseInfo : Option (Expr × Expr) := none) :
   if let some m ← tryStrategy "Complex unit circle" fromCircle          then return some m
   if let some m ← tryStrategy "Sphere"              fromSphere          then return some m
   if let some m ← tryStrategy "NormedField"         fromNormedField     then return some m
+  -- We run this strategy last, as it is the least likely to succeed.
+  -- More commonly, we have a normed space on the nose, and `fromNormedSpace` should succeed.
   if let some m ← tryStrategy "InnerProductSpace" fromInnerProductSpace then return some m
   return none
 where
