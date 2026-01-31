@@ -680,8 +680,7 @@ theorem exists_partition_in_cover
   -- Each segment is in some U j
   intro i
   obtain ⟨j, hj⟩ := ht_cover i
-  refine ⟨j, fun s hs => ?_⟩
-  exact hj ⟨hs.1, hs.2⟩
+  refine ⟨j, fun s hs => hj hs⟩
 
 /-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
 has a neighborhood with property P, then there exists a partition such that each segment lies
@@ -695,9 +694,8 @@ theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → 
   -- For each z, choose a neighborhood U z with property P
   choose U hU_open hU_mem hU_P using h
   -- These form an open cover of the path's range
-  have h_cover : Set.range γ ⊆ ⋃ z : Set.range γ, U z.val z.property := by
-    intro w hw
-    exact Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩
+  have h_cover : Set.range γ ⊆ ⋃ z : Set.range γ, U z.val z.property := fun w hw =>
+    Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩
   -- Apply the cover version
   obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
     exists_partition_in_cover (fun z : Set.range γ => U z.val z.property)

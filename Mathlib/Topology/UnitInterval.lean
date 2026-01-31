@@ -464,9 +464,8 @@ theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y �
     ring_nf
 
 theorem continuous_convexCombo {a b : ℝ} :
-    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) := by
-  apply Continuous.subtype_mk
-  fun_prop
+    Continuous (fun (p : Icc a b × Icc a b × unitInterval) => convexCombo p.1 p.2.1 p.2.2) :=
+  Continuous.subtype_mk (by fun_prop) _
 
 end Set.Icc
 
@@ -521,14 +520,14 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
     refine ⟨0, fun _ => ⟨a, by simp⟩, ?_, ?_, ?_, ?_⟩
     · -- StrictMono: vacuously true for Fin 1
       intro i j hij
-      exact absurd hij (by omega)
+      omega
     · -- t 0 = a
       rfl
     · -- t (Fin.last 0) = a = b
       rfl
     · -- Covering property: vacuously true for Fin 0
       intro i
-      exact absurd i.val.lt_succ_self (by omega)
+      exact i.elim0
   · -- Case a < b: pick n with (b - a) / n < δ
     have hab_pos : 0 < b - a := sub_pos.mpr (Ne.lt_of_le hab h)
     obtain ⟨n, hn_pos, hn_small⟩ : ∃ n : ℕ, 0 < n ∧ (b - a) / n < δ := by
@@ -602,8 +601,7 @@ lemma exists_strictMono_Icc_subset_open_cover_Icc {ι} {a b : ℝ} (h : a ≤ b)
         have dist_bound : dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := by
           rw [dist_comm, Real.dist_eq]
           simp only [m, abs_sub_le_iff]
-          constructor
-          · linarith [hx_bounds.1, hx_bounds.2]
+          constructor <;>
           · linarith [hx_bounds.1, hx_bounds.2]
         -- Since (b-a)/n < δ, we have (b-a)/(2n) < δ/2 < δ
         calc dist (x : ℝ) (m : ℝ) ≤ ((b - a) / n) / 2 := dist_bound
