@@ -491,15 +491,16 @@ private lemma le_prod_max_one {ι : Type*} {s : Finset ι} {i : ι} (hi : i ∈ 
     simp
   exact this ▸ Finset.prod_le_prod (fun _ _ ↦ by grind) fun _ _ ↦ by grind
 
+open Finset in
 -- The "local" version of the height bound for arbitrary sums for archimedean `v`.
 private lemma max_abv_sum_one_le (v : AbsoluteValue K ℝ) {ι : Type*} {s : Finset ι}
     (hs : s.Nonempty) (x : ι → K) :
-    max (v (∑ i ∈ s, x i)) 1 ≤ s.card * ∏ i ∈ s, max (v (x i)) 1 := by
+    max (v (∑ i ∈ s, x i)) 1 ≤ #s * ∏ i ∈ s, max (v (x i)) 1 := by
   refine sup_le ?_ ?_
-  · rw [← nsmul_eq_mul, ← Finset.sum_const]
+  · rw [← nsmul_eq_mul, ← sum_const]
     grw [v.sum_le s x]
     gcongr with i hi
-    exact le_prod_max_one hi (fun i ↦ v (x i))
+    exact le_prod_max_one hi fun i ↦ v (x i)
   · nth_rewrite 1 [← mul_one 1]
     gcongr
     · simp [hs]
@@ -511,7 +512,7 @@ private lemma max_abv_sum_one_le_of_nonarch {v : AbsoluteValue K ℝ} (hv : IsNo
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
   refine sup_le ?_ <| s.one_le_prod fun _ ↦ le_max_right ..
   grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
-  exact Finset.sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi (fun i ↦ v (x i))
+  exact Finset.sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
 variable [AdmissibleAbsValues K]
 
@@ -525,8 +526,8 @@ lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α
     mulHeight₁ (∑ a ∈ s, x a) ≤ #s ^ (totalWeight K) * ∏ a ∈ s, mulHeight₁ (x a) := by
   simp only [mulHeight₁_eq, totalWeight]
   calc
-    _ ≤ (archAbsVal.map fun v ↦ (s.card : ℝ) * ∏ i ∈ s, max (v (x i)) 1).prod * _ := by
-      refine mul_le_mul_of_nonneg_right ?_ <| finprod_nonneg fun _ ↦ by grind
+    _ ≤ (archAbsVal.map fun v ↦ (#s : ℝ) * ∏ i ∈ s, max (v (x i)) 1).prod * _ := by
+      refine mul_le_mul_of_nonneg_right ?_ <| finprod_nonneg fun _ ↦ by positivity
       exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
     _ ≤ _ * ∏ᶠ (v : ↑nonarchAbsVal), ∏ i ∈ s, max (v.val (x i)) 1 := by
       refine mul_le_mul_of_nonneg_left ?_ <| prod_nonneg fun _ h ↦ by
@@ -554,7 +555,7 @@ lemma logHeight₁_sum_le {α : Type*} (s : Finset α) (x : α → K) :
   · simp
   simp only [logHeight₁_eq_log_mulHeight₁]
   have : ∀ a ∈ s, mulHeight₁ (x a) ≠ 0 := fun _ _ ↦ by positivity
-  have : (s.card : ℝ) ^ totalWeight K ≠ 0 := by simp [hs.ne_empty]
+  have : (#s : ℝ) ^ totalWeight K ≠ 0 := by simp [hs.ne_empty]
   pull (disch := first | assumption | positivity) log
   exact (log_le_log <| by positivity) <| mulHeight₁_sum_le hs x
 
