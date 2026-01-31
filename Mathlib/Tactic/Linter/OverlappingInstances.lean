@@ -19,6 +19,9 @@ open Lean Meta Elab
 
 public meta section
 
+open Lean Elab Command
+
+
 namespace Mathlib.Tactic.OverlappingInstances
 
 /-- Given an instance `e`, compute all data carrying classes that are
@@ -191,18 +194,11 @@ def overlappingInstances : Linter where
     -- Note: we don't break on errors; we want to lint even on partial declarations
     for t in ← getInfoTrees do
       for (ctx, info) in t.getDeclBodyInfos do
-        let (lctx, localInstances, remainingType?) ← do
-          match info with
-          | .ofTacticInfo i => do
-            let g :: _ := i.goalsBefore | continue
-            let some decl := i.mctxBefore.findDecl? g | continue
-            pure (decl.lctx, some decl.localInstances, some decl.type)
-          | .ofTermInfo i
-          | .ofPartialTermInfo i => pure (i.lctx, none, i.expectedType?)
-          | _ => continue -- Ought to be unreachable. TODO: check or refactor?
+        let some (lctx, localInstances, remainingType?) := info.getLCtxBefore?
+          | continue
+        -- TODO: better logging location
         let outerRef ← getRef
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
-          -- TODO: better logging location
           withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
           instance hypotheses. For now, we don't use the new fvars or remaining type for anything,

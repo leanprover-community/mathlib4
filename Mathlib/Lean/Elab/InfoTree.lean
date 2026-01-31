@@ -48,6 +48,8 @@ where
 
 namespace InfoTree
 
+
+
 /--
 Finds the first result of `← f ctx info children` which is `some a`, descending the
 tree from the top. Merges and updates contexts as it descends the tree.
@@ -154,4 +156,21 @@ using the keyword `theorem` directly.
 def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
   t.getDeclsByBody.filterMap env.findTheoremConstVal?
 
-end Lean.Elab.InfoTree
+end InfoTree
+
+namespace Info
+
+/-- Gets the local context, the local instances if available, and the expected type just before
+`Expr`. Handles `TacticInfo`s (looking at the first goal), `TermInfo`s, and `PartialTermInfo`s.
+Does not get the metavariable context; assumes that the caller has accumulated an ambient
+`ContextInfo` at this point which is sufficient. -/
+def getLCtxBefore? : Info → Option (LocalContext × Option LocalInstances × Option Expr)
+  | .ofTacticInfo i => do
+    let g ← i.goalsBefore.head?
+    let decl ← i.mctxBefore.findDecl? g
+    some (decl.lctx, decl.localInstances, decl.type)
+  | .ofTermInfo i
+  | .ofPartialTermInfo i => some (i.lctx, none, i.expectedType?)
+  | _ => none
+
+end Lean.Elab.Info
