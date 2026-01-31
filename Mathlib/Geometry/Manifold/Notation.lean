@@ -235,7 +235,7 @@ structure NormedSpaceInfo where
   normedSpace : Expr
   /-- The expression for the normed space's base field. -/
   baseField   : Expr
-deriving Repr, Inhabited
+deriving Inhabited
 
 /--
 Information about a model with corners found through search.
@@ -252,7 +252,7 @@ structure FindModelResult where
   /-- Information on the underlying normed space if this model it the trivial model with corners on
   a normed space. -/
   normedSpaceInfo? : Option NormedSpaceInfo := none
-deriving Repr, Inhabited
+deriving Inhabited
 
 instance : Coe Expr FindModelResult where
   coe model := { model }
