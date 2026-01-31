@@ -268,9 +268,9 @@ theorem hasFDerivAt_integral_of_dominated_of_fderiv_le'' [NormedSpace ℝ H] {μ
 
 /-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
 if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
-is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
-of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
-`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
+is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then for any
+finite-measure set `s ⊆ k` a derivative of `fun x => ∫ a in s, F x a ∂μ` in `x₀` can be computed as
+`∫ a in s, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
 theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
     [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set α}
     (hk : IsCompact k) (hs : MeasurableSet s) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
@@ -315,11 +315,8 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv [TopologicalSpace α]
     apply DifferentiableAt.hasFDerivAt
     exact (hF₂ a (hsk ha) x (hε' hx)).differentiableAt (hu'.mem_nhds (hε' hx))
 
-/-- A convenient special case of `hasFDerivAt_integral_of_dominated_of_fderiv_le`:
-if there exist a neighbourhood `u` of `x₀` and a compact set `k` such that `F.uncurry : H × α → E`
-is continuous and continuously differentiable in the first argument on `u ×ˢ k`, then a derivative
-of `fun x => ∫ a in k, F x a ∂μ` in `x₀` can be computed as
-`∫ a in k, fderiv 𝕜 (fun x ↦ F x a) x₀ ∂μ`. -/
+/-- A version of `hasFDerivAt_integral_of_continuousOn_fderiv` where `α` is required to be Hausdorff
+but `s` is not required to be measurable. -/
 theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace α] [T2Space α]
     [OpensMeasurableSpace α] {F : H → α → E} {x₀ : H} {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set α}
     (hk : IsCompact k) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
@@ -339,8 +336,9 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace
 
 /-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
 if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
-of `x₀` and a nice compact set `k`, then a derivative of `fun x => ∫ a in k, f x a ∂μ` in `x₀` can
-be computed as `∫ a in k, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ`. -/
+of `x₀` and a nice compact set `k`, then for any finite-measure set `s ⊆ k` a derivative of
+`fun x => ∫ a in s, f x a ∂μ` in `x₀` can be computed as
+`∫ a in s, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ`. -/
 theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E} {x₀ : H}
     {u : Set H} (hu : u ∈ 𝓝 x₀) {k s : Set H'}
     (hk : IsCompact k) (hs' : μ s ≠ ⊤) (hsk : s ⊆ k)
@@ -472,7 +470,7 @@ theorem hasFTaylorSeriesOn_setIntegral_of_le_const
 
 open ContinuousMultilinearMap in
 /-- If `f.uncurry : H × H' → E` is `Cⁿ` on `u ×ˢ k` for an open set `u` and a compact set `k`, then
-given any subset `s₀` of `k` the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
+given any finite-measure subset `s₀` of `k` the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
 is `Cⁿ` on `u` too. -/
 lemma ContDiffOn.parametric_integral
     {μ : Measure H'} {f : H → H' → E} {u : Set H} (hu : IsOpen u)
@@ -566,11 +564,10 @@ lemma ContDiffOn.parametric_integral
   exact contDiffWithinAt_nat.2 ⟨u', nhdsWithin_le_nhds u'_mem, _, this⟩
 
 /-- If `f.uncurry : H × H' → E` is `Cⁿ`, the parametric integral `fun x ↦ ∫ a in s₀, f x a ∂μ`
-over a set `s₀` contained in a compact set `k` is `Cⁿ` too. -/
-lemma ContDiff.parametric_integral {H' : Type*}
-    [NormedAddCommGroup H'] [NormedSpace 𝕜 H'] [MeasurableSpace H'] [OpensMeasurableSpace H']
-    {μ : Measure H'} {f : H → H' → E} {k s₀ : Set H'} (hk : IsCompact k) {n : ℕ∞} (hs₀ : s₀ ⊆ k)
-    (hf : ContDiff 𝕜 n f.uncurry) (mus₀ : μ s₀ ≠ ⊤) :
+over a finite-measure set `s₀` contained in a compact set `k` is `Cⁿ` too. -/
+lemma ContDiff.parametric_integral {μ : Measure H'} {f : H → H' → E}
+    {k s₀ : Set H'} (hk : IsCompact k) (hs₀ : s₀ ⊆ k) (mus₀ : μ s₀ ≠ ⊤) {n : ℕ∞}
+    (hf : ContDiff 𝕜 n f.uncurry) :
     ContDiff 𝕜 n (fun x ↦ ∫ a in s₀, f x a ∂μ) :=
   contDiffOn_univ.1 <| hf.contDiffOn.parametric_integral isOpen_univ hk hs₀ mus₀
 

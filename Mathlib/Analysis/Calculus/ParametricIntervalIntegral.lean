@@ -158,7 +158,7 @@ end intervalIntegral
 /-- If `f.uncurry : H × ℝ → E` is Cⁿ on `u ×ˢ [[a, b]]`, the parametric integral
 `fun x ↦ ∫ t in a..b, f x t ∂μ` is Cⁿ on `u` too. -/
 lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
-    {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H → ℝ → E} {u : Set H} (hu : IsOpen u) {a b : ℝ} {n : ℕ∞}
     (hf : ContDiffOn ℝ n f.uncurry (u ×ˢ [[a, b]])) :
     ContDiffOn ℝ n (fun x ↦ ∫ t in a..b, f x t ∂μ) u := by
@@ -175,7 +175,7 @@ lemma ContDiffOn.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFinite
 /-- If `f : H × ℝ → E` is Cⁿ, the parametric integral
 `fun x ↦ ∫ t in a..b, f (x, t) ∂μ` is Cⁿ too. -/
 lemma ContDiff.parametric_intervalIntegral {μ : Measure ℝ} [IsLocallyFiniteMeasure μ]
-    {E H : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup H]
     [NormedSpace ℝ H] {f : H × ℝ → E} {a b : ℝ} {n : ℕ∞}
     (hf : ContDiff ℝ n f) : ContDiff ℝ n (fun x ↦ ∫ t in a..b, f (x, t) ∂μ) :=
   contDiffOn_univ.1 <| hf.contDiffOn.parametric_intervalIntegral isOpen_univ
