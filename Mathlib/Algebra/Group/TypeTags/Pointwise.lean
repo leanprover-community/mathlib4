@@ -36,8 +36,7 @@ lemma ofAdd_image_nsmul (n : ℕ) (s : Set M) :
 
 @[simp]
 lemma toAdd_image_setMul (s t : Set (Multiplicative M)) :
-    Multiplicative.toAdd '' (s * t) =
-      (Multiplicative.toAdd '' s) + (Multiplicative.toAdd '' t) := by
+    toAdd '' (s * t) = (toAdd '' s) + (toAdd '' t) := by
   rw [← Set.image2_mul, Set.image_image2_distrib toAdd_mul, Set.image2_add]
 
 @[simp]
