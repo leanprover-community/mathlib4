@@ -41,7 +41,7 @@ lemma toAdd_image_setMul (s t : Set (Multiplicative M)) :
 
 @[simp]
 lemma toAdd_image_nsmul (n : ℕ) (s : Set (Multiplicative M)) :
-    Multiplicative.toAdd '' (s ^ n) = n • (Multiplicative.toAdd '' s) := by
+    toAdd '' (s ^ n) = n • (toAdd '' s) := by
   induction n with
   | zero => simp; rfl
   | succ n IH => simp [succ_nsmul, pow_succ, IH]
