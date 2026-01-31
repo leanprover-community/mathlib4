@@ -312,6 +312,8 @@ public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.Field.TransferInstance
 public import Mathlib.Algebra.Field.ULift
 public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.FiniteSupport.Basic
+public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.Algebra.Free
 public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
@@ -374,7 +376,6 @@ public import Mathlib.Algebra.Group.EvenFunction
 public import Mathlib.Algebra.Group.Ext
 public import Mathlib.Algebra.Group.Fin.Basic
 public import Mathlib.Algebra.Group.Fin.Tuple
-public import Mathlib.Algebra.Group.FiniteSupport
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Algebra.Group.ForwardDiff
 public import Mathlib.Algebra.Group.Graph

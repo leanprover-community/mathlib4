@@ -6,6 +6,7 @@ Authors: Michael Stoll
 module
 
 public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+public import Mathlib.Algebra.FiniteSupport.Defs
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.Data.Set.Finite.Lattice
 
@@ -14,8 +15,8 @@ import Mathlib.Algebra.Group.Support
 /-!
 # Make fun_prop work for finite (mulitplicative) support
 
-We define a new predicate `HasFiniteMulSupport` (and its additivized version) on functions
-and provide the infrastructure so that `fun_prop` can prove it for functions that are
+We provide API lemmas for the predicate `HasFiniteMulSupport` (and its additivized version)
+on functions so that `fun_prop` can prove it for functions that are
 built from other functions with finite multiplicative support.
 -/
 
@@ -24,14 +25,6 @@ built from other functions with finite multiplicative support.
 namespace Function
 
 variable {α M : Type*} [One M]
-
-/-- The function `f` has finite multiplicative support. -/
-@[to_additive (attr := fun_prop) /-- The function `f` has finite support. -/]
-def HasFiniteMulSupport (f : α → M) : Prop := f.mulSupport.Finite
-
-@[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_one : HasFiniteMulSupport fun _ : α ↦ (1 : M) := by
-  simp [HasFiniteMulSupport]
 
 -- why do we need both versions?
 @[to_additive (attr := fun_prop)]
