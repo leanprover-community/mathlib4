@@ -20,10 +20,11 @@ open Function Set
 
 public section
 
+universe u
 -- XXX. I *think* a `NontriviallyNormedField` suffices; if RCLike is required, it will be for the
 -- composition of split continuous linear maps. I believe this is fine, but the proof is not
 -- sorry-free yet.
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E F F' G : Type*} {E' : Type u}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
@@ -60,6 +61,8 @@ local instance : NormedSpace 𝕜 (TangentSpace I x) := inferInstanceAs (NormedS
 variable (I I' f x) in
 /-- If `f : M → M` is differentiable at `x`,
 we say `f` splits at `x` iff `mfderiv 𝕜 f I I' x` splits. -/
+-- TODO: is this a good definition, or should it consider the model normed spaces instead
+-- (and involve the extended charts)?
 def MSplitsAt (f : M → M') (x : M) : Prop := (mfderiv I I' f x).Splits
 
 namespace MSplitsAt
@@ -85,6 +88,23 @@ lemma prodMap {y : N} (hf : MSplitsAt I I' f x) {g : N → N'} (hg : MSplitsAt J
   unfold MSplitsAt at hf hg ⊢
   -- then apply Splits.prodMap to hf and hg
   sorry
+
+section
+
+/-- A choice of closed complement... -/
+-- TODO: think about the right way to formally do this!
+def complement (hf : MSplitsAt I I' f x) : Type u := by
+  let aux := ContinuousLinearMap.Splits.complement hf
+  let φ := extChartAt I x
+  sorry -- use aux... perhaps mapped somewhere!
+
+noncomputable instance (hf : MSplitsAt I I' f x) : NormedAddCommGroup hf.complement := by
+  sorry
+
+noncomputable instance (hf : MSplitsAt I I' f x) : NormedSpace 𝕜 hf.complement := by
+  sorry
+
+end
 
 section
 

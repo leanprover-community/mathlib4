@@ -60,7 +60,6 @@ its image has a closed complement. -/
 @[expose] protected def ContinuousLinearMap.Splits (f : E →L[𝕜] F) : Prop :=
   Injective f ∧ IsClosed (Set.range f) ∧ Submodule.ClosedComplemented (f.range)
 
--- XXX: should this be about ContinuousLinearMapClass?
 namespace ContinuousLinearMap.Splits
 
 variable {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}

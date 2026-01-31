@@ -738,15 +738,14 @@ variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace E'']
   [IsManifold I 1 M] [IsManifold J 1 N]
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv I J f x` splits. -/
-theorem msplitsAt {x : M} (h : IsImmersionAt I J n f x) : MSplitsAt I J f x := by
-  have aux := IsImmersionAt.isImmersionAtOfComplement_complement h
-  exact aux.msplitsAt
+theorem msplitsAt {x : M} (h : IsImmersionAt I J n f x) : MSplitsAt I J f x :=
+  h.isImmersionAtOfComplement_complement.msplitsAt
 
 /-- `f` is an immersion at `x` iff `mfderiv I J f x` splits. -/
 theorem _root_.isImmersionAt_iff_msplitsAt {x : M} [IsManifold J n N] :
     IsImmersionAt I J n f x ↔ MSplitsAt I J f x := by
   refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
-  -- TODO: where does F come from? does this direction make sense at all? think!!
+  -- TODO: take this complement from MSplitsAt.complement
   -- rw [← isImmersionAtOfComplement_iff_msplitsAt (n := n)] at h
   sorry
 
@@ -871,6 +870,7 @@ theorem _root_.isImmersionOfComplement_iff_msplits [IsManifold I n M] [IsManifol
   simp_rw [IsImmersionOfComplement, MSplits, isImmersionAtOfComplement_iff_msplitsAt]
 
 /- TODO: this statement needs some thought --- what is the right complement?
+In particular, is there *one* complement we can synthesize? Might be slightly tricky...
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
 lemma comp [IsManifold I' 1 M'] [IsManifold I' n M'] {g : N → M'}
@@ -954,7 +954,7 @@ theorem msplits [IsManifold I n M] [IsManifold J n N]
 theorem _root_.isImmersion_iff_msplits [IsManifold I n M] [IsManifold I 1 M] [IsManifold J n N] :
     IsImmersion I J n f ↔ MSplits I J f := by
   refine ⟨fun h ↦ h.isImmersionOfComplement_complement.msplits, fun h ↦ ?_⟩
-  -- TODO: how to conjure a complement out of thin air? same issue as before...
+  -- TODO: obtain a complement from MSplits... somehow!
   sorry
 
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
