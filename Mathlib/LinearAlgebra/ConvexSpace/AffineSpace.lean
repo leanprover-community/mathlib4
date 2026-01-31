@@ -96,4 +96,7 @@ instance instConvexSpace : ConvexSpace R P where
   single := convexCombination_single
   assoc := convexCombination_assoc
 
+-- TODO: we still need a public theorem stating how `ConvexSpace.convexCombination`
+-- is defined in terms of the affine structure.
+
 end AddTorsor
