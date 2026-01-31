@@ -81,7 +81,6 @@ lemma setOf_odd_degree_eq :
 theorem not_isEulerian {u v : Verts} (p : graph.Walk u v) (h : p.IsEulerian) : False := by
   have h := h.card_odd_degree
   have h' := setOf_odd_degree_eq
-  apply_fun Fintype.card at h'
   rw [h'] at h
   simp at h
 
