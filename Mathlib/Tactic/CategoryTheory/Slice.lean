@@ -17,6 +17,7 @@ of `Category.comp`.
 
 public meta section
 
+namespace Mathlib.Tactic.Slice
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 

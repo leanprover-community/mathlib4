@@ -34,6 +34,7 @@ variable (C : Type*) [Category* C]
 ```
 -/
 
+namespace Mathlib.Tactic.CategoryStar
 open Lean Meta Elab Term
 
 /--

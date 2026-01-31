@@ -38,7 +38,7 @@ public meta section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
-namespace Tactic.Elementwise
+namespace Mathlib.Tactic.Elementwise
 open CategoryTheory
 
 section theorems

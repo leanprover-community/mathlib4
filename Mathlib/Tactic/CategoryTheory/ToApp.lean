@@ -34,7 +34,7 @@ public meta section
 open Lean Meta Elab Tactic
 open Mathlib.Tactic
 
-namespace CategoryTheory
+namespace Mathlib.Tactic.CategoryTheory.ToApp
 
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
