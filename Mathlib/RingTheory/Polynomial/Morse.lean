@@ -47,7 +47,7 @@ variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [IsDomain S]
 /-- If the roots of `f` in `S` have at most one collision mod `p`, then a `MulSemiringAction` on
 the roots in `S` must be the identity permutation or a transposition.
 
-Such polynomials are called *Morse functions* in section 4.4 of [serre-galois]. -/
+Such polynomials are called *Morse functions* in Section 4.4 of [serre-galois]. -/
 theorem Splits.toPermHom_apply_eq_one_or_isSwap_of_ncard_le_of_mem_inertia
     [DecidableEq (f.rootSet S)] (hf : (f.map (algebraMap R S)).Splits)
     (p : Ideal S) [p.IsPrime] (hp : (f.rootSet S).ncard ≤ (f.rootSet (S ⧸ p)).ncard + 1)
