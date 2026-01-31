@@ -72,6 +72,10 @@ noncomputable def setSMulAntidiagonal [PartialOrder G] [PartialOrder P] [IsOrder
     {s : Set G} {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) : Finset (G × P) :=
   (SMulAntidiagonal.finite_of_isPWO hs ht a).toFinset
 
+@[to_additive (attr := deprecated setVAddAntidiagonal (since := "2026-01-31")),
+  deprecated setSMulAntidiagonal (since := "2026-01-31")]
+alias smulAntidiagonal := setSMulAntidiagonal
+
 @[to_additive (attr := simp)]
 theorem mem_smulAntidiagonal :
     x ∈ setSMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
