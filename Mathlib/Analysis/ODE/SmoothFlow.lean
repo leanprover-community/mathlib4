@@ -32,6 +32,15 @@ lemma Set.mapsTo_univ_iff_range_subset {α : Type*} {β : Type*} {t : Set β} {f
     MapsTo f univ t ↔ range f ⊆ t :=
   mapsTo_univ_iff.trans range_subset_iff.symm
 
+/-- The set of continuous maps whose range is contained in an open set is open,
+provided the domain is compact. -/
+-- TODO: move to Mathlib/Topology/CompactOpen.lean
+theorem ContinuousMap.isOpen_setOf_range_subset {X : Type*} {Y : Type*} [TopologicalSpace X]
+    [CompactSpace X] [TopologicalSpace Y] {U : Set Y} (hU : IsOpen U) :
+    IsOpen {f : C(X, Y) | range f ⊆ U} := by
+  simp_rw [← mapsTo_univ_iff_range_subset]
+  exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hU
+
 /-- The distance between two points in `Icc tmin tmax` is at most `|tmax - tmin|`. -/
 -- TODO: move somewhere
 lemma _root_.Set.Icc.abs_sub_le {tmin tmax : ℝ} (t t₀ : Icc tmin tmax) :
@@ -505,11 +514,12 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
 /-- The derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
 `integralCMLM g' u t₀`, where `g'` is the derivative of `g` in `E`. Uncurrying of multilinear maps
 is needed to ensure the types on both sides of the equation match. -/
+-- TODO: this lemma's existence is due to missing lemmas about `= (_).curryLeft`
 lemma fderiv_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} (hg : ContDiffOn ℝ 1 g u)
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) {α : C(Icc tmin tmax, E)}
     (hα : range α ⊆ u) :
     (fderiv ℝ (integralCMLM g u t₀) α).uncurryLeft =
-      integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α := by
+      (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α) := by
   rw [← uncurry_curryLeft (integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α)]
   congr 1
   exact (hasFDerivAt_integralCMLM hg hu t₀ hα).fderiv
@@ -520,6 +530,7 @@ to preserve the continuous multilinear map structure.
 - `iteratedFDerivUncurry g (k + 1) x = (fderiv ℝ (iteratedFDerivUncurry g k) x).uncurryLeft`
 
 This yields `iteratedFDerivUncurry g k : E → E [×(n + k)]→L[ℝ] E`. -/
+-- TODO: add to mathlib?
 noncomputable def iteratedFDerivUncurry {n : ℕ} (g : E → E [×n]→L[ℝ] E) (k : ℕ) :
     E → E [×(n + k)]→L[ℝ] E :=
   k.recOn g fun _ rec x ↦ (fderiv ℝ rec x).uncurryLeft
@@ -537,24 +548,19 @@ lemma iteratedFDerivUncurry_succ {n : ℕ} (g : E → E [×n]→L[ℝ] E) (k : �
 
 omit [CompleteSpace E] in
 /-- If `g` is `C^(m + k)` on `u`, then `iteratedFDerivUncurry g k` is `C^m` on `u`. -/
-lemma contDiffOn_iteratedFDerivUncurry {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
-    (hu : IsOpen u) (k : ℕ) {m : ℕ∞} (hg : ContDiffOn ℝ (m + k) g u) :
+lemma contDiffOn_iteratedFDerivUncurry {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E} {k : ℕ}
+    {m m' : WithTop ℕ∞} (hg : ContDiffOn ℝ m' g u) (hu : IsOpen u) (hm' : m + k ≤ m') :
     ContDiffOn ℝ m (iteratedFDerivUncurry g k) u := by
   induction k generalizing m with
-  | zero => simp only [Nat.cast_zero, add_zero] at hg ⊢; exact hg
+  | zero => exact hg.of_le (by simp_all)
   | succ k ih =>
-    simp only [iteratedFDerivUncurry_succ]
-    have hg' : ContDiffOn ℝ (↑(m + 1) + ↑k) g u := by
-      convert hg using 1
-      simp only [Nat.cast_add, Nat.cast_one, WithTop.coe_add, WithTop.coe_one, add_comm,
-        add_assoc]
-    have h1 : ContDiffOn ℝ ↑(m + 1) (iteratedFDerivUncurry g k) u := ih hg'
-    have h2 : ContDiffOn ℝ m (fderiv ℝ (iteratedFDerivUncurry g k)) u := by
-      have : (↑(m + 1) : WithTop ℕ∞) = ↑m + 1 := by simp
-      rw [this] at h1
-      exact h1.fderiv_of_isOpen hu le_rfl
-    exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryLeftEquiv ℝ
-      (fun _ : Fin (n + k).succ ↦ E) E).symm).comp_contDiffOn h2
+    rw [iteratedFDerivUncurry_succ]
+    apply (continuousMultilinearCurryLeftEquiv ℝ (fun _ : Fin (n + k + 1) ↦ E) E).symm
+      |>.contDiff.comp_contDiffOn
+    apply ContDiffOn.fderiv_of_isOpen _ hu le_rfl
+    apply ih
+    apply le_trans _ hm'
+    simp [add_assoc, add_comm k]
 
 /-- The `k`-th iterated derivative of `integralCMLM g u t₀` in `C(Icc tmin tmax, E)` is given by
 `integralCMLM (iteratedFDerivUncurry g k) u t₀`. This generalizes `fderiv_integralCMLM`, which is
@@ -568,64 +574,47 @@ lemma iteratedFDerivUncurry_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E
   | zero => simp
   | succ k ih =>
     simp only [iteratedFDerivUncurry_succ]
-    -- The IH gives equality on {β | range β ⊆ u}, which is a neighborhood of α
-    have heq : iteratedFDerivUncurry (integralCMLM g u t₀) k =ᶠ[𝓝 α]
-        integralCMLM (iteratedFDerivUncurry g k) u t₀ := by
-      have hopen : IsOpen {β : C(Icc tmin tmax, E) | range β ⊆ u} := by
-        simp_rw [← Set.mapsTo_univ_iff_range_subset]
-        exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
-      exact hopen.eventually_mem hα |>.mono fun β hβ ↦ ih hβ hg.of_succ
-    have hsmooth : ContDiffOn ℝ 1 (iteratedFDerivUncurry g k) u := by
-      have hg' : ContDiffOn ℝ (1 + k) g u := by simpa [add_comm] using hg
-      exact contDiffOn_iteratedFDerivUncurry hu k hg'
-    rw [heq.fderiv_eq, fderiv_integralCMLM hsmooth hu t₀ hα]
+    rw [← fderiv_integralCMLM
+      (contDiffOn_iteratedFDerivUncurry hg hu (by simp [add_comm])) hu t₀ hα]
+    congr 1
+    apply Filter.EventuallyEq.fderiv_eq
+    exact (ContinuousMap.isOpen_setOf_range_subset hu).eventually_mem hα |>.mono
+      fun β hβ ↦ ih hβ hg.of_succ
 
 lemma contDiffOn_integralCMLM_nat {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ) (hg : ContDiffOn ℝ k g u) :
     ContDiffOn ℝ k (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
   induction k generalizing n g with
   | zero =>
-    simp only [CharP.cast_eq_zero, contDiffOn_zero]
+    rw [CharP.cast_eq_zero, contDiffOn_zero]
     exact continuousOn_integralCMLM hg.continuousOn t₀
   | succ k ih =>
-    have hopen : IsOpen {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
-      simp_rw [← Set.mapsTo_univ_iff_range_subset]
-      exact ContinuousMap.isOpen_setOf_mapsTo isCompact_univ hu
-    have hcast : (↑(k + 1) : WithTop ℕ∞) = ↑k + 1 := by simp
-    rw [hcast, contDiffOn_succ_iff_fderiv_of_isOpen hopen]
-    refine ⟨?_, ?_, ?_⟩
-    · -- DifferentiableOn
+    rw [Nat.cast_add, Nat.cast_one,
+      contDiffOn_succ_iff_fderiv_of_isOpen (ContinuousMap.isOpen_setOf_range_subset hu)]
+    refine ⟨?_, fun h ↦ (WithTop.coe_ne_top h).elim, ?_⟩
+    · intro α hα
+      apply (hasFDerivAt_integralCMLM _ hu t₀ hα).differentiableAt.differentiableWithinAt
+      exact hg.of_le (by simp)
+    · rw [Nat.cast_add, Nat.cast_one] at hg
+      have hg' : ContDiffOn ℝ k (iteratedFDerivUncurry g 1) u :=
+        contDiffOn_iteratedFDerivUncurry hg hu (by simp)
+      apply (continuousMultilinearCurryLeftEquiv ℝ _ _).contDiff.comp_contDiffOn (ih hg') |>.congr
       intro α hα
-      have hg1 : ContDiffOn ℝ 1 g u := hg.of_le (by norm_cast; omega)
-      exact (hasFDerivAt_integralCMLM hg1 hu t₀ hα).differentiableAt.differentiableWithinAt
-    · -- k = ⊤ → AnalyticOn (vacuously true for finite k)
-      intro h
-      exact (WithTop.coe_ne_top h).elim
-    · -- ContDiffOn ℝ k (fderiv ℝ (integralCMLM g u t₀))
-      -- The derivative is curryLeft ∘ integralCMLM (iteratedFDerivUncurry g 1) u t₀
-      have hg' : ContDiffOn ℝ k (iteratedFDerivUncurry g 1) u := by
-        have h1 : ContDiffOn ℝ (↑k + 1) g u := by simpa using hg
-        exact contDiffOn_iteratedFDerivUncurry hu 1 h1
-      have hI := ih hg'
-      -- fderiv equals curryLeft ∘ integralCMLM (iteratedFDerivUncurry g 1) u t₀
-      have heq : ∀ α ∈ {α : C(Icc tmin tmax, E) | range α ⊆ u},
-          fderiv ℝ (integralCMLM g u t₀) α =
-            (integralCMLM (iteratedFDerivUncurry g 1) u t₀ α).curryLeft := fun α hα ↦ by
-        have hg1 : ContDiffOn ℝ 1 g u := hg.of_le (by norm_cast; omega)
-        exact (hasFDerivAt_integralCMLM hg1 hu t₀ hα).fderiv
-      refine ContDiffOn.congr ?_ heq
-      exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryLeftEquiv ℝ
-        (fun _ : Fin (n + 1) ↦ C(Icc tmin tmax, E)) C(Icc tmin tmax, E))).comp_contDiffOn hI
+      rw [(hasFDerivAt_integralCMLM hg.one_of_succ hu t₀ hα).fderiv]
+      simp
+      rfl -- TODO: missing lemmas about `continuousMultilinearCurryLeftEquiv_apply`
 
 /-- If `g` is `C^k` on `u`, then `integralCMLM g u t₀` is `C^k` on the set of curves whose range is
 contained in `u`. -/
 lemma contDiffOn_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E}
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ∞) (hg : ContDiffOn ℝ k g u) :
     ContDiffOn ℝ k (integralCMLM g u t₀) {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
-  induction k using WithTop.recTopCoe with
+  induction k with
   | top =>
-    exact contDiffOn_infty.mpr fun m ↦ contDiffOn_integralCMLM_nat hu t₀ m
-      (hg.of_le (WithTop.coe_le_coe.mpr le_top))
+    rw [contDiffOn_infty]
+    intro m
+    apply contDiffOn_integralCMLM_nat hu t₀ m (hg.of_le _)
+    simp [← WithTop.coe_natCast]
   | coe k => exact contDiffOn_integralCMLM_nat hu t₀ k hg
 
 /-- Specialization of `contDiffOn_integralCMLM` to the case `n = 0`, where `g : E → E [×0]→L[ℝ] E`
@@ -634,11 +623,10 @@ lemma contDiffOn_integralCMLM_curry0 {f : E → E} {u : Set E}
     (hu : IsOpen u) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (k : ℕ∞) (hf : ContDiffOn ℝ k f u) :
     ContDiffOn ℝ k (fun α ↦ (integralCMLM (fun x ↦ uncurry0 ℝ E (f x)) u t₀ α).curry0)
       {α : C(Icc tmin tmax, E) | range α ⊆ u} := by
-  have hg : ContDiffOn ℝ k (fun x ↦ uncurry0 ℝ E (f x)) u :=
-    (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
-  exact (LinearIsometryEquiv.contDiff (continuousMultilinearCurryFin0 ℝ
-    (C(Icc tmin tmax, E)) (C(Icc tmin tmax, E)))).comp_contDiffOn
-    (contDiffOn_integralCMLM hu t₀ k hg)
+  apply continuousMultilinearCurryFin0 ℝ (C(Icc tmin tmax, E)) (C(Icc tmin tmax, E))
+    |>.contDiff.comp_contDiffOn
+  apply contDiffOn_integralCMLM hu
+  exact (continuousMultilinearCurryFin0 ℝ E E).symm.contDiff.comp_contDiffOn hf
 
 /-- The implicit equation that defines the flow as its implicit function (when `T = 0`) -/
 def T (f : E → E) (u : Set E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (p : E × C(Icc tmin tmax, E)) :
