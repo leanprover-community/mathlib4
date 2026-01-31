@@ -208,6 +208,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (Tan
 [Elab.DiffGeo.MDiff] ✅️ NormedSpace
   [Elab.DiffGeo.MDiff] `F` is a normed space over the field `𝕜`
   [Elab.DiffGeo.MDiff] Found model: `𝓘(𝕜, F)`
+  [Elab.DiffGeo.MDiff] This is the trivial model with corners for the normed space `F` over the base field `𝕜`.
 -/
 #guard_msgs in
 set_option trace.Elab.DiffGeo true in
