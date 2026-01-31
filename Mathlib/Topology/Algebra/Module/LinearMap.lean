@@ -1169,13 +1169,30 @@ open ContinuousLinearMap
 def ClosedComplemented (p : Submodule R M) : Prop :=
   ∃ f : M →L[R] p, ∀ x : p, f x = x
 
-theorem ClosedComplemented.exists_isClosed_isCompl {p : Submodule R M} [T1Space p]
-    (h : ClosedComplemented p) :
+variable {p : Submodule R M}
+
+namespace ClosedComplemented
+
+variable [T1Space p]
+
+theorem exists_isClosed_isCompl (h : ClosedComplemented p) :
     ∃ q : Submodule R M, IsClosed (q : Set M) ∧ IsCompl p q :=
   Exists.elim h fun f hf => ⟨ker f, isClosed_ker f, LinearMap.isCompl_of_proj hf⟩
 
+/-- An arbitrary choice of closed complement of a closed complemented submodule. -/
+noncomputable def complement (h : ClosedComplemented p) : Submodule R M :=
+  Classical.choose h.exists_isClosed_isCompl
+
+theorem isClosed_complement (h : ClosedComplemented p) : IsClosed (h.complement : Set M) :=
+  Classical.choose_spec (h.exists_isClosed_isCompl) |>.1
+
+theorem isCompl_complement (h : ClosedComplemented p) : IsCompl p h.complement :=
+  Classical.choose_spec (h.exists_isClosed_isCompl) |>.2
+
+end ClosedComplemented
+
 protected theorem ClosedComplemented.isClosed [IsTopologicalAddGroup M] [T1Space M]
-    {p : Submodule R M} (h : ClosedComplemented p) : IsClosed (p : Set M) := by
+    (h : ClosedComplemented p) : IsClosed (p : Set M) := by
   rcases h with ⟨f, hf⟩
   have : (ContinuousLinearMap.id R M - p.subtypeL.comp f).ker = p :=
     LinearMap.ker_id_sub_eq_of_proj hf

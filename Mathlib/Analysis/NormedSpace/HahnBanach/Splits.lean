@@ -69,18 +69,18 @@ lemma injective (h : f.Splits) : Injective f := h.1
 
 lemma isClosed_range (h : f.Splits) : IsClosed (Set.range f) := h.2.1
 
-lemma closedComplemented (h : f.Splits) : Submodule.ClosedComplemented (f.range) :=
+lemma closedComplemented (h : f.Splits) : Submodule.ClosedComplemented f.range :=
   h.2.2
 
 /-- Choice of a closed complement of `range f` -/
 def complement (h : f.Splits) : Submodule 𝕜 F :=
-  Classical.choose h.closedComplemented.exists_isClosed_isCompl
+  h.closedComplemented.complement
 
-lemma complement_isClosed (h : f.Splits) : IsClosed (X := F) h.complement :=
-  (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).1
+lemma isClosed_complement (h : f.Splits) : IsClosed (X := F) h.complement :=
+  h.closedComplemented.isClosed_complement
 
-lemma complement_isCompl (h : f.Splits) : IsCompl f.range h.complement :=
-  (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).2
+lemma isCompl_complement (h : f.Splits) : IsCompl f.range h.complement :=
+  h.closedComplemented.isCompl_complement
 
 lemma congr {g : E →L[𝕜] F} (hf : f.Splits) (hfg : g = f) : g.Splits :=
   hfg ▸ hf
@@ -162,8 +162,8 @@ lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Spl
     let F' := hf.complement
     refine ⟨h, (F'.map (g : F →ₛₗ[.id _] G)) + hg.complement, ?_, ?_⟩
     · have : IsClosed (X := G) (F'.map (g : F →ₛₗ[.id _] G)) :=
-        hg.isClosedMap _ hf.complement_isClosed
-      have : IsClosed (X := G) hg.complement := hg.complement_isClosed
+        hg.isClosedMap _ hf.isClosed_complement
+      have : IsClosed (X := G) hg.complement := hg.isClosed_complement
       -- In general, the sum of closed subspaces need not be closed.
       -- In this case, however, this is true as F'.map G is a closed subspace of range g,
       -- and range g + hg.complement = G' is closed.
@@ -202,15 +202,15 @@ lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Spl
       -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
       -- rw [← LinearMap.range_eq_map f]
       constructor
-      · exact this ▸ disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
+      · exact this ▸ disjoint_aux hf.isCompl_complement.1 hg.isCompl_complement.1 hg.injective
       · rw [codisjoint_iff, this, ← Submodule.add_eq_sup, Submodule.sum_assoc, Submodule.map_add]
         rw [LinearMap.range_eq_map]
         trans Submodule.map (g : F →ₛₗ[.id _] G) ⊤ + hg.complement
         · congr
           rw [Submodule.add_eq_sup, ← codisjoint_iff]
-          simpa using hf.complement_isCompl.2
+          simpa using hf.isCompl_complement.2
         · rw [Submodule.add_eq_sup, ← codisjoint_iff, ← LinearMap.range_eq_map]
-          exact hg.complement_isCompl.2
+          exact hg.isCompl_complement.2
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
