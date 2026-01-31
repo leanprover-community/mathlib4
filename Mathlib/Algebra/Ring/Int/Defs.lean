@@ -88,6 +88,4 @@ instance instSemiring     : Semiring ℤ     := inferInstance
 instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
-set_option linter.style.whitespace true
-
 end Int

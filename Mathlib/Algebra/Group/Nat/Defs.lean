@@ -77,8 +77,6 @@ instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
 instance instOne              : One ℕ              := inferInstance
 
-set_option linter.style.whitespace true
-
 /-! ### Miscellaneous lemmas -/
 
 -- We set the simp priority slightly lower than default; later more general lemmas will replace it.
