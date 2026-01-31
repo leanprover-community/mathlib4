@@ -219,6 +219,8 @@ lemma summable_cotTerm (hz : x ∈ ℂ_ℤ) : Summable fun n ↦ cotTerm x n := 
   apply (EisensteinSeries.summable_linear_sub_mul_linear_add x 1 1).congr
   simp [mul_comm]
 
+@[deprecated (since := "2026-01-28")] alias Summable_cotTerm := summable_cotTerm
+
 lemma cot_series_rep' (hz : x ∈ ℂ_ℤ) : π * cot (π * x) - 1 / x =
     ∑' n : ℕ, (1 / (x - (n + 1)) + 1 / (x + (n + 1))) := by
   rw [HasSum.tsum_eq]

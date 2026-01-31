@@ -383,6 +383,11 @@ lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
+lemma nil_of_subsingleton [Subsingleton V] (p : G.Walk v w) : p.Nil :=
+  match p with
+  | nil => Nil.nil
+  | cons h w => Unique.eq_default G ▸ h |>.elim
+
 /-- The recursion principle for nonempty walks -/
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
