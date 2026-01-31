@@ -257,7 +257,6 @@ deriving Repr, Inhabited
 instance : Coe Expr FindModelResult where
   coe model := { model }
 
--- TODO: deduplicate with tryStrategy', somehow!
 /-- Try a strategy `x : TermElabM` which either successfully produces some `Expr` or fails. On
 failure in `x`, exceptions are caught, traced (`trace.Elab.DiffGeo.MDiff`), and `none` is
 successfully returned.
