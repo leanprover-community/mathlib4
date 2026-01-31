@@ -529,6 +529,10 @@ theorem closedBall_prod_same [PseudoEMetricSpace β] (x : α) (y : β) (r : ℝ�
 theorem mem_closure_iff : x ∈ closure s ↔ ∀ ε > 0, ∃ y ∈ s, edist x y < ε :=
   (mem_closure_iff_nhds_basis nhds_basis_eball).trans <| by simp only [mem_ball, edist_comm x]
 
+lemma dense_iff : Dense s ↔ ∀ (x : α), ∀ r > 0, (ball x r ∩ s).Nonempty :=
+  forall_congr' fun x => by
+    simp only [mem_closure_iff, Set.Nonempty, mem_inter_iff, and_comm, mem_ball']
+
 theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
     Tendsto u f (𝓝 a) ↔ ∀ ε > 0, ∀ᶠ x in f, edist (u x) a < ε :=
   nhds_basis_eball.tendsto_right_iff
