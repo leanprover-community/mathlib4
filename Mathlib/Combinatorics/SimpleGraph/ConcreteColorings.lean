@@ -236,7 +236,7 @@ lemma Coloring.even_length_iff_same_color (c : G.Coloring (Fin 2)) {u v : V} (p 
 /-- The bypass of a loop in a graph with all cycles of even length is the nil walk -/
 @[simp]
 lemma Walk.bypass_eq_nil
-[DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
+    [DecidableEq V] {G : SimpleGraph V} {u : V} (w : G.Walk u u) :
     w.bypass = Walk.nil :=
   (isPath_iff_eq_nil _).mp (Walk.bypass_isPath _)
 
@@ -261,7 +261,7 @@ theorem even_length_cons_of_isPath
 
 /-- If a path between `u` and `v` contains the edge `{u, v}`, then the path has length 1. -/
 lemma IsPath.length_eq_one_of_mem_edges
-{u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
+    {u v : V} {p : G.Walk u v} (hp : p.IsPath) (h : s(u, v) ∈ p.edges) : p.length = 1 := by
   by_contra h_non_simple_cycle
   have h_cycle : ∃ q : G.Walk u u, q.IsCycle := by
     rcases p with (_ | ⟨_, _, p⟩)
@@ -333,7 +333,7 @@ lemma even_length_iff_even_bypass_length [DecidableEq V]
 
 /-- A graph is bipartite if and only if it does not contain an odd cycle -/
 theorem bipartite_iff_all_cycles_even :
-  G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
+    G.IsBipartite ↔ ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length := by
   classical
   constructor
   · intro h_bip
@@ -356,7 +356,7 @@ theorem bipartite_iff_all_cycles_even :
 
 /-- The same as `bipartite_iff_all_cycles_even`, but as a direct implication -/
 theorem IsBipartite.of_no_odd_cycle
-(h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
+    (h : ∀ (v : V) (c : G.Walk v v), c.IsCycle → Even c.length) :
     G.IsBipartite := (bipartite_iff_all_cycles_even G).mpr h
 
 end OddCycleTheorem
