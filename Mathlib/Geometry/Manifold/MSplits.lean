@@ -84,9 +84,18 @@ lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' 
 
 lemma prodMap {y : N} (hf : MSplitsAt I I' f x) {g : N → N'} (hg : MSplitsAt J J' g y) :
     MSplitsAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
-  -- missing lemma: mfderiv of Prod.map
+  have hf' := hf.mdifferentiableAt
+  have hg' := hg.mdifferentiableAt
   unfold MSplitsAt at hf hg ⊢
-  -- then apply Splits.prodMap to hf and hg
+  rw [mfderiv_prodMk ?_ sorry]
+  swap
+  · have : (fun x ↦ (Prod.map f g x).1) = (fun x ↦ f x.1) := sorry
+    rw [this]
+    have (x : M × N) : MDifferentiableAt (I.prod J) I (fun x : M × N ↦ x.1) x := sorry
+    sorry --apply MDifferentiableAt.comp x.1 this hf
+  convert hf.prodMap hg
+  simp only [Prod.map_apply, Prod.map_fst, Prod.map_snd]
+  -- missing simp lemma!
   sorry
 
 section
