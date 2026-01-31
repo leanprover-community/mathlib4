@@ -10,6 +10,8 @@ public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.Tactic.SuppressCompilation
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
 
 
 /-!
@@ -103,7 +105,7 @@ instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
-  apply (config := { allowSynthFailures := true }) IsOpenImmersion.of_isIso_stalkMap
+  apply +allowSynthFailures IsOpenImmersion.of_isIso_stalkMap
   · exact .of_isEmpty (X := X) _
   · intro (i : X); exact isEmptyElim i
 
@@ -274,7 +276,7 @@ private lemma isOpenImmersion_sigmaDesc_aux
     have ⟨y, hy⟩ := (Scheme.IsLocallyDirected.openCover (Discrete.functor f)).covers x
     rw [← hy]
     refine IsIso.of_isIso_fac_right
-      (g := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
+      (f := ((Scheme.IsLocallyDirected.openCover (Discrete.functor f)).f _).stalkMap y)
       (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
     · simp [← Scheme.Hom.comp_apply]
     · simp [← Scheme.Hom.stalkMap_comp, Scheme.Hom.stalkMap_congr_hom _ _ (colimit.ι_desc _ _)]
@@ -303,7 +305,7 @@ lemma nonempty_isColimit_cofanMk_of [Small.{u} σ]
   have : IsOpenImmersion (Sigma.desc f) := by
     refine isOpenImmersion_sigmaDesc _ _ (fun i j hij ↦ ?_)
     simpa [Function.onFun_apply, disjoint_iff, Opens.ext_iff] using hdisj hij
-  simp only [← Cofan.isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
+  simp only [Cofan.nonempty_isColimit_iff_isIso_sigmaDesc (Cofan.mk S f), cofan_mk_inj, Cofan.mk_pt]
   apply isIso_of_isOpenImmersion_of_opensRange_eq_top
   rw [eq_top_iff]
   intro x hx

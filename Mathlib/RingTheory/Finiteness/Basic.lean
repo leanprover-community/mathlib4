@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 module
 
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.LinearAlgebra.Pi
@@ -235,6 +236,7 @@ variable {S} {P : Type*} [Semiring S] [AddCommMonoid P] [Module S P]
   {σ : R →+* S} [RingHomSurjective σ]
 
 -- TODO: remove RingHomSurjective
+@[stacks 0519 "(3)"]
 theorem of_surjective [hM : Module.Finite R M] (f : M →ₛₗ[σ] P) (hf : Surjective f) :
     Module.Finite S P :=
   ⟨by
@@ -306,6 +308,10 @@ theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N 
 instance [Module.Finite R M] : Module.Finite R Mᵐᵒᵖ := equiv (MulOpposite.opLinearEquiv R)
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
+
+universe u in
+instance Module.finite_shrink [Module.Finite R M] [Small.{u} M] : Module.Finite R (Shrink.{u} M) :=
+  Module.Finite.equiv (Shrink.linearEquiv R M).symm
 
 /-- A submodule is finite as a module iff it is finitely generated. -/
 theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans N.fg_top
