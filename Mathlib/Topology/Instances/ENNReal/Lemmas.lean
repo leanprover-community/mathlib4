@@ -641,7 +641,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
   (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 theorem EMetric.isClosed_closedBall {a : α} {r : ℝ≥0∞} : IsClosed (closedBall a r) :=
-  isClosed_le (continuous_id.edist continuous_const) continuous_const
+  isClosed_le (by fun_prop) continuous_const
 
 @[simp]
 theorem Metric.ediam_closure (s : Set α) : ediam (closure s) = ediam s := by
