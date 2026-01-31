@@ -519,7 +519,7 @@ this violates the naming convention. -/
     if last.endsWith '_' ||
         s.contains '«' || declName.components.any (fun c ↦ c.toString.startsWith "term") ||
         (`LibraryNote).isPrefixOf declName ||
-        declName.components.any (fun c ↦ #[`Mathlib, `Tactic, `Parser].contains c) ||
+        (`Mathlib.Tactic).isPrefixOf declName || (`Mathlib.Parser).isPrefixOf declName ||
         last.endsWith "_1" || last.endsWith "_2" || last.endsWith "_mathlib" then
       return none
     if declName.toString.contains "_" then
