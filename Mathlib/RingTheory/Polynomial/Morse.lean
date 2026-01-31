@@ -33,7 +33,7 @@ of Minkowski's theorem.
 
 ## References
 
-* [J. P. Serre, *Topics in Galois Theory*][serre-galois], section 4.4
+* [J. P. Serre, *Topics in Galois Theory*][serre-galois], Section 4.4
 
 -/
 
