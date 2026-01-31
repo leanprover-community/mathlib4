@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.SupClosed
 
 /-!
 # Measurable spaces and measurable functions
@@ -215,6 +216,13 @@ theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[�
 theorem measurable_generateFrom [MeasurableSpace α] {s : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ s, MeasurableSet (f ⁻¹' t)) : @Measurable _ _ _ (generateFrom s) f :=
   Measurable.of_le_map <| generateFrom_le h
+
+theorem measurableSet_generateFrom_of_mem_supClosure {s : Set (Set α)} {t : Set α}
+    (ht : t ∈ supClosure s) : MeasurableSet[generateFrom s] t := by
+  rcases ht with ⟨P, hP, PC, rfl⟩
+  rw [Finset.sup'_eq_sup, Finset.sup_id_set_eq_sUnion]
+  exact MeasurableSet.sUnion (Finset.countable_toSet P)
+    (fun s hs ↦ measurableSet_generateFrom (PC hs))
 
 variable {f g : α → β}
 
