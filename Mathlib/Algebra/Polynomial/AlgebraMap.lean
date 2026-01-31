@@ -13,6 +13,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 public import Mathlib.Algebra.Polynomial.Monomial
+public import Mathlib.RingTheory.Polynomial.Subring
 
 /-!
 # Theory of univariate polynomials
@@ -596,6 +597,12 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
 theorem dvd_term_of_isRoot_of_dvd_terms {r p : S} {f : S[X]} (i : ℕ) (hr : f.IsRoot r)
     (h : ∀ j ≠ i, p ∣ f.coeff j * r ^ j) : p ∣ f.coeff i * r ^ i :=
   dvd_term_of_dvd_eval_of_dvd_terms i (Eq.symm hr ▸ dvd_zero p) h
+
+@[simp]
+theorem eval₂_toSubring {R} [Ring R] [Algebra S R] (p : S[X]) (s : Subring S) (hp) (x : R) :
+    eval₂ (algebraMap s R) x (p.toSubring s hp) = aeval x p := by
+  rw [aeval_eq_sum_range, eval₂_eq_sum_range]
+  exact Finset.sum_congr rfl (fun n _ => by rw [Algebra.smul_def]; rfl)
 
 end CommRing
 

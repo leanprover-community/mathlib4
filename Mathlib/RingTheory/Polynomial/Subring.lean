@@ -63,14 +63,14 @@ variable (hp : ∀ n, p.coeff n ∈ T)
 @[simp] theorem degree_toSubring : (p.toSubring T hp).degree = p.degree := rfl
 @[simp] theorem natDegree_toSubring : (p.toSubring T hp).natDegree = p.natDegree := rfl
 
-@[simp] theorem toSubring_leadingCoeff : (p.toSubring T hp).leadingCoeff = p.leadingCoeff := rfl
+@[simp] theorem leadingCoeff_toSubring : (p.toSubring T hp).leadingCoeff = p.leadingCoeff := rfl
 
 @[simp] theorem toSubring_zero : toSubring 0 T (by simp) = 0 := rfl
 @[simp] theorem toSubring_one : toSubring 1 T (by aesop) = 1 := by aesop
 
 @[simp]
 theorem monic_toSubring : Monic (p.toSubring T hp) ↔ Monic p := by
-  rw [Monic, Monic, ← toSubring_leadingCoeff p T, OneMemClass.coe_eq_one]
+  rw [Monic, Monic, ← leadingCoeff_toSubring p T, OneMemClass.coe_eq_one]
 
 @[simp]
 theorem map_toSubring : (p.toSubring T hp).map (Subring.subtype T) = p := by
