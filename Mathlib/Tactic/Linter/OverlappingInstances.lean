@@ -201,14 +201,8 @@ def overlappingInstances : Linter where
         ctx.runMetaMWithMessages lctx (localInstances := localInstances) <|
           withRef outerRef do
           /- If there's a remaining expected type, then telescope into it in case it contains more
-          instance hypotheses. For now, we don't use the new fvars or remaining type for anything,
-          but these could be passed to `k`. -/
-          let forallTelescopeRemainingType (k : MetaM Unit) :=
-            if let some type := remainingType? then
-              forallTelescope type fun _ _ => k
-            else
-              k
-          forallTelescopeRemainingType do
+          instance hypotheses. For now, we don't use the new fvars or return type for anything. -/
+          remainingType?.elim id (forallTelescope · fun _ _ => ·) do
             let overlaps ← findOverlappingDataInstances
             unless overlaps.isEmpty do
               -- TODO: alert user to `variable`s, possibly suggest `omit` when relevant
