@@ -702,7 +702,7 @@ where
     -- a product, or a direct sum of spaces.
     match_expr e with
     | Subtype M p =>
-      dbg_trace "found a subtype on `{M}` with condition `{p}`"
+      dbg_trace "found a subtype on `{M}`"
       match_expr p with
       -- TODO: this match arm is not being hit
       | Expr.lam _x _y body _ =>
@@ -718,7 +718,7 @@ where
             return none
           | _ => return none
         | _ => return none
-      | _ => return none
+      | _ => dbg_trace "condition did not match; is `{p}`"; return none
     | TopologicalSpace.Opens M _ =>
       trace[Elab.DiffGeo.MDiff] "Expression `{e}` is an open set of `{M}`, finding a model on `{M}`"
       -- (In practice, `M` is not an `Opens`, as `Opens X` is (currently?) not a topological space.
