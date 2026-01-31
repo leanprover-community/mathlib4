@@ -802,6 +802,9 @@ theorem isIndepSet_iff_isAntichain : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
 theorem isIndepSet_iff_isAntichain : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
   Iff.rfl
 
+theorem isIndepSet_iff_isAntichain : G.IsIndepSet s ↔ IsAntichain G.Adj s :=
+  Iff.rfl
+
 /-- An independent set is a clique in the complement graph and vice versa. -/
 @[simp] theorem isClique_compl : Gᶜ.IsClique s ↔ G.IsIndepSet s := by
   rw [isIndepSet_iff, isClique_iff]; repeat rw [Set.Pairwise]
