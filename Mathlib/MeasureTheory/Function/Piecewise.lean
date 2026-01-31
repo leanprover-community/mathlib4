@@ -25,7 +25,7 @@ namespace IndexedPartition
 variable {ι α β : Type*} [MeasurableSpace α] {s : ι → Set α} {f : ι → α → β}
 
 @[measurability, fun_prop]
-protected theorem measurable_piecewise [MeasurableSpace β] [Countable ι]
+theorem measurable_piecewise [MeasurableSpace β] [Countable ι]
     (hs : IndexedPartition s) (hm : ∀ i, MeasurableSet (s i)) (hf : ∀ i, Measurable (f i)) :
     Measurable (hs.piecewise f) :=
   fun t ht => by simpa [piecewise_preimage] using .iUnion (fun i => (hm i).inter ((hf i) ht))
