@@ -336,7 +336,7 @@ theorem hasFDerivAt_integral_of_continuousOn_fderiv_of_t2Space [TopologicalSpace
 
 /-- A convenient special case of `hasFDerivAt_integral_of_continuousOn_fderiv`:
 if `f.uncurry : H × H' → E` is continuously differentiable on `u ×ˢ k` for a neighbourhood `u`
-of `x₀` and a nice compact set `k`, then for any finite-measure set `s ⊆ k` a derivative of
+of `x₀` and a compact set `k`, then for any finite-measure set `s ⊆ k` a derivative of
 `fun x => ∫ a in s, f x a ∂μ` in `x₀` can be computed as
 `∫ a in s, fderiv 𝕜 (fun x ↦ f x a) x₀ ∂μ`. -/
 theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E} {x₀ : H}
@@ -367,8 +367,7 @@ theorem hasFDerivAt_integral_of_contDiffOn {μ : Measure H'} {f : H → H' → E
       (o ×ˢ o') := by
     intro y hy
     apply (HasFDerivWithinAt.hasFDerivAt ?_ (o_open.mem_nhds hy.1)).fderiv
-    change HasFDerivWithinAt (f.uncurry ∘ (fun z ↦ (z, y.2))) _ _ _
-    apply (hp.hasFDerivWithinAt (x := y) one_ne_zero (oo'w hy)).comp
+    apply (hp.hasFDerivWithinAt (x := y) one_ne_zero (oo'w hy)).comp (f := fun z ↦ (z, y.2))
     · exact (hasFDerivAt_prodMk_left y.1 y.2).hasFDerivWithinAt
     · intro z hz
       exact oo'w ⟨hz, hy.2⟩
@@ -404,10 +403,6 @@ theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : �
     -- next line should not be necessary...
     let A : NormedSpace ℝ (H →L[𝕜] (H [×i]→L[𝕜] E)) := ContinuousLinearMap.toNormedSpace
     rw [← ContinuousLinearEquiv.integral_comp_comm]
-    let G : H → α → (H [×i]→L[𝕜] E) := fun x a ↦ p x a i
-    let G' : H → α → H →L[𝕜] (H [×i]→L[𝕜] E) := fun x a ↦
-      (continuousMultilinearCurryLeftEquiv 𝕜 (fun i ↦ H) E) (p x a i.succ)
-    change HasFDerivAt (fun x ↦ ∫ a, G x a ∂μ) (∫ a, G' x a ∂μ) x
     have s_mem : s ∈ 𝓝 x := hs.mem_nhds hx
     apply hasFDerivAt_integral_of_dominated_of_fderiv_le (s := s) (bound := bound (i + 1)) s_mem
     · filter_upwards [s_mem] with y hy using hF_meas _ hy _ hi.le
@@ -416,8 +411,8 @@ theorem hasFTaylorSeriesOn_integral_of_le_bound {n : WithTop ℕ∞} {bound : �
     · apply Continuous.comp_aestronglyMeasurable (by fun_prop)
       exact hF_meas x hx i.succ h'i
     · filter_upwards [h_bound] with a ha y hy
-      simp only [Nat.succ_eq_add_one, LinearIsometryEquiv.norm_map, G']
-      apply ha _ hy _ h'i
+      simp only [LinearIsometryEquiv.coe_toContinuousLinearEquiv, LinearIsometryEquiv.norm_map]
+      exact ha _ hy _ h'i
     · apply bound_integrable _ h'i
     · filter_upwards [h_diff] with a ha y hy
       exact (ha.fderivWithin i hi y hy).hasFDerivAt (hs.mem_nhds hy)
@@ -443,9 +438,8 @@ theorem hasFTaylorSeriesOn_setIntegral_of_le_const
   apply hasFTaylorSeriesOn_integral_of_le_bound hs (bound := fun i a ↦ C i * ∏ (j : Fin i), 1)
   · intro x hx i hi
     apply ContinuousOn.aestronglyMeasurable_of_isSeparable ?_ tmeas ht
-    change ContinuousOn
-      (fun y ↦ compContinuousLinearMapL (fun i ↦ ContinuousLinearMap.inl 𝕜 H H') (p (x, y) i)) t
-    apply Continuous.comp_continuousOn (by fun_prop)
+    apply Continuous.comp_continuousOn (g := compContinuousLinearMapL _) (by fun_prop)
+      (f := fun y ↦ p (x, y) i)
     apply (hF.cont i hi).comp (by fun_prop)
     intro w hw
     exact ⟨hx, hw⟩
